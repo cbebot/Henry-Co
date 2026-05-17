@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
+import { writeOwnerAudit } from "@/lib/owner-audit-log";
+import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
 
 export const runtime = "nodejs";
 
@@ -57,84 +59,120 @@ export async function POST(request: Request) {
     return ownerAuthDeniedResponse(auth);
   }
 
-  const admin = createAdminSupabase();
-  const body = await request.json();
+  return withOwnerMutationContext(
+    {
+      route: "/api/owner/pages",
+      method: "POST",
+      actor: actorFromOwnerAuth(auth),
+    },
+    async () => {
+      const admin = createAdminSupabase();
+      const body = await request.json();
 
-  const slug = cleanText(body.slug ?? body.page_key).toLowerCase();
-  const title = cleanText(body.title, slug === "home" ? "Henry & Co." : "Henry & Co.");
-  let stats: unknown[] = [];
-  let sections: unknown[] = [];
+      const slug = cleanText(body.slug ?? body.page_key).toLowerCase();
+      const title = cleanText(body.title, slug === "home" ? "Henry & Co." : "Henry & Co.");
+      let stats: unknown[] = [];
+      let sections: unknown[] = [];
 
-  try {
-    stats = parseJsonArray(body.stats);
-    sections = parseJsonArray(body.sections ?? body.body);
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Invalid page JSON payload." },
-      { status: 400 }
-    );
-  }
+      try {
+        stats = parseJsonArray(body.stats);
+        sections = parseJsonArray(body.sections ?? body.body);
+      } catch (error) {
+        return {
+          outcome: "validation" as const,
+          value: NextResponse.json(
+            { error: error instanceof Error ? error.message : "Invalid page JSON payload." },
+            { status: 400 },
+          ),
+        };
+      }
 
-  if (!slug || !title) {
-    return NextResponse.json(
-      { error: "Page slug and title are required." },
-      { status: 400 }
-    );
-  }
+      if (!slug || !title) {
+        return {
+          outcome: "validation" as const,
+          value: NextResponse.json(
+            { error: "Page slug and title are required." },
+            { status: 400 },
+          ),
+        };
+      }
 
-  const payload = {
-    id: body.id ?? undefined,
-    slug,
-    page_key: slug,
-    title,
-    subtitle: nullableText(body.subtitle),
-    hero_badge: nullableText(body.hero_badge ?? body.hero_kicker),
-    intro: nullableText(body.intro ?? body.hero_body ?? body.intro_body),
-    hero_image_url: nullableText(body.hero_image_url ?? body.cover_image_url),
-    primary_cta_label: nullableText(body.primary_cta_label ?? body.cta_primary_label),
-    primary_cta_href: nullableText(body.primary_cta_href ?? body.cta_primary_href),
-    secondary_cta_label: nullableText(body.secondary_cta_label ?? body.cta_secondary_label),
-    secondary_cta_href: nullableText(body.secondary_cta_href ?? body.cta_secondary_href),
-    cta_primary_label: nullableText(body.primary_cta_label ?? body.cta_primary_label),
-    cta_primary_href: nullableText(body.primary_cta_href ?? body.cta_primary_href),
-    cta_secondary_label: nullableText(body.secondary_cta_label ?? body.cta_secondary_label),
-    cta_secondary_href: nullableText(body.secondary_cta_href ?? body.cta_secondary_href),
-    hero_kicker: nullableText(body.hero_badge ?? body.hero_kicker),
-    hero_title: title,
-    hero_body: nullableText(body.intro ?? body.hero_body ?? body.intro_body),
-    hero_primary_label: nullableText(body.primary_cta_label ?? body.hero_primary_label),
-    hero_primary_href: nullableText(body.primary_cta_href ?? body.hero_primary_href),
-    hero_secondary_label: nullableText(
-      body.secondary_cta_label ?? body.hero_secondary_label
-    ),
-    hero_secondary_href: nullableText(
-      body.secondary_cta_href ?? body.hero_secondary_href
-    ),
-    body: sections,
-    stats,
-    sections,
-    seo_title: nullableText(body.seo_title),
-    seo_description: nullableText(body.seo_description),
-    is_published: body.is_published !== false,
-    sort_order: Number(body.sort_order ?? 100),
-    updated_at: new Date().toISOString(),
-  };
+      const payload = {
+        id: body.id ?? undefined,
+        slug,
+        page_key: slug,
+        title,
+        subtitle: nullableText(body.subtitle),
+        hero_badge: nullableText(body.hero_badge ?? body.hero_kicker),
+        intro: nullableText(body.intro ?? body.hero_body ?? body.intro_body),
+        hero_image_url: nullableText(body.hero_image_url ?? body.cover_image_url),
+        primary_cta_label: nullableText(body.primary_cta_label ?? body.cta_primary_label),
+        primary_cta_href: nullableText(body.primary_cta_href ?? body.cta_primary_href),
+        secondary_cta_label: nullableText(body.secondary_cta_label ?? body.cta_secondary_label),
+        secondary_cta_href: nullableText(body.secondary_cta_href ?? body.cta_secondary_href),
+        cta_primary_label: nullableText(body.primary_cta_label ?? body.cta_primary_label),
+        cta_primary_href: nullableText(body.primary_cta_href ?? body.cta_primary_href),
+        cta_secondary_label: nullableText(body.secondary_cta_label ?? body.cta_secondary_label),
+        cta_secondary_href: nullableText(body.secondary_cta_href ?? body.cta_secondary_href),
+        hero_kicker: nullableText(body.hero_badge ?? body.hero_kicker),
+        hero_title: title,
+        hero_body: nullableText(body.intro ?? body.hero_body ?? body.intro_body),
+        hero_primary_label: nullableText(body.primary_cta_label ?? body.hero_primary_label),
+        hero_primary_href: nullableText(body.primary_cta_href ?? body.hero_primary_href),
+        hero_secondary_label: nullableText(
+          body.secondary_cta_label ?? body.hero_secondary_label,
+        ),
+        hero_secondary_href: nullableText(
+          body.secondary_cta_href ?? body.hero_secondary_href,
+        ),
+        body: sections,
+        stats,
+        sections,
+        seo_title: nullableText(body.seo_title),
+        seo_description: nullableText(body.seo_description),
+        is_published: body.is_published !== false,
+        sort_order: Number(body.sort_order ?? 100),
+        updated_at: new Date().toISOString(),
+      };
 
-  const { error } = await admin.from("company_pages").upsert(payload, {
-    onConflict: "slug",
-  });
+      const { data: beforeRecord } = await admin
+        .from("company_pages")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
 
-  if (error) {
-    console.error("[owner/pages][POST]", error);
-    return NextResponse.json({ error: "Could not save this page right now." }, { status: 400 });
-  }
+      const { error } = await admin.from("company_pages").upsert(payload, {
+        onConflict: "slug",
+      });
 
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/contact");
-  revalidatePath("/privacy");
-  revalidatePath("/terms");
-  revalidatePath("/owner");
+      if (error) {
+        console.error("[owner/pages][POST]", error);
+        return {
+          outcome: "server_error" as const,
+          value: NextResponse.json({ error: "Could not save this page right now." }, { status: 400 }),
+        };
+      }
 
-  return NextResponse.json({ ok: true });
+      await writeOwnerAudit({
+        action: beforeRecord ? "owner.brand.page.update" : "owner.brand.page.create",
+        entityType: "company_page",
+        entityId: (beforeRecord?.id as string | undefined) ?? null,
+        oldValues: beforeRecord,
+        newValues: payload,
+        division: "hub",
+      });
+
+      revalidatePath("/");
+      revalidatePath("/about");
+      revalidatePath("/contact");
+      revalidatePath("/privacy");
+      revalidatePath("/terms");
+      revalidatePath("/owner");
+
+      return {
+        outcome: "ok" as const,
+        value: NextResponse.json({ ok: true }),
+      };
+    },
+  );
 }

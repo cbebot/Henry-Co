@@ -19,6 +19,8 @@ import {
   sanitizeStorageFileName,
   validateUploadDescriptor,
 } from "@/app/lib/internal-comms-upload-rules";
+import { writeOwnerAudit } from "@/lib/owner-audit-log";
+import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
 
 export const runtime = "nodejs";
 
@@ -145,6 +147,22 @@ export async function POST(request: Request) {
     return ownerAuthDeniedResponse(auth);
   }
 
+  return withOwnerMutationContext(
+    {
+      route: "/api/owner/internal-comms/messages",
+      method: "POST",
+      actor: actorFromOwnerAuth(auth),
+    },
+    async () => {
+      return await postInternalMessage(request, auth);
+    },
+  );
+}
+
+async function postInternalMessage(
+  request: Request,
+  auth: Extract<Awaited<ReturnType<typeof requireOwner>>, { ok: true }>,
+): Promise<import("@/lib/owner-mutation-context").OwnerMutationResult> {
   let body: {
     threadId?: string;
     body?: string;
@@ -155,7 +173,10 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as typeof body;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+    return {
+      outcome: "validation",
+      value: NextResponse.json({ error: "Invalid JSON." }, { status: 400 }),
+    };
   }
 
   const threadId = String(body.threadId || "").trim();
@@ -166,22 +187,37 @@ export async function POST(request: Request) {
   const attachmentsIn = Array.isArray(body.attachments) ? body.attachments : [];
 
   if (!threadId) {
-    return NextResponse.json({ error: "threadId is required." }, { status: 400 });
+    return {
+      outcome: "validation",
+      value: NextResponse.json({ error: "threadId is required." }, { status: 400 }),
+    };
   }
 
   if (!text && attachmentsIn.length === 0) {
-    return NextResponse.json({ error: "Message text or at least one attachment is required." }, { status: 400 });
+    return {
+      outcome: "validation",
+      value: NextResponse.json(
+        { error: "Message text or at least one attachment is required." },
+        { status: 400 },
+      ),
+    };
   }
 
   if (attachmentsIn.length > 12) {
-    return NextResponse.json({ error: "Too many attachments in one message." }, { status: 400 });
+    return {
+      outcome: "validation",
+      value: NextResponse.json({ error: "Too many attachments in one message." }, { status: 400 }),
+    };
   }
 
   const admin = createAdminSupabase();
   const ctx = await loadThreadAccessContext(admin, auth.user.id);
   const gate = await assertThreadWritable(admin, auth.user.id, threadId, ctx);
   if (!gate.ok) {
-    return NextResponse.json({ error: gate.message }, { status: gate.status });
+    return {
+      outcome: "denied",
+      value: NextResponse.json({ error: gate.message }, { status: gate.status }),
+    };
   }
 
   const email = auth.user.email?.trim() || "Owner";
@@ -218,14 +254,20 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({ message: existing, deduped: true });
+      return {
+        outcome: "conflict",
+        value: NextResponse.json({ message: existing, deduped: true }),
+      };
     }
   }
 
   for (const raw of attachmentsIn) {
     const kind = normalizeUploadKind(String(raw.kind || ""));
     if (!kind) {
-      return NextResponse.json({ error: "Invalid attachment kind." }, { status: 400 });
+      return {
+        outcome: "validation",
+        value: NextResponse.json({ error: "Invalid attachment kind." }, { status: 400 }),
+      };
     }
     const v = validateUploadDescriptor({
       kind,
@@ -233,17 +275,26 @@ export async function POST(request: Request) {
       byteSize: Number(raw.byteSize || 0),
     });
     if (!v.ok) {
-      return NextResponse.json({ error: v.message }, { status: 400 });
+      return {
+        outcome: "validation",
+        value: NextResponse.json({ error: v.message }, { status: 400 }),
+      };
     }
     const attachmentId = String(raw.attachmentId || "").trim();
     const path = String(raw.storagePath || "").trim();
     const prefix = `${threadId}/${auth.user.id}/${attachmentId}/`;
     if (!attachmentId || !/^[0-9a-f-]{36}$/i.test(attachmentId) || !path.startsWith(prefix)) {
-      return NextResponse.json({ error: "Invalid attachment path." }, { status: 400 });
+      return {
+        outcome: "validation",
+        value: NextResponse.json({ error: "Invalid attachment path." }, { status: 400 }),
+      };
     }
     const verified = await verifyStorageObject(admin, path, Number(raw.byteSize || 0));
     if (!verified.ok) {
-      return NextResponse.json({ error: verified.message }, { status: 400 });
+      return {
+        outcome: "validation",
+        value: NextResponse.json({ error: verified.message }, { status: 400 }),
+      };
     }
   }
 
@@ -288,16 +339,28 @@ export async function POST(request: Request) {
   if (error) {
     logInternalCommsError("messages/send", error);
     if (isInternalCommsStorageError(error)) {
-      return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
+      return {
+        outcome: "server_error",
+        value: NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 }),
+      };
     }
     if (String(error.code || "") === "23505") {
-      return NextResponse.json({ error: "Duplicate message submission." }, { status: 409 });
+      return {
+        outcome: "conflict",
+        value: NextResponse.json({ error: "Duplicate message submission." }, { status: 409 }),
+      };
     }
-    return NextResponse.json({ error: "Could not send message." }, { status: 400 });
+    return {
+      outcome: "server_error",
+      value: NextResponse.json({ error: "Could not send message." }, { status: 400 }),
+    };
   }
 
   if (!inserted) {
-    return NextResponse.json({ error: "Could not send message." }, { status: 400 });
+    return {
+      outcome: "server_error",
+      value: NextResponse.json({ error: "Could not send message." }, { status: 400 }),
+    };
   }
 
   for (const raw of attachmentsIn) {
@@ -328,7 +391,10 @@ export async function POST(request: Request) {
     if (attErr) {
       logInternalCommsError("messages/attachment-row", attErr);
       await admin.from("hq_internal_comm_messages").delete().eq("id", inserted.id);
-      return NextResponse.json({ error: "Could not finalize attachments." }, { status: 400 });
+      return {
+        outcome: "server_error",
+        value: NextResponse.json({ error: "Could not finalize attachments." }, { status: 400 }),
+      };
     }
   }
 
@@ -376,5 +442,21 @@ export async function POST(request: Request) {
     lastReadAt: new Date().toISOString(),
   });
 
-  return NextResponse.json({ message: messageRow });
+  await writeOwnerAudit({
+    action: "owner.messaging.message.send",
+    entityType: "hq_internal_comm_message",
+    entityId: inserted.id,
+    newValues: {
+      thread_id: threadId,
+      parent_id: parentId,
+      has_text: Boolean(text),
+      attachment_count: attachmentsIn.length,
+    },
+    division: gate.thread.division ?? "hub",
+  });
+
+  return {
+    outcome: "ok",
+    value: NextResponse.json({ message: messageRow }),
+  };
 }

@@ -387,6 +387,9 @@ importers:
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
+      '@henryco/branded-documents':
+        specifier: workspace:^
+        version: link:../../packages/branded-documents
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -411,6 +414,9 @@ importers:
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
+      '@henryco/notifications-ui':
+        specifier: workspace:^
+        version: link:../../packages/notifications-ui
       '@henryco/observability':
         specifier: workspace:^
         version: link:../../packages/observability

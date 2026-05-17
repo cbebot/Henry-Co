@@ -14,7 +14,9 @@ export type DocumentType =
   | "LogisticsShipmentReceipt"
   | "LogisticsB2BStatement"
   | "VendorPayoutStatement"
-  | "VendorTaxSummary";
+  | "VendorTaxSummary"
+  | "OwnerReportWeekly"
+  | "OwnerReportMonthly";
 
 export function buildDocumentFilename(type: DocumentType, id: string, date: Date = new Date()) {
   const stem = String(id || "doc").replace(NON_SLUG, "").slice(0, 32) || "doc";

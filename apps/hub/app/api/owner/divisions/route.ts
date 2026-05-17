@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
+import { writeOwnerAudit } from "@/lib/owner-audit-log";
+import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
 
 export const runtime = "nodejs";
 
@@ -64,84 +66,120 @@ export async function POST(request: Request) {
     return ownerAuthDeniedResponse(auth);
   }
 
-  const admin = createAdminSupabase();
-  const body = await request.json();
-  const leadPersonId = nullableText(body.lead_person_id);
-  let linkedLead:
-    | {
-        full_name: string | null;
-        role_title: string | null;
-        role_label: string | null;
-        job_title: string | null;
-        photo_url: string | null;
+  return withOwnerMutationContext(
+    {
+      route: "/api/owner/divisions",
+      method: "POST",
+      actor: actorFromOwnerAuth(auth),
+    },
+    async () => {
+      const admin = createAdminSupabase();
+      const body = await request.json();
+      const leadPersonId = nullableText(body.lead_person_id);
+      let linkedLead:
+        | {
+            full_name: string | null;
+            role_title: string | null;
+            role_label: string | null;
+            job_title: string | null;
+            photo_url: string | null;
+          }
+        | null = null;
+
+      if (leadPersonId) {
+        const { data } = await admin
+          .from("company_people")
+          .select("full_name, role_title, role_label, job_title, photo_url")
+          .eq("id", leadPersonId)
+          .maybeSingle();
+
+        linkedLead = data ?? null;
       }
-    | null = null;
 
-  if (leadPersonId) {
-    const { data } = await admin
-      .from("company_people")
-      .select("full_name, role_title, role_label, job_title, photo_url")
-      .eq("id", leadPersonId)
-      .maybeSingle();
+      const payload = {
+        id: body.id ?? undefined,
+        slug: cleanText(body.slug).toLowerCase(),
+        name: cleanText(body.name),
+        tagline: nullableText(body.tagline),
+        description: nullableText(body.description),
+        accent: cleanText(body.accent, "#C9A227"),
+        primary_url: nullableText(body.primary_url),
+        subdomain: normalizeSubdomain(body.subdomain),
+        logo_url: nullableText(body.logo_url),
+        logo_public_id: nullableText(body.logo_public_id),
+        cover_url: nullableText(body.cover_url),
+        cover_public_id: nullableText(body.cover_public_id),
+        categories: ensureTextArray(body.categories),
+        highlights: ensureTextArray(body.highlights),
+        who_its_for: ensureTextArray(body.who_its_for),
+        how_it_works: ensureTextArray(body.how_it_works),
+        trust: ensureTextArray(body.trust),
+        status: ["active", "coming_soon", "paused"].includes(body.status)
+          ? body.status
+          : "active",
+        lead_person_id: leadPersonId,
+        lead_name: nullableText(body.lead_name) ?? linkedLead?.full_name ?? null,
+        lead_title:
+          nullableText(body.lead_title) ??
+          linkedLead?.role_title ??
+          linkedLead?.role_label ??
+          linkedLead?.job_title ??
+          null,
+        lead_avatar_url: nullableText(body.lead_avatar_url) ?? linkedLead?.photo_url ?? null,
+        is_featured: Boolean(body.is_featured),
+        is_published: body.is_published !== false,
+        sort_order: Number(body.sort_order ?? 100),
+        updated_at: new Date().toISOString(),
+      };
 
-    linkedLead = data ?? null;
-  }
+      if (!payload.slug || !payload.name) {
+        return {
+          outcome: "validation" as const,
+          value: NextResponse.json(
+            { error: "Division slug and name are required." },
+            { status: 400 },
+          ),
+        };
+      }
 
-  const payload = {
-    id: body.id ?? undefined,
-    slug: cleanText(body.slug).toLowerCase(),
-    name: cleanText(body.name),
-    tagline: nullableText(body.tagline),
-    description: nullableText(body.description),
-    accent: cleanText(body.accent, "#C9A227"),
-    primary_url: nullableText(body.primary_url),
-    subdomain: normalizeSubdomain(body.subdomain),
-    logo_url: nullableText(body.logo_url),
-    logo_public_id: nullableText(body.logo_public_id),
-    cover_url: nullableText(body.cover_url),
-    cover_public_id: nullableText(body.cover_public_id),
-    categories: ensureTextArray(body.categories),
-    highlights: ensureTextArray(body.highlights),
-    who_its_for: ensureTextArray(body.who_its_for),
-    how_it_works: ensureTextArray(body.how_it_works),
-    trust: ensureTextArray(body.trust),
-    status: ["active", "coming_soon", "paused"].includes(body.status)
-      ? body.status
-      : "active",
-    lead_person_id: leadPersonId,
-    lead_name: nullableText(body.lead_name) ?? linkedLead?.full_name ?? null,
-    lead_title:
-      nullableText(body.lead_title) ??
-      linkedLead?.role_title ??
-      linkedLead?.role_label ??
-      linkedLead?.job_title ??
-      null,
-    lead_avatar_url: nullableText(body.lead_avatar_url) ?? linkedLead?.photo_url ?? null,
-    is_featured: Boolean(body.is_featured),
-    is_published: body.is_published !== false,
-    sort_order: Number(body.sort_order ?? 100),
-    updated_at: new Date().toISOString(),
-  };
+      let beforeRecord: Record<string, unknown> | null = null;
+      if (body.id) {
+        const { data } = await admin.from("company_divisions").select("*").eq("id", body.id).maybeSingle();
+        beforeRecord = data ?? null;
+      } else {
+        const { data } = await admin.from("company_divisions").select("*").eq("slug", payload.slug).maybeSingle();
+        beforeRecord = data ?? null;
+      }
 
-  if (!payload.slug || !payload.name) {
-    return NextResponse.json(
-      { error: "Division slug and name are required." },
-      { status: 400 }
-    );
-  }
+      const { error } = await admin.from("company_divisions").upsert(payload, {
+        onConflict: "slug",
+      });
 
-  const { error } = await admin.from("company_divisions").upsert(payload, {
-    onConflict: "slug",
-  });
+      if (error) {
+        console.error("[owner/divisions][POST]", error);
+        return {
+          outcome: "server_error" as const,
+          value: NextResponse.json({ error: "Could not save this division right now." }, { status: 400 }),
+        };
+      }
 
-  if (error) {
-    console.error("[owner/divisions][POST]", error);
-    return NextResponse.json({ error: "Could not save this division right now." }, { status: 400 });
-  }
+      await writeOwnerAudit({
+        action: beforeRecord ? "owner.brand.division.update" : "owner.brand.division.create",
+        entityType: "company_division",
+        entityId: (beforeRecord?.id as string | undefined) ?? null,
+        oldValues: beforeRecord,
+        newValues: payload,
+        division: payload.slug,
+      });
 
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/owner");
+      revalidatePath("/");
+      revalidatePath("/about");
+      revalidatePath("/owner");
 
-  return NextResponse.json({ ok: true });
+      return {
+        outcome: "ok" as const,
+        value: NextResponse.json({ ok: true }),
+      };
+    },
+  );
 }

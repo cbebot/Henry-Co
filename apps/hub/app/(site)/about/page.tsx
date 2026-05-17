@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import AboutHonestBlock from "../../components/AboutHonestBlock";
-import AboutLeadershipGrid from "../../components/AboutLeadershipGrid";
 import CompanyPageClient from "../../components/CompanyPageClient";
-import { getPublishedPeople } from "../../lib/about-people";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
@@ -31,20 +29,22 @@ export default async function AboutPage() {
   /** allSettled so a single fetcher rejection cannot escalate to error.tsx.
    * The static fallback is the source of truth when supabase is unavailable
    * (e.g., preview env without secrets) — the page still renders premium
-   * content without the dynamic edits. */
-  const [pageResult, peopleResult, settingsResult, divisionsResult] =
+   * content without the dynamic edits.
+   *
+   * V3 PASS 21 polish-layer: the AboutLeadershipGrid + getPublishedPeople
+   * fetcher were removed from this public route. The grid component itself
+   * remains on disk for admin/curation surfaces — the rubric called for
+   * "concrete divisions over team-photo grids" as the premium signal on
+   * the public /about route. */
+  const [pageResult, settingsResult, divisionsResult] =
     await Promise.allSettled([
       getCompanyPage("about"),
-      getPublishedPeople("about"),
       getCompanySettings(),
       getPublishedDivisions(),
     ]);
   const pageData = pageResult.status === "fulfilled"
     ? pageResult.value
     : { page: null, hasServerError: true };
-  const people = peopleResult.status === "fulfilled"
-    ? peopleResult.value
-    : { people: [], hasServerError: true };
   const settings: CompanySettingsRecord = normalizeCompanySettings(
     settingsResult.status === "fulfilled" ? settingsResult.value : null
   );
@@ -59,12 +59,11 @@ export default async function AboutPage() {
       <CompanyPageClient
         pageKey="about"
         initialData={pageData.page ?? createFallbackCompanyPage("about")}
-        serverWarning={Boolean(pageData.hasServerError || people.hasServerError)}
-        hideSections
+        serverWarning={Boolean(pageData.hasServerError)}
+        hideSections={false}
         hideFooter
       />
       <AboutHonestBlock settings={settings} divisions={divisions} />
-      <AboutLeadershipGrid people={people.people} />
     </>
   );
 }

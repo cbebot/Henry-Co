@@ -77,12 +77,48 @@ export default async function OwnerOverviewPage() {
       </OwnerPanel>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <MetricCard label="Live divisions" value={data.metrics.divisionsLive} subtitle="Tracked by the command center" icon={Building2} />
-        <MetricCard label="Recognized revenue" value={formatCurrencyAmount(data.metrics.totalRevenueNaira)} subtitle="Care, marketplace, and paid shared invoices" icon={DollarSign} />
-        <MetricCard label="Open support pressure" value={formatCompactNumber(data.metrics.openSupport)} subtitle="Cross-division support threads awaiting movement" icon={MessageSquare} />
-        <MetricCard label="Active staff" value={data.metrics.activeStaff} subtitle="Auth-backed workforce members seen recently" icon={Users} />
-        <MetricCard label="Critical signals" value={data.metrics.criticalSignals} subtitle="Items needing owner attention now" icon={Shield} />
-        <MetricCard label="Outbound notifications" value={formatCompactNumber(data.metrics.queuedNotifications)} subtitle="Queued email and WhatsApp delivery" icon={Activity} />
+        <MetricCard
+          label="Live divisions"
+          value={data.metrics.divisionsLive}
+          subtitle="Tracked by the command center"
+          icon={Building2}
+          traceId="overview.divisions-live"
+        />
+        <MetricCard
+          label="Recognized revenue"
+          value={formatCurrencyAmount(data.metrics.totalRevenueNaira)}
+          subtitle="Care, marketplace, and paid shared invoices"
+          icon={DollarSign}
+          traceId="overview.recognized-revenue"
+        />
+        <MetricCard
+          label="Open support pressure"
+          value={formatCompactNumber(data.metrics.openSupport)}
+          subtitle="Cross-division support threads awaiting movement"
+          icon={MessageSquare}
+          traceId="overview.open-support"
+        />
+        <MetricCard
+          label="Active staff"
+          value={data.metrics.activeStaff}
+          subtitle="Auth-backed workforce members seen recently"
+          icon={Users}
+          traceId="overview.active-staff"
+        />
+        <MetricCard
+          label="Critical signals"
+          value={data.metrics.criticalSignals}
+          subtitle="Items needing owner attention now"
+          icon={Shield}
+          traceId="overview.critical-signals"
+        />
+        <MetricCard
+          label="Outbound notifications"
+          value={formatCompactNumber(data.metrics.queuedNotifications)}
+          subtitle="Queued email and WhatsApp delivery"
+          icon={Activity}
+          traceId="overview.outbound-notifications"
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">

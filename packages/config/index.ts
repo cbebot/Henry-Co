@@ -2,6 +2,7 @@ export * from "./brand-emails";
 export * from "./company";
 export * from "./identity";
 export * from "./integrations";
+export * from "./legal";
 export * from "./support";
 export * from "./urls";
 export * from "./supabase-cookies";
