@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
@@ -7,11 +8,27 @@ import {
   PropertySectionIntro,
 } from "@/components/property/ui";
 import { getPropertySnapshot } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
+import { getPropertyManagedCopy } from "@henryco/i18n/server";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getPropertyPublicLocale();
+  const copy = getPropertyManagedCopy(locale);
+  return {
+    title: copy.meta.title,
+    description: copy.meta.description,
+  };
+}
+
 export default async function ManagedPropertyPage() {
-  const snapshot = await getPropertySnapshot();
+  const [locale, snapshot] = await Promise.all([
+    getPropertyPublicLocale(),
+    getPropertySnapshot(),
+  ]);
+  const copy = getPropertyManagedCopy(locale);
+
   const managedListings = snapshot.listings.filter(
     (item) => item.status === "approved" && item.managedByHenryCo,
   );
@@ -19,15 +36,15 @@ export default async function ManagedPropertyPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
-        kicker="Managed property"
-        title="Operations-grade management after the listing goes live."
-        description="Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows — held on one operating rail rather than scattered across apps and chat threads."
+        kicker={copy.page.kicker}
+        title={copy.page.title}
+        description={copy.page.description}
         actions={
           <Link
             href="/submit"
             className="property-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Submit a managed property
+            {copy.page.submitCta}
             <ArrowRight className="h-4 w-4" />
           </Link>
         }
@@ -43,10 +60,10 @@ export default async function ManagedPropertyPage() {
       <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr,1.05fr] xl:divide-x xl:divide-[var(--property-line)]">
         <div>
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Service lines
+            {copy.serviceLines.sectionKicker}
           </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-            What HenryCo handles after acceptance.
+            {copy.serviceLines.sectionTitle}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
             {snapshot.services.map((service) => (
@@ -76,7 +93,7 @@ export default async function ManagedPropertyPage() {
 
         <div className="xl:pl-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Recent managed records
+            {copy.recentRecords.sectionKicker}
           </p>
           <div className="mt-6 space-y-5">
             {snapshot.managedRecords.map((record) => (
@@ -88,9 +105,9 @@ export default async function ManagedPropertyPage() {
 
       <section className="mt-14">
         <PropertySectionIntro
-          kicker="Managed listings"
-          title="Homes and stays already on managed rails."
-          description="Stronger readiness, reporting, and coordination than passive pass-through inventory."
+          kicker={copy.managedListings.kicker}
+          title={copy.managedListings.title}
+          description={copy.managedListings.description}
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {managedListings.map((listing) => (
@@ -103,14 +120,13 @@ export default async function ManagedPropertyPage() {
         <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
           <div>
             <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-              Move forward
+              {copy.cta.kicker}
             </p>
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-              Submit your property — we’ll review the operating fit, not just the badge.
+              {copy.cta.title}
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--property-ink-soft)]">
-              Managed acceptance implies HenryCo operational involvement. Non-managed listings can
-              still publish, but the owner remains responsible for day-to-day reality.
+              {copy.cta.description}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -118,14 +134,14 @@ export default async function ManagedPropertyPage() {
               href="/submit"
               className="property-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Submit a property
+              {copy.cta.submitCta}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/trust"
               className="inline-flex items-center gap-2 rounded-full border border-[var(--property-line)] px-6 py-3 text-sm font-semibold text-[var(--property-ink)] transition hover:border-[var(--property-accent-strong)]/50"
             >
-              How HenryCo governs listings
+              {copy.cta.trustCta}
             </Link>
           </div>
         </div>

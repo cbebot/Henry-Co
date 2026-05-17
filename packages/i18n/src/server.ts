@@ -15,6 +15,7 @@ export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
 export { getPropertyFaqCopy, type PropertyFaqCopy } from "./property-faq-copy";
 export { getPropertyTrustCopy, type PropertyTrustCopy } from "./property-trust-copy";
+export { getPropertyManagedCopy, type PropertyManagedCopy } from "./property-managed-copy";
 export { getAccountCopy, formatAccountTemplate, type AccountCopy } from "./account-copy";
 export {
   getSurfaceCopy,
