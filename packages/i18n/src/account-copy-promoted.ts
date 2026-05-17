@@ -4321,11 +4321,82 @@ export const ACCOUNT_COPY_AR = {
       "walletFunding": "إثباتك في انتظار تأكيد التمويل.",
       "support": "لا تزال محادثات الدعم المفتوحة بحاجة إلى اهتمامك.",
       "notifications": "التحديثات غير المقروءة في انتظار المراجعة."
-    }
+    },
+    "priorityFallback": {
+      "low": "هادئ",
+      "normal": "معتاد",
+      "high": "مرتفع",
+      "urgent": "عاجل"
+    },
+    "eyebrow": "قائمة الإجراءات · مباشر",
+    "guidanceTitle": "قائمة واحدة، جميع الأقسام.",
+    "overviewAria": "نظرة عامة على المهام",
+    "volumeAria": "حجم المهام",
+    "pendingAria": "المهام المعلقة",
+    "sideAria": "كيف تعمل القائمة",
+    "bySource": "حسب المصدر",
+    "openTotalLabel": "الإجمالي المفتوح",
+    "nothingBlocking": "لا يوجد ما يعيق الآن",
+    "resolveBlockers": "حلها لفتح مسارات أخرى",
+    "routine": "معتاد",
+    "divisionRepresentedSingular": "{count} قسم ممثَّل",
+    "divisionRepresentedPlural": "{count} أقسام ممثَّلة",
+    "headlineEmpty": "لا شيء في القائمة.",
+    "headlineBlockerSingular": "{count} عائق للحل.",
+    "headlineBlockerPlural": "{count} عوائق للحل.",
+    "headlineUrgentSingular": "{count} مهمة عاجلة للاهتمام بها.",
+    "headlineUrgentPlural": "{count} مهام عاجلة للاهتمام بها.",
+    "headlineActiveSingular": "{count} مهمة للإتمام.",
+    "headlineActivePlural": "{count} مهام للإتمام.",
+    "headlineCalmSingular": "{count} عنصر في قائمتك.",
+    "headlineCalmPlural": "{count} عناصر في قائمتك.",
+    "blurbEmpty": "حسابك في حالة جيدة — التحقق والمدفوعات والمسارات الخاضعة للمراجعة كلها مفتوحة. سنُظهر لك الخطوة التالية هنا تلقائياً عند ظهورها.",
+    "blurbRisk": "هذه العناصر تحجب الإجراءات عالية الثقة في HenryCo — سحب المحفظة وموافقة البائع في المتجر وتحقق صاحب العمل. حلّها يفتح كل مسار.",
+    "blurbActive": "كل صف يأخذك إلى الخطوة التالية بنقرة واحدة. الفلاتر ومستويات الأولوية والروابط المباشرة تبقى متسقة عبر جميع أقسام HenryCo.",
+    "metaEmpty": "كل شيء واضح. أي جديد سيظهر هنا عند وصوله.",
+    "metaCount": "{count} مفتوح · مرتبة حسب الأولوية وحالة الحجب."
   },
   "security": {
     "title": "الأمان",
     "description": "قم بمراجعة النشاط الأمني ​​الأخير، وتغيير كلمة المرور الخاصة بك، وإنهاء جلسات HenryCo عند الحاجة.",
+    "heroAriaLabel": "نظرة عامة على الأمان",
+    "hero": {
+      "trustScoreLabel": "درجة الثقة",
+      "nextTierPrefix": "التالي ·",
+      "nextTierAriaTemplate": "المستوى التالي {tier}",
+      "accountActiveSingularTemplate": "الحساب نشط منذ {days} يوم",
+      "accountActivePluralTemplate": "الحساب نشط منذ {days} أيام",
+      "flaggedEventsSingularTemplate": "{count} حدث مُبلَّغ مسجَّل · راجع أدناه",
+      "flaggedEventsPluralTemplate": "{count} أحداث مُبلَّغة مسجَّلة · راجع أدناه",
+      "statusEyebrow": {
+        "secure": "الأمان والوصول · آمن",
+        "watch": "الأمان والوصول · إجراء موصى به",
+        "risk": "الأمان والوصول · خطر مكتشف"
+      },
+      "statusHeadline": {
+        "secure": "حسابك آمن.",
+        "watch": "بعض الخطوات ستعزز حسابك.",
+        "risk": "اكتشفنا نشاطاً يستدعي انتباهك."
+      },
+      "statusBlurb": {
+        "secure": "لا أحداث مشبوهة، والتحقق في حالة جيدة، وجميع إجراءات الثقة العالية في HenryCo متاحة لك.",
+        "watch": "لا شيء معطوب — لكن بعض الإشارات (تأكيد البريد الإلكتروني، مراجعة الهوية، تطابق جهة الاتصال المكررة) سترفع درجة ثقتك وتفتح مسارات إضافية.",
+        "risk": "الأحداث الأخيرة صُنِّفت على أنها عالية الخطورة. راجع تدفق النشاط أدناه وغيّر كلمة مرورك إذا كان هناك ما يبدو غريباً."
+      }
+    },
+    "signalsTitle": "الإشارات",
+    "signalsMeta": "ما تراه محركات التحقق والتقييم في حسابك الآن.",
+    "signalsAriaLabel": "إشارات الأمان",
+    "guideTitle": "أين أنت · ما الذي يدفعك للأمام",
+    "guideMetaTemplate": "درجة صادقة، لا رقم تسويقي. {tier}.",
+    "allLanesOpen": "جميع المسارات مفتوحة",
+    "accountActionsTitle": "إجراءات الحساب",
+    "accountActionsMeta": "ضوابط روتينية تديرها مباشرة.",
+    "changePasswordTitle": "تغيير كلمة المرور",
+    "signOutEverywhereTitle": "تسجيل الخروج من كل مكان",
+    "suspiciousEventFoot": "راجع تدفق النشاط أدناه.",
+    "noSuspiciousEventFoot": "لا شيء مُبلَّغ في نافذة المراجعة الأخيرة.",
+    "activityAriaLabel": "الأحداث الأمنية الأخيرة",
     "trustProfile": "ملف الثقة",
     "trustDescription": "الثقة تعمل عبر الحساب. وهو يتحكم الآن في إجراءات الأعمال ذات القيمة الأعلى، ووضعية الإشراف، والأهلية الأقوى عبر وحدات HenryCo.",
     "trustScore": "درجة ثقة الحساب",
@@ -6164,6 +6235,49 @@ export const ACCOUNT_COPY_AR = {
       "figureAriaLabel": "الإنفاق اللوجستي خلال آخر 6 أشهر",
       "emptyTick": "—"
     }
+  },
+  "addresses": {
+    "metadata": {
+      "title": "العناوين",
+      "description": "أدِر عناوينك المحفوظة (المنزل، المكتب، المتجر…) — تُستخدم للتوصيل والحجوزات والتحقق من KYC."
+    },
+    "hero": {
+      "title": "العناوين",
+      "description": "أدِر عناوينك المحفوظة (المنزل، المكتب، المتجر…) — تُستخدم للتوصيل والحجوزات والتحقق من KYC."
+    },
+    "card": {
+      "defaultBadge": "الافتراضي",
+      "kycVerifiedBadge": "تم التحقق منه KYC",
+      "setDefaultCta": "تعيين كافتراضي",
+      "editCta": "تعديل",
+      "deleteCta": "حذف",
+      "addressSeparator": "، "
+    },
+    "deleteConfirm": {
+      "prompt": "هل تريد حذف هذا العنوان؟ هذا الإجراء لا يمكن التراجع عنه.",
+      "confirmCta": "حذف",
+      "cancelCta": "إلغاء"
+    },
+    "empty": {
+      "body": "لم تُضف أي عنوان حتى الآن. أضف عنواناً لتسريع الدفع في HenryCo."
+    },
+    "add": {
+      "cta": "إضافة عنوان",
+      "formTitle": "إضافة عنوان جديد",
+      "editFormTitleTemplate": "تعديل {label}",
+      "maxedNoticeTemplate": "لقد وصلت إلى الحد الأقصى وهو {count} أنواع عناوين (منزل، مكتب، متجر، مستودع، بديل 1، بديل 2). عدِّل أو احذف عنواناً لإضافة نوع آخر."
+    }
+  },
+  "search": {
+    "metadata": {
+      "title": "بحث في الحساب",
+      "description": "ابحث في تدفقات حسابك في HenryCo ومسارات الأقسام المتصلة."
+    },
+    "hero": {
+      "title": "ابحث في تدفقات HenryCo الخاصة بك.",
+      "description": "صِل مباشرة إلى إجراءات الحساب الدقيقة ومسارات الأقسام المتصلة دون المرور بلوحات عامة."
+    },
+    "placeholder": "ابحث: الإشعارات، المحفظة، الفواتير، الدعم، الطلبات..."
   },
   "settings": {
     "pageTitle": "الإعدادات والتفضيلات",
