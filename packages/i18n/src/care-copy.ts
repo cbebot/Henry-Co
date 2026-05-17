@@ -608,7 +608,7 @@ const FR: DeepPartial<CareCopy> = {
         flowTemplate: "{inflow} entrant • {outflow} sortant",
       },
     },
-    dash: "—",
+    dash: "–",
   },
   staffOwner: {
     metadata: {
@@ -623,7 +623,7 @@ const FR: DeepPartial<CareCopy> = {
     },
     quickLinks: {
       bookings: "Réservations",
-      finance: "Finance",
+      finance: "Finances",
       records: "Registres",
       security: "Sécurité",
       settings: "Paramètres",
@@ -721,7 +721,7 @@ const FR: DeepPartial<CareCopy> = {
       empty: "Aucun avis disponible pour le moment.",
     },
     intelligencePanel: {
-      eyebrow: "Intelligence",
+      eyebrow: "Renseignement",
       title: "Ce que le propriétaire devrait suivre ensuite",
       subtitle: "L'entreprise gagne en productivité lorsque l'analyse se transforme en action.",
       expenseFlags: {
@@ -745,7 +745,7 @@ const FR: DeepPartial<CareCopy> = {
       eyebrow: "Politique d'archivage",
       cta: "Ouvrir les registres avec archive",
     },
-    dash: "—",
+    dash: "–",
   },
 };
 

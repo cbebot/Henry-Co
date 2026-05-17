@@ -176,6 +176,10 @@ export const INTENTIONAL_ECHOS = {
     "filters.hybrid",         // DE "Hybrid" universal cognate
     "filters.partTime",       // IT "Part-time" universal English borrow
   ],
+  care: [
+    "staffManager.dash",      // "—" universal em-dash punctuation
+    "staffOwner.dash",        // "—" universal em-dash punctuation
+  ],
   auth: [
     "login.passwordLabel",    // IT "Password" universally borrowed
     "signup.passwordLabel",   // IT "Password" universally borrowed
