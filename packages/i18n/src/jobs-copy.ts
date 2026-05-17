@@ -2434,6 +2434,60 @@ const PT: DeepPartial<JobsCopy> = {
     noApplications: "Sem candidaturas ainda.",
     noPostings: "Sem publicações ativas.",
   },
+  interviewRoom: {
+    kicker: "Sala de entrevista",
+    candidateFallback: "Candidato/a",
+    employerFallback: "Equipa de recrutamento",
+    iframeTitle: "Sala de entrevista por vídeo",
+    placeholder:
+      "A sala está a ser preparada. O entrevistador irá partilhar em breve uma ligação para a reunião no chat.",
+    tabChat: "Chat",
+    tabNotes: "Notas",
+    chatHint:
+      "O chat da sala é fornecido pelo serviço de vídeo. Utilize-o para partilhar ligações durante a chamada.",
+    notesLabel: "Notas privadas",
+    notesPlaceholder:
+      "Registe as suas observações. Visíveis apenas para a equipa de recrutamento.",
+    notesSaving: "A guardar…",
+    notesSavedAt: "Guardadas",
+    notesAutosave: "Guarda automaticamente a cada 30 s",
+    notesSaveError: "Não foi possível guardar as notas.",
+  },
+  verification: {
+    skillTitle: "Competências verificadas",
+    skillSubtitle: "Competências em que os empregadores podem confiar à primeira vista.",
+    experienceTitle: "Experiência verificada",
+    experienceSubtitle: "Cargos e antiguidade confirmados.",
+    referenceTitle: "Verificação de referências",
+    referenceSubtitle: "Respostas recolhidas junto das suas referências profissionais.",
+    badgeVerified: "Verificado",
+    badgePending: "Pendente",
+    badgeRejected: "Não verificado",
+  },
+  offerLetter: {
+    title: "Carta de oferta",
+    subtitle: "Reveja a sua oferta e assine quando estiver pronto.",
+    statusDraft: "Rascunho",
+    statusSent: "À espera da sua assinatura",
+    statusSigned: "Assinada",
+    statusExpired: "Expirada",
+    statusDeclined: "Recusada",
+    signCta: "Abrir sala de assinatura",
+    typedFallbackTitle: "Confirmar aceitação",
+    typedFallbackPrompt:
+      "Escreva o seu nome completo para aceitar esta oferta. Um PDF assinado fica guardado nos seus ficheiros.",
+  },
+  salary: {
+    rangeLabel: "Intervalo publicado",
+    benchmarkLabel: "Referência de mercado",
+    p25Label: "Percentil 25",
+    p50Label: "Mediana",
+    p75Label: "Percentil 75",
+    sampleLabel: "Dimensão da amostra",
+    sourceLabel: "Fonte dos dados",
+    discloseRequiredError:
+      "A divulgação salarial é obrigatória. Indique um intervalo numérico ou uma etiqueta concreta.",
+  },
   employerHiring: {
     pageTitle: "Pipelines de contratação",
     pageSubtitle:
