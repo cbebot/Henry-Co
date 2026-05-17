@@ -1,21 +1,34 @@
+import type { Metadata } from "next";
+import { getHubOwnerCopy } from "@henryco/i18n/server";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import CompanyPageEditorForm from "@/components/owner/CompanyPageEditorForm";
+import { getHubPublicLocale } from "@/lib/locale-server";
 import { getBrandCenterData } from "@/lib/owner-data";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getHubPublicLocale();
+  const copy = getHubOwnerCopy(locale).brand.pages;
+  return {
+    title: copy.metadataTitle,
+    description: copy.metadataDescription,
+  };
+}
+
 export default async function BrandPagesPage() {
-  const data = await getBrandCenterData();
+  const [data, locale] = await Promise.all([getBrandCenterData(), getHubPublicLocale()]);
+  const copy = getHubOwnerCopy(locale).brand.pages;
 
   return (
     <div className="space-y-6 acct-fade-in">
       <OwnerPageHeader
-        eyebrow="Pages & Content"
-        title="Shared company pages"
-        description="Hero content, meta, CTAs, and structured sections for the public company pages are now editable from the same central owner dashboard."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        description={copy.description}
       />
 
-      <OwnerPanel title="Page content rows" description="JSON fields stay explicit so the owner can manage page structure without hidden tooling.">
+      <OwnerPanel title={copy.panelTitle} description={copy.panelDescription}>
         <div className="space-y-4">
           {data.pages.map((page) => (
             <CompanyPageEditorForm key={String(page.id)} page={page as Record<string, unknown>} />
