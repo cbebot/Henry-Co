@@ -867,6 +867,32 @@ function getDockCopy(locale: string): DockCopy {
 
 // ─── Component ────────────────────────────────────────────────────────────
 
+/**
+ * Routes where the dock would clutter rather than help — every one of
+ * these already exposes native support / contact affordances:
+ *   - /support/<threadId>          live conversation with a HenryCo
+ *                                  teammate; the dock pointing back
+ *                                  to /support reads as noise.
+ *   - /support/[anything-not-new]  same pattern across apps, defensive
+ *                                  for non-uuid identifier styles.
+ *   - /messages/<id>               account inbox detail surfaces.
+ *   - /client/projects/.../messages  studio client-portal chat.
+ *
+ * Match-by-pathname (not div-by-div) so removing the dock from one
+ * thread surface automatically covers every app that mounts it the
+ * same way (account, studio, anywhere with /support/<id> pattern).
+ */
+const HIDDEN_ROUTE_REGEXPS: RegExp[] = [
+  // /support/<threadId> in account & studio (anything that's not the
+  // "new" wizard or the inbox list).
+  /^\/support\/(?!new(?:\/|$))[^/]+(?:\/|$)/i,
+  // /messages/<id> in account.
+  /^\/messages\/[^/]+(?:\/|$)/i,
+  // Studio client portal messages.
+  /^\/client\/messages(?:\/|$)/i,
+  /^\/client\/projects\/[^/]+\/messages(?:\/|$)/i,
+];
+
 export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const copy = getDockCopy(locale);
@@ -880,6 +906,11 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
   const [hasOpened, setHasOpened] = useState(false);
   const [query, setQuery] = useState("");
   const pathname = usePathname() ?? "";
+
+  const hidden = useMemo(
+    () => HIDDEN_ROUTE_REGEXPS.some((re) => re.test(pathname)),
+    [pathname],
+  );
 
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -1003,6 +1034,8 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
     background: `linear-gradient(135deg, ${accent} 0%, ${shiftHexLightness(accent, -22)} 65%, ${shiftHexLightness(accent, -34)} 100%)`,
     color: accentText,
   };
+
+  if (hidden) return null;
 
   return (
     <div
