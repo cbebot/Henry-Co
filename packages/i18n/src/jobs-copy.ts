@@ -6908,6 +6908,80 @@ const IT: DeepPartial<JobsCopy> = {
     "noApplications": "Nessuna candidatura ancora.",
     "noPostings": "Nessuna offerta di lavoro attiva."
   },
+  "interviewRoom": {
+    "kicker": "Stanza del colloquio",
+    "candidateFallback": "Candidato/a",
+    "employerFallback": "Team di selezione",
+    "iframeTitle": "Stanza del colloquio video",
+    "placeholder":
+      "L'allestimento della stanza è in corso. Il selezionatore condividerà a breve un link alla riunione in chat.",
+    "tabNotes": "Note",
+    "chatHint":
+      "La chat della stanza è fornita dal servizio video. Usala per condividere link durante la chiamata.",
+    "notesLabel": "Note private",
+    "notesPlaceholder":
+      "Annota le tue osservazioni. Visibili solo al team di selezione.",
+    "notesSaving": "Salvataggio in corso…",
+    "notesSavedAt": "Salvate",
+    "notesAutosave": "Salvataggio automatico ogni 30 s",
+    "notesSaveError": "Impossibile salvare le note."
+  },
+  "verification": {
+    "skillTitle": "Competenze verificate",
+    "skillSubtitle": "Competenze su cui i datori di lavoro possono fare affidamento a colpo d'occhio.",
+    "experienceTitle": "Esperienza verificata",
+    "experienceSubtitle": "Ruoli e anzianità confermati.",
+    "referenceTitle": "Verifica delle referenze",
+    "referenceSubtitle": "Risposte raccolte dalle tue referenze professionali.",
+    "badgeVerified": "Verificato",
+    "badgePending": "In attesa",
+    "badgeRejected": "Non verificato"
+  },
+  "offerLetter": {
+    "title": "Lettera di offerta",
+    "subtitle": "Esamina l'offerta e firmala quando sei pronto.",
+    "statusDraft": "Bozza",
+    "statusSent": "In attesa della tua firma",
+    "statusSigned": "Firmata",
+    "statusExpired": "Scaduta",
+    "statusDeclined": "Rifiutata",
+    "signCta": "Apri la stanza di firma",
+    "typedFallbackTitle": "Conferma accettazione",
+    "typedFallbackPrompt":
+      "Digita il tuo nome completo per accettare questa offerta. Un PDF firmato viene conservato nei tuoi file."
+  },
+  "salary": {
+    "rangeLabel": "Intervallo pubblicato",
+    "benchmarkLabel": "Benchmark di mercato",
+    "p25Label": "25° percentile",
+    "p75Label": "75° percentile",
+    "sampleLabel": "Dimensione del campione",
+    "sourceLabel": "Fonte dei dati",
+    "discloseRequiredError":
+      "La pubblicazione dello stipendio è obbligatoria. Indica un intervallo numerico o un'etichetta concreta."
+  },
+  "profileBuilder": {
+    "sectionBasics": "Informazioni di base",
+    "sectionExperience": "Esperienza professionale",
+    "sectionEducation": "Istruzione",
+    "sectionSkills": "Competenze",
+    "fullName": "Nome completo",
+    "headline": "Titolo professionale",
+    "summary": "Riepilogo",
+    "location": "Località",
+    "phone": "Telefono",
+    "saving": "Salvataggio in corso…",
+    "savedAt": "Salvato",
+    "autosaveHint": "Si salva automaticamente ogni 30 s e all'uscita dal campo",
+    "saveError": "Impossibile salvare la bozza.",
+    "addCta": "+ Aggiungi",
+    "rolePlaceholder": "Ruolo",
+    "companyPlaceholder": "Azienda",
+    "descriptionPlaceholder": "Descrivi i tuoi contributi",
+    "skillsAddPlaceholder": "Premi Invio per aggiungere",
+    "removeCta": "Rimuovi",
+    "removeSkillAria": "Rimuovi competenza"
+  },
   "employerHiring": {
     "pageTitle": "Pipeline di assunzione",
     "pageSubtitle":
