@@ -175,6 +175,34 @@ export const INTENTIONAL_ECHOS = {
     "filters.remote",         // DE "Remote" universal English borrow
     "filters.hybrid",         // DE "Hybrid" universal cognate
     "filters.partTime",       // IT "Part-time" universal English borrow
+    // Universal template strings — placeholders + " · " separator are locale-neutral.
+    "employerJobs.roleLineTemplate",          // "{location} · {count} {applicantLabel}" — template
+    "employerApplicants.detailJobTemplate",   // "{jobTitle} · {employerName}" — template
+    // Technical URL placeholder — example URL stays in EN form universally.
+    "interviewScheduler.meetingUrlPlaceholder", // "https://meet.google.com/..." — URL example
+    // JSON-shaped placeholders are example data, not translated copy.
+    "candidateProfile.fieldCertificationsPlaceholder", // JSON example payload
+    // Universal duration abbreviation — "min" is standard in fr/es/pt/it/de/etc.
+    "interviewRoom.minutes",                  // "min" universal abbreviation
+    "interviewScheduler.duration15",          // "15 min" universal in Romance languages
+    "interviewScheduler.duration30",          // "30 min" universal in Romance languages
+    "interviewScheduler.duration45",          // "45 min" universal in Romance languages
+    // Timezone labels with universal acronyms (GMT/UK) + city names.
+    "interviewScheduler.tzAccra",             // "GMT (Accra)" — GMT acronym universal
+    "interviewScheduler.tzLondon",            // "UK (London)" — UK acronym + city
+    // Single-word universal English borrowings used as labels in business contexts.
+    "interviewScheduler.labelType",           // FR "Type" identical cognate
+    "interviewScheduler.labelDate",           // FR "Date" identical cognate
+    "hirePage.featurePipelineLabel",          // "Pipeline" universally borrowed in EU langs
+    "profileBuilder.email",                   // "Email" universally borrowed
+    "employerJobNew.fieldTeamPlaceholder",    // DE/IT "Team" universally borrowed
+    "employerCompany.rightRailStatusLabel",   // DE "Status" universal English borrow
+    "employerCompany.fieldLocationsPlaceholder", // "Lagos, Abuja, Remote" — city example data
+    "employerCompany.fieldTaglinePlaceholder", // IT "Tagline" universal English borrow
+    "employerJobNew.fieldSeniorityPlaceholder", // IT "Seniority" universal English borrow
+    "employerApplicants.stageInterview",      // DE "Interview" universal cognate
+    "employerAnalytics.stageInterview",       // DE "Interview" universal cognate
+    "employerAnalytics.stageOffer",           // ZH "Offer" universal English borrow in HR context
   ],
   care: [
     "staffManager.dash",      // "—" universal em-dash punctuation
