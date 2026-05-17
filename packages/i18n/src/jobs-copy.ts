@@ -361,6 +361,58 @@ export type JobsCopy = {
     submitPending: string;
     submitLabel: string;
   };
+  employerAnalytics: {
+    metaTitle: string;
+    metaDescription: string;
+    eyebrow: string;
+    pageTitle: string;
+    pageSubtitle: string;
+    heroBody: string;
+    tileJobsLabel: string;
+    tileJobsDetail: string;
+    tileApplicantsLabel: string;
+    tileApplicantsDetail: string;
+    tileInterviewingLabel: string;
+    tileInterviewingDetail: string;
+    tileOffersLabel: string;
+    tileOffersDetail: string;
+    tileViewsLabel: string;
+    tileViewsDetail: string;
+    tileAppliesLabel: string;
+    tileAppliesDetail: string;
+    tileConversionRateLabel: string;
+    tileConversionRateDetail: string;
+    tileTimeToHireLabel: string;
+    tileTimeToHireDetail: string;
+    stageSectionTitle: string;
+    stageSectionBody: string;
+    stageApplied: string;
+    stageReviewing: string;
+    stageShortlisted: string;
+    stageInterview: string;
+    stageOffer: string;
+    stageHired: string;
+    stageRejected: string;
+    chartAxisCount: string;
+    chartAxisStage: string;
+    chartAxisDays: string;
+    chartAxisWeek: string;
+    chartAxisMonth: string;
+    rangeLabel: string;
+    rangeLast7Days: string;
+    rangeLast30Days: string;
+    rangeLast90Days: string;
+    rangeLastYear: string;
+    rangeAllTime: string;
+    emptyTitle: string;
+    emptyBody: string;
+    candidateCountSingular: string;
+    candidateCountPlural: string;
+    applicationCountSingular: string;
+    applicationCountPlural: string;
+    daysSingular: string;
+    daysPlural: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -756,6 +808,62 @@ const EN: JobsCopy = {
     submitPending: "Creating role...",
     submitLabel: "Create role",
   },
+  employerAnalytics: {
+    metaTitle: "Employer Analytics",
+    metaDescription:
+      "Track role output, pipeline concentration, and verification posture across your hiring funnel.",
+    eyebrow: "Hiring intelligence",
+    pageTitle: "Employer Analytics",
+    pageSubtitle: "Track role output, pipeline concentration, and verification posture.",
+    heroBody:
+      "Monitor how your roles convert from listing impressions through hire — each tile and stage cell stays live as candidates move.",
+    tileJobsLabel: "Jobs",
+    tileJobsDetail: "Roles under this employer scope.",
+    tileApplicantsLabel: "Applicants",
+    tileApplicantsDetail: "Total live applicants.",
+    tileInterviewingLabel: "Interviewing",
+    tileInterviewingDetail: "Candidates already in interviews.",
+    tileOffersLabel: "Offers",
+    tileOffersDetail: "Candidates at offer stage.",
+    tileViewsLabel: "Views",
+    tileViewsDetail: "Total impressions across published roles.",
+    tileAppliesLabel: "Applies",
+    tileAppliesDetail: "Completed applications submitted.",
+    tileConversionRateLabel: "Conversion rate",
+    tileConversionRateDetail: "Share of viewers who applied.",
+    tileTimeToHireLabel: "Time to hire",
+    tileTimeToHireDetail: "Median days from application to hire.",
+    stageSectionTitle: "Stage distribution",
+    stageSectionBody:
+      "How your live applicants are distributed across pipeline stages right now.",
+    stageApplied: "Applied",
+    stageReviewing: "Reviewing",
+    stageShortlisted: "Shortlisted",
+    stageInterview: "Interview",
+    stageOffer: "Offer",
+    stageHired: "Hired",
+    stageRejected: "Rejected",
+    chartAxisCount: "Candidates",
+    chartAxisStage: "Stage",
+    chartAxisDays: "Days",
+    chartAxisWeek: "Week",
+    chartAxisMonth: "Month",
+    rangeLabel: "Time range",
+    rangeLast7Days: "Last 7 days",
+    rangeLast30Days: "Last 30 days",
+    rangeLast90Days: "Last 90 days",
+    rangeLastYear: "Last 12 months",
+    rangeAllTime: "All time",
+    emptyTitle: "No analytics yet",
+    emptyBody:
+      "Publish your first role to start collecting applicants and pipeline insight.",
+    candidateCountSingular: "{count} candidate",
+    candidateCountPlural: "{count} candidates",
+    applicationCountSingular: "{count} application",
+    applicationCountPlural: "{count} applications",
+    daysSingular: "{count} day",
+    daysPlural: "{count} days",
+  },
 };
 
 const FR: DeepPartial<JobsCopy> = {
@@ -1102,6 +1210,63 @@ const FR: DeepPartial<JobsCopy> = {
     fieldSalaryMaxPlaceholder: "Salaire max",
     submitPending: "Création du poste...",
     submitLabel: "Créer le poste",
+  },
+  employerAnalytics: {
+    metaTitle: "Analyse employeur",
+    metaDescription:
+      "Suivez la production de postes, la concentration du pipeline et la posture de vérification de votre entonnoir de recrutement.",
+    eyebrow: "Intelligence du recrutement",
+    pageTitle: "Analyse employeur",
+    pageSubtitle:
+      "Suivez la production de postes, la concentration du pipeline et la posture de vérification.",
+    heroBody:
+      "Visualisez la conversion de vos postes depuis les impressions jusqu’à l’embauche — chaque tuile et chaque étape restent à jour en temps réel.",
+    tileJobsLabel: "Postes",
+    tileJobsDetail: "Rôles relevant de cet employeur.",
+    tileApplicantsLabel: "Candidats",
+    tileApplicantsDetail: "Total des candidats actifs.",
+    tileInterviewingLabel: "En entretien",
+    tileInterviewingDetail: "Candidats déjà en entretien.",
+    tileOffersLabel: "Offres",
+    tileOffersDetail: "Candidats à l’étape d’offre.",
+    tileViewsLabel: "Vues",
+    tileViewsDetail: "Impressions totales sur les postes publiés.",
+    tileAppliesLabel: "Candidatures",
+    tileAppliesDetail: "Candidatures complètes envoyées.",
+    tileConversionRateLabel: "Taux de conversion",
+    tileConversionRateDetail: "Part des visiteurs ayant postulé.",
+    tileTimeToHireLabel: "Délai d’embauche",
+    tileTimeToHireDetail: "Jours médians entre candidature et embauche.",
+    stageSectionTitle: "Répartition par étape",
+    stageSectionBody:
+      "Répartition actuelle de vos candidats actifs dans les étapes du pipeline.",
+    stageApplied: "Postulé",
+    stageReviewing: "En revue",
+    stageShortlisted: "Présélectionné",
+    stageInterview: "Entretien",
+    stageOffer: "Offre",
+    stageHired: "Embauché",
+    stageRejected: "Refusé",
+    chartAxisCount: "Candidats",
+    chartAxisStage: "Étape",
+    chartAxisDays: "Jours",
+    chartAxisWeek: "Semaine",
+    chartAxisMonth: "Mois",
+    rangeLabel: "Période",
+    rangeLast7Days: "7 derniers jours",
+    rangeLast30Days: "30 derniers jours",
+    rangeLast90Days: "90 derniers jours",
+    rangeLastYear: "12 derniers mois",
+    rangeAllTime: "Depuis le début",
+    emptyTitle: "Aucune donnée pour l’instant",
+    emptyBody:
+      "Publiez votre premier poste pour commencer à recueillir candidats et indicateurs de pipeline.",
+    candidateCountSingular: "{count} candidat",
+    candidateCountPlural: "{count} candidats",
+    applicationCountSingular: "{count} candidature",
+    applicationCountPlural: "{count} candidatures",
+    daysSingular: "{count} jour",
+    daysPlural: "{count} jours",
   },
 };
 
@@ -1451,6 +1616,63 @@ const ES: DeepPartial<JobsCopy> = {
     submitPending: "Creando puesto...",
     submitLabel: "Crear puesto",
   },
+  employerAnalytics: {
+    metaTitle: "Analítica del empleador",
+    metaDescription:
+      "Sigue la publicación de puestos, la concentración del pipeline y la postura de verificación a lo largo de tu embudo de contratación.",
+    eyebrow: "Inteligencia de contratación",
+    pageTitle: "Analítica del empleador",
+    pageSubtitle:
+      "Sigue la publicación de puestos, la concentración del pipeline y la postura de verificación.",
+    heroBody:
+      "Observa cómo tus puestos se convierten desde las impresiones hasta la contratación: cada métrica y etapa se actualiza en vivo.",
+    tileJobsLabel: "Puestos",
+    tileJobsDetail: "Roles dentro del alcance de este empleador.",
+    tileApplicantsLabel: "Candidatos",
+    tileApplicantsDetail: "Total de candidatos activos.",
+    tileInterviewingLabel: "En entrevista",
+    tileInterviewingDetail: "Candidatos ya en entrevistas.",
+    tileOffersLabel: "Ofertas",
+    tileOffersDetail: "Candidatos en la etapa de oferta.",
+    tileViewsLabel: "Visualizaciones",
+    tileViewsDetail: "Impresiones totales en los puestos publicados.",
+    tileAppliesLabel: "Postulaciones",
+    tileAppliesDetail: "Candidaturas completas enviadas.",
+    tileConversionRateLabel: "Tasa de conversión",
+    tileConversionRateDetail: "Porcentaje de visitantes que postularon.",
+    tileTimeToHireLabel: "Tiempo de contratación",
+    tileTimeToHireDetail: "Días medianos de la postulación a la contratación.",
+    stageSectionTitle: "Distribución por etapa",
+    stageSectionBody:
+      "Cómo se distribuyen ahora mismo tus candidatos activos en las etapas del pipeline.",
+    stageApplied: "Postulado",
+    stageReviewing: "En revisión",
+    stageShortlisted: "Preseleccionado",
+    stageInterview: "Entrevista",
+    stageOffer: "Oferta",
+    stageHired: "Contratado",
+    stageRejected: "Rechazado",
+    chartAxisCount: "Candidatos",
+    chartAxisStage: "Etapa",
+    chartAxisDays: "Días",
+    chartAxisWeek: "Semana",
+    chartAxisMonth: "Mes",
+    rangeLabel: "Periodo",
+    rangeLast7Days: "Últimos 7 días",
+    rangeLast30Days: "Últimos 30 días",
+    rangeLast90Days: "Últimos 90 días",
+    rangeLastYear: "Últimos 12 meses",
+    rangeAllTime: "Desde el inicio",
+    emptyTitle: "Sin datos aún",
+    emptyBody:
+      "Publica tu primer puesto para empezar a recopilar candidatos e indicadores del pipeline.",
+    candidateCountSingular: "{count} candidato",
+    candidateCountPlural: "{count} candidatos",
+    applicationCountSingular: "{count} candidatura",
+    applicationCountPlural: "{count} candidaturas",
+    daysSingular: "{count} día",
+    daysPlural: "{count} días",
+  },
 };
 
 const PT: DeepPartial<JobsCopy> = {
@@ -1799,6 +2021,63 @@ const PT: DeepPartial<JobsCopy> = {
     submitPending: "A criar vaga...",
     submitLabel: "Criar vaga",
   },
+  employerAnalytics: {
+    metaTitle: "Análise do empregador",
+    metaDescription:
+      "Acompanhe a publicação de vagas, a concentração do pipeline e a postura de verificação ao longo do seu funil de contratação.",
+    eyebrow: "Inteligência de contratação",
+    pageTitle: "Análise do empregador",
+    pageSubtitle:
+      "Acompanhe a publicação de vagas, a concentração do pipeline e a postura de verificação.",
+    heroBody:
+      "Veja como as suas vagas convertem desde a exibição até à contratação — cada métrica e etapa atualiza-se em direto.",
+    tileJobsLabel: "Vagas",
+    tileJobsDetail: "Funções no âmbito deste empregador.",
+    tileApplicantsLabel: "Candidatos",
+    tileApplicantsDetail: "Total de candidatos ativos.",
+    tileInterviewingLabel: "Em entrevista",
+    tileInterviewingDetail: "Candidatos já em entrevistas.",
+    tileOffersLabel: "Ofertas",
+    tileOffersDetail: "Candidatos na etapa de oferta.",
+    tileViewsLabel: "Visualizações",
+    tileViewsDetail: "Exibições totais nas vagas publicadas.",
+    tileAppliesLabel: "Candidaturas",
+    tileAppliesDetail: "Candidaturas completas enviadas.",
+    tileConversionRateLabel: "Taxa de conversão",
+    tileConversionRateDetail: "Quota de visitantes que se candidataram.",
+    tileTimeToHireLabel: "Tempo até contratação",
+    tileTimeToHireDetail: "Mediana de dias entre candidatura e contratação.",
+    stageSectionTitle: "Distribuição por etapa",
+    stageSectionBody:
+      "Como os seus candidatos ativos estão distribuídos pelas etapas do pipeline neste momento.",
+    stageApplied: "Candidatou-se",
+    stageReviewing: "Em análise",
+    stageShortlisted: "Pré-selecionado",
+    stageInterview: "Entrevista",
+    stageOffer: "Oferta",
+    stageHired: "Contratado",
+    stageRejected: "Recusado",
+    chartAxisCount: "Candidatos",
+    chartAxisStage: "Etapa",
+    chartAxisDays: "Dias",
+    chartAxisWeek: "Semana",
+    chartAxisMonth: "Mês",
+    rangeLabel: "Intervalo",
+    rangeLast7Days: "Últimos 7 dias",
+    rangeLast30Days: "Últimos 30 dias",
+    rangeLast90Days: "Últimos 90 dias",
+    rangeLastYear: "Últimos 12 meses",
+    rangeAllTime: "Desde sempre",
+    emptyTitle: "Sem dados ainda",
+    emptyBody:
+      "Publique a sua primeira vaga para começar a recolher candidatos e insights do pipeline.",
+    candidateCountSingular: "{count} candidato",
+    candidateCountPlural: "{count} candidatos",
+    applicationCountSingular: "{count} candidatura",
+    applicationCountPlural: "{count} candidaturas",
+    daysSingular: "{count} dia",
+    daysPlural: "{count} dias",
+  },
 };
 
 const AR: DeepPartial<JobsCopy> = {
@@ -2141,6 +2420,63 @@ const AR: DeepPartial<JobsCopy> = {
     fieldSalaryMaxPlaceholder: "الحد الأقصى للراتب",
     submitPending: "جارٍ إنشاء الوظيفة...",
     submitLabel: "إنشاء الوظيفة",
+  },
+  employerAnalytics: {
+    metaTitle: "تحليلات صاحب العمل",
+    metaDescription:
+      "تابع إنتاج الوظائف، وتركّز خط التوظيف، ووضع التحقق عبر قمع التوظيف الخاص بك.",
+    eyebrow: "ذكاء التوظيف",
+    pageTitle: "تحليلات صاحب العمل",
+    pageSubtitle:
+      "تابع إنتاج الوظائف، وتركّز خط التوظيف، ووضع التحقق.",
+    heroBody:
+      "راقب كيف تتحول وظائفك من مشاهدات الإعلان إلى تعيين فعلي — كل مؤشر ومرحلة يتحدث مباشرة مع تحرك المرشحين.",
+    tileJobsLabel: "الوظائف",
+    tileJobsDetail: "الأدوار ضمن نطاق صاحب العمل هذا.",
+    tileApplicantsLabel: "المتقدمون",
+    tileApplicantsDetail: "إجمالي المتقدمين النشطين.",
+    tileInterviewingLabel: "في المقابلة",
+    tileInterviewingDetail: "المرشحون في مرحلة المقابلة بالفعل.",
+    tileOffersLabel: "العروض",
+    tileOffersDetail: "المرشحون في مرحلة العرض.",
+    tileViewsLabel: "المشاهدات",
+    tileViewsDetail: "إجمالي مرات الظهور للوظائف المنشورة.",
+    tileAppliesLabel: "التقديمات",
+    tileAppliesDetail: "طلبات التقديم المكتملة المرسلة.",
+    tileConversionRateLabel: "معدل التحويل",
+    tileConversionRateDetail: "نسبة المشاهدين الذين تقدموا للوظيفة.",
+    tileTimeToHireLabel: "وقت التعيين",
+    tileTimeToHireDetail: "الوسيط بالأيام من التقديم إلى التعيين.",
+    stageSectionTitle: "توزيع المراحل",
+    stageSectionBody:
+      "كيف يتوزع المتقدمون النشطون عبر مراحل خط التوظيف الآن.",
+    stageApplied: "تقدّم",
+    stageReviewing: "قيد المراجعة",
+    stageShortlisted: "ضمن القائمة المختصرة",
+    stageInterview: "مقابلة",
+    stageOffer: "عرض",
+    stageHired: "تم التعيين",
+    stageRejected: "مرفوض",
+    chartAxisCount: "المرشحون",
+    chartAxisStage: "المرحلة",
+    chartAxisDays: "الأيام",
+    chartAxisWeek: "الأسبوع",
+    chartAxisMonth: "الشهر",
+    rangeLabel: "النطاق الزمني",
+    rangeLast7Days: "آخر 7 أيام",
+    rangeLast30Days: "آخر 30 يومًا",
+    rangeLast90Days: "آخر 90 يومًا",
+    rangeLastYear: "آخر 12 شهرًا",
+    rangeAllTime: "منذ البداية",
+    emptyTitle: "لا توجد تحليلات بعد",
+    emptyBody:
+      "انشر أول وظيفة لك لتبدأ في جمع المتقدمين ورؤى خط التوظيف.",
+    candidateCountSingular: "{count} مرشح",
+    candidateCountPlural: "{count} مرشحون",
+    applicationCountSingular: "{count} طلب",
+    applicationCountPlural: "{count} طلبات",
+    daysSingular: "{count} يوم",
+    daysPlural: "{count} أيام",
   },
 };
 
@@ -2490,6 +2826,63 @@ const IG: DeepPartial<JobsCopy> = {
     submitPending: "Na-emepụta ọrụ...",
     submitLabel: "Mepụta ọrụ",
   },
+  employerAnalytics: {
+    metaTitle: "Nyocha onye ọrụ na-enye ọrụ",
+    metaDescription:
+      "Soro mmepụta ọrụ, mkpọkọta usoro nleba anya, na ọnọdụ nkwenye gị n'ime usoro inwere onye ọrụ.",
+    eyebrow: "Ọgụgụ isi nke inwere onye ọrụ",
+    pageTitle: "Nyocha onye ọrụ na-enye ọrụ",
+    pageSubtitle:
+      "Soro mmepụta ọrụ, mkpọkọta usoro nleba anya, na ọnọdụ nkwenye.",
+    heroBody:
+      "Hụ ka ọrụ gị si esi mgbasa ozi gaa n'inwere onye ọrụ — akụkụ na nzọụkwụ ọ bụla na-emelite ozugbo ka ndị na-arịọ na-aga n'ihu.",
+    tileJobsLabel: "Ọrụ",
+    tileJobsDetail: "Ọrụ ndị dị n'okpuru onye ọrụ a.",
+    tileApplicantsLabel: "Ndị na-arịọ",
+    tileApplicantsDetail: "Mkpokọta ndị na-arịọ na-arụ ọrụ.",
+    tileInterviewingLabel: "N'ajụjụ ọnụ",
+    tileInterviewingDetail: "Ndị nọ n'ajụjụ ọnụ ugbu a.",
+    tileOffersLabel: "Nkwado",
+    tileOffersDetail: "Ndị nọ na nzọụkwụ nkwado.",
+    tileViewsLabel: "Nleba anya",
+    tileViewsDetail: "Mkpokọta nleba anya n'ọrụ ndị ebipụtara.",
+    tileAppliesLabel: "Arịrịọ",
+    tileAppliesDetail: "Arịrịọ ndị ezurula ezu.",
+    tileConversionRateLabel: "Ọnụego ntụgharị",
+    tileConversionRateDetail: "Òkè ndị lere anya ma rịọ ọrụ.",
+    tileTimeToHireLabel: "Oge inwere mmadụ",
+    tileTimeToHireDetail: "Ụbọchị etiti site n'arịrịọ ruo n'inwere.",
+    stageSectionTitle: "Nkesa nzọụkwụ",
+    stageSectionBody:
+      "Otú ndị na-arịọ gị si kesaa n'akụkụ usoro nleba anya ugbu a.",
+    stageApplied: "Arịọrọ",
+    stageReviewing: "Na-enyocha",
+    stageShortlisted: "Họpụtara",
+    stageInterview: "Ajụjụ ọnụ",
+    stageOffer: "Nkwado",
+    stageHired: "Goro",
+    stageRejected: "Jụrụ",
+    chartAxisCount: "Ndị arịrịọ",
+    chartAxisStage: "Nzọụkwụ",
+    chartAxisDays: "Ụbọchị",
+    chartAxisWeek: "Izu",
+    chartAxisMonth: "Ọnwa",
+    rangeLabel: "Oge ọ ga-anọ",
+    rangeLast7Days: "Ụbọchị 7 gara aga",
+    rangeLast30Days: "Ụbọchị 30 gara aga",
+    rangeLast90Days: "Ụbọchị 90 gara aga",
+    rangeLastYear: "Ọnwa 12 gara aga",
+    rangeAllTime: "Site na mmalite",
+    emptyTitle: "Enwebeghị nyocha ọ bụla",
+    emptyBody:
+      "Bipụta ọrụ mbụ gị iji malite ịchịkọta ndị na-arịọ na nghọta usoro nleba anya.",
+    candidateCountSingular: "{count} onye",
+    candidateCountPlural: "{count} ndị mmadụ",
+    applicationCountSingular: "{count} arịrịọ",
+    applicationCountPlural: "{count} arịrịọ",
+    daysSingular: "{count} ụbọchị",
+    daysPlural: "{count} ụbọchị",
+  },
 };
 
 const YO: DeepPartial<JobsCopy> = {
@@ -2813,6 +3206,63 @@ const YO: DeepPartial<JobsCopy> = {
     fieldSalaryMaxPlaceholder: "Owó osù tó pọ̀jùlọ",
     submitPending: "Ń ṣẹ̀dá ipa...",
     submitLabel: "Ṣẹ̀dá ipa",
+  },
+  employerAnalytics: {
+    metaTitle: "Ìṣirò agbanisíṣẹ́",
+    metaDescription:
+      "Tọpinpin ìjáde àwọn ipa, ìkójọ ìṣàn ìwákírí, àti ipò ìfọwọ́sí lórí gbogbo ọ̀nà ìgbaniṣẹ́ rẹ.",
+    eyebrow: "Ọgbọ́n ìgbaniṣẹ́",
+    pageTitle: "Ìṣirò agbanisíṣẹ́",
+    pageSubtitle:
+      "Tọpinpin ìjáde àwọn ipa, ìkójọ ìṣàn ìwákírí, àti ipò ìfọwọ́sí.",
+    heroBody:
+      "Wo bí àwọn ipa rẹ ṣe ń yí padà láti ìfojúsọ́nà títí dé ìgbaniṣẹ́ — gbogbo àpótí àti ipele ń sọnà lójú ẹsẹ̀ bí àwọn olùbéèrè ṣe ń tẹ̀síwájú.",
+    tileJobsLabel: "Iṣẹ́",
+    tileJobsDetail: "Àwọn ipa lábẹ́ àgbanisíṣẹ́ yìí.",
+    tileApplicantsLabel: "Olùbéèrè",
+    tileApplicantsDetail: "Àpapọ̀ olùbéèrè tí ó ń ṣiṣẹ́.",
+    tileInterviewingLabel: "Nínú ìfọ̀rọ̀wánilẹ́nuwò",
+    tileInterviewingDetail: "Àwọn olùbéèrè tí wọ́n ti wà nínú ìfọ̀rọ̀wánilẹ́nuwò.",
+    tileOffersLabel: "Àwọn ìjáde iṣẹ́",
+    tileOffersDetail: "Àwọn olùbéèrè ní ipele ìjáde iṣẹ́.",
+    tileViewsLabel: "Ìwò",
+    tileViewsDetail: "Àpapọ̀ ìfarahàn lórí àwọn ipa tí a tẹ̀ jáde.",
+    tileAppliesLabel: "Ìbéèrè",
+    tileAppliesDetail: "Àwọn ìbéèrè kíkún tí wọ́n fi ránṣẹ́.",
+    tileConversionRateLabel: "Ìpín ìyípadà",
+    tileConversionRateDetail: "Ìpín àwọn olùwò tí wọ́n bèèrè iṣẹ́.",
+    tileTimeToHireLabel: "Àkókò láti gba ẹnìkan",
+    tileTimeToHireDetail: "Ọ̀dúrú ọjọ́ láti ìbéèrè dé ìgbaniṣẹ́.",
+    stageSectionTitle: "Ìpín ipele",
+    stageSectionBody:
+      "Bí àwọn olùbéèrè rẹ tí ń ṣiṣẹ́ ṣe pín kálẹ̀ láàárín àwọn ipele ìṣàn ìwákírí lọ́wọ́lọ́wọ́.",
+    stageApplied: "Tí ó bèèrè",
+    stageReviewing: "Tí à ń ṣàyẹ̀wò",
+    stageShortlisted: "Tí à ti yàn",
+    stageInterview: "Ìfọ̀rọ̀wánilẹ́nuwò",
+    stageOffer: "Ìjáde iṣẹ́",
+    stageHired: "Tí à ti gbà",
+    stageRejected: "Tí à kọ̀",
+    chartAxisCount: "Olùbéèrè",
+    chartAxisStage: "Ipele",
+    chartAxisDays: "Ọjọ́",
+    chartAxisWeek: "Ọ̀sẹ̀",
+    chartAxisMonth: "Oṣù",
+    rangeLabel: "Àkókò",
+    rangeLast7Days: "Ọjọ́ 7 sẹ́yìn",
+    rangeLast30Days: "Ọjọ́ 30 sẹ́yìn",
+    rangeLast90Days: "Ọjọ́ 90 sẹ́yìn",
+    rangeLastYear: "Oṣù 12 sẹ́yìn",
+    rangeAllTime: "Láti ìbẹ̀rẹ̀",
+    emptyTitle: "Kò sí ìṣirò síbẹ̀",
+    emptyBody:
+      "Tẹ ipa àkọ́kọ́ rẹ jáde láti bẹ̀rẹ̀ ìkójọ àwọn olùbéèrè àti ìṣirò ìṣàn ìwákírí.",
+    candidateCountSingular: "{count} olùbéèrè",
+    candidateCountPlural: "{count} olùbéèrè",
+    applicationCountSingular: "{count} ìbéèrè",
+    applicationCountPlural: "{count} ìbéèrè",
+    daysSingular: "{count} ọjọ́",
+    daysPlural: "{count} ọjọ́",
   },
 };
 
@@ -3138,6 +3588,63 @@ const HA: DeepPartial<JobsCopy> = {
     submitPending: "Ana ƙirƙirar aiki...",
     submitLabel: "Ƙirƙira aiki",
   },
+  employerAnalytics: {
+    metaTitle: "Bayanan ma'aikaci",
+    metaDescription:
+      "Bibiyi yawan ayyukan da aka buga, taron tashar daukar ma'aikata, da matsayin tabbatarwa a kowane bangare na daukar aikinka.",
+    eyebrow: "Hankalin daukar ma'aikata",
+    pageTitle: "Bayanan ma'aikaci",
+    pageSubtitle:
+      "Bibiyi yawan ayyukan da aka buga, taron tashar daukar ma'aikata, da matsayin tabbatarwa.",
+    heroBody:
+      "Duba yadda ayyukanka ke juyawa daga kallo har zuwa daukar ma'aikaci — kowane kati da mataki suna sabuntawa nan take yayin da ‘yan takara ke ci gaba.",
+    tileJobsLabel: "Ayyuka",
+    tileJobsDetail: "Ayyukan da ke ƙarƙashin wannan ma'aikaci.",
+    tileApplicantsLabel: "Masu nema",
+    tileApplicantsDetail: "Jimillar masu nema masu rai.",
+    tileInterviewingLabel: "A cikin tambayoyi",
+    tileInterviewingDetail: "Yan takarar da ke cikin tambayoyi.",
+    tileOffersLabel: "Tayoyi",
+    tileOffersDetail: "Yan takarar da ke matakin tayi.",
+    tileViewsLabel: "Kallace-kallace",
+    tileViewsDetail: "Jimillar bayyana akan ayyukan da aka buga.",
+    tileAppliesLabel: "Buƙatu",
+    tileAppliesDetail: "Buƙatun da aka cika kuma aka aika.",
+    tileConversionRateLabel: "Adadin canzawa",
+    tileConversionRateDetail: "Yawan masu kallon da suka nema aiki.",
+    tileTimeToHireLabel: "Lokacin daukar ma'aikaci",
+    tileTimeToHireDetail: "Tsakar kwanaki daga buƙata har zuwa daukar aiki.",
+    stageSectionTitle: "Rabon matakai",
+    stageSectionBody:
+      "Yadda masu neman aikinka masu rai suka rabu a matakan tashar daukar ma'aikata yanzu.",
+    stageApplied: "Ya nemi aiki",
+    stageReviewing: "Ana dubawa",
+    stageShortlisted: "An zaba",
+    stageInterview: "Tambayoyi",
+    stageOffer: "Tayi",
+    stageHired: "An dauka",
+    stageRejected: "An ƙi",
+    chartAxisCount: "Yan takara",
+    chartAxisStage: "Mataki",
+    chartAxisDays: "Kwanaki",
+    chartAxisWeek: "Mako",
+    chartAxisMonth: "Wata",
+    rangeLabel: "Tsawon lokaci",
+    rangeLast7Days: "Kwanaki 7 da suka wuce",
+    rangeLast30Days: "Kwanaki 30 da suka wuce",
+    rangeLast90Days: "Kwanaki 90 da suka wuce",
+    rangeLastYear: "Watanni 12 da suka wuce",
+    rangeAllTime: "Tun farko",
+    emptyTitle: "Babu bayanai tukuna",
+    emptyBody:
+      "Buga aikinka na farko don fara tara ‘yan takara da fahimtar tashar daukar ma'aikata.",
+    candidateCountSingular: "{count} ɗan takara",
+    candidateCountPlural: "{count} ‘yan takara",
+    applicationCountSingular: "{count} buƙata",
+    applicationCountPlural: "{count} buƙatu",
+    daysSingular: "{count} kwana",
+    daysPlural: "{count} kwanaki",
+  },
 };
 
 const DE: DeepPartial<JobsCopy> = {
@@ -3462,6 +3969,63 @@ const DE: DeepPartial<JobsCopy> = {
     submitPending: "Stelle wird erstellt...",
     submitLabel: "Stelle erstellen",
   },
+  employerAnalytics: {
+    metaTitle: "Arbeitgeber-Analytik",
+    metaDescription:
+      "Verfolgen Sie Stellenproduktion, Pipeline-Konzentration und Verifizierungsstatus entlang Ihres gesamten Einstellungstrichters.",
+    eyebrow: "Recruiting-Intelligenz",
+    pageTitle: "Arbeitgeber-Analytik",
+    pageSubtitle:
+      "Verfolgen Sie Stellenproduktion, Pipeline-Konzentration und Verifizierungsstatus.",
+    heroBody:
+      "Beobachten Sie, wie Ihre Rollen von Anzeigen-Impressionen bis zur Einstellung konvertieren — jede Kachel und jede Phase aktualisiert sich in Echtzeit.",
+    tileJobsLabel: "Stellen",
+    tileJobsDetail: "Rollen im Bereich dieses Arbeitgebers.",
+    tileApplicantsLabel: "Bewerber",
+    tileApplicantsDetail: "Gesamtzahl aktiver Bewerber.",
+    tileInterviewingLabel: "Im Interview",
+    tileInterviewingDetail: "Kandidaten bereits in Interviews.",
+    tileOffersLabel: "Angebote",
+    tileOffersDetail: "Kandidaten in der Angebotsphase.",
+    tileViewsLabel: "Aufrufe",
+    tileViewsDetail: "Gesamtimpressionen auf veröffentlichten Stellen.",
+    tileAppliesLabel: "Bewerbungen",
+    tileAppliesDetail: "Eingereichte vollständige Bewerbungen.",
+    tileConversionRateLabel: "Konversionsrate",
+    tileConversionRateDetail: "Anteil der Betrachter, die sich beworben haben.",
+    tileTimeToHireLabel: "Time-to-Hire",
+    tileTimeToHireDetail: "Mediane Tage von der Bewerbung bis zur Einstellung.",
+    stageSectionTitle: "Phasenverteilung",
+    stageSectionBody:
+      "Wie sich Ihre aktiven Bewerber gerade auf die Pipeline-Phasen verteilen.",
+    stageApplied: "Beworben",
+    stageReviewing: "In Prüfung",
+    stageShortlisted: "Engere Auswahl",
+    stageInterview: "Interview",
+    stageOffer: "Angebot",
+    stageHired: "Eingestellt",
+    stageRejected: "Abgelehnt",
+    chartAxisCount: "Kandidaten",
+    chartAxisStage: "Phase",
+    chartAxisDays: "Tage",
+    chartAxisWeek: "Woche",
+    chartAxisMonth: "Monat",
+    rangeLabel: "Zeitraum",
+    rangeLast7Days: "Letzte 7 Tage",
+    rangeLast30Days: "Letzte 30 Tage",
+    rangeLast90Days: "Letzte 90 Tage",
+    rangeLastYear: "Letzte 12 Monate",
+    rangeAllTime: "Gesamtzeitraum",
+    emptyTitle: "Noch keine Analytik",
+    emptyBody:
+      "Veröffentlichen Sie Ihre erste Stelle, um Bewerber und Pipeline-Erkenntnisse zu sammeln.",
+    candidateCountSingular: "{count} Kandidat",
+    candidateCountPlural: "{count} Kandidaten",
+    applicationCountSingular: "{count} Bewerbung",
+    applicationCountPlural: "{count} Bewerbungen",
+    daysSingular: "{count} Tag",
+    daysPlural: "{count} Tage",
+  },
 };
 
 const ZH: DeepPartial<JobsCopy> = {
@@ -3754,6 +4318,60 @@ const ZH: DeepPartial<JobsCopy> = {
     fieldSalaryMaxPlaceholder: "最高薪资",
     submitPending: "正在创建职位...",
     submitLabel: "创建职位",
+  },
+  employerAnalytics: {
+    metaTitle: "雇主分析",
+    metaDescription:
+      "全程追踪职位发布、招聘漏斗分布与认证状态。",
+    eyebrow: "招聘洞察",
+    pageTitle: "雇主分析",
+    pageSubtitle: "追踪职位发布、招聘漏斗分布与认证状态。",
+    heroBody:
+      "查看您的职位如何从曝光转化为录用 — 候选人每一步进展，所有指标和阶段都会实时更新。",
+    tileJobsLabel: "职位",
+    tileJobsDetail: "该雇主范围内的所有职位。",
+    tileApplicantsLabel: "申请人",
+    tileApplicantsDetail: "当前所有活跃申请人。",
+    tileInterviewingLabel: "面试中",
+    tileInterviewingDetail: "已进入面试阶段的候选人。",
+    tileOffersLabel: "Offer",
+    tileOffersDetail: "处于 Offer 阶段的候选人。",
+    tileViewsLabel: "浏览量",
+    tileViewsDetail: "已发布职位的总曝光数。",
+    tileAppliesLabel: "投递",
+    tileAppliesDetail: "已完成提交的申请数。",
+    tileConversionRateLabel: "转化率",
+    tileConversionRateDetail: "浏览者中实际投递的比例。",
+    tileTimeToHireLabel: "招聘周期",
+    tileTimeToHireDetail: "从投递到录用的中位天数。",
+    stageSectionTitle: "阶段分布",
+    stageSectionBody: "当前活跃申请人在招聘漏斗各阶段的分布。",
+    stageApplied: "已申请",
+    stageReviewing: "审核中",
+    stageShortlisted: "已入围",
+    stageInterview: "面试",
+    stageOffer: "Offer",
+    stageHired: "已录用",
+    stageRejected: "已拒绝",
+    chartAxisCount: "候选人",
+    chartAxisStage: "阶段",
+    chartAxisDays: "天数",
+    chartAxisWeek: "周",
+    chartAxisMonth: "月",
+    rangeLabel: "时间范围",
+    rangeLast7Days: "近 7 天",
+    rangeLast30Days: "近 30 天",
+    rangeLast90Days: "近 90 天",
+    rangeLastYear: "近 12 个月",
+    rangeAllTime: "全部时间",
+    emptyTitle: "暂无分析数据",
+    emptyBody: "发布您的第一个职位以开始收集申请人与漏斗洞察。",
+    candidateCountSingular: "{count} 位候选人",
+    candidateCountPlural: "{count} 位候选人",
+    applicationCountSingular: "{count} 份申请",
+    applicationCountPlural: "{count} 份申请",
+    daysSingular: "{count} 天",
+    daysPlural: "{count} 天",
   },
 };
 
@@ -4079,6 +4697,63 @@ const HI: DeepPartial<JobsCopy> = {
     submitPending: "भूमिका बन रही है...",
     submitLabel: "भूमिका बनाएँ",
   },
+  employerAnalytics: {
+    metaTitle: "नियोक्ता विश्लेषण",
+    metaDescription:
+      "अपने भर्ती फ़नल में भूमिका प्रकाशन, पाइपलाइन सघनता और सत्यापन स्थिति को ट्रैक करें।",
+    eyebrow: "भर्ती इंटेलिजेंस",
+    pageTitle: "नियोक्ता विश्लेषण",
+    pageSubtitle:
+      "भूमिका प्रकाशन, पाइपलाइन सघनता और सत्यापन स्थिति को ट्रैक करें।",
+    heroBody:
+      "देखें कि आपकी भूमिकाएँ इम्प्रेशन से लेकर भर्ती तक कैसे परिवर्तित होती हैं — उम्मीदवारों के बढ़ने पर हर टाइल और चरण रीयल-टाइम में अपडेट होता रहता है।",
+    tileJobsLabel: "भूमिकाएँ",
+    tileJobsDetail: "इस नियोक्ता के दायरे में आने वाली भूमिकाएँ।",
+    tileApplicantsLabel: "आवेदक",
+    tileApplicantsDetail: "कुल सक्रिय आवेदक।",
+    tileInterviewingLabel: "साक्षात्कार में",
+    tileInterviewingDetail: "साक्षात्कार चरण में पहुँच चुके उम्मीदवार।",
+    tileOffersLabel: "ऑफ़र",
+    tileOffersDetail: "ऑफ़र चरण में मौजूद उम्मीदवार।",
+    tileViewsLabel: "व्यू",
+    tileViewsDetail: "प्रकाशित भूमिकाओं पर कुल इम्प्रेशन।",
+    tileAppliesLabel: "आवेदन",
+    tileAppliesDetail: "जमा किए गए पूर्ण आवेदन।",
+    tileConversionRateLabel: "रूपांतरण दर",
+    tileConversionRateDetail: "देखने वालों में से आवेदन करने वालों का अनुपात।",
+    tileTimeToHireLabel: "भर्ती में लगा समय",
+    tileTimeToHireDetail: "आवेदन से भर्ती तक के औसत (मध्यिका) दिन।",
+    stageSectionTitle: "चरण वितरण",
+    stageSectionBody:
+      "आपके सक्रिय आवेदक अभी पाइपलाइन के विभिन्न चरणों में किस प्रकार वितरित हैं।",
+    stageApplied: "आवेदित",
+    stageReviewing: "समीक्षाधीन",
+    stageShortlisted: "शॉर्टलिस्ट",
+    stageInterview: "साक्षात्कार",
+    stageOffer: "ऑफ़र",
+    stageHired: "नियुक्त",
+    stageRejected: "अस्वीकृत",
+    chartAxisCount: "उम्मीदवार",
+    chartAxisStage: "चरण",
+    chartAxisDays: "दिन",
+    chartAxisWeek: "सप्ताह",
+    chartAxisMonth: "महीना",
+    rangeLabel: "समय अवधि",
+    rangeLast7Days: "पिछले 7 दिन",
+    rangeLast30Days: "पिछले 30 दिन",
+    rangeLast90Days: "पिछले 90 दिन",
+    rangeLastYear: "पिछले 12 महीने",
+    rangeAllTime: "शुरुआत से अब तक",
+    emptyTitle: "अभी कोई विश्लेषण नहीं",
+    emptyBody:
+      "आवेदक और पाइपलाइन अंतर्दृष्टि एकत्रित करना शुरू करने के लिए अपनी पहली भूमिका प्रकाशित करें।",
+    candidateCountSingular: "{count} उम्मीदवार",
+    candidateCountPlural: "{count} उम्मीदवार",
+    applicationCountSingular: "{count} आवेदन",
+    applicationCountPlural: "{count} आवेदन",
+    daysSingular: "{count} दिन",
+    daysPlural: "{count} दिन",
+  },
 };
 
 const IT: DeepPartial<JobsCopy> = {
@@ -4402,6 +5077,58 @@ const IT: DeepPartial<JobsCopy> = {
     "fieldSalaryMaxPlaceholder": "Salario max",
     "submitPending": "Creazione del ruolo in corso...",
     "submitLabel": "Crea ruolo"
+  },
+  "employerAnalytics": {
+    "metaTitle": "Analisi datore di lavoro",
+    "metaDescription": "Monitora la produzione di ruoli, la concentrazione della pipeline e lo stato di verifica lungo il tuo funnel di assunzioni.",
+    "eyebrow": "Intelligence per il recruiting",
+    "pageTitle": "Analisi datore di lavoro",
+    "pageSubtitle": "Monitora la produzione di ruoli, la concentrazione della pipeline e lo stato di verifica.",
+    "heroBody": "Osserva come i tuoi ruoli si convertono dalle impressioni all’assunzione — ogni tile e ogni fase si aggiornano in tempo reale mentre i candidati avanzano.",
+    "tileJobsLabel": "Ruoli",
+    "tileJobsDetail": "Ruoli sotto l’ambito di questo datore di lavoro.",
+    "tileApplicantsLabel": "Candidati",
+    "tileApplicantsDetail": "Totale dei candidati attivi.",
+    "tileInterviewingLabel": "In colloquio",
+    "tileInterviewingDetail": "Candidati già in fase di colloquio.",
+    "tileOffersLabel": "Offerte",
+    "tileOffersDetail": "Candidati in fase di offerta.",
+    "tileViewsLabel": "Visualizzazioni",
+    "tileViewsDetail": "Impressioni totali sui ruoli pubblicati.",
+    "tileAppliesLabel": "Candidature",
+    "tileAppliesDetail": "Candidature complete inviate.",
+    "tileConversionRateLabel": "Tasso di conversione",
+    "tileConversionRateDetail": "Quota di visitatori che ha presentato una candidatura.",
+    "tileTimeToHireLabel": "Tempo di assunzione",
+    "tileTimeToHireDetail": "Giorni mediani dalla candidatura all’assunzione.",
+    "stageSectionTitle": "Distribuzione per fase",
+    "stageSectionBody": "Come i tuoi candidati attivi sono distribuiti tra le fasi della pipeline in questo momento.",
+    "stageApplied": "Candidato",
+    "stageReviewing": "In revisione",
+    "stageShortlisted": "In short list",
+    "stageInterview": "Colloquio",
+    "stageOffer": "Offerta",
+    "stageHired": "Assunto",
+    "stageRejected": "Rifiutato",
+    "chartAxisCount": "Candidati",
+    "chartAxisStage": "Fase",
+    "chartAxisDays": "Giorni",
+    "chartAxisWeek": "Settimana",
+    "chartAxisMonth": "Mese",
+    "rangeLabel": "Intervallo temporale",
+    "rangeLast7Days": "Ultimi 7 giorni",
+    "rangeLast30Days": "Ultimi 30 giorni",
+    "rangeLast90Days": "Ultimi 90 giorni",
+    "rangeLastYear": "Ultimi 12 mesi",
+    "rangeAllTime": "Da sempre",
+    "emptyTitle": "Nessun dato analitico",
+    "emptyBody": "Pubblica il tuo primo ruolo per iniziare a raccogliere candidati e insight sulla pipeline.",
+    "candidateCountSingular": "{count} candidato",
+    "candidateCountPlural": "{count} candidati",
+    "applicationCountSingular": "{count} candidatura",
+    "applicationCountPlural": "{count} candidature",
+    "daysSingular": "{count} giorno",
+    "daysPlural": "{count} giorni"
   }
 };
 
