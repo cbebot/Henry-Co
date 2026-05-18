@@ -3,10 +3,12 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorOrdersPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/orders");
   const data = await getVendorWorkspaceData();
 
@@ -14,7 +16,7 @@ export default async function VendorOrdersPage() {
     <WorkspaceShell
       title="Orders"
       description="Seller order handling stays segmented by fulfillment state and payment readiness."
-      nav={vendorNav("/vendor/orders")}
+      nav={vendorNav("/vendor/orders", locale)}
     >
       <div className="space-y-4">
         {data.orders.map((order) => (

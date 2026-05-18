@@ -3,6 +3,7 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export default async function VendorProductDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products");
   const { id } = await params;
   const [data, snapshot] = await Promise.all([getVendorWorkspaceData(), getMarketplaceHomeData()]);
@@ -21,7 +23,7 @@ export default async function VendorProductDetailPage({
     <WorkspaceShell
       title={product.title}
       description="Product detail editing stays anchored to moderation readiness."
-      nav={vendorNav("/vendor/products")}
+      nav={vendorNav("/vendor/products", locale)}
     >
       <div className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
         <form action="/api/marketplace" method="POST" className="market-paper space-y-5 rounded-[1.9rem] p-6">

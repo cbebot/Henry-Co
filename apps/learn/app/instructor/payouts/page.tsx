@@ -32,7 +32,7 @@ export default async function InstructorPayoutsPage() {
       description={t(
         "Each completed enrollment under your courses contributes to the gross figure. Net payout reflects HenryCo's platform fee per your payout model.",
       )}
-      nav={instructorNav("/instructor/payouts")}
+      nav={instructorNav("/instructor/payouts", t)}
     >
       <section className="grid gap-4 sm:grid-cols-3">
         <LearnPanel className="rounded-[1.4rem] p-5">

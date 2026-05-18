@@ -2,10 +2,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getStaffQueueData } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function ModerationPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin", "moderation"], "/moderation");
   const data = await getStaffQueueData();
 
@@ -13,7 +15,7 @@ export default async function ModerationPage() {
     <WorkspaceShell
       title="Moderation"
       description="Product review, risk notes, pricing anomalies, and listing quality signals live here."
-      nav={staffNav("/moderation", "/moderation")}
+      nav={staffNav("/moderation", "/moderation", locale)}
     >
       <div className="space-y-4">
         {data.products.slice(0, 8).map((product: Record<string, unknown>) => (

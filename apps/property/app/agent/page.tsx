@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertyEmptyState, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { getAgentWorkspaceData } from "@/lib/property/data";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
 import { requirePropertyRoles } from "@/lib/property/auth";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -19,17 +21,21 @@ function toDateTimeLocal(value?: string | null) {
 export default async function AgentWorkspacePage() {
   await requirePropertyRoles(["relationship_manager", "listing_manager", "property_admin"], "/agent");
   const data = await getAgentWorkspaceData();
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const listingMap = new Map(data.listings.map((listing) => [listing.id, listing]));
 
   return (
     <PropertyWorkspaceShell
-      kicker="Agent"
-      title="Assigned inquiry and viewing flow"
-      description="Relationship managers and listing leads can update inquiry posture, schedule viewings, and keep seekers informed without leaving the live property workflow."
+      kicker={t("Agent")}
+      title={t("Assigned inquiry and viewing flow")}
+      description={t(
+        "Relationship managers and listing leads can update inquiry posture, schedule viewings, and keep seekers informed without leaving the live property workflow.",
+      )}
       nav={getWorkspaceNavigation("/agent")}
     >
       <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Assigned inquiries</div>
+        <div className="property-kicker">{t("Assigned inquiries")}</div>
         {data.inquiries.length ? (
           <div className="mt-5 space-y-4">
             {data.inquiries.map((inquiry) => {
@@ -53,7 +59,7 @@ export default async function AgentWorkspacePage() {
                             {listing.title}
                           </Link>
                         ) : (
-                          "Listing detail unavailable"
+                          t("Listing detail unavailable")
                         )}
                       </div>
                       <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
@@ -73,18 +79,18 @@ export default async function AgentWorkspacePage() {
 
                       <label className="block">
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                          Status
+                          {t("Status")}
                         </span>
                         <select
                           name="status"
                           defaultValue={inquiry.status}
                           className="property-select mt-2 w-full rounded-2xl px-4 py-3"
                         >
-                          <option value="new">New</option>
-                          <option value="acknowledged">Acknowledged</option>
-                          <option value="assigned">Assigned</option>
-                          <option value="in_progress">In progress</option>
-                          <option value="closed">Closed</option>
+                          <option value="new">{t("New")}</option>
+                          <option value="acknowledged">{t("Acknowledged")}</option>
+                          <option value="assigned">{t("Assigned")}</option>
+                          <option value="in_progress">{t("In progress")}</option>
+                          <option value="closed">{t("Closed")}</option>
                         </select>
                       </label>
 
@@ -94,7 +100,7 @@ export default async function AgentWorkspacePage() {
                           type="submit"
                           className="property-button inline-flex rounded-full px-5 py-3 text-sm font-semibold"
                         >
-                          Update inquiry
+                          {t("Update inquiry")}
                         </button>
                       </div>
                     </form>
@@ -106,15 +112,15 @@ export default async function AgentWorkspacePage() {
         ) : (
           <div className="mt-5">
             <PropertyEmptyState
-              title="No inquiries assigned."
-              body="When inquiries are assigned to this agent, they will appear here with the latest status."
+              title={t("No inquiries assigned.")}
+              body={t("When inquiries are assigned to this agent, they will appear here with the latest status.")}
             />
           </div>
         )}
       </section>
 
       <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Assigned viewings</div>
+        <div className="property-kicker">{t("Assigned viewings")}</div>
         {data.viewings.length ? (
           <div className="mt-5 space-y-4">
             {data.viewings.map((viewing) => {
@@ -130,8 +136,8 @@ export default async function AgentWorkspacePage() {
                         {viewing.attendeeEmail}
                       </div>
                       <div className="mt-2 text-xs text-[var(--property-ink-muted)]">
-                        Preferred: {formatDate(viewing.preferredDate)}
-                        {viewing.scheduledFor ? ` · Scheduled: ${formatDate(viewing.scheduledFor)}` : ""}
+                        {t("Preferred")}: {formatDate(viewing.preferredDate)}
+                        {viewing.scheduledFor ? ` · ${t("Scheduled")}: ${formatDate(viewing.scheduledFor)}` : ""}
                       </div>
                       <div className="mt-2 text-xs text-[var(--property-ink-muted)]">
                         {listing ? (
@@ -139,7 +145,7 @@ export default async function AgentWorkspacePage() {
                             {listing.title}
                           </Link>
                         ) : (
-                          "Listing detail unavailable"
+                          t("Listing detail unavailable")
                         )}
                       </div>
                     </div>
@@ -157,23 +163,23 @@ export default async function AgentWorkspacePage() {
                       <div className="grid gap-3 md:grid-cols-2">
                         <label className="block">
                           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                            Status
+                            {t("Status")}
                           </span>
                           <select
                             name="status"
                             defaultValue={viewing.status}
                             className="property-select mt-2 w-full rounded-2xl px-4 py-3"
                           >
-                            <option value="requested">Requested</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="requested">{t("Requested")}</option>
+                            <option value="scheduled">{t("Scheduled")}</option>
+                            <option value="confirmed">{t("Confirmed")}</option>
+                            <option value="completed">{t("Completed")}</option>
+                            <option value="cancelled">{t("Cancelled")}</option>
                           </select>
                         </label>
                         <label className="block">
                           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                            Scheduled time
+                            {t("Scheduled time")}
                           </span>
                           <input
                             type="datetime-local"
@@ -186,14 +192,14 @@ export default async function AgentWorkspacePage() {
 
                       <label className="block">
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                          Notes
+                          {t("Notes")}
                         </span>
                         <textarea
                           name="notes"
                           rows={3}
                           defaultValue={viewing.notes}
                           className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                          placeholder="Access details, confirmation note, or update for the viewer."
+                          placeholder={t("Access details, confirmation note, or update for the viewer.")}
                         />
                       </label>
 
@@ -203,7 +209,7 @@ export default async function AgentWorkspacePage() {
                           type="submit"
                           className="property-button inline-flex rounded-full px-5 py-3 text-sm font-semibold"
                         >
-                          Update viewing
+                          {t("Update viewing")}
                         </button>
                       </div>
                     </form>
@@ -215,8 +221,8 @@ export default async function AgentWorkspacePage() {
         ) : (
           <div className="mt-5">
             <PropertyEmptyState
-              title="No viewings assigned."
-              body="Confirmed and in-flight viewing requests will surface here once scheduled."
+              title={t("No viewings assigned.")}
+              body={t("Confirmed and in-flight viewing requests will surface here once scheduled.")}
             />
           </div>
         )}

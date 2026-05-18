@@ -1,7 +1,13 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { getSharedAuthUrl } from "@/lib/learn/links";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 
-export const metadata = { title: "Create Account - HenryCo Learn" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLearnPublicLocale();
+  return { title: `${translateSurfaceLabel(locale, "Create Account")} - HenryCo Learn` };
+}
 
 export default async function SignupPage({
   searchParams,

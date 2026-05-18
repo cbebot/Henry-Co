@@ -1,9 +1,11 @@
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
 import { getPropertyViewer } from "@/lib/property/auth";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import {
   getPropertyOrigin,
   getSharedAccountLoginUrl,
@@ -14,11 +16,13 @@ import {
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const viewer = await getPropertyViewer();
   const h = await headers();
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const returnPath = h.get("x-property-return-path") || "/";
   const origin = getPropertyOrigin();
   const chipUser = viewer.user
     ? {
-        displayName: viewer.user.fullName || viewer.user.email || "Your account",
+        displayName: viewer.user.fullName || viewer.user.email || t("Your account"),
         email: viewer.user.email,
         avatarUrl: viewer.user.avatarUrl,
       }
@@ -35,8 +39,8 @@ export default async function PublicLayout({ children }: { children: React.React
       signupHref={getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin: origin })}
       showSignOut
       menuItems={[
-        { label: "Browse listings", href: "/" },
-        { label: "Submit a listing", href: "/submit" },
+        { label: t("Browse listings"), href: "/" },
+        { label: t("Submit a listing"), href: "/submit" },
       ]}
     />
   );

@@ -4,10 +4,12 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function SellerApplicationPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/seller-application");
   const data = await getBuyerDashboardData();
   const application = data.application;
@@ -16,7 +18,7 @@ export default async function SellerApplicationPage() {
     <WorkspaceShell
       title="Seller application"
       description="Seller onboarding now lives in the protected account area so drafts, verification, moderation notes, and approval state stay structured instead of spilling into public clutter."
-      {...accountWorkspaceNav("/account/seller-application")}
+      {...accountWorkspaceNav("/account/seller-application", locale)}
       actions={
         <Link
           href={

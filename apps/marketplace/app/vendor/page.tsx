@@ -4,10 +4,12 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { formatCurrency } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorOverviewPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor");
   const data = await getVendorWorkspaceData();
 
@@ -15,7 +17,7 @@ export default async function VendorOverviewPage() {
     <WorkspaceShell
       title={data.vendor.name}
       description="Seller operations are split by products, orders, disputes, payouts, analytics, store profile, and settings so merchants can work with less noise and better coaching."
-      nav={vendorNav("/vendor")}
+      nav={vendorNav("/vendor", locale)}
       actions={
         <Link href="/vendor/products/new" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
           Add product

@@ -6,11 +6,13 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import {
   PropertyMetricGrid,
   PropertySectionIntro,
 } from "@/components/property/ui";
 import { getPropertySnapshot } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -114,21 +116,30 @@ const nextSteps = [
 
 export default async function TrustPage() {
   const snapshot = await getPropertySnapshot();
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const translatedMetrics = snapshot.metrics.map((metric) => ({
+    label: t(metric.label),
+    value: metric.value,
+    hint: t(metric.hint),
+  }));
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
-        kicker="Trust"
-        title="Governed before it is public."
-        description="Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious."
+        kicker={t("Trust")}
+        title={t("Governed before it is public.")}
+        description={t(
+          "Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious.",
+        )}
       />
 
       <div className="mt-10">
-        <PropertyMetricGrid items={snapshot.metrics} />
+        <PropertyMetricGrid items={translatedMetrics} />
       </div>
 
       <section className="mt-14">
-        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Core trust rails</p>
+        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">{t("Core trust rails")}</p>
         <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
           {trustRails.map((item) => {
             const Icon = item.icon;
@@ -143,10 +154,10 @@ export default async function TrustPage() {
                 />
                 <div>
                   <h3 className="text-base font-semibold tracking-tight text-[var(--property-ink)]">
-                    {item.title}
+                    {t(item.title)}
                   </h3>
                   <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--property-ink-soft)]">
-                    {item.body}
+                    {t(item.body)}
                   </p>
                 </div>
               </li>
@@ -158,16 +169,16 @@ export default async function TrustPage() {
       <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr_0.95fr] xl:divide-x xl:divide-[var(--property-line)]">
         <div>
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            What the listing states mean
+            {t("What the listing states mean")}
           </p>
           <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
             {statusGuide.map((item) => (
               <li key={item.title} className="py-5">
                 <h3 className="text-base font-semibold tracking-tight text-[var(--property-ink)]">
-                  {item.title}
+                  {t(item.title)}
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                  {item.body}
+                  {t(item.body)}
                 </p>
               </li>
             ))}
@@ -176,19 +187,19 @@ export default async function TrustPage() {
 
         <div className="xl:pl-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Two-sided expectations
+            {t("Two-sided expectations")}
           </p>
           <div className="mt-6 grid gap-10 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)]">
             {expectationColumns.map((column, i) => (
               <div key={column.heading} className={i > 0 ? "md:pl-8" : ""}>
                 <h3 className="text-sm font-semibold tracking-tight text-[var(--property-ink)]">
-                  {column.heading}
+                  {t(column.heading)}
                 </h3>
                 <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
                   {column.bullets.map((bullet) => (
                     <li key={bullet} className="flex gap-3">
                       <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
-                      <span>{bullet}</span>
+                      <span>{t(bullet)}</span>
                     </li>
                   ))}
                 </ul>
@@ -200,7 +211,7 @@ export default async function TrustPage() {
 
       <section className="mt-14">
         <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          Policy clarifications
+          {t("Policy clarifications")}
         </p>
         <ul className="mt-8 grid gap-10 md:grid-cols-2 xl:grid-cols-3 xl:divide-x xl:divide-[var(--property-line)]">
           {policyCards.map((card, i) => {
@@ -212,10 +223,10 @@ export default async function TrustPage() {
                   aria-hidden
                 />
                 <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--property-ink)]">
-                  {card.title}
+                  {t(card.title)}
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                  {card.body}
+                  {t(card.body)}
                 </p>
               </li>
             );
@@ -226,7 +237,7 @@ export default async function TrustPage() {
       <section className="mt-14 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
         <p className="property-kicker text-[10.5px] uppercase tracking-[0.22em]">
           <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
-          What happens next after submission
+          {t("What happens next after submission")}
         </p>
         <ol className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
           {nextSteps.map((item, i) => (
@@ -234,7 +245,7 @@ export default async function TrustPage() {
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span>{item}</span>
+              <span>{t(item)}</span>
             </li>
           ))}
         </ol>

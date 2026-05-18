@@ -24,6 +24,7 @@ import type {
   MarketplaceProduct,
   MarketplaceVendor,
 } from "@/lib/marketplace/types";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,7 @@ function orderStatusLabel(status: MarketplaceOrder["status"]) {
 }
 
 export default async function AccountOverviewPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account");
   const data = await getBuyerDashboardData();
   const viewerName =
@@ -118,7 +120,7 @@ export default async function AccountOverviewPage() {
     <WorkspaceShell
       title={firstName ? `${firstName}'s marketplace activity` : "Marketplace activity"}
       description="Orders, saved items, store follows, and account activity in one calmer view. HenryCo unifies these signals across divisions so the trail stays attached to the same account."
-      {...accountWorkspaceNav("/account")}
+      {...accountWorkspaceNav("/account", locale)}
       actions={
         <div className="flex flex-wrap gap-2.5">
           <Link

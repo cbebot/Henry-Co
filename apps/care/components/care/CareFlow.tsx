@@ -10,6 +10,8 @@ import {
   Package2,
   ShieldCheck,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 const SLIDES = [
   {
@@ -51,6 +53,8 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 
 export default function CareFlow() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -91,18 +95,17 @@ export default function CareFlow() {
       <div className="relative">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="care-kicker">Service overview</div>
+            <div className="care-kicker">{t("Service overview")}</div>
             <h2 className="mt-3 care-section-title text-white">
-              See how each service lane behaves.
+              {t("See how each service lane behaves.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/66">
-              This motion strip shows how garment care, home cleaning, office cleaning, and recurring
-              service each move through a clear customer journey.
+              {t("This motion strip shows how garment care, home cleaning, office cleaning, and recurring service each move through a clear customer journey.")}
             </p>
           </div>
 
           <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/58">
-            Hover to pause
+            {t("Hover to pause")}
           </div>
         </div>
 
@@ -138,10 +141,10 @@ export default function CareFlow() {
                     </div>
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
-                        {slide.label}
+                        {t(slide.label)}
                       </div>
                       <div className="mt-1 text-base font-semibold">
-                        {slide.title}
+                        {t(slide.title)}
                       </div>
                     </div>
                   </div>
@@ -173,10 +176,10 @@ export default function CareFlow() {
                       <Icon className="h-6 w-6 text-[color:var(--accent)]" />
                     </div>
                     <div className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-white/72">
-                      Service path
+                      {t("Service path")}
                     </div>
                     <div className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white">
-                      {current.label}
+                      {t(current.label)}
                     </div>
 
                     <div className="mt-8 grid gap-3">
@@ -185,7 +188,7 @@ export default function CareFlow() {
                           key={item}
                           className="rounded-2xl border border-white/12 bg-[#06101a]/58 px-4 py-3 text-sm font-medium text-white/80"
                         >
-                          {item}
+                          {t(item)}
                         </div>
                       ))}
                     </div>
@@ -194,12 +197,12 @@ export default function CareFlow() {
 
                 <div className="flex flex-col justify-between">
                   <div>
-                    <div className="care-kicker">Now showing</div>
+                    <div className="care-kicker">{t("Now showing")}</div>
                     <h3 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white md:text-4xl">
-                      {current.title}
+                      {t(current.title)}
                     </h3>
                     <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
-                      {current.body}
+                      {t(current.body)}
                     </p>
                   </div>
 
@@ -224,15 +227,15 @@ export default function CareFlow() {
                       >
                         <div className="flex items-center gap-2 text-sm font-semibold text-white">
                           <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-                          {item.title}
+                          {t(item.title)}
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-white/62">{item.body}</p>
+                        <p className="mt-3 text-sm leading-6 text-white/62">{t(item.body)}</p>
                       </div>
                     ))}
                   </div>
 
                   <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-[color:var(--accent)]">
-                    Service path overview
+                    {t("Service path overview")}
                     <ArrowRight className="h-4 w-4" />
                   </div>
                 </div>

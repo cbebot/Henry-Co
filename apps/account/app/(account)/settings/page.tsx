@@ -1,3 +1,4 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireAccountUser } from "@/lib/auth";
 import { getProfile, getPreferences } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -29,6 +30,7 @@ export const metadata = {
  */
 export default async function SettingsPage() {
   const [user, locale] = await Promise.all([requireAccountUser(), getAccountAppLocale()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [profile, preferences] = await Promise.all([
     getProfile(user.id),
     getPreferences(user.id),
@@ -41,12 +43,12 @@ export default async function SettingsPage() {
       <section aria-labelledby="acct-settings-profile">
         <div className="acct-settings__section-head">
           <h2 id="acct-settings-profile" className="acct-settings__section-title">
-            Profile
+            {t("Profile")}
           </h2>
-          <span className="acct-settings__section-meta">Identity</span>
+          <span className="acct-settings__section-meta">{t("Identity")}</span>
         </div>
         <div className="acct-settings__card">
-          <p className="acct-settings__card-kicker">Who you are on HenryCo</p>
+          <p className="acct-settings__card-kicker">{t("Who you are on HenryCo")}</p>
           <ProfileForm profile={profile} email={user.email} effectiveLocale={locale} />
         </div>
       </section>
@@ -54,12 +56,12 @@ export default async function SettingsPage() {
       <section aria-labelledby="acct-settings-notifications">
         <div className="acct-settings__section-head">
           <h2 id="acct-settings-notifications" className="acct-settings__section-title">
-            Notifications
+            {t("Notifications")}
           </h2>
-          <span className="acct-settings__section-meta">Signal · channels</span>
+          <span className="acct-settings__section-meta">{t("Signal · channels")}</span>
         </div>
         <div className="acct-settings__card">
-          <p className="acct-settings__card-kicker">How HenryCo reaches you</p>
+          <p className="acct-settings__card-kicker">{t("How HenryCo reaches you")}</p>
           <div className="space-y-4">
             <NotificationSignalSettingsCard />
             <PreferencesForm preferences={preferences} />
@@ -70,9 +72,9 @@ export default async function SettingsPage() {
       <section aria-labelledby="acct-settings-privacy">
         <div className="acct-settings__section-head">
           <h2 id="acct-settings-privacy" className="acct-settings__section-title">
-            Privacy & data
+            {t("Privacy & data")}
           </h2>
-          <span className="acct-settings__section-meta">Controls</span>
+          <span className="acct-settings__section-meta">{t("Controls")}</span>
         </div>
         <PrivacyDataControls />
       </section>

@@ -24,10 +24,8 @@ export async function generateMetadata() {
 
 export default async function EmployerNewJobPage() {
   const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/jobs/new");
-  const [data, locale] = await Promise.all([
-    getEmployerDashboardData(viewer.user!.id, viewer.user!.email),
-    getJobsPublicLocale(),
-  ]);
+  const locale = await getJobsPublicLocale();
+  const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale);
   const copy = getJobsCopy(locale).employerJobNew;
   const membership = data.memberships[0];
   const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;

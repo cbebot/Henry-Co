@@ -4,6 +4,7 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ export default async function AccountOrderDetailPage({
 }: {
   params: Promise<{ orderNo: string }>;
 }) {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/orders");
   const { orderNo } = await params;
   const { orders } = await getBuyerDashboardData();
@@ -22,7 +24,7 @@ export default async function AccountOrderDetailPage({
     <WorkspaceShell
       title={order.orderNo}
       description="Split-order clarity stays visible with vendor-level fulfillment and payment state broken out separately."
-      {...accountWorkspaceNav("/account/orders")}
+      {...accountWorkspaceNav("/account/orders", locale)}
     >
       <section className="market-paper rounded-[1.75rem] p-6">
         <div className="grid gap-4 md:grid-cols-3">

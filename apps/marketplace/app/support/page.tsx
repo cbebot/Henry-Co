@@ -2,10 +2,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getStaffQueueData } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function SupportPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin", "support"], "/support");
   const data = await getStaffQueueData();
 
@@ -13,7 +15,7 @@ export default async function SupportPage() {
     <WorkspaceShell
       title="Support"
       description="Buyer issues, dispute notes, and order pressure are resolved here with the audit trail preserved."
-      nav={staffNav("/support", "/support")}
+      nav={staffNav("/support", "/support", locale)}
     >
       <div className="space-y-4">
         {data.disputes.map((dispute: Record<string, unknown>) => (

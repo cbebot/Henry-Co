@@ -2,10 +2,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorSettingsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/settings");
   const data = await getVendorWorkspaceData();
 
@@ -13,7 +15,7 @@ export default async function VendorSettingsPage() {
     <WorkspaceShell
       title="Settings"
       description="Marketplace settings stay focused on seller operations: payout details, shipping expectations, support coverage, and moderation policy acknowledgement."
-      nav={vendorNav("/vendor/settings")}
+      nav={vendorNav("/vendor/settings", locale)}
     >
       <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-6">
         <input type="hidden" name="intent" value="vendor_store_update" />

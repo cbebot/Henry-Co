@@ -2,11 +2,12 @@ import { headers } from "next/headers";
 import { WorkspaceShell } from "@henryco/workspace-shell";
 import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { getAccountUrl } from "@henryco/config";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { requireLogisticsRoles } from "@/lib/logistics/auth";
 import {
-  RIDER_BRAND,
-  RIDER_MOBILE_NAV,
-  riderNavItems,
+  getRiderBrand,
+  getRiderMobileNav,
+  getRiderNavItems,
 } from "@/lib/logistics/operator-navigation";
 
 /**
@@ -47,19 +48,20 @@ export default async function RiderLayout({
     "/rider",
   );
   const pathname = await currentPathname();
+  const locale = await getLogisticsPublicLocale();
 
   return (
     <>
       <WorkspaceShell
         division="logistics-rider"
-        brand={RIDER_BRAND}
+        brand={getRiderBrand(locale)}
         viewer={{
           fullName: viewer.user?.fullName ?? null,
           email: viewer.user?.email ?? null,
           avatarUrl: null,
         }}
-        navigation={riderNavItems}
-        mobileNavigation={RIDER_MOBILE_NAV}
+        navigation={getRiderNavItems(locale)}
+        mobileNavigation={getRiderMobileNav(locale)}
         notificationsHref="/rider/notifications"
         profileHref={getAccountUrl("/security")}
         accountSettingsUrl={getAccountUrl("/")}

@@ -1,4 +1,6 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireAccountUser } from "@/lib/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import Sidebar from "@/components/layout/Sidebar";
 import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRoot";
 
@@ -24,7 +26,8 @@ import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRo
  *   - The main content area
  */
 export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
-  const user = await requireAccountUser();
+  const [user, locale] = await Promise.all([requireAccountUser(), getAccountAppLocale()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const userInfo = {
     fullName: user.fullName,
@@ -36,7 +39,7 @@ export default async function AccountLayoutInner({ children }: { children: React
     <div className="min-h-screen">
       {/* V5-4 a11y: skip link only visible when keyboard-focused */}
       <a href="#hc-main" className="hc-skip-link">
-        Skip to main content
+        {t("Skip to main content")}
       </a>
       <AccountStudioToastRoot />
       <Sidebar user={userInfo} />

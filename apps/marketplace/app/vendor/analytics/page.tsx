@@ -2,10 +2,12 @@ import { MetricCard, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorAnalyticsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/analytics");
   const data = await getVendorWorkspaceData();
 
@@ -13,7 +15,7 @@ export default async function VendorAnalyticsPage() {
     <WorkspaceShell
       title="Analytics"
       description="Vendor analytics focus on stock risk, listing readiness, order movement, and payout conversion rather than vanity charts."
-      nav={vendorNav("/vendor/analytics")}
+      nav={vendorNav("/vendor/analytics", locale)}
     >
       <div className="grid gap-5 md:grid-cols-3">
         <MetricCard label="Active listings" value={String(data.products.length)} hint="Submission and stock health tracked together." />

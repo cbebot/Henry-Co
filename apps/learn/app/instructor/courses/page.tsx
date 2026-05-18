@@ -22,7 +22,7 @@ export default async function InstructorCoursesPage() {
       description={t(
         "Define the course metadata, then add modules + lessons. Lessons can be video (Cloudinary), reading (markdown), quiz (assessment), or assignment (file or free-text submission).",
       )}
-      nav={instructorNav("/instructor/courses")}
+      nav={instructorNav("/instructor/courses", t)}
     >
       <LearnSectionIntro
         kicker={t("New course")}

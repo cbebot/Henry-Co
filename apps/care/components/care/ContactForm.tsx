@@ -8,6 +8,8 @@ import {
   PhoneCall,
   ShieldCheck,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { emitCareToast } from "@/components/feedback/CareToaster";
 import { CareLoadingGlyph } from "@/components/ui/CareLoading";
 import {
@@ -48,6 +50,8 @@ function isValidEmail(value: string) {
 }
 
 export default function ContactForm() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [form, setForm] = useState<ContactFormState>(INITIAL_STATE);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -69,23 +73,23 @@ export default function ContactForm() {
 
   function validate() {
     if (form.full_name.trim().length < 2) {
-      return "Please enter your full name.";
+      return t("Please enter your full name.");
     }
 
     if (!isValidEmail(form.email.trim())) {
-      return "Please enter a valid email address.";
+      return t("Please enter a valid email address.");
     }
 
     if (needsPhone && form.phone.trim().length < 7) {
-      return "Please add a phone number for the selected contact method.";
+      return t("Please add a phone number for the selected contact method.");
     }
 
     if (form.subject.trim().length < 4) {
-      return "Please add a clear subject so the team can respond quickly.";
+      return t("Please add a clear subject so the team can respond quickly.");
     }
 
     if (form.message.trim().length < 16) {
-      return "Please include a little more detail so the team can respond accurately.";
+      return t("Please include a little more detail so the team can respond accurately.");
     }
 
     return null;
@@ -99,7 +103,7 @@ export default function ContactForm() {
       setError(validationError);
       emitCareToast({
         tone: "warning",
-        title: "Check the contact details",
+        title: t("Check the contact details"),
         description: validationError,
       });
       return;
@@ -127,11 +131,11 @@ export default function ContactForm() {
         | null;
 
       if (!response.ok || !payload?.ok) {
-        const message = payload?.error || "The Care desk could not receive the message just now.";
+        const message = payload?.error || t("The Care desk could not receive the message just now.");
         setError(message);
         emitCareToast({
           tone: "error",
-          title: "Message not sent",
+          title: t("Message not sent"),
           description: message,
         });
         return;
@@ -141,17 +145,17 @@ export default function ContactForm() {
       setSuccessRef(payload.threadRef || null);
       emitCareToast({
         tone: "success",
-        title: "Message sent",
+        title: t("Message sent"),
         description: payload.threadRef
-          ? `Support reference ${payload.threadRef} is now active.`
-          : "The Care desk has received the message.",
+          ? `${t("Support reference")} ${payload.threadRef} ${t("is now active.")}`
+          : t("The Care desk has received the message."),
       });
     } catch {
-      const message = "Network error. Please try again in a moment.";
+      const message = t("Network error. Please try again in a moment.");
       setError(message);
       emitCareToast({
         tone: "error",
-        title: "Network error",
+        title: t("Network error"),
         description: message,
       });
     } finally {
@@ -163,31 +167,30 @@ export default function ContactForm() {
     <div className="care-card rounded-[2.4rem] p-7 sm:p-8">
       <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] care-accent-text">
         <ShieldCheck className="h-4 w-4" />
-        Contact HenryCo Care
+        {t("Contact HenryCo Care")}
       </div>
 
       <h2 className="mt-5 text-3xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white">
-        Send a message and expect a clear follow-up.
+        {t("Send a message and expect a clear follow-up.")}
       </h2>
       <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-        Use this form for booking questions, support follow-up, delivery coordination, recurring
-        plan changes, billing clarification, or any service concern that needs a thoughtful reply.
+        {t("Use this form for booking questions, support follow-up, delivery coordination, recurring plan changes, billing clarification, or any service concern that needs a thoughtful reply.")}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-7 grid gap-4">
         <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Full name" required>
+          <Field label={t("Full name")} requiredLabel={t("Required")} required>
             <input
               value={form.full_name}
               onChange={(event) => updateField("full_name", event.target.value)}
-              placeholder="Your full name"
+              placeholder={t("Your full name")}
               className="care-input care-ring h-14 rounded-2xl px-4 py-3 text-base md:text-sm"
               autoComplete="name"
               required
             />
           </Field>
 
-          <Field label="Email" required>
+          <Field label={t("Email")} requiredLabel={t("Required")} required>
             <div className="relative">
               <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
               <input
@@ -204,20 +207,20 @@ export default function ContactForm() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Phone number">
+          <Field label={t("Phone number")} requiredLabel={t("Required")}>
             <div className="relative">
               <PhoneCall className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
               <input
                 value={form.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
-                placeholder="Phone or WhatsApp number"
+                placeholder={t("Phone or WhatsApp number")}
                 className="care-input care-ring h-14 w-full rounded-2xl px-12 py-3 text-base md:text-sm"
                 autoComplete="tel"
               />
             </div>
           </Field>
 
-          <Field label="Preferred contact route" required>
+          <Field label={t("Preferred contact route")} requiredLabel={t("Required")} required>
             <select
               value={form.preferred_contact_method}
               onChange={(event) => updateField("preferred_contact_method", event.target.value)}
@@ -225,7 +228,7 @@ export default function ContactForm() {
             >
               {SUPPORT_CONTACT_METHODS.map((option) => (
                 <option key={option} value={option}>
-                  {formatSupportContactMethodLabel(option)}
+                  {t(formatSupportContactMethodLabel(option))}
                 </option>
               ))}
             </select>
@@ -233,7 +236,7 @@ export default function ContactForm() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-[1fr_1fr_0.92fr]">
-          <Field label="Service category" required>
+          <Field label={t("Service category")} requiredLabel={t("Required")} required>
             <select
               value={form.service_category}
               onChange={(event) => updateField("service_category", event.target.value)}
@@ -241,24 +244,24 @@ export default function ContactForm() {
             >
               {SUPPORT_SERVICE_CATEGORIES.map((option) => (
                 <option key={option} value={option}>
-                  {formatSupportServiceCategoryLabel(option)}
+                  {t(formatSupportServiceCategoryLabel(option))}
                 </option>
               ))}
             </select>
           </Field>
 
-          <Field label="Subject" required>
+          <Field label={t("Subject")} requiredLabel={t("Required")} required>
             <input
               value={form.subject}
               onChange={(event) => updateField("subject", event.target.value)}
-              placeholder="Briefly describe the request"
+              placeholder={t("Briefly describe the request")}
               className="care-input care-ring h-14 rounded-2xl px-4 py-3 text-base md:text-sm"
               maxLength={120}
               required
             />
           </Field>
 
-          <Field label="Urgency" required>
+          <Field label={t("Urgency")} requiredLabel={t("Required")} required>
             <select
               value={form.urgency}
               onChange={(event) => updateField("urgency", event.target.value)}
@@ -266,29 +269,29 @@ export default function ContactForm() {
             >
               {SUPPORT_URGENCY_LEVELS.map((option) => (
                 <option key={option} value={option}>
-                  {formatSupportUrgencyLabel(option)}
+                  {t(formatSupportUrgencyLabel(option))}
                 </option>
               ))}
             </select>
           </Field>
         </div>
 
-        <Field label="Tracking code">
+        <Field label={t("Tracking code")} requiredLabel={t("Required")}>
           <input
             value={form.tracking_code}
             onChange={(event) => updateField("tracking_code", event.target.value.toUpperCase())}
-            placeholder="Optional, if the request relates to an existing booking"
+            placeholder={t("Optional, if the request relates to an existing booking")}
             className="care-input care-ring h-14 rounded-2xl px-4 py-3 text-base uppercase md:text-sm"
           />
         </Field>
 
-        <Field label="Message" required>
+        <Field label={t("Message")} requiredLabel={t("Required")} required>
           <div className="relative">
             <MessageSquareText className="pointer-events-none absolute left-4 top-4 h-4 w-4 text-zinc-400 dark:text-white/35" />
             <textarea
               value={form.message}
               onChange={(event) => updateField("message", event.target.value)}
-              placeholder="Share the context, timing, address or access details, tracking reference, and the specific help you need."
+              placeholder={t("Share the context, timing, address or access details, tracking reference, and the specific help you need.")}
               className="care-input care-ring min-h-[180px] rounded-2xl px-12 py-3 text-base md:text-sm"
               required
             />
@@ -297,12 +300,12 @@ export default function ContactForm() {
 
         <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.04]">
           <div className="text-sm font-semibold text-zinc-950 dark:text-white">
-            What happens next
+            {t("What happens next")}
           </div>
           <div className="mt-2 grid gap-2 text-sm leading-6 text-zinc-600 dark:text-white/65">
-            <div>Your message is kept under one clear reference.</div>
-            <div>The team replies by email, and by WhatsApp as well when that channel is available.</div>
-            <div>Urgent requests stay visible until the issue has been resolved properly.</div>
+            <div>{t("Your message is kept under one clear reference.")}</div>
+            <div>{t("The team replies by email, and by WhatsApp as well when that channel is available.")}</div>
+            <div>{t("Urgent requests stay visible until the issue has been resolved properly.")}</div>
           </div>
         </div>
 
@@ -316,7 +319,7 @@ export default function ContactForm() {
           ) : (
             <ArrowRight className="h-4 w-4" />
           )}
-          {submitting ? "Sending message..." : "Send to HenryCo Care"}
+          {submitting ? t("Sending message...") : t("Send to HenryCo Care")}
         </button>
       </form>
 
@@ -328,7 +331,7 @@ export default function ContactForm() {
 
       {successRef ? (
         <div className="mt-4 rounded-2xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-100">
-          Message received. Your reference is <span className="font-semibold">{successRef}</span>.
+          {t("Message received. Your reference is")} <span className="font-semibold">{successRef}</span>.
         </div>
       ) : null}
     </div>
@@ -338,17 +341,19 @@ export default function ContactForm() {
 function Field({
   label,
   required,
+  requiredLabel,
   children,
 }: {
   label: string;
   required?: boolean;
+  requiredLabel?: string;
   children: React.ReactNode;
 }) {
   return (
     <label className="grid gap-2">
       <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
         {label}
-        {required ? " • Required" : ""}
+        {required ? ` • ${requiredLabel ?? "Required"}` : ""}
       </span>
       {children}
     </label>

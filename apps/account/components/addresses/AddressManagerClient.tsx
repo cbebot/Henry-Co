@@ -19,6 +19,8 @@ import {
   type UserAddressInput,
   type UserAddressLabel,
 } from "@henryco/address-selector";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 const PLACES_AUTOCOMPLETE = "/api/addresses/places/autocomplete";
 const PLACES_DETAILS = "/api/addresses/places/details";
@@ -40,6 +42,8 @@ const formClassNames = {
 
 export default function AddressManagerClient({ addresses, countryHint }: Props) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<UserAddressRecord | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -58,7 +62,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
     });
     if (!res.ok) {
       const json = (await res.json().catch(() => ({}))) as { error?: string };
-      setExternalError(json.error ?? "Couldn't save the address. Please try again.");
+      setExternalError(json.error ?? t("Couldn't save the address. Please try again."));
       return;
     }
     setShowCreate(false);
@@ -76,7 +80,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
     });
     if (!res.ok) {
       const json = (await res.json().catch(() => ({}))) as { error?: string };
-      setExternalError(json.error ?? "Couldn't update the address. Please try again.");
+      setExternalError(json.error ?? t("Couldn't update the address. Please try again."));
       return;
     }
     setEditing(null);
@@ -106,8 +110,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
         <div className="acct-card p-6 text-center">
           <MapPin className="mx-auto mb-3 text-[var(--acct-muted)]" size={28} />
           <p className="text-sm text-[var(--acct-muted)]">
-            You haven&apos;t added any addresses yet. Add your first one to enable faster checkout
-            across HenryCo.
+            {t("You haven't added any addresses yet. Add your first one to enable faster checkout across HenryCo.")}
           </p>
         </div>
       )}
@@ -124,12 +127,12 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
                     </span>
                     {addr.is_default && (
                       <span className="acct-chip acct-chip-green inline-flex items-center gap-1 text-[0.65rem]">
-                        <Star size={10} /> Default
+                        <Star size={10} /> {t("Default")}
                       </span>
                     )}
                     {addr.kyc_verified && (
                       <span className="acct-chip acct-chip-green inline-flex items-center gap-1 text-[0.65rem]">
-                        <ShieldCheck size={10} /> KYC verified
+                        <ShieldCheck size={10} /> {t("KYC verified")}
                       </span>
                     )}
                   </div>
@@ -153,7 +156,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
                     onClick={() => handleSetDefault(addr.id)}
                     className="acct-button-secondary inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs"
                   >
-                    <Star size={12} /> Set default
+                    <Star size={12} /> {t("Set default")}
                   </button>
                 )}
                 <button
@@ -165,21 +168,21 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
                   }}
                   className="acct-button-secondary inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs"
                 >
-                  <Pencil size={12} /> Edit
+                  <Pencil size={12} /> {t("Edit")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setPendingDeleteId(addr.id)}
                   className="inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs text-[var(--acct-red)] hover:bg-[var(--acct-red-soft)]"
                 >
-                  <Trash2 size={12} /> Delete
+                  <Trash2 size={12} /> {t("Delete")}
                 </button>
               </div>
 
               {pendingDeleteId === addr.id && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-xl bg-[var(--acct-bg)]/95 p-4 text-center">
                   <p className="text-sm">
-                    Delete this address? This cannot be undone.
+                    {t("Delete this address? This cannot be undone.")}
                   </p>
                   <div className="flex gap-2">
                     <button
@@ -187,14 +190,14 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
                       onClick={() => handleDelete(addr.id)}
                       className="rounded-xl bg-[var(--acct-red)] px-3 py-1.5 text-xs text-white"
                     >
-                      Delete
+                      {t("Delete")}
                     </button>
                     <button
                       type="button"
                       onClick={() => setPendingDeleteId(null)}
                       className="acct-button-secondary rounded-xl px-3 py-1.5 text-xs"
                     >
-                      Cancel
+                      {t("Cancel")}
                     </button>
                   </div>
                 </div>
@@ -213,21 +216,19 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
           }}
           className="acct-button-primary inline-flex items-center gap-2 rounded-xl px-4 py-2"
         >
-          <Plus size={14} /> Add address
+          <Plus size={14} /> {t("Add address")}
         </button>
       )}
 
       {!showCreate && !editing && allLabelsUsed && (
         <p className="text-sm text-[var(--acct-muted)]">
-          You&apos;ve added the maximum of {USER_ADDRESS_LABELS.length} address types
-          (home, office, shop, warehouse, alternative 1, alternative 2). Edit or delete one
-          to add a different address.
+          {t("You've added the maximum of")} {USER_ADDRESS_LABELS.length} {t("address types (home, office, shop, warehouse, alternative 1, alternative 2). Edit or delete one to add a different address.")}
         </p>
       )}
 
       {showCreate && (
         <section className="acct-card p-5">
-          <h3 className="mb-3 text-sm font-semibold">Add a new address</h3>
+          <h3 className="mb-3 text-sm font-semibold">{t("Add a new address")}</h3>
           <AddressForm
             mode="create"
             placesAutocompleteEndpoint={PLACES_AUTOCOMPLETE}
@@ -245,7 +246,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
       {editing && (
         <section className="acct-card p-5">
           <h3 className="mb-3 text-sm font-semibold">
-            Edit {USER_ADDRESS_LABEL_DISPLAY[editing.label]}
+            {t("Edit")} {USER_ADDRESS_LABEL_DISPLAY[editing.label]}
           </h3>
           <AddressForm
             mode="edit"

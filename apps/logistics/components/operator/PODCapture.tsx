@@ -2,6 +2,8 @@
 
 import { useCallback, useId, useState } from "react";
 import { Camera, CheckCircle2, MapPin, RotateCcw, X } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 /**
  * V3 PASS 21 — `<PODCapture>` rider POD client component.
@@ -48,6 +50,8 @@ export function PODCapture({
   onSubmitted,
   endpoint = "/api/logistics/pod",
 }: PODCaptureProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const fileInputId = useId();
   const [state, setState] = useState<CaptureState>({ status: "idle" });
   const [recipientName, setRecipientName] = useState("");
@@ -64,7 +68,7 @@ export function PODCapture({
   const captureGps = useCallback(() => {
     setGpsError(null);
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setGpsError("Location not supported on this device.");
+      setGpsError(t("Location not supported on this device."));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -76,11 +80,11 @@ export function PODCapture({
         });
       },
       (err) => {
-        setGpsError(err.message || "Location permission denied.");
+        setGpsError(err.message || t("Location permission denied."));
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
-  }, []);
+  }, [t]);
 
   const handleFile = useCallback((file: File) => {
     const reader = new FileReader();
@@ -124,7 +128,7 @@ export function PODCapture({
         error?: string;
       };
       if (!response.ok || !body?.ok || !body.pod_id) {
-        setSubmitError(body?.error || "Could not save proof of delivery.");
+        setSubmitError(body?.error || t("Could not save proof of delivery."));
         setState({ status: "previewing", dataUrl: state.dataUrl, file: state.file });
         return;
       }
@@ -132,7 +136,7 @@ export function PODCapture({
       if (onSubmitted) onSubmitted(body.pod_id);
     } catch (err) {
       console.error("[pod-capture] submit failed", err);
-      setSubmitError("Network error — try again.");
+      setSubmitError(t("Network error — try again."));
       if (state.status === "previewing")
         setState({ status: "previewing", dataUrl: state.dataUrl, file: state.file });
     }
@@ -146,6 +150,7 @@ export function PODCapture({
     recipientRelationship,
     shipmentId,
     state,
+    t,
     uploadPhoto,
   ]);
 
@@ -154,11 +159,10 @@ export function PODCapture({
       <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-100">
         <div className="flex items-center gap-2 font-semibold">
           <CheckCircle2 className="h-4 w-4" aria-hidden />
-          Proof of delivery captured
+          {t("Proof of delivery captured")}
         </div>
         <p className="mt-1 text-xs text-emerald-100/75">
-          Record id <span className="font-mono">{state.podId}</span> — visible
-          to dispatch and the customer.
+          {t("Record id")} <span className="font-mono">{state.podId}</span> — {t("visible to dispatch and the customer.")}
         </p>
       </div>
     );
@@ -169,14 +173,13 @@ export function PODCapture({
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--logistics-accent-soft)]">
-            Proof of delivery
+            {t("Proof of delivery")}
           </p>
           <h3 className="mt-1 text-base font-semibold tracking-tight text-white">
-            Capture photo + signature
+            {t("Capture photo + signature")}
           </h3>
           <p className="mt-1 text-xs text-[var(--logistics-muted)]">
-            Photo is required. Recipient name optional but speeds resolution if
-            a claim is filed.
+            {t("Photo is required. Recipient name optional but speeds resolution if a claim is filed.")}
           </p>
         </div>
         {state.status === "previewing" ? (
@@ -184,7 +187,7 @@ export function PODCapture({
             type="button"
             onClick={reset}
             className="rounded-full border border-[var(--logistics-line)] bg-white/[0.04] p-2 text-white/80 hover:bg-white/[0.08]"
-            aria-label="Retake photo"
+            aria-label={t("Retake photo")}
           >
             <RotateCcw className="h-4 w-4" />
           </button>
@@ -198,10 +201,10 @@ export function PODCapture({
         >
           <Camera className="h-6 w-6 text-[var(--logistics-accent)]" aria-hidden />
           <span className="text-base font-semibold tracking-tight text-white">
-            Tap to capture photo
+            {t("Tap to capture photo")}
           </span>
           <span className="text-xs text-[var(--logistics-muted)]">
-            Uses your device camera. We never upload until you tap Save.
+            {t("Uses your device camera. We never upload until you tap Save.")}
           </span>
           <input
             id={fileInputId}
@@ -222,7 +225,7 @@ export function PODCapture({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={state.dataUrl}
-            alt="Captured proof of delivery"
+            alt={t("Captured proof of delivery")}
             className="block max-h-72 w-full object-cover"
           />
         </div>
@@ -231,23 +234,23 @@ export function PODCapture({
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="grid gap-1 text-sm">
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-            Recipient name
+            {t("Recipient name")}
           </span>
           <input
             value={recipientName}
             onChange={(e) => setRecipientName(e.target.value)}
-            placeholder="Optional"
+            placeholder={t("Optional")}
             className="rounded-xl border border-[var(--logistics-line)] bg-black/30 px-3 py-2 text-white placeholder:text-white/30 focus:border-[var(--logistics-accent)]/60 focus:outline-none"
           />
         </label>
         <label className="grid gap-1 text-sm">
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-            Relationship
+            {t("Relationship")}
           </span>
           <input
             value={recipientRelationship}
             onChange={(e) => setRecipientRelationship(e.target.value)}
-            placeholder="e.g. Recipient, Doorman, Spouse"
+            placeholder={t("e.g. Recipient, Doorman, Spouse")}
             className="rounded-xl border border-[var(--logistics-line)] bg-black/30 px-3 py-2 text-white placeholder:text-white/30 focus:border-[var(--logistics-accent)]/60 focus:outline-none"
           />
         </label>
@@ -255,13 +258,13 @@ export function PODCapture({
 
       <label className="grid gap-1 text-sm">
         <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-          Note
+          {t("Note")}
         </span>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={2}
-          placeholder='e.g. "Left with security per recipient instruction"'
+          placeholder={t('e.g. "Left with security per recipient instruction"')}
           className="rounded-xl border border-[var(--logistics-line)] bg-black/30 px-3 py-2 text-white placeholder:text-white/30 focus:border-[var(--logistics-accent)]/60 focus:outline-none"
         />
       </label>
@@ -275,10 +278,10 @@ export function PODCapture({
           <MapPin className="h-3.5 w-3.5" aria-hidden />
           {gps ? (
             <span>
-              GPS locked · ±{Math.round(gps.accuracy)}m
+              {t("GPS locked")} · ±{Math.round(gps.accuracy)}m
             </span>
           ) : (
-            <span>Add GPS pin</span>
+            <span>{t("Add GPS pin")}</span>
           )}
         </button>
         {gpsError ? (
@@ -300,10 +303,10 @@ export function PODCapture({
         className="w-full rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-5 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
       >
         {state.status === "uploading"
-          ? "Uploading…"
+          ? t("Uploading…")
           : state.status === "previewing"
-            ? "Save proof of delivery"
-            : "Capture photo first"}
+            ? t("Save proof of delivery")
+            : t("Capture photo first")}
       </button>
     </div>
   );

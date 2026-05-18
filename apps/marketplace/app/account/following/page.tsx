@@ -2,6 +2,7 @@ import { EmptyState, VendorCard, WorkspaceShell } from "@/components/marketplace
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function AccountFollowingPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/following");
   const [data, params] = await Promise.all([getBuyerDashboardData(), searchParams]);
 
@@ -28,7 +30,7 @@ export default async function AccountFollowingPage({
     <WorkspaceShell
       title="Following"
       description="Followed stores persist into the account record so merchandising and re-engagement can stay contextual instead of generic."
-      {...accountWorkspaceNav("/account/following")}
+      {...accountWorkspaceNav("/account/following", locale)}
     >
       {toast ? (
         <div className="rounded-[1.25rem] border border-[rgba(76,201,160,0.35)] bg-[rgba(76,201,160,0.12)] px-4 py-3 text-sm font-medium text-[var(--market-success,#4CC9A0)]">

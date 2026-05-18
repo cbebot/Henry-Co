@@ -25,10 +25,10 @@ export default async function EmployerCompanyPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/company");
-  const [data, params, locale] = await Promise.all([
-    getEmployerDashboardData(viewer.user!.id, viewer.user!.email),
+  const locale = await getJobsPublicLocale();
+  const [data, params] = await Promise.all([
+    getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
-    getJobsPublicLocale(),
   ]);
   const copy = getJobsCopy(locale).employerCompany;
   const membership = data.memberships[0];

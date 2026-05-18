@@ -34,6 +34,8 @@ export type LessonTreeProps = {
     locked: string;
     minutes: string;
     moduleNumber: string;
+    /** Localized aria-label for the nav landmark. */
+    navAriaLabel?: string;
   };
   /** Optional footer slot (e.g. course controls) */
   footer?: ReactNode;
@@ -59,7 +61,7 @@ function lessonIcon(type: LessonTreeNode["lessons"][number]["lessonType"]) {
 export function LessonTree({ modules, labels, footer }: LessonTreeProps) {
   return (
     <nav
-      aria-label="Course lesson tree"
+      aria-label={labels.navAriaLabel ?? "Course lesson tree"}
       className="learn-lesson-tree space-y-7"
     >
       {modules.map((module, index) => (

@@ -46,6 +46,7 @@ function riskWord(locale: AppLocale, fallback: string): string {
 export default async function SecurityPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const copy = getAccountCopy(locale);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [logs, trust, profile] = await Promise.all([
     getSecurityLog(user.id, 12),
     getAccountTrustProfile(user.id),
@@ -114,8 +115,8 @@ export default async function SecurityPage() {
       tone: trust.signals.suspiciousEvents > 0 ? "risk" : "good",
       foot:
         trust.signals.suspiciousEvents > 0
-          ? "Review the activity stream below."
-          : "Nothing flagged in the last review window.",
+          ? t("Review the activity stream below.")
+          : t("Nothing flagged in the last review window."),
     },
     {
       label: copy.security.signalLabels.contactReview,
@@ -147,10 +148,10 @@ export default async function SecurityPage() {
       <section aria-labelledby="acct-sec-signals">
         <div className="acct-sec__section-head">
           <h2 id="acct-sec-signals" className="acct-sec__section-title">
-            Signals
+            {t("Signals")}
           </h2>
           <span className="acct-sec__section-meta">
-            What our verification + scoring engines see on your account right now.
+            {t("What our verification + scoring engines see on your account right now.")}
           </span>
         </div>
         <SignalsStrip signals={signals} />
@@ -159,10 +160,10 @@ export default async function SecurityPage() {
       <section aria-labelledby="acct-sec-guide">
         <div className="acct-sec__section-head">
           <h2 id="acct-sec-guide" className="acct-sec__section-title">
-            Where you are · what advances you
+            {t("Where you are · what advances you")}
           </h2>
           <span className="acct-sec__section-meta">
-            Honest scoring, not a marketing number. {trustTierLabel}.
+            {t("Honest scoring, not a marketing number.")} {trustTierLabel}.
           </span>
         </div>
         <TrustGuide
@@ -194,7 +195,7 @@ export default async function SecurityPage() {
             blocked={blockedActions}
             clearLabel={copy.security.noRestrictions}
             restrictedKicker={copy.security.currentRestrictions}
-            clearKicker="All lanes open"
+            clearKicker={t("All lanes open")}
           />
         </div>
       </section>
@@ -202,21 +203,21 @@ export default async function SecurityPage() {
       <section aria-labelledby="acct-sec-actions">
         <div className="acct-sec__section-head">
           <h2 id="acct-sec-actions" className="acct-sec__section-title">
-            Account actions
+            {t("Account actions")}
           </h2>
-          <span className="acct-sec__section-meta">Routine controls you own directly.</span>
+          <span className="acct-sec__section-meta">{t("Routine controls you own directly.")}</span>
         </div>
         <div className="acct-sec__actions">
           <ActionZone
             kicker={copy.changePassword.updatePassword}
-            title="Change your password"
+            title={t("Change your password")}
             icon={Key}
           >
             <ChangePasswordForm />
           </ActionZone>
           <ActionZone
             kicker={copy.globalSignOut.title}
-            title="Sign out everywhere"
+            title={t("Sign out everywhere")}
             icon={LogOut}
           >
             <GlobalSignOutCard />

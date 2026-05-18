@@ -1,4 +1,6 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -45,34 +47,35 @@ async function getFleet() {
 }
 
 export default async function ManagerFleetPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { riders, vehicles } = await getFleet();
 
   return (
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Fleet
+          {t("Fleet")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Vehicles + riders directory
+          {t("Vehicles + riders directory")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Manage the operating fleet. Onboarding flows for new riders live in
-          the owner workspace; this is the operational view.
+          {t("Manage the operating fleet. Onboarding flows for new riders live in the owner workspace; this is the operational view.")}
         </p>
       </header>
 
       <Panel tone="flat">
         <header className="border-b border-[var(--logistics-line)] pb-3">
           <h2 className="text-base font-semibold tracking-tight text-white">
-            Riders
+            {t("Riders")}
           </h2>
         </header>
         {riders.length === 0 ? (
           <EmptyState
-            kicker="No riders"
-            headline="Roster empty"
-            body="Add riders to assemble your fleet — without riders the dispatcher has nobody to assign."
+            kicker={t("No riders")}
+            headline={t("Roster empty")}
+            body={t("Add riders to assemble your fleet — without riders the dispatcher has nobody to assign.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -86,8 +89,8 @@ export default async function ManagerFleetPage() {
                     {rider.display_name}
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
-                    {rider.phone ?? "Phone TBD"} ·{" "}
-                    {rider.active ? "active" : "off"} · trust{" "}
+                    {rider.phone ?? t("Phone TBD")} ·{" "}
+                    {rider.active ? t("active") : t("off")} · {t("trust")}{" "}
                     {rider.trust_score ?? "—"}
                   </p>
                 </div>
@@ -103,14 +106,14 @@ export default async function ManagerFleetPage() {
       <Panel tone="flat">
         <header className="border-b border-[var(--logistics-line)] pb-3">
           <h2 className="text-base font-semibold tracking-tight text-white">
-            Vehicles
+            {t("Vehicles")}
           </h2>
         </header>
         {vehicles.length === 0 ? (
           <EmptyState
-            kicker="No vehicles"
-            headline="Fleet inventory empty"
-            body="Register vehicles to enable dispatch + assignment."
+            kicker={t("No vehicles")}
+            headline={t("Fleet inventory empty")}
+            body={t("Register vehicles to enable dispatch + assignment.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -125,7 +128,7 @@ export default async function ManagerFleetPage() {
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
                     {vehicle.vehicle_type} ·{" "}
-                    {vehicle.capacity_kg ? `${vehicle.capacity_kg} kg` : "capacity TBD"}
+                    {vehicle.capacity_kg ? `${vehicle.capacity_kg} kg` : t("capacity TBD")}
                   </p>
                 </div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/70">

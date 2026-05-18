@@ -1,0 +1,5467 @@
+[
+  {
+    "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 73,
+        "text": "Account"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 73,
+        "text": "Wallet, payments, and profile updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 74,
+        "text": "Care"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 74,
+        "text": "Bookings, tracking, and service alerts"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 75,
+        "text": "HenryCo Hub"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 75,
+        "text": "Cross-division program updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 76,
+        "text": "Jobs"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 76,
+        "text": "Application movement and recruiter messages"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 77,
+        "text": "Learn"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 77,
+        "text": "Course activity and certification updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 78,
+        "text": "Logistics"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 78,
+        "text": "Shipment progress and delivery alerts"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 79,
+        "text": "Marketplace"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 79,
+        "text": "Orders, seller updates, and disputes"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 80,
+        "text": "Property"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 80,
+        "text": "Inquiries, viewings, and listing progress"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 81,
+        "text": "Security"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 81,
+        "text": "Account and device security alerts"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 82,
+        "text": "Staff"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 82,
+        "text": "Operator-channel updates if you have access"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 83,
+        "text": "Studio"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 83,
+        "text": "Proposals, project rooms, and payment steps"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 84,
+        "text": "System"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 84,
+        "text": "HenryCo-internal alerts and platform notices"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 97,
+        "text": "Welcome / signup confirmations"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 98,
+        "text": "Password change confirmations"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 99,
+        "text": "New device sign-in alerts"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 100,
+        "text": "System welcome messages"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 101,
+        "text": "Shipment movement updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 102,
+        "text": "Order status updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 103,
+        "text": "Property viewing changes"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 104,
+        "text": "Course enrollment updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 105,
+        "text": "Project room updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 106,
+        "text": "Care booking updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 107,
+        "text": "Support thread replies"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 108,
+        "text": "New support threads"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 109,
+        "text": "Wallet transaction updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 110,
+        "text": "KYC verification updates"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 111,
+        "text": "Cross-division relays"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 160,
+        "text": "control } function buildInitialState(initial: Record"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 201,
+        "text": "= [ \"Africa/Lagos\", \"Africa/Accra\", \"Africa/Johannesburg\", \"Africa/Nairobi\", \"Africa/Cairo\", \"Europe/London\", \"Europe/Paris\", \"Europe/Berlin\", \"Europe/Madrid\", \"Europe/Amsterdam\", \"Europe/Rome\", \"Europe/Moscow\", \"America/New_York\", \"America/Chicago\", \"America/Denver\", \"America/Los_Angeles\", \"America/Toronto\", \"America/Sao_Paulo\", \"America/Mexico_City\", \"Asia/Dubai\", \"Asia/Kolkata\", \"Asia/Singapore\", \"Asia/Tokyo\", \"Asia/Shanghai\", \"Asia/Hong_Kong\", \"Australia/Sydney\", \"Australia/Melbourne\", \"Pacific/Auckland\", \"UTC\", ]; type PatchPayload = Partial"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 243,
+        "text": "buildInitialState(initialPreferences)); const [pendingFields, setPendingFields] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 244,
+        "text": "(new Set()); const [errorFields, setErrorFields] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 245,
+        "text": "(new Set()); const [globalStatus, setGlobalStatus] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 246,
+        "text": "(\"idle\"); const [globalMessage, setGlobalMessage] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 247,
+        "text": "(\"\"); const [eventSearch, setEventSearch] = useState(\"\"); const [eventListOpen, setEventListOpen] = useState(false); const [tzPickerOpen, setTzPickerOpen] = useState(false); const [tzSearch, setTzSearch] = useState(\"\"); // Per-field debounce timers keyed by field name. We don't share a single // debounce: tapping toggle A then toggle B should let A flush even if B is // still settling. const debounceTimers = useRef"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 256,
+        "text": "(new Map()); // Authoritative server-confirmed snapshot, used for rollback. const lastConfirmed = useRef"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 463,
+        "text": "new Set(prefs.muted_event_types), [prefs.muted_event_types]); return ("
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 481,
+        "text": ") : globalStatus === \"saved\" ? ("
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 483,
+        "text": ") : globalStatus === \"error\" ? ("
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 609,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 622,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 627,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 843,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 850,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 906,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/notification-preferences/NotificationPreferencesForm.tsx",
+        "line": 931,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/jobs-module.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 418,
+        "text": "Profile basics"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 425,
+        "text": "Role story"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 432,
+        "text": "Identity verification"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 439,
+        "text": "Proof of work"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 446,
+        "text": "Skills mapped"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 661,
+        "text": "Convert a saved role into a live application"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 671,
+        "text": "Restart your jobs search with stronger filters"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 738,
+        "text": "Recruiter note"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 854,
+        "text": "Active applications"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 861,
+        "text": "Saved roles"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 868,
+        "text": "Profile readiness"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 875,
+        "text": "Recruiter updates"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 109,
+        "text": "0 ? stages : STAGE_ORDER.slice(0, 6); if (stage === \"hired\" || stage === \"rejected\") return 100; const index = Math.max(normalized.indexOf(stage), 0); return Math.max(14, Math.round(((index + 1) / (normalized.length + 1)) * 100)); } function notificationBelongsToJobs(row: Record"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 163,
+        "text": "; profile: Record"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 164,
+        "text": "; documents: Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 183,
+        "text": "; documents: Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 229,
+        "text": "= 45) return \"Needs proof\"; return \"Needs structure\"; } function buildJobPreview(row: Record"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 261,
+        "text": "; profile: Record"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 262,
+        "text": "; savedRoles: Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 263,
+        "text": "; applications: Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 354,
+        "text": "; const applicationRows = (applicationsRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 355,
+        "text": "; const savedRows = (savedRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 356,
+        "text": "; const threadRows = (threadsRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 357,
+        "text": "; const jobRows = (jobsRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 380,
+        "text": "[role.slug, role]) ); const messagesByThread = new Map"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 382,
+        "text": "(); const auditsByApplication = new Map"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 383,
+        "text": "(); for (const row of (messageRowsRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 608,
+        "text": "notificationBelongsToJobs(row as Record"
+      },
+      {
+        "file": "apps/account/lib/jobs-module.ts",
+        "line": 830,
+        "text": "notificationBelongsToJobs(row as Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/lifecycle/collector.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 166,
+        "text": "Complete your profile"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 270,
+        "text": "Contact finance support"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 276,
+        "text": "Review funding request"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 282,
+        "text": "Track withdrawal"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 286,
+        "text": "Complete trust requirements"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 355,
+        "text": "Reply to support"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 361,
+        "text": "Open support thread"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 367,
+        "text": "View open support thread"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 440,
+        "text": "Open dispute"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 445,
+        "text": "Review vendor status"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 451,
+        "text": "View vendor status"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 458,
+        "text": "View order"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 462,
+        "text": "Explore marketplace"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 466,
+        "text": "Return to marketplace"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 470,
+        "text": "Browse new listings"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 539,
+        "text": "Prepare for interview"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 545,
+        "text": "Track application"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 553,
+        "text": "View applications"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 557,
+        "text": "Explore jobs"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 561,
+        "text": "Browse jobs"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 565,
+        "text": "Browse new roles"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 702,
+        "text": "Resolve subscription"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 712,
+        "text": "Review subscriptions"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 76,
+        "text": "| null | undefined; type RawList = Array"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 882,
+        "text": "(result: PromiseSettledResult"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 895,
+        "text": "(profileRes); const wallet = asData"
+      },
+      {
+        "file": "apps/account/lib/lifecycle/collector.ts",
+        "line": 896,
+        "text": "(walletRes); const vendorApplication = asData"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/navigation.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 39,
+        "text": "Overview"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 40,
+        "text": "Activity"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 41,
+        "text": "Tasks"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 42,
+        "text": "Wallet"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 43,
+        "text": "Payments"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 44,
+        "text": "Subscriptions"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 45,
+        "text": "Invoices & Receipts"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 46,
+        "text": "Notifications"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 47,
+        "text": "Support"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 48,
+        "text": "Addresses"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 49,
+        "text": "Saved Items"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 50,
+        "text": "Documents"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 51,
+        "text": "Verification"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 53,
+        "text": "Care"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 54,
+        "text": "Marketplace"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 55,
+        "text": "Studio"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 56,
+        "text": "Academy"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 57,
+        "text": "Logistics"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 58,
+        "text": "Property"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 59,
+        "text": "Jobs"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 61,
+        "text": "Referrals"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 62,
+        "text": "Submit KYC"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 63,
+        "text": "Security"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 64,
+        "text": "Preferences"
+      },
+      {
+        "file": "apps/account/lib/navigation.ts",
+        "line": 65,
+        "text": "Notification Preferences"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 84,
+        "text": "Timing"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 89,
+        "text": "Interviewer"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 94,
+        "text": "Join readiness"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 49,
+        "text": "All interview rooms"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 51,
+        "text": "View role"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 54,
+        "text": "Open recruiter thread"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 116,
+        "text": "Interview state"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 117,
+        "text": "What is already known"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 122,
+        "text": "Interviewer"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 127,
+        "text": "Provider"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 132,
+        "text": "Scheduled at"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 138,
+        "text": "Status"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 150,
+        "text": "Preparation notes"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 151,
+        "text": "How to walk into this stage stronger"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 167,
+        "text": "Remote session lane"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 168,
+        "text": "Provider-ready join flow"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 174,
+        "text": "The room is ready to join."
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 175,
+        "text": "Use the live session link when the scheduled window opens."
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 178,
+        "text": "Join remote interview"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 184,
+        "text": "The live provider is not attached yet."
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 185,
+        "text": "HenryCo Jobs now preserves the interview-room architecture, but this session is still waiting for final timing or a video room provider attachment."
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 188,
+        "text": "Request timing or reschedule"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 200,
+        "text": "History"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/[sessionId]/page.tsx",
+        "line": 201,
+        "text": "Recruiter and stage movement"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 53,
+        "text": "Shell primitives sandbox"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 130,
+        "text": "Order #M-1024 packed"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 137,
+        "text": "Funding under review"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 144,
+        "text": "Listing flagged for review"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 152,
+        "text": "Sign-in from a new device"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 157,
+        "text": "Review"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 64,
+        "text": "Flat — no shadow, hairline border."
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 67,
+        "text": "Raised — soft shadow, primary content surface."
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 70,
+        "text": "Inset — recessed, quiet sections."
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 77,
+        "text": "Accent"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 78,
+        "text": "Success"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 79,
+        "text": "Warning"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 80,
+        "text": "Urgent"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 81,
+        "text": "Neutral"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 82,
+        "text": "Outline"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 172,
+        "text": "Open a dispute"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 202,
+        "text": "Idle"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 203,
+        "text": "Spinner"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 204,
+        "text": "Disabled"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 205,
+        "text": "Success-lock"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 206,
+        "text": "Secondary"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 207,
+        "text": "Ghost"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 208,
+        "text": "As link"
+      },
+      {
+        "file": "apps/account/app/(account)/_dev/shell-primitives/page.tsx",
+        "line": 241,
+        "text": "This child renders successfully — no error to catch. Click reload below to verify the boundary&apos;s UI when triggered."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/studio-module.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 162,
+        "text": "; payments: StudioProjectRoomPayment[]; supportThreads: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 178,
+        "text": "(); const studioAssetUrlCache = new Map"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 311,
+        "text": ", milestoneRows: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 312,
+        "text": ", updateRows: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 313,
+        "text": ", paymentRows: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 314,
+        "text": ", deliverableRows: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 315,
+        "text": ", revisionRows: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 316,
+        "text": ", messageRows: Array"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 388,
+        "text": "(\"studio_projects\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 389,
+        "text": "(\"studio_project_milestones\", \"sort_order\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 390,
+        "text": "(\"studio_proposals\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 391,
+        "text": "(\"studio_proposal_milestones\", \"sort_order\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 392,
+        "text": "(\"studio_payments\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 393,
+        "text": "(\"studio_project_updates\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 394,
+        "text": "(\"studio_project_messages\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 395,
+        "text": "(\"studio_deliverables\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 396,
+        "text": "(\"studio_revisions\"), readStudioRows"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 397,
+        "text": "(\"studio_project_files\"), ]); const activity = (activityRows.data ?? []) as Record"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 400,
+        "text": "[]; const threads = (supportThreads.data ?? []) as Record"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 401,
+        "text": "[]; const projectIds = new Set"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 402,
+        "text": "(); const proposalIds = new Set"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 403,
+        "text": "(); const paymentIds = new Set"
+      },
+      {
+        "file": "apps/account/lib/studio-module.ts",
+        "line": 518,
+        "text": "Boolean(payment.proofUrl)).length, deliverables: context.deliverableRows.length, }, }; } export async function getStudioProjectRoom(userId: string, email: string | null, projectId: string): Promise"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/auth/SignupForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 43,
+        "text": "(null); const [success, setSuccess] = useState(false); const [resendStatus, setResendStatus] = useState"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 45,
+        "text": "(\"idle\"); const [resendError, setResendError] = useState"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 152,
+        "text": "Check your inbox."
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 153,
+        "text": "The email is from"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 154,
+        "text": "HenryCo Accounts"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 154,
+        "text": ". If it&rsquo;s not in your inbox after a minute, look in spam or promotions."
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 161,
+        "text": "Tap &ldquo;Verify my HenryCo account.&rdquo;"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 162,
+        "text": "The link is single-use and expires after a short window for your security."
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 170,
+        "text": "Continue to your HenryCo workspace."
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 171,
+        "text": "We&rsquo;ll route you to the right place across Care, Marketplace, Studio and more."
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 187,
+        "text": "Verification email sent again"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 189,
+        "text": ") : resendStatus === \"sending\" ? ( \"Sending verification email…\" ) : ("
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 194,
+        "text": "Resend verification email"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 204,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 208,
+        "text": "Your HenryCo account is end-to-end encrypted across the ecosystem."
+      },
+      {
+        "file": "apps/account/components/auth/SignupForm.tsx",
+        "line": 211,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/learn/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 179,
+        "text": "Commencez votre parcours HenryCo Learn."
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 181,
+        "text": "Ouvrir HenryCo Learn"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 182,
+        "text": "Postuler pour enseigner"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 190,
+        "text": "Ouvrir HenryCo Learn"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 191,
+        "text": "Postuler pour enseigner"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 197,
+        "text": "Ouvrir HenryCo Learn"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 198,
+        "text": "Postuler pour enseigner"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 204,
+        "text": "Start your HenryCo Learn journey."
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 206,
+        "text": "Open HenryCo Learn"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 207,
+        "text": "Apply to teach"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 215,
+        "text": "Open HenryCo Learn"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 216,
+        "text": "Apply to teach"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 222,
+        "text": "Open HenryCo Learn"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 223,
+        "text": "Apply to teach"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 28,
+        "text": "l.toUpperCase()); } const EN_TOKENS: Record"
+      },
+      {
+        "file": "apps/account/components/learn/helpers.ts",
+        "line": 134,
+        "text": "; assignments: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/auth/choose/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 114,
+        "text": "Pick a Henry & Co. dashboard"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 122,
+        "text": "Available dashboards"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 16,
+        "text": "Choose your workspace — Henry & Co."
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 97,
+        "text": "HenryCo Accounts"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 100,
+        "text": "Choose your workspace"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 117,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 154,
+        "text": "Executive"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 156,
+        "text": ") : option.role === \"division_operator\" ? ("
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 159,
+        "text": "Division"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 161,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 194,
+        "text": "Remember my choice on this browser"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 196,
+        "text": "(you can change this from your account settings)"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 208,
+        "text": "Sign out"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 214,
+        "text": "Continue"
+      },
+      {
+        "file": "apps/account/app/auth/choose/page.tsx",
+        "line": 220,
+        "text": "You stay signed in across every Henry &amp; Co. subdomain — switching spaces never asks for your password again."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/marketplace/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 218,
+        "text": "Start shopping on HenryCo Marketplace."
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 220,
+        "text": "Open marketplace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 221,
+        "text": "Apply to sell"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 229,
+        "text": "Review matters"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 230,
+        "text": "Open marketplace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 238,
+        "text": "Open seller workspace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 239,
+        "text": "Open marketplace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 245,
+        "text": "Open marketplace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 246,
+        "text": "Apply to sell"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 254,
+        "text": "Open marketplace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 256,
+        "text": "Open seller workspace"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 257,
+        "text": "Apply to sell"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 132,
+        "text": "; disputes: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 133,
+        "text": "; application: ApplicationRow; memberships: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/marketplace/helpers.ts",
+        "line": 135,
+        "text": "; payouts: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 44,
+        "text": "(null); const [pendingDeleteId, setPendingDeleteId] = useState"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 45,
+        "text": "(null); const [externalError, setExternalError] = useState"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 108,
+        "text": "You haven&apos;t added any addresses yet. Add your first one to enable faster checkout across HenryCo."
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 127,
+        "text": "Default"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 132,
+        "text": "KYC verified"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 156,
+        "text": "Set default"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 168,
+        "text": "Edit"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 175,
+        "text": "Delete"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 181,
+        "text": "Delete this address? This cannot be undone."
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 189,
+        "text": "Delete"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 196,
+        "text": "Cancel"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 216,
+        "text": "Add address"
+      },
+      {
+        "file": "apps/account/components/addresses/AddressManagerClient.tsx",
+        "line": 230,
+        "text": "Add a new address"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/studio/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 179,
+        "text": "Start a Studio brief."
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 181,
+        "text": "Start a brief"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 182,
+        "text": "Open Studio"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 189,
+        "text": "Open payments"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 190,
+        "text": "Open Studio"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 198,
+        "text": "Open projects"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 199,
+        "text": "Open Studio"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 205,
+        "text": "Open Studio"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 206,
+        "text": "Start a new brief"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 212,
+        "text": "Open Studio"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 213,
+        "text": "Start a new brief"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 97,
+        "text": "; payments: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/studio/helpers.ts",
+        "line": 98,
+        "text": "; proposals: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/tasks/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 12,
+        "text": "Account"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 13,
+        "text": "Wallet"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 14,
+        "text": "Support"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 15,
+        "text": "Marketplace"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 16,
+        "text": "Studio"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 17,
+        "text": "Jobs"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 18,
+        "text": "Learn"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 19,
+        "text": "Property"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 20,
+        "text": "Logistics"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 21,
+        "text": "Care"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 25,
+        "text": "HenryCo"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 63,
+        "text": "b.count - a.count) .slice(0, 5), }; } export type HeroState = \"empty\" | \"calm\" | \"active\" | \"risk\"; export function heroState(stats: ReturnType"
+      },
+      {
+        "file": "apps/account/components/tasks/helpers.ts",
+        "line": 73,
+        "text": "0) return \"active\"; return \"calm\"; } export function buildHeadline(state: HeroState, stats: ReturnType"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/verification/IdentityHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 39,
+        "text": "Identity verification overview"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 82,
+        "text": "Trust signal"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 111,
+        "text": "Submission queue summary"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 63,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 65,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 69,
+        "text": "Download summary"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 73,
+        "text": "Talk to support"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 77,
+        "text": "Security & access"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 86,
+        "text": "Trust score"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 92,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 113,
+        "text": "In review"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 119,
+        "text": "Approved"
+      },
+      {
+        "file": "apps/account/components/verification/IdentityHero.tsx",
+        "line": 125,
+        "text": "Rejected"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 59,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 129,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 164,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 203,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 205,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 283,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 311,
+        "text": "file.url ? ("
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 321,
+        "text": ") : null )}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 324,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 333,
+        "text": "file.url ? ("
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 343,
+        "text": ") : null )}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/projects/[id]/page.tsx",
+        "line": 347,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/jobs/JobsHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 43,
+        "text": "Jobs overview"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 63,
+        "text": "Hunt summary"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 81,
+        "text": "Profile readiness"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 47,
+        "text": "Jobs · live"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 53,
+        "text": "Browse live roles"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 56,
+        "text": "Interview rooms"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 59,
+        "text": "Candidate workspace"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 65,
+        "text": "Active applications"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 70,
+        "text": "Saved roles"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 75,
+        "text": "Recruiter updates"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 77,
+        "text": "In your jobs inbox"
+      },
+      {
+        "file": "apps/account/components/jobs/JobsHero.tsx",
+        "line": 82,
+        "text": "Profile readiness"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 80,
+        "text": "(\"all\"); const [sort, setSort] = useState"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 81,
+        "text": "(\"newest\"); const [selected, setSelected] = useState"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 82,
+        "text": "(new Set()); const [pending, startTransition] = useTransition(); const [busy, setBusy] = useState"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 187,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 217,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 290,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 372,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 402,
+        "text": "Date.now()); const expiresAt = new Date(item.expiresAt); const daysToExpire = Math.max( 0, Math.round((expiresAt.getTime() - renderedAtMs) / 86_400_000) ); const isExpiring = !expired && daysToExpire"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 426,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 455,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 474,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/SavedItemsClient.tsx",
+        "line": 509,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 72,
+        "text": "daysToExpire"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 77,
+        "text": "0 && cartRecovery.last_division && cartRecovery.last_surface; return ("
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 89,
+        "text": "For you"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 93,
+        "text": "Saved items, recent finds, and an unfinished basket — all kept for you across every device."
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 101,
+        "text": "Saved items"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 121,
+        "text": "Resume basket"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 134,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 137,
+        "text": "Continue checkout →"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 151,
+        "text": "Saved · expiring soon"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 170,
+        "text": "Open saved items →"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 181,
+        "text": "Recently viewed"
+      },
+      {
+        "file": "apps/account/components/saved-items/WelcomeBackSurface.tsx",
+        "line": 207,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/support/SupportThreadHeader.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 186,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 238,
+        "text": "(null); const [muted, setMuted] = useState(initialMuted); const [busyKey, setBusyKey] = useState"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 240,
+        "text": "(null); const [feedback, setFeedback] = useState"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 241,
+        "text": "(null); const containerRef = useRef"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 242,
+        "text": "(null); const buttonRef = useRef"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 243,
+        "text": "(null); const firstItemRef = useRef"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 431,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 436,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 474,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 477,
+        "text": "); }, ); const ActionItem = forwardRef"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 500,
+        "text": ": icon}"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadHeader.tsx",
+        "line": 505,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 114,
+        "text": "Care"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 115,
+        "text": "Marketplace"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 116,
+        "text": "Studio"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 117,
+        "text": "Jobs"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 118,
+        "text": "Learn"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 119,
+        "text": "Property"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 120,
+        "text": "Logistics"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 121,
+        "text": "Account"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 125,
+        "text": "Other"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 52,
+        "text": "c.toUpperCase()); } const TX_TONE: Record"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 198,
+        "text": "= 0 && age"
+      },
+      {
+        "file": "apps/account/components/wallet/helpers.ts",
+        "line": 199,
+        "text": "30 * 24 * 3600_000 && age"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/settings/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 15,
+        "text": "Settings · HenryCo"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 16,
+        "text": "Identity, channels and per-division reach — every change syncs instantly across Care, Marketplace, Studio, Jobs, Learn, Property and Logistics."
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 23,
+        "text": "chrome with"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 43,
+        "text": "Profile"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 46,
+        "text": "Identity"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 49,
+        "text": "Who you are on HenryCo"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 56,
+        "text": "Notifications"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 59,
+        "text": "Signal · channels"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 62,
+        "text": "How HenryCo reaches you"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 72,
+        "text": "Privacy & data"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/page.tsx",
+        "line": 75,
+        "text": "Controls"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/invoices/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 28,
+        "text": "Account"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 29,
+        "text": "Wallet"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 30,
+        "text": "Marketplace"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 31,
+        "text": "Studio"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 32,
+        "text": "Jobs"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 33,
+        "text": "Learn"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 34,
+        "text": "Property"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 35,
+        "text": "Logistics"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 36,
+        "text": "Care"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 40,
+        "text": "Account"
+      },
+      {
+        "file": "apps/account/components/invoices/helpers.ts",
+        "line": 72,
+        "text": "(); const divisionCounts = new Map"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 4,
+        "text": "Account"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 5,
+        "text": "Wallet"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 6,
+        "text": "Support"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 7,
+        "text": "Marketplace"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 8,
+        "text": "Studio"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 9,
+        "text": "Jobs"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 10,
+        "text": "Learn"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 11,
+        "text": "Property"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 12,
+        "text": "Logistics"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 13,
+        "text": "Care"
+      },
+      {
+        "file": "apps/account/components/notifications/helpers.ts",
+        "line": 14,
+        "text": "Security"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/NotificationBell.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 39,
+        "text": "; type BellNotification = Omit"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 77,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 139,
+        "text": "(signals.length === 0 ? EMPTY_NOTIFICATIONS : signals.map(withFallbackSource)), [signals], ); const cardMeta = useCardMeta(items, locale); const highestUnreadSeverity = useMemo"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 227,
+        "text": "undefined, ); } setOpen(false); navigateSafely(destination); }, [markReadLocally, navigateSafely], ); const performInlineAction = useCallback( async (item: BellNotification, action: BellAction): Promise"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 308,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 348,
+        "text": ") : error ? ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 352,
+        "text": ") : items.length === 0 ? ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 406,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 408,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 511,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationBell.tsx",
+        "line": 517,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/property/saved/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 20,
+        "text": "Saved Properties"
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 15,
+        "text": "property.managedByHenryCo).length; return ("
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 25,
+        "text": "Property overview"
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 33,
+        "text": "Explore Property"
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 42,
+        "text": "Saved now"
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 44,
+        "text": "Properties you&apos;ve saved to your shortlist."
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 49,
+        "text": "HenryCo managed"
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 51,
+        "text": "Listings with clearer operational support and more accountable follow-through."
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 58,
+        "text": "Shortlist quality"
+      },
+      {
+        "file": "apps/account/app/(account)/property/saved/page.tsx",
+        "line": 60,
+        "text": "Compare up to three listings, open details, contact the Property team, and remove saved items without leaving the account dashboard."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 21,
+        "text": "[]; notifications: Record"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 22,
+        "text": "[]; supportThreads: Record"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 23,
+        "text": "[]; invoices: Record"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 67,
+        "text": "( f.href ? ( /^https?:\\/\\//i.test(f.href) ? ("
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 125,
+        "text": "Recent Activity"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 130,
+        "text": "All activity"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 163,
+        "text": "Notifications"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 168,
+        "text": "All"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 208,
+        "text": "All invoices"
+      },
+      {
+        "file": "apps/account/components/divisions/DivisionModulePage.tsx",
+        "line": 242,
+        "text": "All support"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 36,
+        "text": "void; icon?: React.ComponentType"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 49,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 54,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 81,
+        "text": "( subscribeSignalPreferences, getSignalPreferencesSnapshot, getSignalPreferencesServerSnapshot, ); const hydrated = useSyncExternalStore(noopSubscribe, trueSnapshot, falseSnapshot); const audioSupported = useSyncExternalStore(noopSubscribe, audioSupportedSnapshot, falseSnapshot); const vibrationAvailable = useSyncExternalStore( noopSubscribe, vibrationSupportedSnapshot, falseSnapshot, ); const [audioStatus, setAudioStatus] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 93,
+        "text": "(\"idle\"); const update ="
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 132,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 183,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 185,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 208,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/NotificationSignalSettingsCard.tsx",
+        "line": 248,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 25,
+        "text": "Interview Rooms"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 44,
+        "text": "No interview lanes are active yet"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 31,
+        "text": "Back to Jobs"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 33,
+        "text": "Candidate timeline"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 47,
+        "text": "Return to Jobs"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 72,
+        "text": "Timing"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 78,
+        "text": "Interviewer"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/interviews/page.tsx",
+        "line": 85,
+        "text": "Next step"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/security/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 212,
+        "text": "Change your password"
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 219,
+        "text": "Sign out everywhere"
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 60,
+        "text": "buildSecurityEventView(log as Record"
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 149,
+        "text": "Signals"
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 152,
+        "text": "What our verification + scoring engines see on your account right now."
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 161,
+        "text": "Where you are · what advances you"
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 204,
+        "text": "Account actions"
+      },
+      {
+        "file": "apps/account/app/(account)/security/page.tsx",
+        "line": 207,
+        "text": "Routine controls you own directly."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/auth/verified/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 10,
+        "text": "Account verified — Henry & Co."
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 62,
+        "text": "HenryCo Accounts"
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 68,
+        "text": "Your email is confirmed and your customer profile is ready. From here you can move freely across Care, Marketplace, Studio, Jobs, Learn, Logistics, and Property — one HenryCo account, one trusted session."
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 76,
+        "text": "What your HenryCo account unlocks"
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 100,
+        "text": "Continue to my HenryCo account"
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 107,
+        "text": "Explore HenryCo"
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 114,
+        "text": "Need help? Reach"
+      },
+      {
+        "file": "apps/account/app/auth/verified/page.tsx",
+        "line": 115,
+        "text": "any time."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/layout.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 42,
+        "text": "My Account — Henry & Co."
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 43,
+        "text": "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions."
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 52,
+        "text": "My Account — Henry & Co."
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 53,
+        "text": "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions."
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 34,
+        "text": "= 5 && hour"
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 35,
+        "text": "= 7 && hour"
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 36,
+        "text": "= 17 && hour"
+      },
+      {
+        "file": "apps/account/app/layout.tsx",
+        "line": 37,
+        "text": "= 19 && hour"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 27,
+        "text": "Needs attention"
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 34,
+        "text": "Continue where you left off"
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 41,
+        "text": "Worth a second look"
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 71,
+        "text": "Lifecycle"
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 72,
+        "text": "Pick up where you left off"
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 75,
+        "text": "Live view of your open threads across HenryCo divisions, ranked by priority."
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 126,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/lifecycle/LifecycleContinuePanel.tsx",
+        "line": 139,
+        "text": "); } return isExternal ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/settings/SettingsHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 49,
+        "text": "Identity & preferences overview"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 62,
+        "text": "Identity capability snapshot"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 115,
+        "text": "Per-division signal status"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 53,
+        "text": "HenryCo · identity & preferences"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 65,
+        "text": "Profile"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 81,
+        "text": "Channels"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 97,
+        "text": "Region"
+      },
+      {
+        "file": "apps/account/components/settings/SettingsHero.tsx",
+        "line": 116,
+        "text": "By division"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/learn-module.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 114,
+        "text": "(\"learn_courses\", \"updated_at\"), readLearnCollection"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 115,
+        "text": "(\"learn_enrollments\", \"enrolled_at\"), readLearnCollection"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 116,
+        "text": "(\"learn_assignments\", \"assigned_at\"), readLearnCollection"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 117,
+        "text": "(\"learn_certificates\", \"issued_at\"), readLearnCollection"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 118,
+        "text": "(\"learn_saved_courses\", \"created_at\"), readLearnCollection"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 119,
+        "text": "(\"learn_teacher_applications\", \"updated_at\"), readLearnCollection"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 120,
+        "text": "(\"learn_quiz_attempts\", \"submitted_at\"), ]); const courses = new Map"
+      },
+      {
+        "file": "apps/account/lib/learn-module.ts",
+        "line": 147,
+        "text": "[cleanText(row.id), cleanText(row.course_id)]) ); const bestAttemptByCourse = new Map"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 58,
+        "text": "([]); const [error, setError] = useState"
+      },
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 59,
+        "text": "(null); const [removingId, setRemovingId] = useState"
+      },
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 127,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 136,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 174,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 306,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/property/SavedPropertiesBoard.tsx",
+        "line": 344,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/SignalFeed.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 149,
+        "text": "Signal feed pagination"
+      },
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 138,
+        "text": "Emailed"
+      },
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 28,
+        "text": "&cursor.created_at="
+      },
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 88,
+        "text": "Open inbox"
+      },
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 172,
+        "text": "Newer"
+      },
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 189,
+        "text": "Older"
+      },
+      {
+        "file": "apps/account/components/smart-home/SignalFeed.tsx",
+        "line": 195,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 71,
+        "text": "(null); const [uploadingType, setUploadingType] = useState"
+      },
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 138,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 182,
+        "text": "void | Promise"
+      },
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 212,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 228,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 234,
+        "text": "Uploading without leaving the page"
+      },
+      {
+        "file": "apps/account/components/verification/DocumentSubmissionsClient.tsx",
+        "line": 235,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/verification/UnlocksRail.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 21,
+        "text": "Wallet withdrawals & payout release"
+      },
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 22,
+        "text": "Marketplace seller approval & trust uplift"
+      },
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 23,
+        "text": "Jobs employer verification & higher posting lanes"
+      },
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 24,
+        "text": "Higher-risk property submission & ownership review"
+      },
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 25,
+        "text": "Verified instructor & learner credentials on Learn"
+      },
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 26,
+        "text": "Honest trust scoring that can reach premium tiers"
+      },
+      {
+        "file": "apps/account/components/verification/UnlocksRail.tsx",
+        "line": 42,
+        "text": "What approval unlocks"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 27,
+        "text": "HenryCo finance account"
+      },
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 22,
+        "text": "Bank"
+      },
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 23,
+        "text": "Account name"
+      },
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 24,
+        "text": "Account number"
+      },
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 42,
+        "text": "Transfer details"
+      },
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 45,
+        "text": "HenryCo finance account"
+      },
+      {
+        "file": "apps/account/components/wallet/AccountDetailsCard.tsx",
+        "line": 61,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 52,
+        "text": "(null); const [message, setMessage] = useState"
+      },
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 238,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 280,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 283,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 304,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 361,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/wallet/WalletWithdrawalsClient.tsx",
+        "line": 415,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/referral-data.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 85,
+        "text": "r.referee_id != null ).length; const converted = referrals.filter( (r: Record"
+      },
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 88,
+        "text": "String(r.status || \"\").toLowerCase() === \"converted\" ).length; const qualified = referrals.filter( (r: Record"
+      },
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 92,
+        "text": "String(r.status || \"\").toLowerCase() === \"qualified\" ).length; const flagged = referrals.filter( (r: Record"
+      },
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 96,
+        "text": "String(r.status || \"\").toLowerCase() === \"flagged\" ).length; const pendingRewards = rewards .filter( (r: Record"
+      },
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 101,
+        "text": "String(r.status || \"\").toLowerCase() === \"pending\" || String(r.status || \"\").toLowerCase() === \"held\" ) .reduce( (sum: number, r: Record"
+      },
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 106,
+        "text": "sum + (Number(r.amount_kobo) || 0), 0 ); const paidRewards = rewards .filter( (r: Record"
+      },
+      {
+        "file": "apps/account/lib/referral-data.ts",
+        "line": 112,
+        "text": "String(r.status || \"\").toLowerCase() === \"paid\" || String(r.status || \"\").toLowerCase() === \"released\" ) .reduce( (sum: number, r: Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/jobs/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/jobs/page.tsx",
+        "line": 47,
+        "text": "s.id === \"saved\"); const applications: ApplicationRow[] = (data.applications as Array"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/page.tsx",
+        "line": 94,
+        "text": "Active applications"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/page.tsx",
+        "line": 111,
+        "text": "Readiness & shortlist"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/page.tsx",
+        "line": 114,
+        "text": "Profile signal · saved roles"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/page.tsx",
+        "line": 134,
+        "text": "Saved roles"
+      },
+      {
+        "file": "apps/account/app/(account)/jobs/page.tsx",
+        "line": 154,
+        "text": "Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/verification/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/verification/page.tsx",
+        "line": 21,
+        "text": "0 ? \"/api/documents/kyc-summary/me\" : null; return ("
+      },
+      {
+        "file": "apps/account/app/(account)/verification/page.tsx",
+        "line": 34,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/verification/page.tsx",
+        "line": 38,
+        "text": "Trust journey"
+      },
+      {
+        "file": "apps/account/app/(account)/verification/page.tsx",
+        "line": 41,
+        "text": "What approval unlocks · what advances your tier"
+      },
+      {
+        "file": "apps/account/app/(account)/verification/page.tsx",
+        "line": 52,
+        "text": "Documents"
+      },
+      {
+        "file": "apps/account/app/(account)/verification/page.tsx",
+        "line": 55,
+        "text": "Uploads are async — you stay on this page while we review."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/security/SecurityHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/security/SecurityHero.tsx",
+        "line": 33,
+        "text": "Security overview"
+      },
+      {
+        "file": "apps/account/components/security/SecurityHero.tsx",
+        "line": 69,
+        "text": "Trust signal"
+      },
+      {
+        "file": "apps/account/components/security/SecurityHero.tsx",
+        "line": 49,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/security/SecurityHero.tsx",
+        "line": 66,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/security/SecurityHero.tsx",
+        "line": 73,
+        "text": "Trust score"
+      },
+      {
+        "file": "apps/account/components/security/SecurityHero.tsx",
+        "line": 79,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/settings/ProfileForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/settings/ProfileForm.tsx",
+        "line": 30,
+        "text": "Email"
+      },
+      {
+        "file": "apps/account/components/settings/ProfileForm.tsx",
+        "line": 31,
+        "text": "WhatsApp"
+      },
+      {
+        "file": "apps/account/components/settings/ProfileForm.tsx",
+        "line": 32,
+        "text": "Phone"
+      },
+      {
+        "file": "apps/account/components/settings/ProfileForm.tsx",
+        "line": 33,
+        "text": "In-app"
+      },
+      {
+        "file": "apps/account/components/settings/ProfileForm.tsx",
+        "line": 52,
+        "text": "default). // profileLanguage is only consulted for selector options, not the initial selection. const [language, setLanguage] = useState(currentLanguage); const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || \"\"); const [loading, setLoading] = useState(false); const [uploading, setUploading] = useState(false); const [message, setMessage] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/ProfileForm.tsx",
+        "line": 58,
+        "text": "(null); const fileRef = useRef"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+        "line": 44,
+        "text": "a.priority === \"critical\").length : 0; return ("
+      },
+      {
+        "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+        "line": 85,
+        "text": "Attention"
+      },
+      {
+        "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+        "line": 96,
+        "text": "Open threads ranked by what blocks first"
+      },
+      {
+        "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+        "line": 124,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+        "line": 164,
+        "text": "Continue where you left off"
+      },
+      {
+        "file": "apps/account/components/smart-home/AttentionPanel.tsx",
+        "line": 167,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/invoices/[invoiceId]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/invoices/[invoiceId]/page.tsx",
+        "line": 27,
+        "text": "; } if (value && typeof value === \"object\" && Array.isArray((value as Record"
+      },
+      {
+        "file": "apps/account/app/(account)/invoices/[invoiceId]/page.tsx",
+        "line": 30,
+        "text": ").items); } return [] as Array"
+      },
+      {
+        "file": "apps/account/app/(account)/invoices/[invoiceId]/page.tsx",
+        "line": 44,
+        "text": "; } const workspaceHref = getInvoiceWorkspaceHref(typeof invoice.division === \"string\" ? invoice.division : null); const lineItems = parseLineItems(invoice.line_items); return ("
+      },
+      {
+        "file": "apps/account/app/(account)/invoices/[invoiceId]/page.tsx",
+        "line": 73,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/invoices/[invoiceId]/page.tsx",
+        "line": 98,
+        "text": ": null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/modules/[...slug]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/modules/[...slug]/page.tsx",
+        "line": 60,
+        "text": "0; const widgetsPromise = targetModule.getHomeWidgets(viewer); return ("
+      },
+      {
+        "file": "apps/account/app/(account)/modules/[...slug]/page.tsx",
+        "line": 75,
+        "text": "Module"
+      },
+      {
+        "file": "apps/account/app/(account)/modules/[...slug]/page.tsx",
+        "line": 135,
+        "text": "Promise"
+      },
+      {
+        "file": "apps/account/app/(account)/modules/[...slug]/page.tsx",
+        "line": 171,
+        "text": "Deep-link landing for this module is being built. The module&apos;s home view is below — DASH-3 wires per-detail rendering."
+      },
+      {
+        "file": "apps/account/app/(account)/modules/[...slug]/page.tsx",
+        "line": 174,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/wallet/funding/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/wallet/funding/page.tsx",
+        "line": 43,
+        "text": "Transfer to HenryCo"
+      },
+      {
+        "file": "apps/account/app/(account)/wallet/funding/page.tsx",
+        "line": 46,
+        "text": "Send your bank transfer to these details, then upload proof."
+      },
+      {
+        "file": "apps/account/app/(account)/wallet/funding/page.tsx",
+        "line": 59,
+        "text": "Funding requests"
+      },
+      {
+        "file": "apps/account/app/(account)/wallet/funding/page.tsx",
+        "line": 72,
+        "text": "No funding requests yet"
+      },
+      {
+        "file": "apps/account/app/(account)/wallet/funding/page.tsx",
+        "line": 73,
+        "text": "Start a funding request above. Once finance confirms the bank reference, your balance moves into available funds."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/branded-documents/ActivityFiltersClient.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/branded-documents/ActivityFiltersClient.tsx",
+        "line": 18,
+        "text": "= [ \"payment\", \"wallet_credit\", \"wallet_debit\", \"refund\", \"withdrawal\", \"fee\", ]; const STATUSES: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/branded-documents/ActivityFiltersClient.tsx",
+        "line": 45,
+        "text": "(new Set()); const [types, setTypes] = useState"
+      },
+      {
+        "file": "apps/account/components/branded-documents/ActivityFiltersClient.tsx",
+        "line": 46,
+        "text": "(new Set()); const [statuses, setStatuses] = useState"
+      },
+      {
+        "file": "apps/account/components/branded-documents/ActivityFiltersClient.tsx",
+        "line": 74,
+        "text": ", setSet: (next: Set"
+      },
+      {
+        "file": "apps/account/components/branded-documents/ActivityFiltersClient.tsx",
+        "line": 155,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/layout/Sidebar.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/layout/Sidebar.tsx",
+        "line": 73,
+        "text": "Search account and HenryCo routes"
+      },
+      {
+        "file": "apps/account/components/layout/Sidebar.tsx",
+        "line": 74,
+        "text": "Search account and HenryCo routes"
+      },
+      {
+        "file": "apps/account/components/layout/Sidebar.tsx",
+        "line": 119,
+        "text": "Sign out"
+      },
+      {
+        "file": "apps/account/components/layout/Sidebar.tsx",
+        "line": 67,
+        "text": "Henry & Co."
+      },
+      {
+        "file": "apps/account/components/layout/Sidebar.tsx",
+        "line": 68,
+        "text": "My Account"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/learn/LearnExtras.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/learn/LearnExtras.tsx",
+        "line": 13,
+        "text": "; assignments: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/learn/LearnExtras.tsx",
+        "line": 14,
+        "text": "; savedCourses: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/learn/LearnExtras.tsx",
+        "line": 46,
+        "text": "0 || teacherApplication !== null; if (!hasAnything) return null; return ("
+      },
+      {
+        "file": "apps/account/components/learn/LearnExtras.tsx",
+        "line": 149,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/learn/LearnExtras.tsx",
+        "line": 161,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/SwipeableNotificationCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/SwipeableNotificationCard.tsx",
+        "line": 34,
+        "text": "Promise"
+      },
+      {
+        "file": "apps/account/components/notifications/SwipeableNotificationCard.tsx",
+        "line": 35,
+        "text": "Promise"
+      },
+      {
+        "file": "apps/account/components/notifications/SwipeableNotificationCard.tsx",
+        "line": 36,
+        "text": "Promise"
+      },
+      {
+        "file": "apps/account/components/notifications/SwipeableNotificationCard.tsx",
+        "line": 37,
+        "text": "Promise"
+      },
+      {
+        "file": "apps/account/components/notifications/SwipeableNotificationCard.tsx",
+        "line": 149,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/studio/AccountStudioToastAnchor.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/studio/AccountStudioToastAnchor.tsx",
+        "line": 61,
+        "text": "Dismiss"
+      },
+      {
+        "file": "apps/account/components/studio/AccountStudioToastAnchor.tsx",
+        "line": 10,
+        "text": "Payment proof received"
+      },
+      {
+        "file": "apps/account/components/studio/AccountStudioToastAnchor.tsx",
+        "line": 14,
+        "text": "Add a proof file"
+      },
+      {
+        "file": "apps/account/components/studio/AccountStudioToastAnchor.tsx",
+        "line": 18,
+        "text": "Studio brief received"
+      },
+      {
+        "file": "apps/account/components/studio/AccountStudioToastAnchor.tsx",
+        "line": 40,
+        "text": "window.clearTimeout(t); }, [copy, stripToastFromUrl]); if (!copy) return null; return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/tasks/TasksHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/tasks/TasksHero.tsx",
+        "line": 27,
+        "text": "Tasks overview"
+      },
+      {
+        "file": "apps/account/components/tasks/TasksHero.tsx",
+        "line": 36,
+        "text": "Task volume"
+      },
+      {
+        "file": "apps/account/components/tasks/TasksHero.tsx",
+        "line": 60,
+        "text": "How the queue works"
+      },
+      {
+        "file": "apps/account/components/tasks/TasksHero.tsx",
+        "line": 75,
+        "text": "By source"
+      },
+      {
+        "file": "apps/account/components/tasks/TasksHero.tsx",
+        "line": 116,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/FundingStepLadder.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/FundingStepLadder.tsx",
+        "line": 40,
+        "text": "Funding progress"
+      },
+      {
+        "file": "apps/account/components/wallet/FundingStepLadder.tsx",
+        "line": 18,
+        "text": "Transfer funds"
+      },
+      {
+        "file": "apps/account/components/wallet/FundingStepLadder.tsx",
+        "line": 23,
+        "text": "Upload proof"
+      },
+      {
+        "file": "apps/account/components/wallet/FundingStepLadder.tsx",
+        "line": 32,
+        "text": "Finance review"
+      },
+      {
+        "file": "apps/account/components/wallet/FundingStepLadder.tsx",
+        "line": 50,
+        "text": "Funding steps"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/SpendStrip.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/SpendStrip.tsx",
+        "line": 13,
+        "text": "; copy: AccountCopy[\"wallet\"][\"spend\"]; }; function format(template: string, values: Record"
+      },
+      {
+        "file": "apps/account/components/wallet/SpendStrip.tsx",
+        "line": 68,
+        "text": ") : trend === \"up\" ? ("
+      },
+      {
+        "file": "apps/account/components/wallet/SpendStrip.tsx",
+        "line": 73,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/wallet/SpendStrip.tsx",
+        "line": 78,
+        "text": "0 ? m.totalKobo / max : 0; const height = Math.max(6, Math.round(ratio * 84)); return ("
+      },
+      {
+        "file": "apps/account/components/wallet/SpendStrip.tsx",
+        "line": 135,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/account-data.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/account-data.ts",
+        "line": 228,
+        "text": "; } return (data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/account-data.ts",
+        "line": 230,
+        "text": "; } export async function getRecentlyDeletedNotificationFeed( userId: string, limit = 50, locale?: AppLocale, ): Promise"
+      },
+      {
+        "file": "apps/account/lib/account-data.ts",
+        "line": 627,
+        "text": "; const division = asNullableText(subscriptionRow.division); const referenceKeys = collectSubscriptionReferenceKeys(subscriptionRow); const hasDivisionFilter = Boolean(division); const relatedInvoices = (invoices as Array"
+      },
+      {
+        "file": "apps/account/lib/account-data.ts",
+        "line": 780,
+        "text": "r.id)); const legacy = ((legacyRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/account-data.ts",
+        "line": 930,
+        "text": ")); } export function getPendingWithdrawalHoldKobo( requests: Array"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/branding.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/branding.ts",
+        "line": 18,
+        "text": "HenryCo Account"
+      },
+      {
+        "file": "apps/account/lib/branding.ts",
+        "line": 25,
+        "text": "HenryCo Wallet"
+      },
+      {
+        "file": "apps/account/lib/branding.ts",
+        "line": 32,
+        "text": "Security"
+      },
+      {
+        "file": "apps/account/lib/branding.ts",
+        "line": 39,
+        "text": "Support"
+      },
+      {
+        "file": "apps/account/lib/branding.ts",
+        "line": 46,
+        "text": "HenryCo"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/care-sync.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/care-sync.ts",
+        "line": 235,
+        "text": "Track live progress"
+      },
+      {
+        "file": "apps/account/lib/care-sync.ts",
+        "line": 236,
+        "text": "Payment is clear. Follow the current service stage and the next operational handoff."
+      },
+      {
+        "file": "apps/account/lib/care-sync.ts",
+        "line": 244,
+        "text": "Check receipt status"
+      },
+      {
+        "file": "apps/account/lib/care-sync.ts",
+        "line": 254,
+        "text": "Pay and upload receipt"
+      },
+      {
+        "file": "apps/account/lib/care-sync.ts",
+        "line": 445,
+        "text": "Care booking available in your account"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/intelligence-rollout.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/intelligence-rollout.ts",
+        "line": 64,
+        "text": "Complete trust verification steps"
+      },
+      {
+        "file": "apps/account/lib/intelligence-rollout.ts",
+        "line": 77,
+        "text": "Follow up on pending wallet funding"
+      },
+      {
+        "file": "apps/account/lib/intelligence-rollout.ts",
+        "line": 78,
+        "text": "Your proof is waiting for finance confirmation."
+      },
+      {
+        "file": "apps/account/lib/intelligence-rollout.ts",
+        "line": 90,
+        "text": "Reply to open support thread"
+      },
+      {
+        "file": "apps/account/lib/intelligence-rollout.ts",
+        "line": 103,
+        "text": "Review unread notifications"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/smart-home/widgets.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/smart-home/widgets.ts",
+        "line": 33,
+        "text": ", viewer: UnifiedViewer, ): Promise"
+      },
+      {
+        "file": "apps/account/lib/smart-home/widgets.ts",
+        "line": 87,
+        "text": ", count = 6, ): ReadonlyArray"
+      },
+      {
+        "file": "apps/account/lib/smart-home/widgets.ts",
+        "line": 91,
+        "text": "w.size === \"sm\" || w.size === \"md\") .slice() .sort(weightDescending) .slice(0, count); } /** * The \"remaining\" widgets after the ranked metric strip claims its * top bucket. These flow into the Module Widget Grid below the * Attention surface. */ export function pickRemainingWidgets( widgets: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/lib/smart-home/widgets.ts",
+        "line": 103,
+        "text": ", picked: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/lib/smart-home/widgets.ts",
+        "line": 104,
+        "text": ", ): ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/trust.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/trust.ts",
+        "line": 69,
+        "text": "= 3) score += 8; return Math.min(score, 100); } export async function getAccountTrustProfile(userId: string): Promise"
+      },
+      {
+        "file": "apps/account/lib/trust.ts",
+        "line": 103,
+        "text": "; const walletTransactions = (walletRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/trust.ts",
+        "line": 104,
+        "text": "; const securityEvents = (securityRes.data ?? []) as Array"
+      },
+      {
+        "file": "apps/account/lib/trust.ts",
+        "line": 225,
+        "text": "= 1 ? \"Verified transaction history exists.\" : null, suspiciousEvents === 0 ? \"No recent high-risk security events were found.\" : null, ...overlaps.reasons, ].filter(Boolean) as string[]; const nextTier: TrustTier | null = tier === \"basic\" ? \"verified\" : tier === \"verified\" ? \"trusted\" : tier === \"trusted\" ? \"premium_verified\" : null; const requirements = nextTier === \"verified\" ? [ verificationStatus !== \"verified\" ? \"Complete identity verification so trust-based lanes stop relying on optimistic profile signals.\" : null, !emailVerified ? \"Verify your email address.\" : null, !identityVerified ? \"Complete identity verification for seller, property, payout, and finance-sensitive workflows.\" : null, !phonePresent ? \"Add a usable phone number.\" : null, profileCompletion"
+      },
+      {
+        "file": "apps/account/lib/trust.ts",
+        "line": 262,
+        "text": "0 ? \"Keep the account clear of suspicious access warnings.\" : null, overlaps.reviewRequired ? \"Resolve contact overlap review before trusted seller, payout, or property lanes unlock.\" : null, ] : nextTier === \"premium_verified\" ? [ verificationStatus !== \"verified\" ? \"Premium trust is reserved for accounts that have already passed identity verification.\" : null, accountAgeDays"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/AccountLayoutInner.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/AccountLayoutInner.tsx",
+        "line": 9,
+        "text": "` (mounted via `"
+      },
+      {
+        "file": "apps/account/app/(account)/AccountLayoutInner.tsx",
+        "line": 18,
+        "text": "`; the legacy `"
+      },
+      {
+        "file": "apps/account/app/(account)/AccountLayoutInner.tsx",
+        "line": 18,
+        "text": "` has been * retired in favour of the shell's `"
+      },
+      {
+        "file": "apps/account/app/(account)/AccountLayoutInner.tsx",
+        "line": 38,
+        "text": "Skip to main content"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/addresses/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/addresses/page.tsx",
+        "line": 18,
+        "text": "Adresses"
+      },
+      {
+        "file": "apps/account/app/(account)/addresses/page.tsx",
+        "line": 19,
+        "text": "Gérez vos adresses (maison, bureau, boutique...) — utilisées dans la livraison, les rendez-vous, et la vérification KYC."
+      },
+      {
+        "file": "apps/account/app/(account)/addresses/page.tsx",
+        "line": 23,
+        "text": "Addresses"
+      },
+      {
+        "file": "apps/account/app/(account)/addresses/page.tsx",
+        "line": 24,
+        "text": "Manage your saved addresses (home, office, shop…) — used across delivery, bookings, and KYC verification."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/care/bookings/[bookingId]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/care/bookings/[bookingId]/page.tsx",
+        "line": 68,
+        "text": "Route dédiée de réservation Care avec l’action suivante, le contexte de paiement et les enregistrements liés au même endroit."
+      },
+      {
+        "file": "apps/account/app/(account)/care/bookings/[bookingId]/page.tsx",
+        "line": 114,
+        "text": "Dedicated care booking route with the next action, payment context, and linked records in one place."
+      },
+      {
+        "file": "apps/account/app/(account)/care/bookings/[bookingId]/page.tsx",
+        "line": 179,
+        "text": "String(thread.reference_id || \"\") === booking.id || String(thread.id || \"\") === booking.id ); const moneyLocale = locale === \"fr\" ? \"fr-FR\" : \"en-NG\"; return ("
+      },
+      {
+        "file": "apps/account/app/(account)/care/bookings/[bookingId]/page.tsx",
+        "line": 262,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/marketplace/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/marketplace/page.tsx",
+        "line": 48,
+        "text": "); const disputes = toDisputeRows((summary.disputes ?? []) as Array"
+      },
+      {
+        "file": "apps/account/app/(account)/marketplace/page.tsx",
+        "line": 49,
+        "text": "); const application = toApplicationRow(summary.application as Record"
+      },
+      {
+        "file": "apps/account/app/(account)/marketplace/page.tsx",
+        "line": 50,
+        "text": "| null); const memberships = toMembershipRows((summary.memberships ?? []) as Array"
+      },
+      {
+        "file": "apps/account/app/(account)/marketplace/page.tsx",
+        "line": 51,
+        "text": "); const payouts = toPayoutRows((summary.payouts ?? []) as Array"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/search/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/search/page.tsx",
+        "line": 22,
+        "text": "Search your HenryCo workflows."
+      },
+      {
+        "file": "apps/account/app/(account)/search/page.tsx",
+        "line": 24,
+        "text": "Search account: notifications, wallet, invoices, support, jobs applications..."
+      },
+      {
+        "file": "apps/account/app/(account)/search/page.tsx",
+        "line": 7,
+        "text": "Search Account"
+      },
+      {
+        "file": "apps/account/app/(account)/search/page.tsx",
+        "line": 8,
+        "text": "Search HenryCo account workflows and connected division routes."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/settings/addresses/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/settings/addresses/page.tsx",
+        "line": 18,
+        "text": "Adresses"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/addresses/page.tsx",
+        "line": 19,
+        "text": "Une seule adresse par type (maison, bureau, boutique...). Vérifiée avec votre KYC et réutilisée dans toutes les divisions."
+      },
+      {
+        "file": "apps/account/app/(account)/settings/addresses/page.tsx",
+        "line": 23,
+        "text": "Addresses"
+      },
+      {
+        "file": "apps/account/app/(account)/settings/addresses/page.tsx",
+        "line": 24,
+        "text": "One address per type (home, office, shop, warehouse, alternative). Verified against your KYC and reused across every HenryCo division."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/studio/payments/[id]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/studio/payments/[id]/page.tsx",
+        "line": 63,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/payments/[id]/page.tsx",
+        "line": 83,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/payments/[id]/page.tsx",
+        "line": 200,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/studio/payments/[id]/page.tsx",
+        "line": 280,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/addresses/AddAddressForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/addresses/AddAddressForm.tsx",
+        "line": 13,
+        "text": "Libellé"
+      },
+      {
+        "file": "apps/account/components/addresses/AddAddressForm.tsx",
+        "line": 33,
+        "text": "Label"
+      },
+      {
+        "file": "apps/account/components/addresses/AddAddressForm.tsx",
+        "line": 53,
+        "text": "Home"
+      },
+      {
+        "file": "apps/account/components/addresses/AddAddressForm.tsx",
+        "line": 85,
+        "text": "Home"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/divisions/CareBookingsDashboard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/divisions/CareBookingsDashboard.tsx",
+        "line": 401,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/divisions/CareBookingsDashboard.tsx",
+        "line": 404,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/divisions/CareBookingsDashboard.tsx",
+        "line": 532,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/divisions/CareBookingsDashboard.tsx",
+        "line": 546,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/marketplace/MarketplaceMatters.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/marketplace/MarketplaceMatters.tsx",
+        "line": 43,
+        "text": "; application: ApplicationRow; payouts: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/marketplace/MarketplaceMatters.tsx",
+        "line": 45,
+        "text": "; marketplaceOrigin: string; labels: MattersLabels; }; function fill(template: string, values: Record"
+      },
+      {
+        "file": "apps/account/components/marketplace/MarketplaceMatters.tsx",
+        "line": 171,
+        "text": "sum + p.amount, 0)), })}"
+      },
+      {
+        "file": "apps/account/components/marketplace/MarketplaceMatters.tsx",
+        "line": 185,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/NotificationFeed.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/NotificationFeed.tsx",
+        "line": 38,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationFeed.tsx",
+        "line": 135,
+        "text": "item !== notificationId)); } } return ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationFeed.tsx",
+        "line": 187,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationFeed.tsx",
+        "line": 211,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/NotificationsFeed.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/NotificationsFeed.tsx",
+        "line": 33,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationsFeed.tsx",
+        "line": 156,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationsFeed.tsx",
+        "line": 230,
+        "text": "notification.is_read); return ("
+      },
+      {
+        "file": "apps/account/components/notifications/NotificationsFeed.tsx",
+        "line": 340,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/settings/PreferencesForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/settings/PreferencesForm.tsx",
+        "line": 113,
+        "text": "buildInitialState(preferences)); const [loading, setLoading] = useState(false); const [testingSound, setTestingSound] = useState(false); const [audioUnlocked, setAudioUnlocked] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/PreferencesForm.tsx",
+        "line": 116,
+        "text": "typeof window === \"undefined\" ? false : signalAudio.isUnlocked(), ); const [message, setMessage] = useState"
+      },
+      {
+        "file": "apps/account/components/settings/PreferencesForm.tsx",
+        "line": 206,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/settings/PreferencesForm.tsx",
+        "line": 260,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/SmartHome.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/SmartHome.tsx",
+        "line": 161,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/smart-home/SmartHome.tsx",
+        "line": 189,
+        "text": "); } async function collectEmptyTeachings( modules: ReadonlyArray"
+      },
+      {
+        "file": "apps/account/components/smart-home/SmartHome.tsx",
+        "line": 194,
+        "text": ", viewer: UnifiedViewer, ): Promise"
+      },
+      {
+        "file": "apps/account/components/smart-home/SmartHome.tsx",
+        "line": 213,
+        "text": "= []; for (let i = 0; i"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/SmartHomeHeader.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/SmartHomeHeader.tsx",
+        "line": 127,
+        "text": "Smart home is live; data refreshes every 30 seconds"
+      },
+      {
+        "file": "apps/account/components/smart-home/SmartHomeHeader.tsx",
+        "line": 63,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/smart-home/SmartHomeHeader.tsx",
+        "line": 109,
+        "text": "saved · resume"
+      },
+      {
+        "file": "apps/account/components/smart-home/SmartHomeHeader.tsx",
+        "line": 129,
+        "text": "Live · 30s refresh"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/verification/NextMoveCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/verification/NextMoveCard.tsx",
+        "line": 10,
+        "text": "0 ? requirements : [\"You're already in the highest trust lane the shared verification surface exposes.\"]; return ("
+      },
+      {
+        "file": "apps/account/components/verification/NextMoveCard.tsx",
+        "line": 25,
+        "text": "Next strongest move"
+      },
+      {
+        "file": "apps/account/components/verification/NextMoveCard.tsx",
+        "line": 37,
+        "text": "Review documents"
+      },
+      {
+        "file": "apps/account/components/verification/NextMoveCard.tsx",
+        "line": 40,
+        "text": "Contact support"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/AddMoneyForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/AddMoneyForm.tsx",
+        "line": 106,
+        "text": "Enter amount"
+      },
+      {
+        "file": "apps/account/components/wallet/AddMoneyForm.tsx",
+        "line": 67,
+        "text": "Amount (NGN)"
+      },
+      {
+        "file": "apps/account/components/wallet/AddMoneyForm.tsx",
+        "line": 116,
+        "text": "Continue to bank transfer"
+      },
+      {
+        "file": "apps/account/components/wallet/AddMoneyForm.tsx",
+        "line": 120,
+        "text": "You’ll confirm bank details and upload proof on the next step—balance updates after verification."
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/logistics-module.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/logistics-module.ts",
+        "line": 83,
+        "text": "0 ? value : null; } function coordFromRow(row: Record"
+      },
+      {
+        "file": "apps/account/lib/logistics-module.ts",
+        "line": 113,
+        "text": ", addresses: Map"
+      },
+      {
+        "file": "apps/account/lib/logistics-module.ts",
+        "line": 195,
+        "text": "0); const addressMap = new Map"
+      },
+      {
+        "file": "apps/account/lib/logistics-module.ts",
+        "line": 248,
+        "text": "acc + s.amountPaid * 100, 0); const monthBuckets = new Map"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/error.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/error.tsx",
+        "line": 65,
+        "text": "ref&nbsp;"
+      },
+      {
+        "file": "apps/account/app/(account)/error.tsx",
+        "line": 70,
+        "text": "(share with support)"
+      },
+      {
+        "file": "apps/account/app/(account)/error.tsx",
+        "line": 71,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/logistics/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/logistics/page.tsx",
+        "line": 100,
+        "text": ") : snapshot.hasAnyShipments ? ("
+      },
+      {
+        "file": "apps/account/app/(account)/logistics/page.tsx",
+        "line": 108,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/logistics/page.tsx",
+        "line": 147,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/messages/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/messages/page.tsx",
+        "line": 20,
+        "text": "Messages · HenryCo"
+      },
+      {
+        "file": "apps/account/app/(account)/messages/page.tsx",
+        "line": 21,
+        "text": "One inbox across support, marketplace, jobs, studio, care, property, logistics and learn."
+      },
+      {
+        "file": "apps/account/app/(account)/messages/page.tsx",
+        "line": 25,
+        "text": "; const VALID_FILTERS: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/reset-password/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/reset-password/page.tsx",
+        "line": 4,
+        "text": "Set New Password — Henry & Co."
+      },
+      {
+        "file": "apps/account/app/reset-password/page.tsx",
+        "line": 14,
+        "text": "Set new password"
+      },
+      {
+        "file": "apps/account/app/reset-password/page.tsx",
+        "line": 15,
+        "text": "Choose a new password for your account"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/branded-documents/DownloadDocumentButton.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/branded-documents/DownloadDocumentButton.tsx",
+        "line": 82,
+        "text": "(null); const handleClick = useCallback( async (event: React.MouseEvent"
+      },
+      {
+        "file": "apps/account/components/branded-documents/DownloadDocumentButton.tsx",
+        "line": 140,
+        "text": ": canShareFiles() ?"
+      },
+      {
+        "file": "apps/account/components/branded-documents/DownloadDocumentButton.tsx",
+        "line": 143,
+        "text": ": null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/care/CareActivity.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/care/CareActivity.tsx",
+        "line": 6,
+        "text": "; shortMonths: ShortMonths; ariaLabel: string; limit?: number; }; type IconKind = \"booking\" | \"payment\" | \"review\" | \"support\" | \"generic\"; const ICON_BY_KIND: Record"
+      },
+      {
+        "file": "apps/account/components/care/CareActivity.tsx",
+        "line": 52,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/care/CareActivity.tsx",
+        "line": 55,
+        "text": "); return href ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/jobs/ApplicationsList.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/jobs/ApplicationsList.tsx",
+        "line": 30,
+        "text": "Active applications"
+      },
+      {
+        "file": "apps/account/components/jobs/ApplicationsList.tsx",
+        "line": 26,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/jobs/ApplicationsList.tsx",
+        "line": 51,
+        "text": "); return app.detailUrl ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/jobs/SavedRolesList.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/jobs/SavedRolesList.tsx",
+        "line": 29,
+        "text": "Saved roles"
+      },
+      {
+        "file": "apps/account/components/jobs/SavedRolesList.tsx",
+        "line": 25,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/jobs/SavedRolesList.tsx",
+        "line": 49,
+        "text": "); return role.url ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/marketplace/MarketplaceActivity.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/marketplace/MarketplaceActivity.tsx",
+        "line": 6,
+        "text": "; ariaLabel: string; dash: string; limit?: number; }; type IconKind = \"order\" | \"payment\" | \"dispute\" | \"support\" | \"generic\"; const ICON_BY_KIND: Record"
+      },
+      {
+        "file": "apps/account/components/marketplace/MarketplaceActivity.tsx",
+        "line": 52,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/marketplace/MarketplaceActivity.tsx",
+        "line": 55,
+        "text": "); return href ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/property/PropertyActivity.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/property/PropertyActivity.tsx",
+        "line": 22,
+        "text": "; ariaLabel: string; titleLabels: ActivityTitleLabels; limit?: number; }; const ICON_BY_KIND: Record"
+      },
+      {
+        "file": "apps/account/components/property/PropertyActivity.tsx",
+        "line": 56,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/property/PropertyActivity.tsx",
+        "line": 59,
+        "text": "); return href ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/NextBestActions.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/NextBestActions.tsx",
+        "line": 48,
+        "text": "Live ranker"
+      },
+      {
+        "file": "apps/account/components/smart-home/NextBestActions.tsx",
+        "line": 82,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/smart-home/NextBestActions.tsx",
+        "line": 145,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/studio/StudioActivity.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/studio/StudioActivity.tsx",
+        "line": 14,
+        "text": "; ariaLabel: string; copy: StudioCopy; locale: AppLocale; limit?: number; }; type IconKind = \"project\" | \"payment\" | \"milestone\" | \"message\" | \"deliverable\" | \"generic\"; const ICON_BY_KIND: Record"
+      },
+      {
+        "file": "apps/account/components/studio/StudioActivity.tsx",
+        "line": 68,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/studio/StudioActivity.tsx",
+        "line": 71,
+        "text": "); return href ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/studio/StudioWalletCheckoutButton.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/studio/StudioWalletCheckoutButton.tsx",
+        "line": 45,
+        "text": "Charging wallet…"
+      },
+      {
+        "file": "apps/account/components/studio/StudioWalletCheckoutButton.tsx",
+        "line": 47,
+        "text": ") : ( \"Pay from wallet balance\" )}"
+      },
+      {
+        "file": "apps/account/components/studio/StudioWalletCheckoutButton.tsx",
+        "line": 52,
+        "text": ": null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/support/SupportThreadRoom.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/support/SupportThreadRoom.tsx",
+        "line": 50,
+        "text": "accountSupportThreadAdapter(), []); const initial = useMemo"
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadRoom.tsx",
+        "line": 135,
+        "text": ") : isResolved ? ("
+      },
+      {
+        "file": "apps/account/components/support/SupportThreadRoom.tsx",
+        "line": 141,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/tasks/TasksList.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/tasks/TasksList.tsx",
+        "line": 22,
+        "text": "Pending tasks"
+      },
+      {
+        "file": "apps/account/components/tasks/TasksList.tsx",
+        "line": 8,
+        "text": "string; blockingLabel: string; sourceLabel: string; }; const PRIORITY_LABEL_FALLBACK: Record"
+      },
+      {
+        "file": "apps/account/components/tasks/TasksList.tsx",
+        "line": 44,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/FundingProofUpload.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/FundingProofUpload.tsx",
+        "line": 18,
+        "text": "(null); const [loading, setLoading] = useState(false); const [message, setMessage] = useState"
+      },
+      {
+        "file": "apps/account/components/wallet/FundingProofUpload.tsx",
+        "line": 116,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/wallet/FundingProofUpload.tsx",
+        "line": 129,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/message-center.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/message-center.ts",
+        "line": 95,
+        "text": ", excludeId: string, locale?: AppLocale, ): Promise"
+      },
+      {
+        "file": "apps/account/lib/message-center.ts",
+        "line": 168,
+        "text": "new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) .slice(0, 6); } export type HiddenNotificationReason = \"archived\" | \"deleted\"; export async function getHiddenNotificationReason( userId: string, notificationId: string, ): Promise"
+      },
+      {
+        "file": "apps/account/lib/message-center.ts",
+        "line": 299,
+        "text": "); const history = ((notificationsRes.data ?? []) as Array"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/property-module.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/property-module.ts",
+        "line": 139,
+        "text": "Saved property removed"
+      },
+      {
+        "file": "apps/account/lib/property-module.ts",
+        "line": 140,
+        "text": "A property was removed from the shared shortlist."
+      },
+      {
+        "file": "apps/account/lib/property-module.ts",
+        "line": 87,
+        "text": "(\"saved-listings\"), listJsonCollection"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/activity/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/activity/page.tsx",
+        "line": 84,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/activity/page.tsx",
+        "line": 94,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/messages/activity/[id]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/messages/activity/[id]/page.tsx",
+        "line": 69,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/app/(account)/messages/activity/[id]/page.tsx",
+        "line": 108,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/wallet/funding/[requestId]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/wallet/funding/[requestId]/page.tsx",
+        "line": 56,
+        "text": "); } const tone = fundingStatusTone(request.status); const label = statusReadable(request.status); const confirmed = request.status === \"completed\" || request.status === \"verified\"; return ("
+      },
+      {
+        "file": "apps/account/app/(account)/wallet/funding/[requestId]/page.tsx",
+        "line": 109,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/wallet/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/wallet/page.tsx",
+        "line": 75,
+        "text": "isPendingWithdrawalStatus(String(r.status || \"\"))).length; const pendingFundingCount = (requests as Array"
+      },
+      {
+        "file": "apps/account/app/(account)/wallet/page.tsx",
+        "line": 206,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/calendar/CalendarAgenda.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/calendar/CalendarAgenda.tsx",
+        "line": 83,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/calendar/CalendarAgenda.tsx",
+        "line": 100,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/care/CareActiveGlance.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/care/CareActiveGlance.tsx",
+        "line": 76,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/care/CareActiveGlance.tsx",
+        "line": 95,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/care/CareHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/care/CareHero.tsx",
+        "line": 51,
+        "text": "0); return ("
+      },
+      {
+        "file": "apps/account/components/care/CareHero.tsx",
+        "line": 132,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/learn/LearnActivity.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/learn/LearnActivity.tsx",
+        "line": 57,
+        "text": ": null}"
+      },
+      {
+        "file": "apps/account/components/learn/LearnActivity.tsx",
+        "line": 60,
+        "text": "); return href ? ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/learn/LearnHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/learn/LearnHero.tsx",
+        "line": 55,
+        "text": "0); return ("
+      },
+      {
+        "file": "apps/account/components/learn/LearnHero.tsx",
+        "line": 136,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/logistics/QuickActions.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/logistics/QuickActions.tsx",
+        "line": 87,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/logistics/QuickActions.tsx",
+        "line": 104,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/logistics/SpendStrip.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/logistics/SpendStrip.tsx",
+        "line": 20,
+        "text": "Math.max(acc, m.totalMinor), 0); return ("
+      },
+      {
+        "file": "apps/account/components/logistics/SpendStrip.tsx",
+        "line": 24,
+        "text": "0 ? m.totalMinor / max : 0; const height = Math.max(6, Math.round(ratio * 88)); return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/messages/NotificationLifecycleControls.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/messages/NotificationLifecycleControls.tsx",
+        "line": 65,
+        "text": "(null); const [error, setError] = useState"
+      },
+      {
+        "file": "apps/account/components/messages/NotificationLifecycleControls.tsx",
+        "line": 107,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/messages-inbox/InboxList.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/messages-inbox/InboxList.tsx",
+        "line": 68,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/messages-inbox/InboxList.tsx",
+        "line": 80,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/RecentlyDeletedFeed.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/RecentlyDeletedFeed.tsx",
+        "line": 55,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/notifications/RecentlyDeletedFeed.tsx",
+        "line": 331,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/security/ActivityList.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/security/ActivityList.tsx",
+        "line": 48,
+        "text": "Recent security events"
+      },
+      {
+        "file": "apps/account/components/security/ActivityList.tsx",
+        "line": 44,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/security/SignalsStrip.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/security/SignalsStrip.tsx",
+        "line": 16,
+        "text": "Security signals"
+      },
+      {
+        "file": "apps/account/components/security/SignalsStrip.tsx",
+        "line": 23,
+        "text": ": null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/security/TrustGuide.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/security/TrustGuide.tsx",
+        "line": 34,
+        "text": ") : null}"
+      },
+      {
+        "file": "apps/account/components/security/TrustGuide.tsx",
+        "line": 50,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/settings/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/settings/helpers.ts",
+        "line": 11,
+        "text": "| null; export type SettingsPreferences = Record"
+      },
+      {
+        "file": "apps/account/components/settings/helpers.ts",
+        "line": 12,
+        "text": "| null; export type IdentityState = | \"unverified\" | \"verified-base\" | \"verified-rich\" | \"power-user\"; export type DivisionKey = | \"care\" | \"marketplace\" | \"studio\" | \"jobs\" | \"learn\" | \"property\" | \"logistics\" | \"wallet\" | \"security\" | \"referrals\"; const DIVISION_KEYS: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/studio/StudioHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/studio/StudioHero.tsx",
+        "line": 105,
+        "text": "0); return ("
+      },
+      {
+        "file": "apps/account/components/studio/StudioHero.tsx",
+        "line": 194,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/ActivityFeed.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/ActivityFeed.tsx",
+        "line": 41,
+        "text": "); } return ("
+      },
+      {
+        "file": "apps/account/components/wallet/ActivityFeed.tsx",
+        "line": 54,
+        "text": ": null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/notification-signal/preferences.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/notification-signal/preferences.ts",
+        "line": 178,
+        "text": "= start && current"
+      },
+      {
+        "file": "apps/account/lib/notification-signal/preferences.ts",
+        "line": 180,
+        "text": "= start || current"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/verification.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/verification.ts",
+        "line": 63,
+        "text": "; const submissions = ((submissionsRes.data || []) as Array"
+      },
+      {
+        "file": "apps/account/lib/verification.ts",
+        "line": 64,
+        "text": ").map((row: Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/@rail/default.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/@rail/default.tsx",
+        "line": 43,
+        "text": "m.railSlot === \"utility\"); return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/care/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/care/page.tsx",
+        "line": 182,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/jobs/loading.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/jobs/loading.tsx",
+        "line": 6,
+        "text": "Loading Jobs"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/layout.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/layout.tsx",
+        "line": 108,
+        "text": "Opening your account"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/learn/loading.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/learn/loading.tsx",
+        "line": 6,
+        "text": "Loading Learn"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/logistics/loading.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/logistics/loading.tsx",
+        "line": 13,
+        "text": "placeholder"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/MobileChromeBridge.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/MobileChromeBridge.tsx",
+        "line": 14,
+        "text": "`. Also embeds the same `"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/page.tsx",
+        "line": 23,
+        "text": "&cursor.created_at="
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/RealtimeBrowserBridge.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/RealtimeBrowserBridge.tsx",
+        "line": 46,
+        "text": "createSupabaseBrowser(), []); return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/referrals/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/referrals/page.tsx",
+        "line": 54,
+        "text": "r.referee_id != null || r.status === \"flagged\" ); const rewardAmount = formatNaira(REFERRAL_REWARD_KOBO); const statusLabel: Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/settings/notifications/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/settings/notifications/page.tsx",
+        "line": 24,
+        "text": "Notifications"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/studio/loading.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/studio/loading.tsx",
+        "line": 6,
+        "text": "Loading Studio"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/subscriptions/[subscriptionId]/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/subscriptions/[subscriptionId]/page.tsx",
+        "line": 74,
+        "text": "0 ? t(\"Linked invoices and support threads below are shown only when the shared ledger uses one of this subscription's published reference keys.\") : t(\"This subscription row has no published reference key beyond its own record, so invoice/support linkage depends entirely on future division-side sync quality.\")}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/support/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/support/page.tsx",
+        "line": 40,
+        "text": "String(thread.priority || \"\").toLowerCase() === \"high\" ).length; return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/wallet/loading.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/wallet/loading.tsx",
+        "line": 6,
+        "text": "Loading wallet"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/(account)/wallet/withdrawals/page.tsx",
+    "items": [
+      {
+        "file": "apps/account/app/(account)/wallet/withdrawals/page.tsx",
+        "line": 64,
+        "text": "0 ? t(\"Select a payout method and confirm with your PIN.\") : t(\"Add a verified bank account to receive withdrawals.\")}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/app/auth/confirm/route.ts",
+    "items": [
+      {
+        "file": "apps/account/app/auth/confirm/route.ts",
+        "line": 22,
+        "text": "= new Set"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/auth/ForgotPasswordForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/auth/ForgotPasswordForm.tsx",
+        "line": 55,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/auth/ResetPasswordForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/auth/ResetPasswordForm.tsx",
+        "line": 56,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/calendar/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/calendar/helpers.ts",
+        "line": 112,
+        "text": ", copy: CalendarCopy, ): ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/invoices/InvoicesList.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/invoices/InvoicesList.tsx",
+        "line": 13,
+        "text": "string; ariaListLabel: string; rowAriaTemplate: string; divisionLabels: Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/jobs/ReadinessCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/jobs/ReadinessCard.tsx",
+        "line": 17,
+        "text": "Profile readiness checklist"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/layout/AccountRouteLoading.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/layout/AccountRouteLoading.tsx",
+        "line": 5,
+        "text": "Account"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/layout/UserAvatar.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/layout/UserAvatar.tsx",
+        "line": 47,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/logistics/CompletedTimeline.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/logistics/CompletedTimeline.tsx",
+        "line": 58,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/logistics/LiveShipmentMap.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/logistics/LiveShipmentMap.tsx",
+        "line": 68,
+        "text": "); } const altTemplate = geocodedCount === 1 ? copy.map.altTemplateSingular : copy.map.altTemplatePlural; const liveBadgeTemplate = active.length === 1 ? copy.map.liveBadgeTemplateSingular : copy.map.liveBadgeTemplatePlural; return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/logistics/ShipmentCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/logistics/ShipmentCard.tsx",
+        "line": 105,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/marketplace/MarketplaceHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/marketplace/MarketplaceHero.tsx",
+        "line": 188,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/marketplace/MarketplaceOrders.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/marketplace/MarketplaceOrders.tsx",
+        "line": 23,
+        "text": "; marketplaceOrigin: string; labels: OrdersLabels; limit?: number; }; const ICON_BY_KIND: Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/notifications/MarkAllReadButton.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/notifications/MarkAllReadButton.tsx",
+        "line": 30,
+        "text": "Mark all read"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/property/helpers.ts",
+    "items": [
+      {
+        "file": "apps/account/components/property/helpers.ts",
+        "line": 124,
+        "text": ", activityTypes: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/property/PropertyHero.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/property/PropertyHero.tsx",
+        "line": 195,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/property/SavedPropertiesGallery.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/property/SavedPropertiesGallery.tsx",
+        "line": 109,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/search/IdentityBarPaletteBridge.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/search/IdentityBarPaletteBridge.tsx",
+        "line": 24,
+        "text": "; export type IdentityBarPaletteBridgeProps = Omit"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/search/PaletteOpenProvider.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/search/PaletteOpenProvider.tsx",
+        "line": 34,
+        "text": "void; } const PaletteContext = createContext"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/security/GlobalSignOutCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/security/GlobalSignOutCard.tsx",
+        "line": 56,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/security/RestrictionsBanner.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/security/RestrictionsBanner.tsx",
+        "line": 26,
+        "text": "); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/settings/PrivacyDataControls.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/settings/PrivacyDataControls.tsx",
+        "line": 98,
+        "text": "setSaved(false), 2400); } return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/ModuleWidgetGrid.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/ModuleWidgetGrid.tsx",
+        "line": 40,
+        "text": "= 4; const cellClass = isAnchor ? \"hc-smart-home-cell-anchor\" : widget.size === \"md\" ? \"hc-smart-home-cell-md\" : widget.size === \"lg\" ? \"hc-smart-home-cell-lg\" : \"hc-smart-home-cell-sm\"; return ("
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/smart-home/SmartHomeEmpty.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/smart-home/SmartHomeEmpty.tsx",
+        "line": 42,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/studio/StudioPayments.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/studio/StudioPayments.tsx",
+        "line": 15,
+        "text": "; copy: StudioCopy; locale: AppLocale; limit?: number; }; const ICON_BY_KIND: Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/support/NewSupportForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/support/NewSupportForm.tsx",
+        "line": 106,
+        "text": "(prefill.category); const [message, setMessage] = useState(prefill.message); const [loading, setLoading] = useState(false); const [error, setError] = useState"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/support/SupportReplyForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/support/SupportReplyForm.tsx",
+        "line": 97,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/verification/ReviewerNoteCard.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/verification/ReviewerNoteCard.tsx",
+        "line": 14,
+        "text": "Reviewer note"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/FundingRequestForm.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/FundingRequestForm.tsx",
+        "line": 111,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/FundingRequestRow.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/FundingRequestRow.tsx",
+        "line": 45,
+        "text": "0 ? status : \"pending\"; const labels = statusLabels as Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/components/wallet/TrustLadder.tsx",
+    "items": [
+      {
+        "file": "apps/account/components/wallet/TrustLadder.tsx",
+        "line": 100,
+        "text": ") : null}"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/account-localization.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/account-localization.ts",
+        "line": 77,
+        "text": "0 ? copy.security.requirements.trusted.overlap : null, ].filter(Boolean) as string[]; } return [ signals.verificationStatus !== \"verified\" ? copy.security.requirements.premium.verification : null, signals.accountAgeDays"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/auth.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/auth.ts",
+        "line": 91,
+        "text": "| null), phone, isVerified: profile?.is_verified || false, isOwner: !!ownerProfile, ownerRole: ownerProfile?.role || null, }; }); export async function requireAccountUser(): Promise"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/cloudinary.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/cloudinary.ts",
+        "line": 34,
+        "text": "; invalidTypeMessage?: string; publicIdPrefix?: string; }; export async function uploadOwnedAsset( file: File, userId: string, options: UploadOwnedAssetOptions ): Promise"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/division-data.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/division-data.ts",
+        "line": 178,
+        "text": "!isHiddenNotification(record as Record"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/email/templates.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/email/templates.ts",
+        "line": 260,
+        "text": "HenryCo"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/notification-center.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/notification-center.ts",
+        "line": 153,
+        "text": "Notification restored"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/smart-home/format.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/smart-home/format.ts",
+        "line": 167,
+        "text": "( items: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/smart-home/recommender.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/smart-home/recommender.ts",
+        "line": 65,
+        "text": "; emptyTeachings: ReadonlyArray"
+      }
+    ]
+  },
+  {
+    "file": "apps/account/lib/wallet-storage.ts",
+    "items": [
+      {
+        "file": "apps/account/lib/wallet-storage.ts",
+        "line": 131,
+        "text": "Wallet withdrawal PIN"
+      }
+    ]
+  }
+]

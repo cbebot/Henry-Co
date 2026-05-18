@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { CourseCard } from "@/components/learn/ui";
 import { getInstructorBySlug } from "@/lib/learn/data";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 
 export default async function InstructorPage({
   params,
@@ -13,6 +15,9 @@ export default async function InstructorPage({
   const data = await getInstructorBySlug(slug);
   if (!data) notFound();
 
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <nav className="text-sm">
@@ -21,13 +26,13 @@ export default async function InstructorPage({
           className="inline-flex items-center gap-1 font-semibold text-[var(--learn-mint-soft)] underline-offset-4 hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          All instructors
+          {t("All instructors")}
         </Link>
       </nav>
 
       <section className="mt-8">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-          Instructor spotlight
+          {t("Instructor spotlight")}
         </p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
           {data.instructor.fullName}
@@ -41,7 +46,7 @@ export default async function InstructorPage({
         {data.instructor.expertise.length > 0 ? (
           <div className="mt-6">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-              Expertise
+              {t("Expertise")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {data.instructor.expertise.map((topic) => (
@@ -60,15 +65,15 @@ export default async function InstructorPage({
       <section className="mt-14">
         <div className="flex items-end justify-between gap-4 border-b border-[var(--learn-line)] pb-4">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
-            Courses by this instructor
+            {t("Courses by this instructor")}
           </p>
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-            {data.courses.length} active
+            {data.courses.length} {t("active")}
           </span>
         </div>
         <div className="mt-6 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {data.courses.map((course) => (
-            <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} />
+            <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} locale={locale} />
           ))}
         </div>
       </section>

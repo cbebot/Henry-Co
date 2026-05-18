@@ -2,6 +2,8 @@
 
 import { useCallback, useState, type ButtonHTMLAttributes } from "react";
 import { Download, Loader2, Share2 } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { cn } from "@/lib/utils";
 
 type CertificateDownloadButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -51,7 +53,7 @@ export function CertificateDownloadButton({
   verificationCode,
   learnerName,
   courseTitle,
-  label = "Download certificate",
+  label,
   className,
   type = "button",
   variant = "primary",
@@ -59,6 +61,9 @@ export function CertificateDownloadButton({
   disabled,
   ...props
 }: CertificateDownloadButtonProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const resolvedLabel = label ?? t("Download certificate");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const endpoint = `/api/certificates/${encodeURIComponent(verificationCode)}/pdf`;
@@ -90,13 +95,13 @@ export function CertificateDownloadButton({
         }
       } catch (err) {
         if ((err as { name?: string })?.name !== "AbortError") {
-          setError("We couldn't prepare your certificate. Try again.");
+          setError(t("We couldn't prepare your certificate. Try again."));
         }
       } finally {
         setBusy(false);
       }
     },
-    [endpoint, filename, shareTitle, onClick]
+    [endpoint, filename, shareTitle, onClick, locale]
   );
 
   return (
@@ -114,7 +119,7 @@ export function CertificateDownloadButton({
         {...props}
       >
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : canShareFiles() ? <Share2 className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-        <span>{busy ? "Preparing…" : label}</span>
+        <span>{busy ? t("Preparing…") : resolvedLabel}</span>
       </button>
       {error ? <p className="text-[0.7rem] text-rose-300">{error}</p> : null}
     </div>

@@ -1,22 +1,26 @@
+import type { AppLocale } from "@henryco/i18n/server";
+import { translateSurfaceLabel } from "@henryco/i18n";
+
 type NavItem = { href: string; label: string; active: boolean };
 
-export function accountNav(active: string): NavItem[] {
+export function accountNav(active: string, locale: AppLocale): NavItem[] {
+  const t = (s: string) => translateSurfaceLabel(locale, s);
   return [
-    { href: "/account", label: "Overview", active: active === "/account" },
-    { href: "/account/orders", label: "Orders", active: active === "/account/orders" },
-    { href: "/account/wallet", label: "Wallet", active: active === "/account/wallet" },
-    { href: "/account/payments", label: "Payments", active: active === "/account/payments" },
-    { href: "/account/disputes", label: "Disputes", active: active === "/account/disputes" },
-    { href: "/account/addresses", label: "Addresses", active: active === "/account/addresses" },
-    { href: "/account/wishlist", label: "Wishlist", active: active === "/account/wishlist" },
-    { href: "/account/saved", label: "Saved", active: active === "/account/saved" },
-    { href: "/account/following", label: "Following", active: active === "/account/following" },
-    { href: "/account/notifications", label: "Notifications", active: active === "/account/notifications" },
-    { href: "/account/reviews", label: "Reviews", active: active === "/account/reviews" },
-    { href: "/account/support", label: "Support", active: active === "/account/support" },
+    { href: "/account", label: t("Overview"), active: active === "/account" },
+    { href: "/account/orders", label: t("Orders"), active: active === "/account/orders" },
+    { href: "/account/wallet", label: t("Wallet"), active: active === "/account/wallet" },
+    { href: "/account/payments", label: t("Payments"), active: active === "/account/payments" },
+    { href: "/account/disputes", label: t("Disputes"), active: active === "/account/disputes" },
+    { href: "/account/addresses", label: t("Addresses"), active: active === "/account/addresses" },
+    { href: "/account/wishlist", label: t("Wishlist"), active: active === "/account/wishlist" },
+    { href: "/account/saved", label: t("Saved"), active: active === "/account/saved" },
+    { href: "/account/following", label: t("Following"), active: active === "/account/following" },
+    { href: "/account/notifications", label: t("Notifications"), active: active === "/account/notifications" },
+    { href: "/account/reviews", label: t("Reviews"), active: active === "/account/reviews" },
+    { href: "/account/support", label: t("Support"), active: active === "/account/support" },
     {
       href: "/account/seller-application",
-      label: "Seller application",
+      label: t("Seller application"),
       active: active === "/account/seller-application",
     },
   ];
@@ -25,12 +29,12 @@ export function accountNav(active: string): NavItem[] {
 /**
  * One-call helper used by every marketplace /account/* page. Returns
  * the flat `nav` and the mobile-friendly `groups` together so each page
- * can do `<WorkspaceShell {...accountWorkspaceNav("/account/orders")} />`.
+ * can do `<WorkspaceShell {...accountWorkspaceNav("/account/orders", locale)} />`.
  */
-export function accountWorkspaceNav(active: string) {
+export function accountWorkspaceNav(active: string, locale: AppLocale) {
   return {
-    nav: accountNav(active),
-    navGroups: accountNavGroups(active),
+    nav: accountNav(active, locale),
+    navGroups: accountNavGroups(active, locale),
   };
 }
 
@@ -39,16 +43,17 @@ export function accountWorkspaceNav(active: string) {
  * Used by `WorkspaceShell`'s mobile drawer so the workspace doesn't render
  * as a 10-item flat pill list on small screens.
  */
-export function accountNavGroups(active: string) {
-  const flat = accountNav(active);
+export function accountNavGroups(active: string, locale: AppLocale) {
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+  const flat = accountNav(active, locale);
   const byHref = (href: string) => flat.find((item) => item.href === href)!;
   return [
     {
-      label: "Activity",
+      label: t("Activity"),
       items: [byHref("/account"), byHref("/account/orders"), byHref("/account/notifications")],
     },
     {
-      label: "Commerce",
+      label: t("Commerce"),
       items: [
         byHref("/account/wallet"),
         byHref("/account/payments"),
@@ -57,11 +62,11 @@ export function accountNavGroups(active: string) {
       ],
     },
     {
-      label: "Help",
+      label: t("Help"),
       items: [byHref("/account/support")],
     },
     {
-      label: "Saved",
+      label: t("Saved"),
       items: [
         byHref("/account/wishlist"),
         byHref("/account/saved"),
@@ -70,85 +75,87 @@ export function accountNavGroups(active: string) {
       ],
     },
     {
-      label: "Selling",
+      label: t("Selling"),
       items: [byHref("/account/seller-application")],
     },
   ];
 }
 
-export function vendorNav(active: string) {
+export function vendorNav(active: string, locale: AppLocale) {
+  const t = (s: string) => translateSurfaceLabel(locale, s);
   return [
-    { href: "/vendor", label: "Overview", active: active === "/vendor" },
-    { href: "/vendor/products", label: "Products", active: active === "/vendor/products" },
-    { href: "/vendor/orders", label: "Orders", active: active === "/vendor/orders" },
-    { href: "/vendor/disputes", label: "Disputes", active: active === "/vendor/disputes" },
-    { href: "/vendor/payouts", label: "Payouts", active: active === "/vendor/payouts" },
-    { href: "/vendor/analytics", label: "Analytics", active: active === "/vendor/analytics" },
-    { href: "/vendor/store", label: "Store", active: active === "/vendor/store" },
-    { href: "/vendor/settings", label: "Settings", active: active === "/vendor/settings" },
+    { href: "/vendor", label: t("Overview"), active: active === "/vendor" },
+    { href: "/vendor/products", label: t("Products"), active: active === "/vendor/products" },
+    { href: "/vendor/orders", label: t("Orders"), active: active === "/vendor/orders" },
+    { href: "/vendor/disputes", label: t("Disputes"), active: active === "/vendor/disputes" },
+    { href: "/vendor/payouts", label: t("Payouts"), active: active === "/vendor/payouts" },
+    { href: "/vendor/analytics", label: t("Analytics"), active: active === "/vendor/analytics" },
+    { href: "/vendor/store", label: t("Store"), active: active === "/vendor/store" },
+    { href: "/vendor/settings", label: t("Settings"), active: active === "/vendor/settings" },
   ];
 }
 
-export function staffNav(active: string, root: string) {
+export function staffNav(active: string, root: string, locale: AppLocale) {
+  const t = (s: string) => translateSurfaceLabel(locale, s);
   const resourceMap: Record<string, Array<{ href: string; label: string }>> = {
     "/owner": [
-      { href: "/owner", label: "Overview" },
-      { href: "/owner/alerts", label: "Alerts" },
-      { href: "/owner/digest", label: "Digest" },
-      { href: "/owner/automation-health", label: "Automation health" },
-      { href: "/owner/settings", label: "Settings" },
-      { href: "/owner/audit", label: "Audit" },
+      { href: "/owner", label: t("Overview") },
+      { href: "/owner/alerts", label: t("Alerts") },
+      { href: "/owner/digest", label: t("Digest") },
+      { href: "/owner/automation-health", label: t("Automation health") },
+      { href: "/owner/settings", label: t("Settings") },
+      { href: "/owner/audit", label: t("Audit") },
     ],
     "/admin": [
-      { href: "/admin", label: "Overview" },
-      { href: "/admin/sellers", label: "Sellers" },
-      { href: "/admin/seller-applications", label: "Seller applications" },
-      { href: "/admin/products", label: "Products" },
-      { href: "/admin/brands", label: "Brands" },
-      { href: "/admin/categories", label: "Categories" },
-      { href: "/admin/collections", label: "Collections" },
-      { href: "/admin/campaigns", label: "Campaigns" },
-      { href: "/admin/notifications", label: "Notifications" },
-      { href: "/admin/email-logs", label: "Email logs" },
-      { href: "/admin/whatsapp-logs", label: "WhatsApp logs" },
-      { href: "/admin/settings", label: "Settings" },
+      { href: "/admin", label: t("Overview") },
+      { href: "/admin/sellers", label: t("Sellers") },
+      { href: "/admin/seller-applications", label: t("Seller applications") },
+      { href: "/admin/products", label: t("Products") },
+      { href: "/admin/brands", label: t("Brands") },
+      { href: "/admin/categories", label: t("Categories") },
+      { href: "/admin/collections", label: t("Collections") },
+      { href: "/admin/campaigns", label: t("Campaigns") },
+      { href: "/admin/notifications", label: t("Notifications") },
+      { href: "/admin/email-logs", label: t("Email logs") },
+      { href: "/admin/whatsapp-logs", label: t("WhatsApp logs") },
+      { href: "/admin/settings", label: t("Settings") },
     ],
     "/moderation": [
-      { href: "/moderation", label: "Overview" },
-      { href: "/moderation/product-approvals", label: "Product approvals" },
-      { href: "/moderation/risk", label: "Risk signals" },
-      { href: "/moderation/reviews", label: "Reviews" },
-      { href: "/moderation/disputes", label: "Disputes" },
-      { href: "/moderation/audit", label: "Audit" },
+      { href: "/moderation", label: t("Overview") },
+      { href: "/moderation/product-approvals", label: t("Product approvals") },
+      { href: "/moderation/risk", label: t("Risk signals") },
+      { href: "/moderation/reviews", label: t("Reviews") },
+      { href: "/moderation/disputes", label: t("Disputes") },
+      { href: "/moderation/audit", label: t("Audit") },
     ],
     "/support": [
-      { href: "/support", label: "Overview" },
-      { href: "/support/disputes", label: "Disputes" },
-      { href: "/support/returns", label: "Returns" },
-      { href: "/support/threads", label: "Support threads" },
-      { href: "/support/notifications", label: "Notification health" },
-      { href: "/support/email-logs", label: "Email logs" },
-      { href: "/support/whatsapp-logs", label: "WhatsApp logs" },
+      { href: "/support", label: t("Overview") },
+      { href: "/support/disputes", label: t("Disputes") },
+      { href: "/support/returns", label: t("Returns") },
+      { href: "/support/threads", label: t("Support threads") },
+      { href: "/support/notifications", label: t("Notification health") },
+      { href: "/support/email-logs", label: t("Email logs") },
+      { href: "/support/whatsapp-logs", label: t("WhatsApp logs") },
     ],
     "/finance": [
-      { href: "/finance", label: "Overview" },
-      { href: "/finance/payments", label: "Payments" },
-      { href: "/finance/payment-verification", label: "Verification" },
-      { href: "/finance/payouts", label: "Payouts" },
-      { href: "/finance/refunds", label: "Refunds" },
-      { href: "/finance/audit", label: "Audit" },
+      { href: "/finance", label: t("Overview") },
+      { href: "/finance/payments", label: t("Payments") },
+      { href: "/finance/payment-verification", label: t("Verification") },
+      { href: "/finance/payouts", label: t("Payouts") },
+      { href: "/finance/refunds", label: t("Refunds") },
+      { href: "/finance/audit", label: t("Audit") },
     ],
     "/operations": [
-      { href: "/operations", label: "Overview" },
-      { href: "/operations/orders", label: "Orders" },
-      { href: "/operations/low-stock", label: "Low stock" },
-      { href: "/operations/automation-health", label: "Automation health" },
-      { href: "/operations/delays", label: "Delays" },
-      { href: "/operations/notifications", label: "Notification queue" },
+      { href: "/operations", label: t("Overview") },
+      { href: "/operations/orders", label: t("Orders") },
+      { href: "/operations/low-stock", label: t("Low stock") },
+      { href: "/operations/automation-health", label: t("Automation health") },
+      { href: "/operations/delays", label: t("Delays") },
+      { href: "/operations/notifications", label: t("Notification queue") },
     ],
   };
 
-  return (resourceMap[root] ?? [{ href: root, label: "Overview" }]).map((item) => ({
+  return (resourceMap[root] ?? [{ href: root, label: t("Overview") }]).map((item) => ({
     ...item,
     active: active === item.href,
   }));

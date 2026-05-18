@@ -10,7 +10,9 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioViewer } from "@/lib/studio/auth";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioTemplateBySlug } from "@/lib/studio/templates";
@@ -19,61 +21,77 @@ import { TemplateReserveSubmitButton } from "@/components/studio/template-reserv
 
 export const dynamic = "force-dynamic";
 
-const ERROR_COPY: Record<string, string> = {
-  missing_fields:
-    "Please fill in your name and email so we can issue the deposit invoice.",
-  consent_required:
-    "Tick the engagement-terms checkbox to continue. We need your agreement before we can issue an invoice.",
-  invalid_email: "That email looks off. Double-check it before we send the invoice.",
-  server_error:
-    "Something went wrong on our side. Try again in a moment, or contact support if it persists.",
-};
+function getErrorCopy(locale: AppLocale): Record<string, string> {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    missing_fields: t(
+      "Please fill in your name and email so we can issue the deposit invoice.",
+    ),
+    consent_required: t(
+      "Tick the engagement-terms checkbox to continue. We need your agreement before we can issue an invoice.",
+    ),
+    invalid_email: t("That email looks off. Double-check it before we send the invoice."),
+    server_error: t(
+      "Something went wrong on our side. Try again in a moment, or contact support if it persists.",
+    ),
+  };
+}
 
-const BRAND_VIBES = [
-  {
-    value: "Quiet luxury and high-trust",
-    label: "Quiet luxury",
-    body: "Soft type, generous whitespace, deep contrast.",
-  },
-  {
-    value: "Bold and editorial",
-    label: "Bold editorial",
-    body: "Confident typography, strong imagery, clear hierarchy.",
-  },
-  {
-    value: "Warm and human",
-    label: "Warm and human",
-    body: "Friendly tone, organic shapes, approachable colour.",
-  },
-  {
-    value: "Confident and corporate",
-    label: "Confident corporate",
-    body: "Sharp grid, restrained palette, executive feel.",
-  },
-  {
-    value: "Modern and minimal",
-    label: "Modern minimal",
-    body: "Light, fast, with a single accent doing the work.",
-  },
-];
+function getBrandVibes(locale: AppLocale) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  // value strings stay canonical (English) so they round-trip through form submission;
+  // label/body are localized for display.
+  return [
+    {
+      value: "Quiet luxury and high-trust",
+      label: t("Quiet luxury"),
+      body: t("Soft type, generous whitespace, deep contrast."),
+    },
+    {
+      value: "Bold and editorial",
+      label: t("Bold editorial"),
+      body: t("Confident typography, strong imagery, clear hierarchy."),
+    },
+    {
+      value: "Warm and human",
+      label: t("Warm and human"),
+      body: t("Friendly tone, organic shapes, approachable colour."),
+    },
+    {
+      value: "Confident and corporate",
+      label: t("Confident corporate"),
+      body: t("Sharp grid, restrained palette, executive feel."),
+    },
+    {
+      value: "Modern and minimal",
+      label: t("Modern minimal"),
+      body: t("Light, fast, with a single accent doing the work."),
+    },
+  ];
+}
 
-const DOMAIN_OPTIONS: Array<{ value: "have" | "new" | "later"; label: string; body: string }> = [
-  {
-    value: "have",
-    label: "I already own a domain",
-    body: "We connect it cleanly at launch with the right DNS records.",
-  },
-  {
-    value: "new",
-    label: "I want HenryCo to source one",
-    body: "We check availability and register on your behalf at cost.",
-  },
-  {
-    value: "later",
-    label: "Decide before launch",
-    body: "Skip this for now — we lock the domain plan at the launch milestone.",
-  },
-];
+function getDomainOptions(
+  locale: AppLocale,
+): Array<{ value: "have" | "new" | "later"; label: string; body: string }> {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      value: "have",
+      label: t("I already own a domain"),
+      body: t("We connect it cleanly at launch with the right DNS records."),
+    },
+    {
+      value: "new",
+      label: t("I want HenryCo to source one"),
+      body: t("We check availability and register on your behalf at cost."),
+    },
+    {
+      value: "later",
+      label: t("Decide before launch"),
+      body: t("Skip this for now — we lock the domain plan at the launch milestone."),
+    },
+  ];
+}
 
 export async function generateMetadata({
   params,
@@ -82,12 +100,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const template = getStudioTemplateBySlug(slug);
+  const locale = await getStudioPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   if (!template) {
-    return { title: "Reserve template", robots: { index: false, follow: false } };
+    return { title: t("Reserve template"), robots: { index: false, follow: false } };
   }
   return {
-    title: `Reserve ${template.name} | HenryCo Studio`,
-    description: `Reserve the ${template.name} build slot. Pay the deposit and we kick off within ${template.readyInDays} days.`,
+    title: `${t("Reserve")} ${template.name} | HenryCo Studio`,
+    description: `${t("Reserve the build slot for")} ${template.name}. ${t("Pay the deposit and we kick off within")} ${template.readyInDays} ${t("days")}.`,
     alternates: { canonical: `/checkout/template/${template.slug}` },
     robots: { index: false, follow: false },
   };
@@ -108,12 +128,16 @@ export default async function TemplateCheckoutPage({
   const viewer = await getStudioViewer();
   const catalog = await getStudioCatalog();
   const platform = catalog.platform;
+  const locale = await getStudioPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const brandVibes = getBrandVibes(locale);
+  const domainOptions = getDomainOptions(locale);
 
   const totalKobo = Math.round(template.price * 100);
   const depositKobo = Math.round(totalKobo * template.depositRate);
   const balanceKobo = totalKobo - depositKobo;
 
-  const errorMessage = errorKey ? ERROR_COPY[errorKey] : null;
+  const errorMessage = errorKey ? getErrorCopy(locale)[errorKey] : null;
 
   return (
     <main
@@ -126,18 +150,18 @@ export default async function TemplateCheckoutPage({
         className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)] transition hover:text-[var(--studio-ink)]"
       >
         <ArrowLeft className="h-3 w-3" />
-        Back to template
+        {t("Back to template")}
       </Link>
 
       <header className="mt-6 max-w-3xl">
-        <p className="studio-kicker">Instant reserve</p>
+        <p className="studio-kicker">{t("Instant reserve")}</p>
         <h1 className="mt-3 text-balance text-[2rem] font-semibold leading-[1.05] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.4rem] md:text-[2.8rem]">
-          Reserve {template.name} — pay the deposit, we start in {template.readyInDays} days.
+          {t("Reserve")} {template.name} — {t("pay the deposit, we start in")} {template.readyInDays} {t("days")}.
         </h1>
         <p className="mt-4 text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)]">
-          No long brief. No back-and-forth. The template is fully scoped, the price is fixed, and
-          the milestone plan is in writing. Confirm five details below, pay your deposit, and the
-          team starts the moment finance verifies the transfer.
+          {t(
+            "No long brief. No back-and-forth. The template is fully scoped, the price is fixed, and the milestone plan is in writing. Confirm five details below, pay your deposit, and the team starts the moment finance verifies the transfer.",
+          )}
         </p>
       </header>
 
@@ -157,12 +181,12 @@ export default async function TemplateCheckoutPage({
 
           <fieldset className="space-y-5">
             <legend className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              About you
+              {t("About you")}
             </legend>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
-                label="Full name"
+                label={t("Full name")}
                 required
                 input={
                   <input
@@ -179,7 +203,7 @@ export default async function TemplateCheckoutPage({
                 }
               />
               <Field
-                label="Email"
+                label={t("Email")}
                 required
                 input={
                   <input
@@ -194,8 +218,8 @@ export default async function TemplateCheckoutPage({
                 }
               />
               <Field
-                label="Business name"
-                hint="Optional, but it helps us personalise the build."
+                label={t("Business name")}
+                hint={t("Optional, but it helps us personalise the build.")}
                 input={
                   <input
                     type="text"
@@ -208,8 +232,8 @@ export default async function TemplateCheckoutPage({
                 }
               />
               <Field
-                label="Phone or WhatsApp"
-                hint="Optional — but useful if we need a fast clarification."
+                label={t("Phone or WhatsApp")}
+                hint={t("Optional — but useful if we need a fast clarification.")}
                 input={
                   <input
                     type="tel"
@@ -228,14 +252,15 @@ export default async function TemplateCheckoutPage({
 
           <fieldset className="space-y-4">
             <legend className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Brand direction
+              {t("Brand direction")}
             </legend>
             <p className="text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-              Pick the visual feel closest to where you want to land. We will explore around it
-              during customisation, never against it.
+              {t(
+                "Pick the visual feel closest to where you want to land. We will explore around it during customisation, never against it.",
+              )}
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
-              {BRAND_VIBES.map((vibe, index) => (
+              {brandVibes.map((vibe, index) => (
                 <label
                   key={vibe.value}
                   className="group flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-4 py-3 transition hover:border-[rgba(151,244,243,0.4)] has-[:checked]:border-[rgba(151,244,243,0.55)] has-[:checked]:bg-[rgba(151,244,243,0.06)]"
@@ -264,10 +289,10 @@ export default async function TemplateCheckoutPage({
 
           <fieldset className="space-y-4">
             <legend className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Domain
+              {t("Domain")}
             </legend>
             <div className="space-y-2">
-              {DOMAIN_OPTIONS.map((option, index) => (
+              {domainOptions.map((option, index) => (
                 <label
                   key={option.value}
                   className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-4 py-3 transition hover:border-[rgba(151,244,243,0.4)] has-[:checked]:border-[rgba(151,244,243,0.55)] has-[:checked]:bg-[rgba(151,244,243,0.06)]"
@@ -291,7 +316,7 @@ export default async function TemplateCheckoutPage({
               ))}
             </div>
             <Field
-              label="Preferred or existing domain (optional)"
+              label={t("Preferred or existing domain (optional)")}
               input={
                 <input
                   type="text"
@@ -308,18 +333,18 @@ export default async function TemplateCheckoutPage({
 
           <fieldset className="space-y-3">
             <legend className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Anything else
+              {t("Anything else")}
             </legend>
             <Field
-              label="Notes for the team (optional)"
-              hint="A sentence or two on what success looks like, or anything we should know."
+              label={t("Notes for the team (optional)")}
+              hint={t("A sentence or two on what success looks like, or anything we should know.")}
               input={
                 <textarea
                   name="notes"
                   rows={3}
                   maxLength={600}
                   className="portal-textarea"
-                  placeholder="We need this live before the launch event on the 24th."
+                  placeholder={t("We need this live before the launch event on the 24th.")}
                 />
               }
             />
@@ -336,30 +361,29 @@ export default async function TemplateCheckoutPage({
               className="mt-1 h-3.5 w-3.5 accent-[var(--studio-signal)]"
             />
             <span className="text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-              I have read and agree to the{" "}
+              {t("I have read and agree to the")}{" "}
               <Link href="/policies/terms" className="font-semibold text-[var(--studio-signal)] hover:underline">
-                HenryCo Studio Terms of Engagement
+                {t("HenryCo Studio Terms of Engagement")}
               </Link>
               ,{" "}
               <Link href="/policies/privacy" className="font-semibold text-[var(--studio-signal)] hover:underline">
-                Privacy Policy
+                {t("Privacy Policy")}
               </Link>
-              , and{" "}
+              , {t("and")}{" "}
               <Link href="/policies/refunds" className="font-semibold text-[var(--studio-signal)] hover:underline">
-                Refund &amp; Cancellation Policy
+                {t("Refund & Cancellation Policy")}
               </Link>
-              . I understand the deposit reserves my build slot and is non-refundable once kickoff
-              begins, per the refund schedule.
+              . {t("I understand the deposit reserves my build slot and is non-refundable once kickoff begins, per the refund schedule.")}
             </span>
           </label>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[12px] leading-5 text-[var(--studio-ink-soft)]">
-              Next: pay the deposit of{" "}
+              {t("Next: pay the deposit of")}{" "}
               <strong className="font-semibold text-[var(--studio-ink)]">
                 {formatCurrency(template.price * template.depositRate, "NGN")}
               </strong>{" "}
-              by bank transfer.
+              {t("by bank transfer.")}
             </p>
             <TemplateReserveSubmitButton />
           </div>
@@ -389,11 +413,11 @@ export default async function TemplateCheckoutPage({
 
             <dl className="mt-5 space-y-3 text-[13px]">
               <SummaryRow
-                label="Total"
+                label={t("Total")}
                 value={<strong className="text-[var(--studio-ink)]">{formatCurrency(template.price, "NGN")}</strong>}
               />
               <SummaryRow
-                label="Deposit (now)"
+                label={t("Deposit (now)")}
                 value={
                   <strong className="text-[var(--studio-ink)]">
                     {formatCurrency(depositKobo / 100, "NGN")}
@@ -402,15 +426,15 @@ export default async function TemplateCheckoutPage({
                 accent
               />
               <SummaryRow
-                label="Balance (at launch)"
+                label={t("Balance (at launch)")}
                 value={formatCurrency(balanceKobo / 100, "NGN")}
               />
               <SummaryRow
-                label="Ready in"
+                label={t("Ready in")}
                 value={
                   <span className="inline-flex items-center gap-1.5">
                     <Clock className="h-3 w-3" />
-                    {template.readyInDays} days
+                    {template.readyInDays} {t("days")}
                   </span>
                 }
               />
@@ -418,13 +442,13 @@ export default async function TemplateCheckoutPage({
 
             <div className="mt-5 rounded-2xl border border-[var(--studio-line)] bg-[rgba(0,0,0,0.18)] p-4">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                Pay to
+                {t("Pay to")}
               </p>
               <p className="mt-2 text-[13.5px] font-semibold text-[var(--studio-ink)]">
-                {platform.paymentBankName || "Bank details on next page"}
+                {platform.paymentBankName || t("Bank details on next page")}
               </p>
               <p className="mt-1 text-[12.5px] text-[var(--studio-ink-soft)]">
-                {platform.paymentAccountName || "Verified company account"}
+                {platform.paymentAccountName || t("Verified company account")}
                 {platform.paymentAccountNumber ? ` · ${platform.paymentAccountNumber}` : ""}
               </p>
             </div>
@@ -432,15 +456,15 @@ export default async function TemplateCheckoutPage({
             <ul className="mt-5 space-y-2 text-[12.5px] text-[var(--studio-ink-soft)]">
               <li className="flex items-start gap-2">
                 <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]" />
-                Deposit secured by milestone discipline; refundable on the published schedule.
+                {t("Deposit secured by milestone discipline; refundable on the published schedule.")}
               </li>
               <li className="flex items-start gap-2">
                 <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]" />
-                Encrypted in transit; private data covered by our NDPA-aligned privacy policy.
+                {t("Encrypted in transit; private data covered by our NDPA-aligned privacy policy.")}
               </li>
               <li className="flex items-start gap-2">
                 <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]" />
-                IP transfers to you on full payment, in writing.
+                {t("IP transfers to you on full payment, in writing.")}
               </li>
             </ul>
           </section>
@@ -448,7 +472,7 @@ export default async function TemplateCheckoutPage({
           <section className="rounded-[1.5rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] p-5">
             <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
               <Layers3 className="h-3.5 w-3.5" />
-              Included with this template
+              {t("Included with this template")}
             </p>
             <ul className="mt-3 space-y-1.5 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
               {template.features.slice(0, 6).map((feature) => (
@@ -461,12 +485,12 @@ export default async function TemplateCheckoutPage({
           </section>
 
           <p className="text-center text-[11.5px] text-[var(--studio-ink-soft)]">
-            Need scope refinement instead?{" "}
+            {t("Need scope refinement instead?")}{" "}
             <Link
               href={`/request?template=${template.slug}`}
               className="font-semibold text-[var(--studio-signal)] hover:underline"
             >
-              Open the full brief
+              {t("Open the full brief")}
             </Link>
             .
           </p>

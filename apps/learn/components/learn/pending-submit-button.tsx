@@ -3,6 +3,8 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useFormStatus } from "react-dom";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { cn } from "@/lib/utils";
 
 type PendingSubmitButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
@@ -13,7 +15,7 @@ type PendingSubmitButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "c
 
 export function PendingSubmitButton({
   children,
-  pendingLabel = "Working...",
+  pendingLabel,
   variant = "primary",
   className,
   disabled,
@@ -21,6 +23,8 @@ export function PendingSubmitButton({
   ...props
 }: PendingSubmitButtonProps) {
   const { pending } = useFormStatus();
+  const locale = useHenryCoLocale();
+  const resolvedPendingLabel = pendingLabel ?? translateSurfaceLabel(locale, "Working...");
 
   return (
     <button
@@ -37,7 +41,7 @@ export function PendingSubmitButton({
       {pending ? (
         <>
           <LoaderCircle className="h-4 w-4 animate-spin" />
-          <span>{pendingLabel}</span>
+          <span>{resolvedPendingLabel}</span>
         </>
       ) : (
         children

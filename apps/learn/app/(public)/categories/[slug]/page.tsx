@@ -116,7 +116,7 @@ export default async function CategoryPage({
         </div>
         <div className="mt-6 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {data.courses.map((course) => (
-            <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} />
+            <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} locale={locale} />
           ))}
         </div>
       </section>

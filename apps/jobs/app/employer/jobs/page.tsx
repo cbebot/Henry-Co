@@ -11,10 +11,8 @@ export const dynamic = "force-dynamic";
 
 export default async function EmployerJobsPage() {
   const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/jobs");
-  const [data, locale] = await Promise.all([
-    getEmployerDashboardData(viewer.user!.id, viewer.user!.email),
-    getJobsPublicLocale(),
-  ]);
+  const locale = await getJobsPublicLocale();
+  const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale);
   const copy = getJobsCopy(locale).employerJobs;
 
   const moderationStatusLabel = (status: string): string => {

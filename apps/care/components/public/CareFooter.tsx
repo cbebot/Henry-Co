@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { BRAND_EMAILS, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { DivisionPublicConfig } from "@/components/public/CareNavbar";
 import { CareMonogram } from "@/components/brand/CareMonogram";
 
@@ -38,6 +40,8 @@ function FooterBrandMark({
 
 export default function CareFooter({ division }: { division: DivisionPublicConfig }) {
   const year = new Date().getFullYear();
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <footer
@@ -64,13 +68,12 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
                 {division.name}
               </div>
               <div className="text-[11px] uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
-                Care
+                {t("Care")}
               </div>
             </div>
           </div>
           <p className="max-w-md text-sm leading-7 text-zinc-600 dark:text-white/66">
-            Garment care, home cleaning, office cleaning, and pickup delivery — clear booking,
-            careful handling, and responsive support from request to finish.
+            {t("Garment care, home cleaning, office cleaning, and pickup delivery — clear booking, careful handling, and responsive support from request to finish.")}
           </p>
           <div className="space-y-1.5 text-sm">
             <p className="font-medium text-zinc-900 dark:text-white">
@@ -83,40 +86,40 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
         </div>
 
         <FooterColumn
-          title="Explore"
+          title={t("Explore")}
           items={[
-            { href: "/", label: "Home" },
-            { href: "/services", label: "Services" },
-            { href: "/pricing", label: "Pricing" },
-            { href: "/review", label: "Reviews" },
+            { href: "/", label: t("Home") },
+            { href: "/services", label: t("Services") },
+            { href: "/pricing", label: t("Pricing") },
+            { href: "/review", label: t("Reviews") },
           ]}
         />
         <FooterColumn
-          title="Booking"
+          title={t("Booking")}
           items={[
-            { href: "/book", label: "Book a service" },
-            { href: "/track", label: "Track a booking" },
-            { href: "/about", label: "About HenryCo Care" },
-            { href: "/contact", label: "Contact and support" },
+            { href: "/book", label: t("Book a service") },
+            { href: "/track", label: t("Track a booking") },
+            { href: "/about", label: t("About HenryCo Care") },
+            { href: "/contact", label: t("Contact and support") },
           ]}
         />
         <FooterColumn
           title="HenryCo"
           items={[
-            { href: getHubUrl("/"), label: "HenryCo group", external: true },
-            { href: getHubUrl("/preferences"), label: "Preferences", external: true },
-            { href: getHubUrl("/privacy"), label: "Privacy", external: true },
-            { href: getHubUrl("/terms"), label: "Terms", external: true },
+            { href: getHubUrl("/"), label: t("HenryCo group"), external: true },
+            { href: getHubUrl("/preferences"), label: t("Preferences"), external: true },
+            { href: getHubUrl("/privacy"), label: t("Privacy"), external: true },
+            { href: getHubUrl("/terms"), label: t("Terms"), external: true },
           ]}
         />
       </div>
 
       <div className="border-t border-black/10 dark:border-white/10">
         <div className="mx-auto flex max-w-[88rem] flex-col items-start gap-3 px-5 py-5 text-xs text-zinc-500 dark:text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-          <div>© {year} {division.name}. All rights reserved.</div>
+          <div>© {year} {division.name}. {t("All rights reserved.")}</div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]/85" />
-            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+            {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
           </span>
         </div>
       </div>

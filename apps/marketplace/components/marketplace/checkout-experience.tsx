@@ -25,49 +25,63 @@ import { formatCurrency } from "@/lib/utils";
 
 type CheckoutStep = "delivery" | "payment" | "confirm";
 
-const STEPS: Array<{ id: CheckoutStep; label: string; description: string }> = [
-  {
-    id: "delivery",
-    label: "Delivery",
-    description: "Where the order arrives",
-  },
-  {
-    id: "payment",
-    label: "Payment",
-    description: "How you'll settle",
-  },
-  {
-    id: "confirm",
-    label: "Confirm",
-    description: "Final review",
-  },
-];
+const STEP_IDS: CheckoutStep[] = ["delivery", "payment", "confirm"];
 
-const PAYMENT_METHODS = [
-  {
-    id: "wallet_balance",
-    label: "HenryCo balance",
-    description:
-      "Use cleared HenryCo wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
-    icon: Wallet,
-  },
-  {
-    id: "bank_transfer",
-    label: "Bank transfer",
-    description:
-      "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
-    icon: Banknote,
-  },
-  {
-    id: "cod",
-    label: "Cash on delivery",
-    description:
-      "Available on eligible orders only. Pay the rider when the order arrives — seller acceptance still confirms first.",
-    icon: Wallet,
-  },
-] as const;
+function buildSteps(t: (s: string) => string): Array<{ id: CheckoutStep; label: string; description: string }> {
+  return [
+    {
+      id: "delivery",
+      label: t("Delivery"),
+      description: t("Where the order arrives"),
+    },
+    {
+      id: "payment",
+      label: t("Payment"),
+      description: t("How you'll settle"),
+    },
+    {
+      id: "confirm",
+      label: t("Confirm"),
+      description: t("Final review"),
+    },
+  ];
+}
 
-type PaymentMethodId = (typeof PAYMENT_METHODS)[number]["id"];
+type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod";
+
+function buildPaymentMethods(t: (s: string) => string): Array<{
+  id: PaymentMethodId;
+  label: string;
+  description: string;
+  icon: typeof Wallet;
+}> {
+  return [
+    {
+      id: "wallet_balance",
+      label: t("HenryCo balance"),
+      description: t(
+        "Use cleared HenryCo wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
+      ),
+      icon: Wallet,
+    },
+    {
+      id: "bank_transfer",
+      label: t("Bank transfer"),
+      description: t(
+        "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
+      ),
+      icon: Banknote,
+    },
+    {
+      id: "cod",
+      label: t("Cash on delivery"),
+      description: t(
+        "Available on eligible orders only. Pay the rider when the order arrives — seller acceptance still confirms first.",
+      ),
+      icon: Wallet,
+    },
+  ];
+}
 
 type PaymentRailShape = {
   bankName: string | null;
@@ -128,6 +142,8 @@ export function CheckoutExperience({
   walletTopUpHref: string;
   buyer: { fullName: string | null; email: string | null };
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { moveCartItemToSaved, pendingSavedItemIds } = useMarketplaceCart();
   const [step, setStep] = useState<CheckoutStep>("delivery");
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
@@ -290,13 +306,12 @@ export function CheckoutExperience({
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="market-kicker">Checkout</p>
+          <p className="market-kicker">{t("Checkout")}</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
-            Three measured steps. No surprises.
+            {t("Three measured steps. No surprises.")}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-            Save items for later at any point — your basket waits, your prices hold,
-            and the timeline updates the moment payment lands.
+            {t("Save items for later at any point — your basket waits, your prices hold, and the timeline updates the moment payment lands.")}
           </p>
         </div>
         <Link
@@ -304,7 +319,7 @@ export function CheckoutExperience({
           className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
-          Edit cart
+          {t("Edit cart")}
         </Link>
       </header>
 
@@ -404,7 +419,7 @@ export function CheckoutExperience({
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.07)]"
               >
                 <ChevronLeft className="h-4 w-4" />
-                Back
+                {t("Back")}
               </button>
             ) : null}
 
@@ -416,7 +431,7 @@ export function CheckoutExperience({
                 icon={<ChevronRight className="h-4 w-4" />}
                 iconPosition="trailing"
               >
-                Continue
+                {t("Continue")}
               </ActionButton>
             ) : null}
 
@@ -428,23 +443,23 @@ export function CheckoutExperience({
                 spinner={submitting}
                 icon={<Lock className="h-4 w-4" />}
               >
-                {submitting ? "Placing order..." : "Place order"}
+                {submitting ? t("Placing order...") : t("Place order")}
               </ActionButton>
             ) : null}
 
             <p className="ml-auto inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
               <Lock className="h-3 w-3" />
-              Encrypted · session bound · audit-logged
+              {t("Encrypted · session bound · audit-logged")}
             </p>
           </div>
 
           {step === "confirm" ? (
             <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-xs leading-6 text-[var(--market-muted)]">
               {paymentMethod === "wallet_balance"
-                ? "On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches."
+                ? t("On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches.")
                 : paymentMethod === "bank_transfer"
-                ? "On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does."
-                : "On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives."}
+                ? t("On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does.")
+                : t("On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives.")}
             </p>
           ) : null}
         </form>
@@ -467,11 +482,12 @@ export function CheckoutExperience({
 function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const currentIndex = STEPS.findIndex((s) => s.id === currentStep);
-  const progressPct = ((currentIndex + 0.5) / STEPS.length) * 100;
+  const steps = buildSteps(t);
+  const currentIndex = steps.findIndex((s) => s.id === currentStep);
+  const progressPct = ((currentIndex + 0.5) / steps.length) * 100;
 
   return (
-    <nav aria-label="Checkout progress" className="market-paper rounded-[2rem] p-5 sm:p-6">
+    <nav aria-label={t("Checkout progress")} className="market-paper rounded-[2rem] p-5 sm:p-6">
       <div className="relative">
         {/* Progress rail */}
         <div className="absolute left-[2.5%] right-[2.5%] top-[1.25rem] hidden h-px sm:block">
@@ -484,7 +500,7 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
         </div>
 
         <ol className="relative z-10 grid grid-cols-3 gap-3">
-          {STEPS.map((stepDef, index) => {
+          {steps.map((stepDef, index) => {
             const status =
               index < currentIndex
                 ? "done"
@@ -517,10 +533,10 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
                     {t("Step")} {index + 1}
                   </span>
                   <span className="mt-1 block text-sm font-semibold text-[var(--market-paper-white)] sm:text-base">
-                    {t(stepDef.label)}
+                    {stepDef.label}
                   </span>
                   <span className="hidden text-xs text-[var(--market-muted)] sm:block">
-                    {t(stepDef.description)}
+                    {stepDef.description}
                   </span>
                 </span>
               </li>
@@ -557,6 +573,8 @@ function DeliveryStep({
   selectedAddress: UserAddressRecord | null;
   buyer: { fullName: string | null; email: string | null };
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const phoneNeeded = !usingOneShot && !selectedAddress?.phone;
 
   return (
@@ -566,9 +584,9 @@ function DeliveryStep({
           <Truck className="h-4 w-4" />
         </span>
         <div>
-          <p className="market-kicker">Step 1 of 3</p>
+          <p className="market-kicker">{t("Step 1 of 3")}</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-3xl">
-            Delivery details
+            {t("Delivery details")}
           </h2>
         </div>
       </header>
@@ -576,7 +594,7 @@ function DeliveryStep({
       {addresses.length > 0 ? (
         <div className="mt-6 space-y-3">
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--market-muted)]">
-            Saved addresses
+            {t("Saved addresses")}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             {addresses.map((address) => {
@@ -601,10 +619,10 @@ function DeliveryStep({
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
                         {address.label.replace(/_/g, " ")}
-                        {address.is_default ? " · Default" : ""}
+                        {address.is_default ? ` · ${t("Default")}` : ""}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[var(--market-paper-white)]">
-                        {address.full_name || buyer.fullName || "Recipient"}
+                        {address.full_name || buyer.fullName || t("Recipient")}
                       </p>
                       <p className="mt-1 text-sm leading-6 text-[var(--market-muted)]">
                         {address.street}
@@ -626,7 +644,7 @@ function DeliveryStep({
                   </div>
                   {address.kyc_verified ? (
                     <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[rgba(154,174,164,0.16)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--market-aurora)]">
-                      KYC verified
+                      {t("KYC verified")}
                     </span>
                   ) : null}
                 </label>
@@ -637,12 +655,12 @@ function DeliveryStep({
           {phoneNeeded ? (
             <label className="block">
               <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                Phone for the rider
+                {t("Phone for the rider")}
               </span>
               <input
                 type="tel"
                 inputMode="tel"
-                placeholder="e.g. +234 800 000 0000"
+                placeholder={t("e.g. +234 800 000 0000")}
                 value={phoneOverride}
                 onChange={(event) => setPhoneOverride(event.target.value)}
                 className="market-input mt-2 rounded-[1.2rem] px-4 py-3"
@@ -656,13 +674,12 @@ function DeliveryStep({
             onClick={() => setUsingOneShot((v) => !v)}
             className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]"
           >
-            {usingOneShot ? "Use a saved address instead" : "Use a different address this time"}
+            {usingOneShot ? t("Use a saved address instead") : t("Use a different address this time")}
           </button>
         </div>
       ) : (
         <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
-          You don&apos;t have any saved addresses yet. Enter delivery details below — we&apos;ll
-          offer to save it to your address book after the order is placed.
+          {t("You don't have any saved addresses yet. Enter delivery details below — we'll offer to save it to your address book after the order is placed.")}
         </p>
       )}
 
@@ -670,7 +687,7 @@ function DeliveryStep({
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="space-y-2 sm:col-span-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-              Recipient name
+              {t("Recipient name")}
             </span>
             <input
               className="market-input rounded-[1.2rem] px-4 py-3"
@@ -681,7 +698,7 @@ function DeliveryStep({
           </label>
           <label className="space-y-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-              Phone
+              {t("Phone")}
             </span>
             <input
               type="tel"
@@ -694,7 +711,7 @@ function DeliveryStep({
           </label>
           <label className="space-y-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-              Region / state
+              {t("Region / state")}
             </span>
             <input
               className="market-input rounded-[1.2rem] px-4 py-3"
@@ -705,7 +722,7 @@ function DeliveryStep({
           </label>
           <label className="space-y-2 sm:col-span-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-              City
+              {t("City")}
             </span>
             <input
               className="market-input rounded-[1.2rem] px-4 py-3"
@@ -716,7 +733,7 @@ function DeliveryStep({
           </label>
           <label className="space-y-2 sm:col-span-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-              Street address
+              {t("Street address")}
             </span>
             <input
               className="market-input rounded-[1.2rem] px-4 py-3"
@@ -811,7 +828,7 @@ function PaymentStep({
       </p>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-3">
-        {PAYMENT_METHODS.map((option) => {
+        {buildPaymentMethods(t).map((option) => {
           const Icon = option.icon;
           const active = method === option.id;
           const disabled =
@@ -853,7 +870,7 @@ function PaymentStep({
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
-                  {t(option.label)}
+                  {option.label}
                 </span>
                 {active ? (
                   <span className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--market-brass)] text-[#101114]">
@@ -862,7 +879,7 @@ function PaymentStep({
                 ) : null}
               </div>
               <p className="text-sm leading-6 text-[var(--market-muted)]">
-                {t(option.description)}
+                {option.description}
               </p>
               <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--market-brass)]">
                 {detail}
@@ -931,13 +948,13 @@ function PaymentStep({
                   type="button"
                   onClick={() => void copyValue("reference", paymentReference)}
                   className="rounded-full border border-[var(--market-line)] p-2 text-[var(--market-brass)]"
-                  aria-label="Copy payment reference"
+                  aria-label={t("Copy payment reference")}
                 >
                   <Copy className="h-3.5 w-3.5" />
                 </button>
               </div>
               {copied === "reference" ? (
-                <p className="mt-1 text-xs text-[var(--market-brass)]">Copied</p>
+                <p className="mt-1 text-xs text-[var(--market-brass)]">{t("Copied")}</p>
               ) : null}
             </div>
           </div>
@@ -958,7 +975,7 @@ function PaymentStep({
                       type="button"
                       onClick={() => void copyValue(label, value)}
                       className="rounded-full border border-[var(--market-line)] p-1.5 text-[var(--market-brass)]"
-                      aria-label={`Copy ${label}`}
+                      aria-label={`${t("Copy")} ${label}`}
                     >
                       <Copy className="h-3 w-3" />
                     </button>
@@ -968,7 +985,7 @@ function PaymentStep({
             </dl>
           ) : (
             <p className="rounded-[1.2rem] border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
-              Bank transfer is temporarily unavailable because payment account settings are not configured.
+              {t("Bank transfer is temporarily unavailable because payment account settings are not configured.")}
             </p>
           )}
 
@@ -1075,7 +1092,9 @@ function ConfirmStep({
   onSaveItemForLater: (itemId: string) => void;
   pendingSavedItemIds: string[];
 }) {
-  const methodLabel = PAYMENT_METHODS.find((p) => p.id === paymentMethod)?.label ?? paymentMethod;
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const methodLabel = buildPaymentMethods(t).find((p) => p.id === paymentMethod)?.label ?? paymentMethod;
 
   return (
     <article className="market-panel rounded-[2rem] p-6 sm:p-8">

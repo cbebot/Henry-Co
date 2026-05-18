@@ -3,10 +3,12 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorPayoutsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/payouts");
   const data = await getVendorWorkspaceData();
 
@@ -14,7 +16,7 @@ export default async function VendorPayoutsPage() {
     <WorkspaceShell
       title="Payouts"
       description="Payout requests only draw from releasable balances. HenryCo keeps held, frozen, requested, approved, and released funds separated for audit and finance review."
-      nav={vendorNav("/vendor/payouts")}
+      nav={vendorNav("/vendor/payouts", locale)}
     >
       <section className="grid gap-4 md:grid-cols-4">
         <article className="market-paper rounded-[1.5rem] p-5">

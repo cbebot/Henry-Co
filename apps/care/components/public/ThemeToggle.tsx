@@ -3,6 +3,8 @@
 import { useState, useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { Laptop, Moon, Sun } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 function Icon({ mode }: { mode: "light" | "dark" | "system" }) {
   if (mode === "light") return <Sun className="h-4 w-4" />;
@@ -11,6 +13,8 @@ function Icon({ mode }: { mode: "light" | "dark" | "system" }) {
 }
 
 export default function ThemeToggle() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const mounted = useSyncExternalStore(
@@ -22,7 +26,7 @@ export default function ThemeToggle() {
   if (!mounted) return <div className="h-10 w-[110px]" />;
 
   const current = (theme ?? "system") as "light" | "dark" | "system";
-  const visibleLabel = current === "system" ? `System (${resolvedTheme})` : current;
+  const visibleLabel = current === "system" ? `${t("System")} (${resolvedTheme})` : t(current === "light" ? "Light" : "Dark");
 
   const item = (mode: "light" | "dark" | "system", label: string) => (
     <button
@@ -46,6 +50,7 @@ export default function ThemeToggle() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm backdrop-blur-xl hover:bg-white dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.10]"
+        aria-label={t("Toggle theme")}
       >
         <span className="grid h-7 w-7 place-items-center rounded-xl bg-black/5 dark:bg-white/10">
           <Icon mode={current} />
@@ -56,9 +61,9 @@ export default function ThemeToggle() {
 
       {open ? (
         <div className="absolute right-0 z-50 mt-2 w-[220px] overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-2 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#0B1220]/95">
-          {item("system", "System")}
-          {item("light", "Light")}
-          {item("dark", "Dark")}
+          {item("system", t("System"))}
+          {item("light", t("Light"))}
+          {item("dark", t("Dark"))}
         </div>
       ) : null}
     </div>

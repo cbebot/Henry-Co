@@ -13,7 +13,9 @@ import {
   Sparkles,
   SquareStack,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -311,7 +313,9 @@ export function PropertyAreaCard({
   );
 }
 
-export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
+export async function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article className="overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)]">
       <div className="grid gap-0 sm:grid-cols-[0.5fr,1fr]">
@@ -349,7 +353,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
           <dl className="divide-y divide-[var(--property-line)] border-t border-[var(--property-line)] text-sm">
             <div className="flex items-baseline gap-3 py-2.5">
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-                Email
+                {t("Email")}
               </dt>
               <dd className="ml-auto truncate text-right text-sm font-medium text-[var(--property-ink)]">
                 {agent.email}
@@ -357,7 +361,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
             </div>
             <div className="flex items-baseline gap-3 py-2.5">
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-                Phone
+                {t("Phone")}
               </dt>
               <dd className="ml-auto truncate text-right text-sm font-medium text-[var(--property-ink)]">
                 {agent.phone}
@@ -370,13 +374,15 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
   );
 }
 
-export function PropertyManagedRecordCard({
+export async function PropertyManagedRecordCard({
   record,
   compact,
 }: {
   record: PropertyManagedRecord;
   compact?: boolean;
 }) {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article
       className={cn(
@@ -399,7 +405,7 @@ export function PropertyManagedRecordCard({
       <dl className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)] text-sm sm:grid sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:border-y">
         <div className="py-3 sm:px-4 sm:py-4 sm:first:pl-0">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-            Owner
+            {t("Owner")}
           </dt>
           <dd className="mt-1.5 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
             {record.ownerName}
@@ -407,7 +413,7 @@ export function PropertyManagedRecordCard({
         </div>
         <div className="py-3 sm:px-4 sm:py-4">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-            Portfolio value
+            {t("Portfolio value")}
           </dt>
           <dd className="mt-1.5 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
             {formatCurrency(record.portfolioValue)}
@@ -415,7 +421,7 @@ export function PropertyManagedRecordCard({
         </div>
         <div className="py-3 sm:px-4 sm:py-4 sm:last:pr-0">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-            Service lines
+            {t("Service lines")}
           </dt>
           <dd className="mt-1.5 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
             {record.serviceLines.length}
@@ -438,11 +444,13 @@ export function PropertyManagedRecordCard({
   );
 }
 
-export function PropertyDifferentiatorCard({
+export async function PropertyDifferentiatorCard({
   item,
 }: {
   item: PropertyDifferentiator;
 }) {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6">
       <div className="flex items-start justify-between gap-3">
@@ -459,7 +467,7 @@ export function PropertyDifferentiatorCard({
       <div className="mt-5 grid gap-6 border-y border-[var(--property-line)] py-5 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)] md:py-4">
         <div className="md:pr-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--property-sage)]">
-            Pros
+            {t("Pros")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {item.pros.map((value) => (
@@ -475,7 +483,7 @@ export function PropertyDifferentiatorCard({
         </div>
         <div className="md:pl-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--property-accent-strong)]">
-            Trade-offs
+            {t("Trade-offs")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {item.cons.map((value) => (
@@ -491,7 +499,7 @@ export function PropertyDifferentiatorCard({
         </div>
       </div>
       <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-        Difficulty: {item.difficulty.replace("_", " ")}
+        {t("Difficulty")}: {item.difficulty.replace("_", " ")}
       </p>
     </article>
   );
@@ -632,26 +640,28 @@ export function PropertyStatusBadge({ status }: { status: string }) {
   );
 }
 
-export function PropertyQuickFacts({ listing }: { listing: PropertyListing }) {
+export async function PropertyQuickFacts({ listing }: { listing: PropertyListing }) {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const facts = [
     {
       icon: <MapPin className="h-3.5 w-3.5" />,
-      label: "Area",
+      label: t("Area"),
       value: listing.locationLabel,
     },
     {
       icon: <CalendarRange className="h-3.5 w-3.5" />,
-      label: "Availability",
-      value: listing.availableNow ? "Available now" : "Future availability",
+      label: t("Availability"),
+      value: listing.availableNow ? t("Available now") : t("Future availability"),
     },
     {
       icon: <ShieldCheck className="h-3.5 w-3.5" />,
-      label: "Trust",
-      value: `${listing.trustBadges.length} signals`,
+      label: t("Trust"),
+      value: `${listing.trustBadges.length} ${t("signals")}`,
     },
     {
       icon: <Sparkles className="h-3.5 w-3.5" />,
-      label: "Headline",
+      label: t("Headline"),
       value: listing.headlineMetrics.slice(0, 2).join(" · "),
     },
   ];

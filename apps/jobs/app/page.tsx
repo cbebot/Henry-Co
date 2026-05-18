@@ -23,7 +23,7 @@ const accountJobsUrl = getSharedAccountJobsUrl();
 export default async function HomePage() {
   const locale = await getJobsPublicLocale();
   const copy = getJobsPublicCopy(locale);
-  const home = await getJobsHomeData();
+  const home = await getJobsHomeData(locale);
 
   return (
     <PublicShell

@@ -11,6 +11,7 @@ import { getMarketplaceViewer, requireMarketplaceUser } from "@/lib/marketplace/
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export const dynamic = "force-dynamic";
  * action — no client JS needed for the basic round-trip.
  */
 export default async function AccountSavedPage() {
+  const locale = await getMarketplacePublicLocale();
   const viewer = await requireMarketplaceUser("/account/saved");
   const admin = createAdminSupabase();
   const items = await listSavedItems(admin, viewer.user!.id, {
@@ -38,7 +40,7 @@ export default async function AccountSavedPage() {
     <WorkspaceShell
       title="Saved for later"
       description="Items you moved out of the cart so they don't lock up your basket — restore one when you're ready, or clear it."
-      {...accountWorkspaceNav("/account/saved")}
+      {...accountWorkspaceNav("/account/saved", locale)}
     >
       {items.length === 0 ? (
         <EmptyState

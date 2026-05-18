@@ -9,7 +9,9 @@ import {
   ShieldCheck,
   Video,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireAccountUser } from "@/lib/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { getJobsModuleData } from "@/lib/jobs-module";
 import { formatDateTime, timeAgo } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
@@ -28,7 +30,8 @@ export default async function JobsInterviewDetailPage({
 }: {
   params: Promise<{ sessionId: string }>;
 }) {
-  const user = await requireAccountUser();
+  const [user, locale] = await Promise.all([requireAccountUser(), getAccountAppLocale()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { sessionId } = await params;
   const data = await getJobsModuleData(user.id);
   const session = data.interviewSessions.find((item) => item.id === sessionId) ?? null;
@@ -41,18 +44,18 @@ export default async function JobsInterviewDetailPage({
     <div className="space-y-6 acct-fade-in">
       <PageHeader
         title={session.jobTitle}
-        description="A candidate-safe interview room with timing, recruiter notes, provider readiness, and follow-up history."
+        description={t("A candidate-safe interview room with timing, recruiter notes, provider readiness, and follow-up history.")}
         icon={Video}
         actions={
           <div className="flex flex-wrap gap-3">
             <Link href="/jobs/interviews" className="acct-button-secondary rounded-xl">
-              <ArrowLeft size={14} /> All interview rooms
+              <ArrowLeft size={14} /> {t("All interview rooms")}
             </Link>
             <a href={session.jobHref} className="acct-button-secondary rounded-xl">
-              View role <ArrowUpRight size={14} />
+              {t("View role")} <ArrowUpRight size={14} />
             </a>
             <a href={session.supportHref} className="acct-button-primary rounded-xl">
-              Open recruiter thread <ArrowUpRight size={14} />
+              {t("Open recruiter thread")} <ArrowUpRight size={14} />
             </a>
           </div>
         }
@@ -74,26 +77,26 @@ export default async function JobsInterviewDetailPage({
                 </span>
               </div>
               <h2 className="mt-4 acct-display text-3xl leading-tight sm:text-4xl">
-                {session.nextStepLabel}
+                {t(session.nextStepLabel)}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-white/78">{session.confirmationNote}</p>
+              <p className="mt-3 text-sm leading-7 text-white/78">{t(session.confirmationNote)}</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               {[
                 {
-                  label: "Timing",
-                  value: session.scheduledAt ? formatDateTime(session.scheduledAt) : "Pending",
-                  detail: "The recruiter can still refine timing and room details.",
+                  label: t("Timing"),
+                  value: session.scheduledAt ? formatDateTime(session.scheduledAt) : t("Pending"),
+                  detail: t("The recruiter can still refine timing and room details."),
                 },
                 {
-                  label: "Interviewer",
+                  label: t("Interviewer"),
                   value: session.interviewerName,
-                  detail: session.interviewerTitle,
+                  detail: t(session.interviewerTitle),
                 },
                 {
-                  label: "Join readiness",
-                  value: session.isJoinReady ? "Ready" : "Pending",
-                  detail: session.locationLabel,
+                  label: t("Join readiness"),
+                  value: session.isJoinReady ? t("Ready") : t("Pending"),
+                  detail: t(session.locationLabel),
                 },
               ].map((item) => (
                 <div key={item.label} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
@@ -113,29 +116,29 @@ export default async function JobsInterviewDetailPage({
             <div className="mb-5 flex items-center gap-2">
               <CalendarRange size={15} className="text-[var(--acct-gold)]" />
               <div>
-                <p className="acct-kicker">Interview state</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">What is already known</h3>
+                <p className="acct-kicker">{t("Interview state")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What is already known")}</h3>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
-                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Interviewer</div>
+                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Interviewer")}</div>
                 <div className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{session.interviewerName}</div>
-                <p className="mt-1 text-xs text-[var(--acct-muted)]">{session.interviewerTitle}</p>
+                <p className="mt-1 text-xs text-[var(--acct-muted)]">{t(session.interviewerTitle)}</p>
               </div>
               <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
-                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Provider</div>
+                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Provider")}</div>
                 <div className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{session.provider.replaceAll("_", " ")}</div>
-                <p className="mt-1 text-xs text-[var(--acct-muted)]">{session.locationLabel}</p>
+                <p className="mt-1 text-xs text-[var(--acct-muted)]">{t(session.locationLabel)}</p>
               </div>
               <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
-                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Scheduled at</div>
+                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Scheduled at")}</div>
                 <div className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">
-                  {session.scheduledAt ? formatDateTime(session.scheduledAt) : "Awaiting recruiter timing"}
+                  {session.scheduledAt ? formatDateTime(session.scheduledAt) : t("Awaiting recruiter timing")}
                 </div>
               </div>
               <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
-                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Status</div>
+                <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Status")}</div>
                 <div className="mt-2">
                   <span className={statusChip(session.status)}>{session.status.replaceAll("_", " ")}</span>
                 </div>
@@ -147,12 +150,12 @@ export default async function JobsInterviewDetailPage({
             <div className="mb-5 flex items-center gap-2">
               <ShieldCheck size={15} className="text-[var(--acct-blue)]" />
               <div>
-                <p className="acct-kicker">Preparation notes</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">How to walk into this stage stronger</h3>
+                <p className="acct-kicker">{t("Preparation notes")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("How to walk into this stage stronger")}</h3>
               </div>
             </div>
             <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
-              <p className="text-sm font-semibold text-[var(--acct-ink)]">{session.nextStepLabel}</p>
+              <p className="text-sm font-semibold text-[var(--acct-ink)]">{t(session.nextStepLabel)}</p>
               <p className="mt-3 text-sm leading-7 text-[var(--acct-muted)]">{session.preparationNotes}</p>
               <p className="mt-3 text-sm leading-7 text-[var(--acct-muted)]">{session.nextStepBody}</p>
             </div>
@@ -164,29 +167,29 @@ export default async function JobsInterviewDetailPage({
             <div className="mb-5 flex items-center gap-2">
               <Headphones size={15} className="text-[var(--acct-gold)]" />
               <div>
-                <p className="acct-kicker">Remote session lane</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Provider-ready join flow</h3>
+                <p className="acct-kicker">{t("Remote session lane")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Provider-ready join flow")}</h3>
               </div>
             </div>
             <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
               {session.isJoinReady && session.joinUrl ? (
                 <>
-                  <p className="text-sm font-semibold text-[var(--acct-ink)]">The room is ready to join.</p>
+                  <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("The room is ready to join.")}</p>
                   <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-                    Use the live session link when the scheduled window opens.
+                    {t("Use the live session link when the scheduled window opens.")}
                   </p>
                   <a href={session.joinUrl} className="acct-button-primary mt-4 rounded-xl">
-                    Join remote interview
+                    {t("Join remote interview")}
                   </a>
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-semibold text-[var(--acct-ink)]">The live provider is not attached yet.</p>
+                  <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("The live provider is not attached yet.")}</p>
                   <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-                    HenryCo Jobs now preserves the interview-room architecture, but this session is still waiting for final timing or a video room provider attachment.
+                    {t("HenryCo Jobs now preserves the interview-room architecture, but this session is still waiting for final timing or a video room provider attachment.")}
                   </p>
                   <a href={session.supportHref} className="acct-button-secondary mt-4 rounded-xl">
-                    Request timing or reschedule
+                    {t("Request timing or reschedule")}
                   </a>
                 </>
               )}
@@ -197,15 +200,15 @@ export default async function JobsInterviewDetailPage({
             <div className="mb-5 flex items-center gap-2">
               <MessageSquare size={15} className="text-[var(--acct-blue)]" />
               <div>
-                <p className="acct-kicker">History</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Recruiter and stage movement</h3>
+                <p className="acct-kicker">{t("History")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Recruiter and stage movement")}</h3>
               </div>
             </div>
             <div className="space-y-3">
               {session.history.map((item) => (
                 <div key={item.id} className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] px-4 py-4">
                   <div className="flex items-center justify-between gap-4">
-                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{item.title}</p>
+                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{t(item.title)}</p>
                     <span className="text-xs text-[var(--acct-muted)]">{timeAgo(item.createdAt)}</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{item.body}</p>

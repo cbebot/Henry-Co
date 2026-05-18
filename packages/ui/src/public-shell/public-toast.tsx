@@ -10,6 +10,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn } from "../lib/cn";
 
 export type PublicToastTone = "info" | "success" | "warning" | "error" | "accent";
@@ -77,6 +79,7 @@ export function PublicToastProvider({
 }) {
   const [items, setItems] = useState<PublicToastEntry[]>([]);
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const locale = useOptionalHenryCoLocale() ?? "en";
 
   const dismiss = useCallback((id: string) => {
     setItems((prev) => prev.filter((t) => t.id !== id));
@@ -101,7 +104,7 @@ export function PublicToastProvider({
         tone: input.tone ?? toneDefault,
         action: input.action ?? null,
         durationMs: input.durationMs === null ? null : input.durationMs ?? 5000,
-        dismissLabel: input.dismissLabel ?? "Dismiss notification",
+        dismissLabel: input.dismissLabel ?? translateSurfaceLabel(locale, "Dismiss notification"),
       };
       setItems((prev) => {
         const next = [...prev, entry];
@@ -114,7 +117,7 @@ export function PublicToastProvider({
       }
       return id;
     },
-    [dismiss, maxVisible, toneDefault]
+    [dismiss, maxVisible, toneDefault, locale]
   );
 
   const clear = useCallback(() => {

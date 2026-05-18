@@ -1,7 +1,9 @@
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { reviewTeacherApplicationAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { ownerNav } from "@/lib/learn/navigation";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnEmptyState, LearnMetricCard, LearnPanel, LearnStatusBadge, LearnWorkspaceShell } from "@/components/learn/ui";
 
@@ -13,6 +15,8 @@ export default async function OwnerInstructorsPage({
   await requireLearnRoles(["academy_owner", "academy_admin"], "/owner/instructors");
   const params = await searchParams;
   const snapshot = await getLearnSnapshot();
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const applications = [...snapshot.teacherApplications].sort((left, right) =>
     right.updatedAt.localeCompare(left.updatedAt)
   );
@@ -22,30 +26,30 @@ export default async function OwnerInstructorsPage({
 
   return (
     <LearnWorkspaceShell
-      kicker="Instructor Ops"
-      title="Review applications, approve instructors, and keep onboarding structured."
-      description="Teaching opportunities, approval notes, and instructor access should be managed with the same operational discipline as courses and certificates."
-      nav={ownerNav("/owner/instructors")}
+      kicker={t("Instructor Ops")}
+      title={t("Review applications, approve instructors, and keep onboarding structured.")}
+      description={t("Teaching opportunities, approval notes, and instructor access should be managed with the same operational discipline as courses and certificates.")}
+      nav={ownerNav("/owner/instructors", t)}
     >
       {params.updated ? (
         <LearnPanel className="rounded-[2rem]">
           <p className="text-sm font-semibold text-[var(--learn-mint-soft)]">
-            Instructor application updated: {params.updated.replace(/_/g, " ")}.
+            {t("Instructor application updated")}: {params.updated.replace(/_/g, " ")}.
           </p>
         </LearnPanel>
       ) : null}
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <LearnMetricCard label="Applications" value={String(applications.length)} hint="All instructor applications currently stored in HenryCo Learn." />
-        <LearnMetricCard label="Open review" value={String(activeApplications.length)} hint="Applications still moving through review or changes." />
-        <LearnMetricCard label="Approved" value={String(applications.filter((item) => item.status === "approved").length)} hint="Approved instructors ready for onboarding or content work." />
-        <LearnMetricCard label="Public profiles" value={String(snapshot.instructors.length)} hint="Published instructor spotlights already visible in the academy." />
+        <LearnMetricCard label={t("Applications")} value={String(applications.length)} hint={t("All instructor applications currently stored in HenryCo Learn.")} />
+        <LearnMetricCard label={t("Open review")} value={String(activeApplications.length)} hint={t("Applications still moving through review or changes.")} />
+        <LearnMetricCard label={t("Approved")} value={String(applications.filter((item) => item.status === "approved").length)} hint={t("Approved instructors ready for onboarding or content work.")} />
+        <LearnMetricCard label={t("Public profiles")} value={String(snapshot.instructors.length)} hint={t("Published instructor spotlights already visible in the academy.")} />
       </div>
 
       {applications.length === 0 ? (
         <LearnEmptyState
-          title="No instructor applications yet"
-          body="Public teaching applications will appear here once candidates apply through Teach with HenryCo."
+          title={t("No instructor applications yet")}
+          body={t("Public teaching applications will appear here once candidates apply through Teach with HenryCo.")}
         />
       ) : (
         <div className="space-y-5">
@@ -69,16 +73,16 @@ export default async function OwnerInstructorsPage({
                     />
                   </div>
                   <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                    {application.normalizedEmail || "No email"} • {application.phone || "No phone"} •{" "}
-                    {application.country || "Country not supplied"}
+                    {application.normalizedEmail || t("No email")} • {application.phone || t("No phone")} •{" "}
+                    {application.country || t("Country not supplied")}
                   </p>
                   <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                    <span className="font-semibold text-[var(--learn-ink)]">Expertise:</span>{" "}
+                    <span className="font-semibold text-[var(--learn-ink)]">{t("Expertise")}:</span>{" "}
                     {application.expertiseArea}
                   </p>
                 </div>
                 <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm text-[var(--learn-ink-soft)]">
-                  Updated{" "}
+                  {t("Updated")}{" "}
                   {new Date(application.updatedAt).toLocaleDateString("en-NG", {
                     day: "numeric",
                     month: "short",
@@ -91,7 +95,7 @@ export default async function OwnerInstructorsPage({
                 <div className="space-y-4">
                   <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                      Teaching topics
+                      {t("Teaching topics")}
                     </p>
                     <p className="mt-2 text-sm leading-7 text-[var(--learn-ink)]">
                       {application.teachingTopics.join(", ")}
@@ -99,7 +103,7 @@ export default async function OwnerInstructorsPage({
                   </div>
                   <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                      Credentials
+                      {t("Credentials")}
                     </p>
                     <p className="mt-2 text-sm leading-7 text-[var(--learn-ink)]">
                       {application.credentials}
@@ -107,7 +111,7 @@ export default async function OwnerInstructorsPage({
                   </div>
                   <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                      Course proposal
+                      {t("Course proposal")}
                     </p>
                     <p className="mt-2 text-sm leading-7 text-[var(--learn-ink)]">
                       {application.courseProposal}
@@ -116,7 +120,7 @@ export default async function OwnerInstructorsPage({
                   {application.portfolioLinks.length > 0 ? (
                     <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                        Portfolio links
+                        {t("Portfolio links")}
                       </p>
                       <div className="mt-3 space-y-2">
                         {application.portfolioLinks.map((link) => (
@@ -136,7 +140,7 @@ export default async function OwnerInstructorsPage({
                   {application.supportingFiles.length > 0 ? (
                     <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                        Supporting files
+                        {t("Supporting files")}
                       </p>
                       <div className="mt-3 space-y-2">
                         {application.supportingFiles.map((file) => (
@@ -148,7 +152,7 @@ export default async function OwnerInstructorsPage({
                             className="flex items-center justify-between rounded-[1.2rem] border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink)]"
                           >
                             <span>{file.name}</span>
-                            <span className="text-[var(--learn-ink-soft)]">Open</span>
+                            <span className="text-[var(--learn-ink-soft)]">{t("Open")}</span>
                           </a>
                         ))}
                       </div>
@@ -159,41 +163,41 @@ export default async function OwnerInstructorsPage({
                 <form action={reviewTeacherApplicationAction} className="space-y-4 rounded-[1.6rem] border border-[var(--learn-line)] bg-black/10 p-4">
                   <input type="hidden" name="applicationId" value={application.id} />
                   <div>
-                    <label className="block text-sm font-medium text-[var(--learn-ink)]">Review note for applicant</label>
+                    <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Review note for applicant")}</label>
                     <textarea
                       name="reviewNotes"
                       defaultValue={application.reviewNotes || ""}
                       rows={5}
                       className="learn-textarea mt-2 rounded-2xl px-4 py-3"
-                      placeholder="Explain what was approved, what needs to change, or why the team passed."
+                      placeholder={t("Explain what was approved, what needs to change, or why the team passed.")}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[var(--learn-ink)]">Internal note</label>
+                    <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Internal note")}</label>
                     <textarea
                       name="adminNotes"
                       defaultValue={application.adminNotes || ""}
                       rows={4}
                       className="learn-textarea mt-2 rounded-2xl px-4 py-3"
-                      placeholder="Internal onboarding, payout, or staffing notes."
+                      placeholder={t("Internal onboarding, payout, or staffing notes.")}
                     />
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium text-[var(--learn-ink)]">Payout model</label>
+                      <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Payout model")}</label>
                       <select
                         name="payoutModel"
                         defaultValue={application.payoutModel || "pending"}
                         className="learn-select mt-2 rounded-2xl px-4 py-3"
                       >
-                        <option value="pending">Pending</option>
-                        <option value="revenue_share">Revenue share</option>
-                        <option value="fixed_fee">Fixed fee</option>
-                        <option value="stipend">Stipend</option>
+                        <option value="pending">{t("Pending")}</option>
+                        <option value="revenue_share">{t("Revenue share")}</option>
+                        <option value="fixed_fee">{t("Fixed fee")}</option>
+                        <option value="stipend">{t("Stipend")}</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[var(--learn-ink)]">Revenue share %</label>
+                      <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Revenue share %")}</label>
                       <input
                         name="revenueSharePercent"
                         type="number"
@@ -211,32 +215,32 @@ export default async function OwnerInstructorsPage({
                       name="decision"
                       value="under_review"
                       variant="secondary"
-                      pendingLabel="Updating review state..."
+                      pendingLabel={t("Updating review state...")}
                     >
-                      Mark under review
+                      {t("Mark under review")}
                     </PendingSubmitButton>
                     <PendingSubmitButton
                       name="decision"
                       value="changes_requested"
                       variant="secondary"
-                      pendingLabel="Requesting changes..."
+                      pendingLabel={t("Requesting changes...")}
                     >
-                      Request changes
+                      {t("Request changes")}
                     </PendingSubmitButton>
                     <PendingSubmitButton
                       name="decision"
                       value="approved"
-                      pendingLabel="Approving instructor..."
+                      pendingLabel={t("Approving instructor...")}
                     >
-                      Approve instructor
+                      {t("Approve instructor")}
                     </PendingSubmitButton>
                     <PendingSubmitButton
                       name="decision"
                       value="rejected"
                       variant="secondary"
-                      pendingLabel="Updating application..."
+                      pendingLabel={t("Updating application...")}
                     >
-                      Decline application
+                      {t("Decline application")}
                     </PendingSubmitButton>
                   </div>
                 </form>

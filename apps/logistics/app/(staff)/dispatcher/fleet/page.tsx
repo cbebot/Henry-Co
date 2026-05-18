@@ -1,4 +1,6 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -45,34 +47,35 @@ async function getFleetData() {
 }
 
 export default async function DispatcherFleetPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { riders, vehicles } = await getFleetData();
 
   return (
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Fleet
+          {t("Fleet")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Vehicles and riders on shift
+          {t("Vehicles and riders on shift")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Live fleet capacity. Editing shifts and rotation lives on the manager
-          surface.
+          {t("Live fleet capacity. Editing shifts and rotation lives on the manager surface.")}
         </p>
       </header>
 
       <Panel tone="flat">
         <header className="border-b border-[var(--logistics-line)] pb-3">
           <h2 className="text-base font-semibold tracking-tight text-white">
-            Riders
+            {t("Riders")}
           </h2>
         </header>
         {riders.length === 0 ? (
           <EmptyState
-            kicker="No riders"
-            headline="Roster is empty"
-            body="Add riders from the manager workspace to surface them here."
+            kicker={t("No riders")}
+            headline={t("Roster is empty")}
+            body={t("Add riders from the manager workspace to surface them here.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -83,8 +86,8 @@ export default async function DispatcherFleetPage() {
                     {rider.display_name}
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
-                    {rider.phone ?? "Phone TBD"} ·{" "}
-                    {rider.active ? "active" : "off"}
+                    {rider.phone ?? t("Phone TBD")} ·{" "}
+                    {rider.active ? t("active") : t("off")}
                   </p>
                 </div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/70">
@@ -99,14 +102,14 @@ export default async function DispatcherFleetPage() {
       <Panel tone="flat">
         <header className="border-b border-[var(--logistics-line)] pb-3">
           <h2 className="text-base font-semibold tracking-tight text-white">
-            Vehicles
+            {t("Vehicles")}
           </h2>
         </header>
         {vehicles.length === 0 ? (
           <EmptyState
-            kicker="No vehicles"
-            headline="Fleet inventory empty"
-            body="Register vehicles from the manager workspace to track them here."
+            kicker={t("No vehicles")}
+            headline={t("Fleet inventory empty")}
+            body={t("Register vehicles from the manager workspace to track them here.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -121,7 +124,7 @@ export default async function DispatcherFleetPage() {
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
                     {vehicle.vehicle_type} ·{" "}
-                    {vehicle.capacity_kg ? `${vehicle.capacity_kg} kg` : "capacity TBD"}
+                    {vehicle.capacity_kg ? `${vehicle.capacity_kg} kg` : t("capacity TBD")}
                   </p>
                 </div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/70">

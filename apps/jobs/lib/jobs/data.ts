@@ -1,10 +1,15 @@
 import "server-only";
 
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
-import { DEFAULT_PIPELINE, JOBS_DIFFERENTIATORS, JOBS_STAGE_ORDER } from "@/lib/jobs/content";
+import { DEFAULT_PIPELINE, JOBS_STAGE_ORDER, getJobsDifferentiators } from "@/lib/jobs/content";
 import { deriveJobTrustHighlights } from "@/lib/jobs/trust";
+
+function makeT(locale: AppLocale | undefined) {
+  return (text: string) => (locale ? translateSurfaceLabel(locale, text) : text);
+}
 import type {
   ApplicationJourney,
   ApplicationStageStep,
@@ -186,11 +191,12 @@ function calculateTrustScore(input: {
   }).score;
 }
 
-function getReadinessLabel(score: number) {
-  if (score >= 88) return "Interview-ready";
-  if (score >= 68) return "Strong profile";
-  if (score >= 45) return "Needs proof";
-  return "Needs structure";
+function getReadinessLabel(score: number, locale?: AppLocale) {
+  const t = makeT(locale);
+  if (score >= 88) return t("Interview-ready");
+  if (score >= 68) return t("Strong profile");
+  if (score >= 45) return t("Needs proof");
+  return t("Needs structure");
 }
 
 function toCandidateVerificationStatus(status: unknown): CandidateProfile["verificationStatus"] {
@@ -213,16 +219,23 @@ function stageTone(stage: string): StageTone {
   return "neutral";
 }
 
-function humanizeStage(stage: string) {
-  if (!stage) return "Applied";
-  return stage
-    .split(/[_\s-]+/)
-    .filter(Boolean)
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(" ");
+function humanizeStage(stage: string, locale?: AppLocale) {
+  const t = makeT(locale);
+  if (!stage) return t("Applied");
+  return t(
+    stage
+      .split(/[_\s-]+/)
+      .filter(Boolean)
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(" ")
+  );
 }
 
-function buildPipelineState(stages: string[], currentStage: string): ApplicationStageStep[] {
+function buildPipelineState(
+  stages: string[],
+  currentStage: string,
+  locale?: AppLocale
+): ApplicationStageStep[] {
   const normalized = [...new Set(stages.filter(Boolean))];
   if (normalized.length === 0) {
     normalized.push(...DEFAULT_PIPELINE);
@@ -236,7 +249,7 @@ function buildPipelineState(stages: string[], currentStage: string): Application
 
   return normalized.map((stage, index) => ({
     key: stage,
-    label: humanizeStage(stage),
+    label: humanizeStage(stage, locale),
     status: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming",
   }));
 }
@@ -259,99 +272,119 @@ function toTimestamp(value?: string | null) {
   return Number.isFinite(time) ? time : 0;
 }
 
-function relativeStageGuidance(stage: string) {
+function relativeStageGuidance(stage: string, locale?: AppLocale) {
+  const t = makeT(locale);
   if (stage === "reviewing") {
     return {
-      label: "Sit tight—someone is reading your application",
-      body: "Your note and profile are with the hiring team. Refresh your resume and availability so you are easy to move forward if they reach out.",
+      label: t("Sit tight—someone is reading your application"),
+      body: t(
+        "Your note and profile are with the hiring team. Refresh your resume and availability so you are easy to move forward if they reach out."
+      ),
     };
   }
 
   if (stage === "shortlisted") {
     return {
-      label: "You made the first cut",
-      body: "Shortlist means they liked the match enough to look closer. Have examples ready, know your dates, and watch Applications for the next message.",
+      label: t("You made the first cut"),
+      body: t(
+        "Shortlist means they liked the match enough to look closer. Have examples ready, know your dates, and watch Applications for the next message."
+      ),
     };
   }
 
   if (stage === "interview") {
     return {
-      label: "Interview season—prep like you mean it",
-      body: "This is the conversation stage. Bring clear stories, proof of impact, and honest answers about how you work.",
+      label: t("Interview season—prep like you mean it"),
+      body: t(
+        "This is the conversation stage. Bring clear stories, proof of impact, and honest answers about how you work."
+      ),
     };
   }
 
   if (stage === "offer") {
     return {
-      label: "Read the offer like a grown-up contract",
-      body: "Check pay, title, start date, and who you report to. It is OK to ask quiet questions before you say yes.",
+      label: t("Read the offer like a grown-up contract"),
+      body: t(
+        "Check pay, title, start date, and who you report to. It is OK to ask quiet questions before you say yes."
+      ),
     };
   }
 
   if (stage === "hired") {
     return {
-      label: "You closed the loop on this one",
-      body: "Congratulations. Tidy up saved roles and applications so your hub reflects where you are headed next.",
+      label: t("You closed the loop on this one"),
+      body: t(
+        "Congratulations. Tidy up saved roles and applications so your hub reflects where you are headed next."
+      ),
     };
   }
 
   if (stage === "rejected") {
     return {
-      label: "Not this time—and that is information too",
-      body: "One role saying no does not define you. Tighten your story, then keep going; the board updates often.",
+      label: t("Not this time—and that is information too"),
+      body: t(
+        "One role saying no does not define you. Tighten your story, then keep going; the board updates often."
+      ),
     };
   }
 
   return {
-    label: "Keep your profile honest and complete",
-    body: "Strong basics—resume, skills, availability—make the next step easier whenever a recruiter looks your way.",
+    label: t("Keep your profile honest and complete"),
+    body: t(
+      "Strong basics—resume, skills, availability—make the next step easier whenever a recruiter looks your way."
+    ),
   };
 }
 
-function profileChecklist(profile: CandidateProfile | null, documents: CandidateDocument[]): ProfileChecklistItem[] {
+function profileChecklist(
+  profile: CandidateProfile | null,
+  documents: CandidateDocument[],
+  locale?: AppLocale
+): ProfileChecklistItem[] {
+  const t = makeT(locale);
   const hasResume = documents.some((document) => document.kind === "resume");
   const hasPortfolio = documents.some((document) => document.kind === "portfolio") || (profile?.portfolioLinks.length ?? 0) > 0;
 
   return [
     {
       id: "identity",
-      label: "Basics and identity",
-      detail: "Full name, phone, and location give recruiters a usable contact layer.",
+      label: t("Basics and identity"),
+      detail: t("Full name, phone, and location give recruiters a usable contact layer."),
       complete: Boolean(profile?.fullName && profile.phone && profile.location),
       href: "/candidate/profile",
     },
     {
       id: "story",
-      label: "Professional story",
-      detail: "Headline and summary make the profile readable instead of blank metadata.",
+      label: t("Professional story"),
+      detail: t("Headline and summary make the profile readable instead of blank metadata."),
       complete: Boolean(profile?.headline && profile.summary),
       href: "/candidate/profile",
     },
     {
       id: "skills",
-      label: "Skills and function fit",
-      detail: "At least four clear skills and preferred functions improve role matching.",
+      label: t("Skills and function fit"),
+      detail: t("At least four clear skills and preferred functions improve role matching."),
       complete: (profile?.skills.length ?? 0) >= 4 && (profile?.preferredFunctions.length ?? 0) > 0,
       href: "/candidate/profile",
     },
     {
       id: "history",
-      label: "Work history",
-      detail: "Recruiters need evidence of real operating range, not only a headline.",
+      label: t("Work history"),
+      detail: t("Recruiters need evidence of real operating range, not only a headline."),
       complete: (profile?.workHistory.length ?? 0) > 0 || (profile?.education.length ?? 0) > 0,
       href: "/candidate/profile",
     },
     {
       id: "resume",
-      label: "Resume uploaded",
-      detail: "A resume is still the fastest way to raise application readiness.",
+      label: t("Resume uploaded"),
+      detail: t("A resume is still the fastest way to raise application readiness."),
       complete: hasResume,
       href: "/candidate/files",
     },
     {
       id: "portfolio",
-      label: "Proof and portfolio",
-      detail: "Portfolio links or proof files help shortlisted candidates move faster.",
+      label: t("Proof and portfolio"),
+      detail: t("Portfolio links or proof files help shortlisted candidates move faster."),
       complete: hasPortfolio,
       href: "/candidate/files",
     },
@@ -361,8 +394,10 @@ function profileChecklist(profile: CandidateProfile | null, documents: Candidate
 function buildThreadActivity(
   application: JobApplication,
   thread: ConversationThread | null,
-  messages: ConversationMessage[]
+  messages: ConversationMessage[],
+  locale?: AppLocale
 ): RecruiterActivity | null {
+  const t = makeT(locale);
   const visibleMessages = messages.filter((message) => {
     const visibility = asNullableString(message.attachments[0]?.visibility);
     return message.senderType !== "internal_note" && visibility !== "internal";
@@ -375,13 +410,15 @@ function buildThreadActivity(
   const stage = asNullableString(attachment.stage) || application.stage;
   const title =
     asNullableString(attachment.type) === "timeline_event"
-      ? `${humanizeStage(stage || application.stage)} update`
-      : "Recruiter update";
+      ? `${humanizeStage(stage || application.stage, locale)} ${t("update")}`
+      : t("Recruiter update");
 
   return {
     id: `${thread?.id || application.applicationId}-${latest.id}`,
     title,
-    body: latest.body || `${application.jobTitle} has a new recruiter-side update.`,
+    body:
+      latest.body ||
+      `${application.jobTitle} ${t("has a new recruiter-side update.")}`,
     createdAt: latest.createdAt,
     href: "/candidate/applications",
     tone: stageTone(stage || application.stage),
@@ -389,7 +426,12 @@ function buildThreadActivity(
   };
 }
 
-function buildTimelineActivity(application: JobApplication, timeline: TimelineEvent[]): RecruiterActivity | null {
+function buildTimelineActivity(
+  application: JobApplication,
+  timeline: TimelineEvent[],
+  locale?: AppLocale
+): RecruiterActivity | null {
+  const t = makeT(locale);
   const latest = [...timeline].sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt))[0];
   if (!latest) return null;
 
@@ -401,12 +443,14 @@ function buildTimelineActivity(application: JobApplication, timeline: TimelineEv
 
   return {
     id: `timeline-${latest.id}`,
-    title: isStageChange ? `${humanizeStage(nextStage)} stage` : humanizeStage(latest.action.replace(/^jobs_/, "")),
+    title: isStageChange
+      ? `${humanizeStage(nextStage, locale)} ${t("stage")}`
+      : humanizeStage(latest.action.replace(/^jobs_/, ""), locale),
     body:
       latest.reason ||
       (isStageChange
-        ? `${application.jobTitle} moved into ${humanizeStage(nextStage).toLowerCase()}.`
-        : `${application.jobTitle} has a new hiring update.`),
+        ? `${application.jobTitle} ${t("moved into")} ${humanizeStage(nextStage, locale).toLowerCase()}.`
+        : `${application.jobTitle} ${t("has a new hiring update.")}`),
     createdAt: latest.createdAt,
     href: "/candidate/applications",
     tone: stageTone(nextStage),
@@ -419,7 +463,9 @@ function buildRecommendationReason(input: {
   profile: CandidateProfile | null;
   savedJobs: SavedJob[];
   applications: JobApplication[];
+  locale?: AppLocale;
 }) {
+  const t = makeT(input.locale);
   const profileTerms = new Set(
     [
       ...(input.profile?.preferredFunctions ?? []),
@@ -433,18 +479,18 @@ function buildRecommendationReason(input: {
 
   const matchedSkill = input.job.skills.find((skill) => profileTerms.has(skill.toLowerCase()));
   if (matchedSkill) {
-    return `${matchedSkill} already appears in your profile or current search lane.`;
+    return `${matchedSkill} ${t("already appears in your profile or current search lane.")}`;
   }
 
   if (input.profile?.preferredFunctions.some((item) => input.job.title.toLowerCase().includes(item.toLowerCase()))) {
-    return "The role title lines up with the functions you said you want next.";
+    return t("The role title lines up with the functions you said you want next.");
   }
 
   if (input.job.employerVerification === "verified") {
-    return "This is a verified employer lane with clearer trust and response expectations.";
+    return t("This is a verified employer lane with clearer trust and response expectations.");
   }
 
-  return "This role fits the categories and trust signals you have been interacting with.";
+  return t("This role fits the categories and trust signals you have been interacting with.");
 }
 
 function buildRecommendations(input: {
@@ -452,6 +498,7 @@ function buildRecommendations(input: {
   profile: CandidateProfile | null;
   savedJobs: SavedJob[];
   applications: JobApplication[];
+  locale?: AppLocale;
 }): JobRecommendation[] {
   const excluded = new Set([
     ...input.savedJobs.map((item) => item.job.slug),
@@ -496,6 +543,7 @@ function buildRecommendations(input: {
           profile: input.profile,
           savedJobs: input.savedJobs,
           applications: input.applications,
+          locale: input.locale,
         }),
       } satisfies JobRecommendation;
     })
@@ -507,15 +555,17 @@ function buildNextActions(input: {
   checklist: ProfileChecklistItem[];
   journeys: ApplicationJourney[];
   savedJobs: SavedJob[];
+  locale?: AppLocale;
 }): CandidateNextAction[] {
+  const t = makeT(input.locale);
   const actions: CandidateNextAction[] = [];
   const incomplete = input.checklist.filter((item) => !item.complete);
 
   if (incomplete.length > 0) {
     actions.push({
       id: "profile-gap",
-      label: "Finish one profile piece",
-      body: `${incomplete[0].label} still needs love—recruiters notice the gaps first.`,
+      label: t("Finish one profile piece"),
+      body: `${incomplete[0].label} ${t("still needs love—recruiters notice the gaps first.")}`,
       href: incomplete[0].href,
       tone: "warn",
     });
@@ -525,8 +575,8 @@ function buildNextActions(input: {
   if (interviewJourney) {
     actions.push({
       id: `interview-${interviewJourney.application.applicationId}`,
-      label: "Interview prep for this role",
-      body: `${interviewJourney.application.jobTitle} is in interview. Re-read the job, then check Applications for anything new from the team.`,
+      label: t("Interview prep for this role"),
+      body: `${interviewJourney.application.jobTitle} ${t("is in interview. Re-read the job, then check Applications for anything new from the team.")}`,
       href: "/candidate/applications",
       tone: "good",
     });
@@ -536,8 +586,8 @@ function buildNextActions(input: {
   if (offerJourney) {
     actions.push({
       id: `offer-${offerJourney.application.applicationId}`,
-      label: "Offer on the table",
-      body: `${offerJourney.application.jobTitle} reached offer. Read it slowly, then reply with calm questions if you need them.`,
+      label: t("Offer on the table"),
+      body: `${offerJourney.application.jobTitle} ${t("reached offer. Read it slowly, then reply with calm questions if you need them.")}`,
       href: "/candidate/applications",
       tone: "good",
     });
@@ -546,8 +596,8 @@ function buildNextActions(input: {
   if (input.journeys.length === 0 && input.savedJobs.length > 0) {
     actions.push({
       id: "saved-first",
-      label: "Turn a saved role into an application",
-      body: `You bookmarked ${input.savedJobs[0].job.title}. If it still feels right, send a short, specific note while it is open.`,
+      label: t("Turn a saved role into an application"),
+      body: `${t("You bookmarked")} ${input.savedJobs[0].job.title}. ${t("If it still feels right, send a short, specific note while it is open.")}`,
       href: `/jobs/${input.savedJobs[0].job.slug}`,
       tone: "neutral",
     });
@@ -556,8 +606,8 @@ function buildNextActions(input: {
   if (input.journeys.length === 0 && input.savedJobs.length === 0) {
     actions.push({
       id: "start-search",
-      label: "Browse open roles",
-      body: "No saves or applications yet—pick a few roles that fit, save them, and apply when you are ready.",
+      label: t("Browse open roles"),
+      body: t("No saves or applications yet—pick a few roles that fit, save them, and apply when you are ready."),
       href: "/jobs",
       tone: "neutral",
     });
@@ -952,7 +1002,10 @@ export async function getEmployerMembershipsByUser(
     .filter(Boolean) as EmployerMembership[];
 }
 
-export async function getCandidateProfileByUserId(userId: string): Promise<CandidateProfile | null> {
+export async function getCandidateProfileByUserId(
+  userId: string,
+  locale?: AppLocale
+): Promise<CandidateProfile | null> {
   const admin = createAdminSupabase();
   const [baseRes, profileRes, docsRes] = await Promise.all([
     admin.from("customer_profiles").select("*").eq("id", userId).maybeSingle(),
@@ -1019,7 +1072,7 @@ export async function getCandidateProfileByUserId(userId: string): Promise<Candi
     completionScore,
     trustScore,
     verificationStatus,
-    readinessLabel: getReadinessLabel(trustScore),
+    readinessLabel: getReadinessLabel(trustScore, locale),
     updatedAt: asNullableString(profile.updatedAt || profileRow.created_at),
   };
 }
@@ -1222,7 +1275,8 @@ export async function searchJobs(params: URLSearchParams | Record<string, string
   });
 }
 
-export async function getJobsHomeData(): Promise<JobsHomeData> {
+export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
+  const t = makeT(locale);
   const [jobs, employers] = await Promise.all([getJobPosts(), getEmployerProfiles()]);
   const categoriesMap = new Map<string, { slug: string; name: string; count: number }>();
 
@@ -1242,22 +1296,22 @@ export async function getJobsHomeData(): Promise<JobsHomeData> {
     internalJobs: jobs.filter((job) => job.internal).slice(0, 4),
     employers: employers.filter((employer) => employer.openRoleCount > 0).slice(0, 8),
     categories: [...categoriesMap.values()].sort((a, b) => b.count - a.count),
-    differentiators: JOBS_DIFFERENTIATORS,
+    differentiators: getJobsDifferentiators(locale),
     stats: [
       {
-        label: "Open roles",
+        label: t("Open roles"),
         value: String(jobs.length),
-        detail: "Live roles published into the HenryCo hiring operating system.",
+        detail: t("Live roles published into the HenryCo hiring operating system."),
       },
       {
-        label: "Verified employers",
+        label: t("Verified employers"),
         value: String(employers.filter((employer) => employer.verificationStatus === "verified").length),
-        detail: "Employer profiles with verification maturity visible to candidates.",
+        detail: t("Employer profiles with verification maturity visible to candidates."),
       },
       {
-        label: "Internal tracks",
+        label: t("Internal tracks"),
         value: String(jobs.filter((job) => job.internal).length),
-        detail: "HenryCo internal openings running inside the same platform.",
+        detail: t("HenryCo internal openings running inside the same platform."),
       },
     ],
   };
@@ -1389,9 +1443,12 @@ export async function getApplicationById(applicationId: string) {
   return data ? buildApplication(data as Record<string, unknown>) : null;
 }
 
-export async function getCandidateDashboardData(userId: string): Promise<CandidateDashboardData> {
+export async function getCandidateDashboardData(
+  userId: string,
+  locale?: AppLocale
+): Promise<CandidateDashboardData> {
   const [profile, documents, applications, savedJobs, alerts, notifications, threads, jobs] = await Promise.all([
-    getCandidateProfileByUserId(userId),
+    getCandidateProfileByUserId(userId, locale),
     getCandidateDocuments(userId),
     getCandidateApplications(userId),
     getSavedJobs(userId),
@@ -1446,13 +1503,13 @@ export async function getCandidateDashboardData(userId: string): Promise<Candida
       const sharedMessages = thread ? messagesByThreadId.get(thread.id) ?? [] : [];
       const timeline = timelineByApplicationId.get(application.applicationId) ?? [];
       const pipelineSource = job?.pipelineStages.length ? job.pipelineStages : DEFAULT_PIPELINE;
-      const pipeline = buildPipelineState(pipelineSource, application.stage);
-      const threadActivity = buildThreadActivity(application, thread, sharedMessages);
-      const timelineActivity = buildTimelineActivity(application, timeline);
+      const pipeline = buildPipelineState(pipelineSource, application.stage, locale);
+      const threadActivity = buildThreadActivity(application, thread, sharedMessages, locale);
+      const timelineActivity = buildTimelineActivity(application, timeline, locale);
       const latestSharedUpdate = [threadActivity, timelineActivity]
         .filter(Boolean)
         .sort((a, b) => toTimestamp(b!.createdAt) - toTimestamp(a!.createdAt))[0] ?? null;
-      const nextStep = relativeStageGuidance(application.stage);
+      const nextStep = relativeStageGuidance(application.stage, locale);
 
       return {
         application,
@@ -1462,7 +1519,7 @@ export async function getCandidateDashboardData(userId: string): Promise<Candida
         sharedMessages: [...sharedMessages].sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt)),
         pipeline,
         stageTone: stageTone(application.stage),
-        stageLabel: humanizeStage(application.stage),
+        stageLabel: humanizeStage(application.stage, locale),
         progressPercent: progressPercent(application.stage, pipelineSource),
         latestSharedUpdate,
         recruiterActionLabel: latestSharedUpdate?.title || nextStep.label,
@@ -1474,12 +1531,13 @@ export async function getCandidateDashboardData(userId: string): Promise<Candida
     })
     .sort((a, b) => toTimestamp(b.recruiterActionAt) - toTimestamp(a.recruiterActionAt));
 
-  const checklist = profileChecklist(profile, documents);
+  const checklist = profileChecklist(profile, documents, locale);
   const recommendedJobs = buildRecommendations({
     jobs,
     profile,
     savedJobs,
     applications,
+    locale,
   });
   const recruiterFeed = [
     ...notifications.map(
@@ -1510,6 +1568,7 @@ export async function getCandidateDashboardData(userId: string): Promise<Candida
     checklist,
     journeys: applicationJourneys,
     savedJobs,
+    locale,
   });
 
   return {
@@ -1534,7 +1593,11 @@ export async function getCandidateDashboardData(userId: string): Promise<Candida
   };
 }
 
-export async function getEmployerDashboardData(userId: string, email?: string | null) {
+export async function getEmployerDashboardData(
+  userId: string,
+  email?: string | null,
+  _locale?: AppLocale
+) {
   const [memberships, jobs, applications, notifications] = await Promise.all([
     getEmployerMembershipsByUser(userId, email),
     getJobPosts({ includeUnpublished: true }),
@@ -1565,7 +1628,7 @@ export async function getEmployerDashboardData(userId: string, email?: string | 
   };
 }
 
-export async function getRecruiterOverviewData() {
+export async function getRecruiterOverviewData(locale?: AppLocale) {
   const [jobs, employers, profileRows, applicationRows, auditRows, threads] = await Promise.all([
     getJobPosts({ includeUnpublished: true }),
     getEmployerProfiles({ includeUnpublished: true }),
@@ -1599,7 +1662,7 @@ export async function getRecruiterOverviewData() {
     (profileRows.data ?? [])
       .map((row) => asString((row as Record<string, unknown>).user_id))
       .filter(Boolean)
-      .map((userId) => getCandidateProfileByUserId(userId))
+      .map((userId) => getCandidateProfileByUserId(userId, locale))
   );
 
   const applications = (applicationRows.data ?? [])

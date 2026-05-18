@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Bot } from "lucide-react";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { ModuleJumpEntry } from "@henryco/search-ui";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireOwner } from "@/lib/owner-auth";
 import { getOwnerRailEntries } from "@/lib/owner-rail-from-registry";
 import OwnerSidebar from "@/components/owner/OwnerSidebar";
@@ -12,9 +13,12 @@ import OwnerPaletteHost from "@/components/owner/OwnerPaletteHost";
 import OwnerNotificationsLauncher from "@/components/owner/OwnerNotificationsLauncher";
 import OwnerNotificationsToastViewport from "@/components/owner/OwnerNotificationsToastViewport";
 import OwnerSearchButton from "@/components/owner/OwnerSearchButton";
+import { getHubPublicLocale } from "@/lib/locale-server";
 
 export default async function OwnerCommandLayout({ children }: { children: ReactNode }) {
   const user = await requireOwner();
+  const locale = await getHubPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   // Track B / G2 — anti-pattern #19 enforcement. The owner shell rail
   // consumes `getEligibleOwnerModules(viewer)` via `getOwnerRailEntries`,
@@ -68,13 +72,13 @@ export default async function OwnerCommandLayout({ children }: { children: React
                 href="/owner/operations/approvals"
                 className="hidden text-xs font-semibold text-[var(--acct-muted)] hover:text-[var(--acct-ink)] xl:inline"
               >
-                Approval center
+                {t("Approval center")}
               </Link>
               <Link
                 href="/owner/settings/audit"
                 className="hidden text-xs font-semibold text-[var(--acct-muted)] hover:text-[var(--acct-ink)] xl:inline"
               >
-                Audit log
+                {t("Audit log")}
               </Link>
               <OwnerNotificationsLauncher />
             </div>
@@ -89,11 +93,9 @@ export default async function OwnerCommandLayout({ children }: { children: React
                   className="mb-6 rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-sm text-[var(--acct-ink)]"
                   role="status"
                 >
-                  <p className="font-semibold text-amber-950/90 dark:text-amber-100/95">Limited owner profile data</p>
+                  <p className="font-semibold text-amber-950/90 dark:text-amber-100/95">{t("Limited owner profile data")}</p>
                   <p className="mt-1 leading-relaxed text-[var(--acct-muted)]">
-                    We could not load your full command-center profile from the database (configuration, connectivity, or
-                    schema may be involved). Navigation remains available; retry after a moment or contact engineering if this
-                    continues. Technical details are recorded in server logs for diagnosis.
+                    {t("We could not load your full command-center profile from the database (configuration, connectivity, or schema may be involved). Navigation remains available; retry after a moment or contact engineering if this continues. Technical details are recorded in server logs for diagnosis.")}
                   </p>
                 </div>
               ) : null}
@@ -103,8 +105,8 @@ export default async function OwnerCommandLayout({ children }: { children: React
           <Link
             href="/owner/ai"
             className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--acct-gold)] text-[var(--acct-ink)] shadow-[0_12px_40px_rgba(201,162,39,0.45)] ring-2 ring-white/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)] lg:bottom-8 lg:right-8"
-            aria-label="Open owner assistant"
-            title="Owner assistant — summaries, signals, and safe guidance"
+            aria-label={t("Open owner assistant")}
+            title={t("Owner assistant — summaries, signals, and safe guidance")}
           >
             <Bot className="h-6 w-6" aria-hidden />
           </Link>

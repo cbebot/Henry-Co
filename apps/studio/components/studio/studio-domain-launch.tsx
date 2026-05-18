@@ -2,6 +2,8 @@
 
 import { ChevronDown, ChevronUp, Globe, LoaderCircle, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { StudioDomainIntent } from "@/lib/studio/types";
 
 type Path = StudioDomainIntent["path"];
@@ -21,22 +23,28 @@ function buildIntent(partial: Partial<StudioDomainIntent> & { path: Path }): Stu
   return intent;
 }
 
-const PATH_COPY: Record<Path, { title: string; hint: string }> = {
-  new: {
-    title: "I want a new web address (domain)",
-    hint: "We can check common cases and suggest clean alternatives. Final purchase is always confirmed with you.",
-  },
-  have: {
-    title: "I already own a domain",
-    hint: "Keep using it—we connect it when the site is ready. No need to buy another name unless you want one.",
-  },
-  later: {
-    title: "I’m not ready to decide",
-    hint: "Totally fine. HenryCo will help you choose before launch. You can still describe your dream name in the notes.",
-  },
-};
+function getPathCopy(locale: AppLocale): Record<Path, { title: string; hint: string }> {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    new: {
+      title: t("I want a new web address (domain)"),
+      hint: t("We can check common cases and suggest clean alternatives. Final purchase is always confirmed with you."),
+    },
+    have: {
+      title: t("I already own a domain"),
+      hint: t("Keep using it—we connect it when the site is ready. No need to buy another name unless you want one."),
+    },
+    later: {
+      title: t("I’m not ready to decide"),
+      hint: t("Totally fine. HenryCo will help you choose before launch. You can still describe your dream name in the notes."),
+    },
+  };
+}
 
 export function StudioDomainLaunchSection() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const PATH_COPY = useMemo(() => getPathCopy(locale), [locale]);
   const [path, setPath] = useState<Path>("new");
   const [desired, setDesired] = useState("");
   const [backupDesired, setBackupDesired] = useState("");
@@ -99,7 +107,7 @@ export function StudioDomainLaunchSection() {
     if (!q) {
       setLastResult({
         status: "empty",
-        message: "Type a name or full domain first—for example “riveroak” or “riveroak.com”.",
+        message: t("Type a name or full domain first—for example “riveroak” or “riveroak.com”."),
         fqdn: null,
         suggestions: [],
         mode: "off",
@@ -124,7 +132,7 @@ export function StudioDomainLaunchSection() {
       if (!res.ok) {
         setLastResult({
           status: "error",
-          message: data.error || "We could not run the check. You can still submit—we will verify with you.",
+          message: data.error || t("We could not run the check. You can still submit—we will verify with you."),
           fqdn: null,
           suggestions: [],
           mode: "off",
@@ -141,7 +149,7 @@ export function StudioDomainLaunchSection() {
     } catch {
       setLastResult({
         status: "error",
-        message: "Network issue. Submit anyway—HenryCo will confirm your domain manually.",
+        message: t("Network issue. Submit anyway—HenryCo will confirm your domain manually."),
         fqdn: null,
         suggestions: [],
         mode: "off",
@@ -155,15 +163,15 @@ export function StudioDomainLaunchSection() {
     path !== "new"
       ? null
       : lastResult?.status === "available"
-        ? { label: "Looks available*", tone: "ok" as const }
+        ? { label: t("Looks available*"), tone: "ok" as const }
         : lastResult?.status === "unavailable"
-          ? { label: "Likely taken", tone: "bad" as const }
+          ? { label: t("Likely taken"), tone: "bad" as const }
           : lastResult?.status === "unconfigured"
-            ? { label: "Advisory ideas only", tone: "neutral" as const }
+            ? { label: t("Advisory ideas only"), tone: "neutral" as const }
             : lastResult?.status === "blocked"
-              ? { label: "Needs a safer name", tone: "bad" as const }
+              ? { label: t("Needs a safer name"), tone: "bad" as const }
               : lastResult?.status === "unknown" || lastResult?.status === "error"
-                ? { label: "Verify with team", tone: "neutral" as const }
+                ? { label: t("Verify with team"), tone: "neutral" as const }
                 : null;
 
   return (
@@ -176,13 +184,12 @@ export function StudioDomainLaunchSection() {
             <Globe className="h-6 w-6" aria-hidden />
           </div>
           <div>
-            <div className="studio-kicker">Launch & web address</div>
+            <div className="studio-kicker">{t("Launch & web address")}</div>
             <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--studio-ink)]">
-              Your domain is the address people type to find you
+              {t("Your domain is the address people type to find you")}
             </h3>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-              It is not the same as hosting or email setup—we handle those steps with you. You can bring a name
-              you already pay for, or we help you pick and register a strong one before go-live.
+              {t("It is not the same as hosting or email setup—we handle those steps with you. You can bring a name you already pay for, or we help you pick and register a strong one before go-live.")}
             </p>
           </div>
         </div>
@@ -228,21 +235,19 @@ export function StudioDomainLaunchSection() {
           onClick={() => setHelpOpen((o) => !o)}
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-signal)]"
         >
-          Help me choose a domain
+          {t("Help me choose a domain")}
           {helpOpen ? <ChevronUp className="h-4 w-4" aria-hidden /> : <ChevronDown className="h-4 w-4" aria-hidden />}
         </button>
         {helpOpen ? (
           <div className="mt-3 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
             <ul className="list-disc space-y-2 pl-5">
-              <li>Shorter is usually easier to say on the phone and type on a phone screen.</li>
-              <li>Avoid hyphens if you can—they are easy to forget when people hear the name aloud.</li>
+              <li>{t("Shorter is usually easier to say on the phone and type on a phone screen.")}</li>
+              <li>{t("Avoid hyphens if you can—they are easy to forget when people hear the name aloud.")}</li>
               <li>
-                If you serve one country strongly, your local registrar may offer a trusted country ending—we will
-                confirm what fits your brand.
+                {t("If you serve one country strongly, your local registrar may offer a trusted country ending—we will confirm what fits your brand.")}
               </li>
               <li>
-                When live lookup is on, we check public registry data for many .com names; we never claim legal
-                availability until a registrar agrees at purchase time.
+                {t("When live lookup is on, we check public registry data for many .com names; we never claim legal availability until a registrar agrees at purchase time.")}
               </li>
             </ul>
           </div>
@@ -254,7 +259,7 @@ export function StudioDomainLaunchSection() {
           <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <label htmlFor="studio-domain-input" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Preferred name or domain
+                {t("Preferred name or domain")}
               </label>
               <input
                 id="studio-domain-input"
@@ -262,12 +267,11 @@ export function StudioDomainLaunchSection() {
                 value={desired}
                 onChange={(e) => setDesired(e.target.value)}
                 autoComplete="off"
-                placeholder="e.g. riveroak or riveroak.com"
+                placeholder={t("e.g. riveroak or riveroak.com")}
                 className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
               />
               <p className="mt-2 text-xs leading-5 text-[var(--studio-ink-soft)]">
-                *Live checks only run when enabled for .com names. Otherwise we show thoughtful ideas—not a
-                guarantee until a registrar confirms.
+                {t("*Live checks only run when enabled for .com names. Otherwise we show thoughtful ideas—not a guarantee until a registrar confirms.")}
               </p>
             </div>
             <button
@@ -277,7 +281,7 @@ export function StudioDomainLaunchSection() {
               className="studio-button-secondary inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-60"
             >
               {checking ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {checking ? "Checking…" : "Check this name"}
+              {checking ? t("Checking…") : t("Check this name")}
             </button>
           </div>
 
@@ -293,7 +297,7 @@ export function StudioDomainLaunchSection() {
           {lastResult && lastResult.suggestions.length > 0 ? (
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Professional alternatives to try
+                {t("Professional alternatives to try")}
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {lastResult.suggestions.map((s) => (
@@ -315,7 +319,7 @@ export function StudioDomainLaunchSection() {
 
           <div>
             <label htmlFor="studio-domain-backup" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Backup name (optional)
+              {t("Backup name (optional)")}
             </label>
             <input
               id="studio-domain-backup"
@@ -323,11 +327,11 @@ export function StudioDomainLaunchSection() {
               value={backupDesired}
               onChange={(e) => setBackupDesired(e.target.value)}
               autoComplete="off"
-              placeholder="e.g. riveroakstudio.com"
+              placeholder={t("e.g. riveroakstudio.com")}
               className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
             />
             <p className="mt-2 text-xs leading-5 text-[var(--studio-ink-soft)]">
-              If your first choice is taken, we already know a strong second option—no need to restart the brief.
+              {t("If your first choice is taken, we already know a strong second option—no need to restart the brief.")}
             </p>
           </div>
         </div>
@@ -337,27 +341,27 @@ export function StudioDomainLaunchSection() {
         <div className="mt-6 space-y-4">
           <div>
             <label htmlFor="studio-existing-domain" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Primary domain you own
+              {t("Primary domain you own")}
             </label>
             <input
               id="studio-existing-domain"
               type="text"
               value={desired}
               onChange={(e) => setDesired(e.target.value)}
-              placeholder="e.g. mycompany.com"
+              placeholder={t("e.g. mycompany.com")}
               className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
             />
           </div>
           <div>
             <label htmlFor="studio-domain-backup-have" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Backup or redirect domain (optional)
+              {t("Backup or redirect domain (optional)")}
             </label>
             <input
               id="studio-domain-backup-have"
               type="text"
               value={backupDesired}
               onChange={(e) => setBackupDesired(e.target.value)}
-              placeholder="e.g. oldbrand.com → will redirect"
+              placeholder={t("e.g. oldbrand.com → will redirect")}
               className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
             />
           </div>
@@ -368,27 +372,27 @@ export function StudioDomainLaunchSection() {
         <div className="mt-6 space-y-4">
           <div>
             <label htmlFor="studio-domain-later-a" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Names or keywords you like
+              {t("Names or keywords you like")}
             </label>
             <input
               id="studio-domain-later-a"
               type="text"
               value={desired}
               onChange={(e) => setDesired(e.target.value)}
-              placeholder="e.g. something with “Atlas” or my city name"
+              placeholder={t("e.g. something with “Atlas” or my city name")}
               className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
             />
           </div>
           <div>
             <label htmlFor="studio-domain-later-b" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Second direction (optional)
+              {t("Second direction (optional)")}
             </label>
             <input
               id="studio-domain-later-b"
               type="text"
               value={backupDesired}
               onChange={(e) => setBackupDesired(e.target.value)}
-              placeholder="Another style of name you would be happy with"
+              placeholder={t("Another style of name you would be happy with")}
               className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
             />
           </div>

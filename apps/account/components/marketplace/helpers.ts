@@ -1,3 +1,5 @@
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+
 const SHORT_MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -82,14 +84,19 @@ export function orderStatusLabel(
   opts?: {
     statusValueLabels?: Record<string, string>;
     fallbackDraft?: string;
+    locale?: AppLocale;
   },
 ): string {
   const s = String(order.status || "").trim();
-  if (!s) return opts?.fallbackDraft ?? "Draft";
+  if (!s) {
+    const fallback = opts?.fallbackDraft ?? "Draft";
+    return opts?.locale ? translateSurfaceLabel(opts.locale, fallback) : fallback;
+  }
   const key = s.toLowerCase();
   const mapped = opts?.statusValueLabels?.[key];
-  if (mapped) return mapped;
-  return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  if (mapped) return opts?.locale ? translateSurfaceLabel(opts.locale, mapped) : mapped;
+  const titled = s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return opts?.locale ? translateSurfaceLabel(opts.locale, titled) : titled;
 }
 
 export type DisputeKind = "open" | "resolving" | "resolved";
@@ -212,49 +219,51 @@ export function buildHeroCopy(
   state: HeroState,
   stats: MarketStats,
   marketplaceOrigin: string,
+  locale?: AppLocale,
 ): HeroCopy {
+  const t = (text: string) => (locale ? translateSurfaceLabel(locale, text) : text);
   if (state === "empty") {
     return {
-      headline: "Start shopping on HenryCo Marketplace.",
-      blurb: "Orders, disputes, seller activity, and payouts mirror into this room as soon as you transact. Browse the marketplace to get the first one rolling.",
-      ctaPrimary: { label: "Open marketplace", href: marketplaceOrigin },
-      ctaSecondary: { label: "Apply to sell", href: `${marketplaceOrigin}/sell` },
+      headline: t("Start shopping on HenryCo Marketplace."),
+      blurb: t("Orders, disputes, seller activity, and payouts mirror into this room as soon as you transact. Browse the marketplace to get the first one rolling."),
+      ctaPrimary: { label: t("Open marketplace"), href: marketplaceOrigin },
+      ctaSecondary: { label: t("Apply to sell"), href: `${marketplaceOrigin}/sell` },
     };
   }
   if (state === "attention") {
     const n = stats.openDisputes + stats.issueOrders;
     return {
-      headline: `${n} ${n === 1 ? "matter" : "matters"} need attention.`,
-      blurb: "Disputes and exception orders sit at the top of the queue. Open the case to add evidence or accept resolution.",
-      ctaPrimary: { label: "Review matters", href: "#marketplace-matters" },
-      ctaSecondary: { label: "Open marketplace", href: marketplaceOrigin },
+      headline: `${n} ${n === 1 ? t("matter") : t("matters")} ${t("need attention.")}`,
+      blurb: t("Disputes and exception orders sit at the top of the queue. Open the case to add evidence or accept resolution."),
+      ctaPrimary: { label: t("Review matters"), href: "#marketplace-matters" },
+      ctaSecondary: { label: t("Open marketplace"), href: marketplaceOrigin },
     };
   }
   if (state === "active") {
     if (stats.payoutsPending > 0 && stats.inFlight === 0) {
       return {
-        headline: `${stats.payoutsPending} payout${stats.payoutsPending === 1 ? "" : "s"} in review.`,
-        blurb: "Vendor payout requests are moving through finance verification. Status updates appear here as the team progresses each request.",
-        ctaPrimary: { label: "Open seller workspace", href: `${marketplaceOrigin}/seller` },
-        ctaSecondary: { label: "Open marketplace", href: marketplaceOrigin },
+        headline: `${stats.payoutsPending} ${stats.payoutsPending === 1 ? t("payout") : t("payouts")} ${t("in review.")}`,
+        blurb: t("Vendor payout requests are moving through finance verification. Status updates appear here as the team progresses each request."),
+        ctaPrimary: { label: t("Open seller workspace"), href: `${marketplaceOrigin}/seller` },
+        ctaSecondary: { label: t("Open marketplace"), href: marketplaceOrigin },
       };
     }
     return {
-      headline: `${stats.inFlight} order${stats.inFlight === 1 ? "" : "s"} in motion.`,
-      blurb: "Live order status, payment state, and seller follow-up mirror into this room from HenryCo Marketplace in real time.",
-      ctaPrimary: { label: "Open marketplace", href: marketplaceOrigin },
-      ctaSecondary: { label: "Apply to sell", href: `${marketplaceOrigin}/sell` },
+      headline: `${stats.inFlight} ${stats.inFlight === 1 ? t("order") : t("orders")} ${t("in motion.")}`,
+      blurb: t("Live order status, payment state, and seller follow-up mirror into this room from HenryCo Marketplace in real time."),
+      ctaPrimary: { label: t("Open marketplace"), href: marketplaceOrigin },
+      ctaSecondary: { label: t("Apply to sell"), href: `${marketplaceOrigin}/sell` },
     };
   }
   return {
     headline: stats.sellerActive
-      ? `${stats.totalOrders} order${stats.totalOrders === 1 ? "" : "s"} · seller active.`
-      : `${stats.totalOrders} order${stats.totalOrders === 1 ? "" : "s"} on record.`,
-    blurb: "All your marketplace activity in one room — buyer orders, seller payouts, dispute outcomes, and the latest status from every store.",
-    ctaPrimary: { label: "Open marketplace", href: marketplaceOrigin },
+      ? `${stats.totalOrders} ${stats.totalOrders === 1 ? t("order") : t("orders")} ${t("· seller active.")}`
+      : `${stats.totalOrders} ${stats.totalOrders === 1 ? t("order") : t("orders")} ${t("on record.")}`,
+    blurb: t("All your marketplace activity in one room — buyer orders, seller payouts, dispute outcomes, and the latest status from every store."),
+    ctaPrimary: { label: t("Open marketplace"), href: marketplaceOrigin },
     ctaSecondary: stats.sellerActive
-      ? { label: "Open seller workspace", href: `${marketplaceOrigin}/seller` }
-      : { label: "Apply to sell", href: `${marketplaceOrigin}/sell` },
+      ? { label: t("Open seller workspace"), href: `${marketplaceOrigin}/seller` }
+      : { label: t("Apply to sell"), href: `${marketplaceOrigin}/sell` },
   };
 }
 

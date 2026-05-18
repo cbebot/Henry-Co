@@ -279,7 +279,7 @@ export default function NotificationBell({
   const displayCount = unreadCount > 9 ? "9+" : String(unreadCount);
   const bellAriaLabel =
     unreadCount > 0
-      ? `${t("Open notifications")} — ${unreadCount} ${unreadCount === 1 ? "unread" : "unread"}`
+      ? `${t("Open notifications")} — ${unreadCount} ${t("unread")}`
       : t("Open notifications");
 
   return (

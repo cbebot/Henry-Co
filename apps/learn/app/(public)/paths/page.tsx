@@ -93,6 +93,7 @@ export default async function PathsPage() {
               path={path}
               courseCount={pathItemCounts.get(path.id) || 0}
               href={`/paths/${path.slug}`}
+              locale={locale}
             />
           ))}
         </div>

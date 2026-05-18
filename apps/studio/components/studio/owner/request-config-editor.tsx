@@ -2,6 +2,8 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
 import type {
@@ -79,6 +81,8 @@ function RowShell({ children }: { children: React.ReactNode }) {
 
 export function StudioRequestConfigEditor({ initialConfig }: Props) {
   const [draft, setDraft] = useState<StudioRequestConfig>(initialConfig);
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const payload = useMemo(() => JSON.stringify(draft), [draft]);
 
@@ -199,8 +203,8 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
       <input type="hidden" name="payload" value={payload} />
 
       <Section
-        title="Service categories and commercial entry points"
-        description="Add more premium service layers, categories, and structured project types without editing code. Amounts here become part of the live public pricing breakdown."
+        title={t("Service categories and commercial entry points")}
+        description={t("Add more premium service layers, categories, and structured project types without editing code. Amounts here become part of the live public pricing breakdown.")}
       >
         {draft.projectTypes.map((item, index) => (
           <RowShell key={item.id}>
@@ -211,7 +215,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   updateOptionList("projectTypes", index, { label: event.target.value })
                 }
                 className="studio-input rounded-full px-4 py-3"
-                placeholder="Project type or category"
+                placeholder={t("Project type or category")}
               />
               <input
                 type="number"
@@ -221,7 +225,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   updateOptionList("projectTypes", index, { amount: Number(event.target.value || 0) })
                 }
                 className="studio-input rounded-full px-4 py-3"
-                placeholder="Amount"
+                placeholder={t("Amount")}
               />
               <textarea
                 value={item.description}
@@ -230,7 +234,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                 }
                 rows={3}
                 className="studio-textarea min-h-24 rounded-[1.2rem] px-4 py-3 xl:col-span-2"
-                placeholder="Describe what this service lane means on the public request flow."
+                placeholder={t("Describe what this service lane means on the public request flow.")}
               />
               <input
                 value={(item.serviceKinds ?? []).join(", ")}
@@ -243,7 +247,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   })
                 }
                 className="studio-input rounded-full px-4 py-3 xl:col-span-2"
-                placeholder={`Service kinds: ${serviceKinds.join(", ")}`}
+                placeholder={`${t("Service kinds")}: ${serviceKinds.join(", ")}`}
               />
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -255,7 +259,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     updateOptionList("projectTypes", index, { isActive: event.target.checked })
                   }
                 />
-                Active in public flow
+                {t("Active in public flow")}
               </label>
               <button
                 type="button"
@@ -263,7 +267,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs font-semibold text-[var(--studio-ink)]"
               >
                 <Trash2 className="h-4 w-4" />
-                Remove
+                {t("Remove")}
               </button>
             </div>
           </RowShell>
@@ -274,14 +278,14 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
           className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
         >
           <Plus className="h-4 w-4" />
-          Add service category
+          {t("Add service category")}
         </button>
       </Section>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <Section
-          title="Business sectors"
-          description="Business-language options for the commercial brief."
+          title={t("Business sectors")}
+          description={t("Business-language options for the commercial brief.")}
         >
           {draft.businessOptions.map((item, index) => (
             <RowShell key={`business-${index}`}>
@@ -290,7 +294,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   value={item}
                   onChange={(event) => updateStringList("businessOptions", index, event.target.value)}
                   className="studio-input rounded-full px-4 py-3"
-                  placeholder="Business type"
+                  placeholder={t("Business type")}
                 />
                 <button
                   type="button"
@@ -308,13 +312,13 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
             className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
-            Add business sector
+            {t("Add business sector")}
           </button>
         </Section>
 
         <Section
-          title="Budget ranges"
-          description="Budget lanes shown to buyers in the request funnel."
+          title={t("Budget ranges")}
+          description={t("Budget lanes shown to buyers in the request funnel.")}
         >
           {draft.budgetOptions.map((item, index) => (
             <RowShell key={`budget-${index}`}>
@@ -323,7 +327,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   value={item}
                   onChange={(event) => updateStringList("budgetOptions", index, event.target.value)}
                   className="studio-input rounded-full px-4 py-3"
-                  placeholder="Budget range"
+                  placeholder={t("Budget range")}
                 />
                 <button
                   type="button"
@@ -341,15 +345,15 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
             className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
-            Add budget lane
+            {t("Add budget lane")}
           </button>
         </Section>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <Section
-          title="Timeline pricing"
-          description="Compressed delivery lanes automatically add the correct premium in the public pricing summary."
+          title={t("Timeline pricing")}
+          description={t("Compressed delivery lanes automatically add the correct premium in the public pricing summary.")}
         >
           {draft.timelineOptions.map((item, index) => (
             <RowShell key={item.id}>
@@ -360,11 +364,11 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     updateModifierList("timelineOptions", index, { label: event.target.value })
                   }
                   className="studio-input rounded-full px-4 py-3"
-                  placeholder="Timeline label"
+                  placeholder={t("Timeline label")}
                 />
                 <StudioListbox
                   name={`timeline-modifier-${item.id}`}
-                  label="Timeline modifier type"
+                  label={t("Timeline modifier type")}
                   required
                   value={item.modifierType}
                   onChange={(v) =>
@@ -373,8 +377,8 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     })
                   }
                   options={[
-                    { value: "percent", label: "Percent" },
-                    { value: "flat", label: "Flat (₦)" },
+                    { value: "percent", label: t("Percent") },
+                    { value: "flat", label: t("Flat (₦)") },
                   ]}
                   className="md:max-w-[200px]"
                 />
@@ -389,7 +393,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     })
                   }
                   className="studio-input rounded-full px-4 py-3"
-                  placeholder="Modifier"
+                  placeholder={t("Modifier")}
                 />
                 <textarea
                   value={item.description}
@@ -398,7 +402,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   }
                   rows={2}
                   className="studio-textarea min-h-20 rounded-[1.2rem] px-4 py-3 md:col-span-3"
-                  placeholder="Explain when this timeline should be chosen."
+                  placeholder={t("Explain when this timeline should be chosen.")}
                 />
               </div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -410,7 +414,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                       updateModifierList("timelineOptions", index, { isActive: event.target.checked })
                     }
                   />
-                  Active in public flow
+                  {t("Active in public flow")}
                 </label>
                 <button
                   type="button"
@@ -418,7 +422,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs font-semibold text-[var(--studio-ink)]"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Remove
+                  {t("Remove")}
                 </button>
               </div>
             </RowShell>
@@ -429,13 +433,13 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
             className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
-            Add timeline lane
+            {t("Add timeline lane")}
           </button>
         </Section>
 
         <Section
-          title="Urgency modifiers"
-          description="Use urgency when the client needs premium resourcing on top of the selected timeline."
+          title={t("Urgency modifiers")}
+          description={t("Use urgency when the client needs premium resourcing on top of the selected timeline.")}
         >
           {draft.urgencyOptions.map((item, index) => (
             <RowShell key={item.id}>
@@ -446,11 +450,11 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     updateModifierList("urgencyOptions", index, { label: event.target.value })
                   }
                   className="studio-input rounded-full px-4 py-3"
-                  placeholder="Urgency label"
+                  placeholder={t("Urgency label")}
                 />
                 <StudioListbox
                   name={`urgency-modifier-${item.id}`}
-                  label="Urgency modifier type"
+                  label={t("Urgency modifier type")}
                   required
                   value={item.modifierType}
                   onChange={(v) =>
@@ -459,8 +463,8 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     })
                   }
                   options={[
-                    { value: "percent", label: "Percent" },
-                    { value: "flat", label: "Flat (₦)" },
+                    { value: "percent", label: t("Percent") },
+                    { value: "flat", label: t("Flat (₦)") },
                   ]}
                   className="md:max-w-[200px]"
                 />
@@ -475,7 +479,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     })
                   }
                   className="studio-input rounded-full px-4 py-3"
-                  placeholder="Modifier"
+                  placeholder={t("Modifier")}
                 />
                 <textarea
                   value={item.description}
@@ -484,7 +488,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   }
                   rows={2}
                   className="studio-textarea min-h-20 rounded-[1.2rem] px-4 py-3 md:col-span-3"
-                  placeholder="Explain what this urgency option means to the client."
+                  placeholder={t("Explain what this urgency option means to the client.")}
                 />
               </div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -496,7 +500,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                       updateModifierList("urgencyOptions", index, { isActive: event.target.checked })
                     }
                   />
-                  Active in public flow
+                  {t("Active in public flow")}
                 </label>
                 <button
                   type="button"
@@ -504,7 +508,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                   className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs font-semibold text-[var(--studio-ink)]"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Remove
+                  {t("Remove")}
                 </button>
               </div>
             </RowShell>
@@ -515,7 +519,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
             className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
-            Add urgency option
+            {t("Add urgency option")}
           </button>
         </Section>
       </div>
@@ -529,7 +533,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
             ["addOnOptions", "Growth add-ons", "Premium extras such as branding, copy, automation, and support."],
           ] as const
         ).map(([key, title, description]) => (
-          <Section key={key} title={title} description={description}>
+          <Section key={key} title={t(title)} description={t(description)}>
             {draft[key].map((item, index) => (
               <RowShell key={item.id}>
                 <div className="grid gap-4 xl:grid-cols-[1fr_180px]">
@@ -539,7 +543,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                       updateOptionList(key, index, { label: event.target.value })
                     }
                     className="studio-input rounded-full px-4 py-3"
-                    placeholder="Label"
+                    placeholder={t("Label")}
                   />
                   <input
                     type="number"
@@ -549,7 +553,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                       updateOptionList(key, index, { amount: Number(event.target.value || 0) })
                     }
                     className="studio-input rounded-full px-4 py-3"
-                    placeholder="Amount"
+                    placeholder={t("Amount")}
                   />
                   <textarea
                     value={item.description}
@@ -558,7 +562,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     }
                     rows={2}
                     className="studio-textarea min-h-20 rounded-[1.2rem] px-4 py-3 xl:col-span-2"
-                    placeholder="Description"
+                    placeholder={t("Description")}
                   />
                 </div>
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -570,7 +574,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                         updateOptionList(key, index, { isActive: event.target.checked })
                       }
                     />
-                    Active in public flow
+                    {t("Active in public flow")}
                   </label>
                   <button
                     type="button"
@@ -578,7 +582,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs font-semibold text-[var(--studio-ink)]"
                   >
                     <Trash2 className="h-4 w-4" />
-                    Remove
+                    {t("Remove")}
                   </button>
                 </div>
               </RowShell>
@@ -589,7 +593,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
               className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
             >
               <Plus className="h-4 w-4" />
-              Add item
+              {t("Add item")}
             </button>
           </Section>
         ))}
@@ -602,7 +606,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
             ["stackOptions", "Stack preferences", "Technology preferences clients can mention."],
           ] as const
         ).map(([key, title, description]) => (
-          <Section key={key} title={title} description={description}>
+          <Section key={key} title={t(title)} description={t(description)}>
             {draft[key].map((item, index) => (
               <RowShell key={`${key}-${index}`}>
                 <div className="flex items-center gap-3">
@@ -610,7 +614,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
                     value={item}
                     onChange={(event) => updateStringList(key, index, event.target.value)}
                     className="studio-input rounded-full px-4 py-3"
-                    placeholder={title}
+                    placeholder={t(title)}
                   />
                   <button
                     type="button"
@@ -628,7 +632,7 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
               className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
             >
               <Plus className="h-4 w-4" />
-              Add item
+              {t("Add item")}
             </button>
           </Section>
         ))}
@@ -636,10 +640,9 @@ export function StudioRequestConfigEditor({ initialConfig }: Props) {
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.75rem] border border-[var(--studio-line)] bg-black/10 px-5 py-4">
         <div className="max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Saving this panel updates the live commercial config used by the public request funnel,
-          pricing preview, and proposal/payment breakdowns.
+          {t("Saving this panel updates the live commercial config used by the public request funnel, pricing preview, and proposal/payment breakdowns.")}
         </div>
-        <StudioSubmitButton label="Save request and pricing config" pendingLabel="Saving commercial config..." />
+        <StudioSubmitButton label={t("Save request and pricing config")} pendingLabel={t("Saving commercial config...")} />
       </div>
     </div>
   );

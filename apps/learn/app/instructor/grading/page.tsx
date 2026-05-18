@@ -33,7 +33,7 @@ export default async function InstructorGradingPage() {
       description={t(
         "Quiz attempts auto-grade against the answer key; this surface gives you the audit trail and a place to follow up on assignment submissions that need instructor review.",
       )}
-      nav={instructorNav("/instructor/grading")}
+      nav={instructorNav("/instructor/grading", t)}
     >
       <LearnSectionIntro
         kicker={t("Quiz attempts")}

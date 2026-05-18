@@ -81,7 +81,7 @@ function formatFileLimit(bytes: number) {
   return `${Math.round(bytes / (1024 * 1024))} MB max`;
 }
 
-function renderField(spec: PropertySubmissionFieldSpec) {
+function renderField(spec: PropertySubmissionFieldSpec, t: (text: string) => string) {
   const commonClasses =
     spec.kind === "textarea"
       ? "property-textarea mt-2 w-full rounded-2xl px-4 py-3"
@@ -92,28 +92,28 @@ function renderField(spec: PropertySubmissionFieldSpec) {
   return (
     <label key={spec.name} className="block">
       <span className="text-sm font-medium text-[var(--property-ink)]">
-        {spec.label}
+        {t(spec.label)}
         {spec.required ? " *" : ""}
       </span>
       <span className="mt-1 block text-xs leading-6 text-[var(--property-ink-soft)]">
-        {spec.description}
+        {t(spec.description)}
       </span>
       {spec.kind === "textarea" ? (
         <textarea
           name={spec.name}
           rows={4}
           required={spec.required}
-          placeholder={spec.placeholder}
+          placeholder={spec.placeholder ? t(spec.placeholder) : undefined}
           className={commonClasses}
         />
       ) : spec.kind === "select" ? (
         <select name={spec.name} required={spec.required} className={commonClasses} defaultValue="">
           <option value="" disabled>
-            Select an option
+            {t("Select an option")}
           </option>
           {(spec.options || []).map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {t(option.label)}
             </option>
           ))}
         </select>
@@ -122,7 +122,7 @@ function renderField(spec: PropertySubmissionFieldSpec) {
           name={spec.name}
           type={spec.kind}
           required={spec.required}
-          placeholder={spec.placeholder}
+          placeholder={spec.placeholder ? t(spec.placeholder) : undefined}
           className={commonClasses}
         />
       )}
@@ -134,25 +134,27 @@ function UploadField({
   spec,
   count,
   onCountChange,
+  t,
 }: {
   spec: PropertySubmissionUploadSpec;
   count: number;
   onCountChange: (count: number) => void;
+  t: (text: string) => string;
 }) {
   return (
     <label className="block rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold text-[var(--property-ink)]">
-            {spec.label}
+            {t(spec.label)}
             {spec.required ? " *" : ""}
           </div>
           <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-            {spec.description}
+            {t(spec.description)}
           </div>
         </div>
         <div className="rounded-full border border-[var(--property-line)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--property-ink-soft)]">
-          {spec.required ? `${spec.minimumFiles}+ required` : "Optional"}
+          {spec.required ? `${spec.minimumFiles}+ ${t("required")}` : t("Optional")}
         </div>
       </div>
       <input
@@ -166,8 +168,8 @@ function UploadField({
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--property-ink-soft)]">
         <span>
           {count > 0
-            ? `${count} file${count === 1 ? "" : "s"} selected`
-            : "No files selected yet"}
+            ? `${count} ${count === 1 ? t("file selected") : t("files selected")}`
+            : t("No files selected yet")}
         </span>
         <span>{formatFileLimit(PROPERTY_MAX_DOCUMENT_FILE_BYTES)}</span>
       </div>
@@ -589,7 +591,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             )}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {blueprint.contextFields.map((field) => renderField(field))}
+            {blueprint.contextFields.map((field) => renderField(field, t))}
           </div>
         </section>
       ) : null}
@@ -612,11 +614,13 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         <label className="mt-5 block rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
           <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
             <UploadCloud className="h-5 w-5" />
-            <div className="text-sm font-semibold text-[var(--property-ink)]">Property media</div>
+            <div className="text-sm font-semibold text-[var(--property-ink)]">{t("Property media")}</div>
           </div>
           <div className="mt-2 text-xs leading-6 text-[var(--property-ink-soft)]">
-            Upload photos or image evidence. Clear front, interior, and access images make review
-            faster. {formatFileLimit(PROPERTY_MAX_MEDIA_FILE_BYTES)}.
+            {t(
+              "Upload photos or image evidence. Clear front, interior, and access images make review faster.",
+            )}{" "}
+            {formatFileLimit(PROPERTY_MAX_MEDIA_FILE_BYTES)}.
           </div>
           <input
             name="media"
@@ -628,8 +632,8 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
           <div className="mt-2 text-xs text-[var(--property-ink-soft)]">
             {uploadCounts.media > 0
-              ? `${uploadCounts.media} media file${uploadCounts.media === 1 ? "" : "s"} selected`
-              : "No media selected yet"}
+              ? `${uploadCounts.media} ${uploadCounts.media === 1 ? t("media file selected") : t("media files selected")}`
+              : t("No media selected yet")}
           </div>
         </label>
 
@@ -640,6 +644,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               spec={spec}
               count={uploadCounts[spec.name]}
               onCountChange={(count) => updateUploadCount(spec.name, count)}
+              t={t}
             />
           ))}
         </div>
@@ -647,10 +652,10 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
         <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-          <div className="text-lg font-semibold text-[var(--property-ink)]">HenryCo checks</div>
+          <div className="text-lg font-semibold text-[var(--property-ink)]">{t("HenryCo checks")}</div>
           <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {blueprint.moderationChecks.map((item) => (
-              <p key={item}>• {item}</p>
+              <p key={item}>• {t(item)}</p>
             ))}
           </div>
         </section>
@@ -658,11 +663,11 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
           <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
             <ShieldCheck className="h-5 w-5" />
-            <div className="text-lg font-semibold text-[var(--property-ink)]">What happens next</div>
+            <div className="text-lg font-semibold text-[var(--property-ink)]">{t("What happens next")}</div>
           </div>
           <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {blueprint.userChecklist.map((item) => (
-              <p key={item}>• {item}</p>
+              <p key={item}>• {t(item)}</p>
             ))}
           </div>
         </section>
@@ -671,19 +676,19 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       <div className="flex flex-wrap gap-4 text-sm text-[var(--property-ink-soft)]">
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" name="furnished" value="1" />
-          Furnished
+          {t("Furnished")}
         </label>
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" name="pet_friendly" value="1" />
-          Pet friendly
+          {t("Pet friendly")}
         </label>
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" name="shortlet_ready" value="1" />
-          Short-let ready
+          {t("Short-let ready")}
         </label>
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" name="managed_by_henryco" value="1" />
-          Request HenryCo management
+          {t("Request HenryCo management")}
         </label>
       </div>
 
@@ -704,7 +709,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                Live policy result
+                {t("Live policy result")}
               </div>
               <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
                 {submissionFeedback.guidanceHeadline}
@@ -734,14 +739,14 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               href={getSharedAccountPropertyUrl("listings")}
               className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Open property account
+              {t("Open property account")}
             </Link>
             {submissionFeedback.verificationStatus !== "verified" ? (
               <Link
                 href={getAccountUrl("/verification")}
                 className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open account verification
+                {t("Open account verification")}
               </Link>
             ) : null}
           </div>
@@ -765,7 +770,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                Live policy result
+                {t("Live policy result")}
               </div>
               <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
                 {submissionFeedback.guidanceHeadline}
@@ -795,14 +800,14 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               href={getSharedAccountPropertyUrl("listings")}
               className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Open property account
+              {t("Open property account")}
             </Link>
             {submissionFeedback.verificationStatus !== "verified" ? (
               <Link
                 href={getAccountUrl("/verification")}
                 className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open account verification
+                {t("Open account verification")}
               </Link>
             ) : null}
           </div>
@@ -818,22 +823,22 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         >
           <ButtonPendingContent
             pending={submitting}
-            pendingLabel="Submitting listing..."
-            spinnerLabel="Submitting property listing"
+            pendingLabel={t("Submitting listing...")}
+            spinnerLabel={t("Submitting property listing")}
           >
-            Submit listing
+            {t("Submit listing")}
           </ButtonPendingContent>
         </button>
         <Link
           href={getSharedAccountPropertyUrl("listings")}
           className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px]"
         >
-          Open property account
+          {t("Open property account")}
         </Link>
         {submitting ? (
           <span className="inline-flex items-center gap-2 text-xs text-[var(--property-ink-soft)]">
             <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-            Uploading media and trust files without leaving the page
+            {t("Uploading media and trust files without leaving the page")}
           </span>
         ) : null}
       </div>

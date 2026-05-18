@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getCompany } from "@henryco/brand";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getHubPublicLocale } from "@/lib/locale-server";
 
 const companyLinks = [
   { label: "Home", href: "/" },
@@ -12,7 +14,7 @@ const legalLinks = [
   { label: "Terms & conditions", href: "/terms" },
 ];
 
-export default function Footer() {
+export default async function Footer() {
   const company = getCompany("hub") as
     | {
         parentBrand?: string;
@@ -22,6 +24,8 @@ export default function Footer() {
 
   const brandTitle = company?.parentBrand?.trim() || "Henry & Co.";
   const currentYear = new Date().getFullYear();
+  const locale = await getHubPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <footer
@@ -37,15 +41,13 @@ export default function Footer() {
             {brandTitle}
           </div>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
-            A premium multi-division corporate gateway designed to present the
-            Henry &amp; Co. ecosystem with clarity, trust, and long-term brand
-            discipline.
+            {t("A premium multi-division corporate gateway designed to present the Henry & Co. ecosystem with clarity, trust, and long-term brand discipline.")}
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <FooterColumn title="Company" links={companyLinks} />
-          <FooterColumn title="Legal" links={legalLinks} />
+          <FooterColumn title={t("Company")} links={companyLinks.map(l => ({ ...l, label: t(l.label) }))} />
+          <FooterColumn title={t("Legal")} links={legalLinks.map(l => ({ ...l, label: t(l.label) }))} />
         </div>
       </div>
 
@@ -54,13 +56,13 @@ export default function Footer() {
         style={{ borderColor: "var(--site-border)" }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>© {currentYear} {brandTitle}. All rights reserved.</div>
+          <div>© {currentYear} {brandTitle}. {t("All rights reserved.")}</div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span
               aria-hidden
               className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500/80"
             />
-            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+            {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
           </span>
         </div>
       </div>

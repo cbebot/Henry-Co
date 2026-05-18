@@ -3,6 +3,7 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getStaffQueueData } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
 import { formatCurrency } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ function hasPricingLines(value: unknown): value is PricingBreakdown {
 }
 
 export default async function FinancePage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin", "finance"], "/finance");
   const data = await getStaffQueueData();
 
@@ -28,7 +30,7 @@ export default async function FinancePage() {
     <WorkspaceShell
       title="Finance"
       description="Manual payment verification, payout approvals, and finance-led exceptions stay isolated here."
-      nav={staffNav("/finance", "/finance")}
+      nav={staffNav("/finance", "/finance", locale)}
     >
       <section className="space-y-4">
         {data.payments

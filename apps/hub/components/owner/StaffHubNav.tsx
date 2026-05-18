@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 
 const LINKS = [
   { href: "/owner/staff", label: "Overview", match: (p: string) => p === "/owner/staff" },
@@ -17,11 +19,13 @@ const LINKS = [
 
 export function StaffHubNav() {
   const pathname = usePathname();
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <nav
       className="flex flex-wrap gap-2 rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-2"
-      aria-label="Staff intelligence sections"
+      aria-label={t("Staff intelligence sections")}
     >
       {LINKS.map((item) => {
         const active = item.match(pathname);
@@ -35,7 +39,7 @@ export function StaffHubNav() {
                 : "text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
             }`}
           >
-            {item.label}
+            {t(item.label)}
           </Link>
         );
       })}

@@ -8,6 +8,7 @@ import {
   sendTransactionalEmail,
   type HenryCoEmailLayout,
 } from "@henryco/email";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import {
   extractEmailAddress,
   formatCurrency,
@@ -49,6 +50,10 @@ type EmailLayout = {
 };
 
 function toSharedLayout(layout: EmailLayout, locale: string = "en"): HenryCoEmailLayout {
+  const supportLineTemplate = translateSurfaceLabel(
+    locale as AppLocale,
+    "Need help? Reach Studio at {email}.",
+  );
   return {
     purpose: "studio",
     subject: layout.subject,
@@ -62,7 +67,7 @@ function toSharedLayout(layout: EmailLayout, locale: string = "en"): HenryCoEmai
     actionLabel: layout.actionLabel,
     actionHref: layout.actionHref,
     supportLine: studio.supportEmail
-      ? `Need help? Reach Studio at ${studio.supportEmail}.`
+      ? supportLineTemplate.replace("{email}", studio.supportEmail)
       : null,
     locale,
   };
@@ -127,11 +132,32 @@ async function getPaymentSettings() {
   return catalog.platform;
 }
 
+// Apply surface-copy overrides before runtime DeepL translation.
+// Known labels get a curated translation; unknown labels pass through unchanged
+// and then go through localizeStudioLayout (DeepL) for non-English locales.
+function applySurfaceLabels(layout: EmailLayout, locale: AppLocale): EmailLayout {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    ...layout,
+    subject: t(layout.subject),
+    eyebrow: t(layout.eyebrow),
+    title: t(layout.title),
+    intro: t(layout.intro),
+    highlightLabel: layout.highlightLabel ? t(layout.highlightLabel) : layout.highlightLabel,
+    highlightValue: layout.highlightValue,
+    sections: layout.sections?.map((s) => ({ label: t(s.label), value: s.value })),
+    bullets: layout.bullets?.map((b) => t(b)),
+    actionLabel: layout.actionLabel ? t(layout.actionLabel) : layout.actionLabel,
+    actionHref: layout.actionHref,
+  };
+}
+
 // PASS 18C — wrap render with locale resolution. The synchronous English-only
 // renderEmail variant was removed in this pass; every dispatch now goes through
 // the localized path, which is a no-op on locale === "en".
 async function renderLocalizedEmail(layout: EmailLayout, locale: string): Promise<{ html: string; text: string; layout: EmailLayout }> {
-  const localized = await localizeStudioLayout(layout, locale);
+  const surface = applySurfaceLabels(layout, locale as AppLocale);
+  const localized = await localizeStudioLayout(surface, locale);
   const shared = toSharedLayout(localized, locale);
   return {
     html: renderHenryCoEmail(shared),
@@ -219,7 +245,12 @@ async function sendWhatsApp(input: {
   entityId?: string | null;
   templateKey: string;
   subject: string;
+  /** Recipient locale used to localize the supplied subject/body. Optional —
+   * when omitted the supplied strings are dispatched as-is (English). */
+  locale?: AppLocale | string;
 }) {
+  const t = (text: string) =>
+    input.locale ? translateSurfaceLabel(input.locale as AppLocale, text) : text;
   const result = await sendStudioWhatsAppText({
     phone: input.phone,
     body: input.body,
@@ -230,7 +261,7 @@ async function sendWhatsApp(input: {
     channel: "whatsapp",
     templateKey: input.templateKey,
     recipient: input.phone || "missing-recipient",
-    subject: input.subject,
+    subject: t(input.subject),
     status: result.status,
     reason: result.reason,
   });
@@ -258,6 +289,21 @@ async function renderAndSendEmail(input: {
   });
 }
 
+/**
+ * Resolve the recipient locale for outbound channels (used by WhatsApp body
+ * builders so static text can flow through translateSurfaceLabel). Email
+ * dispatch resolves the recipient locale separately inside renderAndSendEmail.
+ */
+async function resolveOutboundLocale(input: {
+  email?: string | null;
+  phone?: string | null;
+}): Promise<AppLocale> {
+  const recipient = extractEmailAddress(input.email);
+  return resolveRecipientLocale(createAdminSupabase() as never, {
+    email: recipient,
+  }) as Promise<AppLocale>;
+}
+
 export async function addStudioNotificationRecord(record: Omit<StudioNotification, "id" | "createdAt">) {
   const notification: StudioNotification = {
     id: crypto.randomUUID(),
@@ -279,8 +325,10 @@ export async function sendInquiryNotifications(input: {
   project: StudioProject | null;
 }) {
   const proposalUrl = `${baseUrl()}/proposals/${input.proposal.id}?access=${input.proposal.accessKey}`;
+  const recipientLocale = await resolveOutboundLocale({ email: input.lead.normalizedEmail });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   const layout: EmailLayout = {
-    subject: `Inquiry received • ${input.lead.customerName}`,
+    subject: `${tw("Inquiry received")} • ${input.lead.customerName}`,
     eyebrow: "Inquiry received",
     title: "Your studio brief is now inside HenryCo Studio.",
     intro:
@@ -335,11 +383,12 @@ export async function sendInquiryNotifications(input: {
     entityId: input.lead.id,
     templateKey: "inquiry_acknowledgement",
     subject: "Studio inquiry acknowledgement",
+    locale: recipientLocale,
     body: [
       `HenryCo Studio • ${input.lead.customerName}`,
-      "Your project brief has been received.",
-      `Proposal value: ${formatCurrency(input.proposal.investment, input.proposal.currency)}`,
-      `Review here: ${proposalUrl}`,
+      tw("Your project brief has been received."),
+      `${tw("Proposal value")}: ${formatCurrency(input.proposal.investment, input.proposal.currency)}`,
+      `${tw("Review here")}: ${proposalUrl}`,
     ].join("\n"),
   });
 }
@@ -412,6 +461,8 @@ export async function sendPaymentInstructionsNotifications(input: {
 }) {
   const projectUrl = `${baseUrl()}/project/${input.project.id}?access=${input.project.accessKey}`;
   const platform = await getPaymentSettings();
+  const recipientLocale = await resolveOutboundLocale({ email: input.lead.normalizedEmail });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   const sections: EmailSection[] = [
     { label: "Transfer amount", value: formatCurrency(input.payment.amount, input.payment.currency) },
     {
@@ -468,13 +519,14 @@ export async function sendPaymentInstructionsNotifications(input: {
     entityId: input.payment.id,
     templateKey: "payment_instructions",
     subject: "Payment instructions",
+    locale: recipientLocale,
     body: [
       `HenryCo Studio • ${input.project.title}`,
-      `Amount: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
-      `Bank: ${platform.paymentBankName || "Pending"}`,
-      `Account: ${platform.paymentAccountName || "Pending"}`,
-      `Number: ${platform.paymentAccountNumber || "Pending"}`,
-      `Workspace: ${projectUrl}`,
+      `${tw("Amount")}: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
+      `${tw("Bank")}: ${platform.paymentBankName || tw("Pending")}`,
+      `${tw("Account")}: ${platform.paymentAccountName || tw("Pending")}`,
+      `${tw("Number")}: ${platform.paymentAccountNumber || tw("Pending")}`,
+      `${tw("Workspace")}: ${projectUrl}`,
     ].join("\n"),
   });
 }
@@ -571,15 +623,18 @@ export async function sendMilestoneReadyNotifications(input: {
     },
   });
 
+  const recipientLocale = await resolveOutboundLocale({ email: input.lead.normalizedEmail });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   await sendWhatsApp({
     phone: input.lead.phone,
     entityId: input.project.id,
     templateKey: "milestone_update",
     subject: "Milestone update",
+    locale: recipientLocale,
     body: [
       `HenryCo Studio • ${input.milestone.name}`,
-      "A project milestone is ready for your review.",
-      `Open workspace: ${projectUrl}`,
+      tw("A project milestone is ready for your review."),
+      `${tw("Open workspace")}: ${projectUrl}`,
     ].join("\n"),
   });
 }
@@ -660,15 +715,18 @@ export async function sendFinalDeliveryNotifications(input: {
     },
   });
 
+  const recipientLocale = await resolveOutboundLocale({ email: input.lead.normalizedEmail });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   await sendWhatsApp({
     phone: input.lead.phone,
     entityId: input.project.id,
     templateKey: "final_delivery_ready",
     subject: "Final delivery ready",
+    locale: recipientLocale,
     body: [
       `HenryCo Studio • ${input.project.title}`,
-      "Final delivery is ready for your review.",
-      `Open workspace: ${projectUrl}`,
+      tw("Final delivery is ready for your review."),
+      `${tw("Open workspace")}: ${projectUrl}`,
     ].join("\n"),
   });
 }
@@ -699,16 +757,19 @@ export async function sendProjectUpdateNotifications(input: {
     },
   });
 
+  const recipientLocale = await resolveOutboundLocale({ email: input.lead.normalizedEmail });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   await sendWhatsApp({
     phone: input.lead.phone,
     entityId: input.project.id,
     templateKey: "project_update",
     subject: "Project update",
+    locale: recipientLocale,
     body: [
       `HenryCo Studio • ${input.project.title}`,
       input.update.title,
       input.update.summary,
-      `Workspace: ${projectUrl}`,
+      `${tw("Workspace")}: ${projectUrl}`,
     ].join("\n"),
   });
 }
@@ -749,17 +810,20 @@ export async function sendPaymentReminderNotification(input: {
     },
   });
 
+  const recipientLocale = await resolveOutboundLocale({ email: input.lead.normalizedEmail });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   await sendWhatsApp({
     phone: input.lead.phone,
     entityId: input.payment.id,
     templateKey: "payment_reminder",
     subject: "Payment reminder",
+    locale: recipientLocale,
     body: [
       `HenryCo Studio • ${input.payment.label}`,
-      `Amount due: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
-      `Bank: ${platform.paymentBankName || "Pending"}`,
-      `Account number: ${platform.paymentAccountNumber || "Pending"}`,
-      `Project workspace: ${projectUrl}`,
+      `${tw("Amount due")}: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
+      `${tw("Bank")}: ${platform.paymentBankName || tw("Pending")}`,
+      `${tw("Account number")}: ${platform.paymentAccountNumber || tw("Pending")}`,
+      `${tw("Project workspace")}: ${projectUrl}`,
     ].join("\n"),
   });
 }
@@ -792,16 +856,19 @@ export async function sendSupportReplyNotification(input: {
     },
   });
 
+  const recipientLocale = await resolveOutboundLocale({ email: input.email });
+  const tw = (text: string) => translateSurfaceLabel(recipientLocale, text);
   await sendWhatsApp({
     phone: input.phone,
     entityId: input.threadId,
     templateKey: "support_reply",
     subject: "Support reply",
+    locale: recipientLocale,
     body: [
-      "HenryCo Studio support replied to your thread.",
+      tw("HenryCo Studio support replied to your thread."),
       input.subject,
       input.body,
-      `Open thread: ${supportUrl}`,
+      `${tw("Open thread")}: ${supportUrl}`,
     ].join("\n"),
   });
 }
