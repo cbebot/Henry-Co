@@ -79,6 +79,11 @@ export default async function TeamsPage() {
         </p>
       </section>
 
+      {/* TODO(wave1): multi-row teams list. team.name / team.label /
+          team.summary are Supabase-row text fields — translate each via
+          Promise.all + resolveLocalizedDynamicField in a follow-up wave. The
+          single-row detail page at /teams/[slug] is already wrapped through
+          the cached DeepL pipeline. */}
       <ol className="mt-7 grid gap-5 lg:grid-cols-2">
         {catalog.teams.map((team) => (
           <li key={team.id} id={team.id} className="scroll-mt-32">

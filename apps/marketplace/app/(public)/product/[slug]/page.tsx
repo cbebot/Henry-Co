@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { JsonLd, buildProductLd } from "@henryco/seo";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
 import { TrustPassport } from "@/components/marketplace/shell";
@@ -29,12 +30,35 @@ export async function generateMetadata({
       description: copy.product.metadata.fallbackDescription,
     };
   }
+  const [productTitle, productSummary, productDescription] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.product.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: data.product.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.product.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+  ]);
   return {
-    title: copy.product.metadata.titleTemplate.replace("{title}", data.product.title),
+    title: copy.product.metadata.titleTemplate.replace("{title}", productTitle),
     description:
-      data.product.summary ||
-      data.product.description ||
-      copy.product.metadata.descriptionTemplate.replace("{title}", data.product.title),
+      productSummary ||
+      productDescription ||
+      copy.product.metadata.descriptionTemplate.replace("{title}", productTitle),
   };
 }
 
@@ -49,12 +73,68 @@ export default async function ProductPage({
   const copy = getMarketplacePublicCopy(locale);
   const productCopy = copy.product;
 
+  // Single-row detail page: wrap all visible DB-driven text fields so non-EN
+  // locales render translated copy on demand.
+  const [
+    localizedTitle,
+    localizedSummary,
+    localizedDescription,
+    localizedDeliveryNote,
+    localizedLeadTime,
+    localizedCategoryName,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.product.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: data.product.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.product.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "deliveryNote",
+      locale,
+      fallback: data.product.deliveryNote ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "leadTime",
+      locale,
+      fallback: data.product.leadTime ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    data.category
+      ? resolveLocalizedDynamicField({
+          record: data.category as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: data.category.name,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
+
   // V3 PASS 21 — Product + Offer + AggregateRating JSON-LD (M9)
   const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
   const productUrl = `https://marketplace.${baseDomain}/product/${data.product.slug}`;
   const productLd = buildProductLd({
-    name: data.product.title,
-    description: data.product.summary || data.product.description,
+    name: localizedTitle,
+    description: localizedSummary || localizedDescription,
     sku: data.product.sku,
     brand: data.brand?.name,
     imageUrls: data.product.gallery,
@@ -102,7 +182,7 @@ export default async function ProductPage({
     {
       icon: Truck,
       label: productCopy.fulfillment.fulfillmentLabel,
-      value: data.product.deliveryNote || data.product.leadTime,
+      value: localizedDeliveryNote || localizedLeadTime,
     },
     {
       icon: ShieldCheck,
@@ -139,7 +219,7 @@ export default async function ProductPage({
       <JsonLd id={`marketplace-product-${data.product.slug}-jsonld`} data={productLd} />
       {/* Editorial product hero — gallery + sticky detail aside, no panel-on-panel */}
       <section className="grid gap-12 xl:grid-cols-[1.06fr,0.94fr]">
-        <ProductMediaGallery title={data.product.title} gallery={data.product.gallery} />
+        <ProductMediaGallery title={localizedTitle} gallery={data.product.gallery} />
 
         <div className="space-y-10 xl:sticky xl:top-28 xl:self-start">
           <article>
@@ -154,10 +234,10 @@ export default async function ProductPage({
               ))}
             </div>
             <h1 className="mt-5 max-w-2xl text-balance font-[family:var(--font-marketplace-display)] text-[2.2rem] leading-[1.04] tracking-[-0.045em] text-[var(--market-paper-white)] sm:text-[2.7rem] md:text-[3rem]">
-              {data.product.title}
+              {localizedTitle}
             </h1>
             <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-[1.7] text-[var(--market-muted)] sm:text-base">
-              {data.product.description}
+              {localizedDescription}
             </p>
 
             {/* Price line — editorial, divided */}
@@ -180,10 +260,10 @@ export default async function ProductPage({
                   {productCopy.price.leadTimeLabel}
                 </p>
                 <p className="text-sm font-semibold text-[var(--market-paper-white)]">
-                  {data.product.leadTime}
+                  {localizedLeadTime}
                 </p>
                 <p className="text-xs text-[var(--market-muted)]">
-                  {data.product.deliveryNote}
+                  {localizedDeliveryNote}
                 </p>
               </div>
             </div>
@@ -281,7 +361,7 @@ export default async function ProductPage({
                 <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
               </summary>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
-                {data.product.deliveryNote || productCopy.detail.deliveryFallback}{" "}
+                {localizedDeliveryNote || productCopy.detail.deliveryFallback}{" "}
                 {productCopy.detail.deliveryTail}
               </p>
             </details>
@@ -326,7 +406,7 @@ export default async function ProductPage({
                     href={`/category/${data.category.slug}`}
                     className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
                   >
-                    {productCopy.detail.exploreCategoryTemplate.replace("{category}", data.category.name)}
+                    {productCopy.detail.exploreCategoryTemplate.replace("{category}", localizedCategoryName)}
                   </Link>
                 ) : null}
                 {data.brand ? (
@@ -350,6 +430,8 @@ export default async function ProductPage({
           <p className="mt-3 max-w-md text-sm leading-7 text-[var(--market-muted)]">
             {productCopy.related.body}
           </p>
+          {/* TODO(wave3-catalogue): paginate translation — related products list
+              is a catalogue surface that can render many rows on hot routes. */}
           <ul className="mt-7 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {data.related.slice(0, 4).map((product) => (
               <li key={product.slug}>
@@ -384,6 +466,9 @@ export default async function ProductPage({
                 {productCopy.reviews.title}
               </h2>
             </div>
+            {/* TODO(wave3-catalogue): paginate translation — buyer review list
+                is a list surface and reviews carry buyer voice; translate via
+                client-side fetch on demand instead of bulk server-side. */}
             <ul className="divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
               {data.reviews.slice(0, 4).map((review) => (
                 <li key={review.id} className="grid gap-4 py-6 md:grid-cols-[0.32fr,0.68fr]">

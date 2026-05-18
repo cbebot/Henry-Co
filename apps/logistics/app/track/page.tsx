@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Clock3, Eye, MapPinned, ShieldCheck } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { buildLogisticsMapViewport } from "@/lib/logistics/map-provider";
 import {
@@ -58,10 +59,27 @@ export default async function TrackPage({ searchParams }: Props) {
   const locale = await getLogisticsPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const { code, phone } = await searchParams;
-  const [snapshot, recentShipments] = await Promise.all([
+  const [snapshot, recentShipmentsRaw] = await Promise.all([
     getPublicLogisticsSnapshot(),
     getRecentLogisticsShipmentsForViewer().catch(() => []),
   ]);
+  // Pre-resolve zone_label for the recent-shipment cards (server-rendered)
+  // so non-English customers see translated lane copy on the picker.
+  // recipientName stays unwrapped — it's a personal name (PII).
+  const recentShipments = await Promise.all(
+    recentShipmentsRaw.map(async (item) => ({
+      ...item,
+      zoneLabel: item.zoneLabel
+        ? await resolveLocalizedDynamicField({
+            record: item as unknown as Record<string, unknown>,
+            field: "zoneLabel",
+            locale,
+            fallback: item.zoneLabel,
+            machineTranslate: locale !== "en",
+          })
+        : null,
+    })),
+  );
   const shipment =
     code && phone ? await getShipmentByTrackingLookup({ trackingCode: code, phone }) : null;
   const detail = shipment ? await getShipmentDetail(shipment.id) : null;
@@ -79,6 +97,97 @@ export default async function TrackPage({ searchParams }: Props) {
   const isDelivered = detail?.shipment.lifecycleStatus === "delivered";
   const promiseWindow = detail?.shipment.pricingBreakdown.promiseWindowHours;
 
+  // Route Supabase-row text on the tracking surface through cached DeepL.
+  //   - settings.trackingLookupHelp + settings.pickupHours: platform copy
+  //     merged from `logistics_settings` rows.
+  //   - shipment.zoneLabel: free-text lane label persisted on the row.
+  //   - proof.note: dispatcher / rider proof note.
+  //   - issue.summary / issue.details: customer-facing exception copy.
+  //   - shipment.supportSummary: customer-facing support summary.
+  //   - pickup/dropoff line1 / instructions / landmark: free-text address
+  //     fields persisted on logistics_addresses; line1 is rendered raw.
+  // TODO(list-row): recipient_name + sender_name are personal names (PII) —
+  // skipped per the skip rule for proper-noun-like tokens.
+  // TODO(list-row): detail.shipment.parcelDescription is not rendered on the
+  // public tracking page (kept for ops); revisit if a public surface appears.
+  const [
+    trackingLookupHelpLocalized,
+    zoneLabelLocalized,
+    proofNoteLocalized,
+    pickupLine1Localized,
+    dropoffLine1Localized,
+    issuesLocalized,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: snapshot.settings as unknown as Record<string, unknown>,
+      field: "trackingLookupHelp",
+      locale,
+      fallback: snapshot.settings.trackingLookupHelp,
+      machineTranslate: locale !== "en",
+    }),
+    detail?.shipment.zoneLabel
+      ? resolveLocalizedDynamicField({
+          record: detail.shipment as unknown as Record<string, unknown>,
+          field: "zoneLabel",
+          locale,
+          fallback: detail.shipment.zoneLabel,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve<string | null>(null),
+    detail?.proof?.note
+      ? resolveLocalizedDynamicField({
+          record: detail.proof as unknown as Record<string, unknown>,
+          field: "note",
+          locale,
+          fallback: detail.proof.note,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve<string | null>(null),
+    detail?.shipment.pickupAddress?.line1
+      ? resolveLocalizedDynamicField({
+          record: detail.shipment.pickupAddress as unknown as Record<string, unknown>,
+          field: "line1",
+          locale,
+          fallback: detail.shipment.pickupAddress.line1,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve<string | null>(null),
+    detail?.shipment.dropoffAddress?.line1
+      ? resolveLocalizedDynamicField({
+          record: detail.shipment.dropoffAddress as unknown as Record<string, unknown>,
+          field: "line1",
+          locale,
+          fallback: detail.shipment.dropoffAddress.line1,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve<string | null>(null),
+    detail
+      ? Promise.all(
+          detail.issues
+            .filter((i) => i.status !== "resolved")
+            .map(async (issue) => ({
+              ...issue,
+              summary: await resolveLocalizedDynamicField({
+                record: issue as unknown as Record<string, unknown>,
+                field: "summary",
+                locale,
+                fallback: issue.summary,
+                machineTranslate: locale !== "en",
+              }),
+              details: await resolveLocalizedDynamicField({
+                record: issue as unknown as Record<string, unknown>,
+                field: "details",
+                locale,
+                fallback: issue.details,
+                machineTranslate: locale !== "en",
+              }),
+            })),
+        )
+      : Promise.resolve<
+          Array<(NonNullable<typeof detail>)["issues"][number]>
+        >([]),
+  ]);
+
   /*
    * Capability evidence for the tracking hero. When no lookup is in
    * play we surface platform-level numbers; once a shipment is loaded
@@ -90,7 +199,7 @@ export default async function TrackPage({ searchParams }: Props) {
         {
           label: t("Status"),
           value: status?.label ? t(status.label) : t("Unknown"),
-          trend: detail.shipment.zoneLabel ?? t("Lane TBD"),
+          trend: zoneLabelLocalized ?? t("Lane TBD"),
           trendDirection: status?.tone === "good" ? "pos" : "neutral",
           pulse: Boolean(isLive),
           emphasis: true,
@@ -170,11 +279,11 @@ export default async function TrackPage({ searchParams }: Props) {
           }
           blurb={
             detail
-              ? `${detail.shipment.zoneLabel ?? t("Lane pending")} · ${detail.shipment.serviceType.replaceAll(
+              ? `${zoneLabelLocalized ?? t("Lane pending")} · ${detail.shipment.serviceType.replaceAll(
                   "_",
                   " ",
                 )} · ${detail.shipment.urgency}. ${t("Milestones update as dispatch progresses; signed-in customers see logistics activity inside their shared HenryCo account.")}`
-              : `${snapshot.settings.trackingLookupHelp} ${t("Signed-in customers also see logistics activity inside their shared HenryCo account.")}`
+              : `${trackingLookupHelpLocalized} ${t("Signed-in customers also see logistics activity inside their shared HenryCo account.")}`
           }
           capabilityMetrics={heroCapability}
           ctas={
@@ -206,8 +315,8 @@ export default async function TrackPage({ searchParams }: Props) {
             eyebrow={t("Live · last update tracked")}
             title={status?.label ? t(status.label) : t("In motion")}
             meta={
-              detail.shipment.pickupAddress?.line1 && detail.shipment.dropoffAddress?.line1
-                ? `${detail.shipment.pickupAddress.line1} → ${detail.shipment.dropoffAddress.line1}`
+              pickupLine1Localized && dropoffLine1Localized
+                ? `${pickupLine1Localized} → ${dropoffLine1Localized}`
                 : t("Awaiting pinned route")
             }
             etaLabel={t("ETA window")}
@@ -324,7 +433,7 @@ export default async function TrackPage({ searchParams }: Props) {
                     {detail.shipment.trackingCode}
                   </h2>
                   <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-                    {detail.shipment.zoneLabel || t("Lane TBD")} ·{" "}
+                    {zoneLabelLocalized || t("Lane TBD")} ·{" "}
                     {detail.shipment.serviceType.replaceAll("_", " ")} ·{" "}
                     {detail.shipment.urgency}
                   </p>
@@ -403,13 +512,13 @@ export default async function TrackPage({ searchParams }: Props) {
                           {detail.proof.proofType}
                         </dd>
                       </div>
-                      {detail.proof.note ? (
+                      {proofNoteLocalized ? (
                         <div className="py-3">
                           <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                             {t("Note")}
                           </dt>
                           <dd className="mt-1 text-sm leading-7 text-[var(--logistics-muted)]">
-                            {detail.proof.note}
+                            {proofNoteLocalized}
                           </dd>
                         </div>
                       ) : null}
@@ -420,20 +529,18 @@ export default async function TrackPage({ searchParams }: Props) {
                     </p>
                   )}
                 </div>
-                {detail.issues.filter((i) => i.status !== "resolved").length > 0 ? (
+                {issuesLocalized.length > 0 ? (
                   <div className="border-l-2 border-amber-400/55 pl-5">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-amber-200/85">
                       {t("Active exception")}
                     </p>
                     <ul className="mt-3 space-y-3 text-sm leading-7 text-[var(--logistics-muted)]">
-                      {detail.issues
-                        .filter((i) => i.status !== "resolved")
-                        .map((issue) => (
-                          <li key={issue.id}>
-                            <span className="font-semibold text-white">{issue.summary}</span> —{" "}
-                            {issue.details}
-                          </li>
-                        ))}
+                      {issuesLocalized.map((issue) => (
+                        <li key={issue.id}>
+                          <span className="font-semibold text-white">{issue.summary}</span> —{" "}
+                          {issue.details}
+                        </li>
+                      ))}
                     </ul>
                     <a
                       href={`mailto:${snapshot.settings.supportEmail}`}
@@ -449,8 +556,8 @@ export default async function TrackPage({ searchParams }: Props) {
                     {t("Lane note")}
                   </p>
                   <p className="mt-2 text-sm leading-7 text-[var(--logistics-muted)]">
-                    {detail.shipment.pickupAddress?.line1 ?? t("Pickup TBD")} →{" "}
-                    {detail.shipment.dropoffAddress?.line1 ?? t("Dropoff TBD")}. {t("Promise window")}{" "}
+                    {pickupLine1Localized ?? t("Pickup TBD")} →{" "}
+                    {dropoffLine1Localized ?? t("Dropoff TBD")}. {t("Promise window")}{" "}
                     {detail.shipment.pricingBreakdown.promiseWindowHours[0]}–
                     {detail.shipment.pricingBreakdown.promiseWindowHours[1]}h.
                   </p>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/utils";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import type { PropertyListing } from "@/lib/property/types";
 
 /**
@@ -54,7 +56,7 @@ export function selectComparableListings(
     .map((entry) => entry.row);
 }
 
-export function ComparablePricingRail({
+export async function ComparablePricingRail({
   target,
   comparables,
 }: {
@@ -62,6 +64,21 @@ export function ComparablePricingRail({
   comparables: ComparableListingInput[];
 }) {
   if (comparables.length === 0) return null;
+
+  // Wrap comparable listing titles — 4-row max, detail page is single-row.
+  const locale = await getPropertyPublicLocale();
+  const localizedComparables = await Promise.all(
+    comparables.map(async (row) => {
+      const title = await resolveLocalizedDynamicField({
+        record: row as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: row.title ?? "",
+        machineTranslate: locale !== "en",
+      });
+      return { ...row, title };
+    }),
+  );
 
   return (
     <section>
@@ -75,7 +92,7 @@ export function ComparablePricingRail({
       </p>
 
       <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-        {comparables.map((row) => {
+        {localizedComparables.map((row) => {
           const delta = deltaPct(target.price, row.price);
           const direction =
             delta > 1 ? "up" : delta < -1 ? "down" : "flat";

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { getLearnInstructorsCopy } from "@henryco/i18n/server";
+import { getLearnInstructorsCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getPublicAcademyData } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 
@@ -16,6 +16,24 @@ export default async function InstructorsPage() {
     getLearnPublicLocale(),
   ]);
   const copy = getLearnInstructorsCopy(locale);
+
+  // WAVE A — list view: translate the primary identity (fullName) per row.
+  // TODO i18n WAVE A — title + bio skipped on the list view per scope (secondary
+  // fields in list views are deferred). Detail page /instructors/[slug] resolves
+  // all three via resolveLocalizedDynamicField.
+  const machineTranslate = locale !== "en";
+  const instructorsLocalized = await Promise.all(
+    academy.instructors.map(async (instructor) => {
+      const fullName = await resolveLocalizedDynamicField({
+        record: instructor as unknown as Record<string, unknown>,
+        field: "fullName",
+        locale,
+        fallback: instructor.fullName ?? "",
+        machineTranslate,
+      });
+      return { ...instructor, fullName };
+    }),
+  );
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
@@ -82,7 +100,7 @@ export default async function InstructorsPage() {
           </p>
         ) : (
           <ul className="mt-8 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
-            {academy.instructors.map((instructor) => (
+            {instructorsLocalized.map((instructor) => (
               <li
                 key={instructor.id}
                 className="grid gap-3 py-6 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"

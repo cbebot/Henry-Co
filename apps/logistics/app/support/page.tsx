@@ -10,7 +10,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { getLogisticsSupportCopy } from "@henryco/i18n/server";
+import {
+  getLogisticsSupportCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
@@ -30,6 +33,17 @@ export default async function SupportPage() {
   const copy = getLogisticsSupportCopy(locale);
   const logistics = getDivisionConfig("logistics");
   const { settings } = await getPublicLogisticsSnapshot();
+
+  // pickupHours is Supabase-merged free-text — wrap through DeepL.
+  // operationsCity / operationsRegion are city / region names (place
+  // identifiers) — skipped per the skip rule for proper-noun-like tokens.
+  const pickupHoursLocalized = await resolveLocalizedDynamicField({
+    record: settings as unknown as Record<string, unknown>,
+    field: "pickupHours",
+    locale,
+    fallback: settings.pickupHours,
+    machineTranslate: locale !== "en",
+  });
 
   const helps = [
     {
@@ -122,7 +136,7 @@ export default async function SupportPage() {
                     {copy.channels.hoursLabel}
                   </span>
                   <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                    {settings.pickupHours}
+                    {pickupHoursLocalized}
                   </span>
                 </li>
                 <li className="flex items-baseline gap-4 py-4">

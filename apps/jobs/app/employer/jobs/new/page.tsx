@@ -28,7 +28,7 @@ export default async function EmployerNewJobPage() {
   const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale);
   const copy = getJobsCopy(locale).employerJobNew;
   const membership = data.memberships[0];
-  const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;
+  const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true, locale }) : null;
   const employer = companyRecord?.employer ?? null;
   const [eligibility, subscription] = membership
     ? await Promise.all([

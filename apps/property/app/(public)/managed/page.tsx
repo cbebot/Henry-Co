@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyListingCard,
   PropertyManagedRecordCard,
@@ -7,6 +8,7 @@ import {
   PropertySectionIntro,
 } from "@/components/property/ui";
 import { getPropertySnapshot } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +16,31 @@ export default async function ManagedPropertyPage() {
   const snapshot = await getPropertySnapshot();
   const managedListings = snapshot.listings.filter(
     (item) => item.status === "approved" && item.managedByHenryCo,
+  );
+  const locale = await getPropertyPublicLocale();
+
+  // Wrap services list — small public ledger, no per-row description
+  // cost concern.
+  const localizedServices = await Promise.all(
+    snapshot.services.map(async (service) => {
+      const [title, summary] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: service as unknown as Record<string, unknown>,
+          field: "title",
+          locale,
+          fallback: service.title ?? "",
+          machineTranslate: locale !== "en",
+        }),
+        resolveLocalizedDynamicField({
+          record: service as unknown as Record<string, unknown>,
+          field: "summary",
+          locale,
+          fallback: service.summary ?? "",
+          machineTranslate: locale !== "en",
+        }),
+      ]);
+      return { ...service, title, summary };
+    }),
   );
 
   return (
@@ -49,7 +76,7 @@ export default async function ManagedPropertyPage() {
             What HenryCo handles after acceptance.
           </h2>
           <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-            {snapshot.services.map((service) => (
+            {localizedServices.map((service) => (
               <li key={service.id} className="py-5">
                 <h3 className="text-base font-semibold tracking-tight text-[var(--property-ink)]">
                   {service.title}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyEmptyState,
   PropertyMetricCard,
@@ -75,6 +76,25 @@ export default async function AdminListingsPage() {
   const inspectionBacklog = data.queue.filter((listing) =>
     ["inspection_requested", "inspection_scheduled"].includes(listing.status)
   ).length;
+
+  // Staff queue — wrap listing.title only per row; descriptions stay raw
+  // to keep DeepL fan-out flat across multi-row tables.
+  // TODO(wave1+): consider batched cache for listing.policySummary when
+  // the governance queue grows past one screen.
+  const queueTitles = await Promise.all(
+    data.queue.map((listing) =>
+      resolveLocalizedDynamicField({
+        record: listing as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: listing.title ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const queueTitleById = new Map(
+    data.queue.map((listing, index) => [listing.id, queueTitles[index] ?? listing.title]),
+  );
 
   return (
     <PropertyWorkspaceShell
@@ -155,7 +175,7 @@ export default async function AdminListingsPage() {
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-[18rem]">
                           <div className="text-lg font-semibold text-[var(--property-ink)]">
-                            {listing.title}
+                            {queueTitleById.get(listing.id) ?? listing.title}
                           </div>
                           <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
                             {listing.locationLabel} · {humanize(listing.serviceType)} · {t("risk")} {listing.riskScore}/100

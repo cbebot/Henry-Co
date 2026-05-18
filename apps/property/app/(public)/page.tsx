@@ -9,6 +9,7 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyListingCard } from "@/components/property/ui";
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { PropertySearchBar } from "@/components/property/property-search-bar";
@@ -85,6 +86,99 @@ export default async function PropertyHomePage() {
   const differentiators = snapshot.differentiators ?? [];
   const viewerFirstName = viewer.user?.fullName?.split(/\s+/)[0]?.trim() || null;
   const inventoryYear = new Date().getFullYear();
+
+  // Home page renders three small Supabase-row ledgers: differentiators
+  // (capped at 4), services (full list), agents (capped at 8). Each list
+  // is short and visible, so wrap title/name + description/summary.
+  // Areas table renders area.name + marketNote and gets wrapped too.
+  const visibleDifferentiators = differentiators.slice(0, 4);
+  const localizedDifferentiators = await Promise.all(
+    visibleDifferentiators.map(async (item) => {
+      const [name, description] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: item as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: item.name ?? "",
+          machineTranslate: locale !== "en",
+        }),
+        resolveLocalizedDynamicField({
+          record: item as unknown as Record<string, unknown>,
+          field: "description",
+          locale,
+          fallback: item.description ?? "",
+          machineTranslate: locale !== "en",
+        }),
+      ]);
+      return { ...item, name, description };
+    }),
+  );
+  const localizedServices = await Promise.all(
+    (snapshot.services ?? []).map(async (service) => {
+      const [title, summary] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: service as unknown as Record<string, unknown>,
+          field: "title",
+          locale,
+          fallback: service.title ?? "",
+          machineTranslate: locale !== "en",
+        }),
+        resolveLocalizedDynamicField({
+          record: service as unknown as Record<string, unknown>,
+          field: "summary",
+          locale,
+          fallback: service.summary ?? "",
+          machineTranslate: locale !== "en",
+        }),
+      ]);
+      return { ...service, title, summary };
+    }),
+  );
+  const visibleAgents = agents.slice(0, 8);
+  const localizedAgents = await Promise.all(
+    visibleAgents.map(async (agent) => {
+      const [name, label] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: agent as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: agent.name ?? "",
+          machineTranslate: locale !== "en",
+        }),
+        resolveLocalizedDynamicField({
+          record: agent as unknown as Record<string, unknown>,
+          field: "label",
+          locale,
+          fallback: agent.label ?? "",
+          machineTranslate: locale !== "en",
+        }),
+      ]);
+      return { ...agent, name, label };
+    }),
+  );
+  // Areas ledger — wrap name + marketNote for the six visible rows.
+  const visibleAreas = areaIndex.slice(0, 6);
+  const localizedAreas = await Promise.all(
+    visibleAreas.map(async (area) => {
+      const [name, marketNote] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: area as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: area.name ?? "",
+          machineTranslate: locale !== "en",
+        }),
+        resolveLocalizedDynamicField({
+          record: area as unknown as Record<string, unknown>,
+          field: "marketNote",
+          locale,
+          fallback: area.marketNote ?? "",
+          machineTranslate: locale !== "en",
+        }),
+      ]);
+      return { ...area, name, marketNote };
+    }),
+  );
 
   return (
     <main id="henryco-main" tabIndex={-1} className="pb-24">
@@ -255,7 +349,7 @@ export default async function PropertyHomePage() {
                   value={`${areaIndex.length}`}
                   hint={
                     areaIndex.length > 0
-                      ? areaIndex
+                      ? localizedAreas
                           .slice(0, 3)
                           .map((a) => a.name)
                           .join(" · ")
@@ -405,7 +499,7 @@ export default async function PropertyHomePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--property-line)]">
-                  {areaIndex.slice(0, 6).map((area) => (
+                  {localizedAreas.map((area) => (
                     <tr
                       key={area.id}
                       className="group/area transition hover:bg-[rgba(232,184,148,0.05)]"
@@ -484,7 +578,7 @@ export default async function PropertyHomePage() {
                 editorial entry, hairline divided. No tile chrome, no
                 rounded-card noise. */}
             <ol className="divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-              {differentiators.slice(0, 4).map((item, index) => (
+              {localizedDifferentiators.map((item, index) => (
                 <li key={item.id} className="py-6 sm:py-7">
                   <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-x-6">
                     <span className="text-[10.5px] font-semibold uppercase tracking-[0.26em] text-[var(--property-accent-strong)]">
@@ -518,9 +612,9 @@ export default async function PropertyHomePage() {
               {copy.home.managedBody}
             </p>
 
-            {snapshot.services && snapshot.services.length > 0 ? (
+            {localizedServices.length > 0 ? (
               <ul className="mt-8 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-                {snapshot.services.map((service, index) => (
+                {localizedServices.map((service, index) => (
                   <li key={service.id} className="py-5 sm:py-6">
                     <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-x-6">
                       <span className="text-[10.5px] font-semibold uppercase tracking-[0.26em] text-[var(--property-sage-soft)]/85">
@@ -609,7 +703,7 @@ export default async function PropertyHomePage() {
           // Editorial spread — large image, name, territory, one-line bio.
           // Snaps on mobile, 4-up grid on desktop. No card chrome.
           <ol className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {agents.slice(0, 8).map((agent) => (
+            {localizedAgents.map((agent) => (
               <li key={agent.id} className="group/agent">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] border border-[var(--property-line)] bg-black/20">
                   {agent.photoUrl ? (

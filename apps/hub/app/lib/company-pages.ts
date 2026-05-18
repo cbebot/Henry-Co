@@ -8,6 +8,10 @@ import {
   RETENTION_POLICIES,
   SUB_PROCESSORS,
 } from "@henryco/config";
+import {
+  resolveLocalizedDynamicField,
+  type AppLocale,
+} from "@henryco/i18n/server";
 import { fetchNoStore } from "./no-store-fetch";
 
 export type CompanyPageStat = {
@@ -1074,5 +1078,151 @@ export async function getCompanyPage(slug: string) {
   return {
     page: normalizeCompanyPage(data, slug),
     hasServerError: false,
+  };
+}
+
+/**
+ * PASS i18n-100 — translate the row text fields on a CompanyPageRecord
+ * through `resolveLocalizedDynamicField` so the SSR first paint of /about,
+ * /contact, /privacy, /terms appears in the visitor's locale.
+ *
+ * Brand strings (e.g. `LEGAL.entity.name`, support phone numbers, dates,
+ * CTA hrefs, image URLs, version markers) are deliberately preserved.
+ *
+ * NOTE: `CompanyPageClient` is a client component that re-subscribes to
+ * `company_pages` realtime and overwrites `initialData` with the raw
+ * source row. Until that client path is routed through the translation
+ * cache, only the initial SSR paint is localized — refresh / realtime
+ * pushes return to English. Tracked under PASS i18n-100 client follow-up.
+ */
+export async function localizeCompanyPage(
+  page: CompanyPageRecord,
+  locale: AppLocale,
+): Promise<CompanyPageRecord> {
+  if (locale === "en") return page;
+
+  const machineTranslate = true;
+  const record = page as unknown as Record<string, unknown>;
+
+  const wrap = async (field: string, fallback: string | null | undefined) => {
+    const safeFallback = typeof fallback === "string" ? fallback : "";
+    if (!safeFallback) return safeFallback;
+    return resolveLocalizedDynamicField({
+      record,
+      field,
+      locale,
+      fallback: safeFallback,
+      machineTranslate,
+    });
+  };
+
+  const wrapInline = async (value: string | null | undefined) => {
+    const safe = typeof value === "string" ? value : "";
+    if (!safe) return safe;
+    return resolveLocalizedDynamicField({
+      record: { value: safe } as Record<string, unknown>,
+      field: "value",
+      locale,
+      fallback: safe,
+      machineTranslate,
+    });
+  };
+
+  const [
+    title,
+    subtitle,
+    heroBadge,
+    intro,
+    primaryCtaLabel,
+    secondaryCtaLabel,
+    seoTitle,
+    seoDescription,
+    stats,
+    sections,
+  ] = await Promise.all([
+    wrap("title", page.title),
+    wrap("subtitle", page.subtitle ?? ""),
+    wrap("hero_badge", page.hero_badge ?? ""),
+    wrap("intro", page.intro ?? ""),
+    wrap("primary_cta_label", page.primary_cta_label ?? ""),
+    wrap("secondary_cta_label", page.secondary_cta_label ?? ""),
+    wrap("seo_title", page.seo_title ?? ""),
+    wrap("seo_description", page.seo_description ?? ""),
+    Promise.all(
+      page.stats.map(async (stat) => {
+        const [label, value] = await Promise.all([
+          wrapInline(stat.label ?? ""),
+          // Stat values are usually numerics, currencies, durations, or
+          // proper nouns — but some are short English phrases like
+          // "Consistent" / "Multi-division". Translate non-numeric values.
+          (() => {
+            const raw = (stat.value ?? "").trim();
+            const numericish = /^[\s\d.,%+\-£€₦$NgN]+$/.test(raw);
+            return numericish ? Promise.resolve(stat.value ?? "") : wrapInline(stat.value ?? "");
+          })(),
+        ]);
+        return { ...stat, label, value };
+      }),
+    ),
+    Promise.all(
+      page.sections.map(async (section) => {
+        const [eyebrow, sectionTitle, body, items] = await Promise.all([
+          wrapInline(section.eyebrow ?? ""),
+          wrapInline(section.title ?? ""),
+          wrapInline(section.body ?? ""),
+          Promise.all(
+            section.items.map(async (item) => {
+              const [iLabel, iValue, iTitle, iBody] = await Promise.all([
+                wrapInline(item.label ?? ""),
+                // Skip translation of values that look like emails / phones /
+                // urls / version markers / IDs — they are not natural-language
+                // strings.
+                (() => {
+                  const raw = (item.value ?? "").trim();
+                  const isLikelyLabelOnly =
+                    /@/.test(raw) ||
+                    /^https?:\/\//i.test(raw) ||
+                    /^\+?[\d\s\-()]+$/.test(raw) ||
+                    /^v?\d+(\.\d+)+/.test(raw);
+                  return isLikelyLabelOnly
+                    ? Promise.resolve(item.value ?? "")
+                    : wrapInline(item.value ?? "");
+                })(),
+                wrapInline(item.title ?? ""),
+                wrapInline(item.body ?? ""),
+              ]);
+              return {
+                ...item,
+                label: iLabel || item.label,
+                value: iValue || item.value,
+                title: iTitle || item.title,
+                body: iBody || item.body,
+              };
+            }),
+          ),
+        ]);
+        return {
+          ...section,
+          eyebrow: eyebrow || section.eyebrow,
+          title: sectionTitle || section.title,
+          body: body || section.body,
+          items,
+        };
+      }),
+    ),
+  ]);
+
+  return {
+    ...page,
+    title: title || page.title,
+    subtitle: subtitle || page.subtitle,
+    hero_badge: heroBadge || page.hero_badge,
+    intro: intro || page.intro,
+    primary_cta_label: primaryCtaLabel || page.primary_cta_label,
+    secondary_cta_label: secondaryCtaLabel || page.secondary_cta_label,
+    seo_title: seoTitle || page.seo_title,
+    seo_description: seoDescription || page.seo_description,
+    stats,
+    sections,
   };
 }

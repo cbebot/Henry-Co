@@ -38,7 +38,7 @@ export default async function StudioPage() {
 
   const [data, activityRaw] = await Promise.all([
     getStudioDashboardData(user.id, user.email),
-    getDivisionActivity(user.id, "studio"),
+    getDivisionActivity(user.id, "studio", 20, locale),
   ]);
 
   const projects: ProjectRow[] = data.projects.map((p) => ({

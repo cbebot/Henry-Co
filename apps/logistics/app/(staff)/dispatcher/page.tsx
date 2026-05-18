@@ -210,6 +210,13 @@ export default async function DispatcherHomePage() {
                         <p className="mt-1 font-semibold tracking-tight text-white">
                           {shipment.recipientName}
                         </p>
+                        {/*
+                          TODO(list-row): wrap shipment.zoneLabel via
+                          resolveLocalizedDynamicField — deferred because
+                          this is a multi-row dispatcher queue with many
+                          shipments, and the parent agent's scope flags
+                          "multi-row lists beyond title → TODO".
+                        */}
                         <p className="mt-0.5 text-xs text-[var(--logistics-muted)]">
                           {shipment.zoneLabel || copy.row.laneTbd} ·{" "}
                           {shipment.urgency} ·{" "}

@@ -16,6 +16,10 @@ export default async function FaqPage() {
         </p>
       </section>
 
+      {/* TODO(wave1): multi-row FAQ list. faq.question / faq.answer are
+          Supabase-row text fields — translate each via Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave. (List is small
+          enough to land in scope on a second pass.) */}
       <ul className="mt-12 border-t border-[var(--studio-line)]">
         {catalog.faqs.map((item) => (
           <li

@@ -25,6 +25,11 @@ export default async function ProjectManagerPage() {
         <StudioMetricCard label="Milestones ready" value={String(snapshot.projects.flatMap((project) => project.milestones).filter((milestone) => milestone.status === "ready_for_review").length)} hint="Delivery checkpoints already prepared for client review." />
       </section>
 
+      {/* TODO(wave1): multi-row PM dashboard. project.title /
+          project.nextAction / milestone.name are Supabase-row text fields —
+          translate each via Promise.all + resolveLocalizedDynamicField in a
+          follow-up wave. The single-row detail page at /project/[projectId]
+          is already wrapped through the cached DeepL pipeline. */}
       <section className="studio-panel rounded-[1.75rem] p-6">
         <div className="studio-kicker">Project board</div>
         <div className="mt-5 space-y-4">

@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PublicShell } from "@/components/public-shell";
 import { getEmployerProfileBySlug } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,8 @@ export default async function EmployerPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const record = await getEmployerProfileBySlug(slug);
+  const locale = await getJobsPublicLocale();
+  const record = await getEmployerProfileBySlug(slug, { locale });
   if (!record) {
     notFound();
   }

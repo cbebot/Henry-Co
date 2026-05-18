@@ -5,6 +5,10 @@ import {
   shouldAutoFlag,
   escalateSeverityForRepeatOffender,
 } from "@henryco/trust";
+import {
+  resolveLocalizedDynamicField,
+  type AppLocale,
+} from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   HiringPipeline,
@@ -179,7 +183,8 @@ export async function getApplications(
 }
 
 export async function getApplicationById(
-  applicationId: string
+  applicationId: string,
+  locale?: AppLocale
 ): Promise<Application | null> {
   const admin = createAdminSupabase();
   const { data, error } = await admin
@@ -189,7 +194,19 @@ export async function getApplicationById(
     .maybeSingle();
 
   if (error || !data) return null;
-  return mapApplication(data as Record<string, unknown>);
+  const application = mapApplication(data as Record<string, unknown>);
+  // Wave 2 i18n — cover note is the candidate's free-form pitch. Names
+  // and job titles stay as identifiers (the JobPost row owns the
+  // translated title).
+  if (!locale || locale === "en" || !application.coverNote) return application;
+  const coverNote = await resolveLocalizedDynamicField({
+    record: data as Record<string, unknown>,
+    field: "cover_note",
+    locale,
+    fallback: application.coverNote,
+    machineTranslate: true,
+  });
+  return { ...application, coverNote };
 }
 
 /* ------------------------------------------------------------------ */

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import {
@@ -74,13 +75,154 @@ export default async function ClientProjectDetailPage({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const projectTabs = buildProjectTabs(locale);
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline (and any `_i18n` /
+  // `locale_overrides` cells when present). Single-row detail page, so the
+  // DeepL cost is acceptable. Milestones / deliverables / updates / invoice
+  // descriptions ship through Promise.all alongside the project fields. The
+  // chat thread (initial messages) is rendered by StudioMessageThread and is
+  // intentionally skipped — those are user-typed messages.
+  const [
+    localizedProjectTitle,
+    localizedProjectSummary,
+    localizedProjectBrief,
+    localizedProjectNextAction,
+    localizedMilestones,
+    localizedDeliverables,
+    localizedUpdates,
+    localizedInvoices,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: detail.project.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: detail.project.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "brief",
+      locale,
+      fallback: detail.project.brief ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "nextAction",
+      locale,
+      fallback: detail.project.nextAction ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    Promise.all(
+      detail.milestones.map(async (milestone) => {
+        const [title, description] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: milestone.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "description",
+            locale,
+            fallback: milestone.description ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...milestone, title, description };
+      }),
+    ),
+    Promise.all(
+      detail.deliverables.map(async (deliverable) => {
+        const [title, description] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: deliverable as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: deliverable.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: deliverable as unknown as Record<string, unknown>,
+            field: "description",
+            locale,
+            fallback: deliverable.description ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...deliverable, title, description };
+      }),
+    ),
+    Promise.all(
+      detail.updates.map(async (update) => {
+        const [title, body] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: update as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: update.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          update.body
+            ? resolveLocalizedDynamicField({
+                record: update as unknown as Record<string, unknown>,
+                field: "body",
+                locale,
+                fallback: update.body ?? "",
+                machineTranslate: locale !== "en",
+              })
+            : Promise.resolve(update.body ?? null),
+        ]);
+        return { ...update, title, body };
+      }),
+    ),
+    Promise.all(
+      detail.invoices.map(async (invoice) => {
+        const description = await resolveLocalizedDynamicField({
+          record: invoice as unknown as Record<string, unknown>,
+          field: "description",
+          locale,
+          fallback: invoice.description ?? "",
+          machineTranslate: locale !== "en",
+        });
+        return { ...invoice, description };
+      }),
+    ),
+  ]);
+
+  // Build a locale-aware detail shape so the existing tab renderers can
+  // continue to use the same prop names without further changes.
+  const localizedDetail = {
+    ...detail,
+    project: {
+      ...detail.project,
+      title: localizedProjectTitle,
+      summary: localizedProjectSummary,
+      brief: localizedProjectBrief,
+      nextAction: localizedProjectNextAction,
+    },
+    milestones: localizedMilestones,
+    deliverables: localizedDeliverables,
+    updates: localizedUpdates,
+    invoices: localizedInvoices,
+  };
+
   const activeTab =
     projectTabs.find((tab) => tab.id === tabParam)?.id ?? "overview";
 
-  const status = projectStatusToken(detail.project.status, locale);
-  const unread = unreadCountForProject(detail.messages, viewer.userId);
-  const filesPending = detail.deliverables.filter((d) => d.status === "shared").length;
-  const outstandingInvoices = detail.invoices.filter(
+  const status = projectStatusToken(localizedDetail.project.status, locale);
+  const unread = unreadCountForProject(localizedDetail.messages, viewer.userId);
+  const filesPending = localizedDetail.deliverables.filter((d) => d.status === "shared").length;
+  const outstandingInvoices = localizedDetail.invoices.filter(
     (i) => i.status === "sent" || i.status === "overdue" || i.status === "pending_verification"
   ).length;
 
@@ -112,14 +254,14 @@ export default async function ClientProjectDetailPage({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              {detail.project.type ? detail.project.type : t("Studio engagement")}
+              {localizedDetail.project.type ? localizedDetail.project.type : t("Studio engagement")}
             </div>
             <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-              {detail.project.title}
+              {localizedDetail.project.title}
             </h1>
-            {detail.project.summary ? (
+            {localizedDetail.project.summary ? (
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-                {detail.project.summary}
+                {localizedDetail.project.summary}
               </p>
             ) : null}
           </div>
@@ -127,23 +269,23 @@ export default async function ClientProjectDetailPage({
         </div>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-[var(--studio-ink-soft)]">
-          {detail.project.startDate ? (
+          {localizedDetail.project.startDate ? (
             <span className="inline-flex items-center gap-1.5">
               <CalendarDays className="h-3.5 w-3.5" />
-              {t("Started")} {shortDate(detail.project.startDate)}
+              {t("Started")} {shortDate(localizedDetail.project.startDate)}
             </span>
           ) : null}
-          {detail.project.estimatedCompletion ? (
+          {localizedDetail.project.estimatedCompletion ? (
             <span className="inline-flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5" />
-              {t("Est. complete")} {shortDate(detail.project.estimatedCompletion)}
+              {t("Est. complete")} {shortDate(localizedDetail.project.estimatedCompletion)}
             </span>
           ) : null}
-          {detail.milestones.length > 0 ? (
+          {localizedDetail.milestones.length > 0 ? (
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              {detail.milestones.filter((m) => ["approved", "complete"].includes(m.status)).length}/
-              {detail.milestones.length} {t("milestones")}
+              {localizedDetail.milestones.filter((m) => ["approved", "complete"].includes(m.status)).length}/
+              {localizedDetail.milestones.length} {t("milestones")}
             </span>
           ) : null}
         </div>
@@ -151,20 +293,20 @@ export default async function ClientProjectDetailPage({
 
       <PortalTabBar tabs={tabs} />
 
-      {activeTab === "overview" ? <OverviewTab detail={detail} locale={locale} /> : null}
-      {activeTab === "progress" ? <ProgressTab detail={detail} locale={locale} /> : null}
-      {activeTab === "files" ? <FilesTab detail={detail} locale={locale} /> : null}
+      {activeTab === "overview" ? <OverviewTab detail={localizedDetail} locale={locale} /> : null}
+      {activeTab === "progress" ? <ProgressTab detail={localizedDetail} locale={locale} /> : null}
+      {activeTab === "files" ? <FilesTab detail={localizedDetail} locale={locale} /> : null}
       {activeTab === "messages" ? (
         <StudioMessageThread
-          projectId={detail.project.id}
-          initialMessages={detail.messages}
+          projectId={localizedDetail.project.id}
+          initialMessages={localizedDetail.messages}
           viewerId={viewer.userId}
           viewerName={viewer.fullName || viewer.email || t("You")}
-          projectTitle={detail.project.title}
-          projectSummary={detail.project.summary || detail.project.brief || null}
+          projectTitle={localizedDetail.project.title}
+          projectSummary={localizedDetail.project.summary || localizedDetail.project.brief || null}
         />
       ) : null}
-      {activeTab === "payments" ? <PaymentsTab detail={detail} locale={locale} /> : null}
+      {activeTab === "payments" ? <PaymentsTab detail={localizedDetail} locale={locale} /> : null}
     </div>
   );
 }

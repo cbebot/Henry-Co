@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
@@ -18,11 +19,21 @@ export async function generateMetadata({
   const copy = getMarketplacePublicCopy(locale);
   const snapshot = await getMarketplaceHomeData();
   const brand = snapshot.brands.find((item) => item.slug === slug);
+  // Brand name is a proper noun and stays as-is — only description translates.
   const brandName = brand?.name ?? slug;
+  const description = brand
+    ? await resolveLocalizedDynamicField({
+        record: brand as unknown as Record<string, unknown>,
+        field: "description",
+        locale,
+        fallback: brand.description ?? copy.brand.metadataDescription.replace("{brand}", brandName),
+        machineTranslate: locale !== "en",
+      })
+    : copy.brand.metadataDescription.replace("{brand}", brandName);
 
   return {
     title: copy.brand.metadataTitle.replace("{brand}", brandName),
-    description: brand?.description ?? copy.brand.metadataDescription.replace("{brand}", brandName),
+    description,
   };
 }
 
@@ -40,6 +51,16 @@ export default async function BrandPage({
   const brand = snapshot.brands.find((item) => item.slug === slug);
   if (!brand) notFound();
 
+  // Brand name is a proper noun and stays as-is; description is editorial copy
+  // and translates for non-EN buyers.
+  const localizedBrandDescription = await resolveLocalizedDynamicField({
+    record: brand as unknown as Record<string, unknown>,
+    field: "description",
+    locale,
+    fallback: brand.description ?? "",
+    machineTranslate: locale !== "en",
+  });
+
   const products = snapshot.products.filter((item) => item.brandSlug === slug);
 
   return (
@@ -52,7 +73,7 @@ export default async function BrandPage({
               {brand.name}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              {brand.description || copy.brand.bodyFallback}
+              {localizedBrandDescription || copy.brand.bodyFallback}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
@@ -111,6 +132,9 @@ export default async function BrandPage({
             {copy.brand.openFullSearch}
           </Link>
         </div>
+        {/* TODO(wave3-catalogue): paginate translation — brand product list is
+            a catalogue surface; ProductCard reads raw product.title and
+            translating every row hits DeepL too often on hot routes. */}
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {products.map((product) => (
             <ProductCard key={product.slug} product={product} />

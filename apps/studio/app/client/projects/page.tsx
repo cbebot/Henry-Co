@@ -139,6 +139,11 @@ function ProjectsGroup({
           {label} · {projects.length}
         </h2>
       </div>
+      {/* TODO(wave1): multi-row client projects list. project.title /
+          project.summary are Supabase-row text fields — translate each via
+          Promise.all + resolveLocalizedDynamicField in a follow-up wave.
+          The single-row detail page at /client/projects/[projectId] is
+          already wrapped through the cached DeepL pipeline. */}
       <div className="grid gap-3 sm:grid-cols-2">
         {projects.map((project) => {
           const status = projectStatusToken(project.status);

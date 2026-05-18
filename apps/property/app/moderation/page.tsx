@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyEmptyState,
   PropertyMetricCard,
@@ -7,6 +8,7 @@ import {
 } from "@/components/property/ui";
 import { requirePropertyRoles } from "@/lib/property/auth";
 import { getPropertyGovernanceWorkspaceData } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
 import { formatDate } from "@/lib/utils";
 
@@ -15,6 +17,25 @@ export const dynamic = "force-dynamic";
 export default async function ModerationPage() {
   await requirePropertyRoles(["moderation", "listing_manager", "property_admin"], "/moderation");
   const data = await getPropertyGovernanceWorkspaceData();
+  const locale = await getPropertyPublicLocale();
+
+  // Moderation queue — wrap listing titles only (8-row slice).
+  // application.reviewNote is staff-authored free-text, kept raw.
+  const visibleQueue = data.queue.slice(0, 8);
+  const visibleTitles = await Promise.all(
+    visibleQueue.map((listing) =>
+      resolveLocalizedDynamicField({
+        record: listing as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: listing.title ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const visibleTitleById = new Map(
+    visibleQueue.map((listing, index) => [listing.id, visibleTitles[index] ?? listing.title]),
+  );
 
   const escalated = data.queue.filter((item) => item.status === "escalated").length;
   const blocked = data.queue.filter((item) => item.status === "blocked").length;
@@ -64,7 +85,7 @@ export default async function ModerationPage() {
         <div className="property-kicker">Priority moderation cases</div>
         {data.queue.length ? (
           <div className="mt-5 space-y-4">
-            {data.queue.slice(0, 8).map((listing) => {
+            {visibleQueue.map((listing) => {
               const application = data.applicationsByListingId.get(listing.id);
               const inspection = data.inspectionsByListingId.get(listing.id);
               return (
@@ -75,7 +96,7 @@ export default async function ModerationPage() {
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <div className="text-lg font-semibold text-[var(--property-ink)]">
-                        {listing.title}
+                        {visibleTitleById.get(listing.id) ?? listing.title}
                       </div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
                         {listing.locationLabel} · risk {listing.riskScore}/100 · updated {formatDate(listing.updatedAt)}

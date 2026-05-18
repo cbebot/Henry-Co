@@ -1,4 +1,5 @@
 import { isAppLocale, normalizeLocale, type AppLocale } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 
 type KnownNotificationLocalizationKey =
   | "support.request.created"
@@ -264,4 +265,72 @@ export function resolveNotificationStoredLocale(row: Record<string, unknown>): A
   const localization = readLocalization(row);
   if (!localization?.locale) return null;
   return safeLocale(localization.locale);
+}
+
+/**
+ * Wave 3 (account) — async wrapper around resolveNotificationPresentation that
+ * also runs DeepL on system-generated title/body fields when:
+ *   - The notification row has no canonical localization.key match, AND
+ *   - The viewer's locale ≠ the row's source locale (defaults to "en").
+ *
+ * Routes title/body through resolveLocalizedDynamicField so cached DeepL
+ * translates the raw EN copy stored in customer_notifications rows that were
+ * published before the canonical localization keys existed (or via direct
+ * admin inserts from sync helpers like care-sync.ts).
+ */
+export async function resolveNotificationPresentationAsync(input: {
+  row: Record<string, unknown>;
+  locale: AppLocale;
+}): Promise<{ title: string; body: string }> {
+  const sync = resolveNotificationPresentation(input);
+  const { row, locale } = input;
+
+  // If a canonical key was matched, sync result is authoritative — DeepL would
+  // re-translate already-localized output.
+  const localization = readLocalization(row);
+  const hasCanonicalKey = Boolean(
+    localization?.key &&
+      [
+        "support.request.created",
+        "support.reply.received",
+        "care.booking.available",
+        "wallet.funded",
+        "wallet.funding.pending",
+        "marketplace.order.confirmed",
+        "property.listing.submitted",
+        "property.listing.approved",
+        "property.listing.rejected",
+        "jobs.application.submitted",
+      ].includes(localization.key),
+  );
+  if (hasCanonicalKey) return sync;
+
+  // Source locale: prefer stored row locale, fall back to "en" (existing rows
+  // were authored in English).
+  const storedLocale = resolveNotificationStoredLocale(row) ?? "en";
+
+  if (locale === storedLocale) return sync;
+
+  const [title, body] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: row,
+      field: "title",
+      locale,
+      fallback: sync.title,
+      sourceLocale: storedLocale,
+      machineTranslate: locale !== "en",
+    }),
+    sync.body
+      ? resolveLocalizedDynamicField({
+          record: row,
+          field: "body",
+          locale,
+          fallback: sync.body,
+          sourceLocale: storedLocale,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(sync.body),
+  ]);
+
+  return { title, body };
 }

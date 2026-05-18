@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { AppLocale } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getDivisionBrand } from "@/lib/branding";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
@@ -9,7 +10,7 @@ import {
   notificationMessageHref,
   resolveSafeActionUrl,
 } from "@/lib/notification-center";
-import { resolveNotificationPresentation } from "@/lib/notification-localization";
+import { resolveNotificationPresentationAsync } from "@/lib/notification-localization";
 import { buildSecurityEventView } from "@/lib/security-events";
 
 function asText(value: unknown, fallback = "") {
@@ -80,14 +81,47 @@ export type MessageHistoryItem = {
   kind: "notification" | "activity" | "security";
 };
 
-function localizeNotificationRow(row: Record<string, unknown>, locale?: AppLocale) {
+async function localizeNotificationRow(row: Record<string, unknown>, locale?: AppLocale) {
   if (!locale) return row;
-  const localized = resolveNotificationPresentation({ row, locale });
+  const localized = await resolveNotificationPresentationAsync({ row, locale });
   return {
     ...row,
     title: localized.title,
     body: localized.body,
   };
+}
+
+/**
+ * Wave 3 (account) — translate system-generated title/description on
+ * customer_activity rows for the activity message-board surface. Mirrors the
+ * helper in account-data.ts; only applied to rows that came from internal
+ * sync helpers (NOT user-typed support messages).
+ */
+async function localizeActivityRow(row: Record<string, unknown>, locale?: AppLocale) {
+  if (!locale || locale === "en") return row;
+  const fallbackTitle = asText(row.title);
+  const fallbackDescription = asText(row.description);
+  const [title, description] = await Promise.all([
+    fallbackTitle
+      ? resolveLocalizedDynamicField({
+          record: row,
+          field: "title",
+          locale,
+          fallback: fallbackTitle,
+          machineTranslate: true,
+        })
+      : Promise.resolve(fallbackTitle),
+    fallbackDescription
+      ? resolveLocalizedDynamicField({
+          record: row,
+          field: "description",
+          locale,
+          fallback: fallbackDescription,
+          machineTranslate: true,
+        })
+      : Promise.resolve(fallbackDescription),
+  ]);
+  return { ...row, title, description };
 }
 
 async function buildRelatedHistory(
@@ -140,31 +174,41 @@ async function buildRelatedHistory(
         : Promise.resolve({ data: [] }),
   ]);
 
-  return [
-    ...((notificationsRes.data ?? []) as Array<Record<string, unknown>>)
+  const notificationItems = await Promise.all(
+    ((notificationsRes.data ?? []) as Array<Record<string, unknown>>)
       .filter((item) => !isHiddenNotification(item) && asText(item.id) !== excludeId)
-      .map((item) => localizeNotificationRow(item, locale))
-      .map((item) => ({
-        id: asText(item.id),
-        title: asText(item.title, "Notification"),
-        body: asText(item.body),
-        createdAt: asText(item.created_at),
-        href: notificationMessageHref(asText(item.id)),
-        tone: !item.is_read ? ("warn" as const) : ("neutral" as const),
-        kind: "notification" as const,
-      })),
-    ...((activityRes.data ?? []) as Array<Record<string, unknown>>)
+      .map(async (item) => {
+        const localized = await localizeNotificationRow(item, locale);
+        return {
+          id: asText(localized.id),
+          title: asText(localized.title, "Notification"),
+          body: asText(localized.body),
+          createdAt: asText(localized.created_at),
+          href: notificationMessageHref(asText(localized.id)),
+          tone: !localized.is_read ? ("warn" as const) : ("neutral" as const),
+          kind: "notification" as const,
+        };
+      }),
+  );
+
+  const activityItems = await Promise.all(
+    ((activityRes.data ?? []) as Array<Record<string, unknown>>)
       .filter((item) => asText(item.id) !== excludeId)
-      .map((item) => ({
-        id: asText(item.id),
-        title: asText(item.title, "Activity"),
-        body: asText(item.description),
-        createdAt: asText(item.created_at),
-        href: activityMessageHref(asText(item.id)),
-        tone: buildTone(asNullableText(item.status)),
-        kind: "activity" as const,
-      })),
-  ]
+      .map(async (item) => {
+        const localized = await localizeActivityRow(item, locale);
+        return {
+          id: asText(localized.id),
+          title: asText(localized.title, "Activity"),
+          body: asText(localized.description),
+          createdAt: asText(localized.created_at),
+          href: activityMessageHref(asText(localized.id)),
+          tone: buildTone(asNullableText(localized.status)),
+          kind: "activity" as const,
+        };
+      }),
+  );
+
+  return [...notificationItems, ...activityItems]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6);
 }
@@ -211,7 +255,7 @@ export async function getNotificationMessageBoard(
     return null;
   }
 
-  const row = localizeNotificationRow(data as Record<string, unknown>, locale);
+  const row = await localizeNotificationRow(data as Record<string, unknown>, locale);
   const source = await getDivisionBrand(resolveNotificationKey(row));
   const history = await buildRelatedHistory(userId, row, asText(row.id), locale);
 
@@ -248,7 +292,7 @@ export async function getActivityMessageBoard(
     return null;
   }
 
-  const row = data as Record<string, unknown>;
+  const row = await localizeActivityRow(data as Record<string, unknown>, locale);
   const source = await getDivisionBrand(asNullableText(row.division) || "account");
   const history = await buildRelatedHistory(userId, row, asText(row.id), locale);
 
@@ -297,23 +341,31 @@ export async function getSecurityMessageBoard(
   ]);
 
   const record = buildSecurityEventView(event as Record<string, unknown>);
-  const history = ((notificationsRes.data ?? []) as Array<Record<string, unknown>>)
-    .filter((row) => {
+  const filteredNotifications = ((notificationsRes.data ?? []) as Array<Record<string, unknown>>).filter(
+    (row) => {
       if (isHiddenNotification(row)) return false;
       const title = asText(row.title).toLowerCase();
       const body = asText(row.body).toLowerCase();
+      // Filter on the SOURCE EN copy before localization so security keywords
+      // resolve regardless of the viewer's locale.
       return title.includes("security") || body.includes("security") || body.includes("login");
-    })
-    .map((row) => localizeNotificationRow(row, locale))
-    .map((row) => ({
-      id: asText(row.id),
-      title: asText(row.title, "Security notification"),
-      body: asText(row.body),
-      createdAt: asText(row.created_at),
-      href: notificationMessageHref(asText(row.id)),
-      tone: buildTone(asNullableText(row.priority)),
-      kind: "notification" as const,
-    }))
+    },
+  );
+  const localizedHistory = await Promise.all(
+    filteredNotifications.map(async (row) => {
+      const localized = await localizeNotificationRow(row, locale);
+      return {
+        id: asText(localized.id),
+        title: asText(localized.title, "Security notification"),
+        body: asText(localized.body),
+        createdAt: asText(localized.created_at),
+        href: notificationMessageHref(asText(localized.id)),
+        tone: buildTone(asNullableText(localized.priority)),
+        kind: "notification" as const,
+      };
+    }),
+  );
+  const history = localizedHistory
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6);
 

@@ -8,7 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
-import type { AppLocale } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, type AppLocale } from "@henryco/i18n/server";
 import { JsonLd, buildRealEstateListingLd } from "@henryco/seo";
 import {
   ComparablePricingRail,
@@ -130,6 +130,68 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
+  // PASS 18C / wave1 — wrap Supabase-row text fields through
+  // resolveLocalizedDynamicField so non-EN locales hit the i18n column,
+  // locale_overrides, or DeepL fallback per row. Single-row detail page,
+  // so the DeepL cost is acceptable.
+  const [
+    listingTitle,
+    listingSummary,
+    listingDescription,
+    areaName,
+    agentName,
+    agentBio,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.listing as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.listing.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.listing as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: data.listing.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.listing as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.listing.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    data.area
+      ? resolveLocalizedDynamicField({
+          record: data.area as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: data.area.name ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    data.agent
+      ? resolveLocalizedDynamicField({
+          record: data.agent as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: data.agent.name ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    data.agent
+      ? resolveLocalizedDynamicField({
+          record: data.agent as unknown as Record<string, unknown>,
+          field: "bio",
+          locale,
+          fallback: data.agent.bio ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
+
   const accountData = viewer.user ? await getPropertyDashboardData() : null;
   const myInquiry =
     accountData?.inquiries
@@ -147,7 +209,7 @@ export default async function PropertyDetailPage({
   const loginHref = getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin });
   const signupHref = getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin });
   const trustCopy = getTrustCopy(data.listing, locale);
-  const viewingFlow = getViewingFlow(data.listing.title, locale);
+  const viewingFlow = getViewingFlow(listingTitle || data.listing.title, locale);
 
   const canonicalUrl = `${propertyOrigin.replace(/\/$/, "")}${returnPath}`;
   const galleryImages = Array.from(
@@ -158,8 +220,8 @@ export default async function PropertyDetailPage({
     ),
   );
   const listingJsonLd = buildRealEstateListingLd({
-    name: data.listing.title,
-    description: data.listing.description,
+    name: listingTitle || data.listing.title,
+    description: listingDescription || data.listing.description,
     url: canonicalUrl,
     imageUrls: galleryImages,
     datePosted: data.listing.listedAt,
@@ -183,7 +245,7 @@ export default async function PropertyDetailPage({
     },
     agent: data.agent
       ? {
-          name: data.agent.name,
+          name: agentName || data.agent.name,
           telephone: data.agent.phone || undefined,
           email: data.agent.email || undefined,
           imageUrl: data.agent.photoUrl || undefined,
@@ -197,8 +259,8 @@ export default async function PropertyDetailPage({
       <JsonLd id="property-listing-jsonld" data={listingJsonLd} />
       <PropertySectionIntro
         kicker={data.listing.locationLabel}
-        title={data.listing.title}
-        description={data.listing.description}
+        title={listingTitle || data.listing.title}
+        description={listingDescription || data.listing.description}
       />
 
       {/* Notification rail — editorial left-rule ribbons, no panels */}
@@ -230,7 +292,7 @@ export default async function PropertyDetailPage({
         <div className="space-y-12">
           {/* Gallery — clickable lightbox viewer with prev/next + thumb strip */}
           <PropertyImageGallery
-            title={data.listing.title}
+            title={listingTitle || data.listing.title}
             hero={data.listing.heroImage}
             gallery={data.listing.gallery}
           />

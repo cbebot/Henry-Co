@@ -20,6 +20,11 @@ export default async function ServicesPage() {
         </p>
       </section>
 
+      {/* TODO(wave1): multi-row services list. service.name / service.headline /
+          service.summary are Supabase-row text fields — translate each via
+          Promise.all + resolveLocalizedDynamicField in a follow-up wave. The
+          single-row detail page at /services/[slug] is already wrapped
+          through the cached DeepL pipeline. */}
       <ol className="mt-14 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
         {catalog.services.map((service, i) => (
           <li

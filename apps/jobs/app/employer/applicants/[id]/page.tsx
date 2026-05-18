@@ -48,11 +48,11 @@ export default async function EmployerApplicantDetailPage({
 }) {
   const { id } = await params;
   await requireJobsRoles(["employer", "admin", "owner"], `/employer/applicants/${id}`);
-  const [application, timeline, query, locale] = await Promise.all([
-    getApplicationById(id),
+  const locale = await getJobsPublicLocale();
+  const [application, timeline, query] = await Promise.all([
+    getApplicationById(id, locale),
     getApplicationTimeline(id),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
-    getJobsPublicLocale(),
   ]);
   if (!application) {
     notFound();

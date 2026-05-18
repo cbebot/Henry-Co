@@ -5,6 +5,7 @@ import CompanyPageClient from "../../components/CompanyPageClient";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
+  localizeCompanyPage,
 } from "../../lib/company-pages";
 import { getCompanySettings } from "../../lib/company-settings";
 import {
@@ -18,8 +19,12 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getCompanyPage("about").catch(() => ({ page: null }));
-  const resolved = page ?? createFallbackCompanyPage("about");
+  const [{ page }, locale] = await Promise.all([
+    getCompanyPage("about").catch(() => ({ page: null })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const baseResolved = page ?? createFallbackCompanyPage("about");
+  const resolved = await localizeCompanyPage(baseResolved, locale);
 
   return {
     title: resolved.seo_title || resolved.title,
@@ -58,11 +63,21 @@ export default async function AboutPage() {
       ? divisionsResult.value.divisions
       : [];
 
+  // PASS i18n-100 — translate the row text from `company_pages` through the
+  // cached DeepL pipeline for the SSR first paint. CompanyPageClient's
+  // realtime subscription will overwrite with raw source text on
+  // subsequent supabase pushes (TODO: route the realtime path through the
+  // cache).
+  const localizedPage = await localizeCompanyPage(
+    pageData.page ?? createFallbackCompanyPage("about"),
+    locale,
+  );
+
   return (
     <>
       <CompanyPageClient
         pageKey="about"
-        initialData={pageData.page ?? createFallbackCompanyPage("about")}
+        initialData={localizedPage}
         serverWarning={Boolean(pageData.hasServerError)}
         hideSections={false}
         hideFooter

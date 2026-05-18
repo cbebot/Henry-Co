@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyEmptyState, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { getAgentWorkspaceData } from "@/lib/property/data";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
@@ -24,6 +25,25 @@ export default async function AgentWorkspacePage() {
   const locale = await getPropertyPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const listingMap = new Map(data.listings.map((listing) => [listing.id, listing]));
+
+  // Staff dashboard — listing.title is the only Supabase-driven text the
+  // operator sees per row; wrap that and leave inquiry/viewing free-text
+  // fields raw (they're already user-authored content for the agent to
+  // read).
+  const listingTitles = await Promise.all(
+    data.listings.map((listing) =>
+      resolveLocalizedDynamicField({
+        record: listing as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: listing.title ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const listingTitleById = new Map(
+    data.listings.map((listing, index) => [listing.id, listingTitles[index] ?? listing.title]),
+  );
 
   return (
     <PropertyWorkspaceShell
@@ -56,7 +76,7 @@ export default async function AgentWorkspacePage() {
                       <div className="mt-2 text-xs text-[var(--property-ink-muted)]">
                         {listing ? (
                           <Link href={`/property/${listing.slug}`} className="underline-offset-4 hover:underline">
-                            {listing.title}
+                            {listingTitleById.get(listing.id) ?? listing.title}
                           </Link>
                         ) : (
                           t("Listing detail unavailable")
@@ -142,7 +162,7 @@ export default async function AgentWorkspacePage() {
                       <div className="mt-2 text-xs text-[var(--property-ink-muted)]">
                         {listing ? (
                           <Link href={`/property/${listing.slug}`} className="underline-offset-4 hover:underline">
-                            {listing.title}
+                            {listingTitleById.get(listing.id) ?? listing.title}
                           </Link>
                         ) : (
                           t("Listing detail unavailable")

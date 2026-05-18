@@ -7,7 +7,7 @@ import {
   Layers3,
   Trophy,
 } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitQuizAttemptAction } from "@/lib/learn/actions";
 import { requireLearnUser } from "@/lib/learn/auth";
 import { getLearnerWorkspace } from "@/lib/learn/data";
@@ -131,11 +131,6 @@ export default async function LearnerCoursePage({
             : remainingAttempts === 0
               ? t("The assessment has reached its maximum attempts. Ask the academy team for a review.")
               : null;
-  const reviewQuestions =
-    latestAttempt && !latestAttempt.passed
-      ? questions.filter((question) => !isAnswerCorrect(question.correctAnswer, latestAttempt.answers[question.id]))
-      : [];
-
   const certificate = workspace.certificates.find((item) => item.courseId === course.id) || null;
   const certificateHref = certificate ? `/certifications/verify/${certificate.verificationCode}` : null;
   const requirementItems = [
@@ -163,6 +158,67 @@ export default async function LearnerCoursePage({
           : t("This course does not include a certificate"),
     },
   ];
+
+  // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
+  const machineTranslate = locale !== "en";
+  const courseRecord = course as unknown as Record<string, unknown>;
+  const quizRecord = quiz as unknown as Record<string, unknown> | null;
+  const [courseTitle, quizTitle, quizDescription, questionsLocalized] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: courseRecord,
+      field: "title",
+      locale,
+      fallback: course.title ?? "",
+      machineTranslate,
+    }),
+    quizRecord
+      ? resolveLocalizedDynamicField({
+          record: quizRecord,
+          field: "title",
+          locale,
+          fallback: quiz?.title ?? "",
+          machineTranslate,
+        })
+      : Promise.resolve(""),
+    quizRecord
+      ? resolveLocalizedDynamicField({
+          record: quizRecord,
+          field: "description",
+          locale,
+          fallback: quiz?.description ?? "",
+          machineTranslate,
+        })
+      : Promise.resolve(""),
+    Promise.all(
+      questions.map(async (question) => {
+        const questionRecord = question as unknown as Record<string, unknown>;
+        const [prompt, explanation] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: questionRecord,
+            field: "prompt",
+            locale,
+            fallback: question.prompt ?? "",
+            machineTranslate,
+          }),
+          resolveLocalizedDynamicField({
+            record: questionRecord,
+            field: "explanation",
+            locale,
+            fallback: question.explanation ?? "",
+            machineTranslate,
+          }),
+        ]);
+        return { ...question, prompt, explanation };
+      }),
+    ),
+  ]);
+
+  const reviewQuestions =
+    latestAttempt && !latestAttempt.passed
+      ? questionsLocalized.filter(
+          (question) => !isAnswerCorrect(question.correctAnswer, latestAttempt.answers[question.id]),
+        )
+      : [];
 
   const courseEnrollments = workspace.snapshot.enrollments.filter(
     (item) =>
@@ -212,7 +268,7 @@ export default async function LearnerCoursePage({
   return (
     <LearnWorkspaceShell
       kicker={t("Learning room")}
-      title={course.title}
+      title={courseTitle || course.title}
       description={t(
         "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your HenryCo account under Learn.",
       )}
@@ -229,7 +285,7 @@ export default async function LearnerCoursePage({
             <CertificateDownloadButton
               verificationCode={certificate.verificationCode}
               learnerName={viewer.user?.fullName ?? null}
-              courseTitle={course.title}
+              courseTitle={courseTitle || course.title}
               label={t("Download certificate")}
               className="learn-print-hidden"
             />
@@ -264,10 +320,10 @@ export default async function LearnerCoursePage({
                     {t("Final assessment")}
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                    {quiz.title}
+                    {quizTitle || quiz.title}
                   </h2>
                   <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                    {quiz.description}
+                    {quizDescription || quiz.description}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -350,7 +406,7 @@ export default async function LearnerCoursePage({
                   <form action={submitQuizAttemptAction} className="space-y-5">
                     <input type="hidden" name="courseId" value={course.id} />
                     <input type="hidden" name="quizId" value={quiz.id} />
-                    {questions.map((question, index) => (
+                    {questionsLocalized.map((question, index) => (
                       <div
                         key={question.id}
                         className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-5"
@@ -499,7 +555,7 @@ export default async function LearnerCoursePage({
               <CertificateDownloadButton
                 verificationCode={certificate.verificationCode}
                 learnerName={viewer.user?.fullName ?? null}
-                courseTitle={course.title}
+                courseTitle={courseTitle || course.title}
                 label={t("Download certificate")}
               />
             </div>
@@ -515,7 +571,7 @@ export default async function LearnerCoursePage({
                 {t("has completed the learning and assessment requirements for")}
               </p>
               <p className="mt-4 text-center text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                {course.title}
+                {courseTitle || course.title}
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
                 <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">

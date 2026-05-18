@@ -32,7 +32,7 @@ export default async function EmployerCompanyPage({
   ]);
   const copy = getJobsCopy(locale).employerCompany;
   const membership = data.memberships[0];
-  const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;
+  const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true, locale }) : null;
   const employer = companyRecord?.employer ?? null;
   const eligibility = membership
     ? await getEmployerPostingEligibility({

@@ -8,7 +8,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { StudioPaymentGuide } from "@/components/studio/payment-guide";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
 import { createProjectFromProposalAction } from "@/lib/studio/actions";
@@ -72,15 +74,123 @@ export default async function ProposalDetailPage({
   const depositAmount = formatCurrency(proposal.depositAmount, proposal.currency);
   const domainRecap = briefDomainSummary(brief);
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline (and any `_i18n` /
+  // `locale_overrides` cells when the mapped rows expose them). Single-row
+  // detail page, so the DeepL cost is acceptable. Milestone descriptions
+  // ship through Promise.all alongside the proposal fields.
+  const locale = await getStudioPublicLocale();
+  const [
+    localizedTitle,
+    localizedSummary,
+    localizedBriefGoals,
+    localizedBriefScope,
+    localizedCustomProjectType,
+    localizedCustomPlatform,
+    localizedCustomDesign,
+    localizedCustomInspiration,
+    localizedMilestones,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: proposal as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: proposal.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: proposal as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: proposal.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    brief
+      ? resolveLocalizedDynamicField({
+          record: brief as unknown as Record<string, unknown>,
+          field: "goals",
+          locale,
+          fallback: brief.goals ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    brief
+      ? resolveLocalizedDynamicField({
+          record: brief as unknown as Record<string, unknown>,
+          field: "scopeNotes",
+          locale,
+          fallback: brief.scopeNotes ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "projectType",
+          locale,
+          fallback: customRequest.projectType ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "platformPreference",
+          locale,
+          fallback: customRequest.platformPreference ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "designDirection",
+          locale,
+          fallback: customRequest.designDirection ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "inspirationSummary",
+          locale,
+          fallback: customRequest.inspirationSummary ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    Promise.all(
+      proposal.milestones.map(async (milestone) => {
+        const [milestoneName, milestoneDescription] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "name",
+            locale,
+            fallback: milestone.name ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "description",
+            locale,
+            fallback: milestone.description ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...milestone, name: milestoneName, description: milestoneDescription };
+      }),
+    ),
+  ]);
+
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel studio-mesh rounded-[2.8rem] px-7 py-10 sm:px-10 lg:px-14">
         <div className="grid gap-6 xl:grid-cols-[1.06fr_0.94fr]">
           <div className="max-w-4xl">
             <div className="studio-kicker">Proposal room</div>
-            <h1 className="studio-heading mt-4">{proposal.title}</h1>
+            <h1 className="studio-heading mt-4">{localizedTitle}</h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--studio-ink-soft)]">
-              {proposal.summary}
+              {localizedSummary}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -186,9 +296,9 @@ export default async function ProposalDetailPage({
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Goals and scope
                 </div>
-                <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{brief.goals}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedBriefGoals}</p>
                 <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                  {brief.scopeNotes}
+                  {localizedBriefScope}
                 </p>
               </div>
             ) : null}
@@ -210,15 +320,21 @@ export default async function ProposalDetailPage({
                 </div>
                 <div className="mt-4 grid gap-3">
                   {[
-                    ["Project type", customRequest.projectType],
-                    ["Platform preference", customRequest.platformPreference],
-                    ["Design direction", customRequest.designDirection],
+                    ["Project type", localizedCustomProjectType],
+                    ["Platform preference", localizedCustomPlatform],
+                    ["Design direction", localizedCustomDesign],
                     [
                       "Pages and interfaces",
+                      // TODO(wave1): multi-row list members (pageRequirements
+                      // entries) — translate each entry through DeepL in a
+                      // later wave so the comma-joined string can be wrapped.
                       customRequest.pageRequirements.join(", ") || "Tailored during scope review",
                     ],
                     [
                       "Add-ons",
+                      // TODO(wave1): multi-row list members (addonServices
+                      // entries) — translate each entry through DeepL in a
+                      // later wave so the comma-joined string can be wrapped.
                       customRequest.addonServices.join(", ") || "None selected",
                     ],
                   ].map(([label, value]) => (
@@ -237,7 +353,7 @@ export default async function ProposalDetailPage({
                         References
                       </div>
                       <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                        {customRequest.inspirationSummary}
+                        {localizedCustomInspiration}
                       </div>
                     </div>
                   ) : null}
@@ -350,13 +466,13 @@ export default async function ProposalDetailPage({
               <div className="text-sm font-semibold">Milestone map</div>
             </div>
             <div className="mt-5 space-y-4">
-              {proposal.milestones.map((milestone, index) => (
+              {localizedMilestones.map((milestone, index) => (
                 <div key={milestone.id} className="flex gap-4">
                   <div className="flex flex-col items-center">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--studio-line)] text-sm font-semibold text-[var(--studio-signal)]">
                       {index + 1}
                     </div>
-                    {index < proposal.milestones.length - 1 ? (
+                    {index < localizedMilestones.length - 1 ? (
                       <div className="mt-2 h-full min-h-10 w-px bg-[var(--studio-line)]" />
                     ) : null}
                   </div>
@@ -387,6 +503,9 @@ export default async function ProposalDetailPage({
               <div className="text-sm font-semibold">Proposal clarity notes</div>
             </div>
             <div className="mt-4 space-y-3">
+              {/* TODO(wave1): comparisonNotes is a string[] not a row-shape —
+                  iterate and translate each entry through DeepL in a later
+                  wave so we can wrap the per-note text. */}
               {proposal.comparisonNotes.map((note) => (
                 <div
                   key={note}

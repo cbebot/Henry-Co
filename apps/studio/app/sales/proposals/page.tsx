@@ -23,6 +23,11 @@ export default async function SalesProposalsPage() {
       description="Sales can change proposal state, preserve the commercial trail, and move into project activation without leaving the Studio surface."
       nav={salesNav("/sales/proposals")}
     >
+      {/* TODO(wave1): multi-row proposal queue (staff). proposal.title and
+          proposal.summary are Supabase-row text fields — translate each via
+          Promise.all + resolveLocalizedDynamicField in a follow-up wave.
+          Single-row detail surface at /proposals/[proposalId] is already
+          wrapped through the cached DeepL pipeline. */}
       <section className="grid gap-4 lg:grid-cols-2">
         {snapshot.proposals.map((proposal) => (
           <article key={proposal.id} className="studio-panel rounded-[1.75rem] p-6">

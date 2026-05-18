@@ -22,7 +22,7 @@ export default async function EmployerJobDetailPage({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const [data, job, query] = await Promise.all([
     getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale),
-    getJobPostBySlug(id, { includeUnpublished: true }),
+    getJobPostBySlug(id, { includeUnpublished: true, locale }),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
 

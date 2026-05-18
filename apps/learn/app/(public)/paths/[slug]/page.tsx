@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import { getPathBySlug } from "@/lib/learn/data";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -20,6 +20,60 @@ export default async function PathDetailPage({
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
+  // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
+  const machineTranslate = locale !== "en";
+  const pathRecord = data.path as unknown as Record<string, unknown>;
+  const [pathTitle, pathDescription] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: pathRecord,
+      field: "title",
+      locale,
+      fallback: data.path.title ?? "",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: pathRecord,
+      field: "description",
+      locale,
+      fallback: data.path.description ?? "",
+      machineTranslate,
+    }),
+  ]);
+
+  // Each path item: localize the course.title (if linked) or the item.label, plus item.description.
+  const itemsLocalized = await Promise.all(
+    data.items.map(async (item) => {
+      const itemRecord = item as unknown as Record<string, unknown>;
+      const courseRecord = (item.course ?? null) as unknown as Record<string, unknown> | null;
+      const [label, description, courseTitle] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: itemRecord,
+          field: "label",
+          locale,
+          fallback: item.label ?? "",
+          machineTranslate,
+        }),
+        resolveLocalizedDynamicField({
+          record: itemRecord,
+          field: "description",
+          locale,
+          fallback: item.description ?? "",
+          machineTranslate,
+        }),
+        courseRecord
+          ? resolveLocalizedDynamicField({
+              record: courseRecord,
+              field: "title",
+              locale,
+              fallback: item.course?.title ?? "",
+              machineTranslate,
+            })
+          : Promise.resolve(""),
+      ]);
+      return { ...item, label, description, courseTitle };
+    }),
+  );
+
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-14 sm:px-8 xl:px-10">
       {/* Editorial path hero — no big rounded panel */}
@@ -32,10 +86,10 @@ export default async function PathDetailPage({
           <LearnStatusBadge label={data.path.accessModel} />
         </div>
         <h1 className="mt-6 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          {data.path.title}
+          {pathTitle}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)] sm:text-lg">
-          {data.path.description}
+          {pathDescription}
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <ActionLink href="/courses" label={t("Browse full catalog")} />
@@ -59,14 +113,14 @@ export default async function PathDetailPage({
         </p>
 
         <ol className="mt-8 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
-          {data.items.map((item, index) => (
+          {itemsLocalized.map((item, index) => (
             <li key={item.id} className="grid gap-5 py-6 md:grid-cols-[0.32fr,0.68fr]">
               <div>
                 <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
                   {t("Step")} {String(index + 1).padStart(2, "0")}
                 </p>
                 <h3 className="mt-3 text-[1.15rem] font-semibold leading-snug tracking-tight text-[var(--learn-ink)] sm:text-[1.25rem]">
-                  {item.course?.title || item.label}
+                  {item.courseTitle || item.label}
                 </h3>
               </div>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

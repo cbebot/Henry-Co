@@ -43,8 +43,8 @@ export default async function JobDetailPage({
   const locale = await getJobsPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const [job, jobs, viewer, query] = await Promise.all([
-    getJobPostBySlug(slug),
-    getJobPosts(),
+    getJobPostBySlug(slug, { locale }),
+    getJobPosts({ locale }),
     getJobsViewer(),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
@@ -53,7 +53,7 @@ export default async function JobDetailPage({
     notFound();
   }
 
-  const candidateData = viewer.user ? await getCandidateDashboardData(viewer.user.id) : null;
+  const candidateData = viewer.user ? await getCandidateDashboardData(viewer.user.id, locale) : null;
   const existingJourney =
     candidateData?.applicationJourneys.find((journey) => journey.application.jobSlug === job.slug) ?? null;
   const related = jobs.filter((item) => item.categorySlug === job.categorySlug && item.slug !== job.slug).slice(0, 3);

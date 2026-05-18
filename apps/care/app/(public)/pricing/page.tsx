@@ -3,7 +3,11 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getCarePricingCopy, type CarePricingCopy } from "@henryco/i18n/server";
+import {
+  getCarePricingCopy,
+  resolveLocalizedDynamicField,
+  type CarePricingCopy,
+} from "@henryco/i18n/server";
 import {
   getCareBookingCatalog,
   getCarePricing,
@@ -42,6 +46,98 @@ export default async function PricingPage() {
   const groups = groupPricing(items);
   const homePackages = catalog.packages.filter((item) => item.category_key === "home");
   const officePackages = catalog.packages.filter((item) => item.category_key === "office");
+
+  // PASS — localize Supabase-driven names/labels in the pricing catalog.
+  // List rows wrap title fields; long-form description text is TODO'd.
+  const groupsLocalized = await Promise.all(
+    groups.map(async (group) => ({
+      category: await resolveLocalizedDynamicField({
+        record: { category: group.category } as Record<string, unknown>,
+        field: "category",
+        locale,
+        fallback: group.category,
+        machineTranslate: locale !== "en",
+      }),
+      rows: await Promise.all(
+        group.rows.map(async (row) => ({
+          ...row,
+          category: await resolveLocalizedDynamicField({
+            record: row as unknown as Record<string, unknown>,
+            field: "category",
+            locale,
+            fallback: row.category,
+            machineTranslate: locale !== "en",
+          }),
+          item_name: await resolveLocalizedDynamicField({
+            record: row as unknown as Record<string, unknown>,
+            field: "item_name",
+            locale,
+            fallback: row.item_name,
+            machineTranslate: locale !== "en",
+          }),
+          // TODO(list-row): localize `description` in detail surfaces.
+        })),
+      ),
+    })),
+  );
+  const homePackagesLocalized = await Promise.all(
+    homePackages.map(async (item) => ({
+      ...item,
+      name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: item.name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize package `summary` in detail surfaces.
+    })),
+  );
+  const officePackagesLocalized = await Promise.all(
+    officePackages.map(async (item) => ({
+      ...item,
+      name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: item.name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize package `summary` in detail surfaces.
+    })),
+  );
+  const addonsLocalized = await Promise.all(
+    catalog.addOns.map(async (item) => ({
+      id: item.id,
+      label: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "label",
+        locale,
+        fallback: item.label,
+        machineTranslate: locale !== "en",
+      }),
+      description: item.description,
+      // TODO(list-row): localize add-on `description` in detail surfaces.
+      amount: item.amount,
+    })),
+  );
+  const priceRulesLocalized = await Promise.all(
+    catalog.priceRules
+      .filter((item) => item.is_active)
+      .slice(0, 8)
+      .map(async (item) => ({
+        id: item.id,
+        label: await resolveLocalizedDynamicField({
+          record: item as unknown as Record<string, unknown>,
+          field: "label",
+          locale,
+          fallback: item.label,
+          machineTranslate: locale !== "en",
+        }),
+        description: item.rule_kind.replaceAll("_", " "),
+        amount: item.amount || item.percent,
+      })),
+  );
 
   return (
     <main
@@ -88,7 +184,7 @@ export default async function PricingPage() {
               title={copy.packages.homeTitle}
               eyebrow={copy.packages.eyebrow}
               staffSuffix={copy.packages.staffSuffix}
-              items={homePackages}
+              items={homePackagesLocalized}
               layout="home"
             />
             <div className="xl:pl-12">
@@ -96,7 +192,7 @@ export default async function PricingPage() {
                 title={copy.packages.officeTitle}
                 eyebrow={copy.packages.eyebrow}
                 staffSuffix={copy.packages.staffSuffix}
-                items={officePackages}
+                items={officePackagesLocalized}
                 layout="office"
               />
             </div>
@@ -108,33 +204,20 @@ export default async function PricingPage() {
             <ModifierList
               title={copy.modifiers.addOnsTitle}
               eyebrow={copy.modifiers.eyebrow}
-              items={catalog.addOns.map((item) => ({
-                id: item.id,
-                label: item.label,
-                description: item.description,
-                amount: item.amount,
-              }))}
+              items={addonsLocalized}
             />
             <div className="xl:pl-12">
               <ModifierList
                 title={copy.modifiers.quoteModifiersTitle}
                 eyebrow={copy.modifiers.eyebrow}
-                items={catalog.priceRules
-                  .filter((item) => item.is_active)
-                  .slice(0, 8)
-                  .map((item) => ({
-                    id: item.id,
-                    label: item.label,
-                    description: item.rule_kind.replaceAll("_", " "),
-                    amount: item.amount || item.percent,
-                  }))}
+                items={priceRulesLocalized}
               />
             </div>
           </div>
         </section>
 
         <section className="space-y-14">
-          {groups.map((group) => (
+          {groupsLocalized.map((group) => (
             <div key={group.category}>
               <div className="flex flex-col gap-3 border-b border-black/10 pb-5 dark:border-white/10 sm:flex-row sm:items-end sm:justify-between">
                 <div>

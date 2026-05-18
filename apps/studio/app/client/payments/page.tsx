@@ -81,6 +81,12 @@ export default async function ClientPaymentsPage() {
             You&apos;re all caught up. Nothing to pay right now.
           </p>
         ) : (
+          // TODO(wave1): multi-row invoice list. invoice.description plus
+          // joined project titles are Supabase-row text fields — translate
+          // each via Promise.all + resolveLocalizedDynamicField in a
+          // follow-up wave. Single-row surfaces at /client/payment/[id]
+          // and /payment?invoice=token are already wrapped via the cached
+          // DeepL pipeline.
           <div className="grid gap-3">
             {outstanding.map((invoice) => {
               const status = invoiceStatusToken(invoice.status);

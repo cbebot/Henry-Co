@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyEmptyState,
   PropertyManagedRecordCard,
@@ -39,6 +40,34 @@ export default async function OperationsPage() {
   const locale = await getPropertyPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const listingMap = new Map(snapshot.listings.map((listing) => [listing.id, listing]));
+
+  // Staff ops — wrap titles for the listings referenced by the open
+  // inspection and viewing queues. We only resolve the listings that
+  // are actually rendered to keep DeepL fan-out flat.
+  const referencedListingIds = new Set<string>([
+    ...data.inspections.map((inspection) => inspection.listingId),
+    ...data.pendingViewings.slice(0, 8).map((viewing) => viewing.listingId),
+  ]);
+  const referencedListings = snapshot.listings.filter((listing) =>
+    referencedListingIds.has(listing.id),
+  );
+  const referencedTitles = await Promise.all(
+    referencedListings.map((listing) =>
+      resolveLocalizedDynamicField({
+        record: listing as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: listing.title ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const listingTitleById = new Map(
+    referencedListings.map((listing, index) => [
+      listing.id,
+      referencedTitles[index] ?? listing.title,
+    ]),
+  );
 
   return (
     <PropertyWorkspaceShell
@@ -102,7 +131,7 @@ export default async function OperationsPage() {
                   <div className="grid gap-4 xl:grid-cols-[1fr,0.9fr]">
                     <div>
                       <div className="text-lg font-semibold text-[var(--property-ink)]">
-                        {listing?.title || t("Inspection-linked listing")}
+                        {listing ? listingTitleById.get(listing.id) ?? listing.title : t("Inspection-linked listing")}
                       </div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
                         {listing?.locationLabel || t("Location pending")} · {formatDate(inspection.updatedAt)}
@@ -211,7 +240,7 @@ export default async function OperationsPage() {
                           {viewing.attendeeName}
                         </div>
                         <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                          {listing?.title || t("Listing pending")} · {t("preferred")} {formatDate(viewing.preferredDate)}
+                          {(listing ? listingTitleById.get(listing.id) ?? listing.title : null) || t("Listing pending")} · {t("preferred")} {formatDate(viewing.preferredDate)}
                         </div>
                       </div>
                       <PropertyStatusBadge status={viewing.status} />

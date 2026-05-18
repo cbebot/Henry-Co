@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/env";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 import { StudioFileField } from "@/components/studio/studio-file-field";
@@ -73,6 +73,160 @@ export default async function ProjectDetailPage({
     updates,
     platform,
   } = workspace;
+
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales pull the row's `_i18n` / `locale_overrides` cells when
+  // present, falling back to the cached DeepL pipeline. Single-row detail
+  // page, so the DeepL cost is acceptable. Milestones / deliverables /
+  // revisions / customRequest ship through Promise.all alongside project
+  // fields. Per-message bodies are skipped on purpose (user-typed
+  // content). Files / file labels are skipped (user-uploaded names).
+  const [
+    localizedProjectTitle,
+    localizedProjectSummary,
+    localizedProjectNextAction,
+    localizedCustomProjectType,
+    localizedCustomPlatform,
+    localizedCustomDesign,
+    localizedCustomInspiration,
+    localizedMilestones,
+    localizedDeliverables,
+    localizedRevisions,
+    localizedUpdates,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: project as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: project.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: project as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: project.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: project as unknown as Record<string, unknown>,
+      field: "nextAction",
+      locale,
+      fallback: project.nextAction ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "projectType",
+          locale,
+          fallback: customRequest.projectType ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "platformPreference",
+          locale,
+          fallback: customRequest.platformPreference ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "designDirection",
+          locale,
+          fallback: customRequest.designDirection ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    customRequest
+      ? resolveLocalizedDynamicField({
+          record: customRequest as unknown as Record<string, unknown>,
+          field: "inspirationSummary",
+          locale,
+          fallback: customRequest.inspirationSummary ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    Promise.all(
+      project.milestones.map(async (milestone) => {
+        const [name, description] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "name",
+            locale,
+            fallback: milestone.name ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "description",
+            locale,
+            fallback: milestone.description ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...milestone, name, description };
+      }),
+    ),
+    Promise.all(
+      deliverables.map(async (deliverable) => {
+        const [label, summary] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: deliverable as unknown as Record<string, unknown>,
+            field: "label",
+            locale,
+            fallback: deliverable.label ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: deliverable as unknown as Record<string, unknown>,
+            field: "summary",
+            locale,
+            fallback: deliverable.summary ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...deliverable, label, summary };
+      }),
+    ),
+    Promise.all(
+      revisions.map(async (revision) => {
+        const summary = await resolveLocalizedDynamicField({
+          record: revision as unknown as Record<string, unknown>,
+          field: "summary",
+          locale,
+          fallback: revision.summary ?? "",
+          machineTranslate: locale !== "en",
+        });
+        return { ...revision, summary };
+      }),
+    ),
+    Promise.all(
+      updates.map(async (update) => {
+        const [title, summary] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: update as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: update.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: update as unknown as Record<string, unknown>,
+            field: "summary",
+            locale,
+            fallback: update.summary ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...update, title, summary };
+      }),
+    ),
+  ]);
   const redirectPath = `/project/${project.id}?access=${project.accessKey}`;
   const isStaff = viewerHasRole(viewer, [
     "studio_owner",
@@ -160,7 +314,7 @@ export default async function ProjectDetailPage({
         </p>
       ) : null}
       <div className="space-y-4">
-        {project.milestones.map((milestone) => (
+        {localizedMilestones.map((milestone) => (
           <div
             key={milestone.id}
             className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface)_90%,transparent)] p-5"
@@ -215,9 +369,12 @@ export default async function ProjectDetailPage({
     <>
       <div className="grid gap-4 md:grid-cols-2">
         {[
-          [t("Project type"), customRequest.projectType],
-          [t("Platform"), customRequest.platformPreference],
-          [t("Design direction"), customRequest.designDirection],
+          [t("Project type"), localizedCustomProjectType],
+          [t("Platform"), localizedCustomPlatform],
+          [t("Design direction"), localizedCustomDesign],
+          // TODO(wave1): pageRequirements / addonServices are string[] —
+          // translate each entry through DeepL in a later wave so the
+          // comma-joined value can be wrapped.
           [t("Pages and interfaces"), customRequest.pageRequirements.join(", ") || t("Refined during scope review")],
           [t("Add-ons"), customRequest.addonServices.join(", ") || t("None selected")],
         ].map(([label, value]) => (
@@ -230,7 +387,7 @@ export default async function ProjectDetailPage({
       {customRequest.inspirationSummary ? (
         <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
           <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{t("References and direction")}</div>
-          <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{customRequest.inspirationSummary}</p>
+          <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedCustomInspiration}</p>
         </div>
       ) : null}
     </>
@@ -239,7 +396,12 @@ export default async function ProjectDetailPage({
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-8 sm:px-8 lg:px-10">
       <ProjectWorkspaceHero
-        project={project}
+        project={{
+          ...project,
+          title: localizedProjectTitle,
+          summary: localizedProjectSummary,
+          nextAction: localizedProjectNextAction,
+        }}
         serviceName={service?.name || project.serviceId}
         teamLine={team?.name || project.teamId || "HenryCo Studio"}
         proposalCurrency={proposalCurrency}
@@ -298,7 +460,7 @@ export default async function ProjectDetailPage({
               </p>
             </div>
             <div className="px-6 pb-8 pt-2 sm:px-8">
-              <ProjectProgressTimeline updates={updates} />
+              <ProjectProgressTimeline updates={localizedUpdates} />
             </div>
           </section>
 
@@ -406,8 +568,8 @@ export default async function ProjectDetailPage({
               <div className="studio-kicker">{t("Revisions")}</div>
               <p className="mt-2 text-sm text-[var(--studio-ink-soft)]">{t("Change requests are tracked here so nothing is lost.")}</p>
               <div className="mt-5 space-y-4">
-                {revisions.length > 0 ? (
-                  revisions.map((revision) => (
+                {localizedRevisions.length > 0 ? (
+                  localizedRevisions.map((revision) => (
                     <div key={revision.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
                       <div className="flex items-center justify-between gap-4">
                         <div className="font-semibold text-[var(--studio-ink)]">{revision.summary}</div>
@@ -474,7 +636,7 @@ export default async function ProjectDetailPage({
                 )}
               </div>
               <div className="mt-6 space-y-4">
-                {deliverables.map((deliverable) => (
+                {localizedDeliverables.map((deliverable) => (
                   <div key={deliverable.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
                     <div className="font-semibold text-[var(--studio-ink)]">{deliverable.label}</div>
                     <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{deliverable.summary}</p>

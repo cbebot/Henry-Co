@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { LocaleProvider } from "@henryco/i18n/react";
-import { getConsentCopy, getHubPublicCopy } from "@henryco/i18n/server";
+import {
+  getConsentCopy,
+  getHubPublicCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { EcosystemPreferences } from "@henryco/ui/public";
 import { getAccountUrl } from "@henryco/config";
 import PublicSiteShell from "../components/PublicSiteShell";
@@ -46,13 +50,41 @@ export async function generateMetadata(): Promise<Metadata> {
       settings: { default_meta_title: null, brand_title: null, brand_description: null, base_domain: null, favicon_url: null, logo_url: null } as never,
       hasServerError: true,
     })),
-    getHubPublicLocale().catch(() => "en"),
+    getHubPublicLocale().catch(() => "en" as const),
   ]);
-  const title = settings.default_meta_title || settings.brand_title || "Henry & Co.";
-  const description =
-    settings.default_meta_description ||
-    settings.brand_description ||
-    "Explore the businesses, services, and operating divisions of Henry & Co.";
+  // PASS i18n-100 — translate the SEO title/description through the cached
+  // DeepL pipeline. `resolveLocalizedDynamicField` returns the fallback
+  // unchanged when the locale is the source language.
+  const machineTranslate = locale !== "en";
+  const settingsRecord = settings as unknown as Record<string, unknown>;
+  const titleField =
+    typeof settings.default_meta_title === "string" && settings.default_meta_title.trim()
+      ? "default_meta_title"
+      : "brand_title";
+  const descriptionField =
+    typeof settings.default_meta_description === "string" &&
+    settings.default_meta_description.trim()
+      ? "default_meta_description"
+      : "brand_description";
+  const [title, description] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: settingsRecord,
+      field: titleField,
+      locale,
+      fallback: settings.default_meta_title || settings.brand_title || "Henry & Co.",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: settingsRecord,
+      field: descriptionField,
+      locale,
+      fallback:
+        settings.default_meta_description ||
+        settings.brand_description ||
+        "Explore the businesses, services, and operating divisions of Henry & Co.",
+      machineTranslate,
+    }),
+  ]);
   const icon = settings.favicon_url || settings.logo_url || undefined;
   const metadataBase = toMetadataUrl(settings.base_domain);
   const canonical = metadataBase ? metadataBase.toString().replace(/\/$/, "") + "/" : "/";

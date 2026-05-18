@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import { CourseCard } from "@/components/learn/ui";
 import { getInstructorBySlug } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -17,6 +17,33 @@ export default async function InstructorPage({
 
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
+  const machineTranslate = locale !== "en";
+  const instructorRecord = data.instructor as unknown as Record<string, unknown>;
+  const [instructorFullName, instructorTitle, instructorBio] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: instructorRecord,
+      field: "fullName",
+      locale,
+      fallback: data.instructor.fullName ?? "",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: instructorRecord,
+      field: "title",
+      locale,
+      fallback: data.instructor.title ?? "",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: instructorRecord,
+      field: "bio",
+      locale,
+      fallback: data.instructor.bio ?? "",
+      machineTranslate,
+    }),
+  ]);
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
@@ -35,13 +62,13 @@ export default async function InstructorPage({
           {t("Instructor spotlight")}
         </p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-          {data.instructor.fullName}
+          {instructorFullName || data.instructor.fullName}
         </h1>
         <p className="mt-3 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
-          {data.instructor.title}
+          {instructorTitle || data.instructor.title}
         </p>
         <p className="mt-6 max-w-3xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
-          {data.instructor.bio}
+          {instructorBio || data.instructor.bio}
         </p>
         {data.instructor.expertise.length > 0 ? (
           <div className="mt-6">

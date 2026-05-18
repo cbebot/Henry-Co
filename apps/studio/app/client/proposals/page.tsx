@@ -64,6 +64,11 @@ export default async function ClientProposalsPage() {
     <div className="space-y-7">
       <Header />
 
+      {/* TODO(wave1): multi-row proposal list. proposal.title /
+          proposal.summary are Supabase-row text fields — translate each via
+          Promise.all + resolveLocalizedDynamicField in a follow-up wave.
+          The single-row detail page at /proposals/[proposalId] is already
+          wrapped through the cached DeepL pipeline. */}
       <section className="grid gap-3 sm:grid-cols-2">
         {ordered.map((proposal) => {
           const tone = STATUS_TONE[proposal.status] ?? "var(--studio-ink-soft)";

@@ -42,7 +42,7 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
   }
 
   const [activity, savedProperties] = await Promise.all([
-    getDivisionActivity(user.id, "property"),
+    getDivisionActivity(user.id, "property", 20, locale),
     getSavedPropertiesForUser(user.id),
   ]);
 

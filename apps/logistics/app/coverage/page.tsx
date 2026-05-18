@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import { getLogisticsCoverageCopy } from "@henryco/i18n/server";
+import {
+  getLogisticsCoverageCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import type { LogisticsZone } from "@/lib/logistics/types";
@@ -28,7 +31,38 @@ export default async function CoveragePage() {
   const copy = getLogisticsCoverageCopy(locale);
   const { zones, settings, stats } = await getPublicLogisticsSnapshot();
 
-  const groupedByRegion = zones.reduce<Record<string, LogisticsZone[]>>(
+  // Route Supabase-row text (zone.name / zone.summary, settings.pickupHours)
+  // through the cached DeepL pipeline so non-English locales get translations.
+  const [zonesLocalized, pickupHoursLocalized] = await Promise.all([
+    Promise.all(
+      zones.map(async (zone) => ({
+        ...zone,
+        name: await resolveLocalizedDynamicField({
+          record: zone as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: zone.name,
+          machineTranslate: locale !== "en",
+        }),
+        summary: await resolveLocalizedDynamicField({
+          record: zone as unknown as Record<string, unknown>,
+          field: "summary",
+          locale,
+          fallback: zone.summary,
+          machineTranslate: locale !== "en",
+        }),
+      })),
+    ),
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "pickupHours",
+      locale,
+      fallback: settings.pickupHours,
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+
+  const groupedByRegion = zonesLocalized.reduce<Record<string, LogisticsZone[]>>(
     (acc: Record<string, LogisticsZone[]>, zone: LogisticsZone) => {
       const region = zone.region || copy.zones.regionFallback;
       acc[region] = acc[region] ? [...acc[region], zone] : [zone];
@@ -40,7 +74,7 @@ export default async function CoveragePage() {
 
   const heroBody = copy.hero.bodyTemplate
     .replace("{activeZones}", String(stats.activeZones))
-    .replace("{pickupHours}", settings.pickupHours);
+    .replace("{pickupHours}", pickupHoursLocalized);
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-12 sm:px-6 lg:px-8">

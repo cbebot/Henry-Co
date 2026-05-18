@@ -115,6 +115,68 @@ export default async function CareHomePage() {
   const garmentPreview = featuredPricing.length > 0 ? featuredPricing : pricing.slice(0, 4);
   const homePackages = catalog.packages.filter((item) => item.category_key === "home").slice(0, 2);
   const officePackages = catalog.packages.filter((item) => item.category_key === "office").slice(0, 2);
+
+  // PASS — wrap Supabase row fields shown above the fold. List views
+  // localize the title only and TODO their long-form copy.
+  const garmentPreviewLocalized = await Promise.all(
+    garmentPreview.map(async (item) => ({
+      ...item,
+      category: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "category",
+        locale,
+        fallback: item.category,
+        machineTranslate: locale !== "en",
+      }),
+      item_name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "item_name",
+        locale,
+        fallback: item.item_name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize `description` in detail surfaces.
+    })),
+  );
+  const homePackagesLocalized = await Promise.all(
+    homePackages.map(async (item) => ({
+      ...item,
+      name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: item.name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize package `summary` in detail surfaces.
+    })),
+  );
+  const officePackagesLocalized = await Promise.all(
+    officePackages.map(async (item) => ({
+      ...item,
+      name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: item.name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize package `summary` in detail surfaces.
+    })),
+  );
+  const reviewsLocalized = await Promise.all(
+    reviews.slice(0, 3).map(async (review) => ({
+      ...review,
+      review_text: await resolveLocalizedDynamicField({
+        record: review as unknown as Record<string, unknown>,
+        field: "review_text",
+        locale,
+        fallback: review.review_text,
+        machineTranslate: locale !== "en",
+      }),
+      // customer_name and city are personal/PII — skip translation.
+    })),
+  );
   const supportEmail = settings.support_email || care.supportEmail;
   const supportPhone = settings.support_phone || care.supportPhone;
   const heroImageUrl = settings.hero_image_url?.trim() || null;
@@ -479,7 +541,7 @@ export default async function CareHomePage() {
               )}
             </p>
             <div className="mt-6 grid gap-4">
-              {homePackages.map((item) => (
+              {homePackagesLocalized.map((item) => (
                 <PackageCard
                   key={item.id}
                   title={item.name}
@@ -502,7 +564,7 @@ export default async function CareHomePage() {
               )}
             </p>
             <div className="mt-6 grid gap-4">
-              {officePackages.map((item) => (
+              {officePackagesLocalized.map((item) => (
                 <PackageCard
                   key={item.id}
                   title={item.name}
@@ -530,7 +592,7 @@ export default async function CareHomePage() {
               )}
             </p>
             <ul className="mt-7 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
-              {garmentPreview.map((item) => (
+              {garmentPreviewLocalized.map((item) => (
                 <li key={item.id} className="flex items-baseline justify-between gap-6 py-4">
                   <div className="min-w-0">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/45">
@@ -565,7 +627,7 @@ export default async function CareHomePage() {
             <div className="mt-7">
               {hasReviews ? (
                 <ul className="divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
-                  {reviews.slice(0, 3).map((review) => (
+                  {reviewsLocalized.map((review) => (
                     <li key={review.id} className="py-5">
                       <div className="flex items-center gap-1 text-[color:var(--accent)]">
                         {stars(review.rating).map((_, index) => (

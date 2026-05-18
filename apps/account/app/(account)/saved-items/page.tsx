@@ -26,6 +26,14 @@ export default async function SavedItemsPage() {
   const grouped = groupByDivision(active);
   const copy = getAccountCopy(locale).savedItems;
 
+  // TODO(wave3-account): itemSnapshot.title/subtitle on saved items are
+  // system-generated copy from upstream products/listings. They flow into a
+  // client component (SavedItemsClient) — translating them here on the
+  // server would require either a server-rendered wrapper or piping
+  // pre-translated snapshots via prop. Skipped for now; revisit when the
+  // grouped view becomes a pure server component or once SavedItemsClient
+  // accepts a per-record localized map.
+
   return (
     <div className="space-y-6 acct-fade-in">
       <PageHeader title={copy.hero.title} description={copy.hero.description} />

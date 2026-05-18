@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import { getLogisticsServicesCopy } from "@henryco/i18n/server";
+import {
+  getLogisticsServicesCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
@@ -23,6 +26,16 @@ export default async function ServicesPage() {
   ]);
   const copy = getLogisticsServicesCopy(locale);
 
+  // `services` is the static LOGISTICS_SERVICES catalogue (not Supabase) —
+  // skipped per scope. `settings.pickupHours` is Supabase-merged: wrap it.
+  const pickupHoursLocalized = await resolveLocalizedDynamicField({
+    record: settings as unknown as Record<string, unknown>,
+    field: "pickupHours",
+    locale,
+    fallback: settings.pickupHours,
+    machineTranslate: locale !== "en",
+  });
+
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[88rem] space-y-12">
@@ -34,7 +47,7 @@ export default async function ServicesPage() {
             {copy.hero.title}
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
-            {copy.hero.body} {settings.pickupHours}
+            {copy.hero.body} {pickupHoursLocalized}
           </p>
         </header>
 

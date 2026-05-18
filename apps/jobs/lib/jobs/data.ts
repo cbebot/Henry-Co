@@ -1,7 +1,11 @@
 import "server-only";
 
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
-import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n/server";
+import {
+  resolveLocalizedDynamicField,
+  translateSurfaceLabel,
+  type AppLocale,
+} from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
 import { DEFAULT_PIPELINE, JOBS_STAGE_ORDER, getJobsDifferentiators } from "@/lib/jobs/content";
@@ -10,6 +14,56 @@ import { deriveJobTrustHighlights } from "@/lib/jobs/trust";
 function makeT(locale: AppLocale | undefined) {
   return (text: string) => (locale ? translateSurfaceLabel(locale, text) : text);
 }
+
+/**
+ * Wave 2 i18n — Supabase-row-driven text passes through
+ * `resolveLocalizedDynamicField` so cached DeepL fills the gap when an
+ * employer hasn't supplied `${field}_i18n` / `locale_overrides`.
+ *
+ * `metadata` is the JSON column on `customer_activity` rows where job
+ * postings + employer profiles store their translatable text. We resolve
+ * against that record (it carries `${field}_i18n` keys when employers
+ * upload localized copy) and feed the live string as the fallback so a
+ * DeepL miss still ships the source text.
+ */
+async function localizeText(
+  metadata: Record<string, unknown> | null | undefined,
+  field: string,
+  fallback: string,
+  locale: AppLocale | undefined,
+): Promise<string> {
+  if (!locale || locale === "en" || !fallback) return fallback;
+  return resolveLocalizedDynamicField({
+    record: metadata ?? { [field]: fallback },
+    field,
+    locale,
+    fallback,
+    machineTranslate: true,
+  });
+}
+
+async function localizeTextArray(
+  metadata: Record<string, unknown> | null | undefined,
+  field: string,
+  fallback: string[],
+  locale: AppLocale | undefined,
+): Promise<string[]> {
+  if (!locale || locale === "en" || fallback.length === 0) return fallback;
+  // Each bullet flows through DeepL individually so the cache hits at the
+  // string level — bullets get re-used across postings.
+  return Promise.all(
+    fallback.map((entry, index) =>
+      resolveLocalizedDynamicField({
+        record: { [`${field}_${index}`]: entry },
+        field: `${field}_${index}`,
+        locale,
+        fallback: entry,
+        machineTranslate: true,
+      }),
+    ),
+  );
+}
+
 import type {
   ApplicationJourney,
   ApplicationStageStep,
@@ -817,6 +871,112 @@ function buildJobPost(input: {
   };
 }
 
+/**
+ * Wave 2 i18n — translate the candidate/recruiter-facing prose on a
+ * JobPost in place. `metadata` is the `customer_activity.metadata` JSON
+ * column. `scope === "detail"` resolves the long-form fields rendered on
+ * the posting detail page; `scope === "list"` is a cheaper variant used
+ * by board/card surfaces. Brand strings, slugs, statuses, currency, and
+ * pipeline keys are intentionally skipped — they are identifiers, not
+ * prose.
+ */
+async function localizeJobPost(
+  job: JobPost,
+  metadata: Record<string, unknown>,
+  locale: AppLocale | undefined,
+  scope: "detail" | "list" = "detail",
+): Promise<JobPost> {
+  if (!locale || locale === "en") return job;
+  if (scope === "list") {
+    const [title, summary] = await Promise.all([
+      localizeText(metadata, "title", job.title, locale),
+      localizeText(metadata, "summary", job.summary, locale),
+    ]);
+    return { ...job, title, summary };
+  }
+  const [
+    title,
+    subtitle,
+    summary,
+    description,
+    responsibilities,
+    requirements,
+    benefits,
+    trustHighlights,
+  ] = await Promise.all([
+    localizeText(metadata, "title", job.title, locale),
+    localizeText(metadata, "subtitle", job.subtitle, locale),
+    localizeText(metadata, "summary", job.summary, locale),
+    localizeText(metadata, "description", job.description, locale),
+    localizeTextArray(metadata, "responsibilities", job.responsibilities, locale),
+    localizeTextArray(metadata, "requirements", job.requirements, locale),
+    localizeTextArray(metadata, "benefits", job.benefits, locale),
+    localizeTextArray(metadata, "trustHighlights", job.trustHighlights, locale),
+  ]);
+  return {
+    ...job,
+    title,
+    subtitle,
+    summary,
+    description,
+    responsibilities,
+    requirements,
+    benefits,
+    trustHighlights,
+  };
+}
+
+/**
+ * Wave 2 i18n — translate employer profile prose. Same scope split as
+ * JobPost — list mode hits name + tagline, detail mode adds description,
+ * benefitsHeadline, culturePoints, verificationNotes. `profileMetadata`
+ * is the JSON column on the employer's `customer_activity` row.
+ */
+async function localizeEmployerProfile(
+  employer: EmployerProfile,
+  profileMetadata: Record<string, unknown>,
+  locale: AppLocale | undefined,
+  scope: "detail" | "list" = "detail",
+): Promise<EmployerProfile> {
+  if (!locale || locale === "en") return employer;
+  if (scope === "list") {
+    const [name, tagline] = await Promise.all([
+      localizeText(profileMetadata, "name", employer.name, locale),
+      localizeText(profileMetadata, "tagline", employer.tagline, locale),
+    ]);
+    return { ...employer, name, tagline };
+  }
+  const [
+    name,
+    tagline,
+    description,
+    benefitsHeadline,
+    culturePoints,
+    verificationNotes,
+  ] = await Promise.all([
+    localizeText(profileMetadata, "name", employer.name, locale),
+    localizeText(profileMetadata, "tagline", employer.tagline, locale),
+    localizeText(profileMetadata, "description", employer.description, locale),
+    localizeText(profileMetadata, "benefitsHeadline", employer.benefitsHeadline, locale),
+    localizeTextArray(profileMetadata, "culturePoints", employer.culturePoints, locale),
+    localizeTextArray(
+      profileMetadata,
+      "verificationNotes",
+      employer.verificationNotes,
+      locale,
+    ),
+  ]);
+  return {
+    ...employer,
+    name,
+    tagline,
+    description,
+    benefitsHeadline,
+    culturePoints,
+    verificationNotes,
+  };
+}
+
 function buildApplication(row: Record<string, unknown>): JobApplication {
   const item = asObject(row);
   const metadata = asObject(item.metadata);
@@ -1049,14 +1209,24 @@ export async function getCandidateProfileByUserId(
   );
   const trustScore = calculateTrustScore({ completionScore, verificationStatus, documents });
 
+  // Wave 2 i18n — translate the candidate-written bio fields. Skills,
+  // portfolio links, work history (structured records), and timestamps stay
+  // as-is.
+  const headlineSource = asString(profile.headline);
+  const summarySource = asString(profile.summary);
+  const [headline, summary] = await Promise.all([
+    localizeText(profile, "headline", headlineSource, locale),
+    localizeText(profile, "summary", summarySource, locale),
+  ]);
+
   return {
     userId,
     email: asNullableString(base.email),
     fullName: asNullableString(base.full_name),
     phone: asNullableString(base.phone),
     avatarUrl: asNullableString(base.avatar_url),
-    headline: asString(profile.headline),
-    summary: asString(profile.summary),
+    headline,
+    summary,
     location: asString(profile.location),
     timezone: asNullableString(base.timezone),
     workModes: asStringArray(profile.workModes),
@@ -1089,7 +1259,10 @@ export async function getCandidateDocuments(userId: string) {
   return Promise.all((data ?? []).map((row) => buildDocument(row as Record<string, unknown>, admin)));
 }
 
-export async function getEmployerProfiles(options?: { includeUnpublished?: boolean }) {
+export async function getEmployerProfiles(options?: {
+  includeUnpublished?: boolean;
+  locale?: AppLocale;
+}) {
   const admin = createAdminSupabase();
   const [companiesRes, profileRowsRes, verificationRowsRes, jobsRes] = await Promise.all([
     admin.from("companies").select("*").order("sort_order", { ascending: true }).order("name"),
@@ -1137,33 +1310,64 @@ export async function getEmployerProfiles(options?: { includeUnpublished?: boole
     ...counts.keys(),
   ]);
 
-  return [...slugs]
-    .map((slug) =>
-      buildEmployerProfile({
+  const built = [...slugs]
+    .map((slug) => {
+      const profileRow = profileMap.get(slug) ?? null;
+      const employer = buildEmployerProfile({
         company: companyMap.get(slug) ?? null,
-        profileRow: profileMap.get(slug) ?? null,
+        profileRow,
         verificationRow: verificationMap.get(slug) ?? null,
         openRoleCount: counts.get(slug) ?? 0,
-      })
+      });
+      return employer ? { employer, profileMetadata: asObject(profileRow?.metadata) } : null;
+    })
+    .filter((value): value is { employer: EmployerProfile; profileMetadata: Record<string, unknown> } =>
+      Boolean(value),
     )
-    .filter((value): value is EmployerProfile => Boolean(value))
-    .filter((employer) => !isJobsVerificationSynthetic(employer.name))
-    .sort((a, b) => {
-      if (b.openRoleCount !== a.openRoleCount) return b.openRoleCount - a.openRoleCount;
-      return a.name.localeCompare(b.name);
-    }) as EmployerProfile[];
+    .filter(({ employer }) => !isJobsVerificationSynthetic(employer.name));
+
+  // Wave 2 i18n — list scope: name + tagline only. Detail surfaces call
+  // `getEmployerProfileBySlug` which upgrades to detail scope.
+  const localized = await Promise.all(
+    built.map(({ employer, profileMetadata }) =>
+      localizeEmployerProfile(employer, profileMetadata, options?.locale, "list"),
+    ),
+  );
+
+  return localized.sort((a, b) => {
+    if (b.openRoleCount !== a.openRoleCount) return b.openRoleCount - a.openRoleCount;
+    return a.name.localeCompare(b.name);
+  }) as EmployerProfile[];
 }
 
 export async function getEmployerProfileBySlug(
   slug: string,
-  options?: { includeUnpublished?: boolean }
+  options?: { includeUnpublished?: boolean; locale?: AppLocale }
 ) {
   const [employers, jobs] = await Promise.all([
     getEmployerProfiles(options),
     getJobPosts(options),
   ]);
-  const employer = employers.find((item) => item.slug === slug) ?? null;
+  let employer = employers.find((item) => item.slug === slug) ?? null;
   if (!employer) return null;
+
+  // Wave 2 i18n — detail surface: pull the employer profile row again so
+  // we can resolve description, benefitsHeadline, culturePoints,
+  // verificationNotes against the metadata blob.
+  if (options?.locale && options.locale !== "en") {
+    const admin = createAdminSupabase();
+    const { data: profileRowRaw } = await admin
+      .from("customer_activity")
+      .select("metadata")
+      .eq("division", JOBS_DIVISION)
+      .eq("activity_type", JOBS_ACTIVITY_EMPLOYER_PROFILE)
+      .eq("reference_id", slug)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const profileMetadata = asObject(asObject(profileRowRaw).metadata);
+    employer = await localizeEmployerProfile(employer, profileMetadata, options.locale, "detail");
+  }
 
   return {
     employer,
@@ -1175,6 +1379,7 @@ export async function getJobPosts(options?: {
   includeUnpublished?: boolean;
   employerSlug?: string;
   internalOnly?: boolean;
+  locale?: AppLocale;
 }) {
   const admin = createAdminSupabase();
   const [rowsRes, applicationsRes, employers] = await Promise.all([
@@ -1189,7 +1394,7 @@ export async function getJobPosts(options?: {
       .select("metadata")
       .eq("division", JOBS_DIVISION)
       .eq("activity_type", JOBS_ACTIVITY_APPLICATION),
-    getEmployerProfiles({ includeUnpublished: true }),
+    getEmployerProfiles({ includeUnpublished: true, locale: options?.locale }),
   ]);
 
   const employerMap = new Map(employers.map((employer) => [employer.slug, employer]));
@@ -1202,36 +1407,74 @@ export async function getJobPosts(options?: {
     applicationCountMap.set(jobSlug, (applicationCountMap.get(jobSlug) ?? 0) + 1);
   }
 
-  return ((rowsRes.data ?? []) as Array<Record<string, unknown>>)
-    .map((row) =>
-      buildJobPost({
+  const built = ((rowsRes.data ?? []) as Array<Record<string, unknown>>)
+    .map((row) => {
+      const metadata = asObject(row.metadata);
+      const job = buildJobPost({
         row,
-        employer: employerMap.get(asString(asObject(row.metadata).employerSlug)) ?? null,
+        employer: employerMap.get(asString(metadata.employerSlug)) ?? null,
         applicationCount:
-          applicationCountMap.get(asString(asObject(row.metadata).slug || row.reference_id)) ?? 0,
-      })
-    )
+          applicationCountMap.get(asString(metadata.slug || row.reference_id)) ?? 0,
+      });
+      return { job, metadata };
+    })
     .filter(
-      (job) =>
+      ({ job }) =>
         !isJobsVerificationSynthetic(job.title) &&
-        !isJobsVerificationSynthetic(job.employerName)
+        !isJobsVerificationSynthetic(job.employerName),
     )
-    .filter((job) => (options?.includeUnpublished ? true : job.isPublished))
-    .filter((job) => (options?.employerSlug ? job.employerSlug === options.employerSlug : true))
-    .filter((job) => (options?.internalOnly ? job.internal : true))
-    .sort((a, b) => {
-      if (b.featured !== a.featured) return Number(b.featured) - Number(a.featured);
-      return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
-    });
+    .filter(({ job }) => (options?.includeUnpublished ? true : job.isPublished))
+    .filter(({ job }) =>
+      options?.employerSlug ? job.employerSlug === options.employerSlug : true,
+    )
+    .filter(({ job }) => (options?.internalOnly ? job.internal : true));
+
+  // Wave 2 i18n — list scope keeps it cheap: title + summary only.
+  // `getJobPostBySlug` upgrades to detail scope below.
+  const localized = await Promise.all(
+    built.map(({ job, metadata }) => localizeJobPost(job, metadata, options?.locale, "list")),
+  );
+
+  return localized.sort((a, b) => {
+    if (b.featured !== a.featured) return Number(b.featured) - Number(a.featured);
+    return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+  });
 }
 
-export async function getJobPostBySlug(slug: string, options?: { includeUnpublished?: boolean }) {
-  const jobs = await getJobPosts({ includeUnpublished: options?.includeUnpublished });
-  return jobs.find((job) => job.slug === slug) ?? null;
+export async function getJobPostBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean; locale?: AppLocale },
+) {
+  // Wave 2 i18n — fetch the list (which only does list-scope translation)
+  // then upgrade the matching detail to full-scope translation by replaying
+  // the resolver against the original row metadata.
+  const jobs = await getJobPosts({
+    includeUnpublished: options?.includeUnpublished,
+    locale: options?.locale,
+  });
+  const job = jobs.find((item) => item.slug === slug) ?? null;
+  if (!job) return null;
+  if (!options?.locale || options.locale === "en") return job;
+
+  const admin = createAdminSupabase();
+  const { data: rowRaw } = await admin
+    .from("customer_activity")
+    .select("metadata")
+    .eq("division", JOBS_DIVISION)
+    .eq("activity_type", JOBS_ACTIVITY_JOB_POST)
+    .eq("reference_id", slug)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const metadata = asObject(asObject(rowRaw).metadata);
+  return localizeJobPost(job, metadata, options.locale, "detail");
 }
 
-export async function searchJobs(params: URLSearchParams | Record<string, string | string[] | undefined>) {
-  const jobs = await getJobPosts();
+export async function searchJobs(
+  params: URLSearchParams | Record<string, string | string[] | undefined>,
+  locale?: AppLocale,
+) {
+  const jobs = await getJobPosts({ locale });
   const getValue = (key: string) =>
     params instanceof URLSearchParams
       ? params.get(key)
@@ -1277,7 +1520,10 @@ export async function searchJobs(params: URLSearchParams | Record<string, string
 
 export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
   const t = makeT(locale);
-  const [jobs, employers] = await Promise.all([getJobPosts(), getEmployerProfiles()]);
+  const [jobs, employers] = await Promise.all([
+    getJobPosts({ locale }),
+    getEmployerProfiles({ locale }),
+  ]);
   const categoriesMap = new Map<string, { slug: string; name: string; count: number }>();
 
   for (const job of jobs) {
@@ -1383,7 +1629,7 @@ export async function getJobAlerts(userId: string): Promise<JobAlert[]> {
   });
 }
 
-export async function getJobsNotifications(userId: string) {
+export async function getJobsNotifications(userId: string, locale?: AppLocale) {
   const admin = createAdminSupabase();
   const { data } = await admin
     .from("customer_notifications")
@@ -1392,7 +1638,19 @@ export async function getJobsNotifications(userId: string) {
     .eq("division", JOBS_DIVISION)
     .order("created_at", { ascending: false });
 
-  return (data ?? []).map((row) => buildNotification(row as Record<string, unknown>));
+  const rows = (data ?? []).map((row) => buildNotification(row as Record<string, unknown>));
+  if (!locale || locale === "en") return rows;
+
+  // Wave 2 i18n — notifications carry their text on the row itself
+  // (`title`, `body`). The cached DeepL pipeline fills the gap when the
+  // signal-producing surface didn't pre-translate.
+  return Promise.all(
+    rows.map(async (row) => ({
+      ...row,
+      title: await localizeText({ title: row.title }, "title", row.title, locale),
+      body: await localizeText({ body: row.body }, "body", row.body, locale),
+    })),
+  );
 }
 
 export async function getJobsThreads(userId: string) {
@@ -1430,7 +1688,7 @@ export async function getApplicationTimeline(applicationId: string) {
   return (data ?? []).map((row) => buildAudit(row as Record<string, unknown>));
 }
 
-export async function getApplicationById(applicationId: string) {
+export async function getApplicationById(applicationId: string, locale?: AppLocale) {
   const admin = createAdminSupabase();
   const { data } = await admin
     .from("customer_activity")
@@ -1440,7 +1698,17 @@ export async function getApplicationById(applicationId: string) {
     .eq("reference_id", applicationId)
     .maybeSingle();
 
-  return data ? buildApplication(data as Record<string, unknown>) : null;
+  if (!data) return null;
+  const application = buildApplication(data as Record<string, unknown>);
+  if (!locale || locale === "en") return application;
+  // Wave 2 i18n — translate the candidate-authored cover note. jobTitle
+  // and employerName are denormalized identifiers tied to the JobPost
+  // row; we leave them so the linked job page stays the source of truth.
+  const metadata = asObject((data as Record<string, unknown>).metadata);
+  const [coverNote] = await Promise.all([
+    localizeText(metadata, "coverNote", application.coverNote, locale),
+  ]);
+  return { ...application, coverNote };
 }
 
 export async function getCandidateDashboardData(
@@ -1453,9 +1721,9 @@ export async function getCandidateDashboardData(
     getCandidateApplications(userId),
     getSavedJobs(userId),
     getJobAlerts(userId),
-    getJobsNotifications(userId),
+    getJobsNotifications(userId, locale),
     getJobsThreads(userId),
-    getJobPosts(),
+    getJobPosts({ locale }),
   ]);
   const applicationIds = applications.map((application) => application.applicationId);
   const threadIds = threads.map((thread) => thread.id);
@@ -1596,18 +1864,18 @@ export async function getCandidateDashboardData(
 export async function getEmployerDashboardData(
   userId: string,
   email?: string | null,
-  _locale?: AppLocale
+  locale?: AppLocale
 ) {
   const [memberships, jobs, applications, notifications] = await Promise.all([
     getEmployerMembershipsByUser(userId, email),
-    getJobPosts({ includeUnpublished: true }),
+    getJobPosts({ includeUnpublished: true, locale }),
     createAdminSupabase()
       .from("customer_activity")
       .select("*")
       .eq("division", JOBS_DIVISION)
       .eq("activity_type", JOBS_ACTIVITY_APPLICATION)
       .order("created_at", { ascending: false }),
-    getJobsNotifications(userId),
+    getJobsNotifications(userId, locale),
   ]);
   const employerSlugs = new Set(memberships.map((membership) => membership.employerSlug));
   const employerJobs = jobs.filter((job) => employerSlugs.has(job.employerSlug));
@@ -1630,8 +1898,8 @@ export async function getEmployerDashboardData(
 
 export async function getRecruiterOverviewData(locale?: AppLocale) {
   const [jobs, employers, profileRows, applicationRows, auditRows, threads] = await Promise.all([
-    getJobPosts({ includeUnpublished: true }),
-    getEmployerProfiles({ includeUnpublished: true }),
+    getJobPosts({ includeUnpublished: true, locale }),
+    getEmployerProfiles({ includeUnpublished: true, locale }),
     createAdminSupabase()
       .from("customer_activity")
       .select("*")

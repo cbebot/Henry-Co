@@ -6,6 +6,10 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
+/* TODO(wave3-catalogue): paginate translation — followed-stores grid is a
+   list surface and VendorCard renders raw vendor.description per row;
+   defer per-row translation to a focused catalogue wave with caching. */
+
 type SearchParams = {
   followed?: string;
   unfollowed?: string;

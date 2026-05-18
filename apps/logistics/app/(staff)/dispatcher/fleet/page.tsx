@@ -1,5 +1,6 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -50,6 +51,23 @@ export default async function DispatcherFleetPage() {
   const locale = await getLogisticsPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const { riders, vehicles } = await getFleetData();
+
+  // Vehicle `vehicle_type` is a free-text descriptor (motorbike, sedan, van).
+  // Route it through cached DeepL. `license_plate` is a code (skip),
+  // `status` is enum-like (skip), `display_name` is PII (skip),
+  // `phone` is a phone number (skip).
+  const vehiclesLocalized = await Promise.all(
+    vehicles.map(async (vehicle) => ({
+      ...vehicle,
+      vehicle_type: await resolveLocalizedDynamicField({
+        record: vehicle as unknown as Record<string, unknown>,
+        field: "vehicle_type",
+        locale,
+        fallback: vehicle.vehicle_type,
+        machineTranslate: locale !== "en",
+      }),
+    })),
+  );
 
   return (
     <div className="space-y-8 py-6">
@@ -113,7 +131,7 @@ export default async function DispatcherFleetPage() {
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
-            {vehicles.map((vehicle) => (
+            {vehiclesLocalized.map((vehicle) => (
               <li
                 key={vehicle.id}
                 className="flex items-center justify-between py-3 text-sm"

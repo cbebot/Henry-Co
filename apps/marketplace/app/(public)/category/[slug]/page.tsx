@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { CollectionCard, ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
@@ -18,7 +19,15 @@ export async function generateMetadata({
   const copy = getMarketplacePublicCopy(locale);
   const snapshot = await getMarketplaceHomeData();
   const category = snapshot.categories.find((item) => item.slug === slug);
-  const categoryName = category?.name ?? slug;
+  const categoryName = category
+    ? await resolveLocalizedDynamicField({
+        record: category as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: category.name,
+        machineTranslate: locale !== "en",
+      })
+    : slug;
 
   return {
     title: copy.category.metadata.titleTemplate.replace("{category}", categoryName),
@@ -42,6 +51,33 @@ export default async function CategoryPage({
   const category = snapshot.categories.find((item) => item.slug === slug);
   if (!category) notFound();
 
+  // Single-row category detail surface: translate every visible category text
+  // field. trustNotes is short string array — translate each in parallel.
+  const [localizedCategoryName, localizedCategoryHero, localizedCategoryDescription] =
+    await Promise.all([
+      resolveLocalizedDynamicField({
+        record: category as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: category.name,
+        machineTranslate: locale !== "en",
+      }),
+      resolveLocalizedDynamicField({
+        record: category as unknown as Record<string, unknown>,
+        field: "hero",
+        locale,
+        fallback: category.hero ?? "",
+        machineTranslate: locale !== "en",
+      }),
+      resolveLocalizedDynamicField({
+        record: category as unknown as Record<string, unknown>,
+        field: "description",
+        locale,
+        fallback: category.description ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ]);
+
   const products = snapshot.products.filter((item) => item.categorySlug === slug);
   const relatedCollections = snapshot.collections.filter((collection) =>
     collection.productSlugs.some((productSlug) =>
@@ -56,10 +92,10 @@ export default async function CategoryPage({
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">{copy.category.hero.kicker}</p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              {category.name}
+              {localizedCategoryName}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              {category.hero}
+              {localizedCategoryHero || localizedCategoryDescription}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
@@ -131,6 +167,9 @@ export default async function CategoryPage({
               </h2>
             </div>
           </div>
+          {/* TODO(wave3-catalogue): paginate translation — collection rail is a
+              list surface; CollectionCard renders its own DB fields and the
+              cost of per-row translation is best deferred to a focused wave. */}
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             {relatedCollections.slice(0, 2).map((collection) => (
               <CollectionCard key={collection.id} collection={collection} />
@@ -156,6 +195,9 @@ export default async function CategoryPage({
             {copy.category.catalog.openSearch}
           </Link>
         </div>
+        {/* TODO(wave3-catalogue): paginate translation — category product grid
+            is a catalogue surface; ProductCard reads raw product.title and
+            translating every row would compound DeepL spend on hot routes. */}
         <div className="mt-6 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
           {products.map((product) => (
             <ProductCard key={product.slug} product={product} />

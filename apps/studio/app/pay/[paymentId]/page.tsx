@@ -11,9 +11,11 @@ import type {
   PaymentSurfaceContext,
   PaymentSurfaceTheme,
 } from "@henryco/payment-surface";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { uploadPaymentProofAction } from "@/lib/studio/actions";
 import { getStudioViewer } from "@/lib/studio/auth";
 import { getPaymentWorkspace } from "@/lib/studio/data";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import {
   getStudioAccountUrl,
@@ -107,10 +109,40 @@ export default async function StudioPaymentWorkspace({
   const rankTotal = sameProjectPayments.length || 1;
   const uploadRedirect = `/pay/${payment.id}${projectAccessKey ? `?access=${projectAccessKey}` : ""}`;
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Payment label / project
+  // title / milestone name surface on the canonical PaymentSurface heading.
+  const locale = await getStudioPublicLocale();
+  const [localizedPaymentLabel, localizedProjectTitle, localizedMilestoneName] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: payment as unknown as Record<string, unknown>,
+      field: "label",
+      locale,
+      fallback: payment.label || "Studio payment",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: project as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: project.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    milestone
+      ? resolveLocalizedDynamicField({
+          record: milestone as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: milestone.name ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
+
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
       id: payment.id,
-      label: payment.label || "Studio payment",
+      label: localizedPaymentLabel || "Studio payment",
       amount: payment.amount,
       currency: payment.currency,
       status: payment.status,
@@ -122,8 +154,8 @@ export default async function StudioPaymentWorkspace({
       rank: { index: rankIndex, total: rankTotal },
     }),
     record: {
-      title: project.title,
-      subtitle: milestone?.name,
+      title: localizedProjectTitle,
+      subtitle: milestone ? localizedMilestoneName : undefined,
       back: { href: projectHref, label: "Project workspace" },
       account: { href: getStudioAccountUrl(), label: "HenryCo account home" },
       primaryCta: { href: projectHref, label: "Open project workspace" },

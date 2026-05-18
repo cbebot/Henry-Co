@@ -22,6 +22,11 @@ export default async function SalesLeadsPage() {
       description="Every lead record keeps enough structure to let sales move from inquiry to proposal without restarting discovery."
       nav={salesNav("/sales/leads")}
     >
+      {/* TODO(wave1): multi-row staff lead queue. lead.customerName /
+          lead.businessType / lead.budgetBand etc. are user-supplied business
+          identity fields — skip translation per scope. service.name comes
+          from the static catalog and is already source-language. No row-text
+          translation needed in this surface. */}
       <section className="space-y-4">
         {snapshot.leads.map((lead) => {
           const proposal = snapshot.proposals.find((item) => item.leadId === lead.id) ?? null;

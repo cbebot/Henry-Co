@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,8 +16,8 @@ import {
   SquareStack,
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
-import { getPropertyPublicLocale } from "@/lib/locale-server";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -313,8 +315,8 @@ export function PropertyAreaCard({
   );
 }
 
-export async function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
-  const locale = await getPropertyPublicLocale();
+export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article className="overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)]">
@@ -374,14 +376,14 @@ export async function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
   );
 }
 
-export async function PropertyManagedRecordCard({
+export function PropertyManagedRecordCard({
   record,
   compact,
 }: {
   record: PropertyManagedRecord;
   compact?: boolean;
 }) {
-  const locale = await getPropertyPublicLocale();
+  const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article
@@ -444,12 +446,12 @@ export async function PropertyManagedRecordCard({
   );
 }
 
-export async function PropertyDifferentiatorCard({
+export function PropertyDifferentiatorCard({
   item,
 }: {
   item: PropertyDifferentiator;
 }) {
-  const locale = await getPropertyPublicLocale();
+  const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6">
@@ -640,8 +642,8 @@ export function PropertyStatusBadge({ status }: { status: string }) {
   );
 }
 
-export async function PropertyQuickFacts({ listing }: { listing: PropertyListing }) {
-  const locale = await getPropertyPublicLocale();
+export function PropertyQuickFacts({ listing }: { listing: PropertyListing }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const facts = [
     {

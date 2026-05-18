@@ -28,6 +28,11 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
+/* TODO(wave3-catalogue): paginate translation — buyer account dashboard
+   surfaces previews from wishlist, follows, and notifications, each of which
+   carry DB-driven titles/bodies. Translating every row per render would
+   compound DeepL spend; defer to a focused wave with caching. */
+
 const nairaFormatter = new Intl.NumberFormat("en-NG", {
   style: "currency",
   currency: "NGN",

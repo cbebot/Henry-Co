@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertySectionIntro } from "@/components/property/ui";
 import { getPropertySnapshot } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
@@ -11,6 +12,30 @@ export default async function PropertyFaqPage() {
   const snapshot = await getPropertySnapshot();
   const locale = await getPropertyPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // Wrap FAQ row text — small fixed list, public page, non-EN
+  // visitors deserve translated answers.
+  const localizedFaqs = await Promise.all(
+    snapshot.faqs.map(async (faq) => {
+      const [question, answer] = await Promise.all([
+        resolveLocalizedDynamicField({
+          record: faq as unknown as Record<string, unknown>,
+          field: "question",
+          locale,
+          fallback: faq.question ?? "",
+          machineTranslate: locale !== "en",
+        }),
+        resolveLocalizedDynamicField({
+          record: faq as unknown as Record<string, unknown>,
+          field: "answer",
+          locale,
+          fallback: faq.answer ?? "",
+          machineTranslate: locale !== "en",
+        }),
+      ]);
+      return { ...faq, question, answer };
+    }),
+  );
 
   return (
     <main className="mx-auto max-w-[80rem] px-5 py-10 sm:px-8 lg:px-10">
@@ -38,7 +63,7 @@ export default async function PropertyFaqPage() {
           </p>
         ) : (
           <ul className="divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-            {snapshot.faqs.map((faq) => (
+            {localizedFaqs.map((faq) => (
               <li key={faq.id}>
                 <details className="group py-5">
                   <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 text-base font-semibold tracking-tight text-[var(--property-ink)]">

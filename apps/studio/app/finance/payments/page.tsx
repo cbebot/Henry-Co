@@ -15,6 +15,9 @@ export default async function FinancePaymentsPage() {
       description="Finance can use this ledger to verify proof and cross-check the project timeline."
       nav={financeNav("/finance/payments")}
     >
+      {/* TODO(wave1): multi-row payment record list (staff). payment.label
+          is a Supabase-row text field — translate each via Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave. */}
       <section className="space-y-4">
         {snapshot.payments.map((payment) => (
           <article key={payment.id} className="studio-panel rounded-[1.75rem] p-6">

@@ -6,6 +6,10 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
+/* TODO(wave3-catalogue): paginate translation — wishlist is a catalogue
+   list surface; ProductCard reads raw product.title and translating every
+   row would compound DeepL spend on hot routes. */
+
 type SearchParams = {
   saved?: string;
   removed?: string;

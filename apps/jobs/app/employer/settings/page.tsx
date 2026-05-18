@@ -28,7 +28,7 @@ export default async function EmployerSettingsPage() {
   const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale);
   const membership = data.memberships[0] ?? null;
   const companyRecord = membership
-    ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true })
+    ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true, locale })
     : null;
   const employer = companyRecord?.employer ?? null;
   const verificationStatus = String(employer?.verificationStatus ?? "pending");

@@ -1,6 +1,8 @@
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyMetricCard, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { requirePropertyRoles } from "@/lib/property/auth";
 import { getPropertyGovernanceWorkspaceData, getPropertySnapshot } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
 import Link from "next/link";
 
@@ -33,6 +35,21 @@ export default async function AdminPage() {
   const whatsappConfigured = Boolean(
     process.env.TWILIO_ACCOUNT_SID ||
       (process.env.WHATSAPP_PHONE_NUMBER_ID && process.env.WHATSAPP_ACCESS_TOKEN)
+  );
+
+  const locale = await getPropertyPublicLocale();
+  // Campaign list — small fixed array, public-facing label, wrap title.
+  const localizedCampaigns = await Promise.all(
+    snapshot.campaigns.map(async (campaign) => {
+      const title = await resolveLocalizedDynamicField({
+        record: campaign as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: campaign.title ?? "",
+        machineTranslate: locale !== "en",
+      });
+      return { ...campaign, title };
+    }),
   );
 
   return (
@@ -98,7 +115,7 @@ export default async function AdminPage() {
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
           <div className="property-kicker">Campaign surfaces</div>
           <div className="mt-5 space-y-4">
-            {snapshot.campaigns.map((campaign) => (
+            {localizedCampaigns.map((campaign) => (
               <div key={campaign.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>

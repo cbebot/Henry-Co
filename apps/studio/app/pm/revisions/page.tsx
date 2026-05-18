@@ -14,6 +14,10 @@ export default async function PmRevisionsPage() {
       description="Revision governance protects the Studio team from untracked scope drift."
       nav={pmNav("/pm/revisions")}
     >
+      {/* TODO(wave1): multi-row revision queue (staff). revision.summary is
+          a user-typed change-request body — keep source text per scope
+          (user-typed messages should not be translated). No row-text
+          translation needed in this surface. */}
       <section className="space-y-4">
         {snapshot.revisions.map((revision) => (
           <article key={revision.id} className="studio-panel rounded-[1.75rem] p-6">
