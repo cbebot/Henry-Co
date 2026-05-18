@@ -26,11 +26,16 @@ import {
 } from "@/components/portal";
 import "@/components/portal/styles.css";
 
-export const metadata: Metadata = {
-  title: "Track shipment | HenryCo Logistics",
-  description:
-    "Track your HenryCo Logistics shipment with milestone visibility and honest map context.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    title: t("Track shipment | HenryCo Logistics"),
+    description: t(
+      "Track your HenryCo Logistics shipment with milestone visibility and honest map context.",
+    ),
+  };
+}
 
 export const dynamic = "force-dynamic";
 

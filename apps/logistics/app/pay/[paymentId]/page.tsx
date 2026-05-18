@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
 // V2-PAYMENT-UNIFICATION: Logistics' /pay route is a wired entrypoint
 // awaiting a payment data model (business booking deposits, customer
@@ -14,11 +16,17 @@ void _PaymentSurface;
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: "Logistics · Payment workspace",
-  description: "Track logistics dispatch payments once the finance pipeline goes live.",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    title: t("Logistics · Payment workspace"),
+    description: t(
+      "Track logistics dispatch payments once the finance pipeline goes live.",
+    ),
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function LogisticsPaymentWorkspace({
   params,

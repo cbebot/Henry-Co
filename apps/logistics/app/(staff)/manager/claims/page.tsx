@@ -1,5 +1,8 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -36,33 +39,47 @@ async function getOpenClaims() {
 }
 
 export default async function ManagerClaimsPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const claims = await getOpenClaims();
+  const localizedClaims = await Promise.all(
+    claims.map(async (claim) => ({
+      ...claim,
+      reason: await resolveLocalizedDynamicField({
+        record: claim as unknown as Record<string, unknown>,
+        field: "reason",
+        locale,
+        fallback: claim.reason,
+        machineTranslate: locale !== "en",
+      }),
+      status: t(claim.status),
+    })),
+  );
 
   return (
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Claims
+          {t("Claims")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Open shipment claims
+          {t("Open shipment claims")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Customer-filed claims for damaged or lost shipments. Investigate,
-          then route to wallet adjustment via the owner workspace.
+          {t("Customer-filed claims for damaged or lost shipments. Investigate, then route to wallet adjustment via the owner workspace.")}
         </p>
       </header>
 
       <Panel tone="flat">
-        {claims.length === 0 ? (
+        {localizedClaims.length === 0 ? (
           <EmptyState
-            kicker="All clear"
-            headline="No open claims"
-            body="When a customer files a claim it appears here with their evidence and the shipment context."
+            kicker={t("All clear")}
+            headline={t("No open claims")}
+            body={t("When a customer files a claim it appears here with their evidence and the shipment context.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
-            {claims.map((claim) => (
+            {localizedClaims.map((claim) => (
               <li key={claim.id} className="py-4 text-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -73,13 +90,13 @@ export default async function ManagerClaimsPage() {
                       {claim.reason}
                     </p>
                     <p className="mt-1 text-xs text-[var(--logistics-muted)]">
-                      Shipment {claim.shipment_id.slice(0, 8)} · opened{" "}
-                      {new Date(claim.created_at).toLocaleDateString()}
+                      {t("Shipment")} {claim.shipment_id.slice(0, 8)} · {t("opened")}{" "}
+                      {new Date(claim.created_at).toLocaleDateString(locale)}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                      Requested
+                      {t("Requested")}
                     </p>
                     <p className="mt-1 font-semibold tracking-tight text-white">
                       {claim.requested_amount_minor / 100} {claim.currency}

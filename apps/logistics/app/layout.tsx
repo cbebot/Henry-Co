@@ -9,6 +9,7 @@ import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henry
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
 import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
@@ -50,6 +51,7 @@ export default async function RootLayout({
     getLogisticsPublicChipUser(),
   ]);
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
+  const t = (text: string) => translateSurfaceLabel(lang, text);
   const returnPath = h.get("x-logistics-return-path") || "/";
   const accountSlot = (
     <PublicAccountChip
@@ -64,7 +66,7 @@ export default async function RootLayout({
       buttonClassName="border-[var(--logistics-line-strong)] bg-[rgba(215,117,57,0.14)] text-[var(--logistics-accent-soft)] hover:bg-[rgba(215,117,57,0.24)]"
       dropdownClassName="border-[var(--logistics-line)] bg-[#120a14]"
       menuItems={[
-        { label: "Logistics in My Account", href: getAccountUrl("/logistics"), external: true },
+        { label: t("Logistics in My Account"), href: getAccountUrl("/logistics"), external: true },
       ]}
     />
   );

@@ -1,5 +1,7 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -35,29 +37,30 @@ async function getAssignments() {
 }
 
 export default async function OwnerCalendarPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const assignments = await getAssignments();
 
   return (
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Calendar
+          {t("Calendar")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Shifts ahead (14 days)
+          {t("Shifts ahead (14 days)")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Forward-looking shift schedule. Edit cadence from the manager
-          workspace — this is the strategic view.
+          {t("Forward-looking shift schedule. Edit cadence from the manager workspace — this is the strategic view.")}
         </p>
       </header>
 
       <Panel tone="flat">
         {assignments.length === 0 ? (
           <EmptyState
-            kicker="No shifts scheduled"
-            headline="Calendar is empty"
-            body="Schedule rider shifts in the manager workspace to surface them on this 14-day horizon."
+            kicker={t("No shifts scheduled")}
+            headline={t("Calendar is empty")}
+            body={t("Schedule rider shifts in the manager workspace to surface them on this 14-day horizon.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -68,15 +71,15 @@ export default async function OwnerCalendarPage() {
               >
                 <div>
                   <p className="font-semibold tracking-tight text-white">
-                    Rider {row.rider_id.slice(0, 8)}
+                    {t("Rider")} {row.rider_id.slice(0, 8)}
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
-                    {new Date(row.shift_starts_at).toLocaleString()} →{" "}
-                    {new Date(row.shift_ends_at).toLocaleTimeString()}
+                    {new Date(row.shift_starts_at).toLocaleString(locale)} →{" "}
+                    {new Date(row.shift_ends_at).toLocaleTimeString(locale)}
                   </p>
                 </div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/70">
-                  {row.status.replaceAll("_", " ")}
+                  {t(row.status.replaceAll("_", " "))}
                 </p>
               </li>
             ))}
