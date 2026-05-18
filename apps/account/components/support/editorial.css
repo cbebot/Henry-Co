@@ -1197,25 +1197,34 @@
   text-transform: uppercase;
 }
 
-/* WhatsApp-style check icons. Drawn as CSS ::before checkmarks via the
-   border + transform trick — no extra DOM, no font-file dependency, no
-   image asset. The mark looks identical in light/dark since it inherits
-   currentColor from the pill.
+/* WhatsApp-style check icons. Plain UTF-8 glyphs prepended via ::before
+   on the status pill — no extra DOM, no font-file dep, no image asset.
+   The glyph inherits currentColor from the pill so it's instantly
+   contrast-correct in both light + dark modes.
      SENT       → single check ✓
-     DELIVERED  → double check (two stacked ✓ glyphs)
-     READ       → double check tinted gold-strong (pulse already pre-existing) */
+     DELIVERED  → double check ✓✓
+     READ       → double check ✓✓ (the pill itself recolours to
+                  gold-strong via the data-state="read" rule below)
+   Earlier versions tried to gate the read state with
+   `:not(:has(::before))::before` — that selector can never match
+   because `::before` is a pseudo-element, not a real element `:has()`
+   can find, so the read pill rendered without a tick. This block fixes
+   it by emitting the tick on every committed state, then the
+   delivered/read rule overrides the content to a double tick. */
 .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="sent"]::before,
 .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before,
-.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]:not(:has(::before))::before {
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
   content: "✓";
   font-size: 12px;
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.06em;
+  display: inline-block;
   animation: acct-bubble-tick-pop 280ms cubic-bezier(0.16, 0.84, 0.44, 1) both;
 }
 
-.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before {
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before,
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
   content: "✓✓";
   letter-spacing: -0.12em;
 }
@@ -1237,7 +1246,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="sent"]::before,
-  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before {
+  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before,
+  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
     animation: none;
   }
 }
