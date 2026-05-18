@@ -3,11 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { getOwnerBreadcrumbs } from "@/lib/owner-navigation";
 
 export default function Breadcrumbs() {
   const pathname = usePathname();
   const crumbs = getOwnerBreadcrumbs(pathname);
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   if (crumbs.length <= 1) return null;
 
@@ -21,11 +25,11 @@ export default function Breadcrumbs() {
               href={crumb.href}
               className="hover:text-[var(--acct-ink)] transition-colors"
             >
-              {crumb.label}
+              {t(crumb.label)}
             </Link>
           ) : (
             <span className="font-medium text-[var(--acct-ink)]">
-              {crumb.label}
+              {t(crumb.label)}
             </span>
           )}
         </span>

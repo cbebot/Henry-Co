@@ -4,10 +4,12 @@ import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import type { MarketplaceDispute } from "@/lib/marketplace/types";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountDisputesPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/disputes");
   const data = await getBuyerDashboardData();
 
@@ -15,7 +17,7 @@ export default async function AccountDisputesPage() {
     <WorkspaceShell
       title="Disputes"
       description="Open an issue with context, keep the order linked, and see support-stage updates without losing the trail."
-      {...accountWorkspaceNav("/account/disputes")}
+      {...accountWorkspaceNav("/account/disputes", locale)}
     >
       <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-5">
         <input type="hidden" name="intent" value="dispute_create" />

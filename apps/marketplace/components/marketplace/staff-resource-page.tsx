@@ -6,6 +6,7 @@ import {
 } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 type StaffRoot = "/admin" | "/finance" | "/moderation" | "/operations" | "/owner" | "/support";
 
@@ -50,13 +51,14 @@ export async function StaffResourcePage({
   root: StaffRoot;
   resource: string;
 }) {
+  const locale = await getMarketplacePublicLocale();
   const [snapshot, queue, overview] = await Promise.all([
     getMarketplaceHomeData(),
     getStaffQueueData(),
     getStaffOverviewData(),
   ]);
 
-  const nav = staffNav(`${root}/${resource}`, root);
+  const nav = staffNav(`${root}/${resource}`, root, locale);
   const title = titleCase(resource);
 
   if (root === "/admin" && resource === "seller-applications") {

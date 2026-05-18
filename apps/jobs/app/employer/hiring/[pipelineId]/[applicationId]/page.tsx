@@ -36,7 +36,7 @@ export default async function ApplicationDetailPage({
 
   const [pipeline, application] = await Promise.all([
     getPipelineById(pipelineId),
-    getApplicationById(applicationId),
+    getApplicationById(applicationId, locale),
   ]);
 
   if (!pipeline || !application) return notFound();

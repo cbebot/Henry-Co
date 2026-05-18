@@ -4,10 +4,12 @@ import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import type { MarketplacePaymentRecord } from "@/lib/marketplace/types";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPaymentsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/payments");
   const data = await getBuyerDashboardData();
 
@@ -15,7 +17,7 @@ export default async function AccountPaymentsPage() {
     <WorkspaceShell
       title="Payments"
       description="Payment verification stays visible next to the order reference so bank-transfer review never feels opaque."
-      {...accountWorkspaceNav("/account/payments")}
+      {...accountWorkspaceNav("/account/payments", locale)}
     >
       {data.payments.length ? (
         <div className="space-y-4">

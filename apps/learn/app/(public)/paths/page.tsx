@@ -86,6 +86,9 @@ export default async function PathsPage() {
           </p>
           <span className="h-px flex-1 bg-[var(--learn-line)]" />
         </div>
+        {/* TODO i18n WAVE A — list view, PathCard renders Supabase-row title + summary.
+            Skipped here per scope (list views beyond title). Detail page /paths/[slug]
+            routes title/description/items via resolveLocalizedDynamicField. */}
         <div className="mt-8 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {academy.paths.map((path) => (
             <PathCard
@@ -93,6 +96,7 @@ export default async function PathsPage() {
               path={path}
               courseCount={pathItemCounts.get(path.id) || 0}
               href={`/paths/${path.slug}`}
+              locale={locale}
             />
           ))}
         </div>

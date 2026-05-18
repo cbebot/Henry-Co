@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ImagePlus, UploadCloud, X } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 type ImageFileFieldProps = {
   name: string;
@@ -17,6 +19,8 @@ export default function ImageFileField({
   hint,
   accept = "image/jpeg,image/png,image/webp",
 }: ImageFileFieldProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
@@ -42,7 +46,7 @@ export default function ImageFileField({
           </div>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-zinc-950 dark:text-white">
-              {file ? file.name : "Choose an image"}
+              {file ? file.name : t("Choose an image")}
             </div>
             <div className="mt-1 text-sm leading-6 text-zinc-600 dark:text-white/65">{hint}</div>
           </div>
@@ -52,7 +56,7 @@ export default function ImageFileField({
           <div className="overflow-hidden rounded-[1.4rem] border border-black/10 bg-white/80 dark:border-white/10 dark:bg-white/[0.05]">
             <Image
               src={previewUrl}
-              alt="Selected upload preview"
+              alt={t("Selected upload preview")}
               width={1200}
               height={1040}
               unoptimized
@@ -63,7 +67,7 @@ export default function ImageFileField({
           <div className="flex min-h-[10rem] items-center justify-center rounded-[1.4rem] border border-black/8 bg-white/70 text-zinc-500 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/48">
             <div className="inline-flex items-center gap-2 text-sm font-medium">
               <ImagePlus className="h-4 w-4" />
-              JPG, PNG, or WebP under 8MB
+              {t("JPG, PNG, or WebP under 8MB")}
             </div>
           </div>
         )}
@@ -93,7 +97,7 @@ export default function ImageFileField({
           className="inline-flex w-fit items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/35 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
         >
           <X className="h-4 w-4" />
-          Remove image
+          {t("Remove image")}
         </button>
       ) : null}
     </div>

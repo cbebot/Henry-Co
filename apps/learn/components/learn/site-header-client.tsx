@@ -8,6 +8,8 @@ import {
   PublicHeader,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 
 type LearnSiteHeaderClientProps = {
   brandName: string;
@@ -38,6 +40,8 @@ export function LearnSiteHeaderClient({
   preferencesHref,
   settingsHref,
 }: LearnSiteHeaderClientProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <PublicHeader
       brand={{
@@ -64,9 +68,9 @@ export function LearnSiteHeaderClient({
           signupHref={signupHref}
           showSignOut
           menuItems={[
-            { label: "My courses", href: "/learner/courses" },
-            { label: "Browse catalog", href: "/courses" },
-            { label: "Teach with HenryCo", href: "/teach" },
+            { label: t("My courses"), href: "/learner/courses" },
+            { label: t("Browse catalog"), href: "/courses" },
+            { label: t("Teach with HenryCo"), href: "/teach" },
           ]}
         />
       }

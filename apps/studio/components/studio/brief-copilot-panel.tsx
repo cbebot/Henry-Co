@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -11,29 +11,37 @@ import {
   Sparkles,
   Wand2,
 } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   generateStudioBriefDraftAction,
   type BriefCopilotResult,
   type BriefCopilotStructured,
 } from "@/lib/studio/brief-copilot-action";
 
-const EXAMPLE_PROMPTS: Array<{ label: string; body: string }> = [
-  {
-    label: "Logistics SaaS",
-    body:
-      "A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard. We need a customer-facing order page, courier mobile UX, dispatcher console, payments, and analytics. Launch within ten weeks.",
-  },
-  {
-    label: "Members investment platform",
-    body:
-      "A members-only investment platform for accredited Nigerian investors. People apply, sign documents, fund their account by bank transfer, and view performance updates monthly. Strong KYC, two-factor auth, and an admin compliance dashboard. We want a clean, restrained, executive feel. Budget around eight to fifteen million naira.",
-  },
-  {
-    label: "Internal ops tool",
-    body:
-      "An internal ops tool for our 30-person agency. Project intake, milestone tracking, time logs, invoicing, and a client portal. Has to integrate with our existing accounting package. Should feel calm and not overwhelming. Soft launch in six weeks.",
-  },
-];
+function getExamplePrompts(locale: AppLocale): Array<{ label: string; body: string }> {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      label: t("Logistics SaaS"),
+      body: t(
+        "A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard. We need a customer-facing order page, courier mobile UX, dispatcher console, payments, and analytics. Launch within ten weeks.",
+      ),
+    },
+    {
+      label: t("Members investment platform"),
+      body: t(
+        "A members-only investment platform for accredited Nigerian investors. People apply, sign documents, fund their account by bank transfer, and view performance updates monthly. Strong KYC, two-factor auth, and an admin compliance dashboard. We want a clean, restrained, executive feel. Budget around eight to fifteen million naira.",
+      ),
+    },
+    {
+      label: t("Internal ops tool"),
+      body: t(
+        "An internal ops tool for our 30-person agency. Project intake, milestone tracking, time logs, invoicing, and a client portal. Has to integrate with our existing accounting package. Should feel calm and not overwhelming. Soft launch in six weeks.",
+      ),
+    },
+  ];
+}
 
 type State =
   | { kind: "idle" }
@@ -49,6 +57,8 @@ export function BriefCopilotPanel({
 }: {
   onApply: (structured: BriefCopilotStructured) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const examplePrompts = useMemo(() => getExamplePrompts(locale), [locale]);
   const [description, setDescription] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
   const [pending, startTransition] = useTransition();
@@ -158,7 +168,7 @@ export function BriefCopilotPanel({
             Try one of these starting points
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {EXAMPLE_PROMPTS.map((example) => (
+            {examplePrompts.map((example) => (
               <button
                 key={example.label}
                 type="button"

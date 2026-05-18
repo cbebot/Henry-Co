@@ -1,5 +1,6 @@
 import "server-only";
 
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import {
   DEFAULT_LOGISTICS_SETTINGS,
   DEFAULT_LOGISTICS_ZONES,
@@ -551,7 +552,12 @@ function isDelayedShipment(shipment: LogisticsShipment) {
   return shipment.lifecycleStatus === "delayed" || shipment.lifecycleStatus === "failed_delivery";
 }
 
-export function groupShipmentsForDispatch(shipments: LogisticsShipment[]): LogisticsDashboardQueue[] {
+export function groupShipmentsForDispatch(
+  shipments: LogisticsShipment[],
+  locale?: AppLocale,
+): LogisticsDashboardQueue[] {
+  const t = (text: string) =>
+    locale ? translateSurfaceLabel(locale, text) : text;
   const unassigned = shipments.filter(
     (shipment) =>
       !isResolvedShipment(shipment) &&
@@ -576,40 +582,40 @@ export function groupShipmentsForDispatch(shipments: LogisticsShipment[]): Logis
   return [
     {
       id: "unassigned",
-      title: "Unassigned",
-      description: "Shipment requests that still need rider ownership.",
+      title: t("Unassigned"),
+      description: t("Shipment requests that still need rider ownership."),
       tone: "warning",
       shipments: unassigned,
     },
     {
       id: "delayed",
-      title: "Delayed or failed attempts",
-      description: "Shipments that need immediate operator action.",
+      title: t("Delayed or failed attempts"),
+      description: t("Shipments that need immediate operator action."),
       tone: "critical",
       shipments: delayed,
     },
     {
       id: "stale",
-      title: "Stale shipments",
-      description: "Active shipments without recent movement.",
+      title: t("Stale shipments"),
+      description: t("Active shipments without recent movement."),
       tone: "warning",
       shipments: stale,
     },
     {
       id: "active",
-      title: "In motion",
-      description: "Assigned shipments that are progressing cleanly.",
+      title: t("In motion"),
+      description: t("Assigned shipments that are progressing cleanly."),
       tone: "info",
       shipments: active,
     },
   ];
 }
 
-export async function getDispatchDashboardData() {
+export async function getDispatchDashboardData(locale?: AppLocale) {
   const snapshot = await getLogisticsSnapshot();
   return {
     ...snapshot,
-    queues: groupShipmentsForDispatch(snapshot.shipments),
+    queues: groupShipmentsForDispatch(snapshot.shipments, locale),
   };
 }
 
@@ -656,7 +662,13 @@ export async function getSupportDashboardData() {
   };
 }
 
-export function buildTrackingTimeline(shipment: LogisticsShipment, events: LogisticsEvent[]) {
+export function buildTrackingTimeline(
+  shipment: LogisticsShipment,
+  events: LogisticsEvent[],
+  locale?: AppLocale,
+) {
+  const t = (text: string) =>
+    locale ? translateSurfaceLabel(locale, text) : text;
   const baseSteps = [
     "quote_requested",
     "quoted",
@@ -689,10 +701,12 @@ export function buildTrackingTimeline(shipment: LogisticsShipment, events: Logis
         [...events]
           .reverse()
           .find((event) => event.lifecycleStatus === status || event.eventType === status) ?? null;
+      const baseLabel = TIMELINE_LABELS[status] || status.replaceAll("_", " ");
+      const baseDescription = TIMELINE_DESCRIPTIONS[status] || "Shipment event recorded.";
       return {
         key: status,
-        label: TIMELINE_LABELS[status] || status.replaceAll("_", " "),
-        description: TIMELINE_DESCRIPTIONS[status] || "Shipment event recorded.",
+        label: t(baseLabel),
+        description: t(baseDescription),
         when: relatedEvent?.createdAt || null,
         active: shipment.lifecycleStatus === status,
       };

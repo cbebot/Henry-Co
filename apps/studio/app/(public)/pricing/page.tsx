@@ -44,6 +44,11 @@ export default async function PricingPage() {
           <p className="studio-kicker">Packages</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
+        {/* TODO(wave1): multi-row packages list. pkg.name / pkg.summary /
+            pkg.bestFor are Supabase-row text fields — translate each via
+            Promise.all + resolveLocalizedDynamicField in a follow-up wave.
+            Per-package detail surfaces under /services/[slug] resolve the
+            package summary via the cached DeepL pipeline. */}
         <ol className="mt-6 grid gap-5 xl:grid-cols-3">
           {catalog.packages.map((pkg) => {
             const service = catalog.services.find((item) => item.id === pkg.serviceId);

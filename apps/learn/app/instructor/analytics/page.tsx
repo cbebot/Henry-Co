@@ -45,7 +45,7 @@ export default async function InstructorAnalyticsPage() {
       description={t(
         "Track enrolment volume, completion rate, certification yield, and average rating across each course you author.",
       )}
-      nav={instructorNav("/instructor/analytics")}
+      nav={instructorNav("/instructor/analytics", t)}
     >
       <LearnSectionIntro
         kicker={t("Per course")}

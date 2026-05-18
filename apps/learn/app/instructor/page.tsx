@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { getLearnInstructorCopy } from "@henryco/i18n/server";
+import { getLearnInstructorCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -67,7 +67,7 @@ export default async function InstructorPage() {
       kicker={copy.hero.kicker}
       title={copy.hero.title}
       description={copy.hero.description}
-      nav={instructorNav("/instructor")}
+      nav={instructorNav("/instructor", (text) => translateSurfaceLabel(locale, text))}
     >
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <LearnPanel className="rounded-[1.4rem] p-5">

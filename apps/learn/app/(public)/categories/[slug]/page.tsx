@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { getLearnCategoriesCopy } from "@henryco/i18n/server";
+import { getLearnCategoriesCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { CourseCard } from "@/components/learn/ui";
 import { getCategoryBySlug } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -16,7 +16,13 @@ export async function generateMetadata({
   const [data, locale] = await Promise.all([getCategoryBySlug(slug), getLearnPublicLocale()]);
   if (!data) return {};
   const copy = getLearnCategoriesCopy(locale);
-  const categoryName = data.category.name;
+  const categoryName = await resolveLocalizedDynamicField({
+    record: data.category as unknown as Record<string, unknown>,
+    field: "name",
+    locale,
+    fallback: data.category.name ?? "",
+    machineTranslate: locale !== "en",
+  });
   return {
     title: copy.meta.titleTemplate.replace("{category}", categoryName),
     description: copy.meta.descriptionTemplate.replace("{category}", categoryName),
@@ -33,7 +39,33 @@ export default async function CategoryPage({
   if (!data) notFound();
 
   const copy = getLearnCategoriesCopy(locale);
-  const categoryName = data.category.name;
+
+  // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
+  const machineTranslate = locale !== "en";
+  const categoryRecord = data.category as unknown as Record<string, unknown>;
+  const [categoryName, categoryHeroCopy, categoryDescription] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: categoryRecord,
+      field: "name",
+      locale,
+      fallback: data.category.name ?? "",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: categoryRecord,
+      field: "heroCopy",
+      locale,
+      fallback: data.category.heroCopy ?? "",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: categoryRecord,
+      field: "description",
+      locale,
+      fallback: data.category.description ?? "",
+      machineTranslate,
+    }),
+  ]);
   const courseCount = data.courses.length;
 
   return (
@@ -55,10 +87,10 @@ export default async function CategoryPage({
               {copy.hero.eyebrowTemplate.replace("{category}", categoryName)}
             </p>
             <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              {data.category.heroCopy}
+              {categoryHeroCopy || data.category.heroCopy}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
-              {data.category.description}
+              {categoryDescription || data.category.description}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
@@ -116,7 +148,7 @@ export default async function CategoryPage({
         </div>
         <div className="mt-6 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {data.courses.map((course) => (
-            <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} />
+            <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} locale={locale} />
           ))}
         </div>
       </section>

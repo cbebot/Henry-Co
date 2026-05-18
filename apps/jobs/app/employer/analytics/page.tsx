@@ -19,10 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function EmployerAnalyticsPage() {
   const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/analytics");
-  const [data, locale] = await Promise.all([
-    getEmployerDashboardData(viewer.user!.id, viewer.user!.email),
-    getJobsPublicLocale(),
-  ]);
+  const locale = await getJobsPublicLocale();
+  const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email, locale);
   const copy = getJobsCopy(locale).employerAnalytics;
 
   const stageLabel = (stage: string): string => {

@@ -16,6 +16,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import {
   getClientProjectDetail,
@@ -39,17 +42,20 @@ export const metadata: Metadata = {
   title: "Project",
 };
 
-const PROJECT_TABS: Array<{
+function buildProjectTabs(locale: AppLocale): Array<{
   id: "overview" | "progress" | "files" | "messages" | "payments";
   label: string;
   icon: typeof Inbox;
-}> = [
-  { id: "overview", label: "Overview", icon: Inbox },
-  { id: "progress", label: "Progress", icon: History },
-  { id: "files", label: "Files", icon: FileText },
-  { id: "messages", label: "Messages", icon: MessageSquare },
-  { id: "payments", label: "Payments", icon: CreditCard },
-];
+}> {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    { id: "overview", label: t("Overview"), icon: Inbox },
+    { id: "progress", label: t("Progress"), icon: History },
+    { id: "files", label: t("Files"), icon: FileText },
+    { id: "messages", label: t("Messages"), icon: MessageSquare },
+    { id: "payments", label: t("Payments"), icon: CreditCard },
+  ];
+}
 
 export default async function ClientProjectDetailPage({
   params,
@@ -65,17 +71,162 @@ export default async function ClientProjectDetailPage({
 
   if (!detail) notFound();
 
-  const activeTab =
-    PROJECT_TABS.find((tab) => tab.id === tabParam)?.id ?? "overview";
+  const locale = await getStudioPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const projectTabs = buildProjectTabs(locale);
 
-  const status = projectStatusToken(detail.project.status);
-  const unread = unreadCountForProject(detail.messages, viewer.userId);
-  const filesPending = detail.deliverables.filter((d) => d.status === "shared").length;
-  const outstandingInvoices = detail.invoices.filter(
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline (and any `_i18n` /
+  // `locale_overrides` cells when present). Single-row detail page, so the
+  // DeepL cost is acceptable. Milestones / deliverables / updates / invoice
+  // descriptions ship through Promise.all alongside the project fields. The
+  // chat thread (initial messages) is rendered by StudioMessageThread and is
+  // intentionally skipped — those are user-typed messages.
+  const [
+    localizedProjectTitle,
+    localizedProjectSummary,
+    localizedProjectBrief,
+    localizedProjectNextAction,
+    localizedMilestones,
+    localizedDeliverables,
+    localizedUpdates,
+    localizedInvoices,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: detail.project.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: detail.project.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "brief",
+      locale,
+      fallback: detail.project.brief ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: detail.project as unknown as Record<string, unknown>,
+      field: "nextAction",
+      locale,
+      fallback: detail.project.nextAction ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    Promise.all(
+      detail.milestones.map(async (milestone) => {
+        const [title, description] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: milestone.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "description",
+            locale,
+            fallback: milestone.description ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...milestone, title, description };
+      }),
+    ),
+    Promise.all(
+      detail.deliverables.map(async (deliverable) => {
+        const [title, description] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: deliverable as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: deliverable.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: deliverable as unknown as Record<string, unknown>,
+            field: "description",
+            locale,
+            fallback: deliverable.description ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...deliverable, title, description };
+      }),
+    ),
+    Promise.all(
+      detail.updates.map(async (update) => {
+        const [title, body] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: update as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: update.title ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          update.body
+            ? resolveLocalizedDynamicField({
+                record: update as unknown as Record<string, unknown>,
+                field: "body",
+                locale,
+                fallback: update.body ?? "",
+                machineTranslate: locale !== "en",
+              })
+            : Promise.resolve(update.body ?? null),
+        ]);
+        return { ...update, title, body };
+      }),
+    ),
+    Promise.all(
+      detail.invoices.map(async (invoice) => {
+        const description = await resolveLocalizedDynamicField({
+          record: invoice as unknown as Record<string, unknown>,
+          field: "description",
+          locale,
+          fallback: invoice.description ?? "",
+          machineTranslate: locale !== "en",
+        });
+        return { ...invoice, description };
+      }),
+    ),
+  ]);
+
+  // Build a locale-aware detail shape so the existing tab renderers can
+  // continue to use the same prop names without further changes.
+  const localizedDetail = {
+    ...detail,
+    project: {
+      ...detail.project,
+      title: localizedProjectTitle,
+      summary: localizedProjectSummary,
+      brief: localizedProjectBrief,
+      nextAction: localizedProjectNextAction,
+    },
+    milestones: localizedMilestones,
+    deliverables: localizedDeliverables,
+    updates: localizedUpdates,
+    invoices: localizedInvoices,
+  };
+
+  const activeTab =
+    projectTabs.find((tab) => tab.id === tabParam)?.id ?? "overview";
+
+  const status = projectStatusToken(localizedDetail.project.status, locale);
+  const unread = unreadCountForProject(localizedDetail.messages, viewer.userId);
+  const filesPending = localizedDetail.deliverables.filter((d) => d.status === "shared").length;
+  const outstandingInvoices = localizedDetail.invoices.filter(
     (i) => i.status === "sent" || i.status === "overdue" || i.status === "pending_verification"
   ).length;
 
-  const tabs: PortalTabDefinition[] = PROJECT_TABS.map((tab) => ({
+  const tabs: PortalTabDefinition[] = projectTabs.map((tab) => ({
     id: tab.id,
     label: tab.label,
     icon: tab.icon,
@@ -96,21 +247,21 @@ export default async function ClientProjectDetailPage({
         className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)] transition hover:text-[var(--studio-ink)]"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        All projects
+        {t("All projects")}
       </Link>
 
       <header className="flex flex-col gap-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              {detail.project.type ? detail.project.type : "Studio engagement"}
+              {localizedDetail.project.type ? localizedDetail.project.type : t("Studio engagement")}
             </div>
             <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-              {detail.project.title}
+              {localizedDetail.project.title}
             </h1>
-            {detail.project.summary ? (
+            {localizedDetail.project.summary ? (
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-                {detail.project.summary}
+                {localizedDetail.project.summary}
               </p>
             ) : null}
           </div>
@@ -118,23 +269,23 @@ export default async function ClientProjectDetailPage({
         </div>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-[var(--studio-ink-soft)]">
-          {detail.project.startDate ? (
+          {localizedDetail.project.startDate ? (
             <span className="inline-flex items-center gap-1.5">
               <CalendarDays className="h-3.5 w-3.5" />
-              Started {shortDate(detail.project.startDate)}
+              {t("Started")} {shortDate(localizedDetail.project.startDate)}
             </span>
           ) : null}
-          {detail.project.estimatedCompletion ? (
+          {localizedDetail.project.estimatedCompletion ? (
             <span className="inline-flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5" />
-              Est. complete {shortDate(detail.project.estimatedCompletion)}
+              {t("Est. complete")} {shortDate(localizedDetail.project.estimatedCompletion)}
             </span>
           ) : null}
-          {detail.milestones.length > 0 ? (
+          {localizedDetail.milestones.length > 0 ? (
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              {detail.milestones.filter((m) => ["approved", "complete"].includes(m.status)).length}/
-              {detail.milestones.length} milestones
+              {localizedDetail.milestones.filter((m) => ["approved", "complete"].includes(m.status)).length}/
+              {localizedDetail.milestones.length} {t("milestones")}
             </span>
           ) : null}
         </div>
@@ -142,41 +293,50 @@ export default async function ClientProjectDetailPage({
 
       <PortalTabBar tabs={tabs} />
 
-      {activeTab === "overview" ? <OverviewTab detail={detail} /> : null}
-      {activeTab === "progress" ? <ProgressTab detail={detail} /> : null}
-      {activeTab === "files" ? <FilesTab detail={detail} /> : null}
+      {activeTab === "overview" ? <OverviewTab detail={localizedDetail} locale={locale} /> : null}
+      {activeTab === "progress" ? <ProgressTab detail={localizedDetail} locale={locale} /> : null}
+      {activeTab === "files" ? <FilesTab detail={localizedDetail} locale={locale} /> : null}
       {activeTab === "messages" ? (
         <StudioMessageThread
-          projectId={detail.project.id}
-          initialMessages={detail.messages}
+          projectId={localizedDetail.project.id}
+          initialMessages={localizedDetail.messages}
           viewerId={viewer.userId}
-          viewerName={viewer.fullName || viewer.email || "You"}
-          projectTitle={detail.project.title}
-          projectSummary={detail.project.summary || detail.project.brief || null}
+          viewerName={viewer.fullName || viewer.email || t("You")}
+          projectTitle={localizedDetail.project.title}
+          projectSummary={localizedDetail.project.summary || localizedDetail.project.brief || null}
         />
       ) : null}
-      {activeTab === "payments" ? <PaymentsTab detail={detail} /> : null}
+      {activeTab === "payments" ? <PaymentsTab detail={localizedDetail} locale={locale} /> : null}
     </div>
   );
 }
 
-function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>> }) {
+function OverviewTab({
+  detail,
+  locale,
+}: {
+  detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
+  locale: AppLocale;
+}) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const recent = detail.updates.slice(0, 6);
   return (
     <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
       <div className="space-y-4">
         <section className="portal-card-elev p-5 sm:p-7">
           <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-            About this project
+            {t("About this project")}
           </h2>
           <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-[var(--studio-ink-soft)]">
             {detail.project.brief ||
               detail.project.summary ||
-              "Your project brief will appear here once we capture it. The team uses this as the source of truth for scope and direction."}
+              t(
+                "Your project brief will appear here once we capture it. The team uses this as the source of truth for scope and direction.",
+              )}
           </p>
           {detail.project.nextAction ? (
             <div className="mt-4 rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.04)] px-4 py-3 text-[13px] text-[var(--studio-ink)]">
-              <span className="font-semibold text-[var(--studio-signal)]">Next: </span>
+              <span className="font-semibold text-[var(--studio-signal)]">{t("Next")}: </span>
               {detail.project.nextAction}
             </div>
           ) : null}
@@ -185,7 +345,7 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
         {detail.milestones.length > 0 ? (
           <section className="portal-card p-5 sm:p-6">
             <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-              Timeline at a glance
+              {t("Timeline at a glance")}
             </h2>
             <div className="mt-4">
               <MilestoneProgress milestones={detail.milestones} layout="horizontal" />
@@ -197,7 +357,7 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
       <div className="space-y-4">
         <section className="portal-card p-5">
           <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-            Recent activity
+            {t("Recent activity")}
           </h2>
           {recent.length > 0 ? (
             <div className="mt-4">
@@ -205,14 +365,14 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
             </div>
           ) : (
             <p className="mt-3 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-              Activity will appear here as we move through milestones, share files, and post updates.
+              {t("Activity will appear here as we move through milestones, share files, and post updates.")}
             </p>
           )}
         </section>
 
         <section className="portal-card p-5">
           <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-            Quick links
+            {t("Quick links")}
           </h2>
           <div className="mt-3 flex flex-col gap-2 text-[13px]">
             <Link
@@ -221,7 +381,7 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
             >
               <span className="inline-flex items-center gap-2">
                 <FileText className="h-3.5 w-3.5" />
-                Files
+                {t("Files")}
               </span>
               <ArrowRight className="h-3.5 w-3.5 text-[var(--studio-ink-soft)]" />
             </Link>
@@ -231,7 +391,7 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
             >
               <span className="inline-flex items-center gap-2">
                 <MessageSquare className="h-3.5 w-3.5" />
-                Messages
+                {t("Messages")}
               </span>
               <ArrowRight className="h-3.5 w-3.5 text-[var(--studio-ink-soft)]" />
             </Link>
@@ -241,7 +401,7 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
             >
               <span className="inline-flex items-center gap-2">
                 <CreditCard className="h-3.5 w-3.5" />
-                Payments
+                {t("Payments")}
               </span>
               <ArrowRight className="h-3.5 w-3.5 text-[var(--studio-ink-soft)]" />
             </Link>
@@ -252,13 +412,20 @@ function OverviewTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
   );
 }
 
-function ProgressTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>> }) {
+function ProgressTab({
+  detail,
+  locale,
+}: {
+  detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
+  locale: AppLocale;
+}) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   if (detail.milestones.length === 0) {
     return (
       <PortalEmptyState
         icon={History}
-        title="Milestones will appear once we kick off"
-        body="Once the project starts, you will see every milestone here with its status, due date, and the deliverables linked to it."
+        title={t("Milestones will appear once we kick off")}
+        body={t("Once the project starts, you will see every milestone here with its status, due date, and the deliverables linked to it.")}
       />
     );
   }
@@ -266,11 +433,10 @@ function ProgressTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
   return (
     <section className="portal-card-elev p-5 sm:p-7">
       <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-        Milestone tracker
+        {t("Milestone tracker")}
       </h2>
       <p className="mt-1.5 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-        This is the answer to &ldquo;what stage are we at?&rdquo; — the current milestone is highlighted, and
-        completed work shows the date it was approved.
+        {t("This is the answer to “what stage are we at?” — the current milestone is highlighted, and completed work shows the date it was approved.")}
       </p>
       <div className="mt-5">
         <MilestoneProgress milestones={detail.milestones} layout="vertical" />
@@ -279,7 +445,14 @@ function ProgressTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
   );
 }
 
-function FilesTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>> }) {
+function FilesTab({
+  detail,
+  locale,
+}: {
+  detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
+  locale: AppLocale;
+}) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const grouped = new Map<string | null, typeof detail.deliverables>();
   for (const deliverable of detail.deliverables) {
     const key = deliverable.milestoneId ?? null;
@@ -290,8 +463,8 @@ function FilesTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof ge
     return (
       <PortalEmptyState
         icon={Folder}
-        title="No deliverables shared yet"
-        body="As the team prepares files — design directions, prototypes, final assets — they will land here grouped by milestone."
+        title={t("No deliverables shared yet")}
+        body={t("As the team prepares files — design directions, prototypes, final assets — they will land here grouped by milestone.")}
       />
     );
   }
@@ -302,7 +475,7 @@ function FilesTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof ge
         const milestone = milestoneId
           ? detail.milestones.find((m) => m.id === milestoneId)
           : null;
-        const heading = milestone?.title || "Other files";
+        const heading = milestone?.title || t("Other files");
 
         return (
           <section key={milestoneId ?? "_other"} className="space-y-3">
@@ -311,7 +484,7 @@ function FilesTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof ge
                 {heading}
               </h3>
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                {deliverables.length} item{deliverables.length === 1 ? "" : "s"}
+                {deliverables.length} {deliverables.length === 1 ? t("item") : t("items")}
               </span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -326,16 +499,23 @@ function FilesTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof ge
   );
 }
 
-function PaymentsTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>> }) {
+function PaymentsTab({
+  detail,
+  locale,
+}: {
+  detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
+  locale: AppLocale;
+}) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const summary = detail.paymentSummary;
 
   return (
     <div className="space-y-5">
       <section className="portal-card-elev grid gap-4 p-5 sm:grid-cols-3 sm:p-6">
-        <SummaryStat label="Project value" value={formatKobo(summary.totalKobo, summary.currency)} />
-        <SummaryStat label="Paid" value={formatKobo(summary.paidKobo, summary.currency)} accent="success" />
+        <SummaryStat label={t("Project value")} value={formatKobo(summary.totalKobo, summary.currency)} />
+        <SummaryStat label={t("Paid")} value={formatKobo(summary.paidKobo, summary.currency)} accent="success" />
         <SummaryStat
-          label="Remaining"
+          label={t("Remaining")}
           value={formatKobo(summary.outstandingKobo, summary.currency)}
           accent={summary.outstandingKobo > 0 ? "warn" : "neutral"}
         />
@@ -344,13 +524,13 @@ function PaymentsTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
       {detail.invoices.length === 0 ? (
         <PortalEmptyState
           icon={Receipt}
-          title="No invoices yet"
-          body="When we issue an invoice for this project, it will appear here with bank details and a one-click pay button."
+          title={t("No invoices yet")}
+          body={t("When we issue an invoice for this project, it will appear here with bank details and a one-click pay button.")}
         />
       ) : (
         <section className="space-y-3">
           {detail.invoices.map((invoice) => {
-            const status = invoiceStatusToken(invoice.status);
+            const status = invoiceStatusToken(invoice.status, locale);
             const payable = invoice.status === "sent" || invoice.status === "overdue";
             return (
               <article
@@ -360,10 +540,10 @@ function PaymentsTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
                 <div className="min-w-0">
                   <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
                     {invoice.invoiceNumber}
-                    {invoice.dueDate ? ` · Due ${shortDate(invoice.dueDate)}` : ""}
+                    {invoice.dueDate ? ` · ${t("Due")} ${shortDate(invoice.dueDate)}` : ""}
                   </div>
                   <div className="mt-1 truncate text-[15px] font-semibold text-[var(--studio-ink)]">
-                    {invoice.description || "Studio invoice"}
+                    {invoice.description || t("Studio invoice")}
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--studio-ink-soft)]">
                     <StatusBadge tone={status.tone} label={status.label} size="sm" />
@@ -375,12 +555,12 @@ function PaymentsTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
                     href={`/client/payment/${invoice.id}`}
                     className="portal-button portal-button-primary self-start"
                   >
-                    Pay now
+                    {t("Pay now")}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 ) : invoice.status === "pending_verification" ? (
                   <span className="self-start text-[12px] font-semibold text-[var(--studio-ink-soft)]">
-                    Verifying with finance
+                    {t("Verifying with finance")}
                   </span>
                 ) : null}
               </article>
@@ -391,22 +571,22 @@ function PaymentsTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
 
       {detail.payments.length > 0 ? (
         <section className="space-y-3">
-          <h3 className="text-[14.5px] font-semibold text-[var(--studio-ink)]">Payment history</h3>
+          <h3 className="text-[14.5px] font-semibold text-[var(--studio-ink)]">{t("Payment history")}</h3>
           <div className="portal-card divide-y divide-[var(--studio-line)]">
             {detail.payments.map((payment) => {
-              const status = paymentStatusToken(payment.status);
+              const status = paymentStatusToken(payment.status, locale);
               return (
                 <div key={payment.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                   <div className="min-w-0">
                     <div className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                      {payment.paymentReference || "Bank transfer"}
+                      {payment.paymentReference || t("Bank transfer")}
                     </div>
                     <div className="mt-0.5 text-[13.5px] font-semibold text-[var(--studio-ink)]">
                       {formatKobo(payment.amountKobo, payment.currency)}
                     </div>
                     <div className="mt-1 text-[11.5px] text-[var(--studio-ink-soft)]">
-                      Submitted {shortDate(payment.submittedAt) || "—"}
-                      {payment.verifiedAt ? ` · Verified ${shortDate(payment.verifiedAt)}` : ""}
+                      {t("Submitted")} {shortDate(payment.submittedAt) || "—"}
+                      {payment.verifiedAt ? ` · ${t("Verified")} ${shortDate(payment.verifiedAt)}` : ""}
                     </div>
                   </div>
                   <StatusBadge tone={status.tone} label={status.label} size="sm" />

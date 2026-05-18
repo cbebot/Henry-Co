@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioCatalog, getStudioServiceBySlug } from "@/lib/studio/catalog";
 
 export default async function ServiceDetailPage({
@@ -18,22 +20,85 @@ export default async function ServiceDetailPage({
 
   const packages = catalog.packages.filter((item) => item.serviceId === service.id);
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Public single-row
+  // service detail surface, so the DeepL cost is acceptable. Package
+  // summaries ship through Promise.all alongside service fields.
+  const locale = await getStudioPublicLocale();
+  const [
+    localizedServiceName,
+    localizedServiceHeadline,
+    localizedServiceSummary,
+    localizedServiceDeliveryWindow,
+    localizedPackages,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: service as unknown as Record<string, unknown>,
+      field: "name",
+      locale,
+      fallback: service.name ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: service as unknown as Record<string, unknown>,
+      field: "headline",
+      locale,
+      fallback: service.headline ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: service as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: service.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: service as unknown as Record<string, unknown>,
+      field: "deliveryWindow",
+      locale,
+      fallback: service.deliveryWindow ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    Promise.all(
+      packages.map(async (pkg) => {
+        const [name, summary] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: pkg as unknown as Record<string, unknown>,
+            field: "name",
+            locale,
+            fallback: pkg.name ?? "",
+            machineTranslate: locale !== "en",
+          }),
+          resolveLocalizedDynamicField({
+            record: pkg as unknown as Record<string, unknown>,
+            field: "summary",
+            locale,
+            fallback: pkg.summary ?? "",
+            machineTranslate: locale !== "en",
+          }),
+        ]);
+        return { ...pkg, name, summary };
+      }),
+    ),
+  ]);
+
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
-        <p className="studio-kicker">{service.name}</p>
+        <p className="studio-kicker">{localizedServiceName}</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          {service.headline}
+          {localizedServiceHeadline}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          {service.summary}
+          {localizedServiceSummary}
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/request"
             className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold"
           >
-            Start a {service.name.toLowerCase()} brief
+            Start a {localizedServiceName.toLowerCase()} brief
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
@@ -77,7 +142,7 @@ export default async function ServiceDetailPage({
                 Delivery window
               </dt>
               <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
-                {service.deliveryWindow}
+                {localizedServiceDeliveryWindow}
               </dd>
             </div>
           </dl>
@@ -89,7 +154,7 @@ export default async function ServiceDetailPage({
             Pre-scoped lanes you can pick from.
           </h2>
           <ul className="mt-7 grid gap-5 lg:grid-cols-2">
-            {packages.map((pkg) => (
+            {localizedPackages.map((pkg) => (
               <li
                 key={pkg.id}
                 className="rounded-[1.6rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--studio-signal)]/40"

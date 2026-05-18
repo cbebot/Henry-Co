@@ -1,43 +1,47 @@
 import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { assignTrainingAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { ownerNav } from "@/lib/learn/navigation";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function OwnerAssignmentsPage() {
   await requireLearnRoles(["academy_owner", "academy_admin", "internal_manager", "support"], "/owner/assignments");
   const snapshot = await getLearnSnapshot();
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <LearnWorkspaceShell
-      kicker="Assignments"
-      title="Assign internal training and monitor completion windows."
-      description="Assignments can target a course or full path, preserve sponsor context, and trigger academy reminders automatically."
-      nav={ownerNav("/owner/assignments")}
+      kicker={t("Assignments")}
+      title={t("Assign internal training and monitor completion windows.")}
+      description={t("Assignments can target a course or full path, preserve sponsor context, and trigger academy reminders automatically.")}
+      nav={ownerNav("/owner/assignments", t)}
     >
       <LearnPanel className="rounded-[2rem]">
         <form action={assignTrainingAction} className="grid gap-4 md:grid-cols-2">
           <input name="email" placeholder={BRAND_EMAIL_PLACEHOLDERS.learner} className="learn-input rounded-2xl px-4 py-3" required />
-          <input name="assigneeRole" placeholder="care_staff, logistics_lead..." className="learn-input rounded-2xl px-4 py-3" />
+          <input name="assigneeRole" placeholder={t("care_staff, logistics_lead...")} className="learn-input rounded-2xl px-4 py-3" />
           <select name="courseId" className="learn-select rounded-2xl px-4 py-3">
-            <option value="">Choose course</option>
+            <option value="">{t("Choose course")}</option>
             {snapshot.courses.map((course) => (
               <option key={course.id} value={course.id}>{course.title}</option>
             ))}
           </select>
           <select name="pathId" className="learn-select rounded-2xl px-4 py-3">
-            <option value="">Choose path</option>
+            <option value="">{t("Choose path")}</option>
             {snapshot.paths.map((path) => (
               <option key={path.id} value={path.id}>{path.title}</option>
             ))}
           </select>
-          <input name="sponsorName" placeholder="HenryCo Operations" className="learn-input rounded-2xl px-4 py-3" />
+          <input name="sponsorName" placeholder={t("HenryCo Operations")} className="learn-input rounded-2xl px-4 py-3" />
           <input name="dueAt" type="datetime-local" className="learn-input rounded-2xl px-4 py-3" />
-          <textarea name="note" placeholder="Required before dispatch coverage begins..." className="learn-textarea rounded-2xl px-4 py-3 md:col-span-2" rows={4} />
+          <textarea name="note" placeholder={t("Required before dispatch coverage begins...")} className="learn-textarea rounded-2xl px-4 py-3 md:col-span-2" rows={4} />
           <div className="md:col-span-2">
-            <PendingSubmitButton pendingLabel="Sending assignment...">Assign training</PendingSubmitButton>
+            <PendingSubmitButton pendingLabel={t("Sending assignment...")}>{t("Assign training")}</PendingSubmitButton>
           </div>
         </form>
       </LearnPanel>
@@ -49,7 +53,7 @@ export default async function OwnerAssignmentsPage() {
           return (
             <LearnPanel key={assignment.id} className="rounded-[2rem]">
               <div className="font-semibold text-[var(--learn-ink)]">{course?.title || path?.title}</div>
-              <p className="mt-2 text-sm text-[var(--learn-ink-soft)]">{assignment.normalizedEmail} • {assignment.status} • {assignment.dueAt || "No due date"}</p>
+              <p className="mt-2 text-sm text-[var(--learn-ink-soft)]">{assignment.normalizedEmail} • {assignment.status} • {assignment.dueAt || t("No due date")}</p>
             </LearnPanel>
           );
         })}

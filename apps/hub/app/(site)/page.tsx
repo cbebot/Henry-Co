@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
-import { getHubHomeCopy } from "@henryco/i18n/server";
+import { getHubHomeCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getAccountUrl } from "@henryco/config";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getCompanySettings } from "../lib/company-settings";
@@ -121,6 +121,123 @@ export default async function HomePage() {
 
   const locale = await getHubPublicLocale();
   const copy = getHubHomeCopy(locale);
+  const machineTranslate = locale !== "en";
+
+  // PASS i18n-100 — translate Supabase-row-driven text for the public hub
+  // home through the cached DeepL pipeline. Brand strings, IDs, slugs,
+  // URLs, colors, and numerics are left untouched. Array fields
+  // (highlights / who_its_for / how_it_works / trust) are translated
+  // element-by-element via `resolveLocalizedDynamicField` against a
+  // synthetic single-field record.
+  const settingsRecord = settings as unknown as Record<string, unknown>;
+  const [
+    brandTitleI18n,
+    brandSubtitleI18n,
+    brandDescriptionI18n,
+    footerBlurbI18n,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: settingsRecord,
+      field: "brand_title",
+      locale,
+      fallback: settings.brand_title ?? "Henry & Co.",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: settingsRecord,
+      field: "brand_subtitle",
+      locale,
+      fallback: settings.brand_subtitle ?? "Corporate Platform",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: settingsRecord,
+      field: "brand_description",
+      locale,
+      fallback: settings.brand_description ?? "",
+      machineTranslate,
+    }),
+    resolveLocalizedDynamicField({
+      record: settingsRecord,
+      field: "footer_blurb",
+      locale,
+      fallback: settings.footer_blurb ?? settings.brand_description ?? "",
+      machineTranslate,
+    }),
+  ]);
+
+  const translateRowField = async (
+    record: Record<string, unknown>,
+    field: string,
+    fallback: string,
+  ) =>
+    resolveLocalizedDynamicField({
+      record,
+      field,
+      locale,
+      fallback,
+      machineTranslate,
+    });
+
+  const translateStringArray = async (items: string[]) =>
+    Promise.all(
+      items.map((item) =>
+        item
+          ? resolveLocalizedDynamicField({
+              record: { value: item } as Record<string, unknown>,
+              field: "value",
+              locale,
+              fallback: item,
+              machineTranslate,
+            })
+          : Promise.resolve(item),
+      ),
+    );
+
+  const localizedDivisions = await Promise.all(
+    divisions.map(async (division) => {
+      const record = division as unknown as Record<string, unknown>;
+      const [name, tagline, description, highlights] = await Promise.all([
+        translateRowField(record, "name", division.name),
+        division.tagline
+          ? translateRowField(record, "tagline", division.tagline)
+          : Promise.resolve(division.tagline),
+        division.description
+          ? translateRowField(record, "description", division.description)
+          : Promise.resolve(division.description),
+        translateStringArray(division.highlights ?? []),
+      ]);
+      // `categories` are treated as filter taxonomy / enum-like keys and are
+      // left in source language to keep cross-language filter behaviour
+      // consistent with the public selector. Lead names are PII (skip).
+      return {
+        ...division,
+        name,
+        tagline,
+        description,
+        highlights,
+      };
+    }),
+  );
+
+  const localizedFaqs = await Promise.all(
+    faqs.map(async (faq) => {
+      const record = faq as unknown as Record<string, unknown>;
+      const [question, answer] = await Promise.all([
+        faq.question
+          ? translateRowField(record, "question", faq.question)
+          : Promise.resolve(faq.question ?? ""),
+        faq.answer
+          ? translateRowField(record, "answer", faq.answer)
+          : Promise.resolve(faq.answer ?? ""),
+      ]);
+      return {
+        ...faq,
+        question,
+        answer,
+      };
+    }),
+  );
 
   const [chipUser, h] = await Promise.all([getHubPublicChipUser(), headers()]);
   const returnPath = h.get("x-hub-return-path") || "/";
@@ -140,17 +257,17 @@ export default async function HomePage() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: settings.brand_title ?? "HenryCo",
+    name: brandTitleI18n || "HenryCo",
     url: "https://henrycogroup.com",
     logo: organizationLogo,
     description:
-      settings.brand_description ??
+      brandDescriptionI18n ||
       "HenryCo is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
   };
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: settings.brand_title ?? "HenryCo",
+    name: brandTitleI18n || "HenryCo",
     url: "https://henrycogroup.com",
   };
 
@@ -165,14 +282,14 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
     <HubHomeClient
-      brandTitle={settings.brand_title ?? "Henry & Co."}
-      brandSub={settings.brand_subtitle ?? "Corporate Platform"}
+      brandTitle={brandTitleI18n || "Henry & Co."}
+      brandSub={brandSubtitleI18n || "Corporate Platform"}
       brandAccent={settings.brand_accent ?? "#C9A227"}
       brandLogoUrl={settings.logo_url ?? null}
-      brandFooterBlurb={settings.footer_blurb ?? settings.brand_description ?? ""}
-      intro={settings.brand_description ?? ""}
-      initialDivisions={divisions}
-      initialFaqs={faqs}
+      brandFooterBlurb={footerBlurbI18n}
+      intro={brandDescriptionI18n}
+      initialDivisions={localizedDivisions}
+      initialFaqs={localizedFaqs}
       divisionStats={divisionStats}
       hasServerError={hasServerError}
       copy={copy}

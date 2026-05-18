@@ -2,10 +2,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewVendorProductPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products/new");
   const [data, vendorData] = await Promise.all([getMarketplaceHomeData(), getVendorWorkspaceData()]);
 
@@ -13,7 +15,7 @@ export default async function NewVendorProductPage() {
     <WorkspaceShell
       title="New product"
       description="Listings are built with moderation, pricing governance, and trust scoring in mind: title, story, delivery proof, featured-slot requests, and posting-fee visibility are explicit."
-      nav={vendorNav("/vendor/products")}
+      nav={vendorNav("/vendor/products", locale)}
     >
       <section className="market-panel rounded-[1.75rem] p-5">
         <p className="market-kicker">Seller economics in this flow</p>

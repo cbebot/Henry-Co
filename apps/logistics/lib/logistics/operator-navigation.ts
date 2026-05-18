@@ -17,6 +17,7 @@ import {
   Truck,
   Users,
 } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import type { WorkspaceNavItem } from "@henryco/workspace-shell";
 
 /**
@@ -28,160 +29,192 @@ import type { WorkspaceNavItem } from "@henryco/workspace-shell";
  * specifically asks for "4 anchors" in the mobile parity spec).
  */
 
-export const riderNavItems: WorkspaceNavItem[] = [
-  {
+export function getRiderNavItems(locale: AppLocale): WorkspaceNavItem[] {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      href: "/rider",
+      label: t("Today"),
+      icon: LayoutDashboard,
+      description: t("Today's queue"),
+    },
+    {
+      href: "/rider/active",
+      label: t("Active leg"),
+      icon: Route,
+      description: t("Current pickup or drop-off"),
+    },
+    {
+      href: "/rider/history",
+      label: t("History"),
+      icon: History,
+      description: t("Completed legs"),
+    },
+    {
+      href: "/rider/notifications",
+      label: t("Alerts"),
+      icon: Bell,
+      hasIndicator: true,
+      description: t("Dispatch + customer alerts"),
+    },
+    {
+      href: "/rider/expenses",
+      label: t("Expenses"),
+      icon: ReceiptText,
+      description: t("Fuel + maintenance log"),
+    },
+  ];
+}
+
+export function getDispatcherNavItems(locale: AppLocale): WorkspaceNavItem[] {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      href: "/dispatcher",
+      label: t("Live board"),
+      icon: LayoutDashboard,
+      description: t("Unassigned pickups + live riders"),
+    },
+    {
+      href: "/dispatcher/zones",
+      label: t("Zones"),
+      icon: Map,
+      description: t("Corridors + surge + SLA"),
+    },
+    {
+      href: "/dispatcher/exceptions",
+      label: t("Exceptions"),
+      icon: AlertTriangle,
+      hasIndicator: true,
+      description: t("Delayed / failed shipments"),
+    },
+    {
+      href: "/dispatcher/fleet",
+      label: t("Fleet"),
+      icon: Truck,
+      description: t("Vehicles + riders on shift"),
+    },
+  ];
+}
+
+export function getManagerNavItems(locale: AppLocale): WorkspaceNavItem[] {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      href: "/manager",
+      label: t("Operations"),
+      icon: LayoutDashboard,
+      description: t("On-time, exceptions, revenue"),
+    },
+    {
+      href: "/manager/fleet",
+      label: t("Fleet"),
+      icon: Truck,
+      description: t("Vehicles + riders directory"),
+    },
+    {
+      href: "/manager/sla",
+      label: t("SLA"),
+      icon: ClipboardCheck,
+      description: t("Per-corridor SLA health"),
+    },
+    {
+      href: "/manager/finance",
+      label: t("Finance"),
+      icon: Banknote,
+      description: t("Revenue, payouts, fuel"),
+    },
+    {
+      href: "/manager/claims",
+      label: t("Claims"),
+      icon: PackageCheck,
+      hasIndicator: true,
+      description: t("Damaged / lost shipments"),
+    },
+  ];
+}
+
+export function getOwnerNavItems(locale: AppLocale): WorkspaceNavItem[] {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      href: "/owner",
+      label: t("Strategic"),
+      icon: LineChart,
+      description: t("Monthly volume + growth"),
+    },
+    {
+      href: "/owner/business",
+      label: t("Business"),
+      icon: Building2,
+      description: t("B2B account roster"),
+    },
+    {
+      href: "/owner/staff",
+      label: t("Staff"),
+      icon: Users,
+      description: t("Operator directory"),
+    },
+    {
+      href: "/owner/calendar",
+      label: t("Calendar"),
+      icon: CalendarDays,
+      description: t("Shift + service calendar"),
+    },
+  ];
+}
+
+export function getRiderMobileNav(locale: AppLocale) {
+  return getRiderNavItems(locale).slice(0, 4);
+}
+export function getDispatcherMobileNav(locale: AppLocale) {
+  return getDispatcherNavItems(locale).slice(0, 4);
+}
+export function getManagerMobileNav(locale: AppLocale) {
+  return getManagerNavItems(locale).slice(0, 4);
+}
+export function getOwnerMobileNav(locale: AppLocale) {
+  return getOwnerNavItems(locale).slice(0, 4);
+}
+
+export function getRiderBrand(locale: AppLocale) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    shortName: t("Rider workspace"),
+    kicker: "HenryCo · Logistics",
     href: "/rider",
-    label: "Today",
-    icon: LayoutDashboard,
-    description: "Today's queue",
-  },
-  {
-    href: "/rider/active",
-    label: "Active leg",
-    icon: Route,
-    description: "Current pickup or drop-off",
-  },
-  {
-    href: "/rider/history",
-    label: "History",
-    icon: History,
-    description: "Completed legs",
-  },
-  {
-    href: "/rider/notifications",
-    label: "Alerts",
-    icon: Bell,
-    hasIndicator: true,
-    description: "Dispatch + customer alerts",
-  },
-  {
-    href: "/rider/expenses",
-    label: "Expenses",
-    icon: ReceiptText,
-    description: "Fuel + maintenance log",
-  },
-];
+    icon: Compass,
+  };
+}
 
-export const dispatcherNavItems: WorkspaceNavItem[] = [
-  {
+export function getDispatcherBrand(locale: AppLocale) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    shortName: t("Dispatch board"),
+    kicker: "HenryCo · Logistics",
     href: "/dispatcher",
-    label: "Live board",
-    icon: LayoutDashboard,
-    description: "Unassigned pickups + live riders",
-  },
-  {
-    href: "/dispatcher/zones",
-    label: "Zones",
     icon: Map,
-    description: "Corridors + surge + SLA",
-  },
-  {
-    href: "/dispatcher/exceptions",
-    label: "Exceptions",
-    icon: AlertTriangle,
-    hasIndicator: true,
-    description: "Delayed / failed shipments",
-  },
-  {
-    href: "/dispatcher/fleet",
-    label: "Fleet",
-    icon: Truck,
-    description: "Vehicles + riders on shift",
-  },
-];
+  };
+}
 
-export const managerNavItems: WorkspaceNavItem[] = [
-  {
+export function getManagerBrand(locale: AppLocale) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    shortName: t("Operations"),
+    kicker: "HenryCo · Logistics",
     href: "/manager",
-    label: "Operations",
     icon: LayoutDashboard,
-    description: "On-time, exceptions, revenue",
-  },
-  {
-    href: "/manager/fleet",
-    label: "Fleet",
-    icon: Truck,
-    description: "Vehicles + riders directory",
-  },
-  {
-    href: "/manager/sla",
-    label: "SLA",
-    icon: ClipboardCheck,
-    description: "Per-corridor SLA health",
-  },
-  {
-    href: "/manager/finance",
-    label: "Finance",
-    icon: Banknote,
-    description: "Revenue, payouts, fuel",
-  },
-  {
-    href: "/manager/claims",
-    label: "Claims",
-    icon: PackageCheck,
-    hasIndicator: true,
-    description: "Damaged / lost shipments",
-  },
-];
+  };
+}
 
-export const ownerNavItems: WorkspaceNavItem[] = [
-  {
+export function getOwnerBrand(locale: AppLocale) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    shortName: t("Owner suite"),
+    kicker: "HenryCo · Logistics",
     href: "/owner",
-    label: "Strategic",
     icon: LineChart,
-    description: "Monthly volume + growth",
-  },
-  {
-    href: "/owner/business",
-    label: "Business",
-    icon: Building2,
-    description: "B2B account roster",
-  },
-  {
-    href: "/owner/staff",
-    label: "Staff",
-    icon: Users,
-    description: "Operator directory",
-  },
-  {
-    href: "/owner/calendar",
-    label: "Calendar",
-    icon: CalendarDays,
-    description: "Shift + service calendar",
-  },
-];
-
-export const RIDER_MOBILE_NAV = riderNavItems.slice(0, 4);
-export const DISPATCHER_MOBILE_NAV = dispatcherNavItems.slice(0, 4);
-export const MANAGER_MOBILE_NAV = managerNavItems.slice(0, 4);
-export const OWNER_MOBILE_NAV = ownerNavItems.slice(0, 4);
-
-export const RIDER_BRAND = {
-  shortName: "Rider workspace",
-  kicker: "HenryCo · Logistics",
-  href: "/rider",
-  icon: Compass,
-};
-
-export const DISPATCHER_BRAND = {
-  shortName: "Dispatch board",
-  kicker: "HenryCo · Logistics",
-  href: "/dispatcher",
-  icon: Map,
-};
-
-export const MANAGER_BRAND = {
-  shortName: "Operations",
-  kicker: "HenryCo · Logistics",
-  href: "/manager",
-  icon: LayoutDashboard,
-};
-
-export const OWNER_BRAND = {
-  shortName: "Owner suite",
-  kicker: "HenryCo · Logistics",
-  href: "/owner",
-  icon: LineChart,
-};
+  };
+}
 
 export const CAMERA_ICON = Camera;

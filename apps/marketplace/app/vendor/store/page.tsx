@@ -2,10 +2,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorStorePage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/store");
   const data = await getVendorWorkspaceData();
 
@@ -13,7 +15,7 @@ export default async function VendorStorePage() {
     <WorkspaceShell
       title="Store profile"
       description="Branding, trust narrative, and contact clarity belong on a focused surface rather than being buried in settings."
-      nav={vendorNav("/vendor/store")}
+      nav={vendorNav("/vendor/store", locale)}
     >
       <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-6">
         <input type="hidden" name="intent" value="vendor_store_update" />

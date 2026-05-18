@@ -2,6 +2,8 @@
 // indicator across the portal renders through these primitives so the
 // colour system stays consistent.
 
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+
 export type StatusTone =
   | "neutral"
   | "info"
@@ -68,24 +70,34 @@ const deliverableStatusTokens: Record<string, StatusTokenStyle> = {
   superseded: { tone: "neutral", label: "Replaced" },
 };
 
-export function projectStatusToken(status: string): StatusTokenStyle {
-  return projectStatusTokens[status] ?? { tone: "neutral", label: status || "Status" };
+function localizeToken(token: StatusTokenStyle, locale?: AppLocale): StatusTokenStyle {
+  if (!locale) return token;
+  return { ...token, label: translateSurfaceLabel(locale, token.label) };
 }
 
-export function milestoneStatusToken(status: string): StatusTokenStyle {
-  return milestoneStatusTokens[status] ?? { tone: "neutral", label: status || "Status" };
+export function projectStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = projectStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  return localizeToken(token, locale);
 }
 
-export function invoiceStatusToken(status: string): StatusTokenStyle {
-  return invoiceStatusTokens[status] ?? { tone: "neutral", label: status || "Status" };
+export function milestoneStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = milestoneStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  return localizeToken(token, locale);
 }
 
-export function paymentStatusToken(status: string): StatusTokenStyle {
-  return paymentStatusTokens[status] ?? { tone: "neutral", label: status || "Status" };
+export function invoiceStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = invoiceStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  return localizeToken(token, locale);
 }
 
-export function deliverableStatusToken(status: string): StatusTokenStyle {
-  return deliverableStatusTokens[status] ?? { tone: "neutral", label: status || "Status" };
+export function paymentStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = paymentStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  return localizeToken(token, locale);
+}
+
+export function deliverableStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = deliverableStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  return localizeToken(token, locale);
 }
 
 export function toneToClasses(tone: StatusTone): string {

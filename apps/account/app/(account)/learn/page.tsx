@@ -85,7 +85,7 @@ export default async function LearnPage() {
 
   const [summary, activityRaw] = await Promise.all([
     getLearnAccountSummary(user.id, user.email),
-    getDivisionActivity(user.id, "learn"),
+    getDivisionActivity(user.id, "learn", 20, locale),
   ]);
 
   const learnOrigin = getDivisionUrl("learn");

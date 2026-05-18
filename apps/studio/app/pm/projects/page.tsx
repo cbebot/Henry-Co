@@ -15,6 +15,11 @@ export default async function PmProjectsPage() {
       description="Use this list to jump directly into the workspace that needs milestone or revision attention."
       nav={pmNav("/pm/projects")}
     >
+      {/* TODO(wave1): multi-row project list (staff). project.title /
+          project.nextAction are Supabase-row text fields — translate each
+          via Promise.all + resolveLocalizedDynamicField in a follow-up
+          wave. Single-row detail surface at /project/[projectId] is
+          already wrapped through the cached DeepL pipeline. */}
       <section className="space-y-4">
         {snapshot.projects.map((project) => (
           <article key={project.id} className="studio-panel rounded-[1.75rem] p-6">

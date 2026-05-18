@@ -10,7 +10,11 @@ import {
   TruckIcon,
 } from "lucide-react";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { getLogisticsHomeCopy, type LogisticsHomeCopy } from "@henryco/i18n/server";
+import {
+  getLogisticsHomeCopy,
+  resolveLocalizedDynamicField,
+  type LogisticsHomeCopy,
+} from "@henryco/i18n/server";
 import { PublicSpotlight } from "@henryco/ui/public-shell";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { LOGISTICS_FAQS } from "@/lib/logistics/content";
@@ -67,6 +71,27 @@ export default async function LogisticsHomePage() {
   const locale = await getLogisticsPublicLocale();
   const copy = getLogisticsHomeCopy(locale);
   const snapshot = await getPublicLogisticsSnapshot();
+
+  // Route the two Supabase-merged settings strings that are rendered
+  // directly into hero / trust copy through cached DeepL.
+  // `services` is the static LOGISTICS_SERVICES constant (no Supabase) —
+  // skip per scope ("Supabase-row-driven text only").
+  const [pickupHoursLocalized, trackingLookupHelpLocalized] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: snapshot.settings as unknown as Record<string, unknown>,
+      field: "pickupHours",
+      locale,
+      fallback: snapshot.settings.pickupHours,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: snapshot.settings as unknown as Record<string, unknown>,
+      field: "trackingLookupHelp",
+      locale,
+      fallback: snapshot.settings.trackingLookupHelp,
+      machineTranslate: locale !== "en",
+    }),
+  ]);
 
   /*
    * Capability evidence — V3 PASS 21 / Wave B3 editorial bar.
@@ -130,11 +155,11 @@ export default async function LogisticsHomePage() {
     },
     {
       label: copy.metrics.operatingHoursLabel,
-      value: snapshot.settings.pickupHours.includes("•")
-        ? (snapshot.settings.pickupHours.split("•")[1]?.trim() ?? snapshot.settings.pickupHours)
-        : snapshot.settings.pickupHours,
-      trend: snapshot.settings.pickupHours.includes("•")
-        ? (snapshot.settings.pickupHours.split("•")[0]?.trim() ?? copy.metrics.operatingHoursDailyFallback)
+      value: pickupHoursLocalized.includes("•")
+        ? (pickupHoursLocalized.split("•")[1]?.trim() ?? pickupHoursLocalized)
+        : pickupHoursLocalized,
+      trend: pickupHoursLocalized.includes("•")
+        ? (pickupHoursLocalized.split("•")[0]?.trim() ?? copy.metrics.operatingHoursDailyFallback)
         : copy.metrics.operatingHoursDailyFallback,
     },
   ];
@@ -148,7 +173,7 @@ export default async function LogisticsHomePage() {
     {
       icon: Radio,
       title: copy.why.trackingTitle,
-      body: snapshot.settings.trackingLookupHelp,
+      body: trackingLookupHelpLocalized,
     },
     {
       icon: Shield,
@@ -208,7 +233,7 @@ export default async function LogisticsHomePage() {
           title={copy.hero.title}
           blurb={copy.hero.blurb}
           coverage={coverageLine}
-          pickupHours={snapshot.settings.pickupHours}
+          pickupHours={pickupHoursLocalized}
           capabilityMetrics={capabilityMetrics}
           ctas={[
             { href: "/book", label: copy.hero.bookCta, variant: "primary" },

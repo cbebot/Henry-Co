@@ -35,6 +35,12 @@ export default async function WorkPage() {
         </dl>
       </section>
 
+      {/* TODO(wave1): multi-row case-studies list. caseStudy.name /
+          caseStudy.challenge / caseStudy.impact are Supabase-row text
+          fields — translate each via Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave. The single-row
+          detail page at /work/[slug] is already wrapped through the cached
+          DeepL pipeline. */}
       <ol className="mt-16 grid gap-5 lg:grid-cols-3">
         {catalog.caseStudies.map((item) => (
           <li key={item.id} id={item.id} className="scroll-mt-32">

@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, Building2, Home, Package2, Sparkles } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getCareServicesCopy } from "@henryco/i18n/server";
+import { getCareServicesCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { getCareBookingCatalog } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
@@ -31,6 +31,35 @@ export default async function ServicesPage() {
   const catalog = await getCareBookingCatalog();
   const homePackages = catalog.packages.filter((item) => item.category_key === "home");
   const officePackages = catalog.packages.filter((item) => item.category_key === "office");
+
+  // PASS — localize Supabase-driven package names rendered in lists.
+  // Long-form `summary` text is TODO'd because list views localize titles only.
+  const homePackagesLocalized = await Promise.all(
+    homePackages.map(async (item) => ({
+      ...item,
+      name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: item.name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize package `summary` in detail surfaces.
+    })),
+  );
+  const officePackagesLocalized = await Promise.all(
+    officePackages.map(async (item) => ({
+      ...item,
+      name: await resolveLocalizedDynamicField({
+        record: item as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: item.name,
+        machineTranslate: locale !== "en",
+      }),
+      // TODO(list-row): localize package `summary` in detail surfaces.
+    })),
+  );
 
   const lanes = [
     {
@@ -120,14 +149,14 @@ export default async function ServicesPage() {
             title={copy.packages.homeHeading}
             staffUnit={copy.packages.staffUnit}
             variant="home"
-            items={homePackages}
+            items={homePackagesLocalized}
           />
           <PackageCollection
             collectionEyebrow={copy.packages.collectionEyebrow}
             title={copy.packages.officeHeading}
             staffUnit={copy.packages.staffUnit}
             variant="office"
-            items={officePackages}
+            items={officePackagesLocalized}
           />
         </div>
       </section>

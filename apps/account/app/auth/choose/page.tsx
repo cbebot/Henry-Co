@@ -8,7 +8,9 @@ import {
   Sparkles,
   UserCircle,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import Logo from "@/components/brand/Logo";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { loadDashboardOptions } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
@@ -59,6 +61,8 @@ export default async function ChoosePage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const params = await searchParams;
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const supabase = await createSupabaseServer();
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
 
@@ -87,7 +91,7 @@ export default async function ChoosePage({
     (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
     (typeof user.user_metadata?.name === "string" && user.user_metadata.name.trim()) ||
     null;
-  const greeting = fullName ? `Signed in as ${fullName.split(" ")[0]}.` : "Signed in to HenryCo.";
+  const greeting = fullName ? `${t("Signed in as")} ${fullName.split(" ")[0]}.` : t("Signed in to HenryCo.");
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-[var(--acct-bg)] px-4 py-10 sm:items-center sm:py-16">
@@ -95,15 +99,13 @@ export default async function ChoosePage({
         <div className="mb-8 flex flex-col items-center text-center sm:mb-10">
           <Logo size={44} />
           <p className="mt-5 text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--acct-gold)]">
-            HenryCo Accounts
+            {t("HenryCo Accounts")}
           </p>
           <h1 className="acct-display mt-3 text-2xl leading-tight text-[var(--acct-ink)] sm:text-[28px]">
-            Choose your workspace
+            {t("Choose your workspace")}
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--acct-muted)]">
-            {greeting} You have access to more than one Henry &amp; Co. space.
-            Pick where you&rsquo;d like to land — you can switch any time, and we
-            can remember this choice on this browser.
+            {greeting} {t("You have access to more than one Henry & Co. space. Pick where you'd like to land — you can switch any time, and we can remember this choice on this browser.")}
           </p>
         </div>
 
@@ -111,7 +113,7 @@ export default async function ChoosePage({
           method="POST"
           action="/api/auth/choose"
           className="space-y-3"
-          aria-label="Pick a Henry & Co. dashboard"
+          aria-label={t("Pick a Henry & Co. dashboard")}
         >
           {safeNext !== "/" ? (
             <input type="hidden" name="next" value={safeNext} />
@@ -119,7 +121,7 @@ export default async function ChoosePage({
 
           <div
             role="radiogroup"
-            aria-label="Available dashboards"
+            aria-label={t("Available dashboards")}
             className="grid gap-3 sm:gap-4"
           >
             {options.map((option, index) => {
@@ -152,12 +154,12 @@ export default async function ChoosePage({
                       {option.role === "super_admin" ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-gold-soft)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--acct-gold)]">
                           <ShieldCheck size={10} />
-                          Executive
+                          {t("Executive")}
                         </span>
                       ) : option.role === "division_operator" ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-blue-soft)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--acct-div-staff)]">
                           <Building2 size={10} />
-                          Division
+                          {t("Division")}
                         </span>
                       ) : null}
                     </div>
@@ -192,9 +194,9 @@ export default async function ChoosePage({
                 className="h-4 w-4 rounded border-[var(--acct-line)] text-[var(--acct-gold)] focus:ring-[var(--acct-gold)]"
               />
               <span>
-                Remember my choice on this browser
+                {t("Remember my choice on this browser")}
                 <span className="ml-2 text-xs text-[var(--acct-muted)]">
-                  (you can change this from your account settings)
+                  {t("(you can change this from your account settings)")}
                 </span>
               </span>
             </label>
@@ -206,20 +208,19 @@ export default async function ChoosePage({
               className="acct-button-ghost self-center text-xs"
               data-test="chooser-signout"
             >
-              Sign out
+              {t("Sign out")}
             </a>
             <button
               type="submit"
               className="acct-button-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold sm:min-w-[180px]"
             >
-              Continue
+              {t("Continue")}
             </button>
           </div>
         </form>
 
         <p className="mt-8 text-center text-[11px] text-[var(--acct-muted)]">
-          You stay signed in across every Henry &amp; Co. subdomain — switching
-          spaces never asks for your password again.
+          {t("You stay signed in across every Henry & Co. subdomain — switching spaces never asks for your password again.")}
         </p>
       </div>
     </div>

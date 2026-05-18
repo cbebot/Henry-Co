@@ -2,11 +2,13 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, UserCheck } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
 import { getJobsHomeData } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function TrustPage() {
-  const home = await getJobsHomeData();
+  const locale = await getJobsPublicLocale();
+  const home = await getJobsHomeData(locale);
 
   const pillars = [
     {

@@ -3,10 +3,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorOnboardingPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/onboarding");
   const data = await getVendorWorkspaceData();
 
@@ -32,7 +34,7 @@ export default async function VendorOnboardingPage() {
     <WorkspaceShell
       title="Vendor onboarding"
       description="Approval is only the start. This onboarding surface keeps the next store setup steps visible so sellers move into a premium operating posture instead of guessing."
-      nav={vendorNav("/vendor")}
+      nav={vendorNav("/vendor", locale)}
       actions={
         <Link href="/vendor/products/new" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
           Submit first product

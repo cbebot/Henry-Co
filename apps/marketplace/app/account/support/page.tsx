@@ -6,6 +6,7 @@ import { getBuyerDashboardData, getMarketplaceHomeData } from "@/lib/marketplace
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 import type { MarketplaceSupportThread } from "@/lib/marketplace/types";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,7 @@ export default async function AccountSupportPage({
 }: {
   searchParams?: Promise<{ vendor?: string; thread?: string }>;
 }) {
+  const locale = await getMarketplacePublicLocale();
   const params = (await searchParams) ?? {};
   const vendorSlug =
     typeof params.vendor === "string" ? params.vendor.trim().toLowerCase() : "";
@@ -82,7 +84,7 @@ export default async function AccountSupportPage({
     <WorkspaceShell
       title="Support"
       description="Open a ticket attached to your HenryCo account, order history, and dispute trail. Replies stay on the same thread so you never re-type the context."
-      {...accountWorkspaceNav("/account/support")}
+      {...accountWorkspaceNav("/account/support", locale)}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         {/* ── Form column ─────────────────────────────────────────── */}

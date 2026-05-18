@@ -1,6 +1,8 @@
 "use client";
 
 import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   HenryCoSearchBreadcrumb,
   PublicHeader,
@@ -18,6 +20,8 @@ export default function LogisticsShell({
   kicker?: string;
   accountSlot?: ReactNode;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const logistics = getDivisionConfig("logistics");
   const navCfg = getSiteNavigationConfig("logistics");
 
@@ -111,14 +115,14 @@ export default function LogisticsShell({
 
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-muted)]">
-              Service
+              {t("Service")}
             </div>
             <div className="mt-4 grid gap-3 text-sm">
               {[
-                { href: "/quote", label: "Get a quote" },
-                { href: "/track", label: "Track a job" },
-                { href: "/business", label: "For business" },
-                { href: "/coverage", label: "Coverage" },
+                { href: "/quote", label: t("Get a quote") },
+                { href: "/track", label: t("Track a job") },
+                { href: "/business", label: t("For business") },
+                { href: "/coverage", label: t("Coverage") },
               ].map((link) => (
                 <a
                   key={link.href}
@@ -140,25 +144,25 @@ export default function LogisticsShell({
                 href={getHubUrl("/")}
                 className="text-white/75 transition hover:text-white"
               >
-                HenryCo group
+                {t("HenryCo group")}
               </a>
               <a
                 href={getHubUrl("/preferences")}
                 className="text-white/75 transition hover:text-white"
               >
-                Preferences
+                {t("Preferences")}
               </a>
               <a
                 href={getHubUrl("/privacy")}
                 className="text-white/75 transition hover:text-white"
               >
-                Privacy
+                {t("Privacy")}
               </a>
               <a
                 href={getHubUrl("/terms")}
                 className="text-white/75 transition hover:text-white"
               >
-                Terms
+                {t("Terms")}
               </a>
             </div>
           </div>
@@ -166,10 +170,10 @@ export default function LogisticsShell({
 
         <div className="border-t border-[var(--logistics-line)] px-4 py-5 text-xs text-[var(--logistics-muted)] sm:px-6 lg:px-8">
           <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>© {new Date().getFullYear()} {logistics.name}. All rights reserved.</div>
+            <div>© {new Date().getFullYear()} {logistics.name}. {t("All rights reserved.")}</div>
             <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
               <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--logistics-accent-soft)]" />
-              Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+              {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
             </span>
           </div>
         </div>

@@ -7,106 +7,110 @@ export type LearnNavItem = {
   active?: boolean;
 };
 
-export function learnerNav(active: string): LearnNavItem[] {
+type Translator = (text: string) => string;
+
+const identity: Translator = (text) => text;
+
+export function learnerNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: getAccountLearnUrl(), label: "Overview", active: active === "overview" || active === "/learner" },
-    { href: getAccountLearnUrl("active"), label: "My courses", active: active === "active" || active === "/learner/courses" },
-    { href: getAccountLearnUrl("progress"), label: "Progress", active: active === "progress" || active === "/learner/progress" },
-    { href: getAccountLearnUrl("saved"), label: "Saved", active: active === "saved" || active === "/learner/saved" },
-    { href: getAccountLearnUrl("certificates"), label: "Certificates", active: active === "certificates" || active === "/learner/certificates" },
-    { href: getAccountLearnUrl("payments"), label: "Payments", active: active === "payments" || active === "/learner/payments" },
-    { href: getAccountLearnUrl("notifications"), label: "Notifications", active: active === "notifications" || active === "/learner/notifications" },
-    { href: getAccountLearnUrl("overview"), label: "Account settings", active: active === "settings" || active === "/learner/settings" },
+    { href: getAccountLearnUrl(), label: t("Overview"), active: active === "overview" || active === "/learner" },
+    { href: getAccountLearnUrl("active"), label: t("My courses"), active: active === "active" || active === "/learner/courses" },
+    { href: getAccountLearnUrl("progress"), label: t("Progress"), active: active === "progress" || active === "/learner/progress" },
+    { href: getAccountLearnUrl("saved"), label: t("Saved"), active: active === "saved" || active === "/learner/saved" },
+    { href: getAccountLearnUrl("certificates"), label: t("Certificates"), active: active === "certificates" || active === "/learner/certificates" },
+    { href: getAccountLearnUrl("payments"), label: t("Payments"), active: active === "payments" || active === "/learner/payments" },
+    { href: getAccountLearnUrl("notifications"), label: t("Notifications"), active: active === "notifications" || active === "/learner/notifications" },
+    { href: getAccountLearnUrl("overview"), label: t("Account settings"), active: active === "settings" || active === "/learner/settings" },
   ];
 }
 
-export function courseRoomNav(courseHref: string): LearnNavItem[] {
+export function courseRoomNav(courseHref: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: getAccountLearnUrl(), label: "Learn overview" },
-    { href: getAccountLearnUrl("active"), label: "My courses" },
-    { href: getAccountLearnUrl("progress"), label: "Progress" },
-    { href: courseHref, label: "This course", active: true },
-    { href: getAccountLearnUrl("certificates"), label: "Certificates" },
-    { href: "/teach", label: "Apply to teach" },
+    { href: getAccountLearnUrl(), label: t("Learn overview") },
+    { href: getAccountLearnUrl("active"), label: t("My courses") },
+    { href: getAccountLearnUrl("progress"), label: t("Progress") },
+    { href: courseHref, label: t("This course"), active: true },
+    { href: getAccountLearnUrl("certificates"), label: t("Certificates") },
+    { href: "/teach", label: t("Apply to teach") },
   ];
 }
 
-export function ownerNav(active: string): LearnNavItem[] {
+export function ownerNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: "/owner", label: "Overview", active: active === "/owner" },
-    { href: "/owner/courses", label: "Courses", active: active === "/owner/courses" },
-    { href: "/owner/paths", label: "Paths", active: active === "/owner/paths" },
-    { href: "/owner/instructors", label: "Instructors", active: active === "/owner/instructors" },
-    { href: "/owner/learners", label: "Learners", active: active === "/owner/learners" },
-    { href: "/owner/certificates", label: "Certificates", active: active === "/owner/certificates" },
-    { href: "/owner/assignments", label: "Assignments", active: active === "/owner/assignments" },
-    { href: "/owner/analytics", label: "Analytics", active: active === "/owner/analytics" },
-    { href: "/owner/settings", label: "Settings", active: active === "/owner/settings" },
+    { href: "/owner", label: t("Overview"), active: active === "/owner" },
+    { href: "/owner/courses", label: t("Courses"), active: active === "/owner/courses" },
+    { href: "/owner/paths", label: t("Paths"), active: active === "/owner/paths" },
+    { href: "/owner/instructors", label: t("Instructors"), active: active === "/owner/instructors" },
+    { href: "/owner/learners", label: t("Learners"), active: active === "/owner/learners" },
+    { href: "/owner/certificates", label: t("Certificates"), active: active === "/owner/certificates" },
+    { href: "/owner/assignments", label: t("Assignments"), active: active === "/owner/assignments" },
+    { href: "/owner/analytics", label: t("Analytics"), active: active === "/owner/analytics" },
+    { href: "/owner/settings", label: t("Settings"), active: active === "/owner/settings" },
   ];
 }
 
-export function adminNav(active: string): LearnNavItem[] {
+export function adminNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: "/admin", label: "Overview", active: active === "/admin" },
-    { href: "/owner/courses", label: "Courses", active: active === "/owner/courses" },
-    { href: "/owner/paths", label: "Paths", active: active === "/owner/paths" },
-    { href: "/owner/instructors", label: "Instructors", active: active === "/owner/instructors" },
-    { href: "/owner/learners", label: "Learners", active: active === "/owner/learners" },
-    { href: "/owner/assignments", label: "Assignments", active: active === "/owner/assignments" },
+    { href: "/admin", label: t("Overview"), active: active === "/admin" },
+    { href: "/owner/courses", label: t("Courses"), active: active === "/owner/courses" },
+    { href: "/owner/paths", label: t("Paths"), active: active === "/owner/paths" },
+    { href: "/owner/instructors", label: t("Instructors"), active: active === "/owner/instructors" },
+    { href: "/owner/learners", label: t("Learners"), active: active === "/owner/learners" },
+    { href: "/owner/assignments", label: t("Assignments"), active: active === "/owner/assignments" },
   ];
 }
 
-export function instructorNav(active: string): LearnNavItem[] {
+export function instructorNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: "/instructor", label: "Overview", active: active === "/instructor" },
-    { href: "/instructor/courses", label: "Courses", active: active === "/instructor/courses" },
-    { href: "/instructor/grading", label: "Grading", active: active === "/instructor/grading" },
-    { href: "/instructor/payouts", label: "Payouts", active: active === "/instructor/payouts" },
-    { href: "/instructor/analytics", label: "Analytics", active: active === "/instructor/analytics" },
+    { href: "/instructor", label: t("Overview"), active: active === "/instructor" },
+    { href: "/instructor/courses", label: t("Courses"), active: active === "/instructor/courses" },
+    { href: "/instructor/grading", label: t("Grading"), active: active === "/instructor/grading" },
+    { href: "/instructor/payouts", label: t("Payouts"), active: active === "/instructor/payouts" },
+    { href: "/instructor/analytics", label: t("Analytics"), active: active === "/instructor/analytics" },
   ];
 }
 
-export function contentNav(active: string): LearnNavItem[] {
+export function contentNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: "/content", label: "Builder", active: active === "/content" },
-    { href: "/owner/courses", label: "Courses", active: active === "/owner/courses" },
-    { href: "/owner/paths", label: "Paths", active: active === "/owner/paths" },
-    { href: "/owner/settings", label: "Publishing", active: active === "/owner/settings" },
+    { href: "/content", label: t("Builder"), active: active === "/content" },
+    { href: "/owner/courses", label: t("Courses"), active: active === "/owner/courses" },
+    { href: "/owner/paths", label: t("Paths"), active: active === "/owner/paths" },
+    { href: "/owner/settings", label: t("Publishing"), active: active === "/owner/settings" },
   ];
 }
 
-export function analyticsNav(active: string): LearnNavItem[] {
+export function analyticsNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: "/analytics", label: "Overview", active: active === "/analytics" },
-    { href: "/owner/analytics", label: "Owner Analytics", active: active === "/owner/analytics" },
-    { href: "/owner/learners", label: "Learner Signals", active: active === "/owner/learners" },
+    { href: "/analytics", label: t("Overview"), active: active === "/analytics" },
+    { href: "/owner/analytics", label: t("Owner Analytics"), active: active === "/owner/analytics" },
+    { href: "/owner/learners", label: t("Learner Signals"), active: active === "/owner/learners" },
   ];
 }
 
-export function supportNav(active: string): LearnNavItem[] {
+export function supportNav(active: string, t: Translator = identity): LearnNavItem[] {
   return [
-    { href: "/support", label: "Inbox", active: active === "/support" },
-    { href: "/owner/settings", label: "Announcements", active: active === "/owner/settings" },
-    { href: getAccountLearnUrl("notifications"), label: "Learner Notifications" },
+    { href: "/support", label: t("Inbox"), active: active === "/support" },
+    { href: "/owner/settings", label: t("Announcements"), active: active === "/owner/settings" },
+    { href: getAccountLearnUrl("notifications"), label: t("Learner Notifications") },
   ];
 }
 
-export function navForPrimaryRole(role: LearnRole, active: string) {
+export function navForPrimaryRole(role: LearnRole, active: string, t: Translator = identity) {
   switch (role) {
     case "academy_owner":
-      return ownerNav(active);
+      return ownerNav(active, t);
     case "academy_admin":
-      return adminNav(active);
+      return adminNav(active, t);
     case "instructor":
-      return instructorNav(active);
+      return instructorNav(active, t);
     case "content_manager":
-      return contentNav(active);
+      return contentNav(active, t);
     case "support":
-      return supportNav(active);
+      return supportNav(active, t);
     case "finance":
     case "internal_manager":
-      return analyticsNav(active);
+      return analyticsNav(active, t);
     default:
-      return learnerNav(active);
+      return learnerNav(active, t);
   }
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { Sparkles, ArrowRight, X } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useTour } from "./TourProvider";
 import type { TourMachine, TourScope } from "@/lib/tour/engine";
 
@@ -11,6 +13,8 @@ export default function TourWelcomePrompt({
   machine: TourMachine;
   scope: TourScope;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { shouldPrompt, startTour, skipTour } = useTour();
 
   if (!shouldPrompt) return null;
@@ -23,7 +27,7 @@ export default function TourWelcomePrompt({
           <button
             onClick={skipTour}
             className="absolute right-4 top-4 rounded-full p-2 text-zinc-400 transition hover:bg-black/5 hover:text-zinc-600 dark:text-white/40 dark:hover:bg-white/10"
-            aria-label="Dismiss"
+            aria-label={t("Dismiss")}
           >
             <X className="h-4 w-4" />
           </button>
@@ -33,10 +37,10 @@ export default function TourWelcomePrompt({
           </div>
 
           <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
-            {machine.name}
+            {t(machine.name)}
           </h3>
           <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-            {machine.description}. Would you like a quick guided tour? It only takes a minute.
+            {t(machine.description)}. {t("Would you like a quick guided tour? It only takes a minute.")}
           </p>
 
           <div className="mt-6 flex items-center gap-3">
@@ -44,14 +48,14 @@ export default function TourWelcomePrompt({
               onClick={() => startTour(machine, scope)}
               className="care-button-primary inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-semibold"
             >
-              Start tour
+              {t("Start tour")}
               <ArrowRight className="h-4 w-4" />
             </button>
             <button
               onClick={skipTour}
               className="rounded-2xl px-5 py-3 text-sm font-semibold text-zinc-500 transition hover:text-zinc-900 dark:text-white/50 dark:hover:text-white"
             >
-              Maybe later
+              {t("Maybe later")}
             </button>
           </div>
         </div>

@@ -6,6 +6,7 @@ import {
 import { Building2, LineChart, ShieldAlert, Users } from "lucide-react";
 import {
   getLogisticsStaffOwnerCopy,
+  resolveLocalizedDynamicField,
   type LogisticsStaffOwnerCopy,
 } from "@henryco/i18n/server";
 import {
@@ -67,6 +68,36 @@ export default async function OwnerHomePage() {
   const customers = new Set(
     dispatch.shipments.map((s) => s.customerUserId).filter(Boolean),
   ).size;
+
+  // Aggregate top corridors by zone label, then route each unique label
+  // through the cached DeepL pipeline so non-English staff dashboards
+  // surface translated lane copy. (Shipments carry a free-text zone_label
+  // persisted on logistics_shipments.)
+  const corridorCounts = dispatch.shipments.reduce((map, s) => {
+    const key = s.zoneLabel || copy.corridors.unknownZone;
+    map.set(key, (map.get(key) ?? 0) + 1);
+    return map;
+  }, new Map<string, number>());
+  const corridorEntries = Array.from(corridorCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+  const corridorRows = await Promise.all(
+    corridorEntries.map(async ([zone, total]) => {
+      // copy.corridors.unknownZone is already locale-resolved copy — pass it
+      // through as-is so we don't double-translate.
+      if (zone === copy.corridors.unknownZone) {
+        return [zone, total] as const;
+      }
+      const localized = await resolveLocalizedDynamicField({
+        record: { zoneLabel: zone },
+        field: "zoneLabel",
+        locale,
+        fallback: zone,
+        machineTranslate: locale !== "en",
+      });
+      return [localized, total] as const;
+    }),
+  );
 
   return (
     <div className="space-y-8 py-6">
@@ -144,31 +175,22 @@ export default async function OwnerHomePage() {
           </h2>
         </header>
         <ul className="mt-4 divide-y divide-[var(--logistics-line)]">
-          {Array.from(
-            dispatch.shipments.reduce((map, s) => {
-              const key = s.zoneLabel || copy.corridors.unknownZone;
-              map.set(key, (map.get(key) ?? 0) + 1);
-              return map;
-            }, new Map<string, number>()),
-          )
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 6)
-            .map(([zone, total]) => (
-              <li
-                key={zone}
-                className="flex items-center justify-between py-3 text-sm"
-              >
-                <p className="font-semibold tracking-tight text-white">
-                  {zone}
-                </p>
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/70">
-                  {total}{" "}
-                  {total === 1
-                    ? copy.corridors.shipmentSingular
-                    : copy.corridors.shipmentPlural}
-                </p>
-              </li>
-            ))}
+          {corridorRows.map(([zone, total]) => (
+            <li
+              key={zone}
+              className="flex items-center justify-between py-3 text-sm"
+            >
+              <p className="font-semibold tracking-tight text-white">
+                {zone}
+              </p>
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/70">
+                {total}{" "}
+                {total === 1
+                  ? copy.corridors.shipmentSingular
+                  : copy.corridors.shipmentPlural}
+              </p>
+            </li>
+          ))}
         </ul>
       </Panel>
     </div>

@@ -4,11 +4,13 @@ import { PublicShell } from "@/components/public-shell";
 import { getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import { getJobsHomeData } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function TalentPage() {
-  const [home, viewer] = await Promise.all([getJobsHomeData(), getJobsViewer()]);
+  const locale = await getJobsPublicLocale();
+  const [home, viewer] = await Promise.all([getJobsHomeData(locale), getJobsViewer()]);
   const profileUrl = viewer.user ? "/candidate/profile" : getSharedAccountSignupUrl("/candidate/profile");
 
   const traits = home.differentiators.slice(0, 5);

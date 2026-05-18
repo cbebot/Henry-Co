@@ -3,10 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getClientPortalSnapshot, getInvoiceByIdForViewer } from "@/lib/portal/data";
 import { formatKobo } from "@/lib/portal/helpers";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { BankDetails } from "@/components/portal/bank-details";
 import { InvoiceSummary } from "@/components/portal/invoice-summary";
 import { PaymentForm } from "@/components/portal/payment-form";
@@ -38,6 +40,40 @@ export default async function ClientPaymentByIdPage({
   const isPaid = invoice.status === "paid";
   const isPending = invoice.status === "pending_verification";
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Single-row payment
+  // surface, so the DeepL cost is acceptable.
+  const locale = await getStudioPublicLocale();
+  const [localizedInvoiceDescription, localizedProjectTitle, localizedMilestoneTitle] =
+    await Promise.all([
+      resolveLocalizedDynamicField({
+        record: invoice as unknown as Record<string, unknown>,
+        field: "description",
+        locale,
+        fallback: invoice.description ?? "",
+        machineTranslate: locale !== "en",
+      }),
+      project
+        ? resolveLocalizedDynamicField({
+            record: project as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: project.title ?? "",
+            machineTranslate: locale !== "en",
+          })
+        : Promise.resolve(""),
+      milestone
+        ? resolveLocalizedDynamicField({
+            record: milestone as unknown as Record<string, unknown>,
+            field: "title",
+            locale,
+            fallback: milestone.title ?? "",
+            machineTranslate: locale !== "en",
+          })
+        : Promise.resolve(""),
+    ]);
+  const localizedInvoice = { ...invoice, description: localizedInvoiceDescription };
+
   return (
     <div className="space-y-5">
       <Link
@@ -49,9 +85,9 @@ export default async function ClientPaymentByIdPage({
       </Link>
 
       <InvoiceSummary
-        invoice={invoice}
-        projectTitle={project?.title ?? null}
-        milestoneTitle={milestone?.title ?? null}
+        invoice={localizedInvoice}
+        projectTitle={project ? localizedProjectTitle : null}
+        milestoneTitle={milestone ? localizedMilestoneTitle : null}
       />
 
       {isPaid ? (
@@ -94,9 +130,9 @@ export default async function ClientPaymentByIdPage({
             amountLabel={amountLabel}
           />
           <PaymentForm
-            invoiceId={invoice.id}
+            invoiceId={localizedInvoice.id}
             invoiceToken={null}
-            invoiceNumber={invoice.invoiceNumber}
+            invoiceNumber={localizedInvoice.invoiceNumber}
             amountLabel={amountLabel}
           />
         </>

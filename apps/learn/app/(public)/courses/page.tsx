@@ -59,6 +59,9 @@ export default async function CoursesPage({
         <input name="q" defaultValue={params.q} placeholder={t("Search by title, skill, or tag")} className="learn-input rounded-2xl px-4 py-3" />
         <select name="category" defaultValue={params.category || ""} className="learn-select rounded-2xl px-4 py-3">
           <option value="">{t("All categories")}</option>
+          {/* TODO i18n WAVE A — category.name in <option> renders Supabase row text.
+              Wrapping requires a parallel map of resolveLocalizedDynamicField across
+              all categories. Deferred — list-of-options surface, low-impact for v1. */}
           {academy.categories.map((category) => (
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
@@ -85,6 +88,11 @@ export default async function CoursesPage({
           />
         </div>
       ) : (
+        // TODO i18n WAVE A — list view, CourseCard renders Supabase-row title/subtitle/summary.
+        // Skipped here per scope (list views beyond title). Detail page /courses/[slug]
+        // routes all course fields via resolveLocalizedDynamicField. Card-level localization
+        // requires moving CourseCard to a server component or pre-resolving the list rows
+        // before render — deferred to a follow-up wave.
         <div className="mt-8 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {courses.map((course) => (
             <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} locale={locale} />

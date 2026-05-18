@@ -6,8 +6,10 @@ import {
   getLocaleDisplayLabel,
   isPublicSelectorLocale,
   LOCALE_LABELS,
+  translateSurfaceLabel,
   type AppLocale,
 } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 
 const DISMISSED_KEY = "hc-locale-suggestion-dismissed";
 
@@ -36,6 +38,8 @@ export function LocaleSuggestion({
   localeApiPath = "/api/locale",
 }: LocaleSuggestionProps) {
   const [visible, setVisible] = useState(false);
+  const activeLocale = useOptionalHenryCoLocale() ?? currentLocale;
+  const t = (text: string) => translateSurfaceLabel(activeLocale, text);
 
   useEffect(() => {
     if (!suggestedLocale || suggestedLocale === currentLocale) return;
@@ -81,7 +85,7 @@ export function LocaleSuggestion({
   return (
     <div
       role="region"
-      aria-label="Language suggestion"
+      aria-label={t("Language suggestion")}
       className="fixed bottom-5 start-5 z-40 flex max-w-[17rem] items-start gap-3 rounded-2xl border border-white/10 bg-zinc-900/95 px-4 py-3.5 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-300"
     >
       <Globe
@@ -91,7 +95,7 @@ export function LocaleSuggestion({
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-white">{nativeLabel}</p>
         <p className="mt-0.5 text-[11px] leading-snug text-white/50">
-          Switch to {enLabel}?
+          {t("Switch to")} {enLabel}?
         </p>
         <div className="mt-2.5 flex gap-1.5">
           <button
@@ -99,21 +103,21 @@ export function LocaleSuggestion({
             onClick={accept}
             className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-black transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           >
-            Switch
+            {t("Switch")}
           </button>
           <button
             type="button"
             onClick={dismiss}
             className="rounded-full border border-white/12 px-3 py-1 text-[11px] font-medium text-white/55 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
-            Keep {currentNative}
+            {t("Keep")} {currentNative}
           </button>
         </div>
       </div>
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Dismiss language suggestion"
+        aria-label={t("Dismiss language suggestion")}
         className="mt-0.5 flex-shrink-0 text-white/30 transition hover:text-white/70 focus-visible:outline-none"
       >
         <X className="h-3.5 w-3.5" />

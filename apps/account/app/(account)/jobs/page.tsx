@@ -1,3 +1,4 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireAccountUser } from "@/lib/auth";
 import { getJobsModuleData } from "@/lib/jobs-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -39,8 +40,8 @@ function readinessBody(score: number): string {
 }
 
 export default async function JobsPage() {
-  const [_locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
-  void _locale;
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const data = await getJobsModuleData(user.id);
 
   const applicationsStat = data.stats.find((s) => s.id === "applications");
@@ -49,9 +50,9 @@ export default async function JobsPage() {
   const applications: ApplicationRow[] = (data.applications as Array<Record<string, unknown>>)
     .map((row) => ({
       id: String(row.id ?? ""),
-      jobTitle: String(row.jobTitle ?? row.role ?? "Application"),
+      jobTitle: String(row.jobTitle ?? row.role ?? t("Application")),
       companyName: String(row.companyName ?? row.employerName ?? "—"),
-      stageLabel: String(row.stageLabel ?? "In review"),
+      stageLabel: t(String(row.stageLabel ?? "In review")),
       stageKey: String(row.stage ?? row.stageKey ?? "review"),
       lastUpdateAt: String(row.lastUpdateAt ?? row.updatedAt ?? row.createdAt ?? ""),
       detailUrl: typeof row.detailUrl === "string" ? row.detailUrl : null,
@@ -60,7 +61,7 @@ export default async function JobsPage() {
   const saved: SavedRoleRow[] = (data.savedJobs as Array<Record<string, unknown>>)
     .map((row) => ({
       id: String(row.id ?? ""),
-      title: String(row.jobTitle ?? row.title ?? "Saved role"),
+      title: String(row.jobTitle ?? row.title ?? t("Saved role")),
       companyName: String(row.companyName ?? row.employerName ?? "—"),
       location: typeof row.location === "string" ? row.location : null,
       savedAt: String(row.savedAt ?? row.createdAt ?? ""),
@@ -92,16 +93,16 @@ export default async function JobsPage() {
       <section aria-labelledby="acct-job-apps">
         <div className="acct-job__section-head">
           <h2 id="acct-job-apps" className="acct-job__section-title">
-            Active applications
+            {t("Active applications")}
           </h2>
           <span className="acct-job__section-meta">
-            {applications.length} live · stage-tinted chips show where each one stands
+            {applications.length} {t("live · stage-tinted chips show where each one stands")}
           </span>
         </div>
         <ApplicationsList
           applications={applications}
-          emptyTitle="No live applications yet"
-          emptyBody="Apply to a saved role or browse fresh ones. Recruiter movement appears here in real time."
+          emptyTitle={t("No live applications yet")}
+          emptyBody={t("Apply to a saved role or browse fresh ones. Recruiter movement appears here in real time.")}
           formatStamp={formatStamp}
         />
       </section>
@@ -109,16 +110,16 @@ export default async function JobsPage() {
       <section aria-labelledby="acct-job-readiness-saved">
         <div className="acct-job__section-head">
           <h2 id="acct-job-readiness-saved" className="acct-job__section-title">
-            Readiness & shortlist
+            {t("Readiness & shortlist")}
           </h2>
           <span className="acct-job__section-meta">
-            Profile signal · saved roles
+            {t("Profile signal · saved roles")}
           </span>
         </div>
         <div className="acct-job__columns">
           <ReadinessCard
-            title={data.profile.readinessLabel}
-            body={readinessBody(data.profile.trustScore)}
+            title={t(data.profile.readinessLabel)}
+            body={t(readinessBody(data.profile.trustScore))}
             checklist={checklist}
           />
           <div>
@@ -132,12 +133,12 @@ export default async function JobsPage() {
                 margin: "0 0 10px",
               }}
             >
-              Saved roles
+              {t("Saved roles")}
             </p>
             <SavedRolesList
               saved={saved}
-              emptyTitle="No saved roles"
-              emptyBody="Browse live roles and tap the bookmark to keep them here. We mirror them straight from jobs.henrycogroup.com."
+              emptyTitle={t("No saved roles")}
+              emptyBody={t("Browse live roles and tap the bookmark to keep them here. We mirror them straight from jobs.henrycogroup.com.")}
               formatStamp={formatStamp}
             />
           </div>
@@ -152,7 +153,7 @@ export default async function JobsPage() {
           margin: "8px 0 0",
         }}
       >
-        Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox.
+        {t("Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox.")}
       </p>
     </div>
   );

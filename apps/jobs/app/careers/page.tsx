@@ -4,11 +4,13 @@ import { EmptyState } from "@/components/feedback";
 import { PublicShell } from "@/components/public-shell";
 import { getJobPosts } from "@/lib/jobs/data";
 import { JobCard } from "@/components/job-card";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function CareersPage() {
-  const jobs = await getJobPosts({ internalOnly: true });
+  const locale = await getJobsPublicLocale();
+  const jobs = await getJobPosts({ internalOnly: true, locale });
 
   return (
     <PublicShell

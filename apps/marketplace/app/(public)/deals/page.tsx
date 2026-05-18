@@ -7,6 +7,10 @@ import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
+/* TODO(wave3-catalogue): paginate translation — deals page renders many
+   product rows through ProductCard; per-row translation deferred to a
+   focused catalogue wave with caching. */
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);

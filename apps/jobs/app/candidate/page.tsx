@@ -42,7 +42,7 @@ export default async function CandidateOverviewPage() {
     getJobsPublicLocale(),
   ]);
   const copy = getJobsCopy(locale).candidateHome;
-  const data = await getCandidateDashboardData(viewer.user!.id);
+  const data = await getCandidateDashboardData(viewer.user!.id, locale);
   const activeApplications = data.applicationJourneys.filter(
     (journey) => journey.application.stage !== "rejected" && journey.application.stage !== "hired"
   );

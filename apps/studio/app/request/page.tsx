@@ -152,6 +152,12 @@ export default async function RequestPage({
         </p>
       </section>
 
+      {/* TODO(wave1): client-component request builder. Catalog rows
+          (services / packages / teams) feed a client form — wrap text fields
+          inside StudioRequestLanding (a client component) in a follow-up
+          wave once the client/server boundary for cached DeepL is settled
+          (server-side prefetch + lifted props pattern, similar to
+          /services/[slug]). Skip per scope (client components → TODO). */}
       <section className="mt-8 sm:mt-10">
         <StudioRequestLanding
           services={catalog.services}

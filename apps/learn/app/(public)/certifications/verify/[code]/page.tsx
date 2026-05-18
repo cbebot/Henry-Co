@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Award, CircleCheckBig, Download, FileCheck2, ShieldCheck, Sparkles } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import { CertificateDownloadButton } from "@/components/learn/certificate-download-button";
 import { LearnPanel, LearnSectionIntro, LearnStatusBadge } from "@/components/learn/ui";
 import { getCertificateByCode } from "@/lib/learn/data";
@@ -43,7 +43,15 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
     normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
   });
   const learnerName = (learnerProfile?.fullName || t("HenryCo learner")).trim();
-  const courseTitle = data.course?.title || t("HenryCo Learn programme");
+  const courseTitle = data.course
+    ? await resolveLocalizedDynamicField({
+        record: data.course as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: data.course.title ?? t("HenryCo Learn programme"),
+        machineTranslate: locale !== "en",
+      })
+    : t("HenryCo Learn programme");
   const title = `${learnerName} · ${courseTitle} — HenryCo Learn certificate`;
   const description = `Verified HenryCo Learn certificate ${data.certificate.certificateNo}. ${t("This page is the live, public verification surface — no login required.")}`;
 
@@ -89,6 +97,30 @@ export default async function CertificateVerifyPage({
   });
   const learnerName = displayName(learnerProfile?.fullName, t("HenryCo learner"));
 
+  // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
+  const machineTranslate = locale !== "en";
+  const courseRecord = (data.course ?? null) as unknown as Record<string, unknown> | null;
+  const [courseTitle, courseCompletionRule] = await Promise.all([
+    courseRecord
+      ? resolveLocalizedDynamicField({
+          record: courseRecord,
+          field: "title",
+          locale,
+          fallback: data.course?.title ?? "",
+          machineTranslate,
+        })
+      : Promise.resolve(""),
+    courseRecord
+      ? resolveLocalizedDynamicField({
+          record: courseRecord,
+          field: "completionRule",
+          locale,
+          fallback: data.course?.completionRule ?? "",
+          machineTranslate,
+        })
+      : Promise.resolve(""),
+  ]);
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
@@ -109,7 +141,7 @@ export default async function CertificateVerifyPage({
                 <CertificateDownloadButton
                   verificationCode={data.certificate.verificationCode}
                   learnerName={learnerName}
-                  courseTitle={data.course?.title || null}
+                  courseTitle={courseTitle || data.course?.title || null}
                   label={t("Download certificate")}
                 />
                 <Link
@@ -132,7 +164,7 @@ export default async function CertificateVerifyPage({
                 {t("has satisfied the learning and assessment requirements for")}
               </p>
               <p className="mt-4 text-center text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                {data.course?.title || t("HenryCo Learn program")}
+                {courseTitle || data.course?.title || t("HenryCo Learn program")}
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -204,7 +236,7 @@ export default async function CertificateVerifyPage({
               <p className="text-xs font-semibold uppercase tracking-[0.18em]">{t("Program rules")}</p>
             </div>
             <p className="mt-4 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              {data.course?.completionRule ||
+              {courseCompletionRule || data.course?.completionRule ||
                 t("This certificate was issued after the course completion rules and assessment requirements were satisfied.")}
             </p>
             <div className="mt-5 grid gap-3">

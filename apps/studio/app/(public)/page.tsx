@@ -22,6 +22,15 @@ export default async function StudioHomePage() {
     Number.POSITIVE_INFINITY,
   );
 
+  // TODO(wave1): public homepage is mostly multi-row catalog lists (packages,
+  // services, teams, case studies, testimonials, value comparisons). Each
+  // row is a Supabase-row text field (name / summary / quote / etc.) —
+  // translate per-row through Promise.all + resolveLocalizedDynamicField in
+  // a follow-up wave. Single-row detail surfaces under /services/[slug] and
+  // /teams/[slug] and /work/[slug] are already wrapped through the cached
+  // DeepL pipeline. Surface labels remain wrapped via translateSurfaceLabel
+  // above. Templates come from a static module (out of scope).
+
   return (
     <main id="henryco-main" tabIndex={-1} className="pb-24">
       <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">

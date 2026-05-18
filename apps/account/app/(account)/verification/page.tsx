@@ -1,4 +1,6 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireAccountUser } from "@/lib/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
 import { getVerificationState } from "@/lib/verification";
 
@@ -12,7 +14,8 @@ import { UnlocksRail } from "@/components/verification/UnlocksRail";
 export const dynamic = "force-dynamic";
 
 export default async function VerificationPage() {
-  const user = await requireAccountUser();
+  const [user, locale] = await Promise.all([requireAccountUser(), getAccountAppLocale()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [trust, verification] = await Promise.all([
     getAccountTrustProfile(user.id),
     getVerificationState(user.id),
@@ -36,10 +39,10 @@ export default async function VerificationPage() {
       <section className="acct-ver__section" aria-labelledby="acct-ver-trust-head">
         <div className="acct-ver__section-head">
           <h2 id="acct-ver-trust-head" className="acct-ver__section-title hc-h3 acct-display">
-            Trust journey
+            {t("Trust journey")}
           </h2>
           <span className="acct-ver__section-meta">
-            What approval unlocks · what advances your tier
+            {t("What approval unlocks · what advances your tier")}
           </span>
         </div>
         <div className="acct-ver__columns">
@@ -50,10 +53,10 @@ export default async function VerificationPage() {
       <section className="acct-ver__section" aria-labelledby="acct-ver-docs-head">
         <div className="acct-ver__section-head">
           <h2 id="acct-ver-docs-head" className="acct-ver__section-title hc-h3 acct-display">
-            Documents
+            {t("Documents")}
           </h2>
           <span className="acct-ver__section-meta">
-            Uploads are async — you stay on this page while we review.
+            {t("Uploads are async — you stay on this page while we review.")}
           </span>
         </div>
         <DocumentSubmissionsClient initialVerification={verification} />

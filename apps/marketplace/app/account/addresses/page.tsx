@@ -4,6 +4,7 @@ import { AccountAddressesClient } from "@/components/marketplace/account-address
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ const ACCOUNT_HOST =
   process.env.NEXT_PUBLIC_ACCOUNT_HOST || "https://account.henrycogroup.com";
 
 export default async function AccountAddressesPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/addresses");
   const data = await getBuyerDashboardData();
 
@@ -18,7 +20,7 @@ export default async function AccountAddressesPage() {
     <WorkspaceShell
       title="Addresses"
       description="Saved addresses stay tied to the shared account so future HenryCo services can reuse the same customer context."
-      {...accountWorkspaceNav("/account/addresses")}
+      {...accountWorkspaceNav("/account/addresses", locale)}
     >
       {/* V2-ADDR-01 — canonical address book moved to the central account app. */}
       <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100">

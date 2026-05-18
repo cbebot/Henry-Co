@@ -1,3 +1,5 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   activeChannels,
   activeDivisions,
@@ -25,7 +27,9 @@ type Props = {
  * as InboxHero / CalendarHero: eyebrow + state-driven headline +
  * capability tiles + "By division" side panel. No client state.
  */
-export function SettingsHero({ profile, preferences }: Props) {
+export async function SettingsHero({ profile, preferences }: Props) {
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const state = identityState(profile, preferences);
   const headline = identityHeadline(state, profile, preferences);
   const blurb = identityBlurb(state);
@@ -38,31 +42,31 @@ export function SettingsHero({ profile, preferences }: Props) {
 
   const verificationLabel =
     state === "unverified"
-      ? "Setup pending"
+      ? t("Setup pending")
       : state === "verified-base"
-        ? "Base verified"
+        ? t("Base verified")
         : state === "power-user"
-          ? "Power-user tier"
-          : "Verified rich";
+          ? t("Power-user tier")
+          : t("Verified rich");
 
   return (
-    <section className="acct-settings__hero" aria-label="Identity & preferences overview">
+    <section className="acct-settings__hero" aria-label={t("Identity & preferences overview")}>
       <div className="acct-settings__hero-inner">
         <div>
           <span className="acct-settings__eyebrow">
             <span className="acct-settings__eyebrow-dot" aria-hidden />
-            HenryCo · identity & preferences
+            {t("HenryCo · identity & preferences")}
           </span>
-          <h1 className="acct-settings__headline">{headline}</h1>
-          <p className="acct-settings__blurb">{blurb}</p>
+          <h1 className="acct-settings__headline">{t(headline)}</h1>
+          <p className="acct-settings__blurb">{t(blurb)}</p>
 
           <div
             className="acct-settings__hero-tiles"
             role="list"
-            aria-label="Identity capability snapshot"
+            aria-label={t("Identity capability snapshot")}
           >
             <div className="acct-settings__hero-tile" role="listitem">
-              <span className="acct-settings__hero-tile-label">Profile</span>
+              <span className="acct-settings__hero-tile-label">{t("Profile")}</span>
               <span className="acct-settings__hero-tile-value acct-settings__hero-tile-value--fraction">
                 {completenessFilled}
                 <span className="acct-settings__hero-tile-value-suffix">
@@ -71,14 +75,14 @@ export function SettingsHero({ profile, preferences }: Props) {
               </span>
               <span className="acct-settings__hero-tile-foot">
                 {completenessFilled === completenessTotal
-                  ? "Every field filled"
+                  ? t("Every field filled")
                   : completenessFilled === 0
-                    ? "Start with your full name"
-                    : `${completenessTotal - completenessFilled} field${completenessTotal - completenessFilled === 1 ? "" : "s"} left`}
+                    ? t("Start with your full name")
+                    : `${completenessTotal - completenessFilled} ${completenessTotal - completenessFilled === 1 ? t("field left") : t("fields left")}`}
               </span>
             </div>
             <div className="acct-settings__hero-tile" role="listitem">
-              <span className="acct-settings__hero-tile-label">Channels</span>
+              <span className="acct-settings__hero-tile-label">{t("Channels")}</span>
               <span className="acct-settings__hero-tile-value acct-settings__hero-tile-value--fraction">
                 {channels.count}
                 <span className="acct-settings__hero-tile-value-suffix">
@@ -87,14 +91,14 @@ export function SettingsHero({ profile, preferences }: Props) {
               </span>
               <span className="acct-settings__hero-tile-foot">
                 {channels.count === 0
-                  ? "Pick how HenryCo reaches you"
+                  ? t("Pick how HenryCo reaches you")
                   : channels.count === 1
-                    ? "Email only — add a fallback"
-                    : `Email · push · WhatsApp · SMS · in-app`}
+                    ? t("Email only — add a fallback")
+                    : t("Email · push · WhatsApp · SMS · in-app")}
               </span>
             </div>
             <div className="acct-settings__hero-tile" role="listitem">
-              <span className="acct-settings__hero-tile-label">Region</span>
+              <span className="acct-settings__hero-tile-label">{t("Region")}</span>
               <span className="acct-settings__hero-tile-value acct-settings__hero-tile-value--fraction">
                 {region.filled}
                 <span className="acct-settings__hero-tile-value-suffix">
@@ -105,25 +109,24 @@ export function SettingsHero({ profile, preferences }: Props) {
                 {region.filled === 3
                   ? `${region.country} · ${region.language}`
                   : region.filled === 2
-                    ? "One field left for full localisation"
-                    : "Country, language, timezone pending"}
+                    ? t("One field left for full localisation")
+                    : t("Country, language, timezone pending")}
               </span>
             </div>
           </div>
         </div>
 
-        <aside className="acct-settings__hero-side" aria-label="Per-division signal status">
-          <p className="acct-settings__hero-side-label">By division</p>
+        <aside className="acct-settings__hero-side" aria-label={t("Per-division signal status")}>
+          <p className="acct-settings__hero-side-label">{t("By division")}</p>
           <p className="acct-settings__hero-side-title">
             {divisions.count === 0
-              ? "All divisions muted"
+              ? t("All divisions muted")
               : divisions.count === divisions.total
-                ? "Every division opted in"
-                : `${divisions.count} of ${divisions.total} divisions on`}
+                ? t("Every division opted in")
+                : `${divisions.count} ${t("of")} ${divisions.total} ${t("divisions on")}`}
           </p>
           <p className="acct-settings__hero-side-body">
-            {verificationLabel} — preferences sync instantly across HenryCo.
-            Toggle a division below to mute or unmute its alerts.
+            {verificationLabel} {t("— preferences sync instantly across HenryCo. Toggle a division below to mute or unmute its alerts.")}
           </p>
           <div role="list">
             {DIVISION_ORDER.map((key) => {
@@ -145,14 +148,14 @@ export function SettingsHero({ profile, preferences }: Props) {
                         --acct-ink for clean fg-on-page contrast in
                         both modes. */}
                     <span style={{ color: "var(--acct-ink)" }}>
-                      {DIVISION_LABEL[key]}
+                      {t(DIVISION_LABEL[key])}
                     </span>
                   </span>
                   <span
                     className="acct-settings__div-state"
                     data-state={on ? "on" : "off"}
                   >
-                    {on ? "On" : "Muted"}
+                    {on ? t("On") : t("Muted")}
                   </span>
                 </div>
               );

@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Loader2, StickyNote, RefreshCw } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { emitCareToast } from "@/components/feedback/CareToaster";
 import {
   updateSupportThreadStatusAction,
@@ -24,6 +26,8 @@ export default function ThreadQuickActions({
   currentStatus,
   statuses,
 }: ThreadQuickActionsProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +65,7 @@ export default function ThreadQuickActions({
         className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:-translate-y-0.5 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
       >
         <RefreshCw className="h-4 w-4" />
-        Quick actions
+        {t("Quick actions")}
         <ChevronDown className={`h-3.5 w-3.5 transition ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
@@ -70,7 +74,7 @@ export default function ThreadQuickActions({
           <div className="space-y-3">
             <label className="grid gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
-                Status
+                {t("Status")}
               </span>
               <select
                 value={selectedStatus}
@@ -79,7 +83,7 @@ export default function ThreadQuickActions({
               >
                 {statuses.map((s) => (
                   <option key={s} value={s}>
-                    {formatSupportThreadStatusLabel(s)}
+                    {t(formatSupportThreadStatusLabel(s))}
                   </option>
                 ))}
               </select>
@@ -87,12 +91,12 @@ export default function ThreadQuickActions({
 
             <label className="grid gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
-                Note (optional)
+                {t("Note (optional)")}
               </span>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Quick internal note..."
+                placeholder={t("Quick internal note...")}
                 rows={2}
                 className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm font-medium text-zinc-900 outline-none transition focus:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
               />
@@ -109,7 +113,7 @@ export default function ThreadQuickActions({
               ) : (
                 <StickyNote className="h-4 w-4" />
               )}
-              {selectedStatus !== currentStatus ? "Update status" : "Add note"}
+              {selectedStatus !== currentStatus ? t("Update status") : t("Add note")}
             </button>
           </div>
         </div>

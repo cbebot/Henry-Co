@@ -7,6 +7,7 @@ import { PublicShell } from "@/components/public-shell";
 import { getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import { getEmployerProfiles, getJobsHomeData, searchJobs } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +17,12 @@ export default async function JobsPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = (await searchParams) ?? {};
+  const locale = await getJobsPublicLocale();
   const viewer = await getJobsViewer();
   const [jobs, employers, home] = await Promise.all([
-    searchJobs(params),
-    getEmployerProfiles(),
-    getJobsHomeData(),
+    searchJobs(params, locale),
+    getEmployerProfiles({ locale }),
+    getJobsHomeData(locale),
   ]);
   const verifiedEmployers = employers.filter((e) => e.verificationStatus === "verified").length;
   const internalRoles = jobs.filter((job) => job.internal).length;

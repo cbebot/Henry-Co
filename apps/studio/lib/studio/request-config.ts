@@ -1,3 +1,4 @@
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import type { StudioServiceKind } from "@/lib/studio/types";
 
 export type StudioPricedOption = {
@@ -896,4 +897,56 @@ export function findModifierOptionByLabel(
       (option) => option.label.toLowerCase() === normalized
     ) ?? null
   );
+}
+
+/**
+ * Localize a StudioRequestConfig for display. Canonical English labels remain
+ * the source of truth for storage and pricing lookups (findPricedOptionByLabel,
+ * sumOptionCosts, etc.) — this helper produces a parallel display-only config
+ * with each label/description run through translateSurfaceLabel for the
+ * given locale.
+ *
+ * Use this in UI consumers right before render. Do NOT use the returned
+ * config for any persisted state — the original label string is the
+ * canonical key.
+ */
+export function localizeStudioRequestConfig(
+  config: StudioRequestConfig,
+  locale: AppLocale,
+): StudioRequestConfig {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  const localizePriced = (options: StudioPricedOption[]): StudioPricedOption[] =>
+    options.map((option) => ({
+      ...option,
+      label: t(option.label),
+      description: option.description ? t(option.description) : option.description,
+    }));
+
+  const localizeModifier = (options: StudioModifierOption[]): StudioModifierOption[] =>
+    options.map((option) => ({
+      ...option,
+      label: t(option.label),
+      description: option.description ? t(option.description) : option.description,
+    }));
+
+  const localizeStrings = (list: string[]): string[] => list.map((item) => t(item));
+
+  return {
+    businessOptions: localizeStrings(config.businessOptions),
+    budgetOptions: localizeStrings(config.budgetOptions),
+    designOptions: localizeStrings(config.designOptions),
+    stackOptions: localizeStrings(config.stackOptions),
+    programmingLanguageOptions: localizeStrings(config.programmingLanguageOptions),
+    frameworkOptions: localizePriced(config.frameworkOptions),
+    backendOptions: localizePriced(config.backendOptions),
+    hostingOptions: localizeStrings(config.hostingOptions),
+    projectTypes: localizePriced(config.projectTypes),
+    platformOptions: localizePriced(config.platformOptions),
+    pageOptions: localizePriced(config.pageOptions),
+    moduleOptions: localizePriced(config.moduleOptions),
+    addOnOptions: localizePriced(config.addOnOptions),
+    urgencyOptions: localizeModifier(config.urgencyOptions),
+    timelineOptions: localizeModifier(config.timelineOptions),
+  };
 }

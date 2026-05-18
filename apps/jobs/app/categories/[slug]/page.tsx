@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { JobCard } from "@/components/job-card";
 import { PublicShell } from "@/components/public-shell";
 import { getJobPosts } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,8 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const jobs = await getJobPosts();
+  const locale = await getJobsPublicLocale();
+  const jobs = await getJobPosts({ locale });
   const items = jobs.filter((job) => job.categorySlug === slug);
   if (items.length === 0) {
     notFound();

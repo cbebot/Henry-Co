@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyEmptyState,
   PropertyMetricCard,
@@ -9,6 +11,7 @@ import { requirePropertyRoles } from "@/lib/property/auth";
 import { getPropertyGovernanceWorkspaceData } from "@/lib/property/data";
 import { getPropertyListingStatusSummary } from "@/lib/property/governance";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -65,6 +68,8 @@ function summarizeDocuments(
 export default async function AdminListingsPage() {
   await requirePropertyRoles(["property_admin", "moderation", "listing_manager"], "/admin/listings");
   const data = await getPropertyGovernanceWorkspaceData();
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const awaitingDocuments = data.queue.filter((listing) => listing.status === "awaiting_documents").length;
   const awaitingEligibility = data.queue.filter((listing) => listing.status === "awaiting_eligibility").length;
@@ -72,11 +77,32 @@ export default async function AdminListingsPage() {
     ["inspection_requested", "inspection_scheduled"].includes(listing.status)
   ).length;
 
+  // Staff queue — wrap listing.title only per row; descriptions stay raw
+  // to keep DeepL fan-out flat across multi-row tables.
+  // TODO(wave1+): consider batched cache for listing.policySummary when
+  // the governance queue grows past one screen.
+  const queueTitles = await Promise.all(
+    data.queue.map((listing) =>
+      resolveLocalizedDynamicField({
+        record: listing as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: listing.title ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const queueTitleById = new Map(
+    data.queue.map((listing, index) => [listing.id, queueTitles[index] ?? listing.title]),
+  );
+
   return (
     <PropertyWorkspaceShell
-      kicker="Admin"
-      title="Listing governance queue"
-      description="Review trust evidence, inspection readiness, and policy holds before anything reaches the public property surface."
+      kicker={t("Admin")}
+      title={t("Listing governance queue")}
+      description={t(
+        "Review trust evidence, inspection readiness, and policy holds before anything reaches the public property surface.",
+      )}
       nav={getWorkspaceNavigation("/admin")}
       actions={
         <div className="flex flex-wrap gap-3">
@@ -84,47 +110,49 @@ export default async function AdminListingsPage() {
             href="/operations"
             className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Open inspection ops
+            {t("Open inspection ops")}
           </Link>
           <Link
             href="/trust"
             className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Review trust policy copy
+            {t("Review trust policy copy")}
           </Link>
         </div>
       }
     >
       <div className="grid gap-4 md:grid-cols-4">
         <PropertyMetricCard
-          label="Queue"
+          label={t("Queue")}
           value={String(data.queue.length)}
-          hint="Listings currently held somewhere in the governance pipeline."
+          hint={t("Listings currently held somewhere in the governance pipeline.")}
         />
         <PropertyMetricCard
-          label="Docs hold"
+          label={t("Docs hold")}
           value={String(awaitingDocuments)}
-          hint="Listings blocked on authority, ownership, or supporting evidence."
+          hint={t("Listings blocked on authority, ownership, or supporting evidence.")}
         />
         <PropertyMetricCard
-          label="Eligibility hold"
+          label={t("Eligibility hold")}
           value={String(awaitingEligibility)}
-          hint="Listings waiting on identity, duplicate-contact review, or trust eligibility."
+          hint={t("Listings waiting on identity, duplicate-contact review, or trust eligibility.")}
         />
         <PropertyMetricCard
-          label="Inspection"
+          label={t("Inspection")}
           value={String(inspectionBacklog)}
-          hint="Listings that still need an inspection decision before publication can continue."
+          hint={t("Listings that still need an inspection decision before publication can continue.")}
         />
       </div>
 
       <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Action queue</div>
+        <div className="property-kicker">{t("Action queue")}</div>
         {data.queue.length === 0 ? (
           <div className="mt-5">
             <PropertyEmptyState
-              title="No listings are waiting right now."
-              body="New property submissions, document holds, and inspection-sensitive listings will appear here when governance work is required."
+              title={t("No listings are waiting right now.")}
+              body={t(
+                "New property submissions, document holds, and inspection-sensitive listings will appear here when governance work is required.",
+              )}
             />
           </div>
         ) : (
@@ -147,10 +175,10 @@ export default async function AdminListingsPage() {
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-[18rem]">
                           <div className="text-lg font-semibold text-[var(--property-ink)]">
-                            {listing.title}
+                            {queueTitleById.get(listing.id) ?? listing.title}
                           </div>
                           <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                            {listing.locationLabel} · {humanize(listing.serviceType)} · risk {listing.riskScore}/100
+                            {listing.locationLabel} · {humanize(listing.serviceType)} · {t("risk")} {listing.riskScore}/100
                           </div>
                           <div className="mt-3 flex flex-wrap gap-2">
                             <PropertyStatusBadge status={listing.status} />
@@ -159,8 +187,8 @@ export default async function AdminListingsPage() {
                           </div>
                         </div>
                         <div className="text-right text-xs text-[var(--property-ink-soft)]">
-                          <div>Updated {formatDate(listing.updatedAt)}</div>
-                          <div className="mt-1">Owner: {listing.ownerName || listing.ownerEmail || "Unknown"}</div>
+                          <div>{t("Updated")} {formatDate(listing.updatedAt)}</div>
+                          <div className="mt-1">{t("Owner")}: {listing.ownerName || listing.ownerEmail || t("Unknown")}</div>
                         </div>
                       </div>
 
@@ -174,7 +202,7 @@ export default async function AdminListingsPage() {
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/10 p-4">
                           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                            Trust evidence
+                            {t("Trust evidence")}
                           </div>
                           {documentSummary.length ? (
                             <div className="mt-3 space-y-2 text-sm text-[var(--property-ink-soft)]">
@@ -184,21 +212,21 @@ export default async function AdminListingsPage() {
                                     {humanize(doc.kind)}
                                   </div>
                                   <div className="mt-1 text-xs leading-6">
-                                    {doc.count} file{doc.count === 1 ? "" : "s"} · sample: {doc.sample}
+                                    {doc.count} {doc.count === 1 ? t("file") : t("files")} · {t("sample")}: {doc.sample}
                                   </div>
                                 </div>
                               ))}
                             </div>
                           ) : (
                             <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-                              No uploaded trust evidence has been recorded yet.
+                              {t("No uploaded trust evidence has been recorded yet.")}
                             </p>
                           )}
                         </div>
 
                         <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/10 p-4">
                           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                            Contact collision review
+                            {t("Contact collision review")}
                           </div>
                           {contactReview?.reviewRequired ? (
                             <div className="mt-3 space-y-2 text-sm leading-7 text-[var(--property-alert)]">
@@ -208,15 +236,15 @@ export default async function AdminListingsPage() {
                             </div>
                           ) : (
                             <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-                              No duplicate-contact signal is currently blocking this listing.
+                              {t("No duplicate-contact signal is currently blocking this listing.")}
                             </p>
                           )}
                           <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--property-ink-soft)]">
                             <span className="rounded-full border border-[var(--property-line)] px-3 py-1">
-                              email overlaps: {contactReview?.emailMatches || 0}
+                              {t("email overlaps")}: {contactReview?.emailMatches || 0}
                             </span>
                             <span className="rounded-full border border-[var(--property-line)] px-3 py-1">
-                              phone overlaps: {contactReview?.phoneMatches || 0}
+                              {t("phone overlaps")}: {contactReview?.phoneMatches || 0}
                             </span>
                           </div>
                         </div>
@@ -225,7 +253,7 @@ export default async function AdminListingsPage() {
                       {contextEntries.length ? (
                         <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/10 p-4">
                           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                            Submission context
+                            {t("Submission context")}
                           </div>
                           <div className="mt-3 grid gap-3 md:grid-cols-2">
                             {contextEntries.map(([key, value]) => (
@@ -244,7 +272,7 @@ export default async function AdminListingsPage() {
 
                       <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/10 p-4">
                         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                          Latest policy event
+                          {t("Latest policy event")}
                         </div>
                         {latestEvent ? (
                           <div className="mt-3 space-y-2 text-sm leading-7 text-[var(--property-ink-soft)]">
@@ -258,7 +286,7 @@ export default async function AdminListingsPage() {
                           </div>
                         ) : (
                           <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-                            No policy history recorded yet.
+                            {t("No policy history recorded yet.")}
                           </p>
                         )}
                       </div>
@@ -267,10 +295,10 @@ export default async function AdminListingsPage() {
                     <div className="space-y-4">
                       <section className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                         <div className="text-sm font-semibold text-[var(--property-ink)]">
-                          Inspection control
+                          {t("Inspection control")}
                         </div>
                         <p className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-                          Schedule, waive, complete, or fail the inspection rail before publication.
+                          {t("Schedule, waive, complete, or fail the inspection rail before publication.")}
                         </p>
                         <form action="/api/property" method="POST" className="mt-4 space-y-3">
                           <input type="hidden" name="intent" value="inspection_update" />
@@ -280,7 +308,7 @@ export default async function AdminListingsPage() {
 
                           <label className="block">
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                              Inspection status
+                              {t("Inspection status")}
                             </span>
                             <select
                               name="status"
@@ -289,7 +317,7 @@ export default async function AdminListingsPage() {
                             >
                               {INSPECTION_OPTIONS.map((option) => (
                                 <option key={option.value} value={option.value}>
-                                  {option.label}
+                                  {t(option.label)}
                                 </option>
                               ))}
                             </select>
@@ -297,7 +325,7 @@ export default async function AdminListingsPage() {
 
                           <label className="block">
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                              Scheduled time
+                              {t("Scheduled time")}
                             </span>
                             <input
                               type="datetime-local"
@@ -309,27 +337,27 @@ export default async function AdminListingsPage() {
 
                           <label className="block">
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                              Access notes
+                              {t("Access notes")}
                             </span>
                             <textarea
                               name="location_notes"
                               rows={3}
                               defaultValue={inspection?.locationNotes || ""}
                               className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                              placeholder="Caretaker reality, access code, estate rules, location truth..."
+                              placeholder={t("Caretaker reality, access code, estate rules, location truth...")}
                             />
                           </label>
 
                           <label className="block">
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                              Outcome notes
+                              {t("Outcome notes")}
                             </span>
                             <textarea
                               name="outcome_notes"
                               rows={3}
                               defaultValue={inspection?.outcomeNotes || ""}
                               className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                              placeholder="What HenryCo verified, what failed, or why the inspection was waived."
+                              placeholder={t("What HenryCo verified, what failed, or why the inspection was waived.")}
                             />
                           </label>
 
@@ -337,17 +365,17 @@ export default async function AdminListingsPage() {
                             type="submit"
                             className="property-button inline-flex rounded-full px-5 py-3 text-sm font-semibold"
                           >
-                            Save inspection state
+                            {t("Save inspection state")}
                           </button>
                         </form>
                       </section>
 
                       <section className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                         <div className="text-sm font-semibold text-[var(--property-ink)]">
-                          Governance decision
+                          {t("Governance decision")}
                         </div>
                         <p className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-                          Publish only when trust, documents, and inspection truth are coherent.
+                          {t("Publish only when trust, documents, and inspection truth are coherent.")}
                         </p>
                         <form action="/api/property" method="POST" className="mt-4 space-y-3">
                           <input type="hidden" name="intent" value="listing_decision" />
@@ -356,7 +384,7 @@ export default async function AdminListingsPage() {
 
                           <label className="block">
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                              Decision
+                              {t("Decision")}
                             </span>
                             <select
                               name="decision"
@@ -365,7 +393,7 @@ export default async function AdminListingsPage() {
                             >
                               {DECISION_OPTIONS.map((option) => (
                                 <option key={option.value} value={option.value}>
-                                  {option.label}
+                                  {t(option.label)}
                                 </option>
                               ))}
                             </select>
@@ -373,24 +401,24 @@ export default async function AdminListingsPage() {
 
                           <label className="block">
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                              Staff note
+                              {t("Staff note")}
                             </span>
                             <textarea
                               name="note"
                               rows={4}
                               className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                              placeholder="What is missing, what has been cleared, or why this needs escalation."
+                              placeholder={t("What is missing, what has been cleared, or why this needs escalation.")}
                             />
                           </label>
 
                           <div className="grid gap-3 sm:grid-cols-2">
                             <label className="inline-flex items-center gap-2 text-sm text-[var(--property-ink-soft)]">
                               <input type="checkbox" name="featured" value="1" defaultChecked={listing.featured} />
-                              Keep featured
+                              {t("Keep featured")}
                             </label>
                             <label className="inline-flex items-center gap-2 text-sm text-[var(--property-ink-soft)]">
                               <input type="checkbox" name="promoted" value="1" defaultChecked={listing.promoted} />
-                              Keep promoted
+                              {t("Keep promoted")}
                             </label>
                           </div>
 
@@ -399,13 +427,13 @@ export default async function AdminListingsPage() {
                               type="submit"
                               className="property-button inline-flex rounded-full px-5 py-3 text-sm font-semibold"
                             >
-                              Apply decision
+                              {t("Apply decision")}
                             </button>
                             <Link
                               href={`/property/${listing.slug}`}
                               className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
                             >
-                              View public detail
+                              {t("View public detail")}
                             </Link>
                           </div>
                         </form>

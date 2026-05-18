@@ -22,6 +22,12 @@ import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
+/* TODO(wave3-catalogue): paginate translation — the marketplace home page
+   renders many catalogue rows (featured products, categories, collections,
+   vendors). Wrapping every row through resolveLocalizedDynamicField would
+   compound DeepL spend on a hot landing route; defer until cache layer
+   lands so translations can be memoized per locale + record version. */
+
 export default async function MarketplaceHomePage() {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);

@@ -216,6 +216,11 @@ async function runAlerts(request: Request) {
   }
 
   const admin = createAdminSupabase();
+  // TODO(wave3-cron) — alert email rendering needs per-subscriber locale
+  // (currently this passes the EN source job text). The dynamic-field
+  // resolver caches by source string, so per-recipient localization can
+  // happen inside the email render loop once subscriber locale is
+  // threaded through the activity row.
   const [jobs, alertsRes, reminders, offerReminders] = await Promise.all([
     getJobPosts(),
     admin

@@ -3,10 +3,12 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorDisputesPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/disputes");
   const data = await getVendorWorkspaceData();
 
@@ -14,7 +16,7 @@ export default async function VendorDisputesPage() {
     <WorkspaceShell
       title="Disputes"
       description="Vendors can see issue context without losing the order and payout relationship."
-      nav={vendorNav("/vendor/disputes")}
+      nav={vendorNav("/vendor/disputes", locale)}
     >
       <div className="space-y-4">
         {data.disputes.map((dispute) => (

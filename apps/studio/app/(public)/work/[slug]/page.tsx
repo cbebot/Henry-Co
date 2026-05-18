@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioCaseStudyBySlug } from "@/lib/studio/catalog";
 
 export default async function CaseStudyDetailPage({
@@ -12,6 +14,30 @@ export default async function CaseStudyDetailPage({
   const caseStudy = await getStudioCaseStudyBySlug(slug);
   if (!caseStudy) notFound();
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Public single-row case
+  // study detail surface so the DeepL cost is acceptable. caseStudy.name is
+  // a project / brand name — keep source value (skip per scope). Type label
+  // is also a category tag we leave source-language. We translate the two
+  // narrative fields (challenge + impact).
+  const locale = await getStudioPublicLocale();
+  const [localizedCaseChallenge, localizedCaseImpact] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: caseStudy as unknown as Record<string, unknown>,
+      field: "challenge",
+      locale,
+      fallback: caseStudy.challenge ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: caseStudy as unknown as Record<string, unknown>,
+      field: "impact",
+      locale,
+      fallback: caseStudy.impact ?? "",
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[72rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
@@ -20,7 +46,7 @@ export default async function CaseStudyDetailPage({
           {caseStudy.name}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          {caseStudy.challenge}
+          {localizedCaseChallenge}
         </p>
 
         <div className="mt-10 border-l-2 border-[var(--studio-signal)]/55 pl-5">
@@ -28,7 +54,7 @@ export default async function CaseStudyDetailPage({
             Impact
           </p>
           <p className="mt-3 max-w-2xl text-[1.45rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.7rem]">
-            {caseStudy.impact}
+            {localizedCaseImpact}
           </p>
           {caseStudy.metrics.length ? (
             <ul className="mt-5 flex flex-wrap gap-1.5">
@@ -57,12 +83,12 @@ export default async function CaseStudyDetailPage({
         <div>
           <p className="studio-kicker">The challenge</p>
           <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            {caseStudy.challenge}
+            {localizedCaseChallenge}
           </p>
         </div>
         <div>
           <p className="studio-kicker">The result</p>
-          <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{caseStudy.impact}</p>
+          <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedCaseImpact}</p>
         </div>
       </section>
     </main>

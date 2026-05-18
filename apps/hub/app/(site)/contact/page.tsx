@@ -7,6 +7,7 @@ import ContactHeroLayout from "../../components/ContactHeroLayout";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
+  localizeCompanyPage,
 } from "../../lib/company-pages";
 import { getCompanySettings } from "../../lib/company-settings";
 import { normalizeCompanySettings } from "../../lib/company-settings-shared";
@@ -15,8 +16,12 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getCompanyPage("contact").catch(() => ({ page: null }));
-  const resolved = page ?? createFallbackCompanyPage("contact");
+  const [{ page }, locale] = await Promise.all([
+    getCompanyPage("contact").catch(() => ({ page: null })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const baseResolved = page ?? createFallbackCompanyPage("contact");
+  const resolved = await localizeCompanyPage(baseResolved, locale);
 
   return {
     title: resolved.seo_title || resolved.title,
@@ -59,6 +64,12 @@ export default async function ContactPage({
     sp.reason && VALID_REASONS.has(sp.reason) ? sp.reason : "general";
   const planContext = typeof sp.plan === "string" ? sp.plan : null;
 
+  // PASS i18n-100 — translate the row text for SSR first paint.
+  const localizedPage = await localizeCompanyPage(
+    pageResult.page ?? createFallbackCompanyPage("contact"),
+    locale,
+  );
+
   return (
     <>
       <ContactHeroLayout
@@ -70,7 +81,7 @@ export default async function ContactPage({
       />
       <CompanyPageClient
         pageKey="contact"
-        initialData={pageResult.page ?? createFallbackCompanyPage("contact")}
+        initialData={localizedPage}
         serverWarning={pageResult.hasServerError}
         hideHero
         copy={copy.companyPage}

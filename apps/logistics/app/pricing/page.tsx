@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import { getLogisticsPricingCopy } from "@henryco/i18n/server";
+import {
+  getLogisticsPricingCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { DEFAULT_RATE_CARDS } from "@/lib/logistics/pricing";
 import { formatCurrency } from "@/lib/env";
@@ -23,6 +26,30 @@ export default async function PricingPage() {
   const copy = getLogisticsPricingCopy(locale);
   const { zones, rateCards } = await getPublicLogisticsSnapshot();
   const cards = rateCards.length > 0 ? rateCards : DEFAULT_RATE_CARDS;
+
+  // Route Supabase-row zone copy (name / summary) through cached DeepL.
+  const zonesLocalized = await Promise.all(
+    zones.map(async (zone) => ({
+      ...zone,
+      name: await resolveLocalizedDynamicField({
+        record: zone as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: zone.name,
+        machineTranslate: locale !== "en",
+      }),
+      summary: await resolveLocalizedDynamicField({
+        record: zone as unknown as Record<string, unknown>,
+        field: "summary",
+        locale,
+        fallback: zone.summary,
+        machineTranslate: locale !== "en",
+      }),
+    })),
+  );
+  // TODO(list-row): rate-card fields (serviceType / urgency) are enums —
+  // they're status-flavoured strings rendered with `.replaceAll("_", " ")`,
+  // so they're skipped per the enum/status rule.
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-12 sm:px-6 lg:px-8">
@@ -47,7 +74,7 @@ export default async function PricingPage() {
             <span className="h-px flex-1 bg-[var(--logistics-line)]" />
           </div>
           <ul className="mt-6 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-            {zones.map((z) => (
+            {zonesLocalized.map((z) => (
               <li key={z.id} className="grid gap-5 py-6 md:grid-cols-[0.4fr,1fr,0.4fr,0.4fr]">
                 <div>
                   <h3 className="text-[1.05rem] font-semibold tracking-tight text-white">

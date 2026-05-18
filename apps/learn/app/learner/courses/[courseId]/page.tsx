@@ -7,7 +7,7 @@ import {
   Layers3,
   Trophy,
 } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitQuizAttemptAction } from "@/lib/learn/actions";
 import { requireLearnUser } from "@/lib/learn/auth";
 import { getLearnerWorkspace } from "@/lib/learn/data";
@@ -25,8 +25,10 @@ import {
   LearnWorkspaceShell,
 } from "@/components/learn/ui";
 
-function formatDateLabel(value?: string | null) {
-  if (!value) return "Not yet";
+type LearnTranslator = (text: string) => string;
+
+function formatDateLabel(value: string | null | undefined, t: LearnTranslator) {
+  if (!value) return t("Not yet");
   return new Date(value).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "short",
@@ -34,23 +36,23 @@ function formatDateLabel(value?: string | null) {
   });
 }
 
-function formatRelativeTime(value?: string | null) {
-  if (!value) return "No recent activity yet";
+function formatRelativeTime(value: string | null | undefined, t: LearnTranslator) {
+  if (!value) return t("No recent activity yet");
   const time = new Date(value).getTime();
   const delta = Date.now() - time;
   const minute = 60 * 1000;
   const hour = 60 * minute;
   const day = 24 * hour;
 
-  if (delta < hour) return `${Math.max(1, Math.round(delta / minute))} min ago`;
-  if (delta < day) return `${Math.max(1, Math.round(delta / hour))} hr ago`;
-  if (delta < day * 7) return `${Math.max(1, Math.round(delta / day))} day ago`;
-  return formatDateLabel(value);
+  if (delta < hour) return `${Math.max(1, Math.round(delta / minute))} ${t("min ago")}`;
+  if (delta < day) return `${Math.max(1, Math.round(delta / hour))} ${t("hr ago")}`;
+  if (delta < day * 7) return `${Math.max(1, Math.round(delta / day))} ${t("day ago")}`;
+  return formatDateLabel(value, t);
 }
 
-function displayName(value?: string | null) {
+function displayName(value: string | null | undefined, t: LearnTranslator) {
   const text = String(value || "").trim();
-  if (!text) return "HenryCo learner";
+  if (!text) return t("HenryCo learner");
   return text.split(/\s+/).slice(0, 2).join(" ");
 }
 
@@ -129,11 +131,6 @@ export default async function LearnerCoursePage({
             : remainingAttempts === 0
               ? t("The assessment has reached its maximum attempts. Ask the academy team for a review.")
               : null;
-  const reviewQuestions =
-    latestAttempt && !latestAttempt.passed
-      ? questions.filter((question) => !isAnswerCorrect(question.correctAnswer, latestAttempt.answers[question.id]))
-      : [];
-
   const certificate = workspace.certificates.find((item) => item.courseId === course.id) || null;
   const certificateHref = certificate ? `/certifications/verify/${certificate.verificationCode}` : null;
   const requirementItems = [
@@ -162,6 +159,67 @@ export default async function LearnerCoursePage({
     },
   ];
 
+  // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
+  const machineTranslate = locale !== "en";
+  const courseRecord = course as unknown as Record<string, unknown>;
+  const quizRecord = quiz as unknown as Record<string, unknown> | null;
+  const [courseTitle, quizTitle, quizDescription, questionsLocalized] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: courseRecord,
+      field: "title",
+      locale,
+      fallback: course.title ?? "",
+      machineTranslate,
+    }),
+    quizRecord
+      ? resolveLocalizedDynamicField({
+          record: quizRecord,
+          field: "title",
+          locale,
+          fallback: quiz?.title ?? "",
+          machineTranslate,
+        })
+      : Promise.resolve(""),
+    quizRecord
+      ? resolveLocalizedDynamicField({
+          record: quizRecord,
+          field: "description",
+          locale,
+          fallback: quiz?.description ?? "",
+          machineTranslate,
+        })
+      : Promise.resolve(""),
+    Promise.all(
+      questions.map(async (question) => {
+        const questionRecord = question as unknown as Record<string, unknown>;
+        const [prompt, explanation] = await Promise.all([
+          resolveLocalizedDynamicField({
+            record: questionRecord,
+            field: "prompt",
+            locale,
+            fallback: question.prompt ?? "",
+            machineTranslate,
+          }),
+          resolveLocalizedDynamicField({
+            record: questionRecord,
+            field: "explanation",
+            locale,
+            fallback: question.explanation ?? "",
+            machineTranslate,
+          }),
+        ]);
+        return { ...question, prompt, explanation };
+      }),
+    ),
+  ]);
+
+  const reviewQuestions =
+    latestAttempt && !latestAttempt.passed
+      ? questionsLocalized.filter(
+          (question) => !isAnswerCorrect(question.correctAnswer, latestAttempt.answers[question.id]),
+        )
+      : [];
+
   const courseEnrollments = workspace.snapshot.enrollments.filter(
     (item) =>
       item.courseId === course.id &&
@@ -183,7 +241,7 @@ export default async function LearnerCoursePage({
       return {
         id: item.id,
         fullName:
-          profile?.fullName || (item.userId === viewer.user?.id ? viewer.user?.fullName : null) || "HenryCo learner",
+          profile?.fullName || (item.userId === viewer.user?.id ? viewer.user?.fullName : null) || t("HenryCo learner"),
         avatarUrl: profile?.avatarUrl || null,
         status: item.status,
         percentComplete: item.percentComplete,
@@ -210,11 +268,11 @@ export default async function LearnerCoursePage({
   return (
     <LearnWorkspaceShell
       kicker={t("Learning room")}
-      title={course.title}
+      title={courseTitle || course.title}
       description={t(
         "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your HenryCo account under Learn.",
       )}
-      nav={courseRoomNav(`/learner/courses/${course.id}`)}
+      nav={courseRoomNav(`/learner/courses/${course.id}`, t)}
       actions={
         <>
           <a
@@ -227,7 +285,7 @@ export default async function LearnerCoursePage({
             <CertificateDownloadButton
               verificationCode={certificate.verificationCode}
               learnerName={viewer.user?.fullName ?? null}
-              courseTitle={course.title}
+              courseTitle={courseTitle || course.title}
               label={t("Download certificate")}
               className="learn-print-hidden"
             />
@@ -237,10 +295,10 @@ export default async function LearnerCoursePage({
     >
       <LearnPanel className="learn-mesh rounded-[2.2rem] p-7 sm:p-8">
         <div className="flex flex-wrap items-center gap-2">
-          <LearnStatusBadge label={`${participants.length} learners in this cohort`} tone="signal" />
-          <LearnStatusBadge label={`${recentlyActiveCount} active this week`} tone="success" />
+          <LearnStatusBadge label={`${participants.length} ${t("learners in this cohort")}`} tone="signal" />
+          <LearnStatusBadge label={`${recentlyActiveCount} ${t("active this week")}`} tone="success" />
           <LearnStatusBadge
-            label={humanizeLabel(enrollment.status)}
+            label={t(humanizeLabel(enrollment.status))}
             tone={
               enrollment.status === "completed"
                 ? "success"
@@ -249,8 +307,8 @@ export default async function LearnerCoursePage({
                   : "neutral"
             }
           />
-          {quiz ? <LearnStatusBadge label={`${attemptsUsed}/${quiz.maxAttempts} attempts used`} /> : null}
-          {certificate ? <LearnStatusBadge label="Certificate issued" tone="success" /> : null}
+          {quiz ? <LearnStatusBadge label={`${attemptsUsed}/${quiz.maxAttempts} ${t("attempts used")}`} /> : null}
+          {certificate ? <LearnStatusBadge label={t("Certificate issued")} tone="success" /> : null}
         </div>
 
         <div className="space-y-6">
@@ -262,10 +320,10 @@ export default async function LearnerCoursePage({
                     {t("Final assessment")}
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                    {quiz.title}
+                    {quizTitle || quiz.title}
                   </h2>
                   <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                    {quiz.description}
+                    {quizDescription || quiz.description}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -287,18 +345,18 @@ export default async function LearnerCoursePage({
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                      Assessment state
+                      {t("Assessment state")}
                     </p>
                     <p className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-                      {quizPassed ? "Assessment complete" : quizLockedReason ? "Assessment gated" : "Assessment ready"}
+                      {quizPassed ? t("Assessment complete") : quizLockedReason ? t("Assessment gated") : t("Assessment ready")}
                     </p>
                     <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                      {quizLockedReason || "Lessons are complete. Submit the assessment to unlock final completion and certification."}
+                      {quizLockedReason || t("Lessons are complete. Submit the assessment to unlock final completion and certification.")}
                     </p>
                   </div>
                   <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                      Attempt history
+                      {t("Attempt history")}
                     </p>
                     <div className="mt-4 space-y-3">
                       {attempts.length > 0 ? (
@@ -310,17 +368,17 @@ export default async function LearnerCoursePage({
                             <div className="flex items-center justify-between gap-3">
                               <p className="text-sm font-semibold text-[var(--learn-ink)]">{attempt.score}%</p>
                               <LearnStatusBadge
-                                label={attempt.passed ? "Passed" : "Review needed"}
+                                label={attempt.passed ? t("Passed") : t("Review needed")}
                                 tone={attempt.passed ? "success" : "warning"}
                               />
                             </div>
                             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                              {formatRelativeTime(attempt.submittedAt)}
+                              {formatRelativeTime(attempt.submittedAt, t)}
                             </p>
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm leading-7 text-[var(--learn-ink-soft)]">No assessment attempt yet.</p>
+                        <p className="text-sm leading-7 text-[var(--learn-ink-soft)]">{t("No assessment attempt yet.")}</p>
                       )}
                     </div>
                   </div>
@@ -330,17 +388,17 @@ export default async function LearnerCoursePage({
                   <div className="rounded-[1.6rem] border border-emerald-200/25 bg-emerald-300/8 p-5">
                     <div className="flex items-center gap-3 text-emerald-100">
                       <Trophy className="h-5 w-5" />
-                      <p className="text-sm font-semibold">Assessment passed</p>
+                      <p className="text-sm font-semibold">{t("Assessment passed")}</p>
                     </div>
                     <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                      Your best score is {bestAttempt?.score ?? 0}%. The room has recorded the passing assessment in your completion path.
+                      {t("Your best score is")} {bestAttempt?.score ?? 0}%. {t("The room has recorded the passing assessment in your completion path.")}
                     </p>
                   </div>
                 ) : quizLockedReason ? (
                   <div className="rounded-[1.6rem] border border-amber-200/20 bg-amber-300/5 p-5">
                     <div className="flex items-center gap-3 text-amber-100">
                       <CircleAlert className="h-5 w-5" />
-                      <p className="text-sm font-semibold">Assessment locked</p>
+                      <p className="text-sm font-semibold">{t("Assessment locked")}</p>
                     </div>
                     <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">{quizLockedReason}</p>
                   </div>
@@ -348,13 +406,13 @@ export default async function LearnerCoursePage({
                   <form action={submitQuizAttemptAction} className="space-y-5">
                     <input type="hidden" name="courseId" value={course.id} />
                     <input type="hidden" name="quizId" value={quiz.id} />
-                    {questions.map((question, index) => (
+                    {questionsLocalized.map((question, index) => (
                       <div
                         key={question.id}
                         className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-5"
                       >
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                          Question {index + 1}
+                          {t("Question")} {index + 1}
                         </p>
                         <p className="mt-3 text-lg font-semibold text-[var(--learn-ink)]">{question.prompt}</p>
                         <div className="mt-4 space-y-3">
@@ -364,7 +422,7 @@ export default async function LearnerCoursePage({
                               required
                               rows={4}
                               className="learn-textarea rounded-2xl px-4 py-3"
-                              placeholder="Write your answer clearly."
+                              placeholder={t("Write your answer clearly.")}
                             />
                           ) : question.questionType === "multiple_choice" ? (
                             question.options.map((option) => (
@@ -390,8 +448,8 @@ export default async function LearnerCoursePage({
                         </div>
                       </div>
                     ))}
-                    <PendingSubmitButton pendingLabel="Submitting your assessment...">
-                      Submit assessment
+                    <PendingSubmitButton pendingLabel={t("Submitting your assessment...")}>
+                      {t("Submit assessment")}
                     </PendingSubmitButton>
                   </form>
                 )}
@@ -400,7 +458,7 @@ export default async function LearnerCoursePage({
                   <div className="rounded-[1.6rem] border border-[var(--learn-line)] bg-black/10 p-5">
                     <div className="flex items-center gap-3 text-[var(--learn-copper)]">
                       <Layers3 className="h-5 w-5" />
-                      <p className="text-sm font-semibold">Review before your next attempt</p>
+                      <p className="text-sm font-semibold">{t("Review before your next attempt")}</p>
                     </div>
                     <div className="mt-4 space-y-3">
                       {reviewQuestions.map((question) => (
@@ -410,7 +468,7 @@ export default async function LearnerCoursePage({
                         >
                           <p className="text-sm font-semibold text-[var(--learn-ink)]">{question.prompt}</p>
                           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                            {question.explanation || "Review the related lesson before retrying this concept."}
+                            {question.explanation || t("Review the related lesson before retrying this concept.")}
                           </p>
                         </div>
                       ))}
@@ -424,10 +482,10 @@ export default async function LearnerCoursePage({
           <LearnPanel className="rounded-[2rem]">
             <div className="flex items-center gap-3 text-[var(--learn-copper)]">
               <Award className="h-5 w-5" />
-              <p className="text-xs font-semibold uppercase tracking-[0.18em]">Certificate & completion</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em]">{t("Certificate & completion")}</p>
             </div>
             <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-              {certificate ? "You’ve earned this credential" : "What you need to finish"}
+              {certificate ? t("You’ve earned this credential") : t("What you need to finish")}
             </h2>
             <div className="mt-5 space-y-3">
               {requirementItems.map((item) => (
@@ -453,11 +511,11 @@ export default async function LearnerCoursePage({
             {certificate ? (
               <div className="mt-5 rounded-[1.5rem] border border-emerald-200/20 bg-emerald-300/6 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100">
-                  Verification live
+                  {t("Verification live")}
                 </p>
                 <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.certificateNo}</p>
                 <p className="mt-1 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                  Verification code: {certificate.verificationCode}
+                  {t("Verification code")}: {certificate.verificationCode}
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   {certificateHref ? (
@@ -465,14 +523,14 @@ export default async function LearnerCoursePage({
                       href={certificateHref}
                       className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold"
                     >
-                      Open certificate
+                      {t("Open certificate")}
                     </Link>
                   ) : null}
                   <CertificateDownloadButton
                     verificationCode={certificate.verificationCode}
                     learnerName={viewer.user?.fullName ?? null}
                     courseTitle={course.title}
-                    label="Download certificate"
+                    label={t("Download certificate")}
                     className="learn-print-hidden"
                   />
                 </div>
@@ -488,51 +546,51 @@ export default async function LearnerCoursePage({
             <div className="learn-print-hidden flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                  Earned certificate
+                  {t("Earned certificate")}
                 </p>
                 <h2 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[var(--learn-ink)]">
-                  Download-ready and publicly verifiable
+                  {t("Download-ready and publicly verifiable")}
                 </h2>
               </div>
               <CertificateDownloadButton
                 verificationCode={certificate.verificationCode}
                 learnerName={viewer.user?.fullName ?? null}
-                courseTitle={course.title}
-                label="Download certificate"
+                courseTitle={courseTitle || course.title}
+                label={t("Download certificate")}
               />
             </div>
 
             <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.26em] text-[var(--learn-ink-soft)]">
-                HenryCo Learn Certificate
+                {t("HenryCo Learn Certificate")}
               </p>
               <h3 className="mt-6 text-center text-[2.5rem] font-semibold tracking-[-0.05em] text-[var(--learn-ink)] sm:text-[3.4rem]">
-                {displayName(viewer.user?.fullName)}
+                {displayName(viewer.user?.fullName, t)}
               </h3>
               <p className="mt-4 text-center text-sm leading-8 text-[var(--learn-ink-soft)]">
-                has completed the learning and assessment requirements for
+                {t("has completed the learning and assessment requirements for")}
               </p>
               <p className="mt-4 text-center text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                {course.title}
+                {courseTitle || course.title}
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
                 <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    Certificate no
+                    {t("Certificate no")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.certificateNo}</p>
                 </div>
                 <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    Verification code
+                    {t("Verification code")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.verificationCode}</p>
                 </div>
                 <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    Issued
+                    {t("Issued")}
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{formatDateLabel(certificate.issuedAt)}</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{formatDateLabel(certificate.issuedAt, t)}</p>
                 </div>
               </div>
             </div>

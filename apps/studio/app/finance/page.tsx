@@ -29,6 +29,11 @@ export default async function FinanceDashboardPage() {
         <StudioMetricCard label="Overdue" value={String(snapshot.payments.filter((payment) => payment.status === "overdue").length)} hint="Milestone payments that have passed the due lane." />
       </section>
 
+      {/* TODO(wave1): multi-row payment ledger (staff). payment.label is a
+          Supabase-row text field — translate each via Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave. Single-row
+          payment surface at /pay/[paymentId] is already wrapped through
+          the cached DeepL pipeline. */}
       <section className="studio-panel rounded-[1.75rem] p-6">
         <div className="studio-kicker">Payment ledger</div>
         <div className="mt-5 space-y-4">

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyEmptyState,
   PropertyManagedRecordCard,
@@ -9,6 +11,7 @@ import {
 import { requirePropertyRoles } from "@/lib/property/auth";
 import { getOperationsWorkspaceData, getPropertySnapshot } from "@/lib/property/data";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -34,13 +37,45 @@ function toDateTimeLocal(value?: string | null) {
 export default async function OperationsPage() {
   await requirePropertyRoles(["managed_ops", "relationship_manager", "property_admin"], "/operations");
   const [data, snapshot] = await Promise.all([getOperationsWorkspaceData(), getPropertySnapshot()]);
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const listingMap = new Map(snapshot.listings.map((listing) => [listing.id, listing]));
+
+  // Staff ops — wrap titles for the listings referenced by the open
+  // inspection and viewing queues. We only resolve the listings that
+  // are actually rendered to keep DeepL fan-out flat.
+  const referencedListingIds = new Set<string>([
+    ...data.inspections.map((inspection) => inspection.listingId),
+    ...data.pendingViewings.slice(0, 8).map((viewing) => viewing.listingId),
+  ]);
+  const referencedListings = snapshot.listings.filter((listing) =>
+    referencedListingIds.has(listing.id),
+  );
+  const referencedTitles = await Promise.all(
+    referencedListings.map((listing) =>
+      resolveLocalizedDynamicField({
+        record: listing as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: listing.title ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const listingTitleById = new Map(
+    referencedListings.map((listing, index) => [
+      listing.id,
+      referencedTitles[index] ?? listing.title,
+    ]),
+  );
 
   return (
     <PropertyWorkspaceShell
-      kicker="Operations"
-      title="Inspection, viewing, and managed-property operations"
-      description="Coordinate the real-world workflow behind trusted property listings: inspections, viewings, inquiry handoff, and managed portfolio continuity."
+      kicker={t("Operations")}
+      title={t("Inspection, viewing, and managed-property operations")}
+      description={t(
+        "Coordinate the real-world workflow behind trusted property listings: inspections, viewings, inquiry handoff, and managed portfolio continuity.",
+      )}
       nav={getWorkspaceNavigation("/operations")}
       actions={
         <div className="flex flex-wrap gap-3">
@@ -48,42 +83,42 @@ export default async function OperationsPage() {
             href="/admin/listings"
             className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Open governance queue
+            {t("Open governance queue")}
           </Link>
           <Link
             href="/agent"
             className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Open agent workflow
+            {t("Open agent workflow")}
           </Link>
         </div>
       }
     >
       <div className="grid gap-4 md:grid-cols-4">
         <PropertyMetricCard
-          label="Listings"
+          label={t("Listings")}
           value={String(data.pendingListings.length)}
-          hint="Listings still moving through trust, document, or inspection operations."
+          hint={t("Listings still moving through trust, document, or inspection operations.")}
         />
         <PropertyMetricCard
-          label="Inspections"
+          label={t("Inspections")}
           value={String(data.inspections.length)}
-          hint="Open inspections still requiring a scheduling or closure decision."
+          hint={t("Open inspections still requiring a scheduling or closure decision.")}
         />
         <PropertyMetricCard
-          label="Viewings"
+          label={t("Viewings")}
           value={String(data.pendingViewings.length)}
-          hint="Viewing requests still being scheduled, confirmed, or completed."
+          hint={t("Viewing requests still being scheduled, confirmed, or completed.")}
         />
         <PropertyMetricCard
-          label="Inquiries"
+          label={t("Inquiries")}
           value={String(data.pendingInquiries.length)}
-          hint="Leads still open across support and relationship-management surfaces."
+          hint={t("Leads still open across support and relationship-management surfaces.")}
         />
       </div>
 
       <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Inspection queue</div>
+        <div className="property-kicker">{t("Inspection queue")}</div>
         {data.inspections.length ? (
           <div className="mt-5 space-y-4">
             {data.inspections.map((inspection) => {
@@ -96,10 +131,10 @@ export default async function OperationsPage() {
                   <div className="grid gap-4 xl:grid-cols-[1fr,0.9fr]">
                     <div>
                       <div className="text-lg font-semibold text-[var(--property-ink)]">
-                        {listing?.title || "Inspection-linked listing"}
+                        {listing ? listingTitleById.get(listing.id) ?? listing.title : t("Inspection-linked listing")}
                       </div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                        {listing?.locationLabel || "Location pending"} · {formatDate(inspection.updatedAt)}
+                        {listing?.locationLabel || t("Location pending")} · {formatDate(inspection.updatedAt)}
                       </div>
                       <div className="mt-3 flex flex-wrap gap-2">
                         <PropertyStatusBadge status={inspection.status} />
@@ -110,7 +145,7 @@ export default async function OperationsPage() {
                       </p>
                       {inspection.locationNotes ? (
                         <p className="mt-3 text-xs leading-6 text-[var(--property-ink-soft)]">
-                          Access notes: {inspection.locationNotes}
+                          {t("Access notes")}: {inspection.locationNotes}
                         </p>
                       ) : null}
                     </div>
@@ -123,7 +158,7 @@ export default async function OperationsPage() {
 
                       <label className="block">
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                          Status
+                          {t("Status")}
                         </span>
                         <select
                           name="status"
@@ -132,7 +167,7 @@ export default async function OperationsPage() {
                         >
                           {INSPECTION_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>
-                              {option.label}
+                              {t(option.label)}
                             </option>
                           ))}
                         </select>
@@ -140,7 +175,7 @@ export default async function OperationsPage() {
 
                       <label className="block">
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                          Scheduled time
+                          {t("Scheduled time")}
                         </span>
                         <input
                           type="datetime-local"
@@ -152,14 +187,14 @@ export default async function OperationsPage() {
 
                       <label className="block">
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                          Outcome notes
+                          {t("Outcome notes")}
                         </span>
                         <textarea
                           name="outcome_notes"
                           rows={3}
                           defaultValue={inspection.outcomeNotes || ""}
                           className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                          placeholder="What happened onsite, what was confirmed, or why this was waived."
+                          placeholder={t("What happened onsite, what was confirmed, or why this was waived.")}
                         />
                       </label>
 
@@ -167,7 +202,7 @@ export default async function OperationsPage() {
                         type="submit"
                         className="property-button inline-flex rounded-full px-5 py-3 text-sm font-semibold"
                       >
-                        Save inspection update
+                        {t("Save inspection update")}
                       </button>
                     </form>
                   </div>
@@ -178,8 +213,10 @@ export default async function OperationsPage() {
         ) : (
           <div className="mt-5">
             <PropertyEmptyState
-              title="No active inspections."
-              body="Inspection-sensitive listings will appear here when they need scheduling, closure, or a waiver decision."
+              title={t("No active inspections.")}
+              body={t(
+                "Inspection-sensitive listings will appear here when they need scheduling, closure, or a waiver decision.",
+              )}
             />
           </div>
         )}
@@ -187,7 +224,7 @@ export default async function OperationsPage() {
 
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Viewing pipeline</div>
+          <div className="property-kicker">{t("Viewing pipeline")}</div>
           {data.pendingViewings.length ? (
             <div className="mt-5 space-y-4">
               {data.pendingViewings.slice(0, 8).map((viewing) => {
@@ -203,7 +240,7 @@ export default async function OperationsPage() {
                           {viewing.attendeeName}
                         </div>
                         <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                          {listing?.title || "Listing pending"} · preferred {formatDate(viewing.preferredDate)}
+                          {(listing ? listingTitleById.get(listing.id) ?? listing.title : null) || t("Listing pending")} · {t("preferred")} {formatDate(viewing.preferredDate)}
                         </div>
                       </div>
                       <PropertyStatusBadge status={viewing.status} />
@@ -215,15 +252,15 @@ export default async function OperationsPage() {
           ) : (
             <div className="mt-5">
               <PropertyEmptyState
-                title="No active viewings."
-                body="Requested, scheduled, and confirmed viewings will appear here when operations attention is needed."
+                title={t("No active viewings.")}
+                body={t("Requested, scheduled, and confirmed viewings will appear here when operations attention is needed.")}
               />
             </div>
           )}
         </div>
 
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Managed portfolio</div>
+          <div className="property-kicker">{t("Managed portfolio")}</div>
           {data.managedRecords.length ? (
             <div className="mt-5 space-y-4">
               {data.managedRecords.slice(0, 4).map((record) => (
@@ -233,8 +270,8 @@ export default async function OperationsPage() {
           ) : (
             <div className="mt-5">
               <PropertyEmptyState
-                title="No managed portfolio records."
-                body="Managed-property records will appear here once listings move into operational handoff."
+                title={t("No managed portfolio records.")}
+                body={t("Managed-property records will appear here once listings move into operational handoff.")}
               />
             </div>
           )}

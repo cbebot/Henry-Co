@@ -5,6 +5,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getAccountUrl, getStaffHqUrl } from "@henryco/config";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { LogOut, ChevronDown, ChevronRight, ArrowLeft, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { getOwnerNavSections, type OwnerNavItem } from "@/lib/owner-navigation";
@@ -37,9 +39,11 @@ type OwnerSidebarProps = {
 function OwnerNavLink({
   item,
   pathname,
+  locale,
 }: {
   item: OwnerNavItem;
   pathname: string;
+  locale: AppLocale;
 }) {
   const isParentActive =
     pathname === item.href || pathname.startsWith(item.href + "/");
@@ -47,6 +51,7 @@ function OwnerNavLink({
   const [expanded, setExpanded] = useState(isParentActive);
 
   const Icon = item.icon;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <div className="mb-0.5">
@@ -62,7 +67,7 @@ function OwnerNavLink({
           }`}
         >
           <Icon size={18} strokeWidth={isParentActive ? 2.2 : 1.8} />
-          <span className="flex-1 truncate">{item.label}</span>
+          <span className="flex-1 truncate">{t(item.label)}</span>
         </Link>
         {hasChildren && (
           <button
@@ -99,7 +104,7 @@ function OwnerNavLink({
                     strokeWidth={childActive ? 2.2 : 1.6}
                   />
                 )}
-                <span>{child.label}</span>
+                <span>{t(child.label)}</span>
               </Link>
             );
           })}
@@ -114,6 +119,8 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
   const sections = getOwnerNavSections();
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState<string | null>(null);
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const handleSignOut = async () => {
     if (signingOut) return;
@@ -131,7 +138,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
       window.location.assign("/owner/login");
     } catch (error) {
       console.error(error);
-      setSignOutError("We could not sign you out. Try again.");
+      setSignOutError(t("We could not sign you out. Try again."));
       setSigningOut(false);
     }
   };
@@ -150,7 +157,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
             Henry & Co.
           </p>
           <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
-            Command Center
+            {t("Command Center")}
           </p>
         </div>
       </div>
@@ -162,14 +169,14 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
           className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"
         >
           <ArrowLeft size={14} />
-          Back to HenryCo Account
+          {t("Back to HenryCo Account")}
         </Link>
         <a
           href={getStaffHqUrl("/")}
           className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"
         >
           <ExternalLink size={14} />
-          Open Staff HQ
+          {t("Open Staff HQ")}
         </a>
       </div>
 
@@ -177,9 +184,9 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
       <nav className="flex-1 overflow-y-auto py-3 acct-scrollbar">
         {Object.entries(sections).map(([section, items]) => (
           <div key={section} className="mb-3">
-            <p className="acct-kicker mb-1.5 px-5">{section}</p>
+            <p className="acct-kicker mb-1.5 px-5">{t(section)}</p>
             {items.map((item) => (
-              <OwnerNavLink key={item.href} item={item} pathname={pathname} />
+              <OwnerNavLink key={item.href} item={item} pathname={pathname} locale={locale} />
             ))}
           </div>
         ))}
@@ -204,10 +211,10 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-[var(--acct-ink)]">
-              {user.fullName || "Owner"}
+              {user.fullName || t("Owner")}
             </p>
             <p className="truncate text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--owner-accent)]">
-              {user.ownerRole || "Owner"}
+              {user.ownerRole || t("Owner")}
             </p>
           </div>
         </div>
@@ -220,12 +227,12 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
         >
           <ButtonPendingContent
             pending={signingOut}
-            pendingLabel="Signing out..."
-            spinnerLabel="Signing out"
+            pendingLabel={t("Signing out...")}
+            spinnerLabel={t("Signing out")}
           >
             <>
               <LogOut size={16} />
-              Sign out
+              {t("Sign out")}
             </>
           </ButtonPendingContent>
         </button>

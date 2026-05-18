@@ -2,11 +2,12 @@ import { headers } from "next/headers";
 import { WorkspaceShell } from "@henryco/workspace-shell";
 import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { getAccountUrl } from "@henryco/config";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { requireLogisticsRoles } from "@/lib/logistics/auth";
 import {
-  MANAGER_BRAND,
-  MANAGER_MOBILE_NAV,
-  managerNavItems,
+  getManagerBrand,
+  getManagerMobileNav,
+  getManagerNavItems,
 } from "@/lib/logistics/operator-navigation";
 
 export const dynamic = "force-dynamic";
@@ -36,19 +37,20 @@ export default async function ManagerLayout({
     "/manager",
   );
   const pathname = await currentPathname();
+  const locale = await getLogisticsPublicLocale();
 
   return (
     <>
       <WorkspaceShell
         division="logistics-dispatch"
-        brand={MANAGER_BRAND}
+        brand={getManagerBrand(locale)}
         viewer={{
           fullName: viewer.user?.fullName ?? null,
           email: viewer.user?.email ?? null,
           avatarUrl: null,
         }}
-        navigation={managerNavItems}
-        mobileNavigation={MANAGER_MOBILE_NAV}
+        navigation={getManagerNavItems(locale)}
+        mobileNavigation={getManagerMobileNav(locale)}
         notificationsHref="/manager"
         profileHref={getAccountUrl("/security")}
         accountSettingsUrl={getAccountUrl("/")}

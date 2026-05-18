@@ -14,7 +14,7 @@ import {
   Truck,
 } from "lucide-react";
 import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
-import { getCareAboutCopy } from "@henryco/i18n/server";
+import { getCareAboutCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getCareBookingCatalog, getCareSettings } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 import { getCarePublicLocale } from "@/lib/locale-server";
@@ -42,8 +42,22 @@ export default async function AboutPage() {
   const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
   const supportPhone = settings.support_phone || care.supportPhone;
   const pickupHours = settings.pickup_hours || copy.heroFacts.pickupHoursFallback;
-  const heroTitle = settings.about_title || copy.hero.title;
-  const heroBody = settings.about_body || copy.hero.body;
+  const [heroTitle, heroBody] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "about_title",
+      locale,
+      fallback: copy.hero.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "about_body",
+      locale,
+      fallback: copy.hero.body,
+      machineTranslate: locale !== "en",
+    }),
+  ]);
 
   const linesPackagesValue = copy.heroFacts.linesPackagesTemplate
     .replace("{lines}", String(catalog.serviceTypes.length))

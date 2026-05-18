@@ -42,7 +42,7 @@ export default async function MarketplacePage() {
 
   const [summary, activityRaw] = await Promise.all([
     getMarketplaceDivisionSummary(user.id),
-    getDivisionActivity(user.id, "marketplace"),
+    getDivisionActivity(user.id, "marketplace", 20, locale),
   ]);
 
   const orders = toOrderRows((summary.orders ?? []) as Array<Record<string, unknown>>);

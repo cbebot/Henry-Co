@@ -1,11 +1,14 @@
 import "server-only";
 
+import type { AppLocale } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   listLinkedCareBookingsForUser,
   listLinkedCarePaymentsForUser,
 } from "@/lib/care-sync";
 import { isHiddenNotification } from "@/lib/notification-center";
+import { resolveNotificationPresentationAsync } from "@/lib/notification-localization";
 
 const admin = () => createAdminSupabase();
 
@@ -143,7 +146,12 @@ export async function getMarketplaceDivisionSummary(userId: string) {
 }
 
 // ─── Cross-division activity by division ───
-export async function getDivisionActivity(userId: string, division: string, limit = 20) {
+export async function getDivisionActivity(
+  userId: string,
+  division: string,
+  limit = 20,
+  locale?: AppLocale,
+) {
   const { data } = await admin()
     .from("customer_activity")
     .select("*")
@@ -151,7 +159,35 @@ export async function getDivisionActivity(userId: string, division: string, limi
     .eq("division", division)
     .order("created_at", { ascending: false })
     .limit(limit);
-  return data || [];
+  const rows = (data || []) as Array<Record<string, unknown>>;
+  if (!locale || locale === "en") return rows;
+  return Promise.all(
+    rows.map(async (row) => {
+      const fallbackTitle = typeof row.title === "string" ? row.title : "";
+      const fallbackDescription = typeof row.description === "string" ? row.description : "";
+      const [title, description] = await Promise.all([
+        fallbackTitle
+          ? resolveLocalizedDynamicField({
+              record: row,
+              field: "title",
+              locale,
+              fallback: fallbackTitle,
+              machineTranslate: true,
+            })
+          : Promise.resolve(fallbackTitle),
+        fallbackDescription
+          ? resolveLocalizedDynamicField({
+              record: row,
+              field: "description",
+              locale,
+              fallback: fallbackDescription,
+              machineTranslate: true,
+            })
+          : Promise.resolve(fallbackDescription),
+      ]);
+      return { ...row, title, description };
+    }),
+  );
 }
 
 // ─── Division invoices ───
@@ -167,7 +203,11 @@ export async function getDivisionInvoices(userId: string, division: string) {
 }
 
 // ─── Division notifications ───
-export async function getDivisionNotifications(userId: string, division: string) {
+export async function getDivisionNotifications(
+  userId: string,
+  division: string,
+  locale?: AppLocale,
+) {
   const { data } = await admin()
     .from("customer_notifications")
     .select("*")
@@ -176,29 +216,39 @@ export async function getDivisionNotifications(userId: string, division: string)
     .limit(50);
 
   const records = (data || []).filter((record) => !isHiddenNotification(record as Record<string, unknown>));
-  if (division !== "property") {
-    return records
-      .filter((record) => {
-        const category = String(record.category || "");
-        const recordDivision = String(record.division || "");
-        return recordDivision === division || category === division;
-      })
-      .slice(0, 20);
-  }
+  // Filter on source (EN) copy before localization so the property keyword
+  // check below is stable across locales.
+  const filtered =
+    division !== "property"
+      ? records
+          .filter((record) => {
+            const category = String(record.category || "");
+            const recordDivision = String(record.division || "");
+            return recordDivision === division || category === division;
+          })
+          .slice(0, 20)
+      : records
+          .filter((record) => {
+            const referenceType = String(record.reference_type || "");
+            const actionUrl = String(record.action_url || "");
+            const title = String(record.title || "").toLowerCase();
+            return (
+              referenceType.startsWith("property_") ||
+              actionUrl.includes("/property") ||
+              actionUrl.includes("property.henrycogroup.com") ||
+              title.includes("property")
+            );
+          })
+          .slice(0, 20);
 
-  return records
-    .filter((record) => {
-      const referenceType = String(record.reference_type || "");
-      const actionUrl = String(record.action_url || "");
-      const title = String(record.title || "").toLowerCase();
-      return (
-        referenceType.startsWith("property_") ||
-        actionUrl.includes("/property") ||
-        actionUrl.includes("property.henrycogroup.com") ||
-        title.includes("property")
-      );
-    })
-    .slice(0, 20);
+  if (!locale) return filtered;
+
+  return Promise.all(
+    (filtered as Array<Record<string, unknown>>).map(async (row) => {
+      const localized = await resolveNotificationPresentationAsync({ row, locale });
+      return { ...row, title: localized.title, body: localized.body };
+    }),
+  );
 }
 
 // ─── Division support threads ───

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceCollectionBySlug } from "@/lib/marketplace/data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
@@ -25,13 +26,21 @@ export async function generateMetadata({
     return { description: copy.collections.metadata.fallbackDescription };
   }
 
+  const localizedCollectionTitle = await resolveLocalizedDynamicField({
+    record: data.collection as unknown as Record<string, unknown>,
+    field: "title",
+    locale,
+    fallback: data.collection.title,
+    machineTranslate: locale !== "en",
+  });
+
   const title = copy.collections.metadata.titleTemplate.replace(
     "{collection}",
-    data.collection.title,
+    localizedCollectionTitle,
   );
   const description = copy.collections.metadata.descriptionTemplate.replace(
     "{collection}",
-    data.collection.title,
+    localizedCollectionTitle,
   );
 
   return { title, description };
@@ -52,19 +61,48 @@ export default async function CollectionPage({
   const copy = getMarketplacePublicCopy(locale);
   const c = copy.collections;
 
+  // Single-row collection detail surface — translate all editorial fields.
+  const [
+    localizedCollectionKicker,
+    localizedCollectionTitle,
+    localizedCollectionDescription,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.collection as unknown as Record<string, unknown>,
+      field: "kicker",
+      locale,
+      fallback: data.collection.kicker ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.collection as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.collection.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.collection as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.collection.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+
   return (
     <main className="mx-auto max-w-7xl space-y-12 px-4 py-12 sm:px-6 lg:px-8">
       <section>
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">
-              {data.collection.kicker}
+              {localizedCollectionKicker}
             </p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              {data.collection.title}
+              {localizedCollectionTitle}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              {data.collection.description}
+              {localizedCollectionDescription}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
@@ -120,6 +158,9 @@ export default async function CollectionPage({
             {data.products.length} {c.rail.itemsSuffix}
           </span>
         </div>
+        {/* TODO(wave3-catalogue): paginate translation — collection product
+            grid is a catalogue surface; ProductCard reads raw product.title and
+            translating every row would compound DeepL spend on hot routes. */}
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {data.products.map((product) => (
             <ProductCard key={product.slug} product={product} />

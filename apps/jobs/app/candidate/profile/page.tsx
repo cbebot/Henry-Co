@@ -46,10 +46,10 @@ export default async function CandidateProfilePage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const viewer = await requireJobsUser("/candidate/profile");
-  const [data, params, locale] = await Promise.all([
-    getCandidateDashboardData(viewer.user!.id),
+  const locale = await getJobsPublicLocale();
+  const [data, params] = await Promise.all([
+    getCandidateDashboardData(viewer.user!.id, locale),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
-    getJobsPublicLocale(),
   ]);
   const profile = data.profile;
   const saved = params.saved === "1";

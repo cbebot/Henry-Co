@@ -4,10 +4,12 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { formatCurrency } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendorProductsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products");
   const data = await getVendorWorkspaceData();
 
@@ -15,7 +17,7 @@ export default async function VendorProductsPage() {
     <WorkspaceShell
       title="Products"
       description="Seller product management keeps draft, submission, and moderation state obvious."
-      nav={vendorNav("/vendor/products")}
+      nav={vendorNav("/vendor/products", locale)}
       actions={
         <Link href="/vendor/products/new" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
           New product

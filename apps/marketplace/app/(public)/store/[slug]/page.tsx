@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { notFound } from "next/navigation";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
 import { StoreActionsClient } from "@/components/marketplace/store-actions-client";
 import { getMarketplaceVendorBySlug } from "@/lib/marketplace/data";
@@ -38,6 +39,17 @@ export default async function StorePage({
   const data = await getMarketplaceVendorBySlug(slug);
   if (!data) notFound();
 
+  // Store name is a proper noun and stays as-is; the marketing description is
+  // the seller's story and is the field non-EN buyers most benefit from
+  // having translated.
+  const localizedVendorDescription = await resolveLocalizedDynamicField({
+    record: data.vendor as unknown as Record<string, unknown>,
+    field: "description",
+    locale,
+    fallback: data.vendor.description ?? "",
+    machineTranslate: locale !== "en",
+  });
+
   const supportSubject = copy.store.support.subjectTemplate.replace("{store}", data.vendor.name);
   const helpHref = `/help?vendor=${encodeURIComponent(data.vendor.slug)}&subject=${encodeURIComponent(
     supportSubject,
@@ -51,7 +63,7 @@ export default async function StorePage({
           <p className="market-kicker">{copy.store.hero.eyebrow}</p>
           <h1 className="market-display mt-5 max-w-3xl text-balance">{data.vendor.name}</h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
-            {data.vendor.description || copy.store.hero.bodyFallback}
+            {localizedVendorDescription || copy.store.hero.bodyFallback}
           </p>
           <div className="mt-7">
             <StoreActionsClient vendorSlug={data.vendor.slug} />
@@ -134,6 +146,8 @@ export default async function StorePage({
             <p className="market-kicker">{copy.store.reviews.eyebrow}</p>
             <span className="h-px flex-1 bg-[var(--market-line)]" />
           </div>
+          {/* TODO(wave3-catalogue): paginate translation — review list carries
+              buyer voice; translate per-row via client-side fetch on demand. */}
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {data.reviews.slice(0, 4).map((review) => (
               <li key={review.id} className="grid gap-5 py-6 lg:grid-cols-[0.3fr,0.7fr]">
@@ -171,6 +185,9 @@ export default async function StorePage({
           </Link>
         </div>
         {data.products.length ? (
+          /* TODO(wave3-catalogue): paginate translation — store catalogue is a
+             list surface; ProductCard reads raw product.title / product.summary
+             and translating every row on hot routes blows up DeepL quota. */
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {data.products.map((product) => (
               <ProductCard key={product.slug} product={product} />

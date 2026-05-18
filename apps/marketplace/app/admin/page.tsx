@@ -3,10 +3,12 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getStaffQueueData } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin"], "/admin");
   const data = await getStaffQueueData();
 
@@ -14,7 +16,7 @@ export default async function AdminPage() {
     <WorkspaceShell
       title="Admin"
       description="Vendor approval and catalog administration remain separate from moderation heat and finance decisions."
-      nav={staffNav("/admin", "/admin")}
+      nav={staffNav("/admin", "/admin", locale)}
     >
       <div className="space-y-4">
         {data.applications.map((application: Record<string, unknown>) => (

@@ -1,6 +1,8 @@
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyEmptyState, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { requirePropertyRoles } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -35,6 +37,35 @@ export default async function SupportPage() {
     threads = [];
   }
 
+  const locale = await getPropertyPublicLocale();
+
+  // Support workspace — wrap subject for both support_threads (Supabase
+  // table) and notification rows. Bodies/reasons are staff context; we
+  // keep those raw to avoid a fan-out cost on every visit.
+  const threadSubjects = await Promise.all(
+    threads.map((thread) =>
+      resolveLocalizedDynamicField({
+        record: thread as unknown as Record<string, unknown>,
+        field: "subject",
+        locale,
+        fallback: thread.subject ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const visibleNotifications = snapshot.notifications.slice(0, 12);
+  const notificationSubjects = await Promise.all(
+    visibleNotifications.map((notification) =>
+      resolveLocalizedDynamicField({
+        record: notification as unknown as Record<string, unknown>,
+        field: "subject",
+        locale,
+        fallback: notification.subject ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+
   return (
     <PropertyWorkspaceShell
       kicker="Support"
@@ -47,11 +78,11 @@ export default async function SupportPage() {
           <div className="property-kicker">Support threads</div>
           {threads.length ? (
             <div className="mt-5 space-y-4">
-              {threads.map((thread) => (
+              {threads.map((thread, index) => (
                 <div key={thread.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <div className="text-lg font-semibold text-[var(--property-ink)]">{thread.subject}</div>
+                      <div className="text-lg font-semibold text-[var(--property-ink)]">{threadSubjects[index] ?? thread.subject}</div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
                         {thread.category || "general"} · {thread.priority || "normal"}
                       </div>
@@ -75,11 +106,11 @@ export default async function SupportPage() {
           <div className="property-kicker">Notification log</div>
           {snapshot.notifications.length ? (
             <div className="mt-5 space-y-4">
-              {snapshot.notifications.slice(0, 12).map((notification) => (
+              {visibleNotifications.map((notification, index) => (
                 <div key={notification.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <div className="text-lg font-semibold text-[var(--property-ink)]">{notification.subject}</div>
+                      <div className="text-lg font-semibold text-[var(--property-ink)]">{notificationSubjects[index] ?? notification.subject}</div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
                         {notification.channel} · {notification.recipient}
                       </div>

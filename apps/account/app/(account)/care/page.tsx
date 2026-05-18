@@ -54,7 +54,7 @@ export default async function CarePage({
 
   const [bookings, activity] = await Promise.all([
     getCareBookings(user.id),
-    getDivisionActivity(user.id, "care"),
+    getDivisionActivity(user.id, "care", 20, locale),
   ]);
 
   const stats = careStats(bookings);

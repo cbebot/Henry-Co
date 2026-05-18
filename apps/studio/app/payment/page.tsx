@@ -3,8 +3,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, FileQuestion, Sparkles } from "lucide-react";
 
+import { resolveLocalizedDynamicField, type AppLocale } from "@henryco/i18n/server";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioLoginUrl } from "@/lib/studio/links";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getClientPortalViewer } from "@/lib/portal/auth";
 import {
   getInvoiceByToken,
@@ -36,12 +38,19 @@ export default async function StudioPaymentPage({
   const token = (invoiceTokenParam ?? "").trim();
   const viewer = await getClientPortalViewer();
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
 
   // Scenario A — token-based access (unauthenticated or otherwise).
   if (token) {
     const lookup = await getInvoiceByToken(token);
     if (lookup) {
-      return renderInvoicePay(lookup.invoice, lookup.project?.title ?? null, catalog, /* token */ token);
+      return renderInvoicePay(
+        lookup.invoice,
+        lookup.project ?? null,
+        catalog,
+        /* token */ token,
+        locale,
+      );
     }
     return renderInvoiceNotFound();
   }
@@ -71,7 +80,7 @@ export default async function StudioPaymentPage({
   }
 
   if (invoices.length === 1) {
-    return renderInvoicePay(invoices[0], null, catalog, /* token */ null);
+    return renderInvoicePay(invoices[0], null, catalog, /* token */ null, locale);
   }
 
   return (
@@ -89,6 +98,11 @@ export default async function StudioPaymentPage({
         </p>
       </header>
 
+      {/* TODO(wave1): multi-row invoice picker — each invoice.description is
+          a Supabase-row text field. Wrap with Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave (cost vs. value
+          deferred for list view; the per-invoice surface at
+          /client/payment/[invoiceId] is already wrapped). */}
       <div className="mt-6 space-y-3">
         {invoices.map((invoice) => {
           const status = invoiceStatusToken(invoice.status);
@@ -146,25 +160,49 @@ function renderInvoiceNotFound() {
   );
 }
 
-function renderInvoicePay(
+async function renderInvoicePay(
   invoice: import("@/types/portal").StudioInvoice,
-  projectTitle: string | null,
+  project: import("@/types/portal").ClientProject | null,
   catalog: Awaited<ReturnType<typeof getStudioCatalog>>,
-  token: string | null
+  token: string | null,
+  locale: AppLocale,
 ) {
   const platform = catalog.platform;
   const amountLabel = formatKobo(invoice.amountKobo, invoice.currency);
   const isPaid = invoice.status === "paid";
   const isPending = invoice.status === "pending_verification";
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Single-row invoice
+  // surface so the DeepL cost is acceptable.
+  const [localizedInvoiceDescription, localizedProjectTitle] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: invoice as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: invoice.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    project
+      ? resolveLocalizedDynamicField({
+          record: project as unknown as Record<string, unknown>,
+          field: "title",
+          locale,
+          fallback: project.title ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
+  const localizedInvoice = { ...invoice, description: localizedInvoiceDescription };
+
   return (
     <main className="portal-shell mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <h1 className="sr-only">
-        Pay invoice {invoice.invoiceNumber} · {amountLabel}
+        Pay invoice {localizedInvoice.invoiceNumber} · {amountLabel}
       </h1>
 
       <div className="space-y-5">
-        <InvoiceSummary invoice={invoice} projectTitle={projectTitle} />
+        <InvoiceSummary invoice={localizedInvoice} projectTitle={project ? localizedProjectTitle : null} />
 
         {isPaid ? (
           <div className="portal-card-elev p-6 text-center">
@@ -206,9 +244,9 @@ function renderInvoicePay(
               amountLabel={amountLabel}
             />
             <PaymentForm
-              invoiceId={invoice.id}
+              invoiceId={localizedInvoice.id}
               invoiceToken={token}
-              invoiceNumber={invoice.invoiceNumber}
+              invoiceNumber={localizedInvoice.invoiceNumber}
               amountLabel={amountLabel}
             />
             <div className="rounded-2xl border border-dashed border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-5 py-4 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">

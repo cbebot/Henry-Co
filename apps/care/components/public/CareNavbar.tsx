@@ -4,6 +4,8 @@ import { PhoneCall, Sparkles } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo } from "react";
 import { getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   HenryCoSearchBreadcrumb,
   PublicHeader,
@@ -79,6 +81,8 @@ export default function CareNavbar({
   division: DivisionPublicConfig;
   accountSlot?: ReactNode;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const careNav = useMemo(() => getSiteNavigationConfig("care"), []);
 
   /** Drop nav entries that the header already renders as the primary /
@@ -104,7 +108,7 @@ export default function CareNavbar({
       />
       <div className="hidden items-center gap-2 rounded-full border border-black/8 bg-white/68 px-4 py-2 text-xs font-medium text-zinc-600 shadow-[0_12px_32px_rgba(12,17,45,0.06)] xl:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-white/68">
         <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-        {DEFAULT_TAGLINE}
+        {t(DEFAULT_TAGLINE)}
       </div>
       {division.supportPhone ? (
         <div className="hidden items-center gap-2 rounded-full border border-black/8 bg-white/68 px-4 py-2 text-xs font-medium text-zinc-600 shadow-[0_12px_32px_rgba(12,17,45,0.06)] 2xl:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-white/68">
@@ -119,7 +123,7 @@ export default function CareNavbar({
     <PublicHeader
       brand={{
         name: division.name,
-        sub: division.sub ?? DEFAULT_SUB,
+        sub: division.sub ?? t(DEFAULT_SUB),
         href: "/",
         mark: <BrandMark accent={division.accent ?? "#6B7CFF"} />,
         /** Custom brand text — keeps "Henry & Co. Fabric Care" on a
@@ -135,7 +139,7 @@ export default function CareNavbar({
               className="block truncate text-[13px] font-black tracking-[0.01em] text-zinc-950 sm:hidden dark:text-white"
               title={division.name}
             >
-              {division.shortName || "Fabric Care"}
+              {division.shortName || t("Fabric Care")}
             </div>
             <div
               className="hidden truncate text-[13.5px] font-black tracking-[0.01em] text-zinc-950 sm:block md:text-[15px] lg:text-base dark:text-white"

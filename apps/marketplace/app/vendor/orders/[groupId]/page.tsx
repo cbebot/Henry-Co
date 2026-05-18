@@ -4,6 +4,7 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ export default async function VendorOrderDetailPage({
 }: {
   params: Promise<{ groupId: string }>;
 }) {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/orders");
   const { groupId } = await params;
   const data = await getVendorWorkspaceData();
@@ -22,7 +24,7 @@ export default async function VendorOrderDetailPage({
     <WorkspaceShell
       title={order.orderNo}
       description="Detailed vendor order handling with payment and fulfillment signals aligned."
-      nav={vendorNav("/vendor/orders")}
+      nav={vendorNav("/vendor/orders", locale)}
     >
       <article className="market-paper rounded-[1.75rem] p-6">
         <p className="market-kicker">{order.fulfillmentStatus}</p>

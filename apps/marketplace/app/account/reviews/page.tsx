@@ -3,10 +3,12 @@ import { AccountReviewsClient } from "@/components/marketplace/account-reviews-c
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData, getMarketplaceHomeData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountReviewsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/reviews");
   const [buyer, snapshot] = await Promise.all([
     getBuyerDashboardData(),
@@ -17,7 +19,7 @@ export default async function AccountReviewsPage() {
     <WorkspaceShell
       title="Reviews"
       description="Verified purchase reviews, moderation state, and trust contribution stay visible here instead of disappearing after checkout."
-      {...accountWorkspaceNav("/account/reviews")}
+      {...accountWorkspaceNav("/account/reviews", locale)}
     >
       <AccountReviewsClient
         products={snapshot.products.map((product) => ({

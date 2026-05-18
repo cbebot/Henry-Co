@@ -10,6 +10,8 @@
  */
 
 import { Search } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { useOwnerPaletteOpen } from "./OwnerPaletteOpenProvider";
 
 export type OwnerSearchButtonProps = {
@@ -23,6 +25,8 @@ export default function OwnerSearchButton({
 }: OwnerSearchButtonProps) {
   const palette = useOwnerPaletteOpen();
   const open = palette.open;
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   if (variant === "mobile") {
     return (
@@ -33,7 +37,7 @@ export default function OwnerSearchButton({
           className ??
           "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--acct-line)] bg-[var(--acct-surface)] text-[var(--acct-muted)] transition-colors hover:text-[var(--acct-ink)]"
         }
-        aria-label="Open command palette"
+        aria-label={t("Open command palette")}
       >
         <Search className="h-4 w-4" aria-hidden />
       </button>
@@ -48,10 +52,10 @@ export default function OwnerSearchButton({
         className ??
         "flex w-full items-center gap-3 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-left text-xs text-[var(--acct-muted)] transition-colors hover:border-[var(--owner-accent)]/40 hover:bg-[var(--owner-accent-soft)]/60"
       }
-      aria-label="Search HenryCo across divisions"
+      aria-label={t("Search HenryCo across divisions")}
     >
       <Search className="h-3.5 w-3.5" aria-hidden />
-      <span className="flex-1 truncate">Search HenryCo</span>
+      <span className="flex-1 truncate">{t("Search HenryCo")}</span>
       <kbd className="rounded-md border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-1.5 py-0.5 text-[0.65rem] font-semibold text-[var(--acct-muted)]">
         Cmd K
       </kbd>

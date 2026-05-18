@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { requireStudioUser } from "@/lib/studio/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { fetchThreadInitialState } from "@/lib/messaging/queries";
 import { ProjectThread } from "@/components/messaging";
 
@@ -19,9 +21,21 @@ export async function generateMetadata({
   if (!initial) {
     return { title: "Project conversation · HenryCo Studio" };
   }
+  // WAVE1 — wrap the Supabase-row-derived project title so the document
+  // title / description render in the viewer's locale via the cached DeepL
+  // pipeline. The fallback keeps the source-language title visible if the
+  // translation fails.
+  const locale = await getStudioPublicLocale();
+  const localizedProjectTitle = await resolveLocalizedDynamicField({
+    record: initial.context as unknown as Record<string, unknown>,
+    field: "projectTitle",
+    locale,
+    fallback: initial.context.projectTitle ?? "",
+    machineTranslate: locale !== "en",
+  });
   return {
-    title: `${initial.context.projectTitle} · Messages · HenryCo Studio`,
-    description: `Conversation with the HenryCo Studio team for ${initial.context.projectTitle}.`,
+    title: `${localizedProjectTitle} · Messages · HenryCo Studio`,
+    description: `Conversation with the HenryCo Studio team for ${localizedProjectTitle}.`,
     robots: { index: false, follow: false },
   };
 }
