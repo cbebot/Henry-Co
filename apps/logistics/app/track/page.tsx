@@ -276,6 +276,7 @@ export default async function TrackPage({ searchParams }: Props) {
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[88rem] log-pf">
         <PortalHero
+          locale={locale}
           eyebrow={t("Visibility · Milestones · Proof")}
           title={
             detail
@@ -334,7 +335,7 @@ export default async function TrackPage({ searchParams }: Props) {
           />
         ) : null}
 
-        {recentShipments.length ? <RecentShipmentCards shipments={recentShipments} /> : null}
+        {recentShipments.length ? <RecentShipmentCards shipments={recentShipments} locale={locale} /> : null}
 
         <PortalSection
           id="log-pf-track-lookup"

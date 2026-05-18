@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { ArrowRight, MapPin } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 
 /**
  * PortalHero — editorial-premium hero for HenryCo Logistics public surfaces.
@@ -27,6 +28,7 @@ type PortalHeroProps = {
   pickupHours?: string | null;
   coverage?: string | null;
   capabilityMetrics?: PortalCapabilityMetric[];
+  locale?: AppLocale;
 };
 
 export type PortalCapabilityMetric = {
@@ -72,7 +74,7 @@ export function PortalHero(props: PortalHeroProps) {
           ) : null}
         </div>
         {props.capabilityMetrics && props.capabilityMetrics.length > 0 ? (
-          <PortalCapabilityStrip metrics={props.capabilityMetrics} />
+          <PortalCapabilityStrip metrics={props.capabilityMetrics} locale={props.locale} />
         ) : null}
       </div>
     </section>
@@ -103,11 +105,19 @@ function CtaLink({ cta }: { cta: PortalHeroCta }) {
   );
 }
 
-export function PortalCapabilityStrip({ metrics }: { metrics: PortalCapabilityMetric[] }) {
+export function PortalCapabilityStrip({
+  metrics,
+  locale,
+}: {
+  metrics: PortalCapabilityMetric[];
+  locale?: AppLocale;
+}) {
+  const t = (text: string) =>
+    locale ? translateSurfaceLabel(locale, text) : text;
   // Cap visual density to 4 tiles. Anything past that lives in a section.
   const clipped = metrics.slice(0, 4);
   return (
-    <div className="log-pf__capability" role="list" aria-label="Live capability evidence">
+    <div className="log-pf__capability" role="list" aria-label={t("Live capability evidence")}>
       {clipped.map((metric, i) => {
         const trendClass =
           metric.trendDirection === "pos"

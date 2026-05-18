@@ -7,6 +7,8 @@ import { resolveZone } from "@/lib/logistics/pricing";
 import { createLogisticsRequest, type CreateLogisticsRequestInput } from "@/lib/logistics/write";
 import { notifyLogisticsRequestCreated, getPublicTrackingUrl } from "@/lib/logistics/notify-customer";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 import type { LogisticsServiceType, LogisticsUrgency } from "@/lib/logistics/types";
 
 export type BookingFormState =
@@ -31,22 +33,24 @@ export async function submitLogisticsBookingAction(
   _prev: BookingFormState | null,
   formData: FormData
 ): Promise<BookingFormState> {
+  const locale = await getLogisticsPublicLocale();
+  const tx = (text: string) => autoTranslate(text, locale);
   const mode = clean(formData.get("mode")) === "quote" ? "quote" : "book";
   const serviceType = clean(formData.get("serviceType")) as LogisticsServiceType;
   const urgency = clean(formData.get("urgency")) as LogisticsUrgency;
 
   if (!SERVICE_TYPES.includes(serviceType)) {
-    return { ok: false, error: "Please choose a valid service type." };
+    return { ok: false, error: await tx("Please choose a valid service type.") };
   }
   if (!URGENCIES.includes(urgency)) {
-    return { ok: false, error: "Please choose a valid speed option." };
+    return { ok: false, error: await tx("Please choose a valid speed option.") };
   }
 
   const zoneKey = clean(formData.get("zoneKey"));
   const zones = await getLogisticsZones();
   const zone = resolveZone(zoneKey, zones);
   if (!zone?.key) {
-    return { ok: false, error: "Please choose a delivery zone." };
+    return { ok: false, error: await tx("Please choose a delivery zone.") };
   }
 
   const viewer = await getLogisticsViewer();
@@ -54,10 +58,10 @@ export async function submitLogisticsBookingAction(
   const senderPhone = clean(formData.get("senderPhone"));
   const recipientPhone = clean(formData.get("recipientPhone"));
   if (senderPhone.replace(/[^\d]/g, "").length < 10) {
-    return { ok: false, error: "Please enter a valid sender phone number." };
+    return { ok: false, error: await tx("Please enter a valid sender phone number.") };
   }
   if (recipientPhone.replace(/[^\d]/g, "").length < 10) {
-    return { ok: false, error: "Please enter a valid recipient phone number." };
+    return { ok: false, error: await tx("Please enter a valid recipient phone number.") };
   }
 
   const input: CreateLogisticsRequestInput = {
@@ -89,6 +93,7 @@ export async function submitLogisticsBookingAction(
     dropInstructions: clean(formData.get("dropInstructions")) || null,
     customerUserId,
     trackingPortalBaseUrl: getDivisionUrl("logistics"),
+    locale,
   };
 
   const result = await createLogisticsRequest(input);
@@ -118,8 +123,8 @@ export async function submitLogisticsBookingAction(
 
   const message =
     mode === "quote"
-      ? `Quote saved. Your reference is ${result.trackingCode}. We emailed instructions if you provided an address.`
-      : `Booking received. Your tracking code is ${result.trackingCode}. You will see live milestones as dispatch progresses.`;
+      ? `${await tx("Quote saved. Your reference is")} ${result.trackingCode}. ${await tx("We emailed instructions if you provided an address.")}`
+      : `${await tx("Booking received. Your tracking code is")} ${result.trackingCode}. ${await tx("You will see live milestones as dispatch progresses.")}`;
 
   return {
     ok: true,

@@ -229,6 +229,7 @@ export default async function LogisticsHomePage() {
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[92rem] log-pf">
         <PortalHero
+          locale={locale}
           eyebrow={copy.hero.eyebrow}
           title={copy.hero.title}
           blurb={copy.hero.blurb}
@@ -261,7 +262,7 @@ export default async function LogisticsHomePage() {
             count: String(services.length),
           })}
         >
-          <PortalLaneGrid lanes={laneCards} />
+          <PortalLaneGrid lanes={laneCards} locale={locale} />
         </PortalSection>
 
         <PortalSection
