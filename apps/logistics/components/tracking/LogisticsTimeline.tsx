@@ -1,13 +1,17 @@
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { buildTrackingTimeline } from "@/lib/logistics/data";
 import type { LogisticsEvent, LogisticsShipment } from "@/lib/logistics/types";
 
 export default function LogisticsTimeline({
   shipment,
   events,
+  locale = "en",
 }: {
   shipment: LogisticsShipment;
   events: LogisticsEvent[];
+  locale?: AppLocale;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const steps = buildTrackingTimeline(shipment, events.filter((e) => e.customerVisible));
 
   return (
@@ -27,17 +31,17 @@ export default function LogisticsTimeline({
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-baseline gap-2">
-              <span className={`font-semibold ${step.active ? "text-white" : "text-white/70"}`}>{step.label}</span>
+              <span className={`font-semibold ${step.active ? "text-white" : "text-white/70"}`}>{t(step.label)}</span>
               {step.when ? (
                 <time className="text-xs text-[var(--logistics-muted)]" dateTime={step.when}>
-                  {new Date(step.when).toLocaleString(undefined, {
+                  {new Date(step.when).toLocaleString(locale, {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}
                 </time>
               ) : null}
             </div>
-            <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">{step.description}</p>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">{t(step.description)}</p>
           </div>
         </li>
       ))}

@@ -481,7 +481,7 @@ export default async function TrackPage({ searchParams }: Props) {
                   </span>
                 </div>
                 <div className="mt-6 border-t border-[var(--logistics-line)] pt-6">
-                  <LogisticsTimeline shipment={detail.shipment} events={detail.events} />
+                  <LogisticsTimeline shipment={detail.shipment} events={detail.events} locale={locale} />
                 </div>
               </div>
               <div className="space-y-8">

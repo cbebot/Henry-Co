@@ -116,6 +116,7 @@ export async function submitLogisticsBookingAction(
     promiseWindowHours: result.promiseWindowHours,
     trackingUrl,
     customerUserId,
+    locale,
   });
 
   revalidatePath("/");
