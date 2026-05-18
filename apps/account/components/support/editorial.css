@@ -507,14 +507,33 @@
     display: none !important;
   }
   .acct-thread-header {
-    padding: 0.4rem 0.55rem 0.4rem 0.4rem !important;
+    padding: 0.3rem 0.4rem 0.3rem 0.25rem !important;
     border-radius: 0 !important;
-    gap: 0.5rem !important;
+    gap: 0.35rem !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
     border: 0 !important;
-    border-bottom: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink)) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--acct-line) 75%, transparent) !important;
     box-shadow: none !important;
+    /* Kill the gold gradient on mobile — it reads as a "banner" that
+       sits between the app shell and the chat. Use the page surface so
+       the bar visually melts into the chrome. */
+    background: color-mix(in srgb, var(--acct-bg-elevated) 96%, transparent) !important;
+    backdrop-filter: blur(18px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.1) !important;
+    min-height: 2.6rem !important;
+  }
+  /* Lower the subject one notch so the bar reads as the same physical
+     height as the back-arrow tap target — no more "tall card". */
+  .acct-thread-header__subject {
+    font-size: 0.88rem !important;
+    line-height: 1.15 !important;
+  }
+  /* Subtitle: even quieter, single short line, ellipsis on overflow. */
+  .acct-thread-header__mobile-subtitle {
+    font-size: 0.66rem !important;
+    color: color-mix(in srgb, var(--acct-muted) 85%, transparent) !important;
+    margin-top: 0.05rem !important;
   }
   .acct-thread-header__mobile-back {
     display: inline-flex !important;
@@ -547,14 +566,23 @@
   .acct-thread-header__mobile-subtitle {
     display: inline-flex !important;
   }
+  /* Mobile: hide the labeled Download wrapper + ThreadCustomizationMenu
+     trigger — the overflow menu covers both. Customize still lives in
+     the overflow via the desktop popover (acceptable trade for the
+     space). */
   .acct-thread-header__actions > :not(.mt-customize):not(.acct-thread-header__menu),
   .acct-thread-header__actions > .mt-customize {
     display: none !important;
   }
   .acct-thread-header__actions {
-    gap: 0 !important;
+    gap: 0.1rem !important;
     margin-left: auto !important;
     align-self: center !important;
+  }
+  /* Strip the menu trigger of any verbose label on mobile — the dots
+     icon is sufficient and matches the iOS/WhatsApp pattern. */
+  .acct-thread-header__menu-trigger-label {
+    display: none !important;
   }
   .acct-support-room .mt-thread {
     border-radius: 0 !important;
@@ -1026,6 +1054,80 @@
   box-shadow:
     0 6px 16px -10px rgba(15, 17, 24, 0.22),
     0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+  /* Micro-interaction: tap/press feedback. Subtle scale so a tap reads
+     as tactile without feeling like a button. transform-origin biases
+     into the bubble so the corner doesn't shift. */
+  transition:
+    transform 220ms cubic-bezier(0.22, 0.85, 0.32, 1),
+    box-shadow 220ms cubic-bezier(0.22, 0.85, 0.32, 1),
+    border-color 220ms ease;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  cursor: default;
+}
+
+/* Press feedback — works on touch (active) AND mouse (active). The
+   scale stays narrow (0.985) so it reads as tactile, not bouncy. */
+.acct-support-room .mt-bubble:active {
+  transform: scale(0.985);
+  box-shadow:
+    0 4px 12px -10px rgba(15, 17, 24, 0.28),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+}
+
+/* Hover lift on the viewer-owned bubble (desktop only — hover doesn't
+   exist on touch). Subtle 1px float so the gold gradient catches more
+   light. */
+@media (hover: hover) {
+  .acct-support-room .mt-bubble-row[data-side="own"]:hover .mt-bubble {
+    transform: translateY(-1px);
+    box-shadow:
+      0 14px 32px -16px color-mix(in srgb, var(--acct-ink) 70%, transparent),
+      0 1px 0 color-mix(in srgb, var(--acct-gold) 30%, transparent) inset;
+  }
+  .acct-support-room .mt-bubble-row[data-side="team"]:hover .mt-bubble,
+  .acct-support-room .mt-bubble-row[data-side="other"]:hover .mt-bubble {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--acct-gold) 35%, var(--acct-line));
+  }
+}
+
+/* Entrance animation — when a new bubble lands in the list it fades
+   up + scales in. Reads as "message arrived" without being noisy. The
+   engine doesn't emit any side-data for which bubble is new, so this
+   keyframe is bound to :nth-last-child(-n+2) — the trailing two bubbles
+   get the animation, older messages don't re-animate on rerender.
+   data-pending is the optimistic-send pre-state; we tune that one
+   tighter (no scale) since it should appear instantly. */
+@keyframes acct-bubble-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.acct-support-room .mt-bubble-row:nth-last-child(-n+2) .mt-bubble {
+  animation: acct-bubble-rise 320ms cubic-bezier(0.22, 0.85, 0.32, 1) both;
+}
+
+.acct-support-room .mt-bubble-row[data-pending] .mt-bubble {
+  animation: none;
+  opacity: 0.88;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-room .mt-bubble,
+  .acct-support-room .mt-bubble-row[data-side="own"]:hover .mt-bubble,
+  .acct-support-room .mt-bubble-row[data-side="team"]:hover .mt-bubble,
+  .acct-support-room .mt-bubble-row:nth-last-child(-n+2) .mt-bubble {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 .acct-support-room .mt-bubble-row {
@@ -1083,7 +1185,7 @@
   align-items: center;
   gap: 0.34rem;
   margin-top: 0.5rem;
-  padding: 0.16rem 0.6rem;
+  padding: 0.16rem 0.6rem 0.16rem 0.48rem;
   border-radius: 9999px;
   background: color-mix(in srgb, var(--acct-gold) 30%, transparent);
   /* Use the same bg-soft trick as the bubble body — guarantees
@@ -1093,6 +1195,61 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* WhatsApp-style check icons. Plain UTF-8 glyphs prepended via ::before
+   on the status pill — no extra DOM, no font-file dep, no image asset.
+   The glyph inherits currentColor from the pill so it's instantly
+   contrast-correct in both light + dark modes.
+     SENT       → single check ✓
+     DELIVERED  → double check ✓✓
+     READ       → double check ✓✓ (the pill itself recolours to
+                  gold-strong via the data-state="read" rule below)
+   Earlier versions tried to gate the read state with
+   `:not(:has(::before))::before` — that selector can never match
+   because `::before` is a pseudo-element, not a real element `:has()`
+   can find, so the read pill rendered without a tick. This block fixes
+   it by emitting the tick on every committed state, then the
+   delivered/read rule overrides the content to a double tick. */
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="sent"]::before,
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before,
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
+  content: "✓";
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  display: inline-block;
+  animation: acct-bubble-tick-pop 280ms cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before,
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
+  content: "✓✓";
+  letter-spacing: -0.12em;
+}
+
+@keyframes acct-bubble-tick-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="sent"]::before,
+  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="delivered"]::before,
+  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
+    animation: none;
+  }
 }
 
 .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"] {
@@ -1296,6 +1453,23 @@
 @media (min-width: 640px) {
   .acct-support-room .mt-composer-host {
     padding: 0.85rem 1rem max(env(safe-area-inset-bottom, 0px), 0.85rem);
+  }
+}
+
+/* Mobile (<= 767px): the composer host wrapper goes edge-to-edge so the
+   engine-level edge-to-edge fix in @henryco/chat-composer isn't undone
+   by host padding. Also drop the host's own top hairline since the
+   engine now ships its own — keeps the divider single-line. */
+@media (max-width: 767px) {
+  .acct-support-room .mt-composer-host {
+    padding: 0 !important;
+    border-top: 0 !important;
+  }
+  /* The bottom fade and the engine composer border-top were stacking.
+     Hide the host's bottom fade on mobile — the engine border is the
+     single divider. */
+  .acct-support-room .mt-thread .mt-thread-list::after {
+    display: none !important;
   }
 }
 
@@ -1538,7 +1712,11 @@
 }
 
 /* Reconnect banner — amber, semantically the warning state. Stays
-   gold/amber on purpose (yellow = caution, not green). */
+   gold/amber on purpose (yellow = caution, not green). On mobile we
+   collapse the full banner row to a small floating pill aligned with
+   the live pill, so the chat surface starts immediately under the thin
+   top bar (instead of being shoved down by a banner the user sees as a
+   "blocker"). The label is hidden, the dot pulses on its own. */
 
 .acct-support-room .mt-live-banner {
   color: var(--acct-gold-text, #8a6f00);
@@ -1554,6 +1732,59 @@
 .acct-support-room .mt-live-dot {
   background: var(--acct-gold-strong);
   box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 50%, transparent);
+  animation: acct-live-reconnect-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes acct-live-reconnect-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.36rem color-mix(in srgb, var(--acct-gold) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-room .mt-live-dot {
+    animation: none;
+  }
+}
+
+/* Mobile: convert the row banner into a floating amber pill so it
+   stops eating chat space. */
+@media (max-width: 767px) {
+  .acct-support-room .mt-live-banner {
+    position: absolute !important;
+    top: 0.5rem !important;
+    right: 0.55rem !important;
+    z-index: 3 !important;
+    padding: 0.18rem 0.42rem !important;
+    border-radius: 9999px !important;
+    background: color-mix(in srgb, var(--acct-gold-soft) 92%, var(--acct-bg-elevated)) !important;
+    border: 1px solid color-mix(in srgb, var(--acct-gold) 32%, var(--acct-line)) !important;
+    backdrop-filter: blur(10px) saturate(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(1.05) !important;
+    box-shadow:
+      0 6px 18px -12px color-mix(in srgb, var(--acct-gold) 55%, transparent),
+      0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 50%, transparent) inset !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.32rem !important;
+    width: auto !important;
+    /* Hide the "Reconnecting…" word — the dot alone is the signal,
+       like Slack / iMessage do for connection state. The aria-label
+       on the parent role="status" still announces to SR. */
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+  .acct-support-room .mt-live-banner > span:not(.mt-live-dot) {
+    display: none !important;
+  }
+  /* When reconnecting, suppress the green "Live" pill so they don't
+     stack — the amber dot is the truth right now. */
+  .acct-support-room [data-live="reconnecting"] .mt-live-pill {
+    display: none !important;
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────

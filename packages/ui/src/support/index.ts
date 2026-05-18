@@ -1,2 +1,11 @@
-export { SupportDock, AssistDock } from "./SupportDock";
-export type { SupportDockProps, AssistDockProps, AssistDivision } from "./SupportDock";
+export {
+  SupportAssist,
+  AssistDock,
+  SupportDock,
+} from "./SupportAssist";
+export type {
+  SupportAssistProps,
+  AssistDockProps,
+  SupportDockProps,
+  AssistDivision,
+} from "./SupportAssist";

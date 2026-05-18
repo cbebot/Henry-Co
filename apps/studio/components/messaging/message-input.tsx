@@ -133,20 +133,24 @@ export function MessageInput({
   );
 
   return (
-    <div className="flex flex-col gap-2 border-t border-white/[0.06] bg-[#0A0E1A] px-3 pb-3 pt-2 sm:px-4">
+    <div className="flex flex-col gap-2 bg-[#0A0E1A] pb-3 pt-2 sm:border-t sm:border-white/[0.06] sm:px-4">
       {reply ? (
-        <ReplyComposerPreview
-          preview={reply}
-          onCancel={() => onCancelReply?.()}
-        />
+        <div className="px-3 sm:px-0">
+          <ReplyComposerPreview
+            preview={reply}
+            onCancel={() => onCancelReply?.()}
+          />
+        </div>
       ) : null}
       {offline ? (
-        <div
-          className="rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-1.5 text-[11px] font-medium text-amber-200"
-          role="status"
-        >
-          You&apos;re offline — your next message will be queued and sent
-          automatically once the connection returns.
+        <div className="px-3 sm:px-0">
+          <div
+            className="rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-1.5 text-[11px] font-medium text-amber-200"
+            role="status"
+          >
+            You&apos;re offline — your next message will be queued and sent
+            automatically once the connection returns.
+          </div>
         </div>
       ) : null}
       <div className="studio-msg-composer">
@@ -159,6 +163,7 @@ export function MessageInput({
           enableAttachments
           enableDraft
           enableFullScreenOnMobile
+          edgeToEdgeMobile
           maxAttachments={MAX_ATTACHMENTS_PER_MESSAGE}
           maxFileBytes={MAX_ATTACHMENT_BYTES}
           acceptedMimeTypes={[...ACCEPTED_ATTACHMENT_MIME_TYPES]}

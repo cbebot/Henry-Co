@@ -277,6 +277,7 @@ export function MessageThread({
   enableTypingPresence = true,
   composerExtras,
   dayDividerLabel,
+  autoFocusComposer = false,
 }: MessageThreadProps) {
   const appearance = useThreadAppearance();
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
@@ -698,6 +699,7 @@ export function MessageThread({
             enableAttachments={Boolean(adapter.attachAction)}
             enableDraft
             enableFullScreenOnMobile
+            autoFocus={autoFocusComposer}
             uploadAttachment={uploader}
             onSend={handleSend}
             onTyping={enableTypingPresence ? handleTyping : undefined}

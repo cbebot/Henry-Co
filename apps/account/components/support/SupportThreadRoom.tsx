@@ -118,6 +118,7 @@ export default function SupportThreadRoom({
         renderMarkdown
         disableComposer={isClosed}
         dayDividerLabel={dayDividerLabel}
+        autoFocusComposer={!isClosed}
         placeholder={t(
           "Reply with context, screenshots, or next steps. Drafts stay here while you type.",
         )}

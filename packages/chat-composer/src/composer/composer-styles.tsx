@@ -222,6 +222,89 @@ const STYLE_BODY = `
   background-color: color-mix(in srgb, var(--composer-accent, #0E7C86) 18%, transparent);
 }
 
+/* iOS Safari triggers a viewport zoom whenever a focused input has a
+   computed font-size below 16px. The Tailwind utilities on the inline
+   textarea ship 15/15.5px — premium on desktop, but jarring on mobile
+   because the page kicks into the zoom state and refuses to settle
+   back when the keyboard hides. The composer marks its textarea with
+   the data-hc-no-zoom attribute; this rule enforces 16px on small
+   viewports so Safari leaves the viewport alone. Layout barely budges
+   because the bump only kicks in under 640px where the textarea is
+   full-bleed, and the line-height is generous enough to absorb 1px. */
+@media (max-width: 640px) {
+  [data-hc-no-zoom],
+  [data-composer-input],
+  .henryco-composer-input {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   Edge-to-edge composer on mobile — WhatsApp / iMessage parity.
+
+   On phones (<= 767px) every CHAT-FIRST surface in the monorepo should
+   render the composer as device chrome, not a floating card. That means:
+     - No outer border-radius (rounded-[1.6rem] from the Tailwind
+       utility goes to 0 so the shell touches both viewport edges).
+     - No outer card border (the JSX ships a class="border" — we drop
+       it to a single 1px hairline border-top that ties the bar to the
+       chat above with no double-line against the bottom fade).
+     - No horizontal padding on the shell itself (px-3 → 0). Inner
+       padding moves onto the children so the textarea + action row
+       still have breathing room without a visible side gutter.
+     - Safe-area-inset-bottom on the bottom edge so iOS home indicator
+       and Android gesture bar stay clear.
+     - Solid frosted background (no shadow leaking sideways).
+   The inner textarea keeps its own rounded pill via the
+   .henryco-composer-input rules above; only the OUTER shell is
+   stripped of its card chrome.
+
+   SCOPE: this rule only fires when the composer is mounted inside a
+   .mt-composer-host (the @henryco/messaging-thread host wrapper)
+   OR carries data-hc-edge-to-edge="true" (host opt-in). That way
+   form-embedded composers (NewSupportForm inside .acct-card, Care
+   ReplyComposer inside .care-card) keep their rounded chrome — they're
+   not chat surfaces and shouldn't read as device-bottom-bars. Hosts
+   that want WhatsApp behaviour without MessageThread can set the
+   data attribute (see ChatComposer's edgeToEdgeMobile prop).
+   ──────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .mt-composer-host .henryco-composer-shell,
+  .henryco-composer-shell[data-hc-edge-to-edge="true"] {
+    border-radius: 0 !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    border-bottom-width: 0 !important;
+    border-top-width: 1px !important;
+    border-top-color: color-mix(in srgb, currentColor 12%, transparent) !important;
+    padding-left: 0.6rem !important;
+    padding-right: 0.6rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem) !important;
+    /* Solid frosted background — no shadow halo on the sides since
+       there's no gutter to project one into. */
+    box-shadow: none !important;
+    /* The shell still renders its gradient via background-image, which
+       is fine — the gradient blends with the chat surface above. */
+  }
+  /* Tame the focus-within shadow ring on mobile — a 4px ring around an
+     edge-to-edge bar reads as a double-line. The inner textarea still
+     gets its own focus styling via border-color change. */
+  .mt-composer-host .henryco-composer-shell:where(:focus-within),
+  .henryco-composer-shell[data-hc-edge-to-edge="true"]:where(:focus-within) {
+    box-shadow:
+      0 -8px 24px -16px rgba(15, 17, 24, 0.18) !important;
+  }
+  /* Strip the fullscreen-strip 3px decorative top line on mobile only
+     within chat surfaces — it stacks with the new border-top hairline. */
+  .mt-composer-host .henryco-fullscreen-strip,
+  .henryco-composer-shell[data-hc-edge-to-edge="true"] .henryco-fullscreen-strip {
+    display: none !important;
+  }
+}
+
 /* V5-4 polish: gentle "alive" expand-button breath when the composer is
    empty. Stops as soon as the user types a character so it never
    competes with active typing. Hosts can opt out by setting

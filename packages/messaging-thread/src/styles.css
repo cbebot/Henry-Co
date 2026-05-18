@@ -537,6 +537,21 @@
   }
 }
 
+/* Mobile (<= 767px): go edge-to-edge so the engine composer's own
+   edge-to-edge rule in @henryco/chat-composer isn't undone by host
+   wrapper padding. The bottom safe-area inset is owned by the engine
+   composer shell (its mobile rule ships padding-bottom:
+   env(safe-area-inset-bottom)); we drop our wrapper's horizontal
+   padding entirely and trim the top border so we don't double up
+   against the engine's new hairline. */
+@media (max-width: 767px) {
+  .mt-composer-host {
+    padding: 0;
+    border-top: 0;
+    background: transparent;
+  }
+}
+
 .mt-composer-error {
   margin-top: 0.5rem;
   font-size: 11.5px;

@@ -176,6 +176,23 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
       if (!res.ok) throw new Error(data.error || "We couldn’t save your changes. Please try again.");
 
       setMessage({ type: "success", text: t("Profile updated") });
+
+      // Language change needs a hard reload, not router.refresh().
+      // router.refresh() re-runs server components but does not re-execute
+      // the client-side providers that initialise from cookies (HenryCoLocale
+      // context, RTL `<html dir>`, persisted user agent). A full reload
+      // forces the layout's server-side cookie read to apply the new
+      // locale across every surface (typed copy + runtime DeepL + RTL
+      // direction + dashboard-shell sidebar copy) in one trip.
+      const languageChanged =
+        normalizeLocale(language) !== normalizeLocale(effectiveLocale);
+      if (languageChanged) {
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        }
+        return;
+      }
+
       router.refresh();
     } catch (err: unknown) {
       setMessage({

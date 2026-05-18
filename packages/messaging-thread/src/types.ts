@@ -235,4 +235,12 @@ export type MessageThreadProps = {
     date: Date,
     position: "today" | "yesterday" | "earlier",
   ) => string | null;
+  /**
+   * Auto-focus the composer textarea when the thread mounts. Hosts use
+   * this on chat-first surfaces (eg. a dedicated /support/[threadId] page)
+   * where opening the keyboard immediately on mobile is the right default.
+   * Hosts mounting threads inside a dashboard tab should leave it off so
+   * the engine doesn't steal focus from the surrounding page.
+   */
+  autoFocusComposer?: boolean;
 };

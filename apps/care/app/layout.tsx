@@ -8,7 +8,7 @@ import {
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
+import { SupportAssist } from "@henryco/ui/support";
 import { createDivisionMetadata } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CareToaster locale={lang} />
           </Suspense>
           {children}
-          <AssistDock division="care" accent="#6B7CFF" />
+          <SupportAssist division="care" accent="#6B7CFF" />
         </PublicThemeGuard>
         <HenryCoAnalytics />
       </body>

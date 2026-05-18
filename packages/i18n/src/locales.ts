@@ -34,10 +34,26 @@ export const LOCALE_TIERS: Record<AppLocale, LocaleTier> = {
   hi: "scaffold",
 };
 
-/** Fully user-visible selector locales. */
-export const PUBLIC_SELECTOR_LOCALES: readonly AppLocale[] = ["en", "fr", "es", "pt", "ar", "de", "it"];
+/**
+ * Fully user-visible selector locales.
+ *
+ * All 12 are exposed in the selector now that native copy is complete
+ * across account-copy + jobs-copy + hub-public + the surface-extra-labels
+ * dictionary, with the runtime DeepL fallback covering any straggler
+ * surface string for the 8 DeepL-supported locales. The four DeepL-
+ * unsupported locales (ig/yo/ha — Hindi is supported) still fall back
+ * to English on any string that doesn't have a typed copy entry; the
+ * audit in `scripts/i18n-audit-actionable-paths.mjs` lists `actionable:
+ * 0` for every (module, locale) pair after the wave-1 closure.
+ */
+export const PUBLIC_SELECTOR_LOCALES: readonly AppLocale[] = ALL_LOCALES;
 
-/** Internal registry locales that remain detectable/persistable but are not yet public selector options. */
+/**
+ * Empty by design after the wave-1 promotion — kept as a named export so
+ * downstream code that referenced it (audit scripts, internal feature
+ * flags) keeps compiling. Any future scaffold-tier work can re-populate
+ * this list and the selector helpers will respect it automatically.
+ */
 export const INTERNAL_SCAFFOLD_LOCALES: readonly AppLocale[] = ALL_LOCALES.filter(
   (locale) => !PUBLIC_SELECTOR_LOCALES.includes(locale),
 );

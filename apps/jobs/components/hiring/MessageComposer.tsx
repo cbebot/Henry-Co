@@ -118,6 +118,7 @@ export function MessageComposer({
         ariaLabel="Hiring conversation composer"
         placeholder="Type your message…"
         enableAttachments={false}
+        edgeToEdgeMobile
         labels={labels}
         onSend={handleSend}
         onTyping={handleTyping}
