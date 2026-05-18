@@ -9,6 +9,7 @@ import {
   ensureCustomerProfile,
   upsertCustomerInvoice,
 } from "@/lib/logistics/shared-account";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 import type { LogisticsServiceType, LogisticsUrgency } from "@/lib/logistics/types";
 
 function cleanText(value?: unknown) {
@@ -58,6 +59,8 @@ export type CreateLogisticsRequestInput = {
   customerUserId?: string | null;
   /** Public logistics origin (e.g. https://logistics.example.com) for account deep links. */
   trackingPortalBaseUrl?: string | null;
+  /** BCP-47 locale of the requester for server-side error message translation. */
+  locale?: string;
 };
 
 export type CreateLogisticsRequestResult =
@@ -86,11 +89,13 @@ function isUuid(value: string) {
 }
 
 export async function createLogisticsRequest(input: CreateLogisticsRequestInput): Promise<CreateLogisticsRequestResult> {
+  const locale = input.locale || "en";
+  const tx = (text: string) => autoTranslate(text, locale);
   let admin: ReturnType<typeof createAdminSupabase>;
   try {
     admin = createAdminSupabase();
   } catch {
-    return { ok: false, error: "Logistics is temporarily unavailable. Please try again or contact support." };
+    return { ok: false, error: await tx("Logistics is temporarily unavailable. Please try again or contact support.") };
   }
 
   const senderName = cleanText(input.senderName);
@@ -105,13 +110,13 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
   const dropRegion = cleanText(input.dropRegion);
 
   if (!senderName || !recipientName || !senderPhone || !recipientPhone) {
-    return { ok: false, error: "Please complete sender and recipient names and phone numbers." };
+    return { ok: false, error: await tx("Please complete sender and recipient names and phone numbers.") };
   }
 
   if (!pickupLine1 || !dropLine1 || !pickupCity || !dropCity) {
     return {
       ok: false,
-      error: "Pickup and receiving addresses each need at least a street line and city.",
+      error: await tx("Pickup and receiving addresses each need at least a street line and city."),
     };
   }
 
@@ -119,7 +124,7 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
   const rateCards = await getLogisticsRateCards();
   const zone = resolveZone(input.zoneKey, zones);
   if (!zone) {
-    return { ok: false, error: "Selected zone is no longer available. Please choose a valid zone." };
+    return { ok: false, error: await tx("Selected zone is no longer available. Please choose a valid zone.") };
   }
   const pricing = buildPricingBreakdown({
     zone,
@@ -185,7 +190,7 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
   const { error: shipErr } = await admin.from("logistics_shipments").insert(shipmentRow as never);
   if (shipErr) {
     console.error("[logistics] shipment insert", shipErr);
-    return { ok: false, error: "We could not save your request. Please check your details and try again." };
+    return { ok: false, error: await tx("We could not save your request. Please check your details and try again.") };
   }
 
   const pickupId = createId();
@@ -236,7 +241,7 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
   if (addrErr) {
     console.error("[logistics] address insert", addrErr);
     await admin.from("logistics_shipments").delete().eq("id", shipmentId);
-    return { ok: false, error: "We could not save address details. Please try again." };
+    return { ok: false, error: await tx("We could not save address details. Please try again.") };
   }
 
   const eventTitle = input.mode === "quote" ? "Quote requested" : "Booking submitted";

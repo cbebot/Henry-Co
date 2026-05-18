@@ -7,6 +7,7 @@ import {
 } from "@henryco/i18n/server";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
+import { autoTranslate, autoTranslateMany } from "@/lib/i18n/auto-translate";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLogisticsPublicLocale();
@@ -26,8 +27,22 @@ export default async function ServicesPage() {
   ]);
   const copy = getLogisticsServicesCopy(locale);
 
-  // `services` is the static LOGISTICS_SERVICES catalogue (not Supabase) —
-  // skipped per scope. `settings.pickupHours` is Supabase-merged: wrap it.
+  // Localize the static LOGISTICS_SERVICES catalogue at render time —
+  // each card's name/summary/promise/badge/highlights goes through the
+  // cached DeepL runtime for supported locales, EN passthrough for
+  // hi/ig/yo/ha (until human translators are wired).
+  const localizedServices = await Promise.all(
+    services.map(async (s) => ({
+      ...s,
+      name: await autoTranslate(s.name, locale),
+      summary: await autoTranslate(s.summary, locale),
+      promise: await autoTranslate(s.promise, locale),
+      badge: await autoTranslate(s.badge, locale),
+      highlights: await autoTranslateMany(s.highlights, locale),
+    })),
+  );
+
+  // `settings.pickupHours` is Supabase-merged: wrap it.
   const pickupHoursLocalized = await resolveLocalizedDynamicField({
     record: settings as unknown as Record<string, unknown>,
     field: "pickupHours",
@@ -52,7 +67,7 @@ export default async function ServicesPage() {
         </header>
 
         <ol className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-          {services.map((s, i) => (
+          {localizedServices.map((s, i) => (
             <li key={s.slug} className="grid gap-6 py-8 md:grid-cols-[0.32fr,0.68fr]">
               <div>
                 <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">

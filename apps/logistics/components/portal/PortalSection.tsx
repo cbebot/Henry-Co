@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 
 /**
  * PortalSection — editorial-premium content section: kicker rail +
@@ -83,17 +84,25 @@ export type PortalLaneCard = {
   href: string;
 };
 
-export function PortalLaneGrid({ lanes }: { lanes: PortalLaneCard[] }) {
+export function PortalLaneGrid({
+  lanes,
+  locale,
+}: {
+  lanes: PortalLaneCard[];
+  locale?: AppLocale;
+}) {
+  const t = (text: string) =>
+    locale ? translateSurfaceLabel(locale, text) : text;
   const clipped = lanes.slice(0, 4);
   return (
-    <div className="log-pf__lanes" role="list" aria-label="Logistics lanes">
+    <div className="log-pf__lanes" role="list" aria-label={t("Logistics lanes")}>
       {clipped.map((lane) => (
         <a key={lane.href} className="log-pf__lane" href={lane.href} role="listitem">
           <span className="log-pf__lane-badge">{lane.badge}</span>
           <h3 className="log-pf__lane-title">{lane.title}</h3>
           <p className="log-pf__lane-body">{lane.body}</p>
           <div className="log-pf__lane-foot">
-            <span>Promise</span>
+            <span>{t("Promise")}</span>
             <span className="log-pf__lane-promise">{lane.promise}</span>
           </div>
         </a>

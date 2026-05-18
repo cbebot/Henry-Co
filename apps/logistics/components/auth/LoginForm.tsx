@@ -3,10 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginForm() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +32,7 @@ export default function LoginForm() {
       });
 
       if (authError) {
-        setError(authError.message);
+        setError(t(authError.message));
         return;
       }
 
@@ -36,7 +40,7 @@ export default function LoginForm() {
       router.push(next);
       router.refresh();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("Something went wrong. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -52,7 +56,7 @@ export default function LoginForm() {
 
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Email</label>
+          <label className="mb-1.5 block text-sm font-medium">{t("Email")}</label>
           <input
             type="email"
             value={email}
@@ -66,9 +70,9 @@ export default function LoginForm() {
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label className="text-sm font-medium">Password</label>
+            <label className="text-sm font-medium">{t("Password")}</label>
             <Link href="/forgot-password" className="text-xs text-[var(--acct-gold)] hover:underline">
-              Forgot password?
+              {t("Forgot password?")}
             </Link>
           </div>
           <div className="relative">
@@ -77,14 +81,16 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="acct-input pr-10"
-              placeholder="Your password"
+              placeholder={t("Your password")}
               required
               autoComplete="current-password"
+              aria-label={t("Password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+              aria-label={showPassword ? t("Hide password") : t("Show password")}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -97,7 +103,7 @@ export default function LoginForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Sign in"}
+        {loading ? <Loader2 size={18} className="animate-spin" /> : t("Sign in")}
       </button>
     </form>
   );

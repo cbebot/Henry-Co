@@ -1,5 +1,7 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -37,29 +39,30 @@ async function getStaff() {
 }
 
 export default async function OwnerStaffPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const staff = await getStaff();
 
   return (
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Staff
+          {t("Staff")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Operator directory
+          {t("Operator directory")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Every active operator on the logistics platform with their role and
-          scope. Role changes route through the cross-division staff hub.
+          {t("Every active operator on the logistics platform with their role and scope. Role changes route through the cross-division staff hub.")}
         </p>
       </header>
 
       <Panel tone="flat">
         {staff.length === 0 ? (
           <EmptyState
-            kicker="No memberships"
-            headline="No operators yet"
-            body="Invite riders, dispatchers, and managers — their memberships will appear here once accepted."
+            kicker={t("No memberships")}
+            headline={t("No operators yet")}
+            body={t("Invite riders, dispatchers, and managers — their memberships will appear here once accepted.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -73,13 +76,13 @@ export default async function OwnerStaffPage() {
                     {row.normalized_email || row.user_id?.slice(0, 8) || "—"}
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
-                    Joined{" "}
-                    {new Date(row.created_at).toLocaleDateString()} · scope{" "}
-                    {row.scope_type ?? "platform"}
+                    {t("Joined")}{" "}
+                    {new Date(row.created_at).toLocaleDateString(locale)} · {t("scope")}{" "}
+                    {row.scope_type ? t(row.scope_type) : t("platform")}
                   </p>
                 </div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                  {row.role ?? "—"}
+                  {row.role ? t(row.role) : "—"}
                 </p>
               </li>
             ))}

@@ -19,6 +19,7 @@ import { PublicSpotlight } from "@henryco/ui/public-shell";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { LOGISTICS_FAQS } from "@/lib/logistics/content";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
+import { autoTranslate, autoTranslateMany } from "@/lib/i18n/auto-translate";
 import {
   PortalHero,
   PortalSection,
@@ -101,11 +102,21 @@ export default async function LogisticsHomePage() {
    * (anti-pattern #18 enforced at the type level).
    */
   const activeZones = snapshot.zones.filter((zone) => zone.active);
-  const zoneNames = Array.from(
+  const rawZoneNames = Array.from(
     new Set(activeZones.map((zone) => zone.name.trim()).filter(Boolean))
   );
+  const zoneNames = await autoTranslateMany(rawZoneNames, locale);
   const coverageLine = buildCoverageLine(copy, zoneNames);
-  const services = snapshot.services;
+  const services = await Promise.all(
+    snapshot.services.map(async (s) => ({
+      ...s,
+      name: await autoTranslate(s.name, locale),
+      summary: await autoTranslate(s.summary, locale),
+      promise: await autoTranslate(s.promise, locale),
+      badge: await autoTranslate(s.badge, locale),
+      highlights: await autoTranslateMany(s.highlights, locale),
+    })),
+  );
   const fastestEtaZone = activeZones.reduce<{ low: number; high: number } | null>(
     (acc, zone) => {
       if (!Number.isFinite(zone.etaHoursMin) || !Number.isFinite(zone.etaHoursMax)) return acc;
@@ -229,6 +240,7 @@ export default async function LogisticsHomePage() {
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[92rem] log-pf">
         <PortalHero
+          locale={locale}
           eyebrow={copy.hero.eyebrow}
           title={copy.hero.title}
           blurb={copy.hero.blurb}
@@ -261,7 +273,7 @@ export default async function LogisticsHomePage() {
             count: String(services.length),
           })}
         >
-          <PortalLaneGrid lanes={laneCards} />
+          <PortalLaneGrid lanes={laneCards} locale={locale} />
         </PortalSection>
 
         <PortalSection
