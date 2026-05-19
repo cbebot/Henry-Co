@@ -5,6 +5,7 @@ import {
   ShieldQuestion,
   TimerReset,
 } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import type {
   PropertyListing,
   PropertyListingStatus,
@@ -96,9 +97,12 @@ const COPY: Record<
 
 export function PropertyVerificationBadge({
   listing,
+  locale = "en",
 }: {
   listing: Pick<PropertyListing, "status" | "managedByHenryCo" | "trustBadges">;
+  locale?: AppLocale;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const variant = classifyListing(listing);
   const copy = COPY[variant];
   const Icon = copy.Icon;
@@ -113,23 +117,23 @@ export function PropertyVerificationBadge({
           className={`inline-flex items-center gap-2 rounded-full border border-[var(--property-line)] px-3 py-1 text-[11.5px] font-semibold uppercase tracking-[0.2em] ${copy.tone}`}
         >
           <Icon className="h-3.5 w-3.5" aria-hidden />
-          {copy.label}
+          {t(copy.label)}
         </span>
         <Link
           href="/trust"
           className="text-[12px] font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
         >
-          What this means
+          {t("What this means")}
         </Link>
       </div>
       <h2
         id="property-verification-badge"
         className="sr-only"
       >
-        Property verification posture
+        {t("Property verification posture")}
       </h2>
       <p className="mt-3 max-w-md text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-        {copy.summary}
+        {t(copy.summary)}
       </p>
       {listing.trustBadges.length > 0 && variant !== "submission" ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">
@@ -138,7 +142,7 @@ export function PropertyVerificationBadge({
               key={badge}
               className="rounded-full border border-[var(--property-line)] px-2 py-0.5 text-[10.5px] font-medium tracking-[0.12em] text-[var(--property-ink-soft)]"
             >
-              {badge}
+              {t(badge)}
             </li>
           ))}
         </ul>
@@ -149,9 +153,12 @@ export function PropertyVerificationBadge({
 
 export function PropertyVerificationBadgePill({
   listing,
+  locale = "en",
 }: {
   listing: Pick<PropertyListing, "status" | "managedByHenryCo" | "trustBadges">;
+  locale?: AppLocale;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const variant = classifyListing(listing);
   const copy = COPY[variant];
   const Icon = copy.Icon;
@@ -160,7 +167,7 @@ export function PropertyVerificationBadgePill({
       className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] ${copy.tone}`}
     >
       <Icon className="h-3 w-3" aria-hidden />
-      {copy.label}
+      {t(copy.label)}
     </span>
   );
 }

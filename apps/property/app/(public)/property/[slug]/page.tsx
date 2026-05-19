@@ -302,7 +302,7 @@ export default async function PropertyDetailPage({
           {/* V3 PASS 21 — verification posture surfaced from the
               documented state model (/docs/property-verification-state-model.md).
               Editorial pill + summary, links to /trust. */}
-          <PropertyVerificationBadge listing={data.listing} />
+          <PropertyVerificationBadge listing={data.listing} locale={locale} />
 
           {/* Highlights + Verification + Amenities — editorial 2-col, no panel */}
           <div>
