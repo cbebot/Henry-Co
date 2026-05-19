@@ -335,7 +335,7 @@ export default async function CourseDetailPage({
           {/* Description + tags — editorial column */}
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-copper)]">
-              About this program
+              {t("About this program")}
             </p>
             <p className="mt-4 max-w-3xl text-[15px] leading-[1.75] text-[var(--learn-ink-soft)]">
               {courseDescription}

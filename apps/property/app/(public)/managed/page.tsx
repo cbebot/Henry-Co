@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyListingCard,
@@ -18,6 +19,7 @@ export default async function ManagedPropertyPage() {
     (item) => item.status === "approved" && item.managedByHenryCo,
   );
   const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   // Wrap services list — small public ledger, no per-row description
   // cost concern.
@@ -46,15 +48,15 @@ export default async function ManagedPropertyPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
-        kicker="Managed property"
-        title="Operations-grade management after the listing goes live."
-        description="Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows — held on one operating rail rather than scattered across apps and chat threads."
+        kicker={t("Managed property")}
+        title={t("Operations-grade management after the listing goes live.")}
+        description={t("Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows — held on one operating rail rather than scattered across apps and chat threads.")}
         actions={
           <Link
             href="/submit"
             className="property-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Submit a managed property
+            {t("Submit a managed property")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         }
@@ -70,10 +72,10 @@ export default async function ManagedPropertyPage() {
       <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr,1.05fr] xl:divide-x xl:divide-[var(--property-line)]">
         <div>
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Service lines
+            {t("Service lines")}
           </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-            What HenryCo handles after acceptance.
+            {t("What HenryCo handles after acceptance.")}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
             {localizedServices.map((service) => (
@@ -103,7 +105,7 @@ export default async function ManagedPropertyPage() {
 
         <div className="xl:pl-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Recent managed records
+            {t("Recent managed records")}
           </p>
           <div className="mt-6 space-y-5">
             {snapshot.managedRecords.map((record) => (
@@ -115,9 +117,9 @@ export default async function ManagedPropertyPage() {
 
       <section className="mt-14">
         <PropertySectionIntro
-          kicker="Managed listings"
-          title="Homes and stays already on managed rails."
-          description="Stronger readiness, reporting, and coordination than passive pass-through inventory."
+          kicker={t("Managed listings")}
+          title={t("Homes and stays already on managed rails.")}
+          description={t("Stronger readiness, reporting, and coordination than passive pass-through inventory.")}
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {managedListings.map((listing) => (
@@ -130,14 +132,13 @@ export default async function ManagedPropertyPage() {
         <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
           <div>
             <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-              Move forward
+              {t("Move forward")}
             </p>
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-              Submit your property — we’ll review the operating fit, not just the badge.
+              {t("Submit your property — we’ll review the operating fit, not just the badge.")}
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--property-ink-soft)]">
-              Managed acceptance implies HenryCo operational involvement. Non-managed listings can
-              still publish, but the owner remains responsible for day-to-day reality.
+              {t("Managed acceptance implies HenryCo operational involvement. Non-managed listings can still publish, but the owner remains responsible for day-to-day reality.")}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -145,14 +146,14 @@ export default async function ManagedPropertyPage() {
               href="/submit"
               className="property-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Submit a property
+              {t("Submit a property")}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/trust"
               className="inline-flex items-center gap-2 rounded-full border border-[var(--property-line)] px-6 py-3 text-sm font-semibold text-[var(--property-ink)] transition hover:border-[var(--property-accent-strong)]/50"
             >
-              How HenryCo governs listings
+              {t("How HenryCo governs listings")}
             </Link>
           </div>
         </div>

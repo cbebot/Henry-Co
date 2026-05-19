@@ -1,3 +1,4 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyMetricCard, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { requirePropertyRoles } from "@/lib/property/auth";
@@ -38,6 +39,7 @@ export default async function AdminPage() {
   );
 
   const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   // Campaign list — small fixed array, public-facing label, wrap title.
   const localizedCampaigns = await Promise.all(
     snapshot.campaigns.map(async (campaign) => {
@@ -54,16 +56,16 @@ export default async function AdminPage() {
 
   return (
     <PropertyWorkspaceShell
-      kicker="Admin"
-      title="Property platform governance"
-      description="Monitor live inventory, messaging health, moderation backlog, and the current readiness of the platform’s operator stack."
+      kicker={t("Admin")}
+      title={t("Property platform governance")}
+      description={t("Monitor live inventory, messaging health, moderation backlog, and the current readiness of the platform’s operator stack.")}
       nav={getWorkspaceNavigation("/admin")}
     >
       <div className="grid gap-4 md:grid-cols-4">
-        <PropertyMetricCard label="Approved" value={String(approved)} hint="Listings currently live on the public property surface." />
-        <PropertyMetricCard label="Pending" value={String(submitted)} hint="Listings waiting for moderation or revision." />
-        <PropertyMetricCard label="Inspection" value={String(inspectionBacklog)} hint="Listings that still need an inspection decision before publication." />
-        <PropertyMetricCard label="Failures" value={String(messagingFailures)} hint="Notification records marked as failed." />
+        <PropertyMetricCard label={t("Approved")} value={String(approved)} hint={t("Listings currently live on the public property surface.")} />
+        <PropertyMetricCard label={t("Pending")} value={String(submitted)} hint={t("Listings waiting for moderation or revision.")} />
+        <PropertyMetricCard label={t("Inspection")} value={String(inspectionBacklog)} hint={t("Listings that still need an inspection decision before publication.")} />
+        <PropertyMetricCard label={t("Failures")} value={String(messagingFailures)} hint={t("Notification records marked as failed.")} />
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
@@ -71,38 +73,38 @@ export default async function AdminPage() {
           href="/admin/listings"
           className="property-button inline-flex rounded-full px-6 py-3 text-sm font-semibold"
         >
-          Open governance queue
+          {t("Open governance queue")}
         </Link>
         <Link
           href="/operations"
           className="property-button-secondary inline-flex rounded-full px-6 py-3 text-sm font-semibold"
         >
-          Open operations
+          {t("Open operations")}
         </Link>
       </div>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Governance posture</div>
+          <div className="property-kicker">{t("Governance posture")}</div>
           <div className="mt-5 space-y-4">
             <div className="flex items-center justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
               <div>
-                <div className="text-lg font-semibold text-[var(--property-ink)]">Awaiting documents</div>
-                <div className="mt-1 text-sm text-[var(--property-ink-soft)]">Listings still missing trust evidence before review can continue.</div>
+                <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Awaiting documents")}</div>
+                <div className="mt-1 text-sm text-[var(--property-ink-soft)]">{t("Listings still missing trust evidence before review can continue.")}</div>
               </div>
               <CountPill value={awaitingDocuments} />
             </div>
             <div className="flex items-center justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
               <div>
-                <div className="text-lg font-semibold text-[var(--property-ink)]">Awaiting eligibility</div>
-                <div className="mt-1 text-sm text-[var(--property-ink-soft)]">Listings paused on identity, duplicate-contact, or trust gating.</div>
+                <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Awaiting eligibility")}</div>
+                <div className="mt-1 text-sm text-[var(--property-ink-soft)]">{t("Listings paused on identity, duplicate-contact, or trust gating.")}</div>
               </div>
               <CountPill value={awaitingEligibility} />
             </div>
             <div className="flex items-center justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
               <div>
-                <div className="text-lg font-semibold text-[var(--property-ink)]">Messaging health</div>
-                <div className="mt-1 text-sm text-[var(--property-ink-soft)]">Email and WhatsApp delivery stack for property notifications.</div>
+                <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Messaging health")}</div>
+                <div className="mt-1 text-sm text-[var(--property-ink-soft)]">{t("Email and WhatsApp delivery stack for property notifications.")}</div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <PropertyStatusBadge status={emailConfigured ? "active" : "offline"} />
@@ -113,7 +115,7 @@ export default async function AdminPage() {
         </div>
 
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Campaign surfaces</div>
+          <div className="property-kicker">{t("Campaign surfaces")}</div>
           <div className="mt-5 space-y-4">
             {localizedCampaigns.map((campaign) => (
               <div key={campaign.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">

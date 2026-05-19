@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import {
   PropertyEmptyState,
@@ -18,6 +19,7 @@ export default async function ModerationPage() {
   await requirePropertyRoles(["moderation", "listing_manager", "property_admin"], "/moderation");
   const data = await getPropertyGovernanceWorkspaceData();
   const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   // Moderation queue — wrap listing titles only (8-row slice).
   // application.reviewNote is staff-authored free-text, kept raw.
@@ -45,44 +47,44 @@ export default async function ModerationPage() {
 
   return (
     <PropertyWorkspaceShell
-      kicker="Moderation"
-      title="Moderation posture and exception handling"
-      description="Keep risky listings out of publication, surface the correction backlog, and route serious exceptions into the full governance queue."
+      kicker={t("Moderation")}
+      title={t("Moderation posture and exception handling")}
+      description={t("Keep risky listings out of publication, surface the correction backlog, and route serious exceptions into the full governance queue.")}
       nav={getWorkspaceNavigation("/moderation")}
       actions={
         <Link
           href="/admin/listings"
           className="property-button inline-flex rounded-full px-5 py-3 text-sm font-semibold"
         >
-          Open full governance queue
+          {t("Open full governance queue")}
         </Link>
       }
     >
       <div className="grid gap-4 md:grid-cols-4">
         <PropertyMetricCard
-          label="Queue"
+          label={t("Queue")}
           value={String(data.queue.length)}
-          hint="Listings still in moderation, trust review, or inspection-sensitive states."
+          hint={t("Listings still in moderation, trust review, or inspection-sensitive states.")}
         />
         <PropertyMetricCard
-          label="Corrections"
+          label={t("Corrections")}
           value={String(corrections)}
-          hint="Listings that need better copy, stronger evidence, or clearer readiness details."
+          hint={t("Listings that need better copy, stronger evidence, or clearer readiness details.")}
         />
         <PropertyMetricCard
-          label="Blocked"
+          label={t("Blocked")}
           value={String(blocked)}
-          hint="Listings held back because the trust posture is currently too weak."
+          hint={t("Listings held back because the trust posture is currently too weak.")}
         />
         <PropertyMetricCard
-          label="Escalated"
+          label={t("Escalated")}
           value={String(escalated)}
-          hint="Listings that need higher-scrutiny operator review before moving forward."
+          hint={t("Listings that need higher-scrutiny operator review before moving forward.")}
         />
       </div>
 
       <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Priority moderation cases</div>
+        <div className="property-kicker">{t("Priority moderation cases")}</div>
         {data.queue.length ? (
           <div className="mt-5 space-y-4">
             {visibleQueue.map((listing) => {

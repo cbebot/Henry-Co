@@ -38,7 +38,7 @@ export default async function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
         <div>
           <div className="text-xl font-semibold text-[var(--site-text)]">
-            {brandTitle}
+            {t(brandTitle)}
           </div>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
             {t("A premium multi-division corporate gateway designed to present the Henry & Co. ecosystem with clarity, trust, and long-term brand discipline.")}
@@ -56,7 +56,7 @@ export default async function Footer() {
         style={{ borderColor: "var(--site-border)" }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>© {currentYear} {brandTitle}. {t("All rights reserved.")}</div>
+          <div>© {currentYear} {t(brandTitle)}. {t("All rights reserved.")}</div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span
               aria-hidden

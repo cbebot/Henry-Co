@@ -18,7 +18,7 @@ export async function LearnSiteFooter() {
       />
       <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[1.3fr_1fr_1fr_1fr] xl:px-10">
         <div className="space-y-5">
-          <p className="learn-kicker">{learn.name}</p>
+          <p className="learn-kicker">{t(learn.name)}</p>
           <p className="max-w-md text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t("Practical courses, clear progress, verified certificates. Learn on your schedule and pick up where you left off in your HenryCo account.")}
           </p>
@@ -57,7 +57,7 @@ export async function LearnSiteFooter() {
       <div className="border-t border-[var(--learn-line)] px-5 py-5 text-xs text-[var(--learn-ink-soft)] sm:px-8 xl:px-10">
         <div className="mx-auto flex max-w-[92rem] flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>© {new Date().getFullYear()} {learn.name}. {t("All rights reserved.")}</span>
+            <span>© {new Date().getFullYear()} {t(learn.name)}. {t("All rights reserved.")}</span>
             <Link href="/trust" className="transition hover:text-[var(--learn-ink)]">
               {t("Trust")}
             </Link>

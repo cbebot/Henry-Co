@@ -83,7 +83,7 @@ export default async function OwnerInstructorsPage({
                 </div>
                 <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm text-[var(--learn-ink-soft)]">
                   {t("Updated")}{" "}
-                  {new Date(application.updatedAt).toLocaleDateString("en-NG", {
+                  {new Date(application.updatedAt).toLocaleDateString(locale, {
                     day: "numeric",
                     month: "short",
                     year: "numeric",

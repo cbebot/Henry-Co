@@ -1,41 +1,46 @@
 import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getPropertyOrigin, getSharedAccountLoginUrl, getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 const property = getDivisionConfig("property");
 
-const footerColumns = [
-  {
-    title: "Discover",
-    links: [
-      { href: "/search", label: "Search listings" },
-      { href: "/managed", label: "Managed properties" },
-      { href: "/trust", label: "Trust standards" },
-      { href: "/faq", label: "FAQ" },
-    ],
-  },
-  {
-    title: "Owners and agents",
-    links: [
-      { href: "/submit", label: "Submit a listing" },
-      { href: "/agent", label: "Agent surface" },
-      { href: getSharedAccountPropertyUrl("viewings"), label: "Viewings and inquiries" },
-      { href: getSharedAccountPropertyUrl("listings"), label: "Listing activity" },
-    ],
-  },
-  {
-    title: "Account",
-    links: [
-      { href: getSharedAccountPropertyUrl(), label: "Property activity" },
-      {
-        href: getSharedAccountLoginUrl({ propertyOrigin: getPropertyOrigin() }),
-        label: "HenryCo account sign-in",
-      },
-    ],
-  },
-];
+export async function PropertySiteFooter() {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
-export function PropertySiteFooter() {
+  const footerColumns = [
+    {
+      title: t("Discover"),
+      links: [
+        { href: "/search", label: t("Search listings") },
+        { href: "/managed", label: t("Managed properties") },
+        { href: "/trust", label: t("Trust standards") },
+        { href: "/faq", label: t("FAQ") },
+      ],
+    },
+    {
+      title: t("Owners and agents"),
+      links: [
+        { href: "/submit", label: t("Submit a listing") },
+        { href: "/agent", label: t("Agent surface") },
+        { href: getSharedAccountPropertyUrl("viewings"), label: t("Viewings and inquiries") },
+        { href: getSharedAccountPropertyUrl("listings"), label: t("Listing activity") },
+      ],
+    },
+    {
+      title: t("Account"),
+      links: [
+        { href: getSharedAccountPropertyUrl(), label: t("Property activity") },
+        {
+          href: getSharedAccountLoginUrl({ propertyOrigin: getPropertyOrigin() }),
+          label: t("HenryCo account sign-in"),
+        },
+      ],
+    },
+  ];
+
   return (
     <footer className="mt-20 border-t border-[var(--property-line)] bg-[linear-gradient(180deg,rgba(17,12,9,0.14),rgba(17,12,9,0.52))]">
       <div
@@ -45,10 +50,9 @@ export function PropertySiteFooter() {
       <div className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div className="space-y-5">
-            <div className="property-kicker">{property.name}</div>
+            <div className="property-kicker">{t(property.name)}</div>
             <p className="max-w-md text-sm leading-7 text-[var(--property-ink-soft)]">
-              Property discovery with tighter moderation and calmer inquiry handling — built for
-              serious renters, buyers, owners, and operators.
+              {t("Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.")}
             </p>
             <div className="space-y-1.5 text-sm text-[var(--property-ink-soft)]">
               <p className="font-medium text-[var(--property-ink)]">{property.supportEmail}</p>
@@ -78,14 +82,14 @@ export function PropertySiteFooter() {
 
         <div className="mt-10 flex flex-col items-start gap-3 border-t border-[var(--property-line)] pt-5 text-xs text-[var(--property-ink-soft)]/80 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>&copy; {new Date().getFullYear()} {property.name}. All rights reserved.</span>
+            <span>&copy; {new Date().getFullYear()} {t(property.name)}. {t("All rights reserved.")}</span>
             <Link href="/trust" className="transition hover:text-[var(--property-ink)]">
-              Trust
+              {t("Trust")}
             </Link>
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--property-accent-strong)]" />
-            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+            {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
           </span>
         </div>
       </div>

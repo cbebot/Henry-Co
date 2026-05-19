@@ -3,6 +3,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   HenryCoSearchBreadcrumb,
   PublicHeader,
@@ -19,6 +21,8 @@ function joinClassNames(...values: Array<string | false | null | undefined>) {
 }
 
 export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const items: readonly PublicNavItem[] = propertyNav.primaryNav;
 
   return (
@@ -34,17 +38,17 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
           <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-5 py-2 text-xs text-[var(--property-ink-soft)] sm:px-8 lg:px-10">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[var(--property-accent-strong)]" />
-              Curated listings, guided viewings, and managed-property trust rails
+              {t("Curated listings, guided viewings, and managed-property trust rails")}
             </div>
             <Link href="/managed" className="hidden font-semibold text-[var(--property-ink)] lg:inline-flex">
-              Managed property
+              {t("Managed property")}
             </Link>
           </div>
         </div>
       }
       afterBrand={
         <div className="hidden rounded-full border border-[var(--property-line)] bg-black/10 px-3 py-2 text-xs text-[var(--property-ink-soft)] xl:flex">
-          Editorial listings for calmer decisions
+          {t("Editorial listings for calmer decisions")}
         </div>
       }
       brand={{
@@ -60,8 +64,8 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
         ),
         text: (
           <>
-            <div className="property-kicker">{property.shortName}</div>
-            <div className="text-sm font-semibold text-[var(--property-ink)]">{property.name}</div>
+            <div className="property-kicker">{t(property.shortName)}</div>
+            <div className="text-sm font-semibold text-[var(--property-ink)]">{t(property.name)}</div>
           </>
         ),
       }}

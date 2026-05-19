@@ -291,7 +291,7 @@ export default async function TeachPage({
                     {t("Updated")}
                   </dt>
                   <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
-                    {new Date(application.updatedAt).toLocaleDateString("en-NG", {
+                    {new Date(application.updatedAt).toLocaleDateString(locale, {
                       day: "numeric",
                       month: "short",
                       year: "numeric",

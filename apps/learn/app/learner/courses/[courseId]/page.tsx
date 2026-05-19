@@ -27,16 +27,16 @@ import {
 
 type LearnTranslator = (text: string) => string;
 
-function formatDateLabel(value: string | null | undefined, t: LearnTranslator) {
+function formatDateLabel(value: string | null | undefined, t: LearnTranslator, locale: string) {
   if (!value) return t("Not yet");
-  return new Date(value).toLocaleDateString("en-NG", {
+  return new Date(value).toLocaleDateString(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 }
 
-function formatRelativeTime(value: string | null | undefined, t: LearnTranslator) {
+function formatRelativeTime(value: string | null | undefined, t: LearnTranslator, locale: string) {
   if (!value) return t("No recent activity yet");
   const time = new Date(value).getTime();
   const delta = Date.now() - time;
@@ -47,7 +47,7 @@ function formatRelativeTime(value: string | null | undefined, t: LearnTranslator
   if (delta < hour) return `${Math.max(1, Math.round(delta / minute))} ${t("min ago")}`;
   if (delta < day) return `${Math.max(1, Math.round(delta / hour))} ${t("hr ago")}`;
   if (delta < day * 7) return `${Math.max(1, Math.round(delta / day))} ${t("day ago")}`;
-  return formatDateLabel(value, t);
+  return formatDateLabel(value, t, locale);
 }
 
 function displayName(value: string | null | undefined, t: LearnTranslator) {
@@ -373,7 +373,7 @@ export default async function LearnerCoursePage({
                               />
                             </div>
                             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                              {formatRelativeTime(attempt.submittedAt, t)}
+                              {formatRelativeTime(attempt.submittedAt, t, locale)}
                             </p>
                           </div>
                         ))
@@ -590,7 +590,7 @@ export default async function LearnerCoursePage({
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Issued")}
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{formatDateLabel(certificate.issuedAt, t)}</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{formatDateLabel(certificate.issuedAt, t, locale)}</p>
                 </div>
               </div>
             </div>

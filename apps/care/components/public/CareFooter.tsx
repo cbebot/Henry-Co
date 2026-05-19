@@ -65,7 +65,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
             />
             <div>
               <div className="text-base font-semibold tracking-[-0.01em] text-zinc-950 dark:text-white">
-                {division.name}
+                {t(division.name)}
               </div>
               <div className="text-[11px] uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                 {t("Care")}
@@ -116,7 +116,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
 
       <div className="border-t border-black/10 dark:border-white/10">
         <div className="mx-auto flex max-w-[88rem] flex-col items-start gap-3 px-5 py-5 text-xs text-zinc-500 dark:text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-          <div>© {year} {division.name}. {t("All rights reserved.")}</div>
+          <div>© {year} {t(division.name)}. {t("All rights reserved.")}</div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]/85" />
             {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}

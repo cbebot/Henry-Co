@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { getJobsPublicCopy } from "@/lib/public-copy";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import {
@@ -32,6 +33,7 @@ export async function PublicShell({
   secondaryCta?: { label: string; href: string };
 }) {
   const locale = await getJobsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const copy = getJobsPublicCopy(locale);
   const viewer = await getJobsViewer();
   const resolvedPrimary =
@@ -60,8 +62,8 @@ export async function PublicShell({
     <div className="jobs-page jobs-shell">
       <PublicHeader
         brand={{
-          name: jobs.name,
-          sub: jobs.sub,
+          name: t(jobs.name),
+          sub: t(jobs.sub),
           mark: (
             <span
               className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.06] text-white shadow-[0_10px_30px_rgba(0,0,0,0.18)]"
@@ -104,8 +106,8 @@ export async function PublicShell({
       />
       <main id="henryco-main" tabIndex={-1} className="jobs-main">{children}</main>
       <PublicFooter
-        brand={jobs.name}
-        description={jobs.description}
+        brand={t(jobs.name)}
+        description={t(jobs.description)}
         support={{ email: jobs.supportEmail, phone: jobs.supportPhone }}
         groups={[
           {

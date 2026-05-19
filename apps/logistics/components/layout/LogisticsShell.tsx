@@ -42,10 +42,10 @@ export default function LogisticsShell({
           text: (
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                {kicker || logistics.shortName}
+                {kicker ? t(kicker) : t(logistics.shortName)}
               </div>
-              <div className="text-base font-semibold tracking-tight text-white">{logistics.name}</div>
-              <div className="hidden text-xs text-[var(--logistics-muted)] sm:inline">{logistics.sub}</div>
+              <div className="text-base font-semibold tracking-tight text-white">{t(logistics.name)}</div>
+              <div className="hidden text-xs text-[var(--logistics-muted)] sm:inline">{t(logistics.sub)}</div>
             </div>
           ),
         }}
@@ -88,14 +88,14 @@ export default function LogisticsShell({
           <div className="space-y-5">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                {logistics.shortName}
+                {t(logistics.shortName)}
               </div>
               <div className="mt-2 text-base font-semibold tracking-[-0.01em] text-white">
-                {logistics.name}
+                {t(logistics.name)}
               </div>
             </div>
             <p className="max-w-md text-sm leading-7 text-[var(--logistics-muted)]">
-              {logistics.tagline}
+              {t(logistics.tagline)}
             </p>
             <div className="space-y-1.5 text-sm">
               <a
@@ -170,7 +170,7 @@ export default function LogisticsShell({
 
         <div className="border-t border-[var(--logistics-line)] px-4 py-5 text-xs text-[var(--logistics-muted)] sm:px-6 lg:px-8">
           <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>© {new Date().getFullYear()} {logistics.name}. {t("All rights reserved.")}</div>
+            <div>© {new Date().getFullYear()} {t(logistics.name)}. {t("All rights reserved.")}</div>
             <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
               <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--logistics-accent-soft)]" />
               {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
