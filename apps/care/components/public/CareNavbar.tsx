@@ -122,8 +122,8 @@ export default function CareNavbar({
   return (
     <PublicHeader
       brand={{
-        name: division.name,
-        sub: division.sub ?? t(DEFAULT_SUB),
+        name: t(division.name),
+        sub: division.sub ? t(division.sub) : t(DEFAULT_SUB),
         href: "/",
         mark: <BrandMark accent={division.accent ?? "#6B7CFF"} />,
         /** Custom brand text — keeps "Henry & Co. Fabric Care" on a
@@ -137,19 +137,19 @@ export default function CareNavbar({
           <div className="min-w-0 leading-tight">
             <div
               className="block truncate text-[13px] font-black tracking-[0.01em] text-zinc-950 sm:hidden dark:text-white"
-              title={division.name}
+              title={t(division.name)}
             >
-              {division.shortName || t("Fabric Care")}
+              {division.shortName ? t(division.shortName) : t("Fabric Care")}
             </div>
             <div
               className="hidden truncate text-[13.5px] font-black tracking-[0.01em] text-zinc-950 sm:block md:text-[15px] lg:text-base dark:text-white"
-              title={division.name}
+              title={t(division.name)}
             >
-              {division.name}
+              {t(division.name)}
             </div>
             {division.sub ? (
               <div className="hidden truncate text-[10.5px] uppercase tracking-[0.18em] text-zinc-500 md:block dark:text-white/45">
-                {division.sub}
+                {t(division.sub)}
               </div>
             ) : null}
           </div>
