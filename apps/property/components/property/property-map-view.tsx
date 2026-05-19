@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { MapPin, X } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { PropertyListing, PropertyArea } from "@/lib/property/types";
 import { formatCurrency } from "@/lib/utils";
 
@@ -41,6 +43,8 @@ export function PropertyMapView({
   areas: PropertyArea[];
   mapboxAccessToken?: string | null;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [selectedAreaSlug, setSelectedAreaSlug] = useState<string | null>(null);
 
   const clusters: AreaCluster[] = useMemo(() => {
@@ -76,7 +80,7 @@ export function PropertyMapView({
   return (
     <section
       className="relative overflow-hidden rounded-[1.4rem] border border-[var(--property-line)] bg-black/15"
-      aria-label="Property map view"
+      aria-label={t("Property map view")}
     >
       <div className="relative h-[28rem]">
         {liveMap ? (
@@ -106,6 +110,7 @@ export function PropertyMapView({
         <SelectedAreaSheet
           cluster={selectedCluster}
           onClose={() => setSelectedAreaSlug(null)}
+          t={t}
         />
       ) : null}
     </section>
@@ -235,9 +240,11 @@ function MapFallback({
 function SelectedAreaSheet({
   cluster,
   onClose,
+  t,
 }: {
   cluster: AreaCluster;
   onClose: () => void;
+  t: (text: string) => string;
 }) {
   const ranked = cluster.listings
     .slice()
@@ -253,7 +260,7 @@ function SelectedAreaSheet({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--property-accent-strong)]">
-            Area · {cluster.area.city}
+            {t("Area")} · {cluster.area.city}
           </p>
           <h3
             id="property-map-sheet-title"
@@ -271,7 +278,7 @@ function SelectedAreaSheet({
           type="button"
           onClick={onClose}
           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--property-line)] text-[var(--property-ink-soft)] transition hover:border-[var(--property-accent-strong)]/40 hover:text-[var(--property-accent-strong)]"
-          aria-label="Close area details"
+          aria-label={t("Close area details")}
         >
           <X className="h-4 w-4" />
         </button>
