@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   HenryCoSearchBreadcrumb,
   PublicHeader,
@@ -28,6 +30,8 @@ export function StudioSiteHeader({
   accountHref: string;
   accountMenu?: ReactNode;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const getNavItemClassName = (
     _item: PublicNavItem,
     active: boolean,
@@ -49,12 +53,12 @@ export function StudioSiteHeader({
       <div className="mx-auto flex max-w-[92rem] flex-wrap items-center justify-between gap-4 px-5 py-2 text-xs text-[var(--studio-ink-soft)] sm:px-8 lg:px-10">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-[var(--studio-signal)]" />
-          Premium briefs, verified payment guidance, and project history aligned with HenryCo account
+          {t("Premium briefs, verified payment guidance, and project history aligned with HenryCo account")}
         </div>
         <div className="hidden items-center gap-5 lg:flex">
           <div>{supportEmail || studio.supportEmail}</div>
           <Link href={accountHref} className="font-semibold text-[var(--studio-ink)]">
-            HenryCo account
+            {t("HenryCo account")}
           </Link>
         </div>
       </div>
@@ -72,7 +76,7 @@ export function StudioSiteHeader({
       menuButtonClassName="rounded-full border border-[var(--studio-line)] text-[var(--studio-ink)]"
       brand={{
         href: "/",
-        name: studio.name,
+        name: t(studio.name),
         mark: (
           <div
             className="studio-brand-mark"
@@ -89,16 +93,16 @@ export function StudioSiteHeader({
          * (where space is tightest) and reinstated at xl. */
         text: (
           <div className="min-w-0">
-            <div className="studio-kicker truncate lg:hidden xl:block">{studio.shortName}</div>
+            <div className="studio-kicker truncate lg:hidden xl:block">{t(studio.shortName)}</div>
             <div className="truncate text-[13px] font-semibold text-[var(--studio-ink)] lg:text-[12.5px] xl:text-sm">
-              {studio.name}
+              {t(studio.name)}
             </div>
           </div>
         ),
       }}
       afterBrand={
         <div className="hidden rounded-full border border-[var(--studio-line)] bg-black/10 px-3 py-2 text-xs text-[var(--studio-ink-soft)] 2xl:flex">
-          Premium digital product delivery
+          {t("Premium digital product delivery")}
         </div>
       }
       items={studioNav.primaryNav}
