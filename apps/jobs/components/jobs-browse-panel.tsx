@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 const SUGGESTIONS = [
   { label: "Remote", href: "/jobs?mode=remote" },
@@ -28,6 +30,8 @@ export function JobsBrowsePanel({
   params: Record<string, string | string[] | undefined>;
   categories: Category[];
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -44,9 +48,9 @@ export function JobsBrowsePanel({
     <>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--jobs-muted)]">
-          Category
+          {t("Category")}
           <select className="jobs-select mt-2" name="category" defaultValue={category}>
-            <option value="">All categories</option>
+            <option value="">{t("All categories")}</option>
             {categories.map((c) => (
               <option key={c.slug} value={c.slug}>
                 {c.name} ({c.count})
@@ -55,41 +59,41 @@ export function JobsBrowsePanel({
           </select>
         </label>
         <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--jobs-muted)]">
-          Location
+          {t("Location")}
           <input
             className="jobs-input mt-2"
             name="loc"
             defaultValue={loc}
-            placeholder="City, region, or “Remote”"
+            placeholder={t("City, region, or “Remote”")}
           />
         </label>
         <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--jobs-muted)]">
-          Work mode
+          {t("Work mode")}
           <select className="jobs-select mt-2" name="mode" defaultValue={mode}>
-            <option value="">Any mode</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">On-site</option>
+            <option value="">{t("Any mode")}</option>
+            <option value="remote">{t("Remote")}</option>
+            <option value="hybrid">{t("Hybrid")}</option>
+            <option value="onsite">{t("On-site")}</option>
           </select>
         </label>
         <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--jobs-muted)]">
-          Role type
+          {t("Role type")}
           <select className="jobs-select mt-2" name="type" defaultValue={type}>
-            <option value="">Any type</option>
-            <option value="full-time">Full-time</option>
-            <option value="contract">Contract</option>
-            <option value="part-time">Part-time</option>
+            <option value="">{t("Any type")}</option>
+            <option value="full-time">{t("Full-time")}</option>
+            <option value="contract">{t("Contract")}</option>
+            <option value="part-time">{t("Part-time")}</option>
           </select>
         </label>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <label className="jobs-soft-panel inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-3 text-sm font-medium">
           <input type="checkbox" name="verified" value="1" defaultChecked={verifiedOnly} />
-          Verified employers only
+          {t("Verified employers only")}
         </label>
         <label className="jobs-soft-panel inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-3 text-sm font-medium">
           <input type="checkbox" name="internal" value="1" defaultChecked={internalOnly} />
-          Internal HenryCo roles only
+          {t("Internal HenryCo roles only")}
         </label>
       </div>
     </>
@@ -118,14 +122,14 @@ export function JobsBrowsePanel({
         <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
           {employer ? <input type="hidden" name="employer" value={employer} /> : null}
           <label className="sr-only" htmlFor="jobs-q">
-            Search jobs
+            {t("Search jobs")}
           </label>
           <input
             id="jobs-q"
             className="jobs-input min-h-[3.25rem] flex-1 text-base lg:text-sm"
             name="q"
             defaultValue={q}
-            placeholder="Try a role, skill, team, or company name"
+            placeholder={t("Try a role, skill, team, or company name")}
             autoComplete="off"
           />
           <button
@@ -134,11 +138,11 @@ export function JobsBrowsePanel({
             aria-busy={isPending}
             disabled={isPending}
           >
-            {isPending ? "Searching..." : "Search"}
+            {isPending ? t("Searching...") : t("Search")}
           </button>
         </div>
 
-        <p className="text-xs font-medium text-[var(--jobs-muted)]">Popular starting points</p>
+        <p className="text-xs font-medium text-[var(--jobs-muted)]">{t("Popular starting points")}</p>
         <div className="flex flex-wrap gap-2">
           {SUGGESTIONS.map((item) => (
             <Link
@@ -147,7 +151,7 @@ export function JobsBrowsePanel({
               aria-busy={isPending}
               className="rounded-full border border-[var(--jobs-line)] bg-[var(--jobs-paper-soft)] px-3.5 py-1.5 text-xs font-semibold text-[var(--jobs-ink)] transition hover:border-[color-mix(in_srgb,var(--jobs-accent)_40%,transparent)] hover:bg-[var(--jobs-accent-soft)]"
             >
-              {item.label}
+              {t(item.label)}
             </Link>
           ))}
         </div>
@@ -155,8 +159,8 @@ export function JobsBrowsePanel({
         <details className="jobs-soft-panel group rounded-[1.5rem] p-4 lg:hidden">
           <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
             <SlidersHorizontal className="h-4 w-4 text-[var(--jobs-accent)]" />
-            Filters
-            <span className="ml-auto text-xs font-medium text-[var(--jobs-muted)]">Tap to expand</span>
+            {t("Filters")}
+            <span className="ml-auto text-xs font-medium text-[var(--jobs-muted)]">{t("Tap to expand")}</span>
           </summary>
           <div className="mt-4 space-y-4 border-t border-[var(--jobs-line)] pt-4">{filterFields}</div>
         </details>
