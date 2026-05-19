@@ -1,3 +1,4 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyEmptyState, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { requirePropertyRoles } from "@/lib/property/auth";
@@ -38,6 +39,7 @@ export default async function SupportPage() {
   }
 
   const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   // Support workspace — wrap subject for both support_threads (Supabase
   // table) and notification rows. Bodies/reasons are staff context; we
@@ -68,14 +70,14 @@ export default async function SupportPage() {
 
   return (
     <PropertyWorkspaceShell
-      kicker="Support"
-      title="Support and escalation context"
-      description="Support can see the inquiry queue, viewing queue, and the shared support threads generated from property activity."
+      kicker={t("Support")}
+      title={t("Support and escalation context")}
+      description={t("Support can see the inquiry queue, viewing queue, and the shared support threads generated from property activity.")}
       nav={getWorkspaceNavigation("/support")}
     >
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Support threads</div>
+          <div className="property-kicker">{t("Support threads")}</div>
           {threads.length ? (
             <div className="mt-5 space-y-4">
               {threads.map((thread, index) => (
@@ -84,7 +86,7 @@ export default async function SupportPage() {
                     <div>
                       <div className="text-lg font-semibold text-[var(--property-ink)]">{threadSubjects[index] ?? thread.subject}</div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                        {thread.category || "general"} · {thread.priority || "normal"}
+                        {thread.category ? t(thread.category) : t("general")} · {thread.priority ? t(thread.priority) : t("normal")}
                       </div>
                     </div>
                     <PropertyStatusBadge status={thread.status} />
@@ -95,15 +97,15 @@ export default async function SupportPage() {
           ) : (
             <div className="mt-5">
               <PropertyEmptyState
-                title="No support threads yet."
-                body="Inquiry and viewing flows will create support context here when they need attention."
+                title={t("No support threads yet.")}
+                body={t("Inquiry and viewing flows will create support context here when they need attention.")}
               />
             </div>
           )}
         </div>
 
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Notification log</div>
+          <div className="property-kicker">{t("Notification log")}</div>
           {snapshot.notifications.length ? (
             <div className="mt-5 space-y-4">
               {visibleNotifications.map((notification, index) => (
@@ -126,8 +128,8 @@ export default async function SupportPage() {
           ) : (
             <div className="mt-5">
               <PropertyEmptyState
-                title="No notification records yet."
-                body="Once email or WhatsApp events fire, support can review delivery outcomes here."
+                title={t("No notification records yet.")}
+                body={t("Once email or WhatsApp events fire, support can review delivery outcomes here.")}
               />
             </div>
           )}
