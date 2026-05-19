@@ -15,11 +15,16 @@ import { getPropertySnapshot } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Trust standards | HenryCo Property",
-  description:
-    "How HenryCo Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    title: t("Trust standards | HenryCo Property"),
+    description: t(
+      "How HenryCo Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
+    ),
+  };
+}
 
 const trustRails = [
   {

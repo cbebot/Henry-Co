@@ -11,11 +11,16 @@ import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getSharedAccountLoginUrl } from "@/lib/property/links";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Search property listings | HenryCo Property",
-  description:
-    "Search HenryCo Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return {
+    title: t("Search property listings | HenryCo Property"),
+    description: t(
+      "Search HenryCo Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+    ),
+  };
+}
 
 type SearchParams = {
   q?: string;
