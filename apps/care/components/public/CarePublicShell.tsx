@@ -2,9 +2,11 @@ import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import CareNavbar, { type DivisionPublicConfig } from "@/components/public/CareNavbar";
 import CareFooter from "@/components/public/CareFooter";
 import { getCareSettings } from "@/lib/care-data";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 import {
   getCareAccountHomeUrl,
@@ -14,6 +16,8 @@ import {
 import { getCarePublicChipUser } from "@/lib/care-public-viewer";
 
 export default async function CarePublicShell({ children }: { children: ReactNode }) {
+  const locale = await getCarePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const care = getDivisionConfig("care") as unknown as DivisionPublicConfig;
   const settings = await getCareSettings();
   const publicCare: DivisionPublicConfig = {
@@ -42,8 +46,8 @@ export default async function CarePublicShell({ children }: { children: ReactNod
       signupHref={signupHref}
       showSignOut
       menuItems={[
-        { label: "Track a booking", href: "/track" },
-        { label: "Book care", href: "/book" },
+        { label: t("Track a booking"), href: "/track" },
+        { label: t("Book care"), href: "/book" },
       ]}
     />
   );
