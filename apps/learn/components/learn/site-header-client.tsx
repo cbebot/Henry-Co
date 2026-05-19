@@ -45,8 +45,8 @@ export function LearnSiteHeaderClient({
   return (
     <PublicHeader
       brand={{
-        name: brandName,
-        sub: "HenryCo",
+        name: t(brandName),
+        sub: t("HenryCo"),
         mark: brandMark,
       }}
       items={learnNav.primaryNav}
