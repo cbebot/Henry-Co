@@ -48,7 +48,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm run start -- -p 3003",
+    command: "pnpm exec next start --port 3003",
     url: process.env.NEXT_PUBLIC_ACCOUNT_BASE_URL ?? "http://localhost:3003",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
