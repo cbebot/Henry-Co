@@ -1,22 +1,54 @@
 "use client";
 
+/**
+ * apps/jobs/app/error.tsx — V3-10 error boundary.
+ * See apps/account/app/error.tsx for the canonical pattern reference.
+ */
+import * as Sentry from "@sentry/nextjs";
+import { logger } from "@henryco/observability/logger";
+import {
+  getErrorFallbackCopy,
+  useOptionalHenryCoLocale,
+  DEFAULT_LOCALE,
+} from "@henryco/i18n";
 import { HenryCoErrorFallback } from "@henryco/ui/public-shell";
 
-/**
- * Jobs root error boundary.
- *
- * V3 Wave A1 D6 coverage: every web app's `app/error.tsx` must consume
- * `HenryCoErrorFallback` so error states across the platform read with
- * one calm, branded voice. The prior bespoke jobs-only fallback drifted
- * off-pattern (different copy, different chrome, locally-defined
- * Tailwind classes) and is replaced here with the shared primitive.
- */
-export default function jobsError({
+const DIVISION = "jobs";
+
+export default function JobsError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return <HenryCoErrorFallback error={error} reset={reset} division="jobs" />;
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
+  const copy = getErrorFallbackCopy(locale);
+
+  return (
+    <HenryCoErrorFallback
+      error={error}
+      reset={reset}
+      division={DIVISION}
+      copy={copy}
+      onErrorReport={({ error: e, division }) => {
+        try {
+          logger
+            .child({ module: `${division}.error-boundary` })
+            .error("error_boundary_caught", {
+              division,
+              digest: e.digest,
+              name: e.name,
+              message: e.message,
+            });
+        } catch {}
+        try {
+          Sentry.captureException(e, {
+            tags: { division, source: "app/error.tsx" },
+            extra: { digest: e.digest },
+          });
+        } catch {}
+      }}
+    />
+  );
 }
