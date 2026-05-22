@@ -1,51 +1,67 @@
 "use client";
 
-import Link from "next/link";
-
 /**
- * (workspace) error boundary — DASH-9 G9 minimal stub.
+ * apps/staff/app/(workspace)/error.tsx — V3-07(S6) i18n migration.
  *
- * Replaced V1 chrome-aware error UI. The remaining DEEP-LINK routes
- * (newsletter editor) inherit this minimal boundary.
+ * Operator surface; previously rendered hardcoded English via the
+ * DASH-9 G9 minimal stub. Now reuses V3-10's HenryCoErrorFallback so
+ * the staff workspace inherits the same calm fallback + structured
+ * log + Sentry capture pattern as the per-division apps.
+ *
+ * Note: home link still falls back to "/" (HenryCoErrorFallback default).
+ * Staff workspace operators land back on the workspace root, which
+ * matches the previous "/modules/staff-overview" intent within the
+ * staff app.
  */
-export default function WorkspaceError({ reset }: { error: Error; reset: () => void }) {
+import * as Sentry from "@sentry/nextjs";
+import { logger } from "@henryco/observability/logger";
+import {
+  getErrorFallbackCopy,
+  useOptionalHenryCoLocale,
+  DEFAULT_LOCALE,
+} from "@henryco/i18n";
+import { HenryCoErrorFallback } from "@henryco/ui/public-shell";
+
+const DIVISION = "staff.workspace";
+
+export default function WorkspaceError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
+  const copy = getErrorFallbackCopy(locale);
+
   return (
-    <div style={{ padding: "1.5rem", maxWidth: "640px", color: "var(--hc-text-primary)" }}>
-      <h1 className="hc-h2" style={{ margin: 0 }}>Something went wrong.</h1>
-      <p className="hc-body" style={{ marginTop: "0.5rem", color: "var(--hc-text-secondary)" }}>
-        Try again, or return to the operator briefing.
-      </p>
-      <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
-        <button
-          type="button"
-          onClick={reset}
-          className="hc-body-sm"
-          style={{
-            padding: "0.5rem 0.875rem",
-            borderRadius: "0.5rem",
-            border: "1px solid var(--hc-border-default)",
-            background: "transparent",
-            color: "var(--hc-text-primary)",
-            cursor: "pointer",
-          }}
-        >
-          Retry
-        </button>
-        <Link
-          href="/modules/staff-overview"
-          className="hc-body-sm"
-          style={{
-            padding: "0.5rem 0.875rem",
-            borderRadius: "0.5rem",
-            background: "var(--hc-accent)",
-            color: "var(--hc-text-on-accent)",
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
-        >
-          Open overview
-        </Link>
-      </div>
-    </div>
+    <HenryCoErrorFallback
+      error={error}
+      reset={reset}
+      division={DIVISION}
+      copy={copy}
+      onErrorReport={({ error: e, division }) => {
+        try {
+          logger
+            .child({ module: `${division}.error-boundary` })
+            .error("error_boundary_caught", {
+              division,
+              digest: e.digest,
+              name: e.name,
+              message: e.message,
+            });
+        } catch {
+          // Logger failure must not crash the boundary.
+        }
+        try {
+          Sentry.captureException(e, {
+            tags: { division, source: "app/(workspace)/error.tsx" },
+            extra: { digest: e.digest },
+          });
+        } catch {
+          // Sentry not initialised — silent.
+        }
+      }}
+    />
   );
 }

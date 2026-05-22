@@ -1,7 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
-import Link from "next/link";
+/**
+ * apps/hub/app/owner/(command)/error.tsx — V3-07(S6) i18n migration.
+ *
+ * Owner command-center route boundary. Previously rendered hardcoded
+ * English copy; now reuses V3-10's HenryCoErrorFallback so all 12
+ * locales work and structured logging + Sentry capture follow the
+ * same pattern as every other division boundary.
+ */
+import * as Sentry from "@sentry/nextjs";
+import { logger } from "@henryco/observability/logger";
+import {
+  getErrorFallbackCopy,
+  useOptionalHenryCoLocale,
+  DEFAULT_LOCALE,
+} from "@henryco/i18n";
+import { HenryCoErrorFallback } from "@henryco/ui/public-shell";
+
+const DIVISION = "hub.owner-command";
 
 export default function OwnerCommandError({
   error,
@@ -10,28 +26,37 @@ export default function OwnerCommandError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("[owner-route-error]", error.digest || "", error.message);
-  }, [error]);
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
+  const copy = getErrorFallbackCopy(locale);
 
   return (
-    <div className="acct-fade-in mx-auto flex min-h-[50vh] max-w-lg flex-col justify-center gap-6 px-4 py-16 text-center">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">Command center</p>
-        <h1 className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">This view could not load safely</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--acct-muted)]">
-          Something failed while rendering owner data. Your session is still protected — retry, return to the overview, or
-          contact engineering if the problem persists. Raw system details are not shown here.
-        </p>
-      </div>
-      <div className="flex flex-wrap justify-center gap-3">
-        <button type="button" onClick={() => reset()} className="acct-button-primary">
-          Try again
-        </button>
-        <Link href="/owner" className="acct-button-secondary">
-          Executive overview
-        </Link>
-      </div>
-    </div>
+    <HenryCoErrorFallback
+      error={error}
+      reset={reset}
+      division={DIVISION}
+      copy={copy}
+      onErrorReport={({ error: e, division }) => {
+        try {
+          logger
+            .child({ module: `${division}.error-boundary` })
+            .error("error_boundary_caught", {
+              division,
+              digest: e.digest,
+              name: e.name,
+              message: e.message,
+            });
+        } catch {
+          // Logger failure must not crash the boundary.
+        }
+        try {
+          Sentry.captureException(e, {
+            tags: { division, source: "app/owner/(command)/error.tsx" },
+            extra: { digest: e.digest },
+          });
+        } catch {
+          // Sentry not initialised — silent.
+        }
+      }}
+    />
   );
 }
