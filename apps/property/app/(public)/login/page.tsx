@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { henryDomainHost } from "@henryco/config";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getSharedAccountLoginUrl, sanitizePropertyPath } from "@/lib/property/links";
 
@@ -19,7 +20,7 @@ export default async function LoginPage({
   }
 
   const headerStore = await headers();
-  const host = headerStore.get("x-forwarded-host") || headerStore.get("host") || "property.henrycogroup.com";
+  const host = headerStore.get("x-forwarded-host") || headerStore.get("host") || henryDomainHost("property");
   const protocol =
     headerStore.get("x-forwarded-proto") ||
     (host.includes("localhost") || host.startsWith("127.") ? "http" : "https");

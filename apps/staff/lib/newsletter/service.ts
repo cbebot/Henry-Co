@@ -31,6 +31,7 @@ import {
   type VoiceGuardWarning,
 } from "@henryco/newsletter";
 
+import { henryWebRoot } from "@henryco/config";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 
 function getOptionalEnv(key: string): string | undefined {
@@ -56,7 +57,8 @@ function getPreferenceSecret(): string {
 function getHubPublicBase(): string {
   const explicit = getOptionalEnv("NEXT_PUBLIC_HUB_URL");
   if (explicit) return explicit.replace(/\/+$/, "");
-  return "https://henrycogroup.com";
+  // V3-07(S2): env-aware via henryWebRoot() instead of literal.
+  return henryWebRoot();
 }
 
 type VoiceRuleRow = {

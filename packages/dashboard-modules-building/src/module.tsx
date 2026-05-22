@@ -1,4 +1,5 @@
 import { Building2 } from "lucide-react";
+import { henryDomain } from "@henryco/config";
 import type {
   DashboardModule,
   HomeWidget,
@@ -68,7 +69,7 @@ export const buildingModule: DashboardModule = {
       kicker: "Building",
       headline: "Construction and project delivery, coming soon.",
       body: "Modern construction, delivery, and project confidence under the HenryCo standard.",
-      action: { label: "Learn more", href: "https://building.henrycogroup.com" },
+      action: { label: "Learn more", href: henryDomain("building") },
     };
   },
 

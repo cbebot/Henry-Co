@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, henryDomain } from "@henryco/config";
 import {
   renderHenryCoEmail,
   renderHenryCoEmailText,
@@ -123,8 +123,9 @@ async function localizeStudioLayout(layout: EmailLayout, locale: string): Promis
 }
 
 function baseUrl() {
-  const domain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
-  return process.env.NODE_ENV === "production" ? `https://studio.${domain}` : "http://localhost:3000";
+  // V3-07(S2): henryDomain() resolves via COMPANY.group.baseDomain so
+  // preview/staging studio emails route through the matching base domain.
+  return process.env.NODE_ENV === "production" ? henryDomain("studio") : "http://localhost:3000";
 }
 
 async function getPaymentSettings() {

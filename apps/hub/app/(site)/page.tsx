@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
 import { getHubHomeCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, henryWebRoot } from "@henryco/config";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getCompanySettings } from "../lib/company-settings";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
@@ -250,15 +250,17 @@ export default async function HomePage() {
   const firstName = chipUser?.displayName?.trim().split(/\s+/).filter(Boolean)[0];
   const heroWelcome = firstName ? `Signed in · ${firstName}` : null;
 
-  // Fall back to the platform-served brand monogram so the Knowledge Panel
-  // logo never goes empty. CMS-driven `logo_url` overrides the default.
+  // V3-07(S2): Knowledge-Panel logo + canonical-URL JSON-LD pulls from
+  // henryWebRoot() so preview/staging serve their own base domain in the
+  // schema.org payload. CMS-driven `logo_url` still overrides the default.
   const organizationLogo =
-    settings.logo_url || "https://henrycogroup.com/brand/monogram.svg";
+    settings.logo_url || henryWebRoot("/brand/monogram.svg");
+  const canonicalSiteUrl = henryWebRoot();
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: brandTitleI18n || "HenryCo",
-    url: "https://henrycogroup.com",
+    url: canonicalSiteUrl,
     logo: organizationLogo,
     description:
       brandDescriptionI18n ||
@@ -268,7 +270,7 @@ export default async function HomePage() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: brandTitleI18n || "HenryCo",
-    url: "https://henrycogroup.com",
+    url: canonicalSiteUrl,
   };
 
   return (

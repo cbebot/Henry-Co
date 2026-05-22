@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { henrySubdomain } from "@henryco/config";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { AccountAddressesClient } from "@/components/marketplace/account-addresses-client";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
@@ -8,8 +9,11 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
+// V3-07(S2): NEXT_PUBLIC_ACCOUNT_HOST override is still honoured; fallback
+// resolves the account subdomain via the COMPANY registry so preview/staging
+// builds stop pointing at production henrycogroup.com.
 const ACCOUNT_HOST =
-  process.env.NEXT_PUBLIC_ACCOUNT_HOST || "https://account.henrycogroup.com";
+  process.env.NEXT_PUBLIC_ACCOUNT_HOST || henrySubdomain("account");
 
 export default async function AccountAddressesPage() {
   const locale = await getMarketplacePublicLocale();

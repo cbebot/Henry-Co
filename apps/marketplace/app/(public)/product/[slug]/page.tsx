@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { JsonLd, buildProductLd } from "@henryco/seo";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { henryDomain } from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
 import { TrustPassport } from "@/components/marketplace/shell";
@@ -129,9 +130,9 @@ export default async function ProductPage({
       : Promise.resolve(""),
   ]);
 
-  // V3 PASS 21 — Product + Offer + AggregateRating JSON-LD (M9)
-  const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
-  const productUrl = `https://marketplace.${baseDomain}/product/${data.product.slug}`;
+  // V3 PASS 21 — Product + Offer + AggregateRating JSON-LD (M9).
+  // V3-07(S2): henryDomain() routes preview/staging at their matching domain.
+  const productUrl = henryDomain("marketplace", `/product/${data.product.slug}`);
   const productLd = buildProductLd({
     name: localizedTitle,
     description: localizedSummary || localizedDescription,

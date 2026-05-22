@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Bell, BellOff } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { henryDomain } from "@henryco/config";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
 import { PropertyMapView } from "@/components/property/property-map-view";
 import { PropertyPendingButton } from "@/components/property/form-status";
@@ -165,7 +166,7 @@ export default async function PropertySearchPage({
             <Link
               href={getSharedAccountLoginUrl({
                 nextPath: "/search",
-                propertyOrigin: process.env.NEXT_PUBLIC_PROPERTY_ORIGIN || "https://property.henrycogroup.com",
+                propertyOrigin: process.env.NEXT_PUBLIC_PROPERTY_ORIGIN || henryDomain("property"),
               })}
               className="property-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-[12.5px] font-semibold"
             >

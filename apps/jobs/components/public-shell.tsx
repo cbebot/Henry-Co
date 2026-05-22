@@ -134,7 +134,7 @@ export async function PublicShell({
             links: [
               { label: copy.shell.account, href: accountJobsUrl, external: true },
               { label: copy.shell.internalCareers, href: "/careers" },
-              { label: copy.shell.groupHub, href: "https://henrycogroup.com", external: true },
+              { label: copy.shell.groupHub, href: getHubUrl(), external: true },
             ],
           },
         ]}
