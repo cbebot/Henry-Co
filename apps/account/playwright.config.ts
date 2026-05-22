@@ -26,7 +26,12 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: process.env.CI ? "github" : "list",
+  reporter: process.env.CI
+    ? [
+        ["github"],
+        ["html", { open: "never", outputFolder: "playwright-report" }],
+      ]
+    : "list",
   timeout: 30_000,
   expect: { timeout: 7_500 },
   use: {
@@ -42,4 +47,10 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
+  webServer: {
+    command: "pnpm run start -- -p 3003",
+    url: process.env.NEXT_PUBLIC_ACCOUNT_BASE_URL ?? "http://localhost:3003",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 });

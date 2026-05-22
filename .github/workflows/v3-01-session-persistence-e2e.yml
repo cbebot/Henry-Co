@@ -109,5 +109,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-session-persistence
-          path: apps/account/playwright-report/
+          path: |
+            apps/account/playwright-report/
+            apps/account/test-results/
           retention-days: 7
