@@ -79,7 +79,12 @@ export async function proxy(request: NextRequest) {
     // Public auth routes: pass through with verification side effects
     // (cookie refresh + state tag + referral capture). No redirect.
     const state = sessionStateFor(session);
-    if (state) writeSessionStateCookie(response, state);
+    if (state) {
+      writeSessionStateCookie(response, state, {
+        hostname: request.nextUrl.hostname,
+        secure: request.nextUrl.protocol === "https:",
+      });
+    }
     captureReferralCode(request, response);
     return response;
   }
@@ -105,7 +110,12 @@ export async function proxy(request: NextRequest) {
 
   // ok | no-config — pass through with security headers + referral.
   const state = sessionStateFor(session);
-  if (state) writeSessionStateCookie(response, state);
+  if (state) {
+    writeSessionStateCookie(response, state, {
+      hostname: request.nextUrl.hostname,
+      secure: request.nextUrl.protocol === "https:",
+    });
+  }
   captureReferralCode(request, response);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");

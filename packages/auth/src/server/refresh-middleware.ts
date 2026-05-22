@@ -60,8 +60,11 @@ function buildReauthRedirect(req: NextRequest, base: string): URL {
   return reauth;
 }
 
-function tagSessionState(res: NextResponse, state: SessionState): void {
-  writeSessionStateCookie(res, state);
+function tagSessionState(req: NextRequest, res: NextResponse, state: SessionState): void {
+  writeSessionStateCookie(res, state, {
+    hostname: req.nextUrl.hostname,
+    secure: req.nextUrl.protocol === "https:",
+  });
 }
 
 export type ReauthRedirectOptions = {
@@ -122,7 +125,7 @@ export function reauthRedirectFor(
   const res = NextResponse.redirect(reauthUrl, 307);
   res.headers.set("WWW-Authenticate", REAUTH_HEADER_VALUE);
   res.headers.set("X-HenryCo-Session-State", "reauth");
-  tagSessionState(res, "reauth-required");
+  tagSessionState(req, res, "reauth-required");
 
   if (options.carryCookiesFrom) {
     for (const cookie of options.carryCookiesFrom.cookies.getAll()) {
@@ -197,7 +200,7 @@ export function withSessionRefresh<Args extends unknown[]>(
     const downstream = (await next(req, ...rest)) ?? NextResponse.next();
     const state: SessionState =
       resolution.status === "anonymous" ? "signed-out" : "signed-in";
-    tagSessionState(downstream, state);
+    tagSessionState(req, downstream, state);
     return downstream;
   };
 }

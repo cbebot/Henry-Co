@@ -72,7 +72,10 @@ function appendStaffRoleParam(search: string) {
  */
 function tagSessionFromCookies(req: NextRequest, res: NextResponse): NextResponse {
   const hasAuth = req.cookies.getAll().some((cookie) => isSupabaseAuthTokenCookie(cookie.name));
-  writeSessionStateCookie(res, hasAuth ? "signed-in-stale" : "signed-out");
+  writeSessionStateCookie(res, hasAuth ? "signed-in-stale" : "signed-out", {
+    hostname: req.nextUrl.hostname,
+    secure: req.nextUrl.protocol === "https:",
+  });
   return res;
 }
 

@@ -215,6 +215,7 @@ function clearAuthCookies(
   names?: Set<string>,
 ): void {
   const cookieDomain = getSharedCookieDomain(req.nextUrl.hostname);
+  const secure = req.nextUrl.protocol === "https:" || Boolean(cookieDomain);
   for (const cookie of req.cookies.getAll()) {
     if (!isSupabaseAuthTokenCookie(cookie.name)) continue;
     if (names && !names.has(cookie.name)) continue;
@@ -224,7 +225,7 @@ function clearAuthCookies(
       expires: new Date(0),
       path: "/",
       sameSite: "lax",
-      secure: true,
+      secure,
     });
   }
 }
