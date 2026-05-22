@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatSurfaceTemplate, getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { ButtonPendingContent, HenryCoActivityIndicator } from "@henryco/ui";
 import {
   getActiveCountries,
@@ -17,6 +18,14 @@ import {
 import Link from "next/link";
 import { Camera, LifeBuoy, Lock } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
+
+type ProfileDraft = {
+  fullName: string;
+  phone: string;
+  country: string;
+  contactPref: string;
+  language: AppLocale;
+};
 
 const COUNTRIES = getActiveCountries().map((country) => ({
   code: country.code,
@@ -45,19 +54,37 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const profileLanguage = profile?.language ? normalizeLocale(profile.language) : null;
   const currentLanguage = normalizeLocale(effectiveLocale);
-  const [fullName, setFullName] = useState(profile?.full_name || "");
-  const [phone, setPhone] = useState(profile?.phone || "");
-  const [country, setCountry] = useState(profile?.country || "NG");
-  const [contactPref, setContactPref] = useState(profile?.contact_preference || "email");
-  // Initialize from the server-resolved effective locale (cookie > profile > accept-language > default).
-  // profileLanguage is only consulted for selector options, not the initial selection.
-  const [language, setLanguage] = useState(currentLanguage);
+  const draft = useFormDraft<ProfileDraft>("account-settings-profile", {
+    fullName: profile?.full_name || "",
+    phone: profile?.phone || "",
+    country: profile?.country || "NG",
+    contactPref: profile?.contact_preference || "email",
+    // Initialize from the server-resolved effective locale (cookie > profile > accept-language > default).
+    // profileLanguage is only consulted for selector options, not the initial selection.
+    language: currentLanguage,
+  });
+  const setDraft = draft.setValue;
+  const { fullName, phone, country, contactPref, language } = draft.value;
+  const setFullName = (val: string) => setDraft((d) => ({ ...d, fullName: val }));
+  const setPhone = (val: string) => setDraft((d) => ({ ...d, phone: val }));
+  const setCountry = (val: string) => setDraft((d) => ({ ...d, country: val }));
+  const setContactPref = (val: string) => setDraft((d) => ({ ...d, contactPref: val }));
+  const setLanguage = (val: AppLocale) => setDraft((d) => ({ ...d, language: val }));
+  // avatarUrl is server-side state (set by the upload endpoint), not a typed
+  // draft field — keep it as plain useState so a stale localStorage copy
+  // never overrides the freshly-uploaded server value.
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  // Skip the initial mount run of the prop-sync effect so the restored draft
+  // (if any) wins on first render. Subsequent re-runs — triggered when the
+  // server-component parent re-renders ProfileForm with updated profile props
+  // (e.g., after a successful avatar upload + router.refresh) — still sync,
+  // matching the existing "props update wins" semantics.
+  const propSyncMountedRef = useRef(false);
   const selectedCountry = getCountry(country) || getCountry("NG")!;
   const selectedAvailability = selectedCountry.availability;
   const languageOptions = getUserSelectableLocales(currentLanguage, profileLanguage).map((localeOption) => ({
@@ -68,11 +95,22 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
   }));
 
   useEffect(() => {
-    setFullName(profile?.full_name || "");
-    setPhone(profile?.phone || "");
-    setCountry(profile?.country || "NG");
-    setContactPref(profile?.contact_preference || "email");
-    setLanguage(currentLanguage);
+    // On first mount, skip syncing from props so the restored draft (from
+    // useFormDraft) wins. Subsequent runs — triggered by genuine prop changes
+    // (avatar upload + router.refresh, profile updates from elsewhere) — fall
+    // through and sync as before.
+    if (!propSyncMountedRef.current) {
+      propSyncMountedRef.current = true;
+      setAvatarUrl(profile?.avatar_url || "");
+      return;
+    }
+    setDraft({
+      fullName: profile?.full_name || "",
+      phone: profile?.phone || "",
+      country: profile?.country || "NG",
+      contactPref: profile?.contact_preference || "email",
+      language: currentLanguage,
+    });
     setAvatarUrl(profile?.avatar_url || "");
   }, [
     currentLanguage,
@@ -82,6 +120,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
     profile?.full_name,
     profile?.phone,
     profileLanguage,
+    setDraft,
   ]);
 
   function localizeProfileError(message: string) {
@@ -176,6 +215,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
       if (!res.ok) throw new Error(data.error || "We couldn’t save your changes. Please try again.");
 
       setMessage({ type: "success", text: t("Profile updated") });
+      draft.clear();
 
       // Language change needs a hard reload, not router.refresh().
       // router.refresh() re-runs server components but does not re-execute
