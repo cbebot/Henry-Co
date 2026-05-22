@@ -97,10 +97,11 @@ type StubOpts = {
   /**
    * Simulate the failure modes the helper distinguishes:
    *   "error"           → getUser resolves with { user: null, error: { recoverable } }
+   *   "refresh-token-invalid" → getUser resolves with Supabase's 400 refresh-token failure
    *   "throw-recoverable" → getUser throws a recoverable error
    *   "throw-fatal"     → getUser throws a non-recoverable error (should propagate)
    */
-  throwOn?: "error" | "throw-recoverable" | "throw-fatal";
+  throwOn?: "error" | "refresh-token-invalid" | "throw-recoverable" | "throw-fatal";
 };
 
 function stubSupabase(userId: string | null, opts: StubOpts = {}): void {
@@ -129,6 +130,17 @@ function stubSupabase(userId: string | null, opts: StubOpts = {}): void {
             return {
               data: { user: null },
               error: { name: "AuthSessionMissingError", message: "session missing", status: 401 },
+            };
+          }
+          if (opts.throwOn === "refresh-token-invalid") {
+            return {
+              data: { user: null },
+              error: {
+                name: "AuthApiError",
+                message: "Refresh token is not valid",
+                code: "validation_failed",
+                status: 400,
+              },
             };
           }
           if (userId === null) {
@@ -195,6 +207,15 @@ test("verifySupabaseSession: setAll called during getUser → ok with refreshed=
 
 test("verifySupabaseSession: cookies present, recoverable error → reauth", async () => {
   stubSupabase(null, { throwOn: "error" });
+  const result = await verifySupabaseSession(makeReq(validSessionCookieHeader()), freshRes());
+  if (result.status !== "reauth") {
+    assert.fail(`expected reauth, got ${result.status}`);
+  }
+  assert.equal(result.reason, "supabase_auth_error");
+});
+
+test("verifySupabaseSession: invalid refresh token API error → reauth", async () => {
+  stubSupabase(null, { throwOn: "refresh-token-invalid" });
   const result = await verifySupabaseSession(makeReq(validSessionCookieHeader()), freshRes());
   if (result.status !== "reauth") {
     assert.fail(`expected reauth, got ${result.status}`);
