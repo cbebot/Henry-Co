@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { getDivisionConfig } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 import {
@@ -286,6 +288,9 @@ function mapReviewRow(
 }
 
 export async function POST(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const formData = await request.formData();
   const intent = text(formData, "intent");
   const json = wantsJson(request, formData);
@@ -1050,7 +1055,7 @@ export async function POST(request: Request) {
         const addressId = text(formData, "address_id");
         if (!addressId) {
           if (json) {
-            return NextResponse.json({ error: "Address not found." }, { status: 400 });
+            return NextResponse.json({ error: await tx("Address not found.") }, { status: 400 });
           }
           return redirectTo(request, "/account/addresses?error=missing-address");
         }
@@ -1083,7 +1088,7 @@ export async function POST(request: Request) {
         const addressId = text(formData, "address_id");
         if (!addressId) {
           if (json) {
-            return NextResponse.json({ error: "Address not found." }, { status: 400 });
+            return NextResponse.json({ error: await tx("Address not found.") }, { status: 400 });
           }
           return redirectTo(request, "/account/addresses?error=missing-address");
         }

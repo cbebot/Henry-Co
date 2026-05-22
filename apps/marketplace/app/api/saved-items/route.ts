@@ -7,6 +7,8 @@ import {
   restoreSavedItem,
   saveItemForLater,
 } from "@henryco/cart-saved-items/server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getMarketplaceShellState } from "@/lib/marketplace/data";
 import { logMarketplaceAction } from "@/lib/marketplace/notifications";
@@ -46,16 +48,19 @@ export async function GET() {
  *   { productSlug: string }  — direct product save (e.g. from product page)
  */
 export async function POST(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const viewer = await getMarketplaceViewer();
   if (!viewer.user) {
-    return NextResponse.json({ error: "Sign in to save items." }, { status: 401 });
+    return NextResponse.json({ error: await tx("Sign in to save items.") }, { status: 401 });
   }
 
   const payload = (await request.json().catch(() => ({}))) as MovePayload;
   const cartItemId = String(payload.cartItemId || "").trim();
   const productSlug = String(payload.productSlug || "").trim();
   if (!cartItemId && !productSlug) {
-    return NextResponse.json({ error: "Missing item reference." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing item reference.") }, { status: 400 });
   }
 
   const admin = createAdminSupabase();
@@ -72,7 +77,7 @@ export async function POST(request: Request) {
       .eq("id", cartItemId)
       .maybeSingle();
     if (!cartItem) {
-      return NextResponse.json({ error: "Cart item not found." }, { status: 404 });
+      return NextResponse.json({ error: await tx("Cart item not found.") }, { status: 404 });
     }
     const { data: cart } = await admin
       .from("marketplace_carts")
@@ -80,13 +85,13 @@ export async function POST(request: Request) {
       .eq("id", cartItem.cart_id)
       .maybeSingle();
     if (!cart || String((cart as { user_id?: string }).user_id) !== viewer.user.id) {
-      return NextResponse.json({ error: "Cart item not yours." }, { status: 403 });
+      return NextResponse.json({ error: await tx("Cart item not yours.") }, { status: 403 });
     }
     const product = snapshot.products.find(
       (item) => item.id === String(cartItem.product_id)
     );
     if (!product) {
-      return NextResponse.json({ error: "Product no longer available." }, { status: 410 });
+      return NextResponse.json({ error: await tx("Product no longer available.") }, { status: 410 });
     }
     resolvedProductSlug = product.slug;
     resolvedCartItemId = cartItemId;
@@ -95,7 +100,7 @@ export async function POST(request: Request) {
 
   const product = snapshot.products.find((item) => item.slug === resolvedProductSlug);
   if (!product) {
-    return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    return NextResponse.json({ error: await tx("Product not found.") }, { status: 404 });
   }
   const vendor = snapshot.vendors.find((item) => item.slug === product.vendorSlug) ?? null;
 
@@ -159,15 +164,18 @@ export async function POST(request: Request) {
  * PATCH — restore a saved item back to the cart.
  */
 export async function PATCH(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const viewer = await getMarketplaceViewer();
   if (!viewer.user) {
-    return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    return NextResponse.json({ error: await tx("Sign in first.") }, { status: 401 });
   }
 
   const payload = (await request.json().catch(() => ({}))) as RestorePayload;
   const savedItemId = String(payload.savedItemId || "").trim();
   if (!savedItemId) {
-    return NextResponse.json({ error: "Missing saved item id." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing saved item id.") }, { status: 400 });
   }
 
   const admin = createAdminSupabase();
@@ -179,10 +187,10 @@ export async function PATCH(request: Request) {
     .maybeSingle();
 
   if (!row) {
-    return NextResponse.json({ error: "Saved item not found." }, { status: 404 });
+    return NextResponse.json({ error: await tx("Saved item not found.") }, { status: 404 });
   }
   if (String((row as { division?: string }).division) !== "marketplace") {
-    return NextResponse.json({ error: "Wrong division." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Wrong division.") }, { status: 400 });
   }
 
   const snapshot = (row as { item_snapshot?: Record<string, unknown> }).item_snapshot ?? {};
@@ -210,7 +218,7 @@ export async function PATCH(request: Request) {
     cartId = created?.id ? String(created.id) : null;
   }
   if (!cartId) {
-    return NextResponse.json({ error: "Could not resolve cart." }, { status: 500 });
+    return NextResponse.json({ error: await tx("Could not resolve cart.") }, { status: 500 });
   }
 
   // Look up live price (don't trust the snapshot — listing may have re-priced).
@@ -221,7 +229,7 @@ export async function PATCH(request: Request) {
     : null;
   if (!product) {
     return NextResponse.json(
-      { error: "Listing is no longer available — saved item kept for reference." },
+      { error: await tx("Listing is no longer available — saved item kept for reference.") },
       { status: 410 }
     );
   }
@@ -275,15 +283,18 @@ export async function PATCH(request: Request) {
  * DELETE — permanently remove a saved item.
  */
 export async function DELETE(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const viewer = await getMarketplaceViewer();
   if (!viewer.user) {
-    return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    return NextResponse.json({ error: await tx("Sign in first.") }, { status: 401 });
   }
 
   const payload = (await request.json().catch(() => ({}))) as RemovePayload;
   const savedItemId = String(payload.savedItemId || "").trim();
   if (!savedItemId) {
-    return NextResponse.json({ error: "Missing saved item id." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing saved item id.") }, { status: 400 });
   }
 
   const admin = createAdminSupabase();

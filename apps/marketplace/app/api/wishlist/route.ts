@@ -1,6 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { normalizeEmail } from "@/lib/env";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getMarketplaceShellState } from "@/lib/marketplace/data";
 import { logMarketplaceAction } from "@/lib/marketplace/notifications";
@@ -9,21 +11,24 @@ import { createAdminSupabase } from "@/lib/supabase";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const viewer = await getMarketplaceViewer();
   if (!viewer.user) {
-    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    return NextResponse.json({ error: await tx("Authentication required.") }, { status: 401 });
   }
 
   const payload = (await request.json().catch(() => ({}))) as { productSlug?: string };
   const productSlug = String(payload.productSlug || "").trim();
   if (!productSlug) {
-    return NextResponse.json({ error: "Missing product slug." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing product slug.") }, { status: 400 });
   }
 
   const snapshot = await getMarketplaceHomeData();
   const product = snapshot.products.find((item) => item.slug === productSlug);
   if (!product) {
-    return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    return NextResponse.json({ error: await tx("Product not found.") }, { status: 404 });
   }
 
   const admin = createAdminSupabase();
