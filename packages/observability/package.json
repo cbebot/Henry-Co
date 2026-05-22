@@ -11,13 +11,15 @@
     "./audit-log": "./src/audit-log.ts",
     "./sentry/server": "./src/sentry/server.ts",
     "./sentry/client": "./src/sentry/client.ts",
-    "./sentry/instrumentation": "./src/sentry/instrumentation.ts"
+    "./sentry/instrumentation": "./src/sentry/instrumentation.ts",
+    "./persist-event": "./src/persist-event.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
   },
   "peerDependencies": {
     "@sentry/nextjs": "^10.0.0",
+    "@supabase/supabase-js": "^2.0.0",
     "next": "^16.0.0"
   },
   "peerDependenciesMeta": {
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@sentry/nextjs": "^10.0.0",
+    "@supabase/supabase-js": "^2.98.0",
     "@types/node": "^20.0.0",
     "next": "^16.1.6",
     "typescript": "^5.9.3"

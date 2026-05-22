@@ -11,6 +11,7 @@ import {
   isSupabaseAuthTokenCookie,
 } from "@henryco/config";
 import { emitEvent } from "@henryco/observability/events";
+import { persistEvent } from "@henryco/observability/persist-event";
 
 import type { SessionState } from "../types";
 
@@ -134,6 +135,12 @@ export async function verifySupabaseSession(
         throw error;
       }
       clearAuthCookies(req, res);
+      await persistEvent({
+        supabase,
+        name: "henry.auth.session.refresh_failed",
+        actorId: null,
+        payload: { reason: "supabase_auth_error" },
+      });
       return { status: "reauth", reason: "supabase_auth_error" };
     }
     userId = data.user?.id ?? null;
@@ -142,6 +149,12 @@ export async function verifySupabaseSession(
       throw error;
     }
     clearAuthCookies(req, res);
+    await persistEvent({
+      supabase,
+      name: "henry.auth.session.refresh_failed",
+      actorId: null,
+      payload: { reason: "supabase_auth_exception" },
+    });
     return { status: "reauth", reason: "supabase_auth_exception" };
   }
 
@@ -150,6 +163,12 @@ export async function verifySupabaseSession(
     // refresh failed silently. The session has gone stale on the
     // server side.
     clearAuthCookies(req, res);
+    await persistEvent({
+      supabase,
+      name: "henry.auth.session.refresh_failed",
+      actorId: null,
+      payload: { reason: "user_absent_after_verify" },
+    });
     return { status: "reauth", reason: "user_absent_after_verify" };
   }
 
@@ -158,6 +177,14 @@ export async function verifySupabaseSession(
       name: "henry.auth.session.refreshed",
       classification: "system_state",
       outcome: "completed",
+      actorId: userId,
+    });
+    // V3-01 slice 5b: dual-write to henry_events so the owner
+    // session-health tile sees real counts. Best-effort, non-blocking
+    // (persistEvent never throws).
+    await persistEvent({
+      supabase,
+      name: "henry.auth.session.refreshed",
       actorId: userId,
     });
   }

@@ -67,14 +67,14 @@ const ROLLBACK_GATE_RATE = 99; // 99% success = below 1% failure (Addendum A4)
 
 async function countSince(
   client: ReturnType<typeof createAdminSupabase>,
-  activityType: string,
+  eventName: string,
   sinceISO: string,
 ): Promise<number> {
   try {
     const { count, error } = await client
-      .from("customer_activity")
+      .from("henry_events")
       .select("id", { count: "exact", head: true })
-      .eq("activity_type", activityType)
+      .eq("name", eventName)
       .gte("created_at", sinceISO);
     if (error) return 0;
     return count ?? 0;
