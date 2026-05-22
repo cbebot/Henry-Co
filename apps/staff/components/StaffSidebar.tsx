@@ -149,7 +149,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
         </div>
         <Link
           href="/search"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--staff-muted)] transition-colors hover:bg-[var(--staff-surface)] hover:text-[var(--staff-ink)]"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--staff-muted)] transition-colors hover:bg-[var(--staff-surface)] hover:text-[var(--staff-ink)]"
           aria-label="Search Staff HQ"
           title="Search Staff HQ"
         >

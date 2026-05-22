@@ -88,7 +88,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
             onClick={() => setOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={open}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] px-3.5 py-2 text-[12px] font-semibold text-[#0b1018] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f17]"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-2.5 text-[12px] font-semibold text-[#0b1018] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f17]"
           >
             <Menu className="h-3.5 w-3.5" />
             Open workspace menu
@@ -120,7 +120,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-muted)] transition hover:text-[var(--market-paper-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-muted)] transition hover:text-[var(--market-paper-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
