@@ -6,10 +6,15 @@ import { createAdminSupabase } from "@/app/lib/supabase-admin";
 import { normalizeCompanySettings } from "@/app/lib/company-settings-shared";
 import { writeOwnerAudit } from "@/lib/owner-audit-log";
 import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
+import { getHubPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export const runtime = "nodejs";
 
 export async function GET() {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -25,13 +30,16 @@ export async function GET() {
 
   if (error) {
     console.error("[owner/settings][GET]", error);
-    return NextResponse.json({ error: "Could not load company settings right now." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Could not load company settings right now.") }, { status: 400 });
   }
 
   return NextResponse.json({ settings: data ?? null });
 }
 
 export async function POST(request: Request) {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -67,7 +75,7 @@ export async function POST(request: Request) {
         console.error("[owner/settings][POST]", result.error);
         return {
           outcome: "server_error" as const,
-          value: NextResponse.json({ error: "Could not save company settings right now." }, { status: 400 }),
+          value: NextResponse.json({ error: await tx("Could not save company settings right now.") }, { status: 400 }),
         };
       }
 

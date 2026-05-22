@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { loadOwnerReconcileTrace } from "@/lib/owner-reconcile-trace";
+import { getHubPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +21,9 @@ export const dynamic = "force-dynamic";
  * — the route is the chokepoint.
  */
 export async function GET(request: Request) {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -27,12 +32,12 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const traceId = (url.searchParams.get("id") || "").trim();
   if (!traceId) {
-    return NextResponse.json({ error: "trace id is required." }, { status: 400 });
+    return NextResponse.json({ error: await tx("trace id is required.") }, { status: 400 });
   }
 
   const trace = await loadOwnerReconcileTrace(traceId);
   if (!trace) {
-    return NextResponse.json({ error: "Trace not found.", id: traceId }, { status: 404 });
+    return NextResponse.json({ error: await tx("Trace not found."), id: traceId }, { status: 404 });
   }
 
   return NextResponse.json({ trace });

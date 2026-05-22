@@ -9,6 +9,8 @@ import {
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
 import { writeOwnerAudit } from "@/lib/owner-audit-log";
 import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
+import { getHubPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export const runtime = "nodejs";
 
@@ -23,6 +25,9 @@ function nullableText(value: unknown) {
 }
 
 export async function GET() {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -38,7 +43,7 @@ export async function GET() {
 
   if (error) {
     console.error("[owner/people][GET]", error);
-    return NextResponse.json({ error: "Could not load people records right now." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Could not load people records right now.") }, { status: 400 });
   }
 
   return NextResponse.json({
@@ -49,6 +54,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -124,7 +132,7 @@ export async function POST(request: Request) {
       if (!payload.full_name) {
         return {
           outcome: "validation" as const,
-          value: NextResponse.json({ error: "Full name is required." }, { status: 400 }),
+          value: NextResponse.json({ error: await tx("Full name is required.") }, { status: 400 }),
         };
       }
 
@@ -142,7 +150,7 @@ export async function POST(request: Request) {
         console.error("[owner/people][POST]", result.error);
         return {
           outcome: "server_error" as const,
-          value: NextResponse.json({ error: "Could not save this person record right now." }, { status: 400 }),
+          value: NextResponse.json({ error: await tx("Could not save this person record right now.") }, { status: 400 }),
         };
       }
 
