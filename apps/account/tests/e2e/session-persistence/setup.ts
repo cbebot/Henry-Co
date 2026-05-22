@@ -214,16 +214,26 @@ function toPlaywrightCookie(cookie: SupabaseCookieToSet): BrowserCookieToSet {
   const expires = maxAge && maxAge > 0
     ? Math.floor(Date.now() / 1000) + maxAge
     : undefined;
-
-  return {
+  const baseCookie = {
     name: cookie.name,
     value: cookie.value,
-    ...(domain ? { domain } : { url: baseURL }),
-    path: stringOption(options.path) ?? "/",
     ...(expires ? { expires } : {}),
     httpOnly: booleanOption(options.httpOnly) ?? false,
     secure: booleanOption(options.secure) ?? (new URL(baseURL).protocol === "https:"),
     sameSite: sameSiteOption(options.sameSite) ?? "Lax",
+  };
+
+  if (domain) {
+    return {
+      ...baseCookie,
+      domain,
+      path: stringOption(options.path) ?? "/",
+    };
+  }
+
+  return {
+    ...baseCookie,
+    url: baseURL,
   };
 }
 
