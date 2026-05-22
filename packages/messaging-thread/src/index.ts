@@ -38,3 +38,11 @@ export type {
   ThreadSupabaseLike,
   ThreadChannelLike,
 } from "./types";
+
+// V3-03 — WhatsApp-style delivery state pip
+export { DeliveryStatePip } from "./delivery-pip";
+export type {
+  DeliveryState,
+  DeliveryPipLabels,
+  DeliveryStatePipProps,
+} from "./delivery-pip";

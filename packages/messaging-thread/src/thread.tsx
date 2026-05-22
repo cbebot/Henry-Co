@@ -17,6 +17,7 @@ import type {
 } from "./types";
 import { renderBody as renderMarkdownBody } from "./markdown";
 import { useThreadAppearance } from "./appearance";
+import { DeliveryStatePip, type DeliveryPipLabels } from "./delivery-pip";
 
 /** Typing-presence cadence — broadcasts at most once per 2s while a
  * participant is actively typing; the indicator decays after 4s with no
@@ -89,9 +90,11 @@ function ownStatusLabel(message: ThreadMessage, isPending: boolean): string {
 function MessageBubble({
   message,
   renderMarkdown,
+  deliveryPipLabels,
 }: {
   message: ThreadMessage;
   renderMarkdown: boolean;
+  deliveryPipLabels?: DeliveryPipLabels;
 }) {
   const isOwn = Boolean(message.isOwnMessage);
   const isSystem = message.senderRole === "system";
@@ -101,9 +104,21 @@ function MessageBubble({
   const attachments = message.attachments ?? [];
   const images = attachments.filter(isImageAttachment);
   const files = attachments.filter((a) => !isImageAttachment(a));
+  // V3-03 — when the adapter supplies a delivery_state we render the
+  // WhatsApp-style pip in place of the legacy text status label.
+  // Falling back to the text label keeps older hosts (which don't map
+  // delivery_state) rendering as before.
+  const showPip = isOwn && !isSystem && !isPending && message.deliveryState != null;
 
   return (
-    <li className="mt-bubble-row" data-side={side} data-pending={isPending || undefined}>
+    <li
+      className="mt-bubble-row"
+      data-side={side}
+      data-pending={isPending || undefined}
+      data-message-id={message.id}
+      data-unread-for-viewer={message.isUnreadForViewer ? "true" : undefined}
+      data-sender-id={message.senderId ?? undefined}
+    >
       {!isSystem && !isOwn ? (
         <span className="mt-avatar" aria-hidden>
           {initials}
@@ -181,20 +196,32 @@ function MessageBubble({
           </ul>
         ) : null}
         {isOwn && !isSystem ? (
-          <span
-            className="mt-bubble-status"
-            data-state={
-              isPending
-                ? "pending"
-                : message.readAt
-                  ? "read"
-                  : message.deliveredAt
-                    ? "delivered"
-                    : "sent"
-            }
-          >
-            {ownStatusLabel(message, isPending)}
-          </span>
+          showPip ? (
+            <span
+              className="mt-bubble-status"
+              data-state={message.deliveryState ?? "sent"}
+            >
+              <DeliveryStatePip
+                state={message.deliveryState as "sent" | "delivered" | "seen" | "failed"}
+                labels={deliveryPipLabels}
+              />
+            </span>
+          ) : (
+            <span
+              className="mt-bubble-status"
+              data-state={
+                isPending
+                  ? "pending"
+                  : message.readAt
+                    ? "read"
+                    : message.deliveredAt
+                      ? "delivered"
+                      : "sent"
+              }
+            >
+              {ownStatusLabel(message, isPending)}
+            </span>
+          )
         ) : null}
       </div>
     </li>
@@ -278,7 +305,29 @@ export function MessageThread({
   composerExtras,
   dayDividerLabel,
   autoFocusComposer = false,
+  deliveryPipLabels,
+  unreadDividerLabel,
+  scrollToFirstUnread,
 }: MessageThreadProps) {
+  // V3-03 — first-unread divider position. Computed once per message
+  // list change; renders the "New" separator above the earliest
+  // inbound message the viewer hasn't read yet. Null when nothing is
+  // unread or the host didn't pass unreadDividerLabel.
+  const firstUnreadMessageId = useMemo(() => {
+    if (!unreadDividerLabel) return null;
+    for (const m of initialMessages) {
+      if (m.isUnreadForViewer && !m.isOwnMessage) {
+        return m.id;
+      }
+    }
+    return null;
+  // initialMessages — divider is "sticky" at the first unread on
+  // mount; once that message is marked read by the IntersectionObserver
+  // we keep the divider until the user scrolls away (otherwise the
+  // divider would vanish under their cursor mid-read, which is jarring).
+  // Recomputing on `initialMessages` only (not `messages`) achieves this.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unreadDividerLabel, initialMessages]);
   const appearance = useThreadAppearance();
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
   const [composerError, setComposerError] = useState<string | null>(null);
@@ -314,6 +363,32 @@ export function MessageThread({
     }
   }, [messages.length]);
 
+  // V3-03 — Scroll-to-first-unread on mount. Honors a per-host opt-in
+  // via `scrollToFirstUnread`; when the prop is undefined, defaults to
+  // true only when the host also passed `unreadDividerLabel` (i.e.
+  // they've opted into the V3-03 read-state UX overall).
+  const initialScrollDoneRef = useRef(false);
+  useEffect(() => {
+    if (initialScrollDoneRef.current) return;
+    if (!firstUnreadMessageId) return;
+    const shouldScroll =
+      scrollToFirstUnread === undefined
+        ? Boolean(unreadDividerLabel)
+        : Boolean(scrollToFirstUnread);
+    if (!shouldScroll) return;
+    const container = scrollRef.current;
+    if (!container) return;
+    const target = container.querySelector<HTMLElement>(
+      `[data-message-id="${CSS.escape(firstUnreadMessageId)}"]`,
+    );
+    if (target) {
+      // Use scrollIntoView so the "New" divider (which precedes the
+      // target message in the DOM) is visible above the fold.
+      target.scrollIntoView({ block: "center", behavior: "auto" });
+      initialScrollDoneRef.current = true;
+    }
+  }, [firstUnreadMessageId, scrollToFirstUnread, unreadDividerLabel]);
+
   // Mark-read on mount.
   useEffect(() => {
     if (!adapter.markReadAction) return;
@@ -321,6 +396,84 @@ export function MessageThread({
     formData.set("threadId", threadId);
     adapter.markReadAction(formData).catch(() => null);
   }, [threadId, adapter]);
+
+  // V3-03 — Per-message IntersectionObserver mark-read. When an
+  // inbound message scrolls fully into view we fire
+  // adapter.markMessageReadAction with the messageId, debounced
+  // 250ms per messageId so a quick scroll doesn't fire dozens of
+  // updates. Skipped when the adapter doesn't supply the action.
+  useEffect(() => {
+    if (!adapter.markMessageReadAction) return;
+    const container = scrollRef.current;
+    if (!container) return;
+    if (typeof IntersectionObserver === "undefined") return;
+
+    const pendingTimers = new Map<string, number>();
+    const seenIds = new Set<string>();
+
+    const fireMarkRead = (messageId: string) => {
+      if (seenIds.has(messageId)) return;
+      seenIds.add(messageId);
+      const formData = new FormData();
+      formData.set("threadId", threadId);
+      formData.set("messageId", messageId);
+      adapter.markMessageReadAction?.(formData).catch(() => null);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          const messageId = el.dataset.messageId;
+          const unread = el.dataset.unreadForViewer === "true";
+          const senderId = el.dataset.senderId;
+          if (!messageId || !unread) continue;
+          // Defensive — never mark-read the viewer's own messages.
+          if (senderId && senderId === viewer.userId) continue;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            const existing = pendingTimers.get(messageId);
+            if (existing !== undefined) continue;
+            const timerId = window.setTimeout(() => {
+              pendingTimers.delete(messageId);
+              fireMarkRead(messageId);
+            }, 250);
+            pendingTimers.set(messageId, timerId);
+          } else {
+            // Scrolled out before the debounce fired — cancel.
+            const existing = pendingTimers.get(messageId);
+            if (existing !== undefined) {
+              window.clearTimeout(existing);
+              pendingTimers.delete(messageId);
+            }
+          }
+        }
+      },
+      {
+        root: container,
+        threshold: [0.6],
+      },
+    );
+
+    const observeRows = () => {
+      const rows = container.querySelectorAll<HTMLElement>(
+        '[data-message-id][data-unread-for-viewer="true"]',
+      );
+      rows.forEach((row) => observer.observe(row));
+    };
+
+    observeRows();
+
+    // MutationObserver to pick up rows that arrive via realtime / optimistic.
+    const mutationObserver = new MutationObserver(() => observeRows());
+    mutationObserver.observe(container, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+      pendingTimers.forEach((id) => window.clearTimeout(id));
+      pendingTimers.clear();
+    };
+  }, [adapter, threadId, viewer.userId]);
 
   // Realtime INSERT subscription with explicit reconnect-on-drop.
   // Supabase Realtime auto-recovers most transient drops, but on
@@ -638,6 +791,7 @@ export function MessageThread({
             {(() => {
               const out: import("react").ReactNode[] = [];
               let prevDayKey: string | null = null;
+              let unreadDividerEmitted = false;
               for (const message of messages) {
                 if (dayDividerLabel) {
                   const key = localDayKey(message.createdAt);
@@ -661,11 +815,35 @@ export function MessageThread({
                     prevDayKey = key;
                   }
                 }
+                // V3-03 — "New" divider above the first unread message
+                // computed from initialMessages. The divider is sticky
+                // for the duration of the mount so the user can see
+                // where they left off, even after IntersectionObserver
+                // marks the message as read.
+                if (
+                  unreadDividerLabel &&
+                  !unreadDividerEmitted &&
+                  firstUnreadMessageId &&
+                  message.id === firstUnreadMessageId
+                ) {
+                  out.push(
+                    <li
+                      key={`unread-divider-${message.id}`}
+                      className="mt-unread-divider"
+                      role="separator"
+                      aria-label={unreadDividerLabel}
+                    >
+                      <span>{unreadDividerLabel}</span>
+                    </li>,
+                  );
+                  unreadDividerEmitted = true;
+                }
                 out.push(
                   <MessageBubble
                     key={message.id}
                     message={message}
                     renderMarkdown={renderMarkdown}
+                    deliveryPipLabels={deliveryPipLabels}
                   />,
                 );
               }
