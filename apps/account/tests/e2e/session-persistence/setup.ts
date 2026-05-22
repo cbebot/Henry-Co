@@ -94,9 +94,14 @@ export async function signIn(page: Page): Promise<void> {
 
   await page.context().addCookies(cookies);
   await page.goto("/auth/resolve?next=/dashboard");
-  await page.waitForURL((url) => url.pathname === "/dashboard", {
-    timeout: 15_000,
-  });
+  const postAuthUrl = new URL(page.url());
+  if (
+    postAuthUrl.pathname.startsWith("/login") ||
+    postAuthUrl.pathname.startsWith("/auth/resolve") ||
+    postAuthUrl.pathname.startsWith("/auth/reauth")
+  ) {
+    throw new Error(`Supabase fixture sign-in did not resolve: ${postAuthUrl.pathname}`);
+  }
 }
 
 export async function signOutViaUI(page: Page): Promise<void> {
