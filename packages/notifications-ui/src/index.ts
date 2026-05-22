@@ -68,3 +68,10 @@ export {
 
 // Deep-link guard
 export { isSafeNotificationDeepLink } from "./deep-link";
+
+// V3-03 — Shared notification bell primitive
+export { NotificationBell } from "./notification-bell";
+export type {
+  NotificationBellLabels,
+  NotificationBellProps,
+} from "./notification-bell";
