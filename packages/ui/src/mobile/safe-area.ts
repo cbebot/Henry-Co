@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 /**
  * @henryco/ui/mobile/safe-area — safe-area inset helpers.
  *
@@ -67,8 +69,8 @@ export function safeAreaInsetClass(sides: SafeAreaSides): string {
  * Example:
  *   `<div style={{ ...existingStyle, ...safeAreaInsetStyle({ bottom: true }) }} />`
  */
-export function safeAreaInsetStyle(sides: SafeAreaSides): React.CSSProperties {
-  const style: React.CSSProperties = {};
+export function safeAreaInsetStyle(sides: SafeAreaSides): CSSProperties {
+  const style: CSSProperties = {};
   if (sides.top) style.paddingTop = "env(safe-area-inset-top, 0px)";
   if (sides.bottom) style.paddingBottom = "env(safe-area-inset-bottom, 0px)";
   if (sides.left) style.paddingLeft = "env(safe-area-inset-left, 0px)";
