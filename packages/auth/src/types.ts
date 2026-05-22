@@ -161,3 +161,33 @@ export const DASHBOARD_PREFERENCE_COOKIE = "hc_dash_pref";
 export const DASHBOARD_PREFERENCE_VALUES = ["customer", "staff", "owner"] as const;
 
 export type DashboardPreference = (typeof DASHBOARD_PREFERENCE_VALUES)[number];
+
+/**
+ * Cookie name for `hc_session_state` — V3-01 transport-layer signal of
+ * the viewer's session lifecycle. Written by the refresh middleware on
+ * every request; read by SSR + the client-side `subscribeSessionState`
+ * helper for cross-tab soft signals.
+ *
+ * NOT a security boundary. Supabase's httpOnly session cookie remains
+ * the only thing trusted for authentication. This cookie exists so
+ * server components can branch on signed-in-ness without round-
+ * tripping to Supabase, and the client can react softly to lifecycle
+ * changes without a hard refresh.
+ *
+ * `signed-in`         — access token valid (refreshed if needed).
+ * `signed-in-stale`   — auth still valid but profile/role data may be
+ *                       stale (e.g., role granted in another tab, this
+ *                       tab hasn't re-fetched yet).
+ * `signed-out`        — no session present.
+ * `reauth-required`   — refresh failed; user must re-authenticate.
+ */
+export const HC_SESSION_STATE_COOKIE = "hc_session_state";
+
+export const SESSION_STATE_VALUES = [
+  "signed-in",
+  "signed-in-stale",
+  "signed-out",
+  "reauth-required",
+] as const;
+
+export type SessionState = (typeof SESSION_STATE_VALUES)[number];
