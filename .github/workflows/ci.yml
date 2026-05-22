@@ -46,6 +46,9 @@ jobs:
       - name: Typecheck (all apps)
         run: pnpm run typecheck:all
 
+      - name: i18n hardcoded-text gate (V3-07 S8 — strict)
+        run: pnpm run i18n:check:strict
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 

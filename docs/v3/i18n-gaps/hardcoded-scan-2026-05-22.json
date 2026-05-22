@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-05-22T15:47:09.216Z",
+  "generatedAt": "2026-05-22T15:56:00.592Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
     "scannedFiles": 1267,
-    "entries": 1354,
+    "entries": 1351,
     "counts": {
       "OK": 1,
-      "GAP": 1308,
+      "GAP": 1305,
       "EXEMPT": 0,
       "AMBIGUOUS": 45
     },
-    "durationMs": 5975
+    "durationMs": 5468
   },
   "entriesByFile": {
     "apps/account/app/(account)/error.tsx": [
@@ -4411,24 +4411,6 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       }
     ],
-    "apps/hub/app/owner/(command)/error.tsx": [
-      {
-        "line": 20,
-        "col": 97,
-        "kind": "jsx_text",
-        "text": "Command center",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 21,
-        "col": 75,
-        "kind": "jsx_text",
-        "text": "This view could not load safely",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      }
-    ],
     "apps/hub/app/owner/(command)/finance/revenue/page.tsx": [
       {
         "line": 15,
@@ -7495,16 +7477,6 @@
         "text": "Keyboard shortcuts",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
-      }
-    ],
-    "apps/staff/app/(workspace)/error.tsx": [
-      {
-        "line": 14,
-        "col": 50,
-        "kind": "jsx_text",
-        "text": "Something went wrong.",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
       }
     ],
     "apps/staff/app/(workspace)/operations/newsletter/new/page.tsx": [
