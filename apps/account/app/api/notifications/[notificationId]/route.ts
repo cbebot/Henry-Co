@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { updateNotificationLifecycle } from "@/lib/notification-center";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 type Props = {
   params: Promise<{ notificationId: string }>;
@@ -16,10 +18,12 @@ async function getAuthenticatedUser() {
 }
 
 export async function PATCH(request: Request, { params }: Props) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const user = await getAuthenticatedUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
     }
 
     const { notificationId } = await params;
@@ -35,20 +39,22 @@ export async function PATCH(request: Request, { params }: Props) {
       .eq("id", notificationId);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: await tx(error.message) }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "Unable to update notification." }, { status: 500 });
+    return NextResponse.json({ error: await tx("Unable to update notification.") }, { status: 500 });
   }
 }
 
 export async function DELETE(_: Request, { params }: Props) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const user = await getAuthenticatedUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
     }
 
     const { notificationId } = await params;
@@ -59,11 +65,11 @@ export async function DELETE(_: Request, { params }: Props) {
     });
 
     if (!result.ok) {
-      return NextResponse.json({ error: result.error }, { status: result.status });
+      return NextResponse.json({ error: await tx(result.error) }, { status: result.status });
     }
 
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "Unable to delete notification." }, { status: 500 });
+    return NextResponse.json({ error: await tx("Unable to delete notification.") }, { status: 500 });
   }
 }

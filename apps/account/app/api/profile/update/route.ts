@@ -6,6 +6,8 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 type ProfileUpdateBody = {
   full_name?: string | null;
@@ -20,12 +22,14 @@ function hasOwn(body: ProfileUpdateBody, key: keyof ProfileUpdateBody) {
 }
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     await ensureAccountProfileRecords(user);
 
@@ -40,7 +44,7 @@ export async function POST(request: Request) {
 
     if (profileError) {
       logApiError("profile/update:load-current", profileError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     const currentCountry =
@@ -97,7 +101,7 @@ export async function POST(request: Request) {
 
     if (error) {
       logApiError("profile/update", error);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     const metadataPatch: Record<string, unknown> = {};
@@ -139,6 +143,6 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     logApiError("profile/update", error);
-    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
   }
 }

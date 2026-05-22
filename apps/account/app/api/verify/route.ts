@@ -14,6 +14,8 @@ import {
   getVerificationState,
   submitVerificationDocument,
 } from "@/lib/verification";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_TYPES = new Set([
@@ -58,6 +60,8 @@ function redirectOrJson(
 }
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const cookieStore = await cookies();
     const headerStore = await headers();
@@ -76,7 +80,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
     if (!user) {
       if (wantsJson(request)) {
-        return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+        return NextResponse.json({ error: await tx("Authentication required.") }, { status: 401 });
       }
       return NextResponse.redirect(new URL("/login", request.url));
     }
@@ -88,7 +92,7 @@ export async function POST(request: Request) {
     if (!VALID_DOC_TYPES.has(documentType)) {
       return redirectOrJson(request, {
         ok: false,
-        error: "That document type is not supported.",
+        error: await tx("That document type is not supported."),
         status: 400,
         code: "invalid_type",
       });
@@ -97,7 +101,7 @@ export async function POST(request: Request) {
     if (!file || file.size <= 0) {
       return redirectOrJson(request, {
         ok: false,
-        error: "Select a file before uploading.",
+        error: await tx("Select a file before uploading."),
         status: 400,
         code: "no_file",
       });
@@ -106,7 +110,7 @@ export async function POST(request: Request) {
     if (file.size > MAX_FILE_SIZE) {
       return redirectOrJson(request, {
         ok: false,
-        error: "File size must be 10 MB or less.",
+        error: await tx("File size must be 10 MB or less."),
         status: 400,
         code: "too_large",
       });
@@ -115,7 +119,7 @@ export async function POST(request: Request) {
     if (!ALLOWED_TYPES.has(file.type.toLowerCase())) {
       return redirectOrJson(request, {
         ok: false,
-        error: "Upload a JPG, PNG, WebP, or PDF file.",
+        error: await tx("Upload a JPG, PNG, WebP, or PDF file."),
         status: 400,
         code: "invalid_format",
       });
@@ -127,7 +131,7 @@ export async function POST(request: Request) {
       resourceType: "auto",
       maxBytes: MAX_FILE_SIZE,
       allowedTypes: ALLOWED_TYPES,
-      invalidTypeMessage: "Upload a JPG, PNG, WebP, or PDF file.",
+      invalidTypeMessage: await tx("Upload a JPG, PNG, WebP, or PDF file."),
     });
 
     // Store the document record.
@@ -203,7 +207,7 @@ export async function POST(request: Request) {
       ok: true,
       payload: {
         ok: true,
-        message: `${getDocumentTypeLabel(documentType)} uploaded successfully.`,
+        message: await tx(`${getDocumentTypeLabel(documentType)} uploaded successfully.`),
         verification,
         submission,
       },
@@ -212,7 +216,7 @@ export async function POST(request: Request) {
     console.error("[verify] Upload error:", err);
     return redirectOrJson(request, {
       ok: false,
-      error: err instanceof Error ? err.message : "Upload failed.",
+      error: err instanceof Error ? err.message : await tx("Upload failed."),
       status: 500,
       code: "upload_failed",
     });

@@ -14,21 +14,25 @@ import {
   isMissingPostgrestResourceError,
   mapLegacyPayoutMethod,
 } from "@/lib/wallet-storage";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     await ensureAccountProfileRecords(user);
 
     // KYC gate: withdrawals require verified identity.
     const verification = await requireVerification(user.id);
     if (!verification.allowed) {
-      return NextResponse.json({ error: verification.reason }, { status: 403 });
+      return NextResponse.json({ error: await tx(verification.reason) }, { status: 403 });
     }
 
     const body = await request.json();
@@ -38,11 +42,11 @@ export async function POST(request: Request) {
 
     const amountKobo = Math.round(amountNaira * 100);
     if (!amountKobo || amountKobo < 10000) {
-      return NextResponse.json({ error: "Minimum withdrawal is NGN 100." }, { status: 400 });
+      return NextResponse.json({ error: await tx("Minimum withdrawal is NGN 100.") }, { status: 400 });
     }
 
     if (!payoutMethodId) {
-      return NextResponse.json({ error: "Choose a verified payout account." }, { status: 400 });
+      return NextResponse.json({ error: await tx("Choose a verified payout account.") }, { status: 400 });
     }
 
     const admin = createAdminSupabase();
@@ -55,7 +59,7 @@ export async function POST(request: Request) {
     let pinHash = (prefs as { withdrawal_pin_hash?: string } | null)?.withdrawal_pin_hash ?? null;
     if (prefsError && !isMissingPostgrestResourceError(prefsError)) {
       logApiError("wallet/withdrawal/request prefs", prefsError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     if (prefsError && isMissingPostgrestResourceError(prefsError)) {
@@ -66,7 +70,7 @@ export async function POST(request: Request) {
 
       if (legacyError) {
         logApiError("wallet/withdrawal/request prefs legacy", legacyError);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
 
       pinHash = extractLegacyWithdrawalPinHash((legacyRows ?? []) as Array<Record<string, unknown>>);
@@ -84,7 +88,7 @@ export async function POST(request: Request) {
     }
 
     if (!pinHash || !verifyWithdrawalPin(pin, pinHash)) {
-      return NextResponse.json({ error: "Withdrawal PIN is required or incorrect." }, { status: 400 });
+      return NextResponse.json({ error: await tx("Withdrawal PIN is required or incorrect.") }, { status: 400 });
     }
 
     const { data: method, error: methodError } = await admin
@@ -116,7 +120,7 @@ export async function POST(request: Request) {
 
       if (legacyMethodError) {
         logApiError("wallet/withdrawal/request payout legacy", legacyMethodError);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
 
       if (legacyMethods && isLegacyPayoutMethodRow(legacyMethods as Record<string, unknown>)) {
@@ -124,11 +128,11 @@ export async function POST(request: Request) {
       }
     } else if (methodError) {
       logApiError("wallet/withdrawal/request payout", methodError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     if (!payoutMethod) {
-      return NextResponse.json({ error: "That payout account is not available." }, { status: 400 });
+      return NextResponse.json({ error: await tx("That payout account is not available.") }, { status: 400 });
     }
 
     const wallet = await getWalletSummary(user.id);
@@ -139,7 +143,7 @@ export async function POST(request: Request) {
 
     if (amountKobo > availableBalance) {
       return NextResponse.json(
-        { error: "Amount exceeds your available balance after pending withdrawals." },
+        { error: await tx("Amount exceeds your available balance after pending withdrawals.") },
         { status: 400 }
       );
     }
@@ -160,7 +164,7 @@ export async function POST(request: Request) {
     if (insertError && isMissingPostgrestResourceError(insertError)) {
       const walletId = String((wallet as { id?: string | null }).id || "");
       if (!walletId) {
-        return NextResponse.json({ error: "We couldn’t load your wallet. Please refresh and try again." }, { status: 400 });
+        return NextResponse.json({ error: await tx("We couldn’t load your wallet. Please refresh and try again.") }, { status: 400 });
       }
 
       const { data: legacyRow, error: legacyInsertError } = await admin
@@ -182,7 +186,7 @@ export async function POST(request: Request) {
 
       if (legacyInsertError || !legacyRow) {
         logApiError("wallet/withdrawal/request legacy insert", legacyInsertError);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
 
       await admin.from("customer_activity").insert({
@@ -215,7 +219,7 @@ export async function POST(request: Request) {
 
     if (insertError || !row) {
       logApiError("wallet/withdrawal/request insert", insertError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     await admin.from("customer_activity").insert({
@@ -246,6 +250,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, id: (row as { id: string }).id });
   } catch (error) {
     logApiError("wallet/withdrawal/request", error);
-    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
   }
 }

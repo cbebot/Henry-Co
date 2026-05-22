@@ -9,6 +9,8 @@ import {
   isMissingPostgrestResourceError,
   mapLegacyPayoutMethod,
 } from "@/lib/wallet-storage";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 function normalizeAccountNumber(value: unknown) {
   return String(value || "")
@@ -17,12 +19,14 @@ function normalizeAccountNumber(value: unknown) {
 }
 
 export async function GET() {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     const admin = createAdminSupabase();
     const { data, error } = await admin
@@ -69,12 +73,14 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
     const userId = user.id;
 
     await ensureAccountProfileRecords(user);
@@ -86,7 +92,7 @@ export async function POST(request: Request) {
 
     if (!bankName || !accountName || !accountNumber || accountNumber.length < 8) {
       return NextResponse.json(
-        { error: "Enter your bank name, account name, and a valid account number." },
+        { error: await tx("Enter your bank name, account name, and a valid account number.") },
         { status: 400 }
       );
     }
@@ -102,7 +108,7 @@ export async function POST(request: Request) {
 
       if (legacyError) {
         logApiError("wallet/payout-methods POST legacy load", legacyError);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
 
       const existingLegacy = ((legacyRows ?? []) as Array<Record<string, unknown>>).filter((row) =>
@@ -119,7 +125,7 @@ export async function POST(request: Request) {
 
       if (duplicateLegacy) {
         return NextResponse.json(
-          { error: "That bank account is already saved for payouts." },
+          { error: await tx("That bank account is already saved for payouts.") },
           { status: 409 }
         );
       }
@@ -150,7 +156,7 @@ export async function POST(request: Request) {
 
       if (insertedLegacyError || !insertedLegacy) {
         logApiError("wallet/payout-methods POST legacy insert", insertedLegacyError);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
 
       return NextResponse.json({
@@ -170,7 +176,7 @@ export async function POST(request: Request) {
 
     if (countError) {
       logApiError("wallet/payout-methods POST count", countError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     const isDefault = (count ?? 0) === 0;
@@ -187,12 +193,12 @@ export async function POST(request: Request) {
 
     if (existingError) {
       logApiError("wallet/payout-methods POST existing", existingError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     const duplicate = (existing ?? []).some((row) => normalizeAccountNumber(row.account_number) === accountNumber);
     if (duplicate) {
-      return NextResponse.json({ error: "That bank account is already saved for payouts." }, { status: 409 });
+      return NextResponse.json({ error: await tx("That bank account is already saved for payouts.") }, { status: 409 });
     }
 
     if (isDefault) {
@@ -220,12 +226,12 @@ export async function POST(request: Request) {
 
     if (error || !data) {
       logApiError("wallet/payout-methods POST", error);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     return NextResponse.json({ method: data });
   } catch (error) {
     logApiError("wallet/payout-methods POST", error);
-    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
   }
 }

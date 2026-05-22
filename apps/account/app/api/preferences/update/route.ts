@@ -3,6 +3,8 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 const ALLOWED_FIELDS = [
   "email_marketing", "email_transactional", "email_digest", "push_enabled",
@@ -26,12 +28,14 @@ function normalizeTimeValue(value: unknown) {
 }
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     await ensureAccountProfileRecords(user);
 
@@ -60,12 +64,12 @@ export async function POST(request: Request) {
 
     if (error) {
       logApiError("preferences/update", error);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     logApiError("preferences/update", error);
-    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
   }
 }

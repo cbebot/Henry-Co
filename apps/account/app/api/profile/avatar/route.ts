@@ -4,21 +4,25 @@ import { uploadProfileAvatar } from "@/lib/cloudinary";
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     await cookies();
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     await ensureAccountProfileRecords(user);
 
     const formData = await request.formData();
     const file = formData.get("avatar") as File | null;
-    if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    if (!file) return NextResponse.json({ error: await tx("No file provided") }, { status: 400 });
 
     const { secureUrl } = await uploadProfileAvatar(file, user.id);
 
@@ -44,6 +48,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ avatar_url: secureUrl });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Upload failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: await tx(message) }, { status: 500 });
   }
 }
