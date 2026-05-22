@@ -180,7 +180,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -190,6 +190,9 @@ importers:
 
   apps/care:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
@@ -277,7 +280,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -620,6 +623,9 @@ importers:
 
   apps/learn:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
@@ -711,6 +717,9 @@ importers:
 
   apps/logistics:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
@@ -817,6 +826,9 @@ importers:
       '@henryco/address-selector':
         specifier: workspace:^
         version: link:../../packages/address-selector
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
@@ -920,6 +932,9 @@ importers:
 
   apps/property:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -1378,6 +1393,9 @@ importers:
       '@henryco/observability':
         specifier: workspace:^
         version: link:../observability
+      '@supabase/ssr':
+        specifier: ^0.9.0
+        version: 0.9.0(@supabase/supabase-js@2.98.0)
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0

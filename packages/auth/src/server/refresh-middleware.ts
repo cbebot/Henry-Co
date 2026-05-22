@@ -64,6 +64,75 @@ function tagSessionState(res: NextResponse, state: SessionState): void {
   writeSessionStateCookie(res, state);
 }
 
+export type ReauthRedirectOptions = {
+  /** Diagnostic reason carried into the `session.refresh_failed` event payload. */
+  reason?: string;
+  /** Actor id for the event, when known. */
+  userId?: string;
+  /** Override the default reauth base URL (e.g., cross-domain account host). */
+  reauthBaseUrl?: string;
+  /**
+   * Forward Set-Cookie writes from an inner response onto the redirect.
+   * Useful when the caller already wrote cookies (e.g., malformed-cookie
+   * cleanup) on its working response and is about to discard it in
+   * favour of a redirect — without this, those Set-Cookie headers
+   * would never reach the browser.
+   */
+  carryCookiesFrom?: NextResponse;
+};
+
+/**
+ * Build the canonical V3-01 reauth redirect response — the 307 to
+ * `/auth/reauth?return=…&intent=form|page&drafts=…` with the
+ * `WWW-Authenticate: ReauthRequired` + `X-HenryCo-Session-State: reauth`
+ * headers, plus the `hc_session_state=reauth-required` cookie.
+ *
+ * Exposed as a standalone helper so per-app `proxy.ts` files that do
+ * NOT use `withSessionRefresh` (because they already share a single
+ * response object with the Supabase ssr client) can still produce the
+ * same redirect with one call.
+ *
+ * Emits `henry.auth.session.refresh_failed` exactly once per call.
+ *
+ * @example
+ *   // inside apps/<app>/proxy.ts
+ *   const session = await verifySupabaseSession(request, response);
+ *   if (session.status === "reauth" && isGatedRequest) {
+ *     return reauthRedirectFor(request, {
+ *       reason: session.reason,
+ *       userId: session.userId,
+ *     });
+ *   }
+ */
+export function reauthRedirectFor(
+  req: NextRequest,
+  options: ReauthRedirectOptions = {},
+): NextResponse {
+  emitEvent({
+    name: "henry.auth.session.refresh_failed",
+    classification: "system_state",
+    outcome: "failed",
+    actorId: options.userId,
+    payload: { reason: options.reason ?? "unknown" },
+  });
+
+  const base = options.reauthBaseUrl ?? defaultReauthBase();
+  const reauthUrl = buildReauthRedirect(req, base);
+
+  const res = NextResponse.redirect(reauthUrl, 307);
+  res.headers.set("WWW-Authenticate", REAUTH_HEADER_VALUE);
+  res.headers.set("X-HenryCo-Session-State", "reauth");
+  tagSessionState(res, "reauth-required");
+
+  if (options.carryCookiesFrom) {
+    for (const cookie of options.carryCookiesFrom.cookies.getAll()) {
+      res.cookies.set(cookie);
+    }
+  }
+
+  return res;
+}
+
 /**
  * Wrap a Next.js middleware so token-refresh + reauth routing become
  * a single, ecosystem-wide behaviour across the 10 web apps.
@@ -109,22 +178,11 @@ export function withSessionRefresh<Args extends unknown[]>(
     const resolution = await options.resolve(req);
 
     if (resolution.status === "reauth") {
-      emitEvent({
-        name: "henry.auth.session.refresh_failed",
-        classification: "system_state",
-        outcome: "failed",
-        actorId: resolution.userId,
-        payload: { reason: resolution.reason ?? "unknown" },
+      return reauthRedirectFor(req, {
+        reason: resolution.reason,
+        userId: resolution.userId,
+        reauthBaseUrl: options.reauthBaseUrl,
       });
-
-      const base = options.reauthBaseUrl ?? defaultReauthBase();
-      const reauthUrl = buildReauthRedirect(req, base);
-
-      const res = NextResponse.redirect(reauthUrl, 307);
-      res.headers.set("WWW-Authenticate", REAUTH_HEADER_VALUE);
-      res.headers.set("X-HenryCo-Session-State", "reauth");
-      tagSessionState(res, "reauth-required");
-      return res;
     }
 
     if (resolution.status === "refreshed") {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { COMPANY, buildSecurityHeaders } from "@henryco/config";
+import { COMPANY, buildSecurityHeaders, isSupabaseAuthTokenCookie } from "@henryco/config";
+import { writeSessionStateCookie } from "@henryco/auth/server/session-state";
 
 const csp = [
   "default-src 'self'",
@@ -52,6 +53,27 @@ function appendStaffRoleParam(search: string) {
   params.delete("role");
   params.set("role", "staff");
   return `?${params.toString()}`;
+}
+
+/**
+ * Hub does not run a full Supabase verify in the proxy (it cross-rewrites
+ * /owner and offloads auth to the owner / staff pages). V3-01 adds a
+ * passive `hc_session_state` cookie tag based on whether ANY Supabase
+ * auth cookies are present in the request, so SSR + the client
+ * `subscribeSessionState` helper can still observe the lifecycle.
+ *
+ * Tag value:
+ *   - "signed-in-stale" when auth cookies are present (the next
+ *     auth-aware app the user lands on will upgrade this to
+ *     "signed-in" via its full verify).
+ *   - "signed-out" when no auth cookies are present.
+ *
+ * Tagging is skipped on cross-host redirects (the destination tags).
+ */
+function tagSessionFromCookies(req: NextRequest, res: NextResponse): NextResponse {
+  const hasAuth = req.cookies.getAll().some((cookie) => isSupabaseAuthTokenCookie(cookie.name));
+  writeSessionStateCookie(res, hasAuth ? "signed-in-stale" : "signed-out");
+  return res;
 }
 
 export function proxy(request: NextRequest) {
@@ -129,7 +151,7 @@ export function proxy(request: NextRequest) {
     response.headers.set("Expires", "0");
   }
 
-  return response;
+  return tagSessionFromCookies(request, response);
 }
 
 export const config = {

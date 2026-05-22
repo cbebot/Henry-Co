@@ -15,7 +15,7 @@ import assert from "node:assert/strict";
 
 import { NextRequest } from "next/server";
 
-import { withSessionRefresh } from "../server/refresh-middleware";
+import { reauthRedirectFor, withSessionRefresh } from "../server/refresh-middleware";
 
 declare const __resetAuthTestState: () => void;
 
@@ -138,4 +138,62 @@ test("withSessionRefresh: respects inner middleware response when provided", asy
   assert.equal(res.headers.get(sentinel), "yes");
   // Cookie still tagged on the inner response.
   assert.equal(res.cookies.get("hc_session_state")?.value, "signed-in");
+});
+
+// ─── reauthRedirectFor standalone helper ───────────────────────────
+
+test("reauthRedirectFor: produces 307 + reauth headers + cookie + return path", () => {
+  const res = reauthRedirectFor(
+    makeRequest("/support/threads/new", "POST"),
+    { reason: "user_absent_after_verify", reauthBaseUrl: "/auth/reauth" },
+  );
+  assert.equal(res.status, 307);
+  assert.equal(res.headers.get("WWW-Authenticate"), "ReauthRequired");
+  assert.equal(res.headers.get("X-HenryCo-Session-State"), "reauth");
+  assert.equal(res.cookies.get("hc_session_state")?.value, "reauth-required");
+
+  const url = new URL(res.headers.get("location")!);
+  assert.equal(url.pathname, "/auth/reauth");
+  assert.equal(url.searchParams.get("return"), "/support/threads/new");
+  assert.equal(url.searchParams.get("intent"), "form");
+});
+
+test("reauthRedirectFor: honours cross-domain reauthBaseUrl override", () => {
+  const res = reauthRedirectFor(makeRequest("/anywhere"), {
+    reauthBaseUrl: "https://account.example.com/auth/reauth",
+  });
+  const url = new URL(res.headers.get("location")!);
+  assert.equal(url.host, "account.example.com");
+  assert.equal(url.pathname, "/auth/reauth");
+});
+
+test("reauthRedirectFor: preserves drafts query param from incoming request", () => {
+  const res = reauthRedirectFor(
+    makeRequest("/listings?drafts=property-listing-new", "POST"),
+    { reauthBaseUrl: "/auth/reauth" },
+  );
+  const url = new URL(res.headers.get("location")!);
+  assert.equal(url.searchParams.get("drafts"), "property-listing-new");
+});
+
+test("reauthRedirectFor: carryCookiesFrom forwards Set-Cookie writes onto the redirect", async () => {
+  const { NextResponse } = await import("next/server");
+  const inner = NextResponse.next();
+  // Simulate the malformed-cookie clearing pattern: write an expired
+  // cookie on the inner response.
+  inner.cookies.set("sb-cleanup-test-auth-token", "", {
+    path: "/",
+    expires: new Date(0),
+  });
+
+  const res = reauthRedirectFor(makeRequest("/foo", "POST"), {
+    reauthBaseUrl: "/auth/reauth",
+    carryCookiesFrom: inner,
+  });
+
+  // The redirect response should now also expire that cookie.
+  const carried = res.cookies.get("sb-cleanup-test-auth-token");
+  assert.ok(carried, "carried cookie present on redirect response");
+  // Reauth cookie still set too.
+  assert.equal(res.cookies.get("hc_session_state")?.value, "reauth-required");
 });

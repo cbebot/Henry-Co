@@ -15,6 +15,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@henryco/auth": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
