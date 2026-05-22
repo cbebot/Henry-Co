@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs-pro-react": "^2.7.1",
+    "@henryco/auth": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",

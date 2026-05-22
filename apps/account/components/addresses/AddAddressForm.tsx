@@ -3,7 +3,34 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useHenryCoLocale } from "@henryco/i18n";
+import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { ButtonPendingContent } from "@henryco/ui";
+
+type AddressDraft = {
+  label: string;
+  full_name: string;
+  phone: string;
+  address_line1: string;
+  address_line2: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  landmark: string;
+  is_default: boolean;
+};
+
+const INITIAL_ADDRESS_DRAFT: AddressDraft = {
+  label: "Home",
+  full_name: "",
+  phone: "",
+  address_line1: "",
+  address_line2: "",
+  city: "",
+  state: "",
+  postal_code: "",
+  landmark: "",
+  is_default: false,
+};
 
 export default function AddAddressForm() {
   const locale = useHenryCoLocale();
@@ -49,23 +76,18 @@ export default function AddAddressForm() {
           success: "Address saved",
           error: "Failed to save address",
         };
-  const [form, setForm] = useState({
-    label: "Home",
-    full_name: "",
-    phone: "",
-    address_line1: "",
-    address_line2: "",
-    city: "",
-    state: "",
-    postal_code: "",
-    landmark: "",
-    is_default: false,
-  });
+  const draft = useFormDraft<AddressDraft>(
+    "account-address-add",
+    INITIAL_ADDRESS_DRAFT,
+  );
+  const form = draft.value;
+  const setForm = draft.setValue;
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const router = useRouter();
 
-  const update = (key: string, val: string | boolean) => setForm((f) => ({ ...f, [key]: val }));
+  const update = (key: keyof AddressDraft, val: string | boolean) =>
+    setForm((f) => ({ ...f, [key]: val }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,10 +103,8 @@ export default function AddAddressForm() {
 
       if (!res.ok) throw new Error("Failed to save");
       setMessage({ type: "success", text: copy.success });
-      setForm({
-        label: "Home", full_name: "", phone: "", address_line1: "",
-        address_line2: "", city: "", state: "", postal_code: "", landmark: "", is_default: false,
-      });
+      setForm(INITIAL_ADDRESS_DRAFT);
+      draft.clear();
       router.refresh();
     } catch {
       setMessage({ type: "error", text: copy.error });

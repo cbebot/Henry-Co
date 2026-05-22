@@ -1,92 +1,31 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import {
-  buildSharedCookieWriteOptions,
-  filterValidSupabaseSessionCookies,
-  findMalformedSupabaseSessionCookieNames,
-  getSharedCookieDomain,
-  isRecoverableSupabaseAuthError,
-  isSupabaseAuthTokenCookie,
-} from "@henryco/config";
+  sessionStateFor,
+  verifySupabaseSession,
+} from "@henryco/auth/server/verify-supabase-session";
+import { writeSessionStateCookie } from "@henryco/auth/server/session-state";
 
-function clearSupabaseAuthCookies(
-  request: NextRequest,
-  response: NextResponse,
-  cookieNames?: Set<string>,
-) {
-  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
-  for (const cookie of request.cookies.getAll()) {
-    if (!isSupabaseAuthTokenCookie(cookie.name)) {
-      continue;
-    }
-    if (cookieNames && !cookieNames.has(cookie.name)) {
-      continue;
-    }
-    request.cookies.set(cookie.name, "");
-    response.cookies.set(cookie.name, "", {
-      domain: cookieDomain,
-      expires: new Date(0),
-      path: "/",
-      sameSite: "lax",
-      secure: true,
-    });
-  }
-}
-
+/**
+ * Care proxy — V3-01 wired.
+ *
+ * Passive auth: verifies / refreshes the Supabase session and tags the
+ * `hc_session_state` cookie. Page-level guards handle auth gating.
+ */
 export async function proxy(request: NextRequest) {
   const reqHeaders = new Headers(request.headers);
-  reqHeaders.set("x-care-return-path", `${request.nextUrl.pathname}${request.nextUrl.search}`);
-  const malformedCookieNames = new Set(findMalformedSupabaseSessionCookieNames(request.cookies.getAll()));
+  reqHeaders.set(
+    "x-care-return-path",
+    `${request.nextUrl.pathname}${request.nextUrl.search}`,
+  );
 
   const response = NextResponse.next({
-    request: {
-      headers: reqHeaders,
-    },
+    request: { headers: reqHeaders },
   });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !anon) {
-    return response;
-  }
-
-  if (malformedCookieNames.size > 0) {
-    clearSupabaseAuthCookies(request, response, malformedCookieNames);
-    return response;
-  }
-
-  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
-
-  const supabase = createServerClient(url, anon, {
-    cookieOptions: cookieDomain
-      ? {
-          domain: cookieDomain,
-          path: "/",
-          sameSite: "lax",
-          secure: true,
-        }
-      : undefined,
-    cookies: {
-      getAll() {
-        return filterValidSupabaseSessionCookies(request.cookies.getAll());
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          request.cookies.set(name, value);
-          response.cookies.set(name, value, buildSharedCookieWriteOptions(options, cookieDomain));
-        });
-      },
-    },
-  });
-
-  try {
-    await supabase.auth.getUser();
-  } catch (error) {
-    if (!isRecoverableSupabaseAuthError(error)) {
-      throw error;
-    }
-    clearSupabaseAuthCookies(request, response);
+  const session = await verifySupabaseSession(request, response);
+  const state = sessionStateFor(session);
+  if (state) {
+    writeSessionStateCookie(response, state);
   }
 
   return response;

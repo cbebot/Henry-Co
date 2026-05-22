@@ -85,7 +85,13 @@ export type HenryEventName =
   | "henry.studio.proposal.ready"
   | "henry.studio.payment.updated"
   | "henry.studio.project.updated"
-  | "henry.studio.message.added";
+  | "henry.studio.message.added"
+  // auth/session — V3-01 foundation lock (session persistence)
+  | "henry.auth.session.refreshed"
+  | "henry.auth.session.refresh_failed"
+  | "henry.auth.session.reauth_succeeded"
+  | "henry.auth.session.draft_restored"
+  | "henry.auth.session.multitab_broadcast";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

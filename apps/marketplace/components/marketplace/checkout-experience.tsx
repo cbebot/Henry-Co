@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import {
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { useFormDraft } from "@henryco/lifecycle/drafts";
 import type { UserAddressRecord } from "@henryco/address-selector";
 import { useMarketplaceCart } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
@@ -26,6 +27,31 @@ import { formatCurrency } from "@/lib/utils";
 type CheckoutStep = "delivery" | "payment" | "confirm";
 
 const STEP_IDS: CheckoutStep[] = ["delivery", "payment", "confirm"];
+
+/**
+ * Persisted user-input shape for the checkout draft.
+ *
+ * Captures only what the user explicitly typed or selected — the cart
+ * contents, addresses book, payment-rail config, wallet snapshot, and
+ * `buyer` identity are all server-fetched runtime data and stay out of
+ * the draft. The `proofName` (display-only filename for the upload
+ * field) is also excluded because the underlying `File` object is lost
+ * on reload — restoring just the name would mislead the user into
+ * thinking proof was still attached. Card-sensitive data NEVER enters
+ * the DOM in this flow (bank transfer + wallet + COD only), so
+ * `paymentMethod` here is a method id, never card data.
+ *
+ * Schema versioned at 1; bump if shape changes.
+ */
+type CheckoutDraft = {
+  step: CheckoutStep;
+  selectedAddressId: string | null;
+  oneShot: { fullName: string; phone: string; city: string; region: string; line1: string };
+  usingOneShot: boolean;
+  phoneOverride: string;
+  paymentMethod: PaymentMethodId;
+  bankReference: string;
+};
 
 function buildSteps(t: (s: string) => string): Array<{ id: CheckoutStep; label: string; description: string }> {
   return [
@@ -145,90 +171,121 @@ export function CheckoutExperience({
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const { moveCartItemToSaved, pendingSavedItemIds } = useMarketplaceCart();
-  const [step, setStep] = useState<CheckoutStep>("delivery");
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    addresses.find((a) => a.is_default)?.id ?? addresses[0]?.id ?? null
-  );
-  const [oneShot, setOneShot] = useState<{
-    fullName: string;
-    phone: string;
-    city: string;
-    region: string;
-    line1: string;
-  }>({
-    fullName: buyer.fullName ?? "",
-    phone: "",
-    city: "",
-    region: "",
-    line1: "",
-  });
-  const [usingOneShot, setUsingOneShot] = useState<boolean>(addresses.length === 0);
-  const [phoneOverride, setPhoneOverride] = useState<string>("");
   const subtotal = cart.subtotal;
   const shipping = subtotal > 350000 ? 0 : 18000;
   const total = subtotal + shipping;
   const currency = cart.items[0]?.currency || "NGN";
   const totalKobo = Math.max(0, Math.round(total * 100));
   const walletCanPay = wallet.isActive && Boolean(wallet.walletId) && wallet.availableKobo >= totalKobo;
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(
-    walletCanPay ? "wallet_balance" : "bank_transfer"
+
+  // V3-01 form-draft envelope — survives refresh + reauth round-trip.
+  // Initial values mirror the prior useState defaults (so first-paint
+  // behaviour is identical when no draft exists). On mount, the hook
+  // restores the persisted envelope if one is found.
+  const initialDraft = useMemo<CheckoutDraft>(
+    () => ({
+      step: "delivery",
+      selectedAddressId: addresses.find((a) => a.is_default)?.id ?? addresses[0]?.id ?? null,
+      oneShot: {
+        fullName: buyer.fullName ?? "",
+        phone: "",
+        city: "",
+        region: "",
+        line1: "",
+      },
+      usingOneShot: addresses.length === 0,
+      phoneOverride: "",
+      paymentMethod: walletCanPay ? "wallet_balance" : "bank_transfer",
+      bankReference: "",
+    }),
+    // Initial value is captured once on mount; subsequent prop changes
+    // (cart total flipping walletCanPay, addresses arriving) are
+    // handled by the live useEffect below — they should NOT re-seed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
-  const [bankReference, setBankReference] = useState("");
+
+  const draft = useFormDraft<CheckoutDraft>("marketplace-checkout", initialDraft);
+  const {
+    step,
+    selectedAddressId,
+    oneShot,
+    usingOneShot,
+    phoneOverride,
+    paymentMethod,
+    bankReference,
+  } = draft.value;
+
+  // Per-field setters that update the single draft envelope. Each
+  // matches the signature the existing child-component props expect
+  // (no functional setters needed — DeliveryStep's `setUsingOneShot`
+  // is the one exception and gets the React.Dispatch shape below).
+  const setStep = useCallback(
+    (next: CheckoutStep) =>
+      draft.setValue((prev) => (prev.step === next ? prev : { ...prev, step: next })),
+    [draft],
+  );
+  const setSelectedAddressId = useCallback(
+    (next: string | null) =>
+      draft.setValue((prev) =>
+        prev.selectedAddressId === next ? prev : { ...prev, selectedAddressId: next },
+      ),
+    [draft],
+  );
+  const setOneShot = useCallback(
+    (next: CheckoutDraft["oneShot"]) =>
+      draft.setValue((prev) => ({ ...prev, oneShot: next })),
+    [draft],
+  );
+  const setUsingOneShot = useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
+    (next) =>
+      draft.setValue((prev) => {
+        const resolved = typeof next === "function" ? next(prev.usingOneShot) : next;
+        return prev.usingOneShot === resolved ? prev : { ...prev, usingOneShot: resolved };
+      }),
+    [draft],
+  );
+  const setPhoneOverride = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.phoneOverride === next ? prev : { ...prev, phoneOverride: next },
+      ),
+    [draft],
+  );
+  const setPaymentMethod = useCallback(
+    (next: PaymentMethodId) =>
+      draft.setValue((prev) =>
+        prev.paymentMethod === next ? prev : { ...prev, paymentMethod: next },
+      ),
+    [draft],
+  );
+  const setBankReference = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.bankReference === next ? prev : { ...prev, bankReference: next },
+      ),
+    [draft],
+  );
+
+  // `proofName` is the display name of the bank-transfer proof upload.
+  // We deliberately KEEP this out of the persisted draft — the
+  // underlying File object is lost on reload, so restoring just the
+  // name would mislead the user into thinking proof was still
+  // attached. Plain useState here.
   const [proofName, setProofName] = useState("");
+  // UI lock during submit; not user-input — plain useState.
   const [submitting, setSubmitting] = useState(false);
+  // Marketplace policy consent; reset each session, not persisted —
+  // matches the prior behaviour (the previous manual draft also did
+  // not store this field).
   const [agreed, setAgreed] = useState(true);
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Persist progress (auto-save) — survives reload mid-checkout.
-  useEffect(() => {
-    try {
-      const draft = localStorage.getItem("henryco:mp:checkoutDraft");
-      if (draft) {
-        const parsed = JSON.parse(draft) as {
-          step?: CheckoutStep;
-          paymentMethod?: PaymentMethodId;
-          bankReference?: string;
-          phoneOverride?: string;
-          oneShot?: typeof oneShot;
-          usingOneShot?: boolean;
-          selectedAddressId?: string | null;
-        };
-        if (parsed.step) setStep(parsed.step);
-        if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
-        if (typeof parsed.bankReference === "string") setBankReference(parsed.bankReference);
-        if (typeof parsed.phoneOverride === "string") setPhoneOverride(parsed.phoneOverride);
-        if (parsed.oneShot) setOneShot(parsed.oneShot);
-        if (typeof parsed.usingOneShot === "boolean") setUsingOneShot(parsed.usingOneShot);
-        if (parsed.selectedAddressId !== undefined && addresses.some((a) => a.id === parsed.selectedAddressId)) {
-          setSelectedAddressId(parsed.selectedAddressId ?? null);
-        }
-      }
-    } catch {
-      // ignore
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        "henryco:mp:checkoutDraft",
-        JSON.stringify({
-          step,
-          paymentMethod,
-          bankReference,
-          phoneOverride,
-          oneShot,
-          usingOneShot,
-          selectedAddressId,
-        })
-      );
-    } catch {
-      // ignore quota
-    }
-  }, [step, paymentMethod, bankReference, phoneOverride, oneShot, usingOneShot, selectedAddressId]);
-
+  // When the wallet/payment-rail availability changes (e.g. cart total
+  // moves the user across the wallet-can-pay threshold), nudge the
+  // selected method into a valid choice. Preserved verbatim from the
+  // pre-draft version of this component.
   useEffect(() => {
     if (paymentMethod === "wallet_balance" && !walletCanPay) {
       setPaymentMethod("bank_transfer");
@@ -236,7 +293,20 @@ export function CheckoutExperience({
     if (paymentMethod === "bank_transfer" && !paymentRail.ready && walletCanPay) {
       setPaymentMethod("wallet_balance");
     }
-  }, [paymentMethod, paymentRail.ready, walletCanPay]);
+  }, [paymentMethod, paymentRail.ready, walletCanPay, setPaymentMethod]);
+
+  // If the saved address from a restored draft is no longer in the
+  // user's address book (deleted on another device, list refreshed
+  // from server), drop the stale id. Preserves the prior guard that
+  // only restored a known address.
+  useEffect(() => {
+    if (
+      selectedAddressId !== null &&
+      !addresses.some((a) => a.id === selectedAddressId)
+    ) {
+      setSelectedAddressId(null);
+    }
+  }, [addresses, selectedAddressId, setSelectedAddressId]);
 
   const selectedAddress = useMemo(
     () => addresses.find((a) => a.id === selectedAddressId) ?? null,
@@ -266,18 +336,14 @@ export function CheckoutExperience({
   function next() {
     if (step === "delivery" && !deliveryReady) return;
     if (step === "payment" && !paymentReady) return;
-    setStep((current) =>
-      current === "delivery" ? "payment" : current === "payment" ? "confirm" : current
-    );
+    setStep(step === "delivery" ? "payment" : step === "payment" ? "confirm" : step);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
   function back() {
-    setStep((current) =>
-      current === "confirm" ? "payment" : current === "payment" ? "delivery" : current
-    );
+    setStep(step === "confirm" ? "payment" : step === "payment" ? "delivery" : step);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -333,7 +399,20 @@ export function CheckoutExperience({
           method="POST"
           encType="multipart/form-data"
           className="space-y-5"
-          onSubmit={() => setSubmitting(true)}
+          onSubmit={() => {
+            setSubmitting(true);
+            // V3-01: the form posts natively to /api/marketplace which
+            // either redirects to /track/{orderNo}?placed=1 on success
+            // or back to /checkout?error=… on server-side rejection.
+            // We have no JS-level success callback, so we synchronously
+            // clear the draft at submit time — the localStorage write
+            // completes before the navigation begins. The trade-off:
+            // on a server-rejection round-trip the user lands back at
+            // /checkout without the saved selections, which mirrors
+            // the existing failure UX where the form re-renders
+            // server-side anyway.
+            draft.clear();
+          }}
         >
           <input type="hidden" name="intent" value="checkout_submit" />
           <input type="hidden" name="return_to" value="/checkout" />

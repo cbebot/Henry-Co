@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
+import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { ButtonPendingContent } from "@henryco/ui";
 import { ChatComposer } from "@henryco/chat-composer";
 import type { ComposerSendPayload } from "@henryco/chat-composer";
@@ -23,6 +24,12 @@ const SUPPORT_CATEGORIES = [
 ] as const;
 
 type SupportCategory = (typeof SUPPORT_CATEGORIES)[number];
+
+type SupportDraft = {
+  subject: string;
+  category: SupportCategory;
+  message: string;
+};
 
 type SearchParamsReader = {
   get(name: string): string | null;
@@ -102,18 +109,36 @@ export default function NewSupportForm() {
     { value: "other", label: t("Other") },
   ];
   const prefill = buildSupportPrefill(searchParams);
-  const [subject, setSubject] = useState(prefill.subject);
-  const [category, setCategory] = useState<SupportCategory>(prefill.category);
-  const [message, setMessage] = useState(prefill.message);
+  const draft = useFormDraft<SupportDraft>("account-support-thread-new", {
+    subject: prefill.subject,
+    category: prefill.category,
+    message: prefill.message,
+  });
+  const setDraft = draft.setValue;
+  const clearDraft = draft.clear;
+  const { subject, category, message } = draft.value;
+  const setSubject = (val: string) => setDraft((d) => ({ ...d, subject: val }));
+  const setCategory = (val: SupportCategory) => setDraft((d) => ({ ...d, category: val }));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  // Skip the initial mount run of the prefill-sync effect so the restored
+  // draft (if any) wins on first render. After mount, URL searchParam changes
+  // (e.g., user navigates to a different prefilled link) still re-sync,
+  // matching the original "URL prefill wins on change" semantics.
+  const prefillSyncMountedRef = useRef(false);
 
   useEffect(() => {
-    setSubject(prefill.subject);
-    setCategory(prefill.category);
-    setMessage(prefill.message);
-  }, [prefill.category, prefill.message, prefill.subject]);
+    if (!prefillSyncMountedRef.current) {
+      prefillSyncMountedRef.current = true;
+      return;
+    }
+    setDraft({
+      subject: prefill.subject,
+      category: prefill.category,
+      message: prefill.message,
+    });
+  }, [prefill.category, prefill.message, prefill.subject, setDraft]);
 
   const localizeSupportError = useCallback((message: string) => {
     switch (message) {
@@ -149,10 +174,11 @@ export default function NewSupportForm() {
           localizeSupportError(data.error || "Failed to create request")
         );
       }
+      clearDraft();
       router.push("/support");
       router.refresh();
     },
-    [subject, category, router, localizeSupportError]
+    [subject, category, router, localizeSupportError, clearDraft]
   );
 
   const handleSend = useCallback(
@@ -161,12 +187,12 @@ export default function NewSupportForm() {
       setLoading(true);
       try {
         await submit(text);
-        setMessage("");
+        setDraft((d) => ({ ...d, message: "" }));
       } finally {
         setLoading(false);
       }
     },
-    [submit]
+    [submit, setDraft]
   );
 
   return (

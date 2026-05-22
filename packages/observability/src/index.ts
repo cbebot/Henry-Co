@@ -36,6 +36,8 @@ export {
   type EmitEventParams,
 } from "./events";
 
+export { persistEvent, type PersistEventInput } from "./persist-event";
+
 export {
   buildServerSentryConfig,
   buildEdgeSentryConfig,

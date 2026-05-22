@@ -29,6 +29,7 @@ export type {
   DashboardPreference,
   DashboardResolution,
   DashboardRole,
+  SessionState,
   StaffDivision,
   StaffDivisionMembership,
   UnifiedViewer,
@@ -38,4 +39,15 @@ export type {
 export {
   DASHBOARD_PREFERENCE_COOKIE,
   DASHBOARD_PREFERENCE_VALUES,
+  HC_SESSION_STATE_COOKIE,
+  SESSION_STATE_VALUES,
 } from "./types";
+
+export {
+  detectAuthMethod,
+  authMethodOAuthProvider,
+  authMethodProviderName,
+  isOAuthMethod,
+  type AuthMethod,
+  type AuthMethodSubject,
+} from "./auth-method";

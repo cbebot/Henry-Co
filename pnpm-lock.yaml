@@ -163,6 +163,9 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0
     devDependencies:
+      '@playwright/test':
+        specifier: ^1.59.0
+        version: 1.59.0
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.2.1
@@ -190,6 +193,9 @@ importers:
 
   apps/care:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
@@ -620,6 +626,9 @@ importers:
 
   apps/learn:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
@@ -711,6 +720,9 @@ importers:
 
   apps/logistics:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
@@ -817,6 +829,9 @@ importers:
       '@henryco/address-selector':
         specifier: workspace:^
         version: link:../../packages/address-selector
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
@@ -835,6 +850,9 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
@@ -920,6 +938,9 @@ importers:
 
   apps/property:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -1141,6 +1162,9 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
       '@henryco/messaging-thread':
         specifier: workspace:^
         version: link:../../packages/messaging-thread
@@ -1375,6 +1399,12 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@supabase/ssr':
+        specifier: ^0.9.0
+        version: 0.9.0(@supabase/supabase-js@2.98.0)
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0
@@ -1860,7 +1890,36 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
 
-  packages/lifecycle: {}
+  packages/lifecycle:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/messaging-thread:
     dependencies:
@@ -1933,6 +1992,9 @@ importers:
       '@sentry/nextjs':
         specifier: ^10.0.0
         version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.37
@@ -2140,6 +2202,9 @@ importers:
       '@fingerprintjs/fingerprintjs-pro-react':
         specifier: ^2.7.1
         version: 2.7.1
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
       '@henryco/config':
         specifier: workspace:^
         version: link:../config

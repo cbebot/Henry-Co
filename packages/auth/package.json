@@ -10,17 +10,28 @@
     "./cookies": "./src/cookies.ts",
     "./viewer": "./src/viewer.ts",
     "./staff": "./src/staff.ts",
-    "./owner": "./src/owner.ts"
+    "./owner": "./src/owner.ts",
+    "./client": "./src/client/index.ts",
+    "./client/retry": "./src/client/retry.ts",
+    "./client/session-broadcast": "./src/client/session-broadcast.ts",
+    "./client/session-state": "./src/client/session-state.ts",
+    "./server/refresh-middleware": "./src/server/refresh-middleware.ts",
+    "./server/session-state": "./src/server/session-state.ts",
+    "./server/verify-supabase-session": "./src/server/verify-supabase-session.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/retry.test.ts src/__tests__/session-state.test.ts src/__tests__/session-broadcast.test.ts src/__tests__/refresh-middleware.test.ts src/__tests__/verify-supabase-session.test.ts src/__tests__/auth-method.test.ts"
   },
   "peerDependencies": {
+    "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.0.0",
     "next": "^16.0.0"
   },
   "devDependencies": {
     "@henryco/config": "workspace:^",
+    "@henryco/observability": "workspace:^",
+    "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.98.0",
     "@types/node": "^20.0.0",
     "next": "^16.1.6",

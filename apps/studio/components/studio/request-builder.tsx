@@ -1,7 +1,8 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { requestSteps } from "@/components/studio/request-builder-data";
 import { StudioRequestActivationStep } from "@/components/studio/request-activation-step";
 import { StudioRequestCommercialStep } from "@/components/studio/request-commercial-step";
@@ -18,6 +19,51 @@ import {
 import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
+
+/**
+ * Persisted user-input shape for the studio brief draft.
+ *
+ * Captures every field the user types or selects across the 4-step
+ * builder (Path / Scope / Commercial / Activation), plus the current
+ * step index so a mid-flow reauth lands the user back on the right
+ * step instead of step 1. Excluded from the envelope:
+ *
+ *   - `services`, `packages`, `teams`, `requestConfig`, `presetHint`
+ *     and `copilotSeed` — all server- or runtime-supplied (props).
+ *   - `isStepTransitioning`, `progressHint` — UI animation state.
+ *   - Derived memos (effective*, filteredPackages, pricingPreview,
+ *     readinessScore) — computed from the persisted fields above.
+ *   - DOM refs (`topRef`).
+ *
+ * The studio brief has no payment / KYC / password fields, so no
+ * sensitive-data exclusion is needed beyond the categories above.
+ */
+type StudioBriefDraft = {
+  stepIndex: number;
+  serviceKind: StudioService["kind"];
+  pathway: "package" | "custom";
+  selectedPackageId: string;
+  selectedTeamId: string;
+  selectedProjectType: string;
+  selectedPlatform: string;
+  selectedDesign: string;
+  preferredLanguage: string;
+  selectedPages: string[];
+  selectedModules: string[];
+  selectedAddOns: string[];
+  selectedTech: string[];
+  selectedProgrammingLanguage: string;
+  selectedFramework: string;
+  selectedBackend: string;
+  selectedHosting: string;
+  businessType: string;
+  budgetBand: string;
+  urgency: string;
+  timeline: string;
+  goals: string;
+  scopeNotes: string;
+  inspirationSummary: string;
+};
 
 type Props = {
   services: StudioService[];
@@ -92,49 +138,254 @@ export function StudioRequestBuilder({
     copilotSeed?.hostingPreference ||
     requestConfig.hostingOptions[0] ||
     "HenryCo recommends the host";
-  // Step index can be pre-set by the parent so callers arriving from
-  // upstream path-pickers (e.g. /pick → /request?path=custom) don't get
-  // re-asked "package or custom?" on step 1.
-  const [stepIndex, setStepIndex] = useState(
-    Math.min(Math.max(0, initialStepIndex), 3)
+  // Initial draft envelope — mirrors the prior useState defaults so
+  // first-paint behaviour is identical when no persisted draft exists.
+  // The hook restores any saved envelope on mount; when a fresh
+  // `copilotSeed` is delivered (the parent re-mounts this component
+  // with a new `key`), we skip restoration so the seed wins.
+  const initialDraft = useMemo<StudioBriefDraft>(
+    () => ({
+      stepIndex: Math.min(Math.max(0, initialStepIndex), 3),
+      serviceKind: initialServiceKind,
+      pathway: initialPathway ?? presetHint?.pathway ?? "custom",
+      selectedPackageId: "",
+      selectedTeamId: preferredTeamId ?? "",
+      selectedProjectType: initialProjectType,
+      selectedPlatform: initialPlatform,
+      selectedDesign: initialDesign,
+      preferredLanguage: copilotSeed?.preferredLanguage || "English",
+      selectedPages: copilotSeed?.pageRequirements ?? [],
+      selectedModules: copilotSeed?.requiredFeatures ?? [],
+      selectedAddOns: copilotSeed?.addonServices ?? [],
+      selectedTech: copilotSeed?.techPreferences ?? [],
+      selectedProgrammingLanguage: initialProgrammingLanguage,
+      selectedFramework: initialFramework,
+      selectedBackend: initialBackend,
+      selectedHosting: initialHosting,
+      businessType: copilotSeed?.businessType ?? "",
+      budgetBand: copilotSeed?.budgetBand ?? "",
+      urgency: initialUrgency,
+      timeline: initialTimeline,
+      goals: copilotSeed?.goals ?? "",
+      scopeNotes: copilotSeed?.scopeNotes ?? "",
+      inspirationSummary: "",
+    }),
+    // The initial value is captured once on mount. Parent re-mounts
+    // with a new `key` when a fresh copilot seed arrives, so this
+    // closure picks up the new seed each mount. Subsequent prop
+    // changes mid-mount do not re-seed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
-  const [serviceKind, setServiceKind] = useState<StudioService["kind"]>(initialServiceKind);
-  const [pathway, setPathway] = useState<"package" | "custom">(
-    initialPathway ?? presetHint?.pathway ?? "custom"
+
+  // When a fresh copilot seed is delivered, the parent re-mounts the
+  // builder via a new `key`. In that case, the user explicitly asked
+  // for a freshly drafted brief and any older saved draft should NOT
+  // resurrect over the seed values. Skip restore on seeded mounts.
+  const draft = useFormDraft<StudioBriefDraft>("studio-brief-new", initialDraft, {
+    skipRestore: Boolean(copilotSeed),
+  });
+  const {
+    stepIndex,
+    serviceKind,
+    pathway,
+    selectedPackageId,
+    selectedTeamId,
+    selectedProjectType,
+    selectedPlatform,
+    selectedDesign,
+    preferredLanguage,
+    selectedPages,
+    selectedModules,
+    selectedAddOns,
+    selectedTech,
+    selectedProgrammingLanguage,
+    selectedFramework,
+    selectedBackend,
+    selectedHosting,
+    businessType,
+    budgetBand,
+    urgency,
+    timeline,
+    goals,
+    scopeNotes,
+    inspirationSummary,
+  } = draft.value;
+
+  // Per-field setters update the single envelope. Each matches the
+  // `(value: T) => void` signature the child step components already
+  // expect via `RequestBuilderSelectionProps`, so no downstream
+  // refactor is required.
+  const setStepIndex = useCallback(
+    (next: number) =>
+      draft.setValue((prev) =>
+        prev.stepIndex === next ? prev : { ...prev, stepIndex: next },
+      ),
+    [draft],
   );
-  const [selectedPackageId, setSelectedPackageId] = useState("");
-  const [selectedTeamId, setSelectedTeamId] = useState(preferredTeamId ?? "");
-  const [selectedProjectType, setSelectedProjectType] = useState(initialProjectType);
-  const [selectedPlatform, setSelectedPlatform] = useState(initialPlatform);
-  const [selectedDesign, setSelectedDesign] = useState(initialDesign);
-  const [preferredLanguage, setPreferredLanguage] = useState(
-    copilotSeed?.preferredLanguage || "English",
+  const setServiceKind = useCallback(
+    (next: StudioService["kind"]) =>
+      draft.setValue((prev) =>
+        prev.serviceKind === next ? prev : { ...prev, serviceKind: next },
+      ),
+    [draft],
   );
-  const [selectedPages, setSelectedPages] = useState<string[]>(
-    copilotSeed?.pageRequirements ?? [],
+  const setPathway = useCallback(
+    (next: "package" | "custom") =>
+      draft.setValue((prev) =>
+        prev.pathway === next ? prev : { ...prev, pathway: next },
+      ),
+    [draft],
   );
-  const [selectedModules, setSelectedModules] = useState<string[]>(
-    copilotSeed?.requiredFeatures ?? [],
+  const setSelectedPackageId = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedPackageId === next ? prev : { ...prev, selectedPackageId: next },
+      ),
+    [draft],
   );
-  const [selectedAddOns, setSelectedAddOns] = useState<string[]>(
-    copilotSeed?.addonServices ?? [],
+  const setSelectedTeamId = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedTeamId === next ? prev : { ...prev, selectedTeamId: next },
+      ),
+    [draft],
   );
-  const [selectedTech, setSelectedTech] = useState<string[]>(
-    copilotSeed?.techPreferences ?? [],
+  const setSelectedProjectType = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedProjectType === next
+          ? prev
+          : { ...prev, selectedProjectType: next },
+      ),
+    [draft],
   );
-  const [selectedProgrammingLanguage, setSelectedProgrammingLanguage] = useState(
-    initialProgrammingLanguage,
+  const setSelectedPlatform = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedPlatform === next ? prev : { ...prev, selectedPlatform: next },
+      ),
+    [draft],
   );
-  const [selectedFramework, setSelectedFramework] = useState(initialFramework);
-  const [selectedBackend, setSelectedBackend] = useState(initialBackend);
-  const [selectedHosting, setSelectedHosting] = useState(initialHosting);
-  const [businessType, setBusinessType] = useState(copilotSeed?.businessType ?? "");
-  const [budgetBand, setBudgetBand] = useState(copilotSeed?.budgetBand ?? "");
-  const [urgency, setUrgency] = useState(initialUrgency);
-  const [timeline, setTimeline] = useState(initialTimeline);
-  const [goals, setGoals] = useState(copilotSeed?.goals ?? "");
-  const [scopeNotes, setScopeNotes] = useState(copilotSeed?.scopeNotes ?? "");
-  const [inspirationSummary, setInspirationSummary] = useState("");
+  const setSelectedDesign = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedDesign === next ? prev : { ...prev, selectedDesign: next },
+      ),
+    [draft],
+  );
+  const setPreferredLanguage = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.preferredLanguage === next
+          ? prev
+          : { ...prev, preferredLanguage: next },
+      ),
+    [draft],
+  );
+  const setSelectedPages = useCallback(
+    (next: string[]) => draft.setValue((prev) => ({ ...prev, selectedPages: next })),
+    [draft],
+  );
+  const setSelectedModules = useCallback(
+    (next: string[]) =>
+      draft.setValue((prev) => ({ ...prev, selectedModules: next })),
+    [draft],
+  );
+  const setSelectedAddOns = useCallback(
+    (next: string[]) =>
+      draft.setValue((prev) => ({ ...prev, selectedAddOns: next })),
+    [draft],
+  );
+  const setSelectedTech = useCallback(
+    (next: string[]) => draft.setValue((prev) => ({ ...prev, selectedTech: next })),
+    [draft],
+  );
+  const setSelectedProgrammingLanguage = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedProgrammingLanguage === next
+          ? prev
+          : { ...prev, selectedProgrammingLanguage: next },
+      ),
+    [draft],
+  );
+  const setSelectedFramework = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedFramework === next
+          ? prev
+          : { ...prev, selectedFramework: next },
+      ),
+    [draft],
+  );
+  const setSelectedBackend = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedBackend === next ? prev : { ...prev, selectedBackend: next },
+      ),
+    [draft],
+  );
+  const setSelectedHosting = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.selectedHosting === next ? prev : { ...prev, selectedHosting: next },
+      ),
+    [draft],
+  );
+  const setBusinessType = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.businessType === next ? prev : { ...prev, businessType: next },
+      ),
+    [draft],
+  );
+  const setBudgetBand = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.budgetBand === next ? prev : { ...prev, budgetBand: next },
+      ),
+    [draft],
+  );
+  const setUrgency = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.urgency === next ? prev : { ...prev, urgency: next },
+      ),
+    [draft],
+  );
+  const setTimeline = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.timeline === next ? prev : { ...prev, timeline: next },
+      ),
+    [draft],
+  );
+  const setGoals = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.goals === next ? prev : { ...prev, goals: next },
+      ),
+    [draft],
+  );
+  const setScopeNotes = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.scopeNotes === next ? prev : { ...prev, scopeNotes: next },
+      ),
+    [draft],
+  );
+  const setInspirationSummary = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.inspirationSummary === next
+          ? prev
+          : { ...prev, inspirationSummary: next },
+      ),
+    [draft],
+  );
+
+  // UI / animation state — not user input, not persisted.
   const [isStepTransitioning, setIsStepTransitioning] = useState(false);
   const [progressHint, setProgressHint] = useState<string | null>(null);
   const topRef = useRef<HTMLDivElement | null>(null);
@@ -328,7 +579,21 @@ export function StudioRequestBuilder({
   const currentStep = requestSteps[stepIndex];
 
   return (
-    <form action={submitStudioBriefAction} className="space-y-10">
+    <form
+      action={submitStudioBriefAction}
+      className="space-y-10"
+      onSubmit={() => {
+        // V3-01: server action redirects to /pay, /project, or
+        // /proposals on success. No JS-level success callback exists,
+        // so we clear the draft synchronously at submit time — the
+        // localStorage write completes before the request begins.
+        // If the action throws server-side validation, the user
+        // would land back on this page without the saved draft;
+        // client-side gating in the step controls catches almost
+        // every failure case before the submit fires.
+        draft.clear();
+      }}
+    >
       <div ref={topRef} />
       <input type="hidden" name="preferredTeamId" value={selectedTeamId} />
       <input type="hidden" name="serviceKind" value={serviceKind} />
