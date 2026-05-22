@@ -16,17 +16,20 @@ import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/components/owner/OwnerPrimitives";
 import SessionHealthTile from "@/components/owner/SessionHealthTile";
+import ObservabilityTile from "./dashboard/observability-tile";
 import { getOwnerOverviewData } from "@/lib/owner-data";
 import { getSessionHealthMetrics } from "@/lib/owner-session-health";
+import { getObservabilityMetrics } from "@/lib/owner-observability";
 import { formatCurrencyAmount, formatCompactNumber, timeAgo } from "@/lib/format";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function OwnerOverviewPage() {
-  const [data, sessionHealth, locale] = await Promise.all([
+  const [data, sessionHealth, observability, locale] = await Promise.all([
     getOwnerOverviewData(),
     getSessionHealthMetrics(),
+    getObservabilityMetrics(),
     getHubPublicLocale(),
   ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -215,6 +218,8 @@ export default async function OwnerOverviewPage() {
       </div>
 
       <SessionHealthTile metrics={sessionHealth} locale={locale} />
+
+      <ObservabilityTile metrics={observability} locale={locale} />
     </div>
   );
 }
