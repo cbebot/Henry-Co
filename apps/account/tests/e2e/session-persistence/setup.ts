@@ -144,6 +144,7 @@ export async function expireSession(
 
   if (mode === "both") {
     await revokeRefreshToken(parsed.accessToken);
+    poisonRefreshToken(parsed.session);
   }
 
   backdateSessionExpiry(parsed.session);
@@ -436,6 +437,16 @@ function backdateSessionExpiry(session: Record<string, unknown> | unknown[]): vo
 
   session.expires_at = expiredAt;
   session.expires_in = 0;
+}
+
+function poisonRefreshToken(session: Record<string, unknown> | unknown[]): void {
+  const invalidToken = `v3-01-invalid-refresh-token-${Date.now()}`;
+  if (Array.isArray(session)) {
+    session[1] = invalidToken;
+    return;
+  }
+
+  session.refresh_token = invalidToken;
 }
 
 function createCookieChunks(name: string, value: string): Array<{ name: string; value: string }> {

@@ -18,6 +18,10 @@ import {
   sessionStateFor,
   __setSupabaseClientFactoryForTests,
 } from "../server/verify-supabase-session";
+import {
+  decodeReauthContextCookieValue,
+  HC_REAUTH_CONTEXT_COOKIE,
+} from "../server/reauth-context";
 
 declare const __resetAuthTestState: () => void;
 
@@ -60,6 +64,24 @@ function validSessionCookieHeader(): string {
     access_token: "stub-access",
     refresh_token: "stub-refresh",
     expires_at: Date.now() / 1000 + 3600,
+  });
+  return `sb-stub-auth-token=${encodeURIComponent(payload)}`;
+}
+
+function validSessionCookieHeaderWithUser(): string {
+  const payload = JSON.stringify({
+    access_token: "stub-access",
+    refresh_token: "stub-refresh",
+    expires_at: Date.now() / 1000 + 3600,
+    user: {
+      email: "fixture@example.com",
+      app_metadata: { provider: "email", role: "ignored" },
+      user_metadata: {
+        full_name: "Fixture User",
+        avatar_url: "https://example.com/avatar.png",
+        secret_note: "ignored",
+      },
+    },
   });
   return `sb-stub-auth-token=${encodeURIComponent(payload)}`;
 }
@@ -178,6 +200,33 @@ test("verifySupabaseSession: cookies present, recoverable error → reauth", asy
     assert.fail(`expected reauth, got ${result.status}`);
   }
   assert.equal(result.reason, "supabase_auth_error");
+});
+
+test("verifySupabaseSession: recoverable error writes short-lived reauth context", async () => {
+  stubSupabase(null, { throwOn: "error" });
+  const res = freshRes();
+  const result = await verifySupabaseSession(
+    makeReq(validSessionCookieHeaderWithUser()),
+    res,
+  );
+  if (result.status !== "reauth") {
+    assert.fail(`expected reauth, got ${result.status}`);
+  }
+
+  const cookie = res.cookies.get(HC_REAUTH_CONTEXT_COOKIE);
+  assert.ok(cookie, "reauth context cookie should be set before auth cookies are cleared");
+  assert.equal(cookie.path, "/auth/reauth");
+  assert.equal(cookie.httpOnly, true);
+  assert.equal(cookie.maxAge, 300);
+
+  const context = decodeReauthContextCookieValue(cookie.value);
+  assert.equal(context?.email, "fixture@example.com");
+  assert.deepEqual(context?.app_metadata, { provider: "email" });
+  assert.deepEqual(context?.user_metadata, {
+    full_name: "Fixture User",
+    avatar_url: "https://example.com/avatar.png",
+  });
+  assert.equal(context?.displayName, "Fixture User");
 });
 
 test("verifySupabaseSession: cookies present, getUser throws recoverable → reauth", async () => {

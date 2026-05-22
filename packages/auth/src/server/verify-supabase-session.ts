@@ -14,6 +14,10 @@ import { emitEvent } from "@henryco/observability/events";
 import { persistEvent } from "@henryco/observability/persist-event";
 
 import type { SessionState } from "../types";
+import {
+  extractReauthContextFromSupabaseCookies,
+  writeReauthContextCookie,
+} from "./reauth-context";
 
 /**
  * Verify the Supabase session attached to a Next.js proxy request and
@@ -84,6 +88,7 @@ export async function verifySupabaseSession(
   }
 
   const allCookies = req.cookies.getAll();
+  const reauthContext = extractReauthContextFromSupabaseCookies(allCookies);
   const malformedNames = new Set(findMalformedSupabaseSessionCookieNames(allCookies));
   const clearMalformed = opts.clearMalformed ?? true;
   if (malformedNames.size > 0 && clearMalformed) {
@@ -134,6 +139,7 @@ export async function verifySupabaseSession(
       if (!isRecoverableSupabaseAuthError(error)) {
         throw error;
       }
+      writeReauthContextCookie(req, res, reauthContext);
       clearAuthCookies(req, res);
       await persistEvent({
         supabase,
@@ -148,6 +154,7 @@ export async function verifySupabaseSession(
     if (!isRecoverableSupabaseAuthError(error)) {
       throw error;
     }
+    writeReauthContextCookie(req, res, reauthContext);
     clearAuthCookies(req, res);
     await persistEvent({
       supabase,
@@ -162,6 +169,7 @@ export async function verifySupabaseSession(
     // Cookies present but @supabase/ssr could not produce a user —
     // refresh failed silently. The session has gone stale on the
     // server side.
+    writeReauthContextCookie(req, res, reauthContext);
     clearAuthCookies(req, res);
     await persistEvent({
       supabase,

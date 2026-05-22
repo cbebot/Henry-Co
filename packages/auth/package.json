@@ -16,6 +16,7 @@
     "./client/session-broadcast": "./src/client/session-broadcast.ts",
     "./client/session-state": "./src/client/session-state.ts",
     "./server/refresh-middleware": "./src/server/refresh-middleware.ts",
+    "./server/reauth-context": "./src/server/reauth-context.ts",
     "./server/session-state": "./src/server/session-state.ts",
     "./server/verify-supabase-session": "./src/server/verify-supabase-session.ts"
   },
