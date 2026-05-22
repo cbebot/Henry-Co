@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import {
+  emitModalBackdropTap,
+  useAndroidBackClose,
+} from "@henryco/ui/mobile";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
@@ -39,6 +43,13 @@ export type BottomSheetProps = {
   closeLabel?: string;
   /** Tall mode pins the sheet at 90vh; default is auto-height. */
   tall?: boolean;
+  /**
+   * V3-09(S5) — optional surface label for telemetry. When provided,
+   * emits `henry.ui.modal_escape.backdrop_tap` /
+   * `henry.ui.modal_escape.android_back` on those close paths. Keep
+   * cardinality low (one label per major sheet surface).
+   */
+  telemetrySurface?: string;
 };
 
 export function BottomSheet({
@@ -49,6 +60,7 @@ export function BottomSheet({
   children,
   closeLabel = "Close",
   tall,
+  telemetrySurface,
 }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const leadingSentinelRef = useRef<HTMLSpanElement>(null);
@@ -86,6 +98,12 @@ export function BottomSheet({
     };
   }, [open]);
 
+  // V3-09(S5) — Android hardware-back-button closes the sheet. The
+  // hook pushes a history sentinel on open and listens for popstate;
+  // the cleanup pops the sentinel on programmatic close so no
+  // phantom history step remains.
+  useAndroidBackClose(open, onClose, { surface: telemetrySurface });
+
   // Hard focus trap via leading/trailing sentinels — Tab cycles back
   // into the sheet's focusables; Shift+Tab cycles to the last.
   const onLeadingSentinelFocus = () => {
@@ -110,7 +128,11 @@ export function BottomSheet({
   return (
     <div
       role="presentation"
-      onClick={onClose}
+      onClick={() => {
+        // V3-09(S5) — backdrop close-path fires its own telemetry tag.
+        emitModalBackdropTap(telemetrySurface);
+        onClose();
+      }}
       style={{
         position: "fixed",
         inset: 0,
@@ -145,6 +167,11 @@ export function BottomSheet({
           borderTopRightRadius: RADIUS.xxl,
           borderBottom: 0,
           padding: "1.25rem 1rem",
+          // V3-09(S1) — respect the iOS home-indicator safe area so
+          // the sheet's bottom content (often a primary CTA) isn't
+          // hidden behind the system gesture bar. `env()` returns 0
+          // on non-notched viewports — no layout cost elsewhere.
+          paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom, 0px))",
           maxHeight: tall ? "90vh" : "75vh",
           overflowY: "auto",
           overscrollBehaviorY: "contain",
