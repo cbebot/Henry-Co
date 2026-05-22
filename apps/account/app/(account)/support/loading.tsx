@@ -12,9 +12,6 @@ export default async function SupportLoading() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
-    <AccountRouteLoading
-      title={t("Loading support")}
-      description={t("Preparing your support threads, message room, and reply composer.")}
-    />
+    <AccountRouteLoading title={t("Support")} />
   );
 }

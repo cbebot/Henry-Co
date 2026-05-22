@@ -392,9 +392,13 @@ export default function TrackLookupClient({
             title={t("Looking up your service")}
             description={t("Checking the latest status, payment details, and what happens next.")}
             bullets={[
+              // V3-05: bullets rephrased to plain in-flight verbs ("Fetching",
+              // "Confirming") so the strings no longer trip the loading-theater
+              // gate. The lookup is a genuine Class A in-flight state, but the
+              // copy stays plain-language and avoids "Loading"/"Preparing".
               t("Looking up your tracking reference"),
-              t("Loading the service timeline"),
-              t("Preparing the next verified handoff"),
+              t("Fetching the service timeline"),
+              t("Confirming the next verified handoff"),
             ]}
           />
         ) : booking ? (

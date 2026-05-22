@@ -12,9 +12,6 @@ export default async function NotificationsLoading() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
-    <AccountRouteLoading
-      title={t("Loading notifications")}
-      description={t("Grouping recent alerts, unread movement, and source-branded context.")}
-    />
+    <AccountRouteLoading title={t("Notifications")} />
   );
 }
