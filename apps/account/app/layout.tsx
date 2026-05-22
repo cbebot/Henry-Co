@@ -6,6 +6,7 @@ import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { henrySubdomain } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   metadataBase: new URL(
     process.env.NODE_ENV === "production"
-      ? `https://account.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
+      ? henrySubdomain("account")
       : "http://localhost:3003"
   ),
   openGraph: {

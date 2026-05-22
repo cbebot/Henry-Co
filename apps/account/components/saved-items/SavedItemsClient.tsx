@@ -21,6 +21,7 @@ import {
   type AppLocale,
 } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { henryDomain } from "@henryco/config";
 import { formatNaira } from "@/lib/format";
 
 type SavedItemsCopy = AccountCopy["savedItems"];
@@ -42,14 +43,16 @@ function divisionLabelOf(division: SavedItemDivision, locale: AppLocale): string
   return translateSurfaceLabel(locale, DIVISION_LABEL_EN[division] ?? division);
 }
 
+// V3-07(S2): division-home routes built from henryDomain() so the env-aware
+// base domain (NEXT_PUBLIC_BASE_DOMAIN) wins, including on preview builds.
 const DIVISION_HOME: Record<SavedItemDivision, string> = {
-  marketplace: "https://marketplace.henrycogroup.com/cart",
-  care: "https://care.henrycogroup.com/book",
-  learn: "https://learn.henrycogroup.com",
-  logistics: "https://logistics.henrycogroup.com/book",
-  property: "https://property.henrycogroup.com",
-  jobs: "https://jobs.henrycogroup.com",
-  studio: "https://studio.henrycogroup.com",
+  marketplace: henryDomain("marketplace", "/cart"),
+  care: henryDomain("care", "/book"),
+  learn: henryDomain("learn"),
+  logistics: henryDomain("logistics", "/book"),
+  property: henryDomain("property"),
+  jobs: henryDomain("jobs"),
+  studio: henryDomain("studio"),
   account: "/",
 };
 

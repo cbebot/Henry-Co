@@ -1,6 +1,7 @@
 import { RouteLiveRefresh } from "@henryco/ui";
 import { getAccountCopy } from "@henryco/i18n/server";
 import { formatAccountTemplate } from "@henryco/i18n";
+import { henryDomain } from "@henryco/config";
 
 import { requireAccountUser } from "@/lib/auth";
 import {
@@ -53,7 +54,7 @@ export default async function MarketplacePage() {
   const stats = marketStats({ orders, disputes, application, memberships, payouts });
   const activityRows = toMarketActivityRows(activityRaw);
 
-  const marketplaceOrigin = `https://marketplace.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`;
+  const marketplaceOrigin = henryDomain("marketplace");
 
   // Resolve hero copy from i18n slice.
   const state = heroState(stats);

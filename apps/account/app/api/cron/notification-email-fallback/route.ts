@@ -10,6 +10,7 @@ import {
   type EmailPurpose,
   type SendTransactionalEmailInput,
 } from "@henryco/email";
+import { henrySubdomain } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -37,7 +38,9 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 1;
 const BODY_CAP = 1024;
 
-const ACCOUNT_HOME_FALLBACK = "https://account.henrycogroup.com";
+// V3-07(S2): env-aware account origin so emails carry the matching base
+// domain in preview/staging instead of always production.
+const ACCOUNT_HOME_FALLBACK = henrySubdomain("account");
 // PASS 22 issue #1 — every email this cron sends footers a "Manage email
 // preferences" link. The previous path `/account/settings/notifications`
 // 404'd because the account shell does not nest under `/account/...` —
