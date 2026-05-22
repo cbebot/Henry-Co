@@ -54,6 +54,7 @@ type Props = {
   enableDraft: boolean;
   validationMessage: string | null;
   ariaLabel?: string;
+  textareaName?: string;
 };
 
 export function FullScreenComposer(props: Props) {
@@ -81,6 +82,7 @@ export function FullScreenComposer(props: Props) {
     enableDraft,
     validationMessage,
     ariaLabel,
+    textareaName,
   } = props;
 
   const [mounted, setMounted] = useState(false);
@@ -248,6 +250,7 @@ export function FullScreenComposer(props: Props) {
             value={text}
             onChange={(event) => onTextChange(event.target.value)}
             onKeyDown={onKeyDown}
+            name={textareaName}
             fill
             placeholder={labels?.placeholder || "Write a message…"}
             aria-label={ariaLabel || "Message body"}

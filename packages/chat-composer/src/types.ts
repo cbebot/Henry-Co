@@ -99,6 +99,7 @@ export type ComposerProps = {
   belowInputSlot?: ReactNode;
   initialText?: string;
   ariaLabel?: string;
+  textareaName?: string;
   /**
    * Focus the textarea on mount. Useful for chat surfaces where the
    * thread is the entire screen — the keyboard opens immediately on
