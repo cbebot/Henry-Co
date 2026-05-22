@@ -158,6 +158,29 @@ test("reauthRedirectFor: produces 307 + reauth headers + cookie + return path", 
   assert.equal(url.searchParams.get("intent"), "form");
 });
 
+test("reauthRedirectFor: production localhost redirects stay same-origin", () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = "production";
+
+  try {
+    const req = new NextRequest("http://localhost:3003/support/new", {
+      method: "GET",
+    });
+    const res = reauthRedirectFor(req);
+    const url = new URL(res.headers.get("location")!);
+
+    assert.equal(url.origin, "http://localhost:3003");
+    assert.equal(url.pathname, "/auth/reauth");
+    assert.equal(url.searchParams.get("return"), "/support/new");
+  } finally {
+    if (originalNodeEnv == null) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
+  }
+});
+
 test("reauthRedirectFor: honours cross-domain reauthBaseUrl override", () => {
   const res = reauthRedirectFor(makeRequest("/anywhere"), {
     reauthBaseUrl: "https://account.example.com/auth/reauth",
@@ -195,5 +218,21 @@ test("reauthRedirectFor: carryCookiesFrom forwards Set-Cookie writes onto the re
   const carried = res.cookies.get("sb-cleanup-test-auth-token");
   assert.ok(carried, "carried cookie present on redirect response");
   // Reauth cookie still set too.
+  assert.equal(res.cookies.get("hc_session_state")?.value, "reauth-required");
+});
+
+test("reauthRedirectFor: reauth cookie wins over carried stale state", async () => {
+  const { NextResponse } = await import("next/server");
+  const inner = NextResponse.next();
+  inner.cookies.set("hc_session_state", "signed-out", {
+    path: "/",
+    maxAge: 0,
+  });
+
+  const res = reauthRedirectFor(makeRequest("/foo", "POST"), {
+    reauthBaseUrl: "/auth/reauth",
+    carryCookiesFrom: inner,
+  });
+
   assert.equal(res.cookies.get("hc_session_state")?.value, "reauth-required");
 });

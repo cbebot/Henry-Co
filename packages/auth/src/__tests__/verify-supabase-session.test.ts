@@ -236,7 +236,7 @@ test("verifySupabaseSession: recoverable error writes short-lived reauth context
 
   const cookie = res.cookies.get(HC_REAUTH_CONTEXT_COOKIE);
   assert.ok(cookie, "reauth context cookie should be set before auth cookies are cleared");
-  assert.equal(cookie.path, "/auth/reauth");
+  assert.equal(cookie.path, "/");
   assert.equal(cookie.httpOnly, true);
   assert.equal(cookie.maxAge, 300);
 

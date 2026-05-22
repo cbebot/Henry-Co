@@ -83,11 +83,15 @@ export async function proxy(request: NextRequest) {
     // Public auth routes: pass through with verification side effects
     // (cookie refresh + state tag + referral capture). No redirect.
     const state = sessionStateFor(session);
+    const hasActiveReauthContext = Boolean(
+      request.cookies.get(HC_REAUTH_CONTEXT_COOKIE),
+    );
     const shouldPreserveReauthState =
-      pathname.startsWith("/auth/reauth") &&
       session.status === "anonymous" &&
-      (request.cookies.get(HC_SESSION_STATE_COOKIE)?.value === "reauth-required" ||
-        Boolean(request.cookies.get(HC_REAUTH_CONTEXT_COOKIE)));
+      (hasActiveReauthContext ||
+        (pathname.startsWith("/auth/reauth") &&
+          request.cookies.get(HC_SESSION_STATE_COOKIE)?.value ===
+            "reauth-required"));
 
     if (state && !shouldPreserveReauthState) {
       writeSessionStateCookie(response, state, {

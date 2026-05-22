@@ -29,14 +29,28 @@ export type RefreshMiddlewareOptions = {
   resolve: (req: NextRequest) => Promise<SessionResolution> | SessionResolution;
   /**
    * Where to redirect users on reauth-required. Defaults to
+   * `/auth/reauth` for loopback hosts, otherwise
    * `https://account.<baseDomain>/auth/reauth` in production and
-   * `/auth/reauth` (relative) outside production so local dev does not
-   * cross domains.
+   * `/auth/reauth` outside production.
    */
   reauthBaseUrl?: string;
 };
 
-function defaultReauthBase(): string {
+function isLoopbackHostname(hostname: string): boolean {
+  const normalized = hostname.toLowerCase();
+  return (
+    normalized === "localhost" ||
+    normalized === "127.0.0.1" ||
+    normalized === "::1" ||
+    normalized.endsWith(".localhost")
+  );
+}
+
+function defaultReauthBase(req: NextRequest): string {
+  if (isLoopbackHostname(req.nextUrl.hostname)) {
+    return REAUTH_PATH;
+  }
+
   if (process.env.NODE_ENV === "production") {
     return `https://account.${COMPANY.group.baseDomain}${REAUTH_PATH}`;
   }
@@ -119,19 +133,20 @@ export function reauthRedirectFor(
     payload: { reason: options.reason ?? "unknown" },
   });
 
-  const base = options.reauthBaseUrl ?? defaultReauthBase();
+  const base = options.reauthBaseUrl ?? defaultReauthBase(req);
   const reauthUrl = buildReauthRedirect(req, base);
 
   const res = NextResponse.redirect(reauthUrl, 307);
   res.headers.set("WWW-Authenticate", REAUTH_HEADER_VALUE);
   res.headers.set("X-HenryCo-Session-State", "reauth");
-  tagSessionState(req, res, "reauth-required");
 
   if (options.carryCookiesFrom) {
     for (const cookie of options.carryCookiesFrom.cookies.getAll()) {
       res.cookies.set(cookie);
     }
   }
+
+  tagSessionState(req, res, "reauth-required");
 
   return res;
 }

@@ -89,7 +89,7 @@ export function writeReauthContextCookie(
   res.cookies.set({
     name: HC_REAUTH_CONTEXT_COOKIE,
     value: encodeReauthContextCookieValue(context),
-    path: "/auth/reauth",
+    path: "/",
     maxAge: REAUTH_CONTEXT_MAX_AGE_SECONDS,
     httpOnly: true,
     sameSite: "lax",
