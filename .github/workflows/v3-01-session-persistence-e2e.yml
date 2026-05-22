@@ -1,0 +1,113 @@
+# V3-01 Slice 5b — Session-Persistence E2E Gate
+#
+# Runs the Playwright session-persistence specs (T1/T2; T3 is fixme'd
+# until the AccountDropdown data-testids land) against a freshly built
+# account app. These are the CI canary for the A4 rollback gate — if
+# `henry_events` insert breaks, this workflow fails before the change
+# lands in production.
+#
+# Triggers:
+#   - pull_request that touches V3-01 session-persistence surfaces
+#   - workflow_dispatch (manual re-run / soak-window spot check)
+#
+# Required GitHub Actions secrets (set by the owner):
+#   SUPABASE_TEST_URL            — Test/staging Supabase project URL
+#   SUPABASE_TEST_ANON_KEY       — Test/staging anon key
+#   SUPABASE_TEST_SERVICE_ROLE   — Test/staging service-role key
+#   E2E_USER_EMAIL               — Fixture user email
+#   E2E_USER_PASSWORD            — Fixture user password
+#
+# DO NOT point these at the production project — the helper revokes
+# refresh tokens via admin.signOut(jwt, "global"). Use staging.
+
+name: V3-01 Session Persistence E2E
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "apps/account/app/auth/**"
+      - "apps/account/proxy.ts"
+      - "apps/account/tests/e2e/session-persistence/**"
+      - "apps/account/playwright.config.ts"
+      - "apps/hub/supabase/migrations/**henry_events**"
+      - "apps/hub/lib/owner-session-health.ts"
+      - "apps/hub/components/owner/SessionHealthTile.tsx"
+      - "packages/auth/**"
+      - "packages/observability/src/persist-event.ts"
+      - "packages/observability/src/events.ts"
+      - "packages/ui/src/auth/ReauthScreen.tsx"
+      - ".github/workflows/v3-01-session-persistence-e2e.yml"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch / SHA to run against (defaults to PR head)"
+        required: false
+        type: string
+
+concurrency:
+  group: v3-01-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  session-persistence-e2e:
+    name: Session persistence (T1/T2)
+    runs-on: ubuntu-latest
+    # Skip on forked-PRs — secrets are not exposed there. The owner can
+    # re-run via workflow_dispatch after rebasing into the canonical
+    # repo, which is the policy for any test that needs a service-role
+    # key (this is not optional — the helper revokes refresh tokens).
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      CI: true
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_TEST_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_TEST_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_TEST_SERVICE_ROLE }}
+      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+      NEXT_PUBLIC_BASE_DOMAIN: henrycogroup.com
+      # Account app runs on port 3003 (matches playwright.config.ts default).
+      NEXT_PUBLIC_ACCOUNT_BASE_URL: http://localhost:3003
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.event.pull_request.head.sha }}
+
+      - name: Fail fast when secrets are missing
+        run: |
+          if [ -z "${SUPABASE_SERVICE_ROLE_KEY}" ] || [ -z "${E2E_USER_EMAIL}" ]; then
+            echo "::error::SUPABASE_TEST_SERVICE_ROLE / E2E_USER_EMAIL secrets not configured." \
+                 " Add them in repo Settings → Secrets and variables → Actions before this gate runs."
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers (Chromium only)
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: apps/account
+
+      - name: Build account app
+        run: pnpm --filter @henryco/account run build
+
+      - name: Run T1/T2 specs (workers=1; serial — they mutate session state)
+        run: pnpm --filter @henryco/account run test:e2e -- tests/e2e/session-persistence
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-session-persistence
+          path: apps/account/playwright-report/
+          retention-days: 7

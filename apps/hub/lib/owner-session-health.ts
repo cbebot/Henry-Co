@@ -7,25 +7,29 @@ import { createAdminSupabase } from "./supabase";
 /**
  * V3-01 session-health metrics for the owner-workspace tile (Slice 5).
  *
- * Reads counts of the 5 V3-01 session events from `customer_activity`:
+ * Reads counts of the V3-01 session events from `henry_events`
+ * (Slice 5b telemetry sink):
  *   - henry.auth.session.refreshed       — silent access-token refresh
  *   - henry.auth.session.refresh_failed  — refresh failed → reauth
  *   - henry.auth.session.reauth_succeeded — user completed reauth
  *   - henry.auth.session.draft_restored  — useFormDraft re-populated state
- *   - henry.auth.session.multitab_broadcast — cross-tab signal fired
  *
  * Today + 7-day windows. The 7-day refresh success rate is the
  * owner's headline metric — Addendum A4 sets 1% refresh_failed as
- * the rollback gate.
+ * the rollback gate (i.e., refreshSuccessRate7d ≥ 99 is the floor).
  *
- * PERSISTENCE NOTE: as of slice 5 the V3-01 emitEvent calls go to
- * pino logs + Sentry breadcrumbs only. To make this tile populate
- * with real numbers, those emit sites need to ALSO write rows to
- * `customer_activity` via the canonical
- * `buildCanonicalActivityMetadata` writer in @henryco/intelligence.
- * That wiring lands as slice 5b (or part of the closure pass). Until
- * then the tile renders the zero-state gracefully — query shape +
- * UI are production-ready; the data pipe is the remaining gap.
+ * Persistence pipe (Slice 5b):
+ *   - refreshed / refresh_failed — written server-side from
+ *     `verify-supabase-session` (proxy middleware) via persistEvent.
+ *   - reauth_succeeded — written client-side from ReauthClient on
+ *     successful re-auth (also via persistEvent).
+ *   - draft_restored — still emitEvent-only until the client-side
+ *     persistEvent bridge for useFormDraft lands. Tile shows 0 for
+ *     this metric until then.
+ *
+ * Empty state: the tile renders an informational notice when no
+ * events have been observed (avoids reading the zero-state as a
+ * regression). The state flips the moment the first row lands.
  */
 
 export type SessionHealthMetrics = {
