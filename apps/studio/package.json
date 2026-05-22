@@ -24,6 +24,7 @@
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/lifecycle": "workspace:^",
     "@henryco/messaging-thread": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
