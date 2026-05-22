@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getAccountUrl, isRecoverableSupabaseAuthError } from "@henryco/config";
+import { isRecoverableSupabaseAuthError } from "@henryco/config";
 import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   }
 
   if (!user) {
-    const loginUrl = new URL(getAccountUrl("/login"));
+    const loginUrl = new URL("/login", url.origin);
     const next = url.searchParams.get("next");
     if (next) {
       loginUrl.searchParams.set("next", next);

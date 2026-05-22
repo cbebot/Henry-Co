@@ -1,5 +1,9 @@
 import { type Page } from "@playwright/test";
-import { isSupabaseAuthTokenCookie } from "@henryco/config";
+import {
+  buildSupabaseCookieOptions,
+  getSharedCookieDomain,
+  isSupabaseAuthTokenCookie,
+} from "@henryco/config";
 
 /**
  * V3-01 session-persistence e2e — shared setup helpers.
@@ -21,6 +25,12 @@ export type ExpireMode = "access" | "both";
 
 type BrowserContext = ReturnType<Page["context"]>;
 type BrowserCookie = Awaited<ReturnType<BrowserContext["cookies"]>>[number];
+type BrowserCookieToSet = Parameters<BrowserContext["addCookies"]>[0][number];
+type SupabaseCookieToSet = {
+  name: string;
+  value: string;
+  options?: Record<string, unknown>;
+};
 type ParsedSessionCookie = {
   baseName: string;
   cookies: BrowserCookie[];
@@ -40,12 +50,51 @@ const SUPABASE_COOKIE_CHUNK_SIZE = 3180;
 export async function signIn(page: Page): Promise<void> {
   const email = requireEnv("E2E_USER_EMAIL");
   const password = requireEnv("E2E_USER_PASSWORD");
-  await page.goto("/login");
-  await page.locator('input[name="email"]').fill(email);
-  await page.locator('input[name="password"]').fill(password);
-  await page.locator('button[type="submit"]').click();
-  // Wait for the post-auth redirect — /auth/resolve → final destination.
-  await page.waitForURL((url) => !url.pathname.startsWith("/login"), {
+  const { createBrowserClient } = await import("@supabase/ssr");
+  const cookieOptions = buildSupabaseCookieOptions(
+    getSharedCookieDomain(new URL(accountBaseURL()).hostname),
+  );
+  const cookieJar = new Map<string, SupabaseCookieToSet>();
+
+  const supabase = createBrowserClient(
+    requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+    requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    {
+      isSingleton: false,
+      cookieOptions,
+      cookies: {
+        getAll() {
+          return [...cookieJar.values()].map(({ name, value }) => ({ name, value }));
+        },
+        setAll(cookiesToSet) {
+          for (const cookie of cookiesToSet) {
+            if (cookie.value) {
+              cookieJar.set(cookie.name, cookie);
+            } else {
+              cookieJar.delete(cookie.name);
+            }
+          }
+        },
+      },
+    },
+  );
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    throw new Error(`Supabase fixture sign-in failed: ${error.message}`);
+  }
+
+  const cookies = [...cookieJar.values()]
+    .filter((cookie) => isSupabaseAuthTokenCookie(cookie.name))
+    .map((cookie) => toPlaywrightCookie(cookie));
+
+  if (!cookies.length) {
+    throw new Error("Supabase fixture sign-in did not produce an SSR auth cookie.");
+  }
+
+  await page.context().addCookies(cookies);
+  await page.goto("/auth/resolve?next=/dashboard");
+  await page.waitForURL((url) => url.pathname === "/dashboard", {
     timeout: 15_000,
   });
 }
@@ -151,6 +200,51 @@ function requireEnv(name: string): string {
     );
   }
   return v;
+}
+
+function accountBaseURL(): string {
+  return process.env.NEXT_PUBLIC_ACCOUNT_BASE_URL ?? "http://localhost:3003";
+}
+
+function toPlaywrightCookie(cookie: SupabaseCookieToSet): BrowserCookieToSet {
+  const options = cookie.options ?? {};
+  const baseURL = accountBaseURL();
+  const domain = stringOption(options.domain);
+  const maxAge = numberOption(options.maxAge);
+  const expires = maxAge && maxAge > 0
+    ? Math.floor(Date.now() / 1000) + maxAge
+    : undefined;
+
+  return {
+    name: cookie.name,
+    value: cookie.value,
+    ...(domain ? { domain } : { url: baseURL }),
+    path: stringOption(options.path) ?? "/",
+    ...(expires ? { expires } : {}),
+    httpOnly: booleanOption(options.httpOnly) ?? false,
+    secure: booleanOption(options.secure) ?? (new URL(baseURL).protocol === "https:"),
+    sameSite: sameSiteOption(options.sameSite) ?? "Lax",
+  };
+}
+
+function stringOption(value: unknown): string | undefined {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function numberOption(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function booleanOption(value: unknown): boolean | undefined {
+  return typeof value === "boolean" ? value : undefined;
+}
+
+function sameSiteOption(value: unknown): BrowserCookieToSet["sameSite"] | undefined {
+  const normalized = String(value || "").toLowerCase();
+  if (normalized === "strict") return "Strict";
+  if (normalized === "lax") return "Lax";
+  if (normalized === "none") return "None";
+  return undefined;
 }
 
 /**
