@@ -52,7 +52,17 @@ export type SessionBroadcastSubscription = {
   unsubscribe(): void;
 };
 
-export type PublishInput = Omit<SessionBroadcastMessage, "at"> & { at?: number };
+/**
+ * Distributive Omit-equivalent — preserves the discriminated-union
+ * structure so caller code can narrow on `type` and access the
+ * variant-specific fields (`reason`, `userId`, etc.). Plain `Omit` on
+ * a union collapses to just the common keys.
+ */
+export type PublishInput =
+  | { type: "sign-out"; reason: SessionSignOutReason; at?: number }
+  | { type: "user-changed"; userId: string; at?: number }
+  | { type: "reauth-required"; returnPath: string; at?: number }
+  | { type: "draft-restored"; draftKey: string; at?: number };
 
 export interface SessionBroadcaster {
   publish(message: PublishInput): void;

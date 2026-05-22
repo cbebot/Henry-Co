@@ -2161,6 +2161,9 @@ importers:
       '@fingerprintjs/fingerprintjs-pro-react':
         specifier: ^2.7.1
         version: 2.7.1
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
       '@henryco/config':
         specifier: workspace:^
         version: link:../config

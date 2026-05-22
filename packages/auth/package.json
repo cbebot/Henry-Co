@@ -21,7 +21,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/retry.test.ts src/__tests__/session-state.test.ts src/__tests__/session-broadcast.test.ts src/__tests__/refresh-middleware.test.ts src/__tests__/verify-supabase-session.test.ts"
+    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/retry.test.ts src/__tests__/session-state.test.ts src/__tests__/session-broadcast.test.ts src/__tests__/refresh-middleware.test.ts src/__tests__/verify-supabase-session.test.ts src/__tests__/auth-method.test.ts"
   },
   "peerDependencies": {
     "@supabase/ssr": "^0.9.0",

@@ -42,3 +42,12 @@ export {
   HC_SESSION_STATE_COOKIE,
   SESSION_STATE_VALUES,
 } from "./types";
+
+export {
+  detectAuthMethod,
+  authMethodOAuthProvider,
+  authMethodProviderName,
+  isOAuthMethod,
+  type AuthMethod,
+  type AuthMethodSubject,
+} from "./auth-method";
