@@ -1,6 +1,7 @@
 export * from "./types";
 export * from "./rules";
 export * from "./selectors";
+export * from "./drafts";
 
 export const LIFECYCLE_SNAPSHOT_TABLE = "customer_lifecycle_snapshots";
 
