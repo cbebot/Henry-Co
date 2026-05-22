@@ -8,171 +8,23 @@ Excluded: `node_modules/`, `.next/`, `dist/`, `build/`, `.turbo/`, `.vercel/`, `
 ## Counts
 
 - **Class A — real loading state (keep / migrate to skeleton):** 0
-- **Class B — fake/decorative theater (REMOVE):** 72
+- **Class B — fake/decorative theater (REMOVE):** 0
 - **Class C — empty/error miscoded as loading (FIX):** 0
-- **Needs review (ambiguous context):** 241
+- **Needs review (ambiguous context):** 208
 - **Exempt (search-ui / tests):** 0
-- **Total matches:** 313
+- **Total matches:** 208
 
 ## Class B — fake/decorative (replace with real SSR content or structured skeleton)
-
-### `apps/account/app/(account)/jobs/loading.tsx`
-
-- **L1** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-- **L6** — `Loading Jobs` — _title="Loading Jobs"_
-
-### `apps/account/app/(account)/learn/loading.tsx`
-
-- **L1** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-- **L6** — `Loading Learn` — _title="Loading Learn"_
-- **L7** — `Loading your courses` — _description="Loading your courses, progress signals, and certificates."_
-
-### `apps/account/app/(account)/loading.tsx`
-
-- **L1** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-
-### `apps/account/app/(account)/notifications/loading.tsx`
-
-- **L3** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-- **L16** — `Loading notifications` — _title={t("Loading notifications")}_
-
-### `apps/account/app/(account)/studio/loading.tsx`
-
-- **L1** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-- **L6** — `Loading Studio` — _title="Loading Studio"_
-
-### `apps/account/app/(account)/support/loading.tsx`
-
-- **L3** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-- **L16** — `Loading support` — _title={t("Loading support")}_
-- **L17** — `Preparing your support threads` — _description={t("Preparing your support threads, message room, and reply composer.")}_
-
-### `apps/account/app/(account)/wallet/loading.tsx`
-
-- **L1** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-- **L6** — `Loading wallet` — _title="Loading wallet"_
-
-### `apps/account/app/loading.tsx`
-
-- **L1** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-
-### `apps/learn/app/(public)/loading.tsx`
-
-- **L14** — `Loading courses` — _title={t("Loading courses, certifications, and learning paths.")}_
-
-### `apps/learn/app/learner/loading.tsx`
-
-- **L12** — `Loading your progress and enrolled courses` — _title={t("Loading your progress and enrolled courses.")}_
-- **L13** — `Preparing your enrollments` — _body={t("Preparing your enrollments, lessons, and certificates.")}_
-
-### `apps/learn/app/loading.tsx`
-
-- **L17** — `Loading your learning experience` — _title={t("Loading your learning experience.")}_
-- **L18** — `Preparing courses` — _subtitle={t("Preparing courses, learning paths, and your progress.")}_
-
-### `apps/learn/app/owner/loading.tsx`
-
-- **L11** — `Preparing academy operations` — _kicker={t("Preparing academy operations")}_
-- **L12** — `Loading courses` — _title={t("Loading courses, learners, assignments, and communications.")}_
-
-### `apps/logistics/app/loading.tsx`
-
-- **L7** — `Loading logistics` — _title="Loading logistics"_
-- **L8** — `Preparing shipping` — _subtitle="Preparing shipping, tracking, and delivery services."_
-
-### `apps/marketplace/app/(public)/loading.tsx`
-
-- **L6** — `Loading marketplace` — _title="Loading marketplace"_
-- **L7** — `Preparing products` — _subtitle="Preparing products, stores, and your personalised experience."_
-
-### `apps/marketplace/app/account/loading.tsx`
-
-- **L6** — `Loading your account` — _title="Loading your account"_
-
-### `apps/marketplace/app/loading.tsx`
-
-- **L7** — `Loading marketplace` — _title="Loading marketplace"_
-- **L8** — `Preparing products` — _subtitle="Preparing products, stores, and your personalized experience."_
-
-### `apps/marketplace/app/vendor/loading.tsx`
-
-- **L6** — `Loading vendor workspace` — _title="Loading vendor workspace"_
-- **L7** — `Preparing your products` — _subtitle="Preparing your products, orders, and store settings."_
-
-### `apps/property/app/account/loading.tsx`
-
-- **L10** — `Loading your saved listings` — _subtitle="Loading your saved listings, viewings, and inquiries."_
-
-### `apps/studio/app/(public)/loading.tsx`
-
-- **L6** — `Loading studio` — _title="Loading studio"_
-- **L7** — `Preparing services` — _subtitle="Preparing services, teams, and portfolio experiences."_
-
-### `apps/studio/app/loading.tsx`
-
-- **L6** — `Loading HenryCo Studio` — _title="Loading HenryCo Studio"_
-- **L7** — `Preparing your creative workspace` — _subtitle="Preparing your creative workspace."_
-
-### `packages/i18n/src/surface-extra-labels.ts`
-
-- **L2870** — `Loading your dashboard` — _"Loading your dashboard.": "Chargement de votre tableau de bord.",_
-- **L2871** — `Loading your learning experience` — _"Loading your learning experience.": "Chargement de votre expérience d'apprentissage.",_
-- **L2872** — `Loading your next academy view` — _"Loading your next academy view.": "Chargement de votre prochaine vue de l'académie.",_
-- **L7027** — `Loading your dashboard` — _"Loading your dashboard.": "Cargando tu panel.",_
-- **L7028** — `Loading your learning experience` — _"Loading your learning experience.": "Cargando tu experiencia de aprendizaje.",_
-- **L7029** — `Loading your next academy view` — _"Loading your next academy view.": "Cargando tu siguiente vista de la academia.",_
-- **L11184** — `Loading your dashboard` — _"Loading your dashboard.": "A carregar o teu painel.",_
-- **L11185** — `Loading your learning experience` — _"Loading your learning experience.": "A carregar a tua experiência de aprendizagem.",_
-- **L11186** — `Loading your next academy view` — _"Loading your next academy view.": "A carregar a tua próxima vista da academia.",_
-- **L15341** — `Loading your dashboard` — _"Loading your dashboard.": "جارٍ تحميل لوحتك.",_
-- **L15342** — `Loading your learning experience` — _"Loading your learning experience.": "جارٍ تحميل تجربة التعلّم الخاصة بك.",_
-- **L15343** — `Loading your next academy view` — _"Loading your next academy view.": "جارٍ تحميل عرض الأكاديمية التالي.",_
-- **L19481** — `Loading your dashboard` — _"Loading your dashboard.": "Na-ebudo dashboard gị.",_
-- **L19482** — `Loading your learning experience` — _"Loading your learning experience.": "Na-ebudo ahụmịhe mmụta gị.",_
-- **L19483** — `Loading your next academy view` — _"Loading your next academy view.": "Na-ebudo nlele akademị gị na-esote.",_
-- **L23621** — `Loading your dashboard` — _"Loading your dashboard.": "Ń gbé dashboard rẹ wọlé.",_
-- **L23622** — `Loading your learning experience` — _"Loading your learning experience.": "Ń gbé ìrírí ìkẹ́kọ̀ọ́ rẹ wọlé.",_
-- **L23623** — `Loading your next academy view` — _"Loading your next academy view.": "Ń gbé ìwòye ilé-ìwé rẹ tó kàn wọlé.",_
-- **L27761** — `Loading your dashboard` — _"Loading your dashboard.": "Ana loda dashboard ɗinka.",_
-- **L27762** — `Loading your learning experience` — _"Loading your learning experience.": "Ana loda gogewar koyonka.",_
-- **L27763** — `Loading your next academy view` — _"Loading your next academy view.": "Ana loda ra'ayinka na makaranta na gaba.",_
-- **L31918** — `Loading your dashboard` — _"Loading your dashboard.": "Ihr Dashboard wird geladen.",_
-- **L31919** — `Loading your learning experience` — _"Loading your learning experience.": "Ihre Lern-Erfahrung wird geladen.",_
-- **L31920** — `Loading your next academy view` — _"Loading your next academy view.": "Ihre nächste Akademie-Ansicht wird geladen.",_
-- **L36075** — `Loading your dashboard` — _"Loading your dashboard.": "正在加载您的仪表盘。",_
-- **L36076** — `Loading your learning experience` — _"Loading your learning experience.": "正在加载您的学习体验。",_
-- **L36077** — `Loading your next academy view` — _"Loading your next academy view.": "正在加载您下一个学院视图。",_
-- **L40215** — `Loading your dashboard` — _"Loading your dashboard.": "आपका डैशबोर्ड लोड हो रहा है।",_
-- **L40216** — `Loading your learning experience` — _"Loading your learning experience.": "आपका लर्निंग अनुभव लोड हो रहा है।",_
-- **L40217** — `Loading your next academy view` — _"Loading your next academy view.": "आपका अगला अकादमी दृश्य लोड हो रहा है।",_
-- **L44372** — `Loading your dashboard` — _"Loading your dashboard.": "Caricamento della tua dashboard.",_
-- **L44373** — `Loading your learning experience` — _"Loading your learning experience.": "Caricamento della tua esperienza di apprendimento.",_
-- **L44374** — `Loading your next academy view` — _"Loading your next academy view.": "Caricamento della tua prossima vista academy.",_
-
-### `packages/ui/src/public-shell/public-route-loader.tsx`
-
-- **L8** — `Preparing the public Care experience` — _*   • Premium ecosystems do NOT show a "Preparing the public Care experience"_
-- **L15** — `Preparing your creative workspace` — _*     copy ("Preparing your creative workspace"). This shipped across every_
 
 ## Class A — real in-flight loading (keep; consider StructuredSkeleton)
 
 ## Needs review
 
-### `apps/account/app/(account)/layout.tsx`
-
-- **L21** — `Loading from ` — _import AccountRouteLoading from "@/components/layout/AccountRouteLoading";_
-
-### `apps/account/components/layout/AccountRouteLoading.tsx`
-
-- **L14** — `Loading account` — _<HenryCoActivityIndicator label="Loading account" />_
-
 ### `apps/care/components/care/TrackLookupClient.tsx`
 
-- **L396** — `Loading the service timeline` — _t("Loading the service timeline"),_
-- **L397** — `Preparing the next verified handoff` — _t("Preparing the next verified handoff"),_
-- **L666** — `Preparing service status and timeline details` — _description={t("Preparing service status and timeline details.")}_
-- **L668** — `Loading booking identity` — _t("Loading booking identity"),_
-- **L670** — `Preparing your next-step guidance` — _t("Preparing your next-step guidance"),_
+- **L670** — `Preparing service status and timeline details` — _description={t("Preparing service status and timeline details.")}_
+- **L672** — `Loading booking identity` — _t("Loading booking identity"),_
+- **L674** — `Preparing your next-step guidance` — _t("Preparing your next-step guidance"),_
 
 ### `apps/care/components/ui/CareLoading.tsx`
 
@@ -192,13 +44,6 @@ Excluded: `node_modules/`, `.next/`, `dist/`, `build/`, `.turbo/`, `.vercel/`, `
 
 - **L61** — `Preparing your workspace` — _title = "Preparing your workspace.",_
 - **L62** — `Loading applications` — _body = "Loading applications, job postings, and activity.",_
-
-### `apps/learn/components/learn/loading-state.tsx`
-
-- **L40** — `Preparing HenryCo Learn` — _const resolvedKicker = kicker ?? t("Preparing HenryCo Learn");_
-- **L41** — `Loading your next academy view` — _const resolvedTitle = title ?? t("Loading your next academy view.");_
-- **L79** — `Loading your dashboard` — _const resolvedTitle = title ?? t("Loading your dashboard.");_
-- **L80** — `Preparing your progress` — _const resolvedBody = body ?? t("Preparing your progress, enrollments, and reminders.");_
 
 ### `apps/learn/lib/learn/shared-account.ts`
 
@@ -236,218 +81,187 @@ Excluded: `node_modules/`, `.next/`, `dist/`, `build/`, `.turbo/`, `.vercel/`, `
 - **L779** — `Loading notifications` — _"Loading notifications": "Chargement des notifications",_
 - **L2868** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Chargement des cours, certifications et parcours.",_
 - **L2869** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Chargement des cours, apprenants, devoirs et communications.",_
-- **L2873** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Chargement de votre progression et de vos cours inscrits.",_
-- **L2938** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Préparation de HenryCo Learn",_
-- **L2939** — `Preparing academy operations` — _"Preparing academy operations": "Préparation des opérations de l'académie",_
-- **L2940** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Préparation des cours, parcours et de votre progression.",_
-- **L2941** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Préparation de vos inscriptions, leçons et certificats.",_
-- **L2942** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Préparation de votre progression, inscriptions et rappels.",_
-- **L3823** — `Loading booking identity` — _"Loading booking identity": "Chargement de l'identité de la réservation",_
-- **L3824** — `Loading the service timeline` — _"Loading the service timeline": "Chargement de la chronologie du service",_
-- **L3825** — `Loading your bookings` — _"Loading your bookings": "Chargement de vos réservations",_
-- **L3920** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Préparation du statut du service et des détails de la chronologie.",_
-- **L3921** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Préparation du prochain transfert vérifié",_
-- **L3922** — `Preparing your dashboard` — _"Preparing your dashboard": "Préparation de votre tableau de bord",_
-- **L3923** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Préparation des conseils pour votre prochaine étape",_
-- **L4517** — `Preparing your Care experience` — _"Preparing your Care experience": "Preparando su experiencia de atención",_
-- **L4928** — `Loading support` — _"Loading support": "Cargando soporte",_
-- **L4929** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Preparando tus hilos de soporte, la sala de mensajes y el editor de respuestas.",_
-- **L4946** — `Loading notifications` — _"Loading notifications": "Cargando notificaciones",_
-- **L7025** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Cargando cursos, certificaciones y rutas de aprendizaje.",_
-- **L7026** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Cargando cursos, aprendices, asignaciones y comunicaciones.",_
-- **L7030** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Cargando tu progreso y cursos inscritos.",_
-- **L7095** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Preparando HenryCo Learn",_
-- **L7096** — `Preparing academy operations` — _"Preparing academy operations": "Preparando operaciones de la academia",_
-- **L7097** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Preparando cursos, rutas y tu progreso.",_
-- **L7098** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Preparando tus inscripciones, lecciones y certificados.",_
-- **L7099** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Preparando tu progreso, inscripciones y recordatorios.",_
-- **L7980** — `Loading booking identity` — _"Loading booking identity": "Cargando identidad de la reserva",_
-- **L7981** — `Loading the service timeline` — _"Loading the service timeline": "Cargando la línea de tiempo del servicio",_
-- **L7982** — `Loading your bookings` — _"Loading your bookings": "Cargando sus reservas",_
-- **L8077** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Preparando el estado del servicio y los detalles de la cronología.",_
-- **L8078** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Preparando el próximo traspaso verificado",_
-- **L8079** — `Preparing your dashboard` — _"Preparing your dashboard": "Preparando su panel",_
-- **L8080** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Preparando su guía para el próximo paso",_
-- **L8674** — `Preparing your Care experience` — _"Preparing your Care experience": "Preparando sua experiência de cuidado",_
-- **L9085** — `Loading support` — _"Loading support": "Carregando suporte",_
-- **L9086** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Preparando suas conversas de suporte, a sala de mensagens e o editor de respostas.",_
-- **L9103** — `Loading notifications` — _"Loading notifications": "Carregando notificações",_
-- **L11182** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "A carregar cursos, certificações e percursos de aprendizagem.",_
-- **L11183** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "A carregar cursos, aprendizes, atribuições e comunicações.",_
-- **L11187** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "A carregar o teu progresso e cursos inscritos.",_
-- **L11252** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "A preparar HenryCo Learn",_
-- **L11253** — `Preparing academy operations` — _"Preparing academy operations": "A preparar operações da academia",_
-- **L11254** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "A preparar cursos, percursos e o teu progresso.",_
-- **L11255** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "A preparar as tuas inscrições, lições e certificados.",_
-- **L11256** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "A preparar o teu progresso, inscrições e lembretes.",_
-- **L12137** — `Loading booking identity` — _"Loading booking identity": "Carregando identidade da reserva",_
-- **L12138** — `Loading the service timeline` — _"Loading the service timeline": "Carregando a linha do tempo do serviço",_
-- **L12139** — `Loading your bookings` — _"Loading your bookings": "Carregando suas reservas",_
-- **L12234** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "A preparar o estado do serviço e os detalhes da linha do tempo.",_
-- **L12235** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "A preparar a próxima transferência verificada",_
-- **L12236** — `Preparing your dashboard` — _"Preparing your dashboard": "A preparar o seu painel",_
-- **L12237** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "A preparar a sua orientação para o próximo passo",_
-- **L12831** — `Preparing your Care experience` — _"Preparing your Care experience": "إعداد تجربة الرعاية الخاصة بك",_
-- **L13242** — `Loading support` — _"Loading support": "جارٍ تحميل الدعم",_
-- **L13243** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "جارٍ تجهيز سلاسل الدعم الخاصة بك وغرفة الرسائل ومحرر الرد.",_
-- **L13260** — `Loading notifications` — _"Loading notifications": "جارٍ تحميل الإشعارات",_
-- **L15339** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "جارٍ تحميل الدورات والشهادات ومسارات التعلّم.",_
-- **L15340** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "جارٍ تحميل الدورات والمتعلِّمين والمهام والتواصل.",_
-- **L15344** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "جارٍ تحميل تقدّمك ودوراتك المسجَّلة.",_
-- **L15409** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "تجهيز HenryCo Learn",_
-- **L15410** — `Preparing academy operations` — _"Preparing academy operations": "تجهيز عمليات الأكاديمية",_
-- **L15411** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "تجهيز الدورات ومسارات التعلّم وتقدّمك.",_
-- **L15412** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "تجهيز تسجيلاتك ودروسك وشهاداتك.",_
-- **L15413** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "تجهيز تقدّمك وتسجيلاتك وتذكيراتك.",_
-- **L16294** — `Loading booking identity` — _"Loading booking identity": "جارٍ تحميل هوية الحجز",_
-- **L16295** — `Loading the service timeline` — _"Loading the service timeline": "جارٍ تحميل الجدول الزمني للخدمة",_
-- **L16296** — `Loading your bookings` — _"Loading your bookings": "جارٍ تحميل حجوزاتك",_
-- **L16391** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "جارٍ تحضير حالة الخدمة وتفاصيل الجدول الزمني.",_
-- **L16392** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "جارٍ تحضير عملية التسليم التالية المعتمدة",_
-- **L16393** — `Preparing your dashboard` — _"Preparing your dashboard": "جارٍ تحضير لوحة التحكم الخاصة بك",_
-- **L16394** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "جارٍ تحضير إرشادات الخطوة التالية لك",_
-- **L16969** — `Preparing your Care experience` — _"Preparing your Care experience": "Na-akwado ahụmịhe nlekọta gị",_
-- **L17234** — `Loading support` — _"Loading support": "Na-ebudata nkwado",_
-- **L17235** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Na-akwadebe eriri nkwado gị, ụlọ ozi, na onye ndezi nzaghachi.",_
-- **L17249** — `Loading notifications` — _"Loading notifications": "Na-ebudata ngosi",_
-- **L19479** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Na-ebudo nkuzi, asambodo na ụzọ mmụta.",_
-- **L19480** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Na-ebudo nkuzi, ndị mmụta, ọrụ enyere na nkwukọrịta.",_
-- **L19484** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Na-ebudo ọganihu gị na nkuzi i debanyere.",_
-- **L19549** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Na-akwadebe HenryCo Learn",_
-- **L19550** — `Preparing academy operations` — _"Preparing academy operations": "Na-akwadebe ọrụ akademị",_
-- **L19551** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Na-akwadebe nkuzi, ụzọ mmụta na ọganihu gị.",_
-- **L19552** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Na-akwadebe ndabanye gị, ihe ọmụmụ na asambodo.",_
-- **L19553** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Na-akwadebe ọganihu, ndabanye na ihe ncheta gị.",_
-- **L20434** — `Loading booking identity` — _"Loading booking identity": "Na-ebudata njirimara ndokwa",_
-- **L20435** — `Loading the service timeline` — _"Loading the service timeline": "Na-ebudata usoro oge ọrụ",_
-- **L20436** — `Loading your bookings` — _"Loading your bookings": "Na-ebudata ndokwa gị",_
-- **L20531** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Na-akwado ọnọdụ ọrụ na nkọwa usoro oge.",_
-- **L20532** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Na-akwado nnyefe ọzọ akwadoro",_
-- **L20533** — `Preparing your dashboard` — _"Preparing your dashboard": "Na-akwado dashboard gị",_
-- **L20534** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Na-akwado ntuziaka nzọụkwụ na-esote gị",_
-- **L21109** — `Preparing your Care experience` — _"Preparing your Care experience": "Ngbaradi iriri Itọju rẹ",_
-- **L21374** — `Loading support` — _"Loading support": "N gbe atilẹyin",_
-- **L21375** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Ngbaradi awọn okun atilẹyin rẹ, yara ifiranṣẹ, ati olutẹjade idahun.",_
-- **L21389** — `Loading notifications` — _"Loading notifications": "N gbe àwọn ìfìmọ̀",_
-- **L23619** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Ń gbé àwọn ìdánilẹ́kọ̀ọ́, ẹ̀rí, àti ọ̀nà ìkẹ́kọ̀ọ́ wọlé.",_
-- **L23620** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Ń gbé àwọn ìdánilẹ́kọ̀ọ́, akẹ́kọ̀ọ́, iṣẹ́ àti ìbánisọ̀rọ̀ wọlé.",_
-- **L23624** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Ń gbé ìlọsíwájú rẹ àti àwọn ìdánilẹ́kọ̀ọ́ tí o forúkọsílẹ̀ wọlé.",_
-- **L23689** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Ń múrasílẹ̀ HenryCo Learn",_
-- **L23690** — `Preparing academy operations` — _"Preparing academy operations": "Ń múrasílẹ̀ iṣẹ́ ilé-ìwé",_
-- **L23691** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Ń múrasílẹ̀ àwọn ìdánilẹ́kọ̀ọ́, ọ̀nà ìkẹ́kọ̀ọ́, àti ìlọsíwájú rẹ.",_
-- **L23692** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Ń múrasílẹ̀ àwọn ìforúkọsílẹ̀ rẹ, ẹ̀kọ́ àti ẹ̀rí.",_
-- **L23693** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Ń múrasílẹ̀ ìlọsíwájú rẹ, àwọn ìforúkọsílẹ̀, àti àwọn ìránti.",_
-- **L24574** — `Loading booking identity` — _"Loading booking identity": "Ń kó ìdánimọ̀ ìfìpamọ́ wọlé",_
-- **L24575** — `Loading the service timeline` — _"Loading the service timeline": "Ń kó ìtòlẹ́sẹẹsẹ àkókò iṣẹ́ wọlé",_
-- **L24576** — `Loading your bookings` — _"Loading your bookings": "Ń kó àwọn ìfìpamọ́ rẹ wọlé",_
-- **L24671** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Ń múra ipò iṣẹ́ àti àwọn àlàyé àkókò sílẹ̀.",_
-- **L24672** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Ń múra ìfijíṣẹ́ tí a fọwọ́sí tó kàn sílẹ̀",_
-- **L24673** — `Preparing your dashboard` — _"Preparing your dashboard": "Ń múra pátákó rẹ sílẹ̀",_
-- **L24674** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Ń múra ìtọ́sọ́nà ìgbésẹ̀ tó kàn rẹ sílẹ̀",_
-- **L25249** — `Preparing your Care experience` — _"Preparing your Care experience": "Ana shirya kwarewar Kulawar ku",_
-- **L25514** — `Loading support` — _"Loading support": "Ana loda tallafi",_
-- **L25515** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Ana shirya zaren tallafin ku, dakin saƙo, da editan amsa.",_
-- **L25529** — `Loading notifications` — _"Loading notifications": "Ana loda sanarwa",_
-- **L27759** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Ana loda kwasoshi, takaddun shaida, da hanyoyin koyo.",_
-- **L27760** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Ana loda kwasoshi, ɗalibai, ayyuka, da sadarwa.",_
-- **L27764** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Ana loda ci gabanka da kwasoshin da ka yi rajista.",_
-- **L27829** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Ana shirya HenryCo Learn",_
-- **L27830** — `Preparing academy operations` — _"Preparing academy operations": "Ana shirya ayyukan makaranta",_
-- **L27831** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Ana shirya kwasoshi, hanyoyin koyo, da ci gabanka.",_
-- **L27832** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Ana shirya rajistar ka, darussa, da takaddun shaida.",_
-- **L27833** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Ana shirya ci gabanka, rajistar, da tunatarwa.",_
-- **L28714** — `Loading booking identity` — _"Loading booking identity": "Ana lodi shaidar rijista",_
-- **L28715** — `Loading the service timeline` — _"Loading the service timeline": "Ana lodi jadawalin sabis",_
-- **L28716** — `Loading your bookings` — _"Loading your bookings": "Ana lodi rijistar ku",_
-- **L28811** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Ana shirya matsayin sabis da cikakkun bayanan layin lokaci.",_
-- **L28812** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Ana shirya mika wuya na gaba da aka tabbatar",_
-- **L28813** — `Preparing your dashboard` — _"Preparing your dashboard": "Ana shirya dashboard ɗinku",_
-- **L28814** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Ana shirya jagorar matakin ku na gaba",_
-- **L29408** — `Preparing your Care experience` — _"Preparing your Care experience": "Bereiten Sie Ihr Care-Erlebnis vor",_
-- **L29673** — `Loading support` — _"Loading support": "Support wird geladen",_
-- **L29674** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Ihre Support-Threads, der Nachrichtenraum und der Antworteditor werden vorbereitet.",_
-- **L29688** — `Loading notifications` — _"Loading notifications": "Benachrichtigungen werden geladen",_
-- **L31916** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Kurse, Zertifizierungen und Lernpfade werden geladen.",_
-- **L31917** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Kurse, Lernende, Aufgaben und Kommunikation werden geladen.",_
-- **L31921** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Ihr Fortschritt und eingeschriebene Kurse werden geladen.",_
-- **L31986** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "HenryCo Learn wird vorbereitet",_
-- **L31987** — `Preparing academy operations` — _"Preparing academy operations": "Akademie-Operationen werden vorbereitet",_
-- **L31988** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Kurse, Lernpfade und Ihr Fortschritt werden vorbereitet.",_
-- **L31989** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Ihre Einschreibungen, Lektionen und Zertifikate werden vorbereitet.",_
-- **L31990** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Ihr Fortschritt, Einschreibungen und Erinnerungen werden vorbereitet.",_
-- **L32871** — `Loading booking identity` — _"Loading booking identity": "Buchungsidentität wird geladen",_
-- **L32872** — `Loading the service timeline` — _"Loading the service timeline": "Service-Zeitachse wird geladen",_
-- **L32873** — `Loading your bookings` — _"Loading your bookings": "Ihre Buchungen werden geladen",_
-- **L32968** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Servicestatus und Zeitleistendetails werden vorbereitet.",_
-- **L32969** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Nächste verifizierte Übergabe wird vorbereitet",_
-- **L32970** — `Preparing your dashboard` — _"Preparing your dashboard": "Ihr Dashboard wird vorbereitet",_
-- **L32971** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Ihre Anleitung für den nächsten Schritt wird vorbereitet",_
-- **L33546** — `Preparing your Care experience` — _"Preparing your Care experience": "准备您的护理体验",_
-- **L33811** — `Loading support` — _"Loading support": "正在加载支持",_
-- **L33812** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "正在准备您的支持会话、消息室和回复编辑器。",_
-- **L33826** — `Loading notifications` — _"Loading notifications": "正在加载通知",_
-- **L36073** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "正在加载课程、认证与学习路径。",_
-- **L36074** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "正在加载课程、学员、作业与沟通。",_
-- **L36078** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "正在加载您的进度与已注册课程。",_
-- **L36143** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "正在准备 HenryCo Learn",_
-- **L36144** — `Preparing academy operations` — _"Preparing academy operations": "正在准备学院运营",_
-- **L36145** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "正在准备课程、学习路径与您的进度。",_
-- **L36146** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "正在准备您的注册、课时与证书。",_
-- **L36147** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "正在准备您的进度、注册与提醒。",_
-- **L37028** — `Loading booking identity` — _"Loading booking identity": "正在加载预订身份",_
-- **L37029** — `Loading the service timeline` — _"Loading the service timeline": "正在加载服务时间线",_
-- **L37030** — `Loading your bookings` — _"Loading your bookings": "正在加载您的预订",_
-- **L37125** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "正在准备服务状态和时间线详情。",_
-- **L37126** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "正在准备下一次已验证的交接",_
-- **L37127** — `Preparing your dashboard` — _"Preparing your dashboard": "正在准备您的仪表板",_
-- **L37128** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "正在准备您的下一步指导",_
-- **L37703** — `Preparing your Care experience` — _"Preparing your Care experience": "आपका देखभाल अनुभव तैयार करना",_
-- **L37968** — `Loading support` — _"Loading support": "सहायता लोड हो रही है",_
-- **L37969** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "आपके सहायता थ्रेड, संदेश कक्ष और उत्तर कंपोज़र तैयार किए जा रहे हैं।",_
-- **L37983** — `Loading notifications` — _"Loading notifications": "सूचनाएँ लोड हो रही हैं",_
-- **L40213** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "कोर्स, प्रमाणन और लर्निंग पाथ लोड हो रहे हैं।",_
-- **L40214** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "कोर्स, शिक्षार्थी, असाइनमेंट और संचार लोड हो रहे हैं।",_
-- **L40218** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "आपकी प्रगति और नामांकित कोर्स लोड हो रहे हैं।",_
-- **L40283** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "HenryCo Learn तैयार हो रहा है",_
-- **L40284** — `Preparing academy operations` — _"Preparing academy operations": "अकादमी संचालन तैयार हो रहे हैं",_
-- **L40285** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "कोर्स, लर्निंग पाथ और आपकी प्रगति तैयार हो रहे हैं।",_
-- **L40286** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "आपके नामांकन, पाठ और प्रमाणपत्र तैयार हो रहे हैं।",_
-- **L40287** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "आपकी प्रगति, नामांकन और रिमाइंडर तैयार हो रहे हैं।",_
-- **L41168** — `Loading booking identity` — _"Loading booking identity": "बुकिंग पहचान लोड हो रही है",_
-- **L41169** — `Loading the service timeline` — _"Loading the service timeline": "सेवा टाइमलाइन लोड हो रही है",_
-- **L41170** — `Loading your bookings` — _"Loading your bookings": "आपकी बुकिंग लोड हो रही है",_
-- **L41265** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "सेवा स्थिति और टाइमलाइन विवरण तैयार किए जा रहे हैं।",_
-- **L41266** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "अगला सत्यापित हैंडऑफ़ तैयार किया जा रहा है",_
-- **L41267** — `Preparing your dashboard` — _"Preparing your dashboard": "आपका डैशबोर्ड तैयार किया जा रहा है",_
-- **L41268** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "आपका अगला-चरण मार्गदर्शन तैयार किया जा रहा है",_
-- **L41862** — `Preparing your Care experience` — _"Preparing your Care experience": "Preparare la tua esperienza di cura",_
-- **L42127** — `Loading support` — _"Loading support": "Supporto al caricamento",_
-- **L42128** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Preparazione dei thread di supporto, della stanza dei messaggi e del compositore di risposte.",_
-- **L42142** — `Loading notifications` — _"Loading notifications": "Caricamento notifiche",_
-- **L44370** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Caricamento corsi, certificazioni e percorsi.",_
-- **L44371** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Caricamento corsi, apprendisti, assegnazioni e comunicazioni.",_
-- **L44375** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Caricamento del tuo progresso e dei corsi iscritti.",_
-- **L44440** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Preparazione di HenryCo Learn",_
-- **L44441** — `Preparing academy operations` — _"Preparing academy operations": "Preparazione operations academy",_
-- **L44442** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Preparazione di corsi, percorsi e del tuo progresso.",_
-- **L44443** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Preparazione delle tue iscrizioni, lezioni e certificati.",_
-- **L44444** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Preparazione di progresso, iscrizioni e promemoria.",_
-- **L45325** — `Loading booking identity` — _"Loading booking identity": "Caricamento dell'identità della prenotazione",_
-- **L45326** — `Loading the service timeline` — _"Loading the service timeline": "Caricamento della cronologia del servizio",_
-- **L45327** — `Loading your bookings` — _"Loading your bookings": "Caricamento delle tue prenotazioni",_
-- **L45422** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Preparazione dello stato del servizio e dei dettagli della cronologia.",_
-- **L45423** — `Preparing the next verified handoff` — _"Preparing the next verified handoff": "Preparazione del prossimo passaggio di consegne verificato",_
-- **L45424** — `Preparing your dashboard` — _"Preparing your dashboard": "Preparazione della tua dashboard",_
-- **L45425** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Preparazione della guida per il prossimo passaggio",_
-
-### `packages/rooms/src/components/RoomShell.tsx`
-
-- **L27** — `Loading state via ` — _* and chat. Loading state via `<LoadingSkeleton>`. Error state via_
-
-### `packages/ui/src/public-shell/public-home-skeleton.tsx`
-
-- **L7** — `Loading the public Care experience` — _*   - Replaces the previous theatrical "Loading the public Care experience"_
-- **L130** — `Loading content` — _<span className="sr-only">Loading content.</span>_
+- **L2870** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Chargement de votre progression et de vos cours inscrits.",_
+- **L2935** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Préparation de HenryCo Learn",_
+- **L2936** — `Preparing academy operations` — _"Preparing academy operations": "Préparation des opérations de l'académie",_
+- **L2937** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Préparation des cours, parcours et de votre progression.",_
+- **L2938** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Préparation de vos inscriptions, leçons et certificats.",_
+- **L2939** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Préparation de votre progression, inscriptions et rappels.",_
+- **L3820** — `Loading booking identity` — _"Loading booking identity": "Chargement de l'identité de la réservation",_
+- **L3821** — `Loading your bookings` — _"Loading your bookings": "Chargement de vos réservations",_
+- **L3916** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Préparation du statut du service et des détails de la chronologie.",_
+- **L3917** — `Preparing your dashboard` — _"Preparing your dashboard": "Préparation de votre tableau de bord",_
+- **L3918** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Préparation des conseils pour votre prochaine étape",_
+- **L4512** — `Preparing your Care experience` — _"Preparing your Care experience": "Preparando su experiencia de atención",_
+- **L4923** — `Loading support` — _"Loading support": "Cargando soporte",_
+- **L4924** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Preparando tus hilos de soporte, la sala de mensajes y el editor de respuestas.",_
+- **L4941** — `Loading notifications` — _"Loading notifications": "Cargando notificaciones",_
+- **L7020** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Cargando cursos, certificaciones y rutas de aprendizaje.",_
+- **L7021** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Cargando cursos, aprendices, asignaciones y comunicaciones.",_
+- **L7022** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Cargando tu progreso y cursos inscritos.",_
+- **L7087** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Preparando HenryCo Learn",_
+- **L7088** — `Preparing academy operations` — _"Preparing academy operations": "Preparando operaciones de la academia",_
+- **L7089** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Preparando cursos, rutas y tu progreso.",_
+- **L7090** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Preparando tus inscripciones, lecciones y certificados.",_
+- **L7091** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Preparando tu progreso, inscripciones y recordatorios.",_
+- **L7972** — `Loading booking identity` — _"Loading booking identity": "Cargando identidad de la reserva",_
+- **L7973** — `Loading your bookings` — _"Loading your bookings": "Cargando sus reservas",_
+- **L8068** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Preparando el estado del servicio y los detalles de la cronología.",_
+- **L8069** — `Preparing your dashboard` — _"Preparing your dashboard": "Preparando su panel",_
+- **L8070** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Preparando su guía para el próximo paso",_
+- **L8664** — `Preparing your Care experience` — _"Preparing your Care experience": "Preparando sua experiência de cuidado",_
+- **L9075** — `Loading support` — _"Loading support": "Carregando suporte",_
+- **L9076** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Preparando suas conversas de suporte, a sala de mensagens e o editor de respostas.",_
+- **L9093** — `Loading notifications` — _"Loading notifications": "Carregando notificações",_
+- **L11172** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "A carregar cursos, certificações e percursos de aprendizagem.",_
+- **L11173** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "A carregar cursos, aprendizes, atribuições e comunicações.",_
+- **L11174** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "A carregar o teu progresso e cursos inscritos.",_
+- **L11239** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "A preparar HenryCo Learn",_
+- **L11240** — `Preparing academy operations` — _"Preparing academy operations": "A preparar operações da academia",_
+- **L11241** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "A preparar cursos, percursos e o teu progresso.",_
+- **L11242** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "A preparar as tuas inscrições, lições e certificados.",_
+- **L11243** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "A preparar o teu progresso, inscrições e lembretes.",_
+- **L12124** — `Loading booking identity` — _"Loading booking identity": "Carregando identidade da reserva",_
+- **L12125** — `Loading your bookings` — _"Loading your bookings": "Carregando suas reservas",_
+- **L12220** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "A preparar o estado do serviço e os detalhes da linha do tempo.",_
+- **L12221** — `Preparing your dashboard` — _"Preparing your dashboard": "A preparar o seu painel",_
+- **L12222** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "A preparar a sua orientação para o próximo passo",_
+- **L12816** — `Preparing your Care experience` — _"Preparing your Care experience": "إعداد تجربة الرعاية الخاصة بك",_
+- **L13227** — `Loading support` — _"Loading support": "جارٍ تحميل الدعم",_
+- **L13228** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "جارٍ تجهيز سلاسل الدعم الخاصة بك وغرفة الرسائل ومحرر الرد.",_
+- **L13245** — `Loading notifications` — _"Loading notifications": "جارٍ تحميل الإشعارات",_
+- **L15324** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "جارٍ تحميل الدورات والشهادات ومسارات التعلّم.",_
+- **L15325** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "جارٍ تحميل الدورات والمتعلِّمين والمهام والتواصل.",_
+- **L15326** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "جارٍ تحميل تقدّمك ودوراتك المسجَّلة.",_
+- **L15391** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "تجهيز HenryCo Learn",_
+- **L15392** — `Preparing academy operations` — _"Preparing academy operations": "تجهيز عمليات الأكاديمية",_
+- **L15393** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "تجهيز الدورات ومسارات التعلّم وتقدّمك.",_
+- **L15394** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "تجهيز تسجيلاتك ودروسك وشهاداتك.",_
+- **L15395** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "تجهيز تقدّمك وتسجيلاتك وتذكيراتك.",_
+- **L16276** — `Loading booking identity` — _"Loading booking identity": "جارٍ تحميل هوية الحجز",_
+- **L16277** — `Loading your bookings` — _"Loading your bookings": "جارٍ تحميل حجوزاتك",_
+- **L16372** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "جارٍ تحضير حالة الخدمة وتفاصيل الجدول الزمني.",_
+- **L16373** — `Preparing your dashboard` — _"Preparing your dashboard": "جارٍ تحضير لوحة التحكم الخاصة بك",_
+- **L16374** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "جارٍ تحضير إرشادات الخطوة التالية لك",_
+- **L16949** — `Preparing your Care experience` — _"Preparing your Care experience": "Na-akwado ahụmịhe nlekọta gị",_
+- **L17214** — `Loading support` — _"Loading support": "Na-ebudata nkwado",_
+- **L17215** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Na-akwadebe eriri nkwado gị, ụlọ ozi, na onye ndezi nzaghachi.",_
+- **L17229** — `Loading notifications` — _"Loading notifications": "Na-ebudata ngosi",_
+- **L19459** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Na-ebudo nkuzi, asambodo na ụzọ mmụta.",_
+- **L19460** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Na-ebudo nkuzi, ndị mmụta, ọrụ enyere na nkwukọrịta.",_
+- **L19461** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Na-ebudo ọganihu gị na nkuzi i debanyere.",_
+- **L19526** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Na-akwadebe HenryCo Learn",_
+- **L19527** — `Preparing academy operations` — _"Preparing academy operations": "Na-akwadebe ọrụ akademị",_
+- **L19528** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Na-akwadebe nkuzi, ụzọ mmụta na ọganihu gị.",_
+- **L19529** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Na-akwadebe ndabanye gị, ihe ọmụmụ na asambodo.",_
+- **L19530** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Na-akwadebe ọganihu, ndabanye na ihe ncheta gị.",_
+- **L20411** — `Loading booking identity` — _"Loading booking identity": "Na-ebudata njirimara ndokwa",_
+- **L20412** — `Loading your bookings` — _"Loading your bookings": "Na-ebudata ndokwa gị",_
+- **L20507** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Na-akwado ọnọdụ ọrụ na nkọwa usoro oge.",_
+- **L20508** — `Preparing your dashboard` — _"Preparing your dashboard": "Na-akwado dashboard gị",_
+- **L20509** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Na-akwado ntuziaka nzọụkwụ na-esote gị",_
+- **L21084** — `Preparing your Care experience` — _"Preparing your Care experience": "Ngbaradi iriri Itọju rẹ",_
+- **L21349** — `Loading support` — _"Loading support": "N gbe atilẹyin",_
+- **L21350** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Ngbaradi awọn okun atilẹyin rẹ, yara ifiranṣẹ, ati olutẹjade idahun.",_
+- **L21364** — `Loading notifications` — _"Loading notifications": "N gbe àwọn ìfìmọ̀",_
+- **L23594** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Ń gbé àwọn ìdánilẹ́kọ̀ọ́, ẹ̀rí, àti ọ̀nà ìkẹ́kọ̀ọ́ wọlé.",_
+- **L23595** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Ń gbé àwọn ìdánilẹ́kọ̀ọ́, akẹ́kọ̀ọ́, iṣẹ́ àti ìbánisọ̀rọ̀ wọlé.",_
+- **L23596** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Ń gbé ìlọsíwájú rẹ àti àwọn ìdánilẹ́kọ̀ọ́ tí o forúkọsílẹ̀ wọlé.",_
+- **L23661** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Ń múrasílẹ̀ HenryCo Learn",_
+- **L23662** — `Preparing academy operations` — _"Preparing academy operations": "Ń múrasílẹ̀ iṣẹ́ ilé-ìwé",_
+- **L23663** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Ń múrasílẹ̀ àwọn ìdánilẹ́kọ̀ọ́, ọ̀nà ìkẹ́kọ̀ọ́, àti ìlọsíwájú rẹ.",_
+- **L23664** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Ń múrasílẹ̀ àwọn ìforúkọsílẹ̀ rẹ, ẹ̀kọ́ àti ẹ̀rí.",_
+- **L23665** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Ń múrasílẹ̀ ìlọsíwájú rẹ, àwọn ìforúkọsílẹ̀, àti àwọn ìránti.",_
+- **L24546** — `Loading booking identity` — _"Loading booking identity": "Ń kó ìdánimọ̀ ìfìpamọ́ wọlé",_
+- **L24547** — `Loading your bookings` — _"Loading your bookings": "Ń kó àwọn ìfìpamọ́ rẹ wọlé",_
+- **L24642** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Ń múra ipò iṣẹ́ àti àwọn àlàyé àkókò sílẹ̀.",_
+- **L24643** — `Preparing your dashboard` — _"Preparing your dashboard": "Ń múra pátákó rẹ sílẹ̀",_
+- **L24644** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Ń múra ìtọ́sọ́nà ìgbésẹ̀ tó kàn rẹ sílẹ̀",_
+- **L25219** — `Preparing your Care experience` — _"Preparing your Care experience": "Ana shirya kwarewar Kulawar ku",_
+- **L25484** — `Loading support` — _"Loading support": "Ana loda tallafi",_
+- **L25485** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Ana shirya zaren tallafin ku, dakin saƙo, da editan amsa.",_
+- **L25499** — `Loading notifications` — _"Loading notifications": "Ana loda sanarwa",_
+- **L27729** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Ana loda kwasoshi, takaddun shaida, da hanyoyin koyo.",_
+- **L27730** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Ana loda kwasoshi, ɗalibai, ayyuka, da sadarwa.",_
+- **L27731** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Ana loda ci gabanka da kwasoshin da ka yi rajista.",_
+- **L27796** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Ana shirya HenryCo Learn",_
+- **L27797** — `Preparing academy operations` — _"Preparing academy operations": "Ana shirya ayyukan makaranta",_
+- **L27798** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Ana shirya kwasoshi, hanyoyin koyo, da ci gabanka.",_
+- **L27799** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Ana shirya rajistar ka, darussa, da takaddun shaida.",_
+- **L27800** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Ana shirya ci gabanka, rajistar, da tunatarwa.",_
+- **L28681** — `Loading booking identity` — _"Loading booking identity": "Ana lodi shaidar rijista",_
+- **L28682** — `Loading your bookings` — _"Loading your bookings": "Ana lodi rijistar ku",_
+- **L28777** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Ana shirya matsayin sabis da cikakkun bayanan layin lokaci.",_
+- **L28778** — `Preparing your dashboard` — _"Preparing your dashboard": "Ana shirya dashboard ɗinku",_
+- **L28779** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Ana shirya jagorar matakin ku na gaba",_
+- **L29373** — `Preparing your Care experience` — _"Preparing your Care experience": "Bereiten Sie Ihr Care-Erlebnis vor",_
+- **L29638** — `Loading support` — _"Loading support": "Support wird geladen",_
+- **L29639** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Ihre Support-Threads, der Nachrichtenraum und der Antworteditor werden vorbereitet.",_
+- **L29653** — `Loading notifications` — _"Loading notifications": "Benachrichtigungen werden geladen",_
+- **L31881** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Kurse, Zertifizierungen und Lernpfade werden geladen.",_
+- **L31882** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Kurse, Lernende, Aufgaben und Kommunikation werden geladen.",_
+- **L31883** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Ihr Fortschritt und eingeschriebene Kurse werden geladen.",_
+- **L31948** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "HenryCo Learn wird vorbereitet",_
+- **L31949** — `Preparing academy operations` — _"Preparing academy operations": "Akademie-Operationen werden vorbereitet",_
+- **L31950** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Kurse, Lernpfade und Ihr Fortschritt werden vorbereitet.",_
+- **L31951** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Ihre Einschreibungen, Lektionen und Zertifikate werden vorbereitet.",_
+- **L31952** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Ihr Fortschritt, Einschreibungen und Erinnerungen werden vorbereitet.",_
+- **L32833** — `Loading booking identity` — _"Loading booking identity": "Buchungsidentität wird geladen",_
+- **L32834** — `Loading your bookings` — _"Loading your bookings": "Ihre Buchungen werden geladen",_
+- **L32929** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Servicestatus und Zeitleistendetails werden vorbereitet.",_
+- **L32930** — `Preparing your dashboard` — _"Preparing your dashboard": "Ihr Dashboard wird vorbereitet",_
+- **L32931** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Ihre Anleitung für den nächsten Schritt wird vorbereitet",_
+- **L33506** — `Preparing your Care experience` — _"Preparing your Care experience": "准备您的护理体验",_
+- **L33771** — `Loading support` — _"Loading support": "正在加载支持",_
+- **L33772** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "正在准备您的支持会话、消息室和回复编辑器。",_
+- **L33786** — `Loading notifications` — _"Loading notifications": "正在加载通知",_
+- **L36033** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "正在加载课程、认证与学习路径。",_
+- **L36034** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "正在加载课程、学员、作业与沟通。",_
+- **L36035** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "正在加载您的进度与已注册课程。",_
+- **L36100** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "正在准备 HenryCo Learn",_
+- **L36101** — `Preparing academy operations` — _"Preparing academy operations": "正在准备学院运营",_
+- **L36102** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "正在准备课程、学习路径与您的进度。",_
+- **L36103** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "正在准备您的注册、课时与证书。",_
+- **L36104** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "正在准备您的进度、注册与提醒。",_
+- **L36985** — `Loading booking identity` — _"Loading booking identity": "正在加载预订身份",_
+- **L36986** — `Loading your bookings` — _"Loading your bookings": "正在加载您的预订",_
+- **L37081** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "正在准备服务状态和时间线详情。",_
+- **L37082** — `Preparing your dashboard` — _"Preparing your dashboard": "正在准备您的仪表板",_
+- **L37083** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "正在准备您的下一步指导",_
+- **L37658** — `Preparing your Care experience` — _"Preparing your Care experience": "आपका देखभाल अनुभव तैयार करना",_
+- **L37923** — `Loading support` — _"Loading support": "सहायता लोड हो रही है",_
+- **L37924** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "आपके सहायता थ्रेड, संदेश कक्ष और उत्तर कंपोज़र तैयार किए जा रहे हैं।",_
+- **L37938** — `Loading notifications` — _"Loading notifications": "सूचनाएँ लोड हो रही हैं",_
+- **L40168** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "कोर्स, प्रमाणन और लर्निंग पाथ लोड हो रहे हैं।",_
+- **L40169** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "कोर्स, शिक्षार्थी, असाइनमेंट और संचार लोड हो रहे हैं।",_
+- **L40170** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "आपकी प्रगति और नामांकित कोर्स लोड हो रहे हैं।",_
+- **L40235** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "HenryCo Learn तैयार हो रहा है",_
+- **L40236** — `Preparing academy operations` — _"Preparing academy operations": "अकादमी संचालन तैयार हो रहे हैं",_
+- **L40237** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "कोर्स, लर्निंग पाथ और आपकी प्रगति तैयार हो रहे हैं।",_
+- **L40238** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "आपके नामांकन, पाठ और प्रमाणपत्र तैयार हो रहे हैं।",_
+- **L40239** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "आपकी प्रगति, नामांकन और रिमाइंडर तैयार हो रहे हैं।",_
+- **L41120** — `Loading booking identity` — _"Loading booking identity": "बुकिंग पहचान लोड हो रही है",_
+- **L41121** — `Loading your bookings` — _"Loading your bookings": "आपकी बुकिंग लोड हो रही है",_
+- **L41216** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "सेवा स्थिति और टाइमलाइन विवरण तैयार किए जा रहे हैं।",_
+- **L41217** — `Preparing your dashboard` — _"Preparing your dashboard": "आपका डैशबोर्ड तैयार किया जा रहा है",_
+- **L41218** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "आपका अगला-चरण मार्गदर्शन तैयार किया जा रहा है",_
+- **L41812** — `Preparing your Care experience` — _"Preparing your Care experience": "Preparare la tua esperienza di cura",_
+- **L42077** — `Loading support` — _"Loading support": "Supporto al caricamento",_
+- **L42078** — `Preparing your support threads` — _"Preparing your support threads, message room, and reply composer.": "Preparazione dei thread di supporto, della stanza dei messaggi e del compositore di risposte.",_
+- **L42092** — `Loading notifications` — _"Loading notifications": "Caricamento notifiche",_
+- **L44320** — `Loading courses` — _"Loading courses, certifications, and learning paths.": "Caricamento corsi, certificazioni e percorsi.",_
+- **L44321** — `Loading courses` — _"Loading courses, learners, assignments, and communications.": "Caricamento corsi, apprendisti, assegnazioni e comunicazioni.",_
+- **L44322** — `Loading your progress and enrolled courses` — _"Loading your progress and enrolled courses.": "Caricamento del tuo progresso e dei corsi iscritti.",_
+- **L44387** — `Preparing HenryCo Learn` — _"Preparing HenryCo Learn": "Preparazione di HenryCo Learn",_
+- **L44388** — `Preparing academy operations` — _"Preparing academy operations": "Preparazione operations academy",_
+- **L44389** — `Preparing courses` — _"Preparing courses, learning paths, and your progress.": "Preparazione di corsi, percorsi e del tuo progresso.",_
+- **L44390** — `Preparing your enrollments` — _"Preparing your enrollments, lessons, and certificates.": "Preparazione delle tue iscrizioni, lezioni e certificati.",_
+- **L44391** — `Preparing your progress` — _"Preparing your progress, enrollments, and reminders.": "Preparazione di progresso, iscrizioni e promemoria.",_
+- **L45272** — `Loading booking identity` — _"Loading booking identity": "Caricamento dell'identità della prenotazione",_
+- **L45273** — `Loading your bookings` — _"Loading your bookings": "Caricamento delle tue prenotazioni",_
+- **L45368** — `Preparing service status and timeline details` — _"Preparing service status and timeline details.": "Preparazione dello stato del servizio e dei dettagli della cronologia.",_
+- **L45369** — `Preparing your dashboard` — _"Preparing your dashboard": "Preparazione della tua dashboard",_
+- **L45370** — `Preparing your next-step guidance` — _"Preparing your next-step guidance": "Preparazione della guida per il prossimo passaggio",_
 
 ### `packages/ui/src/public/public-route-loading.tsx`
 

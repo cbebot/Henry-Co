@@ -134,6 +134,39 @@ function classify(filePath, line, snippet) {
   return "needs-review";
 }
 
+/**
+ * A match on a line that is part of a JS/TS comment (line-comment `//`,
+ * block-comment `*`, or markdown-style doc comment) is not visible UI
+ * copy. We exclude these from classification so the inventory reports
+ * the surfaces that actually render the strings.
+ */
+function isCommentLine(line) {
+  const trimmed = line.trim();
+  if (trimmed.startsWith("//")) return true;
+  if (trimmed.startsWith("*")) return true;
+  if (trimmed.startsWith("/*")) return true;
+  if (trimmed.startsWith("#")) return true; // markdown headings / shell
+  return false;
+}
+
+/**
+ * Some matches are syntactic noise — JS import statements ("Loading from"
+ * matches `import X from ...`), JSX prop names ("Loading title" matches
+ * `title="..."`), and `<span className="sr-only">Loading content.</span>`
+ * which is an a11y screen-reader announcement (REQUIRED, not theater).
+ * Skip them so the inventory shows real user-facing strings only.
+ */
+function isNoise(line, match) {
+  // `import X from "..."` — JS module import.
+  if (/^\s*import\b.*from\s+["']/.test(line)) return true;
+  // `<Component title="..." />` — JSX prop name picked up by the loose
+  // regex when the prop value starts inside a Loading-prefix string.
+  if (/title=/.test(line) && match.startsWith("Loading title")) return true;
+  // `<span className="sr-only">Loading...</span>` — required a11y label.
+  if (/sr-only/.test(line)) return true;
+  return false;
+}
+
 async function scanFile(file, hits) {
   let raw;
   try {
@@ -145,10 +178,12 @@ async function scanFile(file, hits) {
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i];
     if (!line) continue;
+    if (isCommentLine(line)) continue;
     for (const { label, pattern } of PATTERNS) {
       pattern.lastIndex = 0;
       let m;
       while ((m = pattern.exec(line)) !== null) {
+        if (isNoise(line, m[0])) continue;
         const snippet = lines
           .slice(Math.max(0, i - 1), Math.min(lines.length, i + 2))
           .join("\n");
