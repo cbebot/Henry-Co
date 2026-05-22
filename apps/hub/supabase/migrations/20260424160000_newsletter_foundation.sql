@@ -441,7 +441,7 @@ on conflict (rule_key) do update
 
 -- Seed default audience segments (idempotent).
 insert into public.email_audience_segments (key, label, description, criteria, owner_team) values
-  ('company_newsletter_all_optins','Company newsletter — all active opt-ins','Anyone who opted into the HenryCo Group Digest and is not suppressed.',
+  ('company_newsletter_all_optins','Company newsletter — all active opt-ins','Anyone who opted into the Henry & Co. Digest and is not suppressed.',
    '{"topics":["company_digest"],"excludeSupportSensitive":true,"excludeTrustHold":true,"excludeDisputeActive":true}'::jsonb,'Editorial'),
   ('marketplace_digest_active_buyers','Marketplace digest — active buyers','Marketplace digest subscribers with engagement in last 90 days.',
    '{"topics":["marketplace_digest"],"minEngagementWithinDays":90,"excludeDormant":true,"excludeSupportSensitive":true,"excludeDisputeActive":true}'::jsonb,'Marketplace Ops'),

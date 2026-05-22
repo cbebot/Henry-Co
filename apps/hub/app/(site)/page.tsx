@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "HenryCo Group",
+    title: "Henry & Co.",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
     type: "website",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HenryCo Group",
+    title: "Henry & Co.",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
   },
