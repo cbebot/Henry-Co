@@ -2292,8 +2292,66 @@ export function getSurfaceCopy(locale: AppLocale): SurfaceCopy {
   ) as unknown as SurfaceCopy;
 }
 
+// V3-07(S9) — runtime missing-label telemetry. Set once per process at app
+// startup (e.g. in instrumentation.ts or a top-level layout) so we don't
+// pull observability deps into @henryco/i18n itself. Fire-and-forget: any
+// throw inside the reporter is swallowed so a logger outage never breaks
+// the surface render.
+export type MissingLabelEvent = {
+  /** Locale that fell through to EN ("fr", "ar", "zh", etc.). */
+  locale: AppLocale;
+  /** The EN string that had no translation. */
+  label: string;
+  /**
+   * Which surface module emitted the fallback. Currently only `"surface"`
+   * — extended in a future pass when other copy modules wire the hook.
+   */
+  surface: "surface";
+};
+let missingLabelReporter: ((event: MissingLabelEvent) => void) | null = null;
+const seenMissingLabels = new Set<string>();
+
+/**
+ * Install a process-wide reporter for `henry.i18n.missing_label_at_runtime`
+ * events. Apps should call this once at startup (instrumentation.ts on the
+ * server, root layout on the client) with an implementation that wraps the
+ * observability event sink. Calls are idempotent — the second call replaces
+ * the reporter.
+ *
+ * Implementations receive `{ locale, label, surface }`. Dedup by
+ * `(locale + ':' + label)` is handled inside @henryco/i18n so the reporter
+ * is called at most ONCE per fallback per process.
+ */
+export function registerMissingLabelReporter(
+  reporter: ((event: MissingLabelEvent) => void) | null,
+): void {
+  missingLabelReporter = reporter;
+  // Reset the dedup set so a new reporter sees every fallback at least once.
+  seenMissingLabels.clear();
+}
+
+function reportMissingLabel(event: MissingLabelEvent): void {
+  if (!missingLabelReporter) return;
+  const key = `${event.locale}:${event.surface}:${event.label}`;
+  if (seenMissingLabels.has(key)) return;
+  seenMissingLabels.add(key);
+  try {
+    missingLabelReporter(event);
+  } catch {
+    // Reporter failure must not crash the render. Silent.
+  }
+}
+
 export function translateSurfaceLabel(locale: AppLocale, label: string): string {
-  return getSurfaceCopy(locale).labels[label] ?? label;
+  const hit = getSurfaceCopy(locale).labels[label];
+  if (hit !== undefined) return hit;
+  // Locale dict has no entry for this label — fire telemetry once and
+  // fall through to the EN passthrough. EN locale itself is not reported
+  // (the "fallback" there IS the source of truth).
+  if (locale !== "en") {
+    reportMissingLabel({ locale, label, surface: "surface" });
+  }
+  return label;
 }
 
 export function formatSurfaceTemplate(
