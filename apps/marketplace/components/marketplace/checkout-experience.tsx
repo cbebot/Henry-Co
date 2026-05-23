@@ -1085,7 +1085,7 @@ function PaymentStep({
                 value={bankReference}
                 onChange={(event) => setBankReference(event.target.value)}
                 className="market-input rounded-[1.2rem] px-4 py-3"
-                placeholder="Enter the bank receipt/reference number"
+                placeholder={t("Enter the bank receipt/reference number")}
                 required={method === "bank_transfer"}
               />
             </label>
