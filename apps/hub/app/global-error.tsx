@@ -151,23 +151,37 @@ export default function HubGlobalError({
             >
               Try again
             </button>
-            <a
-              href="/"
+            {/* global-error.tsx sits ABOVE the root layout — Next's
+                router context is unavailable here, so `<Link>` would
+                not work. The `@next/next/no-html-link-for-pages` rule
+                does not know about that exception. Using a `<button>`
+                + `window.location.assign` keeps full-reload semantics
+                (correct at this boundary; everything below us is
+                broken) without tripping the rule. */}
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.location.assign("/");
+                }
+              }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
                 borderRadius: "9999px",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "transparent",
                 color: "#ffffff",
                 padding: "0.625rem 1.25rem",
                 fontSize: "0.875rem",
                 fontWeight: 600,
-                textDecoration: "none",
+                cursor: "pointer",
+                fontFamily: "inherit",
               }}
             >
               Go to homepage
-            </a>
+            </button>
           </div>
         </main>
       </body>
