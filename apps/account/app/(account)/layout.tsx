@@ -119,7 +119,22 @@ export default async function AccountLayout({ children, rail, drawer }: LayoutPr
 
 async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
   const user = await requireAccountUser();
-  const [viewer, options, preferences] = await Promise.all([
+  // DIAG-IOS-01 hardening. The previous Promise.all rejected as a unit
+  // — a single fetcher hiccup (e.g. a transient Supabase auth-RLS flake
+  // mid-deploy) collapsed every authenticated route into V3-10's
+  // fallback because the layout error bubbled up through the route
+  // segment. `allSettled` barriers each fetcher independently so a
+  // partial-data render degrades to a "no notifications preferences
+  // yet" state instead of a full-page "Something didn't load."
+  //
+  // The mandatory primitive is `buildUnifiedViewer` — the viewer drives
+  // role-aware module visibility downstream. We retain the synchronous
+  // throw on its rejection so the V3-10 boundary fires for the
+  // genuinely-unrecoverable case (no viewer = no shell). The two
+  // optional fetchers (`loadDashboardOptions`, `getPreferences`)
+  // degrade silently when they fail; missing options collapse the lane
+  // switcher chrome rather than crashing.
+  const [viewerResult, optionsResult, preferencesResult] = await Promise.allSettled([
     buildUnifiedViewer({
       id: user.id,
       email: user.email,
@@ -132,6 +147,21 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     }),
     getPreferences(user.id),
   ]);
+
+  if (viewerResult.status !== "fulfilled") {
+    // The viewer is the only fetcher whose failure must surface the
+    // V3-10 boundary — without it we can't compute eligible modules,
+    // accent themes, or the role-aware identity bar. Re-throw with the
+    // original cause so Sentry + the runtime-error log capture the
+    // upstream reason.
+    throw viewerResult.reason;
+  }
+
+  const viewer = viewerResult.value;
+  const options: DashboardOption[] =
+    optionsResult.status === "fulfilled" ? optionsResult.value : [];
+  const preferences =
+    preferencesResult.status === "fulfilled" ? preferencesResult.value : null;
 
   const switcherOptions = options.length > 1 ? options : undefined;
 
