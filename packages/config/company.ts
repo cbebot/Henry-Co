@@ -235,12 +235,20 @@ export const COMPANY = {
       dark: "#130B08",
       supportEmail: BRAND_EMAILS.property,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Home" intentionally absent — the brand
+      // logo links to `/`. "Areas" (route `/area/[slug]` plus its index
+      // landing) was previously unsurfaced despite being a top buyer/renter
+      // intent ("where can I rent?"). "FAQ" was also a real `(public)/faq`
+      // route never exposed in nav — added because pre-decision question
+      // funnel matters for high-trust property buyers/renters. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Search", href: "/search" },
+        { label: "Areas", href: "/area" },
         { label: "Managed", href: "/managed" },
         { label: "Trust", href: "/trust" },
-        { label: "Submit", href: "/submit" }
+        { label: "Submit", href: "/submit" },
+        { label: "FAQ", href: "/faq" }
       ],
     },
 
