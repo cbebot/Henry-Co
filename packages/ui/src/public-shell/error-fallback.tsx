@@ -15,6 +15,16 @@ export type ErrorFallbackCopy = {
   retryLabel: string;
   /** Homepage link label. */
   homeLabel: string;
+  /**
+   * V3-10 A8 — caption-token line shown when `error.digest` is present.
+   * Renders as `<referenceLabel>: <digest> — <referenceHint>`. Optional
+   * so older call sites (V2 callers passing only the 5-field shape)
+   * keep working — when omitted the digest still renders without
+   * surrounding chrome.
+   */
+  referenceLabel?: string;
+  /** V3-10 A8 — trailing hint after the reference id (e.g. "share with support…"). */
+  referenceHint?: string;
 };
 
 export type NotFoundCopy = {
@@ -34,6 +44,8 @@ const DEFAULT_ERROR_COPY: ErrorFallbackCopy = {
   body: "Your data is safe. Try again — and if the issue persists, share the reference below with support so it can be traced quickly.",
   retryLabel: "Try again",
   homeLabel: "Go to homepage",
+  referenceLabel: "Reference",
+  referenceHint: "share with support if this repeats",
 };
 
 const DEFAULT_NOT_FOUND_COPY: NotFoundCopy = {
@@ -52,23 +64,44 @@ const DEFAULT_NOT_FOUND_COPY: NotFoundCopy = {
  *
  * Pass `copy={getErrorFallbackCopy(locale)}` (or a subset) to translate.
  * Falls back to English when `copy` is omitted.
+ *
+ * V3-10 A8 — `onErrorReport` lets the app inject structured logging
+ * + Sentry capture without coupling this UI package to
+ * `@henryco/observability`. The component calls back exactly once per
+ * `error` identity (effect deps include both `error` and `division`).
  */
 export function HenryCoErrorFallback({
   error,
   reset,
   division,
   copy = DEFAULT_ERROR_COPY,
+  onErrorReport,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
   division: string;
   copy?: ErrorFallbackCopy;
+  /**
+   * Optional report hook — called once per error instance after mount.
+   * Apps pass an implementation that emits structured log entries and
+   * captures to Sentry. When omitted, the component logs only via
+   * `console.error` (V2 fallback behaviour preserved).
+   */
+  onErrorReport?: (args: { error: Error & { digest?: string }; division: string }) => void;
 }) {
   useEffect(() => {
+    if (onErrorReport) {
+      try {
+        onErrorReport({ error, division });
+      } catch {
+        // Reporter failure must not crash the boundary itself.
+      }
+      return;
+    }
     if (typeof console !== "undefined") {
       console.error(`[${division}/error-boundary]`, error);
     }
-  }, [error, division]);
+  }, [error, division, onErrorReport]);
 
   return (
     <main
@@ -85,8 +118,14 @@ export function HenryCoErrorFallback({
         {copy.body}
       </p>
       {error.digest ? (
-        <p className="mt-3 inline-flex rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 font-mono text-xs text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-          ref: {error.digest}
+        <p className="mt-4 text-xs leading-5 text-zinc-500 dark:text-white/55">
+          <span className="font-mono">
+            {copy.referenceLabel ? `${copy.referenceLabel}: ` : "ref: "}
+            {error.digest}
+          </span>
+          {copy.referenceHint ? (
+            <span className="text-zinc-400 dark:text-white/40"> — {copy.referenceHint}</span>
+          ) : null}
         </p>
       ) : null}
       <div className="mt-7 flex flex-wrap gap-3">

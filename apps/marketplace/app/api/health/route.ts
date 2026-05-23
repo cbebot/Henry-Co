@@ -1,42 +1,78 @@
 import { NextResponse } from "next/server";
+import { buildHealthResponse, healthStatusCode } from "@henryco/observability/health";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
 import { createAdminSupabase } from "@/lib/supabase";
 
+/**
+ * V3-10 S8 + A6 — apps/marketplace /api/health.
+ *
+ * Returns the canonical V3-10 envelope (ok / checks / version / deploy)
+ * AND preserves the legacy marketplace-specific fields the existing
+ * smoke test reads (`shell`, `notificationQueue`, `failedNotifications`,
+ * `lastAutomationRun`). The canonical `ok` flag is the source of truth
+ * for HTTP status; the legacy `shell.schemaReady` no longer dictates
+ * the 200/503 split.
+ *
+ * Standard health response is at the top of the body — the smoke test
+ * reads `body.ok` which now reflects the V3-10 Supabase + env probe.
+ */
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const admin = createAdminSupabase();
-  const shell = await getMarketplaceShellState();
-  const [queueResult, automationResult, failedNotificationsResult] = await Promise.allSettled([
-    admin.from("marketplace_notification_queue").select("id", { count: "exact", head: true }).eq("status", "queued"),
-    admin
-      .from("marketplace_automation_runs")
-      .select("id, status, completed_at, created_at")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    admin.from("marketplace_notification_queue").select("id", { count: "exact", head: true }).eq("status", "failed"),
-  ]);
+  const baseHealth = await buildHealthResponse();
+  const status = healthStatusCode(baseHealth);
+
+  // Best-effort marketplace-specific status. Failures here are surfaced
+  // as null fields, not as health failures — the canonical V3-10
+  // contract is supabase + env only.
+  let shell: Awaited<ReturnType<typeof getMarketplaceShellState>> | null = null;
+  let notificationQueue: number | null = null;
+  let failedNotifications: number | null = null;
+  let lastAutomationRun: Record<string, unknown> | null = null;
+
+  try {
+    const admin = createAdminSupabase();
+    shell = await getMarketplaceShellState();
+    const [queueResult, automationResult, failedNotificationsResult] = await Promise.allSettled([
+      admin
+        .from("marketplace_notification_queue")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "queued"),
+      admin
+        .from("marketplace_automation_runs")
+        .select("id, status, completed_at, created_at")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      admin
+        .from("marketplace_notification_queue")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "failed"),
+    ]);
+
+    if (queueResult.status === "fulfilled" && !queueResult.value.error) {
+      notificationQueue = queueResult.value.count ?? 0;
+    }
+    if (failedNotificationsResult.status === "fulfilled" && !failedNotificationsResult.value.error) {
+      failedNotifications = failedNotificationsResult.value.count ?? 0;
+    }
+    if (automationResult.status === "fulfilled" && !automationResult.value.error) {
+      lastAutomationRun = automationResult.value.data as Record<string, unknown> | null;
+    }
+  } catch {
+    // Marketplace-specific probe failure does not block the standard
+    // health response — the canonical body still reports supabase/env.
+  }
 
   return NextResponse.json(
     {
-      ok: shell.schemaReady,
-      status: shell.schemaReady ? "healthy" : "degraded",
+      ...baseHealth,
       shell,
-      notificationQueue:
-        queueResult.status === "fulfilled" && !queueResult.value.error ? queueResult.value.count ?? 0 : null,
-      failedNotifications:
-        failedNotificationsResult.status === "fulfilled" && !failedNotificationsResult.value.error
-          ? failedNotificationsResult.value.count ?? 0
-          : null,
-      lastAutomationRun:
-        automationResult.status === "fulfilled" && !automationResult.value.error ? automationResult.value.data : null,
-      checkedAt: new Date().toISOString(),
+      notificationQueue,
+      failedNotifications,
+      lastAutomationRun,
     },
-    {
-      headers: {
-        "Cache-Control": "no-store",
-      },
-    }
+    { status, headers: { "Cache-Control": "no-store" } },
   );
 }
