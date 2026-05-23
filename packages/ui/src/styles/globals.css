@@ -114,7 +114,13 @@
  *
  *  Status: tokens defined here are CANONICAL. App-level overrides
  *  ship in the per-app PR that follows this token-system PR.
+ *
+ *  THEME-01 (Phase 2) — additional tokens shipped in
+ *  `packages/ui/src/theme/tokens.css` (alias layer), imported below.
+ *  See `docs/v3/theme-tokens.md` for the full registry.
  */
+
+@import "../theme/tokens.css";
 
 /* ─────────────────────────────────────────────────────────── */
 /*  Canonical type scale (every app inherits)                  */

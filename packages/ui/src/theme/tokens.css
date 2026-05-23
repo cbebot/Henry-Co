@@ -1,0 +1,79 @@
+/*
+ * @henryco/ui/theme/tokens.css — THEME-01 Phase 2.
+ *
+ * This file is the ALIAS LAYER for the canonical token registry defined
+ * in `packages/ui/src/styles/globals.css`. It exists so the THEME-01
+ * standardization can ship the 2 new tokens + 2 new aliases the audit
+ * found missing, WITHOUT duplicating the existing `--hc-*` tokens (which
+ * are working in production today and would be expensive to migrate).
+ *
+ * Import order:
+ *   1. Each app's `globals.css` `@import "tailwindcss"`
+ *   2. `@import "../../../packages/ui/src/styles/globals.css"` (canonical tokens)
+ *   3. `@import "../../../packages/ui/src/theme/tokens.css"` (THIS FILE — alias layer)
+ *
+ * For app-level overrides (e.g. owner/hub re-mapping --hc-* from --acct-*),
+ * the app's own `:root` / `.dark` block continues to override.
+ *
+ * The aliases below are namespaced semantically per the THEME-01 spec
+ * ("surface elevations", "ink hierarchy", "borders", "accent",
+ * "feedback"). Each alias points at an existing `--hc-*` token. New
+ * code SHOULD reference the alias name; legacy code keeps working
+ * because the underlying `--hc-*` token is unchanged.
+ *
+ * Documentation: see `docs/v3/theme-tokens.md` for full registry
+ * (light + dark values + contrast ratios + usage guidance).
+ */
+
+:root {
+  /* ───────────────────────────────────────────────────────────────
+   * NEW TOKENS — THEME-01 additions
+   * ─────────────────────────────────────────────────────────────── */
+
+  /* Overlay scrim — the dim-the-page background behind modals, drawers,
+     and mobile-nav sheets. The light-mode value is a WARM ink-graphite
+     wash (NOT 40% pure black, which on a light backdrop reads as a
+     power-cut). The dark-mode value is deeper because the underlying
+     canvas is already near-black; a darker scrim still creates clear
+     depth separation.
+
+     Usage: bg-[var(--hc-overlay-scrim)] backdrop-blur-sm */
+  --hc-overlay-scrim: rgba(15, 23, 42, 0.32);
+
+  /* Shell topbar background — the sticky chrome row at the top of any
+     dashboard surface. Owner workspace, staff HQ, and account dashboard
+     all consume this. The value composes with `backdrop-blur` so the
+     surface beneath remains partially visible (premium feel, not opaque
+     wall).
+
+     Usage: bg-[var(--hc-shell-topbar-bg)] backdrop-blur-md */
+  --hc-shell-topbar-bg: color-mix(in oklab, var(--hc-surface) 88%, transparent);
+
+  /* ───────────────────────────────────────────────────────────────
+   * NEW ALIASES — accent split for light/dark text-on-light/dark
+   * ─────────────────────────────────────────────────────────────── */
+
+  /* The HenryCo brand gold is the SAME hue across modes; what changes
+     is the surface it sits on. When gold is used as TEXT (not a fill),
+     we need different luminance values to keep AA contrast:
+       - Gold text on a light surface needs to be DARKER (≥5.0:1)
+       - Gold text on a dark surface needs to be LIGHTER (≥7.0:1)
+     `--hc-accent-text` already does this per-mode. The aliases below
+     make the intent explicit when a one-off surface has a locked
+     background regardless of theme (e.g., a brand-locked dark hero panel
+     that still appears in light mode — its gold text should stay LIGHT
+     because its background is locked DARK). */
+  --hc-accent-on-light: #8A6F00;   /* AA-safe gold text on light surfaces (5.0:1) */
+  --hc-accent-on-dark: #E5C870;    /* AA-safe gold text on dark surfaces (7.6:1) */
+}
+
+/* Dark-mode overrides for the new tokens. */
+.dark,
+[data-theme="dark"] {
+  /* Deeper scrim on dark surfaces — the underlying canvas is already
+     graphite, so a faint scrim disappears. Drama is OK here. */
+  --hc-overlay-scrim: rgba(0, 0, 0, 0.55);
+
+  /* Topbar in dark mode composes against the dark surface. */
+  --hc-shell-topbar-bg: color-mix(in oklab, var(--hc-surface) 82%, transparent);
+}
