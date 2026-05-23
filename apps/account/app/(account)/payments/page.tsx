@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { CreditCard, Plus } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { formatAccountTemplate, getAccountCopy } from "@henryco/i18n/server";
+import {
+  HeroCard,
+  EmptyStateCard,
+  DivisionLanding,
+} from "@henryco/dashboard-shell/surfaces";
+
 import { requireAccountUser } from "@/lib/auth";
 import { getPaymentMethods } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +22,17 @@ type PaymentMethodRow = {
   is_default: boolean | null;
 };
 
+/**
+ * Payments landing.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2D).
+ *
+ * Critical bug fixed: the previous page rendered an `<button>` "Add method"
+ * CTA with no onClick handler. Wired through HeroCard's ctaPrimary to
+ * `/wallet/funding` (the funding lane is the canonical add-money flow).
+ *
+ * Wallet remains documented as a payment option via a card-level CTA.
+ */
 export default async function PaymentsPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const accountCopy = getAccountCopy(locale);
@@ -25,62 +40,85 @@ export default async function PaymentsPage() {
   const methods = (await getPaymentMethods(user.id)) as PaymentMethodRow[];
 
   return (
-    <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={copy.hero.title}
-        description={copy.hero.description}
-        icon={CreditCard}
-        actions={
-          <button className="acct-button-primary rounded-xl">
-            <Plus size={16} /> {copy.hero.addMethodCta}
-          </button>
-        }
-      />
-
-      {methods.length === 0 ? (
-        <EmptyState
-          icon={CreditCard}
-          title={copy.empty.title}
-          description={copy.empty.description}
-          action={
-            <button className="acct-button-primary rounded-xl">
-              <Plus size={16} /> {copy.empty.cta}
-            </button>
-          }
+    <DivisionLanding
+      className="acct-fade-in"
+      hero={
+        <HeroCard
+          variant="compact"
+          tone={methods.length === 0 ? "empty" : "calm"}
+          eyebrow={copy.wallet.eyebrow}
+          headline={copy.hero.title}
+          blurb={copy.hero.description}
+          // BUG FIX: was a no-op <button>; now routes to the canonical
+          // add-funds / saved-method route under /wallet/funding.
+          ctaPrimary={{ label: copy.hero.addMethodCta, href: "/wallet/funding" }}
         />
-      ) : (
-        <div className="space-y-3">
-          {methods.map((m) => (
-            <div key={m.id as string} className="acct-card flex items-center gap-4 p-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--acct-gold-soft)]">
-                <CreditCard size={20} className="text-[var(--acct-gold)]" />
+      }
+      sections={[
+        {
+          id: "payments-methods",
+          title: copy.hero.title,
+          meta: `${methods.length}`,
+          content:
+            methods.length === 0 ? (
+              <EmptyStateCard
+                kicker={copy.wallet.eyebrow}
+                title={copy.empty.title}
+                body={copy.empty.description}
+                cta={{ label: copy.empty.cta, href: "/wallet/funding" }}
+              />
+            ) : (
+              <div className="space-y-3">
+                {methods.map((m) => (
+                  <div
+                    key={m.id as string}
+                    className="acct-card flex items-center gap-4 p-4"
+                  >
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--acct-gold-soft)]">
+                      <CreditCard size={20} className="text-[var(--acct-gold)]" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[var(--acct-ink)]">
+                        {m.label || copy.card.savedMethodFallback}
+                      </p>
+                      <p className="text-xs text-[var(--acct-muted)]">
+                        {m.type === "card"
+                          ? formatAccountTemplate(copy.card.cardLastFourTemplate, {
+                              last4: m.last_four ?? "",
+                            })
+                          : m.bank_name || m.type}
+                        {m.is_default && (
+                          <span className="ml-2 acct-chip acct-chip-green text-[0.6rem]">
+                            {accountCopy.common.defaultBadge}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-[var(--acct-ink)]">{m.label || copy.card.savedMethodFallback}</p>
-                <p className="text-xs text-[var(--acct-muted)]">
-                  {m.type === "card"
-                    ? formatAccountTemplate(copy.card.cardLastFourTemplate, { last4: m.last_four ?? "" })
-                    : m.bank_name || m.type}
-                  {m.is_default && (
-                    <span className="ml-2 acct-chip acct-chip-green text-[0.6rem]">{accountCopy.common.defaultBadge}</span>
-                  )}
-                </p>
-              </div>
+            ),
+        },
+        {
+          id: "payments-wallet",
+          title: copy.wallet.eyebrow,
+          meta: copy.wallet.body,
+          content: (
+            <div className="acct-card p-5">
+              <p className="acct-kicker mb-2">{copy.wallet.eyebrow}</p>
+              <p className="text-sm text-[var(--acct-muted)]">
+                {copy.wallet.body}
+                <Link
+                  href="/wallet"
+                  className="ml-1 font-medium text-[var(--acct-gold)] hover:underline"
+                >
+                  {copy.wallet.manageCta}
+                </Link>
+              </p>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Wallet info */}
-      <div className="acct-card p-5">
-        <p className="acct-kicker mb-2">{copy.wallet.eyebrow}</p>
-        <p className="text-sm text-[var(--acct-muted)]">
-          {copy.wallet.body}
-          <Link href="/wallet" className="ml-1 font-medium text-[var(--acct-gold)] hover:underline">
-            {copy.wallet.manageCta}
-          </Link>
-        </p>
-      </div>
-    </div>
+          ),
+        },
+      ]}
+    />
   );
 }
