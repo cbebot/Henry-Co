@@ -269,13 +269,18 @@ export const COMPANY = {
       dark: "#120B08",
       supportEmail: BRAND_EMAILS.logistics,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Home" intentionally absent — logo handles
+      // it. "Quote" and "Book" were both in the nav AND duplicated as the two
+      // most-prominent CTAs, eating row space. They now render only as CTAs
+      // (`siteNavLogistics.defaultCtas` — primary Book, secondary Quote) and
+      // are dropped from primary nav. "Coverage" stays in nav — "do you serve
+      // my area?" is a top-of-funnel decision question that drives drop-off
+      // if hidden. Audit: docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
         { label: "Pricing", href: "/pricing" },
+        { label: "Coverage", href: "/coverage" },
         { label: "Business", href: "/business" },
-        { label: "Quote", href: "/quote" },
-        { label: "Book", href: "/book" },
         { label: "Track", href: "/track" },
         { label: "Support", href: "/support" }
       ],

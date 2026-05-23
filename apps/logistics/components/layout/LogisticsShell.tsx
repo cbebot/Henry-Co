@@ -50,6 +50,22 @@ export default function LogisticsShell({
           ),
         }}
         items={navCfg.primaryNav}
+        primaryCta={
+          navCfg.defaultCtas?.primary
+            ? {
+                label: t(navCfg.defaultCtas.primary.label),
+                href: navCfg.defaultCtas.primary.href,
+              }
+            : undefined
+        }
+        secondaryCta={
+          navCfg.defaultCtas?.secondary
+            ? {
+                label: t(navCfg.defaultCtas.secondary.label),
+                href: navCfg.defaultCtas.secondary.href,
+              }
+            : undefined
+        }
         actions={
           <HenryCoSearchBreadcrumb
             href={getHubUrl("/search")}
