@@ -167,13 +167,19 @@ export function BottomSheet({
 
   // Body scroll lock + iOS-Safari scroll restoration. Cached on a ref
   // so the close path can restore the exact y the user opened from.
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!mounted || !open || !lockBodyScroll) return;
     if (typeof window === "undefined") return;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const scrollY =
+      window.scrollY ||
+      window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0;
     scrollYRef.current = scrollY;
+    const html = document.documentElement;
     const body = document.body;
-    const prior = {
+    const priorBody = {
       position: body.style.position,
       top: body.style.top,
       left: body.style.left,
@@ -181,6 +187,21 @@ export function BottomSheet({
       width: body.style.width,
       overflow: body.style.overflow,
     };
+    const priorHtml = {
+      overflow: html.style.overflow,
+      scrollBehavior: html.style.scrollBehavior,
+    };
+    // Lock html (covers browsers where html is the scrolling
+    // element) AND pin body via the negative-top trick (covers
+    // browsers where body is the scrolling element). The body's
+    // negative `top` translates the document up so the user keeps
+    // looking at the same content; the sheet (portal-mounted at
+    // body, `position: fixed`) anchors to the viewport regardless.
+    // Without locking both, the sheet can render at "top of page"
+    // when the user opened from deep down a long page — the owner-
+    // reported regression.
+    html.style.overflow = "hidden";
+    html.style.scrollBehavior = "auto";
     body.style.position = "fixed";
     body.style.top = `-${scrollY}px`;
     body.style.left = "0";
@@ -188,13 +209,18 @@ export function BottomSheet({
     body.style.width = "100%";
     body.style.overflow = "hidden";
     return () => {
-      body.style.position = prior.position;
-      body.style.top = prior.top;
-      body.style.left = prior.left;
-      body.style.right = prior.right;
-      body.style.width = prior.width;
-      body.style.overflow = prior.overflow;
+      html.style.overflow = priorHtml.overflow;
+      body.style.position = priorBody.position;
+      body.style.top = priorBody.top;
+      body.style.left = priorBody.left;
+      body.style.right = priorBody.right;
+      body.style.width = priorBody.width;
+      body.style.overflow = priorBody.overflow;
+      // Restore scroll position BEFORE re-enabling whatever scroll-
+      // behavior the page had configured — some browsers animate
+      // `scrollTo` if `scroll-behavior: smooth` is in effect.
       window.scrollTo(0, scrollY);
+      html.style.scrollBehavior = priorHtml.scrollBehavior;
     };
   }, [mounted, open, lockBodyScroll]);
 
