@@ -25,7 +25,8 @@
     "Realtime updates are live",
     "Loading content.",
     "Keyboard shortcuts",
-    "Close workspace menu"
+    "Close workspace menu",
+    "(r.ok ? (r.json() as Promise"
   ],
   "filePrefixes": [
     "apps/super-app",
