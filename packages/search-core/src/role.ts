@@ -34,6 +34,16 @@ export interface RoleResolution {
   role_visibility: SearchRoleVisibility[];
   is_staff: boolean;
   is_platform_owner: boolean;
+  /**
+   * SEARCH-01: the user's "home lane" — used as `primary_division` for
+   * the ranking boost in `scoreIndexedHit` and as the anchor division
+   * for the diversity cap. Resolved as:
+   *   - the only division the user has a membership in, OR
+   *   - the division where the user has an `owner`/`lead` role
+   *     (priority over plain staff), OR
+   *   - undefined when the user has no memberships.
+   */
+  primary_division?: import("./types").SearchDivision;
 }
 
 export async function resolveUserRoles(
@@ -52,6 +62,12 @@ export async function resolveUserRoles(
   const visibility = new Set<SearchRoleVisibility>(["public", "authenticated", "owner"]);
   let isStaff = false;
   let isPlatformOwner = false;
+  // SEARCH-01: track which divisions the user has membership in, and
+  // whether any of those memberships is a lead/owner role. The first
+  // pass over the rows fills the maps; we pick `primary_division` at
+  // the end with the lead-wins-over-staff rule.
+  type LaneSignal = { lane: import("./types").SearchDivision; isLead: boolean };
+  const lanes: LaneSignal[] = [];
 
   if (supabase) {
     const [profile, marketplaceRoles, studioRoles, propertyRoles, learnRoles] = await Promise.all([
@@ -87,18 +103,43 @@ export async function resolveUserRoles(
       visibility.add("staff");
     }
 
-    for (const result of [marketplaceRoles, studioRoles, propertyRoles, learnRoles]) {
-      const rows = result.data ?? [];
-      if (rows.length > 0) {
-        isStaff = true;
-        visibility.add("staff");
-        for (const row of rows) {
-          const role = String((row as { role?: unknown }).role ?? "").toLowerCase();
-          if (role === "owner" || role === "lead") {
-            visibility.add("staff_owner");
-          }
+    const membershipChecks: Array<{
+      lane: import("./types").SearchDivision;
+      rows: ReadonlyArray<{ role?: unknown } | unknown>;
+    }> = [
+      { lane: "marketplace", rows: marketplaceRoles.data ?? [] },
+      { lane: "studio", rows: studioRoles.data ?? [] },
+      { lane: "property", rows: propertyRoles.data ?? [] },
+      { lane: "learn", rows: learnRoles.data ?? [] },
+    ];
+
+    for (const check of membershipChecks) {
+      if (check.rows.length === 0) continue;
+      isStaff = true;
+      visibility.add("staff");
+      let isLead = false;
+      for (const row of check.rows) {
+        const role = String((row as { role?: unknown }).role ?? "").toLowerCase();
+        if (role === "owner" || role === "lead") {
+          isLead = true;
+          visibility.add("staff_owner");
         }
       }
+      lanes.push({ lane: check.lane, isLead });
+    }
+  }
+
+  // Pick primary_division — lead/owner wins, then single-membership,
+  // otherwise undefined. Platform owner explicitly has no primary
+  // division because they span all of them; ranking should treat
+  // platform_owner queries as fully cross-cutting.
+  let primary_division: import("./types").SearchDivision | undefined;
+  if (!isPlatformOwner) {
+    const lead = lanes.find((l) => l.isLead);
+    if (lead) {
+      primary_division = lead.lane;
+    } else if (lanes.length === 1) {
+      primary_division = lanes[0]!.lane;
     }
   }
 
@@ -107,6 +148,7 @@ export async function resolveUserRoles(
     role_visibility: Array.from(visibility),
     is_staff: isStaff,
     is_platform_owner: isPlatformOwner,
+    primary_division,
   };
 }
 
