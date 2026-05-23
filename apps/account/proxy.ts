@@ -61,6 +61,7 @@ function isPublicRoute(pathname: string): boolean {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/cron/") ||
     pathname.startsWith("/api/webhooks/account") ||
+    pathname === "/api/health" ||
     pathname.includes(".")
   );
 }
