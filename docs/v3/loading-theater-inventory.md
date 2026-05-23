@@ -10,27 +10,15 @@ Excluded: `node_modules/`, `.next/`, `dist/`, `build/`, `.turbo/`, `.vercel/`, `
 - **Class A — real loading state (keep / migrate to skeleton):** 0
 - **Class B — fake/decorative theater (REMOVE):** 0
 - **Class C — empty/error miscoded as loading (FIX):** 0
-- **Needs review (ambiguous context):** 208
+- **Needs review (ambiguous context):** 202
 - **Exempt (search-ui / tests):** 0
-- **Total matches:** 208
+- **Total matches:** 202
 
 ## Class B — fake/decorative (replace with real SSR content or structured skeleton)
 
 ## Class A — real in-flight loading (keep; consider StructuredSkeleton)
 
 ## Needs review
-
-### `apps/care/components/care/TrackLookupClient.tsx`
-
-- **L670** — `Preparing service status and timeline details` — _description={t("Preparing service status and timeline details.")}_
-- **L672** — `Loading booking identity` — _t("Loading booking identity"),_
-- **L674** — `Preparing your next-step guidance` — _t("Preparing your next-step guidance"),_
-
-### `apps/care/components/ui/CareLoading.tsx`
-
-- **L86** — `Preparing your Care experience` — _const resolvedTitle = t(title || "Preparing your Care experience");_
-- **L135** — `Loading your bookings` — _t("Loading your bookings"),_
-- **L137** — `Preparing your dashboard` — _t("Preparing your dashboard"),_
 
 ### `apps/hub/components/owner/InternalTeamCommsClient.tsx`
 

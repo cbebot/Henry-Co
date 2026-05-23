@@ -83,12 +83,10 @@ export function CareLoadingStage({
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const resolvedEyebrow = t(eyebrow || "Henry & Co. Care");
-  // FIX-LT-01: title is required-by-convention. Every CareLoadingStage call
-  // site passes an explicit title; the previous default ("Preparing your
-  // Care experience") was dead code that only rendered theater copy if a
-  // future caller forgot the prop. Render no title when omitted.
+  // FIX-LT-01: title + description warmup defaults dropped (theater copy).
+  // Every CareLoadingStage call site passes explicit values; an omitted
+  // prop now renders no text.
   const resolvedTitle = title ? t(title) : "";
-  // FIX-LT-01: same dead-default policy for description — no warmup copy.
   const resolvedDescription = description ? t(description) : "";
   const shellClass =
     variant === "panel"
@@ -135,9 +133,9 @@ export function CareLoadingStage({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          {/* FIX-LT-01: default bullets rotation removed — was dead code that
-              only rendered Loading/Preparing warmup theater if a caller
-              omitted the prop. All four call sites pass explicit bullets. */}
+          {/* FIX-LT-01: default bullets rotation removed (warmup verbs were
+              dead-default theater). Every CareLoadingStage call site passes
+              explicit bullets, so the fallback is now an empty list. */}
           {(bullets ?? []).map((item, index) => (
             <div
               key={`${item}-${index}`}
