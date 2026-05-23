@@ -486,14 +486,39 @@ export async function POST(request: Request) {
           if (!bankReference) {
             return redirectTo(request, "/checkout?error=missing-bank-reference");
           }
-          if (!(proofFile instanceof File) || proofFile.size <= 0) {
-            return redirectTo(request, "/checkout?error=missing-payment-proof");
+          // RELIABILITY-01 — the canonical client flow uploads the
+          // proof to Cloudinary BEFORE this submit via
+          // /api/checkout/payment-proof, then forwards the resulting
+          // {url, public_id, name} as hidden form fields. When those
+          // are present, we trust them and skip the inline Cloudinary
+          // round-trip entirely — the pre-upload route already enforced
+          // auth + size + MIME validation server-side.
+          //
+          // The legacy native-submit fallback (browsers with JS off,
+          // or older clients that still post the raw File field) is
+          // preserved below so existing carts in flight don't break.
+          const preUploadedUrl = text(formData, "proof_url");
+          const preUploadedPublicId = text(formData, "proof_public_id");
+          const preUploadedName = text(formData, "proof_name");
+          if (preUploadedUrl && preUploadedPublicId) {
+            proofUpload = {
+              secureUrl: preUploadedUrl,
+              publicId: preUploadedPublicId,
+            };
+          } else {
+            if (!(proofFile instanceof File) || proofFile.size <= 0) {
+              return redirectTo(request, "/checkout?error=missing-payment-proof");
+            }
+            try {
+              proofUpload = await uploadMarketplacePaymentProof(proofFile, viewer.user.id, orderNo);
+            } catch {
+              return redirectTo(request, "/checkout?error=payment-proof-upload-failed");
+            }
           }
-          try {
-            proofUpload = await uploadMarketplacePaymentProof(proofFile, viewer.user.id, orderNo);
-          } catch {
-            return redirectTo(request, "/checkout?error=payment-proof-upload-failed");
-          }
+          // The pre-uploaded path leaves `proofFile` unset; downstream
+          // metadata writes read `preUploadedName` directly so the
+          // proof_name on `marketplace_payment_records` stays populated.
+          void preUploadedName;
         }
 
         const { count: priorOrderCount } = await admin
@@ -713,6 +738,14 @@ export async function POST(request: Request) {
           walletTransactionId = String(debitRow.id);
         }
 
+        // RELIABILITY-01 — accept the pre-uploaded proof name when the
+        // client pushed it via the hidden `proof_name` field. The
+        // inline-File path keeps `proofFile.name` as before.
+        const resolvedProofName =
+          proofFile instanceof File && proofFile.size > 0
+            ? proofFile.name
+            : text(formData, "proof_name") || null;
+
         await admin.from("marketplace_payment_records").insert({
           order_id: orderId,
           order_no: orderNo,
@@ -724,7 +757,7 @@ export async function POST(request: Request) {
           bank_reference: bankReference || null,
           proof_url: proofUpload?.secureUrl ?? null,
           proof_public_id: proofUpload?.publicId ?? null,
-          proof_name: proofFile instanceof File && proofFile.size > 0 ? proofFile.name : null,
+          proof_name: resolvedProofName,
           proof_uploaded_at: proofUpload ? new Date().toISOString() : null,
           submitted_at: isBankTransfer || isWalletPayment ? new Date().toISOString() : null,
           verified_at: isWalletPayment ? new Date().toISOString() : null,
@@ -738,7 +771,7 @@ export async function POST(request: Request) {
             checkout_source: "marketplace_checkout",
             payment_reference: paymentReference,
             bank_reference: bankReference || null,
-            proof_name: proofFile instanceof File && proofFile.size > 0 ? proofFile.name : null,
+            proof_name: resolvedProofName,
           },
         } as never);
 
