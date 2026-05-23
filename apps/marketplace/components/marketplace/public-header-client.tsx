@@ -229,10 +229,10 @@ export function PublicHeaderClient() {
   // backdrop tap, Android back, focus trap, and iOS-Safari-safe
   // body scroll lock (via `position: fixed; top: -<scrollY>px` +
   // `window.scrollTo` restore), so this entire effect is gone.
-  const closeDrawer = useCallback(() => setMobileOpenPath(null), []);
+  const closeDrawer = useCallback(() => setMobileOpenPath(null), [setMobileOpenPath]);
   const handleSheetClose = useCallback(
     (_reason: BottomSheetCloseReason) => setMobileOpenPath(null),
-    [],
+    [setMobileOpenPath],
   );
 
   return (

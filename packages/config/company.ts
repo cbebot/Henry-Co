@@ -91,6 +91,13 @@ export const COMPANY = {
       dark: "#05070D",
       supportEmail: BRAND_EMAILS.hello,
       supportPhone: GROUP_SUPPORT_PHONE,
+      // Homepage anchor nav (jumps to in-page `#` IDs on `/`). The
+      // non-homepage inner-site primary nav is defined separately in
+      // `packages/ui/src/public-shell/navigation/site-nav.hub.ts` via
+      // `hubInnerNav` — those two surfaces have different IA needs and
+      // should not share an array. Anchor entries below stay in lockstep
+      // with section IDs on the home page. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
         { label: "Directory", href: "/#directory" },
         { label: "How It Works", href: "/#how" },
@@ -115,8 +122,16 @@ export const COMPANY = {
       dark: "#09112B",
       supportEmail: BRAND_EMAILS.care,
       supportPhone: GROUP_SUPPORT_PHONE,
+      // Public chrome primary nav. "Home" intentionally absent — the brand
+      // logo links to `/`. Order optimises for the top customer intents on
+      // care.henrycogroup.com: browse → understand cost → book/track → trust
+      // (reviews) → about/contact. Both `book` and `track` also render as
+      // CTAs in the header (`siteNavCare.defaultCtas`), but staying in the
+      // nav row keeps them reachable from drawer mode and the desktop tab
+      // list — confirmed in `apps/care/components/public/CareNavbar.tsx`
+      // (the `ctaHrefs` filter only de-dupes inside the header bar, not the
+      // drawer). Audit: docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
         { label: "Pricing", href: "/pricing" },
         { label: "Book", href: "/book" },
@@ -192,10 +207,18 @@ export const COMPANY = {
       dark: "#18120C",
       supportEmail: BRAND_EMAILS.marketplace,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Home" intentionally absent — the brand
+      // logo links to `/`. "Track" surfaces the customer's #1 post-purchase
+      // intent ("where is my order?") that previously routed through the
+      // account-side mirror only — the real route lives at
+      // `apps/marketplace/app/(public)/track/page.tsx`. Search is mirrored
+      // in nav for keyboard / drawer paths even though the toolbar has a
+      // visible search input on lg+. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Search", href: "/search" },
         { label: "Deals", href: "/deals" },
+        { label: "Track", href: "/track" },
         { label: "Sell", href: "/sell" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
@@ -219,12 +242,22 @@ export const COMPANY = {
       dark: "#130B08",
       supportEmail: BRAND_EMAILS.property,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Home" intentionally absent — the brand
+      // logo links to `/`. "FAQ" added — real `(public)/faq` route never
+      // exposed in nav, even though pre-decision question funnel matters
+      // for high-trust property buyers/renters.
+      //
+      // NOTE: An "Areas" entry was considered but NOT added — the route
+      // `/area` has no index `page.tsx` (only `[slug]`), so a bare-path
+      // nav entry would 404. Area-led browse remains reachable from search
+      // filters and the sitemap. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Search", href: "/search" },
         { label: "Managed", href: "/managed" },
         { label: "Trust", href: "/trust" },
-        { label: "Submit", href: "/submit" }
+        { label: "Submit", href: "/submit" },
+        { label: "FAQ", href: "/faq" }
       ],
     },
 
@@ -245,13 +278,18 @@ export const COMPANY = {
       dark: "#120B08",
       supportEmail: BRAND_EMAILS.logistics,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Home" intentionally absent — logo handles
+      // it. "Quote" and "Book" were both in the nav AND duplicated as the two
+      // most-prominent CTAs, eating row space. They now render only as CTAs
+      // (`siteNavLogistics.defaultCtas` — primary Book, secondary Quote) and
+      // are dropped from primary nav. "Coverage" stays in nav — "do you serve
+      // my area?" is a top-of-funnel decision question that drives drop-off
+      // if hidden. Audit: docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
         { label: "Pricing", href: "/pricing" },
+        { label: "Coverage", href: "/coverage" },
         { label: "Business", href: "/business" },
-        { label: "Quote", href: "/quote" },
-        { label: "Book", href: "/book" },
         { label: "Track", href: "/track" },
         { label: "Support", href: "/support" }
       ],
@@ -274,16 +312,21 @@ export const COMPANY = {
       dark: "#081219",
       supportEmail: BRAND_EMAILS.studio,
       supportPhone: "+2349133957084",
+      // NOTE: `apps/studio` chrome reads from `siteNavStudio` in
+      // `packages/ui/src/public-shell/navigation/site-nav.studio.ts` (local
+      // override of the registry default), not from this array. This array
+      // is kept in sync so other consumers (sitemap, footers, JSON-LD)
+      // reading off `getDivisionConfig("studio").publicNav` stay aligned with
+      // the public chrome. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
+        { label: "Project types", href: "/pick" },
         { label: "Services", href: "/services" },
-        { label: "Work", href: "/work" },
-        { label: "Teams", href: "/teams" },
-        { label: "Pricing", href: "/pricing" },
+        { label: "Packages", href: "/pricing" },
+        { label: "Case studies", href: "/work" },
         { label: "Process", href: "/process" },
         { label: "Trust", href: "/trust" },
-        { label: "Request", href: "/request" },
-        { label: "Contact", href: "/contact" }
+        { label: "Teams", href: "/teams" }
       ],
     },
 
@@ -304,11 +347,22 @@ export const COMPANY = {
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Careers" (internal HenryCo hiring)
+      // removed from primary because it semantically collides with
+      // "Find jobs" — candidates routinely clicked it expecting public
+      // listings. "Careers" still lives in the footer ("Work at HenryCo")
+      // and the employer/candidate-aware account-chip menu, so the
+      // work-for-HenryCo surface is preserved where context disambiguates.
+      //
+      // NOTE: A "Categories" nav entry was considered but NOT added — the
+      // route `/categories` has no index `page.tsx` (only `[slug]`), so a
+      // bare-path nav entry would 404. Browse-by-category remains reachable
+      // via category links on /jobs, sitemap, and search filters. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
         { label: "Find jobs", href: "/jobs" },
         { label: "Talent", href: "/talent" },
         { label: "Hire", href: "/hire" },
-        { label: "Careers", href: "/careers" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
       ],
@@ -331,10 +385,15 @@ export const COMPANY = {
       dark: "#081414",
       supportEmail: BRAND_EMAILS.learn,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. Rename "How it works" → "Academy" — the
+      // route slug is `/academy`, the new label is terser, and "Academy"
+      // matches the brand surface across emails/marketing. No structural
+      // change to the URL set otherwise; every route exists. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
         { label: "Courses", href: "/courses" },
         { label: "Paths", href: "/paths" },
-        { label: "How it works", href: "/academy" },
+        { label: "Academy", href: "/academy" },
         { label: "Certificates", href: "/certifications" },
         { label: "Teach", href: "/teach" },
         { label: "Trust", href: "/trust" },
