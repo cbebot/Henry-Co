@@ -4,6 +4,7 @@ import { StaffShell, StaffRailGroup, StaffRailEntry } from "@henryco/dashboard-s
 import { getEligibleStaffModules } from "@henryco/dashboard-shell";
 import { getAccountUrl } from "@henryco/config";
 import { STAFF_DIVISION_ACCENT } from "@henryco/dashboard-modules-staff/shared";
+import { ThemeToggle } from "@henryco/ui";
 import "@henryco/dashboard-modules-staff/modules";
 
 import { requireTrackCStaffViewer } from "./_internal/viewer";
@@ -80,13 +81,23 @@ export default async function TrackCLayout({ children }: { children: ReactNode }
             textTransform: "uppercase",
             padding: "0.4rem 0.6rem",
             borderRadius: "9999px",
-            border: "1px solid rgba(10,10,10,0.12)",
-            color: "rgba(10,10,10,0.65)",
+            border: "1px solid var(--hc-border-subtle)",
+            color: "var(--hc-text-tertiary)",
             textDecoration: "none",
           }}
         >
           ?
         </a>
+      }
+      trailing={
+        /*
+         * THEME-01 Phase 4 — staff HQ Light/Dark/System toggle.
+         * StaffShell's IdentityBar trailing slot is the canonical mount
+         * point per the dashboard-shell contract; the toggle persists
+         * via the henryco-public-theme localStorage key (shared with
+         * public + owner surfaces).
+         */
+        <ThemeToggle className="h-9 px-2.5 py-1 text-xs" />
       }
       rail={
         <>

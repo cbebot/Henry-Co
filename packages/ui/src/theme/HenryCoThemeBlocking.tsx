@@ -21,7 +21,14 @@ export function HenryCoThemeBlocking() {
       function applyResolved(resolved) {
         root.dataset.theme = resolved;
         root.style.colorScheme = resolved;
+        // THEME-01: manage BOTH light and dark classes so apps that
+        // declare a .light selector override (dark-first apps like
+        // staff HQ, property, learn, studio) get the correct pre-paint
+        // values before next-themes hydrates. next-themes runs with
+        // attribute=[class,data-theme] post-mount; this script mirrors
+        // that contract pre-paint so there is no FOUC either way.
         root.classList.toggle("dark", resolved === "dark");
+        root.classList.toggle("light", resolved === "light");
       }
       var saved = readSaved();
       applyResolved(computeResolved(saved));
