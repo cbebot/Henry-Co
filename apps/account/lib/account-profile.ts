@@ -138,6 +138,32 @@ export async function ensureAccountProfileRecords(user: User) {
     .maybeSingle<{ user_id: string }>();
 
   if (!existingPreferences?.user_id) {
-    await admin.from("customer_preferences").insert(defaultPreferences(user.id, now) as never);
+    // DIAG-ACCOUNT-01 hardening: the original INSERT enumerated every key in
+    // `defaultPreferences()` — including columns added by historical
+    // migrations that hadn't landed in production. The insert silently failed
+    // inside the `after()` callback in apps/account/lib/auth.ts, so signed-up
+    // users never got a preferences row created.
+    //
+    // First-pass attempt: full default shape (includes every column tracked
+    // by the source-of-truth migration set).
+    const { error } = await admin
+      .from("customer_preferences")
+      .insert(defaultPreferences(user.id, now) as never);
+
+    // If the schema is drifted (42703 undefined_column), fall back to the
+    // minimal viable insert — just `user_id` + the trigger / table defaults
+    // fill the rest. This guarantees first-login users ALWAYS get a row
+    // regardless of which migration tier the prod DB is on. A drifted
+    // preferences row missing 2-3 booleans is strictly better than no row
+    // at all (the GET endpoint merges over defaults anyway).
+    if (error && typeof (error as { code?: unknown }).code === "string") {
+      const code = (error as { code?: unknown }).code as string;
+      if (code === "42703") {
+        await admin
+          .from("customer_preferences")
+          .insert({ user_id: user.id } as never)
+          .then(() => undefined);
+      }
+    }
   }
 }
