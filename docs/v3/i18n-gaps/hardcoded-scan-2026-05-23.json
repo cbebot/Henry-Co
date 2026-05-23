@@ -1,6 +1,6 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-05-23T13:23:48.797Z",
+  "generatedAt": "2026-05-23T13:29:18.514Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
@@ -12,7 +12,7 @@
       "EXEMPT": 14,
       "AMBIGUOUS": 43
     },
-    "durationMs": 3642
+    "durationMs": 3830
   },
   "entriesByFile": {
     "apps/account/app/(account)/layout.tsx": [
