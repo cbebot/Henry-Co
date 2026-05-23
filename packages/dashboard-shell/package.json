@@ -19,7 +19,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/command-aggregator.test.ts src/__tests__/bottom-action-bar.test.ts"
+    "test": "tsx --test src/__tests__/command-aggregator.test.ts src/__tests__/bottom-action-bar.test.ts src/__tests__/realtime-auth-refresh.test.ts"
   },
   "peerDependencies": {
     "lucide-react": "^0.577.0",
@@ -31,6 +31,7 @@
     "@henryco/auth": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
+    "@henryco/observability": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
