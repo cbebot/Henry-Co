@@ -338,11 +338,22 @@ export const COMPANY = {
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Careers" (internal HenryCo hiring)
+      // removed from primary because it semantically collides with
+      // "Find jobs" — candidates routinely clicked it expecting public
+      // listings. "Careers" still lives in the footer ("Work at HenryCo")
+      // and the employer/candidate-aware account-chip menu, so the
+      // work-for-HenryCo surface is preserved where context disambiguates.
+      //
+      // NOTE: A "Categories" nav entry was considered but NOT added — the
+      // route `/categories` has no index `page.tsx` (only `[slug]`), so a
+      // bare-path nav entry would 404. Browse-by-category remains reachable
+      // via category links on /jobs, sitemap, and search filters. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
         { label: "Find jobs", href: "/jobs" },
         { label: "Talent", href: "/talent" },
         { label: "Hire", href: "/hire" },
-        { label: "Careers", href: "/careers" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
       ],
