@@ -32,6 +32,7 @@ export type SurfaceCopy = {
   publicHeader: {
     menu: string;
     actions: string;
+    account: string;
     openMenu: string;
     closeMenu: string;
   };
@@ -199,6 +200,7 @@ const EN: SurfaceCopy = {
   publicHeader: {
     menu: "Menu",
     actions: "Actions",
+    account: "Account",
     openMenu: "Open menu",
     closeMenu: "Close menu",
   },
@@ -383,6 +385,7 @@ const FR: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Menu",
     actions: "Actions",
+    account: "Compte",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
   },
@@ -566,6 +569,7 @@ const ES: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Menú",
     actions: "Acciones",
+    account: "Cuenta",
     openMenu: "Abrir menú",
     closeMenu: "Cerrar menú",
   },
@@ -749,6 +753,7 @@ const PT: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Menu",
     actions: "Ações",
+    account: "Conta",
     openMenu: "Abrir menu",
     closeMenu: "Fechar menu",
   },
@@ -932,6 +937,7 @@ const AR: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "القائمة",
     actions: "الإجراءات",
+    account: "الحساب",
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
   },
@@ -1114,6 +1120,7 @@ const DE: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Menü",
     actions: "Aktionen",
+    account: "Konto",
     openMenu: "Menü öffnen",
     closeMenu: "Menü schließen",
   },
@@ -1300,6 +1307,7 @@ const ZH: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "菜单",
     actions: "操作",
+    account: "账户",
     openMenu: "打开菜单",
     closeMenu: "关闭菜单",
   },
@@ -1469,6 +1477,7 @@ const HI: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "मेनू",
     actions: "कार्रवाइयां",
+    account: "खाता",
     openMenu: "मेनू खोलें",
     closeMenu: "मेनू बंद करें",
   },
@@ -1643,6 +1652,7 @@ const IG: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Nchịkọta",
     actions: "Ihe omume",
+    account: "Akauntu",
     openMenu: "Meghee menu",
     closeMenu: "Mechie menu",
   },
@@ -1817,6 +1827,7 @@ const YO: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Mẹnu",
     actions: "Àwọn ìṣe",
+    account: "Àkọọlẹ",
     openMenu: "Ṣí mẹnu",
     closeMenu: "Pa mẹnu",
   },
@@ -1991,6 +2002,7 @@ const HA: Partial<SurfaceCopy> = {
   publicHeader: {
     menu: "Menu",
     actions: "Ayyuka",
+    account: "Asusu",
     openMenu: "Bude menu",
     closeMenu: "Rufe menu",
   },
@@ -2165,6 +2177,7 @@ const IT: Partial<SurfaceCopy> = {
   "publicHeader": {
     "menu": "Menu",
     "actions": "Azioni",
+    "account": "Account",
     "openMenu": "Apri il menu",
     "closeMenu": "Chiudi il menu"
   },

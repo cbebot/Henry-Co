@@ -67,6 +67,18 @@ export type PublicHeaderProps = {
   mobileSheetAfterNav?: ReactNode;
   renderMobileSheetAfterNav?: (close: () => void) => ReactNode;
   mobileSheetBeforeNav?: ReactNode;
+  /**
+   * Render the premium in-place profile card at the top of the mobile
+   * drawer. The callback receives the same `dismiss` function the nav
+   * links use (rAF-deferred close — see FIX-CHROME-02 RCA), so any
+   * link / button inside the rendered card closes the drawer without
+   * racing the App Router transition.
+   *
+   * When provided, this REPLACES the `mobileSheetBeforeNav` slot's
+   * role for account content. Callers usually pass
+   * `<DrawerAccountSection ... />` from `@henryco/ui/public`.
+   */
+  renderMobileSheetProfile?: (dismiss: () => void) => ReactNode;
   showAccountInMobileSheetFooter?: boolean;
   /**
    * `floating` — premium rounded elevated bar (default for division marketing sites).
@@ -114,6 +126,7 @@ export function PublicHeader({
   mobileSheetAfterNav,
   renderMobileSheetAfterNav,
   mobileSheetBeforeNav,
+  renderMobileSheetProfile,
   showAccountInMobileSheetFooter = true,
   /** Most division shells use full-bleed themed headers; set `"floating"` for elevated rounded chrome. */
   variant = "default",
@@ -441,12 +454,28 @@ export function PublicHeader({
 
       <div
         className={cn(
-          "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5",
+          "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-8 sm:px-5",
           mobileMenuContainerClassName
         )}
         style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}
       >
         {mobileSheetBeforeNav}
+
+        {/*
+         * Premium in-place profile section. When the caller passes
+         * `renderMobileSheetProfile`, we render the returned card here
+         * (above the nav). This replaces the chip-with-nested-dropdown
+         * pattern that was awkward inside a BottomSheet — see
+         * FIX-CHROME-02 RCA "PRIORITY 2 — Profile section premium polish".
+         */}
+        {renderMobileSheetProfile ? (
+          <div className="mb-4">{renderMobileSheetProfile(dismissAfterNavigation)}</div>
+        ) : null}
+
+        {/* MENU kicker — brand-quiet uppercase eyebrow above the nav list. */}
+        <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
+          {surfaceCopy.publicHeader.menu}
+        </p>
 
         <div className="flex flex-col gap-2">
           {items.map((item) => {
@@ -488,7 +517,8 @@ export function PublicHeader({
             {surfaceCopy.publicHeader.actions}
           </p>
           <div className="flex flex-col gap-2">
-            {showAccountInMobileSheetFooter && accountMenu ? (
+            {/* Suppress the legacy chip if we already rendered a premium profile card. */}
+            {showAccountInMobileSheetFooter && accountMenu && !renderMobileSheetProfile ? (
               <div className="flex justify-stretch px-0.5">{accountMenu}</div>
             ) : null}
             {auxLink ? (
