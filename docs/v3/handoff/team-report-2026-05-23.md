@@ -56,9 +56,22 @@ These five passes are foundation locks. The strict-gate scanner (`pnpm i18n:chec
 
 ---
 
-## Vercel platform pause (added at 14:55 UTC)
+## Vercel TEAM-LEVEL deployment block (revised diagnosis at ~15:15 UTC)
 
-After the day's PR sequence merged, the `marketplace` and `henryco-account` Vercel projects fell into a paused/errored state. Symptom from the owner's iPhone screenshot (2:50 PM Lagos / 13:50 UTC) on `account.henrycogroup.com`: a "This deployment is temporarily paused" branded Vercel page with request ID `fra1::np5mg-1779544185184-c8fbed357ace`.
+After the day's PR sequence merged, customer-facing apps stopped serving. Initial symptom from the owner's iPhone screenshot (2:50 PM Lagos / 13:50 UTC) on `account.henrycogroup.com` was the branded "This deployment is temporarily paused" page with request ID `fra1::np5mg-1779544185184-c8fbed357ace`.
+
+**Initial misdiagnosis (recorded for the record):** I read `get_project` showing `live: false` + missing custom domains and assumed two specific Vercel projects (marketplace + henryco-account) had been manually paused. Owner unpaused both via dashboard. Symptom persisted.
+
+**Actual root cause (verified at ~15:15 UTC):** the issue is **team-level billing/quota** at Vercel, not per-project. Direct `curl -I` against every customer-facing domain returns:
+
+```
+HTTP/1.1 402 Payment Required
+X-Vercel-Error: DEPLOYMENT_DISABLED
+```
+
+Confirmed on: `care.henrycogroup.com`, `henrycogroup.com` (hub), `marketplace.henrycogroup.com`, `account.henrycogroup.com` — every domain. The `DEPLOYMENT_DISABLED` error code is Vercel's explicit signal that the team has been blocked from serving production traffic, typically because of billing (expired card, hit usage limit, plan downgrade, etc.).
+
+The reason `get_project` showed different states across projects (hub + care READY, marketplace + account ERROR) is that Vercel disables projects selectively when the team hits limits — highest-usage first — but the block has since cascaded across all four.
 
 **Diagnostic:**
 - `mcp__claude_ai_Vercel__get_project` on `prj_oADXXXOhrio50OSFw0utEJF7vYpB` (henryco-account) returned `live: false`, `latestDeployment.readyState: "ERROR"`, and the custom domain `account.henrycogroup.com` was MISSING from the domain list (only vercel.app preview URLs present).
@@ -69,11 +82,11 @@ After the day's PR sequence merged, the `marketplace` and `henryco-account` Verc
 
 **Verdict:** the failure is not in the code. It's a Vercel platform-side state — the project is paused / the build environment hit an infrastructure issue / the project lost its custom-domain alias. None of this can be resolved via MCP — Vercel does not expose a resume-project or rebuild-paused-project tool.
 
-**OWNER ACTION REQUIRED (cannot be automated):**
-1. Open https://vercel.com/henry-co/marketplace/settings/general → if there's a "Pause Project" toggle, unpause. Then confirm `marketplace.henrycogroup.com` is in the Domains list (Settings → Domains).
-2. Open https://vercel.com/henry-co/henryco-account/settings/general → same procedure. Then confirm `account.henrycogroup.com` is in the Domains list.
-3. Trigger a new production deploy: in each project, click "Redeploy" on the latest deployment, OR push any empty/no-op commit to `main` (the next git push naturally retriggers all apps' builds).
-4. Watch for both projects to flip back to `live: true` in `get_project` output (or visit `account.henrycogroup.com` / `marketplace.henrycogroup.com` and confirm the apps render).
+**OWNER ACTION REQUIRED (Vercel team-level billing — cannot be automated):**
+1. Open https://vercel.com/teams/henry-co/settings/billing — check current balance, payment method status, and usage against plan limits. Look for any "your team has exceeded…" or "payment failed" banner.
+2. Resolve whatever's blocking — typically one of: re-validate payment method, upgrade plan tier, settle outstanding balance, contact Vercel support if it's a usage dispute.
+3. Once Vercel restores the team to good standing, the `DEPLOYMENT_DISABLED` flag is lifted automatically across all projects; the existing successful builds for hub + care will start serving immediately, and the ERROR'd marketplace + account builds will need a redeploy (push any commit to `main`, or click Redeploy in each project's deployments page).
+4. Verify with `curl -I https://account.henrycogroup.com` — expect `HTTP/1.1 200 OK` once the team block lifts.
 
 If the rebuild itself fails after unpausing, capture the failed deployment ID and the Vercel build inspector URL (https://vercel.com/henry-co/<project>/<deployment_id>) and hand to the team — they'll have full build log access in the dashboard that the MCP doesn't expose.
 
