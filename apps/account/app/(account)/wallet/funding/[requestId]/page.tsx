@@ -5,6 +5,11 @@ import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingRequestById } from "@/lib/account-data";
+import {
+  HeroCard,
+  EmptyStateCard,
+  DivisionLanding,
+} from "@henryco/dashboard-shell/surfaces";
 
 import "@/components/wallet/styles.css";
 import FundingProofUpload from "@/components/wallet/FundingProofUpload";
@@ -36,6 +41,12 @@ function formatCreated(iso: string | null | undefined): string {
   });
 }
 
+/**
+ * Wallet · Funding request detail.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2F). Compact HeroCard with parent
+ * breadcrumb + back link + the request's reference as the headline.
+ */
 export default async function WalletFundingRequestPage({ params }: Props) {
   const { requestId } = await params;
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
@@ -46,13 +57,12 @@ export default async function WalletFundingRequestPage({ params }: Props) {
     return (
       <div className="acct-wal acct-fade-in">
         <BackNav href="/wallet/funding" label={t("Back to funding")} />
-        <div className="acct-wal__empty">
-          <h3 className="acct-wal__empty-title">{t("Funding request not found.")}</h3>
-          <p className="acct-wal__empty-body">{t("Open one of your existing requests from the funding lane.")}</p>
-          <Link href="/wallet/funding" className="acct-wal__cta acct-wal__cta--primary">
-            {t("Back to funding")}
-          </Link>
-        </div>
+        <EmptyStateCard
+          kicker={t("Funding · not found")}
+          title={t("Funding request not found.")}
+          body={t("Open one of your existing requests from the funding lane.")}
+          cta={{ label: t("Back to funding"), href: "/wallet/funding" }}
+        />
       </div>
     );
   }
@@ -60,96 +70,77 @@ export default async function WalletFundingRequestPage({ params }: Props) {
   const tone = fundingStatusTone(request.status);
   const label = statusReadable(request.status);
   const confirmed = request.status === "completed" || request.status === "verified";
+  const refDisplay = request.reference || request.id.slice(0, 8).toUpperCase();
+  const heroTone: "calm" | "active" | "attention" =
+    tone === "danger"
+      ? "attention"
+      : tone === "success"
+        ? "calm"
+        : "active";
 
   return (
     <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
       <BackNav href="/wallet/funding" label={t("Back to funding")} />
-      <section className="acct-wal__hero" aria-label={t("Funding request detail")}>
-        <div className="acct-wal__hero-inner">
-          <div className="acct-wal__hero-row">
-            <div>
-              <span className="acct-wal__hero-eyebrow">
-                <span className="acct-wal__hero-eyebrow-dot" aria-hidden />
-                {t("Funding request")}
-              </span>
-              <p className="acct-wal__hero-label">{t("Reference")}</p>
-              <h1
-                className="acct-wal__hero-balance"
-                style={{ fontSize: "clamp(28px, 3.4vw, 36px)" }}
-              >
-                {request.reference || request.id.slice(0, 8).toUpperCase()}
-              </h1>
-              <p className="acct-wal__hero-settle" style={{ marginTop: 10 }}>
-                ₦{formatKoboMajor(request.amount_kobo)} · {t("created")} {formatCreated(request.created_at)}
-              </p>
-              <div className="acct-wal__chip-row" style={{ marginTop: 12 }}>
-                <span className="acct-wal__chip" data-tone={tone}>
-                  {label}
-                </span>
-                {request.proof_url ? (
-                  <span className="acct-wal__chip" data-tone="success">
-                    {t("Proof uploaded")}
-                  </span>
-                ) : (
-                  <span className="acct-wal__chip" data-tone="warn">
-                    {t("Awaiting proof")}
-                  </span>
-                )}
-              </div>
-            </div>
-            {request.proof_url ? (
-              <a
-                href={request.proof_url}
-                target="_blank"
-                rel="noreferrer"
-                className="acct-wal__cta acct-wal__cta--ghost"
-              >
-                {t("View proof")}
-              </a>
-            ) : null}
-          </div>
-        </div>
-      </section>
-
-      <section className="acct-wal__section" aria-labelledby="wal-fund-flow-head">
-        <div className="acct-wal__section-head">
-          <h2 id="wal-fund-flow-head" className="acct-wal__section-title hc-h3 acct-display">
-            {t("Where we are")}
-          </h2>
-          <span className="acct-wal__section-meta">{t("3 quick steps")}</span>
-        </div>
-        <FundingStepLadder
-          proofUploaded={Boolean(request.proof_url)}
-          proofUploadedAtIso={request.proof_uploaded_at || null}
-          confirmed={confirmed}
-        />
-      </section>
-
-      <section className="acct-wal__section" aria-labelledby="wal-fund-rail-head">
-        <div className="acct-wal__section-head">
-          <h2 id="wal-fund-rail-head" className="acct-wal__section-title hc-h3 acct-display">
-            {t("Transfer rail")}
-          </h2>
-          <span className="acct-wal__section-meta">
-            {request.note
-              ? request.note
-              : t("Tap any value to copy. Then upload your transfer proof.")}
-          </span>
-        </div>
-        <div className="acct-wal__columns">
-          <AccountDetailsCard
-            rail={{
-              bankName: request.bank_name,
-              accountName: request.account_name,
-              accountNumber: request.account_number,
-            }}
-            copyLabel={t("Copy")}
-            copiedLabel={t("Copied")}
+      <DivisionLanding
+        hero={
+          <HeroCard
+            variant="compact"
+            tone={heroTone}
+            eyebrow={`${t("Wallet")} · ${t("Funding request")}`}
+            headline={refDisplay}
+            blurb={`₦${formatKoboMajor(request.amount_kobo)} · ${t("created")} ${formatCreated(request.created_at)} · ${label}${request.proof_url ? ` · ${t("Proof uploaded")}` : ` · ${t("Awaiting proof")}`}`}
           />
-          <FundingProofUpload requestId={request.id} currentProofUrl={request.proof_url} />
-        </div>
-      </section>
+        }
+        sections={[
+          {
+            id: "wal-fund-flow",
+            title: t("Where we are"),
+            meta: t("3 quick steps"),
+            content: (
+              <>
+                <FundingStepLadder
+                  proofUploaded={Boolean(request.proof_url)}
+                  proofUploadedAtIso={request.proof_uploaded_at || null}
+                  confirmed={confirmed}
+                />
+                {request.proof_url ? (
+                  <Link
+                    href={request.proof_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="acct-wal__cta acct-wal__cta--ghost"
+                    style={{ marginTop: 16 }}
+                  >
+                    {t("View proof")}
+                  </Link>
+                ) : null}
+              </>
+            ),
+          },
+          {
+            id: "wal-fund-rail-detail",
+            title: t("Transfer rail"),
+            meta: request.note
+              ? request.note
+              : t("Tap any value to copy. Then upload your transfer proof."),
+            content: (
+              <div className="acct-wal__columns">
+                <AccountDetailsCard
+                  rail={{
+                    bankName: request.bank_name,
+                    accountName: request.account_name,
+                    accountNumber: request.account_number,
+                  }}
+                  copyLabel={t("Copy")}
+                  copiedLabel={t("Copied")}
+                />
+                <FundingProofUpload requestId={request.id} currentProofUrl={request.proof_url} />
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }
