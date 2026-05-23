@@ -115,8 +115,16 @@ export const COMPANY = {
       dark: "#09112B",
       supportEmail: BRAND_EMAILS.care,
       supportPhone: GROUP_SUPPORT_PHONE,
+      // Public chrome primary nav. "Home" intentionally absent — the brand
+      // logo links to `/`. Order optimises for the top customer intents on
+      // care.henrycogroup.com: browse → understand cost → book/track → trust
+      // (reviews) → about/contact. Both `book` and `track` also render as
+      // CTAs in the header (`siteNavCare.defaultCtas`), but staying in the
+      // nav row keeps them reachable from drawer mode and the desktop tab
+      // list — confirmed in `apps/care/components/public/CareNavbar.tsx`
+      // (the `ctaHrefs` filter only de-dupes inside the header bar, not the
+      // drawer). Audit: docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
         { label: "Pricing", href: "/pricing" },
         { label: "Book", href: "/book" },
