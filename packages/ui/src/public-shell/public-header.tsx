@@ -4,9 +4,10 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { BottomSheet, type BottomSheetCloseReason } from "../mobile/bottom-sheet";
 import { cn } from "../lib/cn";
 import { ThemeToggle } from "../public/theme-toggle";
 import { HenryCoPublicSurfaceTokens } from "./surface-tokens";
@@ -126,23 +127,31 @@ export function PublicHeader({
   const floating = variant === "floating";
   const localize = (label: string) => translateSurfaceLabel(locale, label);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [open]);
+  // Stable ids so the trigger's `aria-controls` and the sheet's `id`
+  // line up across renders. `useId()` is SSR-safe so the markup matches
+  // between server and client streams.
+  const idBase = useId();
+  const drawerId = `henryco-public-mobile-nav-${idBase}`;
+  const drawerTitleId = `${drawerId}-title`;
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
 
+  // Route-change auto-close. The drawer holds anchor links/CTAs that
+  // navigate within Next.js — when pathname flips, the sheet should
+  // animate out via `open=false`. The BottomSheet primitive owns its
+  // own scroll lock, focus trap, Esc handling, Android back, backdrop
+  // tap and swipe-down dismiss, so the inline `body.overflow=hidden`
+  // and Escape effect that used to live here are gone — replacing the
+  // sticky-break root cause behind the FIX-CHROME-01 report.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  const handleSheetClose = useCallback((_reason: BottomSheetCloseReason) => {
+    setOpen(false);
+  }, []);
+
+  const closeDrawer = useCallback(() => setOpen(false), []);
 
   const focusRingBar =
     "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]";
@@ -337,27 +346,17 @@ export function PublicHeader({
         {actions}
         {wrapIdentity(mobileIdentityOrdered)}
         <button
+          ref={triggerRef}
           type="button"
-          onClick={() => {
-            setOpen((v) => {
-              const next = !v;
-              // When opening from the bottom of a long page, scroll
-              // the viewport back to the top so the drawer + its menu
-              // items are visible immediately. Skip when closing or
-              // when the user is already near the top.
-              if (next && typeof window !== "undefined" && window.scrollY > 80) {
-                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-              }
-              return next;
-            });
-          }}
+          onClick={() => setOpen((v) => !v)}
           className={cn(
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200/90 bg-white text-zinc-950 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]",
             floating && "h-10 w-10 rounded-xl",
             menuButtonClassName
           )}
+          aria-haspopup="dialog"
           aria-expanded={open}
-          aria-controls="henryco-public-mobile-nav"
+          aria-controls={drawerId}
           aria-label={open ? surfaceCopy.publicHeader.closeMenu : surfaceCopy.publicHeader.openMenu}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -366,94 +365,122 @@ export function PublicHeader({
     </div>
   );
 
-  const mobileDrawer = (
-    <div
-      id="henryco-public-mobile-nav"
-      className={cn(
-        "border-t border-zinc-200/80 transition-[max-height,opacity] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0 dark:border-zinc-800/90 lg:hidden",
-        mobileDrawerClassName,
-        open ? "max-h-[min(72vh,560px)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
-      )}
+  // Mobile drawer is rendered via the canonical `BottomSheet` primitive
+  // from `@henryco/ui/mobile`. The sheet portal-mounts at
+  // `document.body`, so it lives OUTSIDE the sticky header — the
+  // owner-reported sticky-break bug (body.overflow=hidden detaching
+  // sticky descendants from their viewport anchor) cannot recur
+  // because we no longer touch `body.style.overflow` here. Body
+  // scroll lock is owned by BottomSheet via the iOS-Safari-safe
+  // `position: fixed; top: -<scrollY>px` pattern, with a
+  // `window.scrollTo` restore on close.
+  const mobileBottomSheet = (
+    <BottomSheet
+      open={open}
+      onClose={handleSheetClose}
+      id={drawerId}
+      labelledBy={drawerTitleId}
+      surface="henryco.public_header_drawer"
+      triggerRef={triggerRef}
+      initialFocusRef={closeRef}
     >
+      <header className="flex items-start justify-between gap-3 border-b border-white/10 px-5 pb-4 pt-2 dark:border-white/10">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
+            {surfaceCopy.publicHeader.menu}
+          </p>
+          <p
+            id={drawerTitleId}
+            className="mt-1 line-clamp-2 text-base font-semibold tracking-tight text-white"
+          >
+            {brand.name}
+          </p>
+        </div>
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={closeDrawer}
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/15 text-white/75 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/55"
+          aria-label={surfaceCopy.publicHeader.closeMenu}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </header>
+
       <div
         className={cn(
-          "flex max-h-[min(72vh,560px)] flex-col gap-2 overflow-y-auto overscroll-contain py-3",
-          floating ? "px-4 sm:px-5" : "px-6 py-4 sm:px-8 lg:px-10",
+          "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5",
           mobileMenuContainerClassName
         )}
+        style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}
       >
-        <p className="px-1 pb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
-          {surfaceCopy.publicHeader.menu}
-        </p>
         {mobileSheetBeforeNav}
 
-        {items.map((item) => {
-          const active = !item.external && isNavActive(pathname, item.href);
-          const sheetClass = getNavItemClassName
-            ? getNavItemClassName(item, active, "sheet")
-            : cn(defaultSheetLink, active && defaultSheetLinkActive);
+        <div className="flex flex-col gap-2">
+          {items.map((item) => {
+            const active = !item.external && isNavActive(pathname, item.href);
+            const sheetClass = getNavItemClassName
+              ? getNavItemClassName(item, active, "sheet")
+              : cn(defaultSheetLink, active && defaultSheetLinkActive);
 
-          return item.external ? (
-            <a
-              key={item.label}
-              href={item.href}
-              target="_blank"
-              rel="noreferrer"
-              className={sheetClass}
-            >
-              {localize(item.label)}
-            </a>
-          ) : (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className={sheetClass}
-              aria-current={active ? "page" : undefined}
-            >
-              {localize(item.label)}
-            </Link>
-          );
-        })}
+            return item.external ? (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={closeDrawer}
+                className={sheetClass}
+              >
+                {localize(item.label)}
+              </a>
+            ) : (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={closeDrawer}
+                className={sheetClass}
+                aria-current={active ? "page" : undefined}
+              >
+                {localize(item.label)}
+              </Link>
+            );
+          })}
+        </div>
 
         {mobileSheetAfterNav}
-        {renderMobileSheetAfterNav ? renderMobileSheetAfterNav(() => setOpen(false)) : null}
+        {renderMobileSheetAfterNav ? renderMobileSheetAfterNav(closeDrawer) : null}
 
-        <div className="mt-3 border-t border-zinc-200/70 pt-3 dark:border-zinc-800/80">
+        <div className="mt-3 border-t border-white/10 pt-3">
           <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
             {surfaceCopy.publicHeader.actions}
           </p>
           <div className="flex flex-col gap-2">
-            {showAccountInMobileSheetFooter ? (
+            {showAccountInMobileSheetFooter && accountMenu ? (
               <div className="flex justify-stretch px-0.5">{accountMenu}</div>
             ) : null}
             {auxLink ? (
-              <Link href={auxLink.href} onClick={() => setOpen(false)} className={auxSheetClass}>
+              <Link href={auxLink.href} onClick={closeDrawer} className={auxSheetClass}>
                 {localize(auxLink.label)}
               </Link>
             ) : null}
             {secondaryCta ? (
-              <Link href={secondaryCta.href} onClick={() => setOpen(false)} className={secondarySheetClass}>
+              <Link href={secondaryCta.href} onClick={closeDrawer} className={secondarySheetClass}>
                 {localize(secondaryCta.label)}
               </Link>
             ) : null}
             {primaryCta ? (
-              <Link href={primaryCta.href} onClick={() => setOpen(false)} className={primarySheetClass}>
+              <Link href={primaryCta.href} onClick={closeDrawer} className={primarySheetClass}>
                 {localize(primaryCta.label)}
               </Link>
             ) : null}
           </div>
         </div>
       </div>
-    </div>
+    </BottomSheet>
   );
 
-  const shellInner = (
-    <>
-      {toolbarRow}
-      {mobileDrawer}
-    </>
-  );
+  const shellInner = toolbarRow;
 
   return (
     <>
@@ -472,14 +499,9 @@ export function PublicHeader({
       )}
     >
       {prepend ? <div className="relative z-[70]">{prepend}</div> : null}
-      {open ? (
-        <button
-          type="button"
-          aria-label={surfaceCopy.publicHeader.closeMenu}
-          className="fixed inset-0 z-40 bg-zinc-950/45 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
-      ) : null}
+      {/* Inline backdrop is gone — the BottomSheet primitive renders
+       * its own backdrop inside a portal anchored at `document.body`,
+       * so it cannot be clipped by a sticky/transformed ancestor. */}
       <div className={cn("relative z-[60] mx-auto w-full", maxWidth, floating && "px-3 sm:px-4")}>
         {floating ? (
           <div className={HenryCoPublicSurfaceTokens.floatingHeaderChrome}>{shellInner}</div>
@@ -488,6 +510,12 @@ export function PublicHeader({
         )}
       </div>
     </header>
+    {/* Portal-rendered mobile drawer. Rendered alongside the header
+     * so the JSX tree mirrors the visual stacking, but the actual DOM
+     * mount point is `document.body` via BottomSheet's `createPortal`.
+     * That isolates it from any sticky/transform/overflow ancestor —
+     * the canonical fix behind FIX-CHROME-01. */}
+    {mobileBottomSheet}
     </>
   );
 }
