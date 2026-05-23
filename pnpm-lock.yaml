@@ -1621,6 +1621,9 @@ importers:
       '@henryco/auth':
         specifier: workspace:^
         version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../dashboard-shell
@@ -1655,6 +1658,9 @@ importers:
       '@henryco/auth':
         specifier: workspace:^
         version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../dashboard-shell
