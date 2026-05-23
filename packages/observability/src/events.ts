@@ -155,7 +155,21 @@ export type HenryEventName =
   // wires the emitter; the event registered here so the typed
   // emission path is ready for session 2 callers and the taxonomy
   // doc stays in sync).
-  | "henry.search.query.zero_results";
+  | "henry.search.query.zero_results"
+  // realtime connection state — REALTIME-01. Emitted by
+  // `SupabaseRealtimeProvider` (and the rooms provider via the same
+  // names) on every channel-state transition. The owner-workspace
+  // realtime-health tile rolls these up into a 24h success-rate
+  // metric so any future regression of the connecting/reconnecting
+  // loop surfaces immediately. Payload carries `channel`
+  // ("customer" | "staff" | "rooms"), `attempt` (retry counter,
+  // reconnecting only), `reason` ("token_refresh" | "watchdog" |
+  // "channel_error" | "timed_out" | "closed"), and `error_class`
+  // (failed only: "auth" | "channel_error" | "watchdog" | "timed_out").
+  | "henry.realtime.connection.connecting"
+  | "henry.realtime.connection.live"
+  | "henry.realtime.connection.reconnecting"
+  | "henry.realtime.connection.failed";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
