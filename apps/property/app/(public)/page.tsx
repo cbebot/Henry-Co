@@ -361,7 +361,7 @@ export default async function PropertyHomePage() {
                   value={`${managedActive}`}
                   hint={
                     managedRecords.length === 0
-                      ? copy.home.inventorySnapshot.managedPortfolioWarmingHint
+                      ? undefined
                       : managedValue > 0
                       ? copy.home.inventorySnapshot.managedPipelineTemplate
                           .replace("{pipeline}", String(managedPipeline))
@@ -644,16 +644,7 @@ export default async function PropertyHomePage() {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <div className="mt-8 border-l-2 border-[var(--property-sage-soft)]/55 pl-5 py-2">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--property-sage-soft)]">
-                  {copy.home.managedAside.warmingEyebrow}
-                </p>
-                <p className="mt-2 text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-                  {copy.home.managedAside.warmingBody}
-                </p>
-              </div>
-            )}
+            ) : null}
           </div>
 
           {/* Numerical column — managed economics visible up front */}

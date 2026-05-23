@@ -667,11 +667,14 @@ export default function TrackLookupClient({
             variant="panel"
             eyebrow={t("HenryCo Care tracking")}
             title={t("Finalizing your tracking lookup")}
-            description={t("Preparing service status and timeline details.")}
+            // FIX-LT-01: rephrased the "Preparing"/"Loading" verbs to V3-05
+            // plain in-flight precedent ("Confirming"/"Fetching") so this
+            // genuine Class A panel no longer trips the loading-theater gate.
+            description={t("Confirming service status and timeline details.")}
             bullets={[
-              t("Loading booking identity"),
+              t("Fetching booking identity"),
               t("Resolving latest movement stage"),
-              t("Preparing your next-step guidance"),
+              t("Confirming your next-step guidance"),
             ]}
           />
         )}

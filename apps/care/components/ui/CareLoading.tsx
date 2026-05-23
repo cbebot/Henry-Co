@@ -83,11 +83,11 @@ export function CareLoadingStage({
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const resolvedEyebrow = t(eyebrow || "Henry & Co. Care");
-  const resolvedTitle = t(title || "Preparing your Care experience");
-  const resolvedDescription = t(
-    description ||
-      "Pulling the latest booking, pricing, and support context so the next screen opens cleanly.",
-  );
+  // FIX-LT-01: title + description warmup defaults dropped (theater copy).
+  // Every CareLoadingStage call site passes explicit values; an omitted
+  // prop now renders no text.
+  const resolvedTitle = title ? t(title) : "";
+  const resolvedDescription = description ? t(description) : "";
   const shellClass =
     variant === "panel"
       ? "rounded-[2rem] border border-white/10 bg-[#07111F]/88 px-6 py-7 shadow-[0_24px_80px_rgba(3,8,17,0.34)]"
@@ -120,23 +120,23 @@ export function CareLoadingStage({
             <div className="h-px flex-1 bg-gradient-to-r from-[color:var(--accent)]/40 via-white/12 to-transparent" />
           </div>
 
-          <h2 className="mt-6 text-balance text-3xl font-black tracking-[-0.05em] text-white sm:text-5xl">
-            {resolvedTitle}
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/62 sm:text-base">
-            {resolvedDescription}
-          </p>
+          {resolvedTitle ? (
+            <h2 className="mt-6 text-balance text-3xl font-black tracking-[-0.05em] text-white sm:text-5xl">
+              {resolvedTitle}
+            </h2>
+          ) : null}
+          {resolvedDescription ? (
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/62 sm:text-base">
+              {resolvedDescription}
+            </p>
+          ) : null}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          {(bullets && bullets.length > 0
-            ? bullets
-            : [
-                t("Loading your bookings"),
-                t("Checking delivery status"),
-                t("Preparing your dashboard"),
-              ]
-          ).map((item, index) => (
+          {/* FIX-LT-01: default bullets rotation removed (warmup verbs were
+              dead-default theater). Every CareLoadingStage call site passes
+              explicit bullets, so the fallback is now an empty list. */}
+          {(bullets ?? []).map((item, index) => (
             <div
               key={`${item}-${index}`}
               className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm font-medium text-white/74 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
