@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, CalendarRange, CircleAlert } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { HeroCard, EmptyStateCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";

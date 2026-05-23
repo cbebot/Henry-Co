@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, LifeBuoy, Receipt } from "lucide-react";
+import { ArrowLeft, LifeBuoy, Receipt } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";

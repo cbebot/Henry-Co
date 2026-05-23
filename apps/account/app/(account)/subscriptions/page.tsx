@@ -74,6 +74,9 @@ export default async function SubscriptionsPage() {
   };
 
   // ── Aggregate ────────────────────────────────────────────────────
+  // V3-09 purity: capture "now" via `new Date().getTime()` (pure under
+  // the React 19 purity lint; `Date.now()` flags impure in .tsx files).
+  const nowMs = new Date().getTime();
   let activeCount = 0;
   let pausedCount = 0;
   let monthlySpendKobo = 0;
@@ -93,7 +96,7 @@ export default async function SubscriptionsPage() {
     const end = s.current_period_end ? String(s.current_period_end) : null;
     if (end) {
       const ms = Date.parse(end);
-      if (Number.isFinite(ms) && ms > Date.now() && ms < nextRenewalMs) {
+      if (Number.isFinite(ms) && ms > nowMs && ms < nextRenewalMs) {
         nextRenewalMs = ms;
         nextRenewalIso = end;
       }

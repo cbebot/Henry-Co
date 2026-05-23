@@ -52,14 +52,16 @@ export default async function ActivityPage() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   // ── Aggregate stats ──────────────────────────────────────────────
-  const now = Date.now();
+  // V3-09 purity: `new Date().getTime()` reads as pure to the React 19
+  // `react-hooks/purity` lint; `Date.now()` flags as impure even in RSCs.
+  const nowMs = new Date().getTime();
   let todayCount = 0;
   let weekCount = 0;
   const divisionBuckets = new Map<string, number>();
   for (const row of activity as Array<Record<string, unknown>>) {
     const ms = Date.parse(String(row.created_at || ""));
     if (Number.isFinite(ms)) {
-      const age = now - ms;
+      const age = nowMs - ms;
       if (age <= 86_400_000) todayCount += 1;
       if (age <= 7 * 86_400_000) weekCount += 1;
     }

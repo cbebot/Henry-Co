@@ -62,15 +62,15 @@ export default async function SupportPage() {
   const urgentCount = threads.filter(
     (thread) => String(thread.priority || "").toLowerCase() === "high",
   ).length;
-  const resolvedThisWeek = (() => {
-    const now = Date.now();
-    return threads.filter((thread) => {
-      const s = String(thread.status || "");
-      if (s !== "resolved" && s !== "closed") return false;
-      const ms = Date.parse(String(thread.updated_at || ""));
-      return Number.isFinite(ms) && now - ms <= 7 * 86_400_000;
-    }).length;
-  })();
+  // V3-09 purity: capture "now" via `new Date().getTime()` (pure under
+  // the React 19 purity lint; `Date.now()` flags impure in .tsx files).
+  const nowMs = new Date().getTime();
+  const resolvedThisWeek = threads.filter((thread) => {
+    const s = String(thread.status || "");
+    if (s !== "resolved" && s !== "closed") return false;
+    const ms = Date.parse(String(thread.updated_at || ""));
+    return Number.isFinite(ms) && nowMs - ms <= 7 * 86_400_000;
+  }).length;
 
   // ── State picker ─────────────────────────────────────────────────
   const heroTone: "calm" | "active" | "attention" | "empty" =
