@@ -1,4 +1,12 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
+import {
+  HeroCard,
+  NextStepRow,
+  DivisionLanding,
+  EmptyStateCard,
+  type HeroCardTile,
+} from "@henryco/dashboard-shell/surfaces";
+
 import { requireAccountUser } from "@/lib/auth";
 import { getJobsModuleData } from "@/lib/jobs-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -8,7 +16,6 @@ import {
   ApplicationsList,
   type ApplicationRow,
 } from "@/components/jobs/ApplicationsList";
-import { JobsHero } from "@/components/jobs/JobsHero";
 import {
   ReadinessCard,
   type ChecklistRow,
@@ -39,6 +46,13 @@ function readinessBody(score: number): string {
   return "Profile is light. Each item below adds weight to your application signal.";
 }
 
+/**
+ * Jobs landing.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2B). Lifts JobsHero into the shared
+ * HeroCard primitive with `progress` slot for trustScore, derives a state
+ * picker, and surfaces a NextStepRow for the most engagement-likely action.
+ */
 export default async function JobsPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -75,86 +89,222 @@ export default async function JobsPage() {
       done: Boolean(row.done),
     }));
 
-  return (
-    <div className="acct-job acct-fade-in">
-      <JobsHero
-        applicationCount={applications.length}
-        applicationDetail={applicationsStat?.detail || ""}
-        savedCount={saved.length}
-        savedDetail={savedStat?.detail || ""}
-        profileScore={data.profile.trustScore}
-        profileTier={data.profile.readinessLabel}
-        profileFoot={data.profile.resumeQualityLabel}
-        recruiterUpdateCount={data.recruiterFeed?.length ?? 0}
-        candidateUrl={data.candidateUrl}
-        browseJobsUrl={data.browseJobsUrl}
-      />
+  // ── State picker ─────────────────────────────────────────────────
+  const trustScore = data.profile.trustScore || 0;
+  const recruiterCount = data.recruiterFeed?.length ?? 0;
+  const state: "empty" | "calm" | "active" | "attention" =
+    applications.length === 0 && saved.length === 0
+      ? "empty"
+      : applications.some((a) =>
+            ["offer", "interview", "shortlisted"].includes(a.stageKey.toLowerCase()),
+          )
+        ? "attention"
+        : applications.length > 0
+          ? "active"
+          : "calm";
 
-      <section aria-labelledby="acct-job-apps">
-        <div className="acct-job__section-head">
-          <h2 id="acct-job-apps" className="acct-job__section-title">
-            {t("Active applications")}
-          </h2>
-          <span className="acct-job__section-meta">
-            {applications.length} {t("live · stage-tinted chips show where each one stands")}
-          </span>
-        </div>
-        <ApplicationsList
-          applications={applications}
-          emptyTitle={t("No live applications yet")}
-          emptyBody={t("Apply to a saved role or browse fresh ones. Recruiter movement appears here in real time.")}
-          formatStamp={formatStamp}
-        />
-      </section>
+  const headline =
+    state === "empty"
+      ? t("Start your job hunt.")
+      : applications.length > 0
+        ? applications.length === 1
+          ? t("1 application in motion.")
+          : `${applications.length} ${t("applications in motion.")}`
+        : saved.length === 1
+          ? t("1 role on your shortlist.")
+          : `${saved.length} ${t("roles on your shortlist.")}`;
 
-      <section aria-labelledby="acct-job-readiness-saved">
-        <div className="acct-job__section-head">
-          <h2 id="acct-job-readiness-saved" className="acct-job__section-title">
-            {t("Readiness & shortlist")}
-          </h2>
-          <span className="acct-job__section-meta">
-            {t("Profile signal · saved roles")}
-          </span>
-        </div>
-        <div className="acct-job__columns">
-          <ReadinessCard
-            title={t(data.profile.readinessLabel)}
-            body={t(readinessBody(data.profile.trustScore))}
-            checklist={checklist}
-          />
-          <div>
-            <p
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "var(--acct-muted)",
-                margin: "0 0 10px",
-              }}
-            >
-              {t("Saved roles")}
-            </p>
-            <SavedRolesList
-              saved={saved}
-              emptyTitle={t("No saved roles")}
-              emptyBody={t("Browse live roles and tap the bookmark to keep them here. We mirror them straight from jobs.henrycogroup.com.")}
-              formatStamp={formatStamp}
-            />
-          </div>
-        </div>
-      </section>
+  const blurb =
+    state === "empty"
+      ? t(
+          "Browse live roles on jobs.henrycogroup.com, save shortlists, and apply with one tap. Recruiter updates land in your account in real time.",
+        )
+      : t(
+          "Applications, saved roles, recruiter updates, and profile signal — all mirrored from HenryCo Jobs into your account.",
+        );
 
-      <p
-        style={{
-          fontSize: 11,
-          color: "var(--acct-muted)",
-          textAlign: "center",
-          margin: "8px 0 0",
+  // ── NextStepRow picker ───────────────────────────────────────────
+  // Highest-priority: awaiting-response application; otherwise low profile score.
+  let nextStep: React.ReactNode = null;
+  const awaitingApp = applications.find((a) =>
+    ["interview", "offer", "shortlisted", "awaiting_response", "review", "reviewing"].includes(
+      a.stageKey.toLowerCase(),
+    ),
+  );
+  if (awaitingApp) {
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={awaitingApp.stageLabel}
+        title={`${awaitingApp.jobTitle} · ${awaitingApp.companyName}`}
+        detail={t("Open the application to add a note, schedule, or accept the next step.")}
+        cta={{
+          label: t("Open application"),
+          href: awaitingApp.detailUrl || "/jobs",
         }}
-      >
-        {t("Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox.")}
-      </p>
-    </div>
+      />
+    );
+  } else if (state === "empty") {
+    nextStep = (
+      <NextStepRow
+        tone="neutral"
+        kicker={t("Get started")}
+        title={t("Browse live roles")}
+        detail={t("Save the ones that match your story and apply with one tap.")}
+        cta={{ label: t("Browse roles"), href: data.browseJobsUrl, newTab: true }}
+      />
+    );
+  } else if (trustScore < 50) {
+    const itemsLeft = checklist.filter((c) => !c.done).length;
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={t("Profile readiness")}
+        title={
+          itemsLeft === 1
+            ? t("Complete 1 item to lift your profile")
+            : `${t("Complete")} ${itemsLeft} ${t("items to lift your profile")}`
+        }
+        detail={t(readinessBody(trustScore))}
+        cta={{ label: t("Open candidate workspace"), href: data.candidateUrl, newTab: true }}
+      />
+    );
+  }
+
+  // ── HeroCard tiles ───────────────────────────────────────────────
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: t("Active applications"),
+      value: applications.length,
+      foot: applicationsStat?.detail ? t(applicationsStat.detail) : undefined,
+      tone: applications.length > 0 ? "active" : "default",
+    },
+    {
+      label: t("Saved roles"),
+      value: saved.length,
+      foot: savedStat?.detail ? t(savedStat.detail) : undefined,
+    },
+    {
+      label: t("Recruiter updates"),
+      value: recruiterCount,
+      foot: t("In your jobs inbox"),
+      tone: recruiterCount > 0 ? "accent" : "default",
+    },
+  ];
+
+  const heroTone: "calm" | "active" | "attention" | "empty" =
+    state === "empty"
+      ? "empty"
+      : state === "attention"
+        ? "attention"
+        : state === "active"
+          ? "active"
+          : "calm";
+
+  return (
+    <DivisionLanding
+      className="acct-job acct-fade-in"
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={heroTone}
+          eyebrow={t("Jobs · live")}
+          headline={headline}
+          blurb={blurb}
+          ariaLabel={t("Jobs overview")}
+          ariaTilesLabel={t("Hunt summary")}
+          ctaPrimary={{ label: t("Browse live roles"), href: data.browseJobsUrl, newTab: true }}
+          ctaSecondary={{ label: t("Candidate workspace"), href: data.candidateUrl, newTab: true }}
+          tiles={tiles}
+          side={{
+            kicker: t("Profile readiness"),
+            title: t(data.profile.readinessLabel),
+            body: t(data.profile.resumeQualityLabel),
+          }}
+          progress={{
+            percent: trustScore,
+            label: `${t("Profile readiness")} · ${trustScore}%`,
+          }}
+        />
+      }
+      nextStep={nextStep}
+      sections={[
+        {
+          id: "acct-job-apps",
+          title: t("Active applications"),
+          meta: `${applications.length} ${t("live · stage-tinted chips show where each one stands")}`,
+          content:
+            applications.length === 0 ? (
+              <EmptyStateCard
+                kicker={t("Jobs · empty")}
+                title={t("No live applications yet")}
+                body={t(
+                  "Apply to a saved role or browse fresh ones. Recruiter movement appears here in real time.",
+                )}
+                cta={{ label: t("Browse roles"), href: data.browseJobsUrl, newTab: true }}
+              />
+            ) : (
+              <ApplicationsList
+                applications={applications}
+                emptyTitle={t("No live applications yet")}
+                emptyBody={t(
+                  "Apply to a saved role or browse fresh ones. Recruiter movement appears here in real time.",
+                )}
+                formatStamp={formatStamp}
+              />
+            ),
+        },
+        {
+          id: "acct-job-readiness-saved",
+          title: t("Readiness & shortlist"),
+          meta: t("Profile signal · saved roles"),
+          content: (
+            <div className="acct-job__columns">
+              <ReadinessCard
+                title={t(data.profile.readinessLabel)}
+                body={t(readinessBody(trustScore))}
+                checklist={checklist}
+              />
+              <div>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "var(--acct-muted)",
+                    margin: "0 0 10px",
+                  }}
+                >
+                  {t("Saved roles")}
+                </p>
+                <SavedRolesList
+                  saved={saved}
+                  emptyTitle={t("No saved roles")}
+                  emptyBody={t(
+                    "Browse live roles and tap the bookmark to keep them here. We mirror them straight from jobs.henrycogroup.com.",
+                  )}
+                  formatStamp={formatStamp}
+                />
+              </div>
+            </div>
+          ),
+        },
+      ]}
+      footer={
+        <p
+          style={{
+            fontSize: 11,
+            color: "var(--acct-muted)",
+            textAlign: "center",
+            margin: "8px 0 0",
+          }}
+        >
+          {t(
+            "Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox.",
+          )}
+        </p>
+      }
+    />
   );
 }
