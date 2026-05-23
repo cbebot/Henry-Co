@@ -1,9 +1,14 @@
 /**
- * V2-SEARCH-01 — account-app search API.
+ * V2-SEARCH-01 + SEARCH-01 — account-app search API.
  *
  * Identical contract to apps/hub/api/search; resolves the requesting
  * user via the account app's Supabase server helpers (which run inside
  * the same shared cookie domain as the hub).
+ *
+ * SEARCH-01 hardening: mirror the hub-route H8 defensive 500 wrap so
+ * any unexpected throw (rate-limit store outage, role-resolution
+ * throw, schema drift) degrades to an empty 200 response rather than
+ * surfacing a 500 to the palette.
  */
 
 import { NextResponse } from "next/server";
@@ -36,6 +41,17 @@ function parseDivisions(raw: string | null): SearchInput["divisions_filter"] {
   return items.length > 0 ? items : undefined;
 }
 
+function emptySearchResponse(query: string) {
+  return {
+    query,
+    hits: [],
+    took_ms: 0,
+    next_cursor: null as string | null,
+    total: 0,
+    facets: {} as Record<string, number>,
+  };
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = String(url.searchParams.get("q") ?? "").trim();
@@ -61,20 +77,26 @@ export async function GET(request: Request) {
     }
   })();
 
-  const result = await searchAcrossDivisions(
-    {
-      query,
-      user_id,
-      limit,
-      cursor: cursor || undefined,
-      divisions_filter,
-    },
-    {
-      supabase: adminClient,
-      context: user_id ? "account" : "public",
-      rateLimitIdentityKey: user_id ?? deriveAnonKey(request),
-    },
-  );
+  let result;
+  try {
+    result = await searchAcrossDivisions(
+      {
+        query,
+        user_id,
+        limit,
+        cursor: cursor || undefined,
+        divisions_filter,
+      },
+      {
+        supabase: adminClient,
+        context: user_id ? "account" : "public",
+        rateLimitIdentityKey: user_id ?? deriveAnonKey(request),
+      },
+    );
+  } catch (error) {
+    console.warn("[account:/api/search] degraded to empty on unexpected error", error);
+    result = emptySearchResponse(query);
+  }
 
   return NextResponse.json(result, {
     headers: {

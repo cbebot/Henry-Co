@@ -137,7 +137,25 @@ export type HenryEventName =
   // joins these to `marketplace_payment_records.proof_url` to detect
   // orders that submitted without proof reaching Cloudinary.
   | "henry.marketplace.payment_proof.uploaded"
-  | "henry.marketplace.payment_proof.failed";
+  | "henry.marketplace.payment_proof.failed"
+  // search indexing — SEARCH-01 indexing reliability uplift.
+  // `lag` fires once per worker drain with the backlog + oldest-pending
+  // age + processed counts so the owner-workspace observability tile
+  // can compute the indexing SLO without polling Typesense. `failed`
+  // fires per failed batch with a `failure_class` payload so the
+  // failure pattern is debuggable (`network`, `schema_mismatch`,
+  // `rate_limit`, `bulk_partial`, `unknown_collection`,
+  // `payload_invalid`, `unknown`). `dead_letter` fires when a row
+  // exceeds MAX_ATTEMPTS so operators can decide whether to manually
+  // requeue or surgically delete.
+  | "henry.search.indexing.lag"
+  | "henry.search.indexing.failed"
+  | "henry.search.indexing.dead_letter"
+  // search query — SEARCH-01 zero-result observability (session 2
+  // wires the emitter; the event registered here so the typed
+  // emission path is ready for session 2 callers and the taxonomy
+  // doc stays in sync).
+  | "henry.search.query.zero_results";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
