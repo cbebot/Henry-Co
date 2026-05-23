@@ -128,6 +128,11 @@ export async function publishStaffNotification(
     actor_user_id: validation.actorUserId,
     publisher: validation.publisher,
     request_id: validation.requestId,
+    // V3-03: delivery state machine entrypoint — mirrors customer
+    // publisher. 'sent' on insert; Realtime push success →
+    // 'delivered'; recipient mark read → 'seen'; hard bounce →
+    // 'failed'. DB default is 'sent' too; written here for visibility.
+    delivery_state: "sent" as const,
     metadata: {},
   };
 

@@ -143,6 +143,12 @@ export async function publishNotification(input: PublishInput): Promise<PublishR
     publisher: validation.publisher,
     request_id: validation.requestId,
     is_read: false,
+    // V3-03: delivery state machine entrypoint. Server accepted the
+    // insert → 'sent'. Realtime push success log will bump to
+    // 'delivered'; is_read mark bumps to 'seen'; email-fallback hard
+    // bounce bumps to 'failed'. DB default is also 'sent', written
+    // explicitly here so the contract is visible at the call site.
+    delivery_state: "sent" as const,
     metadata: muted ? { suppress_toast: true, suppress_sound: true } : {},
   };
 

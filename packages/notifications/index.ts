@@ -43,3 +43,11 @@ export {
   type StaffEventTypeId,
   type StaffEventTypeSpec,
 } from "./staff-event-types";
+
+// V3-03 — delivery state machine
+export {
+  canTransition,
+  isDeliveryState,
+  rank as deliveryStateRank,
+  type DeliveryState,
+} from "./delivery-state";

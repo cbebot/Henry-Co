@@ -96,7 +96,18 @@ export type HenryEventName =
   | "henry.ui.mobile_keyboard.kept_visible"
   | "henry.ui.mobile_keyboard.obscured"
   | "henry.ui.modal_escape.backdrop_tap"
-  | "henry.ui.modal_escape.android_back";
+  | "henry.ui.modal_escape.android_back"
+  // notification / message delivery state — V3-03 foundation lock
+  // (notification & message states). 'delivered' = realtime push or
+  // email-fallback success; 'read' = recipient marked seen via UI
+  // (IntersectionObserver or explicit POST); 'failed' = hard bounce
+  // OR redelivery cron exhausted retries.
+  | "henry.notification.delivered"
+  | "henry.notification.read"
+  | "henry.notification.failed"
+  | "henry.message.delivered"
+  | "henry.message.read"
+  | "henry.message.failed";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
