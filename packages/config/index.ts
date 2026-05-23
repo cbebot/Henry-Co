@@ -1,5 +1,6 @@
 export * from "./brand-emails";
 export * from "./company";
+export * from "./domain";
 export * from "./identity";
 export * from "./integrations";
 export * from "./legal";

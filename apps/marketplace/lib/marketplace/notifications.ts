@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, henryDomain } from "@henryco/config";
 import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import { normalizeEmail } from "@/lib/env";
 import { autoTranslateMany } from "@/lib/i18n/auto-translate";
@@ -40,9 +40,11 @@ type EventCopy = {
 };
 
 const marketplace = getDivisionConfig("marketplace");
+// V3-07(S2): production base URL via henryDomain() so preview/staging
+// emit their matching base domain in transactional email links.
 const marketplaceBaseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://marketplace.henrycogroup.com"
+    ? henryDomain("marketplace")
     : "http://localhost:3000";
 
 function getMarketplaceSenderAddress() {

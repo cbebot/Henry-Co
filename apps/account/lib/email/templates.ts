@@ -2,12 +2,16 @@
 // All templates return plain HTML strings for Resend
 
 import type { AppLocale } from "@henryco/i18n";
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, henrySubdomain } from "@henryco/config";
 import {
   HENRYCO_EMAIL_TOKENS,
   renderHenryCoEmailFooter,
   renderHenryCoEmailHeader,
 } from "@henryco/email";
+
+// V3-07(S2): env-aware account origin so preview/staging emails point at the
+// matching base domain rather than always-production `henrycogroup.com`.
+const ACCOUNT_ORIGIN = henrySubdomain("account");
 
 const BRAND_COLOR = "#C9A227";
 const BG_COLOR = "#FAFAF8";
@@ -246,7 +250,7 @@ function layout(content: string, locale: AppLocale = "en") {
   const brandFooter = renderHenryCoEmailFooter({
     purpose: "auth",
     supportEmail: BRAND_EMAILS.accounts,
-    preferencesUrl: "https://account.henrycogroup.com/settings#email-preferences",
+    preferencesUrl: `${ACCOUNT_ORIGIN}/settings#email-preferences`,
     reasonLine: copy.footerReason,
   });
 
@@ -304,7 +308,7 @@ export function welcomeEmail(name: string, locale: AppLocale = "en") {
         ${copy.welcomeList.map((item) => `<li>${item}</li>`).join("")}
       </ul>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com" class="btn">${copy.welcomeButton}</a>
+        <a href="${ACCOUNT_ORIGIN}" class="btn">${copy.welcomeButton}</a>
       </p>
     `, locale),
   };
@@ -324,7 +328,7 @@ export function securityAlertEmail(event: string, details: string, locale: AppLo
       <p>${details}</p>
       <p>${copy.securityAction}</p>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/security" class="btn">${copy.securityButton}</a>
+        <a href="${ACCOUNT_ORIGIN}/security" class="btn">${copy.securityButton}</a>
       </p>
     `, locale),
   };
@@ -351,7 +355,7 @@ export function walletFundedEmail(
         <div class="metric-value">NGN ${formatNaira(newBalanceNaira, locale)}</div>
       </div>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/wallet" class="btn">${copy.walletButton}</a>
+        <a href="${ACCOUNT_ORIGIN}/wallet" class="btn">${copy.walletButton}</a>
       </p>
     `, locale),
   };
@@ -630,7 +634,7 @@ export function paymentConfirmationEmail(
       </div>
       <p>${description}</p>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/invoices" class="btn">${copy.paymentReceiptCta}</a>
+        <a href="${ACCOUNT_ORIGIN}/invoices" class="btn">${copy.paymentReceiptCta}</a>
       </p>
     `, locale),
   };
@@ -653,7 +657,7 @@ export function supportUpdateEmail(
         <div class="metric-value" style="font-size:16px;">${subject}</div>
       </div>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/support/${threadId}" class="btn">${copy.supportConversationCta}</a>
+        <a href="${ACCOUNT_ORIGIN}/support/${threadId}" class="btn">${copy.supportConversationCta}</a>
       </p>
     `, locale),
   };
@@ -685,7 +689,7 @@ export function subscriptionChangeEmail(
       <h1>${copy.subscriptionTitle(action)}</h1>
       <p>${copy.subscriptionBody(name, planName, phraseByAction[action])}</p>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/subscriptions" class="btn">${copy.subscriptionManageCta}</a>
+        <a href="${ACCOUNT_ORIGIN}/subscriptions" class="btn">${copy.subscriptionManageCta}</a>
       </p>
     `, locale),
   };
@@ -717,7 +721,7 @@ export function weeklyDigestEmail(
         </div>
       </div>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com" class="btn">${copy.digestDashboardCta}</a>
+        <a href="${ACCOUNT_ORIGIN}" class="btn">${copy.digestDashboardCta}</a>
       </p>
     `, locale),
   };

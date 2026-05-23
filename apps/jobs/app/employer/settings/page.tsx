@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bell, Building2, MessageSquare, ShieldCheck, Wallet } from "lucide-react";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, henryDomainHost } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
@@ -65,7 +65,7 @@ export default async function EmployerSettingsPage() {
               </p>
               <p className="mt-0.5 text-xs leading-5 text-[var(--jobs-muted)]">
                 {employer?.slug
-                  ? `henrycogroup.com/employer/${employer.slug}`
+                  ? `${henryDomainHost("hub")}/employer/${employer.slug}`
                   : t("No public slug yet — set one in the company profile.")}
               </p>
             </div>

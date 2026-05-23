@@ -1,9 +1,14 @@
 import { ImageResponse } from "next/og";
+import { henryDomainHost } from "@henryco/config";
 
 export const runtime = "edge";
 export const alt = "HenryCo Account";
 export const size = { width: 1200, height: 630 } as const;
 export const contentType = "image/png";
+
+// V3-07(S2): label sourced from the COMPANY registry — preview deployments
+// drop their own base-domain into the OG image instead of always production.
+// Account is a non-division subdomain; build the host inline to stay edge-safe.
 
 export default async function OG() {
   return new ImageResponse(
@@ -109,7 +114,7 @@ export default async function OG() {
             opacity: 0.7,
           }}
         >
-          <span>account.henrycogroup.com</span>
+          <span>account.{henryDomainHost("hub")}</span>
           <span
             style={{
               display: "inline-flex",

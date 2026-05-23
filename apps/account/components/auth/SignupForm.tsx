@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { formatSurfaceTemplate, getActiveCountries, getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
-import { normalizeTrustedRedirect } from "@henryco/config";
+import { henryWebRoot, normalizeTrustedRedirect } from "@henryco/config";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff, CheckCircle2, Mail, ShieldCheck, Sparkles } from "lucide-react";
 
@@ -371,11 +371,11 @@ export default function SignupForm() {
           />
           <span className="text-xs leading-relaxed text-[var(--acct-muted)]">
             {surfaceCopy.accountForms.termsAgreementStart}{" "}
-            <a href="https://henrycogroup.com/terms" className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
+            <a href={henryWebRoot("/terms")} className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
               {surfaceCopy.accountForms.termsLink}
             </a>{" "}
             {surfaceCopy.accountForms.termsAgreementMiddle}{" "}
-            <a href="https://henrycogroup.com/privacy" className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
+            <a href={henryWebRoot("/privacy")} className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
               {surfaceCopy.accountForms.privacyLink}
             </a>
           </span>

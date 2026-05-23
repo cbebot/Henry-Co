@@ -30,6 +30,7 @@ import {
   type NewsletterCampaignClass,
 } from "@henryco/newsletter";
 
+import { henryWebRoot } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getOptionalEnv } from "@/lib/env";
 
@@ -51,7 +52,8 @@ function getPreferenceSecret(): string {
 function getHubPublicBase(): string {
   const explicit = getOptionalEnv("NEXT_PUBLIC_HUB_URL");
   if (explicit && explicit.trim()) return explicit.trim().replace(/\/+$/, "");
-  return "https://henrycogroup.com";
+  // V3-07(S2): env-aware via henryWebRoot() instead of literal.
+  return henryWebRoot();
 }
 
 type SubscriberRow = {

@@ -1,4 +1,4 @@
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, henryWebRoot } from "@henryco/config";
 
 import {
   NEWSLETTER_DIVISIONS,
@@ -333,7 +333,7 @@ export function runNewsletterSanity(): SanityCheck[] {
     topic: NEWSLETTER_TOPICS.find((t) => t.key === "marketplace_digest") ?? null,
     angle: "three improvements to seller trust",
     audienceDescription: "marketplace digest subscribers",
-    primaryCta: { label: "Open marketplace", href: "https://henrycogroup.com/marketplace" },
+    primaryCta: { label: "Open marketplace", href: henryWebRoot("/marketplace") },
     secondaryCta: null,
     factsToInclude: [
       "Seller trust scoring is live",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
+import { BRAND_EMAIL_PLACEHOLDERS, henryWebRoot } from "@henryco/config";
 import type {
   NewsletterCampaignClass,
   NewsletterCampaignContent,
@@ -590,7 +590,7 @@ export default function NewsletterDraftEditor(props: Props) {
             onChange={(e) =>
               setState((prev) => ({ ...prev, primaryCtaHref: e.target.value }))
             }
-            placeholder="https://henrycogroup.com/..."
+            placeholder={`${henryWebRoot()}/...`}
             className="w-full rounded-md border border-[var(--staff-line)] bg-[var(--staff-surface)] px-3 py-2 text-sm"
           />
         </div>

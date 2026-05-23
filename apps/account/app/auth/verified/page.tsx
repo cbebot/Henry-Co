@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
-import { isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
+import { henryWebRoot, isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
 import { resolveSenderIdentity } from "@henryco/email";
 import Logo from "@/components/brand/Logo";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -102,7 +102,7 @@ export default async function VerifiedPage({
                 <ArrowRight size={14} />
               </Link>
               <Link
-                href="https://henrycogroup.com"
+                href={henryWebRoot()}
                 className="acct-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
                 Explore HenryCo

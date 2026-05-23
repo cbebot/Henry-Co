@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { detectAuthMethod } from "@henryco/auth";
 import { getAuthSessionCopy } from "@henryco/i18n";
-import { isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
+import { henrySubdomain, isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
 
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -75,7 +75,7 @@ export default async function ReauthPage({
   const forwardedProto = headerStore.get("x-forwarded-proto") || "https";
   const origin = forwardedHost
     ? `${forwardedProto}://${forwardedHost}`
-    : "https://account.henrycogroup.com";
+    : henrySubdomain("account");
 
   const locale = await getAccountAppLocale();
   const copy = getAuthSessionCopy(locale);

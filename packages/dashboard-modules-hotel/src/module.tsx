@@ -1,4 +1,5 @@
 import { Hotel } from "lucide-react";
+import { henryDomain } from "@henryco/config";
 import type {
   DashboardModule,
   HomeWidget,
@@ -66,7 +67,7 @@ export const hotelModule: DashboardModule = {
       kicker: "Hotels",
       headline: "Premium stays, coming soon.",
       body: "A modern hospitality experience designed with premium service and clean digital flow.",
-      action: { label: "Learn more", href: "https://hotel.henrycogroup.com" },
+      action: { label: "Learn more", href: henryDomain("hotel") },
     };
   },
 

@@ -1,3 +1,5 @@
+import { henryDomain } from "@henryco/config";
+
 const SHORT_MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -171,7 +173,9 @@ export type HeroCopy = {
   ctaSecondary: { label: string; href: string };
 };
 
-export const STUDIO_ORIGIN = "https://studio.henrycogroup.com";
+// V3-07(S2): sourced from henryDomain() so preview/staging deployments
+// route to the matching base domain instead of always production.
+export const STUDIO_ORIGIN = henryDomain("studio");
 
 export function buildHeroCopy(state: HeroState, stats: StudioStats): HeroCopy {
   if (state === "empty") {

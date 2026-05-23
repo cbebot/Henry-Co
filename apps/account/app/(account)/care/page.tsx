@@ -1,5 +1,6 @@
 import { getAccountCopy } from "@henryco/i18n/server";
 import { formatAccountTemplate } from "@henryco/i18n";
+import { henryDomain } from "@henryco/config";
 
 import { requireAccountUser } from "@/lib/auth";
 import {
@@ -23,8 +24,10 @@ import CareBookingsDashboard, {
 export const dynamic = "force-dynamic";
 
 const CARE_PAGE_SIZE = 12;
-const CARE_BOOK_URL = "https://care.henrycogroup.com/book";
-const CARE_TRACK_URL = "https://care.henrycogroup.com/track";
+// V3-07(S2): build CTAs from henryDomain() so preview/staging deployments
+// route to the matching base domain instead of always production.
+const CARE_BOOK_URL = henryDomain("care", "/book");
+const CARE_TRACK_URL = henryDomain("care", "/track");
 
 export async function generateMetadata() {
   const locale = await getAccountAppLocale();

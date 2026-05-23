@@ -3,7 +3,7 @@ import {
   buildJobPostingLd,
   type JobEmploymentType,
 } from "@henryco/seo";
-import { COMPANY } from "@henryco/config";
+import { henryDomain, henryWebRoot } from "@henryco/config";
 
 import type { JobPost } from "@/lib/jobs/types";
 
@@ -38,15 +38,13 @@ function mapEmploymentType(value: string): JobEmploymentType {
 }
 
 function buildJobUrl(slug: string) {
-  const division = COMPANY.divisions.jobs;
-  const subdomain = division.subdomain || "jobs";
-  const base = COMPANY.group.baseDomain || "henrycogroup.com";
-  return `https://${subdomain}.${base}/jobs/${slug}`;
+  // V3-07(S2): henryDomain() resolves via COMPANY.group.baseDomain so
+  // preview/staging emit their own URLs in the JobPosting JSON-LD.
+  return henryDomain("jobs", `/jobs/${slug}`);
 }
 
 function buildOrganizationUrl() {
-  const base = COMPANY.group.baseDomain || "henrycogroup.com";
-  return `https://${base}`;
+  return henryWebRoot();
 }
 
 export type JobPostingJsonLdProps = {

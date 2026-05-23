@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError } from "@henryco/config";
+import { henrySubdomain, isRecoverableSupabaseAuthError } from "@henryco/config";
 import { getAuthCopy } from "@henryco/i18n";
 import LoginForm from "@/components/auth/LoginForm";
 import LoginLanguageAccess from "@/components/auth/LoginLanguageAccess";
@@ -40,7 +40,7 @@ export default async function LoginPage({
     const cookieStore = await cookies();
     const forwardedHost = headerStore.get("x-forwarded-host") || headerStore.get("host");
     const forwardedProto = headerStore.get("x-forwarded-proto") || "https";
-    const origin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : "https://account.henrycogroup.com";
+    const origin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : henrySubdomain("account");
     const preferredDashboardKey = cookieStore.get(DASHBOARD_PREFERENCE_COOKIE)?.value || null;
 
     const resolution = await resolveUserDashboard({
