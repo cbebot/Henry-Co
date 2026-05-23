@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Activity, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getActivityMessageBoard } from "@/lib/message-center";
 import { formatDateTime, formatNaira } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 
 function isExternalHref(value?: string | null) {
   return Boolean(value && /^https?:\/\//i.test(value));
@@ -44,10 +44,13 @@ export default async function ActivityMessageBoardPage({
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={t("Activity detail")}
-        description={t("A focused view of one cross-division account event.")}
-        icon={Activity}
+      <HeroCard
+        variant="compact"
+        tone="calm"
+        eyebrow={`${t("Messages")} · ${sourceLabel}`}
+        headline={data.record.title}
+        blurb={t("A focused view of one cross-division account event.")}
+        ctaPrimary={{ label: t("Back to messages"), href: "/messages" }}
       />
 
       <section className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 shadow-[0_18px_55px_rgba(15,23,42,0.08)]">

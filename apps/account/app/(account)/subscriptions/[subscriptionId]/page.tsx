@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, LifeBuoy, Receipt, RefreshCcw } from "lucide-react";
+import { ArrowLeft, ExternalLink, LifeBuoy, Receipt } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getSubscriptionContext } from "@/lib/account-data";
 import { getSubscriptionWorkspaceHref } from "@/lib/account-links";
@@ -13,7 +14,6 @@ import {
   formatDateTime,
   formatSubscriptionStatus,
 } from "@/lib/format";
-import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 const statusChip: Record<string, string> = { active: "acct-chip-green", paused: "acct-chip-orange", cancelled: "acct-chip-red", expired: "acct-chip-red", past_due: "acct-chip-red" };
@@ -56,7 +56,18 @@ export default async function SubscriptionDetailPage({ params }: { params: Promi
   return (
     <div className="space-y-6 acct-fade-in">
       <Link href="/subscriptions" className="acct-button-ghost w-fit rounded-xl"><ArrowLeft size={16} /> {t("Back to subscriptions")}</Link>
-      <PageHeader title={subscriptionTitle} description={t("Shared ledger view. Plan management still happens in the original division workspace when that workflow exists.")} icon={RefreshCcw} actions={workspaceHref ? <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-primary rounded-xl">{t("Open division workspace")} <ExternalLink size={14} /></a> : undefined} />
+      <HeroCard
+        variant="compact"
+        tone={String(subscription.status || "") === "active" ? "calm" : String(subscription.status || "") === "past_due" ? "attention" : "active"}
+        eyebrow={`${t("Subscriptions")} · ${division}`}
+        headline={subscriptionTitle}
+        blurb={t("Shared ledger view. Plan management still happens in the original division workspace when that workflow exists.")}
+        ctaPrimary={
+          workspaceHref
+            ? { label: t("Open division workspace"), href: workspaceHref, newTab: true }
+            : undefined
+        }
+      />
       <div className="acct-card p-6">
         <div className="flex flex-wrap items-center gap-3">
           <span className={`acct-chip ${statusChip[String(subscription.status || "")] || "acct-chip-gold"}`}>{subscriptionStatus}</span>

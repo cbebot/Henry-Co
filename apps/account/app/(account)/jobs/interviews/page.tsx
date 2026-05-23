@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, CalendarRange, CircleAlert, Video } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CalendarRange, CircleAlert } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { HeroCard, EmptyStateCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { getJobsModuleData } from "@/lib/jobs-module";
 import { formatDateTime } from "@/lib/format";
-import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -24,35 +23,23 @@ export default async function JobsInterviewsPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={t("Interview Rooms")}
-        description={t("Provider-ready candidate interview lanes with timing, instructions, recruiter notes, and follow-up history.")}
-        icon={Video}
-        actions={
-          <div className="flex flex-wrap gap-3">
-            <Link href="/jobs" className="acct-button-secondary rounded-xl">
-              <ArrowLeft size={14} /> {t("Back to Jobs")}
-            </Link>
-            <a href={data.applicationsUrl} className="acct-button-primary rounded-xl">
-              {t("Candidate timeline")} <ArrowUpRight size={14} />
-            </a>
-          </div>
-        }
+      <HeroCard
+        variant="compact"
+        tone={data.interviewSessions.length === 0 ? "empty" : "active"}
+        eyebrow={`${t("Jobs")} · ${t("Interview Rooms")}`}
+        headline={t("Interview Rooms")}
+        blurb={t("Provider-ready candidate interview lanes with timing, instructions, recruiter notes, and follow-up history.")}
+        ctaPrimary={{ label: t("Candidate timeline"), href: data.applicationsUrl }}
+        ctaSecondary={{ label: t("Back to Jobs"), href: "/jobs" }}
       />
 
       {data.interviewSessions.length === 0 ? (
-        <section className="acct-card p-6">
-          <EmptyState
-            icon={CalendarRange}
-            title={t("No interview lanes are active yet")}
-            description={t("Once a recruiter moves an application into shortlist or interview movement, the interview room will appear here with timing, preparation notes, and join readiness.")}
-            action={
-              <Link href="/jobs" className="acct-button-primary rounded-xl">
-                {t("Return to Jobs")}
-              </Link>
-            }
-          />
-        </section>
+        <EmptyStateCard
+          kicker={t("Interview Rooms")}
+          title={t("No interview lanes are active yet")}
+          body={t("Once a recruiter moves an application into shortlist or interview movement, the interview room will appear here with timing, preparation notes, and join readiness.")}
+          cta={{ label: t("Return to Jobs"), href: "/jobs" }}
+        />
       ) : (
         <section className="acct-card p-5 sm:p-6">
           <div className="grid gap-4 xl:grid-cols-2">

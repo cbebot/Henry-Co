@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronRight, Shield } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getSecurityMessageBoard } from "@/lib/message-center";
 import { formatDateTime } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 
 function localizeSecurityCategory(
   t: (text: string) => string,
@@ -137,15 +137,16 @@ export default async function SecurityMessageBoardPage({
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={t("Security event")}
-        description={t("A deeper drill-down into one account-safety event.")}
-        icon={Shield}
-        actions={
-          <Link href={data.record.relatedUrl} className="acct-button-primary rounded-xl">
-            {t(data.record.relatedLabel)} <ChevronRight size={14} />
-          </Link>
-        }
+      <HeroCard
+        variant="compact"
+        tone={data.record.riskLevel === "high" ? "attention" : "active"}
+        eyebrow={`${t("Messages")} · ${sourceLabel}`}
+        headline={eventTitle}
+        blurb={t("A deeper drill-down into one account-safety event.")}
+        ctaPrimary={{
+          label: t(data.record.relatedLabel),
+          href: data.record.relatedUrl,
+        }}
       />
 
       <section className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 shadow-[0_18px_55px_rgba(15,23,42,0.08)]">

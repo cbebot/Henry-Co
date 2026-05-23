@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ChevronRight, ExternalLink, Heart, ShieldCheck } from "lucide-react";
+import { ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 import { getDivisionUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { getSavedPropertiesForUser } from "@/lib/property-module";
-import PageHeader from "@/components/layout/PageHeader";
 import SavedPropertiesBoard from "@/components/property/SavedPropertiesBoard";
 
 export const dynamic = "force-dynamic";
@@ -19,26 +19,28 @@ export default async function SavedPropertiesPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={t("Saved Properties")}
-        description={t("A premium shortlist view powered by HenryCo Property's live saved-listing truth, not a generic activity wrapper.")}
-        icon={Heart}
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Link href="/property" className="acct-button-secondary rounded-xl">
-              {t("Property overview")} <ChevronRight size={14} />
-            </Link>
-            <a
-              href={propertyOrigin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="acct-button-primary rounded-xl"
-            >
-              {t("Explore Property")} <ExternalLink size={14} />
-            </a>
-          </div>
-        }
+      <HeroCard
+        variant="compact"
+        tone={properties.length === 0 ? "empty" : "calm"}
+        eyebrow={`${t("Property")} · ${t("Saved")}`}
+        headline={t("Saved Properties")}
+        blurb={t("A premium shortlist view powered by HenryCo Property's live saved-listing truth, not a generic activity wrapper.")}
+        ctaPrimary={{ label: t("Explore Property"), href: propertyOrigin, newTab: true }}
+        ctaSecondary={{ label: t("Property overview"), href: "/property" }}
       />
+      <div className="flex flex-wrap gap-2">
+        <Link href="/property" className="acct-button-secondary rounded-xl">
+          {t("Property overview")} <ChevronRight size={14} />
+        </Link>
+        <a
+          href={propertyOrigin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="acct-button-primary rounded-xl"
+        >
+          {t("Explore Property")} <ExternalLink size={14} />
+        </a>
+      </div>
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="acct-card p-5">

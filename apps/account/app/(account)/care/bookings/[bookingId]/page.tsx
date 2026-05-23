@@ -9,6 +9,7 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import {
   markNotificationsReadByActionUrl,
@@ -19,7 +20,6 @@ import { getCareBookingHref, isExternalHref } from "@/lib/account-links";
 import { formatDate, formatCurrencyAmount, timeAgoLocalized } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { listLinkedCareBookingsForUser } from "@/lib/care-sync";
-import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -186,20 +186,20 @@ export default async function CareBookingDetailPage({
         <ArrowLeft size={16} /> {copy.back}
       </Link>
 
-      <PageHeader
-        title={booking.tracking_code || booking.id}
-        description={copy.description}
-        icon={Sparkles}
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Link href="/support/new" className="acct-button-primary rounded-xl">
-              {copy.getHelp}
-            </Link>
-            {renderExternalAction(booking.nextAction.href, booking.nextAction.label)}
-            {booking.reviewUrl ? renderExternalAction(booking.reviewUrl, copy.leaveReview) : null}
-          </div>
-        }
+      <HeroCard
+        variant="compact"
+        tone="active"
+        eyebrow={`${locale === "fr" ? "Care" : "Care"} · ${booking.service_type || copy.serviceFallback}`}
+        headline={booking.tracking_code || booking.id}
+        blurb={copy.description}
       />
+      <div className="flex flex-wrap gap-2">
+        <Link href="/support/new" className="acct-button-primary rounded-xl">
+          {copy.getHelp}
+        </Link>
+        {renderExternalAction(booking.nextAction.href, booking.nextAction.label)}
+        {booking.reviewUrl ? renderExternalAction(booking.reviewUrl, copy.leaveReview) : null}
+      </div>
 
       <div className={`rounded-3xl border p-5 ${toneClasses(booking.nextAction.tone)}`}>
         <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em]">{copy.nextStep}</p>
