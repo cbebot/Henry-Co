@@ -1,30 +1,20 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-05-23T09:38:38.216Z",
+  "generatedAt": "2026-05-23T13:23:48.797Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1275,
-    "entries": 1338,
+    "scannedFiles": 1284,
+    "entries": 1336,
     "counts": {
       "OK": 1,
       "GAP": 1278,
       "EXEMPT": 14,
-      "AMBIGUOUS": 45
+      "AMBIGUOUS": 43
     },
-    "durationMs": 3349
+    "durationMs": 3642
   },
   "entriesByFile": {
-    "apps/account/app/(account)/error.tsx": [
-      {
-        "line": 70,
-        "col": 48,
-        "kind": "jsx_text",
-        "text": "(share with support)",
-        "classification": "AMBIGUOUS",
-        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
-      }
-    ],
     "apps/account/app/(account)/layout.tsx": [
       {
         "line": 108,
@@ -55,7 +45,7 @@
     ],
     "apps/account/app/(account)/security/page.tsx": [
       {
-        "line": 61,
+        "line": 73,
         "col": 34,
         "kind": "jsx_text",
         "text": "buildSecurityEventView(log as Record",
@@ -63,20 +53,12 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
     ],
-    "apps/account/app/(account)/wallet/funding/page.tsx": [
+    "apps/account/app/(account)/subscriptions/page.tsx": [
       {
-        "line": 46,
-        "col": 51,
+        "line": 99,
+        "col": 37,
         "kind": "jsx_text",
-        "text": "Send your bank transfer to these details, then upload proof.",
-        "classification": "AMBIGUOUS",
-        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
-      },
-      {
-        "line": 72,
-        "col": 50,
-        "kind": "jsx_text",
-        "text": "No funding requests yet",
+        "text": "nowMs && ms",
         "classification": "AMBIGUOUS",
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
@@ -181,7 +163,7 @@
     ],
     "apps/account/app/layout.tsx": [
       {
-        "line": 35,
+        "line": 39,
         "col": 12,
         "kind": "jsx_text",
         "text": "= 5 && hour",
@@ -189,7 +171,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 36,
+        "line": 40,
         "col": 12,
         "kind": "jsx_text",
         "text": "= 7 && hour",
@@ -197,7 +179,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 37,
+        "line": 41,
         "col": 12,
         "kind": "jsx_text",
         "text": "= 17 && hour",
@@ -205,7 +187,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 38,
+        "line": 42,
         "col": 12,
         "kind": "jsx_text",
         "text": "= 19 && hour",
@@ -317,7 +299,7 @@
     ],
     "apps/account/components/jobs/JobsHero.tsx": [
       {
-        "line": 43,
+        "line": 44,
         "col": 46,
         "kind": "attr:label",
         "text": "Jobs overview",
@@ -325,7 +307,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 43,
+        "line": 44,
         "col": 41,
         "kind": "attr:aria-label",
         "text": "Jobs overview",
@@ -333,7 +315,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 63,
+        "line": 64,
         "col": 66,
         "kind": "attr:label",
         "text": "Hunt summary",
@@ -341,7 +323,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 63,
+        "line": 64,
         "col": 61,
         "kind": "attr:aria-label",
         "text": "Hunt summary",
@@ -349,7 +331,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 65,
+        "line": 66,
         "col": 58,
         "kind": "jsx_text",
         "text": "Active applications",
@@ -357,7 +339,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 70,
+        "line": 71,
         "col": 58,
         "kind": "jsx_text",
         "text": "Saved roles",
@@ -365,7 +347,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 75,
+        "line": 76,
         "col": 58,
         "kind": "jsx_text",
         "text": "Recruiter updates",
@@ -373,7 +355,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 77,
+        "line": 78,
         "col": 57,
         "kind": "jsx_text",
         "text": "In your jobs inbox",
@@ -381,7 +363,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 81,
+        "line": 82,
         "col": 53,
         "kind": "attr:label",
         "text": "Profile readiness",
@@ -389,7 +371,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 81,
+        "line": 82,
         "col": 48,
         "kind": "attr:aria-label",
         "text": "Profile readiness",
@@ -397,7 +379,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 82,
+        "line": 83,
         "col": 51,
         "kind": "jsx_text",
         "text": "Profile readiness",
