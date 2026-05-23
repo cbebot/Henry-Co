@@ -69,6 +69,19 @@ const SESSION_EVENT_NAMES = {
 
 const ROLLBACK_GATE_RATE = 99; // 99% success = below 1% failure (Addendum A4)
 
+// Exclude rows tagged by the v3-01-session-persistence-e2e workflow
+// (payload.source='ci'). The marker is set server-side from
+// verify-supabase-session whenever process.env.HENRY_TELEMETRY_SOURCE
+// is non-empty; production deployments don't set it, so real-user
+// rows remain untagged and are always included.
+//
+// Three-branch OR covers every shape the column can take:
+//   payload IS NULL                — events without any payload
+//   payload->>'source' IS NULL     — payload exists but no source key
+//   payload->>'source' != 'ci'     — payload has source but it's not ci
+const EXCLUDE_CI_TAG =
+  "payload.is.null,payload->>source.is.null,payload->>source.neq.ci";
+
 async function countSince(
   client: ReturnType<typeof createAdminSupabase>,
   eventName: string,
@@ -79,7 +92,8 @@ async function countSince(
       .from("henry_events")
       .select("id", { count: "exact", head: true })
       .eq("name", eventName)
-      .gte("created_at", sinceISO);
+      .gte("created_at", sinceISO)
+      .or(EXCLUDE_CI_TAG);
     if (error) return 0;
     return count ?? 0;
   } catch {

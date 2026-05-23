@@ -44,6 +44,11 @@ any service-role client.
 
 ### 2.1 Headline query — the gate itself
 
+The query filters out rows tagged `payload->>'source' = 'ci'` so the
+v3-01-session-persistence-e2e workflow's forced-reauth runs don't
+inflate the failure rate. Production traffic is untagged (the
+`HENRY_TELEMETRY_SOURCE` env is only set in CI).
+
 ```sql
 with recent as (
   select name, count(*) as n
@@ -53,6 +58,9 @@ with recent as (
       'henry.auth.session.refreshed',
       'henry.auth.session.refresh_failed'
     )
+    and (payload is null
+         or payload->>'source' is null
+         or payload->>'source' <> 'ci')
   group by name
 )
 select
@@ -78,7 +86,21 @@ from recent;
 
 Run this every 1–2 hours during the 24h soak. Owner tile shows the
 same numbers in real time via `getSessionHealthMetrics()` at
-`apps/hub/lib/owner-session-health.ts`.
+`apps/hub/lib/owner-session-health.ts` (which applies the same
+exclusion via `.or()` on every count).
+
+To inspect CI noise specifically (verify the gate is actually
+catching real-world events), invert the filter:
+
+```sql
+-- CI-only — should track the v3-01-session-persistence-e2e cadence
+select name, count(*) as n, max(created_at) as last_seen
+from public.henry_events
+where created_at >= now() - interval '24 hours'
+  and payload->>'source' = 'ci'
+group by name
+order by name;
+```
 
 ### 2.2 Hourly bucket — see *when* failures cluster
 
@@ -231,8 +253,11 @@ where schemaname = 'public' and tablename = 'henry_events';
 Expected:
 - 5 columns: `id, name, actor_id, payload, created_at`
 - 2 indexes: `henry_events_name_created_at_idx`, `henry_events_actor_id_idx`
-- 2 policies: `henry_events_insert_own` (authenticated, insert),
-  `henry_events_select_service_role` (service_role, select)
+- 3 policies:
+  - `henry_events_insert_own` (authenticated, insert) — actor-bound writes
+  - `henry_events_insert_anon_system` (anon, insert) — system writes from
+    the proxy when the user's session has just been invalidated
+  - `henry_events_select_service_role` (service_role, select) — admin reads
 
 ---
 
@@ -245,6 +270,29 @@ Expected:
   `refreshed` / `refresh_failed`).
 - **`multitab_broadcast`** is intentionally emitEvent-only. The tile
   does not surface it; it lives in Sentry breadcrumbs.
+- **`reauth_succeeded` source tag** — the V3-01 source-marker
+  convention (`payload->>'source'`) is wired server-side
+  (`verify-supabase-session`) but not client-side
+  (`ReauthClient.handleSuccess`). The A4 gate does not depend on
+  `reauth_succeeded`, but the "Reauths today" tile metric will
+  marginally inflate during CI activity. Closing this gap is a
+  candidate V3-02 micro-slice — wire `NEXT_PUBLIC_HENRY_TELEMETRY_SOURCE`
+  into the browser persistEvent path.
+
+## 6.1 Telemetry source-tagging convention
+
+`verify-supabase-session` stamps `payload.source = process.env.HENRY_TELEMETRY_SOURCE`
+on every row it writes whenever the env is set. Production deployments
+leave the var unset, so real-user rows have no `source` field. The
+v3-01-session-persistence-e2e workflow sets `HENRY_TELEMETRY_SOURCE=ci`,
+so its forced-reauth rows are recognisable by `payload->>'source' = 'ci'`.
+
+The gate query in §2.1 and the owner tile's `countSince` both apply
+the same exclusion, so CI activity never contributes to the production
+gate verdict. Any future system caller that needs to be excluded from
+the gate denominator should set the same env to a distinct value
+(e.g., `HENRY_TELEMETRY_SOURCE=load-test`) and the runbook query
+should be extended to exclude that value.
 
 ---
 

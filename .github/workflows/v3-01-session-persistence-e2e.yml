@@ -70,6 +70,12 @@ jobs:
       NEXT_PUBLIC_BASE_DOMAIN: henrycogroup.com
       # Account app runs on port 3003 (matches playwright.config.ts default).
       NEXT_PUBLIC_ACCOUNT_BASE_URL: http://localhost:3003
+      # V3-01 source tag — stamps payload.source='ci' on henry_events
+      # rows that verify-supabase-session writes during this workflow,
+      # so the A4 rollback-gate query can exclude CI fixture activity
+      # from the production failure-rate read. Production deployments
+      # do NOT set this var, so real-user rows remain untagged.
+      HENRY_TELEMETRY_SOURCE: ci
     steps:
       - uses: actions/checkout@v4
         with:
