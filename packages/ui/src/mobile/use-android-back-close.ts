@@ -33,7 +33,7 @@
  * notifications panel, ReauthScreen.
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export type UseAndroidBackCloseOptions = {
   /**
@@ -59,6 +59,23 @@ export function useAndroidBackClose(
 ): void {
   const { surface, emit } = options;
 
+  // Hold the latest onClose + telemetry inputs in refs so the
+  // open/close effect can re-read them without re-running. Re-running
+  // on every onClose identity change would tear down + reattach the
+  // sentinel, and the cleanup's `history.back()` would synthesize a
+  // popstate that closes the modal seconds after it opens — the
+  // regression that V3-09 originally shipped to main, where the
+  // command palette and other modal consumers refused to stay open
+  // because their parents pass fresh onClose closures every render.
+  const onCloseRef = useRef(onClose);
+  const surfaceRef = useRef(surface);
+  const emitRef = useRef(emit);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    surfaceRef.current = surface;
+    emitRef.current = emit;
+  });
+
   useEffect(() => {
     if (!isOpen) return;
     if (typeof window === "undefined" || !window.history) return;
@@ -80,15 +97,15 @@ export function useAndroidBackClose(
       // the back button was pressed. Fire close.
       const state = event.state as { [SENTINEL_MARKER]?: boolean } | null;
       if (!state || !state[SENTINEL_MARKER]) {
-        if (surface) {
+        if (surfaceRef.current) {
           dispatchTelemetry({
             name: "henry.ui.modal_escape.android_back",
             outcome: "completed",
-            surface,
-            emit,
+            surface: surfaceRef.current,
+            emit: emitRef.current,
           });
         }
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -111,7 +128,7 @@ export function useAndroidBackClose(
         }
       }
     };
-  }, [isOpen, onClose, surface, emit]);
+  }, [isOpen]);
 }
 
 /**
