@@ -1063,14 +1063,85 @@ export function SupportAssist({
 
   // Body scroll lock on mobile so the page underneath doesn't drift
   // while the panel is open.
+  //
+  // DIAG-IOS-01 root-cause fix. The previous implementation set ONLY
+  // `document.body.style.overflow = "hidden"`. On iOS Safari that:
+  //   1. Breaks `position: sticky` on every descendant — the same bug
+  //      class that detached the marketplace public-header from its
+  //      viewport anchor (FIX-CHROME-01).
+  //   2. Can throw in cross-origin iframe / sandboxed contexts when
+  //      style writes are gated by ITP — the throw would propagate
+  //      through `useEffect` (caught by error boundary, but at minimum
+  //      surfaces as a fallback render on iOS Safari Private Browsing).
+  //   3. Leaves the user at the top of the page after close because
+  //      iOS Safari doesn't preserve scroll position when overflow
+  //      changes mid-scroll.
+  //
+  // The new pattern mirrors the canonical `BottomSheet` primitive:
+  // lock html (covers browsers where html is the scrolling element)
+  // AND pin body via the negative-top trick so iOS Safari preserves
+  // the visible content and the trigger restores `window.scrollY` on
+  // close. All style writes are wrapped in try/catch so cross-origin
+  // iframe contexts cannot crash the effect.
   useEffect(() => {
     if (!open || typeof document === "undefined") return;
+    if (typeof window === "undefined" || !window.matchMedia) return;
     const isSmall = window.matchMedia("(max-width: 640px)").matches;
     if (!isSmall) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollY =
+      window.scrollY ||
+      window.pageYOffset ||
+      html.scrollTop ||
+      body.scrollTop ||
+      0;
+
+    const priorBody = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+    const priorHtml = {
+      overflow: html.style.overflow,
+      scrollBehavior: html.style.scrollBehavior,
+    };
+
+    try {
+      html.style.overflow = "hidden";
+      html.style.scrollBehavior = "auto";
+      body.style.position = "fixed";
+      body.style.top = `-${scrollY}px`;
+      body.style.left = "0";
+      body.style.right = "0";
+      body.style.width = "100%";
+      body.style.overflow = "hidden";
+    } catch {
+      // Cross-origin sandbox or ITP-restricted context — bail without
+      // attempting to lock so the effect can't throw a SecurityError
+      // that would surface as a V3-10 fallback.
+      return;
+    }
+
     return () => {
-      document.body.style.overflow = prev;
+      try {
+        html.style.overflow = priorHtml.overflow;
+        body.style.position = priorBody.position;
+        body.style.top = priorBody.top;
+        body.style.left = priorBody.left;
+        body.style.right = priorBody.right;
+        body.style.width = priorBody.width;
+        body.style.overflow = priorBody.overflow;
+        window.scrollTo(0, scrollY);
+        html.style.scrollBehavior = priorHtml.scrollBehavior;
+      } catch {
+        // Best-effort cleanup; a failure here only matters if every
+        // descendant has already crashed for the same reason.
+      }
     };
   }, [open]);
 
