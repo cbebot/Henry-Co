@@ -303,16 +303,21 @@ export const COMPANY = {
       dark: "#081219",
       supportEmail: BRAND_EMAILS.studio,
       supportPhone: "+2349133957084",
+      // NOTE: `apps/studio` chrome reads from `siteNavStudio` in
+      // `packages/ui/src/public-shell/navigation/site-nav.studio.ts` (local
+      // override of the registry default), not from this array. This array
+      // is kept in sync so other consumers (sitemap, footers, JSON-LD)
+      // reading off `getDivisionConfig("studio").publicNav` stay aligned with
+      // the public chrome. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
+        { label: "Project types", href: "/pick" },
         { label: "Services", href: "/services" },
-        { label: "Work", href: "/work" },
-        { label: "Teams", href: "/teams" },
-        { label: "Pricing", href: "/pricing" },
+        { label: "Packages", href: "/pricing" },
+        { label: "Case studies", href: "/work" },
         { label: "Process", href: "/process" },
         { label: "Trust", href: "/trust" },
-        { label: "Request", href: "/request" },
-        { label: "Contact", href: "/contact" }
+        { label: "Teams", href: "/teams" }
       ],
     },
 
