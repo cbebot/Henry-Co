@@ -17,6 +17,7 @@ import {
   PublicShellLayout,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { DrawerAccountSection } from "@henryco/ui/public";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import {
   normalizeCompanySettings,
@@ -162,6 +163,32 @@ export default function PublicSiteShell({
             />
           ) : null
         }
+        // Premium in-place profile card for the mobile drawer
+        // (FIX-CHROME-02). Hub uses the standard amber accent
+        // since the hub homepage owns the brand identity.
+        renderMobileSheetProfile={
+          accountChip
+            ? (dismiss) => (
+                <DrawerAccountSection
+                  user={accountChip.user}
+                  accountHref={accountChip.accountHref}
+                  preferencesHref={getAccountUrl("/settings")}
+                  settingsHref={getAccountUrl("/security")}
+                  loginHref={accountChip.loginHref}
+                  signupHref={accountChip.signupHref}
+                  showSignOut
+                  accent={settings.brand_accent || "#C9A227"}
+                  extraItems={[
+                    { label: copy.menuDivisionsDirectory, href: "/#divisions" },
+                    { label: copy.menuAbout, href: "/about" },
+                    { label: copy.menuContact, href: "/contact" },
+                  ]}
+                  onSelect={dismiss}
+                />
+              )
+            : undefined
+        }
+        showAccountInMobileSheetFooter={!accountChip}
         accountMenuFirst
         showThemeToggle={false}
         headerClassName="z-40 border-white/10 bg-[var(--site-header-bg,rgba(5,8,22,0.84))] text-[var(--site-text,#ffffff)] backdrop-blur-2xl"

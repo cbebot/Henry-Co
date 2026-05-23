@@ -12,7 +12,26 @@ import {
   type PublicNavItem,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { DrawerAccountSection } from "@henryco/ui/public";
+import type { PublicAccountUser } from "@henryco/ui/public";
 import { CareMonogram } from "@/components/brand/CareMonogram";
+
+/**
+ * Data shape consumed by CareNavbar to render the premium
+ * `DrawerAccountSection` inside the mobile drawer (FIX-CHROME-02).
+ * We pass DATA (not JSX) so the client can wire the rAF-deferred
+ * dismiss callback through `onSelect`.
+ */
+export type CareDrawerProfile = {
+  user: PublicAccountUser | null;
+  accountHref?: string;
+  preferencesHref?: string;
+  settingsHref?: string;
+  loginHref?: string;
+  signupHref?: string;
+  accent?: string | null;
+  extraItems?: Array<{ label: string; href: string; external?: boolean }>;
+};
 
 export type DivisionPublicConfig = {
   name: string;
@@ -77,9 +96,11 @@ const DEFAULT_SUB = "Premium garment, home, and workplace care";
 export default function CareNavbar({
   division,
   accountSlot,
+  drawerProfile,
 }: {
   division: DivisionPublicConfig;
   accountSlot?: ReactNode;
+  drawerProfile?: CareDrawerProfile;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -162,6 +183,28 @@ export default function CareNavbar({
       actions={actions}
       headerClassName="z-40 border-b border-[var(--care-border)] bg-[var(--care-bg)] shadow-[0_1px_0_rgba(255,255,255,0.06)] dark:shadow-[0_1px_0_rgba(255,255,255,0.04)]"
       maxWidth="max-w-[92rem]"
+      // Premium in-place profile section for the mobile drawer
+      // (FIX-CHROME-02). Replaces the nested-dropdown chip pattern
+      // with a flat, always-visible profile card.
+      renderMobileSheetProfile={
+        drawerProfile
+          ? (dismiss) => (
+              <DrawerAccountSection
+                user={drawerProfile.user}
+                accountHref={drawerProfile.accountHref}
+                preferencesHref={drawerProfile.preferencesHref}
+                settingsHref={drawerProfile.settingsHref}
+                loginHref={drawerProfile.loginHref}
+                signupHref={drawerProfile.signupHref}
+                showSignOut
+                accent={drawerProfile.accent}
+                extraItems={drawerProfile.extraItems}
+                onSelect={dismiss}
+              />
+            )
+          : undefined
+      }
+      showAccountInMobileSheetFooter={!drawerProfile}
     />
   );
 }

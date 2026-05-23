@@ -10,6 +10,7 @@ import {
   PublicAccountChip,
   PublicFooter,
 } from "@henryco/ui";
+import { DrawerAccountSection } from "@henryco/ui/public";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
@@ -100,6 +101,27 @@ export async function PublicShell({
               { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" },
               { label: copy.home.browseJobs, href: "/jobs" },
               { label: copy.home.hireWithHenryCo, href: "/hire" },
+            ]}
+          />
+        }
+        // Premium in-place profile section for the mobile drawer
+        // (FIX-CHROME-02). Server Component → uses the element-shape
+        // prop (mobileDrawerProfile) rather than the render-function
+        // variant. Same visual; pathname-change closes the drawer
+        // on navigation.
+        mobileDrawerProfile={
+          <DrawerAccountSection
+            user={chipUser}
+            accountHref={accountJobsUrl}
+            preferencesHref={getAccountUrl("/settings")}
+            settingsHref={getAccountUrl("/security")}
+            loginHref={loginHref}
+            signupHref={signupHref}
+            showSignOut
+            accent={jobs.accent ?? "#C9A227"}
+            extraItems={[
+              { label: "Candidate home", href: "/candidate" },
+              { label: "Browse jobs", href: "/jobs" },
             ]}
           />
         }

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -48,6 +48,19 @@ export default async function PublicLayout({ children }: { children: React.React
             ]}
           />
         }
+        drawerProfile={{
+          user: chipUser,
+          accountHref: accountUrl,
+          preferencesHref: getAccountUrl("/settings"),
+          settingsHref: getAccountUrl("/security"),
+          loginHref,
+          signupHref,
+          accent: getDivisionConfig("studio").accentStrong,
+          extraItems: [
+            { label: "Start a project", href: "/request" },
+            { label: "Packages", href: "/pricing" },
+          ],
+        }}
       />
       {children}
       <StudioSiteFooter

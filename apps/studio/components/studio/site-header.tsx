@@ -11,6 +11,8 @@ import {
   type PublicNavItem,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { DrawerAccountSection } from "@henryco/ui/public";
+import type { PublicAccountUser } from "@henryco/ui/public";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { StudioThemeToggle } from "@/components/studio/theme-toggle";
 
@@ -21,14 +23,27 @@ function joinClassNames(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
+export type StudioDrawerProfile = {
+  user: PublicAccountUser | null;
+  accountHref?: string;
+  preferencesHref?: string;
+  settingsHref?: string;
+  loginHref?: string;
+  signupHref?: string;
+  accent?: string | null;
+  extraItems?: Array<{ label: string; href: string; external?: boolean }>;
+};
+
 export function StudioSiteHeader({
   supportEmail,
   accountHref,
   accountMenu,
+  drawerProfile,
 }: {
   supportEmail: string | null;
   accountHref: string;
   accountMenu?: ReactNode;
+  drawerProfile?: StudioDrawerProfile;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -123,6 +138,28 @@ export function StudioSiteHeader({
       accountMenu={accountMenu}
       accountMenuFirst
       themeToggle={<StudioThemeToggle />}
+      // Premium in-place profile card for the mobile drawer
+      // (FIX-CHROME-02). Client Component → uses render-function
+      // variant.
+      renderMobileSheetProfile={
+        drawerProfile
+          ? (dismiss) => (
+              <DrawerAccountSection
+                user={drawerProfile.user}
+                accountHref={drawerProfile.accountHref}
+                preferencesHref={drawerProfile.preferencesHref}
+                settingsHref={drawerProfile.settingsHref}
+                loginHref={drawerProfile.loginHref}
+                signupHref={drawerProfile.signupHref}
+                showSignOut
+                accent={drawerProfile.accent}
+                extraItems={drawerProfile.extraItems}
+                onSelect={dismiss}
+              />
+            )
+          : undefined
+      }
+      showAccountInMobileSheetFooter={!drawerProfile}
       renderMobileSheetAfterNav={(close) => (
         <Link
           href={accountHref}

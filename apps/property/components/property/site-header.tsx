@@ -12,6 +12,8 @@ import {
 } from "@henryco/ui/public-shell";
 import type { PublicNavItem } from "@henryco/ui/public-shell";
 import { HenryCoMonogram } from "@henryco/ui/brand";
+import { DrawerAccountSection } from "@henryco/ui/public";
+import type { PublicAccountUser } from "@henryco/ui/public";
 
 const property = getDivisionConfig("property");
 const propertyNav = getSiteNavigationConfig("property");
@@ -20,7 +22,30 @@ function joinClassNames(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
-export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) {
+/**
+ * Data shape consumed by PropertySiteHeader to render the premium
+ * `DrawerAccountSection` inside the mobile drawer (FIX-CHROME-02).
+ * We pass DATA (not JSX) so the client can wire the rAF-deferred
+ * dismiss callback through DrawerAccountSection's `onSelect`.
+ */
+export type PropertyDrawerProfile = {
+  user: PublicAccountUser | null;
+  accountHref?: string;
+  preferencesHref?: string;
+  settingsHref?: string;
+  loginHref?: string;
+  signupHref?: string;
+  accent?: string | null;
+  extraItems?: Array<{ label: string; href: string; external?: boolean }>;
+};
+
+export function PropertySiteHeader({
+  accountSlot,
+  drawerProfile,
+}: {
+  accountSlot: ReactNode;
+  drawerProfile?: PropertyDrawerProfile;
+}) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const items: readonly PublicNavItem[] = propertyNav.primaryNav;
@@ -79,7 +104,32 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
       accountMenu={<div className="hidden sm:block">{accountSlot}</div>}
       themeToggleBeforeAccount
       themeToggleClassName="hidden h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] px-0 py-0 sm:inline-flex"
-      mobileSheetBeforeNav={<div className="mb-1 flex flex-col items-stretch gap-2">{accountSlot}</div>}
+      // Prefer the premium in-place profile card when the caller
+      // supplied the data tuple (FIX-CHROME-02). Otherwise fall
+      // back to rendering the chip inline (legacy path).
+      renderMobileSheetProfile={
+        drawerProfile
+          ? (dismiss) => (
+              <DrawerAccountSection
+                user={drawerProfile.user}
+                accountHref={drawerProfile.accountHref}
+                preferencesHref={drawerProfile.preferencesHref}
+                settingsHref={drawerProfile.settingsHref}
+                loginHref={drawerProfile.loginHref}
+                signupHref={drawerProfile.signupHref}
+                showSignOut
+                accent={drawerProfile.accent}
+                extraItems={drawerProfile.extraItems}
+                onSelect={dismiss}
+              />
+            )
+          : undefined
+      }
+      mobileSheetBeforeNav={
+        drawerProfile
+          ? undefined
+          : <div className="mb-1 flex flex-col items-stretch gap-2">{accountSlot}</div>
+      }
       showAccountInMobileSheetFooter={false}
       getNavItemClassName={(_item, active, placement) => {
         if (placement === "bar") {

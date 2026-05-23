@@ -77,8 +77,21 @@ export type PublicHeaderProps = {
    * When provided, this REPLACES the `mobileSheetBeforeNav` slot's
    * role for account content. Callers usually pass
    * `<DrawerAccountSection ... />` from `@henryco/ui/public`.
+   *
+   * Prefer this over `mobileDrawerProfile` whenever the caller is a
+   * client component — the dismiss callback ensures even same-route
+   * taps close the drawer cleanly.
    */
   renderMobileSheetProfile?: (dismiss: () => void) => ReactNode;
+  /**
+   * Net-new in FIX-CHROME-02. Element variant of `renderMobileSheet
+   * Profile` for callers that live in Server Components (jobs, learn,
+   * logistics, studio, hub) and can't pass a function across the
+   * server/client boundary. The element is rendered as-is; taps that
+   * navigate to a different route will still auto-close via the
+   * pathname-change effect in PublicHeader.
+   */
+  mobileDrawerProfile?: ReactNode;
   showAccountInMobileSheetFooter?: boolean;
   /**
    * `floating` — premium rounded elevated bar (default for division marketing sites).
@@ -127,6 +140,7 @@ export function PublicHeader({
   renderMobileSheetAfterNav,
   mobileSheetBeforeNav,
   renderMobileSheetProfile,
+  mobileDrawerProfile,
   showAccountInMobileSheetFooter = true,
   /** Most division shells use full-bleed themed headers; set `"floating"` for elevated rounded chrome. */
   variant = "default",
@@ -467,9 +481,15 @@ export function PublicHeader({
          * (above the nav). This replaces the chip-with-nested-dropdown
          * pattern that was awkward inside a BottomSheet — see
          * FIX-CHROME-02 RCA "PRIORITY 2 — Profile section premium polish".
+         *
+         * Server Components can't pass a function across the
+         * server/client boundary — they use `mobileDrawerProfile`
+         * (ReactNode) instead. Either prop produces the same visual.
          */}
         {renderMobileSheetProfile ? (
           <div className="mb-4">{renderMobileSheetProfile(dismissAfterNavigation)}</div>
+        ) : mobileDrawerProfile ? (
+          <div className="mb-4">{mobileDrawerProfile}</div>
         ) : null}
 
         {/* MENU kicker — brand-quiet uppercase eyebrow above the nav list. */}
@@ -518,7 +538,7 @@ export function PublicHeader({
           </p>
           <div className="flex flex-col gap-2">
             {/* Suppress the legacy chip if we already rendered a premium profile card. */}
-            {showAccountInMobileSheetFooter && accountMenu && !renderMobileSheetProfile ? (
+            {showAccountInMobileSheetFooter && accountMenu && !renderMobileSheetProfile && !mobileDrawerProfile ? (
               <div className="flex justify-stretch px-0.5">{accountMenu}</div>
             ) : null}
             {auxLink ? (
