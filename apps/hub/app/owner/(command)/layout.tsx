@@ -4,6 +4,7 @@ import { Bot } from "lucide-react";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { ModuleJumpEntry } from "@henryco/search-ui";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { ThemeToggle } from "@henryco/ui";
 import { requireOwner } from "@/lib/owner-auth";
 import { getOwnerRailEntries } from "@/lib/owner-rail-from-registry";
 import OwnerSidebar from "@/components/owner/OwnerSidebar";
@@ -64,7 +65,7 @@ export default async function OwnerCommandLayout({ children }: { children: React
               notifications bell (staff audience). Keyboard-driven, never
               consumer "marketing" hero.
             */}
-            <div className="sticky top-0 z-30 hidden lg:flex items-center gap-3 border-b border-[var(--acct-line)] bg-[var(--acct-bg)]/85 px-6 py-2 backdrop-blur">
+            <div className="sticky top-0 z-30 hidden lg:flex items-center gap-3 border-b border-[var(--acct-line)] bg-[var(--hc-shell-topbar-bg)] px-6 py-2 backdrop-blur-md">
               <div className="flex-1 max-w-md">
                 <OwnerSearchButton variant="sidebar" />
               </div>
@@ -80,11 +81,15 @@ export default async function OwnerCommandLayout({ children }: { children: React
               >
                 {t("Audit log")}
               </Link>
+              {/* THEME-01 Phase 3 — Light/Dark/System cycle, persists per-device via henryco-public-theme localStorage key */}
+              <ThemeToggle className="h-9 px-2.5 py-1 text-xs" />
               <OwnerNotificationsLauncher />
             </div>
-            {/* Mobile top bar — search + notifications next to OwnerMobileNav */}
+            {/* Mobile top bar — search + theme toggle + notifications next to OwnerMobileNav */}
             <div className="fixed right-3 top-2 z-40 flex items-center gap-2 lg:hidden">
               <OwnerSearchButton variant="mobile" />
+              {/* THEME-01 Phase 3 — toggle visible on mobile too (discoverable, not garish) */}
+              <ThemeToggle className="h-10 w-10 justify-center px-0 py-0" />
               <OwnerNotificationsLauncher />
             </div>
             <div className="relative mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:px-10 lg:py-7">
