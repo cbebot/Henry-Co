@@ -58,7 +58,6 @@ export type PropertyPublicCopy = {
       areasCoveredLabel: string;
       areasCoveredEmptyHint: string;
       managedPortfolioLabel: string;
-      managedPortfolioWarmingHint: string;
       managedPipelineTemplate: string; // e.g. "{pipeline} in pipeline · {value} under management" — handled in code
       managedPipelinePartialTemplate: string; // e.g. "{pipeline} in pipeline · value under setup"
       managedUnderManagementSuffix: string; // e.g. "NGN under management"
@@ -88,8 +87,6 @@ export type PropertyPublicCopy = {
       combinedValueLabel: string;
       combinedValueHint: string;
       footnote: string;
-      warmingEyebrow: string;
-      warmingBody: string;
     };
     agentsEmpty: {
       eyebrow: string;
@@ -271,7 +268,6 @@ const EN: PropertyPublicCopy = {
       areasCoveredLabel: "Areas covered",
       areasCoveredEmptyHint: "Areas open as inventory clears review",
       managedPortfolioLabel: "Managed portfolio",
-      managedPortfolioWarmingHint: "Managed-property layer warming up",
       managedPipelineTemplate: "{pipeline} in pipeline · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} in pipeline · {setupLabel}",
       managedUnderManagementSuffix: "NGN under management",
@@ -301,8 +297,6 @@ const EN: PropertyPublicCopy = {
       combinedValueLabel: "Combined value",
       combinedValueHint: "Combined portfolio under HenryCo trust operations",
       footnote: "Owner reporting, inspections, and maintenance coordination run on the same ledger as the marketing surface. One audit trail.",
-      warmingEyebrow: "Managed lane warming up",
-      warmingBody: "The managed-property service set publishes once at least one managed engagement is live. Operating standards stay the same; the catalog appears when the work does.",
     },
     agentsEmpty: {
       eyebrow: "Operator layer publishing soon",
@@ -486,7 +480,6 @@ const FR: PropertyPublicCopy = {
       areasCoveredLabel: "Zones couvertes",
       areasCoveredEmptyHint: "Les zones s’ouvrent à mesure que l’inventaire passe la revue",
       managedPortfolioLabel: "Portefeuille géré",
-      managedPortfolioWarmingHint: "Couche de gestion en cours d’activation",
       managedPipelineTemplate: "{pipeline} en pipeline · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} en pipeline · {setupLabel}",
       managedUnderManagementSuffix: "NGN sous gestion",
@@ -516,8 +509,6 @@ const FR: PropertyPublicCopy = {
       combinedValueLabel: "Valeur consolidée",
       combinedValueHint: "Portefeuille combiné sous opérations de confiance HenryCo",
       footnote: "Reporting propriétaire, inspections et coordination de maintenance suivent le même registre que la surface marketing. Une seule piste d’audit.",
-      warmingEyebrow: "Voie de gestion en préparation",
-      warmingBody: "Le catalogue des services de gestion paraît dès qu’un mandat est actif. Les standards opérationnels restent identiques ; le catalogue suit le travail.",
     },
     agentsEmpty: {
       eyebrow: "Couche opérateur bientôt publiée",
@@ -635,7 +626,6 @@ const ES: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Zonas cubiertas",
       areasCoveredEmptyHint: "Las zonas se abren a medida que el inventario pasa la revisión",
       managedPortfolioLabel: "Cartera gestionada",
-      managedPortfolioWarmingHint: "Capa de gestión en preparación",
       managedPipelineTemplate: "{pipeline} en proceso · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} en proceso · {setupLabel}",
       managedUnderManagementSuffix: "NGN bajo gestión",
@@ -665,8 +655,6 @@ const ES: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Valor combinado",
       combinedValueHint: "Cartera combinada bajo operaciones de confianza HenryCo",
       footnote: "Reportes al propietario, inspecciones y coordinación de mantenimiento se ejecutan sobre el mismo registro que la superficie de marketing. Un único rastro de auditoría.",
-      warmingEyebrow: "Línea gestionada en preparación",
-      warmingBody: "El catálogo de servicios gestionados se publica cuando hay al menos un mandato activo. Los estándares operativos se mantienen; el catálogo sigue al trabajo.",
     },
     agentsEmpty: {
       eyebrow: "Capa de operador próximamente",
@@ -726,7 +714,6 @@ const PT: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Zonas cobertas",
       areasCoveredEmptyHint: "As zonas abrem à medida que o inventário passa a revisão",
       managedPortfolioLabel: "Carteira sob gestão",
-      managedPortfolioWarmingHint: "Camada de gestão em preparação",
       managedPipelineTemplate: "{pipeline} em pipeline · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} em pipeline · {setupLabel}",
       managedUnderManagementSuffix: "NGN sob gestão",
@@ -756,8 +743,6 @@ const PT: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Valor combinado",
       combinedValueHint: "Carteira combinada sob operações de confiança HenryCo",
       footnote: "Reporte ao proprietário, inspeções e coordenação de manutenção correm no mesmo registo da superfície de marketing. Uma única trilha de auditoria.",
-      warmingEyebrow: "Linha de gestão em preparação",
-      warmingBody: "O catálogo de serviços sob gestão publica-se quando houver pelo menos um mandato ativo. Os padrões operacionais mantêm-se; o catálogo segue o trabalho.",
     },
     agentsEmpty: {
       eyebrow: "Camada de operador em breve",
@@ -817,7 +802,6 @@ const DE: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Abgedeckte Gebiete",
       areasCoveredEmptyHint: "Gebiete werden freigeschaltet, sobald der Bestand die Prüfung passiert",
       managedPortfolioLabel: "Verwaltetes Portfolio",
-      managedPortfolioWarmingHint: "Verwaltungsschicht wird vorbereitet",
       managedPipelineTemplate: "{pipeline} in Bearbeitung · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} in Bearbeitung · {setupLabel}",
       managedUnderManagementSuffix: "NGN unter Verwaltung",
@@ -847,8 +831,6 @@ const DE: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Gesamtwert",
       combinedValueHint: "Kombiniertes Portfolio unter HenryCo-Treuhandbetrieb",
       footnote: "Eigentümerberichte, Inspektionen und Instandhaltungskoordination laufen auf demselben Register wie die Marketingfläche. Ein Prüfpfad.",
-      warmingEyebrow: "Verwaltungsspur in Vorbereitung",
-      warmingBody: "Der Servicekatalog der verwalteten Objekte erscheint, sobald mindestens ein Mandat aktiv ist. Operative Standards bleiben gleich; der Katalog folgt der Arbeit.",
     },
     agentsEmpty: {
       eyebrow: "Operator-Schicht erscheint in Kürze",
@@ -908,7 +890,6 @@ const IT: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Zone coperte",
       areasCoveredEmptyHint: "Le zone si aprono man mano che l’inventario supera la revisione",
       managedPortfolioLabel: "Portafoglio in gestione",
-      managedPortfolioWarmingHint: "Livello di gestione in preparazione",
       managedPipelineTemplate: "{pipeline} in pipeline · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} in pipeline · {setupLabel}",
       managedUnderManagementSuffix: "NGN in gestione",
@@ -938,8 +919,6 @@ const IT: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Valore complessivo",
       combinedValueHint: "Portafoglio combinato sotto le operazioni di fiducia HenryCo",
       footnote: "Reportistica al proprietario, ispezioni e coordinamento della manutenzione corrono sullo stesso registro della superficie marketing. Una sola traccia di audit.",
-      warmingEyebrow: "Linea in gestione in preparazione",
-      warmingBody: "Il catalogo dei servizi in gestione viene pubblicato quando almeno un mandato è attivo. Gli standard operativi restano invariati; il catalogo segue il lavoro.",
     },
     agentsEmpty: {
       eyebrow: "Livello operatore in arrivo",
@@ -999,7 +978,6 @@ const AR: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "المناطق المغطاة",
       areasCoveredEmptyHint: "تُفتح المناطق مع اجتياز المخزون للمراجعة",
       managedPortfolioLabel: "المحفظة المُدارة",
-      managedPortfolioWarmingHint: "طبقة الإدارة قيد التهيئة",
       managedPipelineTemplate: "{pipeline} قيد المعالجة · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} قيد المعالجة · {setupLabel}",
       managedUnderManagementSuffix: "NGN تحت الإدارة",
@@ -1029,8 +1007,6 @@ const AR: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "القيمة المجمّعة",
       combinedValueHint: "محفظة مجمّعة تحت عمليات الثقة في HenryCo",
       footnote: "تقارير الملاك والمعاينات وتنسيق الصيانة تجري على نفس السجل الذي تجري عليه واجهة التسويق. أثر تدقيق واحد.",
-      warmingEyebrow: "مسار الإدارة قيد التهيئة",
-      warmingBody: "تُنشر مجموعة خدمات العقارات المُدارة فور أن يصبح تكليف واحد على الأقل قائماً. المعايير التشغيلية تبقى كما هي؛ والقائمة تتبع العمل.",
     },
     agentsEmpty: {
       eyebrow: "طبقة المشغّل ستُنشر قريباً",
@@ -1090,7 +1066,6 @@ const ZH: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "覆盖区域",
       areasCoveredEmptyHint: "房源通过审核后,相应区域将逐步开放",
       managedPortfolioLabel: "托管组合",
-      managedPortfolioWarmingHint: "托管层级正在启用中",
       managedPipelineTemplate: "{pipeline} 个进行中 · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} 个进行中 · {setupLabel}",
       managedUnderManagementSuffix: "NGN 托管资产",
@@ -1120,8 +1095,6 @@ const ZH: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "合计资产",
       combinedValueHint: "由 HenryCo 信托运营管理的合计组合",
       footnote: "业主报告、巡检与维修协调与营销面板共用同一账本。仅有一条审计轨迹。",
-      warmingEyebrow: "托管通道筹备中",
-      warmingBody: "至少有一项托管委托上线后,托管服务目录将自动发布。运营标准保持一致;目录跟随实际工作出现。",
     },
     agentsEmpty: {
       eyebrow: "运营层即将上线",
@@ -1181,7 +1154,6 @@ const HI: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "कवर किए गए इलाक़े",
       areasCoveredEmptyHint: "जैसे-जैसे इन्वेंटरी समीक्षा पास करती है, इलाक़े खुलते हैं",
       managedPortfolioLabel: "मैनेज्ड पोर्टफ़ोलियो",
-      managedPortfolioWarmingHint: "मैनेजमेंट लेयर सक्रिय हो रही है",
       managedPipelineTemplate: "{pipeline} पाइपलाइन में · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} पाइपलाइन में · {setupLabel}",
       managedUnderManagementSuffix: "NGN प्रबंधन में",
@@ -1211,8 +1183,6 @@ const HI: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "संयुक्त मूल्य",
       combinedValueHint: "HenryCo ट्रस्ट ऑपरेशंस के तहत संयुक्त पोर्टफ़ोलियो",
       footnote: "ओनर रिपोर्टिंग, इंस्पेक्शन और मेंटेनेंस कोऑर्डिनेशन — सब उसी लेजर पर चलते हैं जिस पर मार्केटिंग सरफ़ेस। एक ही ऑडिट ट्रेल।",
-      warmingEyebrow: "मैनेज्ड लेन सक्रिय हो रही है",
-      warmingBody: "कम से कम एक मैनेज्ड कार्यभार लाइव होते ही मैनेज्ड सेवा सूची प्रकाशित होगी। ऑपरेटिंग स्टैंडर्ड वही रहते हैं; कैटलॉग काम के पीछे आता है।",
     },
     agentsEmpty: {
       eyebrow: "ऑपरेटर लेयर जल्द प्रकाशित",
@@ -1272,7 +1242,6 @@ const IG: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Mpaghara akpuchiri",
       areasCoveredEmptyHint: "Mpaghara na-emeghe ka ngwongwo na-agafe nyocha",
       managedPortfolioLabel: "Akpa a na-elekọta",
-      managedPortfolioWarmingHint: "Ọkwa nlekọta ka na-akwado",
       managedPipelineTemplate: "{pipeline} dị na mpịakọta · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} dị na mpịakọta · {setupLabel}",
       managedUnderManagementSuffix: "NGN n’okpuru nlekọta",
@@ -1302,8 +1271,6 @@ const IG: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Uru kpokọtara",
       combinedValueHint: "Akpa kpokọtara n’okpuru ọrụ ntụkwasị obi nke HenryCo",
       footnote: "Mkpesa ndị nwe, nyocha, na nhazi mmezi na-agba n’otu akwụkwọ ndekọ ahụ na ihu ahịa azụmaahịa. Otu ụzọ nyocha.",
-      warmingEyebrow: "Ụzọ nlekọta ka na-akwado",
-      warmingBody: "A na-ebipụta ngwa ọrụ ụlọ a na-elekọta naanị mgbe otu ọrụ nlekọta dị ndụ. Ụkpụrụ ọrụ na-anọgide; ndepụta na-eso ọrụ ahụ.",
     },
     agentsEmpty: {
       eyebrow: "Ọkwa ndị na-arụ ọrụ ga-apụta n’oge na-adịghị anya",
@@ -1363,7 +1330,6 @@ const YO: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Àdúgbò tí a bo",
       areasCoveredEmptyHint: "Àwọn àdúgbò máa ṣí bí àkójọ ṣe ń kọjá àyẹ̀wò",
       managedPortfolioLabel: "Àkójọ ìṣàkóso",
-      managedPortfolioWarmingHint: "Ipele ìṣàkóso ń múrasílẹ̀",
       managedPipelineTemplate: "{pipeline} ní ìlà · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} ní ìlà · {setupLabel}",
       managedUnderManagementSuffix: "NGN labẹ́ ìṣàkóso",
@@ -1393,8 +1359,6 @@ const YO: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Iye gbogbogbò",
       combinedValueHint: "Àkójọ gbogbogbò labẹ́ iṣẹ́ ìgbẹ́kẹ̀lé HenryCo",
       footnote: "Ìròyìn onílé, àyẹ̀wò, àti ìtọ́jú ìtọ́sọ́nà ń lọ lórí ìwé kan náà pẹ̀lú ojú-ìwé tita. Ọ̀nà àyẹ̀wò kan ṣoṣo.",
-      warmingEyebrow: "Ọ̀nà ìṣàkóso ń múrasílẹ̀",
-      warmingBody: "Àkójọ iṣẹ́ ìṣàkóso máa jáde nígbà tí iṣẹ́ kan tí a ń ṣàkóso bá ti bẹ̀rẹ̀ sí lọ. Òṣùwọ̀n iṣẹ́ kò yí padà; àkójọ tẹ̀lé iṣẹ́ ní pẹpẹ.",
     },
     agentsEmpty: {
       eyebrow: "Ipele aṣojú máa jáde láìpẹ́",
@@ -1454,7 +1418,6 @@ const HA: DeepPartial<PropertyPublicCopy> = {
       areasCoveredLabel: "Yankunan da aka kawo",
       areasCoveredEmptyHint: "Yankuna na buɗewa yayin da kayan ke wuce bita",
       managedPortfolioLabel: "Ƙungiyar sarrafawa",
-      managedPortfolioWarmingHint: "Tsarin sarrafawa yana shiri",
       managedPipelineTemplate: "{pipeline} a bututu · {value} {suffix}",
       managedPipelinePartialTemplate: "{pipeline} a bututu · {setupLabel}",
       managedUnderManagementSuffix: "NGN a ƙarƙashin sarrafawa",
@@ -1484,8 +1447,6 @@ const HA: DeepPartial<PropertyPublicCopy> = {
       combinedValueLabel: "Jimillar ƙima",
       combinedValueHint: "Haɗaɗɗiyar ƙungiya a ƙarƙashin ayyukan amincewa na HenryCo",
       footnote: "Rahoton mai gida, dubawa, da gudanar da gyara suna gudana a kan littafi ɗaya da fuskar tallace-tallace. Hanyar bita ɗaya.",
-      warmingEyebrow: "Hanyar sarrafawa tana shiri",
-      warmingBody: "Jadawalin sabis na sarrafawa zai fito sa’ad da aƙalla aiki ɗaya da ake sarrafawa ya kunne. Ƙa’idodin aiki ba sa canzawa; jadawalin yana bin aiki.",
     },
     agentsEmpty: {
       eyebrow: "Tsarin masu aiki zai bayyana nan ba da daɗewa ba",
