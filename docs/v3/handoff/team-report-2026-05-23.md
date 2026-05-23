@@ -81,15 +81,21 @@ If the rebuild itself fails after unpausing, capture the failed deployment ID an
 
 ## Active fire when owner handed off
 
-**FIX-CHROME-02 (drawer nav-clicks + premium profile section + cross-division polish)**
+**FIX-CHROME-02 (drawer nav-clicks + premium profile section + cross-division polish) — LANDED AS DRAFT PR #154**
 
-- **Branch:** `fix/public-drawer-quality`
+- **PR:** https://github.com/cbebot/Henry-Co/pull/154 — DRAFT, awaiting team visual-verify on iPhone Safari before merge.
+- **Branch:** `fix/public-drawer-quality` (3 commits: a8efbd09, fd2e6533, 001007c7)
 - **Worktree:** `C:/Users/HP VICTUS/HenryCo/.worktree/drawer-polish`
 - **Base:** main HEAD `dfa6b9a4`
-- **State:** continuation agent dispatched after the previous Opus 4.7 instance hit the Claude model quota cap (resets ~13:20 Lagos). No commits salvaged from the first instance; the fresh agent has the full mandate.
-- **The bug:** owner screenshot from `property.henrycogroup.com` at 11:46 AM Lagos — the new BottomSheet-based public drawer opens correctly, but tapping any nav link (Home / Search / Managed / Trust / Submit) doesn't navigate. The "Henry" profile chip with up-arrow also needs to surface premium account quick-actions.
-- **Reference for the working pattern:** `apps/marketplace/components/marketplace/workspace-mobile-nav.tsx` — same `BottomSheet` primitive, navigation works correctly there. Diff against that file to find the click-suppression in the public-header version.
-- **Deliverable expected:** DRAFT PR for visual verify on every public division domain. No admin merge — owner wants visual eyes on the drawer feel before it ships.
+- **The original bug:** owner screenshot from `property.henrycogroup.com` at 11:46 Lagos — the new BottomSheet-based public drawer opened correctly, but tapping any nav link did not navigate. The "Henry" profile chip with up-arrow needed to surface premium account quick-actions.
+- **Root cause (verified):** Closing the BottomSheet synchronously inside the Link's `onClick` raced with `useAndroidBackClose`'s cleanup. App Router pushes route state asynchronously via `useTransition` — by the time the cleanup commit ran, its history sentinel was still on top of the history stack, so `history.back()` fired and cancelled the in-flight navigation. Every drawer-tap appeared dead.
+- **Fix shape:**
+  1. `a8efbd09` — defer `setOpen(false)` via `requestAnimationFrame` so Next.js pushes route state first; the sentinel is no longer top-of-history by the time cleanup runs, so `history.back()` is correctly skipped. Plus `min-h-[48px]` tap targets across all drawer links + `aria-current="page"` restored.
+  2. `fd2e6533` — new `<DrawerAccountSection>` component in `@henryco/ui/public` replacing the chip-with-nested-dropdown pattern that was awkward inside a BottomSheet. Two new slots on `PublicHeader`: `renderMobileSheetProfile` (client, with dismiss callback) and `mobileDrawerProfile` (server, element variant). Adds `publicHeader.account` localised key to all 12 locales.
+  3. `001007c7` — wires `DrawerAccountSection` into care, hub (non-home), jobs, learn, logistics, property, studio site-headers. Per-division accent dot, grouped menu, ≥48px tap targets, MENU/ACCOUNT kicker eyebrows.
+- **Gates:** typecheck:all clean (12/12 apps), i18n:check:strict green (`publicHeader.account` added to en/fr/de/es/pt/it/ar/zh/hi/yo/ig/ha), lint 0 errors.
+- **RCA doc:** `docs/v3/public-drawer-quality-rca-2026-05-23.md`
+- **Visual-verify checklist:** every public division domain on iPhone Safari + Android Chrome + desktop; reduced-motion + landscape; profile section expansion timing; tap-target feel.
 
 ---
 
