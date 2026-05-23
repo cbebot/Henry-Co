@@ -25,6 +25,7 @@ import { RankedMetricStrip } from "./RankedMetricStrip";
 import { SignalFeed } from "./SignalFeed";
 import { SmartHomeEmpty } from "./SmartHomeEmpty";
 import { SmartHomeHeader } from "./SmartHomeHeader";
+import { SmartHomeHero } from "./SmartHomeHero";
 
 const smartHomeLogger = logger.child({ namespace: "smart-home" });
 
@@ -145,6 +146,17 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        {/* ACCOUNT-PREMIUM-01: editorial hero band above the empty
+            composition so the first-run state still gets the premium
+            visual signature (calm gradient + serif headline + tiles
+            populated with zero-state copy from the overview slice). */}
+        <SmartHomeHero
+          firstName={firstName}
+          unreadCount={0}
+          attentionCount={0}
+          lastActivityIso={null}
+          savedItemsCount={0}
+        />
         <SmartHomeHeader
           firstName={firstName}
           unreadCount={0}
@@ -164,6 +176,18 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+      {/* ACCOUNT-PREMIUM-01: the editorial hero band sits above the
+          existing SmartHome composition. It answers "what's happening
+          with my stuff?" (eyebrow + headline + tiles) while the row
+          below keeps the realtime-status orb + saved-items rail near
+          the live data they describe. */}
+      <SmartHomeHero
+        firstName={firstName}
+        unreadCount={unreadCount}
+        attentionCount={attentionCount}
+        lastActivityIso={lastActivityIso}
+        savedItemsCount={savedItemsCount}
+      />
       <SmartHomeHeader
         firstName={firstName}
         unreadCount={unreadCount}

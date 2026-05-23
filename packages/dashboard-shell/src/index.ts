@@ -23,6 +23,11 @@ export * from "./components";
 // Shell chrome composition
 export * from "./shell";
 
+// ACCOUNT-PREMIUM-01 — customer-dashboard surface primitives.
+// (HeroCard / NextStepRow / MetricStrip / TimelineCard / EmptyStateCard / DivisionLanding)
+// Hosts may also import via the explicit subpath `@henryco/dashboard-shell/surfaces`.
+export * from "./surfaces";
+
 // Contracts (DASH-2+ consumption)
 export * from "./register";
 export * from "./home-widget";
