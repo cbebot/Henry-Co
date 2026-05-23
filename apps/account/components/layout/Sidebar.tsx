@@ -73,7 +73,7 @@ export default function Sidebar({ user }: SidebarProps) {
         </div>
         <Link
           href="/search"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
           aria-label={t("Search account and HenryCo routes")}
           title={t("Search account and HenryCo routes")}
         >

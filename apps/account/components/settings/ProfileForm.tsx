@@ -6,6 +6,7 @@ import { formatSurfaceTemplate, getSurfaceCopy, translateSurfaceLabel } from "@h
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { ButtonPendingContent, HenryCoActivityIndicator } from "@henryco/ui";
+import { useKeyboardAvoidance } from "@henryco/ui/mobile";
 import {
   getActiveCountries,
   getCountry,
@@ -52,6 +53,13 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
   const locale = useHenryCoLocale();
   const surfaceCopy = getSurfaceCopy(locale);
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  // V3-09(S2) — track the soft keyboard so the bottom Save action
+  // rises above the keyboard on mobile. The hook also emits
+  // henry.ui.mobile_keyboard.kept_visible / obscured telemetry tagged
+  // with the surface label below.
+  const { keyboardOpen, keyboardHeight } = useKeyboardAvoidance({
+    surface: "account_profile_edit",
+  });
   const profileLanguage = profile?.language ? normalizeLocale(profile.language) : null;
   const currentLanguage = normalizeLocale(effectiveLocale);
   const draft = useFormDraft<ProfileDraft>("account-settings-profile", {
@@ -433,11 +441,32 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         </div>
       </div>
 
-      <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
-        <ButtonPendingContent pending={loading} pendingLabel={t("Saving profile...")} spinnerLabel={t("Saving profile...")}>
-          {t("Save changes")}
-        </ButtonPendingContent>
-      </button>
+      <div
+        // V3-09(S2) — when the soft keyboard is open on mobile, rise
+        // above the obscured band so the primary action stays in view
+        // while the user is typing a field below the fold. `position:
+        // sticky` with `bottom: keyboardHeight` is the simplest
+        // visual-viewport pattern that matches `bottomInset` from the
+        // hook. No-op on desktop / when keyboard closed.
+        style={
+          keyboardOpen
+            ? {
+                position: "sticky",
+                bottom: `${keyboardHeight}px`,
+                paddingTop: "0.5rem",
+                paddingBottom: "0.5rem",
+                background: "var(--acct-bg, transparent)",
+                zIndex: 10,
+              }
+            : undefined
+        }
+      >
+        <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
+          <ButtonPendingContent pending={loading} pendingLabel={t("Saving profile...")} spinnerLabel={t("Saving profile...")}>
+            {t("Save changes")}
+          </ButtonPendingContent>
+        </button>
+      </div>
     </form>
   );
 }

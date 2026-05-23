@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import {
+  emitModalBackdropTap,
+  useAndroidBackClose,
+} from "@henryco/ui/mobile";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
 import { RADIUS, SPACING } from "../tokens/spacing";
@@ -35,6 +39,12 @@ export type DrawerProps = {
   closeLabel?: string;
   /** Override the drawer width. Default 22rem (352px). */
   width?: string;
+  /**
+   * V3-09(S5) — optional surface label for telemetry. When provided,
+   * emits `henry.ui.modal_escape.backdrop_tap` /
+   * `henry.ui.modal_escape.android_back`. Keep cardinality low.
+   */
+  telemetrySurface?: string;
 };
 
 export function Drawer({
@@ -45,6 +55,7 @@ export function Drawer({
   children,
   closeLabel = "Close",
   width = SPACING.chrome.drawerWidth,
+  telemetrySurface,
 }: DrawerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const leadingSentinelRef = useRef<HTMLSpanElement>(null);
@@ -65,6 +76,9 @@ export function Drawer({
       clearTimeout(t);
     };
   }, [open, onClose]);
+
+  // V3-09(S5) — Android hardware-back-button closes the drawer.
+  useAndroidBackClose(open, onClose, { surface: telemetrySurface });
 
   // Hard focus trap — leading sentinel forwards to the LAST focusable
   // (Shift+Tab from the input), trailing sentinel forwards to the FIRST
@@ -92,7 +106,11 @@ export function Drawer({
   return (
     <div
       role="presentation"
-      onClick={onClose}
+      onClick={() => {
+        // V3-09(S5) — backdrop close-path emits its own telemetry tag.
+        emitModalBackdropTap(telemetrySurface);
+        onClose();
+      }}
       style={{
         position: "fixed",
         inset: 0,

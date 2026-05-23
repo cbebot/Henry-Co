@@ -91,7 +91,12 @@ export type HenryEventName =
   | "henry.auth.session.refresh_failed"
   | "henry.auth.session.reauth_succeeded"
   | "henry.auth.session.draft_restored"
-  | "henry.auth.session.multitab_broadcast";
+  | "henry.auth.session.multitab_broadcast"
+  // ui/mobile — V3-09 foundation lock (mobile consistency)
+  | "henry.ui.mobile_keyboard.kept_visible"
+  | "henry.ui.mobile_keyboard.obscured"
+  | "henry.ui.modal_escape.backdrop_tap"
+  | "henry.ui.modal_escape.android_back";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

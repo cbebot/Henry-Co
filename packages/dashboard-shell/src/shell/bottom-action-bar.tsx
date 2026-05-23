@@ -215,6 +215,7 @@ export function BottomActionBar({
         onClose={() => setOpenSheet(null)}
         kicker={t("Workspace")}
         title={t("Modules")}
+        telemetrySurface="bottom_action_bar_modules"
       >
         <ModulesList
           modules={modules}
@@ -230,6 +231,7 @@ export function BottomActionBar({
         onClose={() => setOpenSheet(null)}
         kicker={t("Activity")}
         title={t("Inbox")}
+        telemetrySurface="bottom_action_bar_inbox"
       >
         {inboxBody ?? (
           <EmptyState
@@ -246,6 +248,7 @@ export function BottomActionBar({
       <BottomSheet
         open={openSheet === "more"}
         onClose={() => setOpenSheet(null)}
+        telemetrySurface="bottom_action_bar_more"
         kicker={t("Account")}
         title={t("More")}
         tall

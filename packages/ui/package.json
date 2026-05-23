@@ -12,6 +12,7 @@
     "./support": "./src/support/index.ts",
     "./public-shell": "./src/public-shell/index.ts",
     "./a11y": "./src/a11y/index.ts",
+    "./mobile": "./src/mobile/index.ts",
     "./identity": "./src/public/account-identity.ts",
     "./brand": "./src/brand/index.ts"
   },
@@ -26,6 +27,7 @@
     "@henryco/config": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/observability": "workspace:^",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",

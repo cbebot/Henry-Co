@@ -624,3 +624,51 @@
     font-size: 16px;
   }
 }
+
+/* ─────────────────────────────────────────────────────────── */
+/*  V3-09 — Safe-area inset utilities                          */
+/* ─────────────────────────────────────────────────────────── */
+
+/*
+ * Single source of truth for the four `env(safe-area-inset-*)` insets.
+ * Consumers import `safeAreaInsetClass` / `SAFE_AREA_UTILITIES` from
+ * `@henryco/ui/mobile` rather than hard-coding the class names — the
+ * names below are the binding contract.
+ *
+ * The `, 0px` fallback inside `env()` returns zero on non-notched
+ * viewports (desktop, older Android), so applying these classes
+ * unconditionally is safe — no media-query gating required.
+ *
+ * Tested baseline: iOS Safari 17+, Chrome iOS 120+, Chrome Android
+ * 120+, Samsung Internet 24+.
+ */
+.hc-safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.hc-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.hc-safe-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.hc-safe-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/*
+ * Companion margin utilities — useful when the host element already
+ * sets its own `padding-*` and the safe-area inset is a layout
+ * concern, not an internal-padding concern.
+ */
+.hc-safe-mt {
+  margin-top: env(safe-area-inset-top, 0px);
+}
+.hc-safe-mb {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+.hc-safe-ml {
+  margin-left: env(safe-area-inset-left, 0px);
+}
+.hc-safe-mr {
+  margin-right: env(safe-area-inset-right, 0px);
+}

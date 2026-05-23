@@ -287,7 +287,7 @@ export default function NotificationBell({
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`relative rounded-xl p-2 text-[var(--acct-muted)] transition hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--acct-gold)]/40 ${buttonClassName}`}
+        className={`relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--acct-muted)] transition hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--acct-gold)]/40 ${buttonClassName}`}
         aria-label={bellAriaLabel}
         aria-expanded={open}
         aria-haspopup="dialog"

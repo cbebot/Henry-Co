@@ -35,7 +35,7 @@ export default function OwnerSearchButton({
         onClick={open}
         className={
           className ??
-          "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--acct-line)] bg-[var(--acct-surface)] text-[var(--acct-muted)] transition-colors hover:text-[var(--acct-ink)]"
+          "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--acct-line)] bg-[var(--acct-surface)] text-[var(--acct-muted)] transition-colors hover:text-[var(--acct-ink)]"
         }
         aria-label={t("Open command palette")}
       >

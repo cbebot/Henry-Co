@@ -75,7 +75,7 @@ export function LearnSiteHeaderClient({
         />
       }
       showThemeToggle
-      themeToggleClassName="h-9 w-9 shrink-0 rounded-xl border border-[var(--learn-line)] bg-[rgba(8,14,22,0.45)] text-[var(--learn-ink)] shadow-none hover:bg-[rgba(12,18,28,0.55)] dark:border-[var(--learn-line)]"
+      themeToggleClassName="h-11 w-11 shrink-0 rounded-xl border border-[var(--learn-line)] bg-[rgba(8,14,22,0.45)] text-[var(--learn-ink)] shadow-none hover:bg-[rgba(12,18,28,0.55)] dark:border-[var(--learn-line)]"
       maxWidth="max-w-[92rem]"
       toolbarClassName="px-5 sm:px-8 xl:px-10"
       mobileMenuContainerClassName="px-5 sm:px-8 xl:px-10"

@@ -20,6 +20,7 @@ import {
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
+import { useKeyboardAvoidance } from "@henryco/ui/mobile";
 import type { UserAddressRecord } from "@henryco/address-selector";
 import { useMarketplaceCart } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
@@ -171,6 +172,10 @@ export function CheckoutExperience({
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const { moveCartItemToSaved, pendingSavedItemIds } = useMarketplaceCart();
+  // V3-09(S2) — Keyboard avoidance for the mobile checkout flow.
+  // Telemetry surface label is shared across all three steps so the
+  // event cardinality stays one label per checkout (not three).
+  useKeyboardAvoidance({ surface: "marketplace_checkout" });
   const subtotal = cart.subtotal;
   const shipping = subtotal > 350000 ? 0 : 18000;
   const total = subtotal + shipping;
@@ -1080,7 +1085,7 @@ function PaymentStep({
                 value={bankReference}
                 onChange={(event) => setBankReference(event.target.value)}
                 className="market-input rounded-[1.2rem] px-4 py-3"
-                placeholder="Enter the bank receipt/reference number"
+                placeholder={t("Enter the bank receipt/reference number")}
                 required={method === "bank_transfer"}
               />
             </label>

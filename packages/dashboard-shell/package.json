@@ -31,6 +31,7 @@
     "@henryco/auth": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
+    "@henryco/ui": "workspace:^",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "lucide-react": "^0.577.0",
