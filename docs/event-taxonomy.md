@@ -51,6 +51,8 @@ flowchart LR
 | `logistics` | `logistics_quote`, `logistics_booking` | `henry.logistics.quote.requested`, `henry.logistics.booking.created` |
 | `property` | `property_saved`, `property_unsaved`, `property_inquiry`, `property_viewing_requested`, `property_listing_submitted`, `property_listing_updated`, `property_listing_reviewed` | `henry.property.listing.saved`, `henry.property.listing.unsaved`, `henry.property.listing.inquiry_submitted`, `henry.property.listing.viewing_requested`, `henry.property.listing.submitted`, `henry.property.listing.updated`, `henry.property.listing.reviewed` |
 | `studio` | `studio_lead_submitted`, `studio_proposal_ready`, `studio_payment_updated`, `studio_project_updated`, `studio_message_added` | `henry.studio.lead.submitted`, `henry.studio.proposal.ready`, `henry.studio.payment.updated`, `henry.studio.project.updated`, `henry.studio.message.added` |
+| `uploads` | `cloudinary_requested`, `cloudinary_succeeded`, `cloudinary_failed`, `cloudinary_degraded` | `henry.uploads.cloudinary.requested`, `henry.uploads.cloudinary.succeeded`, `henry.uploads.cloudinary.failed`, `henry.uploads.cloudinary.degraded` |
+| `marketplace (proof)` | `payment_proof_uploaded`, `payment_proof_failed` | `henry.marketplace.payment_proof.uploaded`, `henry.marketplace.payment_proof.failed` |
 
 ## Rules
 

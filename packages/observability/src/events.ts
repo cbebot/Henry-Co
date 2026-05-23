@@ -120,7 +120,24 @@ export type HenryEventName =
   // fires when the skeleton stays mounted longer than 3s (configurable).
   // Feeds the owner workspace slow-surface tile.
   | "henry.ui.skeleton.shown"
-  | "henry.ui.skeleton.exceeded_threshold";
+  | "henry.ui.skeleton.exceeded_threshold"
+  // uploads / Cloudinary reliability — RELIABILITY-01.
+  // Every Cloudinary touch-point emits the canonical pair (`requested`
+  // on entry to the upload helper, `succeeded`/`failed` on resolve) so
+  // the owner-workspace upload-health tile can compute per-folder
+  // success rates without scraping logs. `degraded` fires when the
+  // retry budget exhausts and the route returns the V3-10 degraded-
+  // side-effect envelope to the caller.
+  | "henry.uploads.cloudinary.requested"
+  | "henry.uploads.cloudinary.succeeded"
+  | "henry.uploads.cloudinary.failed"
+  | "henry.uploads.cloudinary.degraded"
+  // marketplace payment proof — pairs with the new
+  // /api/checkout/payment-proof route. Owner-workspace finance tile
+  // joins these to `marketplace_payment_records.proof_url` to detect
+  // orders that submitted without proof reaching Cloudinary.
+  | "henry.marketplace.payment_proof.uploaded"
+  | "henry.marketplace.payment_proof.failed";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
