@@ -1,12 +1,13 @@
 import { ShoppingBag } from "lucide-react";
-import type {
-  DashboardModule,
-  HomeWidget,
-  PaletteEntry,
-  NotificationCategory,
-  RoleDecision,
-  RouteEntry,
-  EmptyTeaching,
+import {
+  viewerCanUseCustomerSurface,
+  type DashboardModule,
+  type HomeWidget,
+  type PaletteEntry,
+  type NotificationCategory,
+  type RoleDecision,
+  type RouteEntry,
+  type EmptyTeaching,
 } from "@henryco/dashboard-shell";
 
 import {
@@ -25,11 +26,21 @@ import { loadMarketplaceSnapshot, isVendor } from "./data";
  * (§B.marketplace-7). The module owns five marketplace notification
  * categories: marketplace.{order,dispute,payout,application,moderation}.
  *
- * Eligibility: customer viewers always see the module. The
- * `getRoleGate` returns `restrictions: ["vendor"]` when the viewer
- * has no vendor application/store; the SellerStatusCard widget
- * surfaces only when the viewer is a vendor (via `isVendor()` from
- * the snapshot).
+ * Eligibility: every authenticated viewer in the customer surface
+ * (`apps/account`) can use the marketplace module — including owners
+ * and staff browsing apps/account, because every human has a
+ * customer-shaped buying surface. The `getRoleGate` returns
+ * `restrictions: ["vendor"]` (TODO) when the viewer has no vendor
+ * application/store; the SellerStatusCard widget surfaces only when
+ * the viewer is a vendor (via `isVendor()` from the snapshot).
+ *
+ * MODULES-01 (2026-05-23) widened the gate from `viewer.kind ===
+ * "customer"` to `viewerCanUseCustomerSurface(viewer)` after the owner
+ * reported `/modules/marketplace` returning "not exists" on mobile —
+ * the old gate denied owners (kind: "owner") and staff (kind:
+ * "staff") who legitimately use the customer surface. Data-layer
+ * gates in `data.ts` remain `kind === "customer"` because those load
+ * customer-context rows only.
  */
 export const marketplaceModule: DashboardModule = {
   slug: "marketplace",
@@ -39,11 +50,11 @@ export const marketplaceModule: DashboardModule = {
   railSlot: "primary",
 
   getEligibleViewer(viewer) {
-    return viewer.kind === "customer" ? "allowed" : "hidden";
+    return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
   },
 
   getRoleGate(viewer): RoleDecision | null {
-    if (viewer.kind !== "customer") return null;
+    if (!viewerCanUseCustomerSurface(viewer)) return null;
     return { kind: "allow", role: viewer.role };
   },
 
