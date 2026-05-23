@@ -200,10 +200,18 @@ export const COMPANY = {
       dark: "#18120C",
       supportEmail: BRAND_EMAILS.marketplace,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. "Home" intentionally absent — the brand
+      // logo links to `/`. "Track" surfaces the customer's #1 post-purchase
+      // intent ("where is my order?") that previously routed through the
+      // account-side mirror only — the real route lives at
+      // `apps/marketplace/app/(public)/track/page.tsx`. Search is mirrored
+      // in nav for keyboard / drawer paths even though the toolbar has a
+      // visible search input on lg+. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
-        { label: "Home", href: "/" },
         { label: "Search", href: "/search" },
         { label: "Deals", href: "/deals" },
+        { label: "Track", href: "/track" },
         { label: "Sell", href: "/sell" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
