@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionUrl } from "@henryco/config";
+import { getDivisionUrl, henryDomainHost } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -124,7 +124,7 @@ function notificationBelongsToJobs(row: Record<string, unknown>) {
     division === JOBS_DIVISION ||
     category === JOBS_DIVISION ||
     referenceType.startsWith("jobs_") ||
-    actionUrl.includes("jobs.henrycogroup.com") ||
+    actionUrl.includes(henryDomainHost("jobs")) ||
     actionUrl.includes("/candidate/") ||
     actionUrl.includes("/jobs/") ||
     title.includes("application") ||

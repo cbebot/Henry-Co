@@ -1,3 +1,4 @@
+import { henryDomainHost } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import {
   HeroCard,
@@ -114,11 +115,12 @@ export default async function JobsPage() {
           ? t("1 role on your shortlist.")
           : `${saved.length} ${t("roles on your shortlist.")}`;
 
+  const jobsHost = henryDomainHost("jobs");
   const blurb =
     state === "empty"
       ? t(
-          "Browse live roles on jobs.henrycogroup.com, save shortlists, and apply with one tap. Recruiter updates land in your account in real time.",
-        )
+          "Browse live roles on {host}, save shortlists, and apply with one tap. Recruiter updates land in your account in real time.",
+        ).replace("{host}", jobsHost)
       : t(
           "Applications, saved roles, recruiter updates, and profile signal — all mirrored from HenryCo Jobs into your account.",
         );
@@ -282,8 +284,8 @@ export default async function JobsPage() {
                   saved={saved}
                   emptyTitle={t("No saved roles")}
                   emptyBody={t(
-                    "Browse live roles and tap the bookmark to keep them here. We mirror them straight from jobs.henrycogroup.com.",
-                  )}
+                    "Browse live roles and tap the bookmark to keep them here. We mirror them straight from {host}.",
+                  ).replace("{host}", jobsHost)}
                   formatStamp={formatStamp}
                 />
               </div>
