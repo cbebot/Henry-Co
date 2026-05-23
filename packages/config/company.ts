@@ -378,10 +378,15 @@ export const COMPANY = {
       dark: "#081414",
       supportEmail: BRAND_EMAILS.learn,
       supportPhone: "+2349133957084",
+      // Public chrome primary nav. Rename "How it works" → "Academy" — the
+      // route slug is `/academy`, the new label is terser, and "Academy"
+      // matches the brand surface across emails/marketing. No structural
+      // change to the URL set otherwise; every route exists. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
         { label: "Courses", href: "/courses" },
         { label: "Paths", href: "/paths" },
-        { label: "How it works", href: "/academy" },
+        { label: "Academy", href: "/academy" },
         { label: "Certificates", href: "/certifications" },
         { label: "Teach", href: "/teach" },
         { label: "Trust", href: "/trust" },
