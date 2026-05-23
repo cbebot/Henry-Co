@@ -7,6 +7,7 @@ import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { HenryCoMonogram } from "@henryco/ui/brand";
+import { BottomSheet, type BottomSheetCloseReason } from "@henryco/ui/mobile";
 import {
   Bell,
   Globe,
@@ -22,7 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { buildSharedAccountLoginUrl, buildSharedAccountSignupUrl } from "@/lib/marketplace/shared-account";
 import { cn } from "@/lib/utils";
@@ -207,33 +208,43 @@ export function PublicHeaderClient() {
       }
     : null;
 
-  useEffect(() => {
-    if (!mobileOpen) return;
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpenPath(null);
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [mobileOpen]);
+  // Stable ids for the trigger ↔ sheet relationship. Using `useId()`
+  // (SSR-safe) so the same id is on the trigger's `aria-controls` and
+  // the sheet's `id`.
+  const drawerIdBase = useId();
+  const drawerId = `marketplace-public-mobile-nav-${drawerIdBase}`;
+  const drawerTitleId = `${drawerId}-title`;
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
+
+  // The legacy Escape-listener / `body.overflow = "hidden"` effect
+  // that used to live here was the FIX-CHROME-01 root cause: setting
+  // `body.style.overflow = "hidden"` detaches every sticky descendant
+  // from the viewport because the body stops being the scrolling
+  // container. The sticky `<header>` (and the drawer nested inside it)
+  // collapse back to their document-flow position, rendered at the
+  // top of the page far above the user's current scroll — only the
+  // `fixed inset-0` backdrop stayed visible, matching the owner's
+  // iPhone screenshot. The `BottomSheet` primitive below owns Esc,
+  // backdrop tap, Android back, focus trap, and iOS-Safari-safe
+  // body scroll lock (via `position: fixed; top: -<scrollY>px` +
+  // `window.scrollTo` restore), so this entire effect is gone.
+  const closeDrawer = useCallback(() => setMobileOpenPath(null), []);
+  const handleSheetClose = useCallback(
+    (_reason: BottomSheetCloseReason) => setMobileOpenPath(null),
+    [],
+  );
 
   return (
     <header
       data-marketplace-interactive="true"
       className="sticky top-0 z-50 px-3 pt-3 sm:px-6 xl:px-8"
     >
-      {mobileOpen ? (
-        <button
-          type="button"
-          aria-label={translateSurfaceLabel(locale, "Close navigation")}
-          className="fixed inset-0 z-40 bg-black/45 backdrop-blur-[2px] motion-reduce:backdrop-blur-none lg:hidden"
-          onClick={() => setMobileOpenPath(null)}
-        />
-      ) : null}
+      {/* FIX-CHROME-01: the inline `fixed inset-0` backdrop is gone.
+       * The drawer below is now a `BottomSheet` portal-mounted at
+       * `document.body`, so it renders its own backdrop outside any
+       * sticky/transform ancestor and cannot orphan when the page is
+       * scrolled. */}
       <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
         <div className="flex items-center gap-3 border-b border-[var(--market-line)] px-4 py-3 sm:px-5">
           <Link
@@ -407,11 +418,13 @@ export function PublicHeaderClient() {
             )}
 
             <button
+              ref={triggerRef}
               type="button"
               onClick={() => setMobileOpenPath((openPath) => (openPath === currentPath ? null : currentPath))}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--market-noir)] lg:hidden"
+              aria-haspopup="dialog"
               aria-expanded={mobileOpen}
-              aria-controls="marketplace-public-mobile-nav"
+              aria-controls={drawerId}
               aria-label={mobileOpen ? translateSurfaceLabel(locale, "Close navigation") : translateSurfaceLabel(locale, "Open navigation")}
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -444,133 +457,170 @@ export function PublicHeaderClient() {
           </p>
         </div>
 
-        <div
-          id="marketplace-public-mobile-nav"
-          className={cn(
-            "overflow-hidden border-t border-[var(--market-line)] transition-[max-height,opacity] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0 lg:hidden",
-            mobileOpen ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0"
-          )}
-        >
-          <div className="space-y-5 px-4 py-5 sm:px-5">
-            <form
-              action="/search"
-              method="GET"
-              className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3"
+      </div>
+      {/* Portal-rendered BottomSheet drawer — replaces the inline
+       * `max-height` collapse + body.overflow=hidden pattern. Anchored
+       * at `document.body`, so it always renders at the bottom of the
+       * viewport regardless of how deep the user has scrolled. The
+       * primitive owns Esc, Android back, swipe-down, backdrop tap,
+       * focus trap, and iOS-Safari-safe body scroll lock. Content
+       * inside is preserved verbatim from the legacy drawer:
+       * mobile-search → primary nav → account links (signed-in)
+       * OR sign-in / sign-up CTAs (guest). */}
+      <BottomSheet
+        open={mobileOpen}
+        onClose={handleSheetClose}
+        id={drawerId}
+        labelledBy={drawerTitleId}
+        surface="marketplace.public_header_drawer"
+        triggerRef={triggerRef}
+        initialFocusRef={closeRef}
+      >
+        <header className="flex items-start justify-between gap-3 border-b border-[var(--market-line)] px-5 pb-4 pt-2">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
+              {surfaceCopy.marketplaceHeader.brandSubtitle}
+            </p>
+            <p
+              id={drawerTitleId}
+              className="mt-1 line-clamp-2 text-base font-semibold tracking-tight text-[var(--market-paper-white)]"
             >
-              <Search className="h-4 w-4 text-[var(--market-muted)]" />
-              <input
-                name="q"
-                placeholder={surfaceCopy.marketplaceHeader.shortSearchPlaceholder}
-                className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
-              />
-            </form>
+              {translateSurfaceLabel(locale, "Open navigation")}
+            </p>
+          </div>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={closeDrawer}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-muted)] transition hover:text-[var(--market-paper-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
+            aria-label={translateSurfaceLabel(locale, "Close navigation")}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </header>
 
-            <nav className="grid gap-3">
-              {navLinks.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpenPath(null)}
-                  className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                >
-                  {item.label}
-                </Link>
-              ))}
+        <div
+          className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-5 sm:px-5"
+          style={{ WebkitOverflowScrolling: "touch" } as CSSProperties}
+        >
+          <form
+            action="/search"
+            method="GET"
+            className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3"
+          >
+            <Search className="h-4 w-4 text-[var(--market-muted)]" />
+            <input
+              name="q"
+              placeholder={surfaceCopy.marketplaceHeader.shortSearchPlaceholder}
+              className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
+            />
+          </form>
+
+          <nav className="grid gap-3">
+            {navLinks.map((item) => (
               <Link
-                href={getHubUrl("/search")}
-                onClick={() => setMobileOpenPath(null)}
+                key={item.href}
+                href={item.href}
+                onClick={closeDrawer}
                 className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
               >
-                Search HenryCo
+                {item.label}
               </Link>
-              {runtime.shell.viewer.signedIn ? (
-                <>
-                  <Link
-                    href={getAccountUrl("/")}
-                    onClick={() => setMobileOpenPath(null)}
-                    className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    <UserRound className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
-                    {translateSurfaceLabel(locale, "Profile & account")}
-                  </Link>
-                  <Link
-                    href="/account/wishlist"
-                    onClick={() => setMobileOpenPath(null)}
-                    className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    <Heart className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
-                    {translateSurfaceLabel(locale, "Saved items")}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      runtime.openCart();
-                      setMobileOpenPath(null);
-                    }}
-                    className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-left text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    <span className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
-                      {translateSurfaceLabel(locale, "Cart")}
+            ))}
+            <Link
+              href={getHubUrl("/search")}
+              onClick={closeDrawer}
+              className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+            >
+              Search HenryCo
+            </Link>
+            {runtime.shell.viewer.signedIn ? (
+              <>
+                <Link
+                  href={getAccountUrl("/")}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  <UserRound className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                  {translateSurfaceLabel(locale, "Profile & account")}
+                </Link>
+                <Link
+                  href="/account/wishlist"
+                  onClick={closeDrawer}
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  <Heart className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                  {translateSurfaceLabel(locale, "Saved items")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    runtime.openCart();
+                    closeDrawer();
+                  }}
+                  className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-left text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                    {translateSurfaceLabel(locale, "Cart")}
+                  </span>
+                  {runtime.shell.cart.count ? (
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                      {runtime.shell.cart.count}
                     </span>
-                    {runtime.shell.cart.count ? (
-                      <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
-                        {runtime.shell.cart.count}
-                      </span>
-                    ) : null}
-                  </button>
-                  <Link
-                    href="/account/orders"
-                    onClick={() => setMobileOpenPath(null)}
-                    className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    <Package className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
-                    {translateSurfaceLabel(locale, "Orders")}
-                  </Link>
-                  <a
-                    href={getAccountUrl("/settings")}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => setMobileOpenPath(null)}
-                    className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    <Globe className="h-4 w-4 text-zinc-400" aria-hidden />
-                    {translateSurfaceLabel(locale, "Language & preferences")}
-                  </a>
-                  <a
-                    href={getAccountUrl("/security")}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => setMobileOpenPath(null)}
-                    className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    <Settings2 className="h-4 w-4 text-zinc-400" aria-hidden />
-                    {translateSurfaceLabel(locale, "Settings")}
-                  </a>
-                  <MobileSignOutRow onNavigate={() => setMobileOpenPath(null)} />
-                </>
-              ) : (
-                <>
-                  <Link
-                    href={loginHref}
-                    onClick={() => setMobileOpenPath(null)}
-                    className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                  >
-                    {translateSurfaceLabel(locale, "Sign in")}
-                  </Link>
-                  <Link
-                    href={signupHref}
-                    onClick={() => setMobileOpenPath(null)}
-                    className="rounded-[1.35rem] border border-[var(--market-brass)] bg-[var(--market-brass)] px-4 py-3 text-sm font-bold text-[var(--market-noir)]"
-                  >
-                    {translateSurfaceLabel(locale, "Get started")}
-                  </Link>
-                </>
-              )}
-            </nav>
-          </div>
+                  ) : null}
+                </button>
+                <Link
+                  href="/account/orders"
+                  onClick={closeDrawer}
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  <Package className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                  {translateSurfaceLabel(locale, "Orders")}
+                </Link>
+                <a
+                  href={getAccountUrl("/settings")}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={closeDrawer}
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  <Globe className="h-4 w-4 text-zinc-400" aria-hidden />
+                  {translateSurfaceLabel(locale, "Language & preferences")}
+                </a>
+                <a
+                  href={getAccountUrl("/security")}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={closeDrawer}
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  <Settings2 className="h-4 w-4 text-zinc-400" aria-hidden />
+                  {translateSurfaceLabel(locale, "Settings")}
+                </a>
+                <MobileSignOutRow onNavigate={closeDrawer} />
+              </>
+            ) : (
+              <>
+                <Link
+                  href={loginHref}
+                  onClick={closeDrawer}
+                  className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  {translateSurfaceLabel(locale, "Sign in")}
+                </Link>
+                <Link
+                  href={signupHref}
+                  onClick={closeDrawer}
+                  className="rounded-[1.35rem] border border-[var(--market-brass)] bg-[var(--market-brass)] px-4 py-3 text-sm font-bold text-[var(--market-noir)]"
+                >
+                  {translateSurfaceLabel(locale, "Get started")}
+                </Link>
+              </>
+            )}
+          </nav>
         </div>
-      </div>
+      </BottomSheet>
     </header>
   );
 }
