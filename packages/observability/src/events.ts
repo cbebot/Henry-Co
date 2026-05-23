@@ -56,6 +56,13 @@ export type HenryEventName =
   | "henry.marketplace.dispute.opened"
   | "henry.marketplace.dispute.updated"
   | "henry.marketplace.dispute.resolved"
+  // marketplace profile drawer (mobile workspace nav) — DESIGN-01.
+  // `opened` fires when the user taps the trigger; `closed` fires on
+  // any dismissal (`via` payload identifies the path); `item_selected`
+  // fires when a nav link is tapped (followed by `navigation` close).
+  | "henry.marketplace.profile_drawer.opened"
+  | "henry.marketplace.profile_drawer.closed"
+  | "henry.marketplace.profile_drawer.item_selected"
   // care
   | "henry.care.booking.updated"
   // jobs

@@ -24,7 +24,8 @@
     "= 1024 && unit",
     "Realtime updates are live",
     "Loading content.",
-    "Keyboard shortcuts"
+    "Keyboard shortcuts",
+    "Close workspace menu"
   ],
   "filePrefixes": [
     "apps/super-app",
