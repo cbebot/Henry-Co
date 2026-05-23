@@ -17,6 +17,7 @@ export { AccountDropdown } from "./account-dropdown";
 
 export { PublicRouteLoader } from "./public-route-loader";
 export { PublicPageSkeleton } from "./public-page-skeleton";
+export { PublicHomeSkeleton } from "./public-home-skeleton";
 export { PublicShellLayout } from "./public-shell-layout";
 export { PublicThemeGuard } from "./public-theme-guard";
 export { PublicBrandLoader } from "./public-brand-loader";

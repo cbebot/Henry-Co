@@ -107,7 +107,13 @@ export type HenryEventName =
   | "henry.notification.failed"
   | "henry.message.delivered"
   | "henry.message.read"
-  | "henry.message.failed";
+  | "henry.message.failed"
+  // ui-state telemetry — V3-05 foundation lock (kill loading theater).
+  // `shown` fires on StructuredSkeleton mount, `exceeded_threshold`
+  // fires when the skeleton stays mounted longer than 3s (configurable).
+  // Feeds the owner workspace slow-surface tile.
+  | "henry.ui.skeleton.shown"
+  | "henry.ui.skeleton.exceeded_threshold";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
