@@ -91,6 +91,13 @@ export const COMPANY = {
       dark: "#05070D",
       supportEmail: BRAND_EMAILS.hello,
       supportPhone: GROUP_SUPPORT_PHONE,
+      // Homepage anchor nav (jumps to in-page `#` IDs on `/`). The
+      // non-homepage inner-site primary nav is defined separately in
+      // `packages/ui/src/public-shell/navigation/site-nav.hub.ts` via
+      // `hubInnerNav` — those two surfaces have different IA needs and
+      // should not share an array. Anchor entries below stay in lockstep
+      // with section IDs on the home page. Audit:
+      // docs/v3/public-nav-intelligence-2026-05-23.md.
       publicNav: [
         { label: "Directory", href: "/#directory" },
         { label: "How It Works", href: "/#how" },
