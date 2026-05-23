@@ -1,4 +1,11 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
+import {
+  HeroCard,
+  DivisionLanding,
+  type HeroCardTile,
+  type HeroCardBreakdownRow,
+} from "@henryco/dashboard-shell/surfaces";
+
 import { requireAccountUser } from "@/lib/auth";
 import { getProfile, getPreferences } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -8,7 +15,18 @@ import NotificationSignalSettingsCard from "@/components/settings/NotificationSi
 import PrivacyDataControls from "@/components/settings/PrivacyDataControls";
 
 import "@/components/settings/editorial.css";
-import { SettingsHero } from "@/components/settings/SettingsHero";
+import {
+  DIVISION_ACCENT_VAR,
+  DIVISION_LABEL,
+  DIVISION_ORDER,
+  activeChannels,
+  activeDivisions,
+  identityBlurb,
+  identityHeadline,
+  identityState,
+  profileCompleteness,
+  regionFingerprint,
+} from "@/components/settings/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -19,14 +37,11 @@ export const metadata = {
 };
 
 /**
- * V3 follow-up — /settings editorial premium rebuild.
+ * Settings landing.
  *
- * Replaces the generic <PageHeader> chrome with <SettingsHero>: eyebrow,
- * state-driven headline, capability tiles (profile completeness,
- * notification channels active, region fingerprint) and a "By division"
- * side panel. The three existing form cards (Profile, Notification
- * Preferences, Privacy) are preserved verbatim — the upgrade is purely
- * additive premium chrome.
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2D). Lifts SettingsHero into the
+ * shared <HeroCard variant="paired" /> primitive. Preserves the three forms
+ * (Profile, Notifications, Privacy) verbatim.
  */
 export default async function SettingsPage() {
   const [user, locale] = await Promise.all([requireAccountUser(), getAccountAppLocale()]);
@@ -35,49 +50,132 @@ export default async function SettingsPage() {
     getProfile(user.id),
     getPreferences(user.id),
   ]);
+  const state = identityState(profile, preferences);
+  const headline = identityHeadline(state, profile, preferences);
+  const blurb = identityBlurb(state);
+  const { filled: completenessFilled, total: completenessTotal } = profileCompleteness(profile);
+  const channels = activeChannels(preferences);
+  const divisions = activeDivisions(preferences);
+  const region = regionFingerprint(profile);
+
+  const verificationLabel =
+    state === "unverified"
+      ? t("Setup pending")
+      : state === "verified-base"
+        ? t("Base verified")
+        : state === "power-user"
+          ? t("Power-user tier")
+          : t("Verified rich");
+
+  // ── Tiles ────────────────────────────────────────────────────────
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: t("Profile"),
+      value: `${completenessFilled} / ${completenessTotal}`,
+      foot:
+        completenessFilled === completenessTotal
+          ? t("Every field filled")
+          : completenessFilled === 0
+            ? t("Start with your full name")
+            : `${completenessTotal - completenessFilled} ${t("to add")}`,
+      tone: completenessFilled === completenessTotal ? "accent" : "default",
+    },
+    {
+      label: t("Channels"),
+      value: channels.count,
+      foot:
+        channels.count === 0
+          ? t("Turn on at least one channel")
+          : `${channels.count}/${channels.total} ${t("active")}`,
+      tone: channels.count > 0 ? "active" : "warning",
+    },
+    {
+      label: t("Region"),
+      value: region.country ?? region.language ?? "—",
+      foot: region.language ?? undefined,
+    },
+  ];
+
+  // ── Division breakdown ──────────────────────────────────────────
+  const enabledDivisionKeys = DIVISION_ORDER.filter(
+    (key) => divisions.perDivision[key],
+  );
+  const breakdown: ReadonlyArray<HeroCardBreakdownRow> = enabledDivisionKeys.map((key) => ({
+    label: DIVISION_LABEL[key],
+    count: 1,
+    color: `var(${DIVISION_ACCENT_VAR[key]})`,
+  }));
 
   return (
-    <div className="acct-settings acct-fade-in">
-      <SettingsHero profile={profile} preferences={preferences} />
-
-      <section aria-labelledby="acct-settings-profile">
-        <div className="acct-settings__section-head">
-          <h2 id="acct-settings-profile" className="acct-settings__section-title">
-            {t("Profile")}
-          </h2>
-          <span className="acct-settings__section-meta">{t("Identity")}</span>
-        </div>
-        <div className="acct-settings__card">
-          <p className="acct-settings__card-kicker">{t("Who you are on HenryCo")}</p>
-          <ProfileForm profile={profile} email={user.email} effectiveLocale={locale} />
-        </div>
-      </section>
-
-      <section aria-labelledby="acct-settings-notifications">
-        <div className="acct-settings__section-head">
-          <h2 id="acct-settings-notifications" className="acct-settings__section-title">
-            {t("Notifications")}
-          </h2>
-          <span className="acct-settings__section-meta">{t("Signal · channels")}</span>
-        </div>
-        <div className="acct-settings__card">
-          <p className="acct-settings__card-kicker">{t("How HenryCo reaches you")}</p>
-          <div className="space-y-4">
-            <NotificationSignalSettingsCard />
-            <PreferencesForm preferences={preferences} />
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="acct-settings-privacy">
-        <div className="acct-settings__section-head">
-          <h2 id="acct-settings-privacy" className="acct-settings__section-title">
-            {t("Privacy & data")}
-          </h2>
-          <span className="acct-settings__section-meta">{t("Controls")}</span>
-        </div>
-        <PrivacyDataControls />
-      </section>
-    </div>
+    <DivisionLanding
+      className="acct-settings acct-fade-in"
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={
+            state === "unverified"
+              ? "empty"
+              : state === "power-user"
+                ? "calm"
+                : "active"
+          }
+          eyebrow={t("HenryCo · identity & preferences")}
+          headline={t(headline)}
+          blurb={t(blurb)}
+          ariaLabel={t("Identity & preferences overview")}
+          ariaTilesLabel={t("Identity capability snapshot")}
+          tiles={tiles}
+          side={{
+            kicker: verificationLabel,
+            title: t("By division"),
+            body:
+              enabledDivisionKeys.length === 0
+                ? t("Toggle the divisions you want to hear from in Notifications below.")
+                : `${enabledDivisionKeys.length} ${t("divisions reach you")}`,
+            breakdown:
+              breakdown.length > 0
+                ? {
+                    label: t("By division"),
+                    rows: breakdown,
+                    ariaLabel: t("Divisions reaching you"),
+                  }
+                : undefined,
+          }}
+        />
+      }
+      sections={[
+        {
+          id: "acct-settings-profile",
+          title: t("Profile"),
+          meta: t("Identity"),
+          content: (
+            <div className="acct-settings__card">
+              <p className="acct-settings__card-kicker">{t("Who you are on HenryCo")}</p>
+              <ProfileForm profile={profile} email={user.email} effectiveLocale={locale} />
+            </div>
+          ),
+        },
+        {
+          id: "acct-settings-notifications",
+          title: t("Notifications"),
+          meta: t("Signal · channels"),
+          content: (
+            <div className="acct-settings__card">
+              <p className="acct-settings__card-kicker">{t("How HenryCo reaches you")}</p>
+              <div className="space-y-4">
+                <NotificationSignalSettingsCard />
+                <PreferencesForm preferences={preferences} />
+              </div>
+            </div>
+          ),
+        },
+        {
+          id: "acct-settings-privacy",
+          title: t("Privacy & data"),
+          meta: t("Controls"),
+          content: <PrivacyDataControls />,
+        },
+      ]}
+    />
   );
 }

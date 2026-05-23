@@ -1,5 +1,15 @@
 import { RouteLiveRefresh } from "@henryco/ui";
 import { getAccountCopy } from "@henryco/i18n/server";
+import { formatAccountTemplate } from "@henryco/i18n";
+import {
+  HeroCard,
+  NextStepRow,
+  MetricStrip,
+  EmptyStateCard,
+  DivisionLanding,
+  type HeroCardTile,
+  type MetricStripCell,
+} from "@henryco/dashboard-shell/surfaces";
 
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { requireAccountUser } from "@/lib/auth";
@@ -22,22 +32,35 @@ import {
 import "@/components/wallet/styles.css";
 import { ActivityFeed } from "@/components/wallet/ActivityFeed";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
-import { HeroBalance } from "@/components/wallet/HeroBalance";
-import { PendingOpsTiles } from "@/components/wallet/PendingOpsTile";
 import { QuickActions } from "@/components/wallet/QuickActions";
 import { SpendStrip } from "@/components/wallet/SpendStrip";
 import { TrustLadder } from "@/components/wallet/TrustLadder";
-import type { WalletTransaction } from "@/components/wallet/helpers";
+import { formatKoboMajor, type WalletTransaction } from "@/components/wallet/helpers";
 
 export const dynamic = "force-dynamic";
 
-function format(template: string, values: Record<string, string | number>): string {
-  return Object.entries(values).reduce(
-    (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)),
-    template,
-  );
-}
-
+/**
+ * Wallet landing — the premium-feel anchor for the customer dashboard.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2A).
+ *
+ * Composition (top → bottom):
+ *   1. <HeroCard variant="paired" tone={state}> — available balance is the
+ *      headline value; 3 tiles for verified/pending-funding/pending-withdrawal;
+ *      side panel summarises the trust-ladder readiness.
+ *   2. <NextStepRow> — when pending funding without proof OR identity blocks
+ *      withdrawal, the highest-impact next move surfaces here.
+ *   3. <MetricStrip> — quick glance over pending operations + available cell
+ *      (preserves PendingOpsTiles intent in a primitive shape).
+ *   4. Sections — Actions, Flow (spend strip + trust ladder), Funding
+ *      requests (conditional), Activity.
+ *
+ * State picker (page-local):
+ *   - empty:     wallet has zero history and nothing pending.
+ *   - attention: pending funding without proof OR identity-blocked withdrawal.
+ *   - active:    pending funding or withdrawal in flight.
+ *   - calm:      verified balance with no pending operations.
+ */
 export default async function WalletPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const accountCopy = getAccountCopy(locale);
@@ -73,18 +96,28 @@ export default async function WalletPage() {
   const pendingWithdrawalCount = (
     withdrawalRequests as Array<Record<string, unknown>>
   ).filter((r) => isPendingWithdrawalStatus(String(r.status || ""))).length;
-  const pendingFundingCount = (requests as Array<Record<string, unknown>>).filter(
-    (r) => {
-      const s = String(r.status || "");
-      return s !== "completed" && s !== "verified";
-    },
-  ).length;
+  const fundingRequests = requests as Array<{
+    id: string;
+    amount_kobo: number;
+    status: string;
+    reference: string | null;
+    proof_url?: string | null;
+    created_at: string;
+  }>;
+  const pendingFundingCount = fundingRequests.filter((r) => {
+    const s = String(r.status || "");
+    return s !== "completed" && s !== "verified";
+  }).length;
+  // Funding requests awaiting proof — the highest-friction status.
+  const fundingAwaitingProof = fundingRequests.find((r) => {
+    const status = String(r.status || "");
+    return !r.proof_url && status !== "completed" && status !== "verified";
+  }) ?? null;
 
   const transactions: WalletTransaction[] = (rawTransactions as Array<Record<string, unknown>>)
     .filter((t) => {
       const refType = String(t.reference_type || "");
       const status = String(t.status || "");
-      // Hide noisy pending funding-request entries until they settle.
       if (
         refType === "wallet_funding_request" &&
         status !== "completed" &&
@@ -120,49 +153,117 @@ export default async function WalletPage() {
           ? copy.trust.verificationLabels.rejected
           : copy.trust.verificationLabels.notSubmitted;
 
-  return (
-    <div className="acct-wal acct-fade-in">
-      <RouteLiveRefresh />
-      <HeroBalance
-        balanceKobo={balanceKobo}
-        pendingFundingKobo={pending_kobo}
-        pendingWithdrawalKobo={pendingWithdrawalKobo}
-        availableKobo={availableBalanceKobo}
-        currency={wallet.currency || "NGN"}
-        settlementNote={region.settlementNote || copy.hero.settlementFallback}
-        copy={copy.hero}
+  // ── State picker ─────────────────────────────────────────────────
+  // attention beats active: a pending funding without proof OR an identity
+  // block on withdrawal is the worst friction we want to surface.
+  const verificationBlocksWithdrawal = verification.status !== "verified";
+  const heroState: "empty" | "calm" | "active" | "attention" =
+    balanceKobo === 0 &&
+    pending_kobo === 0 &&
+    pendingWithdrawalKobo === 0 &&
+    transactions.length === 0
+      ? "empty"
+      : fundingAwaitingProof !== null ||
+          (verificationBlocksWithdrawal && pendingWithdrawalCount > 0)
+        ? "attention"
+        : pendingFundingCount > 0 || pendingWithdrawalCount > 0
+          ? "active"
+          : "calm";
+
+  const currency = wallet.currency || "NGN";
+
+  // ── HeroCard composition ─────────────────────────────────────────
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: copy.hero.tiles.verifiedLabel,
+      value: `₦${formatKoboMajor(balanceKobo)}`,
+      foot: copy.hero.tiles.verifiedFoot,
+    },
+    {
+      label: copy.hero.tiles.pendingFundingLabel,
+      value: `₦${formatKoboMajor(pending_kobo)}`,
+      foot: copy.hero.tiles.pendingFundingFoot,
+      tone: pending_kobo > 0 ? "warning" : "default",
+    },
+    {
+      label: copy.hero.tiles.pendingWithdrawalLabel,
+      value: pendingWithdrawalKobo > 0 ? `₦${formatKoboMajor(pendingWithdrawalKobo)}` : "—",
+      foot: copy.hero.tiles.pendingWithdrawalFoot,
+      tone: pendingWithdrawalKobo > 0 ? "active" : "default",
+    },
+  ];
+
+  // ── NextStep picker ──────────────────────────────────────────────
+  // Highest-priority: upload proof for an awaiting-proof funding request.
+  // Otherwise: verify identity to unlock withdrawals.
+  let nextStep: React.ReactNode = null;
+  if (fundingAwaitingProof) {
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={copy.pendingOps.fundingKicker}
+        title={
+          fundingAwaitingProof.reference
+            ? `${copy.funding.awaitingProof} · ${fundingAwaitingProof.reference}`
+            : copy.funding.awaitingProof
+        }
+        detail={copy.pendingOps.fundingDescSingular.replaceAll("{count}", "1")}
+        cta={{
+          label: copy.pendingOps.fundingCta,
+          href: `/wallet/funding/${fundingAwaitingProof.id}`,
+        }}
       />
-      <section className="acct-wal__section" aria-labelledby="acct-wal-actions-head">
-        <div className="acct-wal__section-head">
-          <h2 id="acct-wal-actions-head" className="acct-wal__section-title hc-h3 acct-display">
-            {copy.sections.actionsTitle}
-          </h2>
-          <span className="acct-wal__section-meta">{copy.sections.actionsMeta}</span>
-        </div>
-        <QuickActions copy={copy.quickActions} />
-      </section>
-      <section className="acct-wal__section" aria-labelledby="acct-wal-pending-head">
-        <div className="acct-wal__section-head">
-          <h2 id="acct-wal-pending-head" className="acct-wal__section-title hc-h3 acct-display">
-            {copy.sections.pendingTitle}
-          </h2>
-          <span className="acct-wal__section-meta">{copy.sections.pendingMeta}</span>
-        </div>
-        <PendingOpsTiles
-          pendingFundingKobo={pending_kobo}
-          pendingFundingCount={pendingFundingCount}
-          pendingWithdrawalKobo={pendingWithdrawalKobo}
-          pendingWithdrawalCount={pendingWithdrawalCount}
-          copy={copy.pendingOps}
-        />
-      </section>
-      <section className="acct-wal__section" aria-labelledby="acct-wal-flow-head">
-        <div className="acct-wal__section-head">
-          <h2 id="acct-wal-flow-head" className="acct-wal__section-title hc-h3 acct-display">
-            {copy.sections.flowTitle}
-          </h2>
-          <span className="acct-wal__section-meta">{copy.sections.flowMeta}</span>
-        </div>
+    );
+  } else if (verificationBlocksWithdrawal && pendingWithdrawalCount > 0) {
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={copy.trust.heading}
+        title={copy.trust.identityTitle}
+        detail={verificationLabel}
+        cta={{ label: copy.trust.identityCta, href: "/verification" }}
+      />
+    );
+  }
+
+  // ── MetricStrip: compact pending-ops glance ──────────────────────
+  const metricCells: ReadonlyArray<MetricStripCell> = [
+    {
+      label: copy.pendingOps.fundingKicker,
+      value: `₦${formatKoboMajor(pending_kobo)}`,
+      tone: pending_kobo > 0 ? "warning" : "default",
+      href: "/wallet/funding",
+    },
+    {
+      label: copy.pendingOps.withdrawalKicker,
+      value:
+        pendingWithdrawalKobo > 0 ? `₦${formatKoboMajor(pendingWithdrawalKobo)}` : "—",
+      tone: pendingWithdrawalKobo > 0 ? "default" : "default",
+      href: "/wallet/withdrawals",
+    },
+    {
+      label: copy.hero.availableLabel,
+      value: `₦${formatKoboMajor(availableBalanceKobo)}`,
+      tone: availableBalanceKobo > 0 ? "success" : "default",
+    },
+  ];
+
+  const heroBlurb =
+    region.settlementNote || copy.hero.settlementFallback;
+
+  // ── Sections ─────────────────────────────────────────────────────
+  const sections = [
+    {
+      id: "wal-actions",
+      title: copy.sections.actionsTitle,
+      meta: copy.sections.actionsMeta,
+      content: <QuickActions copy={copy.quickActions} />,
+    },
+    {
+      id: "wal-flow",
+      title: copy.sections.flowTitle,
+      meta: copy.sections.flowMeta,
+      content: (
         <div className="acct-wal__columns">
           <SpendStrip transactions={transactions} copy={copy.spend} />
           <TrustLadder
@@ -173,49 +274,80 @@ export default async function WalletPage() {
             copy={copy.trust}
           />
         </div>
-      </section>
-      {(requests as Array<unknown>).length > 0 ? (
-        <section className="acct-wal__section" aria-labelledby="acct-wal-funding-head">
-          <div className="acct-wal__section-head">
-            <h2 id="acct-wal-funding-head" className="acct-wal__section-title hc-h3 acct-display">
-              {copy.sections.fundingTitle}
-            </h2>
-            <span className="acct-wal__section-meta">
-              {format(copy.sections.fundingMetaTemplate, { count: pendingFundingCount })}
-            </span>
-          </div>
-          <div className="acct-wal__funding-list">
-            {(requests as Array<{
-              id: string;
-              amount_kobo: number;
-              status: string;
-              reference: string | null;
-              proof_url?: string | null;
-              created_at: string;
-            }>)
-              .slice(0, 4)
-              .map((request) => (
-                <FundingRequestRow
-                  key={request.id}
-                  request={request}
-                  copy={copy.funding}
-                  statusLabels={copy.statusLabels}
-                />
-              ))}
-          </div>
-        </section>
-      ) : null}
-      <section className="acct-wal__section" aria-labelledby="acct-wal-activity-head">
-        <div className="acct-wal__section-head">
-          <h2 id="acct-wal-activity-head" className="acct-wal__section-title hc-h3 acct-display">
-            {copy.sections.activityTitle}
-          </h2>
-          <span className="acct-wal__section-meta">
-            {format(copy.sections.activityMetaTemplate, { count: Math.min(transactions.length, 50) })}
-          </span>
-        </div>
-        <ActivityFeed transactions={transactions} copy={copy.activity} />
-      </section>
-    </div>
+      ),
+    },
+    ...(fundingRequests.length > 0
+      ? [
+          {
+            id: "wal-funding",
+            title: copy.sections.fundingTitle,
+            meta: formatAccountTemplate(copy.sections.fundingMetaTemplate, {
+              count: pendingFundingCount,
+            }),
+            content: (
+              <div className="acct-wal__funding-list">
+                {fundingRequests.slice(0, 4).map((request) => (
+                  <FundingRequestRow
+                    key={request.id}
+                    request={request}
+                    copy={copy.funding}
+                    statusLabels={copy.statusLabels}
+                  />
+                ))}
+              </div>
+            ),
+          },
+        ]
+      : []),
+    {
+      id: "wal-activity",
+      title: copy.sections.activityTitle,
+      meta:
+        transactions.length === 0
+          ? copy.activity.emptyTitle
+          : formatAccountTemplate(copy.sections.activityMetaTemplate, {
+              count: Math.min(transactions.length, 50),
+            }),
+      content:
+        transactions.length === 0 ? (
+          <EmptyStateCard
+            kicker={copy.hero.eyebrow}
+            title={copy.activity.emptyTitle}
+            body={copy.activity.emptyBody}
+          />
+        ) : (
+          <ActivityFeed transactions={transactions} copy={copy.activity} />
+        ),
+    },
+  ];
+
+  return (
+    <DivisionLanding
+      className="acct-wal acct-fade-in"
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={heroState}
+          eyebrow={copy.hero.eyebrow}
+          headline={`₦${formatKoboMajor(availableBalanceKobo)}`}
+          blurb={heroBlurb}
+          ariaLabel={copy.hero.ariaLabel}
+          ctaPrimary={{ label: copy.hero.ctas.fund, href: "/wallet/funding" }}
+          ctaSecondary={{ label: copy.hero.ctas.withdraw, href: "/wallet/withdrawals" }}
+          tiles={tiles}
+          side={{
+            kicker: copy.hero.availableLabel,
+            title: `${copy.hero.availableLabel} · ${currency}`,
+            body: copy.hero.tiles.verifiedFoot,
+          }}
+        />
+      }
+      nextStep={nextStep}
+      metrics={
+        <MetricStrip cells={metricCells} ariaLabel={copy.sections.pendingTitle} />
+      }
+      sections={sections}
+      footer={<RouteLiveRefresh />}
+    />
   );
 }

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+// ACCOUNT-PREMIUM-01 — mount the surface-primitives stylesheet once at
+// the layout root so any page that renders <HeroCard /> et al. picks up
+// the shared visual language without per-page CSS plumbing.
+import "@henryco/dashboard-shell/surfaces.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";

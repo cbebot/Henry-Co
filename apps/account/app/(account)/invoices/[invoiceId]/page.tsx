@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Receipt } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getInvoiceById } from "@/lib/account-data";
 import { getInvoiceWorkspaceHref } from "@/lib/account-links";
 import { divisionLabel, formatDate, formatDateTime, formatNaira } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
 export const dynamic = "force-dynamic";
@@ -48,33 +48,33 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="space-y-6 acct-fade-in">
       <Link href="/invoices" className="acct-button-ghost w-fit rounded-xl"><ArrowLeft size={16} /> {t("Back to invoices")}</Link>
-      <PageHeader
-        title={String(invoice.description || invoice.invoice_no || t("Invoice"))}
-        description={t("Shared invoice record with status, payment references, and whatever structured receipt data is currently available.")}
-        icon={Receipt}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <DownloadDocumentButton
-              endpoint={`/api/documents/invoice/${invoiceId}`}
-              suggestedFilename={`HenryCo-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
-              shareTitle={`HenryCo Invoice ${String(invoice.invoice_no || invoiceId)}`}
-              label={t("Download invoice")}
-            />
-            <DownloadDocumentButton
-              endpoint={`/api/documents/receipt/${invoiceId}`}
-              suggestedFilename={`HenryCo-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
-              shareTitle={`HenryCo Receipt ${String(invoice.invoice_no || invoiceId)}`}
-              variant="secondary"
-              label={t("Download receipt")}
-            />
-            {workspaceHref ? (
-              <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-ghost rounded-xl">
-                {t("Open division workspace")} <ExternalLink size={14} />
-              </a>
-            ) : null}
-          </div>
-        }
+      <HeroCard
+        variant="compact"
+        tone={String(invoice.status || "") === "overdue" ? "attention" : String(invoice.status || "") === "paid" ? "calm" : "active"}
+        eyebrow={`${t("Invoices")} · ${divisionLabel(String(invoice.division || "service"))}`}
+        headline={String(invoice.description || invoice.invoice_no || t("Invoice"))}
+        blurb={t("Shared invoice record with status, payment references, and whatever structured receipt data is currently available.")}
       />
+      <div className="flex flex-wrap items-center gap-2">
+        <DownloadDocumentButton
+          endpoint={`/api/documents/invoice/${invoiceId}`}
+          suggestedFilename={`HenryCo-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
+          shareTitle={`HenryCo Invoice ${String(invoice.invoice_no || invoiceId)}`}
+          label={t("Download invoice")}
+        />
+        <DownloadDocumentButton
+          endpoint={`/api/documents/receipt/${invoiceId}`}
+          suggestedFilename={`HenryCo-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
+          shareTitle={`HenryCo Receipt ${String(invoice.invoice_no || invoiceId)}`}
+          variant="secondary"
+          label={t("Download receipt")}
+        />
+        {workspaceHref ? (
+          <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-ghost rounded-xl">
+            {t("Open division workspace")} <ExternalLink size={14} />
+          </a>
+        ) : null}
+      </div>
       <div className="acct-card p-6">
         <div className="flex flex-wrap items-center gap-3"><span className={`acct-chip ${statusChip[String(invoice.status || "")] || "acct-chip-gold"}`}>{String(invoice.status || "Unknown")}</span><span className="text-sm text-[var(--acct-muted)]">{divisionLabel(String(invoice.division || "service"))}</span><span className="text-sm text-[var(--acct-muted)]">{String(invoice.invoice_no || "No invoice number")}</span></div>
         <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">

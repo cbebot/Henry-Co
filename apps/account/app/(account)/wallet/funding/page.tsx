@@ -10,10 +10,20 @@ import FundingRequestForm from "@/components/wallet/FundingRequestForm";
 import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
 import { BackNav } from "@/components/wallet/BackNav";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
-import { HeroBalance } from "@/components/wallet/HeroBalance";
+import {
+  HeroCard,
+  EmptyStateCard,
+  DivisionLanding,
+} from "@henryco/dashboard-shell/surfaces";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Wallet · Funding requests — detail flow.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2F). Compact hero per the detail-page
+ * pattern; inherits wallet parent grammar via the same `acct-wal` styles.
+ */
 export default async function WalletFundingPage() {
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -21,73 +31,69 @@ export default async function WalletFundingPage() {
   const copy = accountCopy.wallet;
   const user = await requireAccountUser();
   const data = await getWalletFundingContext(user.id);
-  const balanceKobo = Number(data.wallet.balance_kobo) || 0;
 
   return (
     <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
       <BackNav href="/wallet" label={t("Back to wallet")} />
-      <HeroBalance
-        balanceKobo={balanceKobo}
-        pendingFundingKobo={data.pending_kobo}
-        pendingWithdrawalKobo={0}
-        availableKobo={balanceKobo}
-        currency={data.wallet.currency || "NGN"}
-        settlementNote={t(
-          "Verified balance is ready to spend across HenryCo. Pending funding sits separately until finance clears the transfer.",
-        )}
-        copy={copy.hero}
-      />
-      <section className="acct-wal__section" aria-labelledby="wal-fund-rail-head">
-        <div className="acct-wal__section-head">
-          <h2 id="wal-fund-rail-head" className="acct-wal__section-title hc-h3 acct-display">
-            Transfer to HenryCo
-          </h2>
-          <span className="acct-wal__section-meta">Send your bank transfer to these details, then upload proof.</span>
-        </div>
-        <div className="acct-wal__columns">
-          <AccountDetailsCard
-            rail={data.rail}
-            copyLabel={t("Copy")}
-            copiedLabel={t("Copied")}
+      <DivisionLanding
+        hero={
+          <HeroCard
+            variant="compact"
+            tone="active"
+            eyebrow={t("Wallet · funding")}
+            headline={t("Add money to your HenryCo wallet")}
+            blurb={t(
+              "Send a bank transfer using the rail below, then upload proof. Finance confirms the amount and your balance moves into available funds.",
+            )}
           />
-          <FundingRequestForm />
-        </div>
-      </section>
-      <section className="acct-wal__section" aria-labelledby="wal-fund-list-head">
-        <div className="acct-wal__section-head">
-          <h2 id="wal-fund-list-head" className="acct-wal__section-title hc-h3 acct-display">
-            Funding requests
-          </h2>
-          <span className="acct-wal__section-meta">{data.requests.length} total</span>
-        </div>
-        {data.requests.length === 0 ? (
-          <div className="acct-wal__empty">
-            <span className="acct-wal__empty-icon" aria-hidden>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <rect x="3" y="6" width="18" height="13" rx="2" />
-                <path d="M3 10h18" />
-              </svg>
-            </span>
-            <h3 className="acct-wal__empty-title">No funding requests yet</h3>
-            <p className="acct-wal__empty-body">
-              Start a funding request above. Once finance confirms the bank
-              reference, your balance moves into available funds.
-            </p>
-          </div>
-        ) : (
-          <div className="acct-wal__funding-list">
-            {data.requests.map((request) => (
-              <FundingRequestRow
-                key={request.id}
-                request={request}
-                copy={copy.funding}
-                statusLabels={copy.statusLabels}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+        }
+        sections={[
+          {
+            id: "wal-fund-rail",
+            title: t("Transfer to HenryCo"),
+            meta: t(
+              "Send your bank transfer to these details, then upload proof.",
+            ),
+            content: (
+              <div className="acct-wal__columns">
+                <AccountDetailsCard
+                  rail={data.rail}
+                  copyLabel={t("Copy")}
+                  copiedLabel={t("Copied")}
+                />
+                <FundingRequestForm />
+              </div>
+            ),
+          },
+          {
+            id: "wal-fund-list",
+            title: t("Funding requests"),
+            meta: t("{count} total").replace("{count}", String(data.requests.length)),
+            content:
+              data.requests.length === 0 ? (
+                <EmptyStateCard
+                  kicker={t("Funding · empty")}
+                  title={t("No funding requests yet")}
+                  body={t(
+                    "Start a funding request above. Once finance confirms the bank reference, your balance moves into available funds.",
+                  )}
+                />
+              ) : (
+                <div className="acct-wal__funding-list">
+                  {data.requests.map((request) => (
+                    <FundingRequestRow
+                      key={request.id}
+                      request={request}
+                      copy={copy.funding}
+                      statusLabels={copy.statusLabels}
+                    />
+                  ))}
+                </div>
+              ),
+          },
+        ]}
+      />
     </div>
   );
 }

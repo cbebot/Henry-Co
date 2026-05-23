@@ -7,6 +7,15 @@ import {
   type AppLocale,
 } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
+import {
+  HeroCard,
+  EmptyStateCard,
+  NextStepRow,
+  MetricStrip,
+  DivisionLanding,
+  type HeroCardTile,
+  type MetricStripCell,
+} from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getProfile, getSecurityLog } from "@/lib/account-data";
@@ -27,12 +36,8 @@ import "@/components/security/styles.css";
 import { ActionZone } from "@/components/security/ActionZone";
 import { ActivityList } from "@/components/security/ActivityList";
 import { RestrictionsBanner } from "@/components/security/RestrictionsBanner";
-import { SecurityHero } from "@/components/security/SecurityHero";
-import {
-  type Signal,
-  SignalsStrip,
-} from "@/components/security/SignalsStrip";
 import { TrustGuide } from "@/components/security/TrustGuide";
+import { computeHeroState, statusBlurb, statusEyebrow, statusHeadline } from "@/components/security/helpers";
 import ChangePasswordForm from "@/components/security/ChangePasswordForm";
 import GlobalSignOutCard from "@/components/security/GlobalSignOutCard";
 
@@ -43,6 +48,13 @@ function riskWord(locale: AppLocale, fallback: string): string {
   return translated && translated !== "Risk" ? translated.toLowerCase() : fallback.toLowerCase();
 }
 
+/**
+ * Security landing.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2D). Lifts SecurityHero into the
+ * shared <HeroCard variant="paired" progress={trustScore} /> and swaps
+ * SignalsStrip for <MetricStrip />.
+ */
 export default async function SecurityPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const copy = getAccountCopy(locale);
@@ -65,13 +77,55 @@ export default async function SecurityPage() {
   const trustTierLabel = getLocalizedTrustTierLabel(copy, trust.tier);
   const nextTierLabel = trust.nextTier ? getLocalizedTrustTierLabel(copy, trust.nextTier) : null;
 
-  const signals: Signal[] = [
+  const state = computeHeroState(trust);
+  const heroTone: "calm" | "active" | "attention" =
+    state === "secure" ? "calm" : state === "watch" ? "active" : "attention";
+
+  // ── Hero tiles ───────────────────────────────────────────────────
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: t("Trust tier"),
+      value: trustTierLabel,
+      foot: nextTierLabel ? `${t("Next")} · ${nextTierLabel}` : t("Top tier reached"),
+      tone: "accent",
+    },
+    {
+      label: t("Trust score"),
+      value: `${trust.score}/100`,
+      foot:
+        trust.score >= 80
+          ? t("Strong")
+          : trust.score >= 50
+            ? t("Healthy")
+            : t("Light"),
+    },
+    {
+      label: copy.security.signalLabels.suspiciousEvents,
+      value: trust.signals.suspiciousEvents,
+      foot:
+        trust.signals.suspiciousEvents > 0
+          ? t("Review the activity below")
+          : t("Nothing flagged"),
+      tone: trust.signals.suspiciousEvents > 0 ? "warning" : "default",
+    },
+    {
+      label: t("Account age"),
+      value: trust.signals.accountAgeDays,
+      foot:
+        trust.signals.accountAgeDays === 1
+          ? t("day on HenryCo")
+          : t("days on HenryCo"),
+    },
+  ];
+
+  // ── Signals strip (MetricStrip) ──────────────────────────────────
+  const signalCells: ReadonlyArray<MetricStripCell> = [
     {
       label: copy.security.signalLabels.emailVerified,
       value: trust.signals.emailVerified
         ? copy.security.signalValues.confirmed
         : copy.security.signalValues.needsAttention,
-      tone: trust.signals.emailVerified ? "good" : "risk",
+      tone: trust.signals.emailVerified ? "success" : "warning",
     },
     {
       label: copy.security.signalLabels.identityStatus,
@@ -85,38 +139,20 @@ export default async function SecurityPage() {
               : copy.security.signalValues.notSubmitted,
       tone:
         trust.signals.verificationStatus === "verified"
-          ? "good"
-          : trust.signals.verificationStatus === "pending"
-            ? "warn"
-            : trust.signals.verificationStatus === "rejected"
-              ? "risk"
-              : "neutral",
-    },
-    {
-      label: copy.security.signalLabels.trustedPhone,
-      value: trust.signals.phonePresent
-        ? copy.security.signalValues.present
-        : copy.security.signalValues.missing,
-      tone: trust.signals.phonePresent ? "info" : "risk",
+          ? "success"
+          : trust.signals.verificationStatus === "rejected"
+            ? "danger"
+            : "warning",
     },
     {
       label: copy.security.signalLabels.profileCompletion,
       value: `${trust.signals.profileCompletion}%`,
       tone:
         trust.signals.profileCompletion >= 80
-          ? "good"
+          ? "success"
           : trust.signals.profileCompletion >= 50
-            ? "warn"
-            : "neutral",
-    },
-    {
-      label: copy.security.signalLabels.suspiciousEvents,
-      value: `${trust.signals.suspiciousEvents}`,
-      tone: trust.signals.suspiciousEvents > 0 ? "risk" : "good",
-      foot:
-        trust.signals.suspiciousEvents > 0
-          ? t("Review the activity stream below.")
-          : t("Nothing flagged in the last review window."),
+            ? "default"
+            : "warning",
     },
     {
       label: copy.security.signalLabels.contactReview,
@@ -126,123 +162,172 @@ export default async function SecurityPage() {
           : copy.security.signalValues.clear,
       tone:
         trust.signals.duplicateEmailMatches > 0 || trust.signals.duplicatePhoneMatches > 0
-          ? "warn"
-          : "good",
+          ? "warning"
+          : "success",
     },
   ];
+
+  // ── NextStepRow: address top blocker ─────────────────────────────
+  let nextStep: React.ReactNode = null;
+  if (trust.signals.suspiciousEvents > 0) {
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={t("Review")}
+        title={t("Suspicious events flagged")}
+        detail={t("Look over the activity stream below, then rotate your password if anything looks unfamiliar.")}
+        href="#acct-sec-activity"
+      />
+    );
+  } else if (!trust.signals.emailVerified) {
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={copy.security.signalLabels.emailVerified}
+        title={t("Confirm your email")}
+        detail={t("Email confirmation is required for higher-trust actions.")}
+        cta={{ label: t("Open settings"), href: "/settings" }}
+      />
+    );
+  } else if (
+    trust.signals.verificationStatus !== "verified" &&
+    trust.nextTier
+  ) {
+    nextStep = (
+      <NextStepRow
+        tone="neutral"
+        kicker={t("Next move")}
+        title={formatAccountTemplate(copy.security.whatUnlocks, {
+          tier: nextTierLabel ?? "",
+        })}
+        detail={copy.security.whatToDoNextBody}
+        cta={{ label: t("Open verification"), href: "/verification" }}
+      />
+    );
+  }
 
   const regionalLine = `${region.countryName} · ${region.locale} · ${region.timezone}`;
 
   return (
-    <div className="acct-sec acct-fade-in">
-      <RouteLiveRefresh />
-      <SecurityHero
-        trust={trust}
-        trustTierLabel={trustTierLabel}
-        nextTierLabel={nextTierLabel}
-        regionalLine={`${regionalLine}. ${region.settlementNote}`}
-        email={user.email ?? null}
-        accountAgeDays={trust.signals.accountAgeDays}
-      />
-
-      <section aria-labelledby="acct-sec-signals">
-        <div className="acct-sec__section-head">
-          <h2 id="acct-sec-signals" className="acct-sec__section-title">
-            {t("Signals")}
-          </h2>
-          <span className="acct-sec__section-meta">
-            {t("What our verification + scoring engines see on your account right now.")}
-          </span>
-        </div>
-        <SignalsStrip signals={signals} />
-      </section>
-
-      <section aria-labelledby="acct-sec-guide">
-        <div className="acct-sec__section-head">
-          <h2 id="acct-sec-guide" className="acct-sec__section-title">
-            {t("Where you are · what advances you")}
-          </h2>
-          <span className="acct-sec__section-meta">
-            {t("Honest scoring, not a marketing number.")} {trustTierLabel}.
-          </span>
-        </div>
-        <TrustGuide
-          whereYouAre={{
-            kicker: copy.security.whyYouAreHere,
+    <DivisionLanding
+      className="acct-sec acct-fade-in"
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={heroTone}
+          eyebrow={t(statusEyebrow(state))}
+          headline={t(statusHeadline(state))}
+          blurb={t(statusBlurb(state))}
+          ariaLabel={copy.security.heroAriaLabel}
+          tiles={tiles}
+          side={{
+            kicker: t("Region"),
             title: trustTierLabel,
-            body: copy.security.whatCurrentStateBody,
-            reasons:
-              localizedReasons.length > 0 ? localizedReasons : [copy.security.baselineReason],
+            body: `${regionalLine}. ${region.settlementNote}`,
           }}
-          whatUnlocksNext={{
-            kicker: copy.security.whatToDoNext,
-            title: trust.nextTier
-              ? formatAccountTemplate(copy.security.whatUnlocks, { tier: nextTierLabel ?? "" })
-              : copy.security.topTrustLaneReached,
-            body: trust.nextTier
-              ? copy.security.whatToDoNextBody
-              : copy.security.topTrustLaneDescription,
-            requirements:
-              localizedRequirements.length > 0
-                ? localizedRequirements
-                : trust.nextTier
-                  ? []
-                  : [copy.security.topTrustLaneDescription],
+          progress={{
+            percent: trust.score,
+            label: `${t("Trust score")} · ${trust.score}/100`,
           }}
         />
-        <div style={{ marginTop: 20 }}>
-          <RestrictionsBanner
-            blocked={blockedActions}
-            clearLabel={copy.security.noRestrictions}
-            restrictedKicker={copy.security.currentRestrictions}
-            clearKicker={t("All lanes open")}
-          />
-        </div>
-      </section>
-
-      <section aria-labelledby="acct-sec-actions">
-        <div className="acct-sec__section-head">
-          <h2 id="acct-sec-actions" className="acct-sec__section-title">
-            {t("Account actions")}
-          </h2>
-          <span className="acct-sec__section-meta">{t("Routine controls you own directly.")}</span>
-        </div>
-        <div className="acct-sec__actions">
-          <ActionZone
-            kicker={copy.changePassword.updatePassword}
-            title={t("Change your password")}
-            icon={Key}
-          >
-            <ChangePasswordForm />
-          </ActionZone>
-          <ActionZone
-            kicker={copy.globalSignOut.title}
-            title={t("Sign out everywhere")}
-            icon={LogOut}
-          >
-            <GlobalSignOutCard />
-          </ActionZone>
-        </div>
-      </section>
-
-      <section aria-labelledby="acct-sec-activity">
-        <div className="acct-sec__section-head">
-          <h2 id="acct-sec-activity" className="acct-sec__section-title">
-            {copy.security.recentActivity}
-          </h2>
-          <span className="acct-sec__section-meta">{copy.security.recentActivityDescription}</span>
-        </div>
-        <ActivityList
-          events={events}
-          emptyTitle={copy.security.emptyTitle}
-          emptyDescription={copy.security.emptyDescription}
-          riskWord={riskWord(locale, copy.security.risk)}
-          href={securityMessageHref}
-          formatDateTime={(iso: string) =>
-            formatDateTime(iso, { locale: region.locale, timezone: region.timezone })
-          }
-        />
-      </section>
-    </div>
+      }
+      nextStep={nextStep}
+      metrics={<MetricStrip cells={signalCells} ariaLabel={t("Security signals")} />}
+      sections={[
+        {
+          id: "acct-sec-guide",
+          title: t("Where you are · what advances you"),
+          meta: `${t("Honest scoring, not a marketing number.")} ${trustTierLabel}.`,
+          content: (
+            <>
+              <TrustGuide
+                whereYouAre={{
+                  kicker: copy.security.whyYouAreHere,
+                  title: trustTierLabel,
+                  body: copy.security.whatCurrentStateBody,
+                  reasons:
+                    localizedReasons.length > 0
+                      ? localizedReasons
+                      : [copy.security.baselineReason],
+                }}
+                whatUnlocksNext={{
+                  kicker: copy.security.whatToDoNext,
+                  title: trust.nextTier
+                    ? formatAccountTemplate(copy.security.whatUnlocks, {
+                        tier: nextTierLabel ?? "",
+                      })
+                    : copy.security.topTrustLaneReached,
+                  body: trust.nextTier
+                    ? copy.security.whatToDoNextBody
+                    : copy.security.topTrustLaneDescription,
+                  requirements:
+                    localizedRequirements.length > 0
+                      ? localizedRequirements
+                      : trust.nextTier
+                        ? []
+                        : [copy.security.topTrustLaneDescription],
+                }}
+              />
+              <div style={{ marginTop: 20 }}>
+                <RestrictionsBanner
+                  blocked={blockedActions}
+                  clearLabel={copy.security.noRestrictions}
+                  restrictedKicker={copy.security.currentRestrictions}
+                  clearKicker={t("All lanes open")}
+                />
+              </div>
+            </>
+          ),
+        },
+        {
+          id: "acct-sec-actions",
+          title: t("Account actions"),
+          meta: t("Routine controls you own directly."),
+          content: (
+            <div className="acct-sec__actions">
+              <ActionZone
+                kicker={copy.changePassword.updatePassword}
+                title={t("Change your password")}
+                icon={Key}
+              >
+                <ChangePasswordForm />
+              </ActionZone>
+              <ActionZone
+                kicker={copy.globalSignOut.title}
+                title={t("Sign out everywhere")}
+                icon={LogOut}
+              >
+                <GlobalSignOutCard />
+              </ActionZone>
+            </div>
+          ),
+        },
+        {
+          id: "acct-sec-activity",
+          title: copy.security.recentActivity,
+          meta: copy.security.recentActivityDescription,
+          content:
+            events.length === 0 ? (
+              <EmptyStateCard
+                kicker={copy.security.recentActivity}
+                title={copy.security.emptyTitle}
+                body={copy.security.emptyDescription}
+              />
+            ) : (
+              <ActivityList
+                events={events}
+                emptyTitle={copy.security.emptyTitle}
+                emptyDescription={copy.security.emptyDescription}
+                riskWord={riskWord(locale, copy.security.risk)}
+                href={securityMessageHref}
+                formatDateTime={(iso: string) =>
+                  formatDateTime(iso, { locale: region.locale, timezone: region.timezone })
+                }
+              />
+            ),
+        },
+      ]}
+      footer={<RouteLiveRefresh />}
+    />
   );
 }

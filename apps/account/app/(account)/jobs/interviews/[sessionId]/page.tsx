@@ -2,19 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  ArrowUpRight,
   CalendarRange,
   Headphones,
   MessageSquare,
   ShieldCheck,
-  Video,
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { getJobsModuleData } from "@/lib/jobs-module";
 import { formatDateTime, timeAgo } from "@/lib/format";
-import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -42,24 +40,20 @@ export default async function JobsInterviewDetailPage({
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={session.jobTitle}
-        description={t("A candidate-safe interview room with timing, recruiter notes, provider readiness, and follow-up history.")}
-        icon={Video}
-        actions={
-          <div className="flex flex-wrap gap-3">
-            <Link href="/jobs/interviews" className="acct-button-secondary rounded-xl">
-              <ArrowLeft size={14} /> {t("All interview rooms")}
-            </Link>
-            <a href={session.jobHref} className="acct-button-secondary rounded-xl">
-              {t("View role")} <ArrowUpRight size={14} />
-            </a>
-            <a href={session.supportHref} className="acct-button-primary rounded-xl">
-              {t("Open recruiter thread")} <ArrowUpRight size={14} />
-            </a>
-          </div>
-        }
+      <HeroCard
+        variant="compact"
+        tone={session.isJoinReady ? "active" : "calm"}
+        eyebrow={`${t("Jobs")} · ${t("Interview Rooms")}`}
+        headline={session.jobTitle}
+        blurb={t("A candidate-safe interview room with timing, recruiter notes, provider readiness, and follow-up history.")}
+        ctaPrimary={{ label: t("Open recruiter thread"), href: session.supportHref }}
+        ctaSecondary={{ label: t("View role"), href: session.jobHref }}
       />
+      <div className="flex flex-wrap gap-3">
+        <Link href="/jobs/interviews" className="acct-button-secondary rounded-xl">
+          <ArrowLeft size={14} /> {t("All interview rooms")}
+        </Link>
+      </div>
 
       <section className="acct-card overflow-hidden">
         <div className="bg-[linear-gradient(135deg,#0F172A_0%,#0E7490_48%,#C9A227_100%)] px-6 py-7 text-white sm:px-8">

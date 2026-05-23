@@ -3,6 +3,7 @@ import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { ThreadAppearanceProvider, type ThreadParticipant } from "@henryco/messaging-thread";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getSupportMessages,
@@ -143,6 +144,13 @@ export default async function SupportThreadPage({ params }: Props) {
         <ArrowLeft size={14} aria-hidden />
         {t("Back to support")}
       </Link>
+      <HeroCard
+        variant="compact"
+        tone={status === "resolved" || status === "closed" ? "calm" : "active"}
+        eyebrow={`${t("Support")} · ${divisionLabelText}`}
+        headline={subject}
+        blurb={`${categoryLabelText} · ${statusLabel}`}
+      />
       <ThreadAppearanceProvider>
         <SupportThreadHeader
           threadId={threadId}

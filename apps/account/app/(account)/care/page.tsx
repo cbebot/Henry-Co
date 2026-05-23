@@ -1,6 +1,13 @@
 import { getAccountCopy } from "@henryco/i18n/server";
 import { formatAccountTemplate } from "@henryco/i18n";
 import { henryDomain } from "@henryco/config";
+import {
+  HeroCard,
+  EmptyStateCard,
+  DivisionLanding,
+  type HeroCardTile,
+  type HeroCardBreakdownRow,
+} from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
 import {
@@ -10,7 +17,6 @@ import {
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 import "@/components/care/styles.css";
-import { CareHero } from "@/components/care/CareHero";
 import { CareActiveGlance } from "@/components/care/CareActiveGlance";
 import { CareActivity } from "@/components/care/CareActivity";
 import { careStats, heroState, toCareActivityRows } from "@/components/care/helpers";
@@ -38,6 +44,28 @@ export async function generateMetadata() {
   };
 }
 
+/**
+ * Care landing — division overview rebuilt against the shared surface
+ * primitives (`<HeroCard />`, `<EmptyStateCard />`, `<DivisionLanding />`).
+ *
+ * ACCOUNT-PREMIUM-01 (session 1 reference).
+ *
+ * Composition (top → bottom):
+ *   1. <HeroCard variant="paired"> — state-driven (empty/calm/active/attention)
+ *      + 4 tiles (total / in-flight / payment / completed)
+ *      + side breakdown (in-flight / scheduled / payment / completed counts)
+ *   2. <CareActiveGlance /> — when there's a top active booking, the next-action
+ *      surface (kept as a richer card than NextStepRow because it has a full
+ *      metadata grid; logically equivalent to NextStepRow but with more weight)
+ *   3. Bookings section — list with filter/pagination via CareBookingsDashboard
+ *      (or EmptyStateCard when stats.total === 0)
+ *   4. Activity section — recent activity timeline (or EmptyStateCard)
+ *
+ * State driving:
+ *   - heroState(stats) returns "empty" | "calm" | "active" | "attention"
+ *   - the four state slices in copy.hero.state.* carry localized headline/blurb/CTA copy
+ *   - tile tones lift the payment value when balanceDue > 0
+ */
 export default async function CarePage({
   searchParams,
 }: {
@@ -67,7 +95,7 @@ export default async function CarePage({
   const listSlice = filteredBookings.slice((page - 1) * CARE_PAGE_SIZE, page * CARE_PAGE_SIZE);
   const activityRows = toCareActivityRows(activity);
 
-  // Resolve hero copy from i18n slice (was previously baked into helpers).
+  // ── Build HeroCard props from state machine ──────────────────────
   const state = heroState(stats);
   const heroCount =
     state === "empty"
@@ -103,6 +131,56 @@ export default async function CarePage({
     heroCtaSecondaryLabel = s.ctaSecondary;
   }
 
+  const ctaPrimaryHref =
+    state === "attention" ? "#care-bookings" : state === "active" ? CARE_TRACK_URL : CARE_BOOK_URL;
+  const ctaSecondaryHref = state === "active" ? CARE_BOOK_URL : CARE_TRACK_URL;
+
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: copy.hero.tileLabels.total,
+      value: stats.total,
+      foot:
+        stats.total === 0
+          ? copy.hero.tileFoot.totalEmpty
+          : formatAccountTemplate(copy.hero.tileFoot.totalWithTemplate, { count: stats.total }),
+    },
+    {
+      label: copy.hero.tileLabels.inFlight,
+      value: stats.inFlight,
+      foot:
+        stats.inFlight === 0
+          ? copy.hero.tileFoot.inFlightEmpty
+          : copy.hero.tileFoot.inFlightWith,
+      tone: stats.inFlight > 0 ? "active" : "default",
+    },
+    {
+      label: copy.hero.tileLabels.payment,
+      value: stats.needsPayment,
+      foot:
+        stats.needsPayment === 0
+          ? copy.hero.tileFoot.paymentEmpty
+          : copy.hero.tileFoot.paymentWith,
+      tone: stats.needsPayment > 0 ? "warning" : "default",
+    },
+    {
+      label: copy.hero.tileLabels.completed,
+      value: stats.completed,
+      foot:
+        stats.completed === 0
+          ? copy.hero.tileFoot.completedEmpty
+          : copy.hero.tileFoot.completedWith,
+    },
+  ];
+
+  const breakdownAll: ReadonlyArray<HeroCardBreakdownRow> = [
+    { label: copy.hero.breakdownLabels.inFlight, count: stats.inFlight, color: "var(--acct-gold)" },
+    { label: copy.hero.breakdownLabels.scheduled, count: stats.scheduled, color: "var(--acct-blue)" },
+    { label: copy.hero.breakdownLabels.payment, count: stats.needsPayment, color: "var(--acct-red)" },
+    { label: copy.hero.breakdownLabels.completed, count: stats.completed, color: "var(--acct-green)" },
+  ];
+  const breakdown = breakdownAll.filter((row) => row.count > 0);
+
+  // ── Section metas ───────────────────────────────────────────────
   const bookingsMeta =
     bookings.length === 0
       ? copy.sections.bookingsEmpty
@@ -122,81 +200,49 @@ export default async function CarePage({
           { count: activityRows.length },
         );
 
-  return (
-    <div className="acct-care acct-fade-in">
-      <CareHero
-        stats={stats}
-        labels={{
-          eyebrow: copy.hero.eyebrow,
-          sideKicker: copy.hero.sideKicker,
-          sideTitle: copy.hero.sideTitle,
-          sideBody: copy.hero.sideBody,
-          breakdownLabel: copy.hero.breakdownLabel,
-          tilesAriaLabel: copy.hero.tilesAriaLabel,
-          tileLabels: copy.hero.tileLabels,
-          tileFoot: {
-            totalEmpty: copy.hero.tileFoot.totalEmpty,
-            totalWith: (n: number) =>
-              formatAccountTemplate(copy.hero.tileFoot.totalWithTemplate, { count: n }),
-            inFlightEmpty: copy.hero.tileFoot.inFlightEmpty,
-            inFlightWith: copy.hero.tileFoot.inFlightWith,
-            paymentEmpty: copy.hero.tileFoot.paymentEmpty,
-            paymentWith: copy.hero.tileFoot.paymentWith,
-            completedEmpty: copy.hero.tileFoot.completedEmpty,
-            completedWith: copy.hero.tileFoot.completedWith,
+  // ── Compose sections ────────────────────────────────────────────
+  const sections = [
+    // Active glance (when present) is rendered as a section to stay
+    // adjacent to the bookings list. The card itself is a richer
+    // capability than NextStepRow so we keep it as its own card.
+    ...(stats.topActiveBooking
+      ? [
+          {
+            id: "care-glance",
+            title: copy.sections.glance,
+            meta: copy.sections.glanceMeta,
+            content: (
+              <CareActiveGlance
+                booking={stats.topActiveBooking}
+                locale={locale}
+                labels={{
+                  nextActionLabel: copy.glance.nextActionLabel,
+                  serviceLabel: copy.glance.serviceLabel,
+                  pickupLabel: copy.glance.pickupLabel,
+                  balanceLabel: copy.glance.balanceLabel,
+                  trackingLabel: copy.glance.trackingLabel,
+                  serviceFallback: copy.glance.serviceFallback,
+                  toBeScheduled: copy.formatLabels.toBeScheduled,
+                  shortMonths: copy.formatLabels.shortMonths,
+                  statusLabels: copy.status,
+                }}
+              />
+            ),
           },
-          breakdownLabels: copy.hero.breakdownLabels,
-          headline: heroHeadline,
-          blurb: heroBlurb,
-          ctaPrimary: {
-            label: heroCtaPrimaryLabel,
-            href: state === "attention" ? "#care-bookings" : state === "active" ? CARE_TRACK_URL : CARE_BOOK_URL,
-          },
-          ctaSecondary: {
-            label: heroCtaSecondaryLabel,
-            href: state === "active" ? CARE_BOOK_URL : CARE_TRACK_URL,
-          },
-        }}
-      />
-
-      {stats.topActiveBooking ? (
-        <section aria-labelledby="acct-care-glance">
-          <div className="acct-care__section-head">
-            <h2 id="acct-care-glance" className="acct-care__section-title">
-              {copy.sections.glance}
-            </h2>
-            <span className="acct-care__section-meta">{copy.sections.glanceMeta}</span>
-          </div>
-          <CareActiveGlance
-            booking={stats.topActiveBooking}
-            locale={locale}
-            labels={{
-              nextActionLabel: copy.glance.nextActionLabel,
-              serviceLabel: copy.glance.serviceLabel,
-              pickupLabel: copy.glance.pickupLabel,
-              balanceLabel: copy.glance.balanceLabel,
-              trackingLabel: copy.glance.trackingLabel,
-              serviceFallback: copy.glance.serviceFallback,
-              toBeScheduled: copy.formatLabels.toBeScheduled,
-              shortMonths: copy.formatLabels.shortMonths,
-              statusLabels: copy.status,
-            }}
+        ]
+      : []),
+    {
+      id: "care-bookings",
+      title: copy.sections.bookings,
+      meta: bookingsMeta,
+      content:
+        bookings.length === 0 ? (
+          <EmptyStateCard
+            kicker={copy.hero.eyebrow}
+            title={copy.empty.title}
+            body={copy.empty.body}
+            cta={{ label: copy.hero.state.empty.ctaPrimary, href: CARE_BOOK_URL }}
           />
-        </section>
-      ) : null}
-
-      <section id="care-bookings" aria-labelledby="acct-care-bookings">
-        <div className="acct-care__section-head">
-          <h2 id="acct-care-bookings" className="acct-care__section-title">
-            {copy.sections.bookings}
-          </h2>
-          <span className="acct-care__section-meta">{bookingsMeta}</span>
-        </div>
-        {bookings.length === 0 ? (
-          <div className="acct-care__empty">
-            <strong>{copy.empty.title}</strong>
-            {copy.empty.body}
-          </div>
         ) : (
           <CareBookingsDashboard
             locale={locale}
@@ -211,29 +257,67 @@ export default async function CarePage({
             copy={copy.dashboard}
             statusValueLabels={copy.statusValueLabels}
           />
-        )}
-      </section>
-
-      <section aria-labelledby="acct-care-activity">
-        <div className="acct-care__section-head">
-          <h2 id="acct-care-activity" className="acct-care__section-title">
-            {copy.sections.activity}
-          </h2>
-          <span className="acct-care__section-meta">{activityMeta}</span>
-        </div>
-        {activityRows.length === 0 ? (
-          <div className="acct-care__empty">
-            <strong>{copy.sections.activity}</strong>
-            {copy.sections.activityEmpty}
-          </div>
+        ),
+    },
+    {
+      id: "care-activity",
+      title: copy.sections.activity,
+      meta: activityMeta,
+      content:
+        activityRows.length === 0 ? (
+          <EmptyStateCard
+            kicker={copy.sections.activity}
+            title={copy.sections.activity}
+            body={copy.sections.activityEmpty}
+          />
         ) : (
           <CareActivity
             activity={activityRows}
             shortMonths={copy.formatLabels.shortMonths}
             ariaLabel={copy.activityAriaLabel}
           />
-        )}
-      </section>
-    </div>
+        ),
+    },
+  ];
+
+  const heroTone: "calm" | "active" | "attention" | "empty" =
+    state === "empty"
+      ? "empty"
+      : state === "attention"
+        ? "attention"
+        : state === "active"
+          ? "active"
+          : "calm";
+
+  return (
+    <DivisionLanding
+      className="acct-care acct-fade-in"
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={heroTone}
+          eyebrow={copy.hero.eyebrow}
+          headline={heroHeadline}
+          blurb={heroBlurb}
+          ariaTilesLabel={copy.hero.tilesAriaLabel}
+          ctaPrimary={{ label: heroCtaPrimaryLabel, href: ctaPrimaryHref }}
+          ctaSecondary={{ label: heroCtaSecondaryLabel, href: ctaSecondaryHref }}
+          tiles={tiles}
+          side={{
+            kicker: copy.hero.sideKicker,
+            title: copy.hero.sideTitle,
+            body: copy.hero.sideBody,
+            breakdown:
+              breakdown.length > 0
+                ? {
+                    label: copy.hero.breakdownLabel,
+                    rows: breakdown,
+                  }
+                : undefined,
+          }}
+        />
+      }
+      sections={sections}
+    />
   );
 }

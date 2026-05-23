@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
   CheckCircle2,
   Clock3,
   Landmark,
@@ -10,11 +9,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { formatCurrencyAmount, formatDate, formatDateTime } from "@/lib/format";
 import { getStudioPaymentRoom } from "@/lib/studio-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 import { StudioWalletCheckoutButton } from "@/components/studio/StudioWalletCheckoutButton";
 
 export const dynamic = "force-dynamic";
@@ -48,22 +47,24 @@ export default async function StudioPaymentPage({
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={payment.label}
-        description={t("Studio payment status, proof visibility, and the exact HenryCo transfer details linked to this milestone.")}
-        icon={ReceiptText}
-        actions={
-          <div className="flex flex-wrap gap-3">
-            <Link href="/studio" className="acct-button-secondary rounded-xl">
-              <ArrowLeft size={14} /> {t("Back to Studio")}
-            </Link>
-            {room.project ? (
-              <Link href={`/studio/projects/${room.project.id}`} className="acct-button-primary rounded-xl">
-                {t("Open project room")}
-              </Link>
-            ) : null}
-          </div>
+      <HeroCard
+        variant="compact"
+        tone={
+          ["overdue", "rejected"].includes(payment.status)
+            ? "attention"
+            : ["paid", "approved"].includes(payment.status)
+              ? "calm"
+              : "active"
         }
+        eyebrow={`${t("Studio")} · ${t("Payment")}`}
+        headline={payment.label}
+        blurb={t("Studio payment status, proof visibility, and the exact HenryCo transfer details linked to this milestone.")}
+        ctaPrimary={
+          room.project
+            ? { label: t("Open project room"), href: `/studio/projects/${room.project.id}` }
+            : undefined
+        }
+        ctaSecondary={{ label: t("Back to Studio"), href: "/studio" }}
       />
 
       <section className="acct-card overflow-hidden">

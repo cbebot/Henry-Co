@@ -8,6 +8,8 @@
     "./tokens": "./src/tokens/index.ts",
     "./components": "./src/components/index.ts",
     "./shell": "./src/shell/index.ts",
+    "./surfaces": "./src/surfaces/index.ts",
+    "./surfaces.css": "./src/surfaces/surfaces.css",
     "./register": "./src/register.ts",
     "./staff-register": "./src/staff-register.ts",
     "./owner-register": "./src/owner-register.ts",

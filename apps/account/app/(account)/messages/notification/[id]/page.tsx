@@ -2,14 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
-import { Archive, Bell, ChevronRight, Trash2 } from "lucide-react";
+import { ChevronRight, Trash2 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getNotificationMessageBoard, getHiddenNotificationReason } from "@/lib/message-center";
 import { updateNotificationLifecycle } from "@/lib/notification-center";
 import { formatDateTime } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
 
 function isExternalHref(value?: string | null) {
@@ -32,10 +32,13 @@ export default async function NotificationMessageBoardPage({
     if (hiddenReason === "deleted") {
       return (
         <div className="space-y-6 acct-fade-in">
-          <PageHeader
-            title={t("Notification")}
-            description={t("This notification is no longer available.")}
-            icon={Trash2}
+          <HeroCard
+            variant="compact"
+            tone="empty"
+            eyebrow={`${t("Messages")} · ${t("Notification")}`}
+            headline={t("Notification removed")}
+            blurb={t("This notification is no longer available.")}
+            ctaPrimary={{ label: t("Back to notifications"), href: "/notifications" }}
           />
           <div className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-8 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
             <Trash2 size={36} className="mx-auto mb-4 text-[var(--acct-muted)]" />
@@ -54,13 +57,16 @@ export default async function NotificationMessageBoardPage({
     if (hiddenReason === "archived") {
       return (
         <div className="space-y-6 acct-fade-in">
-          <PageHeader
-            title={t("Archived notification")}
-            description={t("This notification has been archived.")}
-            icon={Archive}
+          <HeroCard
+            variant="compact"
+            tone="empty"
+            eyebrow={`${t("Messages")} · ${t("Notification")}`}
+            headline={t("Archived notification")}
+            blurb={t("This notification has been archived.")}
+            ctaPrimary={{ label: t("Back to notifications"), href: "/notifications" }}
           />
           <div className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-8 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-            <Archive size={36} className="mx-auto mb-4 text-[var(--acct-muted)]" />
+            <Trash2 size={36} className="mx-auto mb-4 text-[var(--acct-muted)]" />
             <p className="text-base font-semibold text-[var(--acct-ink)]">{t("Notification archived")}</p>
             <p className="mt-2 text-sm text-[var(--acct-muted)]">
               {t("This notification was archived and is no longer shown in your active feed.")}
@@ -87,17 +93,17 @@ export default async function NotificationMessageBoardPage({
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={t("Notification detail")}
-        description={t("A focused inbox view for one cross-division update.")}
-        icon={Bell}
-        actions={
-          <NotificationLifecycleControls
-            notificationId={data.record.id}
-            isRead={data.record.isRead}
-            redirectOnDelete="/notifications"
-          />
-        }
+      <HeroCard
+        variant="compact"
+        tone="calm"
+        eyebrow={`${t("Messages")} · ${sourceLabel}`}
+        headline={data.record.title || t("Notification detail")}
+        blurb={t("A focused inbox view for one cross-division update.")}
+      />
+      <NotificationLifecycleControls
+        notificationId={data.record.id}
+        isRead={data.record.isRead}
+        redirectOnDelete="/notifications"
       />
 
       <section className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 shadow-[0_18px_55px_rgba(15,23,42,0.08)]">
