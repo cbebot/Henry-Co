@@ -153,6 +153,38 @@ export function PublicHeader({
 
   const closeDrawer = useCallback(() => setOpen(false), []);
 
+  /**
+   * Defer the sheet's close until AFTER Next.js's App Router has had a
+   * chance to call `history.pushState` for the in-flight transition.
+   *
+   * Closing synchronously inside a Link's onClick (the pre-FIX-CHROME-02
+   * behaviour) races with `BottomSheet`'s `useAndroidBackClose` cleanup:
+   * the cleanup runs in the same React commit, sees the sentinel still
+   * on top of `history.state` (because App Router transitions push
+   * state via `useTransition`, not synchronously), and calls
+   * `history.back()`. That `back()` cancels the pending route push
+   * before it can commit — the user's tap appears dead.
+   *
+   * `requestAnimationFrame` schedules the close for the next paint.
+   * By then the route has pushed its own history state, so the
+   * sentinel is no longer the top entry and the cleanup correctly
+   * skips its `history.back()` branch.
+   *
+   * Same-pathname taps (e.g. tapping "Home" while already on `/`)
+   * still close because we don't depend on a `pathname` change.
+   *
+   * SSR fallback: just close synchronously — no router race in a
+   * non-browser context, and Next.js never renders the drawer
+   * mounted=true on the server anyway.
+   */
+  const dismissAfterNavigation = useCallback(() => {
+    if (typeof window === "undefined" || !window.requestAnimationFrame) {
+      setOpen(false);
+      return;
+    }
+    window.requestAnimationFrame(() => setOpen(false));
+  }, []);
+
   const focusRingBar =
     "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]";
   const defaultBarLink =
@@ -429,8 +461,8 @@ export function PublicHeader({
                 href={item.href}
                 target="_blank"
                 rel="noreferrer"
-                onClick={closeDrawer}
-                className={sheetClass}
+                onClick={dismissAfterNavigation}
+                className={cn(sheetClass, "min-h-[48px] flex items-center")}
               >
                 {localize(item.label)}
               </a>
@@ -438,8 +470,8 @@ export function PublicHeader({
               <Link
                 key={item.label}
                 href={item.href}
-                onClick={closeDrawer}
-                className={sheetClass}
+                onClick={dismissAfterNavigation}
+                className={cn(sheetClass, "min-h-[48px] flex items-center")}
                 aria-current={active ? "page" : undefined}
               >
                 {localize(item.label)}
@@ -449,7 +481,7 @@ export function PublicHeader({
         </div>
 
         {mobileSheetAfterNav}
-        {renderMobileSheetAfterNav ? renderMobileSheetAfterNav(closeDrawer) : null}
+        {renderMobileSheetAfterNav ? renderMobileSheetAfterNav(dismissAfterNavigation) : null}
 
         <div className="mt-3 border-t border-white/10 pt-3">
           <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
@@ -460,17 +492,29 @@ export function PublicHeader({
               <div className="flex justify-stretch px-0.5">{accountMenu}</div>
             ) : null}
             {auxLink ? (
-              <Link href={auxLink.href} onClick={closeDrawer} className={auxSheetClass}>
+              <Link
+                href={auxLink.href}
+                onClick={dismissAfterNavigation}
+                className={cn(auxSheetClass, "min-h-[48px] flex items-center justify-center")}
+              >
                 {localize(auxLink.label)}
               </Link>
             ) : null}
             {secondaryCta ? (
-              <Link href={secondaryCta.href} onClick={closeDrawer} className={secondarySheetClass}>
+              <Link
+                href={secondaryCta.href}
+                onClick={dismissAfterNavigation}
+                className={cn(secondarySheetClass, "min-h-[48px] flex items-center justify-center")}
+              >
                 {localize(secondaryCta.label)}
               </Link>
             ) : null}
             {primaryCta ? (
-              <Link href={primaryCta.href} onClick={closeDrawer} className={primarySheetClass}>
+              <Link
+                href={primaryCta.href}
+                onClick={dismissAfterNavigation}
+                className={cn(primarySheetClass, "min-h-[48px] flex items-center justify-center")}
+              >
                 {localize(primaryCta.label)}
               </Link>
             ) : null}
