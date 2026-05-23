@@ -1,13 +1,14 @@
 import { LayoutDashboard } from "lucide-react";
 import type { UnifiedViewer } from "@henryco/auth";
-import type {
-  DashboardModule,
-  HomeWidget,
-  PaletteEntry,
-  NotificationCategory,
-  RoleDecision,
-  RouteEntry,
-  EmptyTeaching,
+import {
+  viewerCanUseCustomerSurface,
+  type DashboardModule,
+  type HomeWidget,
+  type PaletteEntry,
+  type NotificationCategory,
+  type RoleDecision,
+  type RouteEntry,
+  type EmptyTeaching,
 } from "@henryco/dashboard-shell";
 
 import {
@@ -32,12 +33,17 @@ import { loadCustomerOverviewSnapshot } from "./data";
  * five customer-side notification categories: account, wallet,
  * security, identity, referral.
  *
- * Eligibility: every `viewer.kind === "customer"` is allowed; staff
- * and owner viewers see the customer-overview only when the
- * preference cookie places them in the customer lane (handled
- * upstream by `@henryco/auth`'s `loadDashboardOptions`). At the
- * module gate, we accept any role — the upstream resolver is the
- * security boundary, not the module.
+ * Eligibility: every authenticated viewer using the customer surface
+ * (`apps/account`) is allowed. The upstream resolver
+ * (`loadDashboardOptions`) is the security boundary that decides
+ * which lane to route a viewer to BY DEFAULT — but once a viewer is
+ * inside the customer surface, the module gate accepts them.
+ *
+ * MODULES-01 (2026-05-23) widened the gate from `viewer.kind ===
+ * "customer"` to `viewerCanUseCustomerSurface(viewer)`. Data-layer
+ * gate in `data.ts` remains `kind === "customer"` because the
+ * customer_profiles / customer_wallet_balance / customer_subscriptions
+ * tables are user-scoped customer-context tables.
  */
 export const customerOverviewModule: DashboardModule = {
   slug: "customer-overview",
@@ -47,11 +53,11 @@ export const customerOverviewModule: DashboardModule = {
   railSlot: "primary",
 
   getEligibleViewer(viewer) {
-    return viewer.kind === "customer" ? "allowed" : "hidden";
+    return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
   },
 
   getRoleGate(viewer): RoleDecision | null {
-    if (viewer.kind !== "customer") return null;
+    if (!viewerCanUseCustomerSurface(viewer)) return null;
     return { kind: "allow", role: viewer.role };
   },
 
