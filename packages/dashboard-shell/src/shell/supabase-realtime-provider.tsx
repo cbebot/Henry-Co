@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import type { UnifiedViewer } from "@henryco/auth";
+import { emitEvent } from "@henryco/observability/events";
 
 import {
   DEFAULT_REALTIME_PREFERENCES,
@@ -66,10 +67,29 @@ import {
  * casts at the call site. Keeps `@supabase/supabase-js` out of the
  * package's import graph; the host app remains the only place that
  * imports the actual SDK.
+ *
+ * REALTIME-01: `auth.onAuthStateChange` + `realtime.setAuth` extend
+ * the shape so the provider can rotate the channel JWT when the
+ * Supabase auth session refreshes. Both keys are typed as optional
+ * (`?`) so legacy / minimal mocks that omit them still conform — when
+ * they're absent the provider gracefully skips the token-refresh
+ * wiring and falls back to the pre-REALTIME-01 behaviour (no loop,
+ * just no live token rotation either).
  */
 type SupabaseLike = {
   channel: (name: string) => RealtimeChannelLike;
   removeChannel: (channel: RealtimeChannelLike) => unknown;
+  auth?: {
+    onAuthStateChange?: (
+      callback: (
+        event: string,
+        session: { access_token?: string | null } | null,
+      ) => void,
+    ) => { data?: { subscription?: { unsubscribe?: () => void } } };
+  };
+  realtime?: {
+    setAuth?: (token: string | null) => void;
+  };
 };
 
 type RealtimeChannelLike = {
@@ -85,6 +105,54 @@ type RealtimeChannelLike = {
   subscribe: (callback?: (status: string) => void) => RealtimeChannelLike;
 };
 
+/**
+ * Telemetry channel identifier — matches the `channel` field of the
+ * `henry.realtime.connection.*` event payload (see
+ * `packages/observability/src/events.ts`).
+ */
+type TelemetryChannel = "customer" | "staff";
+
+/**
+ * Emit a `henry.realtime.connection.*` event. Centralised so the
+ * provider can call into it from any transition site without
+ * sprinkling event-name strings (the union in observability/events.ts
+ * still validates the name at compile time).
+ *
+ * `payload` carries optional extras documented on the canonical event
+ * union: `attempt` (reconnecting only), `reason`, `error_class`.
+ */
+function emitConnectionEvent(
+  state: "connecting" | "live" | "reconnecting" | "failed",
+  payload: {
+    channel: TelemetryChannel;
+    attempt?: number;
+    reason?: string;
+    error_class?: string;
+    userId?: string | null;
+  },
+): void {
+  const { userId, ...rest } = payload;
+  const outcome = (() => {
+    switch (state) {
+      case "live":
+        return "completed" as const;
+      case "connecting":
+        return "started" as const;
+      case "reconnecting":
+        return "pending" as const;
+      case "failed":
+        return "failed" as const;
+    }
+  })();
+  emitEvent({
+    name: `henry.realtime.connection.${state}` as const,
+    classification: "system_state",
+    outcome,
+    actorId: userId ?? undefined,
+    payload: rest,
+  });
+}
+
 const MAX_RETAINED = 50;
 const REALTIME_BACKOFF_INITIAL_MS = 1_000;
 const REALTIME_BACKOFF_MAX_MS = 30_000;
@@ -97,6 +165,62 @@ const REALTIME_CONNECT_TIMEOUT_MS = 10_000;
 const POLL_FALLBACK_INTERVAL_MS = 30_000;
 
 const RealtimeContext = createContext<RealtimeContextValue | null>(null);
+
+/**
+ * Pure helper extracted from the auth-state-change effect so the
+ * REALTIME-01 token-refresh contract has a testable surface without
+ * pulling a React testing library into the package.
+ *
+ * Given a Supabase auth event + session payload, performs:
+ *   - on TOKEN_REFRESHED with a non-null access_token: invokes
+ *     `setAuth(newToken)` and emits a `reconnecting` telemetry event
+ *     per audience.
+ *   - on TOKEN_REFRESHED with a null/missing token OR a `setAuth`
+ *     throw: emits a `failed` telemetry event with `error_class: "auth"`.
+ *   - on any other event: no-op (the effect comments cover why).
+ *
+ * Pure (no React, no module-level singletons) — the test harness in
+ * `__tests__/realtime-auth-refresh.test.ts` exercises it with a spy
+ * `setAuth` + a spy telemetry sink.
+ */
+export type RealtimeAuthRefreshDeps = {
+  setAuth: ((token: string | null) => void) | undefined;
+  hasStaffAccess: boolean;
+  userId: string | null;
+  emit: typeof emitConnectionEvent;
+};
+
+export function handleSupabaseAuthEvent(
+  event: string,
+  session: { access_token?: string | null } | null,
+  deps: RealtimeAuthRefreshDeps,
+): void {
+  if (event !== "TOKEN_REFRESHED") return;
+  const { setAuth, hasStaffAccess, userId, emit } = deps;
+  if (typeof setAuth !== "function") return;
+  try {
+    setAuth(session?.access_token ?? null);
+    emit("reconnecting", {
+      channel: "customer",
+      reason: "token_refresh",
+      userId,
+    });
+    if (hasStaffAccess) {
+      emit("reconnecting", {
+        channel: "staff",
+        reason: "token_refresh",
+        userId,
+      });
+    }
+  } catch (err) {
+    emit("failed", {
+      channel: "customer",
+      error_class: "auth",
+      reason: err instanceof Error ? err.message : "setAuth_threw",
+      userId,
+    });
+  }
+}
 
 export type SupabaseRealtimeProviderProps = {
   children: ReactNode;
@@ -466,6 +590,9 @@ export function SupabaseRealtimeProvider({
       debouncedRefresh();
     };
 
+    let attempt = 0;
+    const userIdForTelemetry = viewer.user.id;
+
     const start = () => {
       if (cancelled) return;
       let supabase = supabaseRef.current;
@@ -480,6 +607,23 @@ export function SupabaseRealtimeProvider({
       const userId = viewer.user.id;
       const filter = `user_id=eq.${userId}`;
       setCustomerStatus("connecting");
+      // REALTIME-01 telemetry: every transition emits a canonical
+      // `henry.realtime.connection.*` event so the owner-workspace
+      // tile can chart a 24h connection success rate. `attempt` is 0
+      // on the first try and increments on every retry — that lets
+      // the tile distinguish a healthy cold-start from a loop.
+      if (attempt === 0) {
+        emitConnectionEvent("connecting", {
+          channel: "customer",
+          userId: userIdForTelemetry,
+        });
+      } else {
+        emitConnectionEvent("reconnecting", {
+          channel: "customer",
+          attempt,
+          userId: userIdForTelemetry,
+        });
+      }
 
       // Watchdog: if the broker doesn't respond with SUBSCRIBED or an error
       // within REALTIME_CONNECT_TIMEOUT_MS we treat it as an error and retry
@@ -489,9 +633,15 @@ export function SupabaseRealtimeProvider({
       let watchdog: number | null = window.setTimeout(() => {
         if (cancelled) return;
         setCustomerStatus("error");
+        emitConnectionEvent("failed", {
+          channel: "customer",
+          error_class: "watchdog",
+          userId: userIdForTelemetry,
+        });
         teardown();
         retryTimer = window.setTimeout(() => {
           backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
+          attempt += 1;
           start();
         }, backoffMs);
       }, REALTIME_CONNECT_TIMEOUT_MS);
@@ -530,6 +680,11 @@ export function SupabaseRealtimeProvider({
             clearWatchdog();
             setCustomerStatus("subscribed");
             backoffMs = REALTIME_BACKOFF_INITIAL_MS;
+            attempt = 0;
+            emitConnectionEvent("live", {
+              channel: "customer",
+              userId: userIdForTelemetry,
+            });
             return;
           }
           if (
@@ -539,9 +694,21 @@ export function SupabaseRealtimeProvider({
           ) {
             clearWatchdog();
             setCustomerStatus(status === "CLOSED" ? "closed" : "error");
+            emitConnectionEvent("failed", {
+              channel: "customer",
+              error_class:
+                status === "CHANNEL_ERROR"
+                  ? "channel_error"
+                  : status === "TIMED_OUT"
+                    ? "timed_out"
+                    : "closed",
+              reason: status.toLowerCase(),
+              userId: userIdForTelemetry,
+            });
             teardown();
             retryTimer = window.setTimeout(() => {
               backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
+              attempt += 1;
               start();
             }, backoffMs);
           }
@@ -594,6 +761,9 @@ export function SupabaseRealtimeProvider({
       }
     };
 
+    let attempt = 0;
+    const userIdForTelemetry = viewer.user.id;
+
     const start = () => {
       if (cancelled) return;
       let supabase = supabaseRef.current;
@@ -607,6 +777,18 @@ export function SupabaseRealtimeProvider({
       }
       const userId = viewer.user.id;
       setStaffStatus("connecting");
+      if (attempt === 0) {
+        emitConnectionEvent("connecting", {
+          channel: "staff",
+          userId: userIdForTelemetry,
+        });
+      } else {
+        emitConnectionEvent("reconnecting", {
+          channel: "staff",
+          attempt,
+          userId: userIdForTelemetry,
+        });
+      }
 
       // Track per-channel state so the aggregate staffStatus stays accurate.
       let contentReady = false;
@@ -615,14 +797,26 @@ export function SupabaseRealtimeProvider({
         if (contentReady && stateReady) {
           setStaffStatus("subscribed");
           backoffMs = REALTIME_BACKOFF_INITIAL_MS;
+          attempt = 0;
+          emitConnectionEvent("live", {
+            channel: "staff",
+            userId: userIdForTelemetry,
+          });
         }
       };
-      const onPartFail = (cause: "closed" | "error") => {
+      const onPartFail = (cause: "closed" | "error", reason?: string) => {
         if (cancelled) return;
         setStaffStatus(cause);
+        emitConnectionEvent("failed", {
+          channel: "staff",
+          error_class: cause === "closed" ? "closed" : reason ?? "channel_error",
+          reason,
+          userId: userIdForTelemetry,
+        });
         teardown();
         retryTimer = window.setTimeout(() => {
           backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
+          attempt += 1;
           start();
         }, backoffMs);
       };
@@ -630,7 +824,7 @@ export function SupabaseRealtimeProvider({
       // Watchdog for both staff channels combined.
       let watchdog: number | null = window.setTimeout(() => {
         if (cancelled) return;
-        if (!(contentReady && stateReady)) onPartFail("error");
+        if (!(contentReady && stateReady)) onPartFail("error", "watchdog");
       }, REALTIME_CONNECT_TIMEOUT_MS);
       const clearWatchdog = () => {
         if (watchdog !== null) {
@@ -666,7 +860,14 @@ export function SupabaseRealtimeProvider({
             status === "TIMED_OUT"
           ) {
             clearWatchdog();
-            onPartFail(status === "CLOSED" ? "closed" : "error");
+            onPartFail(
+              status === "CLOSED" ? "closed" : "error",
+              status === "CHANNEL_ERROR"
+                ? "channel_error"
+                : status === "TIMED_OUT"
+                  ? "timed_out"
+                  : "closed",
+            );
           }
         });
 
@@ -708,7 +909,14 @@ export function SupabaseRealtimeProvider({
             status === "TIMED_OUT"
           ) {
             clearWatchdog();
-            onPartFail(status === "CLOSED" ? "closed" : "error");
+            onPartFail(
+              status === "CLOSED" ? "closed" : "error",
+              status === "CHANNEL_ERROR"
+                ? "channel_error"
+                : status === "TIMED_OUT"
+                  ? "timed_out"
+                  : "closed",
+            );
           }
         });
     };
@@ -720,6 +928,78 @@ export function SupabaseRealtimeProvider({
       teardown();
     };
   }, [viewer?.user.id, viewer?.access.hasStaffAccess, debouncedRefresh]);
+
+  // REALTIME-01 — Auth-state-change wiring.
+  //
+  // Supabase Realtime uses a JWT for RLS-aware subscriptions. The
+  // browser client refreshes its access token on its own cadence
+  // (~1h), but the WebSocket carrying our open channels was
+  // authenticated at subscribe-time and will continue using the
+  // pre-refresh JWT until we explicitly rotate it. When the broker
+  // notices a stale token it closes the socket; the existing
+  // CHANNEL_ERROR / CLOSED retry path then reconnects — but with the
+  // same cached `supabaseRef.current`, whose internal channel auth
+  // header is still the stale token until we call
+  // `realtime.setAuth(newToken)`. Result without this effect: every
+  // long-lived tab eventually enters the connecting/reconnecting
+  // loop the owner reports.
+  //
+  // We subscribe to `auth.onAuthStateChange` once per provider mount
+  // and on `TOKEN_REFRESHED` push the fresh access_token into the
+  // realtime client. The Supabase docs guarantee `setAuth` rotates
+  // the JWT on every open channel without forcing a re-subscribe, so
+  // the customer + staff channels stay `subscribed` through the
+  // refresh — the only telemetry signal is a
+  // `henry.realtime.connection.reconnecting` event with
+  // `reason: "token_refresh"` so the owner-workspace tile can chart
+  // the cadence.
+  //
+  // On `SIGNED_OUT` we tear down by clearing the cached client and
+  // letting the next render — which receives `viewer = null` from
+  // the host — drive the channel effects to their `disabled` exit.
+  useEffect(() => {
+    if (!viewer?.user.id) return;
+    const factory = getSupabaseRef.current;
+    if (!factory) return;
+    const supabase = supabaseRef.current ?? factory();
+    if (!supabase) return;
+    supabaseRef.current = supabase;
+    const authApi = supabase.auth?.onAuthStateChange;
+    if (typeof authApi !== "function") return;
+
+    let unsubscribed = false;
+    const userId = viewer.user.id;
+    const hasStaffAccess = Boolean(viewer.access.hasStaffAccess);
+    const result = authApi((event, session) => {
+      if (unsubscribed) return;
+      // Delegate to the pure helper. Other events (SIGNED_IN,
+      // SIGNED_OUT, USER_UPDATED, PASSWORD_RECOVERY, INITIAL_SESSION)
+      // are intentionally no-ops here:
+      //   - SIGNED_OUT: host re-renders with viewer=null; the channel
+      //     effects' cleanup tears down naturally.
+      //   - SIGNED_IN / INITIAL_SESSION: handled by the existing
+      //     channel-effect mount path (deps include viewer.user.id).
+      //   - USER_UPDATED / PASSWORD_RECOVERY: no channel impact.
+      handleSupabaseAuthEvent(event, session, {
+        setAuth: supabase.realtime?.setAuth,
+        hasStaffAccess,
+        userId,
+        emit: emitConnectionEvent,
+      });
+    });
+    const unsubscribe = result?.data?.subscription?.unsubscribe;
+
+    return () => {
+      unsubscribed = true;
+      if (typeof unsubscribe === "function") {
+        try {
+          unsubscribe();
+        } catch {
+          /* ignore — best-effort cleanup */
+        }
+      }
+    };
+  }, [viewer?.user.id, viewer?.access.hasStaffAccess]);
 
   // Polling fallback — covers the gap when Realtime drops events during
   // disconnects. Pauses while tab hidden. Uses the hydrate ref so this
