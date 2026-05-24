@@ -79,7 +79,10 @@ export function proxy(request: NextRequest) {
   const hasAuth = request.cookies
     .getAll()
     .some((cookie) => isSupabaseAuthTokenCookie(cookie.name));
-  writeSessionStateCookie(response, hasAuth ? "signed-in-stale" : "signed-out");
+  writeSessionStateCookie(response, hasAuth ? "signed-in-stale" : "signed-out", {
+    hostname: request.nextUrl.hostname,
+    secure: request.nextUrl.protocol === "https:",
+  });
 
   return response;
 }

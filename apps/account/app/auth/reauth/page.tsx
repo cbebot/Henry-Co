@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { detectAuthMethod } from "@henryco/auth";
+import { readReauthContext } from "@henryco/auth/server/reauth-context";
 import { getAuthSessionCopy } from "@henryco/i18n";
 import { henrySubdomain, isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
 
@@ -62,7 +63,10 @@ export default async function ReauthPage({
     }
   }
 
-  if (!user) {
+  const reauthContext = user ? null : await readReauthContext();
+  const viewerSubject = user ?? reauthContext;
+
+  if (!viewerSubject?.email) {
     // No JWT → can't reauth, fall back to /login with the same return.
     const returnPath = normalizeTrustedRedirect(params.return ?? "/");
     const loginUrl =
@@ -79,21 +83,23 @@ export default async function ReauthPage({
 
   const locale = await getAccountAppLocale();
   const copy = getAuthSessionCopy(locale);
-  const authMethod = detectAuthMethod(user);
+  const authMethod = detectAuthMethod(viewerSubject);
 
-  const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const userMetadata = (viewerSubject.user_metadata ?? {}) as Record<string, unknown>;
   const displayName =
-    typeof userMetadata.full_name === "string"
+    reauthContext?.displayName ??
+    (typeof userMetadata.full_name === "string"
       ? userMetadata.full_name
       : typeof userMetadata.name === "string"
         ? userMetadata.name
-        : null;
+        : null);
   const avatarUrl =
-    typeof userMetadata.avatar_url === "string"
+    reauthContext?.avatarUrl ??
+    (typeof userMetadata.avatar_url === "string"
       ? userMetadata.avatar_url
       : typeof userMetadata.picture === "string"
         ? userMetadata.picture
-        : null;
+        : null);
 
   const returnPath = normalizeTrustedRedirect(params.return ?? "/");
   const intent: "form" | "page" = params.intent === "form" ? "form" : "page";
@@ -103,7 +109,7 @@ export default async function ReauthPage({
     <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4 py-12">
       <ReauthClient
         viewer={{
-          email: user.email ?? "",
+          email: viewerSubject.email,
           displayName,
           avatarUrl,
         }}

@@ -13,7 +13,24 @@ import {
 import { emitEvent } from "@henryco/observability/events";
 import { persistEvent } from "@henryco/observability/persist-event";
 
+// V3-01: identify the origin of session telemetry rows so the A4
+// rollback-gate query can exclude CI fixture activity from the
+// production failure-rate read. Set HENRY_TELEMETRY_SOURCE=ci in the
+// v3-01-session-persistence-e2e workflow; production deployments
+// don't set the var, so real-user traffic lands with no source field.
+function telemetrySource(): string | undefined {
+  return process.env.HENRY_TELEMETRY_SOURCE || undefined;
+}
+function telemetryPayload<T extends Record<string, unknown>>(base: T): T & { source?: string } {
+  const source = telemetrySource();
+  return source ? { ...base, source } : base;
+}
+
 import type { SessionState } from "../types";
+import {
+  extractReauthContextFromSupabaseCookies,
+  writeReauthContextCookie,
+} from "./reauth-context";
 
 /**
  * Verify the Supabase session attached to a Next.js proxy request and
@@ -84,6 +101,7 @@ export async function verifySupabaseSession(
   }
 
   const allCookies = req.cookies.getAll();
+  const reauthContext = extractReauthContextFromSupabaseCookies(allCookies);
   const malformedNames = new Set(findMalformedSupabaseSessionCookieNames(allCookies));
   const clearMalformed = opts.clearMalformed ?? true;
   if (malformedNames.size > 0 && clearMalformed) {
@@ -134,12 +152,13 @@ export async function verifySupabaseSession(
       if (!isRecoverableSupabaseAuthError(error)) {
         throw error;
       }
+      writeReauthContextCookie(req, res, reauthContext);
       clearAuthCookies(req, res);
       await persistEvent({
         supabase,
         name: "henry.auth.session.refresh_failed",
         actorId: null,
-        payload: { reason: "supabase_auth_error" },
+        payload: telemetryPayload({ reason: "supabase_auth_error" }),
       });
       return { status: "reauth", reason: "supabase_auth_error" };
     }
@@ -148,12 +167,13 @@ export async function verifySupabaseSession(
     if (!isRecoverableSupabaseAuthError(error)) {
       throw error;
     }
+    writeReauthContextCookie(req, res, reauthContext);
     clearAuthCookies(req, res);
     await persistEvent({
       supabase,
       name: "henry.auth.session.refresh_failed",
       actorId: null,
-      payload: { reason: "supabase_auth_exception" },
+      payload: telemetryPayload({ reason: "supabase_auth_exception" }),
     });
     return { status: "reauth", reason: "supabase_auth_exception" };
   }
@@ -162,12 +182,13 @@ export async function verifySupabaseSession(
     // Cookies present but @supabase/ssr could not produce a user —
     // refresh failed silently. The session has gone stale on the
     // server side.
+    writeReauthContextCookie(req, res, reauthContext);
     clearAuthCookies(req, res);
     await persistEvent({
       supabase,
       name: "henry.auth.session.refresh_failed",
       actorId: null,
-      payload: { reason: "user_absent_after_verify" },
+      payload: telemetryPayload({ reason: "user_absent_after_verify" }),
     });
     return { status: "reauth", reason: "user_absent_after_verify" };
   }
@@ -182,10 +203,12 @@ export async function verifySupabaseSession(
     // V3-01 slice 5b: dual-write to henry_events so the owner
     // session-health tile sees real counts. Best-effort, non-blocking
     // (persistEvent never throws).
+    const source = telemetrySource();
     await persistEvent({
       supabase,
       name: "henry.auth.session.refreshed",
       actorId: userId,
+      payload: source ? { source } : null,
     });
   }
 
@@ -215,6 +238,7 @@ function clearAuthCookies(
   names?: Set<string>,
 ): void {
   const cookieDomain = getSharedCookieDomain(req.nextUrl.hostname);
+  const secure = req.nextUrl.protocol === "https:" || Boolean(cookieDomain);
   for (const cookie of req.cookies.getAll()) {
     if (!isSupabaseAuthTokenCookie(cookie.name)) continue;
     if (names && !names.has(cookie.name)) continue;
@@ -224,7 +248,7 @@ function clearAuthCookies(
       expires: new Date(0),
       path: "/",
       sameSite: "lax",
-      secure: true,
+      secure,
     });
   }
 }

@@ -4,7 +4,11 @@ import {
   sessionStateFor,
   verifySupabaseSession,
 } from "@henryco/auth/server/verify-supabase-session";
-import { writeSessionStateCookie } from "@henryco/auth/server/session-state";
+import {
+  HC_SESSION_STATE_COOKIE,
+  writeSessionStateCookie,
+} from "@henryco/auth/server/session-state";
+import { HC_REAUTH_CONTEXT_COOKIE } from "@henryco/auth/server/reauth-context";
 import { getHqUrl, getSharedCookieDomain } from "@henryco/config";
 
 /**
@@ -80,7 +84,22 @@ export async function proxy(request: NextRequest) {
     // Public auth routes: pass through with verification side effects
     // (cookie refresh + state tag + referral capture). No redirect.
     const state = sessionStateFor(session);
-    if (state) writeSessionStateCookie(response, state);
+    const hasActiveReauthContext = Boolean(
+      request.cookies.get(HC_REAUTH_CONTEXT_COOKIE),
+    );
+    const shouldPreserveReauthState =
+      session.status === "anonymous" &&
+      (hasActiveReauthContext ||
+        (pathname.startsWith("/auth/reauth") &&
+          request.cookies.get(HC_SESSION_STATE_COOKIE)?.value ===
+            "reauth-required"));
+
+    if (state && !shouldPreserveReauthState) {
+      writeSessionStateCookie(response, state, {
+        hostname: request.nextUrl.hostname,
+        secure: request.nextUrl.protocol === "https:",
+      });
+    }
     captureReferralCode(request, response);
     return response;
   }
@@ -106,7 +125,12 @@ export async function proxy(request: NextRequest) {
 
   // ok | no-config — pass through with security headers + referral.
   const state = sessionStateFor(session);
-  if (state) writeSessionStateCookie(response, state);
+  if (state) {
+    writeSessionStateCookie(response, state, {
+      hostname: request.nextUrl.hostname,
+      secure: request.nextUrl.protocol === "https:",
+    });
+  }
   captureReferralCode(request, response);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");

@@ -83,6 +83,7 @@ export function ChatComposer(props: ComposerProps) {
     belowInputSlot,
     initialText,
     ariaLabel,
+    textareaName,
     composerExtras,
     autoFocus = false,
     edgeToEdgeMobile = false,
@@ -332,6 +333,7 @@ export function ChatComposer(props: ComposerProps) {
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={placeholder || labels?.placeholder || "Write a message…"}
+          name={textareaName}
           minRows={1}
           maxRows={6}
           disabled={disabled}
@@ -466,6 +468,7 @@ export function ChatComposer(props: ComposerProps) {
           enableDraft={enableDraft}
           validationMessage={validationMessage}
           ariaLabel={ariaLabel}
+          textareaName={textareaName}
         />
       </>
     );

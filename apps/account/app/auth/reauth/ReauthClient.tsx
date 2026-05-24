@@ -11,6 +11,7 @@ import {
   releaseIdempotencyKey,
 } from "@henryco/auth/client";
 import { emitEvent } from "@henryco/observability/events";
+import { persistEvent } from "@henryco/observability/persist-event";
 import { ReauthScreen, type ReauthResult, type ReauthViewer } from "@henryco/ui";
 import type { AuthSessionCopy } from "@henryco/i18n";
 
@@ -24,6 +25,12 @@ import { createSupabaseBrowser } from "@/lib/supabase/browser";
  * `henry.auth.session.reauth_succeeded` event on success, broadcasts
  * `user-changed` across tabs, releases the in-flight Idempotency-Key
  * for the captured draft, and navigates to the return path.
+ *
+ * Slice 5b dual-write: `handleSuccess` also `persistEvent`s the
+ * reauth_succeeded row so the owner session-health tile's "Reauths
+ * today" metric actually populates. Server-side events (refreshed,
+ * refresh_failed) are persisted in verify-supabase-session; reauth
+ * is browser-side because the success state only exists here.
  */
 
 export type ReauthClientProps = {
@@ -52,6 +59,24 @@ export function ReauthClient(props: ReauthClientProps) {
       },
     });
 
+    // Slice 5b dual-write to henry_events. The RLS policy accepts
+    // inserts where actor_id IS NULL OR actor_id = auth.uid(); we
+    // send null because ReauthViewer doesn't carry the user id and
+    // the owner tile counts rows by name (not by actor) — `actor_id`
+    // is reserved for downstream analytics, not the rollback gate.
+    // Fire-and-forget — persistEvent swallows failures so a telemetry
+    // hiccup never blocks the draft restore / redirect.
+    void persistEvent({
+      supabase,
+      name: "henry.auth.session.reauth_succeeded",
+      actorId: null,
+      payload: {
+        intent: props.intent,
+        method: props.authMethod,
+        hasDraft: props.draftKey != null,
+      },
+    });
+
     const broadcaster = createSessionBroadcaster();
     broadcaster.publish({
       type: "user-changed",
@@ -60,7 +85,14 @@ export function ReauthClient(props: ReauthClientProps) {
     broadcaster.close();
 
     router.replace(props.returnPath);
-  }, [props.authMethod, props.draftKey, props.intent, props.returnPath, router]);
+  }, [
+    props.authMethod,
+    props.draftKey,
+    props.intent,
+    props.returnPath,
+    router,
+    supabase,
+  ]);
 
   const onPasswordSubmit = useCallback(
     async (password: string): Promise<ReauthResult> => {

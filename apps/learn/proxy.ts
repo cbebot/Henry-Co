@@ -25,7 +25,10 @@ export async function proxy(request: NextRequest) {
   const session = await verifySupabaseSession(request, response);
   const state = sessionStateFor(session);
   if (state) {
-    writeSessionStateCookie(response, state);
+    writeSessionStateCookie(response, state, {
+      hostname: request.nextUrl.hostname,
+      secure: request.nextUrl.protocol === "https:",
+    });
   }
 
   return response;
