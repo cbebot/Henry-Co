@@ -127,7 +127,11 @@ async function main() {
   });
 
   const warnings = [];
-  const jobsBaseUrl = "https://jobs.henrycogroup.com";
+  // PROD-READY-01: domain-agnostic — defaults to `henrycogroup.com` when unset.
+  const baseDomain =
+    process.env.BASE_DOMAIN || process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
+  const subUrl = (sub) => `https://${sub}.${baseDomain}`;
+  const jobsBaseUrl = subUrl("jobs");
 
   const [{ data: usersData }, ownerRows, managerRows] = await Promise.all([
     supabase.auth.admin.listUsers({ page: 1, perPage: 200 }),
@@ -207,7 +211,7 @@ async function main() {
       category: "Jobs",
       status: "active",
       subdomain: "jobs",
-      domain: "jobs.henrycogroup.com",
+      domain: `jobs.${baseDomain}`,
       short_description:
         "Premium hiring, verified talent, and recruiter operations in one calm platform.",
       highlights: [
@@ -243,7 +247,7 @@ async function main() {
       slug: "henryco-group",
       name: "HenryCo Group",
       category: "Internal Hiring",
-      href: "https://henrycogroup.com",
+      href: `https://${baseDomain}`,
       tagline: "Internal hiring for shared HenryCo teams and division leadership.",
       description:
         "Internal roles across the HenryCo ecosystem, from shared operations to executive hiring tracks.",
@@ -263,7 +267,7 @@ async function main() {
       slug: "care",
       name: "Henry & Co Fabric Care",
       category: "Fabric Care",
-      href: "https://care.henrycogroup.com",
+      href: subUrl("care"),
       tagline: "Premium garment, home, and office care operations.",
       description:
         "HenryCo Fabric Care hires for service operations, support, logistics coordination, and leadership execution.",
@@ -283,7 +287,7 @@ async function main() {
       slug: "studio",
       name: "HenryCo Studio",
       category: "Product Studio",
-      href: "https://studio.henrycogroup.com",
+      href: subUrl("studio"),
       tagline: "Premium digital product, brand, and software delivery.",
       description:
         "HenryCo Studio hires for product, design, and engineering execution with a high bar for craft and systems thinking.",
