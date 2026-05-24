@@ -1,6 +1,13 @@
+import { henryDivisionUrl } from "@/core/domain";
 import type { Division, DivisionSector } from "@/domain/division";
 
-/** Canonical division catalog mirrored from the public company hub (audit baseline). */
+/**
+ * Canonical division catalog mirrored from the public company hub (audit baseline).
+ *
+ * Note (PROD-READY-01): `destinationUrl` is computed via `henryDivisionUrl()`
+ * so the urls update if `EXPO_PUBLIC_BASE_DOMAIN` is set to a different brand
+ * TLD. Defaults preserve the previous `<slug>.henrycogroup.com` shape.
+ */
 export const DIVISION_CATALOG: Division[] = [
   {
     slug: "fabric-care",
@@ -10,7 +17,7 @@ export const DIVISION_CATALOG: Division[] = [
     featured: true,
     summary: "Premium dry-cleaning and laundry with pickup, tracking and polished garment care.",
     highlights: ["Pickup and delivery scheduling", "Live tracking", "Premium garment finishing"],
-    destinationUrl: "https://care.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("care"),
     sectors: ["fabric_care"],
     accentHex: "#6B7CFF",
   },
@@ -23,7 +30,7 @@ export const DIVISION_CATALOG: Division[] = [
     summary:
       "Websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software.",
     highlights: ["Milestone visibility", "Packages & custom briefs", "Delivery teams"],
-    destinationUrl: "https://studio.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("studio"),
     sectors: ["technology", "design"],
     accentHex: "#C9A227",
   },
@@ -35,7 +42,7 @@ export const DIVISION_CATALOG: Division[] = [
     featured: true,
     summary: "Premium multi-vendor commerce with trust signals and split-order clarity.",
     highlights: ["Verified sellers", "Orders in one account", "Curated discovery"],
-    destinationUrl: "https://marketplace.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("marketplace"),
     sectors: ["commerce", "marketplace", "premium_retail", "vendor_platforms"],
     accentHex: "#B2863B",
   },
@@ -47,7 +54,7 @@ export const DIVISION_CATALOG: Division[] = [
     featured: true,
     summary: "Hiring operating system for HenryCo and verified external employers.",
     highlights: ["Verified talent layer", "Employer moderation", "Structured applications"],
-    destinationUrl: "https://jobs.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("jobs"),
     sectors: ["general"],
     accentHex: "#2DD4BF",
   },
@@ -59,7 +66,7 @@ export const DIVISION_CATALOG: Division[] = [
     featured: true,
     summary: "Listings, viewing coordination, owner submissions, and managed-property services.",
     highlights: ["Trust notes on listings", "Viewing pipeline", "Area guides"],
-    destinationUrl: "https://property.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("property"),
     sectors: ["property", "real_estate"],
     accentHex: "#A78BFA",
   },
@@ -71,7 +78,7 @@ export const DIVISION_CATALOG: Division[] = [
     featured: true,
     summary: "Public courses, internal training, certifications, and partner enablement.",
     highlights: ["Learning paths", "Progress tracking", "Certificate verification"],
-    destinationUrl: "https://learn.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("learn"),
     sectors: ["education", "academy", "internal_training", "certification"],
     accentHex: "#38BDF8",
   },
@@ -83,7 +90,7 @@ export const DIVISION_CATALOG: Division[] = [
     featured: true,
     summary: "Pickup, dispatch, same-day and scheduled delivery with proof of delivery.",
     highlights: ["Quotes & bookings", "Rider workflows", "Customer tracking"],
-    destinationUrl: "https://logistics.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("logistics"),
     sectors: ["logistics", "delivery"],
     accentHex: "#D06F32",
   },
@@ -96,7 +103,7 @@ export const DIVISION_CATALOG: Division[] = [
     summary:
       "Building materials, interior finishes, procurement, and engineering support — launching soon.",
     highlights: ["End-to-end solutions", "Trusted engineers", "Premium supply"],
-    destinationUrl: "https://building.henrycogroup.com",
+    destinationUrl: henryDivisionUrl("building"),
     sectors: [
       "building_materials",
       "interior_finishes",

@@ -2,6 +2,7 @@ import { ScrollView, Text, View } from "react-native";
 
 import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { BRAND_EMAILS } from "@/lib/brand-emails";
+import { henryAppDomain } from "@/lib/domain";
 
 function Section({
   title,
@@ -148,7 +149,7 @@ export default function PrivacyScreen() {
         <Section title="8. Contact Us">
           <Body>
             If you have questions about this Privacy Policy, please contact us
-            at {`${BRAND_EMAILS.privacy} `}or visit henrycogroup.com.
+            at {`${BRAND_EMAILS.privacy} `}or visit {henryAppDomain()}.
           </Body>
         </Section>
       </View>

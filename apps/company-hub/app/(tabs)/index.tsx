@@ -15,6 +15,7 @@ import { useDivisionModal } from "@/context/DivisionModalContext";
 import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { useHubSearch } from "@/context/HubSearchContext";
 import { DIVISIONS, getFeaturedDivisions } from "@/data/divisions";
+import { henryAppDomain } from "@/lib/domain";
 import { matchesQuery } from "@/lib/searchDivisions";
 import { getBookmarks, toggleBookmark } from "@/store/bookmarks";
 
@@ -124,7 +125,7 @@ export default function HomeScreen() {
             <Animated.View entering={FadeInUp.delay(200).duration(480).springify()}>
               <View className="mt-7 h-px w-20 bg-[#C9A227]/70" />
               <Text className="mt-4 text-sm" style={{ color: heroKickerMuted }}>
-                Premium company network — henrycogroup.com
+                Premium company network — {henryAppDomain()}
               </Text>
             </Animated.View>
           </View>

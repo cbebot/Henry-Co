@@ -4,9 +4,14 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { BRAND_EMAILS } from "@/lib/brand-emails";
+import { henryAppDomain, henryWebOrigin } from "@/lib/domain";
 
 export default function ContactScreen() {
   const { palette } = useHubAppearance();
+  // PROD-READY-01: resolved via env-aware helper so the brand TLD can change
+  // without a code edit.
+  const webOrigin = henryWebOrigin();
+  const baseDomainDisplay = henryAppDomain();
   const openMail = () => {
     void Linking.openURL(
       `mailto:${BRAND_EMAILS.hello}?subject=Henry%20%26%20Co.%20Hub%20inquiry`,
@@ -14,7 +19,7 @@ export default function ContactScreen() {
   };
 
   const openWeb = () => {
-    void Linking.openURL("https://www.henrycogroup.com");
+    void Linking.openURL(webOrigin);
   };
 
   return (
@@ -71,7 +76,7 @@ export default function ContactScreen() {
             borderColor: palette.line,
             backgroundColor: palette.surface,
           }}
-          accessibilityLabel="Open henrycogroup.com"
+          accessibilityLabel={`Open ${baseDomainDisplay}`}
           accessibilityRole="button"
         >
           <View className="flex-row items-center gap-3">
@@ -90,7 +95,7 @@ export default function ContactScreen() {
                 className="mt-1 text-lg font-semibold"
                 style={{ color: palette.textPrimary }}
               >
-                henrycogroup.com
+                {baseDomainDisplay}
               </Text>
             </View>
           </View>
