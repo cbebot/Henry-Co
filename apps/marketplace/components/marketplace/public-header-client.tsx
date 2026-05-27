@@ -9,7 +9,7 @@ import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } 
 import { logoutEverywhere } from "@henryco/auth/client";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { BottomSheet, type BottomSheetCloseReason } from "@henryco/ui/mobile";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { getBrowserSupabase } from "@/lib/supabase/browser";
 import {
   Bell,
   Globe,
@@ -69,7 +69,7 @@ function MobileSignOutRow({ onNavigate }: { onNavigate: () => void }) {
           setError(null);
           setBusy(true);
           try {
-            const supabase = createSupabaseBrowser();
+            const supabase = getBrowserSupabase();
             const result = await logoutEverywhere({
               supabase,
               redirectTo: "/",
@@ -361,7 +361,7 @@ export function PublicHeaderClient() {
                 signOutApiPath="/api/auth/logout"
                 signOutRedirectHref="/"
                 onSignOut={async () => {
-                  const supabase = createSupabaseBrowser();
+                  const supabase = getBrowserSupabase();
                   await logoutEverywhere({
                     supabase,
                     redirectTo: "/",
