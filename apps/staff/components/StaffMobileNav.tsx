@@ -8,7 +8,7 @@ import { ButtonPendingContent } from "@henryco/ui";
 import { logoutEverywhere } from "@henryco/auth/client";
 import { Menu, X, LogOut, ExternalLink, Search } from "lucide-react";
 import { resolveIcon } from "@/components/StaffPrimitives";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { createStaffSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import type { WorkspaceNavItem } from "@/lib/types";
 
@@ -38,7 +38,7 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const supabase = createSupabaseBrowser();
+      const supabase = createStaffSupabaseBrowser();
       const result = await logoutEverywhere({
         supabase,
         redirectTo: "/login",

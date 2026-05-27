@@ -8,7 +8,7 @@ import { logoutEverywhere } from "@henryco/auth/client";
 import { LogOut, ChevronDown, ChevronRight, ExternalLink, Search } from "lucide-react";
 import { createElement, useState } from "react";
 import { resolveIcon } from "@/components/StaffPrimitives";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { createStaffSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import type { WorkspaceNavItem } from "@/lib/types";
 
@@ -119,7 +119,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const supabase = createSupabaseBrowser();
+      const supabase = createStaffSupabaseBrowser();
       const result = await logoutEverywhere({
         supabase,
         redirectTo: "/login",
