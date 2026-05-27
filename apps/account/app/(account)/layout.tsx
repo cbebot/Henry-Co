@@ -21,6 +21,7 @@ import AccountLayoutInner from "./AccountLayoutInner";
 import AccountRouteLoading from "@/components/layout/AccountRouteLoading";
 import IdentityBarPaletteBridge from "@/components/search/IdentityBarPaletteBridge";
 import AccountPaletteHost from "@/components/search/PaletteHost";
+import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
@@ -200,6 +201,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
       }
     >
       <style dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES_CSS + MOBILE_SHELL_CSS }} />
+      <SensitiveActionProviderBridge email={viewer.user.email}>
       <AccountPaletteHost userId={user.id} moduleJumpEntries={moduleJumpEntries}>
         {/*
           Theme-aware shell wrapper. The shell's `--hc-*` tokens are
@@ -250,6 +252,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
           <NotificationsToastViewport audience="customer" />
         </div>
       </AccountPaletteHost>
+      </SensitiveActionProviderBridge>
     </RealtimeBrowserBridge>
   );
 }
