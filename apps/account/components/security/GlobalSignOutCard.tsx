@@ -4,6 +4,9 @@ import { useState } from "react";
 import { getAccountCopy, useHenryCoLocale } from "@henryco/i18n";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { ButtonPendingContent } from "@henryco/ui";
+import { logoutEverywhere } from "@henryco/auth/client";
+
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
 export default function GlobalSignOutCard() {
   const locale = useHenryCoLocale();
@@ -17,17 +20,28 @@ export default function GlobalSignOutCard() {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/logout", {
+      // V3-02 S7: hit the dedicated sign-out-everywhere endpoint
+      // FIRST so the server can publish the Supabase Realtime
+      // broadcast on `user:<id>:session` before invalidating the
+      // global refresh tokens. Then run logout-everywhere on THIS
+      // device to tear down henryco_* storage + cookies + broadcast
+      // sign-out across this device's tabs.
+      const response = await fetch("/api/security/sign-out-everywhere", {
         method: "POST",
         headers: { "content-type": "application/json" },
         cache: "no-store",
       });
-
       if (!response.ok) {
-        throw new Error("Logout failed");
+        throw new Error("Sign-out-everywhere failed");
       }
-
-      window.location.assign("/login?signed_out=all");
+      const supabase = createSupabaseBrowser();
+      await logoutEverywhere({
+        supabase,
+        serverLogoutUrl: null,
+        suppressBroadcast: false,
+        reason: "force",
+        redirectTo: "/login?signed_out=all",
+      });
     } catch {
       setError(copy.globalSignOut.unavailable);
       setPending(false);

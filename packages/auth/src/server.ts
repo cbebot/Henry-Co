@@ -327,7 +327,12 @@ export async function loadDashboardOptions(user: AuthenticatedUser): Promise<Das
 }
 
 // Re-export viewer helpers for one-import server consumption.
-export { requireUnifiedViewer, buildUnifiedViewer, getViewerRoles } from "./viewer";
+export {
+  requireUnifiedViewer,
+  buildUnifiedViewer,
+  getViewerRoles,
+  readAccessSnapshot,
+} from "./viewer";
 
 // Track C (DASH-9) staff helpers. Re-exported here so single-import
 // callers (apps/staff/app/(track-c)/layout.tsx) can pick up everything

@@ -8,8 +8,10 @@ import { ButtonPendingContent } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { Menu, X, LogOut, ArrowLeft } from "lucide-react";
 import { getOwnerNavSections } from "@/lib/owner-navigation";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
 
@@ -41,15 +43,14 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { Accept: "application/json" },
+      const supabase = createSupabaseBrowser();
+      const result = await logoutEverywhere({
+        supabase,
+        redirectTo: "/owner/login",
       });
-      if (!response.ok) {
-        throw new Error(`Owner logout failed with status ${response.status}`);
+      if (!result.ok && result.serverLogoutStatus && result.serverLogoutStatus >= 500) {
+        throw new Error(`Owner logout failed with status ${result.serverLogoutStatus}`);
       }
-      window.location.assign("/owner/login");
     } catch (error) {
       console.error(error);
       setSignOutError(t("We could not sign you out. Try again."));

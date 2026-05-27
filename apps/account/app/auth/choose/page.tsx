@@ -9,7 +9,9 @@ import {
   UserCircle,
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { readAndClearOAuthErrorCookie } from "@henryco/auth/server/oauth-error-cookie";
 import Logo from "@/components/brand/Logo";
+import { RoleChooserBadges } from "@/components/auth/RoleChooserBadges";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { loadDashboardOptions } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -86,6 +88,22 @@ export default async function ChoosePage({
     redirect(options[0]?.href || "/");
   }
 
+  // Read + clear the OAuth error cookie (Addendum A6). Surfaced as
+  // an inline notice on top of the chooser; the URL stays clean.
+  const oauthError = await readAndClearOAuthErrorCookie();
+  const oauthErrorCopy =
+    oauthError?.code === "cancelled"
+      ? t("Sign-in was cancelled. Try again when you're ready.")
+      : oauthError?.code === "session_exchange_failed"
+        ? t("We couldn't complete that sign-in. Please try again.")
+        : oauthError?.code === "link_required"
+          ? t("Please confirm your password to link the new sign-in method.")
+          : oauthError?.code === "link_window_expired"
+            ? t("The link window expired. Start the sign-in again.")
+            : oauthError
+              ? t("We couldn't complete that sign-in. Please try again.")
+              : null;
+
   const safeNext = normalizeTrustedRedirect(params.next);
   const fullName =
     (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
@@ -107,6 +125,15 @@ export default async function ChoosePage({
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--acct-muted)]">
             {greeting} {t("You have access to more than one Henry & Co. space. Pick where you'd like to land — you can switch any time, and we can remember this choice on this browser.")}
           </p>
+          {oauthErrorCopy ? (
+            <p
+              role="alert"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-100/70 px-4 py-1.5 text-xs font-medium text-amber-900"
+              data-oauth-error={oauthError?.code}
+            >
+              {oauthErrorCopy}
+            </p>
+          ) : null}
         </div>
 
         <form
@@ -169,6 +196,7 @@ export default async function ChoosePage({
                     >
                       {option.description}
                     </p>
+                    <RoleChooserBadges tileKey={option.key} />
                     <p className="mt-2 truncate text-[11px] uppercase tracking-[0.18em] text-[var(--acct-muted)]/80">
                       {new URL(option.href).host}
                     </p>

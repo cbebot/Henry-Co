@@ -7,9 +7,11 @@ import { ButtonPendingContent } from "@henryco/ui";
 import { getAccountUrl, getStaffHqUrl } from "@henryco/config";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { LogOut, ChevronDown, ChevronRight, ArrowLeft, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { getOwnerNavSections, type OwnerNavItem } from "@/lib/owner-navigation";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
 import OwnerSearchButton from "@/components/owner/OwnerSearchButton";
@@ -127,15 +129,14 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { Accept: "application/json" },
+      const supabase = createSupabaseBrowser();
+      const result = await logoutEverywhere({
+        supabase,
+        redirectTo: "/owner/login",
       });
-      if (!response.ok) {
-        throw new Error(`Owner logout failed with status ${response.status}`);
+      if (!result.ok && result.serverLogoutStatus && result.serverLogoutStatus >= 500) {
+        throw new Error(`Owner logout failed with status ${result.serverLogoutStatus}`);
       }
-      window.location.assign("/owner/login");
     } catch (error) {
       console.error(error);
       setSignOutError(t("We could not sign you out. Try again."));

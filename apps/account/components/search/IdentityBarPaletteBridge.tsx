@@ -17,8 +17,10 @@
 
 import { IdentityBar } from "@henryco/dashboard-shell/shell";
 import { ThemeToggle } from "@henryco/ui";
+import { logoutEverywhere } from "@henryco/auth/client";
 import type { ComponentProps } from "react";
 
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { usePaletteOpen } from "./PaletteOpenProvider";
 
 type IdentityBarProps = ComponentProps<typeof IdentityBar>;
@@ -31,14 +33,19 @@ export type IdentityBarPaletteBridgeProps = Omit<
 export default function IdentityBarPaletteBridge(props: IdentityBarPaletteBridgeProps) {
   const palette = usePaletteOpen();
   const wrappedSignOut = props.onSignOut
-    ? () => {
-        // Clear the per-user palette recents *before* signOut. The
-        // server action redirects to /api/auth/logout which clears
-        // the Supabase session — this happens after our local store
-        // is already wiped, so a subsequent user on the same device
-        // never sees the prior user's recents.
+    ? async () => {
+        // Clear the per-user palette recents *before* logoutEverywhere
+        // so a subsequent user on the same device never sees the prior
+        // user's recents. V3-02 S2: logoutEverywhere tears down all
+        // henryco_* localStorage / sessionStorage / IndexedDB / caches
+        // + Supabase session + broadcasts sign-out across this device's
+        // tabs, then redirects.
         palette.clearRecentsForViewer();
-        props.onSignOut?.();
+        const supabase = createSupabaseBrowser();
+        await logoutEverywhere({
+          supabase,
+          redirectTo: "/login",
+        });
       }
     : undefined;
   return (

@@ -6,8 +6,10 @@ import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { BottomSheet, type BottomSheetCloseReason } from "@henryco/ui/mobile";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import {
   Bell,
   Globe,
@@ -67,12 +69,15 @@ function MobileSignOutRow({ onNavigate }: { onNavigate: () => void }) {
           setError(null);
           setBusy(true);
           try {
-            const response = await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-            if (!response.ok) {
-              throw new Error(`Marketplace logout failed with status ${response.status}`);
+            const supabase = createSupabaseBrowser();
+            const result = await logoutEverywhere({
+              supabase,
+              redirectTo: "/",
+            });
+            if (!result.ok && result.serverLogoutStatus && result.serverLogoutStatus >= 500) {
+              throw new Error(`Marketplace logout failed with status ${result.serverLogoutStatus}`);
             }
             onNavigate();
-            window.location.assign("/");
           } catch (logoutError) {
             console.error(logoutError);
             setError(surfaceCopy.marketplaceHeader.signOutError);
@@ -355,6 +360,13 @@ export function PublicHeaderClient() {
                 showSignOut
                 signOutApiPath="/api/auth/logout"
                 signOutRedirectHref="/"
+                onSignOut={async () => {
+                  const supabase = createSupabaseBrowser();
+                  await logoutEverywhere({
+                    supabase,
+                    redirectTo: "/",
+                  });
+                }}
                 buttonClassName="h-11 min-w-[10.5rem] rounded-full"
                 menuItems={
                   chipUser
