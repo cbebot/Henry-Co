@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
 import { useHubAppearance } from "@/context/HubAppearanceContext";
+import { henryAppDomain } from "@/lib/domain";
 import { clearBookmarks } from "@/store/bookmarks";
 import { resetOnboarding } from "@/store/onboarding";
 import { getThemeMode, setThemeMode, type ThemeMode } from "@/store/themeStore";
@@ -94,7 +95,7 @@ export default function SettingsScreen() {
         </Text>
         <Text className="mt-2 text-sm leading-5" style={{ color: palette.muted }}>
           The official corporate directory for Henry &amp; Co. divisions and
-          services—aligned with henrycogroup.com.
+          services—aligned with {henryAppDomain()}.
         </Text>
       </View>
 

@@ -435,7 +435,10 @@ async function main() {
   profileForm.set("roleTypes", "full-time, contract");
   profileForm.set("preferredFunctions", "Operations, Recruitment, Product");
   profileForm.set("skills", "Hiring Ops, Process Design, Candidate Experience, Analytics");
-  profileForm.set("portfolioLinks", "https://jobs.henrycogroup.com/talent");
+  // PROD-READY-01: domain-agnostic — defaults to `henrycogroup.com`.
+  const baseDomain =
+    process.env.BASE_DOMAIN || process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
+  profileForm.set("portfolioLinks", `https://jobs.${baseDomain}/talent`);
   profileForm.set("salaryExpectation", "₦1,800,000 monthly");
   profileForm.set("availability", "2 weeks");
   profileForm.set(

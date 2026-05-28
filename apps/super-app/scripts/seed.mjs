@@ -4,6 +4,10 @@
  *
  * Usage (from repo root):
  *   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node apps/super-app/scripts/seed.mjs
+ *
+ * PROD-READY-01: the seeded `destination_url` per division now respects
+ * `BASE_DOMAIN` (preferred) or `EXPO_PUBLIC_BASE_DOMAIN`. Unset → defaults to
+ * `henrycogroup.com` so existing behaviour is preserved.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -18,6 +22,26 @@ if (!url || !key) {
 
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 
+const FALLBACK_BASE_DOMAIN = "henrycogroup.com";
+
+function resolveBaseDomain() {
+  const raw =
+    process.env.BASE_DOMAIN ??
+    process.env.NEXT_PUBLIC_BASE_DOMAIN ??
+    process.env.EXPO_PUBLIC_BASE_DOMAIN ??
+    "";
+  const clean = String(raw || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "")
+    .replace(/\.+$/, "");
+  return clean || FALLBACK_BASE_DOMAIN;
+}
+
+const BASE_DOMAIN = resolveBaseDomain();
+const divisionUrl = (subdomain) => `https://${subdomain}.${BASE_DOMAIN}`;
+
 const rows = [
   {
     slug: "fabric-care",
@@ -27,7 +51,7 @@ const rows = [
     summary:
       "Premium dry-cleaning and laundry with pickup, tracking and polished garment care.",
     accent_hex: "#6B7CFF",
-    destination_url: "https://care.henrycogroup.com",
+    destination_url: divisionUrl("care"),
     sectors: ["fabric_care"],
   },
   {
@@ -37,7 +61,7 @@ const rows = [
     featured: true,
     summary: "Websites, mobile apps, UI systems, branding, e-commerce, and custom software.",
     accent_hex: "#C9A227",
-    destination_url: "https://studio.henrycogroup.com",
+    destination_url: divisionUrl("studio"),
     sectors: ["technology", "design"],
   },
   {
@@ -47,7 +71,7 @@ const rows = [
     featured: true,
     summary: "Premium multi-vendor commerce with trust signals and split-order clarity.",
     accent_hex: "#B2863B",
-    destination_url: "https://marketplace.henrycogroup.com",
+    destination_url: divisionUrl("marketplace"),
     sectors: ["commerce", "marketplace", "premium_retail", "vendor_platforms"],
   },
   {
@@ -57,7 +81,7 @@ const rows = [
     featured: true,
     summary: "Hiring operating system for HenryCo and verified external employers.",
     accent_hex: "#2DD4BF",
-    destination_url: "https://jobs.henrycogroup.com",
+    destination_url: divisionUrl("jobs"),
     sectors: ["general"],
   },
   {
@@ -67,7 +91,7 @@ const rows = [
     featured: true,
     summary: "Listings, viewing coordination, owner submissions, and managed-property services.",
     accent_hex: "#A78BFA",
-    destination_url: "https://property.henrycogroup.com",
+    destination_url: divisionUrl("property"),
     sectors: ["property", "real_estate"],
   },
   {
@@ -77,7 +101,7 @@ const rows = [
     featured: true,
     summary: "Public courses, internal training, certifications, and partner enablement.",
     accent_hex: "#38BDF8",
-    destination_url: "https://learn.henrycogroup.com",
+    destination_url: divisionUrl("learn"),
     sectors: ["education", "academy", "internal_training", "certification"],
   },
   {
@@ -87,7 +111,7 @@ const rows = [
     featured: true,
     summary: "Pickup, dispatch, same-day and scheduled delivery with proof of delivery.",
     accent_hex: "#D06F32",
-    destination_url: "https://logistics.henrycogroup.com",
+    destination_url: divisionUrl("logistics"),
     sectors: ["logistics", "delivery"],
   },
   {
@@ -98,7 +122,7 @@ const rows = [
     summary:
       "Building materials, interior finishes, procurement, and engineering support — launching soon.",
     accent_hex: "#4F46E5",
-    destination_url: "https://building.henrycogroup.com",
+    destination_url: divisionUrl("building"),
     sectors: ["building_materials", "interior_finishes", "construction_supply"],
   },
 ];

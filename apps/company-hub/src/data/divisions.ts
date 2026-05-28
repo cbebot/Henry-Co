@@ -1,5 +1,12 @@
+import { henryDivisionHost, henryDivisionUrl } from "@/lib/domain";
 import type { Division } from "@/types/division";
 
+/**
+ * Canonical division catalog. `subdomain` and `visitUrl` are derived via the
+ * shared `henryDivisionUrl()` / `henryDivisionHost()` helpers so the catalog
+ * respects `EXPO_PUBLIC_BASE_DOMAIN` (PROD-READY-01). Defaults preserve the
+ * historical `<slug>.henrycogroup.com` shape when no override is set.
+ */
 export const DIVISIONS: Division[] = [
   {
     id: "fabric-care",
@@ -12,8 +19,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#6B7CFF",
-    subdomain: "care.henrycogroup.com",
-    visitUrl: "https://care.henrycogroup.com",
+    subdomain: henryDivisionHost("care"),
+    visitUrl: henryDivisionUrl("care"),
     iconName: "tshirt-crew-outline",
     sectors: ["Fabric Care", "Laundry", "Dry Cleaning"],
   },
@@ -28,8 +35,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#C9A227",
-    subdomain: "studio.henrycogroup.com",
-    visitUrl: "https://studio.henrycogroup.com",
+    subdomain: henryDivisionHost("studio"),
+    visitUrl: henryDivisionUrl("studio"),
     iconName: "code-braces",
     sectors: ["Technology", "Design", "Software"],
   },
@@ -44,8 +51,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#B2863B",
-    subdomain: "marketplace.henrycogroup.com",
-    visitUrl: "https://marketplace.henrycogroup.com",
+    subdomain: henryDivisionHost("marketplace"),
+    visitUrl: henryDivisionUrl("marketplace"),
     iconName: "shopping-outline",
     sectors: ["Commerce", "Marketplace"],
   },
@@ -60,8 +67,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#2DD4BF",
-    subdomain: "jobs.henrycogroup.com",
-    visitUrl: "https://jobs.henrycogroup.com",
+    subdomain: henryDivisionHost("jobs"),
+    visitUrl: henryDivisionUrl("jobs"),
     iconName: "briefcase-outline",
     sectors: ["Talent", "Hiring", "Careers"],
   },
@@ -76,8 +83,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#A78BFA",
-    subdomain: "property.henrycogroup.com",
-    visitUrl: "https://property.henrycogroup.com",
+    subdomain: henryDivisionHost("property"),
+    visitUrl: henryDivisionUrl("property"),
     iconName: "home-city-outline",
     sectors: ["Property", "Real Estate"],
   },
@@ -92,8 +99,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#38BDF8",
-    subdomain: "learn.henrycogroup.com",
-    visitUrl: "https://learn.henrycogroup.com",
+    subdomain: henryDivisionHost("learn"),
+    visitUrl: henryDivisionUrl("learn"),
     iconName: "school-outline",
     sectors: ["Education", "Training"],
   },
@@ -108,8 +115,8 @@ export const DIVISIONS: Division[] = [
     status: "active",
     featured: true,
     accentHex: "#D06F32",
-    subdomain: "logistics.henrycogroup.com",
-    visitUrl: "https://logistics.henrycogroup.com",
+    subdomain: henryDivisionHost("logistics"),
+    visitUrl: henryDivisionUrl("logistics"),
     iconName: "truck-delivery-outline",
     sectors: ["Logistics", "Delivery"],
   },
@@ -124,8 +131,8 @@ export const DIVISIONS: Division[] = [
     status: "coming_soon",
     featured: true,
     accentHex: "#4F46E5",
-    subdomain: "building.henrycogroup.com",
-    visitUrl: "https://building.henrycogroup.com",
+    subdomain: henryDivisionHost("building"),
+    visitUrl: henryDivisionUrl("building"),
     iconName: "office-building-outline",
     sectors: ["Construction", "Interiors"],
   },

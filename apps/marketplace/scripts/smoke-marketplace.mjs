@@ -24,9 +24,12 @@ loadEnvFile(path.join(rootDir, ".env.local"));
 loadEnvFile(path.join(rootDir, ".env.production.vercel"));
 
 const port = Number(process.env.MARKETPLACE_E2E_PORT || 3016);
+// PROD-READY-01: domain-agnostic — defaults to `henrycogroup.com` when unset.
+const baseDomain =
+  process.env.BASE_DOMAIN || process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
 const defaultBaseUrl =
   process.env.VERCEL_ENV === "production"
-    ? "https://marketplace.henrycogroup.com"
+    ? `https://marketplace.${baseDomain}`
     : `http://127.0.0.1:${port}`;
 const baseURL =
   process.env.MARKETPLACE_SMOKE_BASE_URL ||

@@ -269,35 +269,53 @@ if (!ownerUser?.email || !memberUser?.email) {
 const memberJar = await authenticateThroughAccount(memberUser.email, "/care");
 const ownerJar = await authenticateThroughAccount(ownerUser.email, "/owner");
 
-const accountCare = await timedHtml("https://account.henrycogroup.com/care", memberJar);
+// PROD-READY-01: domain-agnostic helper — defaults preserve `henrycogroup.com`
+// when no env var is set so existing behaviour is identical.
+const FALLBACK_BASE_DOMAIN = "henrycogroup.com";
+const BASE_DOMAIN = (() => {
+  const raw =
+    process.env.BASE_DOMAIN ??
+    process.env.NEXT_PUBLIC_BASE_DOMAIN ??
+    "";
+  const clean = String(raw || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "")
+    .replace(/\.+$/, "");
+  return clean || FALLBACK_BASE_DOMAIN;
+})();
+const subdomainUrl = (sub, path = "") => `https://${sub}.${BASE_DOMAIN}${path}`;
+
+const accountCare = await timedHtml(subdomainUrl("account", "/care"), memberJar);
 const accountNotifications = await timedHtml(
-  "https://account.henrycogroup.com/notifications",
+  subdomainUrl("account", "/notifications"),
   memberJar
 );
 const marketplaceShell = await timedJson(
-  "https://marketplace.henrycogroup.com/api/shell",
+  subdomainUrl("marketplace", "/api/shell"),
   memberJar
 );
-const marketplaceHome = await timedHtml("https://marketplace.henrycogroup.com", memberJar);
-const jobsCandidate = await timedHtml("https://jobs.henrycogroup.com/candidate", memberJar);
-const studioClient = await timedHtml("https://studio.henrycogroup.com/client", memberJar);
-const learnOwner = await timedHtml("https://learn.henrycogroup.com/owner", ownerJar);
-const hqOwner = await timedHtml("https://hq.henrycogroup.com/owner", ownerJar);
+const marketplaceHome = await timedHtml(subdomainUrl("marketplace"), memberJar);
+const jobsCandidate = await timedHtml(subdomainUrl("jobs", "/candidate"), memberJar);
+const studioClient = await timedHtml(subdomainUrl("studio", "/client"), memberJar);
+const learnOwner = await timedHtml(subdomainUrl("learn", "/owner"), ownerJar);
+const hqOwner = await timedHtml(subdomainUrl("hq", "/owner"), ownerJar);
 const hqThreads = await timedJson(
-  "https://hq.henrycogroup.com/api/owner/internal-comms/threads",
+  subdomainUrl("hq", "/api/owner/internal-comms/threads"),
   ownerJar
 );
 
 const guestCartToken = crypto.randomUUID();
 const guestCookieJar = new Map([["marketplace_cart_token", guestCartToken]]);
 const productsResponse = await timedJson(
-  "https://marketplace.henrycogroup.com/api/products",
+  subdomainUrl("marketplace", "/api/products"),
   guestCookieJar
 );
 const guestProduct = productsResponse.json?.items?.[0];
 
 if (guestProduct?.slug) {
-  await fetchWithJar("https://marketplace.henrycogroup.com/api/cart", guestCookieJar, {
+  await fetchWithJar(subdomainUrl("marketplace", "/api/cart"), guestCookieJar, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
@@ -308,7 +326,7 @@ if (guestProduct?.slug) {
   });
 }
 
-const guestCheckout = await timedHtml("https://marketplace.henrycogroup.com/checkout", guestCookieJar);
+const guestCheckout = await timedHtml(subdomainUrl("marketplace", "/checkout"), guestCookieJar);
 
 assert(accountCare.status === 200, `Account Care returned ${accountCare.status}.`, failures);
 assert(
@@ -348,7 +366,7 @@ assert(
       studioClient.body.includes("No Studio activity yet"))) ||
     (studioClient.status >= 300 &&
       studioClient.status < 400 &&
-      studioClient.location === "https://account.henrycogroup.com/studio"),
+      studioClient.location === subdomainUrl("account", "/studio")),
   "Studio client workspace did not resolve through the shared account flow.",
   failures
 );

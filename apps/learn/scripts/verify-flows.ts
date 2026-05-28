@@ -418,7 +418,11 @@ async function main() {
     teachingTopics: [`Academy QA ${runId}`, "Operations readiness", "Internal enablement"],
     credentials:
       "Operational QA lead for HenryCo academy verification with practical experience in structured learning flows, publishing checks, and readiness reviews.",
-    portfolioLinks: ["https://learn.henrycogroup.com/academy", "https://henrycogroup.com"],
+    portfolioLinks: [
+      // PROD-READY-01: derived from BASE_DOMAIN env (fallback `henrycogroup.com`).
+      `https://learn.${process.env.BASE_DOMAIN || process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}/academy`,
+      `https://${process.env.BASE_DOMAIN || process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`,
+    ],
     courseProposal:
       "A practical academy operations course that teaches staff and partners how to structure learning experiences, validate readiness, and deliver premium instructional quality inside HenryCo Learn.",
     supportingFiles: [],
