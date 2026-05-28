@@ -1,4 +1,4 @@
-import { COMPANY } from "./company";
+import { COMPANY, getTrustedAppHosts } from "./company";
 
 function isLocalHost(hostname: string) {
   return (
@@ -15,6 +15,14 @@ function isTrustedHenryCoHost(hostname: string) {
 
   if (!normalizedHost) return false;
   if (isLocalHost(normalizedHost)) return true;
+
+  // Per-app override + live-Vercel-alias hosts the auth flow may
+  // legitimately redirect to. Computed lazily from `company.ts` so a
+  // V3-DOMAIN-01 base-domain flip or a Vercel project env var change
+  // widens the allowlist automatically without touching this file.
+  const appHosts = getTrustedAppHosts();
+  if (appHosts.includes(normalizedHost)) return true;
+
   if (!baseDomain) return false;
 
   return normalizedHost === baseDomain || normalizedHost.endsWith(`.${baseDomain}`);
