@@ -10,6 +10,8 @@ import {
 } from "@henryco/ui/public-shell";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { logoutEverywhere } from "@henryco/auth/client";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
 type LearnSiteHeaderClientProps = {
   brandName: string;
@@ -67,6 +69,9 @@ export function LearnSiteHeaderClient({
           settingsHref={settingsHref}
           signupHref={signupHref}
           showSignOut
+          onSignOut={async () => {
+            await logoutEverywhere({ supabase: createSupabaseBrowser(), redirectTo: "/" });
+          }}
           menuItems={[
             { label: t("My courses"), href: "/learner/courses" },
             { label: t("Browse catalog"), href: "/courses" },

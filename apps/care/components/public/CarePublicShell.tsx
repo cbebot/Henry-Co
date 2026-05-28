@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { CareAccountChipClient } from "@/components/public/CareAccountChipClient";
 import CareNavbar, { type DivisionPublicConfig } from "@/components/public/CareNavbar";
 import CareFooter from "@/components/public/CareFooter";
 import { getCareSettings } from "@/lib/care-data";
@@ -36,15 +36,11 @@ export default async function CarePublicShell({ children }: { children: ReactNod
   const accountHref = getCareAccountHomeUrl();
 
   const accountSlot = (
-    <PublicAccountChip
-      {...HenryCoPublicAccountPresets.standard}
+    <CareAccountChipClient
       user={chipUser}
       loginHref={loginHref}
-      accountHref={accountHref}
-      preferencesHref={getAccountUrl("/settings")}
-      settingsHref={getAccountUrl("/security")}
       signupHref={signupHref}
-      showSignOut
+      accountHref={accountHref}
       menuItems={[
         { label: t("Track a booking"), href: "/track" },
         { label: t("Book care"), href: "/book" },

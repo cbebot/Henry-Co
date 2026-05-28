@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl } from "@henryco/config";
+import { StudioAccountChipClient } from "@/components/studio/StudioAccountChipClient";
 import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -29,17 +28,11 @@ export default async function PublicLayout({ children }: { children: React.React
         supportEmail={catalog.platform.supportEmail}
         accountHref={accountUrl}
         accountMenu={
-          <PublicAccountChip
-            {...HenryCoPublicAccountPresets.standard}
+          <StudioAccountChipClient
             user={chipUser}
             loginHref={loginHref}
-            accountHref={accountUrl}
-            preferencesHref={getAccountUrl("/settings")}
-            settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
-            showSignOut
-            buttonClassName="border-[var(--studio-line)] bg-black/15 text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)] hover:bg-black/25 dark:text-[var(--studio-ink)]"
-            dropdownClassName="border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_100%,#0a1620)]"
+            accountHref={accountUrl}
             menuItems={[
               { label: "Start a project", href: "/request" },
               { label: "Pick a project type", href: "/pick" },

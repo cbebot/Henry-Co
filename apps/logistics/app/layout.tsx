@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Manrope } from "next/font/google";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { LogisticsAccountChipClient } from "@/components/layout/LogisticsAccountChipClient";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
@@ -54,17 +54,11 @@ export default async function RootLayout({
   const t = (text: string) => translateSurfaceLabel(lang, text);
   const returnPath = h.get("x-logistics-return-path") || "/";
   const accountSlot = (
-    <PublicAccountChip
-      {...HenryCoPublicAccountPresets.standard}
+    <LogisticsAccountChipClient
       user={chipUser}
       loginHref={getLogisticsSharedLoginUrl(returnPath)}
       signupHref={getLogisticsSharedSignupUrl(returnPath)}
       accountHref={getAccountUrl("/logistics")}
-      preferencesHref={getAccountUrl("/settings")}
-      settingsHref={getAccountUrl("/security")}
-      showSignOut
-      buttonClassName="border-[var(--logistics-line-strong)] bg-[rgba(215,117,57,0.14)] text-[var(--logistics-accent-soft)] hover:bg-[rgba(215,117,57,0.24)]"
-      dropdownClassName="border-[var(--logistics-line)] bg-[#120a14]"
       menuItems={[
         { label: t("Logistics in My Account"), href: getAccountUrl("/logistics"), external: true },
       ]}

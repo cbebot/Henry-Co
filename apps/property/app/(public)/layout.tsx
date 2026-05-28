@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl } from "@henryco/config";
+import { PropertyAccountChipClient } from "@/components/property/PropertyAccountChipClient";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
@@ -29,15 +28,11 @@ export default async function PublicLayout({ children }: { children: React.React
     : null;
 
   const accountSlot = (
-    <PublicAccountChip
-      {...HenryCoPublicAccountPresets.standard}
+    <PropertyAccountChipClient
       user={chipUser}
       loginHref={getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin: origin })}
-      accountHref={getSharedAccountPropertyUrl()}
-      preferencesHref={getAccountUrl("/settings")}
-      settingsHref={getAccountUrl("/security")}
       signupHref={getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin: origin })}
-      showSignOut
+      accountHref={getSharedAccountPropertyUrl()}
       menuItems={[
         { label: t("Browse listings"), href: "/" },
         { label: t("Submit a listing"), href: "/submit" },

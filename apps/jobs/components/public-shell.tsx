@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { getJobsPublicCopy } from "@/lib/public-copy";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import {
-  HenryCoPublicAccountPresets,
   HenryCoSearchBreadcrumb,
-  PublicAccountChip,
   PublicFooter,
 } from "@henryco/ui";
+import { JobsAccountChipClient } from "@/components/JobsAccountChipClient";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
@@ -85,15 +84,11 @@ export async function PublicShell({
         headerClassName="jobs-public-header"
         auxLink={{ label: copy.shell.account, href: accountJobsUrl, external: true }}
         accountMenu={
-          <PublicAccountChip
-            {...HenryCoPublicAccountPresets.standard}
+          <JobsAccountChipClient
             user={chipUser}
             loginHref={loginHref}
-            accountHref={accountJobsUrl}
-            preferencesHref={getAccountUrl("/settings")}
-            settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
-            showSignOut
+            accountHref={accountJobsUrl}
             menuItems={[
               { label: copy.shell.candidateHome, href: "/candidate" },
               { label: copy.shell.applications, href: "/candidate/applications" },

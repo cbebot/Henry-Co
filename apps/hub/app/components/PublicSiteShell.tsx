@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import type { HubPublicCopy } from "@henryco/i18n";
+import { logoutEverywhere } from "@henryco/auth/client";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import {
   type PublicAccountUser,
   HenryCoSearchBreadcrumb,
@@ -154,6 +156,9 @@ export default function PublicSiteShell({
               preferencesHref={getAccountUrl("/settings")}
               settingsHref={getAccountUrl("/security")}
               showSignOut
+              onSignOut={async () => {
+                await logoutEverywhere({ supabase: createSupabaseBrowser(), redirectTo: "/" });
+              }}
               menuItems={[
                 { label: copy.menuDivisionsDirectory, href: "/#divisions" },
                 { label: copy.menuAbout, href: "/about" },
