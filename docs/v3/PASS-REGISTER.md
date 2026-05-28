@@ -72,14 +72,29 @@ The owner's #1 demand. No new feature pillar (Phase C+) starts until Phase B clo
 
 | ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
 |---|---|---|---|---|---|---|---|---|
+| V3-02b | public-shell-logout-everywhere-completion | P12, P7 | V3-02 | S | Y | — | I | Wire `onSignOut` prop on shared `PublicAccountChip` + `AccountDropdown` across the 6 remaining public-shell apps (care, jobs, learn, logistics, property, studio); marketplace already wired as template; ~2 hours; source: `.codex-temp/v3-02-auth-reliability/report.md` §8 item 2 |
 | V3-07b | operator-surface-i18n | P12 | V3-07, V3-12 | L | N | D17 | — | Close ~1,305 operator-surface i18n GAPs (staff dashboards, admin workspaces, server messages, emails, PDFs, structured data, A11y); raise scanner from baseline to "no ambiguity"; 3–4 sessions |
 | V3-07c | henrycogroup-domain-sweep | P12 | V3-07 | S | Y | — | — | Mechanical replace of remaining ~156 `henrycogroup.com` literals with `henryDomain(division)` / `henryWebRoot()` helper across `apps/` + `packages/` (excl. `packages/search-ui/`); 1–2 sessions |
+| V3-DELIVERY-01 | notification-delivery-classification-fix | P3, P12 | V3-03 (merged) | S | Y | — | — | Add `email_dispatched_at IS NOT NULL` guard to V3-03 redelivery cron Stage 2 + optional 1-statement UPDATE to re-classify 1,408 misclassified `customer_notifications` rows (benign, 13 distinct users); see `docs/v3/notification-delivery-incident.md`; ~6-line fix |
 
-**Hardening posture (V3-07b, V3-07c):**
-- These are HARDENING passes surfaced by the Wave B.1 conductor as deferred work after V3-07 closed. They do NOT block Phase B closure (D11) and they do NOT block Phase C start.
-- Pattern B (runtime DeepL fallback) handles user-facing translation today; these passes deliver Pattern A typed-copy completeness and operator-surface coverage.
+**Hardening posture (V3-02b, V3-07b, V3-07c, V3-DELIVERY-01):**
+- These are HARDENING / CLEANUP passes surfaced by Wave B.1/B.2 conductors as deferred work after their parent passes closed. With one named exception, none block Phase B closure (D11) and none block Phase C start.
+- **Exception — V3-02b blocks Phase B closure (V3-12 acceptance).** V3-12 red-teams "no dead logout paths"; the 6 public-shell apps still routing through the legacy fetch path are a foundation-lock gap until wired. Schedule V3-02b in the same window as V3-02's merge.
+- Pattern B (runtime DeepL fallback) handles user-facing translation today; V3-07b/c deliver Pattern A typed-copy completeness and operator-surface coverage.
 - V3-07b runs sequentially across modules within itself (3–4 agent sessions are expected, each closing a module slice). V3-07c is parallel-safe and mechanical.
-- Either may execute during Phase C or later. Recommendation: schedule V3-07c immediately after V3-07 merges (it's a 1–2 session sweep); schedule V3-07b after Phase B closes, before Phase C wave 2.
+- V3-DELIVERY-01 is benign — see `docs/v3/notification-delivery-incident.md`. Ship within the same window as the cron-guard PR.
+- Either V3-07b/c may execute during Phase C or later. Recommendation: schedule V3-07c immediately after V3-07 merges (1–2 session sweep); schedule V3-07b after Phase B closes, before Phase C wave 2.
+
+### Infrastructure tail (NOT phase blockers; sit between Phase B closure and Phase C)
+
+| ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
+|---|---|---|---|---|---|---|---|---|
+| V3-DOMAIN-01 | henry-holdings-domain-migration | P12 | Wave B.1 merged + henry.holdings purchased + CAC certificate + corporate bank account | M | N | — | I | Migrate production from `henrycogroup.com` to `henry.holdings` — DNS, SSO domain, OAuth callbacks, Vercel project domains, email sender domains, hardcoded references via `henryDomain()` helper; see `docs/v3/domain-decision.md` + `docs/v3/infrastructure-decisions.md` ID-2 |
+
+**Infrastructure posture (V3-DOMAIN-01):**
+- Domain `henry.holdings` is selected (per `docs/v3/domain-decision.md`) but not yet acquired. Trigger to buy: Wave B.1 fully merged + CAC certificate received + corporate bank account opened.
+- Cross-references with infrastructure ID-1 (Cloudflare reverse-proxy, see `docs/v3/infrastructure-decisions.md`) — sequence Cloudflare cutover BEFORE the domain migration where possible to minimize compounding DNS churn.
+- Does NOT block any V3 numbered pass; clean public launch (V3-96) benefits from the migration but does not strictly require it.
 
 ---
 

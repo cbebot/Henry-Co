@@ -30,7 +30,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-14, V3-15, V3-16.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Paystack + Flutterwave first (Nigeria-native, handle Naira correctly, faster activation, lower domestic fees). Stripe added later when international expansion begins. Unblocks: V3-13, V3-15, V3-16; V3-14 (Stripe) deferred within Phase C.
 
 ---
 
@@ -47,7 +47,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-65, V3-66.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Defer gaming arena entirely from V3. Wallet-funded player-vs-player matches with company margin is gambling under Nigerian law and most jurisdictions; requires gaming license, age verification, deposit limits, responsible-play features, exclusion lists, audited fairness — months of legal work. Revisit in V4 only after a lawyer signs off per market. Blocks/defers: the gaming portions of Phase G (V3-66 and any gaming-gated pass).
 
 ---
 
@@ -67,7 +67,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-26.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Anthropic primary + OpenAI fallback, with a tiered model strategy inside the provider router: routine tasks (draft replies, summarization, classification) use the cheapest capable model; medium reasoning uses a mid model; complex agentic work uses the top model. The router must never name the underlying provider in user-facing UI; it is "HenryCo Intelligence" only. Unblocks: V3-26 through V3-33 (Phase D).
 
 ---
 
@@ -85,7 +85,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-27.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-27 (Phase D usage-billing) can start.
 
 ---
 
@@ -104,7 +104,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-21.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-21 (Phase C tax engine) can start.
 
 ---
 
@@ -122,7 +122,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-24.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Smile Identity for African markets, Onfido for international. A KYC router dispatches by region. Unblocks: V3-24 (KYC) and any verification-gated pass.
 
 ---
 
@@ -139,7 +139,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-46, V3-48, V3-61 partially (operational, not blocker).
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-46, V3-48, V3-61 (Phase F + newsletter); operational, does not gate a phase.
 
 ---
 
@@ -157,7 +157,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-86 (the spike pass itself), partially V3-23 (native-app payments).
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-86 (mobile architecture decision); partial dependency on V3-23 (native-app payment compliance).
 
 ---
 
@@ -178,7 +178,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-20 partially, V3-69, V3-75, V3-22 dashboard granularity.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-20 (subscription lifecycle, partial), V3-69 (partner payouts), V3-75 (bulk invoicing + team roles), V3-22 (finance dashboard granularity).
 
 ---
 
@@ -196,7 +196,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-84.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-84 (global-localization maturity).
 
 ---
 
@@ -213,7 +213,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Phase C start (every pass V3-13+).
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — YES, hold the gate. No Phase C or later pass starts until Phase B (V3-01 through V3-12) closes with V3-12 acceptance. Non-negotiable.
 
 ---
 
@@ -230,7 +230,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Cross-cuts all phases; informs V3-09 (mobile), V3-26 (AI router), V3-50 (provider model), V3-52 (marketplace ranking), V3-76 (API foundation).
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-09, V3-26, V3-50, V3-52, V3-76; cross-cuts all phases, does not hard-gate any single pass but informs scope.
 
 ---
 
@@ -247,7 +247,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Coordination only — no specific pass.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — coordination only; no specific blocked pass.
 
 ---
 
@@ -264,7 +264,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** None directly; informs Phase G prioritization.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — no direct blocked pass; informs Phase G prioritization.
 
 ---
 
@@ -281,7 +281,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Operational only.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — operational only; no blocked pass.
 
 ---
 
@@ -298,7 +298,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-60 scope.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-60 (coming-soon / public roadmap surface).
 
 ---
 
@@ -328,7 +328,7 @@ V3-07b is the prompt that operationalizes that bar. Two sub-decisions need ratif
 
 **Blocks:** V3-07b only. Does NOT block any phase.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-07b (operator-surface i18n wave); does NOT block any phase.
 
 ---
 
