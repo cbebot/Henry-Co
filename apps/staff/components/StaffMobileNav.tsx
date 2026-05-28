@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getHqUrl } from "@henryco/config";
 import { ButtonPendingContent } from "@henryco/ui";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { Menu, X, LogOut, ExternalLink, Search } from "lucide-react";
 import { resolveIcon } from "@/components/StaffPrimitives";
+import { createStaffSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import type { WorkspaceNavItem } from "@/lib/types";
 
@@ -36,15 +38,14 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { Accept: "application/json" },
+      const supabase = createStaffSupabaseBrowser();
+      const result = await logoutEverywhere({
+        supabase,
+        redirectTo: "/login",
       });
-      if (!response.ok) {
-        throw new Error(`Staff logout failed with status ${response.status}`);
+      if (!result.ok && result.serverLogoutStatus && result.serverLogoutStatus >= 500) {
+        throw new Error(`Staff logout failed with status ${result.serverLogoutStatus}`);
       }
-      window.location.assign("/login");
     } catch (error) {
       console.error(error);
       setSignOutError("We could not sign you out. Try again.");

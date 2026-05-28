@@ -99,6 +99,16 @@ export type HenryEventName =
   | "henry.auth.session.reauth_succeeded"
   | "henry.auth.session.draft_restored"
   | "henry.auth.session.multitab_broadcast"
+  // auth/reliability — V3-02 foundation lock
+  | "henry.auth.oauth.completed"
+  | "henry.auth.oauth.failed"
+  | "henry.auth.oauth.link_required"
+  | "henry.auth.oauth.linked"
+  | "henry.auth.logout.everywhere"
+  | "henry.auth.sensitive_action.reauth_required"
+  | "henry.auth.sensitive_action.reauth_succeeded"
+  | "henry.auth.sensitive_action.rate_limited"
+  | "henry.auth.role_chooser.viewed"
   // ui/mobile — V3-09 foundation lock (mobile consistency)
   | "henry.ui.mobile_keyboard.kept_visible"
   | "henry.ui.mobile_keyboard.obscured"

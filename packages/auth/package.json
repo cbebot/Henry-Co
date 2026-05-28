@@ -15,19 +15,35 @@
     "./client/retry": "./src/client/retry.ts",
     "./client/session-broadcast": "./src/client/session-broadcast.ts",
     "./client/session-state": "./src/client/session-state.ts",
+    "./client/known-storage": "./src/client/known-storage.ts",
+    "./client/clear-henryco-storage": "./src/client/clear-henryco-storage.ts",
+    "./client/logout-everywhere": "./src/client/logout-everywhere.ts",
+    "./client/sensitive-action-modal": "./src/client/sensitive-action-modal.tsx",
     "./server/refresh-middleware": "./src/server/refresh-middleware.ts",
     "./server/reauth-context": "./src/server/reauth-context.ts",
     "./server/session-state": "./src/server/session-state.ts",
-    "./server/verify-supabase-session": "./src/server/verify-supabase-session.ts"
+    "./server/verify-supabase-session": "./src/server/verify-supabase-session.ts",
+    "./server/sensitive-action-guard": "./src/server/sensitive-action-guard.ts",
+    "./server/reauth-cookie": "./src/server/reauth-cookie.ts",
+    "./server/sensitive-action-rate-limit": "./src/server/sensitive-action-rate-limit.ts",
+    "./server/role-status": "./src/server/role-status.ts",
+    "./server/oauth-link-intent": "./src/server/oauth-link-intent.ts",
+    "./server/oauth-error-cookie": "./src/server/oauth-error-cookie.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/retry.test.ts src/__tests__/session-state.test.ts src/__tests__/session-broadcast.test.ts src/__tests__/refresh-middleware.test.ts src/__tests__/verify-supabase-session.test.ts src/__tests__/auth-method.test.ts"
+    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/retry.test.ts src/__tests__/session-state.test.ts src/__tests__/session-broadcast.test.ts src/__tests__/refresh-middleware.test.ts src/__tests__/verify-supabase-session.test.ts src/__tests__/auth-method.test.ts src/__tests__/known-storage.test.ts src/__tests__/reauth-cookie.test.ts src/__tests__/sensitive-action-rate-limit.test.ts src/__tests__/oauth-error-cookie.test.ts"
   },
   "peerDependencies": {
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.0.0",
-    "next": "^16.0.0"
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "react-dom": { "optional": true }
   },
   "devDependencies": {
     "@henryco/config": "workspace:^",
@@ -35,7 +51,11 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.98.0",
     "@types/node": "^20.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "next": "^16.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "typescript": "^5.9.3"
   }
 }

@@ -7,10 +7,12 @@ import { LogOut, Search } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import UserAvatar from "@/components/layout/UserAvatar";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
 type SidebarProps = {
   user: { fullName: string | null; email: string | null; avatarUrl: string | null };
@@ -51,13 +53,12 @@ export default function Sidebar({ user }: SidebarProps) {
     if (signingOut) return;
     setSigningOut(true);
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        cache: "no-store",
+      const supabase = createSupabaseBrowser();
+      await logoutEverywhere({
+        supabase,
+        redirectTo: "/login",
       });
     } finally {
-      router.replace("/login");
       router.refresh();
     }
   };

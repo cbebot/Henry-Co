@@ -106,6 +106,7 @@ export function AccountDropdown({
   showSignOut = false,
   signOutApiPath = "/api/auth/logout",
   signOutRedirectHref,
+  onSignOut,
   tone = "theme",
   open,
   onClose,
@@ -119,6 +120,13 @@ export function AccountDropdown({
   showSignOut?: boolean;
   signOutApiPath?: string;
   signOutRedirectHref?: string;
+  /**
+   * V3-02 S2 — when provided, replaces the built-in fetch+redirect
+   * with the host app's logout orchestrator (e.g. `logoutEverywhere`
+   * from `@henryco/auth/client`). The host is responsible for the
+   * post-sign-out redirect when this prop is used.
+   */
+  onSignOut?: () => Promise<void> | void;
   tone?: DropdownTone;
   open: boolean;
   onClose: () => void;
@@ -159,6 +167,16 @@ export function AccountDropdown({
   async function handleSignOut() {
     if (signingOut) return;
     setSigningOut(true);
+    if (onSignOut) {
+      try {
+        await onSignOut();
+      } catch {
+        window.location.assign(
+          signOutRedirectHref || (typeof window !== "undefined" ? `${window.location.origin}/` : "/"),
+        );
+      }
+      return;
+    }
     try { await fetch(signOutApiPath, { method: "POST", credentials: "include", headers: { Accept: "application/json" } }); } catch { /* still redirect */ }
     finally { window.location.assign(signOutRedirectHref || (typeof window !== "undefined" ? `${window.location.origin}/` : "/")); }
   }

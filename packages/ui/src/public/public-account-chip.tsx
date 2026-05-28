@@ -150,6 +150,7 @@ export function PublicAccountChip({
   showSignOut = false,
   signOutApiPath = "/api/auth/logout",
   signOutRedirectHref,
+  onSignOut,
   dropdownTone = "theme",
   chipSurface = "theme",
   className,
@@ -169,6 +170,13 @@ export function PublicAccountChip({
   showSignOut?: boolean;
   signOutApiPath?: string;
   signOutRedirectHref?: string;
+  /**
+   * V3-02 S2 — when provided, replaces the built-in fetch+redirect
+   * with the host app's logout orchestrator (e.g. `logoutEverywhere`
+   * from `@henryco/auth/client`). The host is responsible for the
+   * post-sign-out redirect when this prop is used.
+   */
+  onSignOut?: () => Promise<void> | void;
   /** Menu panel colors: follow site theme, or force solid dark/light surfaces. */
   dropdownTone?: DropdownTone;
   /** Chip (signed-in and signed-out controls) for dark headers vs standard adaptive styling. */
@@ -275,6 +283,19 @@ export function PublicAccountChip({
   async function handleSignOut() {
     if (signingOut) return;
     setSigningOut(true);
+    if (onSignOut) {
+      try {
+        await onSignOut();
+      } catch {
+        // Host's orchestrator failed — fall back to redirect so the
+        // user isn't stranded mid-action.
+        const next =
+          signOutRedirectHref ||
+          (typeof window !== "undefined" ? `${window.location.origin}/` : "/");
+        window.location.assign(next);
+      }
+      return;
+    }
     try {
       await fetch(signOutApiPath, {
         method: "POST",

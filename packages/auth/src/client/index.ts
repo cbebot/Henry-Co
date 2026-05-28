@@ -33,5 +33,26 @@ export {
   type SessionStateListener,
 } from "./session-state";
 
+export {
+  clearHenryCoStorage,
+  type ClearHenryCoStorageReport,
+} from "./clear-henryco-storage";
+
+export {
+  HENRYCO_INDEXED_DB_PREFIX,
+  HENRYCO_STORAGE_PREFIXES,
+  HENRYCO_CACHE_NAME_PREFIX,
+  KNOWN_HENRYCO_INDEXED_DB_NAMES,
+  isHenryCoStorageKey,
+  isHenryCoIndexedDbName,
+  isHenryCoCacheName,
+} from "./known-storage";
+
+export {
+  logoutEverywhere,
+  type LogoutEverywhereOptions,
+  type LogoutEverywhereResult,
+} from "./logout-everywhere";
+
 export type { SessionState } from "../types";
 export { HC_SESSION_STATE_COOKIE, SESSION_STATE_VALUES } from "../types";

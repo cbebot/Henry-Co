@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { publishNotification } from "@henryco/notifications";
+import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -22,6 +23,18 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // V3-02 S4: withdrawals are sensitive actions — require a
+    // fresh re-credential within the 5-minute window before any
+    // funds movement is initiated. The guard emits the audit
+    // log entry on success + rate-limits 5 reauths per 5 min.
+    const guard = await requireSensitiveAction(request, {
+      action: "wallet.withdrawal.request",
+      entityType: "wallet_withdrawal",
+      resolveUser: async () => user,
+      userId: (u) => u.id,
+    });
+    if (!guard.ok) return guard.response;
 
     await ensureAccountProfileRecords(user);
 

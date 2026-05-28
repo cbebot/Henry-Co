@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -76,6 +77,15 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = user.id;
+
+    // V3-02 S4: adding / changing a payout method is sensitive.
+    const guard = await requireSensitiveAction(request, {
+      action: "wallet.payout_method.add",
+      entityType: "payout_method",
+      resolveUser: async () => user,
+      userId: (u) => u.id,
+    });
+    if (!guard.ok) return guard.response;
 
     await ensureAccountProfileRecords(user);
 
