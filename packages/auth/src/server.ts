@@ -1,8 +1,11 @@
 import "server-only";
 
 import {
-  COMPANY,
   getAccountUrl,
+  getCanonicalAccountHosts,
+  getCanonicalHqHosts,
+  getCanonicalStaffHqHosts,
+  getCanonicalWorkspaceHosts,
   getHqUrl,
   getStaffHqUrl,
   isAbsoluteHttpUrl,
@@ -35,42 +38,37 @@ const ACCOUNT_AUTH_PATHS = new Set([
   "/auth/choose",
 ]);
 
-function getHenryCoHosts() {
-  const baseDomain = COMPANY.group.baseDomain;
-  return {
-    accountHost: `account.${baseDomain}`,
-    hqHost: `hq.${baseDomain}`,
-    staffHost: `staff.${baseDomain}`,
-    workspaceHost: `workspace.${baseDomain}`,
-  };
-}
-
 function toTargetUrl(target: string, origin: string): URL {
   return new URL(target.startsWith("/") ? target : target, origin);
 }
 
+function hostMatchesAny(hostname: string, candidates: string[]): boolean {
+  const normalized = hostname.toLowerCase();
+  return candidates.some((candidate) => candidate.toLowerCase() === normalized);
+}
+
 function isOwnerTarget(targetUrl: URL): boolean {
-  const { hqHost } = getHenryCoHosts();
   return (
-    targetUrl.hostname === hqHost ||
+    hostMatchesAny(targetUrl.hostname, getCanonicalHqHosts()) ||
     targetUrl.pathname === "/owner" ||
     targetUrl.pathname.startsWith("/owner/")
   );
 }
 
 function isStaffTarget(targetUrl: URL): boolean {
-  const { staffHost, workspaceHost } = getHenryCoHosts();
   return (
-    targetUrl.hostname === staffHost ||
-    targetUrl.hostname === workspaceHost ||
+    hostMatchesAny(targetUrl.hostname, getCanonicalStaffHqHosts()) ||
+    hostMatchesAny(targetUrl.hostname, getCanonicalWorkspaceHosts()) ||
     targetUrl.pathname === "/workspace" ||
     targetUrl.pathname.startsWith("/workspace/")
   );
 }
 
 function isAccountAuthTarget(targetUrl: URL): boolean {
-  const { accountHost } = getHenryCoHosts();
-  return targetUrl.hostname === accountHost && ACCOUNT_AUTH_PATHS.has(targetUrl.pathname);
+  return (
+    hostMatchesAny(targetUrl.hostname, getCanonicalAccountHosts()) &&
+    ACCOUNT_AUTH_PATHS.has(targetUrl.pathname)
+  );
 }
 
 function toOwnerDestination(target: string, origin: string): string {

@@ -61,6 +61,97 @@ const BASE_DOMAIN =
   "henrycogroup.com";
 const GROUP_SUPPORT_PHONE = "+2349133957084";
 
+// The legacy `henrycogroup.com` subdomain set (`account.`, `hq.`, `staff.`,
+// `workspace.`, division `<sub>.`) has no working production DNS today: the
+// apps moved to a new Vercel team during the 2026-05-23 migration and the
+// old DNS cutover never happened. Until V3-DOMAIN-01 wires `henry.holdings`
+// (or restores the legacy subdomain DNS), per-app URL overrides + live
+// Vercel aliases below carry SSO traffic so post-login redirects land on
+// a live origin instead of a 404/dead host.
+const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = BASE_DOMAIN === "henrycogroup.com";
+
+function normalizeAppOriginEnv(value?: string | null): string | null {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (!/^https?:$/.test(url.protocol)) return null;
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return null;
+  }
+}
+
+const ACCOUNT_URL_OVERRIDE = normalizeAppOriginEnv(
+  process.env.NEXT_PUBLIC_ACCOUNT_URL,
+);
+const HUB_URL_OVERRIDE = normalizeAppOriginEnv(process.env.NEXT_PUBLIC_HUB_URL);
+const HQ_URL_OVERRIDE = normalizeAppOriginEnv(process.env.NEXT_PUBLIC_HQ_URL);
+const STAFF_HQ_URL_OVERRIDE = normalizeAppOriginEnv(
+  process.env.NEXT_PUBLIC_STAFF_HQ_URL,
+);
+const WORKSPACE_URL_OVERRIDE = normalizeAppOriginEnv(
+  process.env.NEXT_PUBLIC_WORKSPACE_URL,
+);
+
+// Live customer-facing Vercel production aliases for the `henry-co-studio`
+// team (verified live with HTTP 200 on 2026-05-28). These exist only as the
+// last-resort default so that a zero-config build never points users at a
+// dead URL while the canonical custom domains are unwired.
+//
+// Resolution precedence per app:
+//   1. `NEXT_PUBLIC_<APP>_URL` env override (explicit Vercel project config)
+//   2. `https://<sub>.<NEXT_PUBLIC_BASE_DOMAIN>` (when base domain has been
+//      explicitly changed away from the dead `henrycogroup.com` default —
+//      the V3-DOMAIN-01 single-flip path: set `NEXT_PUBLIC_BASE_DOMAIN`
+//      to `henry.holdings` and the helpers automatically produce
+//      `https://account.henry.holdings`)
+//   3. Live Vercel alias below (current safety net)
+//
+// The hub app on Vercel hosts both the public hub (`/`) and the owner
+// console (`/owner/*`), so `getHubUrl` and `getHqUrl` share the same
+// fallback. Likewise the staff app hosts both `/` and `/workspace/*`.
+const ACCOUNT_LIVE_FALLBACK_ORIGIN = "https://henryco-account-tau.vercel.app";
+const HUB_LIVE_FALLBACK_ORIGIN = "https://hub-mu-wheat.vercel.app";
+const HQ_LIVE_FALLBACK_ORIGIN = "https://hub-mu-wheat.vercel.app";
+const STAFF_HQ_LIVE_FALLBACK_ORIGIN = "https://staff-kappa-livid.vercel.app";
+const WORKSPACE_LIVE_FALLBACK_ORIGIN = "https://staff-kappa-livid.vercel.app";
+
+function joinOriginAndPath(origin: string, path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${origin.replace(/\/+$/, "")}${normalizedPath}`;
+}
+
+function resolveAppOrigin(
+  override: string | null,
+  subdomain: string | null,
+  liveFallback: string,
+): string {
+  if (override) return override;
+  if (BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP) return liveFallback;
+  return subdomain
+    ? `https://${subdomain}.${BASE_DOMAIN}`
+    : `https://${BASE_DOMAIN}`;
+}
+
+function hostnameOf(origin: string): string | null {
+  try {
+    return new URL(origin).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function dedupedHosts(...candidates: Array<string | null | undefined>): string[] {
+  const set = new Set<string>();
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const host = hostnameOf(candidate);
+    if (host) set.add(host);
+  }
+  return [...set];
+}
+
 export const COMPANY = {
   group: {
     name: "Henry & Co.",
@@ -416,28 +507,112 @@ export function getDivisionUrl(key: DivisionKey) {
 }
 
 export function getHubUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(HUB_URL_OVERRIDE, null, HUB_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
 }
 
 export function getAccountUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://account.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(ACCOUNT_URL_OVERRIDE, "account", ACCOUNT_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
 }
 
 export function getHqUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://hq.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(HQ_URL_OVERRIDE, "hq", HQ_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
 }
 
 export function getWorkspaceUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://workspace.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(
+      WORKSPACE_URL_OVERRIDE,
+      "workspace",
+      WORKSPACE_LIVE_FALLBACK_ORIGIN,
+    ),
+    path,
+  );
 }
 
 export function getStaffHqUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://staff.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(STAFF_HQ_URL_OVERRIDE, "staff", STAFF_HQ_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
+}
+
+/**
+ * Canonical hostnames the auth flow treats as authoritative for each app
+ * lane. Each set unions the env override host (if configured), the legacy
+ * `<sub>.<baseDomain>` host (so historical deep-link `next=` params still
+ * route correctly), and the live Vercel-alias fallback host (so traffic
+ * arriving from preview/local environments is recognised). Consumed by
+ * `packages/auth/src/server.ts` to detect owner/staff/account-auth targets
+ * and by `packages/config/urls.ts` to widen the open-redirect allowlist.
+ */
+export function getCanonicalAccountHosts(): string[] {
+  return dedupedHosts(
+    ACCOUNT_URL_OVERRIDE,
+    `https://account.${BASE_DOMAIN}`,
+    ACCOUNT_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalHubHosts(): string[] {
+  return dedupedHosts(
+    HUB_URL_OVERRIDE,
+    `https://${BASE_DOMAIN}`,
+    HUB_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalHqHosts(): string[] {
+  return dedupedHosts(
+    HQ_URL_OVERRIDE,
+    `https://hq.${BASE_DOMAIN}`,
+    HQ_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalStaffHqHosts(): string[] {
+  return dedupedHosts(
+    STAFF_HQ_URL_OVERRIDE,
+    `https://staff.${BASE_DOMAIN}`,
+    STAFF_HQ_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalWorkspaceHosts(): string[] {
+  return dedupedHosts(
+    WORKSPACE_URL_OVERRIDE,
+    `https://workspace.${BASE_DOMAIN}`,
+    WORKSPACE_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+/**
+ * Union of every canonical app host plus the `BASE_DOMAIN` itself. The
+ * open-redirect allowlist in `urls.ts` consults this to decide which
+ * absolute `next=` URLs are trusted. Localhost matching is handled
+ * separately by `isTrustedHenryCoHost`.
+ */
+export function getTrustedAppHosts(): string[] {
+  const set = new Set<string>();
+  set.add(BASE_DOMAIN.toLowerCase());
+  for (const host of [
+    ...getCanonicalAccountHosts(),
+    ...getCanonicalHubHosts(),
+    ...getCanonicalHqHosts(),
+    ...getCanonicalStaffHqHosts(),
+    ...getCanonicalWorkspaceHosts(),
+  ]) {
+    set.add(host);
+  }
+  return [...set];
 }
 
 export function getSharedCookieDomain(hostname?: string | null) {
