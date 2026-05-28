@@ -72,14 +72,16 @@ The owner's #1 demand. No new feature pillar (Phase C+) starts until Phase B clo
 
 | ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
 |---|---|---|---|---|---|---|---|---|
+| V3-02b | auth-public-shell-wirings | P12, P7 | V3-02 | S | Y | — | I | Thread `onSignOut={logoutEverywhere}` on `<PublicAccountChip>` / `<AccountDropdown>` through the 6 remaining public-shell hosts (care, jobs, learn, logistics, property, studio public chromes; hub-public); marketplace already wired as template. Add `requireSensitiveAction` to KYC submission + future password-change + delete-account routes when each lands. 1 session |
 | V3-07b | operator-surface-i18n | P12 | V3-07, V3-12 | L | N | D17 | — | Close ~1,305 operator-surface i18n GAPs (staff dashboards, admin workspaces, server messages, emails, PDFs, structured data, A11y); raise scanner from baseline to "no ambiguity"; 3–4 sessions |
 | V3-07c | henrycogroup-domain-sweep | P12 | V3-07 | S | Y | — | — | Mechanical replace of remaining ~156 `henrycogroup.com` literals with `henryDomain(division)` / `henryWebRoot()` helper across `apps/` + `packages/` (excl. `packages/search-ui/`); 1–2 sessions |
 
-**Hardening posture (V3-07b, V3-07c):**
-- These are HARDENING passes surfaced by the Wave B.1 conductor as deferred work after V3-07 closed. They do NOT block Phase B closure (D11) and they do NOT block Phase C start.
-- Pattern B (runtime DeepL fallback) handles user-facing translation today; these passes deliver Pattern A typed-copy completeness and operator-surface coverage.
+**Hardening posture (V3-02b, V3-07b, V3-07c):**
+- These are HARDENING passes surfaced by V3-02 / V3-07 closure conductors as deferred work. They do NOT block Phase B closure (D11) and they do NOT block Phase C start.
+- V3-02b is a 1-session mechanical pass — diff template lives in `.codex-temp/v3-02-auth-reliability/report.md` §8 item 2; marketplace wiring is the template. Parallel-safe with V3-07b/V3-07c. Recommendation: schedule immediately after V3-02 merges so logout-everywhere has identical coverage across every chrome.
+- Pattern B (runtime DeepL fallback) handles user-facing translation today; V3-07b/V3-07c deliver Pattern A typed-copy completeness and operator-surface coverage.
 - V3-07b runs sequentially across modules within itself (3–4 agent sessions are expected, each closing a module slice). V3-07c is parallel-safe and mechanical.
-- Either may execute during Phase C or later. Recommendation: schedule V3-07c immediately after V3-07 merges (it's a 1–2 session sweep); schedule V3-07b after Phase B closes, before Phase C wave 2.
+- Either V3-07 sibling may execute during Phase C or later. Recommendation: schedule V3-07c immediately after V3-07 merges (it's a 1–2 session sweep); schedule V3-07b after Phase B closes, before Phase C wave 2.
 
 ---
 
