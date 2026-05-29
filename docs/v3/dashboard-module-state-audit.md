@@ -175,6 +175,43 @@ and is noted as follow-up rather than fabricating per-tile timestamps.
   panels are explicitly described as "Only recommendations backed by live
   signals" / "Evidence-backed … from live tables".
 
+## S5 — Account overview (customer dashboard)
+
+The account Smart Home (`apps/account/components/smart-home/SmartHome.tsx`)
+composes the `customer-overview` module (table above) plus the
+deterministic recommender. Audited every widget read: each resolves to a
+real, user-scoped query — `customer_wallet_balance`, notifications count,
+`customer_subscriptions`, trust snapshot, `customer_invoices`, support
+threads, lifecycle snapshot. `getHomeWidgets` returns `[]` when there is
+no snapshot (e.g. a non-customer viewer) rather than rendering ghost
+cards, and `SmartHomeEmpty` is typographic with CTAs sourced from the
+recommender (no hardcoded fallbacks). **Verdict: Truthful** — the single
+fix on this surface (ReferralsCard fabricated trend) is recorded in S4.
+
+## S6 — Per-division mini-dashboards
+
+Audited the home / mini-dashboard surface of the customer-facing division
+modules — marketplace, wallet, building, hotel (tables above) — plus the
+`customer_invoices` surface. Searched the audited dashboard-module sources
+for fabricated-data literals (mock / sample / dummy / placeholder rows):
+**none found.** Every mini-dashboard sources from a snapshot or live query
+and returns `[]` or a distinct empty state when there is nothing to show;
+module gates hide ineligible surfaces (`hidden`) rather than padding with
+filler. **Verdict: Truthful** — no decorative or fabricated division
+tiles. (Invoices: 2 real rows in prod + distinct empty state, no fix.)
+
+## S7 — Staff workspace
+
+The staff registry (12 modules, table above) pulls live
+intelligence-data per `intelligence-rollout-status.md`. Spot-checked
+`staff-overview` directly — real queue/risk metrics, not a stub.
+**Verdict: Truthful** for the registry + spot-checked surfaces.
+**Limitation (honest):** a full click-through walk of every staff module
+needs a seeded staff session, which was not available in this pass. The
+registry-level review and the `staff-overview` spot-check found no
+fabricated data, but a live staff-session walk is recorded as follow-up
+rather than claimed complete.
+
 ## S8 — Hidden-when-empty
 
 `decideModuleRender({ state, emptyBehaviour, showAllModules })` is
