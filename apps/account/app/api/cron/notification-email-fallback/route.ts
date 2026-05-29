@@ -477,6 +477,10 @@ function buildIndividualEmail(args: {
     intro: args.body || "You have a new HenryCo notification waiting in your inbox.",
     actionLabel: "View notification",
     actionHref: args.ctaUrl,
+    // V3-04 (S6): attribute the landing to the notification-fallback
+    // email so owner analytics can distinguish in-app vs email-driven
+    // notification opens. The renderer appends utm_source=henryco_email.
+    campaign: `notification_fallback_${args.division || "general"}`,
     footnote:
       "This is a HenryCo transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
@@ -502,6 +506,8 @@ function buildDigestEmail(args: {
       "to review the pending updates in one place.",
     actionLabel: "Open my inbox",
     actionHref: `${ACCOUNT_HOME_FALLBACK}/notifications`,
+    // V3-04 (S6): attribute digest-driven inbox opens.
+    campaign: "notification_fallback_digest",
     footnote:
       "This is a HenryCo transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,

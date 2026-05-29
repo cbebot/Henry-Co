@@ -17,7 +17,20 @@
       "supportsTablet": true,
       "buildNumber": "2",
       "bundleIdentifier": "com.henryco.superapp.staging",
-      "associatedDomains": ["applinks:staging.henrycogroup.com"]
+      "associatedDomains": [
+        "applinks:staging.henrycogroup.com",
+        "applinks:account.henrycogroup.com",
+        "applinks:care.henrycogroup.com",
+        "applinks:marketplace.henrycogroup.com",
+        "applinks:property.henrycogroup.com",
+        "applinks:jobs.henrycogroup.com",
+        "applinks:learn.henrycogroup.com",
+        "applinks:logistics.henrycogroup.com",
+        "applinks:studio.henrycogroup.com",
+        "applinks:building.henrycogroup.com",
+        "applinks:hotel.henrycogroup.com",
+        "webcredentials:account.henrycogroup.com"
+      ]
     },
     "android": {
       "versionCode": 2,
@@ -31,11 +44,17 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "staging.henrycogroup.com",
-              "pathPrefix": "/app"
-            }
+            { "scheme": "https", "host": "staging.henrycogroup.com", "pathPrefix": "/app" },
+            { "scheme": "https", "host": "account.henrycogroup.com" },
+            { "scheme": "https", "host": "care.henrycogroup.com" },
+            { "scheme": "https", "host": "marketplace.henrycogroup.com" },
+            { "scheme": "https", "host": "property.henrycogroup.com" },
+            { "scheme": "https", "host": "jobs.henrycogroup.com" },
+            { "scheme": "https", "host": "learn.henrycogroup.com" },
+            { "scheme": "https", "host": "logistics.henrycogroup.com" },
+            { "scheme": "https", "host": "studio.henrycogroup.com" },
+            { "scheme": "https", "host": "building.henrycogroup.com" },
+            { "scheme": "https", "host": "hotel.henrycogroup.com" }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
