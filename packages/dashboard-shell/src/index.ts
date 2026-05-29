@@ -31,6 +31,9 @@ export * from "./surfaces";
 // Contracts (DASH-2+ consumption)
 export * from "./register";
 export * from "./home-widget";
+// V3-08 — module-state taxonomy (real / empty_yet / empty_none /
+// loading / error) + hidden-when-empty decision helpers.
+export * from "./module-state-contract";
 export * from "./command-palette";
 export * from "./command-aggregator";
 export * from "./notification-categories";

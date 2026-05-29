@@ -22,6 +22,7 @@ import { AttentionPanel } from "./AttentionPanel";
 import { ModuleWidgetGrid } from "./ModuleWidgetGrid";
 import { NextBestActions } from "./NextBestActions";
 import { RankedMetricStrip } from "./RankedMetricStrip";
+import { EmptyStateCtaTracker } from "./EmptyStateCtaTracker";
 import { SignalFeed } from "./SignalFeed";
 import { SmartHomeEmpty } from "./SmartHomeEmpty";
 import { SmartHomeHeader } from "./SmartHomeHeader";
@@ -165,11 +166,13 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
           savedItemsCount={0}
           fallbackBody={copy.smartHomeEmptyFallback}
         />
-        <SmartHomeEmpty
-          firstName={firstName}
-          primaryAction={primary}
-          secondaryAction={secondary}
-        />
+        <EmptyStateCtaTracker moduleId="smart-home">
+          <SmartHomeEmpty
+            firstName={firstName}
+            primaryAction={primary}
+            secondaryAction={secondary}
+          />
+        </EmptyStateCtaTracker>
       </div>
     );
   }

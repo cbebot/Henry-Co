@@ -179,7 +179,21 @@ export type HenryEventName =
   | "henry.realtime.connection.connecting"
   | "henry.realtime.connection.live"
   | "henry.realtime.connection.reconnecting"
-  | "henry.realtime.connection.failed";
+  | "henry.realtime.connection.failed"
+  // dashboard module truth — V3-08 foundation lock (empty dashboard
+  // truth). `rendered` fires once per dashboard composition per module
+  // with the resolved `state` (real | empty_yet | empty_none | loading
+  // | error) and `source` (live | derived | aggregate | static) so the
+  // owner-workspace module-health tile can flag modules that have been
+  // empty for >7 days (candidates for removal or messaging fix).
+  // `refreshed` fires when a tile re-runs its query (manual refresh or
+  // route-live-refresh) carrying the freshness age in seconds.
+  // `empty_state.cta_clicked` fires when a viewer taps the CTA on an
+  // empty-state surface, carrying the cta_target so we can tell which
+  // empty states actually convert.
+  | "henry.dashboard.module.rendered"
+  | "henry.dashboard.module.refreshed"
+  | "henry.dashboard.empty_state.cta_clicked";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
