@@ -55,7 +55,7 @@ const DIVISION_MODULE = {
  * path segment(s) of the canonical web deep links from
  * `@henryco/seo/deeplinks` builders.
  */
-const PATH_RULES: Array<{ test: (segments: string[]) => boolean; to: string }> = [
+const PATH_RULES: { test: (segments: string[]) => boolean; to: string }[] = [
   { test: (s) => s[0] === "care", to: DIVISION_MODULE.care },
   { test: (s) => s[0] === "marketplace", to: DIVISION_MODULE.marketplace },
   { test: (s) => s[0] === "product", to: DIVISION_MODULE.marketplace },
