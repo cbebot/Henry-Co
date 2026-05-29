@@ -53,6 +53,7 @@ flowchart LR
 | `studio` | `studio_lead_submitted`, `studio_proposal_ready`, `studio_payment_updated`, `studio_project_updated`, `studio_message_added` | `henry.studio.lead.submitted`, `henry.studio.proposal.ready`, `henry.studio.payment.updated`, `henry.studio.project.updated`, `henry.studio.message.added` |
 | `uploads` | `cloudinary_requested`, `cloudinary_succeeded`, `cloudinary_failed`, `cloudinary_degraded` | `henry.uploads.cloudinary.requested`, `henry.uploads.cloudinary.succeeded`, `henry.uploads.cloudinary.failed`, `henry.uploads.cloudinary.degraded` |
 | `marketplace (proof)` | `payment_proof_uploaded`, `payment_proof_failed` | `henry.marketplace.payment_proof.uploaded`, `henry.marketplace.payment_proof.failed` |
+| `dashboard` (V3-08) | `dashboard_module_rendered`, `dashboard_module_refreshed`, `dashboard_empty_state_cta_clicked` | `henry.dashboard.module.rendered`, `henry.dashboard.module.refreshed`, `henry.dashboard.empty_state.cta_clicked` |
 
 ## Rules
 
