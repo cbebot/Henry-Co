@@ -179,7 +179,23 @@ export type HenryEventName =
   | "henry.realtime.connection.connecting"
   | "henry.realtime.connection.live"
   | "henry.realtime.connection.reconnecting"
-  | "henry.realtime.connection.failed";
+  | "henry.realtime.connection.failed"
+  // ui/card — V3-11 foundation lock (one job per card). The audit asks
+  // of every card: "does it open the exact next step, or just show more
+  // text?" These events let the owner-workspace card-clickthrough tile
+  // answer that empirically AFTER deploy: a card that renders often but
+  // is rarely clicked is a candidate for demotion (its next step is not
+  // compelling, or it is informational and mis-styled as actionable).
+  //   - `rendered` — a classified card painted. Payload: { card_id,
+  //     classification ("A"|"B"|"C1"|"C2"|"C3"), division }.
+  //   - `clicked`  — the viewer activated the card's primary next step.
+  //     Payload: { card_id, target }.
+  //   - `demoted`  — fired DURING this pass (and any later audit) to log
+  //     a card that was demoted/removed. Payload: { card_id, from, to,
+  //     reason }. Lets the owner see the audit's churn over time.
+  | "henry.ui.card.rendered"
+  | "henry.ui.card.clicked"
+  | "henry.ui.card.demoted";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

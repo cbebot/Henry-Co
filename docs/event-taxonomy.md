@@ -53,6 +53,7 @@ flowchart LR
 | `studio` | `studio_lead_submitted`, `studio_proposal_ready`, `studio_payment_updated`, `studio_project_updated`, `studio_message_added` | `henry.studio.lead.submitted`, `henry.studio.proposal.ready`, `henry.studio.payment.updated`, `henry.studio.project.updated`, `henry.studio.message.added` |
 | `uploads` | `cloudinary_requested`, `cloudinary_succeeded`, `cloudinary_failed`, `cloudinary_degraded` | `henry.uploads.cloudinary.requested`, `henry.uploads.cloudinary.succeeded`, `henry.uploads.cloudinary.failed`, `henry.uploads.cloudinary.degraded` |
 | `marketplace (proof)` | `payment_proof_uploaded`, `payment_proof_failed` | `henry.marketplace.payment_proof.uploaded`, `henry.marketplace.payment_proof.failed` |
+| `ui (foundation UX telemetry)` | V3-05 skeleton (`skeleton_shown`, `skeleton_exceeded_threshold`); V3-09 mobile (`mobile_keyboard_kept_visible`, `mobile_keyboard_obscured`, `modal_escape_backdrop_tap`, `modal_escape_android_back`); V3-11 card (`card_rendered`, `card_clicked`, `card_demoted`) | `henry.ui.skeleton.shown`, `henry.ui.skeleton.exceeded_threshold`, `henry.ui.mobile_keyboard.kept_visible`, `henry.ui.mobile_keyboard.obscured`, `henry.ui.modal_escape.backdrop_tap`, `henry.ui.modal_escape.android_back`, `henry.ui.card.rendered`, `henry.ui.card.clicked`, `henry.ui.card.demoted` |
 
 ## Rules
 
