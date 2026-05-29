@@ -26,14 +26,15 @@
     "Loading content.",
     "Keyboard shortcuts",
     "Close workspace menu",
-    "(r.ok ? (r.json() as Promise"
+    "(r.ok ? (r.json() as Promise",
+    "): Promise"
   ],
   "filePrefixes": [
     "apps/super-app",
     "apps/company-hub"
   ],
   "notes": {
-    "strings": "Day + month tokens that resolve via Intl on the surface but appear as fallback literals in non-localised utility files. '= 1024 && unit' is a scanner false positive on packages/messaging-thread/src/thread.tsx:51 — the formatBytes JS `value >= 1024 && unit < units.length - 1` loop condition parsed as JSX text. 'Realtime updates are live' is a screen-reader aria-label on the messaging-thread Live pill — deferred to V3-07b operator-surface i18n pass. 'Loading content.' is a screen-reader-only a11y label in apps/property/app/account/loading.tsx — deferred to V3-07b for systematic sr-only string handling.",
+    "strings": "Day + month tokens that resolve via Intl on the surface but appear as fallback literals in non-localised utility files. '= 1024 && unit' is a scanner false positive on packages/messaging-thread/src/thread.tsx:51 — the formatBytes JS `value >= 1024 && unit < units.length - 1` loop condition parsed as JSX text. 'Realtime updates are live' is a screen-reader aria-label on the messaging-thread Live pill — deferred to V3-07b operator-surface i18n pass. 'Loading content.' is a screen-reader-only a11y label in apps/property/app/account/loading.tsx — deferred to V3-07b for systematic sr-only string handling. '): Promise' is the same TS-type-annotation false-positive class as the '(r.ok ? (r.json() as Promise' entry: the `>([^<>{}]{2,})<` JSX-text regex captures the `): Promise` between the `>` of `Record<string, unknown>` and the `<` of `Promise<void>` in async telemetry helpers (apps/account/components/smart-home/DashboardRefreshTracker.tsx + EmptyStateCtaTracker.tsx) — never user-facing copy.",
     "filePrefixes": "super-app + company-hub are Expo (React Native) apps with their own i18n stack and should not be lumped into the Next.js JSX scan. scripts/ and tools/ are not walked at all — see SCAN_ROOTS in hardcoded-text-scan.mjs."
   }
 }
