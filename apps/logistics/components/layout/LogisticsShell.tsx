@@ -15,10 +15,18 @@ export default function LogisticsShell({
   children,
   kicker,
   accountSlot,
+  drawerProfileSlot,
 }: {
   children: ReactNode;
   kicker?: string;
   accountSlot?: ReactNode;
+  /**
+   * Premium in-place profile section rendered inside the mobile
+   * BottomSheet drawer (FIX-CHROME-02). Typically
+   * `<DrawerAccountSection ... />`. Replaces the chip-with-nested-
+   * dropdown pattern that was awkward inside a BottomSheet.
+   */
+  drawerProfileSlot?: ReactNode;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -73,6 +81,8 @@ export default function LogisticsShell({
           />
         }
         accountMenu={accountSlot}
+        mobileDrawerProfile={drawerProfileSlot}
+        showAccountInMobileSheetFooter={!drawerProfileSlot}
         showThemeToggle={false}
         headerClassName="z-40 border-b border-[var(--logistics-line)] bg-[#09060a]/85 text-white backdrop-blur-xl"
         maxWidth="max-w-7xl"

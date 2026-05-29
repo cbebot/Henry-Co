@@ -6,6 +6,7 @@ export * from "./public-footer";
 export * from "./public-navbar";
 export * from "./public-section";
 export * from "./public-account-chip";
+export * from "./drawer-account-section";
 export * from "./public-route-loading";
 export * from "../theme/HenryCoThemeBlocking";
 export * from "../theme/constants";

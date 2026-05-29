@@ -1,6 +1,6 @@
 "use client";
 
-import { getHubUrl } from "@henryco/config";
+import { getHubUrl, getDivisionConfig } from "@henryco/config";
 import {
   HenryCoSearchBreadcrumb,
   HenryCoPublicAccountPresets,
@@ -8,6 +8,7 @@ import {
   PublicHeader,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { DrawerAccountSection } from "@henryco/ui/public";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 
@@ -29,6 +30,7 @@ type LearnSiteHeaderClientProps = {
 };
 
 const learnNav = getSiteNavigationConfig("learn");
+const learnAccent = getDivisionConfig("learn").accentStrong;
 
 export function LearnSiteHeaderClient({
   brandName,
@@ -74,6 +76,28 @@ export function LearnSiteHeaderClient({
           ]}
         />
       }
+      // Premium in-place profile card for the mobile drawer
+      // (FIX-CHROME-02). Client Component → uses render-function
+      // variant so dismiss is wired through DrawerAccountSection's
+      // onSelect prop.
+      renderMobileSheetProfile={(dismiss) => (
+        <DrawerAccountSection
+          user={accountChipUser}
+          accountHref={accountHref}
+          preferencesHref={preferencesHref}
+          settingsHref={settingsHref}
+          loginHref={loginHref}
+          signupHref={signupHref}
+          showSignOut
+          accent={learnAccent}
+          extraItems={[
+            { label: "My courses", href: "/learner/courses" },
+            { label: "Browse catalog", href: "/courses" },
+            { label: "Teach with HenryCo", href: "/teach" },
+          ]}
+          onSelect={dismiss}
+        />
+      )}
       showThemeToggle
       themeToggleClassName="h-11 w-11 shrink-0 rounded-xl border border-[var(--learn-line)] bg-[rgba(8,14,22,0.45)] text-[var(--learn-ink)] shadow-none hover:bg-[rgba(12,18,28,0.55)] dark:border-[var(--learn-line)]"
       maxWidth="max-w-[92rem]"

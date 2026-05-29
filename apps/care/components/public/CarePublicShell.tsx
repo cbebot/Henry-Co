@@ -52,6 +52,21 @@ export default async function CarePublicShell({ children }: { children: ReactNod
     />
   );
 
+  // Data tuple for the premium drawer profile section (FIX-CHROME-02).
+  const drawerProfile = {
+    user: chipUser,
+    accountHref,
+    preferencesHref: getAccountUrl("/settings"),
+    settingsHref: getAccountUrl("/security"),
+    loginHref,
+    signupHref,
+    accent: publicCare.accent ?? CARE_ACCENT,
+    extraItems: [
+      { label: "Track a booking", href: "/track" },
+      { label: "Book care", href: "/book" },
+    ],
+  };
+
   return (
     <div
       className="care-page"
@@ -62,7 +77,7 @@ export default async function CarePublicShell({ children }: { children: ReactNod
         } as CSSProperties
       }
     >
-      <CareNavbar division={publicCare} accountSlot={accountSlot} />
+      <CareNavbar division={publicCare} accountSlot={accountSlot} drawerProfile={drawerProfile} />
 
       <div className="mx-auto w-full max-w-[88rem] px-0">
         {children}

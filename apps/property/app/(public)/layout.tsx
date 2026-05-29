@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
@@ -45,9 +45,29 @@ export default async function PublicLayout({ children }: { children: React.React
     />
   );
 
+  // Data tuple consumed by PropertySiteHeader to construct the
+  // premium DrawerAccountSection (FIX-CHROME-02). We pass the data
+  // (not the JSX) so the client-side site-header can plumb the
+  // rAF-deferred dismiss callback through DrawerAccountSection's
+  // onSelect prop — closing the drawer cleanly after each tap
+  // without racing the App Router transition.
+  const drawerProfile = {
+    user: chipUser,
+    accountHref: getSharedAccountPropertyUrl(),
+    preferencesHref: getAccountUrl("/settings"),
+    settingsHref: getAccountUrl("/security"),
+    loginHref: getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin: origin }),
+    signupHref: getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin: origin }),
+    accent: getDivisionConfig("property").accentStrong,
+    extraItems: [
+      { label: "Browse listings", href: "/" },
+      { label: "Submit a listing", href: "/submit" },
+    ],
+  };
+
   return (
     <div className="property-page property-shell">
-      <PropertySiteHeader accountSlot={accountSlot} />
+      <PropertySiteHeader accountSlot={accountSlot} drawerProfile={drawerProfile} />
       {children}
       <PropertySiteFooter />
     </div>

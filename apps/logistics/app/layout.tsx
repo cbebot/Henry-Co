@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Manrope } from "next/font/google";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { DrawerAccountSection } from "@henryco/ui/public";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
@@ -71,6 +72,27 @@ export default async function RootLayout({
     />
   );
 
+  // Premium in-place profile card for the mobile drawer
+  // (FIX-CHROME-02). The DrawerAccountSection is itself a Client
+  // Component, so we render it directly as a ReactNode and hand it
+  // down through the (Client) LogisticsShell, which passes it to
+  // PublicHeader's mobileDrawerProfile prop.
+  const drawerProfileSlot = (
+    <DrawerAccountSection
+      user={chipUser}
+      accountHref={getAccountUrl("/logistics")}
+      preferencesHref={getAccountUrl("/settings")}
+      settingsHref={getAccountUrl("/security")}
+      loginHref={getLogisticsSharedLoginUrl(returnPath)}
+      signupHref={getLogisticsSharedSignupUrl(returnPath)}
+      showSignOut
+      accent={logistics.accentStrong}
+      extraItems={[
+        { label: "Logistics in My Account", href: getAccountUrl("/logistics"), external: true },
+      ]}
+    />
+  );
+
   return (
     <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
@@ -78,7 +100,7 @@ export default async function RootLayout({
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
-            <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
+            <LogisticsShell accountSlot={accountSlot} drawerProfileSlot={drawerProfileSlot}>{children}</LogisticsShell>
             <SupportAssist division="logistics" accent="#D77539" />
           </LocaleProvider>
         </PublicThemeGuard>
