@@ -126,6 +126,24 @@ export type DashboardModule = {
   railSlot: RailSlot;
 
   /**
+   * V3-11 (one-job-per-card) — the module's single "exact next step".
+   *
+   * Per the owner's question — _"Does this open the exact next step, or
+   * does it just show more text?"_ — every module surface should make its
+   * primary action explicit rather than dumping the viewer onto a generic
+   * hub. When set, the shell renders this as the module card's primary CTA
+   * (the one job the card opens). When absent, the module's `getRoutes()`
+   * home entry is the implicit next step (entire-card-tap).
+   *
+   * `href` MUST be a real, live route (validated against the deep-link
+   * inventory at V3-04 merge time). `label` is the already-i18n'd CTA
+   * text — the contract carries NO copy of its own, so host apps pass a
+   * translated string through and the V3-07 strict hardcoded-text gate
+   * stays green.
+   */
+  nextStep?: { href: string; label: string };
+
+  /**
    * Coarse eligibility check — used by the rail to decide whether to
    * render the module's entry at all. Equivalent to "is `getRoleGate`
    * non-null", but expressed as a literal "allowed" | "hidden" for

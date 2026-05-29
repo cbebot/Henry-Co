@@ -26,6 +26,15 @@ export {
   type ListStatesProps,
   type ListStateKind,
 } from "./states/list-states";
+// V3-11 (S9) — card telemetry (one-job-per-card click-through).
+export {
+  CardTelemetry,
+  useCardRendered,
+  emitCardClicked,
+  emitCardDemoted,
+  type CardTelemetryProps,
+  type CardClassification,
+} from "./telemetry/card-telemetry";
 export * from "./live/RouteLiveRefresh";
 export * from "./public/public-account-chip";
 export { HenryCoPublicAccountPresets } from "./public/henryco-account-chip-presets";

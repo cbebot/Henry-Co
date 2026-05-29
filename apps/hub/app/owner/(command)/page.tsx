@@ -17,11 +17,13 @@ import DivisionBadge from "@/components/owner/DivisionBadge";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/components/owner/OwnerPrimitives";
 import SessionHealthTile from "@/components/owner/SessionHealthTile";
 import ObservabilityTile from "./dashboard/observability-tile";
+import CardClickThroughTile from "./dashboard/card-clickthrough-tile";
 import ModuleHealthTile from "./dashboard/module-health-tile";
 import DeepLinkHealthTile from "./dashboard/deep-link-health-tile";
 import { getOwnerOverviewData } from "@/lib/owner-data";
 import { getSessionHealthMetrics } from "@/lib/owner-session-health";
 import { getObservabilityMetrics } from "@/lib/owner-observability";
+import { getCardClickThroughMetrics } from "@/lib/owner-card-clickthrough";
 import { getModuleHealthMetrics } from "@/lib/owner-module-health";
 import { getDeepLinkHealthMetrics } from "@/lib/owner-deeplink-health";
 import { formatCurrencyAmount, formatCompactNumber, timeAgo } from "@/lib/format";
@@ -34,6 +36,7 @@ export default async function OwnerOverviewPage() {
     data,
     sessionHealth,
     observability,
+    cardClickThrough,
     moduleHealth,
     deepLinkHealth,
     locale,
@@ -41,6 +44,7 @@ export default async function OwnerOverviewPage() {
     getOwnerOverviewData(),
     getSessionHealthMetrics(),
     getObservabilityMetrics(),
+    getCardClickThroughMetrics(),
     getModuleHealthMetrics(),
     getDeepLinkHealthMetrics(),
     getHubPublicLocale(),
@@ -233,6 +237,8 @@ export default async function OwnerOverviewPage() {
       <SessionHealthTile metrics={sessionHealth} locale={locale} />
 
       <ObservabilityTile metrics={observability} locale={locale} />
+
+      <CardClickThroughTile metrics={cardClickThrough} locale={locale} />
 
       <ModuleHealthTile metrics={moduleHealth} locale={locale} />
 
