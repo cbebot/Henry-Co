@@ -1,0 +1,301 @@
+{
+  "app": "care",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/about",
+      "api": false
+    },
+    {
+      "route": "/admin",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/care/book",
+      "api": true
+    },
+    {
+      "route": "/api/care/bookings",
+      "api": true
+    },
+    {
+      "route": "/api/care/claims",
+      "api": true
+    },
+    {
+      "route": "/api/care/contact",
+      "api": true
+    },
+    {
+      "route": "/api/care/payments/receipt",
+      "api": true
+    },
+    {
+      "route": "/api/care/pod",
+      "api": true
+    },
+    {
+      "route": "/api/care/preferences/garments",
+      "api": true
+    },
+    {
+      "route": "/api/care/preferences/unsubscribe",
+      "api": true
+    },
+    {
+      "route": "/api/care/recurring",
+      "api": true
+    },
+    {
+      "route": "/api/care/reviews",
+      "api": true
+    },
+    {
+      "route": "/api/care/track",
+      "api": true
+    },
+    {
+      "route": "/api/cron/care-automation",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/owner/care-media",
+      "api": true
+    },
+    {
+      "route": "/api/owner/whatsapp/health",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/resend",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/whatsapp",
+      "api": true
+    },
+    {
+      "route": "/app/manager",
+      "api": false
+    },
+    {
+      "route": "/app/owner",
+      "api": false
+    },
+    {
+      "route": "/book",
+      "api": false
+    },
+    {
+      "route": "/contact",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/manager",
+      "api": false
+    },
+    {
+      "route": "/manager/expenses",
+      "api": false
+    },
+    {
+      "route": "/manager/notifications",
+      "api": false
+    },
+    {
+      "route": "/manager/operations",
+      "api": false
+    },
+    {
+      "route": "/manager/pricing",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/owner/bookings",
+      "api": false
+    },
+    {
+      "route": "/owner/finance",
+      "api": false
+    },
+    {
+      "route": "/owner/impersonate",
+      "api": false
+    },
+    {
+      "route": "/owner/impersonate/callback",
+      "api": true
+    },
+    {
+      "route": "/owner/insights",
+      "api": false
+    },
+    {
+      "route": "/owner/notifications",
+      "api": false
+    },
+    {
+      "route": "/owner/pricing",
+      "api": false
+    },
+    {
+      "route": "/owner/records",
+      "api": false
+    },
+    {
+      "route": "/owner/reviews",
+      "api": false
+    },
+    {
+      "route": "/owner/security",
+      "api": false
+    },
+    {
+      "route": "/owner/settings",
+      "api": false
+    },
+    {
+      "route": "/owner/staff",
+      "api": false
+    },
+    {
+      "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/pricing",
+      "api": false
+    },
+    {
+      "route": "/review",
+      "api": false
+    },
+    {
+      "route": "/rider",
+      "api": false
+    },
+    {
+      "route": "/rider/deliveries",
+      "api": false
+    },
+    {
+      "route": "/rider/expenses",
+      "api": false
+    },
+    {
+      "route": "/rider/history",
+      "api": false
+    },
+    {
+      "route": "/rider/notifications",
+      "api": false
+    },
+    {
+      "route": "/rider/pickups",
+      "api": false
+    },
+    {
+      "route": "/services",
+      "api": false
+    },
+    {
+      "route": "/staff",
+      "api": false
+    },
+    {
+      "route": "/staff/assignments",
+      "api": false
+    },
+    {
+      "route": "/staff/history",
+      "api": false
+    },
+    {
+      "route": "/staff/notifications",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/support/archive",
+      "api": false
+    },
+    {
+      "route": "/support/expenses",
+      "api": false
+    },
+    {
+      "route": "/support/inbox",
+      "api": false
+    },
+    {
+      "route": "/support/inbox/assign",
+      "api": false
+    },
+    {
+      "route": "/support/inbox/reply",
+      "api": false
+    },
+    {
+      "route": "/support/notifications",
+      "api": false
+    },
+    {
+      "route": "/support/outbox",
+      "api": false
+    },
+    {
+      "route": "/support/payments",
+      "api": false
+    },
+    {
+      "route": "/support/reviews",
+      "api": false
+    },
+    {
+      "route": "/track",
+      "api": false
+    },
+    {
+      "route": "/unsubscribe",
+      "api": false
+    },
+    {
+      "route": "/workspace/access",
+      "api": false
+    },
+    {
+      "route": "/workspace/access/callback",
+      "api": true
+    },
+    {
+      "route": "/workspace/access/recovery",
+      "api": false
+    }
+  ]
+}
