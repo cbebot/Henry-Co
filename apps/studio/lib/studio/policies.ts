@@ -29,7 +29,7 @@ export type PolicyDocument = {
 };
 
 const COMPANY_NAME = "HenryCo Studio";
-const PARENT = "Henry & Co. Group Ltd.";
+const PARENT = "Henry & Co. Limited";
 const SUPPORT_EMAIL = BRAND_EMAILS.studio;
 const FINANCE_EMAIL = BRAND_EMAILS.finance;
 const PRIVACY_EMAIL = BRAND_EMAILS.privacy;

@@ -249,7 +249,6 @@ function renderBrandMark(palette: ResolvedPalette): string {
               </td>
               <td style="padding:0 0 0 14px; vertical-align:middle;">
                 <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:21px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
-                <div style="margin:4px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9.5px; font-weight:700; letter-spacing:0.32em; text-transform:uppercase; color:${palette.accent};">Group</div>
               </td>
             </tr>
           </table>
@@ -292,7 +291,6 @@ export function renderHenryCoEmailHeader(
               </td>
               <td style="padding:0 0 0 12px; vertical-align:middle;">
                 <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
-                <div style="margin:3px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9px; font-weight:700; letter-spacing:0.30em; text-transform:uppercase; color:${palette.accent};">Group</div>
               </td>
             </tr>
           </table>
@@ -346,13 +344,13 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
             ${escapeHtml(reason)}
           </p>
           <p style="margin:10px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
-            Henry &amp; Co. Group &middot; Lagos, Nigeria
+            Henry &amp; Co. Limited &middot; Lagos, Nigeria
           </p>
           <p style="margin:6px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
             Need help? ${supportLink}${unsubscribeBlock}${preferencesBlock}
           </p>
           <p style="margin:14px 0 0 0; font-family:${t.bodyFont}; font-size:11px; line-height:1.7; color:${t.footerText};">
-            &copy; ${new Date().getFullYear()} Henry &amp; Co. Group. All rights reserved.
+            &copy; ${new Date().getFullYear()} Henry &amp; Co. Limited. All rights reserved.
           </p>
         </td>
       </tr>

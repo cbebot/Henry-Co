@@ -155,7 +155,7 @@ function dedupedHosts(...candidates: Array<string | null | undefined>): string[]
 export const COMPANY = {
   group: {
     name: "Henry & Co.",
-    legalName: "Henry & Co. Group",
+    legalName: "Henry & Co. Limited",
     baseDomain: BASE_DOMAIN,
     mission:
       "A premium group of service businesses built on clarity, trust, and operational excellence.",

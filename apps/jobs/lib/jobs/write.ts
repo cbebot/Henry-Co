@@ -1099,7 +1099,7 @@ export async function createJobPost(input: {
 
   const slug = slugify(asText(input.formData.get("slug")) || `${title}-${employer?.employerSlug || "henryco"}`);
   const employerSlug = employer?.employerSlug || "henryco-group";
-  const employerName = employer?.employerName || "HenryCo Group";
+  const employerName = employer?.employerName || "Henry & Co.";
   const isPrivileged = input.actor.role === "owner" || input.actor.role === "manager";
   const [eligibility, subscription] = await Promise.all([
     getEmployerPostingEligibility({
