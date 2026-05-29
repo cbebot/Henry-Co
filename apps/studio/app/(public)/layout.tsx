@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
+import { StudioAccountChip } from "@/components/studio/StudioAccountChip";
 import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -29,7 +30,7 @@ export default async function PublicLayout({ children }: { children: React.React
         supportEmail={catalog.platform.supportEmail}
         accountHref={accountUrl}
         accountMenu={
-          <PublicAccountChip
+          <StudioAccountChip
             {...HenryCoPublicAccountPresets.standard}
             user={chipUser}
             loginHref={loginHref}
