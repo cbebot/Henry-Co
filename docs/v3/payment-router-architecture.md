@@ -28,7 +28,7 @@ packages/payment-router/src/
   state-machine.ts               LEGAL_TRANSITIONS, isLegalTransition, assertTransition (A2).
                                  *** Shared source of truth with the SQL trigger. ***
   providers/
-    adapter-interface.ts         PaymentProviderAdapter + I/O types (charge / refund / verifyWebhook).
+    adapter-interface.ts         PaymentProviderAdapter + I/O types (initiate / refund / verifyWebhook).
     mock-provider.ts             MockProvider — HMAC webhook verify; MOCK_PAYMENT_FAILURE injection.
   routing/
     capability-matrix.ts         provider → supported PaymentMethod[] (A10).
@@ -137,7 +137,7 @@ The refund path resolves the owning adapter from the server-side `provider_refer
 
 The entire live-provider wiring is two edits per provider:
 
-1. **Implement the adapter.** Create `providers/stripe-provider.ts` implementing `PaymentProviderAdapter` (`charge`, `refund`, `verifyWebhook`). Return `retryable` vs `fatal` errors per the failover contract in §4. Hold credentials via env (`STRIPE_SECRET_KEY` etc. — already inventoried in `INTEGRATION-KEYS.md`).
+1. **Implement the adapter.** Create `providers/stripe-provider.ts` implementing `PaymentProviderAdapter` (`initiate`, `refund`, `verifyWebhook`). Return `retryable` vs `fatal` errors per the failover contract in §4. Hold credentials via env (`STRIPE_SECRET_KEY` etc. — already inventoried in `INTEGRATION-KEYS.md`).
 2. **Register it.** In `createPaymentRouter`, register the real adapter under its key instead of the mock. The capability-matrix and country-defaults entries for that provider already exist, so routing lights up the moment the adapter is registered.
 
 Then in the webhook route, remove the provider from the "not yet activated" (501) guard and point `WEBHOOK_SECRET_ENV[provider]` at the live secret. No change to selection, schema, or the account routes.
