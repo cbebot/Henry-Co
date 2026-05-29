@@ -225,7 +225,29 @@ export type HenryEventName =
   // empty states actually convert.
   | "henry.dashboard.module.rendered"
   | "henry.dashboard.module.refreshed"
-  | "henry.dashboard.empty_state.cta_clicked";
+  | "henry.dashboard.empty_state.cta_clicked"
+  // payments / provider router — V3-13 foundation lock (vendor-agnostic
+  // routing). `intent.*` track the money lifecycle of a payment_intent
+  // (created → succeeded | failed → refunded); the outcome axis maps
+  // created→started, succeeded→paid, failed→failed, refunded→completed
+  // so the owner finance tile rolls payments up on the same axis as
+  // every other domain. `webhook.*` track the provider callback path:
+  // `received` on raw delivery, `verified` after HMAC + dedup passes,
+  // `rejected` on a bad signature or replayed event. `no_suitable_provider`
+  // fires on the A5 manual-fallback path (no provider matches the
+  // country∩method); `illegal_transition` fires when a webhook implies a
+  // state move the machine forbids. None of these payloads name the
+  // chosen provider in any CLIENT-facing surface (ANTI-CLONE Principle 9)
+  // — the server-side audit row carries it for refunds/reconciliation.
+  | "henry.payment.intent.created"
+  | "henry.payment.intent.succeeded"
+  | "henry.payment.intent.failed"
+  | "henry.payment.intent.refunded"
+  | "henry.payment.webhook.received"
+  | "henry.payment.webhook.verified"
+  | "henry.payment.webhook.rejected"
+  | "henry.payment.no_suitable_provider"
+  | "henry.payment.illegal_transition";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
