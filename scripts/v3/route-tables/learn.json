@@ -1,0 +1,245 @@
+{
+  "app": "learn",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/academy",
+      "api": false
+    },
+    {
+      "route": "/admin",
+      "api": false
+    },
+    {
+      "route": "/analytics",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/certificates/:param/pdf",
+      "api": true
+    },
+    {
+      "route": "/api/cron/learn-automation",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/learn/announcement",
+      "api": true
+    },
+    {
+      "route": "/api/learn/assignments/grade",
+      "api": true
+    },
+    {
+      "route": "/api/learn/assignments/submit",
+      "api": true
+    },
+    {
+      "route": "/api/learn/bookmarks",
+      "api": true
+    },
+    {
+      "route": "/api/learn/bootstrap",
+      "api": true
+    },
+    {
+      "route": "/api/learn/cohorts/:param/calendar",
+      "api": true
+    },
+    {
+      "route": "/api/learn/discussions",
+      "api": true
+    },
+    {
+      "route": "/api/learn/instructor/payout-request",
+      "api": true
+    },
+    {
+      "route": "/api/learn/notes",
+      "api": true
+    },
+    {
+      "route": "/api/learn/playback",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/auth/callback",
+      "api": true
+    },
+    {
+      "route": "/categories/:param",
+      "api": false
+    },
+    {
+      "route": "/certifications",
+      "api": false
+    },
+    {
+      "route": "/certifications/verify",
+      "api": false
+    },
+    {
+      "route": "/certifications/verify/:param",
+      "api": false
+    },
+    {
+      "route": "/content",
+      "api": false
+    },
+    {
+      "route": "/courses",
+      "api": false
+    },
+    {
+      "route": "/courses/:param",
+      "api": false
+    },
+    {
+      "route": "/help",
+      "api": false
+    },
+    {
+      "route": "/instructor",
+      "api": false
+    },
+    {
+      "route": "/instructor/analytics",
+      "api": false
+    },
+    {
+      "route": "/instructor/courses",
+      "api": false
+    },
+    {
+      "route": "/instructor/grading",
+      "api": false
+    },
+    {
+      "route": "/instructor/payouts",
+      "api": false
+    },
+    {
+      "route": "/instructors",
+      "api": false
+    },
+    {
+      "route": "/instructors/:param",
+      "api": false
+    },
+    {
+      "route": "/learner",
+      "api": false
+    },
+    {
+      "route": "/learner/certificates",
+      "api": false
+    },
+    {
+      "route": "/learner/courses",
+      "api": false
+    },
+    {
+      "route": "/learner/courses/:param",
+      "api": false
+    },
+    {
+      "route": "/learner/notifications",
+      "api": false
+    },
+    {
+      "route": "/learner/payments",
+      "api": false
+    },
+    {
+      "route": "/learner/progress",
+      "api": false
+    },
+    {
+      "route": "/learner/saved",
+      "api": false
+    },
+    {
+      "route": "/learner/settings",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/owner/analytics",
+      "api": false
+    },
+    {
+      "route": "/owner/assignments",
+      "api": false
+    },
+    {
+      "route": "/owner/certificates",
+      "api": false
+    },
+    {
+      "route": "/owner/courses",
+      "api": false
+    },
+    {
+      "route": "/owner/instructors",
+      "api": false
+    },
+    {
+      "route": "/owner/learners",
+      "api": false
+    },
+    {
+      "route": "/owner/paths",
+      "api": false
+    },
+    {
+      "route": "/owner/settings",
+      "api": false
+    },
+    {
+      "route": "/paths",
+      "api": false
+    },
+    {
+      "route": "/paths/:param",
+      "api": false
+    },
+    {
+      "route": "/signup",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/teach",
+      "api": false
+    },
+    {
+      "route": "/trust",
+      "api": false
+    }
+  ]
+}

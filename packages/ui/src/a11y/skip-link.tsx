@@ -3,7 +3,11 @@
 import type { ReactNode } from "react";
 
 export function SkipLink({
-  href = "#main",
+  // Default aligns with the canonical landmark id rendered by the shared public
+  // shells (`<main id="henryco-main">`, see public-shell-layout.tsx). The prior
+  // `#main` default never matched a rendered landmark, so a zero-prop SkipLink
+  // pointed at a dead anchor (V3-06 anchor audit). Consumers may still override.
+  href = "#henryco-main",
   children = "Skip to main content",
   className,
 }: {

@@ -1,0 +1,6 @@
+{
+  "schema": "v1",
+  "generatedAt": "2026-05-29T01:28:45.604Z",
+  "note": "V3-06 dead-link baseline. Fingerprints of DEAD/LEGACY entries acknowledged at baseline time. --check fails only on NEW fingerprints.",
+  "deadLegacyFingerprints": []
+}
