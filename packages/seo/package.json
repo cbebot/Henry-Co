@@ -11,7 +11,8 @@
     "./verification": "./src/verification/index.ts",
     "./hreflang": "./src/hreflang/index.ts",
     "./sitemap": "./src/sitemap/index.ts",
-    "./components": "./src/components/index.ts"
+    "./components": "./src/components/index.ts",
+    "./deeplinks": "./src/deeplinks/index.ts"
   },
   "peerDependencies": {
     "next": "^16.0.0",

@@ -180,6 +180,22 @@ export type HenryEventName =
   | "henry.realtime.connection.live"
   | "henry.realtime.connection.reconnecting"
   | "henry.realtime.connection.failed"
+  // deep links + share — V3-04 foundation lock (deep links).
+  // `arrived` fires when a user lands from a notification/email/share
+  // deep link (payload: `source`, `target`, `outcome`). `returned_after_auth`
+  // fires on the auth round-trip success path — an unauth user clicked a
+  // protected deep link, signed in, and landed back on the target.
+  // `dead_link` fires when a deep-link arrival 404s (payload: `source`,
+  // `target`, source-attribution token) and feeds the owner-workspace
+  // dead-deep-link tile. `share.clicked` fires when a ShareButton resolves
+  // (Web Share API or copy fallback); `share.attributed_install` fires when
+  // a shared link leads to a sign-up that credits the sharer in
+  // customer_referrals.
+  | "henry.deeplink.arrived"
+  | "henry.deeplink.returned_after_auth"
+  | "henry.deeplink.dead_link"
+  | "henry.share.clicked"
+  | "henry.share.attributed_install"
   // dashboard module truth — V3-08 foundation lock (empty dashboard
   // truth). `rendered` fires once per dashboard composition per module
   // with the resolved `state` (real | empty_yet | empty_none | loading

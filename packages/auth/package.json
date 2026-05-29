@@ -20,6 +20,7 @@
     "./client/logout-everywhere": "./src/client/logout-everywhere.ts",
     "./client/sensitive-action-modal": "./src/client/sensitive-action-modal.tsx",
     "./server/refresh-middleware": "./src/server/refresh-middleware.ts",
+    "./server/deep-link-middleware": "./src/server/deep-link-middleware.ts",
     "./server/reauth-context": "./src/server/reauth-context.ts",
     "./server/session-state": "./src/server/session-state.ts",
     "./server/verify-supabase-session": "./src/server/verify-supabase-session.ts",

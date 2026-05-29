@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { Suspense } from "react";
 import {
   getRegisteredModules,
@@ -13,7 +14,13 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import {
+  deepLinkSourceFromUtm,
+  recordDeepLinkArrived,
+  recordDeepLinkDeadLink,
+} from "@henryco/observability";
 import { requireAccountUser } from "@/lib/auth";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 // Side-effect: register modules. Without this import the registry is
@@ -34,14 +41,29 @@ import "@/app/(account)/_modules";
  */
 export const dynamic = "force-dynamic";
 
+type SearchParams = { [key: string]: string | string[] | undefined };
+
 type PageProps = {
   params: Promise<{ slug: string[] }>;
+  searchParams: Promise<SearchParams>;
 };
 
-export default async function ModulePage({ params }: PageProps) {
-  const { slug } = await params;
+function firstParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function ModulePage({ params, searchParams }: PageProps) {
+  const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const [moduleSlug, ...rest] = slug;
   if (!moduleSlug) notFound();
+
+  // V3-04 (S8) — deep-link telemetry context. `source` stays "unknown" for
+  // ordinary in-app navigations (no UTM), which we use to skip recording
+  // those as attributed arrivals; a dead link is recorded regardless. The
+  // emit+persist runs in `after()` so telemetry NEVER blocks routing.
+  const source = deepLinkSourceFromUtm(firstParam(sp.utm_source));
+  const sourceRef = firstParam(sp.utm_campaign) ?? null;
+  const target = `/modules/${slug.join("/")}`;
 
   const [locale, user] = await Promise.all([
     getAccountAppLocale(),
@@ -57,11 +79,41 @@ export default async function ModulePage({ params }: PageProps) {
 
   const registered = getRegisteredModules();
   const targetModule = registered.find((m) => m.slug === moduleSlug);
-  if (!targetModule) notFound();
+  if (!targetModule) {
+    const supabase = await createSupabaseServer();
+    after(() =>
+      recordDeepLinkDeadLink({
+        supabase,
+        actorId: user.id,
+        source,
+        target,
+        sourceRef,
+      }),
+    );
+    notFound();
+  }
 
+  // Role-gate denial is an authorization outcome, not a broken link, so it is
+  // deliberately NOT recorded as a dead link (keeps the S7 dead-link tile to
+  // genuinely broken targets).
   const decision = targetModule.getRoleGate(viewer);
   if (!decision || decision.kind !== "allow") {
     notFound();
+  }
+
+  // V3-04 (S8) — record a successful attributed arrival, gated on a known
+  // source so in-app navigations don't flood the event sink.
+  if (source !== "unknown") {
+    const supabase = await createSupabaseServer();
+    after(() =>
+      recordDeepLinkArrived({
+        supabase,
+        actorId: user.id,
+        source,
+        target,
+        outcome: "ok",
+      }),
+    );
   }
 
   const isDetail = rest.length > 0;

@@ -5,3 +5,4 @@ export * from "./analytics";
 export * from "./verification";
 export * from "./hreflang";
 export * from "./sitemap";
+export * from "./deeplinks";
