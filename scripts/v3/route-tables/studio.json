@@ -1,0 +1,297 @@
+{
+  "app": "studio",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/about",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/cron/studio-automation",
+      "api": true
+    },
+    {
+      "route": "/api/documents/support-thread/:param",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/portal/download",
+      "api": true
+    },
+    {
+      "route": "/api/studio/asset-packs/generate",
+      "api": true
+    },
+    {
+      "route": "/api/studio/domain-check",
+      "api": true
+    },
+    {
+      "route": "/api/studio/milestones",
+      "api": true
+    },
+    {
+      "route": "/api/studio/proposals/sign",
+      "api": true
+    },
+    {
+      "route": "/api/studio/revisions",
+      "api": true
+    },
+    {
+      "route": "/api/support/create",
+      "api": true
+    },
+    {
+      "route": "/api/support/mark-read",
+      "api": true
+    },
+    {
+      "route": "/api/support/mute",
+      "api": true
+    },
+    {
+      "route": "/api/support/reply",
+      "api": true
+    },
+    {
+      "route": "/api/support/report",
+      "api": true
+    },
+    {
+      "route": "/api/support/transfer",
+      "api": true
+    },
+    {
+      "route": "/api/support/transitions",
+      "api": true
+    },
+    {
+      "route": "/api/support/upload",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/resend",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/whatsapp",
+      "api": true
+    },
+    {
+      "route": "/checkout/template/:param",
+      "api": false
+    },
+    {
+      "route": "/client",
+      "api": false
+    },
+    {
+      "route": "/client/dashboard",
+      "api": false
+    },
+    {
+      "route": "/client/files",
+      "api": false
+    },
+    {
+      "route": "/client/messages",
+      "api": false
+    },
+    {
+      "route": "/client/notifications",
+      "api": false
+    },
+    {
+      "route": "/client/payment/:param",
+      "api": false
+    },
+    {
+      "route": "/client/payments",
+      "api": false
+    },
+    {
+      "route": "/client/profile",
+      "api": false
+    },
+    {
+      "route": "/client/projects",
+      "api": false
+    },
+    {
+      "route": "/client/projects/:param",
+      "api": false
+    },
+    {
+      "route": "/client/projects/:param/messages",
+      "api": false
+    },
+    {
+      "route": "/client/proposals",
+      "api": false
+    },
+    {
+      "route": "/client/reviews",
+      "api": false
+    },
+    {
+      "route": "/contact",
+      "api": false
+    },
+    {
+      "route": "/delivery",
+      "api": false
+    },
+    {
+      "route": "/delivery/assets",
+      "api": false
+    },
+    {
+      "route": "/faq",
+      "api": false
+    },
+    {
+      "route": "/finance",
+      "api": false
+    },
+    {
+      "route": "/finance/invoices",
+      "api": false
+    },
+    {
+      "route": "/finance/payments",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/payment",
+      "api": false
+    },
+    {
+      "route": "/pick",
+      "api": false
+    },
+    {
+      "route": "/pick/:param",
+      "api": false
+    },
+    {
+      "route": "/pm",
+      "api": false
+    },
+    {
+      "route": "/pm/projects",
+      "api": false
+    },
+    {
+      "route": "/pm/revisions",
+      "api": false
+    },
+    {
+      "route": "/policies",
+      "api": false
+    },
+    {
+      "route": "/policies/:param",
+      "api": false
+    },
+    {
+      "route": "/pricing",
+      "api": false
+    },
+    {
+      "route": "/process",
+      "api": false
+    },
+    {
+      "route": "/project/:param",
+      "api": false
+    },
+    {
+      "route": "/proposals/:param",
+      "api": false
+    },
+    {
+      "route": "/request",
+      "api": false
+    },
+    {
+      "route": "/sales",
+      "api": false
+    },
+    {
+      "route": "/sales/leads",
+      "api": false
+    },
+    {
+      "route": "/sales/match",
+      "api": false
+    },
+    {
+      "route": "/sales/proposals",
+      "api": false
+    },
+    {
+      "route": "/services",
+      "api": false
+    },
+    {
+      "route": "/services/:param",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/support/:param",
+      "api": false
+    },
+    {
+      "route": "/teams",
+      "api": false
+    },
+    {
+      "route": "/teams/:param",
+      "api": false
+    },
+    {
+      "route": "/trust",
+      "api": false
+    },
+    {
+      "route": "/work",
+      "api": false
+    },
+    {
+      "route": "/work/:param",
+      "api": false
+    }
+  ]
+}

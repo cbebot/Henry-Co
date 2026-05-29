@@ -945,7 +945,9 @@ export const ACCOUNT_COPY_ES = {
     },
     "empty": {
       "title": "Aún no hay suscripciones sincronizadas",
-      "description": "Esto puede significar que no tienes ningún plan activo, o que la división aún no ha publicado sus suscripciones en el libro mayor compartido de tu cuenta."
+      "description": "Esto puede significar que no tienes ningún plan activo, o que la división aún no ha publicado sus suscripciones en el libro mayor compartido de tu cuenta.",
+      "ctaLabel": "Explorar el mercado",
+      "footnote": "Las suscripciones las crea la división a la que compras. Cuando una se sincroniza con tu cuenta, aparece aquí automáticamente."
     },
     "card": {
       "planFallback": "Plan de suscripción",
@@ -3041,7 +3043,9 @@ export const ACCOUNT_COPY_PT = {
     },
     "empty": {
       "title": "Ainda não há assinaturas sincronizadas",
-      "description": "Isso pode significar que você não tem nenhum plano ativo, ou que a divisão ainda não publicou suas assinaturas no livro-razão compartilhado da conta."
+      "description": "Isso pode significar que você não tem nenhum plano ativo, ou que a divisão ainda não publicou suas assinaturas no livro-razão compartilhado da conta.",
+      "ctaLabel": "Explorar o marketplace",
+      "footnote": "As assinaturas são criadas pela divisão em que você compra. Quando uma é sincronizada com sua conta, ela aparece aqui automaticamente."
     },
     "card": {
       "planFallback": "Plano de assinatura",
@@ -5137,7 +5141,9 @@ export const ACCOUNT_COPY_AR = {
     },
     "empty": {
       "title": "لا توجد اشتراكات مُزامَنة بعد",
-      "description": "قد يعني ذلك أنه ليست لديك خطة نشطة، أو أن القسم لم ينشر بعد سجلات اشتراكاته في دفتر الحساب المشترك."
+      "description": "قد يعني ذلك أنه ليست لديك خطة نشطة، أو أن القسم لم ينشر بعد سجلات اشتراكاته في دفتر الحساب المشترك.",
+      "ctaLabel": "تصفح السوق",
+      "footnote": "تُنشأ الاشتراكات من قِبل القسم الذي تشتري منه. وعند مزامنة أحدها مع حسابك يظهر هنا تلقائيًا."
     },
     "card": {
       "planFallback": "خطة اشتراك",

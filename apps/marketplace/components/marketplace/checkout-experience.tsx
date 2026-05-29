@@ -1740,7 +1740,7 @@ function ConfirmStep({
         />
         <span>
           I agree to the{" "}
-          <Link href="/policies" className="font-semibold text-[var(--market-brass)]">
+          <Link href="/policies/buyer-protection" className="font-semibold text-[var(--market-brass)]">
             HenryCo marketplace policies
           </Link>{" "}
           and confirm the delivery address and payment method are correct.

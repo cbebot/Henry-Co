@@ -3,6 +3,7 @@ import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { SignalFeedCursor } from "@henryco/data";
 import { requireAccountUser } from "@/lib/auth";
 import { SmartHome } from "@/components/smart-home/SmartHome";
+import { DashboardRefreshTracker } from "@/components/smart-home/DashboardRefreshTracker";
 
 // Side-effect: register modules. Without this import the registry is
 // empty and the Smart Home composition has no widgets to walk.
@@ -48,6 +49,7 @@ export default async function OverviewPage({
   return (
     <div className="acct-fade-in">
       <RouteLiveRefresh />
+      <DashboardRefreshTracker moduleId="smart-home" />
       <SmartHome viewer={viewer} cursor={cursor} prevHref={prevHref} />
     </div>
   );

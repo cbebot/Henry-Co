@@ -1,0 +1,129 @@
+{
+  "app": "property",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/account",
+      "api": false
+    },
+    {
+      "route": "/account/inquiries",
+      "api": false
+    },
+    {
+      "route": "/account/listings",
+      "api": false
+    },
+    {
+      "route": "/account/saved",
+      "api": false
+    },
+    {
+      "route": "/account/viewings",
+      "api": false
+    },
+    {
+      "route": "/admin",
+      "api": false
+    },
+    {
+      "route": "/admin/listings",
+      "api": false
+    },
+    {
+      "route": "/agent",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/cron/property-automation",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/property",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/whatsapp",
+      "api": true
+    },
+    {
+      "route": "/area/:param",
+      "api": false
+    },
+    {
+      "route": "/auth/callback",
+      "api": false
+    },
+    {
+      "route": "/auth/confirm",
+      "api": true
+    },
+    {
+      "route": "/auth/session",
+      "api": true
+    },
+    {
+      "route": "/faq",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/managed",
+      "api": false
+    },
+    {
+      "route": "/moderation",
+      "api": false
+    },
+    {
+      "route": "/operations",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/property/:param",
+      "api": false
+    },
+    {
+      "route": "/search",
+      "api": false
+    },
+    {
+      "route": "/submit",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/trust",
+      "api": false
+    }
+  ]
+}
