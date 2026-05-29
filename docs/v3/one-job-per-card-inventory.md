@@ -13,42 +13,60 @@ Excluded: `node_modules/`, `.next/`, `dist/`, `build/`, `.turbo/`, `.vercel/`, t
 
 - **A — opens a next step (has nav/mutation):** 87
 - **B — generic hub, not exact next step (human-tagged):** 0
-- **C — information only (needs C1/C2/C3 split):** 2
+- **C — information only:** 12 (C1 critical+implied-action: 5, C2 nice-to-have: 7, C3 decorative: 0)
 - **D — looks actionable, does nothing (machine-detected):** 0
-- **needs-review (ambiguous):** 13
-- **Total card-like surfaces:** 102
+- **needs-review (ambiguous):** 0
+- **Total card-like surfaces:** 99
+- **Excluded structural non-cards (skeletons / page-server loaders):** 3
 
 ## Class D — looks actionable but does nothing (FIX or REMOVE)
 
 _(none — gate green)_
 
+## Class C — information only (C1/C2/C3)
+
+_C1 = critical info that should pair an implied action (owned here by the parent surface); C2 = nice-to-have context at lower visual priority; C3 = decorative (remove). Each rationale is a recorded human judgement from reading the file._
+
+- **[C/C1]** `apps/account/components/jobs/ReadinessCard.tsx` — Profile-readiness checklist (done/not-done rows). Critical info; implied action 'complete your profile' is owned by the parent jobs profile page. [human override of signal 'needs-review']
+- **[C/C1]** `apps/account/components/verification/ReviewerNoteCard.tsx` — Reviewer note (role=status). Critical info; implied action 'fix + resubmit' is owned by the parent verification surface. [human override of signal 'needs-review']
+- **[C/C1]** `apps/hub/components/owner/MetricCard.tsx` — Owner reconcile-able KPI tile (label/value/trend). Critical reporting info that PAIRS an action: with a traceId it renders MetricTraceDrawer to drill into the underlying SQL filter + sample. [human override of signal 'C']
+- **[C/C1]** `apps/hub/components/owner/SessionHealthTile.tsx` — Owner V3-01 session-health panel (reauths, refresh success, rollback-gate notice). Critical operational monitoring; the implied 'investigate / rollback' action is surfaced via its warning notice, not a card link. [human override of signal 'C']
+- **[C/C1]** `apps/studio/components/portal/invoice-summary.tsx` — Invoice header (amount, due date, transfer reference). Critical financial info; the 'pay/transfer' action is owned by the parent portal invoice page. [human override of signal 'needs-review']
+- **[C/C2]** `apps/account/components/calendar/CalendarHero.tsx` — Calendar capability-evidence hero (event count, active portals, next-up). Info-only banner above the interactive calendar. [human override of signal 'needs-review']
+- **[C/C2]** `apps/account/components/invoices/InvoicesHero.tsx` — Invoices section hero — evidence banner above the invoices list. Info-only. [human override of signal 'needs-review']
+- **[C/C2]** `apps/account/components/messages-inbox/InboxHero.tsx` — Inbox section hero — evidence banner above the thread list. Info-only. [human override of signal 'needs-review']
+- **[C/C2]** `apps/account/components/notifications/NotificationsHero.tsx` — Notifications section hero — evidence banner above the notifications list. Info-only. [human override of signal 'needs-review']
+- **[C/C2]** `apps/account/components/settings/SettingsHero.tsx` — Settings section hero — evidence banner above the settings forms. Info-only. [human override of signal 'needs-review']
+- **[C/C2]** `apps/account/components/tasks/TasksHero.tsx` — Tasks section hero — evidence banner above the task list. Info-only. [human override of signal 'needs-review']
+- **[C/C2]** `apps/logistics/components/tracking/TrackingMapPanel.tsx` — Shipment route/status panel (pickup/dropoff/live-rider rows + embedded map). Informational; no card-level action to pair. [human override of signal 'needs-review']
+
 ## Inventory by app / package
 
-### `app:account` — 26 surfaces (A:18 B:0 C:0 D:0 review:8)
+### `app:account` — 26 surfaces (A:18 B:0 C:8 D:0 review:0)
 
-- **[needs-review]** `apps/account/components/calendar/CalendarHero.tsx` — _card/tile-class×9_
+- **[C/C2]** `apps/account/components/calendar/CalendarHero.tsx` — _card/tile-class×9_
 - **[A]** `apps/account/components/care/CareHero.tsx` — _card/tile-class×12, has-nav_
-- **[needs-review]** `apps/account/components/invoices/InvoicesHero.tsx` — _card/tile-class×9_
+- **[C/C2]** `apps/account/components/invoices/InvoicesHero.tsx` — _card/tile-class×9_
 - **[A]** `apps/account/components/jobs/JobsHero.tsx` — _card/tile-class×9, has-nav_
-- **[needs-review]** `apps/account/components/jobs/ReadinessCard.tsx` — _card-file_
+- **[C/C1]** `apps/account/components/jobs/ReadinessCard.tsx` — _card-file_
 - **[A]** `apps/account/components/learn/LearnHero.tsx` — _card/tile-class×12, has-nav_
 - **[A]** `apps/account/components/lifecycle/LifecycleContinuePanel.tsx` — _card-file, has-nav_
 - **[A]** `apps/account/components/logistics/ShipmentCard.tsx` — _card-file, has-nav_
 - **[A]** `apps/account/components/marketplace/MarketplaceHero.tsx` — _card/tile-class×12, has-nav_
-- **[needs-review]** `apps/account/components/messages-inbox/InboxHero.tsx` — _card/tile-class×9_
+- **[C/C2]** `apps/account/components/messages-inbox/InboxHero.tsx` — _card/tile-class×9_
 - **[A]** `apps/account/components/notifications/NotificationBell.tsx` — _card/tile-class×1, has-nav_
-- **[needs-review]** `apps/account/components/notifications/NotificationsHero.tsx` — _card/tile-class×9_
+- **[C/C2]** `apps/account/components/notifications/NotificationsHero.tsx` — _card/tile-class×9_
 - **[A]** `apps/account/components/notifications/SwipeableNotificationCard.tsx` — _card-file, has-nav_
 - **[A]** `apps/account/components/property/PropertyHero.tsx` — _card/tile-class×12, has-nav_
 - **[A]** `apps/account/components/security/GlobalSignOutCard.tsx` — _card-file, has-nav_
 - **[A]** `apps/account/components/settings/NotificationSignalSettingsCard.tsx` — _card-file, has-nav_
-- **[needs-review]** `apps/account/components/settings/SettingsHero.tsx` — _card/tile-class×12_
+- **[C/C2]** `apps/account/components/settings/SettingsHero.tsx` — _card/tile-class×12_
 - **[A]** `apps/account/components/smart-home/AttentionPanel.tsx` — _card-file, has-nav_
 - **[A]** `apps/account/components/studio/StudioHero.tsx` — _card/tile-class×12, has-nav_
-- **[needs-review]** `apps/account/components/tasks/TasksHero.tsx` — _card/tile-class×9_
+- **[C/C2]** `apps/account/components/tasks/TasksHero.tsx` — _card/tile-class×9_
 - **[A]** `apps/account/components/verification/IdentityHero.tsx` — _card/tile-class×6, has-nav_
 - **[A]** `apps/account/components/verification/NextMoveCard.tsx` — _card-file, has-nav_
-- **[needs-review]** `apps/account/components/verification/ReviewerNoteCard.tsx` — _card-file_
+- **[C/C1]** `apps/account/components/verification/ReviewerNoteCard.tsx` — _card-file_
 - **[A]** `apps/account/components/wallet/AccountDetailsCard.tsx` — _card-file, has-nav_
 - **[A]** `apps/account/components/wallet/HeroBalance.tsx` — _card/tile-class×9, has-nav_
 - **[A]** `apps/account/components/wallet/PendingOpsTile.tsx` — _card-file, has-nav_
@@ -65,15 +83,15 @@ _(none — gate green)_
 
 ### `app:hub` — 3 surfaces (A:1 B:0 C:2 D:0 review:0)
 
-- **[C]** `apps/hub/components/owner/MetricCard.tsx` — _card-file_
-- **[C]** `apps/hub/components/owner/SessionHealthTile.tsx` — _card-file_
+- **[C/C1]** `apps/hub/components/owner/MetricCard.tsx` — _card-file_
+- **[C/C1]** `apps/hub/components/owner/SessionHealthTile.tsx` — _card-file_
 - **[A]** `apps/hub/components/owner/StaffMemberCard.tsx` — _card-file, has-nav_
 
-### `app:logistics` — 1 surfaces (A:0 B:0 C:0 D:0 review:1)
+### `app:logistics` — 1 surfaces (A:0 B:0 C:1 D:0 review:0)
 
-- **[needs-review]** `apps/logistics/components/tracking/TrackingMapPanel.tsx` — _card-file_
+- **[C/C2]** `apps/logistics/components/tracking/TrackingMapPanel.tsx` — _card-file_
 
-### `app:studio` — 14 surfaces (A:12 B:0 C:0 D:0 review:2)
+### `app:studio` — 13 surfaces (A:12 B:0 C:1 D:0 review:0)
 
 - **[A]** `apps/studio/app/(public)/page.tsx` — _card/tile-class×1, has-nav_
 - **[A]** `apps/studio/app/(public)/pick/page.tsx` — _card/tile-class×1, has-nav_
@@ -86,9 +104,8 @@ _(none — gate green)_
 - **[A]** `apps/studio/app/client/projects/[projectId]/page.tsx` — _card/tile-class×3, has-nav_
 - **[A]** `apps/studio/app/payment/page.tsx` — _card/tile-class×2, has-nav_
 - **[A]** `apps/studio/components/portal/bank-details.tsx` — _card/tile-class×1, has-nav_
-- **[needs-review]** `apps/studio/components/portal/invoice-summary.tsx` — _card/tile-class×1_
+- **[C/C1]** `apps/studio/components/portal/invoice-summary.tsx` — _card/tile-class×1_
 - **[A]** `apps/studio/components/portal/payment-form.tsx` — _card/tile-class×2, has-nav_
-- **[needs-review]** `apps/studio/components/portal/skeletons.tsx` — _card/tile-class×1_
 
 ### `app:super-app` — 1 surfaces (A:1 B:0 C:0 D:0 review:0)
 
@@ -135,12 +152,11 @@ _(none — gate green)_
 - **[A]** `packages/dashboard-modules-owner/src/owner-settings/module.tsx` — _dashboard-module, has-nav_
 - **[A]** `packages/dashboard-modules-owner/src/owner-staff/module.tsx` — _dashboard-module, has-nav_
 
-### `pkg:dashboard-modules-staff` — 17 surfaces (A:16 B:0 C:0 D:0 review:1)
+### `pkg:dashboard-modules-staff` — 16 surfaces (A:16 B:0 C:0 D:0 review:0)
 
 - **[A]** `packages/dashboard-modules-staff/src/shared/generic-queue.tsx` — _dashboard-module, has-nav_
 - **[A]** `packages/dashboard-modules-staff/src/shared/queue-shell.tsx` — _dashboard-module, has-nav_
 - **[A]** `packages/dashboard-modules-staff/src/staff-care/module.tsx` — _dashboard-module, has-nav_
-- **[needs-review]** `packages/dashboard-modules-staff/src/staff-care/page-server.tsx` — _dashboard-module_
 - **[A]** `packages/dashboard-modules-staff/src/staff-care/page.tsx` — _dashboard-module, has-nav_
 - **[A]** `packages/dashboard-modules-staff/src/staff-finance-operator/index.tsx` — _dashboard-module, has-nav_
 - **[A]** `packages/dashboard-modules-staff/src/staff-jobs/index.tsx` — _dashboard-module, has-nav_
@@ -169,8 +185,15 @@ _(none — gate green)_
 - **[A]** `packages/dashboard-shell/src/surfaces/HeroCard.tsx` — _card-file, has-nav_
 - **[A]** `packages/dashboard-shell/src/surfaces/TimelineCard.tsx` — _card-file, has-nav_
 
-### `pkg:workspace-shell` — 2 surfaces (A:1 B:0 C:0 D:0 review:1)
+### `pkg:workspace-shell` — 1 surfaces (A:1 B:0 C:0 D:0 review:0)
 
 - **[A]** `packages/workspace-shell/src/error-boundary.tsx` — _card/tile-class×1, has-nav_
-- **[needs-review]** `packages/workspace-shell/src/skeletons.tsx` — _card/tile-class×2_
+
+## Excluded structural non-cards
+
+_These match a card-like signal (a `card-*`/`tile-*` className, etc.) but are loading skeletons or RSC `page-server` data-loaders — not real cards with a job. They are excluded from the A/B/C/D tally; the live surface each stands in for is classified above._
+
+- `apps/studio/components/portal/skeletons.tsx`
+- `packages/dashboard-modules-staff/src/staff-care/page-server.tsx`
+- `packages/workspace-shell/src/skeletons.tsx`
 

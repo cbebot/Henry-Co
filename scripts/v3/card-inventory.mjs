@@ -125,6 +125,106 @@ const INFO_CUES = [
   /\bKpi\b/i,
 ];
 
+/**
+ * S2 — structural non-cards. Files whose basename is a known structural
+ * convention are NOT "card-like surfaces with a job": they are excluded
+ * from the A/B/C/D tally (but still listed, transparently, in an
+ * "Excluded" section of the report so nothing is silently hidden).
+ *   - `skeleton(s).tsx` — loading-shimmer placeholders (aria-hidden); the
+ *     `card-*`/`tile-*` classNames they carry are skeleton wrappers, not
+ *     real cards. The live card they stand in for is classified separately.
+ *   - `page-server.tsx` — an RSC data-loader shell that fetches a snapshot
+ *     and delegates rendering to its sibling client `page.tsx` (which IS
+ *     scanned + classified). The server shell paints no card itself.
+ */
+const NON_CARD_STRUCTURAL_RE = /(?:^|\/)(?:skeletons?|page-server)\.(?:tsx|jsx)$/;
+
+/**
+ * S2 — explicit human classifications for surfaces the static heuristic
+ * leaves as `needs-review` (card-like file, no machine-detectable nav cue
+ * AND no info-only marker). Each entry is a recorded human judgement from
+ * reading the file, so the inventory reaches "every card classified
+ * A/B/C/D" (validation gate #2) without guessing.
+ *
+ * `klass` is the base class for counts (C rolls up C1/C2/C3); `sub` is the
+ * owner-question sub-split; `reason` is the evidence.
+ */
+const CLASS_OVERRIDES = {
+  // C1 — critical information; keep informational but pair the implied
+  // action. These are sub-components embedded in an action-bearing parent
+  // surface (the parent page owns the CTA), so they stay as-is.
+  "apps/account/components/jobs/ReadinessCard.tsx": {
+    klass: "C",
+    sub: "C1",
+    reason:
+      "Profile-readiness checklist (done/not-done rows). Critical info; implied action 'complete your profile' is owned by the parent jobs profile page.",
+  },
+  "apps/account/components/verification/ReviewerNoteCard.tsx": {
+    klass: "C",
+    sub: "C1",
+    reason:
+      "Reviewer note (role=status). Critical info; implied action 'fix + resubmit' is owned by the parent verification surface.",
+  },
+  "apps/studio/components/portal/invoice-summary.tsx": {
+    klass: "C",
+    sub: "C1",
+    reason:
+      "Invoice header (amount, due date, transfer reference). Critical financial info; the 'pay/transfer' action is owned by the parent portal invoice page.",
+  },
+  "apps/hub/components/owner/MetricCard.tsx": {
+    klass: "C",
+    sub: "C1",
+    reason:
+      "Owner reconcile-able KPI tile (label/value/trend). Critical reporting info that PAIRS an action: with a traceId it renders MetricTraceDrawer to drill into the underlying SQL filter + sample.",
+  },
+  "apps/hub/components/owner/SessionHealthTile.tsx": {
+    klass: "C",
+    sub: "C1",
+    reason:
+      "Owner V3-01 session-health panel (reauths, refresh success, rollback-gate notice). Critical operational monitoring; the implied 'investigate / rollback' action is surfaced via its warning notice, not a card link.",
+  },
+  // C2 — capability-evidence section banners / info panels: nice-to-have
+  // context at a glance, lower visual priority, no action to pair. The
+  // interactive surface (grid / list / form) sits below the banner.
+  "apps/account/components/calendar/CalendarHero.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason:
+      "Calendar capability-evidence hero (event count, active portals, next-up). Info-only banner above the interactive calendar.",
+  },
+  "apps/account/components/invoices/InvoicesHero.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason: "Invoices section hero — evidence banner above the invoices list. Info-only.",
+  },
+  "apps/account/components/messages-inbox/InboxHero.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason: "Inbox section hero — evidence banner above the thread list. Info-only.",
+  },
+  "apps/account/components/notifications/NotificationsHero.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason: "Notifications section hero — evidence banner above the notifications list. Info-only.",
+  },
+  "apps/account/components/settings/SettingsHero.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason: "Settings section hero — evidence banner above the settings forms. Info-only.",
+  },
+  "apps/account/components/tasks/TasksHero.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason: "Tasks section hero — evidence banner above the task list. Info-only.",
+  },
+  "apps/logistics/components/tracking/TrackingMapPanel.tsx": {
+    klass: "C",
+    sub: "C2",
+    reason:
+      "Shipment route/status panel (pickup/dropoff/live-rider rows + embedded map). Informational; no card-level action to pair.",
+  },
+};
+
 async function walk(dir, out) {
   let entries;
   try {
@@ -221,6 +321,7 @@ function scanSource(file, raw) {
   if (isCardFile || isDashboardModulePkg || hasCardJsx) {
     let signalClass;
     let rationale;
+    let subClass = null;
     if (dCandidates.length > 0 && !hasNav) {
       signalClass = "D";
       rationale =
@@ -239,6 +340,20 @@ function scanSource(file, raw) {
         "Card-like file with no clear navigation cue and no clear info-only marker. Human classify.";
     }
 
+    // S2 — structural excludes take priority, then explicit human
+    // overrides resolve `needs-review` (recording the prior signal as
+    // evidence). This drives needs-review to 0 honestly.
+    if (NON_CARD_STRUCTURAL_RE.test(relPath)) {
+      signalClass = "excluded";
+      rationale =
+        "Structural non-card (loading skeleton or RSC page-server loader). Excluded from the card tally; the live surface it stands in for is classified separately.";
+    } else if (CLASS_OVERRIDES[relPath]) {
+      const ov = CLASS_OVERRIDES[relPath];
+      rationale = `${ov.reason} [human override of signal '${signalClass}']`;
+      signalClass = ov.klass;
+      subClass = ov.sub;
+    }
+
     hits.push({
       file: relPath,
       scope: appOrPkg(relPath),
@@ -250,6 +365,7 @@ function scanSource(file, raw) {
       hasNav,
       dCandidates,
       signalClass,
+      subClass,
       rationale,
     });
   }
@@ -268,8 +384,14 @@ async function scanFile(file, hits) {
 }
 
 function classCounts(hits) {
-  const acc = { A: 0, B: 0, C: 0, D: 0, "needs-review": 0 };
+  const acc = { A: 0, B: 0, C: 0, D: 0, "needs-review": 0, excluded: 0 };
   for (const h of hits) acc[h.signalClass] = (acc[h.signalClass] || 0) + 1;
+  return acc;
+}
+
+function subCounts(hits) {
+  const acc = { C1: 0, C2: 0, C3: 0 };
+  for (const h of hits) if (h.subClass) acc[h.subClass] = (acc[h.subClass] || 0) + 1;
   return acc;
 }
 
@@ -283,7 +405,10 @@ function groupByScope(hits) {
 }
 
 function renderMd(hits) {
-  const c = classCounts(hits);
+  const cardHits = hits.filter((h) => h.signalClass !== "excluded");
+  const excludedHits = hits.filter((h) => h.signalClass === "excluded");
+  const c = classCounts(cardHits);
+  const sub = subCounts(cardHits);
   const out = [];
   out.push("# V3-11 — One-job-per-card inventory");
   out.push("");
@@ -318,16 +443,24 @@ function renderMd(hits) {
   out.push("");
   out.push(`- **A — opens a next step (has nav/mutation):** ${c.A}`);
   out.push(`- **B — generic hub, not exact next step (human-tagged):** ${c.B}`);
-  out.push(`- **C — information only (needs C1/C2/C3 split):** ${c.C}`);
+  out.push(
+    `- **C — information only:** ${c.C} ` +
+      `(C1 critical+implied-action: ${sub.C1}, C2 nice-to-have: ${sub.C2}, ` +
+      `C3 decorative: ${sub.C3})`,
+  );
   out.push(`- **D — looks actionable, does nothing (machine-detected):** ${c.D}`);
   out.push(`- **needs-review (ambiguous):** ${c["needs-review"]}`);
-  out.push(`- **Total card-like surfaces:** ${hits.length}`);
+  out.push(`- **Total card-like surfaces:** ${cardHits.length}`);
+  out.push(
+    "- **Excluded structural non-cards (skeletons / page-server loaders):** " +
+      `${excludedHits.length}`,
+  );
   out.push("");
 
   // D section first — these are the gate failures.
   out.push("## Class D — looks actionable but does nothing (FIX or REMOVE)");
   out.push("");
-  const dHits = hits.filter((h) => h.signalClass === "D");
+  const dHits = cardHits.filter((h) => h.signalClass === "D");
   if (dHits.length === 0) {
     out.push("_(none — gate green)_");
   } else {
@@ -342,10 +475,33 @@ function renderMd(hits) {
   }
   out.push("");
 
+  // C breakdown — the human C1/C2/C3 split with recorded rationale.
+  out.push("## Class C — information only (C1/C2/C3)");
+  out.push("");
+  out.push(
+    "_C1 = critical info that should pair an implied action (owned here by " +
+      "the parent surface); C2 = nice-to-have context at lower visual " +
+      "priority; C3 = decorative (remove). Each rationale is a recorded human " +
+      "judgement from reading the file._",
+  );
+  out.push("");
+  const cHits = cardHits.filter((h) => h.signalClass === "C");
+  if (cHits.length === 0) {
+    out.push("_(none)_");
+  } else {
+    for (const h of [...cHits].sort((a, b) => {
+      const s = (a.subClass || "").localeCompare(b.subClass || "");
+      return s !== 0 ? s : a.file.localeCompare(b.file);
+    })) {
+      out.push(`- **[C/${h.subClass || "?"}]** \`${h.file}\` — ${h.rationale}`);
+    }
+  }
+  out.push("");
+
   // Per-scope breakdown for everything else.
   out.push("## Inventory by app / package");
   out.push("");
-  const byScope = groupByScope(hits);
+  const byScope = groupByScope(cardHits);
   for (const [scope, list] of [...byScope.entries()].sort((a, b) =>
     a[0].localeCompare(b[0]),
   )) {
@@ -363,12 +519,33 @@ function renderMd(hits) {
       if (h.classNameLines.length) tags.push(`card/tile-class×${h.classNameLines.length}`);
       if (h.usesInteractivePrimitive) tags.push("interactive-primitive");
       if (h.hasNav) tags.push("has-nav");
+      const label = h.subClass ? `${h.signalClass}/${h.subClass}` : h.signalClass;
       out.push(
-        `- **[${h.signalClass}]** \`${h.file}\`${tags.length ? ` — _${tags.join(", ")}_` : ""}`,
+        `- **[${label}]** \`${h.file}\`${tags.length ? ` — _${tags.join(", ")}_` : ""}`,
       );
     }
     out.push("");
   }
+
+  // Excluded structural non-cards — transparent listing so nothing is
+  // silently dropped from the audit.
+  out.push("## Excluded structural non-cards");
+  out.push("");
+  out.push(
+    "_These match a card-like signal (a `card-*`/`tile-*` className, etc.) " +
+      "but are loading skeletons or RSC `page-server` data-loaders — not real " +
+      "cards with a job. They are excluded from the A/B/C/D tally; the live " +
+      "surface each stands in for is classified above._",
+  );
+  out.push("");
+  if (excludedHits.length === 0) {
+    out.push("_(none)_");
+  } else {
+    for (const h of [...excludedHits].sort((a, b) => a.file.localeCompare(b.file))) {
+      out.push(`- \`${h.file}\``);
+    }
+  }
+  out.push("");
 
   return out.join("\n") + "\n";
 }
@@ -385,10 +562,12 @@ async function main() {
     await scanFile(f, hits);
   }
 
-  const c = classCounts(hits);
+  const cardHits = hits.filter((h) => h.signalClass !== "excluded");
+  const excludedCount = hits.length - cardHits.length;
+  const c = classCounts(cardHits);
 
   if (CHECK_MODE) {
-    const dHits = hits.filter((h) => h.signalClass === "D");
+    const dHits = cardHits.filter((h) => h.signalClass === "D");
     if (dHits.length > 0) {
       // eslint-disable-next-line no-console
       console.error(
@@ -410,8 +589,8 @@ async function main() {
   await fs.writeFile(OUT_FILE, md, "utf8");
   // eslint-disable-next-line no-console
   console.log(
-    `card-inventory: total=${hits.length}, A=${c.A}, B=${c.B}, C=${c.C}, ` +
-      `D=${c.D}, needs-review=${c["needs-review"]}`,
+    `card-inventory: total=${cardHits.length}, A=${c.A}, B=${c.B}, C=${c.C}, ` +
+      `D=${c.D}, needs-review=${c["needs-review"]}, excluded=${excludedCount}`,
   );
   // eslint-disable-next-line no-console
   console.log(`Wrote ${rel(OUT_FILE)}`);
