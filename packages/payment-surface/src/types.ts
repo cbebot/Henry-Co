@@ -117,4 +117,14 @@ export interface PaymentSurfaceContext {
   upload?: PaymentProofUploadConfig;
   copy?: PaymentSurfaceCopy;
   theme?: PaymentSurfaceTheme;
+  /**
+   * V3-13 provider-router seam: an optional "pay by card" CTA that starts a
+   * card payment through @henryco/payment-router instead of bank transfer.
+   * `label` is already i18n-translated by the caller; `href` points at the
+   * app's card-payment route. Rendered only while the payment is open and
+   * awaiting action. Omit or pass null to keep the surface bank-transfer-only
+   * (the default until an app opts in). The live card route + provider land in
+   * V3-14/15/16 — V3-13 ships the seam, not a customer-facing card page.
+   */
+  cardCta?: { label: string; href: string } | null;
 }

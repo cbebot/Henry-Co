@@ -11,10 +11,12 @@ import type {
   PaymentSurfaceContext,
   PaymentSurfaceTheme,
 } from "@henryco/payment-surface";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getOrderByNumber } from "@/lib/marketplace/data";
 import { getMarketplacePaymentRail } from "@/lib/marketplace/payment";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -56,10 +58,11 @@ export default async function MarketplacePaymentWorkspace({
   params: Promise<{ orderNo: string }>;
 }) {
   const { orderNo } = await params;
-  const [order, viewer, rail] = await Promise.all([
+  const [order, viewer, rail, locale] = await Promise.all([
     getOrderByNumber(orderNo),
     getMarketplaceViewer(),
     getMarketplacePaymentRail(),
+    getMarketplacePublicLocale(),
   ]);
   if (!order) notFound();
 
@@ -74,6 +77,15 @@ export default async function MarketplacePaymentWorkspace({
   const proof = order.paymentRecord;
   const paymentLabel = `Order ${order.orderNo}`;
   const trackHref = `/track/${order.orderNo}`;
+
+  // V3-13 provider-router seam. Gated on MOCK_PAYMENT so production — where the
+  // flag is never set — ships no card CTA and therefore no dead link to the
+  // not-yet-built card route. The live card page + provider arrive in
+  // V3-14/15/16; this is the reference wire the other five pay surfaces copy.
+  const cardCta =
+    process.env.MOCK_PAYMENT === "1"
+      ? { label: translateSurfaceLabel(locale, "Pay with card"), href: `/pay/${order.orderNo}/card` }
+      : null;
 
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
@@ -118,6 +130,7 @@ export default async function MarketplacePaymentWorkspace({
         "Confirmed on {date}.{proof} Your order moved to escrow and the seller is preparing dispatch.",
     },
     theme: MARKETPLACE_THEME,
+    cardCta,
   });
 
   return <PaymentSurface ctx={ctx} />;

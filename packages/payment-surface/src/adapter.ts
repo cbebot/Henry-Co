@@ -82,6 +82,7 @@ export function buildPaymentSurfaceContext(input: {
   upload?: PaymentSurfaceContext["upload"];
   copy?: PaymentSurfaceContext["copy"];
   theme?: PaymentSurfaceContext["theme"];
+  cardCta?: PaymentSurfaceContext["cardCta"];
 }): PaymentSurfaceContext {
   return {
     payment: input.payment,
@@ -90,5 +91,6 @@ export function buildPaymentSurfaceContext(input: {
     upload: input.upload,
     copy: input.copy,
     theme: input.theme,
+    cardCta: input.cardCta,
   };
 }
