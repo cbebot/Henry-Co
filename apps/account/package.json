@@ -36,6 +36,7 @@
     "@henryco/messaging-thread": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
+    "@henryco/payment-router": "workspace:^",
     "@henryco/search-core": "workspace:^",
     "@henryco/search-ui": "workspace:^",
     "@henryco/seo": "workspace:^",

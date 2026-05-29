@@ -104,7 +104,7 @@ Payments and identity are the highest-stakes work in V3. Every pass in this phas
 
 | ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
 |---|---|---|---|---|---|---|---|---|
-| V3-13 | payments-provider-router | P2 | V3-12 | M | N | — | M | Vendor-agnostic `PaymentProviderRouter` interface + capability registry + deterministic routing rules + per-country defaults |
+| V3-13 | payments-provider-router | P2 | V3-12 | M | N | — | M | Vendor-agnostic `@henryco/payment-router` (capability registry + deterministic country routing) built + proven against MockProvider; A1/A2/A3 (idempotent create / legal transitions / webhook dedup) enforced at DB + mirrored TS reference; client never sees provider (Principle 9). See `docs/v3/payment-router-architecture.md` |
 | V3-14 | payments-stripe-activation | P2 | V3-13 | L | Y | D1 | M | Stripe SDK wired + Apple/Google Pay + Stripe Connect for payouts + webhook handler signed-and-idempotent |
 | V3-15 | payments-paystack-activation | P2 | V3-13 | L | Y | D1 | M | Paystack SDK wired + card + bank + USSD + webhook reconciliation |
 | V3-16 | payments-flutterwave-activation | P2 | V3-13 | L | Y | D1 | M | Flutterwave SDK wired + mobile money rails + multi-currency + webhook reconciliation |
@@ -119,6 +119,8 @@ Payments and identity are the highest-stakes work in V3. Every pass in this phas
 | V3-25 | identity-content-moderation-framework | P7 | V3-12 | L | Y | — | C | Cross-division content moderation: marketplace listings, jobs posts, studio briefs, services profiles; LLM-assisted but human-gated |
 
 **Phase C parallelism plan:** V3-13 first (provider router). Then V3-14, V3-15, V3-16 in parallel (per-provider integrations). V3-17 ledger in parallel with provider work. V3-18, V3-20, V3-21, V3-22, V3-23 fan out after their deps. V3-19 (refunds) waits for all providers + ledger.
+
+**V3-13 card-CTA rollout (Q2 deliverable):** the `cardCta` seam shipped on `PaymentSurfaceContext` (+ `buildPaymentSurfaceContext` passthrough) in `@henryco/payment-surface`, wired once as a reference in marketplace `/pay/[orderNo]` — gated on `MOCK_PAYMENT=1` so production ships no dead link until the live card route exists. Remaining pay surfaces to adopt the same seam (tracked, NOT yet wired): logistics, studio, jobs, property, care. Each adopts via one call-site addition — `buildPaymentSurfaceContext({ …, cardCta: { label: translateSurfaceLabel(locale, "Pay with card"), href } })` — when its checkout surface and a live card route are ready. No live provider until V3-14/15/16.
 
 ---
 
