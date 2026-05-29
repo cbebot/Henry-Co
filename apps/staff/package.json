@@ -21,6 +21,7 @@
     "@henryco/newsletter": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",
+    "@henryco/seo": "workspace:^",
     "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@sentry/nextjs": "^10.0.0",

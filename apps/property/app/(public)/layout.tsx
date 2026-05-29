@@ -1,7 +1,8 @@
 import { headers } from "next/headers";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { PropertyAccountChip } from "@/components/property/PropertyAccountChip";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
 import { getPropertyViewer } from "@/lib/property/auth";
@@ -29,7 +30,7 @@ export default async function PublicLayout({ children }: { children: React.React
     : null;
 
   const accountSlot = (
-    <PublicAccountChip
+    <PropertyAccountChip
       {...HenryCoPublicAccountPresets.standard}
       user={chipUser}
       loginHref={getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin: origin })}

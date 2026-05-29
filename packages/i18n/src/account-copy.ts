@@ -949,6 +949,10 @@ export type AccountCopy = {
     empty: {
       title: string;
       description: string;
+      /** V3-08 — CTA on the empty state, points to a real shipping flow. */
+      ctaLabel: string;
+      /** V3-08 — honest footnote shown under the empty CTA. */
+      footnote: string;
     };
     card: {
       planFallback: string;
@@ -3101,6 +3105,9 @@ const EN: AccountCopy = {
       title: "No synced subscriptions yet",
       description:
         "This can mean you have no active plan, or that the division has not published subscription records into the shared account ledger yet.",
+      ctaLabel: "Browse the marketplace",
+      footnote:
+        "Subscriptions are created by the division you buy from. When one syncs into your account, it appears here automatically.",
     },
     card: {
       planFallback: "Subscription plan",
@@ -5311,6 +5318,9 @@ const FR: DeepPartial<AccountCopy> = {
       title: "Aucun abonnement synchronisé pour le moment",
       description:
         "Cela peut signifier que vous n’avez aucun forfait actif, ou que la division n’a pas encore publié ses abonnements dans le registre partagé du compte.",
+      ctaLabel: "Parcourir la place de marché",
+      footnote:
+        "Les abonnements sont créés par la division auprès de laquelle vous achetez. Dès qu’un abonnement se synchronise, il apparaît ici automatiquement.",
     },
     card: {
       planFallback: "Forfait d’abonnement",
@@ -7447,6 +7457,9 @@ const DE: DeepPartial<AccountCopy> = {
       title: "Noch keine synchronisierten Abonnements",
       description:
         "Das kann bedeuten, dass Sie keinen aktiven Plan haben oder dass der Bereich seine Abonnements noch nicht in das gemeinsame Konto-Register übertragen hat.",
+      ctaLabel: "Marktplatz durchsuchen",
+      footnote:
+        "Abonnements werden von dem Bereich erstellt, bei dem Sie kaufen. Sobald eines synchronisiert wird, erscheint es hier automatisch.",
     },
     card: {
       planFallback: "Abonnement-Plan",
@@ -9585,6 +9598,9 @@ const IT: DeepPartial<AccountCopy> = {
       title: "Nessun abbonamento sincronizzato",
       description:
         "Potrebbe significare che non hai piani attivi, oppure che la divisione non ha ancora pubblicato i propri abbonamenti nel registro condiviso del tuo account.",
+      ctaLabel: "Esplora il marketplace",
+      footnote:
+        "Gli abbonamenti vengono creati dalla divisione presso cui acquisti. Quando uno si sincronizza, appare qui automaticamente.",
     },
     card: {
       planFallback: "Piano di abbonamento",
@@ -11726,6 +11742,9 @@ const IG: DeepPartial<AccountCopy> = {
       title: "Enwebeghi ndenye aha echekwara",
       description:
         "Nke a nwere ike pụta na i nweghị atụmatụ na-arụ ọrụ, ma ọ bụ na ngalaba ahụ ebipụtabeghị ndenye aha ya n’ime ebe nchịkọta akaụntụ.",
+      ctaLabel: "Chọgharịa ahịa",
+      footnote:
+        "Ọ bụ ngalaba ị na-azụta n’aka ya na-emepụta ndenye aha. Mgbe otu mekọrịtara, ọ ga-apụta ebe a ozugbo.",
     },
     card: {
       planFallback: "Atụmatụ ndenye aha",
@@ -13866,6 +13885,9 @@ const YO: DeepPartial<AccountCopy> = {
       title: "Kò sí ìforúkọsílẹ̀ tí a kó síbẹ̀",
       description:
         "Èyí lè túmọ̀ sí pé o kò ní ètò tí ó ń ṣiṣẹ́, tàbí pé ìpín náà kò tíì gbé àwọn ìforúkọsílẹ̀ rẹ̀ jáde sí ìwé àkáǹtì pínpín.",
+      ctaLabel: "Wo ọjà",
+      footnote:
+        "Ìpín tí o bá ń rà lọ́wọ́ ló ń ṣẹ̀dá àwọn ìforúkọsílẹ̀. Nígbà tí ọ̀kan bá mu wọnú àkáǹtì rẹ, yóò farahàn níbí lẹ́sẹ̀kẹsẹ̀.",
     },
     card: {
       planFallback: "Ètò ìforúkọsílẹ̀",
@@ -16006,6 +16028,9 @@ const HA: DeepPartial<AccountCopy> = {
       title: "Babu rajistar biyan kuɗi da aka daidaita tukuna",
       description:
         "Wannan na iya nufin ba ka da wani tsari mai aiki, ko kuma sashen bai riga ya buga bayanan rajistar biyan kuɗinsa a cikin rikodin asusu mai raba ba.",
+      ctaLabel: "Bincika kasuwa",
+      footnote:
+        "Sashen da kake saya daga gare shi ne ke ƙirƙirar rajistar biyan kuɗi. Lokacin da ɗaya ya daidaita, zai bayyana a nan nan take.",
     },
     card: {
       planFallback: "Tsarin rajista",
@@ -18137,6 +18162,9 @@ const ZH: DeepPartial<AccountCopy> = {
       title: "暂无已同步的订阅",
       description:
         "这可能表示您没有任何活动套餐，或该部门尚未将其订阅记录发布到共享账户账本中。",
+      ctaLabel: "浏览市场",
+      footnote:
+        "订阅由您购买的部门创建。一旦同步到您的账户，它会自动显示在这里。",
     },
     card: {
       planFallback: "订阅套餐",
@@ -20263,6 +20291,9 @@ const HI: DeepPartial<AccountCopy> = {
       title: "अभी तक कोई सिंक की गई सदस्यता नहीं",
       description:
         "इसका मतलब हो सकता है कि आपके पास कोई सक्रिय योजना नहीं है, या उस डिवीज़न ने अभी तक सदस्यता रिकॉर्ड साझा खाता बहीखाते में प्रकाशित नहीं किए हैं।",
+      ctaLabel: "मार्केटप्लेस ब्राउज़ करें",
+      footnote:
+        "सदस्यताएँ उस डिवीज़न द्वारा बनाई जाती हैं जहाँ से आप खरीदते हैं। जब कोई सिंक होती है, तो वह यहाँ अपने आप दिख जाती है।",
     },
     card: {
       planFallback: "सदस्यता योजना",

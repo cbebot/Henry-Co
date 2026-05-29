@@ -100,6 +100,63 @@ const PURPOSE_PALETTE: Record<
   generic: { accent: "#C9A227", accentSoft: "rgba(201,162,39,0.16)", accentBorder: "rgba(201,162,39,0.32)", ctaText: "#0b1018" },
 };
 
+/**
+ * V3-04 (S6) — Email CTA integrity: every transactional-email action
+ * link must be an ABSOLUTE https URL (email clients have no relative
+ * base) AND carry UTM attribution so owner analytics + the deep-link
+ * telemetry (S8) can join landings back to the email that drove them.
+ *
+ * Self-contained here (no `@henryco/seo` dep) so `@henryco/email`
+ * keeps its single `@henryco/config` dependency and stays free of the
+ * seo → config → i18n graph. Mirrors `withEmailUtm` in
+ * `@henryco/seo/deeplinks` — keep the two in sync if the UTM contract
+ * changes.
+ */
+function sanitizeUtmValue(value: string): string {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "_")
+    .replace(/_{2,}/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+/**
+ * Append `utm_source=henryco_email` + the campaign to an absolute
+ * action URL. No-ops (returns the input unchanged) for non-absolute or
+ * non-http(s) URLs and `mailto:`/`tel:` links so a CTA that is a
+ * support mailto is never mangled.
+ */
+function withEmailCtaUtm(
+  href: string,
+  campaign: string | null | undefined,
+  content?: string,
+): string {
+  const value = String(href || "").trim();
+  if (!value) return value;
+  // Never tag non-navigational schemes.
+  if (/^(mailto:|tel:|sms:)/i.test(value)) return value;
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    // Relative path — cannot UTM-tag without an origin, and email CTAs
+    // must be absolute anyway. Return unchanged; the caller owns the
+    // absolute-URL contract.
+    return value;
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return value;
+  // Do not clobber a campaign the caller already encoded.
+  if (!parsed.searchParams.has("utm_source")) {
+    parsed.searchParams.set("utm_source", "henryco_email");
+    parsed.searchParams.set("utm_medium", "email");
+    const normalizedCampaign = sanitizeUtmValue(campaign || "");
+    if (normalizedCampaign) parsed.searchParams.set("utm_campaign", normalizedCampaign);
+    if (content) parsed.searchParams.set("utm_content", sanitizeUtmValue(content));
+  }
+  return parsed.toString();
+}
+
 export type HenryCoEmailSection = {
   label: string;
   value: string;
@@ -121,6 +178,14 @@ export type HenryCoEmailLayout = {
   body?: string;
   actionLabel?: string | null;
   actionHref?: string | null;
+  /**
+   * V3-04 (S6) — UTM campaign for the CTA. When set, `renderHenryCoEmail`
+   * appends `utm_source=henryco_email&utm_medium=email&utm_campaign=<this>`
+   * to `actionHref` (if it is an absolute http(s) URL and not already
+   * UTM-tagged). Typically the email purpose + event, e.g.
+   * "care_booking_confirmed". Omit to leave the link untagged.
+   */
+  campaign?: string | null;
   /** Optional muted footer note (e.g., expiry, recovery instruction). */
   footnote?: string | null;
   /** Optional support contact line. */
@@ -372,7 +437,8 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
   const sections = renderSections(layout.sections || []);
   const bullets = renderBullets(layout.bullets || []);
   const highlight = renderHighlight(layout.highlightLabel, layout.highlightValue, palette);
-  const cta = renderCta(layout.actionLabel, layout.actionHref, palette);
+  const ctaHref = withEmailCtaUtm(layout.actionHref || "", layout.campaign, "cta_button");
+  const cta = renderCta(layout.actionLabel, ctaHref, palette);
   const body = layout.body
     ? `<p style="margin:18px 0 0 0; font-size:15px; line-height:1.75; color:${t.bodyText};">${escapeHtml(layout.body)}</p>`
     : "";
@@ -465,7 +531,9 @@ export function renderHenryCoEmailText(layout: HenryCoEmailLayout): string {
   }
   if (layout.actionLabel && layout.actionHref) {
     lines.push("");
-    lines.push(`${layout.actionLabel}: ${layout.actionHref}`);
+    lines.push(
+      `${layout.actionLabel}: ${withEmailCtaUtm(layout.actionHref, layout.campaign, "cta_button")}`,
+    );
   }
   if (layout.footnote) {
     lines.push("");

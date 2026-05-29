@@ -19,6 +19,7 @@ import {
   writeOAuthLinkIntent,
   isOAuthLinkIntentEnabled,
 } from "@henryco/auth/server/oauth-link-intent";
+import { emitDeepLinkReturnedAfterAuth } from "@henryco/auth/server/deep-link-middleware";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
 import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
@@ -252,6 +253,25 @@ export async function GET(request: Request) {
             firstSignIn: justConfirmed,
           },
         });
+
+        // V3-04 (S1): a deep link that bounced an anonymous visitor
+        // through sign-in carried its target in `next`. When that
+        // target survived the round trip (not the bare "/" default),
+        // record that the deep link completed its auth detour so the
+        // owner deep-link-health tile can measure round-trip success.
+        const deepLinkTarget = normalizeTrustedRedirect(next);
+        if (deepLinkTarget !== "/") {
+          emitDeepLinkReturnedAfterAuth({
+            target: deepLinkTarget,
+            via:
+              justConfirmed
+                ? "sign_up"
+                : provider === "email"
+                  ? "sign_in"
+                  : "oauth",
+            userId: user.id,
+          });
+        }
 
         if (justConfirmed) {
           const verifiedUrl = new URL("/auth/verified", origin);

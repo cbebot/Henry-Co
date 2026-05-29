@@ -54,6 +54,8 @@ flowchart LR
 | `uploads` | `cloudinary_requested`, `cloudinary_succeeded`, `cloudinary_failed`, `cloudinary_degraded` | `henry.uploads.cloudinary.requested`, `henry.uploads.cloudinary.succeeded`, `henry.uploads.cloudinary.failed`, `henry.uploads.cloudinary.degraded` |
 | `marketplace (proof)` | `payment_proof_uploaded`, `payment_proof_failed` | `henry.marketplace.payment_proof.uploaded`, `henry.marketplace.payment_proof.failed` |
 | `ui (foundation UX telemetry)` | V3-05 skeleton (`skeleton_shown`, `skeleton_exceeded_threshold`); V3-09 mobile (`mobile_keyboard_kept_visible`, `mobile_keyboard_obscured`, `modal_escape_backdrop_tap`, `modal_escape_android_back`); V3-11 card (`card_rendered`, `card_clicked`, `card_demoted`) | `henry.ui.skeleton.shown`, `henry.ui.skeleton.exceeded_threshold`, `henry.ui.mobile_keyboard.kept_visible`, `henry.ui.mobile_keyboard.obscured`, `henry.ui.modal_escape.backdrop_tap`, `henry.ui.modal_escape.android_back`, `henry.ui.card.rendered`, `henry.ui.card.clicked`, `henry.ui.card.demoted` |
+| `deeplink` (V3-04) | `deeplink_arrived`, `deeplink_returned_after_auth`, `deeplink_dead_link`, `share_clicked`, `share_attributed_install` | `henry.deeplink.arrived`, `henry.deeplink.returned_after_auth`, `henry.deeplink.dead_link`, `henry.share.clicked`, `henry.share.attributed_install` |
+| `dashboard` (V3-08) | `dashboard_module_rendered`, `dashboard_module_refreshed`, `dashboard_empty_state_cta_clicked` | `henry.dashboard.module.rendered`, `henry.dashboard.module.refreshed`, `henry.dashboard.empty_state.cta_clicked` |
 
 ## Rules
 

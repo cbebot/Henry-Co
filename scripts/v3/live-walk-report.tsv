@@ -1,0 +1,8 @@
+# V3-06 live-walk report (S6 + S7). ANTI-CLONE: internal — do not publish.
+# Generated: 2026-05-29T01:15:07.679Z
+# Base domain: henrycogroup.com
+#
+app	method	status	category	url	note
+hub	GET	404	DEAD	https://henrycogroup.com/terms	
+hub	GET	404	DEAD	https://henrycogroup.com/privacy	
+hub	GET	404	DEAD	https://henrycogroup.com/	

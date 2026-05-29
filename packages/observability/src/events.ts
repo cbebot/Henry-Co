@@ -195,7 +195,37 @@ export type HenryEventName =
   //     reason }. Lets the owner see the audit's churn over time.
   | "henry.ui.card.rendered"
   | "henry.ui.card.clicked"
-  | "henry.ui.card.demoted";
+  | "henry.ui.card.demoted"
+  // deep links + share — V3-04 foundation lock (deep links).
+  // `arrived` fires when a user lands from a notification/email/share
+  // deep link (payload: `source`, `target`, `outcome`). `returned_after_auth`
+  // fires on the auth round-trip success path — an unauth user clicked a
+  // protected deep link, signed in, and landed back on the target.
+  // `dead_link` fires when a deep-link arrival 404s (payload: `source`,
+  // `target`, source-attribution token) and feeds the owner-workspace
+  // dead-deep-link tile. `share.clicked` fires when a ShareButton resolves
+  // (Web Share API or copy fallback); `share.attributed_install` fires when
+  // a shared link leads to a sign-up that credits the sharer in
+  // customer_referrals.
+  | "henry.deeplink.arrived"
+  | "henry.deeplink.returned_after_auth"
+  | "henry.deeplink.dead_link"
+  | "henry.share.clicked"
+  | "henry.share.attributed_install"
+  // dashboard module truth — V3-08 foundation lock (empty dashboard
+  // truth). `rendered` fires once per dashboard composition per module
+  // with the resolved `state` (real | empty_yet | empty_none | loading
+  // | error) and `source` (live | derived | aggregate | static) so the
+  // owner-workspace module-health tile can flag modules that have been
+  // empty for >7 days (candidates for removal or messaging fix).
+  // `refreshed` fires when a tile re-runs its query (manual refresh or
+  // route-live-refresh) carrying the freshness age in seconds.
+  // `empty_state.cta_clicked` fires when a viewer taps the CTA on an
+  // empty-state surface, carrying the cta_target so we can tell which
+  // empty states actually convert.
+  | "henry.dashboard.module.rendered"
+  | "henry.dashboard.module.refreshed"
+  | "henry.dashboard.empty_state.cta_clicked";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

@@ -18,24 +18,37 @@ import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/comp
 import SessionHealthTile from "@/components/owner/SessionHealthTile";
 import ObservabilityTile from "./dashboard/observability-tile";
 import CardClickThroughTile from "./dashboard/card-clickthrough-tile";
+import ModuleHealthTile from "./dashboard/module-health-tile";
+import DeepLinkHealthTile from "./dashboard/deep-link-health-tile";
 import { getOwnerOverviewData } from "@/lib/owner-data";
 import { getSessionHealthMetrics } from "@/lib/owner-session-health";
 import { getObservabilityMetrics } from "@/lib/owner-observability";
 import { getCardClickThroughMetrics } from "@/lib/owner-card-clickthrough";
+import { getModuleHealthMetrics } from "@/lib/owner-module-health";
+import { getDeepLinkHealthMetrics } from "@/lib/owner-deeplink-health";
 import { formatCurrencyAmount, formatCompactNumber, timeAgo } from "@/lib/format";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function OwnerOverviewPage() {
-  const [data, sessionHealth, observability, cardClickThrough, locale] =
-    await Promise.all([
-      getOwnerOverviewData(),
-      getSessionHealthMetrics(),
-      getObservabilityMetrics(),
-      getCardClickThroughMetrics(),
-      getHubPublicLocale(),
-    ]);
+  const [
+    data,
+    sessionHealth,
+    observability,
+    cardClickThrough,
+    moduleHealth,
+    deepLinkHealth,
+    locale,
+  ] = await Promise.all([
+    getOwnerOverviewData(),
+    getSessionHealthMetrics(),
+    getObservabilityMetrics(),
+    getCardClickThroughMetrics(),
+    getModuleHealthMetrics(),
+    getDeepLinkHealthMetrics(),
+    getHubPublicLocale(),
+  ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
@@ -226,6 +239,10 @@ export default async function OwnerOverviewPage() {
       <ObservabilityTile metrics={observability} locale={locale} />
 
       <CardClickThroughTile metrics={cardClickThrough} locale={locale} />
+
+      <ModuleHealthTile metrics={moduleHealth} locale={locale} />
+
+      <DeepLinkHealthTile metrics={deepLinkHealth} locale={locale} />
     </div>
   );
 }

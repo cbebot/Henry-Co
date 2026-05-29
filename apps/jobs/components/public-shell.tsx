@@ -7,11 +7,11 @@ import { getJobsPublicLocale } from "@/lib/locale-server";
 import {
   HenryCoPublicAccountPresets,
   HenryCoSearchBreadcrumb,
-  PublicAccountChip,
   PublicFooter,
 } from "@henryco/ui";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
+import { JobsAccountChip } from "@/components/JobsAccountChip";
 import {
   getSharedAccountJobsUrl,
   getSharedAccountLoginUrl,
@@ -85,7 +85,7 @@ export async function PublicShell({
         headerClassName="jobs-public-header"
         auxLink={{ label: copy.shell.account, href: accountJobsUrl, external: true }}
         accountMenu={
-          <PublicAccountChip
+          <JobsAccountChip
             {...HenryCoPublicAccountPresets.standard}
             user={chipUser}
             loginHref={loginHref}

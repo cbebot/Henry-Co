@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Manrope } from "next/font/google";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets } from "@henryco/ui";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
@@ -14,6 +14,7 @@ import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
 import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
 import { getLogisticsPublicChipUser } from "@/lib/logistics-public-viewer";
+import { LogisticsAccountChip } from "@/components/layout/LogisticsAccountChip";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import "./globals.css";
 
@@ -54,7 +55,7 @@ export default async function RootLayout({
   const t = (text: string) => translateSurfaceLabel(lang, text);
   const returnPath = h.get("x-logistics-return-path") || "/";
   const accountSlot = (
-    <PublicAccountChip
+    <LogisticsAccountChip
       {...HenryCoPublicAccountPresets.standard}
       user={chipUser}
       loginHref={getLogisticsSharedLoginUrl(returnPath)}
