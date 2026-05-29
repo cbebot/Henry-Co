@@ -47,6 +47,16 @@ Boolean env vars that gate optional auth flows. Default OFF — flipped to `1` (
 | Paystack | `PAYSTACK_SECRET_KEY`, `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | server / client | V3-15, V3-19, V3-20, V3-69 | Nigeria-native cards, bank, USSD, transfers, payouts |
 | Flutterwave | `FLW_SECRET_KEY`, `NEXT_PUBLIC_FLW_PUBLIC_KEY`, `FLW_SECRET_HASH` | server / client | V3-16, V3-19, V3-20, V3-69 | Multi-rail Africa, mobile money, multi-currency, payouts |
 
+#### Mock payment rail (V3-13)
+
+The provider router (`@henryco/payment-router`) ships in V3-13 proven against an in-package MockProvider only — no live provider until V3-14 (Stripe) / V3-15 (Paystack) / V3-16 (Flutterwave). These flags gate the dormant rail. **All three are dev/test only — never set in production.** Note the value convention: `createPaymentRouter()` activates on `MOCK_PAYMENT=1` *exactly* (not `true`, unlike the sibling `MOCK_AI` / `MOCK_KYC` / `MOCK_SMS` toggles); any other value leaves zero providers registered, so every route fails closed to the A5 manual-fallback path rather than silently mocking.
+
+| Flag | Values | Used in | Behavior |
+|---|---|---|---|
+| `MOCK_PAYMENT` | `1` = on; unset / anything else = off | V3-13 | `=1` registers MockProvider under every real provider key, so country∩capability routing behaves exactly as in production while the mock executes charges. Off ⇒ no providers registered ⇒ all routes resolve to A5 manual-fallback (HTTP 422). |
+| `MOCK_PAYMENT_FAILURE` | `retryable` \| `fatal` | V3-13 | Forces MockProvider charge failure: `retryable` lets the router fail over to the next provider; `fatal` stops immediately (no failover). Drives the failover specs. |
+| `MOCK_PAYMENT_WEBHOOK_SECRET` | HMAC secret string | V3-13 | Secret the mock webhook route (`POST /api/payments/webhooks/mock`) verifies the `x-signature` HMAC against. Absent ⇒ the route fail-closes with HTTP 503. |
+
 ### AI Providers
 
 | Integration | Env var(s) | Side | Used in | Value-add |
@@ -286,7 +296,7 @@ Verify per app per pass:
 | Preview | Stripe TEST | Paystack TEST | Flutterwave TEST | Mock or low-cost real | Sandbox | Mock or low-cost |
 | Development | Mock-only | Mock-only | Mock-only | `MOCK_AI=true` | Sandbox | Mock |
 
-Mock-mode env vars: `MOCK_AI=true`, `MOCK_PAYMENT=true`, `MOCK_KYC=true`, `MOCK_SMS=true`. Each adapter respects its mock toggle.
+Mock-mode env vars: `MOCK_AI=true`, `MOCK_PAYMENT=1` (payment uses `1`, not `true` — see the V3-13 mock payment rail note above), `MOCK_KYC=true`, `MOCK_SMS=true`. Each adapter respects its mock toggle.
 
 ---
 
