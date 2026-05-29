@@ -159,9 +159,14 @@ const PRIORITY_PREFIXES = [
 // whose rendered chrome emits them; the path is resolved against that app's own
 // origin (relative cross-namespace links are rewritten onto the division host at
 // the edge, so a bare "/care" from hub resolves on the hub origin's edge).
+// EXCEPTION: trust links the chrome emits as ABSOLUTE henryWebRoot() URLs
+// (e.g. account SignupForm's /privacy + /terms) point at the hub web host, not
+// the displaying app's origin — so they are seeded under `hub` (where the routes
+// actually live, per route-tables/hub.json) rather than `account`. Seeding them
+// under account probed the account origin and produced false 404s.
 const CROSS_DIVISION_SEEDS = {
-  hub: ["/", "/care", "/jobs", "/learn", "/logistics", "/marketplace", "/property", "/studio"],
-  account: ["/", "/care", "/marketplace", "/studio", "/learn", "/support", "/privacy", "/terms"],
+  hub: ["/", "/care", "/jobs", "/learn", "/logistics", "/marketplace", "/property", "/studio", "/privacy", "/terms"],
+  account: ["/", "/care", "/marketplace", "/studio", "/learn", "/support"],
   marketplace: ["/", "/account/orders", "/help", "/policies/buyer-protection"],
 };
 
