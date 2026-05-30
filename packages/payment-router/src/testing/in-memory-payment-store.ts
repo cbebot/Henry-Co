@@ -60,7 +60,6 @@ export class InMemoryPaymentStore {
   private intents = new Map<string, IntentRow>();
   private byIdemKey = new Map<string, string>(); // `${userId}:${key}` → intentId (mirrors UNIQUE)
   private processedWebhooks = new Set<string>(); // `${provider}:${eventId}` (mirrors UNIQUE)
-  private attempts = new Map<string, number>(); // intentId → attempt count
 
   /** Test-only switch modelling a crash AFTER dedup-insert, BEFORE the effect commits. */
   __crashAfterDedupInsert = false;
@@ -124,10 +123,9 @@ export class InMemoryPaymentStore {
     } catch (e) {
       return { ok: false, error: (e as Error).message };
     }
-    // COMMIT: dedup row + status effect + attempt row, together.
+    // COMMIT: dedup row + status effect, together.
     this.processedWebhooks.add(dedupKey);
     row.status = target;
-    this.attempts.set(evt.intentId, (this.attempts.get(evt.intentId) ?? 0) + 1);
     return { ok: true, value: { applied: true } };
   }
 
@@ -136,8 +134,5 @@ export class InMemoryPaymentStore {
   }
   count(): number {
     return this.intents.size;
-  }
-  attemptCount(intentId: string): number {
-    return this.attempts.get(intentId) ?? 0;
   }
 }

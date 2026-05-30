@@ -80,7 +80,6 @@ describe("InMemoryPaymentStore — A3 webhook dedup (dedup-insert FIRST, effect 
     assert.ok(first.ok && first.value.applied);
     assert.ok(second.ok && !second.value.applied, "duplicate is an idempotent ack, not re-applied");
     assert.equal(store.getIntent(c.value.id)?.status, "succeeded");
-    assert.equal(store.attemptCount(c.value.id), 1, "exactly one attempt row from the webhook");
   });
 
   it("CRASH-BETWEEN-STEPS: a crash after dedup-insert, before effect, rolls back so replay completes", () => {
@@ -105,7 +104,6 @@ describe("InMemoryPaymentStore — A3 webhook dedup (dedup-insert FIRST, effect 
     const replay = store.applyWebhook(evt);
     assert.ok(replay.ok && replay.value.applied, "replay applies the effect");
     assert.equal(store.getIntent(c.value.id)?.status, "succeeded");
-    assert.equal(store.attemptCount(c.value.id), 1);
   });
 
   it("a webhook implying an illegal transition is rejected without recording dedup (safe to retry)", () => {
@@ -122,5 +120,58 @@ describe("InMemoryPaymentStore — A3 webhook dedup (dedup-insert FIRST, effect 
     };
     const r = store.applyWebhook(evt);
     assert.equal(r.ok, false);
+  });
+});
+
+describe("InMemoryPaymentStore — Q3 refund lifecycle (refunded means provider-confirmed)", () => {
+  /** Drive a fresh intent all the way to a confirmed `succeeded`. */
+  function succeededIntent() {
+    const store = new InMemoryPaymentStore();
+    const c = store.createIntent(freshIntent());
+    assert.ok(c.ok);
+    const id = (c as { value: { id: string } }).value.id;
+    store.transition(id, "processing");
+    store.applyWebhook({ provider: "paystack", providerEventId: "ref_1", intentId: id, impliedStatus: "succeeded" });
+    assert.equal(store.getIntent(id)?.status, "succeeded");
+    return { store, id };
+  }
+
+  it("succeeded → refund_processing (request) → refunded (refund.processed webhook)", () => {
+    const { store, id } = succeededIntent();
+    // The refund REQUEST is a non-money advance (mirrors advance_payment_intent).
+    assert.equal(store.transition(id, "refund_processing").ok, true);
+    // Money only confirmed-moved when the provider's refund.processed webhook lands.
+    const w = store.applyWebhook({ provider: "paystack", providerEventId: "refund:ref_1", intentId: id, impliedStatus: "refunded" });
+    assert.ok(w.ok && w.value.applied);
+    assert.equal(store.getIntent(id)?.status, "refunded");
+  });
+
+  it("refund_processing → succeeded revert when the refund fails (refund.failed webhook)", () => {
+    const { store, id } = succeededIntent();
+    store.transition(id, "refund_processing");
+    // refund.failed implies `succeeded`: money never left, so succeeded is the honest state.
+    const w = store.applyWebhook({ provider: "paystack", providerEventId: "refund:ref_1", intentId: id, impliedStatus: "succeeded" });
+    assert.ok(w.ok && w.value.applied);
+    assert.equal(store.getIntent(id)?.status, "succeeded");
+  });
+
+  it("rejects a DIRECT succeeded → refunded webhook (must pass through refund_processing)", () => {
+    const { store, id } = succeededIntent();
+    // A refund.processed arriving while still `succeeded` is illegal — `refunded`
+    // can only be reached from `refund_processing`. Rejected without recording dedup.
+    const w = store.applyWebhook({ provider: "paystack", providerEventId: "refund:ref_1", intentId: id, impliedStatus: "refunded" });
+    assert.equal(w.ok, false);
+    assert.equal(store.getIntent(id)?.status, "succeeded", "status unchanged after illegal refund");
+  });
+
+  it("dedups a duplicate refund.processed delivery (refunded is reached exactly once)", () => {
+    const { store, id } = succeededIntent();
+    store.transition(id, "refund_processing");
+    const evt = { provider: "paystack", providerEventId: "refund:ref_1", intentId: id, impliedStatus: "refunded" as const };
+    const first = store.applyWebhook(evt);
+    const second = store.applyWebhook(evt);
+    assert.ok(first.ok && first.value.applied);
+    assert.ok(second.ok && !second.value.applied, "duplicate refund.processed is an idempotent ack");
+    assert.equal(store.getIntent(id)?.status, "refunded");
   });
 });

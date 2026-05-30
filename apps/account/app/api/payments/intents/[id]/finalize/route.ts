@@ -1,9 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { createPaymentRouter } from "@henryco/payment-router";
+import { resolveProviderFromSucceededAttempt } from "@/lib/payments/server";
+import { emitPaymentEvent, intentEventForStatus } from "@/lib/payments/telemetry";
 
 export const runtime = "nodejs";
 
+// The Paystack callback return: the buyer is back from hosted checkout. We read
+// the provider's authoritative charge state (transaction/verify) rather than
+// trusting the client, and confirm it through the SAME deduped RPC the async
+// webhook uses — so finalize and a later charge.success can't double-apply (G2).
 export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createSupabaseServer();
@@ -16,18 +23,38 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
   if (intent.error || !intentRow || intentRow.user_id !== user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  // Move pending → processing (the only legal client-driven step; the BEFORE UPDATE trigger enforces A2).
-  // The .eq("status","pending") guard makes this a no-op-safe single-step advance.
-  const update = await admin
-    .from("payment_intents")
-    .update({ status: "processing" } as never)
-    .eq("id", id)
-    .eq("status", "pending")
-    .select("id, status")
-    .maybeSingle();
-  if (update.error) {
-    return NextResponse.json({ error: "Cannot finalize" }, { status: 409 });
+
+  // Resolve the provider that actually charged this intent (Q2). No succeeded
+  // attempt → routing never completed; there is nothing to finalize.
+  const owner = await resolveProviderFromSucceededAttempt(admin, id);
+  if (!owner) return NextResponse.json({ error: "Cannot finalize" }, { status: 409 });
+
+  // Best-effort visible advance pending → processing (D3: via the guarded RPC,
+  // never a raw UPDATE). Not gated — the provider verify below is the truth.
+  await admin.rpc("advance_payment_intent", { p_intent_id: id, p_from: "pending", p_to: "processing" });
+
+  const adapter = createPaymentRouter().getAdapter(owner.provider);
+  const verified = await adapter?.finalize?.({ providerReference: owner.providerReference });
+
+  // Still pending at the provider (or no synchronous finalize): leave at
+  // processing; the async webhook will confirm the terminal status later.
+  if (!verified?.ok || !verified.value.impliedStatus) {
+    return NextResponse.json({ intentId: id, status: "processing" }, { status: 200 });
   }
-  const updatedRow = update.data as { id: string; status: string } | null;
-  return NextResponse.json({ intentId: id, status: updatedRow?.status ?? intentRow.status }, { status: 200 });
+
+  const terminal = verified.value.impliedStatus;
+  // D3: the ONLY status writer for money-confirming edges. Deduped by the shared
+  // reference key, so whichever of finalize / webhook lands first wins exactly once.
+  const applied = await admin.rpc("apply_payment_webhook", {
+    p_provider: owner.provider,
+    p_provider_event_id: verified.value.providerEventId,
+    p_intent_id: id,
+    p_new_status: terminal,
+  });
+  if (applied.error) return NextResponse.json({ error: "Apply failed" }, { status: 500 });
+  if ((applied.data as { applied?: boolean } | null)?.applied === true) {
+    emitPaymentEvent(intentEventForStatus(terminal), { actorId: user.id, payload: { provider: owner.provider } });
+  }
+
+  return NextResponse.json({ intentId: id, status: terminal }, { status: 200 });
 }

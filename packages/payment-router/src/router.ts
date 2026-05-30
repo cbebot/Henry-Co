@@ -12,6 +12,7 @@ import type {
 import { providerPreferenceForCountry } from "./routing/country-defaults";
 import { providerSupportsMethod } from "./routing/capability-matrix";
 import { MockProvider } from "./providers/mock-provider";
+import { PaystackProvider } from "./providers/paystack-provider";
 
 export interface SelectProviderQuery {
   country: ISO3166Alpha2;
@@ -26,6 +27,13 @@ export interface RouteIntent {
   country: ISO3166Alpha2;
   method: PaymentMethod;
   idempotencyKey: string;
+  /**
+   * The authenticated buyer's email. Optional at the router boundary (kept
+   * provider-agnostic), but Paystack cannot open a charge without it — its
+   * adapter treats absence as a fatal config error. Threaded verbatim to
+   * `initiate`.
+   */
+  customerEmail?: string;
 }
 
 /**
@@ -121,6 +129,7 @@ export class PaymentRouter {
         country: intent.country,
         method: intent.method,
         idempotencyKey: intent.idempotencyKey,
+        customerEmail: intent.customerEmail,
       });
       if (result.ok) {
         this.hooks.onProviderSucceeded?.(key, intent.intentId);
@@ -141,25 +150,57 @@ export class PaymentRouter {
   }
 }
 
+export interface CreatePaymentRouterOptions {
+  /** Server-side routing observers (provider identity surfaces ONLY here). */
+  hooks?: RouteHooks;
+  /**
+   * Absolute URL Paystack returns the buyer to after hosted checkout. Computed
+   * by the APP via its env-aware account-origin helper and injected here (G7:
+   * config-driven, never a hardcoded host) — so the base-domain migration is a
+   * one-place change. The package deliberately does NOT read an env var for
+   * this (an uninventoried `PAYSTACK_CALLBACK_URL` would be a phantom env).
+   */
+  callbackUrl?: string;
+}
+
 /**
- * Build the router for app use. Wiring is env-gated:
+ * Build the router for app use. Wiring is env-gated and additive — a LIVE
+ * adapter always wins its key; the mock only backfills keys nothing live serves:
+ *  - `PAYSTACK_SECRET_KEY` set → register the live {@link PaystackProvider}
+ *    under `paystack` (V3-15 activation). G3: the same code is test or live
+ *    purely by which secret (`sk_test_…`/`sk_live_…`) is supplied.
  *  - `MOCK_PAYMENT=1` → register the MockProvider under every real provider key
- *    so country/capability routing behaves exactly as in production while the
- *    mock executes charges (the V3-13 dormant rail).
- *  - otherwise → no providers registered. Real Stripe/Paystack/Flutterwave
- *    adapters are wired here in V3-14/15/16; until then every route resolves to
- *    the A5 manual-fallback path.
+ *    NOT already served by a live adapter, so country/capability routing behaves
+ *    as in production across the still-dormant rails (the V3-13 mock rail).
+ *  - neither → no providers registered; every route resolves to the A5
+ *    manual-fallback path.
+ *
+ * Registering live providers first (and recording their keys in `served`) is
+ * what stops the mock loop from shadowing a real provider — so `MOCK_PAYMENT=1`
+ * is safe to leave on alongside a real Paystack key.
  */
-export function createPaymentRouter(hooks?: RouteHooks): PaymentRouter {
-  const useMock = process.env.MOCK_PAYMENT === "1";
-  if (!useMock) {
-    return new PaymentRouter({ providers: [], hooks });
+export function createPaymentRouter(options?: CreatePaymentRouterOptions): PaymentRouter {
+  const providers: PaymentProviderAdapter[] = [];
+  const served = new Set<PaymentProviderKey>();
+
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+  if (paystackSecret) {
+    providers.push(
+      new PaystackProvider({ secretKey: paystackSecret, callbackUrl: options?.callbackUrl }),
+    );
+    served.add("paystack");
   }
-  const keys: PaymentProviderKey[] = ["stripe", "paystack", "flutterwave", "mock"];
-  const providers = keys.map((key) => {
-    const m = new MockProvider();
-    Object.defineProperty(m, "key", { value: key });
-    return m as PaymentProviderAdapter;
-  });
-  return new PaymentRouter({ providers, hooks });
+
+  if (process.env.MOCK_PAYMENT === "1") {
+    const keys: PaymentProviderKey[] = ["stripe", "paystack", "flutterwave", "mock"];
+    for (const key of keys) {
+      if (served.has(key)) continue; // never shadow a live adapter
+      const m = new MockProvider();
+      Object.defineProperty(m, "key", { value: key });
+      providers.push(m as PaymentProviderAdapter);
+      served.add(key);
+    }
+  }
+
+  return new PaymentRouter({ providers, hooks: options?.hooks });
 }

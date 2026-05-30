@@ -6,6 +6,7 @@ export const ALL_STATUSES: readonly PaymentIntentStatus[] = [
   "processing",
   "succeeded",
   "failed",
+  "refund_processing",
   "refunded",
   "cancelled",
 ] as const;
@@ -20,12 +21,20 @@ export const ALL_STATUSES: readonly PaymentIntentStatus[] = [
  * table is the in-process guard, but a divergence between them would be a
  * money bug — so the SQL is written as a direct transcription of these rows.
  *
+ * `refund_processing` is the honest intermediate between requesting a refund and
+ * the provider confirming money moved (Q3): `succeeded -> refund_processing` is the
+ * request, `refund_processing -> refunded` is the provider's `refund.processed`
+ * webhook, and `refund_processing -> succeeded` reverts when the refund fails (or
+ * the provider rejects it synchronously) — money is still with us, so `succeeded`
+ * is the truthful state. `refunded` therefore ALWAYS means provider-confirmed.
+ *
  * Terminal states (`failed`, `refunded`, `cancelled`) have no outgoing edges.
  */
 export const LEGAL_TRANSITIONS: Record<PaymentIntentStatus, PaymentIntentStatus[]> = {
   pending: ["processing", "cancelled"],
   processing: ["succeeded", "failed"],
-  succeeded: ["refunded"],
+  succeeded: ["refund_processing"],
+  refund_processing: ["refunded", "succeeded"],
   failed: [],
   refunded: [],
   cancelled: [],

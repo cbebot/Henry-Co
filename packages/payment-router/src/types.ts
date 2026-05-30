@@ -48,6 +48,7 @@ export type PaymentIntentStatus =
   | "processing"
   | "succeeded"
   | "failed"
+  | "refund_processing"
   | "refunded"
   | "cancelled";
 
