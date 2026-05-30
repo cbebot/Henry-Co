@@ -87,3 +87,54 @@ describe("MockProvider.refund", () => {
     if (r.ok) assert.match(r.value.refundReference, /^mockrf_/);
   });
 });
+
+describe("MockProvider.finalize (D1 synchronous confirm)", () => {
+  it("confirms succeeded and sets providerEventId = providerReference (G2 dedup identity)", async () => {
+    const p = new MockProvider();
+    const r = await p.finalize({ providerReference: "mock_abc" });
+    assert.equal(r.ok, true);
+    if (r.ok) {
+      // G2: the finalize event id MUST equal the charge reference so a later
+      // charge.success webhook for the same reference can't double-apply.
+      assert.equal(r.value.providerEventId, "mock_abc");
+      assert.equal(r.value.impliedStatus, "succeeded");
+    }
+  });
+
+  it("returns a RETRYABLE error when failureMode=retryable", async () => {
+    const p = new MockProvider({ failureMode: "retryable" });
+    const r = await p.finalize({ providerReference: "mock_abc" });
+    assert.equal(r.ok, false);
+    if (!r.ok) {
+      assert.equal(r.error.retryable, true);
+      assert.equal(r.error.providerKey, "mock");
+    }
+  });
+
+  it("returns a FATAL error when failureMode=fatal", async () => {
+    const p = new MockProvider({ failureMode: "fatal" });
+    const r = await p.finalize({ providerReference: "mock_abc" });
+    assert.equal(r.ok, false);
+    if (!r.ok) assert.equal(r.error.retryable, false);
+  });
+});
+
+describe("MockProvider.getBalance (G4 reconciliation read)", () => {
+  it("echoes the requested currency and returns an ISO-8601 asOf", async () => {
+    const p = new MockProvider();
+    const r = await p.getBalance({ currency: "NGN" });
+    assert.equal(r.ok, true);
+    if (r.ok) {
+      assert.equal(r.value.currency, "NGN");
+      assert.equal(typeof r.value.availableMinor, "number");
+      assert.ok(!Number.isNaN(Date.parse(r.value.asOf)), "asOf parses as a date");
+    }
+  });
+
+  it("returns a FATAL error when failureMode=fatal", async () => {
+    const p = new MockProvider({ failureMode: "fatal" });
+    const r = await p.getBalance({ currency: "NGN" });
+    assert.equal(r.ok, false);
+    if (!r.ok) assert.equal(r.error.retryable, false);
+  });
+});

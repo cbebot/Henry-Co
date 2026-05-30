@@ -27,7 +27,9 @@ V3 vision P2: "Finance dashboard for staff/owner." Read-only views over ledger +
    - Open refunds.
    - Provider payout schedule.
 
-3. **Per-staff filtered views** per `is_staff_in('finance')`.
+3. **Per-staff filtered views** for finance staff.
+   - ⚠️ **V3-15 finding (load-bearing — do NOT inherit the broken predicate):** `is_staff_in('finance')` is **silently always-false** — `'finance'` is a ROLE, not a division, so the call denies every finance read. V3-22 must NOT gate on it. Use a real finance-scoped predicate (e.g. a finance-role check, or extend `is_staff_in` to accept role args) and PROVE a finance-staff user can read while a non-finance staff cannot (the validation gate below).
+   - ⚠️ **Tighten the V3-15 interim grant:** `payment_intents` + `payment_attempts` SELECT RLS currently uses the broad `public.is_platform_staff()` (hub/staff/account/security × owner/admin/superadmin) because it was the only working sensitive-data reader at V3-15 time — broader than finance by design, as a deliberate interim. V3-22 owns narrowing both policies to the real finance-scoped predicate. Confirm the migration deviation note (`20260529120000_payment_intents.sql`) before changing.
 
 4. **Charts**:
    - Time-series for revenue trends (use lightweight chart library; no third-party SaaS).
@@ -63,7 +65,7 @@ Currency rendering per V3-84; labels via @henryco/i18n.
 
 ## Validation gates
 1. Standard CI.
-2. **RLS smoke** — non-finance-staff cannot read.
+2. **RLS smoke (both directions)** — a finance-staff user CAN read `payment_intents`/`payment_attempts` AND a non-finance staff user CANNOT. The positive case is the one the broken `is_staff_in('finance')` predicate silently fails (see scope item 3), so it must be asserted explicitly, not assumed.
 3. **Reconciliation status accurate** — dashboard shows match with V3-17 reconcile output.
 4. **Export e2e** — CSV + PDF generated + watermarked.
 

@@ -7,6 +7,10 @@ import type {
   RefundResult,
   VerifyWebhookParams,
   VerifiedWebhook,
+  FinalizeParams,
+  FinalizeResult,
+  BalanceParams,
+  BalanceResult,
 } from "./adapter-interface";
 import type { Result } from "../types";
 import type { ProviderError } from "../errors";
@@ -59,6 +63,34 @@ export class MockProvider implements PaymentProviderAdapter {
   async refund(params: RefundParams): Promise<Result<RefundResult, ProviderError>> {
     if (this.failureMode === "fatal") return this.err("mock_refund_fatal", false);
     return { ok: true, value: { refundReference: `mockrf_${params.providerReference}` } };
+  }
+
+  /**
+   * Stateless confirm (D1). `providerEventId` is the reference itself so a
+   * finalize and a later charge webhook for the same reference dedup against
+   * each other (G2). The mock holds no charge state, so amount/currency are
+   * deterministic placeholders — the real adapter reads them from the provider.
+   */
+  async finalize(params: FinalizeParams): Promise<Result<FinalizeResult, ProviderError>> {
+    if (this.failureMode === "retryable") return this.err("mock_finalize_retryable", true);
+    if (this.failureMode === "fatal") return this.err("mock_finalize_fatal", false);
+    return {
+      ok: true,
+      value: {
+        providerEventId: params.providerReference,
+        impliedStatus: "succeeded",
+        amountMinor: 0,
+        currency: "NGN",
+      },
+    };
+  }
+
+  async getBalance(params: BalanceParams): Promise<Result<BalanceResult, ProviderError>> {
+    if (this.failureMode === "fatal") return this.err("mock_balance_fatal", false);
+    return {
+      ok: true,
+      value: { currency: params.currency, availableMinor: 0, asOf: new Date(0).toISOString() },
+    };
   }
 
   async verifyWebhook(

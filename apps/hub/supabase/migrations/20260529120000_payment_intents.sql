@@ -1,4 +1,4 @@
--- V3-13 Payments: Provider Router — payment_intents schema + money-correctness enforcement.
+-- V3-13/V3-15 Payments: Provider Router — payment_intents schema + money-correctness enforcement.
 --
 -- PRODUCTION MIRROR of packages/payment-router/src/state-machine.ts (A2) and
 -- packages/payment-router/src/testing/in-memory-payment-store.ts (A1, A3).
@@ -6,14 +6,35 @@
 -- production transcription of the SAME rules. The transition `if` clauses below
 -- list EXACTLY the pairs in LEGAL_TRANSITIONS — keep them in lockstep.
 --
--- NOT APPLIED in this session — conductor + owner review first, then it lands
--- with the first real-provider pass (V3-14/15/16) and its 48h money soak.
+-- NOT APPLIED in this session — even though V3-15 activates Paystack, this
+-- migration stays unapplied until owner review + the 48h money soak. Applying it
+-- is a deliberate, separate step (conductor gate), never a side effect of CI.
+--
+-- V3-15 activation changes (mirror the updated state-machine.ts + the Q1/Q3 locks):
+--   - status CHECK + transition trigger gain `refund_processing` (Q3 honest
+--     intermediate). `succeeded → refund_processing → refunded` replaces the old
+--     direct `succeeded → refunded`, so `refunded` ALWAYS means provider-confirmed.
+--   - new guarded RPC advance_payment_intent(): the ONLY synchronous (non-webhook)
+--     status writer, whitelisted to 3 non-money edges with a rows-affected mutex
+--     (Q1 — routes never UPDATE status directly).
+--   - apply_payment_webhook() no longer writes payment_attempts: attempts record
+--     ROUTING attempts only (written at initiate, Q2), so "resolve provider from
+--     the status='succeeded' attempt" stays unambiguous. Webhook auditing lives in
+--     processed_webhooks.
 --
 -- Deviations from the V3-13 plan (both are plan-bug fixes caught during grounding):
 --   1. Finance read policy uses public.is_platform_staff() (the established
 --      sensitive-data reader from 20260502160000_user_addresses_canonical.sql),
 --      NOT is_staff_in('finance', …): 'finance' is a ROLE, not a division, so
 --      that call is silently always-false and would deny every finance read.
+--      ►► V3-22 FORWARD-POINTER: is_platform_staff() is BROADER than finance
+--      (hub/staff/account/security × owner/admin/superadmin) — a deliberate
+--      interim because it was the only WORKING sensitive-data reader at V3-15
+--      time. V3-22 (payments-finance-dashboard) OWNS narrowing both the
+--      payment_intents AND payment_attempts SELECT policies to a real
+--      finance-scoped predicate — and MUST NOT regress to is_staff_in('finance')
+--      (still always-false until that predicate is fixed). Tracked in
+--      docs/v3/prompts/v3-22-payments-finance-dashboard.md scope item 3.
 --   2. apply_payment_webhook() declares v_affected INTEGER (not BOOLEAN): the
 --      plan's `v_inserted boolean` + `if v_inserted = 0` is a plpgsql type error
 --      (GET DIAGNOSTICS yields bigint; boolean = integer has no operator).
@@ -41,7 +62,7 @@ do $$ begin
   end if;
   if not exists (select 1 from pg_constraint where conname = 'payment_intents_status_valid') then
     alter table public.payment_intents add constraint payment_intents_status_valid
-      check (status in ('pending','processing','succeeded','failed','refunded','cancelled'));
+      check (status in ('pending','processing','succeeded','failed','refund_processing','refunded','cancelled'));
   end if;
   if not exists (select 1 from pg_constraint where conname = 'payment_intents_user_idem_unique') then
     alter table public.payment_intents add constraint payment_intents_user_idem_unique unique (user_id, idempotency_key); -- A1
@@ -99,9 +120,11 @@ begin
   if new.status = old.status then
     return new; -- idempotent no-op (mirrors isLegalTransition: from === to → true)
   end if;
+  -- EXACTLY the pairs in LEGAL_TRANSITIONS (state-machine.ts). Keep in lockstep.
   if (old.status = 'pending' and new.status in ('processing','cancelled'))
      or (old.status = 'processing' and new.status in ('succeeded','failed'))
-     or (old.status = 'succeeded' and new.status = 'refunded') then
+     or (old.status = 'succeeded' and new.status = 'refund_processing')
+     or (old.status = 'refund_processing' and new.status in ('refunded','succeeded')) then
     return new;
   end if;
   -- failed / refunded / cancelled are terminal: any move out raises.
@@ -114,6 +137,51 @@ drop trigger if exists payment_intents_enforce_transition on public.payment_inte
 create trigger payment_intents_enforce_transition
   before update on public.payment_intents
   for each row execute function public.enforce_payment_intent_transition();
+
+-- ============ Q1 guarded synchronous advance (non-money, route-driven, mutex) ============
+-- The ONLY way a route may move `status` without a provider event. It exists so
+-- that routes NEVER issue a raw `update … set status` (D3: the grep stays zero).
+--
+-- Whitelisted to the THREE non-money edges only — a subset of LEGAL_TRANSITIONS:
+--   pending           → processing          (finalize: buyer returned, begin verify)
+--   succeeded         → refund_processing    (refund request accepted; money NOT yet moved)
+--   refund_processing → succeeded            (synchronous refund reject — revert, money stayed)
+-- Money-confirming edges (→succeeded via charge, →failed, →refunded) are deliberately
+-- NOT here: those flow ONLY through apply_payment_webhook (provider-confirmed, deduped).
+-- A non-whitelisted (p_from,p_to) is a programming error and RAISES — this function
+-- must never degrade into a general-purpose status setter.
+--
+-- `where … and status = p_from` is an optimistic mutex: concurrent callers race and
+-- exactly ONE observes advanced=true (row_count 1); the loser sees advanced=false and
+-- must not run the side effect (e.g. only the first finalize calls the provider). The
+-- BEFORE UPDATE trigger re-checks legality regardless (defence in depth) — but every
+-- whitelisted edge is legal, so it never fires for them.
+create or replace function public.advance_payment_intent(
+  p_intent_id uuid,
+  p_from text,
+  p_to text
+) returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_affected integer := 0;
+begin
+  if not (
+       (p_from = 'pending'           and p_to = 'processing')
+    or (p_from = 'succeeded'         and p_to = 'refund_processing')
+    or (p_from = 'refund_processing' and p_to = 'succeeded')
+  ) then
+    raise exception 'advance_payment_intent: non-whitelisted edge % -> %', p_from, p_to
+      using errcode = 'check_violation';
+  end if;
+
+  update public.payment_intents
+     set status = p_to
+   where id = p_intent_id and status = p_from;
+  get diagnostics v_affected = row_count;
+
+  return jsonb_build_object('advanced', v_affected > 0);
+end $$;
+revoke all on function public.advance_payment_intent(uuid, text, text) from public;
+grant execute on function public.advance_payment_intent(uuid, text, text) to service_role;
 
 -- ============ A3 webhook apply RPC (dedup-insert FIRST, effect SECOND, one txn) ============
 create or replace function public.apply_payment_webhook(
@@ -138,10 +206,10 @@ begin
   -- STEP 2: effect SECOND, SAME transaction. The BEFORE UPDATE trigger enforces A2;
   -- an illegal implied transition raises here and rolls back the dedup row too,
   -- so the delivery can be safely retried (mirrors the store's crash-between-steps test).
+  -- NOTE: no payment_attempts write here. attempts record ROUTING attempts only
+  -- (written at initiate, Q2); a webhook is not a routing attempt and writing one
+  -- would create a second status='succeeded' row, breaking provider resolution.
   update public.payment_intents set status = p_new_status where id = p_intent_id;
-
-  insert into public.payment_attempts (intent_id, provider, status)
-  values (p_intent_id, p_provider, p_new_status);
 
   return jsonb_build_object('applied', true);
 end $$;
@@ -161,7 +229,9 @@ drop policy if exists payment_intents_insert_own on public.payment_intents;
 create policy payment_intents_insert_own on public.payment_intents
   for insert to authenticated with check (user_id = (select auth.uid()));
 
--- NO user UPDATE policy — status changes only via service_role + apply_payment_webhook().
+-- NO user UPDATE policy — status changes only via service_role through the two
+-- guarded RPCs: advance_payment_intent() (synchronous non-money edges) and
+-- apply_payment_webhook() (provider-confirmed, deduped). Never a raw UPDATE.
 
 -- Platform-staff read-all (finance/reconciliation). Reuses the canonical
 -- sensitive-data reader predicate (hub/staff/account/security × owner/admin/superadmin).

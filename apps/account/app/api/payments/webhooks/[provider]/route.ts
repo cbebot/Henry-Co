@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase";
-import { MockProvider } from "@henryco/payment-router";
+import { createPaymentRouter } from "@henryco/payment-router";
+import type { PaymentProviderKey } from "@henryco/payment-router/types";
+import { emitPaymentEvent, intentEventForStatus } from "@/lib/payments/telemetry";
 
 export const runtime = "nodejs";
 
@@ -18,20 +20,30 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const secret = process.env[secretEnv];
   if (!secret) return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
 
+  // G1: HMAC is over the RAW bytes — read as text BEFORE any parse. A
+  // re-serialized body would change the digest.
   const rawBody = await request.text();
-  const signature = request.headers.get("x-signature") ?? request.headers.get("x-paystack-signature");
+  const signature = request.headers.get("x-paystack-signature") ?? request.headers.get("x-signature");
 
-  // Only the mock adapter exists in V3-13; real adapters land in V3-14/15/16.
-  if (provider !== "mock") {
-    return NextResponse.json({ error: "Provider not yet activated" }, { status: 501 });
-  }
-  const adapter = new MockProvider();
+  emitPaymentEvent("henry.payment.webhook.received", { payload: { provider } });
+
+  // The live adapter for this provider owns its signature scheme. Absent (not
+  // activated in this env) → 501; we never fall back to a different verifier.
+  const adapter = createPaymentRouter().getAdapter(provider as PaymentProviderKey);
+  if (!adapter) return NextResponse.json({ error: "Provider not yet activated" }, { status: 501 });
+
   const verified = await adapter.verifyWebhook({ rawBody, signature, secret });
   if (!verified.ok) {
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 }); // henry.payment.webhook.rejected
+    // G1 fail-closed: missing OR mismatched signature → 401, never 200/400.
+    emitPaymentEvent("henry.payment.webhook.rejected", { payload: { provider } });
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
+  emitPaymentEvent("henry.payment.webhook.verified", {
+    payload: { provider, eventType: verified.value.eventType },
+  });
+
   if (!verified.value.impliedStatus) {
-    return NextResponse.json({ received: true }, { status: 200 }); // no-op event
+    return NextResponse.json({ received: true }, { status: 200 }); // informational event
   }
 
   const admin = createAdminSupabase();
@@ -46,7 +58,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ received: true }, { status: 200 }); // unknown reference — ack, do not leak
   }
 
-  // A3: dedup-insert first, effect second — atomic in the RPC. A duplicate delivery is an idempotent ack.
+  // A3/D3: the ONLY money-confirming status writer — dedup-insert first, then the
+  // A2-guarded transition, atomically. A duplicate delivery is an idempotent ack.
   const applied = await admin.rpc("apply_payment_webhook", {
     p_provider: provider,
     p_provider_event_id: verified.value.providerEventId,
@@ -55,6 +68,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   });
   if (applied.error) {
     return NextResponse.json({ error: "Apply failed" }, { status: 500 });
+  }
+  // Money truth emitted exactly once — only the delivery that actually applied
+  // (not a deduped redelivery) fires intent.succeeded/failed/refunded.
+  if ((applied.data as { applied?: boolean } | null)?.applied === true) {
+    emitPaymentEvent(intentEventForStatus(verified.value.impliedStatus), { payload: { provider } });
   }
   return NextResponse.json({ received: true }, { status: 200 });
 }

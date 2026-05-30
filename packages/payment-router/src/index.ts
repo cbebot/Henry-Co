@@ -7,5 +7,11 @@ export * from "./telemetry";
 export * from "./reconciliation";
 export * from "./providers/adapter-interface";
 export { MockProvider } from "./providers/mock-provider";
+export { PaystackProvider } from "./providers/paystack-provider";
+export type {
+  PaystackProviderOptions,
+  PaystackFetch,
+  PaystackHttpResponse,
+} from "./providers/paystack-provider";
 export { CAPABILITY_MATRIX, providerSupportsMethod } from "./routing/capability-matrix";
 export { providerPreferenceForCountry } from "./routing/country-defaults";
