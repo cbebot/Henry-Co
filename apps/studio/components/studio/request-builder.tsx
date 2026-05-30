@@ -18,55 +18,16 @@ import {
   filterPricedOptions,
   type StudioRequestConfig,
 } from "@/lib/studio/request-config";
+import {
+  STUDIO_BRIEF_DRAFT_KEY,
+  STUDIO_BRIEF_DRAFT_VERSION,
+  emptyStudioBriefDraft,
+  structuredToDraft,
+  type StudioBriefDraft,
+} from "@/lib/studio/request-fields";
 import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
-
-/**
- * Persisted user-input shape for the studio brief draft.
- *
- * Captures every field the user types or selects across the 4-step
- * builder (Path / Scope / Commercial / Activation), plus the current
- * step index so a mid-flow reauth lands the user back on the right
- * step instead of step 1. Excluded from the envelope:
- *
- *   - `services`, `packages`, `teams`, `requestConfig`, `presetHint`
- *     and `copilotSeed` — all server- or runtime-supplied (props).
- *   - `isStepTransitioning`, `progressHint` — UI animation state.
- *   - Derived memos (effective*, filteredPackages, pricingPreview,
- *     readinessScore) — computed from the persisted fields above.
- *   - DOM refs (`topRef`).
- *
- * The studio brief has no payment / KYC / password fields, so no
- * sensitive-data exclusion is needed beyond the categories above.
- */
-type StudioBriefDraft = {
-  stepIndex: number;
-  serviceKind: StudioService["kind"];
-  pathway: "package" | "custom";
-  selectedPackageId: string;
-  selectedTeamId: string;
-  selectedProjectType: string;
-  selectedPlatform: string;
-  selectedDesign: string;
-  preferredLanguage: string;
-  selectedPages: string[];
-  selectedModules: string[];
-  selectedAddOns: string[];
-  selectedTech: string[];
-  selectedProgrammingLanguage: string;
-  selectedFramework: string;
-  selectedBackend: string;
-  selectedHosting: string;
-  businessType: string;
-  budgetBand: string;
-  urgency: string;
-  timeline: string;
-  goals: string;
-  scopeNotes: string;
-  inspirationSummary: string;
-  domainIntentJson: string;
-};
 
 type Props = {
   services: StudioService[];
@@ -103,79 +64,39 @@ export function StudioRequestBuilder({
 }: Props) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const resolvedKind =
-    presetHint?.serviceKind && services.some((s) => s.kind === presetHint.serviceKind)
-      ? presetHint.serviceKind
-      : (services[0]?.kind ?? "website");
-  const initialServiceKind = resolvedKind;
-  const initialProjectType =
-    copilotSeed?.projectType ||
-    presetHint?.projectTypeLabel ||
-    filterPricedOptions(requestConfig.projectTypes, initialServiceKind)[0]?.label ||
-    "Custom digital program";
-  const initialPlatform =
-    copilotSeed?.platformPreference ||
-    filterPricedOptions(requestConfig.platformOptions, initialServiceKind)[0]?.label ||
-    "Best-fit recommendation";
-  const initialDesign =
-    copilotSeed?.designDirection ||
-    requestConfig.designOptions[0] ||
-    "Quiet luxury and high-trust";
-  const initialTimeline =
-    copilotSeed?.timeline ||
-    filterModifierOptions(requestConfig.timelineOptions, initialServiceKind)[0]?.label ||
-    "";
-  const initialUrgency =
-    copilotSeed?.urgency ||
-    filterModifierOptions(requestConfig.urgencyOptions, initialServiceKind)[0]?.label ||
-    "";
-  const initialProgrammingLanguage =
-    requestConfig.programmingLanguageOptions[0] || "HenryCo's recommendation";
-  const initialFramework =
-    copilotSeed?.frameworkPreference ||
-    filterPricedOptions(requestConfig.frameworkOptions, initialServiceKind)[0]?.label ||
-    "HenryCo's framework recommendation";
-  const initialBackend =
-    copilotSeed?.backendPreference ||
-    filterPricedOptions(requestConfig.backendOptions, initialServiceKind)[0]?.label ||
-    "HenryCo recommends the backend";
-  const initialHosting =
-    copilotSeed?.hostingPreference ||
-    requestConfig.hostingOptions[0] ||
-    "HenryCo recommends the host";
-  // Initial draft envelope — mirrors the prior useState defaults so
-  // first-paint behaviour is identical when no persisted draft exists.
-  // The hook restores any saved envelope on mount; when a fresh
-  // `copilotSeed` is delivered (the parent re-mounts this component
-  // with a new `key`), we skip restoration so the seed wins.
+  // Initial draft envelope — delegates default + co-pilot-seed derivation
+  // to the shared `request-fields` contract so the manual builder, guided
+  // interview, and chat on-ramps all start from one source of truth. The
+  // hook restores any saved envelope on mount; when a fresh `copilotSeed`
+  // is delivered (the parent re-mounts this component with a new `key`),
+  // we skip restoration so the seed wins.
   const initialDraft = useMemo<StudioBriefDraft>(
-    () => ({
-      stepIndex: Math.min(Math.max(0, initialStepIndex), 3),
-      serviceKind: initialServiceKind,
-      pathway: initialPathway ?? presetHint?.pathway ?? "custom",
-      selectedPackageId: "",
-      selectedTeamId: preferredTeamId ?? "",
-      selectedProjectType: initialProjectType,
-      selectedPlatform: initialPlatform,
-      selectedDesign: initialDesign,
-      preferredLanguage: copilotSeed?.preferredLanguage || "English",
-      selectedPages: copilotSeed?.pageRequirements ?? [],
-      selectedModules: copilotSeed?.requiredFeatures ?? [],
-      selectedAddOns: copilotSeed?.addonServices ?? [],
-      selectedTech: copilotSeed?.techPreferences ?? [],
-      selectedProgrammingLanguage: initialProgrammingLanguage,
-      selectedFramework: initialFramework,
-      selectedBackend: initialBackend,
-      selectedHosting: initialHosting,
-      businessType: copilotSeed?.businessType ?? "",
-      budgetBand: copilotSeed?.budgetBand ?? "",
-      urgency: initialUrgency,
-      timeline: initialTimeline,
-      goals: copilotSeed?.goals ?? "",
-      scopeNotes: copilotSeed?.scopeNotes ?? "",
-      inspirationSummary: "",
-      domainIntentJson: "",
-    }),
+    () => {
+      const seedInput = {
+        config: requestConfig,
+        services,
+        serviceKind: presetHint?.serviceKind,
+        preferredTeamId,
+      };
+      const base = copilotSeed
+        ? structuredToDraft(copilotSeed, seedInput)
+        : emptyStudioBriefDraft(seedInput);
+      return {
+        ...base,
+        // Step + pathway overrides — the path may have been chosen
+        // upstream (/pick → /request?path=custom, or a preset hint), so
+        // we honour the explicit initial values exactly as before.
+        stepIndex: Math.min(Math.max(0, initialStepIndex), 3),
+        pathway: initialPathway ?? presetHint?.pathway ?? "custom",
+        // Preset project-type hint — only meaningful on the non-seeded
+        // path. When a co-pilot seed is present its projectType already
+        // won inside structuredToDraft, so we leave `base` untouched.
+        selectedProjectType:
+          !copilotSeed && presetHint?.projectTypeLabel
+            ? presetHint.projectTypeLabel
+            : base.selectedProjectType,
+      };
+    },
     // The initial value is captured once on mount. Parent re-mounts
     // with a new `key` when a fresh copilot seed arrives, so this
     // closure picks up the new seed each mount. Subsequent prop
@@ -188,8 +109,9 @@ export function StudioRequestBuilder({
   // builder via a new `key`. In that case, the user explicitly asked
   // for a freshly drafted brief and any older saved draft should NOT
   // resurrect over the seed values. Skip restore on seeded mounts.
-  const draft = useFormDraft<StudioBriefDraft>("studio-brief-new", initialDraft, {
+  const draft = useFormDraft<StudioBriefDraft>(STUDIO_BRIEF_DRAFT_KEY, initialDraft, {
     skipRestore: Boolean(copilotSeed),
+    version: STUDIO_BRIEF_DRAFT_VERSION,
   });
   const {
     stepIndex,
