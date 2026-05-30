@@ -826,6 +826,32 @@ export function StudioRequestBuilder({
               teams={teams}
               selectedTeamId={selectedTeamId}
               setSelectedTeamId={setSelectedTeamId}
+              review={{
+                pathway,
+                packageName: selectedPackage?.name ?? null,
+                projectType: effectiveProjectType,
+                platform: effectivePlatform,
+                design: selectedDesign,
+                preferredLanguage,
+                pages: selectedPages,
+                modules: selectedModules,
+                addOns: selectedAddOns,
+                tech: selectedTech,
+                programmingLanguage: selectedProgrammingLanguage,
+                framework: selectedFramework,
+                backend: selectedBackend,
+                hosting: selectedHosting,
+                businessType,
+                budgetBand,
+                urgency: effectiveUrgency,
+                timeline: effectiveTimeline,
+                goals,
+                scopeNotes,
+                inspirationSummary,
+                domainIntentJson,
+                readinessScore,
+                pricing: pricingPreview,
+              }}
             />
           ) : null}
 

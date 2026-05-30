@@ -2,7 +2,6 @@ import { useId } from "react";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { StudioDomainLaunchSection } from "@/components/studio/studio-domain-launch";
 import { StudioListbox } from "@/components/studio/studio-listbox";
-import { StudioReferenceAttachments } from "@/components/studio/studio-reference-attachments";
 import type { StudioModifierOption } from "@/lib/studio/request-config";
 
 /** Fixed-price NGN input. Formats with thousands separators on blur and
@@ -188,25 +187,24 @@ export function StudioRequestCommercialStep({
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-          <StudioReferenceAttachments />
-
-          <div>
-            <label
-              htmlFor="studio-inspiration-summary"
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]"
-            >
-              Anything else we should study?
-            </label>
-            <textarea
-              id="studio-inspiration-summary"
-              name="inspirationSummary"
-              value={inspirationSummary}
-              onChange={(event) => setInspirationSummary(event.target.value)}
-              className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
-              placeholder="Tone, audience, things to avoid, brand words you love, or “make it feel like X but more premium.”"
-            />
-          </div>
+        <div className="mt-8">
+          <label
+            htmlFor="studio-inspiration-summary"
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]"
+          >
+            Anything else we should study?
+          </label>
+          <textarea
+            id="studio-inspiration-summary"
+            name="inspirationSummary"
+            value={inspirationSummary}
+            onChange={(event) => setInspirationSummary(event.target.value)}
+            className="studio-textarea mt-2 min-h-36 w-full rounded-[1.6rem] px-4 py-4"
+            placeholder="Tone, audience, things to avoid, brand words you love, or “make it feel like X but more premium.”"
+          />
+          <p className="mt-2 text-[0.72rem] leading-snug text-[var(--studio-ink-soft)]">
+            Add links and file references on the final Review step, just before you submit.
+          </p>
         </div>
       </section>
     </div>

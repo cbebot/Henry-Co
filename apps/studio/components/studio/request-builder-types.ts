@@ -1,7 +1,42 @@
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
+import type { StudioPricingSummary } from "@/lib/studio/pricing";
 
 export type StudioRequestPathway = "package" | "custom";
+
+/**
+ * A read-only restatement of everything the buyer chose, assembled by the
+ * builder from its effective values + live pricing, and handed to the Review
+ * step so the final screen can confirm the whole brief (and the exact price /
+ * deposit) before the client commits. The pricing field is the *same* object
+ * the side panel renders — one money source, no divergence.
+ */
+export type StudioBriefReviewSummary = {
+  pathway: StudioRequestPathway;
+  packageName: string | null;
+  projectType: string;
+  platform: string;
+  design: string;
+  preferredLanguage: string;
+  pages: string[];
+  modules: string[];
+  addOns: string[];
+  tech: string[];
+  programmingLanguage: string;
+  framework: string;
+  backend: string;
+  hosting: string;
+  businessType: string;
+  budgetBand: string;
+  urgency: string;
+  timeline: string;
+  goals: string;
+  scopeNotes: string;
+  inspirationSummary: string;
+  domainIntentJson: string;
+  readinessScore: number;
+  pricing: StudioPricingSummary;
+};
 
 export type RequestBuilderSelectionProps = {
   services: StudioService[];
