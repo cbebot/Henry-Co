@@ -56,68 +56,87 @@ The duplication is one route with three auth models. Fix = collapse the
 **rendering** into one shared presentational view, then route each audience to
 its own door without forcing them all through the same auth gate.
 
+### REVISED after reading the code: bridge, not merge
+
+Reading both surfaces showed they are **different subsystems**, not one view in
+two skins:
+
+| | `/project/[id]` | `/client/projects/[id]` |
+|---|---|---|
+| Loader | `getProjectWorkspace` (access-key capable) | `getClientProjectDetail` (auth-scoped) |
+| Auth | access-key OR authed OR staff | login-gated at **layout** (CHROME-01A) |
+| Money unit | major units (`formatCurrency`) | kobo (`formatKobo`) |
+| Pay route | `/pay/[paymentId]?access=` | `/client/payment/[invoiceId]` |
+| Layout | single-scroll + staff tools | tabbed portal |
+
+Merging their *rendering* would be a large, risky refactor on a live money app —
+violating `clean-works-over-bulk` and `payments-money-truth`. The owner's concrete
+pain is narrower: **post-payment authed users land on `/project` instead of the
+nice `/client` portal.** The right fix is a **smart bridge**, not a merge.
+
 ### Canonical surfaces after change
 
 | Audience | Route | Auth | Renders |
 |---|---|---|---|
-| Logged-in client | `/client/projects/[id]` | login-gated (unchanged) | premium tabbed portal |
-| No-login client (post-pay / email) | `/project/[id]?access=KEY` | access-key, no login | **same** premium view (read-only twin) |
-| Staff cockpit | `/pm/projects/[id]` **(new)** | staff role | the relocated 734-line action workspace |
+| Logged-in **owner** | `/client/projects/[id]` | login-gated (unchanged) | premium tabbed portal |
+| No-login client (post-pay / email) | `/project/[id]?access=KEY` | access-key, no login | existing rich workspace (unchanged) |
+| Authed non-owner via shared `?access=` link | `/project/[id]?access=KEY` | access-key | existing rich workspace (unchanged) |
+| Staff cockpit | `/project/[id]` | staff role | existing workspace + staff tools (unchanged) |
 
-`/project/[id]` is **not deleted**. It becomes a smart router + the no-login twin:
+`/project/[id]` gains ONE early decision at the top:
 
 ```
 /project/[id] server entry:
-  viewer = getStudioViewer()
-  if viewer.isStaff           -> redirect /pm/projects/[id]
-  if viewer.user owns lead    -> redirect /client/projects/[id]   (full chrome)
-  else if valid ?access=KEY   -> render shared read-only project view (NO login)
-  else                        -> getStudioLoginUrl(next=/client/projects/[id])
+  viewer    = getStudioViewer()
+  workspace = getProjectWorkspace({ projectId, accessKey, viewer })
+  if !workspace -> (existing login-bounce / notFound)
+  if viewer.user && !isStaff && workspace.viewerOwnsViaAuth:
+      redirect /client/projects/[id]            // authed owner -> canonical portal
+  ...render existing workspace (covers: no-login access-key, shared link, staff)
 ```
 
-### Why keep `/project` instead of one literal route (owner's option 3)
+`viewerOwnsViaAuth` is a new boolean returned by `getProjectWorkspace`, derived
+from the ownership terms the loader *already* computes (user-id / email / lead
+match) — NOT from the access-key term. This is the precise distinction that keeps
+a shared `?access=` link working for a logged-in non-owner.
 
-`/client/*` forces login at the **layout** level (CHROME-01A: never serve a
-cached unauthenticated render in the account portal — a real security boundary).
-Routing the no-login money/email links through `/client/*` would bounce a
-just-paid anonymous customer to a sign-in wall and **drop the access key**,
-violating the money-truth invariant. Keeping `/project/[id]` as the access-key
-door preserves no-login without weakening the account portal. This satisfies the
-owner's option 2 ("make it the same as /clients") — identical rendering, two doors.
+### Why this is correct for every case
 
-### Email + CTA repointing
+- **No-login + `?access=`** (post-pay, email): `viewer.user` falsy → no redirect →
+  renders in place. Money path untouched.
+- **Authed owner** (clicks pay CTA / portal / email and owns it): redirect to
+  `/client/projects/[id]`. Fixes the owner's pain.
+- **Authed non-owner via shared link**: `viewerOwnsViaAuth` false → no redirect →
+  renders access-key view. Shared-link sharing preserved.
+- **Staff**: `isStaff` true → no redirect → staff cockpit. Unaffected.
 
-| Emitter | Before | After | No-login? |
-|---|---|---|---|
-| `payment_instructions`, `payment_reminder` emails | `/pay/[id]?access=` | **unchanged** | yes |
-| pay-page "Open project workspace" CTA | `/project/[id]?access=` | `/project/[id]?access=` (now premium twin) | yes |
-| status / update emails | `/project/[id]?access=` | `/project/[id]?access=` (premium twin) | yes |
-| PM dashboard + PM list + delivery dashboard | `/project/[id]?access=` | `/pm/projects/[id]` | staff |
-| `scripts/smoke-studio.mjs:34` | `/project/[id]` | keep (validates twin) | n/a |
+### What does NOT change (bridge centralizes the decision)
+
+- Pay-page "Open project workspace" CTA stays `/project/[id]?access=` — the bridge
+  routes authed owners onward.
+- Email deep links + `store.ts` activity `actionUrl` stay `/project/[id]?access=`
+  — same bridge.
+- PM dashboard / PM list / delivery links stay `/project/[id]?access=` — staff are
+  never redirected.
+- `scripts/smoke-studio.mjs` — unchanged.
+- No staff relocation, no component extraction, no data-unit changes.
 
 ### Flagged decision (owner veto point)
 
-Keep `/project/[id]` alive as the no-login twin rather than literally deleting it,
-because deleting forces post-payment customers through a login wall. If the owner
-wants exactly one route name and accepts post-payment login friction, that's a
-follow-up requiring rework of the account-portal layout gate.
+This delivers "one canonical page for authed clients" (`/client`) while keeping
+`/project` as the no-login + staff mechanism. It does NOT literally delete
+`/project` (still load-bearing for no-login money + staff) and does NOT port the
+no-login view into the tabbed portal (would require auth-gated `getClientProjectDetail`
+to run without auth — a large, risky change). If the owner wants the no-login
+post-payment view to *also* be the tabbed portal, that's a larger follow-up.
 
 ### Implementation steps (Job A)
 
-1. Extract the client project view into a shared presentational component
-   consumed by both `/client/projects/[id]` (authed) and `/project/[id]`
-   (access-key). Reuse existing portal components (`PortalTabBar`,
-   `StudioMessageThread`, `MilestoneProgress`, `FileCard`, `ActivityFeed`,
-   `StatusBadge`, `PortalEmptyState`).
-2. Create `app/pm/projects/[projectId]/page.tsx` — relocate the staff cockpit
-   (move the `isStaff` branch + action tools from `/project/[id]`). Keep the
-   rich workspace component; gate on staff role; redirect non-staff to
-   `/client/projects/[id]`.
-3. Rewrite `app/project/[projectId]/page.tsx` as the smart router + no-login twin
-   per the pseudocode above.
-4. Repoint PM dashboard, PM list, delivery dashboard links → `/pm/projects/[id]`.
-5. Leave money emails on `/pay`. Status/update emails stay on `/project` twin.
-6. Update `scripts/smoke-studio.mjs` if needed.
+1. `lib/studio/data.ts` — extract the auth-ownership terms in `getProjectWorkspace`
+   into `ownsViaAuth` and return it as `viewerOwnsViaAuth`.
+2. `app/project/[projectId]/page.tsx` — compute `isStaff` early; after the
+   workspace null-check, redirect authed non-staff owners to
+   `/client/projects/[id]` (preserve `?tab=` if present). Render unchanged otherwise.
 
 ### Preserve
 
