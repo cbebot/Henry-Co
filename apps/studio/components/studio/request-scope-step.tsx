@@ -1,3 +1,7 @@
+"use client";
+
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   joinClassNames,
   toggleValue,
@@ -6,8 +10,10 @@ import type { RequestBuilderSelectionProps } from "@/components/studio/request-b
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import { filterPricedOptions } from "@/lib/studio/request-config";
 
-function amountLabel(amount: number) {
-  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : "Included";
+/** Price delta label. The money fragment is dynamic; the "Included" fallback
+ * is authored copy localized via the passed-in translator. */
+function amountLabel(amount: number, t: (text: string) => string) {
+  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : t("Included");
 }
 
 function ScopeSummaryHeader({
@@ -21,6 +27,8 @@ function ScopeSummaryHeader({
   total: number;
   hint?: string;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const visible = selected.slice(0, 3);
   const remaining = Math.max(0, selected.length - visible.length);
   return (
@@ -30,7 +38,7 @@ function ScopeSummaryHeader({
           {kicker}
         </div>
         <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
-          {selected.length}/{total} selected
+          {selected.length}/{total} {t("selected")}
         </div>
         {hint ? (
           <div className="text-[11px] italic text-[var(--studio-ink-soft)]">{hint}</div>
@@ -53,7 +61,7 @@ function ScopeSummaryHeader({
           ) : null}
         </div>
       ) : (
-        <div className="text-[11px] italic text-[var(--studio-ink-soft)]">None selected yet</div>
+        <div className="text-[11px] italic text-[var(--studio-ink-soft)]">{t("None selected yet")}</div>
       )}
     </div>
   );
@@ -79,6 +87,8 @@ function PricedCheckboxList({
   selected: string[];
   onToggle: (label: string) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.06)]">
       {options.map((item) => {
@@ -120,7 +130,7 @@ function PricedCheckboxList({
                         : "text-[var(--studio-ink-soft)]"
                     )}
                   >
-                    {amountLabel(item.amount)}
+                    {amountLabel(item.amount, t)}
                   </span>
                 </div>
                 <div className="mt-0.5 text-[12.5px] leading-5">
@@ -200,6 +210,8 @@ export function StudioRequestScopeStep({
   | "selectedHosting"
   | "setSelectedHosting"
 >) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const pageOptions = filterPricedOptions(requestConfig.pageOptions, serviceKind);
   const moduleOptions = filterPricedOptions(requestConfig.moduleOptions, serviceKind);
   const addOnOptions = filterPricedOptions(requestConfig.addOnOptions, serviceKind);
@@ -215,15 +227,15 @@ export function StudioRequestScopeStep({
     <div className="space-y-8">
       {pathway === "package" && selectedPackage ? (
         <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-          <div className="studio-kicker">Package context</div>
+          <div className="studio-kicker">{t("Package context")}</div>
           <div className="mt-3 rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
             <div className="text-lg font-semibold text-[var(--studio-ink)]">
               {selectedPackage.name}
             </div>
             <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-              Package mode keeps the core lane cleaner. Skip the page list — the package
-              already covers it. Tick add-ons or pin a tech stack below if it matters
-              for your team.
+              {t(
+                "Package mode keeps the core lane cleaner. Skip the page list — the package already covers it. Tick add-ons or pin a tech stack below if it matters for your team.",
+              )}
             </p>
           </div>
         </section>
@@ -232,14 +244,15 @@ export function StudioRequestScopeStep({
       {/* PAGES — only for website / ecommerce builds */}
       {pathway === "custom" && showPagesSection ? (
         <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-          <div className="studio-kicker">Pages or sections</div>
+          <div className="studio-kicker">{t("Pages or sections")}</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-            Tick the pages this site needs at launch. Each page is priced individually
-            so the proposal is line-itemised — nothing hidden.
+            {t(
+              "Tick the pages this site needs at launch. Each page is priced individually so the proposal is line-itemised — nothing hidden.",
+            )}
           </p>
           <div className="mt-5">
             <ScopeSummaryHeader
-              kicker="Pages"
+              kicker={t("Pages")}
               selected={selectedPages}
               total={pageOptions.length}
             />
@@ -258,14 +271,15 @@ export function StudioRequestScopeStep({
       {/* FEATURES — for every project type. Module list is project-aware. */}
       {moduleOptions.length > 0 ? (
         <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-          <div className="studio-kicker">Required features</div>
+          <div className="studio-kicker">{t("Required features")}</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-            What does the product need to do for users on day one? Pick what&apos;s
-            non-negotiable; we&apos;ll suggest sensible additions during proposal review.
+            {t(
+              "What does the product need to do for users on day one? Pick what's non-negotiable; we'll suggest sensible additions during proposal review.",
+            )}
           </p>
           <div className="mt-5">
             <ScopeSummaryHeader
-              kicker="Features"
+              kicker={t("Features")}
               selected={selectedModules}
               total={moduleOptions.length}
             />
@@ -283,20 +297,20 @@ export function StudioRequestScopeStep({
 
       {/* TECH STACK — single dedicated panel; no duplication. */}
       <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-        <div className="studio-kicker">Tech stack</div>
+        <div className="studio-kicker">{t("Tech stack")}</div>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Tell us your preferences. We&apos;ll honour them where it serves the project,
-          push back honestly where a different choice would serve you better. Cost
-          deltas are shown — most picks are zero-delta.
+          {t(
+            "Tell us your preferences. We'll honour them where it serves the project, push back honestly where a different choice would serve you better. Cost deltas are shown — most picks are zero-delta.",
+          )}
         </p>
 
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           <StudioListbox
             name="programmingLanguage"
-            label="Preferred programming language"
+            label={t("Preferred programming language")}
             value={selectedProgrammingLanguage}
             onChange={(next) => next && setSelectedProgrammingLanguage(next)}
-            placeholder="Choose language…"
+            placeholder={t("Choose language…")}
             required
             options={requestConfig.programmingLanguageOptions.map((item) => ({
               value: item,
@@ -305,34 +319,34 @@ export function StudioRequestScopeStep({
           />
           <StudioListbox
             name="frameworkPreference"
-            label="Frontend / app framework"
+            label={t("Frontend / app framework")}
             value={selectedFramework}
             onChange={(next) => next && setSelectedFramework(next)}
-            placeholder="Choose framework…"
+            placeholder={t("Choose framework…")}
             required
             options={frameworkOptions.map((item) => ({
               value: item.label,
-              label: `${item.label} · ${amountLabel(item.amount)}`,
+              label: `${item.label} · ${amountLabel(item.amount, t)}`,
             }))}
           />
           <StudioListbox
             name="backendPreference"
-            label="Backend / data platform"
+            label={t("Backend / data platform")}
             value={selectedBackend}
             onChange={(next) => next && setSelectedBackend(next)}
-            placeholder="Choose backend…"
+            placeholder={t("Choose backend…")}
             required
             options={backendOptions.map((item) => ({
               value: item.label,
-              label: `${item.label} · ${amountLabel(item.amount)}`,
+              label: `${item.label} · ${amountLabel(item.amount, t)}`,
             }))}
           />
           <StudioListbox
             name="hostingPreference"
-            label="Hosting / deployment"
+            label={t("Hosting / deployment")}
             value={selectedHosting}
             onChange={(next) => next && setSelectedHosting(next)}
-            placeholder="Choose host…"
+            placeholder={t("Choose host…")}
             required
             options={requestConfig.hostingOptions.map((item) => ({
               value: item,
@@ -344,10 +358,10 @@ export function StudioRequestScopeStep({
         {requestConfig.stackOptions.length > 0 ? (
           <div className="mt-7 border-t border-[var(--studio-line)] pt-5">
             <ScopeSummaryHeader
-              kicker="Stack philosophy"
+              kicker={t("Stack philosophy")}
               selected={selectedTech}
               total={requestConfig.stackOptions.length}
-              hint="Pick zero or many"
+              hint={t("Pick zero or many")}
             />
             <div className="mt-4 flex flex-wrap gap-1.5">
               {requestConfig.stackOptions.map((item) => {
@@ -382,13 +396,13 @@ export function StudioRequestScopeStep({
       {/* ADD-ONS — single dedicated section, no longer concatenated with stack. */}
       {addOnOptions.length > 0 ? (
         <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-          <div className="studio-kicker">Add-on services</div>
+          <div className="studio-kicker">{t("Add-on services")}</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-            Optional supporting work. Skip what&apos;s not needed — pricing recalculates live.
+            {t("Optional supporting work. Skip what's not needed — pricing recalculates live.")}
           </p>
           <div className="mt-5">
             <ScopeSummaryHeader
-              kicker="Add-ons"
+              kicker={t("Add-ons")}
               selected={selectedAddOns}
               total={addOnOptions.length}
             />

@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronUp, Globe, LoaderCircle, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { StudioDomainIntent } from "@/lib/studio/types";
@@ -41,7 +41,14 @@ function getPathCopy(locale: AppLocale): Record<Path, { title: string; hint: str
   };
 }
 
-export function StudioDomainLaunchSection() {
+export function StudioDomainLaunchSection({
+  onIntentChange,
+}: {
+  /** Lifts the serialized domain intent up to the form shell so it can be
+   * mirrored as a hidden input. This section unmounts before submit (it
+   * lives in the Commercial step), so without lifting, the intent drops. */
+  onIntentChange?: (intentJson: string) => void;
+} = {}) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const PATH_COPY = useMemo(() => getPathCopy(locale), [locale]);
@@ -101,6 +108,13 @@ export function StudioDomainLaunchSection() {
       })
     );
   }, [path, desired, backupDesired, lastResult]);
+
+  // Lift the serialized intent to the form shell whenever it changes. The
+  // shell's always-mounted hidden mirror is what actually posts, since this
+  // section is unmounted at submit time.
+  useEffect(() => {
+    onIntentChange?.(intentJson);
+  }, [intentJson, onIntentChange]);
 
   async function runCheck() {
     const q = desired.trim();
@@ -176,8 +190,6 @@ export function StudioDomainLaunchSection() {
 
   return (
     <div className="rounded-[2rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface)_90%,transparent)] p-6 sm:p-8">
-      <input type="hidden" name="domainIntentJson" value={intentJson} />
-
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4">
           <div className="rounded-2xl border border-[var(--studio-line)] bg-black/15 p-3 text-[var(--studio-signal)]">

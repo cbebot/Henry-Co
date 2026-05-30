@@ -1,4 +1,8 @@
+"use client";
+
 import { Layers3, Sparkles } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   joinClassNames,
 } from "@/components/studio/request-builder-data";
@@ -6,8 +10,11 @@ import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { filterPricedOptions } from "@/lib/studio/request-config";
 
-function formatAmount(amount: number) {
-  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : "Included";
+/** Price delta label for an option. The money fragment is dynamic data; the
+ * "Included" fallback is authored copy, so it is localized via the passed-in
+ * translator (module-scope functions cannot call the locale hook directly). */
+function formatAmount(amount: number, t: (text: string) => string) {
+  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : t("Included");
 }
 
 export function StudioRequestPathStep({
@@ -50,19 +57,21 @@ export function StudioRequestPathStep({
   | "preferredLanguage"
   | "setPreferredLanguage"
 >) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const projectTypeOptions = filterPricedOptions(requestConfig.projectTypes, serviceKind);
   const platformOptions = filterPricedOptions(requestConfig.platformOptions, serviceKind);
 
   return (
     <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-      <div className="studio-kicker">Buying lane</div>
+      <div className="studio-kicker">{t("Buying lane")}</div>
       {/* Two-up segmented control. Replaces the prior pair of large
        * tile-cards with a horizontal segment for fast comparison —
        * less vertical real estate, equal information weight, no
        * card stacking on narrow widths. */}
       <div
         role="radiogroup"
-        aria-label="Buying lane"
+        aria-label={t("Buying lane")}
         className="mt-5 grid grid-cols-2 gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 p-1.5"
       >
         {[
@@ -105,9 +114,9 @@ export function StudioRequestPathStep({
                   isActive ? "text-[var(--studio-signal)]" : "text-[var(--studio-ink-soft)]"
                 )}
               />
-              <span>{item.title}</span>
+              <span>{t(item.title)}</span>
               <span className="hidden text-[11px] font-normal text-[var(--studio-ink-soft)] sm:inline">
-                · {item.body}
+                · {t(item.body)}
               </span>
             </button>
           );
@@ -183,8 +192,9 @@ export function StudioRequestPathStep({
         <div className="mt-7">
           {filteredPackages.length === 0 ? (
             <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink-soft)]">
-              No fixed package is available for this service yet. Switch to the
-              custom project route.
+              {t(
+                "No fixed package is available for this service yet. Switch to the custom project route.",
+              )}
             </div>
           ) : null}
           <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10">
@@ -235,23 +245,23 @@ export function StudioRequestPathStep({
           <div>
             <div className="flex items-baseline justify-between gap-4">
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Project type or category
+                {t("Project type or category")}
               </div>
               <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
-                {projectTypeOptions.length} options
+                {projectTypeOptions.length} {t("options")}
               </div>
             </div>
             <div className="mt-3">
               <StudioListbox
                 name="projectType"
-                label="Project type or category"
+                label={t("Project type or category")}
                 value={selectedProjectType}
                 onChange={(next) => next && setSelectedProjectType(next)}
-                placeholder="Choose project type…"
+                placeholder={t("Choose project type…")}
                 required
                 options={projectTypeOptions.map((item) => ({
                   value: item.label,
-                  label: `${item.label} · ${formatAmount(item.amount)}`,
+                  label: `${item.label} · ${formatAmount(item.amount, t)}`,
                 }))}
               />
             </div>
@@ -269,23 +279,23 @@ export function StudioRequestPathStep({
           <div>
             <div className="flex items-baseline justify-between gap-4">
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Delivery platform
+                {t("Delivery platform")}
               </div>
               <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
-                {platformOptions.length} options
+                {platformOptions.length} {t("options")}
               </div>
             </div>
             <div className="mt-3">
               <StudioListbox
                 name="platformPreference"
-                label="Delivery platform"
+                label={t("Delivery platform")}
                 value={selectedPlatform}
                 onChange={(next) => next && setSelectedPlatform(next)}
-                placeholder="Choose platform…"
+                placeholder={t("Choose platform…")}
                 required
                 options={platformOptions.map((item) => ({
                   value: item.label,
-                  label: `${item.label} · ${formatAmount(item.amount)}`,
+                  label: `${item.label} · ${formatAmount(item.amount, t)}`,
                 }))}
               />
             </div>
@@ -303,15 +313,15 @@ export function StudioRequestPathStep({
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Design direction
+                {t("Design direction")}
               </div>
               <div className="mt-3">
                 <StudioListbox
                   name="designDirectionDropdown"
-                  label="Design direction"
+                  label={t("Design direction")}
                   value={selectedDesign}
                   onChange={(next) => next && setSelectedDesign(next)}
-                  placeholder="Choose design direction…"
+                  placeholder={t("Choose design direction…")}
                   required
                   options={requestConfig.designOptions.map((item) => ({
                     value: item,
@@ -322,15 +332,15 @@ export function StudioRequestPathStep({
             </div>
             <div>
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Project/content language
+                {t("Project/content language")}
               </div>
               <div className="mt-3">
                 <StudioListbox
                   name="preferredLanguageDropdown"
-                  label="Project/content language"
+                  label={t("Project/content language")}
                   value={preferredLanguage}
                   onChange={(next) => next && setPreferredLanguage(next)}
-                  placeholder="Choose language…"
+                  placeholder={t("Choose language…")}
                   required
                   options={["English", "French", "Arabic", "Portuguese"].map((item) => ({
                     value: item,

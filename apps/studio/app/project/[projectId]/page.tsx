@@ -58,6 +58,23 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
+  const isStaff = viewerHasRole(viewer, [
+    "studio_owner",
+    "sales_consultation",
+    "project_manager",
+    "developer_designer",
+    "client_success",
+    "finance",
+  ]);
+
+  // Authed owners belong on the canonical /client portal — the single
+  // client-facing project surface. Access-key visitors (no-login post-payment
+  // and shared email deep-links) and staff fall through and render the
+  // workspace here, so the no-login money path is untouched.
+  if (viewer.user && !isStaff && workspace.viewerOwnsViaAuth) {
+    redirect(`/client/projects/${projectId}`);
+  }
+
   const {
     project,
     proposal,
@@ -228,14 +245,6 @@ export default async function ProjectDetailPage({
     ),
   ]);
   const redirectPath = `/project/${project.id}?access=${project.accessKey}`;
-  const isStaff = viewerHasRole(viewer, [
-    "studio_owner",
-    "sales_consultation",
-    "project_manager",
-    "developer_designer",
-    "client_success",
-    "finance",
-  ]);
   const isPm = viewerHasRole(viewer, ["studio_owner", "project_manager"]);
   const isDelivery = viewerHasRole(viewer, ["studio_owner", "developer_designer"]);
   const unpaidPayments = payments.filter((payment) => payment.status !== "paid");

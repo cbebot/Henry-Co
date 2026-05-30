@@ -123,14 +123,16 @@ export async function getProjectWorkspace(input: {
 
   const lead = snapshot.leads.find((item) => item.id === project.leadId) ?? null;
   const hasVerifiedAccess = Boolean(direct && input.accessKey);
-  const viewerAllowed =
-    hasVerifiedAccess ||
-    isStaff(input.viewer) ||
-    Boolean(
-      (input.viewer?.user?.id && project.clientUserId === input.viewer.user.id) ||
-        matchesViewerEmail(input.viewer, project.normalizedEmail) ||
-        viewerOwnsLead(input.viewer, lead)
-    );
+  // Ownership through the viewer's own account (user id / email / lead), as
+  // distinct from access-key or staff allowance. The /project route uses this
+  // to send authed owners to the canonical /client portal while leaving
+  // shared-access-key links and staff rendering in place.
+  const ownsViaAuth = Boolean(
+    (input.viewer?.user?.id && project.clientUserId === input.viewer.user.id) ||
+      matchesViewerEmail(input.viewer, project.normalizedEmail) ||
+      viewerOwnsLead(input.viewer, lead)
+  );
+  const viewerAllowed = hasVerifiedAccess || isStaff(input.viewer) || ownsViaAuth;
 
   if (!viewerAllowed) return null;
 
@@ -139,6 +141,7 @@ export async function getProjectWorkspace(input: {
   return {
     project,
     lead,
+    viewerOwnsViaAuth: ownsViaAuth,
     proposal: snapshot.proposals.find((item) => item.id === project.proposalId) ?? null,
     brief: snapshot.briefs.find((item) => item.leadId === project.leadId) ?? null,
     customRequest:

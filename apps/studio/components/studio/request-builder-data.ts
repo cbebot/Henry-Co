@@ -11,8 +11,10 @@
  *                  backend, hosting). What you tick here lands in the
  *                  proposal as priced line-items.
  *   3. COMMERCIAL— Domain plan, budget, urgency, and supporting context.
- *   4. ACTIVATION— Team fit, contact, and submit. The brief becomes a real
- *                  Studio lead with a senior team assigned by name.
+ *   4. ACTIVATION— Review the restated brief and exact price, attach
+ *                  references, pick a team, add contact, and submit. The
+ *                  brief becomes a real Studio lead with a senior team
+ *                  assigned by name.
  *
  * Each stage is independently navigable (forward and back) and progress is
  * persisted across step changes — leave the page and the saved selections
@@ -35,13 +37,13 @@ export const requestSteps = [
     key: "commercial",
     label: "Context",
     title: "Domain, timing, budget, and anything we should study.",
-    body: "Plain language is perfect. This step includes your web-address plan and reference uploads.",
+    body: "Plain language is perfect. This step covers your web-address plan, budget, and the context that shapes your proposal.",
   },
   {
     key: "activation",
     label: "Review",
-    title: "Team fit, contact details, and submit.",
-    body: "You get a real Studio record, clear next steps, and honest payment guidance — never a silent inbox.",
+    title: "Review the brief, confirm the price, and submit.",
+    body: "See the full brief and the exact price restated, add any references, choose your team, and submit — you get a real Studio record and clear next steps, never a silent inbox.",
   },
 ] as const;
 
