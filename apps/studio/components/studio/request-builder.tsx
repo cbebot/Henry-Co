@@ -609,6 +609,36 @@ export function StudioRequestBuilder({
       <input type="hidden" name="frameworkPreference" value={selectedFramework} />
       <input type="hidden" name="backendPreference" value={selectedBackend} />
       <input type="hidden" name="hostingPreference" value={selectedHosting} />
+      {/* The step panels below are conditionally mounted — only the active
+        step is in the DOM. At submit time that step is Activation (it owns
+        the submit button), so every other step's named inputs are absent
+        from the posted FormData. The shell therefore mirrors every contract
+        field as an always-mounted hidden input; without this the user's
+        project type, scope, budget, timeline, and feature choices are
+        silently dropped, and the server re-prices the deposit from an
+        incomplete brief. Multi-value fields emit one hidden input per
+        selection so the action's getAll(...) reads the full list. */}
+      <input type="hidden" name="projectType" value={effectiveProjectType} />
+      <input type="hidden" name="platformPreference" value={effectivePlatform} />
+      <input type="hidden" name="businessType" value={businessType} />
+      <input type="hidden" name="budgetBand" value={budgetBand} />
+      <input type="hidden" name="urgency" value={effectiveUrgency} />
+      <input type="hidden" name="timeline" value={effectiveTimeline} />
+      <input type="hidden" name="goals" value={goals} />
+      <input type="hidden" name="scopeNotes" value={scopeNotes} />
+      <input type="hidden" name="inspirationSummary" value={inspirationSummary} />
+      {selectedPages.map((value) => (
+        <input key={`page-${value}`} type="hidden" name="pageRequirements" value={value} />
+      ))}
+      {selectedModules.map((value) => (
+        <input key={`feature-${value}`} type="hidden" name="requiredFeatures" value={value} />
+      ))}
+      {selectedAddOns.map((value) => (
+        <input key={`addon-${value}`} type="hidden" name="addonServices" value={value} />
+      ))}
+      {selectedTech.map((value) => (
+        <input key={`tech-${value}`} type="hidden" name="techPreferences" value={value} />
+      ))}
 
       {/* Editorial brief header — no panel chrome, magazine progress strip */}
       <section>

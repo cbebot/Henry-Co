@@ -174,6 +174,59 @@ Rebuild the visual/component layer; keep the data + action contract byte-for-byt
 `request-commercial-step`, `request-activation-step`), `request-side-panel`,
 `brief-copilot-panel`.
 
+### CRITICAL FINDING — the current form silently drops most of the brief
+
+Verified by inspection across `request-builder`, all 4 step panels,
+`useFormDraft`, and `submitStudioBriefAction`:
+
+- The builder renders ONE step at a time — `{stepIndex === N ? <Step/> : null}`
+  unmounts the other three.
+- The only submit control (`StudioSubmitButton`) lives in step 3 (Activation).
+- A React `<form action={serverAction}>` builds its `FormData` from the form
+  controls in the DOM **at submit time**. Unmounted steps' inputs are absent.
+- The form shell mirrors only **10 single-value** fields as always-present hidden
+  inputs (`preferredTeamId, serviceKind, packageIntent, packageId,
+  designDirection, preferredLanguage, programmingLanguage, frameworkPreference,
+  backendPreference, hostingPreference`).
+- `useFormDraft` persists the full envelope to localStorage but never bridges it
+  back into the form — it cannot rescue the missing fields.
+
+Therefore, submitting from step 3, these never reach `submitStudioBriefAction`:
+`projectType, platformPreference, pageRequirements, requiredFeatures,
+addonServices, techPreferences, businessType, budgetBand, urgency, timeline,
+goals, scopeNotes, inspirationSummary, referenceFiles, domainIntentJson`.
+
+The loss is **silent**: the action defaults every field
+(`String(get(x) || "")` / `|| null` / `asList → []`), so the submit still
+"succeeds" and redirects to `/pay`/`/proposals` with an near-empty lead. This is
+a money/lead-integrity bug, and it makes the rebuild a correctness fix, not only
+a reskin. (Was likely introduced when V3-01 refactored the form to a stepwise
+draft envelope.)
+
+### Submission architecture (the fix, folded into the rebuild)
+
+Premium UX and the fix are the same artifact: the final step becomes a
+**Review & Send** summary that restates every choice + the live price, rendered
+from the draft envelope — so every field is present in the DOM at submit *by
+construction*.
+
+- **Form shell (always mounted):** hidden inputs mirroring EVERY envelope field —
+  scalars as one input each, multi-values (`pageRequirements`, `requiredFeatures`,
+  `addonServices`, `techPreferences`, `referenceLinks`) as N inputs each, plus
+  `domainIntentJson`. Driven by `draft.value`, so it is complete regardless of
+  which step is visible.
+- **Visible step panels (presentational):** controlled (`value`/`onChange` →
+  envelope), with NO `name=` on fields the shell already mirrors — avoids
+  duplicate form entries (which would double-count multi-values). The shared
+  `StudioListbox`/`PricedCheckboxList` gain an optional/absent `name` =
+  "presentational mode."
+- **Review step (step 3, the submit step):** the live `<input type="file"
+  name="referenceFiles">` (files cannot be mirrored as hidden inputs) and the
+  contact fields (`customerName` required, `companyName`, `email` required,
+  `phone`, `depositNow`) as live inputs, since this step is mounted at submit.
+- Net: `FormData` at submit = full envelope (shell) + files + contact (review).
+  Nothing drops. Contract field names preserved byte-for-byte.
+
 ### Layout (no-giant-hero rule)
 
 ```
