@@ -53,6 +53,11 @@ export type RequestBuilderSelectionProps = {
   setScopeNotes: (value: string) => void;
   inspirationSummary: string;
   setInspirationSummary: (value: string) => void;
+  /** Serialized StudioDomainIntent, lifted from the domain section so the
+   * form shell can mirror it as a hidden input. The section owns the value;
+   * the builder only stores and re-emits it (see request-builder shell). */
+  domainIntentJson: string;
+  setDomainIntentJson: (value: string) => void;
   selectedTeamId: string;
   setSelectedTeamId: (value: string) => void;
 };

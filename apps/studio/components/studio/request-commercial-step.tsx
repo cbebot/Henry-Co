@@ -77,6 +77,7 @@ export function StudioRequestCommercialStep({
   setScopeNotes,
   inspirationSummary,
   setInspirationSummary,
+  setDomainIntentJson,
 }: Pick<
   RequestBuilderSelectionProps,
   | "requestConfig"
@@ -94,13 +95,14 @@ export function StudioRequestCommercialStep({
   | "setScopeNotes"
   | "inspirationSummary"
   | "setInspirationSummary"
+  | "setDomainIntentJson"
 >) {
   const urgencyOptions = requestConfig.urgencyOptions.filter((item) => item.isActive !== false);
   const timelineOptions = requestConfig.timelineOptions.filter((item) => item.isActive !== false);
 
   return (
     <div className="space-y-8">
-      <StudioDomainLaunchSection />
+      <StudioDomainLaunchSection onIntentChange={setDomainIntentJson} />
 
       <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
         <div className="studio-kicker">Commercial context</div>

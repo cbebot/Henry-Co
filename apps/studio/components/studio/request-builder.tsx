@@ -63,6 +63,7 @@ type StudioBriefDraft = {
   goals: string;
   scopeNotes: string;
   inspirationSummary: string;
+  domainIntentJson: string;
 };
 
 type Props = {
@@ -169,6 +170,7 @@ export function StudioRequestBuilder({
       goals: copilotSeed?.goals ?? "",
       scopeNotes: copilotSeed?.scopeNotes ?? "",
       inspirationSummary: "",
+      domainIntentJson: "",
     }),
     // The initial value is captured once on mount. Parent re-mounts
     // with a new `key` when a fresh copilot seed arrives, so this
@@ -210,6 +212,7 @@ export function StudioRequestBuilder({
     goals,
     scopeNotes,
     inspirationSummary,
+    domainIntentJson,
   } = draft.value;
 
   // Per-field setters update the single envelope. Each matches the
@@ -381,6 +384,13 @@ export function StudioRequestBuilder({
         prev.inspirationSummary === next
           ? prev
           : { ...prev, inspirationSummary: next },
+      ),
+    [draft],
+  );
+  const setDomainIntentJson = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.domainIntentJson === next ? prev : { ...prev, domainIntentJson: next },
       ),
     [draft],
   );
@@ -627,6 +637,10 @@ export function StudioRequestBuilder({
       <input type="hidden" name="goals" value={goals} />
       <input type="hidden" name="scopeNotes" value={scopeNotes} />
       <input type="hidden" name="inspirationSummary" value={inspirationSummary} />
+      {/* Domain intent is built inside the (unmounted-at-submit) domain
+        section; the section lifts its serialized intent up via
+        onIntentChange so this always-mounted mirror carries it. */}
+      <input type="hidden" name="domainIntentJson" value={domainIntentJson} />
       {selectedPages.map((value) => (
         <input key={`page-${value}`} type="hidden" name="pageRequirements" value={value} />
       ))}
@@ -804,6 +818,7 @@ export function StudioRequestBuilder({
               setScopeNotes={setScopeNotes}
               inspirationSummary={inspirationSummary}
               setInspirationSummary={setInspirationSummary}
+              setDomainIntentJson={setDomainIntentJson}
             />
           ) : null}
           {stepIndex === 3 ? (
