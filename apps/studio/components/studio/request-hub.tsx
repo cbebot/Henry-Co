@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   ListChecks,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { useStudioMotion } from "@/lib/studio/motion";
 
 type OnRamp = {
   href: string;
@@ -35,14 +37,14 @@ type OnRamp = {
  *   - Build it yourself  → /request/build    (manual builder)
  *
  * No giant hero (owner rejects oversized headline chrome): a compact
- * kicker + h1 sits above a responsive 3-card grid. Micro-interactions
- * (hover lift, arrow slide, underline sweep) are pure CSS — framer-motion
- * layers in at Stage 5 via useStudioMotion, consistent with how the
- * builder and side panel deferred motion.
+ * kicker + h1 sits above a responsive 3-card grid. The cards stagger in
+ * on mount via useStudioMotion (reduced-motion-gated); per-card hover
+ * affordances (lift, arrow slide, underline sweep) stay pure CSS.
  */
 export function StudioRequestHub() {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const m = useStudioMotion();
 
   const onRamps: OnRamp[] = [
     {
@@ -88,9 +90,14 @@ export function StudioRequestHub() {
 
       {/* Three on-ramps. Single column on mobile, 3-up from lg. Each card is
           one tap target wrapping its full content for screen readers. */}
-      <ul className="grid gap-4 sm:gap-5 lg:grid-cols-3">
+      <motion.ul
+        variants={m.staggerChildren}
+        initial="hidden"
+        animate="visible"
+        className="grid gap-4 sm:gap-5 lg:grid-cols-3"
+      >
         {onRamps.map((ramp) => (
-          <li key={ramp.href}>
+          <motion.li key={ramp.href} variants={m.reveal}>
             <Link
               href={ramp.href}
               className={[
@@ -132,9 +139,9 @@ export function StudioRequestHub() {
                 className="mt-auto block h-px w-0 bg-gradient-to-r from-[var(--studio-signal)] to-transparent transition-all duration-500 ease-out group-hover:w-full"
               />
             </Link>
-          </li>
+          </motion.li>
         ))}
-      </ul>
+      </motion.ul>
 
       {/* Templates escape hatch — for buyers who already know the shape. */}
       <p className="text-[13.5px] leading-7 text-[var(--studio-ink-soft)]">

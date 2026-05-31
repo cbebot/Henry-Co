@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   CircleDollarSign,
@@ -16,6 +17,7 @@ import {
   readinessBand,
   routeRecommendation,
 } from "@/components/studio/request-builder-data";
+import { useStudioMotion } from "@/lib/studio/motion";
 import type { StudioPricingSummary } from "@/lib/studio/pricing";
 
 /**
@@ -52,6 +54,7 @@ export function StudioRequestSidePanel({
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const m = useStudioMotion();
   const guidance = [
     {
       icon: ShieldCheck,
@@ -121,7 +124,15 @@ export function StudioRequestSidePanel({
               {t("Total")}
             </dt>
             <dd className="font-mono text-sm font-semibold tabular-nums text-[var(--studio-ink)]">
-              {formatNaira(pricingPreview.total)}
+              <motion.span
+                key={pricingPreview.total}
+                variants={m.pricingCountUp}
+                initial="hidden"
+                animate="visible"
+                className="inline-block"
+              >
+                {formatNaira(pricingPreview.total)}
+              </motion.span>
             </dd>
           </div>
           <div className="flex items-baseline justify-between gap-3 py-2.5">
@@ -129,7 +140,15 @@ export function StudioRequestSidePanel({
               {t("Deposit")} · {Math.round(pricingPreview.depositRate * 100)}%
             </dt>
             <dd className="font-mono text-sm font-semibold tabular-nums text-[var(--studio-signal)]">
-              {formatNaira(pricingPreview.depositAmount)}
+              <motion.span
+                key={pricingPreview.depositAmount}
+                variants={m.pricingCountUp}
+                initial="hidden"
+                animate="visible"
+                className="inline-block"
+              >
+                {formatNaira(pricingPreview.depositAmount)}
+              </motion.span>
             </dd>
           </div>
           <div className="flex items-baseline justify-between gap-3 py-2.5">

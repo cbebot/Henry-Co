@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, LoaderCircle, SlidersHorizontal } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { saveDraft, useFormDraft } from "@henryco/lifecycle/drafts";
 import { GuidedQuestionCard } from "@/components/studio/guided-interview/question-card";
 import { generateStudioBriefDraftAction } from "@/lib/studio/brief-copilot-action";
+import { useStudioMotion } from "@/lib/studio/motion";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
 import {
   GUIDED_GOAL_MIN_LENGTH,
@@ -51,6 +53,7 @@ export function GuidedInterview({
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const m = useStudioMotion();
   const router = useRouter();
 
   const answers = useFormDraft<GuidedAnswers>(GUIDED_ANSWERS_KEY, {}, {
@@ -224,7 +227,15 @@ export function GuidedInterview({
             </p>
           </div>
         ) : current ? (
-          <div ref={cardRef} tabIndex={-1} className="outline-none">
+          <motion.div
+            key={current.id}
+            ref={cardRef}
+            tabIndex={-1}
+            variants={m.reveal}
+            initial="hidden"
+            animate="visible"
+            className="outline-none"
+          >
             <GuidedQuestionCard
               question={current}
               options={options}
@@ -232,7 +243,7 @@ export function GuidedInterview({
               onChange={handleChange}
               t={t}
             />
-          </div>
+          </motion.div>
         ) : null}
 
         {!submitting ? (

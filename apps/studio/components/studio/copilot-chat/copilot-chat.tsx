@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { ArrowRight, LoaderCircle, SendHorizontal, SlidersHorizontal } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
@@ -21,6 +22,7 @@ import {
   type BriefChatMessage,
 } from "@/lib/studio/brief-chat";
 import { generateStudioBriefDraftAction } from "@/lib/studio/brief-copilot-action";
+import { useStudioMotion } from "@/lib/studio/motion";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
 import {
   STUDIO_BRIEF_DRAFT_KEY,
@@ -54,6 +56,7 @@ export function CopilotChat({
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const m = useStudioMotion();
   const router = useRouter();
 
   const transcript = useFormDraft<BriefChatMessage[]>(CHAT_TRANSCRIPT_KEY, [], {
@@ -176,9 +179,18 @@ export function CopilotChat({
           <>
             <div className="space-y-4">
               {/* Static opener — always shown above the live transcript. */}
-              <ChatMessage role="assistant" content={t(BRIEF_CHAT_OPENER)} />
+              <motion.div variants={m.messageIn} initial="hidden" animate="visible">
+                <ChatMessage role="assistant" content={t(BRIEF_CHAT_OPENER)} />
+              </motion.div>
               {messages.map((message, index) => (
-                <ChatMessage key={index} role={message.role} content={message.content} />
+                <motion.div
+                  key={index}
+                  variants={m.messageIn}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <ChatMessage role={message.role} content={message.content} />
+                </motion.div>
               ))}
               {sending ? (
                 <p className="pl-11 text-[12.5px] italic text-[var(--studio-ink-soft)]">

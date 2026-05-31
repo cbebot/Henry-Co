@@ -10,7 +10,8 @@ import type { GuidedOption, GuidedQuestion } from "@/lib/studio/guided-questions
  * `value`, translated `label`/`detail`) and reports the next answer up to the
  * controller. `single` and `multi` render as chip grids (radio / toggle
  * semantics via `aria-pressed`); `text` renders a `.studio-textarea`. Hover
- * lift + selected ring are pure CSS — framer-motion reveal lands at Stage 5.
+ * lift + selected ring are pure CSS; the card's entrance reveal is owned by
+ * the controller, which wraps it in a per-question keyed motion element.
  */
 export function GuidedQuestionCard({
   question,
