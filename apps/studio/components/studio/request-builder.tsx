@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
@@ -19,10 +19,12 @@ import {
   type StudioRequestConfig,
 } from "@/lib/studio/request-config";
 import {
+  STEP_ORDER,
   STUDIO_BRIEF_DRAFT_KEY,
   STUDIO_BRIEF_DRAFT_VERSION,
   emptyStudioBriefDraft,
   structuredToDraft,
+  validateStep,
   type StudioBriefDraft,
 } from "@/lib/studio/request-fields";
 import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
@@ -324,6 +326,9 @@ export function StudioRequestBuilder({
   // UI / animation state — not user input, not persisted.
   const [isStepTransitioning, setIsStepTransitioning] = useState(false);
   const [progressHint, setProgressHint] = useState<string | null>(null);
+  // Inline validation messages keyed by field anchor (`data-field`). Set
+  // by a blocked Continue / Submit, cleared on any step navigation.
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const topRef = useRef<HTMLDivElement | null>(null);
 
   const filteredPackages = useMemo(
@@ -495,6 +500,9 @@ export function StudioRequestBuilder({
 
   function goToStep(nextIndex: number) {
     if (nextIndex === stepIndex) return;
+    // Errors belong to the step that raised them; drop them the moment we
+    // move so a commercial error never lingers over the path step.
+    setErrors({});
     setIsStepTransitioning(true);
     setStepIndex(nextIndex);
     setProgressHint(t("Progress saved — you can leave and return any time while signed in."));
@@ -510,25 +518,112 @@ export function StudioRequestBuilder({
     }
   }
 
+  /**
+   * Scroll the first errored field into view. The FieldError components
+   * expose a `[data-field="…"]` anchor that only mounts once its message is
+   * present, so we defer the lookup to the next frame (after React flushes
+   * the error state) and pick the topmost anchor in document order.
+   */
+  const scrollToFirstError = useCallback((errs: Record<string, string>) => {
+    if (typeof window === "undefined") return;
+    const keys = Object.keys(errs);
+    if (keys.length === 0) return;
+    window.requestAnimationFrame(() => {
+      const node = keys
+        .map((key) => document.querySelector<HTMLElement>(`[data-field="${key}"]`))
+        .filter((el): el is HTMLElement => el !== null)
+        .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+      if (!node) return;
+      const targetTop = node.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: Math.max(targetTop, 0), behavior: "smooth" });
+    });
+  }, []);
+
+  /**
+   * Per-step gate for Continue. Validates only the current draft-backed
+   * step (path / scope / commercial); on failure it surfaces the inline
+   * errors and scrolls to the first one instead of advancing.
+   */
+  function handleContinue() {
+    const v = validateStep(STEP_ORDER[stepIndex], draft.value);
+    if (!v.ok) {
+      setErrors(v.errors);
+      scrollToFirstError(v.errors);
+      return;
+    }
+    setErrors({});
+    goToStep(Math.min(stepIndex + 1, requestSteps.length - 1));
+  }
+
+  /**
+   * Full-draft gate for Submit. The activation step owns the submit button
+   * but every prior step is unmounted, so a user who jumped to Review via
+   * the step rail could otherwise post an incomplete brief through the
+   * hidden-input mirror — re-pricing the deposit from defaults. We re-run
+   * every draft-backed step here; the first failure cancels the server
+   * action (`preventDefault`), jumps back to that step, and surfaces the
+   * errors. Activation's name / email / phone are natively gated by their
+   * HTML5 `required` + `type="email"` inputs, which fire before this.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // The brief may only be posted from the final (activation) step, which
+    // owns the real submit button and the required name / email / phone
+    // inputs. A stray Enter in the budget text field on an earlier step
+    // would otherwise implicitly submit a contact-less brief — swallow it.
+    if (stepIndex !== STEP_ORDER.length - 1) {
+      event.preventDefault();
+      return;
+    }
+    for (let i = 0; i < STEP_ORDER.length - 1; i++) {
+      const v = validateStep(STEP_ORDER[i], draft.value);
+      if (!v.ok) {
+        event.preventDefault();
+        // goToStep clears errors on navigation, so set them AFTER it —
+        // both batch into one render and the later write must win.
+        goToStep(i);
+        setErrors(v.errors);
+        scrollToFirstError(v.errors);
+        return;
+      }
+    }
+    // V3-01: the server action redirects to /pay, /project, or /proposals
+    // on success; there is no JS success callback, so we clear the draft
+    // synchronously now. The localStorage write completes before the
+    // request begins. If the action throws server-side validation the user
+    // returns without the draft, but the gating above catches every
+    // client-side failure case before the submit fires.
+    draft.clear();
+  }
+
+  /**
+   * On the custom lane, the first package that fits the current service
+   * kind is offered in the side panel as a calm "lock this in instead"
+   * shortcut. Null on the package lane (the lane toggle is canonical there)
+   * or when no package matches the current service kind.
+   */
+  const recommendedPackage =
+    pathway === "custom" && filteredPackages[0]
+      ? { name: filteredPackages[0].name, price: filteredPackages[0].price }
+      : null;
+  const lockInRecommendedPackage = useCallback(() => {
+    const pkg = filteredPackages[0];
+    if (!pkg) return;
+    setPathway("package");
+    setSelectedPackageId(pkg.id);
+  }, [filteredPackages, setPathway, setSelectedPackageId]);
+
   const totalSteps = requestSteps.length;
   const progressPct = Math.round(((stepIndex + 1) / totalSteps) * 100);
   const currentStep = requestSteps[stepIndex];
+  // Drives Continue's muted look + aria-disabled. The button stays
+  // clickable so a blocked click still teaches *why* via inline errors.
+  const currentStepValid = validateStep(STEP_ORDER[stepIndex], draft.value).ok;
 
   return (
     <form
       action={submitStudioBriefAction}
       className="space-y-10"
-      onSubmit={() => {
-        // V3-01: server action redirects to /pay, /project, or
-        // /proposals on success. No JS-level success callback exists,
-        // so we clear the draft synchronously at submit time — the
-        // localStorage write completes before the request begins.
-        // If the action throws server-side validation, the user
-        // would land back on this page without the saved draft;
-        // client-side gating in the step controls catches almost
-        // every failure case before the submit fires.
-        draft.clear();
-      }}
+      onSubmit={handleSubmit}
     >
       <div ref={topRef} />
       <input type="hidden" name="preferredTeamId" value={selectedTeamId} />
@@ -701,6 +796,7 @@ export function StudioRequestBuilder({
               setSelectedDesign={setSelectedDesign}
               preferredLanguage={preferredLanguage}
               setPreferredLanguage={setPreferredLanguage}
+              errors={errors}
             />
           ) : null}
           {stepIndex === 1 ? (
@@ -725,6 +821,7 @@ export function StudioRequestBuilder({
               setSelectedBackend={setSelectedBackend}
               selectedHosting={selectedHosting}
               setSelectedHosting={setSelectedHosting}
+              errors={errors}
             />
           ) : null}
           {stepIndex === 2 ? (
@@ -745,6 +842,7 @@ export function StudioRequestBuilder({
               inspirationSummary={inspirationSummary}
               setInspirationSummary={setInspirationSummary}
               setDomainIntentJson={setDomainIntentJson}
+              errors={errors}
             />
           ) : null}
           {stepIndex === 3 ? (
@@ -799,9 +897,11 @@ export function StudioRequestBuilder({
             {stepIndex < requestSteps.length - 1 ? (
               <button
                 type="button"
-                onClick={() => goToStep(Math.min(stepIndex + 1, requestSteps.length - 1))}
-                disabled={pathway === "package" && filteredPackages.length === 0}
-                className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={handleContinue}
+                aria-disabled={!currentStepValid}
+                className={`studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${
+                  currentStepValid ? "" : "opacity-60"
+                }`}
               >
                 {isStepTransitioning ? (
                   <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -818,6 +918,8 @@ export function StudioRequestBuilder({
           readinessScore={readinessScore}
           pricingPreview={pricingPreview}
           recommendedTeamName={recommendedTeam?.name || t("HenryCo team recommendation")}
+          recommendedPackage={recommendedPackage}
+          onLockPackage={lockInRecommendedPackage}
         />
       </div>
     </form>

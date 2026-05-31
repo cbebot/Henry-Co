@@ -34,11 +34,21 @@ export function StudioRequestSidePanel({
   readinessScore,
   pricingPreview,
   recommendedTeamName,
+  recommendedPackage,
+  onLockPackage,
 }: {
   pathway: "package" | "custom";
   readinessScore: number;
   pricingPreview: StudioPricingSummary;
   recommendedTeamName: string;
+  /** A fixed package available for the current build, surfaced only on the
+   * custom lane as a calm "you could lock this in instead" shortcut. Null
+   * when none applies (or already on the package lane). Purely additive —
+   * the Path-step Buying-lane toggle stays the canonical lane chooser. */
+  recommendedPackage?: { name: string; price: number } | null;
+  /** Flips the builder to the package lane + selects the recommended
+   * package. Defined alongside `recommendedPackage`. */
+  onLockPackage?: () => void;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -167,6 +177,26 @@ export function StudioRequestSidePanel({
               ))}
             </ul>
           </details>
+        ) : null}
+
+        {/* Package shortcut — surfaced only on the custom lane when the current
+            build maps to a fixed package. A calm switch, not a competing CTA. */}
+        {recommendedPackage && onLockPackage ? (
+          <button
+            type="button"
+            onClick={onLockPackage}
+            className="group mt-4 flex w-full items-center justify-between gap-3 rounded-[1.1rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-left transition hover:border-[var(--studio-signal)]/45 hover:bg-[rgba(151,244,243,0.05)]"
+          >
+            <span className="min-w-0">
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">
+                {t("Matches a fixed package")}
+              </span>
+              <span className="mt-1 block truncate text-[13px] font-semibold text-[var(--studio-ink)]">
+                {t("Lock in")} {recommendedPackage.name} · {formatNaira(recommendedPackage.price)}
+              </span>
+            </span>
+            <ArrowRight className="h-4 w-4 shrink-0 text-[var(--studio-signal)] transition group-hover:translate-x-0.5" />
+          </button>
         ) : null}
 
         {/* Next-step recommendation — one line, not a heading + body block. */}

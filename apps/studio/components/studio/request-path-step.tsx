@@ -6,6 +6,7 @@ import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   joinClassNames,
 } from "@/components/studio/request-builder-data";
+import { FieldError } from "@/components/studio/request-field-error";
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { filterPricedOptions } from "@/lib/studio/request-config";
@@ -36,6 +37,7 @@ export function StudioRequestPathStep({
   setSelectedDesign,
   preferredLanguage,
   setPreferredLanguage,
+  errors,
 }: Pick<
   RequestBuilderSelectionProps,
   | "services"
@@ -56,7 +58,7 @@ export function StudioRequestPathStep({
   | "setSelectedDesign"
   | "preferredLanguage"
   | "setPreferredLanguage"
->) {
+> & { errors?: Record<string, string> }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const projectTypeOptions = filterPricedOptions(requestConfig.projectTypes, serviceKind);
@@ -239,6 +241,7 @@ export function StudioRequestPathStep({
               );
             })}
           </ul>
+          <FieldError field="selectedPackageId" message={errors?.selectedPackageId} />
         </div>
       ) : (
         <div className="mt-8 space-y-7">

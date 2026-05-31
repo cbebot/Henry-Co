@@ -6,6 +6,7 @@ import {
   joinClassNames,
   toggleValue,
 } from "@/components/studio/request-builder-data";
+import { FieldError } from "@/components/studio/request-field-error";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import { filterPricedOptions } from "@/lib/studio/request-config";
@@ -187,6 +188,7 @@ export function StudioRequestScopeStep({
   setSelectedBackend,
   selectedHosting,
   setSelectedHosting,
+  errors,
 }: Pick<
   RequestBuilderSelectionProps,
   | "requestConfig"
@@ -209,7 +211,7 @@ export function StudioRequestScopeStep({
   | "setSelectedBackend"
   | "selectedHosting"
   | "setSelectedHosting"
->) {
+> & { errors?: Record<string, string> }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const pageOptions = filterPricedOptions(requestConfig.pageOptions, serviceKind);
@@ -225,6 +227,8 @@ export function StudioRequestScopeStep({
 
   return (
     <div className="space-y-8">
+      <FieldError field="scope" message={errors?.scope} />
+
       {pathway === "package" && selectedPackage ? (
         <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
           <div className="studio-kicker">{t("Package context")}</div>
@@ -317,30 +321,34 @@ export function StudioRequestScopeStep({
               label: item,
             }))}
           />
-          <StudioListbox
-            name="frameworkPreference"
-            label={t("Frontend / app framework")}
-            value={selectedFramework}
-            onChange={(next) => next && setSelectedFramework(next)}
-            placeholder={t("Choose framework…")}
-            required
-            options={frameworkOptions.map((item) => ({
-              value: item.label,
-              label: `${item.label} · ${amountLabel(item.amount, t)}`,
-            }))}
-          />
-          <StudioListbox
-            name="backendPreference"
-            label={t("Backend / data platform")}
-            value={selectedBackend}
-            onChange={(next) => next && setSelectedBackend(next)}
-            placeholder={t("Choose backend…")}
-            required
-            options={backendOptions.map((item) => ({
-              value: item.label,
-              label: `${item.label} · ${amountLabel(item.amount, t)}`,
-            }))}
-          />
+          {frameworkOptions.length > 0 ? (
+            <StudioListbox
+              name="frameworkPreference"
+              label={t("Frontend / app framework")}
+              value={selectedFramework}
+              onChange={(next) => next && setSelectedFramework(next)}
+              placeholder={t("Choose framework…")}
+              required
+              options={frameworkOptions.map((item) => ({
+                value: item.label,
+                label: `${item.label} · ${amountLabel(item.amount, t)}`,
+              }))}
+            />
+          ) : null}
+          {backendOptions.length > 0 ? (
+            <StudioListbox
+              name="backendPreference"
+              label={t("Backend / data platform")}
+              value={selectedBackend}
+              onChange={(next) => next && setSelectedBackend(next)}
+              placeholder={t("Choose backend…")}
+              required
+              options={backendOptions.map((item) => ({
+                value: item.label,
+                label: `${item.label} · ${amountLabel(item.amount, t)}`,
+              }))}
+            />
+          ) : null}
           <StudioListbox
             name="hostingPreference"
             label={t("Hosting / deployment")}
