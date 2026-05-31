@@ -15,6 +15,9 @@ export type HubHomeCopy = {
     overview: string;
     engines: string;
     oneStandard: string;
+    skipToContent: string;
+    menu: string;
+    closeMenu: string;
   };
   companyPages: {
     about: string;
@@ -226,6 +229,9 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     overview: "Overview",
     engines: "Engines",
     oneStandard: "One standard",
+    skipToContent: "Skip to content",
+    menu: "Menu",
+    closeMenu: "Close menu",
   },
   companyPages: {
     about: "About Henry & Co.",
@@ -514,6 +520,9 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     overview: "Aperçu",
     engines: "Moteurs",
     oneStandard: "Un seul standard",
+    skipToContent: "Aller au contenu",
+    menu: "Menu",
+    closeMenu: "Fermer le menu",
   },
   companyPages: {
     about: "À propos de Henry & Co.",
