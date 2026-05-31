@@ -75,7 +75,7 @@ export function HomeStandard({
         {heroWelcome ? (
           <motion.p
             variants={m.reveal}
-            className="mb-7 inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-white/45"
+            className="mb-7 inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-white/50"
           >
             <span aria-hidden className="inline-block h-1.5 w-1.5 rotate-45 bg-[color:var(--accent)]" />
             {heroWelcome}
@@ -109,7 +109,7 @@ export function HomeStandard({
 
         {hasRail ? (
           <motion.div variants={m.reveal} className="mt-16 border-t border-white/10 pt-8">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
               {copy.standard.proofRailLabel}
             </p>
 
@@ -121,7 +121,7 @@ export function HomeStandard({
                     variants={m.countUp}
                     className="flex flex-col-reverse gap-1"
                   >
-                    <dt className="text-[11px] uppercase tracking-[0.2em] text-white/45">
+                    <dt className="text-[11px] uppercase tracking-[0.2em] text-white/50">
                       {cell.label}
                     </dt>
                     <dd
@@ -145,7 +145,7 @@ export function HomeStandard({
                     >
                       {lm.metric}
                     </span>
-                    <span className="text-xs text-white/40">{lm.name}</span>
+                    <span className="text-xs text-white/50">{lm.name}</span>
                   </li>
                 ))}
               </ul>

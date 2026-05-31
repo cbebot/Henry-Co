@@ -44,7 +44,7 @@ export function HomeFaq({ copy, faqs }: HomeFaqProps) {
         viewport={{ once: true, margin: "-12% 0px -10% 0px" }}
       >
         <motion.header variants={m.reveal} className="max-w-3xl">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
             {copy.faq.eyebrow}
           </p>
           <h2

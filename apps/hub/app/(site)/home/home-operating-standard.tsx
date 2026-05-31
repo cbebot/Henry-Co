@@ -33,7 +33,7 @@ export function HomeOperatingStandard({ copy }: HomeOperatingStandardProps) {
       >
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
           <motion.div variants={m.reveal} className="lg:sticky lg:top-28 lg:self-start">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
               {os.kicker}
             </p>
             <h2

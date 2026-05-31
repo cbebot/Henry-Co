@@ -88,7 +88,7 @@ export function HomeFooter({
             aria-label={copy.footer.exploreDivisions}
             className="border-t border-white/10 py-12"
           >
-            <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+            <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
               {copy.footer.exploreDivisions}
             </h2>
             <ul className="mt-6 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -105,7 +105,7 @@ export function HomeFooter({
                       {division.name}
                     </span>
                     {division.tagline ? (
-                      <span className="min-w-0 flex-1 truncate text-sm text-white/40 transition-colors group-hover:text-white/60">
+                      <span className="min-w-0 flex-1 truncate text-sm text-white/50 transition-colors group-hover:text-white/60">
                         {division.tagline}
                       </span>
                     ) : (
@@ -137,7 +137,7 @@ export function HomeFooter({
         {/* BAND 4 — baseline: copyright + the maker's mark */}
         <motion.div
           variants={motionV.reveal}
-          className="flex flex-col gap-4 border-t border-white/10 py-8 text-sm text-white/40 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-4 border-t border-white/10 py-8 text-sm text-white/50 sm:flex-row sm:items-center sm:justify-between"
         >
           <p>{`© ${year} ${brandTitle}. ${copy.footer.copyrightAllRightsReserved}`}</p>
           <p className="flex items-center gap-2">
@@ -162,7 +162,7 @@ function FooterLinkGroup({
 }) {
   return (
     <nav aria-label={label} className="flex flex-col gap-3">
-      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
         {label}
       </span>
       <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">

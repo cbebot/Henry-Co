@@ -21,9 +21,12 @@ import { HenryCoLogo } from "@henryco/brand";
 // rest of the page.
 const EASE_OUT: Transition["ease"] = [0.22, 1, 0.36, 1];
 
-// The in-page section anchors the scroll-spy watches. Stable module constant so
-// the IntersectionObserver effect never re-subscribes on re-render.
-const SPY_IDS = ["standard", "engines", "standard-why"] as const;
+// The in-page section anchors the scroll-spy watches — every editorial section,
+// in document order. Sections without a matching nav link (e.g. "proof") are
+// still observed so the active state clears cleanly there instead of freezing
+// on the previous link. Stable module constant so the IntersectionObserver
+// effect never re-subscribes on re-render.
+const SPY_IDS = ["standard", "engines", "standard-why", "proof", "questions"] as const;
 
 export type HomeAccountChip = {
   user: PublicAccountUser | null;
@@ -91,7 +94,7 @@ function HomeWordmark({
         >
           {brandTitle}
         </span>
-        <span className="block text-[10px] uppercase tracking-[0.3em] text-white/45">
+        <span className="block text-[10px] uppercase tracking-[0.3em] text-white/50">
           {brandSub}
         </span>
       </span>
@@ -172,7 +175,7 @@ function MobileSheet({
         className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-white/10 bg-[#0B1020] shadow-[0_40px_140px_rgba(0,0,0,0.55)]"
       >
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/45">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/50">
             {copy.nav.menu}
           </span>
           <button
@@ -262,8 +265,8 @@ export function HomeHeader({
   });
 
   // Scroll-spy: highlight the nav link for whichever section dominates the
-  // viewport. Re-runs only when section nodes mount (they exist as skeleton
-  // slots in Stage 1, then fill with real content later).
+  // viewport. Subscribes once on mount; every SPY_IDS section is a real,
+  // always-present landmark, so the observer set is stable.
   useEffect(() => {
     const elements = SPY_IDS.map((id) => document.getElementById(id)).filter(
       (el): el is HTMLElement => Boolean(el),
@@ -307,6 +310,7 @@ export function HomeHeader({
     { kind: "spy", id: "standard", label: copy.nav.overview },
     { kind: "spy", id: "engines", label: copy.nav.engines },
     { kind: "spy", id: "standard-why", label: copy.nav.oneStandard },
+    { kind: "spy", id: "questions", label: copy.nav.faq },
     { kind: "route", href: "/about", label: copy.nav.about },
     { kind: "route", href: "/contact", label: copy.nav.contact },
   ];
