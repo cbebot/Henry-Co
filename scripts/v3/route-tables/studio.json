@@ -6,6 +6,14 @@
       "api": false
     },
     {
+      "route": "/.well-known/apple-app-site-association",
+      "api": true
+    },
+    {
+      "route": "/.well-known/assetlinks.json",
+      "api": true
+    },
+    {
       "route": "/about",
       "api": false
     },
@@ -239,6 +247,18 @@
     },
     {
       "route": "/request",
+      "api": false
+    },
+    {
+      "route": "/request/build",
+      "api": false
+    },
+    {
+      "route": "/request/copilot",
+      "api": false
+    },
+    {
+      "route": "/request/guided",
       "api": false
     },
     {

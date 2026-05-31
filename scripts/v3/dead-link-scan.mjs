@@ -182,6 +182,28 @@ const HARD_SKIP_DIRS = new Set([
   "__fixtures__",
 ]);
 
+// Inside a Next.js `app/` tree, build-output directory names (build, dist, out,
+// coverage) are legitimate route segments — e.g. `/request/build`, an insurance
+// `/coverage` page. Next emits build output to `.next` at the app root, never
+// inside `app/`, so skipping those names while DISCOVERING routes hides real
+// routes and makes every link to them look DEAD. The route-table walk therefore
+// uses this narrower set; only the catalog walk (which scans apps + packages
+// from the repo root, where `dist`/`build`/`out` ARE compiled output) keeps the
+// full HARD_SKIP_DIRS.
+const ROUTE_TREE_SKIP_DIRS = new Set([
+  "node_modules",
+  ".next",
+  ".turbo",
+  ".vercel",
+  ".codex-temp",
+  ".worktree",
+  ".claude",
+  ".git",
+  "__tests__",
+  "__mocks__",
+  "__fixtures__",
+]);
+
 // search-ui is owner-reserved (memory: feedback_dashboard_search_engine_no_touch).
 const OWNER_RESERVED_PREFIXES = [["packages", "search-ui"].join(sep)];
 
@@ -204,7 +226,12 @@ function ensureDir(dir) {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
 
-function walk(dirAbs, relSoFar, files, { onlyRouteFiles = false } = {}) {
+function walk(
+  dirAbs,
+  relSoFar,
+  files,
+  { onlyRouteFiles = false, skipDirs = HARD_SKIP_DIRS } = {},
+) {
   let entries;
   try {
     entries = readdirSync(dirAbs);
@@ -212,7 +239,7 @@ function walk(dirAbs, relSoFar, files, { onlyRouteFiles = false } = {}) {
     return;
   }
   for (const name of entries) {
-    if (HARD_SKIP_DIRS.has(name)) continue;
+    if (skipDirs.has(name)) continue;
     const childAbs = join(dirAbs, name);
     const childRel = relSoFar ? `${relSoFar}${sep}${name}` : name;
     if (isOwnerReserved(childRel)) continue;
@@ -223,7 +250,7 @@ function walk(dirAbs, relSoFar, files, { onlyRouteFiles = false } = {}) {
       continue;
     }
     if (st.isDirectory()) {
-      walk(childAbs, childRel, files, { onlyRouteFiles });
+      walk(childAbs, childRel, files, { onlyRouteFiles, skipDirs });
       continue;
     }
     const ext = name.slice(name.lastIndexOf("."));
@@ -279,7 +306,7 @@ function buildRouteTable(app) {
     return { app, routes: [], note: "no app/ dir" };
   }
   const files = [];
-  walk(appAbs, "", files, { onlyRouteFiles: true });
+  walk(appAbs, "", files, { onlyRouteFiles: true, skipDirs: ROUTE_TREE_SKIP_DIRS });
   for (const f of files) {
     const relDir = dirname(f.rel); // segments below app/
     const segments = relDir === "." ? [] : toPosix(relDir).split("/");
