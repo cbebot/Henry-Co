@@ -5,6 +5,7 @@ import type { DivisionRow } from "../lib/divisions";
 import type { DivisionLiveStat } from "../lib/division-stats";
 import { HomeHeader, HomeSkipLink } from "./home/home-chrome";
 import { HomeStandard } from "./home/home-standard";
+import { HomeIndex } from "./home/home-index";
 import { HomeFooter } from "./home/home-footer";
 
 /**
@@ -86,7 +87,11 @@ export default function HubHomeClient({
           heroWelcome={heroWelcome ?? null}
           accent={accent}
         />
-        <section id="engines" className="min-h-[70vh] scroll-mt-24" />
+        <HomeIndex
+          copy={copy}
+          divisions={divisions}
+          divisionStats={divisionStats ?? {}}
+        />
         <section id="standard-why" className="min-h-[70vh] scroll-mt-24" />
         <section id="proof" className="min-h-[70vh] scroll-mt-24" />
         <section id="questions" className="min-h-[70vh] scroll-mt-24" />
