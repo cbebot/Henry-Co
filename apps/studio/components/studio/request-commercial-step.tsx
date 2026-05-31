@@ -4,6 +4,7 @@ import { useId } from "react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
+import { FieldError } from "@/components/studio/request-field-error";
 import { StudioDomainLaunchSection } from "@/components/studio/studio-domain-launch";
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { StudioModifierOption } from "@/lib/studio/request-config";
@@ -14,9 +15,11 @@ import type { StudioModifierOption } from "@/lib/studio/request-config";
 function StudioBudgetInput({
   value,
   onChange,
+  error,
 }: {
   value: string;
   onChange: (v: string) => void;
+  error?: string;
 }) {
   const id = useId();
   const locale = useHenryCoLocale();
@@ -41,6 +44,7 @@ function StudioBudgetInput({
         inputMode="numeric"
         autoComplete="off"
         required
+        aria-invalid={error ? true : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onChange(format(e.target.value))}
@@ -54,6 +58,7 @@ function StudioBudgetInput({
       >
         {t("Fixed price. Locked at proposal acceptance — no surprise overages.")}
       </span>
+      <FieldError field="budgetBand" message={error} />
     </div>
   );
 }
@@ -83,6 +88,7 @@ export function StudioRequestCommercialStep({
   inspirationSummary,
   setInspirationSummary,
   setDomainIntentJson,
+  errors,
 }: Pick<
   RequestBuilderSelectionProps,
   | "requestConfig"
@@ -101,7 +107,7 @@ export function StudioRequestCommercialStep({
   | "inspirationSummary"
   | "setInspirationSummary"
   | "setDomainIntentJson"
->) {
+> & { errors?: Record<string, string> }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const urgencyOptions = requestConfig.urgencyOptions.filter((item) => item.isActive !== false);
@@ -143,7 +149,7 @@ export function StudioRequestCommercialStep({
             placeholder={t("Select business type")}
             options={requestConfig.businessOptions.map((item) => ({ value: item, label: item }))}
           />
-          <StudioBudgetInput value={budgetBand} onChange={setBudgetBand} />
+          <StudioBudgetInput value={budgetBand} onChange={setBudgetBand} error={errors?.budgetBand} />
           <StudioListbox
             name="urgency"
             label={t("Urgency")}
@@ -173,11 +179,13 @@ export function StudioRequestCommercialStep({
               id="studio-goals"
               name="goals"
               required
+              aria-invalid={errors?.goals ? true : undefined}
               value={goals}
               onChange={(event) => setGoals(event.target.value)}
               className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
               placeholder={t("e.g. More qualified leads, calmer operations, clearer client onboarding…")}
             />
+            <FieldError field="goals" message={errors?.goals} />
           </div>
           <div>
             <label htmlFor="studio-scope-notes" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
@@ -187,11 +195,13 @@ export function StudioRequestCommercialStep({
               id="studio-scope-notes"
               name="scopeNotes"
               required
+              aria-invalid={errors?.scopeNotes ? true : undefined}
               value={scopeNotes}
               onChange={(event) => setScopeNotes(event.target.value)}
               className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
               placeholder={t("Pages, features, integrations, languages, admin tools—bullet points are fine.")}
             />
+            <FieldError field="scopeNotes" message={errors?.scopeNotes} />
           </div>
         </div>
 
