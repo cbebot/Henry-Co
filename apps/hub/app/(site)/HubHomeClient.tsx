@@ -7,6 +7,7 @@ import { HomeHeader, HomeSkipLink } from "./home/home-chrome";
 import { HomeStandard } from "./home/home-standard";
 import { HomeIndex } from "./home/home-index";
 import { HomeOperatingStandard } from "./home/home-operating-standard";
+import { HomeProof } from "./home/home-proof";
 import { HomeFooter } from "./home/home-footer";
 
 /**
@@ -94,7 +95,7 @@ export default function HubHomeClient({
           divisionStats={divisionStats ?? {}}
         />
         <HomeOperatingStandard copy={copy} />
-        <section id="proof" className="min-h-[70vh] scroll-mt-24" />
+        <HomeProof copy={copy} divisions={divisions} divisionStats={divisionStats ?? {}} />
         <section id="questions" className="min-h-[70vh] scroll-mt-24" />
       </main>
 
