@@ -6,6 +6,7 @@ import type { DivisionLiveStat } from "../lib/division-stats";
 import { HomeHeader, HomeSkipLink } from "./home/home-chrome";
 import { HomeStandard } from "./home/home-standard";
 import { HomeIndex } from "./home/home-index";
+import { HomeOperatingStandard } from "./home/home-operating-standard";
 import { HomeFooter } from "./home/home-footer";
 
 /**
@@ -92,7 +93,7 @@ export default function HubHomeClient({
           divisions={divisions}
           divisionStats={divisionStats ?? {}}
         />
-        <section id="standard-why" className="min-h-[70vh] scroll-mt-24" />
+        <HomeOperatingStandard copy={copy} />
         <section id="proof" className="min-h-[70vh] scroll-mt-24" />
         <section id="questions" className="min-h-[70vh] scroll-mt-24" />
       </main>
