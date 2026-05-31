@@ -43,7 +43,7 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
         viewport={{ once: true, margin: "-12% 0px -10% 0px" }}
       >
         <motion.header variants={m.reveal} className="max-w-3xl">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
             {copy.index.kicker}
           </p>
           <h2
@@ -70,7 +70,7 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
             ))}
           </motion.ul>
         ) : (
-          <motion.p variants={m.reveal} className="mt-12 text-sm text-white/45">
+          <motion.p variants={m.reveal} className="mt-12 text-sm text-white/50">
             {copy.index.empty}
           </motion.p>
         )}

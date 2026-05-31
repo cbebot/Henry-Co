@@ -86,7 +86,7 @@ export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) 
               {division.name}
             </span>
             {category ? (
-              <span className="text-[11px] uppercase tracking-[0.22em] text-white/40">
+              <span className="text-[11px] uppercase tracking-[0.22em] text-white/50">
                 {category}
               </span>
             ) : null}
