@@ -8,6 +8,7 @@ import { HomeStandard } from "./home/home-standard";
 import { HomeIndex } from "./home/home-index";
 import { HomeOperatingStandard } from "./home/home-operating-standard";
 import { HomeProof } from "./home/home-proof";
+import { HomeFaq } from "./home/home-faq";
 import { HomeFooter } from "./home/home-footer";
 
 /**
@@ -29,6 +30,7 @@ export default function HubHomeClient({
   brandLogoUrl,
   brandFooterBlurb,
   initialDivisions,
+  initialFaqs,
   divisionStats,
   copy,
   locale,
@@ -79,8 +81,6 @@ export default function HubHomeClient({
       />
 
       <main id="henryco-main" tabIndex={-1}>
-        {/* Editorial sections land here, stage by stage. Empty bordered blocks
-            for now — sized so anchor links and scroll-spy resolve. */}
         <HomeStandard
           copy={copy}
           locale={locale}
@@ -96,7 +96,7 @@ export default function HubHomeClient({
         />
         <HomeOperatingStandard copy={copy} />
         <HomeProof copy={copy} divisions={divisions} divisionStats={divisionStats ?? {}} />
-        <section id="questions" className="min-h-[70vh] scroll-mt-24" />
+        <HomeFaq copy={copy} faqs={initialFaqs ?? []} />
       </main>
 
       <HomeFooter
