@@ -12,6 +12,9 @@ export type HubHomeCopy = {
     faq: string;
     about: string;
     contact: string;
+    overview: string;
+    engines: string;
+    oneStandard: string;
   };
   companyPages: {
     about: string;
@@ -188,6 +191,28 @@ export type HubHomeCopy = {
       other: string;
     };
   };
+  standard: {
+    statement: string;
+    sub: string;
+    ctaPrimary: string;
+    proofRailLabel: string;
+  };
+  index: {
+    kicker: string;
+    lead: string;
+    ariaRowSuffix: string;
+  };
+  operatingStandard: {
+    kicker: string;
+    lead: string;
+    body: string;
+    principles: { title: string; body: string }[];
+  };
+  proof: {
+    kicker: string;
+    lead: string;
+    makersMark: string;
+  };
 };
 
 const HUB_HOME_COPY_EN: HubHomeCopy = {
@@ -198,6 +223,9 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     faq: "FAQ",
     about: "About",
     contact: "Contact",
+    overview: "Overview",
+    engines: "Engines",
+    oneStandard: "One standard",
   },
   companyPages: {
     about: "About Henry & Co.",
@@ -438,6 +466,41 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
       other: "Something else",
     },
   },
+  standard: {
+    statement: "One standard, held across every engine we run.",
+    sub: "Henry & Co. is one operating standard expressed through many divisions — the same calm, the same rigor, whichever door you enter.",
+    ctaPrimary: "See the engines",
+    proofRailLabel: "Live across the group",
+  },
+  index: {
+    kicker: "The index of engines",
+    lead: "Each engine runs a different business on the same standard. Open any one to step inside.",
+    ariaRowSuffix: ". Open division.",
+  },
+  operatingStandard: {
+    kicker: "The operating standard",
+    lead: "Different businesses, run the same way.",
+    body: "Whichever division you enter, the standard holds: the same clarity, the same honest delivery, the same calm surface that respects your time. We build the software in-house, so the experience never fragments at the seams between one business and the next.",
+    principles: [
+      {
+        title: "One surface",
+        body: "Every division shares the same interface language, so moving between them costs you nothing to relearn.",
+      },
+      {
+        title: "Honest by default",
+        body: "Numbers are real or they are not shown. We never inflate proof to look larger than we are.",
+      },
+      {
+        title: "Built in-house",
+        body: "The platform behind every engine is made by HenryCo Studio — one team, one standard, end to end.",
+      },
+    ],
+  },
+  proof: {
+    kicker: "Proof, and who makes it",
+    lead: "The proof is simple: the numbers above are real, and the work is ours.",
+    makersMark: "Built in-house by HenryCo Studio",
+  },
 };
 
 const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
@@ -448,6 +511,9 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     faq: "FAQ",
     about: "À propos",
     contact: "Contact",
+    overview: "Aperçu",
+    engines: "Moteurs",
+    oneStandard: "Un seul standard",
   },
   companyPages: {
     about: "À propos de Henry & Co.",
@@ -683,6 +749,41 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
       complaint: "Réclamation ou préoccupation",
       other: "Autre",
     },
+  },
+  standard: {
+    statement: "Un seul standard, tenu dans chaque moteur que nous exploitons.",
+    sub: "Henry & Co. est un seul standard opérationnel exprimé à travers de nombreuses divisions — le même calme, la même rigueur, quelle que soit la porte que vous franchissez.",
+    ctaPrimary: "Voir les moteurs",
+    proofRailLabel: "En direct dans tout le groupe",
+  },
+  index: {
+    kicker: "L’index des moteurs",
+    lead: "Chaque moteur exploite une activité différente selon le même standard. Ouvrez-en un pour entrer.",
+    ariaRowSuffix: ". Ouvrir la division.",
+  },
+  operatingStandard: {
+    kicker: "Le standard opérationnel",
+    lead: "Des activités différentes, menées de la même manière.",
+    body: "Quelle que soit la division que vous franchissez, le standard tient : la même clarté, la même livraison honnête, la même surface calme qui respecte votre temps. Nous concevons le logiciel en interne, afin que l’expérience ne se fragmente jamais aux jointures entre une activité et la suivante.",
+    principles: [
+      {
+        title: "Une seule surface",
+        body: "Chaque division partage le même langage d’interface ; passer de l’une à l’autre ne demande rien à réapprendre.",
+      },
+      {
+        title: "Honnête par défaut",
+        body: "Les chiffres sont réels ou ne sont pas affichés. Nous ne gonflons jamais les preuves pour paraître plus grands que nous ne le sommes.",
+      },
+      {
+        title: "Conçu en interne",
+        body: "La plateforme derrière chaque moteur est réalisée par HenryCo Studio — une équipe, un standard, de bout en bout.",
+      },
+    ],
+  },
+  proof: {
+    kicker: "La preuve, et qui la réalise",
+    lead: "La preuve est simple : les chiffres ci-dessus sont réels, et le travail est le nôtre.",
+    makersMark: "Conçu en interne par HenryCo Studio",
   },
 };
 
