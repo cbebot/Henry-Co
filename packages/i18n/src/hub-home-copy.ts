@@ -204,6 +204,7 @@ export type HubHomeCopy = {
     kicker: string;
     lead: string;
     ariaRowSuffix: string;
+    empty: string;
   };
   operatingStandard: {
     kicker: string;
@@ -482,6 +483,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     kicker: "The index of engines",
     lead: "Each engine runs a different business on the same standard. Open any one to step inside.",
     ariaRowSuffix: ". Open division.",
+    empty: "The engine directory is loading.",
   },
   operatingStandard: {
     kicker: "The operating standard",
