@@ -4,6 +4,7 @@ import type { PublicAccountUser } from "@henryco/ui";
 import type { DivisionRow } from "../lib/divisions";
 import type { DivisionLiveStat } from "../lib/division-stats";
 import { HomeHeader, HomeSkipLink } from "./home/home-chrome";
+import { HomeStandard } from "./home/home-standard";
 import { HomeFooter } from "./home/home-footer";
 
 /**
@@ -25,8 +26,11 @@ export default function HubHomeClient({
   brandLogoUrl,
   brandFooterBlurb,
   initialDivisions,
+  divisionStats,
   copy,
+  locale,
   accountChip,
+  heroWelcome,
 }: {
   // 14-prop contract — mirrors app/(site)/page.tsx; do not change shape.
   brandTitle?: string | null;
@@ -51,9 +55,8 @@ export default function HubHomeClient({
   heroWelcome?: string | null;
 }) {
   const brandTitleSafe = brandTitle?.trim() || "Henry & Co.";
-  const rootStyle = {
-    "--accent": brandAccent?.trim() || "#C9A227",
-  } as CSSProperties;
+  const accent = brandAccent?.trim() || "#C9A227";
+  const rootStyle = { "--accent": accent } as CSSProperties;
   const divisions = initialDivisions ?? [];
 
   return (
@@ -75,7 +78,14 @@ export default function HubHomeClient({
       <main id="henryco-main" tabIndex={-1}>
         {/* Editorial sections land here, stage by stage. Empty bordered blocks
             for now — sized so anchor links and scroll-spy resolve. */}
-        <section id="standard" className="min-h-[70vh] scroll-mt-24" />
+        <HomeStandard
+          copy={copy}
+          locale={locale}
+          divisions={divisions}
+          divisionStats={divisionStats ?? {}}
+          heroWelcome={heroWelcome ?? null}
+          accent={accent}
+        />
         <section id="engines" className="min-h-[70vh] scroll-mt-24" />
         <section id="standard-why" className="min-h-[70vh] scroll-mt-24" />
         <section id="proof" className="min-h-[70vh] scroll-mt-24" />
