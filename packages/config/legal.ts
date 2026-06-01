@@ -269,7 +269,7 @@ export const INTERNATIONAL_AUTHORITIES = [
 
 export const LEGAL = {
   entity: {
-    name: "[OWNER-TO-CONFIRM: registered name per CAC]",
+    name: COMPANY.group.legalName,
     tradingName: COMPANY.group.name,
     rcNumber: "[OWNER-TO-CONFIRM: CAC RC number]",
     registeredOffice: {

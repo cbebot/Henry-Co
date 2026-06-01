@@ -203,8 +203,8 @@ export function LogisticsB2BStatementDocument({
 
       <LegalFooter
         lines={[
-          "This statement summarises shipment activity booked through your HenryCo B2B account during the period above. Amounts are gross of any negotiated rebate, which is settled separately on the agreed cadence.",
-          "Discrepancies must be raised within the dispute window stated in your service agreement; we cannot re-bill outside that window.",
+          "This statement summarises shipment activity booked through your Henry & Co. B2B account during the period above. Amounts are gross of any negotiated rebate, which is settled separately on the agreed cadence.",
+          "Discrepancies must be raised within the dispute window stated in your service agreement; Henry Holdings Limited cannot re-bill outside that window.",
         ]}
       />
     </BrandedDocument>

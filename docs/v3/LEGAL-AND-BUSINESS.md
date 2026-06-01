@@ -50,7 +50,7 @@ This is the list of things owner+lawyer+accountant work on in parallel with engi
 
 **Blocks:** V3-14, V3-15, V3-16, V3-19, V3-22, V3-65, V3-66, V3-93.
 
-**Current state:** Nigeria entity assumed (owner-confirmed; Naira-native operations exist). International entities not yet established.
+**Current state:** Nigeria registered entity is **Henry Holdings Limited**. CAC name availability has been confirmed and the registration filing is in process as of 2026-06-01; use this legal entity on payment, invoice, receipt, KYB, KYC, privacy, terms, tax, and provider-onboarding surfaces. International entities are not yet established.
 
 **Recommended path:**
 - Nigeria: already in place; verify CAC registration current.

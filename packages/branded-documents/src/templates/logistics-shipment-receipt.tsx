@@ -292,7 +292,7 @@ export function LogisticsShipmentReceiptDocument({
 
       <LegalFooter
         lines={[
-          "HenryCo Logistics is the operator of record for this shipment. Insurance, claim windows, and lost-package liability are governed by the HenryCo Logistics service agreement.",
+          "Henry Holdings Limited, through HenryCo Logistics, is the operator of record for this shipment. Insurance, claim windows, and lost-package liability are governed by the HenryCo Logistics service agreement.",
           "If a discrepancy exists between this receipt and the live shipment record, contact logistics support within 7 days for the fastest resolution path.",
         ]}
       />

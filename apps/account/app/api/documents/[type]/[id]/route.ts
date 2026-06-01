@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 import {
   InvoiceDocument,
   KycSummaryDocument,
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
           address: null,
         },
         issuer: {
-          name: `Henry & Co. — ${asString(invoice.division) || "Group"}`,
+          name: COMPANY.group.legalName,
           addressLines: ["Plot 14B, Admiralty Way", "Lekki Phase 1, Lagos"],
           rcNumber: null,
           vatNumber: null,

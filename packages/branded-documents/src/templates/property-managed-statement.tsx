@@ -198,8 +198,8 @@ export function PropertyManagedStatementDocument({
   ];
 
   const legalLines = [
-    "This statement reflects rent collected and operating expenses applied to the managed listing above during the period. Amounts are gross of withholding tax; HenryCo remits the net pass-through on the cadence agreed in your management instrument.",
-    "Any discrepancy must be raised in writing within the dispute window stated in your management instrument; HenryCo cannot re-bill or re-collect outside that window.",
+    "This statement reflects rent collected and operating expenses applied to the managed listing above during the period. Amounts are gross of withholding tax; Henry Holdings Limited remits the net pass-through on the cadence agreed in your management instrument.",
+    "Any discrepancy must be raised in writing within the dispute window stated in your management instrument; Henry Holdings Limited cannot re-bill or re-collect outside that window.",
     ...(notes ?? []),
   ];
 

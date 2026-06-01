@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { COMPANY } from "@henryco/config";
 import { cn } from "@henryco/ui/cn";
 import { formatPaymentReceiptDate } from "./format";
 import type { PaymentRecordView, PaymentSurfaceRecord, PaymentSurfaceTheme } from "./types";
@@ -14,6 +15,7 @@ export interface PaymentReceiptProps {
 
 const DEFAULT_RECEIPT =
   "Confirmed on {date}.{proof} Your record advances and the next step appears in the parent workspace.";
+const RECEIPT_COPYRIGHT_YEAR = 2026;
 
 function applyTemplate(template: string, vars: Record<string, string>) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? "");
@@ -26,6 +28,7 @@ function applyTemplate(template: string, vars: Record<string, string>) {
  */
 export function PaymentReceipt({ payment, record, theme, receiptText }: PaymentReceiptProps) {
   const date = formatPaymentReceiptDate(payment.updatedAt);
+  const legalEntity = COMPANY.group.legalName;
   const proofClause = payment.proofName ? ` Proof on file: ${payment.proofName}.` : "";
   const body = applyTemplate(receiptText ?? DEFAULT_RECEIPT, { date, proof: proofClause });
   const cta = record.primaryCta ?? record.back;
@@ -62,6 +65,17 @@ export function PaymentReceipt({ payment, record, theme, receiptText }: PaymentR
         {cta.label}
         <ArrowRight className="h-4 w-4" />
       </Link>
+      <div
+        className={cn(
+          "mt-5 border-t pt-4 text-[11px] leading-5",
+          "border-[color:var(--payment-line,rgba(255,255,255,0.18))]",
+          "text-[color:var(--payment-soft,rgba(255,255,255,0.58))]",
+          theme?.softTextClassName,
+        )}
+      >
+        <div className="font-semibold text-[color:var(--payment-accent,#97f4f3)]">{legalEntity}</div>
+        <div>{`© ${RECEIPT_COPYRIGHT_YEAR} ${legalEntity}`}</div>
+      </div>
     </section>
   );
 }

@@ -94,7 +94,7 @@ export default function StudioPoliciesPage() {
             Bank transfer to the verified company account.
           </h3>
           <p className="mt-2 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-            Always to <strong>{`Henry & Co. Group Ltd.`}</strong> If anyone, internal or external,
+            Always to <strong>{`Henry Holdings Limited`}</strong> If anyone, internal or external,
             asks you to pay anywhere else, treat it as fraud and contact finance.
           </p>
         </div>

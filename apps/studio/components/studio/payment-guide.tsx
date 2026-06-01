@@ -1,4 +1,5 @@
 import { Mail, ShieldCheck, Smartphone } from "lucide-react";
+import { COMPANY } from "@henryco/config";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { formatCurrency } from "@/lib/env";
 import { StudioCopyButton } from "@/components/studio/copy-button";
@@ -48,6 +49,7 @@ export function StudioPaymentGuide({
 }) {
   const whatsappHref = supportWhatsappHref(supportWhatsApp);
   const formattedAmount = formatCurrency(amount, currency);
+  const legalEntity = COMPANY.group.legalName;
 
   return (
     <section className="space-y-5">
@@ -84,7 +86,7 @@ export function StudioPaymentGuide({
           Verified company payee
         </div>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Transfer only to the HenryCo company account shown below. Each detail has a copy
+          Transfer only to the {legalEntity} company account shown below. Each detail has a copy
           button so nothing has to be retyped.
         </p>
         <dl className="mt-4 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">

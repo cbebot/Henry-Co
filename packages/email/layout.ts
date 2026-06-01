@@ -22,7 +22,7 @@
  * brand strap above and below their own hero blocks (V2-EMAIL-BRAND-01).
  */
 
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 
 import type { EmailPurpose } from "./types";
 
@@ -57,18 +57,18 @@ export const HENRYCO_EMAIL_TOKENS = {
 } as const;
 
 const PURPOSE_KICKER: Record<EmailPurpose, string> = {
-  auth: "HenryCo Accounts",
-  support: "HenryCo Support",
-  newsletter: "HenryCo Editorial",
-  care: "HenryCo Care",
-  studio: "HenryCo Studio",
-  marketplace: "HenryCo Marketplace",
-  jobs: "HenryCo Jobs",
-  learn: "HenryCo Learn",
-  property: "HenryCo Property",
-  logistics: "HenryCo Logistics",
-  security: "HenryCo Security",
-  generic: "HenryCo",
+  auth: "Henry & Co. Accounts",
+  support: "Henry & Co. Support",
+  newsletter: "Henry & Co. Editorial",
+  care: "Henry & Co. Care",
+  studio: "Henry & Co. Studio",
+  marketplace: "Henry & Co. Marketplace",
+  jobs: "Henry & Co. Jobs",
+  learn: "Henry & Co. Learn",
+  property: "Henry & Co. Property",
+  logistics: "Henry & Co. Logistics",
+  security: "Henry & Co. Security",
+  generic: "Henry & Co.",
 };
 
 /**
@@ -314,7 +314,7 @@ function renderBrandMark(palette: ResolvedPalette): string {
               </td>
               <td style="padding:0 0 0 14px; vertical-align:middle;">
                 <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:21px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
-                <div style="margin:4px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9.5px; font-weight:700; letter-spacing:0.32em; text-transform:uppercase; color:${palette.accent};">Group</div>
+                <div style="margin:4px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9.5px; font-weight:700; letter-spacing:0.32em; text-transform:uppercase; color:${palette.accent};">Platform</div>
               </td>
             </tr>
           </table>
@@ -326,7 +326,7 @@ function renderBrandMark(palette: ResolvedPalette): string {
 /**
  * Standalone brand header partial. Custom division templates compose
  * this above their existing hero sections so every email leads with
- * the same Henry & Co. group identity. Returns email-safe table-based
+ * the same Henry & Co. brand identity. Returns email-safe table-based
  * markup with inline styles — usable in any of the per-division
  * templates without further hardening.
  *
@@ -357,7 +357,7 @@ export function renderHenryCoEmailHeader(
               </td>
               <td style="padding:0 0 0 12px; vertical-align:middle;">
                 <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
-                <div style="margin:3px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9px; font-weight:700; letter-spacing:0.30em; text-transform:uppercase; color:${palette.accent};">Group</div>
+                <div style="margin:3px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9px; font-weight:700; letter-spacing:0.30em; text-transform:uppercase; color:${palette.accent};">Platform</div>
               </td>
             </tr>
           </table>
@@ -383,13 +383,14 @@ export type HenryCoEmailFooterOptions = {
 /**
  * Standalone brand footer partial. Custom division templates compose
  * this below their existing body / signature so every email closes with
- * the same Henry & Co. legal entity, address, and support contact.
+ * the same legal entity, address, and support contact.
  * Email-safe table-based markup with inline styles.
  */
 export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): string {
   const t = HENRYCO_EMAIL_TOKENS;
   const palette = paletteFor(opts.purpose || "generic");
   const eyebrow = opts.purpose ? PURPOSE_KICKER[opts.purpose] : PURPOSE_KICKER.generic;
+  const legalEntity = COMPANY.group.legalName;
   const resolvedSupport = opts.supportEmail || BRAND_EMAILS.support;
   const supportLink = `<a href="mailto:${escapeHtml(resolvedSupport)}" style="color:${palette.accent}; text-decoration:none;">${escapeHtml(resolvedSupport)}</a>`;
   const unsubscribeBlock = opts.unsubscribeUrl
@@ -400,7 +401,7 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
     : "";
   const reason =
     opts.reasonLine ||
-    "This is a HenryCo transactional message. You received it because of an action on your HenryCo account.";
+    "This is a Henry & Co. transactional message. You received it because of an action on your Henry & Co. account.";
 
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.outerBg};">
@@ -411,13 +412,13 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
             ${escapeHtml(reason)}
           </p>
           <p style="margin:10px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
-            Henry &amp; Co. Group &middot; Lagos, Nigeria
+            ${escapeHtml(legalEntity)} &middot; Lagos, Nigeria
           </p>
           <p style="margin:6px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
             Need help? ${supportLink}${unsubscribeBlock}${preferencesBlock}
           </p>
           <p style="margin:14px 0 0 0; font-family:${t.bodyFont}; font-size:11px; line-height:1.7; color:${t.footerText};">
-            &copy; ${new Date().getFullYear()} Henry &amp; Co. Group. All rights reserved.
+            &copy; 2026 ${escapeHtml(legalEntity)}. All rights reserved.
           </p>
         </td>
       </tr>

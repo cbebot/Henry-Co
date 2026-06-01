@@ -114,8 +114,8 @@ export function KycSummaryDocument({ user, status, submittedAt, reviewedAt, revi
 
       <LegalFooter
         lines={[
-          "HenryCo retains identity documents only as long as required by Nigerian law and applicable KYC obligations. This summary is your audit-trail copy and does not include the document images themselves.",
-          "If you need to update an ID, do so from your HenryCo account verification page; the original record will then move to historical state and a new entry will replace it in this view.",
+          "Henry Holdings Limited retains identity documents only as long as required by Nigerian law and applicable KYC obligations. This summary is your audit-trail copy and does not include the document images themselves.",
+          "If you need to update an ID, do so from your Henry & Co. account verification page; the original record will then move to historical state and a new entry will replace it in this view.",
         ]}
       />
     </BrandedDocument>

@@ -9,6 +9,9 @@
     "./adapter": "./src/adapter.ts",
     "./format": "./src/format.ts"
   },
+  "dependencies": {
+    "@henryco/config": "workspace:^"
+  },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
   },

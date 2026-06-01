@@ -258,9 +258,9 @@ export function VendorTaxDocumentDocument({
 
       <LegalFooter
         lines={[
-          `This document is an informational summary of marketplace earnings for fiscal year ${fiscalYear}. HenryCo does not file taxes on a vendor's behalf and makes no warranty as to suitability for any specific jurisdiction's return.`,
+          `This document is an informational summary of marketplace earnings for fiscal year ${fiscalYear}. Henry Holdings Limited does not file taxes on a vendor's behalf and makes no warranty as to suitability for any specific jurisdiction's return.`,
           "Cross-check this summary against your monthly payout statements. Discrepancies must be raised through the vendor workspace dispute channel before filing.",
-          "Where required by your jurisdiction, HenryCo will file information returns (1099-K-equivalent) with the relevant authority. A copy is retained with your vendor record.",
+          "Where required by your jurisdiction, Henry Holdings Limited will file information returns (1099-K-equivalent) with the relevant authority. A copy is retained with your vendor record.",
         ]}
       />
     </BrandedDocument>

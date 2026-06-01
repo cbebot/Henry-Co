@@ -113,7 +113,7 @@ export function TransactionHistoryDocument({
     <BrandedDocument
       metadata={{
         title: `Transaction history · ${user.name ?? user.email ?? user.id}`,
-        author: "Henry & Co.",
+        author: "Henry Holdings Limited",
         subject: "Transaction history",
         keywords: ["transaction", "history", "henryco", "statement"],
       }}
@@ -125,7 +125,7 @@ export function TransactionHistoryDocument({
           { label: "Issued", value: formatDateTime(generatedAt) },
           { label: "Account", value: user.id.slice(0, 8) + "…" },
         ],
-        divisionLabel: titleCase(division ?? "Group"),
+        divisionLabel: titleCase(division ?? "Platform"),
       }}
       division={division}
     >
@@ -162,8 +162,8 @@ export function TransactionHistoryDocument({
 
       <LegalFooter
         lines={[
-          "This statement is a record of activity surfaced from the HenryCo unified ledger. Where a division marks a transaction pending or under review, the canonical settlement remains with that division until the status here updates.",
-          "If a row looks unfamiliar, contact HenryCo support before disputing with your bank — most queries resolve faster through the originating division.",
+          "This statement is a record of activity surfaced from Henry Holdings Limited's unified ledger. Where a division marks a transaction pending or under review, the canonical settlement remains with that division until the status here updates.",
+          "If a row looks unfamiliar, contact Henry & Co. support before disputing with your bank — most queries resolve faster through the originating division.",
         ]}
       />
     </BrandedDocument>

@@ -218,7 +218,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     emptyBody:
       "Publish leadership profiles from the owner dashboard to present ownership, management, and trusted company representatives in a polished public format.",
     sharedSectionDescription:
-      "Profiles in this section reinforce the people, stewardship, and operational accountability behind the Henry & Co. group.",
+      "Profiles in this section reinforce the people, stewardship, and operational accountability behind Henry & Co.",
     headerEyebrow: "Leadership board",
     headerTitle: "Leadership and stewardship",
     headerBody:
@@ -228,7 +228,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     metricManagement: "Management",
     spotlightEyebrow: "Spotlight profile",
     spotlightBioFallback:
-      "This leadership profile reflects the individuals responsible for direction, governance, and premium execution across the Henry & Co. group.",
+      "This leadership profile reflects the individuals responsible for direction, governance, and premium execution across Henry & Co.",
     sectionOwnershipTitle: "Ownership",
     sectionOwnershipEyebrow: "Company leadership",
     sectionManagementTitle: "Management",

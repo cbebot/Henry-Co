@@ -160,7 +160,7 @@ export default function LogisticsShell({
                 href={getHubUrl("/")}
                 className="text-white/75 transition hover:text-white"
               >
-                {t("HenryCo group")}
+                {t("Henry & Co.")}
               </a>
               <a
                 href={getHubUrl("/preferences")}
