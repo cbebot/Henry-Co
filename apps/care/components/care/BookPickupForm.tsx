@@ -583,7 +583,7 @@ export default function BookPickupForm({
               <Package2 className="h-5 w-5 text-[color:var(--accent)]" />
             </div>
             {mode === "garment" ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                 <Check className="h-3.5 w-3.5" />
                 {t("Selected")}
               </span>
@@ -615,7 +615,7 @@ export default function BookPickupForm({
               <Sparkles className="h-5 w-5 text-[color:var(--accent)]" />
             </div>
             {mode === "service" ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                 <Check className="h-3.5 w-3.5" />
                 {t("Selected")}
               </span>
@@ -972,7 +972,7 @@ export default function BookPickupForm({
                           </div>
 
                           {selected ? (
-                            <span className="rounded-full border border-emerald-300/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                            <span className="rounded-full border border-[color:var(--accent)]/30 bg-[color:var(--accent)]/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                               {t("In manifest")}
                             </span>
                           ) : null}
@@ -1220,7 +1220,7 @@ export default function BookPickupForm({
                         <Icon className="h-5 w-5 text-[color:var(--accent)]" />
                       </div>
                       {active ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                           <Check className="h-3.5 w-3.5" />
                           {t("Selected")}
                         </span>
@@ -1294,7 +1294,7 @@ export default function BookPickupForm({
                             </span>
                           ) : null}
                           {active ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                               <Check className="h-3 w-3" />
                               {t("Selected")}
                             </span>
@@ -1623,7 +1623,7 @@ export default function BookPickupForm({
                                 {item.label}
                               </div>
                               {active ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                                   <Check className="h-3 w-3" />
                                   {t("Added")}
                                 </span>
@@ -1762,7 +1762,7 @@ export default function BookPickupForm({
                   {t("Book first")}
                 </div>
                 {paymentPlan === "book_first" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                     <Check className="h-3 w-3" />
                     {t("Selected")}
                   </span>
@@ -1795,7 +1795,7 @@ export default function BookPickupForm({
                   {t("Pay now")}
                 </div>
                 {paymentPlan === "pay_now" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                     <Check className="h-3 w-3" />
                     {t("Selected")}
                   </span>
@@ -1937,7 +1937,7 @@ function ServiceTypeCard({
           {item.pricing_model === "commercial" ? t("Commercial") : t("Property based")}
         </div>
         {active ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--accent)]/12 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
             <CheckIcon /> {t("Selected")}
           </span>
         ) : null}
