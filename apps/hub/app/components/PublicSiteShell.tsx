@@ -44,7 +44,7 @@ function BrandLogo({
   return (
     <div
       className={[
-        "grid place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/5",
+        "grid place-items-center overflow-hidden rounded-2xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)]",
         wrapperClassName,
       ]
         .filter(Boolean)
@@ -78,6 +78,17 @@ function BrandLogo({
   );
 }
 
+/**
+ * PublicSiteShell — the hub's public chrome.
+ *
+ * The homepage (`/`) renders its own bespoke header/footer, so the shell renders its
+ * children alone there. Every OTHER public route renders inside this shell's header +
+ * footer. V3-PUBLIC-DESIGN-01 moved that chrome from a permanently-dark `--site-*`
+ * treatment onto the theme-aware `--home-*` public design system (warm paper ⇄
+ * near-black) and enabled the theme toggle, so the non-home routes now match the
+ * homepage and follow system/light/dark instead of being locked dark. Hub-local — the
+ * other 9 division shells are untouched (they migrate in Phase 2).
+ */
 export default function PublicSiteShell({
   initialSettings,
   accountChip,
@@ -108,7 +119,7 @@ export default function PublicSiteShell({
   const hubNav = useMemo(() => getSiteNavigationConfig("hub"), []);
 
   return (
-    <PublicShellLayout className="bg-[var(--site-bg,#050816)] text-[var(--site-text,#ffffff)]">
+    <PublicShellLayout className="bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]">
       <div
         style={{ ["--accent" as string]: settings.brand_accent } as CSSProperties}
       >
@@ -140,13 +151,13 @@ export default function PublicSiteShell({
         actions={
           <HenryCoSearchBreadcrumb
             href="/search"
-            className="hidden lg:inline-flex border-white/12 bg-white/5 text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
+            className="hidden lg:inline-flex border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink-70)] hover:bg-[color:var(--home-surface-07)]"
           />
         }
         accountMenu={
           accountChip ? (
             <PublicAccountChip
-              {...HenryCoPublicAccountPresets.onDarkMarketing}
+              {...HenryCoPublicAccountPresets.standard}
               user={accountChip.user}
               loginHref={accountChip.loginHref}
               signupHref={accountChip.signupHref}
@@ -163,34 +174,34 @@ export default function PublicSiteShell({
           ) : null
         }
         accountMenuFirst
-        showThemeToggle={false}
-        headerClassName="z-40 border-white/10 bg-[var(--site-header-bg,rgba(5,8,22,0.84))] text-[var(--site-text,#ffffff)] backdrop-blur-2xl"
+        showThemeToggle
+        headerClassName="z-40 border-[color:var(--home-line-12)] bg-[color:var(--home-glass-strong)] text-[color:var(--home-ink)] backdrop-blur-2xl"
         maxWidth="max-w-7xl"
         toolbarClassName="px-4 py-4 sm:px-6 lg:px-8"
         mobileMenuContainerClassName="px-4 py-4 sm:px-6 lg:px-8"
-        menuButtonClassName="border-white/12 bg-white/5 text-white hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
-        mobileDrawerClassName="border-white/10 bg-black/20"
+        menuButtonClassName="border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:bg-[color:var(--home-surface-07)]"
+        mobileDrawerClassName="border-[color:var(--home-line)] bg-[color:var(--home-surface-04)]"
         getNavItemClassName={(_item, active, placement) =>
           placement === "bar"
             ? [
-                "text-sm font-medium text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-white",
-                active ? "text-white" : "",
+                "text-sm font-medium text-[color:var(--home-ink-60)] transition hover:text-[color:var(--home-ink)]",
+                active ? "text-[color:var(--home-ink)]" : "",
               ]
                 .filter(Boolean)
                 .join(" ")
-            : "rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm font-medium text-[var(--site-text-soft,rgba(255,255,255,0.92))]"
+            : "rounded-2xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-medium text-[color:var(--home-ink-70)]"
         }
-        auxLinkClassName="rounded-xl border border-white/12 bg-white/5 px-3.5 py-2 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
-        primaryCtaClassName="inline-flex items-center gap-2 rounded-xl border-0 bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black hover:opacity-90"
+        auxLinkClassName="rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 py-2 text-sm text-[color:var(--home-ink-70)] hover:bg-[color:var(--home-surface-07)]"
+        primaryCtaClassName="inline-flex items-center gap-2 rounded-full border-0 bg-[color:var(--home-accent)] px-4 py-2.5 text-sm font-semibold text-[color:var(--home-accent-ink)] hover:bg-[color:var(--home-accent-strong)]"
         navClassName="hidden shrink-0 items-center gap-6 lg:flex"
       />
 
       <main id="henryco-main" tabIndex={-1}>{children}</main>
 
-      <footer className="mt-20 border-t border-white/10 bg-[var(--site-footer-bg,rgba(0,0,0,0.22))]">
+      <footer className="mt-20 border-t border-[color:var(--home-line)] bg-[color:var(--home-canvas-deep)]">
         <div
           aria-hidden
-          className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-[color:var(--accent,#C9A227)]/40 to-transparent"
+          className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-[color:var(--home-accent)] to-transparent opacity-40"
         />
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:px-8">
           <div className="space-y-5">
@@ -203,35 +214,38 @@ export default function PublicSiteShell({
                 imageClassName="max-h-7 max-w-7 p-1"
               />
               <div>
-                <div className="text-sm font-semibold tracking-[0.18em] text-[var(--site-text,#ffffff)]">
+                <div
+                  className="text-sm font-semibold tracking-[0.18em] text-[color:var(--home-ink)]"
+                  style={{ fontFamily: "var(--home-font-display)" }}
+                >
                   {settings.brand_title}
                 </div>
-                <div className="text-[11px] uppercase tracking-[0.28em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
+                <div className="home-eyebrow text-[color:var(--home-ink-50)]">
                   {settings.brand_subtitle}
                 </div>
               </div>
             </div>
 
-            <p className="max-w-md text-sm leading-7 text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
+            <p className="max-w-md text-sm leading-7 text-[color:var(--home-ink-65)]">
               {settings.footer_blurb || settings.brand_description}
             </p>
 
-            <div className="space-y-1.5 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
+            <div className="space-y-1.5 text-sm text-[color:var(--home-ink-65)]">
               {settings.support_email ? (
                 <a
                   href={`mailto:${settings.support_email}`}
-                  className="inline-flex items-center gap-2 font-medium text-[var(--site-text,#ffffff)] transition hover:text-white"
+                  className="inline-flex items-center gap-2 font-medium text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)]"
                 >
-                  <Mail className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  <Mail className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
                   {settings.support_email}
                 </a>
               ) : null}
               {settings.support_phone ? (
                 <a
                   href={`tel:${settings.support_phone}`}
-                  className="inline-flex items-center gap-2 transition hover:text-white"
+                  className="inline-flex items-center gap-2 transition hover:text-[color:var(--home-ink)]"
                 >
-                  <Phone className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  <Phone className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
                   {settings.support_phone}
                 </a>
               ) : null}
@@ -239,31 +253,29 @@ export default function PublicSiteShell({
           </div>
 
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              {copy.colCompany}
-            </div>
+            <div className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.colCompany}</div>
             <div className="mt-4 grid gap-3">
               <Link
                 href="/"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkHome}
               </Link>
               <Link
                 href="/about"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkAbout}
               </Link>
               <Link
                 href="/contact"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkContact}
               </Link>
               <Link
                 href="/search"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkSearch}
               </Link>
@@ -271,25 +283,23 @@ export default function PublicSiteShell({
           </div>
 
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              {copy.colHenryCo}
-            </div>
+            <div className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.colHenryCo}</div>
             <div className="mt-4 grid gap-3">
               <Link
                 href={getAccountUrl("/")}
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkHenryCoAccount}
               </Link>
               <Link
                 href={getAccountUrl("/settings")}
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkLanguagePrefs}
               </Link>
               <Link
                 href="/preferences"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkEmailPrefs}
               </Link>
@@ -297,19 +307,17 @@ export default function PublicSiteShell({
           </div>
 
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              {copy.colLegal}
-            </div>
+            <div className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.colLegal}</div>
             <div className="mt-4 grid gap-3">
               <Link
                 href="/privacy"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkPrivacy}
               </Link>
               <Link
                 href="/terms"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
               >
                 {copy.linkTerms}
               </Link>
@@ -317,15 +325,15 @@ export default function PublicSiteShell({
           </div>
         </div>
 
-        <div className="border-t border-white/8 px-4 py-5 text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
+        <div className="border-t border-[color:var(--home-line-08)] px-4 py-5 text-xs text-[color:var(--home-ink-50)] sm:px-6 lg:px-8">
           <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}. {copy.allRightsReserved}
             </div>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
+            <span className="home-eyebrow inline-flex items-center gap-1.5 text-[color:var(--home-ink-50)]">
               <span
                 aria-hidden
-                className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent,#C9A227)]/85"
+                className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent)]"
               />
               {copy.builtBy}
             </span>

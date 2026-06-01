@@ -1,0 +1,375 @@
+/*
+ * ============================================================
+ *  HENRYCO PUBLIC DESIGN SYSTEM  —  the --home-* token layer
+ * ============================================================
+ *
+ *  Origin: V3-PUBLIC-DESIGN-01. This file is the single source of truth for the
+ *  PUBLIC (marketing / landing) visual language of every Henry & Co. site. It is
+ *  the formalised, documented, accent-parameterised promotion of the language the
+ *  hub homepage pioneered (PR #174). Full prose + the Phase-2 migration recipe live
+ *  in docs/v3/design-system.md.
+ *
+ *  TWO SYSTEMS, ONE PLATFORM — do not confuse them:
+ *    • --hc-*    (packages/ui/src/styles/globals.css)  →  the DASHBOARD / app-chrome
+ *                system: dense, functional, used inside authenticated product.
+ *    • --home-*  (THIS FILE)                            →  the PUBLIC editorial
+ *                system: warm paper ⇄ near-black, generous space, "gravity not size",
+ *                one confident accent. Used on public landings + key public routes.
+ *  They deliberately share primitives where it is correct to (mono font, easing
+ *  curves) via var() aliases below, so there is one motion/number language platform-wide.
+ *
+ *  HOW A SITE ADOPTS IT (this pass: hub only):
+ *    1. `@import` this file once from the app's `app/globals.css` (after the shared
+ *       globals.css import).
+ *    2. Load the display font (next/font) and expose it as `--font-fraunces` on the
+ *       public subtree (see the hub's (site)/layout.tsx).
+ *    3. Set the division accent on the public subtree:
+ *         --accent       : <division>.accent       (the colour soul, e.g. #C9A227)
+ *         --accent-text  : <division>.accentText    (AA-safe accent-as-text on paper)
+ *       Everything below derives from those. See "ACCENT PARAMETERISATION" in
+ *       docs/v3/design-system.md for the full per-division recipe.
+ *
+ *  ACCESSIBILITY: every default ink/accent pair below clears WCAG AA at body size on
+ *  both themes (see inline ratios). The automated contrast gate
+ *  (scripts/a11y/contrast-matrix.mjs) reads division accents from packages/config
+ *  company.ts only — it does NOT scan these CSS tokens — so this file cannot regress
+ *  the gate; AA here is held by design + the inline annotations.
+ *
+ *  ADDITIVE + INERT: defining these custom properties has zero visual effect on any
+ *  surface that does not reference them. Apps that have not adopted the system are
+ *  unaffected (the other 9 sites migrate in Phase 2).
+ */
+
+:root {
+  /* ── Canvas + ink (warm paper, light theme — the primary theme) ───────────── */
+  --home-ink-rgb: 21 19 15; /* warm near-black ink, as r g b for rgb(... / a) ramps */
+  --home-canvas: #f7f5f0; /* page background — warm paper */
+  --home-canvas-deep: #efeae1; /* a step down — sunken bands, footer */
+  --home-sheet: #ffffff; /* raised sheets — cards, sticky chrome */
+  --home-glass: rgba(247, 245, 240, 0.72); /* frosted chrome (header at rest) */
+  --home-glass-strong: rgba(247, 245, 240, 0.92); /* frosted chrome (scrolled) */
+
+  /* Ink ramp — calibrated per-theme hex in light (alpha on paper does not clear AA
+     the way alpha-on-near-black does in dark). 92→30 = primary → faintest. */
+  --home-ink: rgb(var(--home-ink-rgb));
+  --home-ink-92: #23201b;
+  --home-ink-90: #2a261f;
+  --home-ink-85: #332f27;
+  --home-ink-80: #3c372e;
+  --home-ink-75: #464139; /* primary body on canvas — ~9.4:1 */
+  --home-ink-70: #514b43; /* body — ~7.6:1 */
+  --home-ink-65: #5c554d; /* secondary body — ~6.2:1 */
+  --home-ink-60: #676057;
+  --home-ink-55: #6a645c;
+  --home-ink-50: #6e6860; /* captions / eyebrows — ~4.8:1 (AA normal) */
+  --home-ink-35: #8a837a;
+  --home-ink-30: #8a837a;
+
+  /* Hairlines + tint surfaces — alpha of ink, so they flip with the canvas. */
+  --home-line: rgb(var(--home-ink-rgb) / 0.1);
+  --home-line-08: rgb(var(--home-ink-rgb) / 0.08);
+  --home-line-12: rgb(var(--home-ink-rgb) / 0.12);
+  --home-line-15: rgb(var(--home-ink-rgb) / 0.15);
+  --home-surface: rgb(var(--home-ink-rgb) / 0.05);
+  --home-surface-02: rgb(var(--home-ink-rgb) / 0.02);
+  --home-surface-04: rgb(var(--home-ink-rgb) / 0.04);
+  --home-surface-07: rgb(var(--home-ink-rgb) / 0.07);
+  --home-surface-10: rgb(var(--home-ink-rgb) / 0.1);
+
+  /* ── Accent ramp (NEW) — the one confident accent, parameterised ───────────
+     A division provides --accent (+ --accent-text for AA). The hub default is the
+     brand gold #C9A227 (and #8A6F00 as AA accent-text on paper, 5.0:1). The soft /
+     ring / strong steps are DERIVED from --home-accent via color-mix, so a division
+     only ever sets one or two values. */
+  --home-accent: var(--accent, #c9a227); /* fills, dividers, the focal mark */
+  --home-accent-strong: color-mix(in srgb, var(--home-accent) 82%, #000 18%); /* hover / pressed depth */
+  --home-accent-soft: color-mix(in srgb, var(--home-accent) 12%, transparent); /* tints, chips */
+  --home-accent-ring: color-mix(in srgb, var(--home-accent) 34%, transparent); /* focus ring halo */
+  --home-accent-ink: #1a1814; /* text/icon ON an accent fill — dark-on-gold, 8.6:1 */
+  --home-accent-text: var(--accent-text, #8a6f00); /* accent rendered AS text on canvas — AA 5.0:1 */
+
+  /* ── Type families ─────────────────────────────────────────────────────────
+     Display = the editorial serif (Fraunces, self-hosted via next/font as
+     --font-fraunces) with a serif→serif system fallback so a font swap never
+     jumps serif→sans. Body = system sans (zero web-font cost — mobile-first for
+     slow networks). Numerics = the shared platform mono (tabular). */
+  /* Display family DEFAULT = the editorial serif fallback stack (valid on its own).
+     An app that loads a self-hosted display face (e.g. Fraunces) OVERRIDES
+     --home-font-display on its public-subtree wrapper to prepend the font var —
+     declaring it THERE, on the same element that defines --font-fraunces, so the
+     var() substitution resolves. (A :root definition referencing --font-fraunces
+     would compute to an invalid value before the font var is ever set, and that
+     invalidity would inherit — the custom-property lazy-substitution trap.) See the
+     hub's app/(site)/layout.tsx and §6 of docs/v3/design-system.md. */
+  --home-font-display: "Iowan Old Style", "Palatino Linotype", "Baskerville",
+    "Times New Roman", Times, serif;
+  --home-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --home-font-mono: var(--hc-font-mono, ui-monospace, "SF Mono", "JetBrains Mono",
+    Menlo, Consolas, monospace);
+
+  /* ── Section rhythm + measure (the "expensive" lever) ──────────────────────
+     Mobile-first clamps: generous, never cramped, and they grow with the viewport.
+     One shell width keeps the editorial measure calm (vs sprawling 88rem). */
+  --home-gutter: clamp(1.25rem, 5vw, 2rem); /* page horizontal padding */
+  --home-shell: 72rem; /* standard content max-width */
+  --home-shell-wide: 80rem; /* full-bleed feature bands */
+  --home-shell-prose: 44rem; /* legal / reading measure (~70ch) */
+  --home-section-y: clamp(4rem, 8vw, 7rem); /* default rhythm between sections */
+  --home-section-y-tight: clamp(2.5rem, 5vw, 4rem);
+  --home-section-y-hero: clamp(4.5rem, 9vw, 8rem); /* first beat */
+
+  /* ── Radius (editorial restraint — softer, less than the dashboard 1.75rem) ── */
+  --home-radius-sm: 0.75rem;
+  --home-radius: 1rem;
+  --home-radius-lg: 1.5rem;
+  --home-radius-pill: 9999px;
+
+  /* ── Motion — ALIAS the shared platform curves so the whole company animates on
+     one vocabulary. EASE_OUT == --hc-ease-standard; the emphasized overshoot is
+     reserved for the single crafted beat. All motion is reduced-motion gated in JS
+     (usePublicMotion) and at the CSS layer. */
+  --home-ease: var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
+  --home-ease-emphasized: var(--hc-ease-emphasized, cubic-bezier(0.34, 1.4, 0.64, 1));
+  --home-duration-fast: var(--hc-duration-fast, 120ms);
+  --home-duration-base: 200ms;
+  --home-duration-slow: var(--hc-duration-slow, 260ms);
+}
+
+.dark {
+  /* ── Canvas + ink (paper ink on near-black — dark theme) ───────────────────── */
+  --home-ink-rgb: 255 255 255;
+  --home-canvas: #050816;
+  --home-canvas-deep: #050816;
+  --home-sheet: #0b1020;
+  --home-glass: rgba(5, 8, 22, 0.7);
+  --home-glass-strong: rgba(5, 8, 22, 0.95);
+
+  /* In dark, alpha-on-near-black clears AA, so the ramp is alpha of white. */
+  --home-ink: rgb(var(--home-ink-rgb));
+  --home-ink-92: rgb(var(--home-ink-rgb) / 0.92);
+  --home-ink-90: rgb(var(--home-ink-rgb) / 0.9);
+  --home-ink-85: rgb(var(--home-ink-rgb) / 0.85);
+  --home-ink-80: rgb(var(--home-ink-rgb) / 0.8);
+  --home-ink-75: rgb(var(--home-ink-rgb) / 0.75);
+  --home-ink-70: rgb(var(--home-ink-rgb) / 0.7);
+  --home-ink-65: rgb(var(--home-ink-rgb) / 0.65);
+  --home-ink-60: rgb(var(--home-ink-rgb) / 0.6);
+  --home-ink-55: rgb(var(--home-ink-rgb) / 0.55);
+  --home-ink-50: rgb(var(--home-ink-rgb) / 0.5);
+  --home-ink-35: rgb(var(--home-ink-rgb) / 0.35);
+  --home-ink-30: rgb(var(--home-ink-rgb) / 0.3);
+  --home-line: rgb(var(--home-ink-rgb) / 0.1);
+  --home-line-08: rgb(var(--home-ink-rgb) / 0.08);
+  --home-line-12: rgb(var(--home-ink-rgb) / 0.12);
+  --home-line-15: rgb(var(--home-ink-rgb) / 0.15);
+  --home-surface: rgb(var(--home-ink-rgb) / 0.05);
+  --home-surface-02: rgb(var(--home-ink-rgb) / 0.02);
+  --home-surface-04: rgb(var(--home-ink-rgb) / 0.04);
+  --home-surface-07: rgb(var(--home-ink-rgb) / 0.07);
+  --home-surface-10: rgb(var(--home-ink-rgb) / 0.1);
+
+  /* Accent on dark: the fill stays the division accent; accent-as-text lightens to
+     clear AA on the near-black canvas. Hub default dark gold #E5C870 (≈9:1). A
+     division overrides via --accent-text-dark, else its --accent-text, else this. */
+  --home-accent-text: var(--accent-text-dark, var(--accent-text, #e5c870));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ *  TYPE SCALE — utility classes. A deliberate ramp (display → caption), not
+ *  arbitrary sizes. Display tiers are the editorial serif; text tiers are system
+ *  sans; numerics are mono. Sizes are fluid clamps capped to honour "gravity, not
+ *  size" (no giant viewport-filling hero). Pair exactly ONE display tier per
+ *  section with ONE lede; let scale + space carry the hierarchy.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+.home-eyebrow {
+  font-family: var(--home-font-sans);
+  font-size: 0.6875rem; /* 11px */
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--home-ink-50);
+}
+
+.home-display-xl {
+  font-family: var(--home-font-display);
+  font-size: clamp(2rem, 1.4rem + 3vw, 3.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.018em;
+  font-weight: 500;
+  color: var(--home-ink-92);
+  text-wrap: balance;
+}
+
+.home-display {
+  font-family: var(--home-font-display);
+  font-size: clamp(1.75rem, 1.3rem + 2.2vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  font-weight: 500;
+  color: var(--home-ink-92);
+  text-wrap: balance;
+}
+
+.home-headline {
+  font-family: var(--home-font-display);
+  font-size: clamp(1.375rem, 1.2rem + 0.9vw, 1.75rem);
+  line-height: 1.18;
+  letter-spacing: -0.008em;
+  font-weight: 500;
+  color: var(--home-ink-90);
+  text-wrap: balance;
+}
+
+.home-title {
+  font-family: var(--home-font-display);
+  font-size: clamp(1.125rem, 1.05rem + 0.4vw, 1.3rem);
+  line-height: 1.25;
+  letter-spacing: -0.004em;
+  font-weight: 600;
+  color: var(--home-ink-90);
+}
+
+.home-lede {
+  font-family: var(--home-font-sans);
+  font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.2rem);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--home-ink-65);
+  text-wrap: pretty;
+}
+
+.home-body {
+  font-family: var(--home-font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
+  font-weight: 400;
+  color: var(--home-ink-70);
+  text-wrap: pretty;
+}
+
+.home-body-sm {
+  font-family: var(--home-font-sans);
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--home-ink-65);
+}
+
+.home-caption {
+  font-family: var(--home-font-sans);
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--home-ink-50);
+}
+
+.home-num {
+  font-family: var(--home-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ *  LAYOUT + DECORATION utilities — the section-rhythm spine + editorial details.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* The page measure. Centered, gutter-padded, mobile-first. */
+.home-shell {
+  width: 100%;
+  max-width: var(--home-shell);
+  margin-inline: auto;
+  padding-inline: var(--home-gutter);
+}
+.home-shell-prose {
+  max-width: var(--home-shell-prose);
+}
+.home-shell-wide {
+  max-width: var(--home-shell-wide);
+}
+
+/* Vertical section rhythm — THE expensive lever. Default / tight / hero variants. */
+.home-section {
+  padding-block: var(--home-section-y);
+}
+.home-section-tight {
+  padding-block: var(--home-section-y-tight);
+}
+.home-section-hero {
+  padding-block: var(--home-section-y-hero);
+}
+
+/* Editorial hairline — a full-width rule that flips with the canvas. */
+.home-hairline {
+  height: 1px;
+  width: 100%;
+  background: var(--home-line);
+  border: 0;
+}
+
+/* The one focus treatment for the system — accent ring, visible on both themes. */
+.home-focus:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+  border-radius: var(--home-radius-sm);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ *  MOTION — dependency-free, SSR-safe, reduced-motion-aware.
+ *
+ *  .home-rise   — a calm load entrance (plays once on mount). No JS. Stagger with
+ *                 the .home-delay-{1..6} utilities. Because the rise lives ONLY in
+ *                 the keyframe (the base rule sets no opacity), disabling the
+ *                 animation leaves the element fully visible — so no-JS and
+ *                 reduced-motion users never see hidden content.
+ *  .home-reveal — a scroll-triggered reveal via the modern scroll-driven-animation
+ *                 timeline. Progressive enhancement: browsers without
+ *                 `animation-timeline: view()` simply render the content visible;
+ *                 reduced-motion disables it. Again, the hidden state lives only in
+ *                 the animation, so content is never trapped invisible.
+ * ───────────────────────────────────────────────────────────────────────────── */
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-rise {
+    animation: home-rise 0.55s var(--home-ease) both;
+  }
+  .home-delay-1 { animation-delay: 0.06s; }
+  .home-delay-2 { animation-delay: 0.12s; }
+  .home-delay-3 { animation-delay: 0.18s; }
+  .home-delay-4 { animation-delay: 0.24s; }
+  .home-delay-5 { animation-delay: 0.3s; }
+  .home-delay-6 { animation-delay: 0.36s; }
+
+  /* Scroll-driven reveal — only where the browser supports view() timelines. */
+  @supports (animation-timeline: view()) {
+    .home-reveal {
+      animation: home-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 18%;
+    }
+  }
+}
+
+/* Calm hover lift for interactive cards/rows — honours reduced motion. */
+.home-lift {
+  transition: transform var(--home-duration-base) var(--home-ease),
+    border-color var(--home-duration-base) var(--home-ease),
+    background-color var(--home-duration-base) var(--home-ease);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-lift:hover {
+    transform: translateY(-2px);
+  }
+}

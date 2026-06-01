@@ -3,6 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { Mail, Clock3, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import type { HubHomeCopy } from "@henryco/i18n";
+import { PublicCTA } from "@henryco/ui/public-design";
 import {
   submitContactMessage,
   type ContactSubmitState,
@@ -19,25 +20,30 @@ type ReasonValue =
   | "complaint"
   | "other";
 
+const FIELD_CLASS =
+  "h-12 rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 text-base text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-35)] focus:border-[color:var(--home-accent)] focus:ring-2 focus:ring-[color:var(--home-accent-ring)]";
+const LABEL_CLASS =
+  "text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)]";
+
 function SubmitButton({ sendingLabel, sendLabel }: { sendingLabel: string; sendLabel: string }) {
   const { pending } = useFormStatus();
   return (
-    <button
+    <PublicCTA
       type="submit"
+      variant="primary"
+      size="lg"
       disabled={pending}
-      className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d6a851] px-6 py-3.5 text-sm font-semibold text-[#0a0807] transition hover:bg-[#e3b966] disabled:cursor-not-allowed disabled:opacity-60"
+      trailingIcon={<ArrowRight className="h-4 w-4" />}
     >
       {pending ? sendingLabel : sendLabel}
-      <ArrowRight className="h-4 w-4" />
-    </button>
+    </PublicCTA>
   );
 }
 
 /**
- * ContactHeroForm — primary above-fold form on the /contact page (CHROME-01B
- * FIX 3). Surfaces a real response-time line and the configured group
- * support email, so users see how to reach the company before the form
- * even loads.
+ * ContactHeroForm — primary above-fold form on the /contact page (CHROME-01B FIX 3).
+ * Surfaces a real response-time line and the configured group support email.
+ * V3-PUBLIC-DESIGN-01 moved it onto the theme-aware `--home-*` system + PublicCTA.
  */
 export default function ContactHeroForm({
   supportEmail,
@@ -68,28 +74,24 @@ export default function ContactHeroForm({
   return (
     <form
       action={formAction}
-      className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-6 sm:p-8"
+      className="rounded-[1.6rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-6 sm:p-8"
       noValidate
     >
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-          {copy.formEyebrow}
-        </p>
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white/65">
+        <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.formEyebrow}</p>
+        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[color:var(--home-ink-50)]">
           <Clock3 className="h-3.5 w-3.5" aria-hidden />
           {displayResponseTime}
         </span>
       </div>
 
-      <h2 className="mt-3 text-[1.4rem] font-semibold leading-[1.2] tracking-[-0.012em] text-white sm:text-[1.7rem]">
-        {copy.formTitle}
-      </h2>
-      <p className="mt-2 inline-flex flex-wrap items-center gap-2 text-sm text-white/68">
-        <Mail className="h-3.5 w-3.5 text-[#d6a851]" aria-hidden />
+      <h2 className="home-headline mt-3">{copy.formTitle}</h2>
+      <p className="mt-2 inline-flex flex-wrap items-center gap-2 text-sm text-[color:var(--home-ink-65)]">
+        <Mail className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
         <span>{copy.orEmail} </span>
         <a
           href={`mailto:${supportEmail}`}
-          className="font-semibold text-white underline underline-offset-4 transition hover:text-[#d6a851]"
+          className="home-focus font-semibold text-[color:var(--home-ink)] underline underline-offset-4 transition hover:text-[color:var(--home-accent-text)]"
         >
           {supportEmail}
         </a>
@@ -98,22 +100,18 @@ export default function ContactHeroForm({
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
-            {copy.nameLabel}
-          </span>
+          <span className={LABEL_CLASS}>{copy.nameLabel}</span>
           <input
             name="name"
             type="text"
             required
             autoComplete="name"
             placeholder={copy.namePlaceholder}
-            className="h-12 rounded-xl border border-white/12 bg-black/30 px-3.5 text-base text-white outline-none placeholder:text-white/45 focus:border-[#d6a851]"
+            className={FIELD_CLASS}
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
-            {copy.emailLabel}
-          </span>
+          <span className={LABEL_CLASS}>{copy.emailLabel}</span>
           <input
             name="email"
             type="email"
@@ -121,43 +119,37 @@ export default function ContactHeroForm({
             autoComplete="email"
             inputMode="email"
             placeholder={copy.emailPlaceholder}
-            className="h-12 rounded-xl border border-white/12 bg-black/30 px-3.5 text-base text-white outline-none placeholder:text-white/45 focus:border-[#d6a851]"
+            className={FIELD_CLASS}
           />
         </label>
       </div>
 
       <label className="mt-4 flex flex-col gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
-          {copy.reasonLabel}
-        </span>
-        <select
-          name="reason"
-          defaultValue={initialReason}
-          className="h-12 rounded-xl border border-white/12 bg-black/30 px-3 text-base text-white outline-none focus:border-[#d6a851]"
-        >
+        <span className={LABEL_CLASS}>{copy.reasonLabel}</span>
+        <select name="reason" defaultValue={initialReason} className={`${FIELD_CLASS} px-3`}>
           {reasons.map((item) => (
-            <option key={item.value} value={item.value} className="bg-[#0a0807] text-white">
+            <option
+              key={item.value}
+              value={item.value}
+              className="bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
+            >
               {item.label}
             </option>
           ))}
         </select>
       </label>
 
-      {planContext ? (
-        <input type="hidden" name="planContext" value={planContext} />
-      ) : null}
+      {planContext ? <input type="hidden" name="planContext" value={planContext} /> : null}
 
       <label className="mt-4 flex flex-col gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
-          {copy.messageLabel}
-        </span>
+        <span className={LABEL_CLASS}>{copy.messageLabel}</span>
         <textarea
           name="message"
           required
           rows={5}
           defaultValue={planContext === "partner" ? copy.partnerPlanContext : ""}
           placeholder={copy.messagePlaceholder}
-          className="rounded-xl border border-white/12 bg-black/30 px-3.5 py-3 text-base leading-7 text-white outline-none placeholder:text-white/45 focus:border-[#d6a851]"
+          className="rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 py-3 text-base leading-7 text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-35)] focus:border-[color:var(--home-accent)] focus:ring-2 focus:ring-[color:var(--home-accent-ring)]"
         />
       </label>
 
@@ -166,7 +158,7 @@ export default function ContactHeroForm({
         {state.status === "success" ? (
           <p
             role="status"
-            className="inline-flex items-center gap-2 text-sm font-medium text-emerald-300"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[color:var(--hc-status-success-text)]"
           >
             <CheckCircle2 className="h-4 w-4" aria-hidden />
             {state.message}
@@ -175,7 +167,7 @@ export default function ContactHeroForm({
         {state.status === "error" ? (
           <p
             role="alert"
-            className="inline-flex items-center gap-2 text-sm font-medium text-rose-300"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[color:var(--hc-status-danger-text)]"
           >
             <AlertCircle className="h-4 w-4" aria-hidden />
             {state.message}

@@ -12,6 +12,38 @@ import { deepMergeMessages, type DeepPartial } from "./merge-messages";
  * silently. Mirrors the shape of `hub-home-copy.ts`.
  */
 export type HubPublicCopy = {
+  search: {
+    title: string;
+    description: string;
+    placeholder: string;
+    signInLabel: string;
+  };
+  newsletter: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    promiseTitle: string;
+    promises: string[];
+    form: {
+      emailLabel: string;
+      emailPlaceholder: string;
+      countryLabel: string;
+      countryPlaceholder: string;
+      topicsTitle: string;
+      topicsHint: string;
+      consent: string;
+      submit: string;
+      submitting: string;
+      successCreatedTitle: string;
+      successUpdatedTitle: string;
+      successBody: string;
+      managePrefs: string;
+      openPreferenceCenter: string;
+      errorSuppressed: string;
+      errorGeneric: string;
+      errorNetwork: string;
+    };
+  };
   footer: {
     description: string;
     columnCompany: string;
@@ -139,6 +171,45 @@ export type HubPublicCopy = {
 };
 
 const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
+  search: {
+    title: "Search Henry & Co.",
+    description: "Find divisions, account workflows, and support routes from one place.",
+    placeholder: "Search divisions, orders, jobs, tracking…",
+    signInLabel: "Sign in to continue",
+  },
+  newsletter: {
+    eyebrow: "Editorial",
+    title: "Newsletters, chosen carefully",
+    intro:
+      "We send less, so it matters. Choose your topics — change or unsubscribe any time.",
+    promiseTitle: "What we promise",
+    promises: [
+      "Only topics you opted into.",
+      "We pause sends during active support or billing issues.",
+      "No invented stats, testimonials, or urgency.",
+      "A working unsubscribe link in every email.",
+    ],
+    form: {
+      emailLabel: "Email address",
+      emailPlaceholder: "you@example.com",
+      countryLabel: "Country (2-letter, optional)",
+      countryPlaceholder: "NG",
+      topicsTitle: "Pick what you want to hear about",
+      topicsHint: "You can change or remove any of these later.",
+      consent:
+        "I agree to receive these newsletters from Henry & Co. I can unsubscribe any time, and sends are paused during active support or billing issues.",
+      submit: "Subscribe",
+      submitting: "Subscribing…",
+      successCreatedTitle: "You're subscribed",
+      successUpdatedTitle: "Preferences updated",
+      successBody: "We'll email {email} about: {topics}.",
+      managePrefs: "Manage preferences any time:",
+      openPreferenceCenter: "open preference center",
+      errorSuppressed: "This address is on our suppression list.",
+      errorGeneric: "Something went wrong. Try again.",
+      errorNetwork: "Network error.",
+    },
+  },
   footer: {
     description:
       "A premium multi-division corporate gateway designed to present the Henry & Co. ecosystem with clarity, trust, and long-term brand discipline.",

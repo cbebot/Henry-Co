@@ -6,6 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronRight, Clock3, Globe2, Landmark, ShieldCheck } from "lucide-react";
 import type { HubPublicCopy } from "@henryco/i18n";
+import { PublicCTA, PublicProofRail } from "@henryco/ui/public-design";
 import type { CompanyPageRecord } from "../lib/company-pages";
 import { normalizeCompanyPage } from "../lib/company-pages";
 import SectionBlock from "./SectionBlock";
@@ -31,6 +32,16 @@ function formatUpdatedAt(value: string | null | undefined, locale: string, fallb
   });
 }
 
+/**
+ * Company page (about / privacy / terms / contact) presentation.
+ *
+ * Data + realtime CMS subscription + honest-stat filtering are unchanged. The
+ * presentation was moved onto the shared public design system (V3-PUBLIC-DESIGN-01):
+ * theme-aware `--home-*` tokens (no more hardcoded `#0a0807` / `#d6a851`), the brand
+ * accent, the editorial serif (Fraunces via .home-display*), and the shared
+ * `PublicCTA` / `PublicProofRail` primitives. The surrounding `PublicSiteShell`
+ * now owns the theme-aware canvas, so this surface renders transparently on top.
+ */
 export default function CompanyPageClient({
   pageKey,
   initialData,
@@ -150,192 +161,163 @@ export default function CompanyPageClient({
     const numeric = Number(raw.replace(/[\s,]/g, ""));
     return !(Number.isFinite(numeric) && numeric === 0);
   };
-  const hasRealStats = page.stats.some(isMeaningfulStat);
+  const realStats = page.stats.filter(isMeaningfulStat);
 
   return (
-    <div className="relative isolate min-h-screen overflow-x-hidden bg-[#0a0807] text-[#f5f1eb]">
-      {/* Atmospheric warm-ink gradient — restrained, no grid overlay */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(900px_440px_at_18%_-2%,rgba(214,168,81,0.10),transparent_55%),radial-gradient(720px_360px_at_82%_4%,rgba(120,70,28,0.10),transparent_55%),radial-gradient(900px_520px_at_50%_100%,rgba(38,22,12,0.7),transparent_60%)]" />
-      </div>
-
+    <div className="relative">
       {/* Editorial hero — eyebrow + display + body + CTAs, with an aside that
           either shows the real hero image or a clean editorial summary card. */}
       {!hideHero ? (
-      <section className="relative">
-        <div className="mx-auto grid max-w-[88rem] gap-10 px-5 pb-14 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[1.15fr,0.85fr] lg:px-10 lg:pt-24">
-          <div>
-            {page.hero_badge ? (
-              <motion.p
-                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]"
-              >
-                {page.hero_badge}
-              </motion.p>
-            ) : null}
-
-            <motion.h1
-              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.04 }}
-              /** clamp + safe overflow — same hardening hub home received,
-               * applied here so /about /contact /privacy /terms cannot
-               * clip "Focused" → "ocused" on 320–360 px. */
-              style={{
-                fontSize: "clamp(2rem, 5.4vw + 0.6rem, 3.4rem)",
-                lineHeight: 1.04,
-                letterSpacing: "-0.025em",
-                wordBreak: "normal",
-                overflowWrap: "break-word",
-                hyphens: "auto",
-              }}
-              className="mt-5 max-w-3xl text-balance font-semibold text-white"
-            >
-              {page.title}
-            </motion.h1>
-
-            {page.subtitle ? (
-              <motion.p
-                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.08 }}
-                className="mt-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/64"
-              >
-                {page.subtitle}
-              </motion.p>
-            ) : null}
-
-            {page.intro ? (
-              <motion.p
-                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.12 }}
-                className="mt-6 max-w-2xl text-pretty text-[15px] leading-[1.7] text-white/72 sm:text-base"
-              >
-                {page.intro}
-              </motion.p>
-            ) : null}
-
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.16 }}
-              className="mt-8 flex flex-wrap gap-3"
-            >
-              {page.primary_cta_label && page.primary_cta_href ? (
-                <a
-                  href={page.primary_cta_href}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#d6a851] px-6 py-3.5 text-sm font-semibold text-[#0a0807] transition hover:-translate-y-0.5 hover:bg-[#e3b966]"
+        <section className="relative">
+          <div className="mx-auto grid max-w-6xl gap-10 px-5 pb-14 pt-14 sm:px-8 sm:pt-18 lg:grid-cols-[1.15fr,0.85fr] lg:px-8 lg:pt-20">
+            <div>
+              {page.hero_badge ? (
+                <motion.p
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="home-eyebrow text-[color:var(--home-accent-text)]"
                 >
-                  {page.primary_cta_label}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+                  {page.hero_badge}
+                </motion.p>
               ) : null}
 
-              {page.secondary_cta_label && page.secondary_cta_href ? (
-                <a
-                  href={page.secondary_cta_href}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-6 py-3.5 text-sm font-medium text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
-                >
-                  {page.secondary_cta_label}
-                  <ChevronRight className="h-4 w-4" />
-                </a>
-              ) : null}
-            </motion.div>
-
-            {/* Stats — only when real values exist. Compact rail, not 3 dark tiles. */}
-            {hasRealStats ? (
-              <motion.dl
+              <motion.h1
                 initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.2 }}
-                className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
+                transition={{ duration: 0.45, delay: 0.04 }}
+                /** overflow hardening so /about /contact /privacy /terms cannot clip
+                 * a long word on 320–360 px; size/family come from .home-display-xl. */
+                style={{ overflowWrap: "break-word", hyphens: "auto" }}
+                className="home-display-xl mt-5 max-w-3xl"
               >
-                {page.stats
-                  .filter(isMeaningfulStat)
-                  .map((stat, index) => (
-                    <div key={stat.id || `stat-${index + 1}`} className="flex flex-col gap-1">
-                      <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/62">
-                        {stat.label}
-                      </dt>
-                      <dd className="text-[1.5rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.7rem]">
-                        {stat.value}
+                {page.title}
+              </motion.h1>
+
+              {page.subtitle ? (
+                <motion.p
+                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.08 }}
+                  className="home-eyebrow mt-4 text-[color:var(--home-ink-50)]"
+                >
+                  {page.subtitle}
+                </motion.p>
+              ) : null}
+
+              {page.intro ? (
+                <motion.p
+                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.12 }}
+                  className="home-lede mt-6 max-w-2xl"
+                >
+                  {page.intro}
+                </motion.p>
+              ) : null}
+
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.16 }}
+                className="mt-8 flex flex-wrap gap-3"
+              >
+                {page.primary_cta_label && page.primary_cta_href ? (
+                  <PublicCTA
+                    href={page.primary_cta_href}
+                    variant="primary"
+                    size="lg"
+                    trailingIcon={<ArrowRight className="h-4 w-4" />}
+                  >
+                    {page.primary_cta_label}
+                  </PublicCTA>
+                ) : null}
+
+                {page.secondary_cta_label && page.secondary_cta_href ? (
+                  <PublicCTA
+                    href={page.secondary_cta_href}
+                    variant="secondary"
+                    size="lg"
+                    trailingIcon={<ChevronRight className="h-4 w-4" />}
+                  >
+                    {page.secondary_cta_label}
+                  </PublicCTA>
+                ) : null}
+              </motion.div>
+
+              {/* Stats — only when real, non-zero values exist (honest proof rail). */}
+              {realStats.length ? (
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.2 }}
+                  className="mt-10"
+                >
+                  <PublicProofRail
+                    items={realStats.map((stat) => ({ value: stat.value, label: stat.label }))}
+                  />
+                </motion.div>
+              ) : null}
+            </div>
+
+            {/* Aside — real hero image when set, otherwise a quiet meta rail. */}
+            <motion.aside
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="lg:pt-2"
+            >
+              {page.hero_image_url ? (
+                <div className="overflow-hidden rounded-[2rem] border border-[color:var(--home-line)] sm:rounded-[2.4rem]">
+                  <Image
+                    src={page.hero_image_url}
+                    alt={page.title}
+                    width={760}
+                    height={920}
+                    priority
+                    unoptimized
+                    className="h-[280px] w-full object-cover sm:h-[460px]"
+                  />
+                </div>
+              ) : (
+                <dl className="divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
+                  {metaItems.map((meta, index) => (
+                    <div
+                      key={`${meta.label}-${index}`}
+                      className="flex items-baseline gap-3 py-3 text-sm"
+                    >
+                      <span className="text-[color:var(--home-accent-text)]">{meta.icon}</span>
+                      <dt className="home-eyebrow text-[color:var(--home-ink-50)]">{meta.label}</dt>
+                      <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
+                        {meta.value}
                       </dd>
                     </div>
                   ))}
-              </motion.dl>
-            ) : null}
+                </dl>
+              )}
+
+              {serverWarning ? (
+                <p className="mt-4 border-l-2 border-[color:var(--home-accent)] pl-4 text-sm leading-7 text-[color:var(--home-ink-65)]">
+                  {copy.serverWarning}
+                </p>
+              ) : null}
+            </motion.aside>
           </div>
-
-          {/* Aside — real hero image when set, otherwise a quiet meta rail.
-              The previous default rendered HenryCoHeroCard with identical
-              boilerplate copy on /about, /contact, /privacy, /terms — the
-              repetition read as a mission stencil rather than editorial
-              intention (CHROME-01A). */}
-          <motion.aside
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.08 }}
-            className="lg:pt-2"
-          >
-            {page.hero_image_url ? (
-              <div className="overflow-hidden rounded-[2rem] border border-white/10 sm:rounded-[2.4rem]">
-                <Image
-                  src={page.hero_image_url}
-                  alt={page.title}
-                  width={760}
-                  height={920}
-                  priority
-                  unoptimized
-                  className="h-[280px] w-full object-cover sm:h-[460px]"
-                />
-              </div>
-            ) : (
-              <dl className="divide-y divide-white/10 border-y border-white/10">
-                {metaItems.map((meta, index) => (
-                  <div
-                    key={`${meta.label}-${index}`}
-                    className="flex items-baseline gap-3 py-3 text-sm"
-                  >
-                    <span className="text-[#d6a851]">{meta.icon}</span>
-                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
-                      {meta.label}
-                    </dt>
-                    <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                      {meta.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-
-            {serverWarning ? (
-              <p className="mt-4 border-l-2 border-[#d6a851]/55 pl-4 text-sm leading-7 text-white/72">
-                {copy.serverWarning}
-              </p>
-            ) : null}
-          </motion.aside>
-        </div>
-      </section>
+        </section>
       ) : null}
 
       {/* Section navigator — hairline rule, no panel chrome */}
       {!hideSections && sectionLinks.length ? (
         <nav
           aria-label={copy.pageSectionsAria}
-          className="mx-auto max-w-[88rem] px-5 pb-2 sm:px-8 lg:px-10"
+          className="mx-auto max-w-6xl px-5 pb-2 sm:px-8 lg:px-8"
         >
-          <div className="flex gap-2 overflow-x-auto border-y border-white/10 py-3">
+          <div className="flex gap-2 overflow-x-auto border-y border-[color:var(--home-line)] py-3">
             {sectionLinks.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="whitespace-nowrap rounded-full border border-white/12 bg-transparent px-3.5 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-white/72 transition hover:border-white/30 hover:bg-white/[0.04] hover:text-white"
+                className="home-focus whitespace-nowrap rounded-full border border-[color:var(--home-line-12)] bg-transparent px-3.5 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[color:var(--home-ink-60)] transition hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-04)] hover:text-[color:var(--home-ink)]"
               >
                 {section.label}
               </a>
@@ -344,9 +326,9 @@ export default function CompanyPageClient({
         </nav>
       ) : null}
 
-      {/* Long-form sections — kept as-is. SectionBlock owns its own typography. */}
+      {/* Long-form sections — SectionBlock owns its own (theme-aware) typography. */}
       {!hideSections ? (
-        <section className="mx-auto max-w-[88rem] space-y-10 px-5 py-14 sm:px-8 lg:px-10">
+        <section className="mx-auto max-w-6xl space-y-10 px-5 py-14 sm:px-8 lg:px-8">
           {page.sections.map((section, index) => (
             <SectionBlock
               key={section.id || `section-${index + 1}`}
@@ -359,45 +341,37 @@ export default function CompanyPageClient({
 
       {/* Footer — restrained editorial, no fake "trust quality" InfoPills */}
       {!hideFooter ? (
-      <section className="mx-auto max-w-[88rem] px-5 pb-20 sm:px-8 lg:px-10">
-        <div className="grid gap-8 border-t border-white/10 pt-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
-          <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-              {copy.footerEyebrow}
-            </p>
-            <h2 className="mt-4 max-w-2xl text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.95rem]">
-              {copy.footerTitle}
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
-              {copy.footerBody}
-            </p>
+        <section className="mx-auto max-w-6xl px-5 pb-20 sm:px-8 lg:px-8">
+          <div className="grid gap-8 border-t border-[color:var(--home-line)] pt-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+            <div>
+              <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.footerEyebrow}</p>
+              <h2 className="home-headline mt-4 max-w-2xl text-balance">{copy.footerTitle}</h2>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-65)]">
+                {copy.footerBody}
+              </p>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <li className="flex items-baseline gap-3 border-b border-[color:var(--home-line)] py-3">
+                <span className="text-[color:var(--home-accent-text)]">
+                  <Globe2 className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                <span className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.footerUseCase}</span>
+                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
+                  {copy.footerUseCaseValue}
+                </span>
+              </li>
+              <li className="flex items-baseline gap-3 border-b border-[color:var(--home-line)] py-3">
+                <span className="text-[color:var(--home-accent-text)]">
+                  <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                <span className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.footerStandard}</span>
+                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
+                  {copy.footerStandardValue}
+                </span>
+              </li>
+            </ul>
           </div>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <li className="flex items-baseline gap-3 border-b border-white/10 py-3">
-              <span className="text-[#d6a851]">
-                <Globe2 className="h-3.5 w-3.5" aria-hidden />
-              </span>
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
-                {copy.footerUseCase}
-              </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                {copy.footerUseCaseValue}
-              </span>
-            </li>
-            <li className="flex items-baseline gap-3 border-b border-white/10 py-3">
-              <span className="text-[#d6a851]">
-                <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
-              </span>
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
-                {copy.footerStandard}
-              </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                {copy.footerStandardValue}
-              </span>
-            </li>
-          </ul>
-        </div>
-      </section>
+        </section>
       ) : null}
     </div>
   );

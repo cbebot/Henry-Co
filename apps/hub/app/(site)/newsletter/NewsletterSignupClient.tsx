@@ -2,12 +2,15 @@
 
 import { useMemo, useState } from "react";
 import type { NewsletterDivision, NewsletterTopicDefinition } from "@henryco/newsletter";
+import type { HubPublicCopy } from "@henryco/i18n";
+import { PublicCTA } from "@henryco/ui/public-design";
 
 type GroupProps = {
   groups: Array<{
     division: NewsletterDivision;
     topics: NewsletterTopicDefinition[];
   }>;
+  copy: HubPublicCopy["newsletter"]["form"];
 };
 
 type SubmissionState =
@@ -16,6 +19,7 @@ type SubmissionState =
   | { status: "success"; preferenceUrl: string | null; created: boolean; topics: string[] }
   | { status: "error"; message: string };
 
+// Division names are brand proper nouns (left untranslated, like the public selector).
 const DIVISION_LABEL: Record<NewsletterDivision, string> = {
   hub: "Henry & Co.",
   account: "Account",
@@ -28,7 +32,10 @@ const DIVISION_LABEL: Record<NewsletterDivision, string> = {
   studio: "Studio",
 };
 
-export default function NewsletterSignupClient({ groups }: GroupProps) {
+const FIELD_CLASS =
+  "rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2.5 text-sm text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-35)] focus:border-[color:var(--home-accent)] focus:ring-2 focus:ring-[color:var(--home-accent-ring)]";
+
+export default function NewsletterSignupClient({ groups, copy }: GroupProps) {
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
   const [locale, setLocale] = useState("en-NG");
@@ -80,9 +87,7 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
       if (!res.ok || !body.ok) {
         const message =
           body.message ||
-          (body.code === "suppressed"
-            ? "This address is on our suppression list."
-            : "Something went wrong. Try again.");
+          (body.code === "suppressed" ? copy.errorSuppressed : copy.errorGeneric);
         setState({ status: "error", message });
         return;
       }
@@ -95,28 +100,30 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
     } catch (err) {
       setState({
         status: "error",
-        message: err instanceof Error ? err.message : "Network error",
+        message: err instanceof Error ? err.message : copy.errorNetwork,
       });
     }
   };
 
   if (state.status === "success") {
     return (
-      <div className="rounded-lg border border-[color:var(--border)] bg-[color:var(--background)] p-6">
-        <h2 className="text-lg font-semibold">
-          {state.created ? "You're subscribed" : "Preferences updated"}
+      <div className="rounded-[var(--home-radius)] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-6">
+        <h2 className="home-title">
+          {state.created ? copy.successCreatedTitle : copy.successUpdatedTitle}
         </h2>
-        <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">
-          We&rsquo;ll email {email} about: {state.topics.join(", ")}.
+        <p className="mt-2 text-sm text-[color:var(--home-ink-65)]">
+          {copy.successBody
+            .replace("{email}", email)
+            .replace("{topics}", state.topics.join(", "))}
         </p>
         {state.preferenceUrl ? (
-          <p className="mt-4 text-sm">
-            Manage preferences any time:{" "}
+          <p className="mt-4 text-sm text-[color:var(--home-ink-65)]">
+            {copy.managePrefs}{" "}
             <a
               href={state.preferenceUrl}
-              className="underline decoration-dotted underline-offset-4"
+              className="home-focus font-medium text-[color:var(--home-accent-text)] underline decoration-dotted underline-offset-4"
             >
-              open preference center
+              {copy.openPreferenceCenter}
             </a>
           </p>
         ) : null}
@@ -127,39 +134,37 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="flex flex-col gap-2 text-sm">
-          <span>Email address</span>
+        <label className="flex flex-col gap-2 text-sm text-[color:var(--home-ink-70)]">
+          <span>{copy.emailLabel}</span>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="rounded-md border border-[color:var(--border)] bg-[color:var(--background)] px-3 py-2 text-sm outline-none focus:border-[color:var(--ring)] focus:ring-1 focus:ring-[color:var(--ring)]"
+            placeholder={copy.emailPlaceholder}
+            className={FIELD_CLASS}
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm">
-          <span>Country (2 letter, optional)</span>
+        <label className="flex flex-col gap-2 text-sm text-[color:var(--home-ink-70)]">
+          <span>{copy.countryLabel}</span>
           <input
             type="text"
             maxLength={2}
             value={country}
             onChange={(e) => setCountry(e.target.value.toUpperCase())}
-            placeholder="NG"
-            className="rounded-md border border-[color:var(--border)] bg-[color:var(--background)] px-3 py-2 text-sm uppercase outline-none focus:border-[color:var(--ring)] focus:ring-1 focus:ring-[color:var(--ring)]"
+            placeholder={copy.countryPlaceholder}
+            className={`${FIELD_CLASS} uppercase`}
           />
         </label>
       </div>
 
       <div>
-        <p className="text-sm font-medium">Pick what you want to hear about</p>
-        <p className="mt-1 text-xs text-[color:var(--muted-foreground)]">
-          You can change or remove any of these later.
-        </p>
+        <p className="text-sm font-medium text-[color:var(--home-ink)]">{copy.topicsTitle}</p>
+        <p className="mt-1 text-xs text-[color:var(--home-ink-55)]">{copy.topicsHint}</p>
         <div className="mt-4 space-y-6">
           {groups.map((group) => (
             <section key={group.division} className="space-y-3">
-              <h3 className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+              <h3 className="home-eyebrow text-[color:var(--home-ink-50)]">
                 {DIVISION_LABEL[group.division]}
               </h3>
               <div className="space-y-2">
@@ -170,10 +175,10 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
                     <label
                       key={topic.key}
                       htmlFor={id}
-                      className={`flex cursor-pointer gap-3 rounded-md border p-3 transition-colors ${
+                      className={`flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors ${
                         active
-                          ? "border-[color:var(--foreground)]"
-                          : "border-[color:var(--border)]"
+                          ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)]"
+                          : "border-[color:var(--home-line-12)] hover:border-[color:var(--home-line-15)]"
                       }`}
                     >
                       <input
@@ -181,11 +186,13 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
                         type="checkbox"
                         checked={active}
                         onChange={() => toggleTopic(topic.key)}
-                        className="mt-1 h-4 w-4"
+                        className="mt-1 h-4 w-4 accent-[color:var(--home-accent)]"
                       />
                       <span>
-                        <span className="block text-sm font-medium">{topic.label}</span>
-                        <span className="mt-1 block text-xs text-[color:var(--muted-foreground)]">
+                        <span className="block text-sm font-medium text-[color:var(--home-ink)]">
+                          {topic.label}
+                        </span>
+                        <span className="mt-1 block text-xs text-[color:var(--home-ink-60)]">
                           {topic.description}
                         </span>
                       </span>
@@ -198,17 +205,14 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
         </div>
       </div>
 
-      <label className="flex items-start gap-3 text-xs text-[color:var(--muted-foreground)]">
+      <label className="flex items-start gap-3 text-xs text-[color:var(--home-ink-60)]">
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 h-4 w-4"
+          className="mt-1 h-4 w-4 accent-[color:var(--home-accent)]"
         />
-        <span>
-          I agree to receive these newsletters from HenryCo. I understand I can unsubscribe any
-          time, and that HenryCo will suppress sends during active support or billing issues.
-        </span>
+        <span>{copy.consent}</span>
       </label>
 
       <input
@@ -219,15 +223,11 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
       />
 
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="inline-flex items-center justify-center rounded-md bg-[color:var(--foreground)] px-4 py-2 text-sm font-medium text-[color:var(--background)] disabled:opacity-50"
-        >
-          {state.status === "submitting" ? "Subscribing…" : "Subscribe"}
-        </button>
+        <PublicCTA type="submit" variant="primary" disabled={!canSubmit}>
+          {state.status === "submitting" ? copy.submitting : copy.submit}
+        </PublicCTA>
         {state.status === "error" ? (
-          <span className="text-sm text-[color:var(--destructive)]">{state.message}</span>
+          <span className="text-sm text-[color:var(--hc-status-danger-text)]">{state.message}</span>
         ) : null}
       </div>
     </form>

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/styles/public-design.css";
 @source "../../../packages/ui/src";
 
 /* HenryCo Hub — shared account surface tokens + HQ command center */
@@ -108,78 +109,14 @@
 }
 
 /*
- * Homepage (company landing) theme layer.
- *
- * The bespoke homepage used to hardcode a single near-black palette
- * (bg-[#050816] / text-white). It now reads these --home-* tokens, which flip
- * with next-themes (.dark) exactly like the --acct- and --hc- systems above, so
- * the page follows system/light/dark with no per-class `dark:` variants.
- *
- * Light mode cannot reuse the dark-mode alpha ramp directly: white/50 on the
- * original near-black canvas clears contrast, but warm-ink/50 on paper does
- * not. Text tokens are therefore calibrated per theme while line/surface
- * tokens keep the original alpha behavior.
+ * Homepage (company landing) --home-* tokens now live in the shared design system:
+ *   packages/ui/src/styles/public-design.css  (imported at the top of this file).
+ * V3-PUBLIC-DESIGN-01 promoted them to packages/ui so every public site shares one
+ * source of truth, and added the accent ramp + type scale + section-rhythm + motion
+ * tokens the homepage was missing. See docs/v3/design-system.md. Do NOT redefine
+ * --home-* here — set the division accent (--accent / --accent-text) on the public
+ * subtree instead (the hub does this in app/(site)/layout.tsx).
  */
-:root {
-  --home-ink-rgb: 21 19 15; /* warm near-black ink on paper */
-  --home-canvas: #f7f5f0;
-  --home-canvas-deep: #efeae1;
-  --home-sheet: #ffffff;
-  --home-glass: rgba(247, 245, 240, 0.72);
-  --home-glass-strong: rgba(247, 245, 240, 0.92);
-  --home-ink: rgb(var(--home-ink-rgb));
-  --home-ink-92: #23201b;
-  --home-ink-90: #2a261f;
-  --home-ink-85: #332f27;
-  --home-ink-80: #3c372e;
-  --home-ink-75: #464139;
-  --home-ink-70: #514b43;
-  --home-ink-65: #5c554d;
-  --home-ink-60: #676057;
-  --home-ink-55: #6a645c;
-  --home-ink-50: #6e6860;
-  --home-ink-35: #8a837a;
-  --home-ink-30: #8a837a;
-  --home-line: rgb(var(--home-ink-rgb) / 0.1);
-  --home-line-08: rgb(var(--home-ink-rgb) / 0.08);
-  --home-line-12: rgb(var(--home-ink-rgb) / 0.12);
-  --home-line-15: rgb(var(--home-ink-rgb) / 0.15);
-  --home-surface: rgb(var(--home-ink-rgb) / 0.05);
-  --home-surface-02: rgb(var(--home-ink-rgb) / 0.02);
-  --home-surface-04: rgb(var(--home-ink-rgb) / 0.04);
-  --home-surface-07: rgb(var(--home-ink-rgb) / 0.07);
-  --home-surface-10: rgb(var(--home-ink-rgb) / 0.1);
-}
-.dark {
-  --home-ink-rgb: 255 255 255; /* paper ink on the original near-black canvas */
-  --home-canvas: #050816;
-  --home-canvas-deep: #050816;
-  --home-sheet: #0b1020;
-  --home-glass: rgba(5, 8, 22, 0.7);
-  --home-glass-strong: rgba(5, 8, 22, 0.95);
-  --home-ink: rgb(var(--home-ink-rgb));
-  --home-ink-92: rgb(var(--home-ink-rgb) / 0.92);
-  --home-ink-90: rgb(var(--home-ink-rgb) / 0.9);
-  --home-ink-85: rgb(var(--home-ink-rgb) / 0.85);
-  --home-ink-80: rgb(var(--home-ink-rgb) / 0.8);
-  --home-ink-75: rgb(var(--home-ink-rgb) / 0.75);
-  --home-ink-70: rgb(var(--home-ink-rgb) / 0.7);
-  --home-ink-65: rgb(var(--home-ink-rgb) / 0.65);
-  --home-ink-60: rgb(var(--home-ink-rgb) / 0.6);
-  --home-ink-55: rgb(var(--home-ink-rgb) / 0.55);
-  --home-ink-50: rgb(var(--home-ink-rgb) / 0.5);
-  --home-ink-35: rgb(var(--home-ink-rgb) / 0.35);
-  --home-ink-30: rgb(var(--home-ink-rgb) / 0.3);
-  --home-line: rgb(var(--home-ink-rgb) / 0.1);
-  --home-line-08: rgb(var(--home-ink-rgb) / 0.08);
-  --home-line-12: rgb(var(--home-ink-rgb) / 0.12);
-  --home-line-15: rgb(var(--home-ink-rgb) / 0.15);
-  --home-surface: rgb(var(--home-ink-rgb) / 0.05);
-  --home-surface-02: rgb(var(--home-ink-rgb) / 0.02);
-  --home-surface-04: rgb(var(--home-ink-rgb) / 0.04);
-  --home-surface-07: rgb(var(--home-ink-rgb) / 0.07);
-  --home-surface-10: rgb(var(--home-ink-rgb) / 0.1);
-}
 
 body {
   font-family: var(--acct-font-sans);
