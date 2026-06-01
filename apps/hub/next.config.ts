@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
   async headers() {
     return defaultSecurityHeadersConfig();
   },
+  // The canonical legal routes are /privacy and /terms. These 308s catch the
+  // conventional long-form URLs (and any external inbound links that assume
+  // them) so they resolve instead of 404ing. Page rendering is untouched.
+  async redirects() {
+    return [
+      { source: "/privacy-policy", destination: "/privacy", permanent: true },
+      { source: "/terms-of-service", destination: "/terms", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
