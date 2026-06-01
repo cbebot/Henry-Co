@@ -115,10 +115,10 @@
  * with next-themes (.dark) exactly like the --acct- and --hc- systems above, so
  * the page follows system/light/dark with no per-class `dark:` variants.
  *
- * Trick: one base channel `--home-ink-rgb` is set per theme; the alpha ramp
- * (--home-ink-65, --home-line, --home-surface, …) reads it via var(), and CSS
- * resolves those at the element's cascade — so each derived shade flips for
- * free. Light = warm ink on paper; dark = the original paper-on-near-black.
+ * Light mode cannot reuse the dark-mode alpha ramp directly: white/50 on the
+ * original near-black canvas clears contrast, but warm-ink/50 on paper does
+ * not. Text tokens are therefore calibrated per theme while line/surface
+ * tokens keep the original alpha behavior.
  */
 :root {
   --home-ink-rgb: 21 19 15; /* warm near-black ink on paper */
@@ -127,6 +127,28 @@
   --home-sheet: #ffffff;
   --home-glass: rgba(247, 245, 240, 0.72);
   --home-glass-strong: rgba(247, 245, 240, 0.92);
+  --home-ink: rgb(var(--home-ink-rgb));
+  --home-ink-92: #23201b;
+  --home-ink-90: #2a261f;
+  --home-ink-85: #332f27;
+  --home-ink-80: #3c372e;
+  --home-ink-75: #464139;
+  --home-ink-70: #514b43;
+  --home-ink-65: #5c554d;
+  --home-ink-60: #676057;
+  --home-ink-55: #6a645c;
+  --home-ink-50: #6e6860;
+  --home-ink-35: #8a837a;
+  --home-ink-30: #8a837a;
+  --home-line: rgb(var(--home-ink-rgb) / 0.1);
+  --home-line-08: rgb(var(--home-ink-rgb) / 0.08);
+  --home-line-12: rgb(var(--home-ink-rgb) / 0.12);
+  --home-line-15: rgb(var(--home-ink-rgb) / 0.15);
+  --home-surface: rgb(var(--home-ink-rgb) / 0.05);
+  --home-surface-02: rgb(var(--home-ink-rgb) / 0.02);
+  --home-surface-04: rgb(var(--home-ink-rgb) / 0.04);
+  --home-surface-07: rgb(var(--home-ink-rgb) / 0.07);
+  --home-surface-10: rgb(var(--home-ink-rgb) / 0.1);
 }
 .dark {
   --home-ink-rgb: 255 255 255; /* paper ink on the original near-black canvas */
@@ -135,10 +157,6 @@
   --home-sheet: #0b1020;
   --home-glass: rgba(5, 8, 22, 0.7);
   --home-glass-strong: rgba(5, 8, 22, 0.95);
-}
-/* Ink/line/surface ramp — declared once; reads --home-ink-rgb so it follows
-   whichever theme is active at the point of use. */
-:root {
   --home-ink: rgb(var(--home-ink-rgb));
   --home-ink-92: rgb(var(--home-ink-rgb) / 0.92);
   --home-ink-90: rgb(var(--home-ink-rgb) / 0.9);

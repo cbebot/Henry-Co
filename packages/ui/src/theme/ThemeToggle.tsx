@@ -8,10 +8,16 @@ import { cn } from "../cn";
 const MODES = ["light", "dark", "system"] as const;
 
 export function ThemeToggle({ className }: { className?: string }) {
+  const [mounted, setMounted] = React.useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const raw = theme ?? "system";
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const raw = mounted ? (theme ?? "system") : "system";
   const mode = (MODES.includes(raw as (typeof MODES)[number]) ? raw : "system") as (typeof MODES)[number];
-  const resolved = resolvedTheme === "dark" ? "dark" : "light";
+  const resolved = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const isDark = resolved === "dark";
 
   const cycle = () => {
