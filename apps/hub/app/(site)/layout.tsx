@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { Fraunces } from "next/font/google";
 import { headers } from "next/headers";
 import { LocaleProvider } from "@henryco/i18n/react";
 import {
@@ -15,6 +16,31 @@ import { getCompanySettings } from "../lib/company-settings";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
 import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
+
+/**
+ * Fraunces — the editorial serif display face of the HenryCo public design system
+ * (V3-PUBLIC-DESIGN-01). next/font self-hosts + subsets it (latin + latin-ext — the
+ * Latin-script locales), sets font-display:swap, preloads it, and via
+ * adjustFontFallback generates size-adjust/ascent-override metrics for the serif
+ * fallback so the swap holds CLS ~ 0 even on a slow-3G phone. Body stays system-sans
+ * (no web-font cost — mobile-first). Declared HERE (the public (site) layout) so the
+ * font loads ONLY on public routes, never on the owner/workspace dashboards. Exposed
+ * as --font-fraunces, which --home-font-display consumes (public-design.css).
+ */
+const fraunces = Fraunces({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-fraunces",
+  fallback: [
+    "Iowan Old Style",
+    "Palatino Linotype",
+    "Baskerville",
+    "Times New Roman",
+    "Times",
+    "serif",
+  ],
+  adjustFontFallback: true,
+});
 
 function toMetadataUrl(domain?: string | null) {
   const clean = String(domain || "").trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
@@ -160,7 +186,23 @@ export default async function SiteLayout({
   };
 
   return (
-    <HubPublicProviders>
+    // Scope the editorial serif (Fraunces) to the public subtree. --font-fraunces is
+    // set here by next/font's `.variable` class, so we (re)declare --home-font-display
+    // HERE too — on the same element — so its var(--font-fraunces) actually resolves
+    // (declaring it at :root would freeze it invalid before the font var exists). We
+    // also alias the homepage's existing display-font var to the system one, so the
+    // certified homepage adopts Fraunces with no component churn (refine, not redo).
+    <div
+      className={fraunces.variable}
+      style={
+        {
+          ["--home-font-display" as string]:
+            'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif',
+          ["--acct-font-display" as string]: "var(--home-font-display)",
+        } as CSSProperties
+      }
+    >
+      <HubPublicProviders>
         <LocaleProvider locale={locale}>
           <PublicSiteShell initialSettings={settings} accountChip={accountChip} copy={shellCopy}>
             {children}
@@ -168,5 +210,6 @@ export default async function SiteLayout({
           <EcosystemPreferences copy={consentCopy} initialLocale={locale} />
         </LocaleProvider>
       </HubPublicProviders>
+    </div>
   );
 }

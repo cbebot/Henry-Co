@@ -27,10 +27,9 @@ function deriveYearEstablished(settings: CompanySettingsRecord): string | null {
 /**
  * AboutHonestBlock — a single editorial paragraph + a "By the numbers" ledger
  * computed from real config, plus a founder note. Figures with no real value
- * are omitted (no "—" filler that reads as empty), and the note is a clean
- * editorial card with real links — the former dashed empty-avatar placeholder
- * is gone, in keeping with the "concrete divisions over team-photo grids"
- * direction (V3 PASS 21).
+ * are omitted (no "—" filler that reads as empty). V3-PUBLIC-DESIGN-01 moved it
+ * onto the theme-aware `--home-*` public design system so it matches the rest of
+ * the now-light/dark hub (it previously hardcoded a permanent-dark palette).
  */
 export default function AboutHonestBlock({
   settings,
@@ -59,16 +58,12 @@ export default function AboutHonestBlock({
   ];
 
   return (
-    <section className="mx-auto max-w-[88rem] px-5 py-14 sm:px-8 lg:px-10">
-      <div className="grid gap-12 border-t border-white/10 pt-12 lg:grid-cols-[1.1fr_0.9fr]">
+    <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8 lg:px-8">
+      <div className="grid gap-12 border-t border-[color:var(--home-line)] pt-12 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-            {copy.eyebrow}
-          </p>
-          <h2 className="mt-4 max-w-2xl text-balance text-[1.55rem] font-semibold leading-[1.18] tracking-[-0.012em] text-white sm:text-[1.95rem]">
-            {copy.title}
-          </h2>
-          <p className="mt-5 max-w-2xl text-pretty text-[15px] leading-[1.75] text-white/74 sm:text-base">
+          <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.eyebrow}</p>
+          <h2 className="home-headline mt-4 max-w-2xl text-balance">{copy.title}</h2>
+          <p className="mt-5 max-w-2xl text-pretty text-[15px] leading-[1.75] text-[color:var(--home-ink-65)] sm:text-base">
             {copy.body}
           </p>
 
@@ -77,12 +72,10 @@ export default function AboutHonestBlock({
               {figures.map((figure) => (
                 <div
                   key={figure.label}
-                  className="border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
+                  className="border-t border-[color:var(--home-line)] pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
                 >
-                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
-                    {figure.label}
-                  </dt>
-                  <dd className="mt-2 text-[1.45rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.65rem]">
+                  <dt className="home-eyebrow text-[color:var(--home-ink-50)]">{figure.label}</dt>
+                  <dd className="mt-2 text-[1.45rem] font-semibold leading-tight tracking-tight text-[color:var(--home-ink)] sm:text-[1.65rem]">
                     {figure.value}
                   </dd>
                 </div>
@@ -92,26 +85,24 @@ export default function AboutHonestBlock({
         </div>
 
         <aside className="lg:pt-2">
-          <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.02] p-6 sm:p-8">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-              {copy.founderEyebrow}
-            </p>
-            <p className="mt-4 text-base font-semibold tracking-tight text-white">
+          <div className="rounded-[1.6rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-6 sm:p-8">
+            <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.founderEyebrow}</p>
+            <p className="mt-4 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
               {copy.founderPlaceholderTitle}
             </p>
-            <p className="mt-3 text-[13.5px] leading-7 text-white/72">
+            <p className="mt-3 text-[13.5px] leading-7 text-[color:var(--home-ink-65)]">
               {copy.founderPlaceholderBody}
             </p>
-            <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
+            <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
               {noteLinks.map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="group flex items-center justify-between gap-3 py-3 text-sm font-medium text-white/82 transition hover:text-white"
+                    className="home-focus group flex items-center justify-between gap-3 py-3 text-sm font-medium text-[color:var(--home-ink-70)] transition hover:text-[color:var(--home-ink)]"
                   >
                     <span>{link.label}</span>
                     <ArrowUpRight
-                      className="h-4 w-4 shrink-0 text-[#d6a851] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      className="h-4 w-4 shrink-0 text-[color:var(--home-accent-text)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                       aria-hidden
                     />
                   </a>

@@ -11,14 +11,14 @@ function itemKey(item: CompanyPageItem, index: number) {
 /**
  * Editorial company-page section.
  *
- * Replaces the former "every section is a floating glass card, every item is a
- * dark rounded card in a 3-up grid" treatment with a ruled editorial document:
- * numbered sections separated by hairlines, with items rendered as a
- * hairline-divided register (heading · optional value · prose) rather than a
- * card grid. Section `id`s (anchor + scroll-spy targets), field shapes, and the
- * layout enum are all unchanged — this is a presentation layer only, so the
- * CMS-driven, statute-cited legal copy renders identically, just with real
- * editorial hierarchy instead of a monotonous card stack.
+ * PR #177 replaced the "wall of glass cards" with a ruled editorial register;
+ * V3-PUBLIC-DESIGN-01 then moved it onto the shared `--home-*` token system so it
+ * is theme-aware (warm paper ⇄ near-black) and uses the brand accent
+ * (--home-accent-text) instead of the divergent hardcoded gold. Section heads use
+ * the editorial serif (.home-headline → Fraunces); dense register rows stay system
+ * sans for legibility across long legal documents. Section `id`s, field shapes, and
+ * the layout enum are unchanged — presentation only; the statute-cited CMS copy
+ * renders identically, now with real hierarchy AND theme parity.
  */
 export default function SectionBlock({
   section,
@@ -34,36 +34,36 @@ export default function SectionBlock({
   return (
     <section
       id={section.id || `section-${index + 1}`}
-      className="relative scroll-mt-28 border-t border-white/12 pt-10 first:border-t-0 first:pt-0"
+      className="relative scroll-mt-28 border-t border-[color:var(--home-line-12)] pt-10 first:border-t-0 first:pt-0"
     >
       {hasHeader ? (
         <div className="flex gap-4 sm:gap-6">
           <span
             aria-hidden
-            className="hidden shrink-0 select-none pt-1.5 font-mono text-xs tracking-widest text-[#d6a851]/70 sm:block"
+            className="home-num hidden shrink-0 select-none pt-1.5 text-xs tracking-widest text-[color:var(--home-accent-text)] opacity-70 sm:block"
           >
             {sectionNumber}
           </span>
           <div className="max-w-3xl">
             {section.eyebrow ? (
-              <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#d6a851]">
+              <div className="home-eyebrow text-[color:var(--home-accent-text)]">
                 {section.eyebrow}
               </div>
             ) : null}
             {section.title ? (
-              <h2 className="mt-3 text-balance text-xl font-semibold tracking-tight text-white sm:text-2xl">
-                {section.title}
-              </h2>
+              <h2 className="home-headline mt-3 text-balance">{section.title}</h2>
             ) : null}
             {section.body ? (
-              <p className="mt-3 text-[15px] leading-8 text-white/74">{section.body}</p>
+              <p className="mt-3 text-[15px] leading-8 text-[color:var(--home-ink-70)]">
+                {section.body}
+              </p>
             ) : null}
           </div>
         </div>
       ) : null}
 
       {section.image_url ? (
-        <div className="mt-7 overflow-hidden rounded-2xl border border-white/10">
+        <div className="mt-7 overflow-hidden rounded-2xl border border-[color:var(--home-line)]">
           <Image
             src={section.image_url}
             alt={section.title || "Section visual"}
@@ -77,7 +77,7 @@ export default function SectionBlock({
 
       {items.length ? (
         <div
-          className={`divide-y divide-white/10 border-y border-white/10 ${
+          className={`divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)] ${
             hasHeader ? "mt-7" : "mt-2"
           }`}
         >
@@ -107,26 +107,30 @@ function SectionItem({ item }: { item: CompanyPageItem }) {
           href ? (
             <a
               href={href}
-              className="group inline-flex items-center gap-1.5 text-[15px] font-semibold tracking-tight text-white transition-colors hover:text-[#e3b966]"
+              className="home-focus group inline-flex items-center gap-1.5 text-[15px] font-semibold tracking-tight text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)]"
             >
               {heading}
               <ArrowUpRight
-                className="h-3.5 w-3.5 text-[#d6a851] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                className="h-3.5 w-3.5 text-[color:var(--home-accent-text)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 aria-hidden
               />
             </a>
           ) : (
-            <h3 className="text-[15px] font-semibold tracking-tight text-white">{heading}</h3>
+            <h3 className="text-[15px] font-semibold tracking-tight text-[color:var(--home-ink)]">
+              {heading}
+            </h3>
           )
         ) : null}
         {item.value ? (
-          <span className="shrink-0 text-right text-sm font-semibold tracking-tight text-white/82">
+          <span className="home-num shrink-0 text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink-80)]">
             {item.value}
           </span>
         ) : null}
       </div>
       {item.body ? (
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-white/72">{item.body}</p>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-[color:var(--home-ink-65)]">
+          {item.body}
+        </p>
       ) : null}
     </div>
   );
