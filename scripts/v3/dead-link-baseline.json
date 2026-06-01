@@ -1,6 +1,11 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-05-29T01:28:45.604Z",
+  "generatedAt": "2026-06-01T23:01:55.793Z",
   "note": "V3-06 dead-link baseline. Fingerprints of DEAD/LEGACY entries acknowledged at baseline time. --check fails only on NEW fingerprints.",
-  "deadLegacyFingerprints": []
+  "deadLegacyFingerprints": [
+    "apps/cms/app/(app)/_components/AppShell.tsx:44|router|/login",
+    "apps/cms/app/auth/confirm/route.ts:52|next-redirect|/no-access",
+    "apps/cms/app/no-access/page.tsx:25|href|/login",
+    "apps/cms/app/page.tsx:7|redirect|/dashboard"
+  ]
 }

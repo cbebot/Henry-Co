@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@import "../../../packages/ui/src/styles/globals.css";
+@source "../../../packages/ui/src";
+
+/* Henry & Co. Owner CMS — command chrome tokens (gold on navy), mirroring the
+   hub owner surface so the standalone CMS reads as the same premium system. */
+:root {
+  --acct-bg: #fafaf8;
+  --acct-bg-soft: #ffffff;
+  --acct-bg-elevated: #ffffff;
+  --acct-surface: #f5f3ef;
+  --acct-line: #e8e4dd;
+  --acct-ink: #1a1814;
+  --acct-muted: #6b6560;
+
+  --hc-bg: var(--acct-bg);
+  --hc-bg-soft: var(--acct-bg-soft);
+  --hc-surface: var(--acct-bg-soft);
+  --hc-surface-elevated: var(--acct-bg-elevated);
+  --hc-paper: var(--acct-surface);
+  --hc-ink: var(--acct-ink);
+  --hc-ink-soft: rgba(26, 24, 20, 0.72);
+  --hc-ink-muted: var(--acct-muted);
+  --hc-line: var(--acct-line);
+  --hc-accent: #c9a227;
+  --hc-accent-strong: #a88718;
+  --hc-accent-soft: #f7f0d8;
+  --hc-accent-text: #8a6f00;
+  --hc-focus-ring: #c9a227;
+
+  --owner-accent: #d4af37;
+  --owner-accent-soft: rgba(212, 175, 55, 0.12);
+  --owner-navy: #0f172a;
+  --owner-sidebar-width: 288px;
+  --owner-font-display:
+    "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
+}
+
+.dark {
+  --acct-bg: #0b0f14;
+  --acct-bg-soft: #141920;
+  --acct-bg-elevated: #1a2028;
+  --acct-surface: #1e252e;
+  --acct-line: #2a3140;
+  --acct-ink: #f0ede8;
+  --acct-muted: #8e8a84;
+
+  --hc-accent: #d4af37;
+  --hc-accent-soft: rgba(212, 175, 55, 0.12);
+  --hc-accent-text: #e8cf7a;
+}
