@@ -46,10 +46,10 @@ export function HomeFooter({
   ];
 
   return (
-    <footer className="relative border-t border-white/10 bg-[#050816] text-white">
+    <footer className="relative border-t border-[color:var(--home-line)] bg-[color:var(--home-canvas-deep)] text-[color:var(--home-ink)]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--home-line-15)] to-transparent"
       />
 
       <motion.div
@@ -75,7 +75,7 @@ export function HomeFooter({
             className="h-px w-16 bg-[color:var(--accent)]"
           />
           {brandFooterBlurb ? (
-            <p className="max-w-2xl text-balance text-base leading-relaxed text-white/65">
+            <p className="max-w-2xl text-balance text-base leading-relaxed text-[color:var(--home-ink-65)]">
               {brandFooterBlurb}
             </p>
           ) : null}
@@ -86,9 +86,9 @@ export function HomeFooter({
           <motion.nav
             variants={motionV.reveal}
             aria-label={copy.footer.exploreDivisions}
-            className="border-t border-white/10 py-12"
+            className="border-t border-[color:var(--home-line)] py-12"
           >
-            <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
+            <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
               {copy.footer.exploreDivisions}
             </h2>
             <ul className="mt-6 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -96,16 +96,16 @@ export function HomeFooter({
                 <li key={division.key}>
                   <a
                     href={division.primary_url ?? "#engines"}
-                    className="group flex items-center gap-3 border-t border-white/[0.08] py-3.5 transition-colors hover:bg-white/[0.02]"
+                    className="group flex items-center gap-3 border-t border-[color:var(--home-line-08)] py-3.5 transition-colors hover:bg-[color:var(--home-surface-02)]"
                   >
                     <span
-                      className="shrink-0 font-medium text-white/85 transition-colors group-hover:text-white"
+                      className="shrink-0 font-medium text-[color:var(--home-ink-85)] transition-colors group-hover:text-[color:var(--home-ink)]"
                       style={{ fontFamily: "var(--acct-font-display)" }}
                     >
                       {division.name}
                     </span>
                     {division.tagline ? (
-                      <span className="min-w-0 flex-1 truncate text-sm text-white/50 transition-colors group-hover:text-white/60">
+                      <span className="min-w-0 flex-1 truncate text-sm text-[color:var(--home-ink-50)] transition-colors group-hover:text-[color:var(--home-ink-60)]">
                         {division.tagline}
                       </span>
                     ) : (
@@ -113,7 +113,7 @@ export function HomeFooter({
                     )}
                     <ArrowUpRight
                       aria-hidden
-                      className="h-4 w-4 shrink-0 text-white/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[color:var(--accent)]"
+                      className="h-4 w-4 shrink-0 text-[color:var(--home-ink-30)] transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[color:var(--accent)]"
                     />
                   </a>
                 </li>
@@ -125,7 +125,7 @@ export function HomeFooter({
         {/* BAND 3 — company + global pages as inline rows, not stacked cards */}
         <motion.div
           variants={motionV.reveal}
-          className="border-t border-white/10 py-12"
+          className="border-t border-[color:var(--home-line)] py-12"
         >
           <h2 className="sr-only">{copy.footer.companyPages}</h2>
           <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
@@ -137,7 +137,7 @@ export function HomeFooter({
         {/* BAND 4 — baseline: copyright + the maker's mark */}
         <motion.div
           variants={motionV.reveal}
-          className="flex flex-col gap-4 border-t border-white/10 py-8 text-sm text-white/50 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-4 border-t border-[color:var(--home-line)] py-8 text-sm text-[color:var(--home-ink-50)] sm:flex-row sm:items-center sm:justify-between"
         >
           <p>{`© ${year} ${brandTitle}. ${copy.footer.copyrightAllRightsReserved}`}</p>
           <p className="flex items-center gap-2">
@@ -162,7 +162,7 @@ function FooterLinkGroup({
 }) {
   return (
     <nav aria-label={label} className="flex flex-col gap-3">
-      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
+      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
         {label}
       </span>
       <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -170,7 +170,7 @@ function FooterLinkGroup({
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-sm text-white/60 transition-colors hover:text-white"
+              className="text-sm text-[color:var(--home-ink-60)] transition-colors hover:text-[color:var(--home-ink)]"
             >
               {link.label}
             </Link>

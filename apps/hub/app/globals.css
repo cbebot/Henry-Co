@@ -107,6 +107,62 @@
   --hc-focus-ring: #D4AF37;
 }
 
+/*
+ * Homepage (company landing) theme layer.
+ *
+ * The bespoke homepage used to hardcode a single near-black palette
+ * (bg-[#050816] / text-white). It now reads these --home-* tokens, which flip
+ * with next-themes (.dark) exactly like the --acct- and --hc- systems above, so
+ * the page follows system/light/dark with no per-class `dark:` variants.
+ *
+ * Trick: one base channel `--home-ink-rgb` is set per theme; the alpha ramp
+ * (--home-ink-65, --home-line, --home-surface, …) reads it via var(), and CSS
+ * resolves those at the element's cascade — so each derived shade flips for
+ * free. Light = warm ink on paper; dark = the original paper-on-near-black.
+ */
+:root {
+  --home-ink-rgb: 21 19 15; /* warm near-black ink on paper */
+  --home-canvas: #f7f5f0;
+  --home-canvas-deep: #efeae1;
+  --home-sheet: #ffffff;
+  --home-glass: rgba(247, 245, 240, 0.72);
+  --home-glass-strong: rgba(247, 245, 240, 0.92);
+}
+.dark {
+  --home-ink-rgb: 255 255 255; /* paper ink on the original near-black canvas */
+  --home-canvas: #050816;
+  --home-canvas-deep: #050816;
+  --home-sheet: #0b1020;
+  --home-glass: rgba(5, 8, 22, 0.7);
+  --home-glass-strong: rgba(5, 8, 22, 0.95);
+}
+/* Ink/line/surface ramp — declared once; reads --home-ink-rgb so it follows
+   whichever theme is active at the point of use. */
+:root {
+  --home-ink: rgb(var(--home-ink-rgb));
+  --home-ink-92: rgb(var(--home-ink-rgb) / 0.92);
+  --home-ink-90: rgb(var(--home-ink-rgb) / 0.9);
+  --home-ink-85: rgb(var(--home-ink-rgb) / 0.85);
+  --home-ink-80: rgb(var(--home-ink-rgb) / 0.8);
+  --home-ink-75: rgb(var(--home-ink-rgb) / 0.75);
+  --home-ink-70: rgb(var(--home-ink-rgb) / 0.7);
+  --home-ink-65: rgb(var(--home-ink-rgb) / 0.65);
+  --home-ink-60: rgb(var(--home-ink-rgb) / 0.6);
+  --home-ink-55: rgb(var(--home-ink-rgb) / 0.55);
+  --home-ink-50: rgb(var(--home-ink-rgb) / 0.5);
+  --home-ink-35: rgb(var(--home-ink-rgb) / 0.35);
+  --home-ink-30: rgb(var(--home-ink-rgb) / 0.3);
+  --home-line: rgb(var(--home-ink-rgb) / 0.1);
+  --home-line-08: rgb(var(--home-ink-rgb) / 0.08);
+  --home-line-12: rgb(var(--home-ink-rgb) / 0.12);
+  --home-line-15: rgb(var(--home-ink-rgb) / 0.15);
+  --home-surface: rgb(var(--home-ink-rgb) / 0.05);
+  --home-surface-02: rgb(var(--home-ink-rgb) / 0.02);
+  --home-surface-04: rgb(var(--home-ink-rgb) / 0.04);
+  --home-surface-07: rgb(var(--home-ink-rgb) / 0.07);
+  --home-surface-10: rgb(var(--home-ink-rgb) / 0.1);
+}
+
 body {
   font-family: var(--acct-font-sans);
   background: var(--acct-bg);
