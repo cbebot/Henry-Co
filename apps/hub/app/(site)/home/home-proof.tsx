@@ -40,7 +40,7 @@ export function HomeProof({ copy, divisions, divisionStats }: HomeProofProps) {
   const studioHref = studio?.primary_url ?? null;
 
   return (
-    <section id="proof" className="relative scroll-mt-24 border-t border-white/10">
+    <section id="proof" className="relative scroll-mt-24 border-t border-[color:var(--home-line)]">
       <motion.div
         className="mx-auto w-full max-w-6xl px-6 py-24 sm:px-8 sm:py-28 lg:py-32"
         variants={m.stagger}
@@ -49,11 +49,11 @@ export function HomeProof({ copy, divisions, divisionStats }: HomeProofProps) {
         viewport={{ once: true, margin: "-12% 0px -10% 0px" }}
       >
         <motion.header variants={m.reveal} className="max-w-3xl">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
             {copy.proof.kicker}
           </p>
           <h2
-            className="mt-4 text-balance text-2xl font-semibold leading-[1.15] tracking-tight text-white sm:text-3xl lg:text-4xl"
+            className="mt-4 text-balance text-2xl font-semibold leading-[1.15] tracking-tight text-[color:var(--home-ink)] sm:text-3xl lg:text-4xl"
             style={{ fontFamily: "var(--acct-font-display)" }}
           >
             {copy.proof.lead}
@@ -62,19 +62,19 @@ export function HomeProof({ copy, divisions, divisionStats }: HomeProofProps) {
 
         {ledger.length > 0 ? (
           <motion.div variants={m.reveal} className="mt-14 sm:mt-16">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
               {copy.standard.proofRailLabel}
             </p>
-            <motion.dl variants={m.stagger} className="mt-6 border-t border-white/10">
+            <motion.dl variants={m.stagger} className="mt-6 border-t border-[color:var(--home-line)]">
               {ledger.map((entry) => (
                 <motion.div
                   key={entry.id}
                   variants={m.reveal}
-                  className="flex items-baseline justify-between gap-6 border-b border-white/10 py-4"
+                  className="flex items-baseline justify-between gap-6 border-b border-[color:var(--home-line)] py-4"
                 >
-                  <dt className="text-sm text-white/55">{entry.name}</dt>
+                  <dt className="text-sm text-[color:var(--home-ink-55)]">{entry.name}</dt>
                   <dd
-                    className="text-sm tabular-nums text-white/85"
+                    className="text-sm tabular-nums text-[color:var(--home-ink-85)]"
                     style={{ fontFamily: "var(--hc-font-mono)" }}
                   >
                     {entry.metric}
@@ -89,14 +89,14 @@ export function HomeProof({ copy, divisions, divisionStats }: HomeProofProps) {
           {studioHref ? (
             <a
               href={studioHref}
-              className="group inline-flex items-center gap-2.5 rounded-sm text-sm text-white/65 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              className="group inline-flex items-center gap-2.5 rounded-sm text-sm text-[color:var(--home-ink-65)] transition-colors hover:text-[color:var(--home-ink)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-ink-70)]"
             >
               <span aria-hidden className="inline-block h-1.5 w-1.5 rotate-45 bg-[color:var(--accent)]" />
               {copy.proof.makersMark}
-              <ArrowUpRight className="h-4 w-4 text-white/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[color:var(--accent)]" />
+              <ArrowUpRight className="h-4 w-4 text-[color:var(--home-ink-30)] transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[color:var(--accent)]" />
             </a>
           ) : (
-            <p className="inline-flex items-center gap-2.5 text-sm text-white/65">
+            <p className="inline-flex items-center gap-2.5 text-sm text-[color:var(--home-ink-65)]">
               <span aria-hidden className="inline-block h-1.5 w-1.5 rotate-45 bg-[color:var(--accent)]" />
               {copy.proof.makersMark}
             </p>

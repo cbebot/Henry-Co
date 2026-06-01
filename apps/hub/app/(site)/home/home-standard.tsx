@@ -75,7 +75,7 @@ export function HomeStandard({
         {heroWelcome ? (
           <motion.p
             variants={m.reveal}
-            className="mb-7 inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-white/50"
+            className="mb-7 inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]"
           >
             <span aria-hidden className="inline-block h-1.5 w-1.5 rotate-45 bg-[color:var(--accent)]" />
             {heroWelcome}
@@ -92,7 +92,7 @@ export function HomeStandard({
 
         <motion.p
           variants={m.reveal}
-          className="mt-6 max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg"
+          className="mt-6 max-w-2xl text-base leading-relaxed text-[color:var(--home-ink-65)] sm:text-lg"
         >
           {copy.standard.sub}
         </motion.p>
@@ -100,7 +100,7 @@ export function HomeStandard({
         <motion.div variants={m.reveal} className="mt-9">
           <a
             href="#engines"
-            className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-medium text-white transition-colors hover:border-[color:var(--accent)] hover:bg-white/[0.07] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="group inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] px-6 py-3 text-sm font-medium text-[color:var(--home-ink)] transition-colors hover:border-[color:var(--accent)] hover:bg-[color:var(--home-surface-07)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-ink-70)]"
           >
             {copy.standard.ctaPrimary}
             <ArrowDown className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
@@ -108,8 +108,8 @@ export function HomeStandard({
         </motion.div>
 
         {hasRail ? (
-          <motion.div variants={m.reveal} className="mt-16 border-t border-white/10 pt-8">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
+          <motion.div variants={m.reveal} className="mt-16 border-t border-[color:var(--home-line)] pt-8">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
               {copy.standard.proofRailLabel}
             </p>
 
@@ -121,11 +121,11 @@ export function HomeStandard({
                     variants={m.countUp}
                     className="flex flex-col-reverse gap-1"
                   >
-                    <dt className="text-[11px] uppercase tracking-[0.2em] text-white/50">
+                    <dt className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--home-ink-50)]">
                       {cell.label}
                     </dt>
                     <dd
-                      className="text-3xl font-semibold tabular-nums text-white sm:text-4xl"
+                      className="text-3xl font-semibold tabular-nums text-[color:var(--home-ink)] sm:text-4xl"
                       style={{ fontFamily: "var(--hc-font-mono)" }}
                     >
                       {cell.value}
@@ -140,12 +140,12 @@ export function HomeStandard({
                 {liveMetrics.map((lm) => (
                   <li key={lm.id} className="flex items-baseline gap-2">
                     <span
-                      className="text-sm text-white/85"
+                      className="text-sm text-[color:var(--home-ink-85)]"
                       style={{ fontFamily: "var(--hc-font-mono)" }}
                     >
                       {lm.metric}
                     </span>
-                    <span className="text-xs text-white/50">{lm.name}</span>
+                    <span className="text-xs text-[color:var(--home-ink-50)]">{lm.name}</span>
                   </li>
                 ))}
               </ul>

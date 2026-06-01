@@ -63,7 +63,7 @@ export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) 
         initial="rest"
         whileHover="active"
         whileFocus="active"
-        className="group relative block rounded-sm border-b border-white/10 px-1 py-7 outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:py-8"
+        className="group relative block rounded-sm border-b border-[color:var(--home-line)] px-1 py-7 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-ink-70)] sm:py-8"
       >
         <motion.span
           aria-hidden
@@ -80,20 +80,20 @@ export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) 
         >
           <span className="flex flex-col gap-1">
             <span
-              className="text-2xl font-semibold tracking-tight text-white/85 transition-colors duration-300 group-hover:text-white group-focus-visible:text-white sm:text-3xl"
+              className="text-2xl font-semibold tracking-tight text-[color:var(--home-ink-85)] transition-colors duration-300 group-hover:text-[color:var(--home-ink)] group-focus-visible:text-[color:var(--home-ink)] sm:text-3xl"
               style={{ fontFamily: "var(--acct-font-display)" }}
             >
               {division.name}
             </span>
             {category ? (
-              <span className="text-[11px] uppercase tracking-[0.22em] text-white/50">
+              <span className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                 {category}
               </span>
             ) : null}
           </span>
 
           {division.tagline ? (
-            <span className="min-w-0 truncate text-sm text-white/55 transition-colors duration-300 group-hover:text-white/75 sm:text-base">
+            <span className="min-w-0 truncate text-sm text-[color:var(--home-ink-55)] transition-colors duration-300 group-hover:text-[color:var(--home-ink-75)] sm:text-base">
               {division.tagline}
             </span>
           ) : (
@@ -105,8 +105,8 @@ export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) 
               <span
                 className={
                   isLive
-                    ? "text-sm tabular-nums text-white/80"
-                    : "text-sm text-white/70 transition-colors duration-300 group-hover:text-white"
+                    ? "text-sm tabular-nums text-[color:var(--home-ink-80)]"
+                    : "text-sm text-[color:var(--home-ink-70)] transition-colors duration-300 group-hover:text-[color:var(--home-ink)]"
                 }
                 style={isLive ? { fontFamily: "var(--hc-font-mono)" } : undefined}
               >
@@ -115,7 +115,7 @@ export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) 
             ) : null}
             <ArrowUpRight
               aria-hidden
-              className="h-4 w-4 shrink-0 text-white/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[color:var(--accent)] group-focus-visible:text-[color:var(--accent)]"
+              className="h-4 w-4 shrink-0 text-[color:var(--home-ink-30)] transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[color:var(--accent)] group-focus-visible:text-[color:var(--accent)]"
             />
           </span>
         </motion.div>
