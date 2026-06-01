@@ -149,7 +149,7 @@ export function SupportThreadExportDocument({ thread, customer, messages }: Supp
 
       <LegalFooter
         lines={[
-          "Attachment file content is intentionally not embedded in this export — only the file name and MIME type are listed. Use HenryCo support to retrieve the original files.",
+          "Attachment file content is intentionally not embedded in this export — only the file name and MIME type are listed. Use Henry & Co. support to retrieve the original files.",
           "This is a snapshot of the thread at export time. Subsequent replies will not appear here; re-export the thread for the latest record.",
         ]}
       />

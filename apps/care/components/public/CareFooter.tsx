@@ -106,7 +106,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
         <FooterColumn
           title="HenryCo"
           items={[
-            { href: getHubUrl("/"), label: t("HenryCo group"), external: true },
+            { href: getHubUrl("/"), label: t("Henry & Co."), external: true },
             { href: getHubUrl("/preferences"), label: t("Preferences"), external: true },
             { href: getHubUrl("/privacy"), label: t("Privacy"), external: true },
             { href: getHubUrl("/terms"), label: t("Terms"), external: true },

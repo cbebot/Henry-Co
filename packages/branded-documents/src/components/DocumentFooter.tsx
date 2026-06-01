@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { COMPANY } from "@henryco/config";
 import { BrandedMonogram } from "./BrandMarks";
 import { letterSpacing, palette, typeScale } from "../tokens";
 
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export function DocumentFooter({ legal = "Henry & Co. — every business under one trusted name." }: DocumentFooterProps) {
+export function DocumentFooter({ legal = `${COMPANY.group.legalName} — every business under one trusted name.` }: DocumentFooterProps) {
   return (
     <View style={styles.wrap} fixed>
       <View style={styles.left}>

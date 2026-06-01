@@ -162,7 +162,7 @@ export function PropertyListingDocument({ listing, agent }: PropertyListingProps
       <LegalFooter
         lines={[
           "Listing data is published for marketing purposes. Final terms — including price, condition, and availability — are confirmed in writing through the agent above.",
-          "HenryCo Property does not act as principal for any sale or lease unless explicitly stated; brokerage fees are governed by the engagement agreement.",
+          "Henry Holdings Limited does not act as principal for any sale or lease unless explicitly stated; brokerage fees are governed by the engagement agreement.",
         ]}
       />
     </BrandedDocument>

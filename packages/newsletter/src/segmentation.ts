@@ -213,7 +213,7 @@ export const DEFAULT_SEGMENTS: Array<Pick<NewsletterAudienceSegment, "key" | "la
   {
     key: "company_newsletter_all_optins",
     label: "Company newsletter — all active opt-ins",
-    description: "Anyone who opted into the HenryCo Group Digest and is not suppressed.",
+    description: "Anyone who opted into the Henry & Co. Digest and is not suppressed.",
     criteria: {
       topics: ["company_digest"],
       excludeSupportSensitive: true,

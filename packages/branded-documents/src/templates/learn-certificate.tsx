@@ -212,7 +212,7 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
   return (
     <Document
       title={`Certificate ${certificate.certificateNo} — ${certificate.learnerName}`}
-      author="Henry & Co. — HenryCo Learn"
+      author="Henry Holdings Limited — HenryCo Learn"
       subject={`Certificate of completion for ${certificate.courseTitle}`}
       keywords={`certificate, henryco learn, ${certificate.courseTitle}, ${certificate.certificateNo}`}
       creator="HenryCo Branded Documents"

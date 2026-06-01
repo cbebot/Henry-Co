@@ -1,3 +1,5 @@
+import { COMPANY } from "@henryco/config";
+
 export type CompanySettingsRecord = {
   id: string;
   company_name: string | null;
@@ -64,27 +66,27 @@ export function normalizeCompanySettings(input?: CompanySettingsInput): CompanyS
     support_email: toNullableText(source.support_email),
     support_phone: toNullableText(source.support_phone),
     address: toNullableText(source.address) ?? officeAddress,
-    legal_name: toText(source.legal_name, "Henry & Co."),
-    brand_title: toText(source.brand_title, "Henry & Co."),
+    legal_name: toText(source.legal_name, COMPANY.group.legalName),
+    brand_title: toText(source.brand_title, COMPANY.group.name),
     brand_subtitle: toText(source.brand_subtitle, "Corporate Platform"),
     brand_description: toText(
       source.brand_description,
-      "Henry & Co. brings together focused businesses under one respected group identity."
+      "Henry & Co. brings together focused businesses under one respected company identity."
     ),
     footer_blurb: toText(
       source.footer_blurb,
-      "Henry & Co. provides a clear way to understand the group and reach the right business with confidence."
+      "Henry & Co. provides a clear way to understand the company and reach the right business with confidence."
     ),
     base_domain: toText(source.base_domain, "henrycogroup.com"),
     office_address: officeAddress,
     brand_accent: toText(source.brand_accent, "#C9A227"),
     favicon_url: toNullableText(source.favicon_url),
     favicon_public_id: toNullableText(source.favicon_public_id),
-    default_meta_title: toText(source.default_meta_title, "Henry & Co."),
+    default_meta_title: toText(source.default_meta_title, COMPANY.group.name),
     default_meta_description: toText(
       source.default_meta_description,
       "Explore the businesses, services, and operating divisions of Henry & Co."
     ),
-    copyright_label: toText(source.copyright_label, "Henry & Co."),
+    copyright_label: toText(source.copyright_label, COMPANY.group.legalName),
   };
 }

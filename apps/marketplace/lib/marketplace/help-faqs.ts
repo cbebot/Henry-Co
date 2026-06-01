@@ -172,7 +172,7 @@ export const MARKETPLACE_FAQS: MarketplaceFaqCategory[] = [
         id: "create-account",
         question: "How do I create a HenryCo account?",
         answer:
-          "Tap Sign up and use your email or phone number. The account works across the entire HenryCo group — Marketplace, Care, Property, Logistics, Studio, Jobs, and Learn — so you only ever sign in once.",
+          "Tap Sign up and use your email or phone number. The account works across Henry & Co. — Marketplace, Care, Property, Logistics, Studio, Jobs, and Learn — so you only ever sign in once.",
       },
       {
         id: "forgot-password",

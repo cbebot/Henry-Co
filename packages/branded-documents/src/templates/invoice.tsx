@@ -202,7 +202,7 @@ export function InvoiceDocument({ invoice, customer, issuer }: InvoiceProps) {
 
       <LegalFooter
         lines={[
-          "This invoice is issued under HenryCo unified billing. The originating division remains the source of truth for delivery, dispute, and refund terms.",
+          "This invoice is issued by Henry Holdings Limited under unified billing. The originating division remains the source of truth for delivery, dispute, and refund terms.",
           "Payments are recognised once the originating gateway confirms settlement; the status above reflects the most recent reconciliation snapshot.",
         ]}
       />

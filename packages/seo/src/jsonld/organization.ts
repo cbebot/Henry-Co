@@ -23,9 +23,9 @@ export function buildOrganizationLd(opts: OrganizationOptions): JsonLdNode {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${url}#organization`,
-    name: division.name,
-    legalName:
-      opts.key === "hub" ? COMPANY.group.legalName : `${COMPANY.group.legalName} — ${division.shortName}`,
+    name: COMPANY.group.name,
+    legalName: COMPANY.group.legalName,
+    alternateName: opts.key === "hub" ? undefined : division.name,
     description: division.description,
     url,
     logo,
@@ -38,7 +38,8 @@ export function buildOrganizationLd(opts: OrganizationOptions): JsonLdNode {
         : {
             "@type": "Organization",
             "@id": `https://${COMPANY.group.baseDomain}#organization`,
-            name: COMPANY.group.legalName,
+            name: COMPANY.group.name,
+            legalName: COMPANY.group.legalName,
             url: `https://${COMPANY.group.baseDomain}`,
           },
   };

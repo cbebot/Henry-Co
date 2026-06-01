@@ -540,7 +540,7 @@ const publicCatalog: CrossDivisionSearchResult[] = [
     type: "job_listing",
     title: "Careers at HenryCo",
     subtitle: "Internal HenryCo openings",
-    description: "Open roles inside the HenryCo group — work directly with the company team.",
+    description: "Open roles inside Henry & Co. — work directly with the company team.",
     href: divisionHref("jobs", "/careers"),
     authRequirement: "none",
     visibility: "public",

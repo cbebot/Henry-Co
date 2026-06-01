@@ -241,7 +241,7 @@ async function main() {
   const employers = [
     {
       slug: "henryco-group",
-      name: "HenryCo Group",
+      name: "Henry & Co.",
       category: "Internal Hiring",
       href: "https://henrycogroup.com",
       tagline: "Internal hiring for shared HenryCo teams and division leadership.",
@@ -378,7 +378,7 @@ async function main() {
    *    talent because they compete with global remote pay.
    *  - Care roles trend service-business mid-market — strong relative to
    *    local peers, calibrated to operational scope.
-   *  - HenryCo Group internal leadership roles sit at the top of the local
+   *  - Henry & Co. internal leadership roles sit at the top of the local
    *    band; cross-functional impact + verified-employer trust earns it.
    */
   const jobs = [
@@ -387,7 +387,7 @@ async function main() {
       title: "Head of Recruitment Operations",
       subtitle: "Build the HenryCo hiring operating system",
       employerSlug: "henryco-group",
-      employerName: "HenryCo Group",
+      employerName: "Henry & Co.",
       categoryName: "Recruitment",
       categorySlug: "recruitment",
       location: "Remote",
@@ -675,7 +675,7 @@ async function main() {
       title: "Logistics Dispatch Operations Lead",
       subtitle: "Route discipline, rider performance, and exception recovery",
       employerSlug: "henryco-group",
-      employerName: "HenryCo Group",
+      employerName: "Henry & Co.",
       categoryName: "Logistics",
       categorySlug: "logistics",
       location: "Lagos",
@@ -722,7 +722,7 @@ async function main() {
       title: "Talent Acquisition Specialist",
       subtitle: "Own pipelines for 3-5 concurrent roles across HenryCo",
       employerSlug: "henryco-group",
-      employerName: "HenryCo Group",
+      employerName: "Henry & Co.",
       categoryName: "Recruitment",
       categorySlug: "recruitment",
       location: "Remote",
@@ -815,7 +815,7 @@ async function main() {
       title: "Finance Operations Analyst",
       subtitle: "Invoice cadence, account reconciliation, and vendor compliance",
       employerSlug: "henryco-group",
-      employerName: "HenryCo Group",
+      employerName: "Henry & Co.",
       categoryName: "Finance",
       categorySlug: "finance",
       location: "Remote",

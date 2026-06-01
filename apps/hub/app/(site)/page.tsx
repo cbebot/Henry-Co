@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
 import { getHubHomeCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
-import { getAccountUrl, henryWebRoot } from "@henryco/config";
+import { COMPANY, getAccountUrl, henryWebRoot } from "@henryco/config";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getCompanySettings } from "../lib/company-settings";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
@@ -17,13 +17,13 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
-  title: "HenryCo — Care, Marketplace, Property, Studio, and more",
+  title: "Henry & Co. — Care, Marketplace, Property, Studio, and more",
   description:
-    "HenryCo is a multi-division group: garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
+    "Henry & Co. brings together garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "HenryCo Group",
+    title: "Henry & Co.",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
     type: "website",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HenryCo Group",
+    title: "Henry & Co.",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
   },
@@ -259,7 +259,9 @@ export default async function HomePage() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: brandTitleI18n || "HenryCo",
+    name: COMPANY.group.name,
+    legalName: COMPANY.group.legalName,
+    alternateName: brandTitleI18n || undefined,
     url: canonicalSiteUrl,
     logo: organizationLogo,
     description:
@@ -269,7 +271,7 @@ export default async function HomePage() {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: brandTitleI18n || "HenryCo",
+    name: COMPANY.group.name,
     url: canonicalSiteUrl,
   };
 

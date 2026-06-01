@@ -133,8 +133,8 @@ export function ReceiptDocument({ receipt, customer, items }: ReceiptProps) {
 
       <LegalFooter
         lines={[
-          "This receipt evidences payment captured by HenryCo on behalf of the originating division. Tax position reflects the rate in force on the paid date above.",
-          "If you spot a discrepancy, contact HenryCo support within 7 days for the fastest resolution path.",
+          "This receipt evidences payment captured by Henry Holdings Limited on behalf of the originating division. Tax position reflects the rate in force on the paid date above.",
+          "If you spot a discrepancy, contact Henry & Co. support within 7 days for the fastest resolution path.",
         ]}
       />
     </BrandedDocument>
