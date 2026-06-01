@@ -104,7 +104,7 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
     return (
       <div className="rounded-lg border border-[color:var(--border)] bg-[color:var(--background)] p-6">
         <h2 className="text-lg font-semibold">
-          {state.created ? "You&rsquo;re subscribed" : "Preferences updated"}
+          {state.created ? "You're subscribed" : "Preferences updated"}
         </h2>
         <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">
           We&rsquo;ll email {email} about: {state.topics.join(", ")}.
