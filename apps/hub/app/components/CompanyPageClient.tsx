@@ -204,7 +204,7 @@ export default function CompanyPageClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 0.08 }}
-                className="mt-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/55"
+                className="mt-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/64"
               >
                 {page.subtitle}
               </motion.p>
@@ -260,7 +260,7 @@ export default function CompanyPageClient({
                   .filter(isMeaningfulStat)
                   .map((stat, index) => (
                     <div key={stat.id || `stat-${index + 1}`} className="flex flex-col gap-1">
-                      <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                      <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/62">
                         {stat.label}
                       </dt>
                       <dd className="text-[1.5rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.7rem]">
@@ -303,7 +303,7 @@ export default function CompanyPageClient({
                     className="flex items-baseline gap-3 py-3 text-sm"
                   >
                     <span className="text-[#d6a851]">{meta.icon}</span>
-                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
                       {meta.label}
                     </dt>
                     <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
@@ -377,7 +377,7 @@ export default function CompanyPageClient({
               <span className="text-[#d6a851]">
                 <Globe2 className="h-3.5 w-3.5" aria-hidden />
               </span>
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
                 {copy.footerUseCase}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
@@ -388,7 +388,7 @@ export default function CompanyPageClient({
               <span className="text-[#d6a851]">
                 <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
               </span>
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
                 {copy.footerStandard}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
