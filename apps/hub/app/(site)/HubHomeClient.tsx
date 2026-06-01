@@ -68,7 +68,7 @@ export default function HubHomeClient({
     <div
       id="top"
       style={rootStyle}
-      className="relative min-h-screen overflow-x-hidden bg-[#050816] text-white"
+      className="relative min-h-screen overflow-x-hidden bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
     >
       <HomeSkipLink label={copy.nav.skipToContent} />
 

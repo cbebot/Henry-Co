@@ -34,7 +34,7 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
   });
 
   return (
-    <section id="engines" className="relative scroll-mt-24 border-t border-white/10">
+    <section id="engines" className="relative scroll-mt-24 border-t border-[color:var(--home-line)]">
       <motion.div
         className="mx-auto w-full max-w-6xl px-6 py-24 sm:px-8 sm:py-28 lg:py-32"
         variants={m.stagger}
@@ -43,11 +43,11 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
         viewport={{ once: true, margin: "-12% 0px -10% 0px" }}
       >
         <motion.header variants={m.reveal} className="max-w-3xl">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/50">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
             {copy.index.kicker}
           </p>
           <h2
-            className="mt-4 text-balance text-xl leading-relaxed text-white/75 sm:text-2xl"
+            className="mt-4 text-balance text-xl leading-relaxed text-[color:var(--home-ink-75)] sm:text-2xl"
             style={{ fontFamily: "var(--acct-font-display)" }}
           >
             {copy.index.lead}
@@ -57,7 +57,7 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
         {ordered.length > 0 ? (
           <motion.ul
             variants={m.stagger}
-            className="mt-12 border-t border-white/10 sm:mt-16 [&:focus-within>li:not(:focus-within)]:opacity-50 [&:hover>li:not(:hover)]:opacity-50"
+            className="mt-12 border-t border-[color:var(--home-line)] sm:mt-16 [&:focus-within>li:not(:focus-within)]:opacity-50 [&:hover>li:not(:hover)]:opacity-50"
           >
             {ordered.map((division) => (
               <HomeIndexRow
@@ -70,7 +70,7 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
             ))}
           </motion.ul>
         ) : (
-          <motion.p variants={m.reveal} className="mt-12 text-sm text-white/50">
+          <motion.p variants={m.reveal} className="mt-12 text-sm text-[color:var(--home-ink-50)]">
             {copy.index.empty}
           </motion.p>
         )}

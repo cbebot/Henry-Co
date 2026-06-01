@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import Image from "next/image";
 import {
   AnimatePresence,
   motion,
@@ -14,7 +13,7 @@ import {
 import { Menu, X } from "lucide-react";
 import type { HubHomeCopy } from "@henryco/i18n";
 import type { PublicAccountUser } from "@henryco/ui";
-import { cn, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { cn, HenryCoPublicAccountPresets, PublicAccountChip, ThemeToggle } from "@henryco/ui";
 import { HenryCoLogo } from "@henryco/brand";
 
 // House curve — shared with home-motion's reveal so the chrome settles like the
@@ -56,7 +55,7 @@ export function HomeSkipLink({ label }: { label: string }) {
   return (
     <a
       href="#henryco-main"
-      className="sr-only left-4 top-4 z-[80] rounded-xl bg-[color:var(--accent)] px-4 py-2 text-sm font-semibold text-black focus:not-sr-only focus:absolute focus:outline-none focus:ring-2 focus:ring-white/70"
+      className="sr-only left-4 top-4 z-[80] rounded-xl bg-[color:var(--accent)] px-4 py-2 text-sm font-semibold text-black focus:not-sr-only focus:absolute focus:outline-none focus:ring-2 focus:ring-[color:var(--home-ink-70)]"
     >
       {label}
     </a>
@@ -72,16 +71,23 @@ function HomeWordmark({
   brandSub: string;
   brandLogoUrl: string | null;
 }) {
+  // The CMS logo can live on any origin (Cloudinary, Supabase storage, …).
+  // next/image would 400 unless every host is whitelisted in next.config, which
+  // is what made the mark vanish. A plain <img> is host-agnostic; if it still
+  // fails to load we fall back to the inline brand mark so a broken-image
+  // silhouette can never render.
+  const [logoFailed, setLogoFailed] = useState(false);
+  const showLogo = Boolean(brandLogoUrl) && !logoFailed;
   return (
     <a href="#top" aria-label={brandTitle} className="flex shrink-0 items-center gap-3">
-      <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/12 bg-white/[0.05]">
-        {brandLogoUrl ? (
-          <Image
-            src={brandLogoUrl}
+      <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface)]">
+        {showLogo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- host-agnostic CMS logo; next/image needs per-host remotePatterns
+          <img
+            src={brandLogoUrl as string}
             alt={`${brandTitle} logo`}
-            fill
-            sizes="40px"
-            className="object-contain p-1.5"
+            className="h-full w-full object-contain p-1.5"
+            onError={() => setLogoFailed(true)}
           />
         ) : (
           <HenryCoLogo variant="mark" label={brandTitle} className="h-full w-full p-1.5" />
@@ -89,12 +95,12 @@ function HomeWordmark({
       </span>
       <span className="leading-tight">
         <span
-          className="block text-sm font-semibold tracking-[0.16em] text-white/92"
+          className="block text-sm font-semibold tracking-[0.16em] text-[color:var(--home-ink-92)]"
           style={{ fontFamily: "var(--acct-font-display)" }}
         >
           {brandTitle}
         </span>
-        <span className="block text-[10px] uppercase tracking-[0.3em] text-white/50">
+        <span className="block text-[10px] uppercase tracking-[0.3em] text-[color:var(--home-ink-50)]">
           {brandSub}
         </span>
       </span>
@@ -172,10 +178,10 @@ function MobileSheet({
         aria-label={copy.nav.menu}
         variants={panel}
         onKeyDown={handleKeyDown}
-        className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-white/10 bg-[#0B1020] shadow-[0_40px_140px_rgba(0,0,0,0.55)]"
+        className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-[color:var(--home-line)] bg-[color:var(--home-sheet)] shadow-[0_40px_140px_rgba(0,0,0,0.55)]"
       >
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/50">
+        <div className="flex items-center justify-between border-b border-[color:var(--home-line)] px-6 py-5">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
             {copy.nav.menu}
           </span>
           <button
@@ -183,7 +189,7 @@ function MobileSheet({
             type="button"
             aria-label={copy.nav.closeMenu}
             onClick={onClose}
-            className="grid h-9 w-9 place-items-center rounded-xl border border-white/12 bg-white/[0.05] text-white/80 transition hover:bg-white/10"
+            className="grid h-9 w-9 place-items-center rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface)] text-[color:var(--home-ink-80)] transition hover:bg-[color:var(--home-surface-10)]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -202,8 +208,8 @@ function MobileSheet({
                 className={cn(
                   "border-l-2 py-3 pl-4 text-base transition-colors",
                   isActive
-                    ? "border-[color:var(--accent)] text-white"
-                    : "border-transparent text-white/70 hover:text-white",
+                    ? "border-[color:var(--accent)] text-[color:var(--home-ink)]"
+                    : "border-transparent text-[color:var(--home-ink-70)] hover:text-[color:var(--home-ink)]",
                 )}
                 style={isActive ? undefined : { fontFamily: "var(--acct-font-display)" }}
               >
@@ -212,19 +218,23 @@ function MobileSheet({
             );
           })}
 
-          <div className="my-4 h-px bg-white/10" />
+          <div className="my-4 h-px bg-[color:var(--home-surface-10)]" />
+
+          <div className="px-4 pb-2">
+            <ThemeToggle className="w-full justify-center" />
+          </div>
 
           <a
             href="/search"
             onClick={onClose}
-            className="py-2.5 pl-4 text-sm text-white/55 transition-colors hover:text-white"
+            className="py-2.5 pl-4 text-sm text-[color:var(--home-ink-55)] transition-colors hover:text-[color:var(--home-ink)]"
           >
             {copy.topBar.search}
           </a>
           <a
             href="/preferences"
             onClick={onClose}
-            className="py-2.5 pl-4 text-sm text-white/55 transition-colors hover:text-white"
+            className="py-2.5 pl-4 text-sm text-[color:var(--home-ink-55)] transition-colors hover:text-[color:var(--home-ink)]"
           >
             {copy.footer.linkPreferences}
           </a>
@@ -320,8 +330,8 @@ export function HomeHeader({
       className={cn(
         "sticky top-0 z-50 border-b backdrop-blur-lg transition-[background-color,border-color,box-shadow,padding] duration-300",
         scrolled
-          ? "border-white/12 bg-[#050816]/95 shadow-[0_18px_50px_-30px_rgba(0,0,0,0.9)]"
-          : "border-white/8 bg-[#050816]/70",
+          ? "border-[color:var(--home-line-12)] bg-[color:var(--home-glass-strong)] shadow-[0_18px_50px_-30px_rgba(0,0,0,0.9)]"
+          : "border-[color:var(--home-line-08)] bg-[color:var(--home-glass)]",
       )}
     >
       <div
@@ -343,7 +353,7 @@ export function HomeHeader({
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "relative py-1 text-sm tracking-tight transition-colors",
-                  isActive ? "text-white" : "text-white/60 hover:text-white/90",
+                  isActive ? "text-[color:var(--home-ink)]" : "text-[color:var(--home-ink-60)] hover:text-[color:var(--home-ink-90)]",
                 )}
               >
                 {target.label}
@@ -368,9 +378,11 @@ export function HomeHeader({
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggle className="hidden md:inline-flex" />
+
           {accountChip ? (
             <PublicAccountChip
-              {...HenryCoPublicAccountPresets.onDarkMarketing}
+              {...HenryCoPublicAccountPresets.standard}
               user={accountChip.user}
               loginHref={accountChip.loginHref}
               signupHref={accountChip.signupHref}
@@ -391,7 +403,7 @@ export function HomeHeader({
             aria-expanded={menuOpen}
             aria-controls={menuId}
             onClick={() => setMenuOpen(true)}
-            className="grid h-10 w-10 place-items-center rounded-xl border border-white/12 bg-white/[0.05] text-white/80 transition hover:bg-white/10 md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface)] text-[color:var(--home-ink-80)] transition hover:bg-[color:var(--home-surface-10)] md:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>

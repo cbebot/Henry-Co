@@ -76,7 +76,7 @@ export function HomeAmbient({ accent }: { accent: string }) {
         style={{
           background: [
             "radial-gradient(60% 50% at 50% -8%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%)",
-            "radial-gradient(50% 40% at 82% 12%, rgba(255,255,255,0.05), transparent 60%)",
+            "radial-gradient(50% 40% at 82% 12%, rgb(var(--home-ink-rgb) / 0.05), transparent 60%)",
             "radial-gradient(65% 55% at 12% 88%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 66%)",
           ].join(", "),
         }}
