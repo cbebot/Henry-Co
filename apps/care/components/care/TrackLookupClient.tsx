@@ -76,19 +76,23 @@ type CareBookingTrackRow = {
 };
 
 function toneClasses(tone: ReturnType<typeof getTrackingTone>) {
+  // Light-first care theme: dark-only tints (text-*-100) were invisible on the
+  // #eef2fb surface. Each tone now carries a readable light value + a dark
+  // override, and "blue" (in-progress) uses the care cobalt accent so the
+  // status chips read as one family with the rest of the surface.
   if (tone === "emerald") {
-    return "border-emerald-400/30 bg-emerald-500/10 text-emerald-100";
+    return "border-emerald-500/30 bg-emerald-500/12 text-emerald-700 dark:border-emerald-400/30 dark:text-emerald-200";
   }
   if (tone === "blue") {
-    return "border-cyan-400/30 bg-cyan-500/10 text-cyan-100";
+    return "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/12 text-[color:var(--accent-deep)] dark:text-cyan-200";
   }
   if (tone === "violet") {
-    return "border-violet-400/30 bg-violet-500/10 text-violet-100";
+    return "border-violet-500/30 bg-violet-500/12 text-violet-700 dark:border-violet-400/30 dark:text-violet-200";
   }
   if (tone === "red") {
-    return "border-red-400/30 bg-red-500/10 text-red-100";
+    return "border-red-500/30 bg-red-500/12 text-red-700 dark:border-red-400/30 dark:text-red-200";
   }
-  return "border-amber-400/30 bg-amber-500/10 text-amber-100";
+  return "border-amber-500/30 bg-amber-500/12 text-amber-700 dark:border-amber-400/30 dark:text-amber-200";
 }
 
 function formatDate(value: string | null | undefined, fallback: string) {
@@ -305,7 +309,7 @@ export default function TrackLookupClient({
               <span>{t("Service tracking")}</span>
             </div>
 
-            <h1 className="mt-4 text-balance text-[1.7rem] font-black leading-[1.05] tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-[2.1rem] md:text-[2.6rem]">
+            <h1 className="care-display mt-4 max-w-2xl text-balance text-zinc-950 dark:text-white">
               {t("Track the exact stage of service.")}
             </h1>
 
@@ -646,16 +650,16 @@ export default function TrackLookupClient({
             ) : null}
           </div>
         ) : error ? (
-          <div className="rounded-3xl border border-red-400/20 bg-red-500/10 p-12 text-center">
-            <div className="text-xl font-semibold text-red-100">{t("Tracking lookup failed")}</div>
-            <div className="mt-3 text-sm leading-relaxed text-red-100/85">{error || t("No matching booking was found.")}</div>
+          <div className="rounded-3xl border border-red-500/25 bg-red-500/10 p-12 text-center dark:border-red-400/20">
+            <div className="text-xl font-semibold text-red-700 dark:text-red-100">{t("Tracking lookup failed")}</div>
+            <div className="mt-3 text-sm leading-relaxed text-red-700/85 dark:text-red-100/85">{error || t("No matching booking was found.")}</div>
             <button
               type="button"
               onClick={() => {
                 setSearched(false);
                 setError("");
               }}
-              className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-red-300/20 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-100"
+              className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-red-500/25 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-500/15 dark:border-red-300/20 dark:text-red-100"
             >
               {t("Try again")}
               <ArrowRight className="h-4 w-4" />

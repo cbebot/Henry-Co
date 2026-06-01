@@ -34,7 +34,7 @@ export default async function TrackPage() {
     <>
       {bookings.length ? (
         <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-          <RecentBookingCards bookings={bookings} />
+          <RecentBookingCards bookings={bookings} locale={locale} />
         </div>
       ) : null}
       <TrackLookupClient locale={locale} />
