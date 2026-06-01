@@ -1,4 +1,5 @@
 import type { HubPublicCopy } from "@henryco/i18n";
+import { ArrowUpRight } from "lucide-react";
 import type { CompanySettingsRecord } from "../lib/company-settings-shared";
 import type { DivisionRow } from "../lib/divisions";
 
@@ -8,19 +9,14 @@ type AboutFigure = {
 };
 
 function deriveCity(settings: CompanySettingsRecord): string | null {
-  const raw =
-    settings.office_address?.trim() ||
-    settings.address?.trim() ||
-    "";
+  const raw = settings.office_address?.trim() || settings.address?.trim() || "";
   if (!raw) return null;
   // Take the first comma-separated segment as the city/region label.
   const first = raw.split(",")[0]?.trim();
   return first || null;
 }
 
-function deriveYearEstablished(
-  settings: CompanySettingsRecord
-): string | null {
+function deriveYearEstablished(settings: CompanySettingsRecord): string | null {
   const created = settings.created_at?.trim() || "";
   if (!created) return null;
   const date = new Date(created);
@@ -29,11 +25,12 @@ function deriveYearEstablished(
 }
 
 /**
- * AboutHonestBlock — replaces the three near-identical CMS sections
- * ("What we are building / How the group is structured / What guides the
- * business") with a single editorial paragraph + a By the numbers strip
- * pulled from real config + a designed founder-note placeholder so the
- * shape is correct and ready for content. (CHROME-01B FIX 2.)
+ * AboutHonestBlock — a single editorial paragraph + a "By the numbers" ledger
+ * computed from real config, plus a founder note. Figures with no real value
+ * are omitted (no "—" filler that reads as empty), and the note is a clean
+ * editorial card with real links — the former dashed empty-avatar placeholder
+ * is gone, in keeping with the "concrete divisions over team-photo grids"
+ * direction (V3 PASS 21).
  */
 export default function AboutHonestBlock({
   settings,
@@ -49,18 +46,16 @@ export default function AboutHonestBlock({
   const city = deriveCity(settings);
 
   const figures: AboutFigure[] = [
-    {
-      label: copy.figureDivisionsLive,
-      value: liveCount > 0 ? String(liveCount) : "—",
-    },
-    {
-      label: copy.figureYearEstablished,
-      value: yearEstablished ?? "—",
-    },
-    {
-      label: copy.figureOperatingCity,
-      value: city ?? "—",
-    },
+    { label: copy.figureDivisionsLive, value: liveCount > 0 ? String(liveCount) : null },
+    { label: copy.figureYearEstablished, value: yearEstablished },
+    { label: copy.figureOperatingCity, value: city },
+  ].flatMap((figure) =>
+    figure.value ? [{ label: figure.label, value: figure.value }] : [],
+  );
+
+  const noteLinks = [
+    { label: copy.linkReachCompany, href: "/contact" },
+    { label: copy.linkBrowseDivisions, href: "/#divisions" },
   ];
 
   return (
@@ -77,21 +72,23 @@ export default function AboutHonestBlock({
             {copy.body}
           </p>
 
-          <dl className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {figures.map((figure) => (
-              <div
-                key={figure.label}
-                className="border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
-              >
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {figure.label}
-                </dt>
-                <dd className="mt-2 text-[1.45rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.65rem]">
-                  {figure.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          {figures.length ? (
+            <dl className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
+              {figures.map((figure) => (
+                <div
+                  key={figure.label}
+                  className="border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
+                >
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/64">
+                    {figure.label}
+                  </dt>
+                  <dd className="mt-2 text-[1.45rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.65rem]">
+                    {figure.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
         </div>
 
         <aside className="lg:pt-2">
@@ -99,41 +96,27 @@ export default function AboutHonestBlock({
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
               {copy.founderEyebrow}
             </p>
-            <div className="mt-5 flex items-start gap-5">
-              <div
-                aria-hidden
-                className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-dashed border-white/15 bg-black/30 text-white/40"
-              >
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em]">
-                  {copy.founderPhotoPlaceholder}
-                </span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold tracking-tight text-white">
-                  {copy.founderPlaceholderTitle}
-                </p>
-                <p className="mt-2 text-[13px] leading-7 text-white/62">
-                  {copy.founderPlaceholderBody}
-                </p>
-              </div>
-            </div>
+            <p className="mt-4 text-base font-semibold tracking-tight text-white">
+              {copy.founderPlaceholderTitle}
+            </p>
+            <p className="mt-3 text-[13.5px] leading-7 text-white/72">
+              {copy.founderPlaceholderBody}
+            </p>
             <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-              <li className="flex items-baseline gap-3 py-3 text-sm">
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {copy.linkReachCompany}
-                </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  /contact
-                </span>
-              </li>
-              <li className="flex items-baseline gap-3 py-3 text-sm">
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {copy.linkBrowseDivisions}
-                </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  /#divisions
-                </span>
-              </li>
+              {noteLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="group flex items-center justify-between gap-3 py-3 text-sm font-medium text-white/82 transition hover:text-white"
+                  >
+                    <span>{link.label}</span>
+                    <ArrowUpRight
+                      className="h-4 w-4 shrink-0 text-[#d6a851] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      aria-hidden
+                    />
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </aside>

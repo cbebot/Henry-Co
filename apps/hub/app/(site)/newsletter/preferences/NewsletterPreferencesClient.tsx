@@ -180,7 +180,7 @@ export default function NewsletterPreferencesClient(props: Props) {
           <p className="font-medium">Preferences saved.</p>
           <p className="mt-1 text-[color:var(--muted-foreground)]">
             {state.nextStatus === "unsubscribed"
-              ? "You&rsquo;ve been unsubscribed. We&rsquo;re sorry to see you go."
+              ? "You've been unsubscribed. We're sorry to see you go."
               : `Subscribed to: ${state.topicKeys.join(", ") || "nothing"}.`}
           </p>
         </div>

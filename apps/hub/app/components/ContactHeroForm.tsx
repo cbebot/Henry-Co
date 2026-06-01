@@ -10,17 +10,14 @@ import {
 
 const INITIAL_STATE: ContactSubmitState = { status: "idle", message: "" };
 
-const REASON_VALUES = [
-  "general",
-  "partnerships",
-  "media",
-  "supplier",
-  "investor",
-  "complaint",
-  "other",
-] as const;
-
-type ReasonValue = typeof REASON_VALUES[number];
+type ReasonValue =
+  | "general"
+  | "partnerships"
+  | "media"
+  | "supplier"
+  | "investor"
+  | "complaint"
+  | "other";
 
 function SubmitButton({ sendingLabel, sendLabel }: { sendingLabel: string; sendLabel: string }) {
   const { pending } = useFormStatus();
@@ -101,7 +98,7 @@ export default function ContactHeroForm({
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
             {copy.nameLabel}
           </span>
           <input
@@ -110,11 +107,11 @@ export default function ContactHeroForm({
             required
             autoComplete="name"
             placeholder={copy.namePlaceholder}
-            className="h-12 rounded-xl border border-white/12 bg-black/30 px-3.5 text-base text-white outline-none placeholder:text-white/30 focus:border-[#d6a851]"
+            className="h-12 rounded-xl border border-white/12 bg-black/30 px-3.5 text-base text-white outline-none placeholder:text-white/45 focus:border-[#d6a851]"
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
             {copy.emailLabel}
           </span>
           <input
@@ -124,13 +121,13 @@ export default function ContactHeroForm({
             autoComplete="email"
             inputMode="email"
             placeholder={copy.emailPlaceholder}
-            className="h-12 rounded-xl border border-white/12 bg-black/30 px-3.5 text-base text-white outline-none placeholder:text-white/30 focus:border-[#d6a851]"
+            className="h-12 rounded-xl border border-white/12 bg-black/30 px-3.5 text-base text-white outline-none placeholder:text-white/45 focus:border-[#d6a851]"
           />
         </label>
       </div>
 
       <label className="mt-4 flex flex-col gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
           {copy.reasonLabel}
         </span>
         <select
@@ -151,7 +148,7 @@ export default function ContactHeroForm({
       ) : null}
 
       <label className="mt-4 flex flex-col gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/64">
           {copy.messageLabel}
         </span>
         <textarea
@@ -160,7 +157,7 @@ export default function ContactHeroForm({
           rows={5}
           defaultValue={planContext === "partner" ? copy.partnerPlanContext : ""}
           placeholder={copy.messagePlaceholder}
-          className="rounded-xl border border-white/12 bg-black/30 px-3.5 py-3 text-base leading-7 text-white outline-none placeholder:text-white/30 focus:border-[#d6a851]"
+          className="rounded-xl border border-white/12 bg-black/30 px-3.5 py-3 text-base leading-7 text-white outline-none placeholder:text-white/45 focus:border-[#d6a851]"
         />
       </label>
 
