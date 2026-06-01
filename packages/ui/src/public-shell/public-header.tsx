@@ -80,6 +80,13 @@ export type PublicHeaderProps = {
   groupIdentityActions?: boolean;
   /** Extra classes on the identity capsule (theme + account) */
   identityClusterClassName?: string;
+  /**
+   * Condense the sticky bar (slimmer padding + elevation) once the page scrolls
+   * past the top, matching the homepage chrome. Enabled on every public surface
+   * by default; pass `false` to keep a static bar.
+   * @default true
+   */
+  condenseOnScroll?: boolean;
 };
 
 export function PublicHeader({
@@ -119,8 +126,10 @@ export function PublicHeader({
   variant = "default",
   groupIdentityActions = true,
   identityClusterClassName,
+  condenseOnScroll = true,
 }: PublicHeaderProps) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const locale = useOptionalHenryCoLocale() ?? "en";
   const surfaceCopy = getSurfaceCopy(locale);
@@ -146,6 +155,25 @@ export function PublicHeader({
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  // Scroll-condense: the sticky bar settles from roomy → slim once the page
+  // leaves the very top, matching the homepage chrome. A passive scroll
+  // listener keeps the shared header dependency-free (no animation library).
+  // The height change is applied as inline `paddingBlock` (see toolbarRow) so it
+  // wins deterministically over every division's `toolbarClassName` — our `cn`
+  // is a plain class-join, not tailwind-merge, so a competing `py-*` utility
+  // could not be relied on to win. The CSS transition is suppressed under
+  // `prefers-reduced-motion` via `motion-reduce:transition-none`.
+  useEffect(() => {
+    if (!condenseOnScroll) {
+      setScrolled(false);
+      return;
+    }
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [condenseOnScroll]);
 
   const handleSheetClose = useCallback((_reason: BottomSheetCloseReason) => {
     setOpen(false);
@@ -283,8 +311,9 @@ export function PublicHeader({
 
   const toolbarRow = (
     <div
+      style={scrolled ? { paddingBlock: floating ? "0.5rem" : "0.625rem" } : undefined}
       className={cn(
-        "flex items-center justify-between gap-3",
+        "flex items-center justify-between gap-3 transition-[padding] duration-300 ease-out motion-reduce:transition-none",
         floating ? "px-4 py-3 sm:px-5" : "px-6 py-4 sm:px-8 lg:px-10",
         toolbarClassName
       )}
@@ -490,11 +519,13 @@ export function PublicHeader({
        * tabIndex={-1}>` so this link lands focus correctly. */}
       <SkipLink href="#henryco-main" />
     <header
+      data-scrolled={scrolled ? "true" : undefined}
       className={cn(
-        "sticky top-0 z-50",
+        "sticky top-0 z-50 transition-shadow duration-300 ease-out motion-reduce:transition-none",
         floating
           ? "border-0 bg-transparent pt-2.5 pb-2 sm:pt-3 sm:pb-3"
           : "border-b border-black/10 bg-white/96 backdrop-blur-0 md:backdrop-blur-md supports-[backdrop-filter]:bg-white/93 dark:border-white/10 dark:bg-[#0a0f14] dark:backdrop-blur-0 md:dark:backdrop-blur-md supports-[backdrop-filter]:dark:bg-[#0a0f14]/95",
+        !floating && scrolled && "shadow-[0_16px_40px_-28px_rgba(15,23,42,0.55)] dark:shadow-[0_18px_50px_-30px_rgba(0,0,0,0.9)]",
         headerClassName
       )}
     >
@@ -504,7 +535,19 @@ export function PublicHeader({
        * so it cannot be clipped by a sticky/transformed ancestor. */}
       <div className={cn("relative z-[60] mx-auto w-full", maxWidth, floating && "px-3 sm:px-4")}>
         {floating ? (
-          <div className={HenryCoPublicSurfaceTokens.floatingHeaderChrome}>{shellInner}</div>
+          <div
+            style={
+              scrolled
+                ? { boxShadow: "0 22px 60px -28px rgba(15,23,42,0.45), 0 8px 22px rgba(15,23,42,0.10)" }
+                : undefined
+            }
+            className={cn(
+              HenryCoPublicSurfaceTokens.floatingHeaderChrome,
+              "transition-shadow duration-300 ease-out motion-reduce:transition-none"
+            )}
+          >
+            {shellInner}
+          </div>
         ) : (
           shellInner
         )}

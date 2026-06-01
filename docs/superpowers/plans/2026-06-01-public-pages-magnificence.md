@@ -10,7 +10,13 @@
 
 **Worktree / branch:** `rebuild/public-pages-magnificent` (off `origin/main` @ `715b8dc4`) at `.claude/worktrees/public-pages-magnificent`.
 
-**Owner decisions (locked):** Chrome = **scroll-aware condense** (roomy/transparent at top → slim solid blurred bar on scroll, always visible; unify the two headers + two footers into one). Sequence = **A → B → C → D → E**, commit per stage. Verification = **code-level** (owner does visual review; I run `tsc`/lint).
+**Owner decisions (locked):** Chrome = **scroll-aware condense**, applied **company-wide** to every public site (owner: "perfect everywhere"). Sequence = **A → B → C → D → E**, commit per stage. Bar = **max effort, no shallow work; exhaustively verify against the test suite (`lint:all` + `typecheck:all` + `test:workspace`) before claiming done.**
+
+## Status & scope correction (2026-06-01)
+- **Homepage = already rebuilt on `main`** (`apps/hub/app/(site)/home/*`: scroll-condensing `HomeHeader`, anti-card `HomeIndex`, ambient 3D, `--home-*` tokens). It is the **design reference** — **Stage C is SKIPPED** (leave untouched). The first homepage/chrome audit was of the stale `v3/02-auth-reliability` branch.
+- **Stage B — DONE & verified green.** Added `condenseOnScroll` (default `true` → company-wide) to `packages/ui/src/public-shell/public-header.tsx`: inline `paddingBlock` on scroll (deterministic — `cn` is plain-join, not tailwind-merge) + class shadow (default variant) + inline `boxShadow` (floating); `motion-reduce` disables the transition. Verified: `lint:all`=0, `typecheck:all`=0 (all 12 apps), `test:workspace`=0.
+- **Stage A folds into D** (per-page canonical CC-1, `&rsquo;`/`&ldquo;` entity-literal fixes, contrast) — `--home-*` tokens already exist on main.
+- **Remaining: D (sub-pages) → E (care `/book`).**
 
 ---
 
