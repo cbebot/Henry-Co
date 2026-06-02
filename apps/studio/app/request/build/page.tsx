@@ -14,9 +14,9 @@ import {
 export const maxDuration = 60;
 
 export const metadata: Metadata = {
-  title: "Build your brief — HenryCo Studio",
+  title: "Build your brief — Henry & Co. Studio",
   description:
-    "Step through the HenryCo Studio brief builder: choose a package or custom path, pick the capabilities you need, and see honest pricing before you submit.",
+    "Step through the Henry & Co. Studio brief builder: choose a package or custom path, pick the capabilities you need, and see honest pricing before you submit.",
   alternates: { canonical: "/request/build" },
   robots: { index: true, follow: true },
 };

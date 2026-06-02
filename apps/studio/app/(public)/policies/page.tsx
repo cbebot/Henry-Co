@@ -4,9 +4,9 @@ import { ArrowRight, ScrollText, ShieldCheck } from "lucide-react";
 import { studioPolicyIndex } from "@/lib/studio/policies";
 
 export const metadata: Metadata = {
-  title: "Policies & governance | HenryCo Studio",
+  title: "Policies & governance | Henry & Co. Studio",
   description:
-    "The agreements that govern every HenryCo Studio engagement — terms, privacy, refunds, intellectual property, security, delivery SLA, and acceptable use.",
+    "The agreements that govern every Henry & Co. Studio engagement — terms, privacy, refunds, intellectual property, security, delivery SLA, and acceptable use.",
   alternates: { canonical: "/policies" },
   robots: { index: true, follow: true },
 };
@@ -24,7 +24,7 @@ export default function StudioPoliciesPage() {
           Real agreements. In writing. Before any money moves.
         </h1>
         <p className="mt-5 text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          These are the agreements every HenryCo Studio engagement runs against. They are not
+          These are the agreements every Henry & Co. Studio engagement runs against. They are not
           stock templates. They are written against how the platform actually operates — bank
           transfer in naira, milestone discipline in the portal, NDPA-aligned data handling, and
           IP transfer on verified final payment. Read them once and they will hold up across

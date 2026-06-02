@@ -3,13 +3,13 @@ import { redirect } from "next/navigation";
 import { StudioRequestHub } from "@/components/studio/request-hub";
 
 export const metadata: Metadata = {
-  title: "Studio brief — Tell us what you need | HenryCo Studio",
+  title: "Studio brief — Tell us what you need | Henry & Co. Studio",
   description:
-    "Start a HenryCo Studio brief three ways: talk it through, answer a few questions, or build it yourself. Every path ends in the same brief with honest pricing.",
+    "Start a Henry & Co. Studio brief three ways: talk it through, answer a few questions, or build it yourself. Every path ends in the same brief with honest pricing.",
   alternates: { canonical: "/request" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Studio brief | HenryCo Studio",
+    title: "Studio brief | Henry & Co. Studio",
     description:
       "Tell us what you need. We turn it into a clear plan with real pricing, deposits, and a delivery record.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Studio brief | HenryCo Studio",
+    title: "Studio brief | Henry & Co. Studio",
     description:
       "A calm front door for serious projects — three ways in, one honest brief.",
   },

@@ -103,8 +103,8 @@ export function StudioRequestHub() {
               className={[
                 "studio-panel group relative flex h-full flex-col overflow-hidden rounded-[1.6rem] p-5 transition duration-300 hover:-translate-y-1 sm:p-6",
                 ramp.featured
-                  ? "border-[rgba(151,244,243,0.4)]"
-                  : "hover:border-[rgba(151,244,243,0.35)]",
+                  ? "border-[color:var(--home-accent)]"
+                  : "hover:border-[color:var(--home-accent-ring)]",
               ].join(" ")}
             >
               <div className="flex items-start justify-between gap-3">
@@ -113,8 +113,8 @@ export function StudioRequestHub() {
                   className={[
                     "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border text-[var(--studio-signal)] transition",
                     ramp.featured
-                      ? "border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.12)]"
-                      : "border-[var(--studio-line)] bg-black/10 group-hover:border-[rgba(151,244,243,0.4)]",
+                      ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)]"
+                      : "border-[var(--studio-line)] bg-[color:var(--home-surface-04)] group-hover:border-[color:var(--home-accent-ring)]",
                   ].join(" ")}
                 >
                   <ramp.icon className="h-5 w-5" />

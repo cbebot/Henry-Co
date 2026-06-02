@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+/* V3-PUBLIC-REBUILD-studio — the --home-* public design system (additive/inert;
+   adopted on the public subtree via app/(public)/layout.tsx). See §10.A. */
+@import "../../../packages/ui/src/styles/public-design.css";
 @import "../../../packages/workspace-shell/src/styles.css";
 @import "../../../packages/messaging-thread/src/styles.css";
 @source "../../../packages/ui/src";
@@ -14,6 +17,26 @@
    tokens so the engine renders in studio colors without a single
    hard-coded value.
    ────────────────────────────────────────────────────────────────── */
+
+/* V3-PUBLIC-REBUILD-studio — re-wire the --home-* accent ramp to the Studio
+   teal ON the public subtree. public-design.css computes --home-accent =
+   var(--accent) AT :root, so setting --accent on a descendant wrapper does NOT
+   retro-resolve it (CSS substitutes var() where a property is DECLARED, then the
+   computed value inherits). Re-declaring the ramp here — on the same
+   .studio-public element that carries the inline --accent / --accent-text (read
+   from company.ts) — makes color-mix resolve against the teal; the .dark rule
+   lifts accent-as-text to its bright sibling so it clears AA on the near-black
+   canvas. (The hub never hit this: its accent equals the gold :root fallback.) */
+.studio-public {
+  --home-accent: var(--accent);
+  --home-accent-strong: color-mix(in srgb, var(--accent) 82%, #000 18%);
+  --home-accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --home-accent-ring: color-mix(in srgb, var(--accent) 34%, transparent);
+  --home-accent-text: var(--accent-text);
+}
+.dark .studio-public {
+  --home-accent-text: var(--accent-text-dark, var(--accent-text));
+}
 
 [data-workspace-division="studio"] {
   --ws-bg: var(--studio-bg);

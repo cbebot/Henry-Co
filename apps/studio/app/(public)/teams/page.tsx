@@ -15,7 +15,7 @@ export default async function TeamsPage() {
           The people accountable for your build.
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          HenryCo Studio runs four delivery pods — each tuned to a kind of work — backed by a named
+          Henry & Co. Studio runs four delivery pods — each tuned to a kind of work — backed by a named
           leadership group that owns scope, quality, and the launch date.
         </p>
       </section>

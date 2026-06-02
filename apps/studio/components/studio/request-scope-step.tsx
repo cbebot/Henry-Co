@@ -50,7 +50,7 @@ function ScopeSummaryHeader({
           {visible.map((label) => (
             <span
               key={label}
-              className="inline-flex items-center rounded-full border border-[rgba(151,244,243,0.32)] bg-[rgba(11,42,52,0.45)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--studio-ink)]"
+              className="inline-flex items-center rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--studio-ink)]"
             >
               {label}
             </span>
@@ -91,7 +91,7 @@ function PricedCheckboxList({
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.06)]">
+    <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)]">
       {options.map((item) => {
         const isSelected = selected.includes(item.label);
         return (
@@ -100,8 +100,8 @@ function PricedCheckboxList({
               className={joinClassNames(
                 "relative flex cursor-pointer items-start gap-3 px-4 py-3 text-sm transition duration-150 sm:px-5",
                 isSelected
-                  ? "bg-[rgba(151,244,243,0.06)] text-[var(--studio-ink)]"
-                  : "text-[var(--studio-ink-soft)] hover:bg-[rgba(255,255,255,0.02)] hover:text-[var(--studio-ink)]"
+                  ? "bg-[color:var(--home-accent-soft)] text-[var(--studio-ink)]"
+                  : "text-[var(--studio-ink-soft)] hover:bg-[color:var(--home-surface-04)] hover:text-[var(--studio-ink)]"
               )}
             >
               {isSelected ? (
@@ -232,7 +232,7 @@ export function StudioRequestScopeStep({
       {pathway === "package" && selectedPackage ? (
         <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
           <div className="studio-kicker">{t("Package context")}</div>
-          <div className="mt-3 rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
+          <div className="mt-3 rounded-[1.6rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] p-5">
             <div className="text-lg font-semibold text-[var(--studio-ink)]">
               {selectedPackage.name}
             </div>
@@ -380,8 +380,8 @@ export function StudioRequestScopeStep({
                     className={joinClassNames(
                       "inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition duration-150",
                       selected
-                        ? "border-[rgba(151,244,243,0.55)] bg-[rgba(151,244,243,0.1)] text-[var(--studio-ink)]"
-                        : "border-[var(--studio-line)] bg-transparent text-[var(--studio-ink-soft)] hover:border-[rgba(151,244,243,0.35)] hover:text-[var(--studio-ink)]"
+                        ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[var(--studio-ink)]"
+                        : "border-[var(--studio-line)] bg-transparent text-[var(--studio-ink-soft)] hover:border-[color:var(--home-accent-ring)] hover:text-[var(--studio-ink)]"
                     )}
                   >
                     <input

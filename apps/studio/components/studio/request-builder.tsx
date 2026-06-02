@@ -734,10 +734,10 @@ export function StudioRequestBuilder({
                       <span
                         className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-[11px] font-mono font-semibold tracking-tight transition ${
                           isActive
-                            ? "border-[var(--studio-signal)] bg-[var(--studio-signal)] text-[#031318] shadow-[0_0_0_4px_rgba(73,192,197,0.18)]"
+                            ? "border-[var(--studio-signal)] bg-[var(--studio-signal)] text-[color:var(--home-accent-ink)]"
                             : isComplete
                               ? "border-[var(--studio-signal)]/55 bg-transparent text-[var(--studio-signal)]"
-                              : "border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] text-[var(--studio-ink-soft)] group-hover:border-[var(--studio-signal)]/40 group-hover:text-[var(--studio-ink)]"
+                              : "border-[var(--studio-line)] bg-[color:var(--home-surface-04)] text-[var(--studio-ink-soft)] group-hover:border-[var(--studio-signal)]/40 group-hover:text-[var(--studio-ink)]"
                         }`}
                       >
                         {isComplete ? <Check className="h-4 w-4" /> : `0${index + 1}`}
@@ -888,7 +888,7 @@ export function StudioRequestBuilder({
               className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition ${
                 stepIndex === 0
                   ? "cursor-not-allowed border-[var(--studio-line)] text-[var(--studio-ink-soft)] opacity-40"
-                  : "border-[var(--studio-line)] text-[var(--studio-ink)] hover:border-[var(--studio-signal)]/40 hover:bg-[rgba(0,0,0,0.04)]"
+                  : "border-[var(--studio-line)] text-[var(--studio-ink)] hover:border-[var(--studio-signal)]/40 hover:bg-[color:var(--home-surface-04)]"
               }`}
             >
               <ArrowLeft className="h-3.5 w-3.5" />
@@ -899,7 +899,7 @@ export function StudioRequestBuilder({
                 type="button"
                 onClick={handleContinue}
                 aria-disabled={!currentStepValid}
-                className={`studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${
+                className={`bg-[color:var(--home-accent)] text-[color:var(--home-accent-ink)] hover:bg-[color:var(--home-accent-strong)] transition-colors inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${
                   currentStepValid ? "" : "opacity-60"
                 }`}
               >

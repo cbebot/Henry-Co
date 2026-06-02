@@ -16,7 +16,7 @@ export function FieldError({ field, message }: { field: string; message?: string
     <p
       data-field={field}
       role="alert"
-      className="mt-2 flex items-start gap-1.5 text-[12.5px] leading-snug text-[color:var(--studio-warn,_#d99a13)]"
+      className="mt-2 flex items-start gap-1.5 text-[12.5px] leading-snug text-[color:var(--studio-warn,_var(--home-accent-text))]"
     >
       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
       <span>{message}</span>

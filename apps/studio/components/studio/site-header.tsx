@@ -39,26 +39,29 @@ export function StudioSiteHeader({
   ) => {
     if (placement === "bar") {
       return joinClassNames(
-        "rounded-full px-4 py-2 text-sm font-medium transition",
+        "rounded-full px-4 py-2 text-sm font-medium transition-colors",
         active
-          ? "bg-[rgba(146,241,240,0.14)] text-[var(--studio-ink)]"
-          : "text-[var(--studio-ink-soft)] hover:text-[var(--studio-ink)]"
+          ? "bg-[color:var(--home-accent-soft)] text-[color:var(--home-ink)]"
+          : "text-[color:var(--home-ink-65)] hover:text-[color:var(--home-ink)]"
       );
     }
-    return "rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm font-medium text-[var(--studio-ink)]";
+    return "rounded-[1.2rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-medium text-[color:var(--home-ink)]";
   };
 
   const prepend = (
-    <div className="border-b border-[rgba(146,241,240,0.08)]">
-      <div className="mx-auto flex max-w-[92rem] flex-wrap items-center justify-between gap-4 px-5 py-2 text-xs text-[var(--studio-ink-soft)] sm:px-8 lg:px-10">
+    <div className="border-b border-[color:var(--home-line-08)]">
+      <div className="mx-auto flex max-w-[92rem] flex-wrap items-center justify-between gap-4 px-5 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-8 lg:px-10">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[var(--studio-signal)]" />
-          {t("Premium briefs, verified payment guidance, and project history aligned with HenryCo account")}
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent)]" />
+          {t("Premium briefs, verified payment guidance, and project history in your Henry & Co. account")}
         </div>
         <div className="hidden items-center gap-5 lg:flex">
           <div>{supportEmail || studio.supportEmail}</div>
-          <Link href={accountHref} className="font-semibold text-[var(--studio-ink)]">
-            {t("HenryCo account")}
+          <Link
+            href={accountHref}
+            className="font-semibold text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)]"
+          >
+            {t("Henry & Co. account")}
           </Link>
         </div>
       </div>
@@ -68,40 +71,36 @@ export function StudioSiteHeader({
   return (
     <PublicHeader
       prepend={prepend}
-      headerClassName="border-b border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_82%,transparent)]/90 backdrop-blur-2xl dark:border-[var(--studio-line)]"
+      headerClassName="border-b border-[color:var(--home-line)] bg-[color:var(--home-glass)] backdrop-blur-2xl"
       maxWidth="max-w-[92rem]"
       toolbarClassName="px-5 py-4 sm:px-8 lg:px-10"
       mobileMenuContainerClassName="px-5 sm:px-8 lg:px-10"
-      mobileDrawerClassName="border-[var(--studio-line)]"
-      menuButtonClassName="rounded-full border border-[var(--studio-line)] text-[var(--studio-ink)]"
+      mobileDrawerClassName="border-[color:var(--home-line)]"
+      menuButtonClassName="rounded-full border border-[color:var(--home-line-15)] text-[color:var(--home-ink)]"
       brand={{
         href: "/",
         name: t(studio.name),
         mark: (
-          <div
-            className="studio-brand-mark"
-            style={{ color: studio.accent || "#49C0C5" }}
-          >
-            <HenryCoMonogram size={28} accent={studio.accent || "#49C0C5"} />
+          <div className="studio-brand-mark" style={{ color: studio.accent }}>
+            <HenryCoMonogram size={28} accent={studio.accent} />
           </div>
         ),
-        /** Brand text shrinks at the `lg` breakpoint so the 8-item nav
-         * clears the brand column without overlap. CHROME-01A audit
-         * confirmed the U-10 fix left a residual collision because the
-         * brand cluster (kicker + name) occupied the same row as the
-         * navigation items. The kicker is hidden between lg and xl
-         * (where space is tightest) and reinstated at xl. */
+        /** Brand text shrinks at `lg` so the 8-item nav clears the brand column;
+         * the kicker is hidden between lg and xl (tightest) and reinstated at xl. */
         text: (
           <div className="min-w-0">
-            <div className="studio-kicker truncate lg:hidden xl:block">{t(studio.shortName)}</div>
-            <div className="truncate text-[13px] font-semibold text-[var(--studio-ink)] lg:text-[12.5px] xl:text-sm">
+            <div className="home-eyebrow truncate lg:hidden xl:block">{t(studio.shortName)}</div>
+            <div
+              className="truncate text-[13px] font-semibold text-[color:var(--home-ink)] lg:text-[12.5px] xl:text-sm"
+              style={{ fontFamily: "var(--home-font-display)" }}
+            >
               {t(studio.name)}
             </div>
           </div>
         ),
       }}
       afterBrand={
-        <div className="hidden rounded-full border border-[var(--studio-line)] bg-black/10 px-3 py-2 text-xs text-[var(--studio-ink-soft)] 2xl:flex">
+        <div className="hidden rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2 text-xs text-[color:var(--home-ink-60)] 2xl:flex">
           {t("Premium digital product delivery")}
         </div>
       }
@@ -109,16 +108,16 @@ export function StudioSiteHeader({
       actions={
         <HenryCoSearchBreadcrumb
           href={getHubUrl("/search")}
-          className="hidden xl:inline-flex border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink)] hover:bg-black/20 dark:border-[var(--studio-line)] dark:bg-black/10"
+          className="hidden xl:inline-flex border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:bg-[color:var(--home-surface-07)]"
         />
       }
       getNavItemClassName={getNavItemClassName}
       navClassName="hidden shrink min-w-0 items-center gap-1 lg:flex"
       auxLink={studioNav.defaultCtas?.aux}
       primaryCta={studioNav.defaultCtas?.primary}
-      auxLinkClassName="border-[var(--studio-line)] px-4 py-3 text-sm font-semibold text-[var(--studio-ink-soft)] shadow-none hover:bg-transparent dark:border-[var(--studio-line)] dark:hover:bg-transparent"
+      auxLinkClassName="border-[color:var(--home-line-12)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink-65)] shadow-none hover:bg-transparent hover:text-[color:var(--home-ink)]"
       auxLinkDesktopClassName="hidden xl:inline-flex"
-      primaryCtaClassName="border-0 bg-[linear-gradient(135deg,#cfe9ef_0%,#83ebe8_46%,#46aab4_100%)] px-5 py-3 text-sm font-semibold text-[#041117] shadow-[0_18px_50px_rgba(74,193,197,0.25)] hover:opacity-95 dark:border-0 dark:text-[#041117]"
+      primaryCtaClassName="border-transparent! bg-[color:var(--home-accent)]! px-5 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)]! shadow-none transition-colors hover:bg-[color:var(--home-accent-strong)]!"
       primaryCtaDesktopClassName="hidden sm:inline-flex"
       accountMenu={accountMenu}
       accountMenuFirst
@@ -127,9 +126,9 @@ export function StudioSiteHeader({
         <Link
           href={accountHref}
           onClick={() => close()}
-          className="rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm font-medium text-[var(--studio-ink)]"
+          className="rounded-[1.2rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-medium text-[color:var(--home-ink)]"
         >
-          HenryCo account
+          {t("Henry & Co. account")}
         </Link>
       )}
     />

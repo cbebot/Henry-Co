@@ -1,17 +1,26 @@
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
-import { getAccountUrl } from "@henryco/config";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { StudioAccountChip } from "@/components/studio/StudioAccountChip";
-import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
+import { fraunces, STUDIO_PUBLIC_THEME_STYLE } from "@/components/studio/studio-public-theme";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioViewer } from "@/lib/studio/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioAccountUrl, getStudioLoginUrl, getStudioSignupUrl } from "@/lib/studio/links";
 
+const studio = getDivisionConfig("studio");
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const catalog = await getStudioCatalog();
-  const viewer = await getStudioViewer();
-  const h = await headers();
+  const [catalog, viewer, h, locale] = await Promise.all([
+    getStudioCatalog(),
+    getStudioViewer(),
+    headers(),
+    getStudioPublicLocale(),
+  ]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const returnPath = h.get("x-studio-return-path") || "/";
   const loginHref = getStudioLoginUrl(returnPath);
   const signupHref = getStudioSignupUrl(returnPath);
@@ -24,8 +33,40 @@ export default async function PublicLayout({ children }: { children: React.React
       }
     : null;
 
+  const footerColumns = [
+    {
+      title: t("Studio"),
+      links: [
+        { href: "/services", label: t("Services") },
+        { href: "/pricing", label: t("Packages") },
+        { href: "/work", label: t("Case studies") },
+        { href: "/teams", label: t("Teams") },
+      ],
+    },
+    {
+      title: t("Start"),
+      links: [
+        { href: "/request", label: t("Start a project") },
+        { href: "/pick", label: t("Project types") },
+        { href: "/process", label: t("Process") },
+        { href: "/trust", label: t("Trust") },
+      ],
+    },
+    {
+      title: t("Account"),
+      links: [
+        { href: accountUrl, label: t("Your account") },
+        { href: "/faq", label: t("FAQ") },
+        { href: "/contact", label: t("Contact") },
+      ],
+    },
+  ];
+
   return (
-    <div className="studio-page studio-shell">
+    <div
+      className={`${fraunces.variable} studio-public flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      style={STUDIO_PUBLIC_THEME_STYLE}
+    >
       <StudioSiteHeader
         supportEmail={catalog.platform.supportEmail}
         accountHref={accountUrl}
@@ -39,23 +80,32 @@ export default async function PublicLayout({ children }: { children: React.React
             settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut
-            buttonClassName="border-[var(--studio-line)] bg-black/15 text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)] hover:bg-black/25 dark:text-[var(--studio-ink)]"
-            dropdownClassName="border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_100%,#0a1620)]"
+            buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
+            dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
             menuItems={[
-              { label: "Start a project", href: "/request" },
-              { label: "Pick a project type", href: "/pick" },
-              { label: "Packages", href: "/pricing" },
-              { label: "Studio in your account", href: `${accountUrl}?ref=studio-nav` },
+              { label: t("Start a project"), href: "/request" },
+              { label: t("Pick a project type"), href: "/pick" },
+              { label: t("Packages"), href: "/pricing" },
+              { label: t("Studio in your account"), href: `${accountUrl}?ref=studio-nav` },
             ]}
           />
         }
       />
-      {children}
-      <StudioSiteFooter
-        supportEmail={catalog.platform.supportEmail}
-        supportPhone={catalog.platform.supportPhone}
-        accountHref={getStudioAccountUrl()}
-        loginHref={getStudioLoginUrl("/")}
+      <div className="flex-1">{children}</div>
+      <PublicSiteFooter
+        copy={{
+          statement: t(
+            "Serious software, delivered with sharper process — every brief to launch on one record.",
+          ),
+          divisionsLabel: t("The Henry & Co. group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry & Co. Studio."),
+        }}
+        columns={footerColumns}
+        support={{
+          email: catalog.platform.supportEmail || studio.supportEmail,
+          phone: catalog.platform.supportPhone || studio.supportPhone,
+        }}
       />
     </div>
   );

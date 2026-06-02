@@ -9,9 +9,9 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 export const maxDuration = 60;
 
 export const metadata: Metadata = {
-  title: "Talk it through — HenryCo Studio",
+  title: "Talk it through — Henry & Co. Studio",
   description:
-    "Describe your project in your own words. The HenryCo Studio co-pilot asks a few questions and turns the conversation into a clear brief with honest pricing.",
+    "Describe your project in your own words. The Henry & Co. Studio co-pilot asks a few questions and turns the conversation into a clear brief with honest pricing.",
   alternates: { canonical: "/request/copilot" },
   robots: { index: true, follow: true },
 };

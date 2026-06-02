@@ -54,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <LocaleProvider locale={lang}>
             {children}
             <StudioToastRoot />
-            <SupportAssist division="studio" accent="#49C0C5" />
+            <SupportAssist division="studio" accent={studio.accent} />
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics vercelAnalytics={false} />

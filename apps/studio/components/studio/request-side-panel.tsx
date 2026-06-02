@@ -86,7 +86,7 @@ export function StudioRequestSidePanel({
           <div className="flex items-center gap-2.5">
             <span
               aria-hidden
-              className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-black/10 text-[var(--studio-signal)]"
+              className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] text-[var(--studio-signal)]"
             >
               <Gauge className="h-3.5 w-3.5" />
             </span>
@@ -204,7 +204,7 @@ export function StudioRequestSidePanel({
           <button
             type="button"
             onClick={onLockPackage}
-            className="group mt-4 flex w-full items-center justify-between gap-3 rounded-[1.1rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-left transition hover:border-[var(--studio-signal)]/45 hover:bg-[rgba(151,244,243,0.05)]"
+            className="group mt-4 flex w-full items-center justify-between gap-3 rounded-[1.1rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-4 py-3 text-left transition hover:border-[var(--studio-signal)]/45 hover:bg-[color:var(--home-surface-04)]"
           >
             <span className="min-w-0">
               <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">

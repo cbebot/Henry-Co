@@ -208,12 +208,12 @@ function CompactPathSwitcher({
 }) {
   const activePath = PATHS.find((p) => p.key === active);
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <div className="flex items-center gap-3 min-w-0">
         {activePath ? (
           <span
             aria-hidden
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.1)] text-[var(--studio-signal)]"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]"
           >
             <activePath.icon className="h-3.5 w-3.5" />
           </span>
@@ -244,8 +244,8 @@ function CompactPathSwitcher({
               className={[
                 "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11.5px] font-semibold transition",
                 isActive
-                  ? "border-[rgba(151,244,243,0.55)] bg-[rgba(151,244,243,0.12)] text-[var(--studio-signal)]"
-                  : "border-[var(--studio-line)] bg-transparent text-[var(--studio-ink-soft)] hover:border-[rgba(151,244,243,0.35)] hover:text-[var(--studio-ink)]",
+                  ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]"
+                  : "border-[var(--studio-line)] bg-transparent text-[var(--studio-ink-soft)] hover:border-[color:var(--home-accent-ring)] hover:text-[var(--studio-ink)]",
               ].join(" ")}
             >
               <path.icon className="h-3 w-3" aria-hidden />
@@ -285,8 +285,8 @@ function PathSelector({
               "group/path relative overflow-hidden rounded-2xl border px-5 py-5 text-left transition",
               "sm:px-6 sm:py-6",
               isActive
-                ? "border-[rgba(151,244,243,0.55)] bg-[rgba(151,244,243,0.06)] shadow-[0_22px_60px_rgba(73,192,197,0.18)]"
-                : "border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.35)]",
+                ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)]"
+                : "border-[var(--studio-line)] bg-[color:var(--home-surface-02)] hover:-translate-y-0.5 hover:border-[color:var(--home-accent-ring)]",
             ].join(" ")}
           >
             <div className="flex items-center justify-between gap-3">
@@ -294,8 +294,8 @@ function PathSelector({
                 className={[
                   "inline-flex h-9 w-9 items-center justify-center rounded-xl border transition",
                   isActive
-                    ? "border-[rgba(151,244,243,0.55)] bg-[rgba(151,244,243,0.14)] text-[var(--studio-signal)]"
-                    : "border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] text-[var(--studio-ink-soft)] group-hover/path:text-[var(--studio-signal)]",
+                    ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]"
+                    : "border-[var(--studio-line)] bg-[color:var(--home-surface-02)] text-[var(--studio-ink-soft)] group-hover/path:text-[var(--studio-signal)]",
                 ].join(" ")}
                 aria-hidden
               >
@@ -351,12 +351,12 @@ function TemplatesLinkCard({ count }: { count: number }) {
   return (
     <Link
       href="/pick"
-      className="group/tpl-link flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-5 py-4 transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5"
+      className="group/tpl-link flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--home-accent-ring)] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5"
     >
       <div className="flex items-start gap-4">
         <span
           aria-hidden
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--studio-line)] bg-[rgba(151,244,243,0.05)] text-[var(--studio-signal)]"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--studio-line)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]"
         >
           <Layers3 className="h-4 w-4" />
         </span>
