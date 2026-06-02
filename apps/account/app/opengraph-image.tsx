@@ -60,7 +60,7 @@ export default async function OG() {
               borderRadius: 2,
             }}
           />
-          <span>HENRY &amp; CO.</span>
+          <span>HENRY ONYX</span>
         </div>
         <div
           style={{
@@ -79,7 +79,7 @@ export default async function OG() {
               fontWeight: 500,
             }}
           >
-            Single sign-on across every Henry & Co. division
+            Single sign-on across every Henry Onyx division
           </span>
           <span
             style={{

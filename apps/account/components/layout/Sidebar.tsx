@@ -69,7 +69,7 @@ export default function Sidebar({ user }: SidebarProps) {
       <div className="flex h-16 items-center gap-3 border-b border-[var(--acct-line)] px-5">
         <Logo size={32} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry & Co.</p>
+          <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry Onyx</p>
           <p className="text-[0.65rem] text-[var(--acct-muted)]">{t("My Account")}</p>
         </div>
         <Link

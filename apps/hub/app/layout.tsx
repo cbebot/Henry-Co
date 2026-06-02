@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const lang = await getHubPublicLocale();
   return {
     ...createDivisionMetadata("hub", {
-      title: "Henry & Co. Company Hub",
+      title: "Henry Onyx Company Hub",
       description: COMPANY.group.mission,
       path: "/",
       locale: lang,

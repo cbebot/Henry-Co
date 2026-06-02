@@ -16,9 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getPropertyPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
-    title: t("Search property listings | HenryCo Property"),
+    title: t("Search property listings | Henry Onyx Property"),
     description: t(
-      "Search HenryCo Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+      "Search Henry Onyx Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
     ),
   };
 }
@@ -141,7 +141,7 @@ export default async function PropertySearchPage({
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-l-2 border-[var(--property-line)] pl-4">
           <p className="max-w-md text-[13px] leading-6 text-[var(--property-ink-soft)]">
             {t(
-              "Save this search and HenryCo Property will notify you when a new listing matches. Cadence is daily by default — change it later in your account.",
+              "Save this search and Henry Onyx Property will notify you when a new listing matches. Cadence is daily by default — change it later in your account.",
             )}
           </p>
           {viewer.user ? (

@@ -4,9 +4,9 @@ import { getAccountUrl, getHqUrl } from "@henryco/config";
 import { requireOwner } from "../../lib/owner-auth";
 
 export const metadata: Metadata = {
-  title: "Owner Login | Henry & Co.",
+  title: "Owner Login | Henry Onyx",
   description:
-    "Secure owner access for Henry & Co. website operations, brand controls, public content management, and division administration.",
+    "Secure owner access for Henry Onyx website operations, brand controls, public content management, and division administration.",
   robots: {
     index: false,
     follow: false,

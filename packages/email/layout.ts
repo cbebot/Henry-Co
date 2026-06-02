@@ -57,18 +57,18 @@ export const HENRYCO_EMAIL_TOKENS = {
 } as const;
 
 const PURPOSE_KICKER: Record<EmailPurpose, string> = {
-  auth: "Henry & Co. Accounts",
-  support: "Henry & Co. Support",
-  newsletter: "Henry & Co. Editorial",
-  care: "Henry & Co. Care",
-  studio: "Henry & Co. Studio",
-  marketplace: "Henry & Co. Marketplace",
-  jobs: "Henry & Co. Jobs",
-  learn: "Henry & Co. Learn",
-  property: "Henry & Co. Property",
-  logistics: "Henry & Co. Logistics",
-  security: "Henry & Co. Security",
-  generic: "Henry & Co.",
+  auth: "Henry Onyx Accounts",
+  support: "Henry Onyx Support",
+  newsletter: "Henry Onyx Editorial",
+  care: "Henry Onyx Care",
+  studio: "Henry Onyx Studio",
+  marketplace: "Henry Onyx Marketplace",
+  jobs: "Henry Onyx Jobs",
+  learn: "Henry Onyx Learn",
+  property: "Henry Onyx Property",
+  logistics: "Henry Onyx Logistics",
+  security: "Henry Onyx Security",
+  generic: "Henry Onyx",
 };
 
 /**
@@ -165,7 +165,7 @@ export type HenryCoEmailSection = {
 export type HenryCoEmailLayout = {
   purpose: EmailPurpose;
   subject: string;
-  /** Override the auto-derived purpose kicker (e.g., "HenryCo Studio") */
+  /** Override the auto-derived purpose kicker (e.g., "Henry Onyx Studio") */
   eyebrow?: string;
   title: string;
   /** First paragraph in hero — must be high-contrast. */
@@ -283,7 +283,7 @@ function renderCta(
 }
 
 /**
- * HENRY & CO. wordmark — rendered as native HTML text with a serif font
+ * HENRY ONYX wordmark — rendered as native HTML text with a serif font
  * stack rather than as an image. Email clients across Gmail, Apple Mail,
  * Outlook (web + Mac + iOS), and major Android clients render this
  * faithfully from system fonts; clients without web-font support fall
@@ -313,7 +313,7 @@ function renderBrandMark(palette: ResolvedPalette): string {
                 <img src="data:image/svg+xml;utf8,${monogramSvg}" alt="" width="24" height="24" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
               </td>
               <td style="padding:0 0 0 14px; vertical-align:middle;">
-                <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:21px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
+                <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:21px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
                 <div style="margin:4px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9.5px; font-weight:700; letter-spacing:0.32em; text-transform:uppercase; color:${palette.accent};">Platform</div>
               </td>
             </tr>
@@ -326,7 +326,7 @@ function renderBrandMark(palette: ResolvedPalette): string {
 /**
  * Standalone brand header partial. Custom division templates compose
  * this above their existing hero sections so every email leads with
- * the same Henry & Co. brand identity. Returns email-safe table-based
+ * the same Henry Onyx brand identity. Returns email-safe table-based
  * markup with inline styles — usable in any of the per-division
  * templates without further hardening.
  *
@@ -356,7 +356,7 @@ export function renderHenryCoEmailHeader(
                 <img src="data:image/svg+xml;utf8,${monogramSvg}" alt="" width="22" height="22" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
               </td>
               <td style="padding:0 0 0 12px; vertical-align:middle;">
-                <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
+                <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
                 <div style="margin:3px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9px; font-weight:700; letter-spacing:0.30em; text-transform:uppercase; color:${palette.accent};">Platform</div>
               </td>
             </tr>
@@ -367,7 +367,7 @@ export function renderHenryCoEmailHeader(
 }
 
 export type HenryCoEmailFooterOptions = {
-  /** Sender division for the kicker line ("HenryCo Care", etc.). */
+  /** Sender division for the kicker line ("Henry Onyx Care", etc.). */
   purpose?: EmailPurpose;
   /** Optional support contact line — defaults to `BRAND_EMAILS.support`. */
   supportEmail?: string | null;
@@ -401,7 +401,7 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
     : "";
   const reason =
     opts.reasonLine ||
-    "This is a Henry & Co. transactional message. You received it because of an action on your Henry & Co. account.";
+    "This is a Henry Onyx transactional message. You received it because of an action on your Henry Onyx account.";
 
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.outerBg};">

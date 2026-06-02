@@ -75,7 +75,7 @@ export type LogisticsBusinessCopy = {
 
 const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
   metadata: {
-    title: "Business logistics | HenryCo Logistics",
+    title: "Business logistics | Henry Onyx Logistics",
     description:
       "Repeat routes, governed pricing, and account-level visibility for business shippers.",
   },
@@ -151,7 +151,7 @@ const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
 
 const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Logistique pour entreprises | HenryCo Logistics",
+    title: "Logistique pour entreprises | Henry Onyx Logistics",
     description:
       "Itinéraires récurrents, tarification encadrée et visibilité à l’échelle du compte pour les expéditeurs professionnels.",
   },
@@ -227,7 +227,7 @@ const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Logística para empresas | HenryCo Logistics",
+    title: "Logística para empresas | Henry Onyx Logistics",
     description:
       "Rutas recurrentes, precios regulados y visibilidad a nivel de cuenta para empresas remitentes.",
   },
@@ -303,7 +303,7 @@ const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Logística empresarial | HenryCo Logistics",
+    title: "Logística empresarial | Henry Onyx Logistics",
     description:
       "Rotas recorrentes, preços regulamentados e visibilidade ao nível da conta para expedidores empresariais.",
   },
@@ -379,7 +379,7 @@ const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "الخدمات اللوجستية للأعمال | HenryCo Logistics",
+    title: "الخدمات اللوجستية للأعمال | Henry Onyx Logistics",
     description:
       "خطوط متكررة وتسعير منضبط ورؤية على مستوى الحساب لمُرسلي الأعمال.",
   },
@@ -454,7 +454,7 @@ const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Geschäftslogistik | HenryCo Logistics",
+    title: "Geschäftslogistik | Henry Onyx Logistics",
     description:
       "Wiederkehrende Routen, geregelte Preise und Sichtbarkeit auf Kontoebene für Geschäftsversender.",
   },
@@ -530,7 +530,7 @@ const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Logistica per le imprese | HenryCo Logistics",
+    title: "Logistica per le imprese | Henry Onyx Logistics",
     description:
       "Tratte ricorrenti, tariffe regolate e visibilità a livello di account per gli spedizionieri aziendali.",
   },
@@ -606,7 +606,7 @@ const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "企业物流 | HenryCo Logistics",
+    title: "企业物流 | Henry Onyx Logistics",
     description: "为企业寄件方提供常态线路、规范定价与账户级可见度。",
   },
   hero: {
@@ -675,7 +675,7 @@ const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "व्यवसायिक लॉजिस्टिक्स | HenryCo Logistics",
+    title: "व्यवसायिक लॉजिस्टिक्स | Henry Onyx Logistics",
     description:
       "व्यवसायिक प्रेषकों के लिए दोहराई जाने वाली रूट, नियंत्रित मूल्य निर्धारण और खाता-स्तरीय दृश्यता।",
   },
@@ -751,7 +751,7 @@ const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Logistics maka azụmaahịa | HenryCo Logistics",
+    title: "Logistics maka azụmaahịa | Henry Onyx Logistics",
     description:
       "Ụzọ ndị na-emegharị, ọnụahịa a chịkwara, na anya na ọkwa akaụntụ maka ndị na-eziga maka azụmaahịa.",
   },
@@ -827,7 +827,7 @@ const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Iṣẹ́ Logistics fún Iṣòwò | HenryCo Logistics",
+    title: "Iṣẹ́ Logistics fún Iṣòwò | Henry Onyx Logistics",
     description:
       "Ọ̀nà àtúnṣe, ìṣètò owó tó tọ́, àti ìríran ipele-akáǹtì fún àwọn olùrànṣẹ́ iṣòwò.",
   },
@@ -903,7 +903,7 @@ const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
 
 const LOGISTICS_BUSINESS_COPY_HA: DeepPartial<LogisticsBusinessCopy> = {
   metadata: {
-    title: "Logistics na kasuwanci | HenryCo Logistics",
+    title: "Logistics na kasuwanci | Henry Onyx Logistics",
     description:
       "Hanyoyi maimaitaccen, farashi mai tsari, da gani matakin akwati ga ’yan kasuwa masu aikawa.",
   },

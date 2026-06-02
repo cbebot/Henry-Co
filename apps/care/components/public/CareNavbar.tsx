@@ -22,7 +22,7 @@ export type DivisionPublicConfig = {
   /**
    * Operator-uploadable logo url is intentionally NOT honoured in the
    * public Care navbar mark. Care's brand identity is the in-house
-   * CareMonogram (Henry & Co. serif H + small-caps "Care" caption +
+   * CareMonogram (Henry Onyx serif H + small-caps "Care" caption +
    * periwinkle droplet). Allowing operators to swap that for an
    * uploaded raster logo created the bug the user flagged: stale
    * uploads of the parent monogram kept overriding the proper Care
@@ -126,7 +126,7 @@ export default function CareNavbar({
         sub: division.sub ? t(division.sub) : t(DEFAULT_SUB),
         href: "/",
         mark: <BrandMark accent={division.accent ?? "#6B7CFF"} />,
-        /** Custom brand text — keeps "Henry & Co. Fabric Care" on a
+        /** Custom brand text — keeps "Henry Onyx Fabric Care" on a
          * single line at every viewport above 320px. Without this
          * override the default PublicHeader brand block let the long
          * name wrap to four lines and clipped "PREMIUM" → "PRE…" on

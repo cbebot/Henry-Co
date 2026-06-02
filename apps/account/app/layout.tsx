@@ -44,7 +44,7 @@ function resolveTimeOfDayBucket(timezone: string): string {
 }
 
 export const metadata: Metadata = {
-  title: "My Account — Henry & Co.",
+  title: "My Account — Henry Onyx",
   description:
     "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
   robots: { index: false, follow: false },
@@ -54,10 +54,10 @@ export const metadata: Metadata = {
       : "http://localhost:3003"
   ),
   openGraph: {
-    title: "My Account — Henry & Co.",
+    title: "My Account — Henry Onyx",
     description:
       "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
-    siteName: "Henry & Co. Account",
+    siteName: "Henry Onyx Account",
     type: "website",
   },
   icons: {

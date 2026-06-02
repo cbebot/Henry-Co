@@ -122,7 +122,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Harbour Crest Penthouse",
     summary: "A five-bed duplex penthouse with private terrace, marina-facing lounge, and concierge-led arrival sequence.",
     description:
-      "Designed for executives who want space, privacy, and cleaner operations. HenryCo Property manages the viewing rail, owner communication, and final handover support for this listing.",
+      "Designed for executives who want space, privacy, and cleaner operations. Henry Onyx Property manages the viewing rail, owner communication, and final handover support for this listing.",
     kind: "rent",
     serviceType: "rent",
     intent: "managed_property",
@@ -239,7 +239,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Cove Garden Townhouse",
     summary: "A four-bed family townhouse with rooftop lounge, quiet street access, and strong move-in readiness.",
     description:
-      "This listing is set up for families who want less stress in the decision process. HenryCo Property keeps the shortlist, follow-up, and viewing coordination structured from first inquiry to keys.",
+      "This listing is set up for families who want less stress in the decision process. Henry Onyx Property keeps the shortlist, follow-up, and viewing coordination structured from first inquiry to keys.",
     kind: "rent",
     serviceType: "rent",
     intent: "owner_listed",
@@ -297,7 +297,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Ledger House Commercial Suite",
     summary: "A premium floor plate for advisory firms, founder offices, and polished client-facing teams.",
     description:
-      "HenryCo Property moderates commercial listing quality more tightly than generic boards, so floor plans, service-charge context, and fit-out notes are not buried under weak copy.",
+      "Henry Onyx Property moderates commercial listing quality more tightly than generic boards, so floor plans, service-charge context, and fit-out notes are not buried under weak copy.",
     kind: "commercial",
     serviceType: "commercial",
     intent: "agent_listed",

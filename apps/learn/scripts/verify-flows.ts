@@ -192,7 +192,7 @@ async function main() {
     featured: false,
     certification: false,
     tags: ["qa", "academy", "ops"],
-    prerequisites: ["HenryCo Learn access"],
+    prerequisites: ["Henry Onyx Learn access"],
     outcomes: ["Verify owner editing", "Validate live content publishing"],
   });
 
@@ -202,7 +202,7 @@ async function main() {
     moduleTitle: "QA Operations Module",
     moduleSummary: "Ensures module and lesson creation works live.",
     lessonTitle: "Publishing discipline",
-    lessonSummary: "Validates lesson authoring inside HenryCo Learn.",
+    lessonSummary: "Validates lesson authoring inside Henry Onyx Learn.",
     lessonBody:
       "This lesson exists to verify that owners can create new modules and lessons without falling back to static content.",
     lessonType: "reading",
@@ -387,7 +387,7 @@ async function main() {
     courseId: internalCourse.id,
     email: internalEmail,
     assigneeRole: "care_staff",
-    sponsorName: "HenryCo Learn QA",
+    sponsorName: "Henry Onyx Learn QA",
     note: "Assigned to verify restricted academy training flow.",
     dueAt: "2026-04-03T18:00:00.000Z",
   });
@@ -420,7 +420,7 @@ async function main() {
       "Operational QA lead for HenryCo academy verification with practical experience in structured learning flows, publishing checks, and readiness reviews.",
     portfolioLinks: ["https://learn.henrycogroup.com/academy", "https://henrycogroup.com"],
     courseProposal:
-      "A practical academy operations course that teaches staff and partners how to structure learning experiences, validate readiness, and deliver premium instructional quality inside HenryCo Learn.",
+      "A practical academy operations course that teaches staff and partners how to structure learning experiences, validate readiness, and deliver premium instructional quality inside Henry Onyx Learn.",
     supportingFiles: [],
     agreementAccepted: true,
   });
@@ -457,7 +457,7 @@ async function main() {
   const supportRequest = await createLearnerSupportRequest({
     viewer: learnerViewer,
     subject: `Academy QA support ${runId}`,
-    body: "Support workflow verification for HenryCo Learn.",
+    body: "Support workflow verification for Henry Onyx Learn.",
   });
   assert(cleanText(supportRequest.threadId), "Support request did not return a thread id.");
 

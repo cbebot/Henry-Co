@@ -33,7 +33,7 @@ export type LearnPathsCopy = {
 
 const LEARN_PATHS_COPY_EN: LearnPathsCopy = {
   meta: {
-    title: "Learning paths - HenryCo Learn",
+    title: "Learning paths - Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Learning paths",
@@ -56,7 +56,7 @@ const LEARN_PATHS_COPY_EN: LearnPathsCopy = {
 
 const LEARN_PATHS_COPY_FR: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Parcours d’apprentissage — HenryCo Learn",
+    title: "Parcours d’apprentissage — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Parcours d’apprentissage",
@@ -79,7 +79,7 @@ const LEARN_PATHS_COPY_FR: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_ES: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Itinerarios de aprendizaje — HenryCo Learn",
+    title: "Itinerarios de aprendizaje — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Itinerarios de aprendizaje",
@@ -102,7 +102,7 @@ const LEARN_PATHS_COPY_ES: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_PT: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Trilhas de aprendizagem — HenryCo Learn",
+    title: "Trilhas de aprendizagem — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Trilhas de aprendizagem",
@@ -125,7 +125,7 @@ const LEARN_PATHS_COPY_PT: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_AR: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "مسارات التعلُّم — HenryCo Learn",
+    title: "مسارات التعلُّم — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "مسارات التعلُّم",
@@ -148,7 +148,7 @@ const LEARN_PATHS_COPY_AR: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_DE: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Lernpfade — HenryCo Learn",
+    title: "Lernpfade — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Lernpfade",
@@ -171,7 +171,7 @@ const LEARN_PATHS_COPY_DE: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_IT: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Percorsi di apprendimento — HenryCo Learn",
+    title: "Percorsi di apprendimento — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Percorsi di apprendimento",
@@ -194,7 +194,7 @@ const LEARN_PATHS_COPY_IT: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_ZH: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "学习路径 — HenryCo Learn",
+    title: "学习路径 — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "学习路径",
@@ -217,7 +217,7 @@ const LEARN_PATHS_COPY_ZH: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_HI: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "लर्निंग पथ — HenryCo Learn",
+    title: "लर्निंग पथ — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "लर्निंग पथ",
@@ -240,7 +240,7 @@ const LEARN_PATHS_COPY_HI: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_IG: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Ụzọ mmụta — HenryCo Learn",
+    title: "Ụzọ mmụta — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Ụzọ mmụta",
@@ -263,7 +263,7 @@ const LEARN_PATHS_COPY_IG: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_YO: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Àwọn ọ̀nà ìkẹ́kọ̀ọ́ — HenryCo Learn",
+    title: "Àwọn ọ̀nà ìkẹ́kọ̀ọ́ — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Àwọn ọ̀nà ìkẹ́kọ̀ọ́",
@@ -286,7 +286,7 @@ const LEARN_PATHS_COPY_YO: DeepPartial<LearnPathsCopy> = {
 
 const LEARN_PATHS_COPY_HA: DeepPartial<LearnPathsCopy> = {
   meta: {
-    title: "Hanyoyin koyo — HenryCo Learn",
+    title: "Hanyoyin koyo — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Hanyoyin koyo",

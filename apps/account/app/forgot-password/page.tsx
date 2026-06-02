@@ -7,7 +7,7 @@ import { getAccountAppLocale } from "@/lib/locale-server";
 export async function generateMetadata() {
   const locale = await getAccountAppLocale();
   const copy = getAuthCopy(locale);
-  return { title: `${copy.reset.heading} — Henry & Co.` };
+  return { title: `${copy.reset.heading} — Henry Onyx` };
 }
 
 export default async function ForgotPasswordPage() {

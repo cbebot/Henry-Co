@@ -155,7 +155,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
         <Logo size={32} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">
-            Henry & Co.
+            Henry Onyx
           </p>
           <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
             {t("Command Center")}

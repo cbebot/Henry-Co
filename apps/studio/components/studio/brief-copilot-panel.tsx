@@ -204,7 +204,7 @@ export function BriefCopilotPanel({
             </span>
           ) : (
             <span>
-              Free for early users · Powered by Henry & Co. Studio Intelligence · Your text is never used to train external models.
+              Free for early users · Powered by Henry Onyx Studio Intelligence · Your text is never used to train external models.
             </span>
           )}
         </p>

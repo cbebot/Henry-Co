@@ -55,8 +55,8 @@ export default function PrivacyScreen() {
         </Text>
 
         <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
-          Henry Holdings Limited (&quot;we&quot;, &quot;us&quot;, or
-          &quot;our&quot;) operates the Henry &amp; Co. Hub mobile application
+          Henry Onyx Limited (&quot;we&quot;, &quot;us&quot;, or
+          &quot;our&quot;) operates the Henry Onyx Hub mobile application
           (the &quot;App&quot;). This Privacy Policy explains how we collect,
           use, disclose, and safeguard your information when you use the App.
         </Text>

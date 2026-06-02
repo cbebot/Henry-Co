@@ -317,7 +317,7 @@ test("listing submission, owner update, and moderation approval stay connected",
   await page.getByLabel("Phone").fill(ownerPhone);
   await page.getByLabel("Listing title").fill(listingTitle);
   await page.getByLabel("Short summary").fill(
-    "A verification listing used to confirm the full HenryCo Property owner flow."
+    "A verification listing used to confirm the full Henry Onyx Property owner flow."
   );
   await page
     .getByLabel("Description")

@@ -9,7 +9,7 @@ export default function AuthCallbackPage() {
           fallback={
             <div className="jobs-panel w-full rounded-[2rem] p-8 text-center sm:p-10">
               <div className="mx-auto h-11 w-11 animate-spin rounded-full border-2 border-[var(--jobs-line)] border-t-[var(--jobs-accent)]" />
-              <h1 className="mt-5 text-2xl font-semibold tracking-[-0.02em]">Securing your HenryCo Jobs session</h1>
+              <h1 className="mt-5 text-2xl font-semibold tracking-[-0.02em]">Securing your Henry Onyx Jobs session</h1>
               <p className="mt-3 text-sm leading-7 text-[var(--jobs-muted)]">
                 We are validating your sign-in and restoring the Jobs module.
               </p>

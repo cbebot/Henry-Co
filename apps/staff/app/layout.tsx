@@ -6,8 +6,8 @@ import { getStaffHqUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 
 export const metadata: Metadata = {
-  title: "Staff HQ — Henry & Co.",
-  description: "Internal staff platform for Henry & Co. operations.",
+  title: "Staff HQ — Henry Onyx",
+  description: "Internal staff platform for Henry Onyx operations.",
   robots: { index: false, follow: false },
   metadataBase: new URL(
     process.env.NODE_ENV === "production"

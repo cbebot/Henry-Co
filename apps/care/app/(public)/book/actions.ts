@@ -205,7 +205,7 @@ async function sendBookingConfirmationWhatsApp(input: {
   const result = await sendWhatsAppText({
     phone: input.customerPhone,
     body: [
-      `HenryCo Care booking • ${input.trackingCode}`,
+      `Henry Onyx Care booking • ${input.trackingCode}`,
       `Hello ${input.customerName},`,
       "",
       "Your booking has been received.",

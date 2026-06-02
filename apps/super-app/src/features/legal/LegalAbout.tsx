@@ -7,7 +7,7 @@ export function LegalAbout() {
   return (
     <View style={{ gap: spacing.md }}>
       <Text variant="body" color="textSecondary">
-        Henry &amp; Co. is a multi-division business group built to deliver specialized services
+        Henry Onyx is a multi-division business group built to deliver specialized services
         through focused operating units under a shared standard of quality, discipline, and
         professional accountability.
       </Text>

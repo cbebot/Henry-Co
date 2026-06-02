@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       mode,
       status: "unconfigured",
       message:
-        "Live registry lookup is not turned on for this environment yet. These names are ideas only—Henry & Co. will confirm availability with you before anything is purchased.",
+        "Live registry lookup is not turned on for this environment yet. These names are ideas only—Henry Onyx will confirm availability with you before anything is purchased.",
       fqdn: fqdnGuess || (sld ? `${sld}.com` : null),
       suggestions,
     });
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     mode,
     status: "unknown",
     message:
-      "We could not complete a live check right now. Share the name anyway—Henry & Co. will verify it with you.",
+      "We could not complete a live check right now. Share the name anyway—Henry Onyx will verify it with you.",
     fqdn: fqdnGuess,
     suggestions,
   });

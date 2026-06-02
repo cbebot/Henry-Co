@@ -60,7 +60,7 @@ export type LogisticsQuoteCopy = {
 
 const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
   metadata: {
-    title: "Request a quote | HenryCo Logistics",
+    title: "Request a quote | Henry Onyx Logistics",
     description: "Get an indicative logistics quote before you commit to a booking.",
   },
   hero: {
@@ -124,7 +124,7 @@ const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
 
 const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Demander un devis | HenryCo Logistics",
+    title: "Demander un devis | Henry Onyx Logistics",
     description: "Obtenez un devis logistique indicatif avant de vous engager sur une réservation.",
   },
   hero: {
@@ -188,7 +188,7 @@ const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Solicitar un presupuesto | HenryCo Logistics",
+    title: "Solicitar un presupuesto | Henry Onyx Logistics",
     description: "Obtén un presupuesto logístico indicativo antes de comprometerte con una reserva.",
   },
   hero: {
@@ -252,7 +252,7 @@ const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Solicitar um orçamento | HenryCo Logistics",
+    title: "Solicitar um orçamento | Henry Onyx Logistics",
     description: "Obtenha um orçamento logístico indicativo antes de se comprometer com uma reserva.",
   },
   hero: {
@@ -316,7 +316,7 @@ const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "طلب عرض سعر | HenryCo Logistics",
+    title: "طلب عرض سعر | Henry Onyx Logistics",
     description: "احصل على عرض سعر لوجستي إرشادي قبل الالتزام بالحجز.",
   },
   hero: {
@@ -380,7 +380,7 @@ const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Angebot anfordern | HenryCo Logistics",
+    title: "Angebot anfordern | Henry Onyx Logistics",
     description: "Holen Sie sich vor der Buchung ein indikatives Logistikangebot.",
   },
   hero: {
@@ -444,7 +444,7 @@ const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Richiedi un preventivo | HenryCo Logistics",
+    title: "Richiedi un preventivo | Henry Onyx Logistics",
     description: "Ottieni un preventivo logistico indicativo prima di impegnarti in una prenotazione.",
   },
   hero: {
@@ -508,7 +508,7 @@ const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "申请报价 | HenryCo Logistics",
+    title: "申请报价 | Henry Onyx Logistics",
     description: "在确认预订之前先获取指示性物流报价。",
   },
   hero: {
@@ -572,7 +572,7 @@ const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "कोटेशन का अनुरोध करें | HenryCo Logistics",
+    title: "कोटेशन का अनुरोध करें | Henry Onyx Logistics",
     description: "बुकिंग के लिए प्रतिबद्ध होने से पहले एक संकेतात्मक लॉजिस्टिक्स कोटेशन प्राप्त करें।",
   },
   hero: {
@@ -636,7 +636,7 @@ const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Rịọ ọnụego | HenryCo Logistics",
+    title: "Rịọ ọnụego | Henry Onyx Logistics",
     description: "Nweta ọnụego logistics ngosi tupu ị kwado nzọrọ.",
   },
   hero: {
@@ -700,7 +700,7 @@ const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Béèrè ìpèsè iye | HenryCo Logistics",
+    title: "Béèrè ìpèsè iye | Henry Onyx Logistics",
     description: "Gba ìpèsè iye logistics tó ń tọ́ka kí o tó ṣe ìfọwọ́sí ìpamọ́.",
   },
   hero: {
@@ -764,7 +764,7 @@ const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_HA: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Nemi farashi | HenryCo Logistics",
+    title: "Nemi farashi | Henry Onyx Logistics",
     description: "Sami farashin logistics na ja-gora kafin ka tabbatar da yin rijista.",
   },
   hero: {

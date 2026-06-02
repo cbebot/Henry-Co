@@ -48,7 +48,7 @@ export function getPropertyListingStatusSummary(status: PropertyListingStatus) {
     case "approved":
       return "The listing is approved for trusted publication.";
     case "published":
-      return "The listing is live on the public HenryCo Property surface.";
+      return "The listing is live on the public Henry Onyx Property surface.";
     case "rejected":
       return "The listing was rejected and will not move forward without a new submission path.";
     case "verified":

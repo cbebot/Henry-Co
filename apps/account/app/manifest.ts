@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "HenryCo Account",
     short_name: "HenryCo",
     description:
-      "Your HenryCo account — single sign-on across all Henry & Co. divisions, with activity, payments, and notifications in one place.",
+      "Your HenryCo account — single sign-on across all Henry Onyx divisions, with activity, payments, and notifications in one place.",
     start_url: "/",
     display: "standalone",
     background_color: "#050816",

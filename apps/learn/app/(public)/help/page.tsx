@@ -9,7 +9,7 @@ export async function generateMetadata() {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("Help - HenryCo Learn") };
+  return { title: t("Help - Henry Onyx Learn") };
 }
 
 export default async function HelpPage({

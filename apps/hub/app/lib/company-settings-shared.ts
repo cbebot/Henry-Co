@@ -71,11 +71,11 @@ export function normalizeCompanySettings(input?: CompanySettingsInput): CompanyS
     brand_subtitle: toText(source.brand_subtitle, "Corporate Platform"),
     brand_description: toText(
       source.brand_description,
-      "Henry & Co. brings together focused businesses under one respected company identity."
+      "Henry Onyx brings together focused businesses under one respected company identity."
     ),
     footer_blurb: toText(
       source.footer_blurb,
-      "Henry & Co. provides a clear way to understand the company and reach the right business with confidence."
+      "Henry Onyx provides a clear way to understand the company and reach the right business with confidence."
     ),
     base_domain: toText(source.base_domain, "henrycogroup.com"),
     office_address: officeAddress,
@@ -85,7 +85,7 @@ export function normalizeCompanySettings(input?: CompanySettingsInput): CompanyS
     default_meta_title: toText(source.default_meta_title, COMPANY.group.name),
     default_meta_description: toText(
       source.default_meta_description,
-      "Explore the businesses, services, and operating divisions of Henry & Co."
+      "Explore the businesses, services, and operating divisions of Henry Onyx"
     ),
     copyright_label: toText(source.copyright_label, COMPANY.group.legalName),
   };

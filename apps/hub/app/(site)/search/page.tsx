@@ -18,23 +18,23 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Search — Henry & Co.",
+  title: "Search — Henry Onyx",
   description:
-    "Search across every Henry & Co. division — marketplace, property, jobs, learning, care, logistics, and studio — plus your account workflows and help routes, from one live hub.",
+    "Search across every Henry Onyx division — marketplace, property, jobs, learning, care, logistics, and studio — plus your account workflows and help routes, from one live hub.",
   alternates: { canonical: "/search" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Search Henry & Co.",
+    title: "Search Henry Onyx",
     description:
-      "One live entry point across every Henry & Co. division, workflow, and help route.",
+      "One live entry point across every Henry Onyx division, workflow, and help route.",
     type: "website",
     url: "/search",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Search Henry & Co.",
+    title: "Search Henry Onyx",
     description:
-      "One live entry point across every Henry & Co. division, workflow, and help route.",
+      "One live entry point across every Henry Onyx division, workflow, and help route.",
   },
 };
 
@@ -67,7 +67,7 @@ export default async function HubSearchPage({
   const searchActionSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Henry & Co.",
+    name: "Henry Onyx",
     url: getHubUrl(),
     potentialAction: {
       "@type": "SearchAction",

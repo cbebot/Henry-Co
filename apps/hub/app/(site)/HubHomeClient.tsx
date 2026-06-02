@@ -61,7 +61,7 @@ export default function HubHomeClient({
   /** Subtle signed-in hero line (first name). */
   heroWelcome?: string | null;
 }) {
-  const brandTitleSafe = brandTitle?.trim() || "Henry & Co.";
+  const brandTitleSafe = brandTitle?.trim() || "Henry Onyx";
   const accent = brandAccent?.trim() || "#C9A227";
   const rootStyle = { "--accent": accent } as CSSProperties;
   const divisions = initialDivisions ?? [];

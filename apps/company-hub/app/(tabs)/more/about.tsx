@@ -31,10 +31,10 @@ export default function AboutScreen() {
           className="mt-2 text-xl font-bold"
           style={{ color: palette.textPrimary }}
         >
-          Henry &amp; Co.
+          Henry Onyx
         </Text>
         <Text className="mt-4 text-base leading-7" style={{ color: palette.textBody }}>
-          Henry &amp; Co. is a diversified operating group spanning fabric care,
+          Henry Onyx is a diversified operating group spanning fabric care,
           technology and design, commerce, talent, property, education,
           logistics, and built environment services. The Company Hub connects
           these divisions under one disciplined brand experience—so clients,
@@ -42,7 +42,7 @@ export default function AboutScreen() {
         </Text>
         <Text className="mt-4 text-base leading-7" style={{ color: palette.textBody }}>
           Founded with the principle that operational excellence and premium
-          service should be accessible, Henry &amp; Co. continues to grow its
+          service should be accessible, Henry Onyx continues to grow its
           division network while maintaining consistent standards of quality,
           transparency, and accountability.
         </Text>

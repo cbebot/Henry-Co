@@ -21,7 +21,7 @@ import { logProtectedPageAccess } from "@/lib/security/logger";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Payment Proofs | Henry & Co. Fabric Care",
+  title: "Support Payment Proofs | Henry Onyx Fabric Care",
   description:
     "Payment proof review workspace for approvals, clarifications, and customer follow-up.",
 };

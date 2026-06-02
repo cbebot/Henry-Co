@@ -485,7 +485,7 @@ export type HubOwnerCopy = {
 
 const HUB_OWNER_COPY_EN: HubOwnerCopy = {
   metadata: {
-    title: "Owner command center · Henry & Co.",
+    title: "Owner command center · Henry Onyx",
     description:
       "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.",
   },
@@ -559,7 +559,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
   },
   brand: {
     overview: {
-      metadataTitle: "Brand & subdomain control · Henry & Co.",
+      metadataTitle: "Brand & subdomain control · Henry Onyx",
       metadataDescription:
         "Central source for shared company identity, division branding, page-level content blocks, and subdomain presentation records.",
       eyebrow: "Brand & Subdomain Control",
@@ -575,8 +575,8 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
       supportEmailLabel: "Support email",
       baseDomainLabel: "Base domain",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Managed surfaces",
       managedSurfacesDescription:
@@ -586,7 +586,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
       hubSiteSettingsLabel: "Hub site settings rows",
     },
     pages: {
-      metadataTitle: "Shared company pages · Henry & Co.",
+      metadataTitle: "Shared company pages · Henry Onyx",
       metadataDescription:
         "Hero content, meta, CTAs, and structured sections for the public company pages are editable from the central owner dashboard.",
       eyebrow: "Pages & Content",
@@ -617,7 +617,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Company-wide brand settings · Henry & Co.",
+      metadataTitle: "Company-wide brand settings · Henry Onyx",
       metadataDescription:
         "Identity, contact, SEO, and hub shell controls that write directly into the shared company settings rows.",
       eyebrow: "Brand Settings",
@@ -660,7 +660,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
       footerNoticePlaceholder: "Footer notice",
     },
     subdomains: {
-      metadataTitle: "Division branding · Henry & Co.",
+      metadataTitle: "Division branding · Henry Onyx",
       metadataDescription:
         "Subdomains, logos, and identity rows for every HenryCo division, edited centrally from the owner command center.",
       eyebrow: "Division Branding",
@@ -777,7 +777,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     healthOk:
       "Internal comms storage, memberships, attachments, and presence checks are healthy.",
     healthDegraded:
-      "Provisioning is incomplete. Apply HenryCo Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.",
+      "Provisioning is incomplete. Apply Henry Onyx Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.",
     newRoomTitlePlaceholder: "New room title",
     roomTypeGroupOption: "Group room",
     roomTypeBroadcastOption: "Broadcast room",
@@ -791,7 +791,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     searchChannelsPlaceholder: "Search channels…",
     searchChannelsAriaLabel: "Search channels",
     noChannelsMatch:
-      "No channels match your search. If storage is not provisioned yet, apply HenryCo Hub Supabase migrations and wait for the schema cache to refresh.",
+      "No channels match your search. If storage is not provisioned yet, apply Henry Onyx Hub Supabase migrations and wait for the schema cache to refresh.",
     threadFallbackTitle: "Internal chat",
     threadDescription:
       "Owner-protected HQ surface. Use direct chat for 1:1 conversations and governed rooms for owner-wide updates. Messages use Supabase row-level security, private storage, and realtime delivery with safe fallback to REST.",
@@ -826,12 +826,12 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     pageOwnerAssistant: "Owner assistant",
     pagePanelTitle: "Live thread",
     pagePanelDescription:
-      "Post updates, decisions, and handoffs. If provisioning looks degraded, apply the HenryCo Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes.",
+      "Post updates, decisions, and handoffs. If provisioning looks degraded, apply the Henry Onyx Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes.",
   },
   ownerDashboardClient: {
     loadingDashboard: "Loading dashboard...",
     headerEyebrow: "Owner dashboard",
-    headerTitle: "Henry & Co. administration",
+    headerTitle: "Henry Onyx administration",
     headerDescription:
       "Manage global settings, public pages, leadership records, and divisions.",
     serverRoutedBadge: "Server-routed admin writes only",
@@ -991,7 +991,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
 
 const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Centre de commande propriétaire · Henry & Co.",
+    title: "Centre de commande propriétaire · Henry Onyx",
     description:
       "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface HenryCo HQ.",
   },
@@ -1063,7 +1063,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "Contrôle marque et sous-domaines · Henry & Co.",
+      metadataTitle: "Contrôle marque et sous-domaines · Henry Onyx",
       metadataDescription:
         "Source centrale pour l’identité partagée, la marque des divisions, les blocs de contenu de page et les fiches de présentation des sous-domaines.",
       eyebrow: "Marque et sous-domaines",
@@ -1079,8 +1079,8 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "E-mail du support",
       baseDomainLabel: "Domaine de base",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Surfaces gérées",
       managedSurfacesDescription:
@@ -1090,7 +1090,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Lignes de paramètres du site hub",
     },
     pages: {
-      metadataTitle: "Pages d’entreprise partagées · Henry & Co.",
+      metadataTitle: "Pages d’entreprise partagées · Henry Onyx",
       metadataDescription:
         "Contenu héros, métadonnées, CTA et sections structurées des pages publiques, modifiables depuis le tableau de bord propriétaire central.",
       eyebrow: "Pages et contenu",
@@ -1121,7 +1121,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Paramètres de marque de l’entreprise · Henry & Co.",
+      metadataTitle: "Paramètres de marque de l’entreprise · Henry Onyx",
       metadataDescription:
         "Contrôles d’identité, de contact, de SEO et de l’interface du hub qui écrivent directement dans les paramètres partagés de l’entreprise.",
       eyebrow: "Paramètres de marque",
@@ -1165,7 +1165,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "Mention de pied de page",
     },
     subdomains: {
-      metadataTitle: "Marque des divisions · Henry & Co.",
+      metadataTitle: "Marque des divisions · Henry Onyx",
       metadataDescription:
         "Sous-domaines, logos et fiches d’identité pour chaque division HenryCo, modifiables depuis le centre de commande propriétaire.",
       eyebrow: "Marque des divisions",
@@ -1283,7 +1283,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Le stockage, les membres, les pièces jointes et les vérifications de présence des communications internes sont sains.",
     healthDegraded:
-      "Le provisionnement est incomplet. Appliquez les migrations HenryCo Hub jusqu'au 20260408120000 et confirmez que la sonde de santé passe avant de vous fier à cet ensemble de salles.",
+      "Le provisionnement est incomplet. Appliquez les migrations Henry Onyx Hub jusqu'au 20260408120000 et confirmez que la sonde de santé passe avant de vous fier à cet ensemble de salles.",
     newRoomTitlePlaceholder: "Titre de la nouvelle salle",
     roomTypeGroupOption: "Salle de groupe",
     roomTypeBroadcastOption: "Salle de diffusion",
@@ -1297,7 +1297,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Rechercher des canaux…",
     searchChannelsAriaLabel: "Rechercher des canaux",
     noChannelsMatch:
-      "Aucun canal ne correspond à votre recherche. Si le stockage n'est pas encore provisionné, appliquez les migrations Supabase HenryCo Hub et attendez que le cache de schéma se rafraîchisse.",
+      "Aucun canal ne correspond à votre recherche. Si le stockage n'est pas encore provisionné, appliquez les migrations Supabase Henry Onyx Hub et attendez que le cache de schéma se rafraîchisse.",
     threadFallbackTitle: "Chat interne",
     threadDescription:
       "Surface QG protégée par le propriétaire. Utilisez le chat direct pour les conversations 1:1 et les salles gouvernées pour les mises à jour à l'échelle du propriétaire.",
@@ -1328,7 +1328,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Chargement du tableau de bord…",
     headerEyebrow: "Tableau de bord propriétaire",
-    headerTitle: "Administration Henry & Co.",
+    headerTitle: "Administration Henry Onyx",
     headerDescription:
       "Gérez les paramètres globaux, les pages publiques, les profils de direction et les divisions.",
     serverRoutedBadge: "Écritures administratives acheminées côté serveur uniquement",
@@ -1488,7 +1488,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Centro de mando del propietario · Henry & Co.",
+    title: "Centro de mando del propietario · Henry Onyx",
     description:
       "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie HenryCo HQ.",
   },
@@ -1560,7 +1560,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "Control de marca y subdominios · Henry & Co.",
+      metadataTitle: "Control de marca y subdominios · Henry Onyx",
       metadataDescription:
         "Fuente central de la identidad corporativa compartida, la marca por división, los bloques de contenido de página y las fichas de subdominios.",
       eyebrow: "Marca y subdominios",
@@ -1576,8 +1576,8 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "Correo de soporte",
       baseDomainLabel: "Dominio base",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Superficies gestionadas",
       managedSurfacesDescription:
@@ -1587,7 +1587,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Filas de ajustes del sitio hub",
     },
     pages: {
-      metadataTitle: "Páginas corporativas compartidas · Henry & Co.",
+      metadataTitle: "Páginas corporativas compartidas · Henry Onyx",
       metadataDescription:
         "Contenido hero, metadatos, CTA y secciones estructuradas de las páginas públicas, editables desde el panel central del propietario.",
       eyebrow: "Páginas y contenido",
@@ -1618,7 +1618,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Ajustes de marca de la empresa · Henry & Co.",
+      metadataTitle: "Ajustes de marca de la empresa · Henry Onyx",
       metadataDescription:
         "Controles de identidad, contacto, SEO y carcasa del hub que escriben directamente en las filas de ajustes compartidas.",
       eyebrow: "Ajustes de marca",
@@ -1661,7 +1661,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "Aviso de pie de página",
     },
     subdomains: {
-      metadataTitle: "Marca por división · Henry & Co.",
+      metadataTitle: "Marca por división · Henry Onyx",
       metadataDescription:
         "Subdominios, logos y filas de identidad de cada división HenryCo, editables desde el centro de mando del propietario.",
       eyebrow: "Marca por división",
@@ -1779,7 +1779,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "El almacenamiento, los miembros, los archivos adjuntos y las verificaciones de presencia de las comunicaciones internas están saludables.",
     healthDegraded:
-      "El aprovisionamiento está incompleto. Aplica las migraciones de HenryCo Hub hasta 20260408120000 y confirma que la sonda de salud pasa antes de confiar en este conjunto de salas.",
+      "El aprovisionamiento está incompleto. Aplica las migraciones de Henry Onyx Hub hasta 20260408120000 y confirma que la sonda de salud pasa antes de confiar en este conjunto de salas.",
     newRoomTitlePlaceholder: "Título de la nueva sala",
     roomTypeGroupOption: "Sala de grupo",
     roomTypeBroadcastOption: "Sala de difusión",
@@ -1793,7 +1793,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Buscar canales…",
     searchChannelsAriaLabel: "Buscar canales",
     noChannelsMatch:
-      "Ningún canal coincide con tu búsqueda. Si el almacenamiento aún no está aprovisionado, aplica las migraciones de Supabase de HenryCo Hub y espera a que se actualice la caché del esquema.",
+      "Ningún canal coincide con tu búsqueda. Si el almacenamiento aún no está aprovisionado, aplica las migraciones de Supabase de Henry Onyx Hub y espera a que se actualice la caché del esquema.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
       "Superficie HQ protegida por el propietario. Usa el chat directo para conversaciones 1:1 y salas gobernadas para actualizaciones del propietario.",
@@ -1824,7 +1824,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Cargando panel…",
     headerEyebrow: "Panel del propietario",
-    headerTitle: "Administración de Henry & Co.",
+    headerTitle: "Administración de Henry Onyx",
     headerDescription:
       "Gestiona los ajustes globales, las páginas públicas, los perfiles de liderazgo y las divisiones.",
     serverRoutedBadge: "Solo escrituras administrativas enrutadas por servidor",
@@ -1984,7 +1984,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Centro de comando do proprietário · Henry & Co.",
+    title: "Centro de comando do proprietário · Henry Onyx",
     description:
       "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície HenryCo HQ.",
   },
@@ -2056,7 +2056,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "Controlo de marca e subdomínios · Henry & Co.",
+      metadataTitle: "Controlo de marca e subdomínios · Henry Onyx",
       metadataDescription:
         "Fonte central da identidade partilhada, marca de divisão, blocos de conteúdo de página e fichas de subdomínio.",
       eyebrow: "Marca e subdomínios",
@@ -2072,8 +2072,8 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "E-mail de suporte",
       baseDomainLabel: "Domínio base",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Superfícies geridas",
       managedSurfacesDescription:
@@ -2083,7 +2083,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Linhas de definições do site hub",
     },
     pages: {
-      metadataTitle: "Páginas partilhadas da empresa · Henry & Co.",
+      metadataTitle: "Páginas partilhadas da empresa · Henry Onyx",
       metadataDescription:
         "Conteúdo do herói, meta-dados, CTAs e secções estruturadas das páginas públicas, editáveis no painel central do proprietário.",
       eyebrow: "Páginas e conteúdo",
@@ -2114,7 +2114,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Definições de marca da empresa · Henry & Co.",
+      metadataTitle: "Definições de marca da empresa · Henry Onyx",
       metadataDescription:
         "Controlos de identidade, contacto, SEO e shell do hub que escrevem directamente nas linhas partilhadas da empresa.",
       eyebrow: "Definições de marca",
@@ -2158,7 +2158,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "Aviso de rodapé",
     },
     subdomains: {
-      metadataTitle: "Marca de divisão · Henry & Co.",
+      metadataTitle: "Marca de divisão · Henry Onyx",
       metadataDescription:
         "Subdomínios, logótipos e linhas de identidade de cada divisão HenryCo, editáveis no centro de comando do proprietário.",
       eyebrow: "Marca de divisão",
@@ -2276,7 +2276,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "O armazenamento, membros, anexos e verificações de presença das comunicações internas estão saudáveis.",
     healthDegraded:
-      "O aprovisionamento está incompleto. Aplique as migrações do HenryCo Hub até 20260408120000 e confirme que a sonda de saúde passa antes de confiar neste conjunto de salas.",
+      "O aprovisionamento está incompleto. Aplique as migrações do Henry Onyx Hub até 20260408120000 e confirme que a sonda de saúde passa antes de confiar neste conjunto de salas.",
     newRoomTitlePlaceholder: "Título da nova sala",
     roomTypeGroupOption: "Sala de grupo",
     roomTypeBroadcastOption: "Sala de transmissão",
@@ -2290,7 +2290,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Pesquisar canais…",
     searchChannelsAriaLabel: "Pesquisar canais",
     noChannelsMatch:
-      "Nenhum canal corresponde à sua pesquisa. Se o armazenamento ainda não estiver aprovisionado, aplique as migrações do Supabase do HenryCo Hub e aguarde a actualização da cache.",
+      "Nenhum canal corresponde à sua pesquisa. Se o armazenamento ainda não estiver aprovisionado, aplique as migrações do Supabase do Henry Onyx Hub e aguarde a actualização da cache.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
       "Superfície HQ protegida pelo proprietário. Use o chat directo para conversas 1:1 e salas governadas para actualizações do proprietário.",
@@ -2321,7 +2321,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "A carregar painel…",
     headerEyebrow: "Painel do proprietário",
-    headerTitle: "Administração Henry & Co.",
+    headerTitle: "Administração Henry Onyx",
     headerDescription:
       "Gerencie as definições globais, páginas públicas, perfis de liderança e divisões.",
     serverRoutedBadge: "Apenas escrita administrativa via servidor",
@@ -2481,7 +2481,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "مركز قيادة المالك · Henry & Co.",
+    title: "مركز قيادة المالك · Henry Onyx",
     description:
       "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من HenryCo HQ.",
   },
@@ -2553,7 +2553,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "إدارة العلامة والنطاقات الفرعية · Henry & Co.",
+      metadataTitle: "إدارة العلامة والنطاقات الفرعية · Henry Onyx",
       metadataDescription:
         "المصدر المركزي لهوية الشركة المشتركة وعلامات الأقسام وكتل محتوى الصفحات وسجلات عرض النطاقات الفرعية.",
       eyebrow: "العلامة والنطاقات الفرعية",
@@ -2569,8 +2569,8 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "بريد الدعم",
       baseDomainLabel: "النطاق الأساسي",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "السطوح المُدارة",
       managedSurfacesDescription:
@@ -2580,7 +2580,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "صفوف إعدادات موقع الـ Hub",
     },
     pages: {
-      metadataTitle: "صفحات الشركة المشتركة · Henry & Co.",
+      metadataTitle: "صفحات الشركة المشتركة · Henry Onyx",
       metadataDescription:
         "محتوى الواجهة الرئيسية، البيانات الوصفية، أزرار الإجراءات، والأقسام المنظمة، قابلة للتحرير من لوحة المالك المركزية.",
       eyebrow: "الصفحات والمحتوى",
@@ -2611,7 +2611,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "إعدادات علامة الشركة · Henry & Co.",
+      metadataTitle: "إعدادات علامة الشركة · Henry Onyx",
       metadataDescription:
         "ضوابط الهوية والاتصال وSEO وقشرة الـ Hub التي تكتب مباشرةً في صفوف إعدادات الشركة المشتركة.",
       eyebrow: "إعدادات العلامة",
@@ -2654,7 +2654,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "إشعار التذييل",
     },
     subdomains: {
-      metadataTitle: "علامات الأقسام · Henry & Co.",
+      metadataTitle: "علامات الأقسام · Henry Onyx",
       metadataDescription:
         "النطاقات الفرعية والشعارات وصفوف الهوية لكل أقسام HenryCo، قابلة للتحرير مركزيًا من مركز قيادة المالك.",
       eyebrow: "علامة القسم",
@@ -2771,7 +2771,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "التخزين والعضويات والمرفقات وعمليات فحص الحضور في الاتصالات الداخلية جميعها سليمة.",
     healthDegraded:
-      "التوفير غير مكتمل. طبّق ترحيلات HenryCo Hub حتى 20260408120000 وأكّد اجتياز مجس السلامة قبل الاعتماد على هذه المجموعة من الغرف.",
+      "التوفير غير مكتمل. طبّق ترحيلات Henry Onyx Hub حتى 20260408120000 وأكّد اجتياز مجس السلامة قبل الاعتماد على هذه المجموعة من الغرف.",
     newRoomTitlePlaceholder: "عنوان الغرفة الجديدة",
     roomTypeGroupOption: "غرفة مجموعة",
     roomTypeBroadcastOption: "غرفة بث",
@@ -2785,7 +2785,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "البحث في القنوات…",
     searchChannelsAriaLabel: "البحث في القنوات",
     noChannelsMatch:
-      "لا توجد قنوات تطابق بحثك. إذا لم يكن التخزين مُوفَّراً بعد، طبّق ترحيلات Supabase لـ HenryCo Hub وانتظر تحديث ذاكرة التخزين المؤقت.",
+      "لا توجد قنوات تطابق بحثك. إذا لم يكن التخزين مُوفَّراً بعد، طبّق ترحيلات Supabase لـ Henry Onyx Hub وانتظر تحديث ذاكرة التخزين المؤقت.",
     threadFallbackTitle: "الدردشة الداخلية",
     threadDescription:
       "سطح HQ محمي من قِبَل المالك. استخدم الدردشة المباشرة للمحادثات الفردية والغرف المحكومة للتحديثات العامة.",
@@ -2816,7 +2816,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "جارٍ تحميل لوحة التحكم…",
     headerEyebrow: "لوحة تحكم المالك",
-    headerTitle: "إدارة Henry & Co.",
+    headerTitle: "إدارة Henry Onyx",
     headerDescription:
       "أدر الإعدادات العامة والصفحات العامة وملفات القيادة والأقسام.",
     serverRoutedBadge: "كتابات إدارية عبر الخادم فقط",
@@ -2976,7 +2976,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Eigentümer-Kommandozentrale · Henry & Co.",
+    title: "Eigentümer-Kommandozentrale · Henry Onyx",
     description:
       "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen HenryCo-HQ-Oberfläche.",
   },
@@ -3048,7 +3048,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "Marken- und Subdomain-Steuerung · Henry & Co.",
+      metadataTitle: "Marken- und Subdomain-Steuerung · Henry Onyx",
       metadataDescription:
         "Zentrale Quelle für die geteilte Unternehmensidentität, Bereichsbranding, Seiten-Content-Blöcke und Subdomain-Datensätze.",
       eyebrow: "Marke und Subdomains",
@@ -3064,8 +3064,8 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "Support-E-Mail",
       baseDomainLabel: "Basisdomain",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Verwaltete Oberflächen",
       managedSurfacesDescription:
@@ -3075,7 +3075,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Hub-Site-Einstellungszeilen",
     },
     pages: {
-      metadataTitle: "Geteilte Unternehmensseiten · Henry & Co.",
+      metadataTitle: "Geteilte Unternehmensseiten · Henry Onyx",
       metadataDescription:
         "Hero-Inhalt, Metadaten, CTAs und strukturierte Abschnitte öffentlicher Seiten – editierbar im zentralen Eigentümer-Dashboard.",
       eyebrow: "Seiten und Inhalte",
@@ -3106,7 +3106,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Unternehmensweite Markeneinstellungen · Henry & Co.",
+      metadataTitle: "Unternehmensweite Markeneinstellungen · Henry Onyx",
       metadataDescription:
         "Identitäts-, Kontakt-, SEO- und Hub-Shell-Steuerungen, die direkt in die gemeinsamen Unternehmenszeilen schreiben.",
       eyebrow: "Markeneinstellungen",
@@ -3151,7 +3151,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "Footer-Hinweis",
     },
     subdomains: {
-      metadataTitle: "Bereichsbranding · Henry & Co.",
+      metadataTitle: "Bereichsbranding · Henry Onyx",
       metadataDescription:
         "Subdomains, Logos und Identitätszeilen jedes HenryCo-Bereichs, zentral aus dem Eigentümer-Command-Center editierbar.",
       eyebrow: "Bereichsbranding",
@@ -3269,7 +3269,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Speicher, Mitgliedschaften, Anhänge und Präsenzprüfungen der internen Kommunikation sind gesund.",
     healthDegraded:
-      "Die Bereitstellung ist unvollständig. Wenden Sie HenryCo Hub-Migrationen bis 20260408120000 an und bestätigen Sie, dass die Gesundheitsprüfung besteht.",
+      "Die Bereitstellung ist unvollständig. Wenden Sie Henry Onyx Hub-Migrationen bis 20260408120000 an und bestätigen Sie, dass die Gesundheitsprüfung besteht.",
     newRoomTitlePlaceholder: "Neuer Raumtitel",
     roomTypeGroupOption: "Gruppenraum",
     roomTypeBroadcastOption: "Broadcastraum",
@@ -3283,7 +3283,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Kanäle suchen…",
     searchChannelsAriaLabel: "Kanäle suchen",
     noChannelsMatch:
-      "Keine Kanäle entsprechen Ihrer Suche. Wenn der Speicher noch nicht bereitgestellt ist, wenden Sie Supabase-Migrationen von HenryCo Hub an.",
+      "Keine Kanäle entsprechen Ihrer Suche. Wenn der Speicher noch nicht bereitgestellt ist, wenden Sie Supabase-Migrationen von Henry Onyx Hub an.",
     threadFallbackTitle: "Interner Chat",
     threadDescription:
       "Eigentümer-geschützte HQ-Oberfläche. Verwenden Sie den Direktchat für 1:1-Gespräche und verwaltete Räume für eigentümerweite Updates.",
@@ -3314,7 +3314,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Dashboard wird geladen…",
     headerEyebrow: "Eigentümer-Dashboard",
-    headerTitle: "Henry & Co. Administration",
+    headerTitle: "Henry Onyx Administration",
     headerDescription:
       "Globale Einstellungen, öffentliche Seiten, Führungsprofile und Divisionen verwalten.",
     serverRoutedBadge: "Nur serverseitig geroutete Admin-Schreibvorgänge",
@@ -3474,7 +3474,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Centro di comando del proprietario · Henry & Co.",
+    title: "Centro di comando del proprietario · Henry Onyx",
     description:
       "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie HenryCo HQ.",
   },
@@ -3546,7 +3546,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "Controllo marchio e sottodomini · Henry & Co.",
+      metadataTitle: "Controllo marchio e sottodomini · Henry Onyx",
       metadataDescription:
         "Fonte centrale per identità aziendale condivisa, branding di divisione, blocchi di contenuto di pagina e schede di sottodominio.",
       eyebrow: "Marchio e sottodomini",
@@ -3562,8 +3562,8 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "E-mail di supporto",
       baseDomainLabel: "Dominio base",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Superfici gestite",
       managedSurfacesDescription:
@@ -3573,7 +3573,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Righe delle impostazioni del sito hub",
     },
     pages: {
-      metadataTitle: "Pagine aziendali condivise · Henry & Co.",
+      metadataTitle: "Pagine aziendali condivise · Henry Onyx",
       metadataDescription:
         "Contenuto hero, metadati, CTA e sezioni strutturate delle pagine pubbliche, modificabili dalla dashboard centrale del proprietario.",
       eyebrow: "Pagine e contenuti",
@@ -3604,7 +3604,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Impostazioni marchio aziendale · Henry & Co.",
+      metadataTitle: "Impostazioni marchio aziendale · Henry Onyx",
       metadataDescription:
         "Controlli di identità, contatto, SEO e shell del hub che scrivono direttamente nelle righe condivise dell’azienda.",
       eyebrow: "Impostazioni marchio",
@@ -3647,7 +3647,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "Avviso del piè di pagina",
     },
     subdomains: {
-      metadataTitle: "Branding di divisione · Henry & Co.",
+      metadataTitle: "Branding di divisione · Henry Onyx",
       metadataDescription:
         "Sottodomini, loghi e righe identitarie di ogni divisione HenryCo, modificabili centralmente dal centro di comando del proprietario.",
       eyebrow: "Branding di divisione",
@@ -3765,7 +3765,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Archiviazione, iscrizioni, allegati e verifiche di presenza delle comunicazioni interne sono integri.",
     healthDegraded:
-      "Il provisioning è incompleto. Applica le migrazioni HenryCo Hub fino a 20260408120000 e conferma che la sonda di salute supera il test.",
+      "Il provisioning è incompleto. Applica le migrazioni Henry Onyx Hub fino a 20260408120000 e conferma che la sonda di salute supera il test.",
     newRoomTitlePlaceholder: "Titolo nuova stanza",
     roomTypeGroupOption: "Stanza di gruppo",
     roomTypeBroadcastOption: "Stanza broadcast",
@@ -3779,7 +3779,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Cerca canali…",
     searchChannelsAriaLabel: "Cerca canali",
     noChannelsMatch:
-      "Nessun canale corrisponde alla tua ricerca. Se l'archiviazione non è ancora stata predisposta, applica le migrazioni Supabase di HenryCo Hub.",
+      "Nessun canale corrisponde alla tua ricerca. Se l'archiviazione non è ancora stata predisposta, applica le migrazioni Supabase di Henry Onyx Hub.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
       "Superficie HQ protetta dal proprietario. Usa la chat diretta per conversazioni 1:1 e stanze governate per aggiornamenti estesi.",
@@ -3810,7 +3810,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Caricamento pannello…",
     headerEyebrow: "Pannello proprietario",
-    headerTitle: "Amministrazione Henry & Co.",
+    headerTitle: "Amministrazione Henry Onyx",
     headerDescription:
       "Gestisci impostazioni globali, pagine pubbliche, profili di leadership e divisioni.",
     serverRoutedBadge: "Solo scritture admin instradate dal server",
@@ -3970,7 +3970,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "业主指挥中心 · Henry & Co.",
+    title: "业主指挥中心 · Henry Onyx",
     description: "在一个 HenryCo HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
   },
   hero: {
@@ -4040,7 +4040,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "品牌与子域控制 · Henry & Co.",
+      metadataTitle: "品牌与子域控制 · Henry Onyx",
       metadataDescription: "共享公司形象、业务部门品牌、页面内容模块与子域呈现记录的中央来源。",
       eyebrow: "品牌与子域",
       title: "集中式形象管理",
@@ -4054,8 +4054,8 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "支持邮箱",
       baseDomainLabel: "基础域名",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "受管理的界面",
       managedSurfacesDescription: "共享页面与业务部门行,现归属于中央业主仪表盘。",
@@ -4064,7 +4064,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Hub 站点设置行",
     },
     pages: {
-      metadataTitle: "共享公司页面 · Henry & Co.",
+      metadataTitle: "共享公司页面 · Henry Onyx",
       metadataDescription: "公开页面的 hero 内容、元数据、CTA 与结构化版块,可在中央业主仪表盘中编辑。",
       eyebrow: "页面与内容",
       title: "共享公司页面",
@@ -4092,7 +4092,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "公司品牌设置 · Henry & Co.",
+      metadataTitle: "公司品牌设置 · Henry Onyx",
       metadataDescription: "识别、联系、SEO 与 Hub 外壳控件,直接写入共享的公司设置行。",
       eyebrow: "品牌设置",
       title: "公司级形象控制",
@@ -4133,7 +4133,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "页脚提示",
     },
     subdomains: {
-      metadataTitle: "业务部门品牌 · Henry & Co.",
+      metadataTitle: "业务部门品牌 · Henry Onyx",
       metadataDescription: "每个 HenryCo 业务部门的子域、Logo 与身份行,可在业主指挥中心集中编辑。",
       eyebrow: "业务部门品牌",
       title: "子域、Logo 与身份行",
@@ -4247,7 +4247,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "内部通讯的存储、成员、附件和状态检查均正常。",
     healthDegraded:
-      "配置不完整。请应用 HenryCo Hub 迁移至 20260408120000，并确认健康检查通过后再使用此房间组。",
+      "配置不完整。请应用 Henry Onyx Hub 迁移至 20260408120000，并确认健康检查通过后再使用此房间组。",
     newRoomTitlePlaceholder: "新房间标题",
     roomTypeGroupOption: "群组房间",
     roomTypeBroadcastOption: "广播房间",
@@ -4261,7 +4261,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "搜索频道…",
     searchChannelsAriaLabel: "搜索频道",
     noChannelsMatch:
-      "没有频道符合搜索条件。如存储尚未配置，请应用 HenryCo Hub Supabase 迁移并等待模式缓存刷新。",
+      "没有频道符合搜索条件。如存储尚未配置，请应用 Henry Onyx Hub Supabase 迁移并等待模式缓存刷新。",
     threadFallbackTitle: "内部聊天",
     threadDescription:
       "业主保护的总部界面。1:1 对话请使用私信，业主范围的更新请使用受管房间。",
@@ -4292,7 +4292,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "加载控制面板中…",
     headerEyebrow: "业主控制面板",
-    headerTitle: "Henry & Co. 管理",
+    headerTitle: "Henry Onyx 管理",
     headerDescription:
       "管理全局设置、公开页面、领导层档案和部门。",
     serverRoutedBadge: "仅限服务器路由的管理写入",
@@ -4452,7 +4452,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "मालिक कमांड सेंटर · Henry & Co.",
+    title: "मालिक कमांड सेंटर · Henry Onyx",
     description:
       "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही HenryCo HQ सतह पर।",
   },
@@ -4524,7 +4524,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "ब्रांड और सबडोमेन नियंत्रण · Henry & Co.",
+      metadataTitle: "ब्रांड और सबडोमेन नियंत्रण · Henry Onyx",
       metadataDescription:
         "साझा कंपनी पहचान, डिवीज़न ब्रांडिंग, पेज-स्तरीय सामग्री ब्लॉक्स और सबडोमेन प्रस्तुति रिकॉर्ड के लिए केंद्रीय स्रोत।",
       eyebrow: "ब्रांड और सबडोमेन",
@@ -4540,8 +4540,8 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "सपोर्ट ईमेल",
       baseDomainLabel: "बेस डोमेन",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "प्रबंधित सतहें",
       managedSurfacesDescription:
@@ -4551,7 +4551,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Hub साइट सेटिंग्स पंक्तियाँ",
     },
     pages: {
-      metadataTitle: "साझा कंपनी पेज · Henry & Co.",
+      metadataTitle: "साझा कंपनी पेज · Henry Onyx",
       metadataDescription:
         "सार्वजनिक पेजों के हीरो कंटेंट, मेटा, CTAs और संरचित सेक्शन — केंद्रीय मालिक डैशबोर्ड से संपादन योग्य।",
       eyebrow: "पेज और सामग्री",
@@ -4582,7 +4582,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "कंपनी-व्यापी ब्रांड सेटिंग्स · Henry & Co.",
+      metadataTitle: "कंपनी-व्यापी ब्रांड सेटिंग्स · Henry Onyx",
       metadataDescription:
         "पहचान, संपर्क, SEO और Hub शेल नियंत्रण जो साझा कंपनी सेटिंग्स पंक्तियों में सीधे लिखते हैं।",
       eyebrow: "ब्रांड सेटिंग्स",
@@ -4626,7 +4626,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "फ़ुटर सूचना",
     },
     subdomains: {
-      metadataTitle: "डिवीज़न ब्रांडिंग · Henry & Co.",
+      metadataTitle: "डिवीज़न ब्रांडिंग · Henry Onyx",
       metadataDescription:
         "प्रत्येक HenryCo डिवीज़न के सबडोमेन, लोगो और पहचान पंक्तियाँ — मालिक कमांड सेंटर से केंद्रीय रूप से संपादन योग्य।",
       eyebrow: "डिवीज़न ब्रांडिंग",
@@ -4744,7 +4744,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "आंतरिक संचार का संग्रहण, सदस्यता, अनुलग्नक और उपस्थिति जाँच सभी स्वस्थ हैं।",
     healthDegraded:
-      "प्रावधान अधूरा है। HenryCo Hub माइग्रेशन 20260408120000 तक लागू करें।",
+      "प्रावधान अधूरा है। Henry Onyx Hub माइग्रेशन 20260408120000 तक लागू करें।",
     newRoomTitlePlaceholder: "नए कक्ष का शीर्षक",
     roomTypeGroupOption: "समूह कक्ष",
     roomTypeBroadcastOption: "प्रसारण कक्ष",
@@ -4789,7 +4789,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "डैशबोर्ड लोड हो रहा है…",
     headerEyebrow: "स्वामी डैशबोर्ड",
-    headerTitle: "Henry & Co. प्रशासन",
+    headerTitle: "Henry Onyx प्रशासन",
     headerDescription:
       "वैश्विक सेटिंग, सार्वजनिक पृष्ठ, नेतृत्व रिकॉर्ड और विभाग प्रबंधित करें।",
     serverRoutedBadge: "केवल सर्वर-रूटेड व्यवस्थापक लेखन",
@@ -4949,7 +4949,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Ebe nchịkwa onye nwe · Henry & Co.",
+    title: "Ebe nchịkwa onye nwe · Henry Onyx",
     description:
       "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu HenryCo HQ.",
   },
@@ -5021,7 +5021,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   },
   brand: {
     overview: {
-      metadataTitle: "Njikwa akara na subdomain · Henry & Co.",
+      metadataTitle: "Njikwa akara na subdomain · Henry Onyx",
       metadataDescription:
         "Ebe etiti maka njirimara ụlọ ọrụ a na-ekekọrịta, akara ngalaba, ngọngọ ọdịnaya ibe, na ndekọ ngosipụta subdomain.",
       eyebrow: "Akara na subdomain",
@@ -5037,8 +5037,8 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
       supportEmailLabel: "Email nkwado",
       baseDomainLabel: "Ngalaba ntọala",
       emptyValue: "—",
-      defaultBrandTitle: "Henry & Co.",
-      defaultCompanyName: "Henry & Co.",
+      defaultBrandTitle: "Henry Onyx",
+      defaultCompanyName: "Henry Onyx",
       defaultBaseDomain: "henrycogroup.com",
       managedSurfacesTitle: "Elu a na-ejikwa",
       managedSurfacesDescription:
@@ -5048,7 +5048,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
       hubSiteSettingsLabel: "Ahịrị ntọala saịtị Hub",
     },
     pages: {
-      metadataTitle: "Ibe ụlọ ọrụ a na-ekekọrịta · Henry & Co.",
+      metadataTitle: "Ibe ụlọ ọrụ a na-ekekọrịta · Henry Onyx",
       metadataDescription:
         "Ọdịnaya hero, meta, CTA, na nkebi ahaziri ahazi nke ibe ọha — enwere ike idezi na dashboard onye nwe etiti.",
       eyebrow: "Ibe na Ọdịnaya",
@@ -5079,7 +5079,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
       bodyPlaceholder: '[{"layout":"default","title":"..."}]',
     },
     settings: {
-      metadataTitle: "Ntọala akara ụlọ ọrụ niile · Henry & Co.",
+      metadataTitle: "Ntọala akara ụlọ ọrụ niile · Henry Onyx",
       metadataDescription:
         "Njikwa njirimara, kọntakt, SEO, na shell hub na-edebanye ozugbo na ahịrị ntọala ụlọ ọrụ a na-ekekọrịta.",
       eyebrow: "Ntọala akara",
@@ -5123,7 +5123,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
       footerNoticePlaceholder: "Ọkwa ala ibe",
     },
     subdomains: {
-      metadataTitle: "Akara ngalaba · Henry & Co.",
+      metadataTitle: "Akara ngalaba · Henry Onyx",
       metadataDescription:
         "Subdomain, akara ngosi, na ahịrị njirimara maka ngalaba HenryCo ọ bụla, enwere ike idezi n'etiti site na ebe nchịkwa onye nwe.",
       eyebrow: "Akara ngalaba",
@@ -5223,7 +5223,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Na-ebugo dashboard…",
     headerEyebrow: "Dashboard onye-nwe",
-    headerTitle: "Njikwa Henry & Co.",
+    headerTitle: "Njikwa Henry Onyx",
     serverRoutedBadge: "Naanị edemede njikwa nke ọnụ ọsọ sava",
     tabGeneralSettings: "Ntọala izizi",
     tabCompanyPages: "Peeji ụlọ ọrụ",
@@ -5242,7 +5242,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Ibùdó àṣẹ onílé · Henry & Co.",
+    title: "Ibùdó àṣẹ onílé · Henry Onyx",
     description:
       "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ HenryCo HQ kan ṣoṣo.",
   },
@@ -5375,7 +5375,7 @@ const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Ń gbé dashboard kalẹ̀…",
     headerEyebrow: "Dashboard oní ilé",
-    headerTitle: "Ìṣàkóso Henry & Co.",
+    headerTitle: "Ìṣàkóso Henry Onyx",
     serverRoutedBadge: "Àwọn ìkọ̀wé ìṣàkóso tí a ṣe látọ̀dọ̀ olupin nìkan",
     tabGeneralSettings: "Ìtòlẹ́sẹẹsẹ gbogbogbò",
     tabCompanyPages: "Àwọn ojú-ewé ilé-iṣẹ́",
@@ -5394,7 +5394,7 @@ const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
 
 const HUB_OWNER_COPY_HA: DeepPartial<HubOwnerCopy> = {
   metadata: {
-    title: "Cibiyar umarni ta mai kamfani · Henry & Co.",
+    title: "Cibiyar umarni ta mai kamfani · Henry Onyx",
     description:
       "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na HenryCo HQ.",
   },
@@ -5527,7 +5527,7 @@ const HUB_OWNER_COPY_HA: DeepPartial<HubOwnerCopy> = {
   ownerDashboardClient: {
     loadingDashboard: "Ana loda dashboard…",
     headerEyebrow: "Dashboard mai kamfani",
-    headerTitle: "Gudanarwa Henry & Co.",
+    headerTitle: "Gudanarwa Henry Onyx",
     serverRoutedBadge: "Rubuce-rubucen gudanarwa ta hanyar uwar garken kawai",
     tabGeneralSettings: "Saitunan gabaɗaya",
     tabCompanyPages: "Shafukan kamfani",

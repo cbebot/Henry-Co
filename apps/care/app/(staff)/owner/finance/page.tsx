@@ -28,7 +28,7 @@ import { approveExpenseAction, voidExpenseAction } from "../actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Owner Finance | Henry & Co. Fabric Care",
+  title: "Owner Finance | Henry Onyx Fabric Care",
   description:
     "Finance command center for revenue, expenses, approvals, trends, profit/loss, and operational alerts.",
 };

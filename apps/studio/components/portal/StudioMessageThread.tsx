@@ -51,7 +51,7 @@ function studioAdapter(): MessageThreadAdapter {
         id: String(row.id || ""),
         threadId: String(row.project_id || ""),
         senderId,
-        senderName: String(row.sender || (isOwn ? "You" : "Henry & Co. Studio")),
+        senderName: String(row.sender || (isOwn ? "You" : "Henry Onyx Studio")),
         senderRole: role,
         body: String(row.body || ""),
         attachments,

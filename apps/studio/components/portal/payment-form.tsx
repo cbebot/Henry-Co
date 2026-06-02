@@ -293,7 +293,7 @@ export function PaymentForm({
 
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[12px] leading-5 text-[var(--studio-ink-soft)]">
-          By submitting, you confirm you have transferred {amountLabel} to the verified Henry & Co. account
+          By submitting, you confirm you have transferred {amountLabel} to the verified Henry Onyx account
           shown on this page.
         </p>
         <button

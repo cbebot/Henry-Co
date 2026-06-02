@@ -20,7 +20,7 @@ import { logProtectedPageAccess } from "@/lib/security/logger";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Staff Overview | Henry & Co. Fabric Care",
+  title: "Staff Overview | Henry Onyx Fabric Care",
   description: "Field execution overview for home and office service readiness, assignments, and visit history.",
 };
 

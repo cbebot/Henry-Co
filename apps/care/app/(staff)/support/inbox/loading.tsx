@@ -4,7 +4,7 @@ export default function InboxLoading() {
   return (
     <div className="p-4 sm:p-6">
       <CareLoadingStage
-        eyebrow="Henry & Co. Care support"
+        eyebrow="Henry Onyx Care support"
         title="Support inbox"
         description="Mailbox, active threads, and reply workspace."
         bullets={[

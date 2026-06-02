@@ -37,7 +37,7 @@ export type PropertyPublicCopy = {
       vetted: string;
       curatedBeforePublic: string;
       inventoryUnderReview: string;
-      inventoryLabel: string; // e.g. "HenryCo Property · Inventory" (year appended at render time)
+      inventoryLabel: string; // e.g. "Henry Onyx Property · Inventory" (year appended at render time)
       listingsLiveTemplate: string; // e.g. "{count} listings live"
     };
     heroPage: {
@@ -161,7 +161,7 @@ export type PropertyPublicCopy = {
 
 const EN: PropertyPublicCopy = {
   home: {
-    heroKicker: "HenryCo Property",
+    heroKicker: "Henry Onyx Property",
     heroTitle: "Property discovery for people who do not want noise, guesswork, or weak follow-through.",
     heroBody:
       "Browse curated rentals, sale inventory, commercial spaces, and managed homes with better listing quality, stronger trust notes, structured viewing requests, and calmer owner communication.",
@@ -195,7 +195,7 @@ const EN: PropertyPublicCopy = {
     managedKicker: "Managed-property services",
     managedTitle: "A property platform that continues after marketing, inquiries, and move-in.",
     managedBody:
-      "HenryCo Property is designed to market, qualify, coordinate, and then keep operating selected properties through owner reporting, inspections, maintenance coordination, and ongoing trust services.",
+      "Henry Onyx Property is designed to market, qualify, coordinate, and then keep operating selected properties through owner reporting, inspections, maintenance coordination, and ongoing trust services.",
     trustPills: [
       {
         title: "Editorial moderation",
@@ -223,7 +223,7 @@ const EN: PropertyPublicCopy = {
     agentsDescription:
       "The operator layer is visible because premium real estate decisions need stronger coordination than anonymous form handoffs.",
     metrics: [
-      { label: "Live listings", hint: "Public inventory currently available on HenryCo Property." },
+      { label: "Live listings", hint: "Public inventory currently available on Henry Onyx Property." },
       { label: "Managed portfolio", hint: "Active managed-property records tracked in HenryCo operations." },
       { label: "Viewing pipeline", hint: "Open viewing requests currently being scheduled or confirmed." },
     ],
@@ -231,7 +231,7 @@ const EN: PropertyPublicCopy = {
       vetted: "Vetted listings · Verified owners",
       curatedBeforePublic: "Curated, vetted before public",
       inventoryUnderReview: "Inventory under review",
-      inventoryLabel: "HenryCo Property · Inventory",
+      inventoryLabel: "Henry Onyx Property · Inventory",
       listingsLiveTemplate: "{count} listings live",
     },
     heroPage: {
@@ -373,7 +373,7 @@ const EN: PropertyPublicCopy = {
 /* ─── FR (production-ready) ─────────────────────────────────────────── */
 const FR: PropertyPublicCopy = {
   home: {
-    heroKicker: "HenryCo Property",
+    heroKicker: "Henry Onyx Property",
     heroTitle: "La découverte immobilière pour ceux qui ne veulent ni bruit, ni approximations, ni suivi faible.",
     heroBody:
       "Parcourez des locations sélectionnées, des biens à vendre, des espaces commerciaux et des logements gérés avec une meilleure qualité d’annonce, des notes de confiance plus solides, des demandes de visite structurées et une communication propriétaire plus sereine.",
@@ -407,7 +407,7 @@ const FR: PropertyPublicCopy = {
     managedKicker: "Services de gestion immobilière",
     managedTitle: "Une plateforme immobilière qui continue après le marketing, les demandes et l’emménagement.",
     managedBody:
-      "HenryCo Property est conçu pour commercialiser, qualifier, coordonner puis poursuivre l’exploitation de biens sélectionnés via le reporting propriétaire, les inspections, la coordination de maintenance et les services de confiance.",
+      "Henry Onyx Property est conçu pour commercialiser, qualifier, coordonner puis poursuivre l’exploitation de biens sélectionnés via le reporting propriétaire, les inspections, la coordination de maintenance et les services de confiance.",
     trustPills: [
       {
         title: "Modération éditoriale",
@@ -435,7 +435,7 @@ const FR: PropertyPublicCopy = {
     agentsDescription:
       "La couche opérateur est visible parce que les décisions immobilières premium demandent plus de coordination qu’un formulaire anonyme.",
     metrics: [
-      { label: "Annonces actives", hint: "Inventaire public actuellement disponible sur HenryCo Property." },
+      { label: "Annonces actives", hint: "Inventaire public actuellement disponible sur Henry Onyx Property." },
       { label: "Portefeuille géré", hint: "Dossiers de gestion actifs suivis dans les opérations HenryCo." },
       { label: "Flux de visites", hint: "Demandes de visite ouvertes actuellement planifiées ou confirmées." },
     ],
@@ -443,7 +443,7 @@ const FR: PropertyPublicCopy = {
       vetted: "Annonces vérifiées · Propriétaires authentifiés",
       curatedBeforePublic: "Sélectionnées, vérifiées avant publication",
       inventoryUnderReview: "Inventaire en cours de revue",
-      inventoryLabel: "HenryCo Property · Inventaire",
+      inventoryLabel: "Henry Onyx Property · Inventaire",
       listingsLiveTemplate: "{count} annonces actives",
     },
     heroPage: {
@@ -589,7 +589,7 @@ const ES: DeepPartial<PropertyPublicCopy> = {
       vetted: "Anuncios verificados · Propietarios autenticados",
       curatedBeforePublic: "Seleccionados y verificados antes de publicarse",
       inventoryUnderReview: "Inventario en revisión",
-      inventoryLabel: "HenryCo Property · Inventario",
+      inventoryLabel: "Henry Onyx Property · Inventario",
       listingsLiveTemplate: "{count} anuncios activos",
     },
     heroPage: {
@@ -677,7 +677,7 @@ const PT: DeepPartial<PropertyPublicCopy> = {
       vetted: "Anúncios verificados · Proprietários autenticados",
       curatedBeforePublic: "Selecionados e verificados antes da publicação",
       inventoryUnderReview: "Inventário em revisão",
-      inventoryLabel: "HenryCo Property · Inventário",
+      inventoryLabel: "Henry Onyx Property · Inventário",
       listingsLiveTemplate: "{count} anúncios ativos",
     },
     heroPage: {
@@ -765,7 +765,7 @@ const DE: DeepPartial<PropertyPublicCopy> = {
       vetted: "Geprüfte Inserate · Verifizierte Eigentümer",
       curatedBeforePublic: "Kuratiert und geprüft vor Veröffentlichung",
       inventoryUnderReview: "Bestand in Prüfung",
-      inventoryLabel: "HenryCo Property · Bestand",
+      inventoryLabel: "Henry Onyx Property · Bestand",
       listingsLiveTemplate: "{count} aktive Inserate",
     },
     heroPage: {
@@ -853,7 +853,7 @@ const IT: DeepPartial<PropertyPublicCopy> = {
       vetted: "Annunci verificati · Proprietari autenticati",
       curatedBeforePublic: "Selezionati e verificati prima della pubblicazione",
       inventoryUnderReview: "Inventario in revisione",
-      inventoryLabel: "HenryCo Property · Inventario",
+      inventoryLabel: "Henry Onyx Property · Inventario",
       listingsLiveTemplate: "{count} annunci attivi",
     },
     heroPage: {
@@ -941,7 +941,7 @@ const AR: DeepPartial<PropertyPublicCopy> = {
       vetted: "إعلانات مدققة · مالكون موثّقون",
       curatedBeforePublic: "منتقاة ومدققة قبل النشر",
       inventoryUnderReview: "المخزون قيد المراجعة",
-      inventoryLabel: "HenryCo Property · مخزون",
+      inventoryLabel: "Henry Onyx Property · مخزون",
       listingsLiveTemplate: "{count} إعلانات نشطة",
     },
     heroPage: {
@@ -1029,7 +1029,7 @@ const ZH: DeepPartial<PropertyPublicCopy> = {
       vetted: "审核房源 · 实名业主",
       curatedBeforePublic: "上线前完成精选与审核",
       inventoryUnderReview: "房源审核中",
-      inventoryLabel: "HenryCo Property · 房源库",
+      inventoryLabel: "Henry Onyx Property · 房源库",
       listingsLiveTemplate: "{count} 套在线房源",
     },
     heroPage: {
@@ -1117,7 +1117,7 @@ const HI: DeepPartial<PropertyPublicCopy> = {
       vetted: "जाँची-परखी लिस्टिंग · सत्यापित मालिक",
       curatedBeforePublic: "सार्वजनिक होने से पहले चयनित और जाँची गई",
       inventoryUnderReview: "इन्वेंटरी समीक्षाधीन",
-      inventoryLabel: "HenryCo Property · इन्वेंटरी",
+      inventoryLabel: "Henry Onyx Property · इन्वेंटरी",
       listingsLiveTemplate: "{count} लाइव लिस्टिंग",
     },
     heroPage: {
@@ -1205,7 +1205,7 @@ const IG: DeepPartial<PropertyPublicCopy> = {
       vetted: "Ndepụta a nyochara · Ndị nwe ya akwadoro",
       curatedBeforePublic: "Họpụtara, nyochaa tupu ọ pụta n’ihu ọha",
       inventoryUnderReview: "Ngwongwo na nyocha",
-      inventoryLabel: "HenryCo Property · Ngwongwo",
+      inventoryLabel: "Henry Onyx Property · Ngwongwo",
       listingsLiveTemplate: "Ndepụta {count} dị ndụ",
     },
     heroPage: {
@@ -1293,7 +1293,7 @@ const YO: DeepPartial<PropertyPublicCopy> = {
       vetted: "Àwọn àkọsílẹ̀ tí a yẹ̀wò · Onílé tí a fọwọ́sí",
       curatedBeforePublic: "A yan, a yẹ̀wò ṣáájú kí ó tó wá síta",
       inventoryUnderReview: "Àkójọ ní àyẹ̀wò",
-      inventoryLabel: "HenryCo Property · Àkójọ",
+      inventoryLabel: "Henry Onyx Property · Àkójọ",
       listingsLiveTemplate: "Àkọsílẹ̀ {count} ń lọ́wọ́",
     },
     heroPage: {
@@ -1381,7 +1381,7 @@ const HA: DeepPartial<PropertyPublicCopy> = {
       vetted: "Tallace-tallace da aka tantance · Masu mallaka da aka tabbatar",
       curatedBeforePublic: "An zaɓa, an tantance kafin a fito a fili",
       inventoryUnderReview: "Ana sake duba kayan",
-      inventoryLabel: "HenryCo Property · Kaya",
+      inventoryLabel: "Henry Onyx Property · Kaya",
       listingsLiveTemplate: "Tallace-tallace {count} suna kunne",
     },
     heroPage: {

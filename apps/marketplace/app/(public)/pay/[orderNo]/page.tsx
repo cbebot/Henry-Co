@@ -24,7 +24,7 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Marketplace · Payment workspace",
   description:
-    "Track and verify the bank-transfer payment for your HenryCo Marketplace order.",
+    "Track and verify the bank-transfer payment for your Henry Onyx Marketplace order.",
   robots: { index: false, follow: false },
 };
 

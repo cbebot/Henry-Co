@@ -77,7 +77,7 @@ const payload = {
   is_featured: true,
   sort_order: 3,
   categories: ["Marketplace", "Commerce", "Premium Retail", "Vendor Platforms"],
-  lead_name: "HenryCo Marketplace Leadership",
+  lead_name: "Henry Onyx Marketplace Leadership",
   lead_title: "Marketplace Operations Lead",
 };
 

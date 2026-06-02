@@ -141,7 +141,7 @@ export function ProjectPaymentsStack({
           {isPriority ? (
             <div className="mt-4 rounded-[1.25rem] border border-[rgba(151,244,243,0.28)] bg-black/25 px-4 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
               <span className="font-semibold text-[var(--studio-ink)]">What happens next: </span>
-              Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your Henry & Co. account Studio hub while finance confirms privately.
+              Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your Henry Onyx account Studio hub while finance confirms privately.
             </div>
           ) : null}
         </div>
@@ -205,7 +205,7 @@ export function ProjectPaymentsStack({
 
       <div className="mt-6">
         <StudioPaymentGuide
-          title="Transfer to Henry & Co.’s verified company account"
+          title="Transfer to Henry Onyx’s verified company account"
           amount={paymentOverview.nextPayment?.amount || paymentOverview.outstanding}
           currency={paymentOverview.nextPayment?.currency || proposalCurrency}
           statusLabel={paymentOverview.nextPayment ? friendlyPaymentStatus(paymentOverview.nextPayment.status) : "Ready to pay"}

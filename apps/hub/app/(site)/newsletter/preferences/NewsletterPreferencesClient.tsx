@@ -27,7 +27,7 @@ type SubmissionState =
   | { status: "error"; message: string };
 
 const DIVISION_LABEL: Record<NewsletterDivision, string> = {
-  hub: "Henry & Co.",
+  hub: "Henry Onyx",
   account: "Account",
   care: "Care",
   jobs: "Jobs",

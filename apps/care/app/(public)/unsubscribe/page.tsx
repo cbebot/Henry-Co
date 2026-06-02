@@ -5,9 +5,9 @@ import { MailCheck, MailX, RotateCcw } from "lucide-react";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const metadata: Metadata = {
-  title: "Messaging Preferences | HenryCo Care",
+  title: "Messaging Preferences | Henry Onyx Care",
   description:
-    "Pause or restore HenryCo Care reminder and outreach messages from the customer preference center.",
+    "Pause or restore Henry Onyx Care reminder and outreach messages from the customer preference center.",
 };
 
 type SearchParams = {
@@ -71,8 +71,8 @@ export default async function UnsubscribePage({
         <p className="mt-5 text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
           {isSuccess
             ? isResubscribe
-              ? "HenryCo Care can send future service reminders and occasional re-engagement notes again."
-              : "HenryCo Care will stop sending reminder and outreach messages tied to this customer contact. Transactional updates like active booking progress can still continue when required."
+              ? "Henry Onyx Care can send future service reminders and occasional re-engagement notes again."
+              : "Henry Onyx Care will stop sending reminder and outreach messages tied to this customer contact. Transactional updates like active booking progress can still continue when required."
             : "The preference token was missing or invalid. Use the most recent email link or contact the Care team directly."}
         </p>
 
@@ -117,7 +117,7 @@ export default async function UnsubscribePage({
             href="/"
             className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
           >
-            Return to HenryCo Care
+            Return to Henry Onyx Care
           </Link>
           <Link
             href="/contact"

@@ -10,7 +10,7 @@ const items: { q: string; a: string }[] = [
   },
   {
     q: "Will new divisions appear here?",
-    a: "Yes. As Henry & Co. expands, divisions are introduced through the same premium framework.",
+    a: "Yes. As Henry Onyx expands, divisions are introduced through the same premium framework.",
   },
   {
     q: "Who is this experience for?",

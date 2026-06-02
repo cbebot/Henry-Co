@@ -26,7 +26,7 @@ import { updateServiceExecutionStatusAction } from "../../owner/actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Staff Assignments | Henry & Co. Fabric Care",
+  title: "Staff Assignments | Henry Onyx Fabric Care",
   description: "Grouped live service assignments for home and office cleaning execution.",
 };
 

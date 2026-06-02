@@ -205,14 +205,14 @@ const styles = StyleSheet.create({
 export function LearnCertificateDocument({ certificate, verificationUrl, qrDataUrl, issuer }: LearnCertificateProps) {
   const issuerInfo = issuer ?? {
     name: "Adaeze Henry-Mbachu",
-    title: "Director, HenryCo Learn",
-    accreditation: "Issued under HenryCo Learn academic standards",
+    title: "Director, Henry Onyx Learn",
+    accreditation: "Issued under Henry Onyx Learn academic standards",
   };
 
   return (
     <Document
       title={`Certificate ${certificate.certificateNo} — ${certificate.learnerName}`}
-      author="Henry Holdings Limited — HenryCo Learn"
+      author="Henry Onyx Limited — Henry Onyx Learn"
       subject={`Certificate of completion for ${certificate.courseTitle}`}
       keywords={`certificate, henryco learn, ${certificate.courseTitle}, ${certificate.certificateNo}`}
       creator="HenryCo Branded Documents"
@@ -235,7 +235,7 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
             <BrandedWordmark variant="full" height={22} />
             <View style={styles.topMonogramCol}>
               <BrandedMonogram size={28} accent={palette.copperDeep} />
-              <Text style={[styles.kicker, { marginTop: 6 }]}>HenryCo Learn</Text>
+              <Text style={[styles.kicker, { marginTop: 6 }]}>Henry Onyx Learn</Text>
             </View>
             <View style={{ width: 96, alignItems: "flex-end" }}>
               <Text style={[styles.kicker, { textAlign: "right" }]}>Certificate of Completion</Text>
@@ -292,7 +292,7 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
         </View>
 
         <View style={styles.bottomFooter} fixed>
-          <Text style={styles.footerText}>HENRY & CO. · HenryCo Learn academic certificate</Text>
+          <Text style={styles.footerText}>HENRY ONYX · Henry Onyx Learn academic certificate</Text>
           <Text style={styles.footerText}>Genuine certificates resolve at the URL above</Text>
         </View>
       </Page>

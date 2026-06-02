@@ -388,7 +388,7 @@ export default function TrackLookupClient({
           <CareLoadingStage
             locale={locale}
             variant="panel"
-            eyebrow={t("HenryCo Care tracking")}
+            eyebrow={t("Henry Onyx Care tracking")}
             title={t("Looking up your service")}
             description={t("Checking the latest status, payment details, and what happens next.")}
             bullets={[
@@ -665,7 +665,7 @@ export default function TrackLookupClient({
           <CareLoadingStage
             locale={locale}
             variant="panel"
-            eyebrow={t("HenryCo Care tracking")}
+            eyebrow={t("Henry Onyx Care tracking")}
             title={t("Finalizing your tracking lookup")}
             // FIX-LT-01: rephrased the "Preparing"/"Loading" verbs to V3-05
             // plain in-flight precedent ("Confirming"/"Fetching") so this

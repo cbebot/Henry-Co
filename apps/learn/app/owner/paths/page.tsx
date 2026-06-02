@@ -17,7 +17,7 @@ export default async function OwnerPathsPage() {
     <LearnWorkspaceShell
       kicker={t("Paths")}
       title={t("Sequence courses into first-class academy tracks.")}
-      description={t("Learning paths let HenryCo Learn present capability ladders instead of loose course lists.")}
+      description={t("Learning paths let Henry Onyx Learn present capability ladders instead of loose course lists.")}
       nav={ownerNav("/owner/paths", t)}
     >
       <LearnPanel className="rounded-[2rem]">

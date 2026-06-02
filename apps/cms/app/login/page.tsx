@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
-  title: "Sign in — Henry & Co. Owner CMS",
+  title: "Sign in — Henry Onyx Owner CMS",
   robots: { index: false, follow: false },
 };
 
@@ -34,7 +34,7 @@ export default async function LoginPage({
             style={{ fontFamily: "var(--owner-font-display)" }}
             className="text-3xl tracking-tight text-[var(--hc-ink)]"
           >
-            Henry &amp; Co.
+            Henry Onyx
           </p>
           <p className="mt-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--hc-accent-text)]">
             Owner CMS
@@ -50,7 +50,7 @@ export default async function LoginPage({
           </div>
         </div>
         <p className="mt-6 text-center text-xs text-[var(--hc-ink-muted)]">
-          Access is restricted to the Henry &amp; Co. owner.
+          Access is restricted to the Henry Onyx owner.
         </p>
       </div>
     </main>

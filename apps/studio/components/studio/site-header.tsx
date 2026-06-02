@@ -53,7 +53,7 @@ export function StudioSiteHeader({
       <div className="mx-auto flex max-w-[92rem] flex-wrap items-center justify-between gap-4 px-5 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-8 lg:px-10">
         <div className="flex items-center gap-2">
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent)]" />
-          {t("Premium briefs, verified payment guidance, and project history in your Henry & Co. account")}
+          {t("Premium briefs, verified payment guidance, and project history in your Henry Onyx account")}
         </div>
         <div className="hidden items-center gap-5 lg:flex">
           <div>{supportEmail || studio.supportEmail}</div>
@@ -61,7 +61,7 @@ export function StudioSiteHeader({
             href={accountHref}
             className="font-semibold text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)]"
           >
-            {t("Henry & Co. account")}
+            {t("Henry Onyx account")}
           </Link>
         </div>
       </div>
@@ -128,7 +128,7 @@ export function StudioSiteHeader({
           onClick={() => close()}
           className="rounded-[1.2rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-medium text-[color:var(--home-ink)]"
         >
-          {t("Henry & Co. account")}
+          {t("Henry Onyx account")}
         </Link>
       )}
     />

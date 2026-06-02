@@ -14,9 +14,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Messages · Henry & Co. Studio",
+  title: "Messages · Henry Onyx Studio",
   description:
-    "Every project conversation with the Henry & Co. Studio team in one place.",
+    "Every project conversation with the Henry Onyx Studio team in one place.",
   robots: { index: false, follow: false },
 };
 

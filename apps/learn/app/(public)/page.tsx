@@ -38,7 +38,7 @@ export default async function HomePage() {
       <section className="learn-hero">
         <div className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 sm:py-16 xl:px-10 xl:py-20">
           <div className="learn-panel learn-mesh rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-8 xl:rounded-[2.8rem] xl:p-10">
-            <p className="learn-kicker">HenryCo Learn</p>
+            <p className="learn-kicker">Henry Onyx Learn</p>
             {viewer.user ? (
               <p className="mt-4 text-sm font-semibold tracking-tight text-[var(--learn-ink-soft)]">
                 {t("Welcome back")}
@@ -210,7 +210,7 @@ export default async function HomePage() {
             <li className="flex gap-4 py-5">
               <ChartNoAxesCombined className="mt-1 h-5 w-5 shrink-0 text-[var(--learn-mint-soft)]" />
               <div>
-                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Why HenryCo Learn exists")}</h3>
+                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Why Henry Onyx Learn exists")}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-[var(--learn-ink-soft)]">
                   {t("We invest in education so customers, partners, and staff share the same standards — and so capable people can prove what they know.")}
                 </p>

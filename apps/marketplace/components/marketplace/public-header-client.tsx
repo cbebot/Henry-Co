@@ -255,7 +255,7 @@ export function PublicHeaderClient() {
           <Link
             href="/"
             className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] rounded-2xl"
-            aria-label="HenryCo Marketplace home"
+            aria-label="Henry Onyx Marketplace home"
           >
             <span
               className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-[var(--market-paper-white)] shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
@@ -265,7 +265,7 @@ export function PublicHeaderClient() {
             </span>
             <div className="hidden min-w-0 sm:block">
               <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[var(--market-brass)]">
-                HenryCo Marketplace
+                Henry Onyx Marketplace
               </p>
               <p className="truncate text-sm text-[var(--market-muted)]">
                 {surfaceCopy.marketplaceHeader.brandSubtitle}

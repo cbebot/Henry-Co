@@ -54,7 +54,7 @@ export function AppShell({
             style={{ fontFamily: "var(--owner-font-display)" }}
             className="text-2xl tracking-tight"
           >
-            Henry &amp; Co.
+            Henry Onyx
           </p>
           <p className="mt-0.5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[var(--hc-accent-text)]">
             Owner CMS
@@ -108,7 +108,7 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-[var(--hc-line)] px-6 py-4 lg:hidden">
           <p style={{ fontFamily: "var(--owner-font-display)" }} className="text-xl">
-            Henry &amp; Co.
+            Henry Onyx
           </p>
           <div className="flex items-center gap-3">
             <ThemeToggle />

@@ -62,7 +62,7 @@ export default async function ClientPaymentsPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
           Pay outstanding invoices, see what is being verified, and review every payment you&apos;ve made
-          to Henry & Co. Studio.
+          to Henry Onyx Studio.
         </p>
       </header>
 

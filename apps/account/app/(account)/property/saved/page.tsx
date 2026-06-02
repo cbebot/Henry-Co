@@ -24,7 +24,7 @@ export default async function SavedPropertiesPage() {
         tone={properties.length === 0 ? "empty" : "calm"}
         eyebrow={`${t("Property")} · ${t("Saved")}`}
         headline={t("Saved Properties")}
-        blurb={t("A premium shortlist view powered by HenryCo Property's live saved-listing truth, not a generic activity wrapper.")}
+        blurb={t("A premium shortlist view powered by Henry Onyx Property's live saved-listing truth, not a generic activity wrapper.")}
         ctaPrimary={{ label: t("Explore Property"), href: propertyOrigin, newTab: true }}
         ctaSecondary={{ label: t("Property overview"), href: "/property" }}
       />

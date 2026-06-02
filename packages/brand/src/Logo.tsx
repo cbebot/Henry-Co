@@ -33,7 +33,7 @@ export interface HenryCoLogoProps
   accent?: string;
   /** Tile background override. Defaults from tone. */
   background?: string;
-  /** Mark only (no tile), tile (default), or with “HENRY & CO.” wordmark. */
+  /** Mark only (no tile), tile (default), or with “HENRY ONYX” wordmark. */
   variant?: HenryCoLogoVariant;
   /** Accessible label. Defaults to “HenryCo”. Pass an empty string for decorative usage (uses aria-hidden instead). */
   label?: string;
@@ -65,7 +65,7 @@ function paletteFor(tone: HenryCoLogoTone) {
  *   - Outer tile rounded at 14 (≈22% radius).
  *   - The “H” is two 8-px verticals at x=20 and x=44 with a 4-px crossbar at y=32.
  *   - The crown is a thin 12-px arc above the cross — meant to read as the
- *     ampersand-ish flourish in “Henry & Co.” without being literal text.
+ *     ampersand-ish flourish in “Henry Onyx” without being literal text.
  */
 export function HenryCoLogo({
   size = 40,
@@ -109,7 +109,7 @@ export function HenryCoLogo({
             fontSize={20}
             letterSpacing={3}
           >
-            HENRY &amp; CO.
+            HENRY ONYX
           </text>
           <text
             x="0"

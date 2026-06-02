@@ -72,7 +72,7 @@ type DivisionConfig = {
 const DIVISIONS: ReadonlyArray<DivisionConfig> = [
   { key: "account", label: "Account", description: "Wallet, payments, and profile updates", icon: Users },
   { key: "care", label: "Care", description: "Bookings, tracking, and service alerts", icon: Sparkles },
-  { key: "hub", label: "HenryCo Hub", description: "Cross-division program updates", icon: Wifi },
+  { key: "hub", label: "Henry Onyx Hub", description: "Cross-division program updates", icon: Wifi },
   { key: "jobs", label: "Jobs", description: "Application movement and recruiter messages", icon: Building2 },
   { key: "learn", label: "Learn", description: "Course activity and certification updates", icon: GraduationCap },
   { key: "logistics", label: "Logistics", description: "Shipment progress and delivery alerts", icon: Truck },

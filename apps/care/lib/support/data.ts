@@ -950,7 +950,7 @@ export async function createSupportThread(input: ContactSubmissionInput) {
     await sendAdminNotificationEmail(internalEmail, {
       heading: `New contact request • ${threadRef}`,
       summary:
-        "A customer submitted a new contact request through the HenryCo Care public support page.",
+        "A customer submitted a new contact request through the Henry Onyx Care public support page.",
       lines: [
         `Customer: ${input.fullName}`,
         `Subject: ${input.subject}`,

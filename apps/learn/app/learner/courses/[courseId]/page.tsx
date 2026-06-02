@@ -562,7 +562,7 @@ export default async function LearnerCoursePage({
 
             <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.26em] text-[var(--learn-ink-soft)]">
-                {t("HenryCo Learn Certificate")}
+                {t("Henry Onyx Learn Certificate")}
               </p>
               <h3 className="mt-6 text-center text-[2.5rem] font-semibold tracking-[-0.05em] text-[var(--learn-ink)] sm:text-[3.4rem]">
                 {displayName(viewer.user?.fullName, t)}

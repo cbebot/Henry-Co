@@ -528,7 +528,7 @@ export async function sendSupportReplyWhatsApp(input: {
   message: string;
 }) {
   const body = [
-    `HenryCo Care support • ${input.threadRef}`,
+    `Henry Onyx Care support • ${input.threadRef}`,
     input.customerName ? `Hello ${input.customerName},` : "Hello,",
     "",
     input.subject,

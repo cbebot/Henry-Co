@@ -8,7 +8,7 @@ export type NavItem = {
 
 export type CompanyConfig = {
   key: CompanyKey;
-  parentBrand: string;     // "Henry & Co."
+  parentBrand: string;     // "Henry Onyx"
   division: string;        // "Fabric Care"
   description: string;
   domainLabel: string;     // "care.henryco.com"
@@ -20,10 +20,10 @@ export type CompanyConfig = {
 export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
   hub: {
     key: "hub",
-    parentBrand: "Henry & Co.",
+    parentBrand: "Henry Onyx",
     division: "Platform",
     description:
-      "The operating hub for every Henry & Co. business. Explore divisions, choose services, and enter each standalone website.",
+      "The operating hub for every Henry Onyx business. Explore divisions, choose services, and enter each standalone website.",
     domainLabel: "henryco.com",
     accent: "#C9A227",
     robotsIndex: true,
@@ -37,7 +37,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
 
   care: {
     key: "care",
-    parentBrand: "Henry & Co.",
+    parentBrand: "Henry Onyx",
     division: "Fabric Care",
     description:
       "Premium garment care, home cleaning, office cleaning, and pickup delivery with clear booking, dependable timing, and polished follow-through.",
@@ -54,7 +54,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
 
   building: {
     key: "building",
-    parentBrand: "Henry & Co.",
+    parentBrand: "Henry Onyx",
     division: "Building & Projects",
     description:
       "Construction, renovation, finishing, project supervision, and premium building delivery.",
@@ -71,7 +71,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
 
   marketplace: {
     key: "marketplace",
-    parentBrand: "Henry & Co.",
+    parentBrand: "Henry Onyx",
     division: "Marketplace",
     description:
       "Premium multi-vendor commerce for trusted sellers, cleaner buyer journeys, and sharper operator control.",
@@ -88,7 +88,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
 
   logistics: {
     key: "logistics",
-    parentBrand: "Henry & Co.",
+    parentBrand: "Henry Onyx",
     division: "Logistics",
     description:
       "Premium pickup, dispatch, same-day delivery, scheduled routing, and fleet operations with trustworthy tracking and tighter dispatch control.",

@@ -31,12 +31,12 @@ export async function generateMetadata({
   const template = getStudioTemplateBySlug(slug);
   if (!template) {
     return {
-      title: "Template not found | Henry & Co. Studio",
+      title: "Template not found | Henry Onyx Studio",
       robots: { index: false, follow: false },
     };
   }
   return {
-    title: `${template.name} | Henry & Co. Studio templates`,
+    title: `${template.name} | Henry Onyx Studio templates`,
     description: template.summary,
     alternates: { canonical: `/pick/${template.slug}` },
     robots: { index: true, follow: true },
@@ -292,7 +292,7 @@ export default async function StudioTemplateDetailPage({
             ))}
           </div>
           <p className="mt-6 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            You can pin a different stack on the brief — Henry & Co. will quote the delta if it
+            You can pin a different stack on the brief — Henry Onyx will quote the delta if it
             changes the build effort, or honour your choice at no cost when it doesn&rsquo;t.
           </p>
         </div>

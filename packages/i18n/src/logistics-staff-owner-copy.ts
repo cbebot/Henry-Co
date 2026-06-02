@@ -45,9 +45,9 @@ export type LogisticsStaffOwnerCopy = {
 
 const LOGISTICS_STAFF_OWNER_COPY_EN: LogisticsStaffOwnerCopy = {
   metadata: {
-    title: "Owner suite — Strategic monthly view | HenryCo Logistics",
+    title: "Owner suite — Strategic monthly view | Henry Onyx Logistics",
     description:
-      "The monthly view. Growth, margin, top corridors, customer trust, and claim rate for HenryCo Logistics owners.",
+      "The monthly view. Growth, margin, top corridors, customer trust, and claim rate for Henry Onyx Logistics owners.",
   },
   hero: {
     eyebrow: "Owner suite",
@@ -77,9 +77,9 @@ const LOGISTICS_STAFF_OWNER_COPY_EN: LogisticsStaffOwnerCopy = {
 
 const LOGISTICS_STAFF_OWNER_COPY_FR: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Suite propriétaire — Vue mensuelle stratégique | HenryCo Logistics",
+    title: "Suite propriétaire — Vue mensuelle stratégique | Henry Onyx Logistics",
     description:
-      "La vue mensuelle. Croissance, marge, corridors principaux, confiance client et taux de réclamation pour les propriétaires HenryCo Logistics.",
+      "La vue mensuelle. Croissance, marge, corridors principaux, confiance client et taux de réclamation pour les propriétaires Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Suite propriétaire",
@@ -109,9 +109,9 @@ const LOGISTICS_STAFF_OWNER_COPY_FR: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_ES: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Suite del propietario — Vista mensual estratégica | HenryCo Logistics",
+    title: "Suite del propietario — Vista mensual estratégica | Henry Onyx Logistics",
     description:
-      "La vista mensual. Crecimiento, margen, principales corredores, confianza del cliente y tasa de reclamaciones para propietarios de HenryCo Logistics.",
+      "La vista mensual. Crecimiento, margen, principales corredores, confianza del cliente y tasa de reclamaciones para propietarios de Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Suite del propietario",
@@ -141,9 +141,9 @@ const LOGISTICS_STAFF_OWNER_COPY_ES: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_PT: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Suite do proprietário — Visão mensal estratégica | HenryCo Logistics",
+    title: "Suite do proprietário — Visão mensal estratégica | Henry Onyx Logistics",
     description:
-      "A visão mensal. Crescimento, margem, principais corredores, confiança do cliente e taxa de reclamações para proprietários da HenryCo Logistics.",
+      "A visão mensal. Crescimento, margem, principais corredores, confiança do cliente e taxa de reclamações para proprietários da Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Suite do proprietário",
@@ -173,9 +173,9 @@ const LOGISTICS_STAFF_OWNER_COPY_PT: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_AR: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "جناح المالك — العرض الشهري الاستراتيجي | HenryCo Logistics",
+    title: "جناح المالك — العرض الشهري الاستراتيجي | Henry Onyx Logistics",
     description:
-      "العرض الشهري. النمو والهامش والممرات الرئيسية وثقة العملاء ومعدل المطالبات لمالكي HenryCo Logistics.",
+      "العرض الشهري. النمو والهامش والممرات الرئيسية وثقة العملاء ومعدل المطالبات لمالكي Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "جناح المالك",
@@ -205,7 +205,7 @@ const LOGISTICS_STAFF_OWNER_COPY_AR: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_DE: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Eigentümer-Suite — Strategische Monatsübersicht | HenryCo Logistics",
+    title: "Eigentümer-Suite — Strategische Monatsübersicht | Henry Onyx Logistics",
     description:
       "Die monatliche Übersicht. Wachstum, Marge, wichtigste Korridore, Kundenvertrauen und Reklamationsquote für HenryCo-Logistics-Eigentümer.",
   },
@@ -237,9 +237,9 @@ const LOGISTICS_STAFF_OWNER_COPY_DE: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_IT: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Suite proprietario — Vista mensile strategica | HenryCo Logistics",
+    title: "Suite proprietario — Vista mensile strategica | Henry Onyx Logistics",
     description:
-      "La vista mensile. Crescita, margine, principali corridoi, fiducia dei clienti e tasso di reclami per i proprietari HenryCo Logistics.",
+      "La vista mensile. Crescita, margine, principali corridoi, fiducia dei clienti e tasso di reclami per i proprietari Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Suite proprietario",
@@ -269,8 +269,8 @@ const LOGISTICS_STAFF_OWNER_COPY_IT: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_ZH: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "所有者套件 — 战略月度视图 | HenryCo Logistics",
-    description: "月度视图。HenryCo Logistics 所有者的增长、利润率、主要走廊、客户信任度与理赔率。",
+    title: "所有者套件 — 战略月度视图 | Henry Onyx Logistics",
+    description: "月度视图。Henry Onyx Logistics 所有者的增长、利润率、主要走廊、客户信任度与理赔率。",
   },
   hero: {
     eyebrow: "所有者套件",
@@ -300,9 +300,9 @@ const LOGISTICS_STAFF_OWNER_COPY_ZH: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_HI: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "मालिक सूट — रणनीतिक मासिक दृश्य | HenryCo Logistics",
+    title: "मालिक सूट — रणनीतिक मासिक दृश्य | Henry Onyx Logistics",
     description:
-      "मासिक दृश्य। HenryCo Logistics मालिकों के लिए वृद्धि, मार्जिन, शीर्ष कॉरिडोर, ग्राहक विश्वास और दावा दर।",
+      "मासिक दृश्य। Henry Onyx Logistics मालिकों के लिए वृद्धि, मार्जिन, शीर्ष कॉरिडोर, ग्राहक विश्वास और दावा दर।",
   },
   hero: {
     eyebrow: "मालिक सूट",
@@ -332,9 +332,9 @@ const LOGISTICS_STAFF_OWNER_COPY_HI: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_IG: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Ụlọ onye nwe — Nlere ọnwa nke atụmatụ | HenryCo Logistics",
+    title: "Ụlọ onye nwe — Nlere ọnwa nke atụmatụ | Henry Onyx Logistics",
     description:
-      "Nlere ọnwa. Uto, ego fọrọ, ụzọ ndị kasị, ntụkwasị obi ndị ahịa, na ọnụego mkpesa maka ndị nwe HenryCo Logistics.",
+      "Nlere ọnwa. Uto, ego fọrọ, ụzọ ndị kasị, ntụkwasị obi ndị ahịa, na ọnụego mkpesa maka ndị nwe Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Ụlọ onye nwe",
@@ -364,9 +364,9 @@ const LOGISTICS_STAFF_OWNER_COPY_IG: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_YO: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Yara onílé — Ìwòye oṣooṣù tó dá lórí ìlànà | HenryCo Logistics",
+    title: "Yara onílé — Ìwòye oṣooṣù tó dá lórí ìlànà | Henry Onyx Logistics",
     description:
-      "Ìwòye oṣooṣù. Ìdàgbàsókè, èrè, ọ̀nà ìgbé tó ga jù, ìgbẹ́kẹ̀lé oníbàárà, àti ìwọ̀n ẹ̀sùn fún àwọn onílé HenryCo Logistics.",
+      "Ìwòye oṣooṣù. Ìdàgbàsókè, èrè, ọ̀nà ìgbé tó ga jù, ìgbẹ́kẹ̀lé oníbàárà, àti ìwọ̀n ẹ̀sùn fún àwọn onílé Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Yara onílé",
@@ -396,9 +396,9 @@ const LOGISTICS_STAFF_OWNER_COPY_YO: DeepPartial<LogisticsStaffOwnerCopy> = {
 
 const LOGISTICS_STAFF_OWNER_COPY_HA: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
-    title: "Ɗakin mai shi — Ra'ayin wata mai dabara | HenryCo Logistics",
+    title: "Ɗakin mai shi — Ra'ayin wata mai dabara | Henry Onyx Logistics",
     description:
-      "Ra'ayin wata. Bunƙasa, ribar haƙƙi, manyan hanyoyi, amincewar abokin ciniki, da yawan da'awa ga masu HenryCo Logistics.",
+      "Ra'ayin wata. Bunƙasa, ribar haƙƙi, manyan hanyoyi, amincewar abokin ciniki, da yawan da'awa ga masu Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Ɗakin mai shi",

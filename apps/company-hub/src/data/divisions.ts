@@ -3,12 +3,12 @@ import type { Division } from "@/types/division";
 export const DIVISIONS: Division[] = [
   {
     id: "fabric-care",
-    name: "Henry & Co. Fabric Care",
+    name: "Henry Onyx Fabric Care",
     tagline: "Premium Garment Care",
     summary:
       "Premium dry cleaning and laundry with coordinated pickup, garment tracking, and meticulous finishing.",
     description:
-      "Henry & Co. Fabric Care delivers an end-to-end garment care experience built for busy households and professionals who expect reliability. From coordinated pickup and drop-off to real-time garment tracking, every item is processed with meticulous attention to fabric composition and finishing standards. Services span dry cleaning, wet cleaning, pressing, stain treatment, and speciality care for delicate fabrics — all backed by quality assurance checkpoints and transparent pricing.",
+      "Henry Onyx Fabric Care delivers an end-to-end garment care experience built for busy households and professionals who expect reliability. From coordinated pickup and drop-off to real-time garment tracking, every item is processed with meticulous attention to fabric composition and finishing standards. Services span dry cleaning, wet cleaning, pressing, stain treatment, and speciality care for delicate fabrics — all backed by quality assurance checkpoints and transparent pricing.",
     status: "active",
     featured: true,
     accentHex: "#6B7CFF",
@@ -19,12 +19,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "studio",
-    name: "HenryCo Studio",
+    name: "Henry Onyx Studio",
     tagline: "Design & Technology",
     summary:
       "Websites, mobile apps, UI systems, branding, e-commerce, and custom software.",
     description:
-      "HenryCo Studio designs and ships websites, mobile applications, UI design systems, branding, e-commerce platforms, and bespoke software solutions. The studio operates with disciplined delivery, clear communication, and a commitment to long-term maintainability — partnering with clients from concept through launch and ongoing iteration to build digital products that scale.",
+      "Henry Onyx Studio designs and ships websites, mobile applications, UI design systems, branding, e-commerce platforms, and bespoke software solutions. The studio operates with disciplined delivery, clear communication, and a commitment to long-term maintainability — partnering with clients from concept through launch and ongoing iteration to build digital products that scale.",
     status: "active",
     featured: true,
     accentHex: "#C9A227",
@@ -35,12 +35,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "marketplace",
-    name: "Henry & Co. Marketplace",
+    name: "Henry Onyx Marketplace",
     tagline: "Refined Commerce",
     summary:
       "Premium multi-vendor commerce with trust signals and split-order clarity.",
     description:
-      "The Henry & Co. Marketplace is a premium multi-vendor commerce platform that brings together curated sellers, verified product listings, and transparent split-order fulfilment. Buyers shop with confidence through trust signals, detailed seller profiles, and integrated dispute resolution. Sellers benefit from streamlined onboarding, inventory management, and unified payouts — creating a commerce ecosystem where quality and accountability are the default.",
+      "The Henry Onyx Marketplace is a premium multi-vendor commerce platform that brings together curated sellers, verified product listings, and transparent split-order fulfilment. Buyers shop with confidence through trust signals, detailed seller profiles, and integrated dispute resolution. Sellers benefit from streamlined onboarding, inventory management, and unified payouts — creating a commerce ecosystem where quality and accountability are the default.",
     status: "active",
     featured: true,
     accentHex: "#B2863B",
@@ -51,12 +51,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "jobs",
-    name: "HenryCo Jobs",
+    name: "Henry Onyx Jobs",
     tagline: "Verified Talent",
     summary:
       "Verified hiring for HenryCo and trusted external employers.",
     description:
-      "HenryCo Jobs is a verified talent and hiring platform serving both HenryCo divisions and trusted external employers. The platform provides structured applications, transparent role requirements, and accountable recruiting workflows — ensuring candidates receive timely feedback and employers access pre-vetted talent pools with clearer hiring signals throughout the process.",
+      "Henry Onyx Jobs is a verified talent and hiring platform serving both HenryCo divisions and trusted external employers. The platform provides structured applications, transparent role requirements, and accountable recruiting workflows — ensuring candidates receive timely feedback and employers access pre-vetted talent pools with clearer hiring signals throughout the process.",
     status: "active",
     featured: true,
     accentHex: "#2DD4BF",
@@ -67,12 +67,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "property",
-    name: "HenryCo Property",
+    name: "Henry Onyx Property",
     tagline: "Premium Property",
     summary:
       "Premium rentals, viewings, owner submissions, and managed-property services.",
     description:
-      "HenryCo Property covers premium rental listings, scheduled viewings, owner property submissions, and fully managed-property services. The platform operates with operational rigor and transparent follow-through — giving tenants a reliable search and application experience while providing property owners with professional management, occupancy reporting, and maintenance coordination.",
+      "Henry Onyx Property covers premium rental listings, scheduled viewings, owner property submissions, and fully managed-property services. The platform operates with operational rigor and transparent follow-through — giving tenants a reliable search and application experience while providing property owners with professional management, occupancy reporting, and maintenance coordination.",
     status: "active",
     featured: true,
     accentHex: "#A78BFA",
@@ -83,12 +83,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "learn",
-    name: "HenryCo Learn",
+    name: "Henry Onyx Learn",
     tagline: "Growth & Learning",
     summary:
       "Public courses, internal training, certifications, and partner enablement.",
     description:
-      "HenryCo Learn brings together public courses, internal staff training, professional certifications, and partner enablement programmes on a single coherent platform. Learners progress through structured curricula with progress tracking, assessments, and verifiable credentials — empowering teams across HenryCo and beyond to build skills systematically.",
+      "Henry Onyx Learn brings together public courses, internal staff training, professional certifications, and partner enablement programmes on a single coherent platform. Learners progress through structured curricula with progress tracking, assessments, and verifiable credentials — empowering teams across HenryCo and beyond to build skills systematically.",
     status: "active",
     featured: true,
     accentHex: "#38BDF8",
@@ -99,12 +99,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "logistics",
-    name: "HenryCo Logistics",
+    name: "Henry Onyx Logistics",
     tagline: "Reliable Delivery",
     summary:
       "Pickup, dispatch, same-day and scheduled delivery with proof of delivery.",
     description:
-      "HenryCo Logistics coordinates pickup, dispatch, same-day delivery, and scheduled delivery operations with full end-to-end visibility. Each consignment is tracked from origin to destination with real-time status updates, route optimisation, and digital proof of delivery — keeping operations transparent and accountable for both senders and recipients.",
+      "Henry Onyx Logistics coordinates pickup, dispatch, same-day delivery, and scheduled delivery operations with full end-to-end visibility. Each consignment is tracked from origin to destination with real-time status updates, route optimisation, and digital proof of delivery — keeping operations transparent and accountable for both senders and recipients.",
     status: "active",
     featured: true,
     accentHex: "#D06F32",
@@ -115,12 +115,12 @@ export const DIVISIONS: Division[] = [
   },
   {
     id: "buildings-interiors",
-    name: "Henry & Co. Buildings & Interiors",
+    name: "Henry Onyx Buildings & Interiors",
     tagline: "Built Environment",
     summary:
       "Building materials, interior finishes, procurement, and engineering support.",
     description:
-      "Henry & Co. Buildings & Interiors brings together building materials, interior finishes, procurement services, and engineering support — providing an end-to-end path from concept to site. The division serves developers, contractors, and homeowners with curated product sourcing, project coordination, and technical guidance. This division is coming soon; follow Henry & Co. for launch updates.",
+      "Henry Onyx Buildings & Interiors brings together building materials, interior finishes, procurement services, and engineering support — providing an end-to-end path from concept to site. The division serves developers, contractors, and homeowners with curated product sourcing, project coordination, and technical guidance. This division is coming soon; follow Henry Onyx for launch updates.",
     status: "coming_soon",
     featured: true,
     accentHex: "#4F46E5",

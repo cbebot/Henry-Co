@@ -58,7 +58,7 @@ export default function AdminLayout({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <div className="text-sm uppercase tracking-[0.16em] text-white/45">
-                  Henry & Co. Admin
+                  Henry Onyx Admin
                 </div>
                 <div className="mt-1 text-2xl font-semibold tracking-[-0.02em]">
                   {care.shortName} Dashboard

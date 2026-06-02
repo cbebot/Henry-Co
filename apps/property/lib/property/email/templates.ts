@@ -50,7 +50,7 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput, locale
   const brandFooter = renderHenryCoEmailFooter({
     purpose: "property",
     supportEmail: property.supportEmail,
-    reasonLine: `This is a HenryCo Property transactional message. Support: ${property.supportEmail} · ${property.supportPhone}`,
+    reasonLine: `This is a Henry Onyx Property transactional message. Support: ${property.supportEmail} · ${property.supportPhone}`,
   });
   const isRtl = locale === "ar";
   const dir = isRtl ? "rtl" : "ltr";

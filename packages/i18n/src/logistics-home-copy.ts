@@ -113,9 +113,9 @@ export type LogisticsHomeCopy = {
 
 const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
   metadata: {
-    title: "HenryCo Logistics — calm last-mile, visible end to end",
+    title: "Henry Onyx Logistics — calm last-mile, visible end to end",
     description:
-      "Honest ETAs, governed pricing, and proof-of-delivery on every shipment. Book, quote, or track a HenryCo Logistics delivery.",
+      "Honest ETAs, governed pricing, and proof-of-delivery on every shipment. Book, quote, or track a Henry Onyx Logistics delivery.",
   },
   hero: {
     eyebrow: "Pickup · Dispatch · Proof",
@@ -229,9 +229,9 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
 
 const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — un dernier kilomètre serein, visible de bout en bout",
+    title: "Henry Onyx Logistics — un dernier kilomètre serein, visible de bout en bout",
     description:
-      "Des ETA honnêtes, une tarification encadrée et une preuve de livraison sur chaque envoi. Réservez, demandez un devis ou suivez une livraison HenryCo Logistics.",
+      "Des ETA honnêtes, une tarification encadrée et une preuve de livraison sur chaque envoi. Réservez, demandez un devis ou suivez une livraison Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Enlèvement · Distribution · Preuve",
@@ -344,9 +344,9 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — última milla serena, visible de extremo a extremo",
+    title: "Henry Onyx Logistics — última milla serena, visible de extremo a extremo",
     description:
-      "ETAs honestos, precios gobernados y prueba de entrega en cada envío. Reserva, cotiza o rastrea una entrega de HenryCo Logistics.",
+      "ETAs honestos, precios gobernados y prueba de entrega en cada envío. Reserva, cotiza o rastrea una entrega de Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Recogida · Despacho · Prueba",
@@ -459,9 +459,9 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — última milha serena, visível de ponta a ponta",
+    title: "Henry Onyx Logistics — última milha serena, visível de ponta a ponta",
     description:
-      "ETAs honestos, preços governados e comprovação de entrega em cada envio. Reserve, cote ou rastreie uma entrega HenryCo Logistics.",
+      "ETAs honestos, preços governados e comprovação de entrega em cada envio. Reserve, cote ou rastreie uma entrega Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Coleta · Despacho · Prova",
@@ -574,9 +574,9 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ميل أخير هادئ، مرئي من البداية حتى النهاية",
+    title: "Henry Onyx Logistics — ميل أخير هادئ، مرئي من البداية حتى النهاية",
     description:
-      "أوقات وصول صادقة، وتسعير محوكَم، وإثبات تسليم لكل شحنة. احجز أو اطلب عرضًا أو تتبّع شحنة HenryCo Logistics.",
+      "أوقات وصول صادقة، وتسعير محوكَم، وإثبات تسليم لكل شحنة. احجز أو اطلب عرضًا أو تتبّع شحنة Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "استلام · إرسال · إثبات",
@@ -689,7 +689,7 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ruhige letzte Meile, durchgängig sichtbar",
+    title: "Henry Onyx Logistics — ruhige letzte Meile, durchgängig sichtbar",
     description:
       "Ehrliche ETAs, geregelte Preise und Zustellnachweis bei jeder Sendung. Buchen, anfragen oder verfolgen Sie eine HenryCo-Logistics-Lieferung.",
   },
@@ -804,9 +804,9 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ultimo miglio sereno, visibile da capo a piedi",
+    title: "Henry Onyx Logistics — ultimo miglio sereno, visibile da capo a piedi",
     description:
-      "ETA onesti, prezzi governati e prova di consegna su ogni spedizione. Prenota, richiedi un preventivo o traccia una consegna HenryCo Logistics.",
+      "ETA onesti, prezzi governati e prova di consegna su ogni spedizione. Prenota, richiedi un preventivo o traccia una consegna Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Ritiro · Dispatch · Prova",
@@ -919,9 +919,9 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — 平静的最后一公里,全程可见",
+    title: "Henry Onyx Logistics — 平静的最后一公里,全程可见",
     description:
-      "诚实的预计送达时间、受治理的定价,以及每一票都有的送达证明。预订、报价或追踪一笔 HenryCo Logistics 配送。",
+      "诚实的预计送达时间、受治理的定价,以及每一票都有的送达证明。预订、报价或追踪一笔 Henry Onyx Logistics 配送。",
   },
   hero: {
     eyebrow: "取件 · 派送 · 凭证",
@@ -1033,9 +1033,9 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — शांत लास्ट-माइल, शुरू से अंत तक दिखने वाला",
+    title: "Henry Onyx Logistics — शांत लास्ट-माइल, शुरू से अंत तक दिखने वाला",
     description:
-      "हर शिपमेंट पर ईमानदार ETA, नियंत्रित मूल्य निर्धारण और डिलीवरी का प्रमाण। HenryCo Logistics डिलीवरी को बुक करें, कोट करें या ट्रैक करें।",
+      "हर शिपमेंट पर ईमानदार ETA, नियंत्रित मूल्य निर्धारण और डिलीवरी का प्रमाण। Henry Onyx Logistics डिलीवरी को बुक करें, कोट करें या ट्रैक करें।",
   },
   hero: {
     eyebrow: "पिकअप · डिस्पैच · प्रमाण",
@@ -1148,9 +1148,9 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ọnụụlọ-mma dị jụụ, nke a na-ahụ site na mmalite ruo na njedebe",
+    title: "Henry Onyx Logistics — ọnụụlọ-mma dị jụụ, nke a na-ahụ site na mmalite ruo na njedebe",
     description:
-      "Oge nnata ziri ezi, ọnụahịa nke a na-achịkwa, na ihe akaebe nnyefe na nnyefe ọ bụla. Debe, jụọ ọnụahịa, ma ọ bụ soro nnyefe HenryCo Logistics.",
+      "Oge nnata ziri ezi, ọnụahịa nke a na-achịkwa, na ihe akaebe nnyefe na nnyefe ọ bụla. Debe, jụọ ọnụahịa, ma ọ bụ soro nnyefe Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Nbubata · Mzipu · Ihe Akaebe",
@@ -1263,9 +1263,9 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ìfijiṣẹ́ ìparí tútù, tí ó hàn láti ìbẹ̀rẹ̀ dé òpin",
+    title: "Henry Onyx Logistics — ìfijiṣẹ́ ìparí tútù, tí ó hàn láti ìbẹ̀rẹ̀ dé òpin",
     description:
-      "Àkókò ìdégbé tó dájú, ìnà tí a ń ṣàkóso, àti ẹ̀rí ìfijiṣẹ́ lórí gbogbo gbígbé. Ṣe ìpèsè, béèrè ìdíyelé, tàbí tọpa ìfijiṣẹ́ HenryCo Logistics.",
+      "Àkókò ìdégbé tó dájú, ìnà tí a ń ṣàkóso, àti ẹ̀rí ìfijiṣẹ́ lórí gbogbo gbígbé. Ṣe ìpèsè, béèrè ìdíyelé, tàbí tọpa ìfijiṣẹ́ Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Gbígbà · Pípín · Ẹ̀rí",
@@ -1378,9 +1378,9 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — sashin ƙarshe mai natsuwa, ana ganinsa daga farko zuwa ƙarshe",
+    title: "Henry Onyx Logistics — sashin ƙarshe mai natsuwa, ana ganinsa daga farko zuwa ƙarshe",
     description:
-      "Lokutan ETA na gaskiya, farashi mai sarrafawa, da tabbacin isarwa akan kowace jigila. Yi rajista, nemi farashi, ko bibiyi isarwa ta HenryCo Logistics.",
+      "Lokutan ETA na gaskiya, farashi mai sarrafawa, da tabbacin isarwa akan kowace jigila. Yi rajista, nemi farashi, ko bibiyi isarwa ta Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Ɗauka · Aikawa · Tabbaci",

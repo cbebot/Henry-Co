@@ -541,7 +541,7 @@ export function SellerApplicationWizard({
                 type="checkbox"
               />
               <span className="text-sm leading-7 text-[var(--market-ink)]">
-                I accept HenryCo Marketplace moderation, trust, payout-protection, and response-standard requirements.
+                I accept Henry Onyx Marketplace moderation, trust, payout-protection, and response-standard requirements.
               </span>
             </label>
           </div>

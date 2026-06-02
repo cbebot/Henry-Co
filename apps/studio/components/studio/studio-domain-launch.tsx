@@ -36,7 +36,7 @@ function getPathCopy(locale: AppLocale): Record<Path, { title: string; hint: str
     },
     later: {
       title: t("I’m not ready to decide"),
-      hint: t("Totally fine. Henry & Co. will help you choose before launch. You can still describe your dream name in the notes."),
+      hint: t("Totally fine. Henry Onyx will help you choose before launch. You can still describe your dream name in the notes."),
     },
   };
 }
@@ -163,7 +163,7 @@ export function StudioDomainLaunchSection({
     } catch {
       setLastResult({
         status: "error",
-        message: t("Network issue. Submit anyway—Henry & Co. will confirm your domain manually."),
+        message: t("Network issue. Submit anyway—Henry Onyx will confirm your domain manually."),
         fqdn: null,
         suggestions: [],
         mode: "off",
