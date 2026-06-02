@@ -19,6 +19,8 @@ import { BRAND_EMAILS, getAccountUrl, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { MarketplaceToastStack } from "@/components/marketplace/toast-stack";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -39,12 +41,49 @@ export function PublicHeader(_props: {
   return <PublicHeaderClient />;
 }
 
-export function PublicSurface({ children }: { children: React.ReactNode }) {
+export async function PublicSurface({ children }: { children: React.ReactNode }) {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+  const footerColumns = [
+    { title: copy.footer.shopTitle, links: copy.footer.shopLinks },
+    {
+      title: copy.footer.sellTitle,
+      links: [
+        ...copy.footer.sellLinks,
+        { href: getAccountUrl("/marketplace"), label: t("Your account") },
+      ],
+    },
+    {
+      title: copy.footer.supportTitle,
+      links: [
+        { href: "/help", label: t("Help and support") },
+        { href: getHubUrl("/contact"), label: t("Contact") },
+        { href: "/trust", label: t("Trust") },
+      ],
+    },
+  ];
   return (
-    <div className="market-page">
+    <div
+      className="market-page home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
+      style={MARKETPLACE_PUBLIC_THEME_STYLE}
+    >
       <PublicHeader signedIn={false} />
-      <main id="henryco-main" tabIndex={-1}>{children}</main>
-      <PublicFooter />
+      <main id="henryco-main" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
+      <PublicSiteFooter
+        copy={{
+          statement: t(
+            "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",
+          ),
+          divisionsLabel: t("The Henry & Co. group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry & Co. Studio."),
+        }}
+        columns={footerColumns}
+        support={{ email: BRAND_EMAILS.marketplace, phone: "+234 913 395 7084" }}
+      />
       <MarketplaceCartDrawer />
       <MarketplaceToastStack />
     </div>

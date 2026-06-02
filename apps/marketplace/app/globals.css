@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+/* V3-PUBLIC-REBUILD-marketplace — the --home-* public design system (additive/inert;
+   adopted on the public subtree via app/(public)/layout.tsx + .home-accent-scope). */
+@import "../../../packages/ui/src/styles/public-design.css";
 @source "../../../packages/ui/src";
 
 :root {
@@ -61,6 +64,39 @@
   --hc-accent-on-surface: #ead7b0;
   --hc-ink-on-accent: #1a130c;
   --hc-focus-ring: var(--market-brass);
+}
+
+/* V3-PUBLIC-REBUILD-marketplace — retone the dark-designed .market-* utility
+   classes to the light-primary --home-* system ON THE PUBLIC SUBTREE ONLY (the
+   public wrapper carries .home-accent-scope). Higher specificity wins over the
+   base rules; the dashboards keep their :root dark .market-* definitions intact. */
+.home-accent-scope .market-panel,
+.home-accent-scope .market-paper {
+  background: var(--home-sheet);
+  border-color: var(--home-line);
+  box-shadow: 0 30px 80px -50px rgb(var(--home-ink-rgb) / 0.18);
+}
+.home-accent-scope .market-soft {
+  background: var(--home-surface-02);
+  border-color: var(--home-line);
+  box-shadow: none;
+}
+.home-accent-scope .market-button-primary {
+  background: var(--home-accent);
+  color: var(--home-accent-ink);
+  box-shadow: none;
+}
+.home-accent-scope .market-button-secondary {
+  background: var(--home-surface-04);
+  border-color: var(--home-line-15);
+  color: var(--home-ink);
+}
+.home-accent-scope .market-input,
+.home-accent-scope .market-select,
+.home-accent-scope .market-textarea {
+  background: var(--home-surface-04);
+  border-color: var(--home-line-15);
+  color: var(--home-ink);
 }
 
 * {
