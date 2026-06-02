@@ -6,13 +6,14 @@ import {
   useState,
   type ButtonHTMLAttributes,
   type ChangeEvent,
+  type DragEvent,
   type InputHTMLAttributes,
   type ReactNode,
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from "react";
 import Link from "next/link";
-import { ChevronLeft, Image as ImageIcon, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { ChevronLeft, Loader2, Plus, Trash2, Upload } from "lucide-react";
 
 /**
  * Shared form + chrome primitives for every Owner-CMS editing surface. One
@@ -360,8 +361,14 @@ export function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [showUrl, setShowUrl] = useState(false);
 
   async function upload(file: File) {
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file.");
+      return;
+    }
     setError(null);
     setBusy(true);
     try {
@@ -406,58 +413,96 @@ export function ImageUpload({
     e.target.value = "";
   }
 
+  function onDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) void upload(file);
+  }
+
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-sm font-medium text-[var(--hc-ink)]">{label}</span>
         {hint ? <span className="text-xs text-[var(--hc-ink-muted)]">{hint}</span> : null}
       </div>
-      <div className="mt-1.5 flex items-start gap-4">
-        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--hc-line)] bg-[var(--hc-bg-soft)]">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <ImageIcon className="h-6 w-6 text-[var(--hc-ink-muted)]" aria-hidden />
-          )}
-          {busy ? (
-            <span className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <Loader2 className="h-5 w-5 animate-spin text-white" aria-hidden />
-            </span>
-          ) : null}
-        </div>
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={onFile}
-              className="hidden"
-            />
-            <SecondaryButton onClick={() => inputRef.current?.click()} disabled={busy}>
-              {busy ? <Spinner /> : <Upload className="h-4 w-4" aria-hidden />}
-              {value ? "Replace image" : "Upload image"}
-            </SecondaryButton>
-            {value ? (
-              <button
-                type="button"
-                onClick={() => onChange("")}
-                className="text-sm font-medium text-[var(--hc-ink-muted)] transition-colors hover:text-rose-600"
-              >
-                Remove
-              </button>
+      <input ref={inputRef} type="file" accept="image/*" onChange={onFile} className="hidden" />
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          if (!busy) inputRef.current?.click();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={onDrop}
+        className={`mt-1.5 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors ${
+          dragOver
+            ? "border-[var(--hc-accent)] bg-[var(--hc-accent-soft)]"
+            : "border-[var(--hc-line)] bg-[var(--hc-bg-soft)] hover:border-[var(--hc-accent)]"
+        }`}
+      >
+        {value ? (
+          <div className="relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={value} alt="" className="h-28 w-auto max-w-full rounded-lg object-contain" />
+            {busy ? (
+              <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
+                <Loader2 className="h-5 w-5 animate-spin text-white" aria-hidden />
+              </span>
             ) : null}
           </div>
-          <input
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="…or paste an image URL"
-            className="w-full max-w-md rounded-lg border border-[var(--hc-line)] bg-[var(--hc-surface)] px-2.5 py-1.5 text-xs text-[var(--hc-ink-muted)] outline-none transition-colors focus:border-[var(--hc-accent)]"
-          />
-          {error ? <p className="text-xs font-medium text-rose-600">{error}</p> : null}
+        ) : busy ? (
+          <Loader2 className="h-7 w-7 animate-spin text-[var(--hc-accent-text)]" aria-hidden />
+        ) : (
+          <Upload className="h-7 w-7 text-[var(--hc-ink-muted)]" aria-hidden />
+        )}
+        <div className="text-sm leading-5">
+          <span className="font-medium text-[var(--hc-ink)]">
+            {value ? "Replace image" : "Upload from your device"}
+          </span>
+          <span className="text-[var(--hc-ink-muted)]">
+            {" "}
+            — drag &amp; drop, or click to choose a photo or file
+          </span>
         </div>
       </div>
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+        {value ? (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="font-medium text-[var(--hc-ink-muted)] transition-colors hover:text-rose-600"
+          >
+            Remove
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={() => setShowUrl((s) => !s)}
+          className="font-medium text-[var(--hc-ink-muted)] transition-colors hover:text-[var(--hc-accent-text)]"
+        >
+          {showUrl ? "Hide link option" : "Or paste a link"}
+        </button>
+        {error ? <span className="font-medium text-rose-600">{error}</span> : null}
+      </div>
+      {showUrl ? (
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="https://…"
+          className="mt-2 w-full rounded-lg border border-[var(--hc-line)] bg-[var(--hc-surface)] px-2.5 py-1.5 text-xs text-[var(--hc-ink)] outline-none transition-colors focus:border-[var(--hc-accent)]"
+        />
+      ) : null}
     </div>
   );
 }

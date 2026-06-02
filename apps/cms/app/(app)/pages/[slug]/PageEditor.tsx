@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { CmsPageContent, PageSection, PageStat } from "@/lib/cms/pages";
 import { discardDraft, publishPage, saveDraft } from "@/lib/cms/pages-actions";
+import { ImageUpload } from "@/components/cms/editor-kit";
 
 const PUBLIC_BASE = "https://henrycogroup.com";
 
@@ -252,21 +253,12 @@ export function PageEditor({
               placeholder="A short, welcoming paragraph…"
             />
           </Field>
-          <Field label="Hero image URL" hint="Paste an image link">
-            <TextInput
-              value={content.hero_image_url}
-              onChange={(e) => patch({ hero_image_url: e.target.value })}
-              placeholder="https://…"
-            />
-          </Field>
-          {content.hero_image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={content.hero_image_url}
-              alt=""
-              className="mt-1 h-40 w-full max-w-md rounded-xl border border-[var(--hc-line)] object-cover"
-            />
-          ) : null}
+          <ImageUpload
+            label="Hero image"
+            value={content.hero_image_url}
+            onChange={(url) => patch({ hero_image_url: url })}
+            folder="henryco/pages"
+          />
         </Card>
 
         <Card title="Call to action" desc="Buttons shown in the hero.">
