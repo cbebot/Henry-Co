@@ -43,7 +43,7 @@ export default async function LoginPage({
         <div className="rounded-3xl border border-[var(--hc-line)] bg-[var(--hc-surface)] p-7 shadow-sm">
           <h1 className="text-lg font-semibold text-[var(--hc-ink)]">Sign in</h1>
           <p className="mt-1 text-sm leading-6 text-[var(--hc-ink-muted)]">
-            Enter your owner email. We&apos;ll send a secure sign-in link — no password.
+            Sign in with your owner email and password — two-factor protection supported.
           </p>
           <div className="mt-5">
             <LoginForm initialError={initialError} next={next} />

@@ -8,6 +8,7 @@ import {
   HelpCircle,
   Home,
   Layers,
+  Lock,
   LogOut,
   Settings,
   ShieldCheck,
@@ -18,6 +19,7 @@ import { createCmsSupabaseBrowser } from "@/lib/supabase/browser";
 
 const NAV = [
   { label: "Overview", icon: ShieldCheck, href: "/dashboard", ready: true },
+  { label: "Security", icon: Lock, href: "/settings", ready: true },
   { label: "Company Pages", icon: FileText, href: "/dashboard", ready: false },
   { label: "Brand & Settings", icon: Settings, href: "/dashboard", ready: false },
   { label: "Divisions", icon: Layers, href: "/dashboard", ready: false },

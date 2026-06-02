@@ -56,24 +56,31 @@ export async function POST(request: Request) {
     );
   }
 
-  let isOwner = false;
-  try {
-    const admin = createAdminSupabase();
-    const { data: profile } = await admin
-      .from("owner_profiles")
-      .select("user_id, email, role, is_active")
-      .eq("email", email)
-      .maybeSingle();
-    isOwner =
-      !!profile &&
-      profile.is_active === true &&
-      ["owner", "admin"].includes(String(profile.role).trim().toLowerCase());
-  } catch (error) {
-    // Fail closed: never dispatch a link if ownership cannot be confirmed.
-    logger.error("cms.auth.otp.owner_precheck_failed", {
-      message: error instanceof Error ? error.message : String(error),
-    });
-    return NextResponse.json({ ok: true });
+  // Owner pre-check via the service-role client WHEN it is configured. Without
+  // it, we rely on signInWithOtp({ shouldCreateUser: false }) — only existing
+  // auth users receive a link — plus the requireOwner gate on /dashboard, so
+  // the CMS stays owner-gated end-to-end even with only the public Supabase keys.
+  let isOwner = true;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    isOwner = false;
+    try {
+      const admin = createAdminSupabase();
+      const { data: profile } = await admin
+        .from("owner_profiles")
+        .select("user_id, email, role, is_active")
+        .eq("email", email)
+        .maybeSingle();
+      isOwner =
+        !!profile &&
+        profile.is_active === true &&
+        ["owner", "admin"].includes(String(profile.role).trim().toLowerCase());
+    } catch (error) {
+      // Fail closed: never dispatch a link if ownership cannot be confirmed.
+      logger.error("cms.auth.otp.owner_precheck_failed", {
+        message: error instanceof Error ? error.message : String(error),
+      });
+      return NextResponse.json({ ok: true });
+    }
   }
 
   if (isOwner) {
