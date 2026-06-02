@@ -488,19 +488,19 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
   operatingStandard: {
     kicker: "The operating standard",
     lead: "Different businesses, run the same way.",
-    body: "Whichever division you enter, the standard holds: the same clarity, the same honest delivery, the same calm surface that respects your time. We build the software in-house, so the experience never fragments at the seams between one business and the next.",
+    body: "Same clarity, same honest delivery, same calm surface — built in-house, so it never fragments between divisions.",
     principles: [
       {
         title: "One surface",
-        body: "Every division shares the same interface language, so moving between them costs you nothing to relearn.",
+        body: "The same interface language everywhere. Nothing to relearn.",
       },
       {
         title: "Honest by default",
-        body: "Numbers are real or they are not shown. We never inflate proof to look larger than we are.",
+        body: "Numbers are real, or they are not shown — never inflated.",
       },
       {
         title: "Built in-house",
-        body: "The platform behind every engine is made by Henry & Co. Studio — one team, one standard, end to end.",
+        body: "One platform, built by Henry & Co. Studio. One team, one standard.",
       },
     ],
   },
