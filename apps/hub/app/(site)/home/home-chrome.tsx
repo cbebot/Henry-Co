@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   AnimatePresence,
   motion,
@@ -161,14 +162,22 @@ function MobileSheet({
     visible: { x: 0, transition: { duration: reduce ? 0 : 0.3, ease: EASE_OUT } },
   };
 
-  return (
-    <motion.div className="fixed inset-0 z-[70] md:hidden" initial="hidden" animate="visible" exit="hidden">
+  // Render OUTSIDE the sticky header via a portal. The header has
+  // `backdrop-blur`, which establishes a containing block for fixed descendants
+  // — so a sheet rendered inside it would size to the header (≈64px), not the
+  // viewport, and its content would spill out transparently. Portaling to
+  // <body> anchors the overlay to the viewport, exactly like the shared shell's
+  // mobile drawer does on every other public page.
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <motion.div className="fixed inset-0 z-[120] md:hidden" initial="hidden" animate="visible" exit="hidden">
       <motion.button
         type="button"
         aria-label={copy.nav.closeMenu}
         onClick={onClose}
         variants={backdrop}
-        className="absolute inset-0 h-full w-full bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 h-full w-full bg-black/55 backdrop-blur-md"
       />
       <motion.div
         ref={panelRef}
@@ -178,24 +187,25 @@ function MobileSheet({
         aria-label={copy.nav.menu}
         variants={panel}
         onKeyDown={handleKeyDown}
-        className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-[color:var(--home-line)] bg-[color:var(--home-sheet)] shadow-[0_40px_140px_rgba(0,0,0,0.55)]"
+        className="absolute inset-y-0 right-0 flex h-full w-[86%] max-w-sm flex-col border-l border-[color:var(--home-line-12)] bg-[color:var(--home-sheet)] shadow-[0_40px_140px_rgba(0,0,0,0.5)]"
       >
-        <div className="flex items-center justify-between border-b border-[color:var(--home-line)] px-6 py-5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
-            {copy.nav.menu}
-          </span>
+        <div className="flex items-center justify-between border-b border-[color:var(--home-line)] px-5 py-4">
+          <span className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.nav.menu}</span>
           <button
             ref={closeRef}
             type="button"
             aria-label={copy.nav.closeMenu}
             onClick={onClose}
-            className="grid h-9 w-9 place-items-center rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface)] text-[color:var(--home-ink-80)] transition hover:bg-[color:var(--home-surface-10)]"
+            className="home-focus grid h-10 w-10 place-items-center rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink-80)] transition hover:bg-[color:var(--home-surface-10)]"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <nav aria-label={copy.nav.menu} className="flex flex-1 flex-col gap-1 px-4 py-6">
+        <nav
+          aria-label={copy.nav.menu}
+          className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-5"
+        >
           {targets.map((target) => {
             const href = target.kind === "spy" ? `#${target.id}` : target.href;
             const isActive = target.kind === "spy" && active === target.id;
@@ -206,41 +216,40 @@ function MobileSheet({
                 onClick={onClose}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "border-l-2 py-3 pl-4 text-base transition-colors",
+                  "home-focus rounded-2xl border px-4 py-3.5 text-base font-medium transition-colors",
                   isActive
-                    ? "border-[color:var(--accent)] text-[color:var(--home-ink)]"
-                    : "border-transparent text-[color:var(--home-ink-70)] hover:text-[color:var(--home-ink)]",
+                    ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-ink)]"
+                    : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink-75)] hover:border-[color:var(--home-line-15)] hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)]",
                 )}
-                style={isActive ? undefined : { fontFamily: "var(--acct-font-display)" }}
               >
                 {target.label}
               </a>
             );
           })}
-
-          <div className="my-4 h-px bg-[color:var(--home-surface-10)]" />
-
-          <div className="px-4 pb-2">
-            <ThemeToggle className="w-full justify-center" />
-          </div>
-
-          <a
-            href="/search"
-            onClick={onClose}
-            className="py-2.5 pl-4 text-sm text-[color:var(--home-ink-55)] transition-colors hover:text-[color:var(--home-ink)]"
-          >
-            {copy.topBar.search}
-          </a>
-          <a
-            href="/preferences"
-            onClick={onClose}
-            className="py-2.5 pl-4 text-sm text-[color:var(--home-ink-55)] transition-colors hover:text-[color:var(--home-ink)]"
-          >
-            {copy.footer.linkPreferences}
-          </a>
         </nav>
+
+        <div className="border-t border-[color:var(--home-line)] px-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] pt-4">
+          <ThemeToggle className="w-full justify-center" />
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <a
+              href="/search"
+              onClick={onClose}
+              className="home-focus rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2.5 text-center text-sm text-[color:var(--home-ink-65)] transition-colors hover:text-[color:var(--home-ink)]"
+            >
+              {copy.topBar.search}
+            </a>
+            <a
+              href="/preferences"
+              onClick={onClose}
+              className="home-focus rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2.5 text-center text-sm text-[color:var(--home-ink-65)] transition-colors hover:text-[color:var(--home-ink)]"
+            >
+              {copy.footer.linkPreferences}
+            </a>
+          </div>
+        </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }
 
