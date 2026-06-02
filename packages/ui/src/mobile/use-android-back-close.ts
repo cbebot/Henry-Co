@@ -52,6 +52,23 @@ export type UseAndroidBackCloseOptions = {
 
 const SENTINEL_MARKER = "__henryco_modal";
 
+// When a sheet/drawer closes BECAUSE the user tapped an internal SPA nav link,
+// the navigation (router.push) consumes the top history entry asynchronously —
+// and App Router commits it LATER than a frame. The close's sentinel-pop
+// (history.back) would race and cancel that pending navigation: the reported
+// "mobile nav tap dismisses but never navigates" bug. The nav link calls
+// suppressSentinelPop() so the imminent cleanup deterministically SKIPS its
+// back() and leaves the history to the navigation (the leftover sentinel is a
+// harmless duplicate same-URL entry). Time-boxed so a cancelled tap can't
+// suppress forever.
+let suppressPopUntilMs = 0;
+function nowMs(): number {
+  return typeof performance !== "undefined" ? performance.now() : Date.now();
+}
+export function suppressSentinelPop(windowMs = 1200): void {
+  suppressPopUntilMs = nowMs() + windowMs;
+}
+
 export function useAndroidBackClose(
   isOpen: boolean,
   onClose: () => void,
@@ -113,19 +130,40 @@ export function useAndroidBackClose(
 
     return () => {
       window.removeEventListener("popstate", onPopState);
-      // If our sentinel is still the top entry (close happened via
-      // Esc / backdrop / programmatic), pop it back off so we don't
-      // leave a phantom history step. Detect via the state shape.
-      const currentState = window.history.state as
-        | { [SENTINEL_MARKER]?: boolean }
-        | null;
-      if (currentState && currentState[SENTINEL_MARKER]) {
-        try {
-          window.history.back();
-        } catch {
-          // Best-effort; failure leaves a one-step history pad,
-          // which is harmless functionally.
+      // If our sentinel is still the top entry (close happened via Esc /
+      // backdrop / X / programmatic), pop it back off so we don't leave a
+      // phantom history step. CRITICAL: defer to the next frame and re-check
+      // the sentinel is STILL on top first. When a sheet closes because the
+      // user tapped an internal <Link> (the close + the navigation fire in the
+      // same tick), Next's router.push commits its own history entry within a
+      // microtask — by the next rAF the sentinel is no longer top, so we MUST
+      // skip history.back(); popping here would revert the navigation (the
+      // "mobile nav tap dismisses but never navigates" bug). Esc / backdrop /
+      // hardware-back closes still pop correctly (sentinel still top, or
+      // already gone).
+      const popSentinel = () => {
+        // A nav link is consuming this history entry — skip the pop so we don't
+        // cancel the in-flight navigation.
+        if (nowMs() < suppressPopUntilMs) {
+          suppressPopUntilMs = 0;
+          return;
         }
+        const currentState = window.history.state as
+          | { [SENTINEL_MARKER]?: boolean }
+          | null;
+        if (currentState && currentState[SENTINEL_MARKER]) {
+          try {
+            window.history.back();
+          } catch {
+            // Best-effort; failure leaves a one-step history pad,
+            // which is harmless functionally.
+          }
+        }
+      };
+      if (typeof window.requestAnimationFrame === "function") {
+        window.requestAnimationFrame(popSentinel);
+      } else {
+        popSentinel();
       }
     };
   }, [isOpen]);
