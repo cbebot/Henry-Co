@@ -1,33 +1,12 @@
 "use client";
 
 import { createCmsSupabaseBrowser } from "@/lib/supabase/browser";
-import type { Person } from "./people";
+import type { PersonInput } from "./people-shared";
+
+// Re-export so the editor can import the input type from the actions module.
+export type { PersonInput } from "./people-shared";
 
 type Result = { ok: true } | { ok: false; error: string };
-
-/** The editable fields a person editor sends to the write layer. */
-export type PersonInput = {
-  id?: string;
-  full_name: string;
-  role_title: string;
-  job_title: string;
-  kind: string;
-  group_key: string;
-  department: string;
-  page_slug: string;
-  division_slug: string;
-  short_bio: string;
-  long_bio: string;
-  photo_url: string;
-  email: string;
-  phone: string;
-  linkedin_url: string;
-  is_owner: boolean;
-  is_manager: boolean;
-  is_featured: boolean;
-  is_published: boolean;
-  sort_order: number;
-};
 
 /**
  * Build the DB payload from editor input, keeping every alias pair in sync so
@@ -70,18 +49,13 @@ function toRow(input: PersonInput, updatedAt: string): Record<string, unknown> {
  * Save a person: UPDATE by id when an id is present, otherwise INSERT and
  * return the new id so the editor can route to the freshly created record.
  */
-export async function savePerson(
-  input: PersonInput
-): Promise<Result & { id?: string }> {
+export async function savePerson(input: PersonInput): Promise<Result & { id?: string }> {
   const supabase = createCmsSupabaseBrowser();
   const now = new Date().toISOString();
   const row = toRow(input, now);
 
   if (input.id) {
-    const { error } = await supabase
-      .from("company_people")
-      .update(row)
-      .eq("id", input.id);
+    const { error } = await supabase.from("company_people").update(row).eq("id", input.id);
     return error ? { ok: false, error: error.message } : { ok: true, id: input.id };
   }
 
@@ -100,51 +74,3 @@ export async function deletePerson(id: string): Promise<Result> {
   const { error } = await supabase.from("company_people").delete().eq("id", id);
   return error ? { ok: false, error: error.message } : { ok: true };
 }
-
-/** Map a fully-typed Person into the editor's input shape. */
-export function personToInput(p: Person): PersonInput {
-  return {
-    id: p.id,
-    full_name: p.full_name,
-    role_title: p.role_title,
-    job_title: p.job_title,
-    kind: p.kind,
-    group_key: p.group_key,
-    department: p.department,
-    page_slug: p.page_slug,
-    division_slug: p.division_slug,
-    short_bio: p.short_bio,
-    long_bio: p.long_bio,
-    photo_url: p.photo_url,
-    email: p.email,
-    phone: p.phone,
-    linkedin_url: p.linkedin_url,
-    is_owner: p.is_owner,
-    is_manager: p.is_manager,
-    is_featured: p.is_featured,
-    is_published: p.is_published,
-    sort_order: p.sort_order,
-  };
-}
-
-export const EMPTY_PERSON_INPUT: PersonInput = {
-  full_name: "",
-  role_title: "",
-  job_title: "",
-  kind: "team",
-  group_key: "leadership",
-  department: "",
-  page_slug: "about",
-  division_slug: "",
-  short_bio: "",
-  long_bio: "",
-  photo_url: "",
-  email: "",
-  phone: "",
-  linkedin_url: "",
-  is_owner: false,
-  is_manager: false,
-  is_featured: false,
-  is_published: true,
-  sort_order: 100,
-};

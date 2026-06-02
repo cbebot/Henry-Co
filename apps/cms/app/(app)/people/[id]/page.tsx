@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPerson } from "@/lib/cms/people";
-import { personToInput } from "@/lib/cms/people-actions";
+import { personToInput } from "@/lib/cms/people-shared";
 import { PersonEditor } from "./PersonEditor";
 
 export const dynamic = "force-dynamic";
