@@ -5,6 +5,8 @@ import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
 import { writeOwnerAudit } from "@/lib/owner-audit-log";
 import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
+import { getHubPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export const runtime = "nodejs";
 
@@ -33,6 +35,9 @@ function parseJsonArray(value: unknown) {
 }
 
 export async function GET() {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -47,13 +52,16 @@ export async function GET() {
 
   if (error) {
     console.error("[owner/pages][GET]", error);
-    return NextResponse.json({ error: "Could not load company pages right now." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Could not load company pages right now.") }, { status: 400 });
   }
 
   return NextResponse.json({ pages: data ?? [] });
 }
 
 export async function POST(request: Request) {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return ownerAuthDeniedResponse(auth);
@@ -149,7 +157,7 @@ export async function POST(request: Request) {
         console.error("[owner/pages][POST]", error);
         return {
           outcome: "server_error" as const,
-          value: NextResponse.json({ error: "Could not save this page right now." }, { status: 400 }),
+          value: NextResponse.json({ error: await tx("Could not save this page right now.") }, { status: 400 }),
         };
       }
 

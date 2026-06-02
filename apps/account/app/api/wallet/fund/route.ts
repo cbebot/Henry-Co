@@ -5,6 +5,8 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { LEGACY_WALLET_TRANSACTION_PENDING_STATUS } from "@/lib/wallet-storage";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 function buildFundingReference(userId: string) {
   const stamp = Date.now().toString(36).toUpperCase();
@@ -17,12 +19,14 @@ function isMissingRelationError(message: string) {
 }
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     await ensureAccountProfileRecords(user);
 
@@ -34,15 +38,15 @@ export async function POST(request: Request) {
 
     if (!amountKobo || amountKobo < 10000) {
       return NextResponse.json(
-        { error: "Enter at least NGN 100 to create a funding request." },
+        { error: await tx("Enter at least NGN 100 to create a funding request.") },
         { status: 400 }
       );
     }
     if (amountKobo > 10000000) {
-      return NextResponse.json({ error: "For this flow, the maximum is NGN 100,000 per request." }, { status: 400 });
+      return NextResponse.json({ error: await tx("For this flow, the maximum is NGN 100,000 per request.") }, { status: 400 });
     }
     if (provider !== "bank_transfer") {
-      return NextResponse.json({ error: "This funding method is not available yet." }, { status: 400 });
+      return NextResponse.json({ error: await tx("This funding method is not available yet.") }, { status: 400 });
     }
 
     const admin = createAdminSupabase();
@@ -69,7 +73,7 @@ export async function POST(request: Request) {
         wallet = retry.data;
         if (!wallet) {
           console.error("[henryco/account] wallet create failed:", inserted.error);
-          return NextResponse.json({ error: "We couldn’t open your wallet. Please try again shortly." }, { status: 500 });
+          return NextResponse.json({ error: await tx("We couldn’t open your wallet. Please try again shortly.") }, { status: 500 });
         }
       } else {
         wallet = inserted.data;
@@ -77,7 +81,7 @@ export async function POST(request: Request) {
     }
 
     if (!wallet) {
-      return NextResponse.json({ error: "We couldn’t open your wallet. Please try again shortly." }, { status: 500 });
+      return NextResponse.json({ error: await tx("We couldn’t open your wallet. Please try again shortly.") }, { status: 500 });
     }
 
     const reference = buildFundingReference(user.id);
@@ -180,8 +184,9 @@ export async function POST(request: Request) {
     if (transactionError || !transaction) {
       return NextResponse.json(
         {
-          error:
-            "We couldn’t create your funding request. Your account may need a quick wallet setup—try again in a moment or contact support.",
+          error: await tx(
+            "We couldn’t create your funding request. Your account may need a quick wallet setup—try again in a moment or contact support."
+          ),
         },
         { status: 500 }
       );
@@ -223,6 +228,6 @@ export async function POST(request: Request) {
       status: transaction.status,
     });
   } catch {
-    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: await tx("Something went wrong. Please try again.") }, { status: 500 });
   }
 }

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { normalizeEmail } from "@/lib/env";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -18,6 +20,9 @@ const ALLOWED_KINDS = new Set(["businessRegistration", "founderIdentity", "payou
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   try {
     const supabase = await createSupabaseServer();
     const {
@@ -25,7 +30,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+      return NextResponse.json({ error: await tx("Authentication required.") }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -34,7 +39,7 @@ export async function POST(request: Request) {
     const kind = ALLOWED_KINDS.has(requestedKind) ? requestedKind : "other";
 
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: "A seller document file is required." }, { status: 400 });
+      return NextResponse.json({ error: await tx("A seller document file is required.") }, { status: 400 });
     }
 
     const upload = await uploadOwnedAsset(file, user.id, {
@@ -112,6 +117,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to upload that document.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: await tx(message) }, { status: 500 });
   }
 }

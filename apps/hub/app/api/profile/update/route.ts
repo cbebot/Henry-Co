@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import { buildLocaleCookieOptions, normalizeLocale } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createHubSupabaseServer } from "@/lib/supabase/server";
+import { getHubPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 const USER_FACING_SAVE = "We couldn't save your language preference right now. Please try again.";
 
 export async function POST(request: Request) {
+  const locale = await getHubPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   try {
     const supabase = await createHubSupabaseServer();
     const {
@@ -13,7 +18,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
     }
 
     const body = (await request.json()) as { language?: string | null };
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("[henryco/hub-api] profile/update:", error);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     await admin.auth.admin.updateUserById(user.id, {
@@ -62,6 +67,6 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     console.error("[henryco/hub-api] profile/update:", error);
-    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
   }
 }

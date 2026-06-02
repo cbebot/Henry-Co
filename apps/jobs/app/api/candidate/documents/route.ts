@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { getJobsViewer } from "@/lib/auth";
 import { uploadCandidateAsset } from "@/lib/jobs/write";
 import type { CandidateDocument } from "@/lib/jobs/types";
+import { getJobsPublicLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 const VALID_KINDS = new Set(["resume", "portfolio", "certification"]);
 
@@ -32,11 +34,14 @@ function normalizeCandidateDocument(
 }
 
 export async function POST(request: Request) {
+  const locale = await getJobsPublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   try {
     const viewer = await getJobsViewer();
 
     if (!viewer.user) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+      return NextResponse.json({ error: await tx("Authentication required.") }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -45,7 +50,7 @@ export async function POST(request: Request) {
     const kind = VALID_KINDS.has(requestedKind) ? requestedKind : "resume";
 
     if (!(file instanceof File) || file.size <= 0) {
-      return NextResponse.json({ error: "A file is required." }, { status: 400 });
+      return NextResponse.json({ error: await tx("A file is required.") }, { status: 400 });
     }
 
     const documentRow = (await uploadCandidateAsset({
@@ -65,14 +70,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      message: `${file.name} uploaded successfully.`,
+      message: await tx(`${file.name} uploaded successfully.`),
       document: normalizeCandidateDocument(documentRow || {}, kind),
     });
   } catch (error) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "Candidate document upload failed.",
+          error instanceof Error ? error.message : await tx("Candidate document upload failed."),
       },
       { status: 500 }
     );

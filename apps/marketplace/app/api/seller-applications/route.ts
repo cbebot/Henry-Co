@@ -7,6 +7,8 @@ import {
 } from "@henryco/trust";
 import { BRAND_EMAILS } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { sendMarketplaceEvent } from "@/lib/marketplace/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -93,9 +95,12 @@ function slugify(value: string) {
 }
 
 export async function GET() {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const viewer = await getMarketplaceViewer();
   if (!viewer.user) {
-    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    return NextResponse.json({ error: await tx("Authentication required.") }, { status: 401 });
   }
 
   const admin = createAdminSupabase();
@@ -117,9 +122,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const viewer = await getMarketplaceViewer();
   if (!viewer.user) {
-    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    return NextResponse.json({ error: await tx("Authentication required.") }, { status: 401 });
   }
 
   const payload = (await request.json().catch(() => ({}))) as SellerApplicationPayload;
@@ -140,23 +148,24 @@ export async function POST(request: Request) {
   const missingCriticalDocuments = ["founderIdentity", "payoutProof"].filter((key) => !documents[key]?.fileUrl);
 
   if (mode === "submit" && (!storeName || !storeSlug || !legalName)) {
-    return NextResponse.json({ error: "Store identity is incomplete." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Store identity is incomplete.") }, { status: 400 });
   }
 
   if (mode === "submit" && missingCriticalDocuments.length > 0) {
     return NextResponse.json(
       {
-        error:
+        error: await tx(
           missingCriticalDocuments.length === 1
             ? `Upload the ${missingCriticalDocuments[0] === "founderIdentity" ? "founder identity" : "payout proof"} document before submitting.`
             : "Founder identity and payout proof must be uploaded before submission.",
+        ),
       },
       { status: 400 }
     );
   }
 
   if (mode === "submit" && !agreementAccepted) {
-    return NextResponse.json({ error: "Agreement acceptance is required before submission." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Agreement acceptance is required before submission.") }, { status: 400 });
   }
 
   // Content safety: block submissions whose store story contains high/critical
@@ -202,9 +211,10 @@ export async function POST(request: Request) {
       }
       return NextResponse.json(
         {
-          error:
+          error: await tx(
             "The store story contains content that cannot be accepted. " +
-            "Remove any contact details, off-platform payment instructions, or bypass language before resubmitting.",
+              "Remove any contact details, off-platform payment instructions, or bypass language before resubmitting.",
+          ),
         },
         { status: 422 }
       );
@@ -273,7 +283,7 @@ export async function POST(request: Request) {
 
   const { data: application, error } = await mutation;
   if (error || !application) {
-    return NextResponse.json({ error: error?.message || "Application save failed." }, { status: 500 });
+    return NextResponse.json({ error: await tx(error?.message || "Application save failed.") }, { status: 500 });
   }
 
   if (mode === "submit") {

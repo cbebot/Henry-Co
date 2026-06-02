@@ -11,14 +11,18 @@ import {
   isMissingPostgrestResourceError,
   isLegacyWithdrawalPinRow,
 } from "@/lib/wallet-storage";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
 
     // V3-02 S4: setting / changing a withdrawal PIN is a sensitive
     // action — gate behind fresh re-authentication.
@@ -39,7 +43,7 @@ export async function POST(request: Request) {
 
     if (!isValidWithdrawalPinFormat(pin) || pin !== confirmPin) {
       return NextResponse.json(
-        { error: "Use a 4–6 digit PIN and make sure both entries match." },
+        { error: await tx("Use a 4–6 digit PIN and make sure both entries match.") },
         { status: 400 }
       );
     }
@@ -56,7 +60,7 @@ export async function POST(request: Request) {
     let legacyPinRowId: string | null = null;
     if (prefsError && !isMissingPostgrestResourceError(prefsError)) {
       logApiError("wallet/withdrawal/pin load", prefsError);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
     }
 
     if (prefsError && isMissingPostgrestResourceError(prefsError)) {
@@ -67,7 +71,7 @@ export async function POST(request: Request) {
 
       if (legacyError) {
         logApiError("wallet/withdrawal/pin load legacy", legacyError);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
 
       const rows = (legacyRows ?? []) as Array<Record<string, unknown>>;
@@ -92,7 +96,7 @@ export async function POST(request: Request) {
 
     if (existing) {
       if (!verifyWithdrawalPin(currentPin, existing)) {
-        return NextResponse.json({ error: "Current PIN is incorrect." }, { status: 400 });
+        return NextResponse.json({ error: await tx("Current PIN is incorrect.") }, { status: 400 });
       }
     }
 
@@ -109,7 +113,7 @@ export async function POST(request: Request) {
 
       if (error) {
         logApiError("wallet/withdrawal/pin", error);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
     } else {
       const payload = buildLegacyWithdrawalPinUpsert({
@@ -124,13 +128,13 @@ export async function POST(request: Request) {
 
       if (error) {
         logApiError("wallet/withdrawal/pin legacy", error);
-        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+        return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
       }
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     logApiError("wallet/withdrawal/pin", error);
-    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    return NextResponse.json({ error: await tx(USER_FACING_SAVE) }, { status: 500 });
   }
 }

@@ -5,6 +5,8 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { LEGACY_WALLET_TRANSACTION_PENDING_STATUS } from "@/lib/wallet-storage";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 type Props = {
   params: Promise<{ requestId: string }>;
@@ -19,6 +21,8 @@ const ALLOWED_PROOF_TYPES = new Set([
 ]);
 
 export async function POST(request: Request, { params }: Props) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const { requestId } = await params;
     const supabase = await createSupabaseServer();
@@ -27,7 +31,7 @@ export async function POST(request: Request, { params }: Props) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: await tx("Unauthorized") }, { status: 401 });
     }
 
     await ensureAccountProfileRecords(user);
@@ -53,13 +57,13 @@ export async function POST(request: Request, { params }: Props) {
 
     const record = dedicated ?? legacy;
     if (!record) {
-      return NextResponse.json({ error: "Funding request not found." }, { status: 404 });
+      return NextResponse.json({ error: await tx("Funding request not found.") }, { status: 404 });
     }
 
     const formData = await request.formData();
     const proof = formData.get("proof") as File | null;
     if (!proof) {
-      return NextResponse.json({ error: "Payment proof is required." }, { status: 400 });
+      return NextResponse.json({ error: await tx("Payment proof is required.") }, { status: 400 });
     }
 
     const upload = await uploadOwnedAsset(proof, user.id, {
@@ -94,7 +98,7 @@ export async function POST(request: Request, { params }: Props) {
         .eq("user_id", user.id);
 
       if (error) {
-        return NextResponse.json({ error: "Unable to save proof. Please try again." }, { status: 500 });
+        return NextResponse.json({ error: await tx("Unable to save proof. Please try again.") }, { status: 500 });
       }
     } else {
       const metadata = {
@@ -115,7 +119,7 @@ export async function POST(request: Request, { params }: Props) {
         .eq("user_id", user.id);
 
       if (error) {
-        return NextResponse.json({ error: "Unable to save proof. Please try again." }, { status: 500 });
+        return NextResponse.json({ error: await tx("Unable to save proof. Please try again.") }, { status: 500 });
       }
     }
 
@@ -168,6 +172,6 @@ export async function POST(request: Request, { params }: Props) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unable to upload proof.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: await tx(message) }, { status: 500 });
   }
 }

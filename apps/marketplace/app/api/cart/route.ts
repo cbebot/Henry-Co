@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { normalizeEmail } from "@/lib/env";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getMarketplaceShellState } from "@/lib/marketplace/data";
 import { logMarketplaceAction } from "@/lib/marketplace/notifications";
@@ -204,18 +206,21 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const payload = (await request.json().catch(() => ({}))) as CartPayload;
   const quantity = Math.max(1, asQuantity(payload.quantity, 1));
   const productSlug = String(payload.productSlug || "").trim();
 
   if (!productSlug) {
-    return NextResponse.json({ error: "Missing product slug." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing product slug.") }, { status: 400 });
   }
 
   const snapshot = await getMarketplaceHomeData();
   const product = snapshot.products.find((item) => item.slug === productSlug);
   if (!product) {
-    return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    return NextResponse.json({ error: await tx("Product not found.") }, { status: 404 });
   }
 
   const admin = createAdminSupabase();
@@ -277,17 +282,20 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const payload = (await request.json().catch(() => ({}))) as CartPayload;
   const itemId = String(payload.itemId || "").trim();
   const quantity = asQuantity(payload.quantity, 1);
 
   if (!itemId) {
-    return NextResponse.json({ error: "Missing cart item id." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing cart item id.") }, { status: 400 });
   }
 
   const verified = await verifyCartItemOwnership(itemId);
   if (!verified) {
-    return NextResponse.json({ error: "Cart item not found." }, { status: 404 });
+    return NextResponse.json({ error: await tx("Cart item not found.") }, { status: 404 });
   }
 
   const admin = createAdminSupabase();
@@ -308,16 +316,19 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const locale = await getMarketplacePublicLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
+
   const payload = (await request.json().catch(() => ({}))) as CartPayload;
   const itemId = String(payload.itemId || "").trim();
 
   if (!itemId) {
-    return NextResponse.json({ error: "Missing cart item id." }, { status: 400 });
+    return NextResponse.json({ error: await tx("Missing cart item id.") }, { status: 400 });
   }
 
   const verified = await verifyCartItemOwnership(itemId);
   if (!verified) {
-    return NextResponse.json({ error: "Cart item not found." }, { status: 404 });
+    return NextResponse.json({ error: await tx("Cart item not found.") }, { status: 404 });
   }
 
   const admin = createAdminSupabase();

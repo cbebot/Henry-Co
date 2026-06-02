@@ -3,6 +3,8 @@ import type { HenryEventEnvelope } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { AccountIntelEvents, emitIntelligenceEvent } from "@/lib/intelligence-rollout";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 type IntelDivision = HenryEventEnvelope["division"];
 
@@ -41,13 +43,15 @@ function toIntelDivision(value: string | null | undefined): IntelDivision {
  * Response: { ok: true }
  */
 export async function POST(request: Request) {
+  const locale = await getAccountAppLocale();
+  const tx = (s: string) => autoTranslate(s, locale);
   try {
     const supabase = await createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ ok: false, error: await tx("Unauthorized") }, { status: 401 });
     }
 
     const payload = (await request.json().catch(() => ({}))) as {
@@ -57,7 +61,7 @@ export async function POST(request: Request) {
     const threadId = String(payload.threadId || "").trim();
     const reason = String(payload.reason || "").trim().slice(0, 500);
     if (!threadId) {
-      return NextResponse.json({ ok: false, error: "Thread ID required" }, { status: 400 });
+      return NextResponse.json({ ok: false, error: await tx("Thread ID required") }, { status: 400 });
     }
 
     const admin = createAdminSupabase();
@@ -73,7 +77,7 @@ export async function POST(request: Request) {
         subject: string | null;
       }>();
     if (!thread) {
-      return NextResponse.json({ ok: false, error: "Thread not found" }, { status: 404 });
+      return NextResponse.json({ ok: false, error: await tx("Thread not found") }, { status: 404 });
     }
 
     try {
@@ -99,6 +103,6 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ ok: false, error: "Internal error" }, { status: 500 });
+    return NextResponse.json({ ok: false, error: await tx("Internal error") }, { status: 500 });
   }
 }
