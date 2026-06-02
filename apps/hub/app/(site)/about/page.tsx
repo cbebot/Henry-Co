@@ -14,9 +14,17 @@ import {
 } from "../../lib/company-settings-shared";
 import { getPublishedDivisions, type DivisionRow } from "../../lib/divisions";
 import { getHubPublicLocale } from "../../../lib/locale-server";
+import { getPublishedPeople } from "../../lib/about-people";
+import { autoTranslate } from "../../../lib/i18n/auto-translate";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+/** Insert a Cloudinary face-crop transform so a portrait renders as a clean square avatar. */
+function faceCrop(url: string, size: number): string {
+  if (!url.includes("res.cloudinary.com/") || !url.includes("/upload/")) return url;
+  return url.replace("/upload/", `/upload/c_fill,g_face,ar_1:1,w_${size},q_auto,f_auto/`);
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ page }, locale] = await Promise.all([
@@ -46,11 +54,12 @@ export default async function AboutPage() {
    * the public /about route. */
   const locale = await getHubPublicLocale();
   const copy = getHubPublicCopy(locale);
-  const [pageResult, settingsResult, divisionsResult] =
+  const [pageResult, settingsResult, divisionsResult, peopleResult] =
     await Promise.allSettled([
       getCompanyPage("about"),
       getCompanySettings(),
       getPublishedDivisions(),
+      getPublishedPeople("about"),
     ]);
   const pageData = pageResult.status === "fulfilled"
     ? pageResult.value
@@ -74,6 +83,24 @@ export default async function AboutPage() {
     locale,
   );
 
+  // Owner spotlight for the "Founder note" card — read from company_people (the
+  // CMS), translated for the visitor's locale via the cached DeepL path.
+  const ownerRecord =
+    peopleResult.status === "fulfilled"
+      ? (peopleResult.value.people.find((p) => p.is_owner) ?? null)
+      : null;
+  const owner = ownerRecord
+    ? {
+        name: ownerRecord.full_name,
+        role: await autoTranslate(ownerRecord.role_title ?? "", locale),
+        bio: await autoTranslate(
+          ownerRecord.long_bio ?? ownerRecord.short_bio ?? ownerRecord.bio ?? "",
+          locale,
+        ),
+        photoUrl: faceCrop(ownerRecord.photo_url ?? ownerRecord.image_url ?? "", 240),
+      }
+    : null;
+
   return (
     <>
       <CompanyPageClient
@@ -85,7 +112,12 @@ export default async function AboutPage() {
         copy={copy.companyPage}
         locale={locale}
       />
-      <AboutHonestBlock settings={settings} divisions={divisions} copy={copy.aboutHonest} />
+      <AboutHonestBlock
+        settings={settings}
+        divisions={divisions}
+        owner={owner}
+        copy={copy.aboutHonest}
+      />
     </>
   );
 }
