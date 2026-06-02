@@ -184,14 +184,14 @@ export function emptyStudioBriefDraft({
     selectedAddOns: [],
     selectedTech: [],
     selectedProgrammingLanguage:
-      config.programmingLanguageOptions[0] ?? "HenryCo's recommendation",
+      config.programmingLanguageOptions[0] ?? "Henry & Co.'s recommendation",
     selectedFramework:
       filterPricedOptions(config.frameworkOptions, resolvedKind)[0]?.label ??
-      "HenryCo's framework recommendation",
+      "Henry & Co.'s framework recommendation",
     selectedBackend:
       filterPricedOptions(config.backendOptions, resolvedKind)[0]?.label ??
-      "HenryCo recommends the backend",
-    selectedHosting: config.hostingOptions[0] ?? "HenryCo recommends the host",
+      "Henry & Co. recommends the backend",
+    selectedHosting: config.hostingOptions[0] ?? "Henry & Co. recommends the host",
     businessType: "",
     budgetBand: "",
     urgency:

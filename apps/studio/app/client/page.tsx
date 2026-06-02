@@ -78,7 +78,7 @@ export default async function ClientHomePage() {
           Your Studio workspace
         </h1>
         <p className="max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-          Everything tied to your engagement with HenryCo Studio — milestones, files,
+          Everything tied to your engagement with Henry & Co. Studio — milestones, files,
           messages, payments — stays current here as the work moves forward.
         </p>
       </header>

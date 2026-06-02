@@ -26,7 +26,7 @@ export function BankDetails({
         </div>
         <div>
           <h2 className="text-lg font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">
-            Pay {amountLabel} into the verified HenryCo account
+            Pay {amountLabel} into the verified Henry & Co. account
           </h2>
           <p className="mt-1 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
             Bank transfer is the active method for this invoice. Card payments are coming soon.

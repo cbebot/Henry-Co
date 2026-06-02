@@ -273,7 +273,7 @@ export default async function ProposalDetailPage({
                 ["Client", lead?.customerName || "Studio client"],
                 ["Company", lead?.companyName || "Private brief"],
                 ["Service lane", service?.name || proposal.serviceId],
-                ["Delivery team", team?.name || "HenryCo Studio match"],
+                ["Delivery team", team?.name || "Henry & Co. Studio match"],
                 ["Budget lane", lead?.budgetBand || "Calibrated during review"],
                 ["Urgency", lead?.urgency || "Standard delivery lane"],
               ].map(([label, value]) => (
@@ -366,7 +366,7 @@ export default async function ProposalDetailPage({
             <div className="studio-kicker">Decision guidance</div>
             <div className="mt-5 space-y-4">
               {[
-                "Approve the commercial direction and HenryCo activates the live project room.",
+                "Approve the commercial direction and Henry & Co. activates the live project room.",
                 "The deposit amount below becomes the first payment checkpoint in the delivery timeline.",
                 "Finance confirms payment, then onboarding, design, build, and delivery updates stay on the same Studio record.",
               ].map((step, index) => (
@@ -412,7 +412,7 @@ export default async function ProposalDetailPage({
                   href={viewer.user ? platform.accountDashboardUrl : loginHref}
                   className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  {viewer.user ? "Open HenryCo account" : "Sign in through HenryCo account"}
+                  {viewer.user ? "Open Henry & Co. account" : "Sign in through Henry & Co. account"}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               )}
@@ -518,7 +518,7 @@ export default async function ProposalDetailPage({
           </section>
 
           <StudioPaymentGuide
-            title="Transfer guidance is based on HenryCo’s live company account record."
+            title="Transfer guidance is based on Henry & Co.’s live company account record."
             amount={proposal.depositAmount}
             currency={proposal.currency}
             statusLabel={proposalStatusLabel(proposal.status)}
@@ -529,7 +529,7 @@ export default async function ProposalDetailPage({
             accountNumber={platform.paymentAccountNumber}
             supportEmail={platform.paymentSupportEmail}
             supportWhatsApp={platform.paymentSupportWhatsApp}
-            proofHint="If the project room is already active, upload proof inside the payment lane immediately after transfer. If not, HenryCo activates the workspace on acceptance so the exact proof path is attached to the same record."
+            proofHint="If the project room is already active, upload proof inside the payment lane immediately after transfer. If not, Henry & Co. activates the workspace on acceptance so the exact proof path is attached to the same record."
           />
 
           <section className="studio-panel rounded-[1.9rem] p-6">
@@ -538,7 +538,7 @@ export default async function ProposalDetailPage({
               <div className="text-sm font-semibold">Shared-account continuity</div>
             </div>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-              Studio keeps the direct proposal and project rooms here, while the broader HenryCo account
+              Studio keeps the direct proposal and project rooms here, while the broader Henry & Co. account
               history remains the central place for account-level visibility, invoices, support context,
               and future cross-division records.
             </p>
@@ -547,7 +547,7 @@ export default async function ProposalDetailPage({
                 href={platform.accountDashboardUrl}
                 className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open HenryCo account
+                Open Henry & Co. account
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

@@ -140,14 +140,14 @@ function normaliseStructured(raw: unknown): BriefCopilotStructured | null {
     frameworkPreference: clampString(
       r.frameworkPreference,
       80,
-      "HenryCo's framework recommendation"
+      "Henry & Co.'s framework recommendation"
     ),
     backendPreference: clampString(
       r.backendPreference,
       80,
-      "HenryCo recommends the backend"
+      "Henry & Co. recommends the backend"
     ),
-    hostingPreference: clampString(r.hostingPreference, 80, "HenryCo recommends the host"),
+    hostingPreference: clampString(r.hostingPreference, 80, "Henry & Co. recommends the host"),
     pageRequirements: clampArray(r.pageRequirements, 12, 60),
     requiredFeatures: clampArray(r.requiredFeatures, 10, 80),
     addonServices: clampArray(r.addonServices, 5, 60),
@@ -217,9 +217,9 @@ function resolveFallbackBackend(input: string) {
   if (input.includes("node")) return "Node.js API";
   if (input.includes("python")) return "Python backend";
   if (includesAny(input, ["auth", "login", "payment", "database", "admin", "dashboard", "api"])) {
-    return "HenryCo recommends the backend";
+    return "Henry & Co. recommends the backend";
   }
-  return "HenryCo recommends the backend";
+  return "Henry & Co. recommends the backend";
 }
 
 function resolveFallbackHosting(input: string) {
@@ -227,7 +227,7 @@ function resolveFallbackHosting(input: string) {
   if (input.includes("aws")) return "AWS";
   if (input.includes("gcp") || input.includes("google cloud")) return "Google Cloud";
   if (input.includes("cloudflare")) return "Cloudflare";
-  return "HenryCo recommends the host";
+  return "Henry & Co. recommends the host";
 }
 
 function resolveFallbackBudget(input: string) {
@@ -363,7 +363,7 @@ function buildFallbackStructured(description: string): BriefCopilotStructured {
     preferredLanguage: "English",
     frameworkPreference:
       platformPreference === "Best-fit recommendation"
-        ? "HenryCo's framework recommendation"
+        ? "Henry & Co.'s framework recommendation"
         : platformPreference,
     backendPreference: resolveFallbackBackend(input),
     hostingPreference: resolveFallbackHosting(input),

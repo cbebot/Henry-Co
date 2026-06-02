@@ -1,7 +1,7 @@
 import type { StudioLeader, StudioTemplate } from "@/lib/studio/types";
 
 /**
- * Ready-made HenryCo Studio websites. These sites are built and owned by
+ * Ready-made Henry & Co. Studio websites. These sites are built and owned by
  * the studio — clients pick one, supply brand assets and copy, and the
  * studio launches a customised version inside the stated ready-in window.
  *

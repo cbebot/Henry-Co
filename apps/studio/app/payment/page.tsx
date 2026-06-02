@@ -24,8 +24,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Pay invoice · HenryCo Studio",
-  description: "Securely pay your HenryCo Studio invoice and submit proof of payment.",
+  title: "Pay invoice · Henry & Co. Studio",
+  description: "Securely pay your Henry & Co. Studio invoice and submit proof of payment.",
   robots: { index: false, follow: false },
 };
 

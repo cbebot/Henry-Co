@@ -33,7 +33,7 @@ export type StudioRequestConfig = {
   frameworkOptions: StudioPricedOption[];
   /** Backend / data platform choices (filtered by serviceKind). */
   backendOptions: StudioPricedOption[];
-  /** Hosting / deployment lane (free-form list — most are no-cost and HenryCo neutral). */
+  /** Hosting / deployment lane (free-form list — most are no-cost and Henry & Co. neutral). */
   hostingOptions: string[];
   projectTypes: StudioPricedOption[];
   platformOptions: StudioPricedOption[];
@@ -149,17 +149,17 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       "Editorial and brand-forward",
       "Technical, product-led, and precise",
       "Corporate, premium, and authoritative",
-      "HenryCo should direct the aesthetic",
+      "Henry & Co. should direct the aesthetic",
     ],
     stackOptions: [
-      "HenryCo recommends the stack",
+      "Henry & Co. recommends the stack",
       "Continue with our existing stack",
       "Open-source first / no vendor lock-in",
       "Cloud-native / serverless preferred",
       "Strict on-prem or self-hosted",
     ],
     programmingLanguageOptions: [
-      "HenryCo's recommendation",
+      "Henry & Co.'s recommendation",
       "TypeScript",
       "JavaScript",
       "Python",
@@ -175,7 +175,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
     frameworkOptions: [
       {
         id: "framework-recommend",
-        label: "HenryCo's framework recommendation",
+        label: "Henry & Co.'s framework recommendation",
         description: "We pick the right framework for the job once scope is reviewed.",
         amount: 0,
         isActive: true,
@@ -183,7 +183,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "framework-nextjs",
         label: "Next.js (React) — App Router",
-        description: "Server components, streaming, edge-ready. HenryCo's default for premium web.",
+        description: "Server components, streaming, edge-ready. Henry & Co.'s default for premium web.",
         amount: 0,
         isActive: true,
         serviceKinds: ["website", "ecommerce", "internal_system", "custom_software", "ui_ux"],
@@ -264,7 +264,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
     backendOptions: [
       {
         id: "backend-recommend",
-        label: "HenryCo recommends the backend",
+        label: "Henry & Co. recommends the backend",
         description: "We choose between Supabase, custom Node services, or a managed cloud stack.",
         amount: 0,
         isActive: true,
@@ -272,7 +272,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "backend-supabase",
         label: "Supabase (Postgres + Auth + Storage)",
-        description: "HenryCo's default — Postgres, row-level security, magic-link auth, file storage.",
+        description: "Henry & Co.'s default — Postgres, row-level security, magic-link auth, file storage.",
         amount: 0,
         isActive: true,
       },
@@ -324,7 +324,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       },
     ],
     hostingOptions: [
-      "HenryCo recommends the host",
+      "Henry & Co. recommends the host",
       "Vercel (managed Next.js / Edge)",
       "Cloudflare Pages / Workers",
       "Netlify",
@@ -432,7 +432,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "platform-best-fit",
         label: "Best-fit recommendation",
-        description: "HenryCo recommends the architecture after reviewing scope and growth constraints.",
+        description: "Henry & Co. recommends the architecture after reviewing scope and growth constraints.",
         amount: 0,
         isActive: true,
       },
@@ -808,7 +808,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       },
       {
         id: "timeline-recommend",
-        label: "Need HenryCo to recommend the timeline",
+        label: "Need Henry & Co. to recommend the timeline",
         description: "Use this if the right sequence depends on deeper scope review.",
         modifierType: "percent",
         value: 0,

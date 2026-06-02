@@ -157,7 +157,7 @@ export default async function StudioPaymentWorkspace({
       title: localizedProjectTitle,
       subtitle: milestone ? localizedMilestoneName : undefined,
       back: { href: projectHref, label: "Project workspace" },
-      account: { href: getStudioAccountUrl(), label: "HenryCo account home" },
+      account: { href: getStudioAccountUrl(), label: "Henry & Co. account home" },
       primaryCta: { href: projectHref, label: "Open project workspace" },
     },
     platform: {
