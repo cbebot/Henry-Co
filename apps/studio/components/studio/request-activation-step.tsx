@@ -91,7 +91,7 @@ function domainSummary(intentJson: string, t: (text: string) => string): string 
       intent.path === "have"
         ? t("Existing domain")
         : intent.path === "later"
-          ? t("Decide with HenryCo")
+          ? t("Decide with Henry & Co.")
           : t("New domain");
     const name = intent.desiredLabel?.trim();
     return name ? `${head} · ${name}` : head;
@@ -328,7 +328,7 @@ export function StudioRequestActivationStep({
               <div className="studio-kicker">{t("Team fit")}</div>
               <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
                 {t(
-                  "Pick a team, or let HenryCo match the strongest fit to your scope, urgency, and industry.",
+                  "Pick a team, or let Henry & Co. match the strongest fit to your scope, urgency, and industry.",
                 )}
               </p>
               <div className="mt-3">
@@ -336,7 +336,7 @@ export function StudioRequestActivationStep({
                   label={t("Preferred team")}
                   value={selectedTeamId}
                   onChange={setSelectedTeamId}
-                  placeholder={t("Let HenryCo recommend the best-fit team")}
+                  placeholder={t("Let Henry & Co. recommend the best-fit team")}
                   options={teamOptions}
                 />
               </div>
@@ -415,7 +415,7 @@ export function StudioRequestActivationStep({
               <input type="checkbox" name="depositNow" className="mt-1" />
               <span>
                 {t(
-                  "I am ready to secure a deposit-backed lane as soon as HenryCo confirms scope and pricing with me.",
+                  "I am ready to secure a deposit-backed lane as soon as Henry & Co. confirms scope and pricing with me.",
                 )}
               </span>
             </label>

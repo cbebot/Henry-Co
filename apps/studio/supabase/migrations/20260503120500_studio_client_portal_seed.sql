@@ -178,7 +178,7 @@ begin
   values (
     demo_message_id,
     demo_project_id,
-    'HenryCo Studio',
+    'Henry & Co. Studio',
     'team',
     'The client portal is open. Milestones, files, payments, and a direct line to the team all live here — reply any time.',
     false,

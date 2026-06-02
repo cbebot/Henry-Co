@@ -31,7 +31,7 @@ const FULL_TAKEOVER_PREFIXES = ["/client/messages"];
 
 const STUDIO_BRAND: WorkspaceBrand = {
   shortName: "Studio portal",
-  kicker: "HenryCo",
+  kicker: "Henry & Co.",
   href: "/client",
   icon: Sparkles,
 };

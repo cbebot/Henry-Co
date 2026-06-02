@@ -24,7 +24,7 @@ export default async function ClientProfilePage() {
           Profile
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Your sign-in details and security settings live on the shared HenryCo account. Open it
+          Your sign-in details and security settings live on the shared Henry & Co. account. Open it
           there to update your name, password, two-factor settings, and connected divisions.
         </p>
       </header>
@@ -60,7 +60,7 @@ export default async function ClientProfilePage() {
             <ProfileLink
               icon={ExternalLink}
               title="Update profile"
-              body="Change your name, avatar, and contact details on your HenryCo account."
+              body="Change your name, avatar, and contact details on your Henry & Co. account."
               href={accountUrl}
               external
             />
@@ -73,7 +73,7 @@ export default async function ClientProfilePage() {
             />
             <ProfileLink
               icon={UserCircle}
-              title="HenryCo account home"
+              title="Henry & Co. account home"
               body="See all your divisions in one place — Studio, Care, Hub, and more."
               href={accountUrl}
               external

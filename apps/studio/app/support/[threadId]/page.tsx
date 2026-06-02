@@ -131,7 +131,7 @@ export default async function SupportThreadPage({
           download={{
             endpoint: `/api/documents/support-thread/${thread.id}`,
             filename: `HenryCo-SupportThread-${thread.id.slice(0, 8)}.pdf`,
-            shareTitle: `HenryCo Studio — ${subject}`,
+            shareTitle: `Henry & Co. Studio — ${subject}`,
             label: "Download",
           }}
         />
@@ -189,7 +189,7 @@ function deriveStudioParticipants({
     if (seen.has(senderId)) continue;
     seen.set(senderId, {
       id: senderId,
-      name: "HenryCo staff",
+      name: "Henry & Co. staff",
       role: "Studio support",
     });
   }

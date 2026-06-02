@@ -1,6 +1,6 @@
 /**
  * The brief is split into four stages that mirror the real production
- * sequence we follow at HenryCo Studio after a project is signed:
+ * sequence we follow at Henry & Co. Studio after a project is signed:
  *
  *   1. PATH      — Define the kind of thing being built. This decision
  *                  drives every downstream filter (pages, modules,
@@ -31,7 +31,7 @@ export const requestSteps = [
     key: "scope",
     label: "Scope",
     title: "Pages, features, and the actual tech stack we'll use.",
-    body: "Tick what matters. Each page or feature is a priced line-item. Choose your programming language, framework, backend, and host — or let HenryCo recommend.",
+    body: "Tick what matters. Each page or feature is a priced line-item. Choose your programming language, framework, backend, and host — or let Henry & Co. recommend.",
   },
   {
     key: "commercial",

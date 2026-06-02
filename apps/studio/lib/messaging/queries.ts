@@ -316,7 +316,7 @@ function shapeMessage(
   const senderName =
     (raw.sender_id && displayNames.get(raw.sender_id)) ||
     raw.sender ||
-    (senderRole === "team" ? "HenryCo Studio" : "Client");
+    (senderRole === "team" ? "Henry & Co. Studio" : "Client");
 
   return {
     id: raw.id,

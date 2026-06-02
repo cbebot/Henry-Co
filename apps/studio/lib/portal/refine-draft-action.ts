@@ -22,7 +22,7 @@ const MIN_DRAFT_CHARS = 6;
 const MAX_DRAFT_CHARS = 4_000;
 
 const SYSTEM_PROMPT = [
-  "You are a polish assistant for messages exchanged between a client and the HenryCo Studio team in a project workspace.",
+  "You are a polish assistant for messages exchanged between a client and the Henry & Co. Studio team in a project workspace.",
   "Your job: take the user's draft and return a refined version that is clearer, warmer, and more concise.",
   "",
   "Rules — strict:",

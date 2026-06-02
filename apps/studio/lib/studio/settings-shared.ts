@@ -118,7 +118,7 @@ export function normalizeStudioPlatformSettings(
     paymentCurrency: asText(source.payment_currency, asText(shared.payment_currency, "NGN")),
     paymentInstructions: asText(
       source.payment_instructions,
-      "Transfer the exact amount shown below, upload proof immediately inside the project workspace, and HenryCo finance confirms the payment before delivery advances."
+      "Transfer the exact amount shown below, upload proof immediately inside the project workspace, and Henry & Co. finance confirms the payment before delivery advances."
     ),
     paymentSupportEmail,
     paymentSupportWhatsApp,

@@ -395,11 +395,11 @@ export function StudioRequestBuilder({
       selectedFramework &&
       !validFrameworks.find((option) => option.label === selectedFramework)
     ) {
-      setSelectedFramework(validFrameworks[0]?.label ?? "HenryCo's framework recommendation");
+      setSelectedFramework(validFrameworks[0]?.label ?? "Henry & Co.'s framework recommendation");
     }
     const validBackends = filterPricedOptions(requestConfig.backendOptions, serviceKind);
     if (selectedBackend && !validBackends.find((option) => option.label === selectedBackend)) {
-      setSelectedBackend(validBackends[0]?.label ?? "HenryCo recommends the backend");
+      setSelectedBackend(validBackends[0]?.label ?? "Henry & Co. recommends the backend");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceKind]);
@@ -459,12 +459,12 @@ export function StudioRequestBuilder({
     if (selectedAddOns.length >= 2) score += 6;
     if (selectedTech.length >= 1) score += 4;
     // Tech-stack picks signal a serious operator; the score reflects that.
-    if (selectedProgrammingLanguage && selectedProgrammingLanguage !== "HenryCo's recommendation")
+    if (selectedProgrammingLanguage && selectedProgrammingLanguage !== "Henry & Co.'s recommendation")
       score += 3;
-    if (selectedFramework && selectedFramework !== "HenryCo's framework recommendation")
+    if (selectedFramework && selectedFramework !== "Henry & Co.'s framework recommendation")
       score += 3;
-    if (selectedBackend && selectedBackend !== "HenryCo recommends the backend") score += 3;
-    if (selectedHosting && selectedHosting !== "HenryCo recommends the host") score += 2;
+    if (selectedBackend && selectedBackend !== "Henry & Co. recommends the backend") score += 3;
+    if (selectedHosting && selectedHosting !== "Henry & Co. recommends the host") score += 2;
     if (businessType) score += 4;
     if (budgetBand) score += 4;
     if (effectiveUrgency) score += 4;
@@ -917,7 +917,7 @@ export function StudioRequestBuilder({
           pathway={pathway}
           readinessScore={readinessScore}
           pricingPreview={pricingPreview}
-          recommendedTeamName={recommendedTeam?.name || t("HenryCo team recommendation")}
+          recommendedTeamName={recommendedTeam?.name || t("Henry & Co. team recommendation")}
           recommendedPackage={recommendedPackage}
           onLockPackage={lockInRecommendedPackage}
         />

@@ -84,7 +84,7 @@ export function ProjectWorkspaceHero({
                 </span>
                 . Projects also live in your{" "}
                 <Link href={`${accountUrl}?ref=studio-project`} className="font-semibold text-[var(--studio-signal)]">
-                  HenryCo account
+                  Henry & Co. account
                 </Link>
                 .
               </>

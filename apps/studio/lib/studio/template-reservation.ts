@@ -284,7 +284,7 @@ export async function reserveStudioTemplate(
       domainStatus === "have"
         ? `Domain: customer connecting existing domain${domainPreference ? ` (${domainPreference})` : ""}`
         : domainStatus === "new"
-          ? `Domain: HenryCo to source new domain${domainPreference ? ` (preferred: ${domainPreference})` : ""}`
+          ? `Domain: Henry & Co. to source new domain${domainPreference ? ` (preferred: ${domainPreference})` : ""}`
           : "Domain: decide before launch",
     ],
     milestones: [
