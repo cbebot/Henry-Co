@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
-import { getHubHomeCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import {
+  getHubHomeCopy,
+  getHubPublicCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
+import { buildHubFooter } from "../lib/site-footer";
 import { COMPANY, getAccountUrl, henryWebRoot } from "@henryco/config";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getCompanySettings } from "../lib/company-settings";
@@ -166,6 +171,14 @@ export default async function HomePage() {
     }),
   ]);
 
+  // Shared site footer — same builder + component as the inner-route shell, so
+  // the closing footer is identical across the whole hub. The CMS blurb feeds the
+  // brand statement; division links + legal entity come from @henryco/config.
+  const footer = buildHubFooter(getHubPublicCopy(locale), {
+    statement: footerBlurbI18n,
+    support: { email: settings.support_email, phone: settings.support_phone },
+  });
+
   const translateRowField = async (
     record: Record<string, unknown>,
     field: string,
@@ -266,7 +279,7 @@ export default async function HomePage() {
     logo: organizationLogo,
     description:
       brandDescriptionI18n ||
-      "HenryCo is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
+      "Henry & Co. is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
   };
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -290,7 +303,7 @@ export default async function HomePage() {
       brandSub={brandSubtitleI18n || "Corporate Platform"}
       brandAccent={settings.brand_accent ?? "#C9A227"}
       brandLogoUrl={settings.logo_url ?? null}
-      brandFooterBlurb={footerBlurbI18n}
+      footer={footer}
       intro={brandDescriptionI18n}
       initialDivisions={localizedDivisions}
       initialFaqs={localizedFaqs}

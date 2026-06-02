@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SupportAssist — HenryCo's chrome-integrated help surface.
+ * SupportAssist — Henry & Co.'s chrome-integrated help surface.
  *
  * The cross-division replacement for the old `SupportDock` / `AssistDock`
  * floating concierge. Two non-negotiables drove this redesign:
@@ -88,7 +88,7 @@ export type SupportAssistProps = {
   division: AssistDivision;
   /**
    * Optional accent for the trigger ring + contextual-row highlight.
-   * Defaults to the HenryCo gold (#C9A227). The dock no longer paints a
+   * Defaults to the Henry & Co. gold (#C9A227). The dock no longer paints a
    * gradient header — the accent only tints small focused surfaces.
    */
   accent?: string;
@@ -294,7 +294,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Buyer protection"),
-      description: t(locale, "Disputes, refunds, and HenryCo escrow review"),
+      description: t(locale, "Disputes, refunds, and Henry & Co. escrow review"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace buyer protection issue",
@@ -305,7 +305,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Open a support thread"),
-      description: t(locale, "Reach the HenryCo support team directly"),
+      description: t(locale, "Reach the Henry & Co. support team directly"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace support request",
@@ -350,7 +350,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Care support"),
-      description: t(locale, "Speak directly to the HenryCo Care team"),
+      description: t(locale, "Speak directly to the Henry & Co. Care team"),
       href: accountSupportHref({
         division: "care",
         subject: "Care booking support",
@@ -388,7 +388,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Jobs help"),
-      description: t(locale, "Reach the HenryCo Jobs support team"),
+      description: t(locale, "Reach the Henry & Co. Jobs support team"),
       href: divisionUrl("jobs", "/help"),
       external: false,
       icon: <IconMessage />,
@@ -422,7 +422,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Learning help"),
-      description: t(locale, "Reach the HenryCo Learn team"),
+      description: t(locale, "Reach the Henry & Co. Learn team"),
       href: divisionUrl("learn", "/help"),
       external: false,
       icon: <IconMessage />,
@@ -456,7 +456,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Logistics support"),
-      description: t(locale, "Reach the HenryCo Logistics team"),
+      description: t(locale, "Reach the Henry & Co. Logistics team"),
       href: "/support",
       external: false,
       icon: <IconMessage />,
@@ -490,7 +490,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Property support"),
-      description: t(locale, "Reach the HenryCo Property team"),
+      description: t(locale, "Reach the Henry & Co. Property team"),
       href: accountSupportHref({
         division: "property",
         subject: "Property support request",
@@ -565,7 +565,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
   account: (locale) => [
     {
       label: t(locale, "Open inbox"),
-      description: t(locale, "Notifications across HenryCo divisions"),
+      description: t(locale, "Notifications across Henry & Co. divisions"),
       href: "/notifications",
       external: false,
       icon: <IconBell />,
@@ -608,7 +608,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconUser />,
     },
     {
-      label: t(locale, "Contact HenryCo"),
+      label: t(locale, "Contact Henry & Co."),
       description: t(locale, "General support and enquiries"),
       href: hub("/contact"),
       external: false,

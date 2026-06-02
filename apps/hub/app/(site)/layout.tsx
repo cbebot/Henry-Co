@@ -13,6 +13,8 @@ import { getAccountUrl } from "@henryco/config";
 import PublicSiteShell from "../components/PublicSiteShell";
 import { HubPublicProviders } from "../components/HubPublicProviders";
 import { getCompanySettings } from "../lib/company-settings";
+import { normalizeCompanySettings } from "../lib/company-settings-shared";
+import { buildHubFooter } from "../lib/site-footer";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
 import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
@@ -176,7 +178,18 @@ export default async function SiteLayout({
   const chipUser = chipResult.status === "fulfilled" ? chipResult.value : null;
   const { settings } = company;
   const consentCopy = getConsentCopy(locale);
-  const shellCopy = getHubPublicCopy(locale).publicSiteShell;
+  const hubCopy = getHubPublicCopy(locale);
+  const shellCopy = hubCopy.publicSiteShell;
+  const footerSettings = normalizeCompanySettings(
+    settings as Parameters<typeof normalizeCompanySettings>[0],
+  );
+  const footer = buildHubFooter(hubCopy, {
+    statement: footerSettings.footer_blurb || footerSettings.brand_description,
+    support: {
+      email: footerSettings.support_email,
+      phone: footerSettings.support_phone,
+    },
+  });
   const returnPath = headerReader.get("x-hub-return-path") || "/";
   const accountChip = {
     user: chipUser,
@@ -204,7 +217,12 @@ export default async function SiteLayout({
     >
       <HubPublicProviders>
         <LocaleProvider locale={locale}>
-          <PublicSiteShell initialSettings={settings} accountChip={accountChip} copy={shellCopy}>
+          <PublicSiteShell
+            initialSettings={settings}
+            accountChip={accountChip}
+            copy={shellCopy}
+            footer={footer}
+          >
             {children}
           </PublicSiteShell>
           <EcosystemPreferences copy={consentCopy} initialLocale={locale} />

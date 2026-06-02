@@ -3,11 +3,11 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
 import type { HubPublicCopy } from "@henryco/i18n";
+import type { HubFooterInputs } from "../lib/site-footer";
 import {
   type PublicAccountUser,
   HenryCoSearchBreadcrumb,
@@ -94,6 +94,7 @@ export default function PublicSiteShell({
   accountChip,
   children,
   copy,
+  footer,
 }: {
   initialSettings:
     | Partial<CompanySettingsRecord>
@@ -109,6 +110,8 @@ export default function PublicSiteShell({
   };
   children: ReactNode;
   copy: HubPublicCopy["publicSiteShell"];
+  /** Pre-assembled shared-footer inputs (see lib/site-footer.ts). */
+  footer: HubFooterInputs;
 }) {
   const pathname = usePathname();
   const settings = useMemo(
@@ -198,148 +201,11 @@ export default function PublicSiteShell({
 
       <main id="henryco-main" tabIndex={-1}>{children}</main>
 
-      <footer className="mt-20 border-t border-[color:var(--home-line)] bg-[color:var(--home-canvas-deep)]">
-        <div
-          aria-hidden
-          className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-[color:var(--home-accent)] to-transparent opacity-40"
-        />
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:px-8">
-          <div className="space-y-5">
-            <div className="flex items-center gap-3">
-              <BrandLogo
-                src={settings.logo_url}
-                alt={settings.brand_title || copy.brandFallback}
-                accent={settings.brand_accent || "#C9A227"}
-                wrapperClassName="h-10 w-10"
-                imageClassName="max-h-7 max-w-7 p-1"
-              />
-              <div>
-                <div
-                  className="text-sm font-semibold tracking-[0.18em] text-[color:var(--home-ink)]"
-                  style={{ fontFamily: "var(--home-font-display)" }}
-                >
-                  {settings.brand_title}
-                </div>
-                <div className="home-eyebrow text-[color:var(--home-ink-50)]">
-                  {settings.brand_subtitle}
-                </div>
-              </div>
-            </div>
-
-            <p className="max-w-md text-sm leading-7 text-[color:var(--home-ink-65)]">
-              {settings.footer_blurb || settings.brand_description}
-            </p>
-
-            <div className="space-y-1.5 text-sm text-[color:var(--home-ink-65)]">
-              {settings.support_email ? (
-                <a
-                  href={`mailto:${settings.support_email}`}
-                  className="inline-flex items-center gap-2 font-medium text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)]"
-                >
-                  <Mail className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-                  {settings.support_email}
-                </a>
-              ) : null}
-              {settings.support_phone ? (
-                <a
-                  href={`tel:${settings.support_phone}`}
-                  className="inline-flex items-center gap-2 transition hover:text-[color:var(--home-ink)]"
-                >
-                  <Phone className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-                  {settings.support_phone}
-                </a>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <div className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.colCompany}</div>
-            <div className="mt-4 grid gap-3">
-              <Link
-                href="/"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkHome}
-              </Link>
-              <Link
-                href="/about"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkAbout}
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkContact}
-              </Link>
-              <Link
-                href="/search"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkSearch}
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <div className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.colHenryCo}</div>
-            <div className="mt-4 grid gap-3">
-              <Link
-                href={getAccountUrl("/")}
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkHenryCoAccount}
-              </Link>
-              <Link
-                href={getAccountUrl("/settings")}
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkLanguagePrefs}
-              </Link>
-              <Link
-                href="/preferences"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkEmailPrefs}
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <div className="home-eyebrow text-[color:var(--home-ink-50)]">{copy.colLegal}</div>
-            <div className="mt-4 grid gap-3">
-              <Link
-                href="/privacy"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkPrivacy}
-              </Link>
-              <Link
-                href="/terms"
-                className="text-sm text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
-              >
-                {copy.linkTerms}
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-[color:var(--home-line-08)] px-4 py-5 text-xs text-[color:var(--home-ink-50)] sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}. {copy.allRightsReserved}
-            </div>
-            <span className="home-eyebrow inline-flex items-center gap-1.5 text-[color:var(--home-ink-50)]">
-              <span
-                aria-hidden
-                className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent)]"
-              />
-              {copy.builtBy}
-            </span>
-          </div>
-        </div>
-      </footer>
+      <PublicSiteFooter
+        copy={footer.copy}
+        columns={footer.columns}
+        support={footer.support}
+      />
         </>
       )}
       </div>

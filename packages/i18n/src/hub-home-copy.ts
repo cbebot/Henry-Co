@@ -339,7 +339,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     companyPagesEyebrow: "Company-level pages",
     empty: "No matching divisions were found. Clear your filters or broaden the search criteria.",
     searchingState: "Searching…",
-    searchHelpLink: "Search HenryCo workflows and help",
+    searchHelpLink: "Search Henry & Co. workflows and help",
   },
   ecosystem: {
     eyebrow: "Why this exists",
@@ -394,7 +394,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     linkPrivacy: "Privacy",
     linkTerms: "Terms",
     linkPreferences: "Preferences",
-    designedBy: "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem",
+    designedBy: "Designed and built in-house by Henry & Co. Studio for the Henry & Co. ecosystem",
   },
   cards: {
     divisionFallbackLong:
@@ -500,14 +500,14 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
       },
       {
         title: "Built in-house",
-        body: "One platform, built by HenryCo Studio. One team, one standard.",
+        body: "One platform, built by Henry & Co. Studio. One team, one standard.",
       },
     ],
   },
   proof: {
     kicker: "Proof, and who makes it",
     lead: "The proof is simple: the numbers above are real, and the work is ours.",
-    makersMark: "Built in-house by HenryCo Studio",
+    makersMark: "Built in-house by Henry & Co. Studio",
   },
 };
 
@@ -631,7 +631,7 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Pages groupe",
     empty: "Aucune division ne correspond. Réinitialisez les filtres ou élargissez la recherche.",
     searchingState: "Recherche en cours…",
-    searchHelpLink: "Rechercher les workflows et l’aide HenryCo",
+    searchHelpLink: "Rechercher les workflows et l’aide Henry & Co.",
   },
   ecosystem: {
     eyebrow: "Pourquoi c’est important",
@@ -682,7 +682,7 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     linkPrivacy: "Confidentialité",
     linkTerms: "Conditions",
     linkPreferences: "Préférences",
-    designedBy: "Conçu et développé en interne par HenryCo Studio pour l’écosystème HenryCo",
+    designedBy: "Conçu et développé en interne par Henry & Co. Studio pour l’écosystème Henry & Co.",
   },
   cards: {
     divisionFallbackLong:
@@ -787,14 +787,14 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
       },
       {
         title: "Conçu en interne",
-        body: "La plateforme derrière chaque moteur est réalisée par HenryCo Studio — une équipe, un standard, de bout en bout.",
+        body: "La plateforme derrière chaque moteur est réalisée par Henry & Co. Studio — une équipe, un standard, de bout en bout.",
       },
     ],
   },
   proof: {
     kicker: "La preuve, et qui la réalise",
     lead: "La preuve est simple : les chiffres ci-dessus sont réels, et le travail est le nôtre.",
-    makersMark: "Conçu en interne par HenryCo Studio",
+    makersMark: "Conçu en interne par Henry & Co. Studio",
   },
 };
 
@@ -864,7 +864,7 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Páginas corporativas",
     empty: "No se encontraron divisiones que coincidan. Limpia los filtros o amplía los criterios de búsqueda.",
     searchingState: "Buscando…",
-    searchHelpLink: "Buscar flujos de trabajo y ayuda de HenryCo",
+    searchHelpLink: "Buscar flujos de trabajo y ayuda de Henry & Co.",
   },
   ecosystem: {
     eyebrow: "Por qué importa",
@@ -885,7 +885,7 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Preguntas frecuentes", title: "Preguntas frecuentes", subtitle: "Estas respuestas ayudan a clientes, socios y partes interesadas a entender cómo funciona la empresa antes de ponerse en contacto." },
   topBar: { search: "Buscar", explore: "Explorar" },
-  footer: { exploreDivisions: "Explorar divisiones", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globales", copyrightAllRightsReserved: "Todos los derechos reservados.", linkPrivacy: "Privacidad", linkTerms: "Términos", linkPreferences: "Preferencias", designedBy: "Diseñado y desarrollado internamente por HenryCo Studio para el ecosistema HenryCo" },
+  footer: { exploreDivisions: "Explorar divisiones", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globales", copyrightAllRightsReserved: "Todos los derechos reservados.", linkPrivacy: "Privacidad", linkTerms: "Términos", linkPreferences: "Preferencias", designedBy: "Diseñado y desarrollado internamente por Henry & Co. Studio para el ecosistema Henry & Co." },
   cards: {
     divisionFallbackLong: "Una división de Henry & Co. orientada al público, construida para servir a un mercado enfocado con claridad y presentación premium.",
     divisionFallbackShort: "Una división enfocada de Henry & Co. presentada como una marca operativa independiente dentro del ecosistema del grupo.",
@@ -997,7 +997,7 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Páginas corporativas",
     empty: "Nenhuma divisão correspondente foi encontrada. Limpe seus filtros ou amplie os critérios de pesquisa.",
     searchingState: "Pesquisando…",
-    searchHelpLink: "Pesquisar fluxos de trabalho e ajuda da HenryCo",
+    searchHelpLink: "Pesquisar fluxos de trabalho e ajuda da Henry & Co.",
   },
   ecosystem: {
     eyebrow: "Por que isso importa",
@@ -1018,7 +1018,7 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Perguntas frequentes", title: "Perguntas frequentes", subtitle: "Estas respostas ajudam clientes, parceiros e partes interessadas a entender como a empresa funciona antes de entrar em contato." },
   topBar: { search: "Pesquisar", explore: "Explorar" },
-  footer: { exploreDivisions: "Explorar divisões", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globais", copyrightAllRightsReserved: "Todos os direitos reservados.", linkPrivacy: "Privacidade", linkTerms: "Termos", linkPreferences: "Preferências", designedBy: "Projetado e desenvolvido internamente pela HenryCo Studio para o ecossistema HenryCo" },
+  footer: { exploreDivisions: "Explorar divisões", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globais", copyrightAllRightsReserved: "Todos os direitos reservados.", linkPrivacy: "Privacidade", linkTerms: "Termos", linkPreferences: "Preferências", designedBy: "Projetado e desenvolvido internamente pela Henry & Co. Studio para o ecossistema Henry & Co." },
   cards: {
     divisionFallbackLong: "Uma divisão voltada ao público da Henry & Co. construída para servir um mercado focado com clareza e apresentação premium.",
     divisionFallbackShort: "Uma divisão focada da Henry & Co. apresentada como uma marca operacional independente dentro do ecossistema do grupo.",
@@ -1130,7 +1130,7 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "صفحات الشركة",
     empty: "لم يتم العثور على أقسام مطابقة. امسح المرشحات أو وسّع معايير البحث.",
     searchingState: "جاري البحث…",
-    searchHelpLink: "ابحث في سير عمل HenryCo والمساعدة",
+    searchHelpLink: "ابحث في سير عمل Henry & Co. والمساعدة",
   },
   ecosystem: {
     eyebrow: "لماذا هذا مهم",
@@ -1151,7 +1151,7 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "الأسئلة المتكررة", title: "الأسئلة الشائعة", subtitle: "هذه الإجابات تساعد العملاء والشركاء وأصحاب المصلحة على فهم كيفية عمل الشركة قبل التواصل معنا." },
   topBar: { search: "بحث", explore: "استكشاف" },
-  footer: { exploreDivisions: "استكشاف الأقسام", companyPages: "صفحات الشركة", colHub: "مركز الشركة", colGlobal: "الصفحات العالمية", copyrightAllRightsReserved: "جميع الحقوق محفوظة.", linkPrivacy: "الخصوصية", linkTerms: "الشروط", linkPreferences: "التفضيلات", designedBy: "صُمم وطُور داخلياً بواسطة HenryCo Studio لمنظومة HenryCo" },
+  footer: { exploreDivisions: "استكشاف الأقسام", companyPages: "صفحات الشركة", colHub: "مركز الشركة", colGlobal: "الصفحات العالمية", copyrightAllRightsReserved: "جميع الحقوق محفوظة.", linkPrivacy: "الخصوصية", linkTerms: "الشروط", linkPreferences: "التفضيلات", designedBy: "صُمم وطُور داخلياً بواسطة Henry & Co. Studio لمنظومة Henry & Co." },
   cards: {
     divisionFallbackLong: "قسم Henry & Co. المواجه للجمهور مبني لخدمة سوق متخصصة بوضوح وعرض متميز.",
     divisionFallbackShort: "قسم متخصص من Henry & Co. مقدم كعلامة تشغيلية مستقلة ضمن نظام بيئي المجموعة الأشمل.",
@@ -1263,7 +1263,7 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Unternehmensseiten",
     empty: "Keine passenden Abteilungen gefunden. Filter löschen oder Suchkriterien erweitern.",
     searchingState: "Suche läuft…",
-    searchHelpLink: "HenryCo-Workflows und Hilfe durchsuchen",
+    searchHelpLink: "Henry & Co.-Workflows und Hilfe durchsuchen",
   },
   ecosystem: {
     eyebrow: "Warum das wichtig ist",
@@ -1284,7 +1284,7 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Häufig gestellt", title: "Häufig gestellte Fragen", subtitle: "Diese Antworten helfen Kunden, Partnern und Stakeholdern dabei, zu verstehen, wie das Unternehmen funktioniert, bevor sie sich melden müssen." },
   topBar: { search: "Hub durchsuchen", explore: "Erkunden" },
-  footer: { exploreDivisions: "Abteilungen erkunden", companyPages: "Unternehmensseiten", colHub: "Unternehmens-Hub", colGlobal: "Globale Seiten", copyrightAllRightsReserved: "Alle Rechte vorbehalten.", linkPrivacy: "Datenschutz", linkTerms: "AGB", linkPreferences: "Einstellungen", designedBy: "Intern entworfen und entwickelt von HenryCo Studio für das HenryCo-Ökosystem" },
+  footer: { exploreDivisions: "Abteilungen erkunden", companyPages: "Unternehmensseiten", colHub: "Unternehmens-Hub", colGlobal: "Globale Seiten", copyrightAllRightsReserved: "Alle Rechte vorbehalten.", linkPrivacy: "Datenschutz", linkTerms: "AGB", linkPreferences: "Einstellungen", designedBy: "Intern entworfen und entwickelt von Henry & Co. Studio für das Henry & Co.-Ökosystem" },
   cards: {
     divisionFallbackLong: "Eine öffentlich zugängliche Henry & Co. Abteilung, die darauf ausgelegt ist, einen fokussierten Markt mit Klarheit und Premium-Präsentation zu bedienen.",
     divisionFallbackShort: "Eine fokussierte Henry & Co. Abteilung, die als unabhängige Betriebsmarke innerhalb des weiteren Unternehmensökosystems präsentiert wird.",
@@ -1396,7 +1396,7 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "公司页面",
     empty: "未找到匹配的部门。请清除筛选条件或扩大搜索范围。",
     searchingState: "正在搜索…",
-    searchHelpLink: "搜索 HenryCo 工作流程与帮助",
+    searchHelpLink: "搜索 Henry & Co. 工作流程与帮助",
   },
   ecosystem: {
     eyebrow: "为何重要",
@@ -1417,7 +1417,7 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "常见问题", title: "常见问题解答", subtitle: "这些解答帮助客户、合作伙伴和利益相关者在需要联系之前了解公司的运作方式。" },
   topBar: { search: "搜索中心", explore: "探索" },
-  footer: { exploreDivisions: "探索部门", companyPages: "公司页面", colHub: "公司中心", colGlobal: "全球页面", copyrightAllRightsReserved: "版权所有。", linkPrivacy: "隐私", linkTerms: "条款", linkPreferences: "偏好设置", designedBy: "由 HenryCo Studio 内部为 HenryCo 生态系统设计与开发" },
+  footer: { exploreDivisions: "探索部门", companyPages: "公司页面", colHub: "公司中心", colGlobal: "全球页面", copyrightAllRightsReserved: "版权所有。", linkPrivacy: "隐私", linkTerms: "条款", linkPreferences: "偏好设置", designedBy: "由 Henry & Co. Studio 内部为 Henry & Co. 生态系统设计与开发" },
   cards: {
     divisionFallbackLong: "Henry & Co. 的一个面向公众的部门，旨在以清晰和优质的展示服务于专注的市场。",
     divisionFallbackShort: "Henry & Co. 的一个专注部门，作为更广泛公司生态系统内的独立运营品牌呈现。",
@@ -1529,7 +1529,7 @@ const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "कंपनी-स्तरीय पेज",
     empty: "कोई मिलान प्रभाग नहीं मिला। अपने फिल्टर साफ करें या खोज मानदंड व्यापक करें।",
     searchingState: "खोज हो रही है…",
-    searchHelpLink: "HenryCo वर्कफ़्लो और सहायता खोजें",
+    searchHelpLink: "Henry & Co. वर्कफ़्लो और सहायता खोजें",
   },
   ecosystem: {
     eyebrow: "यह क्यों मायने रखता है",
@@ -1550,7 +1550,7 @@ const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "अक्सर पूछे जाने वाले प्रश्न", title: "अक्सर पूछे जाने वाले प्रश्न", subtitle: "ये उत्तर ग्राहकों, भागीदारों और हितधारकों को संपर्क करने से पहले कंपनी के काम को समझने में मदद करते हैं।" },
   topBar: { search: "हब खोजें", explore: "एक्सप्लोर करें" },
-  footer: { exploreDivisions: "प्रभाग एक्सप्लोर करें", companyPages: "कंपनी पेज", colHub: "कंपनी हब", colGlobal: "ग्लोबल पेज", copyrightAllRightsReserved: "सर्वाधिकार सुरक्षित।", linkPrivacy: "गोपनीयता", linkTerms: "नियम", linkPreferences: "वरीयताएँ", designedBy: "HenryCo Studio द्वारा HenryCo इकोसिस्टम के लिए इन-हाउस डिज़ाइन और निर्मित" },
+  footer: { exploreDivisions: "प्रभाग एक्सप्लोर करें", companyPages: "कंपनी पेज", colHub: "कंपनी हब", colGlobal: "ग्लोबल पेज", copyrightAllRightsReserved: "सर्वाधिकार सुरक्षित।", linkPrivacy: "गोपनीयता", linkTerms: "नियम", linkPreferences: "वरीयताएँ", designedBy: "Henry & Co. Studio द्वारा Henry & Co. इकोसिस्टम के लिए इन-हाउस डिज़ाइन और निर्मित" },
   cards: {
     divisionFallbackLong: "Henry & Co. का एक सार्वजनिक-सामना प्रभाग स्पष्टता और प्रीमियम प्रस्तुति के साथ एक केंद्रित बाजार की सेवा करने के लिए बनाया गया है।",
     divisionFallbackShort: "Henry & Co. का एक केंद्रित प्रभाग व्यापक कंपनी इकोसिस्टम के भीतर एक स्वतंत्र ऑपरेटिंग ब्रांड के रूप में प्रस्तुत किया गया है।",
@@ -1662,7 +1662,7 @@ const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Peeji ụlọ ọrụ",
     empty: "Ọ dịghị ngalaba dabara. Hichapụ nzacha gị ma ọ bụ gbasaa usoro nchọọ.",
     searchingState: "Na-achọ…",
-    searchHelpLink: "Chọọ usoro ọrụ na enyemaka HenryCo",
+    searchHelpLink: "Chọọ usoro ọrụ na enyemaka Henry & Co.",
   },
   ecosystem: {
     eyebrow: "Ihe kpatara o dị mkpa",
@@ -1683,7 +1683,7 @@ const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "A na-ajụ ajụjụ ndị a mgbe niile", title: "Ajụjụ ndị a na-ajụ mgbe niile", subtitle: "Azịza ndị a na-enyere ndị ahịa, ndị mmekọ na ndị nwere ọrụ aka ịghọta otu ụlọ ọrụ ahụ si arụ ọrụ tupu ha kpọtụrụ." },
   topBar: { search: "Chọọ hub", explore: "Nyochaa" },
-  footer: { exploreDivisions: "Nyochaa ngalaba", companyPages: "Peeji ụlọ ọrụ", colHub: "Hub ụlọ ọrụ", colGlobal: "Peeji zuru ụwa ọnụ", copyrightAllRightsReserved: "Ikike niile e debere.", linkPrivacy: "Nzuzo", linkTerms: "Usoro", linkPreferences: "Mmasị", designedBy: "HenryCo Studio mere ma rụọ ya n'ime ụlọ maka usoro ihe ọkụkụ HenryCo" },
+  footer: { exploreDivisions: "Nyochaa ngalaba", companyPages: "Peeji ụlọ ọrụ", colHub: "Hub ụlọ ọrụ", colGlobal: "Peeji zuru ụwa ọnụ", copyrightAllRightsReserved: "Ikike niile e debere.", linkPrivacy: "Nzuzo", linkTerms: "Usoro", linkPreferences: "Mmasị", designedBy: "Henry & Co. Studio mere ma rụọ ya n'ime ụlọ maka usoro ihe ọkụkụ Henry & Co." },
   cards: {
     divisionFallbackLong: "Ngalaba Henry & Co. e wuru iji jụ ahịa lekwasịrị anya n'ụzọ doro anya na ngosipụta kacha mma.",
     divisionFallbackShort: "Ngalaba Henry & Co. lekwasịrị anya gosipụtara dị ka akara arụmọrụ nke nọ n'onwe ya n'ime ikike ụlọ ọrụ ka ọ bụ.",
@@ -1795,7 +1795,7 @@ const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Àwọn ojúewé ìpele ilé-iṣẹ́",
     empty: "A kò rí àwọn ẹ̀ka tó bá a mu. Pa àwọn àlẹ̀mọ rẹ mọ́ tàbí gbòòrò àwọn ìpèsè ìwádìí.",
     searchingState: "A ń wá…",
-    searchHelpLink: "Wá àwọn ìṣàn iṣẹ́ àti ìrànlọ́wọ́ HenryCo",
+    searchHelpLink: "Wá àwọn ìṣàn iṣẹ́ àti ìrànlọ́wọ́ Henry & Co.",
   },
   ecosystem: {
     eyebrow: "Ìdí tó fi ṣe pàtàkì",
@@ -1816,7 +1816,7 @@ const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Tí a máa ń béèrè", title: "Àwọn ìbéèrè tó máa ń wọ́pọ̀", subtitle: "Àwọn ìdáhùn wọ̀nyí ń ràn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àti àwọn olùjọpọ̀ lọ́wọ́ láti mọ bí ilé-iṣẹ́ ṣe ń ṣiṣẹ́ ṣáájú kí wọn to kàn sí." },
   topBar: { search: "Wá hub", explore: "Ṣàwárí" },
-  footer: { exploreDivisions: "Ṣàwárí àwọn ẹ̀ka", companyPages: "Àwọn ojúewé ilé-iṣẹ́", colHub: "Hub ilé-iṣẹ́", colGlobal: "Àwọn ojúewé àgbáyé", copyrightAllRightsReserved: "Gbogbo ẹ̀tọ́ wà ní àìbàjẹ́.", linkPrivacy: "Ìpamọ́", linkTerms: "Àwọn òfin", linkPreferences: "Àwọn àyànfẹ́", designedBy: "Tí a ṣe àpẹrẹ tí a sì kọ́ ní ilé-iṣẹ́ nípasẹ̀ HenryCo Studio fún ètò-àyíká HenryCo" },
+  footer: { exploreDivisions: "Ṣàwárí àwọn ẹ̀ka", companyPages: "Àwọn ojúewé ilé-iṣẹ́", colHub: "Hub ilé-iṣẹ́", colGlobal: "Àwọn ojúewé àgbáyé", copyrightAllRightsReserved: "Gbogbo ẹ̀tọ́ wà ní àìbàjẹ́.", linkPrivacy: "Ìpamọ́", linkTerms: "Àwọn òfin", linkPreferences: "Àwọn àyànfẹ́", designedBy: "Tí a ṣe àpẹrẹ tí a sì kọ́ ní ilé-iṣẹ́ nípasẹ̀ Henry & Co. Studio fún ètò-àyíká Henry & Co." },
   cards: {
     divisionFallbackLong: "Ẹ̀ka Henry & Co. tó ń dojú kọ gbangba tí a kọ́ láti sìn ọjà tó dájú pẹ̀lú ìmọ̀ àti àgbéjáde àgbéga.",
     divisionFallbackShort: "Ẹ̀ka tó dájú ti Henry & Co. tó jẹ́ àgbéjáde bí àmì-iṣẹ́ tó ṣiṣẹ́ nìkanṣoṣo abẹ́ ètò-ẹ̀ka ilé-iṣẹ́ tó gbòòrò.",
@@ -1928,7 +1928,7 @@ const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
     companyPagesEyebrow: "Shafukan matakin kamfani",
     empty: "Ba a sami daidaitaccen sassan ba. Share tacewar ku ko faɗaɗa ƙa'idodin bincike.",
     searchingState: "Ana bincika…",
-    searchHelpLink: "Bincika ayyukan HenryCo da taimako",
+    searchHelpLink: "Bincika ayyukan Henry & Co. da taimako",
   },
   ecosystem: {
     eyebrow: "Dalilin da yasa yana da mahimmanci",
@@ -1949,7 +1949,7 @@ const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Ana tambaya akai-akai", title: "Tambayoyin da ake yi akai-akai", subtitle: "Waɗannan amsoshi suna taimaka wa abokan ciniki, abokan hulɗa, da masu ruwa da tsaki su fahimci yadda kamfani ke aiki kafin su tuntuɓa." },
   topBar: { search: "Bincika hub", explore: "Bincika" },
-  footer: { exploreDivisions: "Bincika sassan", companyPages: "Shafukan kamfani", colHub: "Hub na kamfani", colGlobal: "Shafukan duniya", copyrightAllRightsReserved: "Duk haƙƙoƙin sun kiyaye.", linkPrivacy: "Sirri", linkTerms: "Sharuɗɗa", linkPreferences: "Abubuwan da aka fi so", designedBy: "An ƙira tare da ginawa a cikin gida ta HenryCo Studio don tsarin yanayi na HenryCo" },
+  footer: { exploreDivisions: "Bincika sassan", companyPages: "Shafukan kamfani", colHub: "Hub na kamfani", colGlobal: "Shafukan duniya", copyrightAllRightsReserved: "Duk haƙƙoƙin sun kiyaye.", linkPrivacy: "Sirri", linkTerms: "Sharuɗɗa", linkPreferences: "Abubuwan da aka fi so", designedBy: "An ƙira tare da ginawa a cikin gida ta Henry & Co. Studio don tsarin yanayi na Henry & Co." },
   cards: {
     divisionFallbackLong: "Sashi na Henry & Co. da ke fuskanta jama'a da aka gina don sabis ɗin kasuwancin da ke mai da hankali da ƙarfi kuma gabatarwa na musamman.",
     divisionFallbackShort: "Sashi mai mai da hankali na Henry & Co. da aka gabatar a matsayin alamar aiki mai zaman kanta a cikin tsarin kamfani mafi girma.",
@@ -2088,7 +2088,7 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
     "body": "Cerca per nome della divisione, categoria, enfasi sul servizio o focus aziendale. Questa directory esiste per aiutare le persone a spostarsi rapidamente e con sicurezza nella parte giusta dell'azienda.",
     "searchPlaceholder": "Cerca divisioni, servizi, categorie, sottodomini...",
     "searchingState": "Ricerca in corso…",
-    "searchHelpLink": "Cerca flussi di lavoro e supporto HenryCo",
+    "searchHelpLink": "Cerca flussi di lavoro e supporto Henry & Co.",
     "clearSearchAria": "Cancella ricerca",
     "popularSectors": "Settori popolari",
     "featuredOn": "Mostra solo in primo piano",
@@ -2165,7 +2165,7 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
     "linkPrivacy": "Riservatezza",
     "linkTerms": "Termini",
     "linkPreferences": "Preferenze",
-    "designedBy": "Progettato e realizzato internamente da HenryCo Studio per l'ecosistema HenryCo"
+    "designedBy": "Progettato e realizzato internamente da Henry & Co. Studio per l'ecosistema Henry & Co."
   },
   "cards": {
     "divisionFallbackLong": "Una divisione Henry & Co. rivolta al pubblico, creata per servire un mercato mirato con chiarezza e presentazione premium.",

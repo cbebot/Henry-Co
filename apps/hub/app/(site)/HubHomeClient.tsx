@@ -1,15 +1,16 @@
 import type { CSSProperties } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import type { PublicAccountUser } from "@henryco/ui";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
 import type { DivisionRow } from "../lib/divisions";
 import type { DivisionLiveStat } from "../lib/division-stats";
+import type { HubFooterInputs } from "../lib/site-footer";
 import { HomeHeader, HomeSkipLink } from "./home/home-chrome";
 import { HomeStandard } from "./home/home-standard";
 import { HomeIndex } from "./home/home-index";
 import { HomeOperatingStandard } from "./home/home-operating-standard";
 import { HomeProof } from "./home/home-proof";
 import { HomeFaq } from "./home/home-faq";
-import { HomeFooter } from "./home/home-footer";
 
 /**
  * HubHomeClient — the company homepage's thin orchestrator.
@@ -28,7 +29,7 @@ export default function HubHomeClient({
   brandSub,
   brandAccent,
   brandLogoUrl,
-  brandFooterBlurb,
+  footer,
   initialDivisions,
   initialFaqs,
   divisionStats,
@@ -37,12 +38,13 @@ export default function HubHomeClient({
   accountChip,
   heroWelcome,
 }: {
-  // 14-prop contract — mirrors app/(site)/page.tsx; do not change shape.
+  // Prop contract — mirrors app/(site)/page.tsx; keep the two in lockstep.
   brandTitle?: string | null;
   brandSub?: string | null;
   brandAccent?: string | null;
   brandLogoUrl?: string | null;
-  brandFooterBlurb?: string | null;
+  /** Pre-assembled shared-footer inputs (see lib/site-footer.ts). */
+  footer: HubFooterInputs;
   intro?: string | null;
   initialDivisions?: DivisionRow[];
   initialFaqs?: Array<{ question?: string | null; answer?: string | null }>;
@@ -99,11 +101,10 @@ export default function HubHomeClient({
         <HomeFaq copy={copy} faqs={initialFaqs ?? []} />
       </main>
 
-      <HomeFooter
-        brandTitle={brandTitleSafe}
-        brandFooterBlurb={brandFooterBlurb ?? null}
-        divisions={divisions}
-        copy={copy}
+      <PublicSiteFooter
+        copy={footer.copy}
+        columns={footer.columns}
+        support={footer.support}
       />
     </div>
   );
