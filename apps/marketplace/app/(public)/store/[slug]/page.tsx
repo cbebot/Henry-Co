@@ -97,16 +97,16 @@ export default async function StorePage({
           </dl>
         </article>
 
-        {/* Standards aside — noir gradient with editorial divided list */}
-        <aside className="rounded-[2.4rem] border border-[var(--market-line-strong)] bg-[linear-gradient(135deg,#0c0a09_0%,#1a1410_55%,#2a1f17_100%)] px-7 py-9 text-[var(--market-paper-white)] shadow-[0_36px_110px_rgba(17,13,9,0.3)] sm:px-9 sm:py-11">
+        {/* Standards aside — sunken editorial panel with divided list */}
+        <aside className="rounded-[2.4rem] border border-[var(--market-line-strong)] bg-[var(--home-canvas-deep)] px-7 py-9 text-[var(--market-paper-white)] shadow-[0_36px_110px_-60px_rgb(var(--home-ink-rgb)/0.22)] sm:px-9 sm:py-11">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--market-brass)]">
             {copy.store.standards.eyebrow}
           </p>
-          <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
+          <ul className="mt-6 divide-y divide-[var(--home-line-12)] border-y border-[var(--home-line-12)]">
             {data.vendor.badges.map((badge) => (
               <li
                 key={badge}
-                className="flex items-baseline gap-3 py-3 text-sm leading-7 text-white/82"
+                className="flex items-baseline gap-3 py-3 text-sm leading-7 text-[var(--home-ink-70)]"
               >
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--market-brass)]" />
                 <span>{badge}</span>
@@ -114,13 +114,13 @@ export default async function StorePage({
             ))}
           </ul>
           <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-4">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--home-ink-50)]">
               {copy.store.support.eyebrow}
             </p>
-            <p className="mt-2 max-w-md text-sm leading-7 text-white/72">
+            <p className="mt-2 max-w-md text-sm leading-7 text-[var(--home-ink-70)]">
               <Link
                 href={helpHref}
-                className="font-semibold text-[var(--market-brass)] underline-offset-4 outline-none transition hover:underline focus-visible:underline focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+                className="font-semibold text-[var(--market-brass)] underline-offset-4 outline-none transition hover:underline focus-visible:underline focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)] rounded-sm"
               >
                 {copy.store.support.contactLinkLabel}
               </Link>
@@ -128,7 +128,7 @@ export default async function StorePage({
             </p>
             <Link
               href={helpHref}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)] transition hover:bg-white/[0.08] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_12px_28px_rgba(178,134,59,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-[var(--home-line-15)] bg-[var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)] transition hover:bg-[var(--home-surface-07)] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_12px_28px_rgba(178,134,59,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)]"
             >
               <MessageSquare className="h-3.5 w-3.5 text-[var(--market-brass)]" aria-hidden />
               {copy.store.support.ctaLabel}

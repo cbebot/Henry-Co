@@ -70,7 +70,7 @@ export default async function HelpPage({
           <div className="flex flex-wrap gap-3 lg:justify-end">
             <Link
               href={supportHref}
-              className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+              className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)] active:translate-y-[0.5px]"
             >
               <MessageSquare className="h-4 w-4" />
               {copy.help.stillNeedHelp.ctaLabel}

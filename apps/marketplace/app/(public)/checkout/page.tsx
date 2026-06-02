@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
 const CHECKOUT_ERROR_COPY: Record<string, { title: string; body: string }> = {
   "wallet-unavailable": {
     title: "Wallet isn't ready for marketplace debits yet",
-    body: "Your HenryCo wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
+    body: "Your Henry & Co. wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
   },
   "insufficient-balance": {
     title: "Wallet balance didn't cover the order",
@@ -88,8 +88,8 @@ export default async function CheckoutPage({
       <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
         <PageIntro
           kicker="Checkout"
-          title="Sign in with your HenryCo account to continue."
-          description="Browsing stays open, but checkout uses your HenryCo account so orders, payments, addresses, notifications, and support history stay together — across every device, every session."
+          title="Sign in with your Henry & Co. account to continue."
+          description="Browsing stays open, but checkout uses your Henry & Co. account so orders, payments, addresses, notifications, and support history stay together — across every device, every session."
         />
         <div className="grid gap-6 lg:grid-cols-[1.02fr,0.98fr]">
           <EmptyState
@@ -99,13 +99,13 @@ export default async function CheckoutPage({
             ctaLabel="Sign in to continue"
           />
           <section className="market-paper rounded-[2rem] p-6 sm:p-8">
-            <p className="market-kicker">Why HenryCo checkout</p>
+            <p className="market-kicker">Why Henry & Co. checkout</p>
             <div className="mt-5 space-y-4">
               {[
                 {
                   icon: LockKeyhole,
                   title: "Account-protected",
-                  body: "Your card, address, and order history live in one HenryCo account — never re-keyed across surfaces.",
+                  body: "Your card, address, and order history live in one Henry & Co. account — never re-keyed across surfaces.",
                 },
                 {
                   icon: ShieldCheck,
@@ -120,9 +120,9 @@ export default async function CheckoutPage({
               ].map(({ icon: Icon, title, body }) => (
                 <div
                   key={title}
-                  className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
+                  className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--home-surface-04)] p-4"
                 >
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--home-surface-07)] text-[var(--market-brass)]">
                     <Icon className="h-4 w-4" />
                   </div>
                   <p className="mt-3 text-base font-semibold text-[var(--market-paper-white)]">{title}</p>

@@ -514,9 +514,9 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     heroKicker: t("Refined premium marketplace"),
     heroTitle: t("Buy from verified stores without the noise, clutter, or trust guesswork."),
     heroBody:
-      t("HenryCo Marketplace turns multi-vendor commerce into a calmer experience: cleaner discovery, quick-add from every card, split-order clarity, stronger seller passports, and a single HenryCo account for orders, payments, reviews, and support."),
+      t("Henry & Co. Marketplace turns multi-vendor commerce into a calmer experience: cleaner discovery, quick-add from every card, split-order clarity, stronger seller passports, and a single Henry & Co. account for orders, payments, reviews, and support."),
     primaryCta: t("Explore the catalog"),
-    secondaryCta: t("Sell on HenryCo"),
+    secondaryCta: t("Sell on Henry & Co."),
     quickCards: [
       {
         title: t("Quick-add everywhere"),
@@ -528,7 +528,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
       },
       {
         title: t("One account, less friction"),
-        body: t("Orders, payments, wishlist, follows, and notifications stay together in one HenryCo account."),
+        body: t("Orders, payments, wishlist, follows, and notifications stay together in one Henry & Co. account."),
       },
     ],
     whyKicker: t("Why this feels different"),
@@ -540,7 +540,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
       },
       {
         title: t("Split-order clarity stays readable"),
-        body: t("When inventory comes from different vendors or HenryCo stock, delivery segmentation stays obvious instead of becoming checkout confusion."),
+        body: t("When inventory comes from different vendors or Henry & Co. stock, delivery segmentation stays obvious instead of becoming checkout confusion."),
       },
       {
         title: t("Sellers are curated, not dumped into a grid"),
@@ -565,12 +565,12 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     standardsKicker: t("Marketplace standards"),
     standardsTitle: t("Built for trust, clarity, and a calmer buying experience."),
     standardsBullets: [
-      t("Seller applications, moderation, and approvals are reviewed through dedicated HenryCo review lanes."),
+      t("Seller applications, moderation, and approvals are reviewed through dedicated Henry & Co. review lanes."),
       t("Order updates, reviews, support, and payments stay connected to the same buyer account."),
       t("Support, payment review, and delivery operations stay organized so responses remain consistent."),
     ],
     sellerKicker: t("Seller quality"),
-    sellerTitle: t("Serious sellers start inside their HenryCo account."),
+    sellerTitle: t("Serious sellers start inside their Henry & Co. account."),
     sellerBody:
       t("Public visitors can learn about selling on /sell, while the application, draft progress, review updates, and approval status stay inside the seller account experience."),
     sellerBullets: [
@@ -585,18 +585,18 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     trustRating: t("Trust rating"),
   },
   kpiHints: {
-    verifiedStores: t("Curated sellers and HenryCo-owned inventory with clearer accountability."),
+    verifiedStores: t("Curated sellers and Henry & Co.-owned inventory with clearer accountability."),
     activeListings: t("Approved listings surfaced with delivery, trust, and ownership clarity."),
     trustRating: t("Marketplace review quality and seller reliability are surfaced before checkout."),
   },
   footer: {
-    brandSubtitle: t("Refined commerce with one connected HenryCo account"),
-    brandBody: t("HenryCo Marketplace is built for high-trust buying, verified sellers, and a cleaner experience from checkout to delivery."),
+    brandSubtitle: t("Refined commerce with one connected Henry & Co. account"),
+    brandBody: t("Henry & Co. Marketplace is built for high-trust buying, verified sellers, and a cleaner experience from checkout to delivery."),
     shopTitle: t("Shop"),
     sellTitle: t("Sell"),
     supportTitle: t("Support"),
     supportBody:
-      t("Orders, seller conversations, support updates, and payment records stay connected in one HenryCo account."),
+      t("Orders, seller conversations, support updates, and payment records stay connected in one Henry & Co. account."),
     shopLinks: [
       { href: "/search", label: t("Search the marketplace") },
       { href: "/deals", label: t("Deals and timed edits") },
@@ -605,7 +605,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
       { href: "/help", label: t("Support and resolution") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("Why sell on HenryCo") },
+      { href: "/sell", label: t("Why sell on Henry & Co.") },
       { href: "/sell/pricing", label: t("Seller pricing and fees") },
       { href: "/policies/seller-policy", label: t("Seller policy") },
       { href: "/account/seller-application", label: t("Seller application") },
@@ -613,7 +613,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("HenryCo stocked"),
+    stockedByHenryCo: t("Henry & Co. stocked"),
     verifiedSeller: t("Verified seller"),
     onlyLeft: t("Only {count} left"),
     saveToWishlist: t("Save to wishlist"),
@@ -651,7 +651,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   track: {
     metadata: {
-      title: t("Order tracking — HenryCo Marketplace"),
+      title: t("Order tracking — Henry & Co. Marketplace"),
       description:
         t("Track each vendor segment, payment update, and fulfillment milestone in one place. Escrow stays on until delivery confirms."),
     },
@@ -668,7 +668,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     paymentRecord: {
       kicker: t("Payment record"),
       walletBody: t("Wallet balance was debited and the order is held in escrow for fulfillment."),
-      proofBody: t("Transfer proof is attached for HenryCo finance review."),
+      proofBody: t("Transfer proof is attached for Henry & Co. finance review."),
       awaitingBody: t("Payment is waiting for finance evidence or delivery reconciliation."),
       methodLabel: t("Method"),
       statusLabel: t("Status"),
@@ -684,7 +684,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     segments: {
       kicker: t("Vendor segments"),
       title: t("Each vendor stays accountable to its own dispatch."),
-      henrycoSegment: t("HenryCo segment"),
+      henrycoSegment: t("Henry & Co. segment"),
       fulfillmentLabel: t("Fulfillment"),
       trackingLabel: t("Tracking"),
       payoutLabel: t("Payout"),
@@ -692,7 +692,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     },
     completion: {
       kicker: t("Completion confirmation"),
-      body: t("Confirm completion once the order is satisfactory. HenryCo only releases seller payout after delivery is confirmed or the order qualifies for auto-release."),
+      body: t("Confirm completion once the order is satisfactory. Henry & Co. only releases seller payout after delivery is confirmed or the order qualifies for auto-release."),
       confirmCta: t("Confirm completion"),
     },
     help: {
@@ -705,9 +705,9 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   deals: {
     metadata: {
-      title: t("Verified deals — HenryCo Marketplace"),
+      title: t("Verified deals — Henry & Co. Marketplace"),
       description:
-        t("Discounts filtered for trust, stock certainty, and seller accountability. Only verified listings with clean trust signals appear on the HenryCo deals page."),
+        t("Discounts filtered for trust, stock certainty, and seller accountability. Only verified listings with clean trust signals appear on the Henry & Co. deals page."),
     },
     pageIntro: {
       kicker: t("Verified Deals"),
@@ -744,16 +744,16 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
       openSearch: t("Open full search"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Explore verified products in {category} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout."),
+        t("Explore verified products in {category} on Henry & Co. Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout."),
       fallbackDescription:
-        t("Browse a curated category on HenryCo Marketplace with trust signals, delivery clarity, and seller passports surfaced before checkout."),
+        t("Browse a curated category on Henry & Co. Marketplace with trust signals, delivery clarity, and seller passports surfaced before checkout."),
     },
   },
   brand: {
     eyebrow: t("Brand"),
-    bodyFallback: t("A verified store on HenryCo Marketplace with trust signals, delivery clarity, and seller passport details surfaced before checkout."),
+    bodyFallback: t("A verified store on Henry & Co. Marketplace with trust signals, delivery clarity, and seller passport details surfaced before checkout."),
     searchCta: t("Search this brand"),
     trustCta: t("Trust standards"),
     stats: {
@@ -765,20 +765,20 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     },
     liveKicker: t("Live from {brand}"),
     openFullSearch: t("Open full search"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Explore verified products from {brand} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout."),
+      t("Explore verified products from {brand} on Henry & Co. Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Browse verified products from {store} on HenryCo Marketplace, with trust signals, delivery clarity, and the seller passport surfaced before checkout."),
+      t("Browse verified products from {store} on Henry & Co. Marketplace, with trust signals, delivery clarity, and the seller passport surfaced before checkout."),
     metadataDescriptionFallback:
-      t("A verified store on HenryCo Marketplace with trust signals, delivery clarity, and a seller passport surfaced before checkout."),
+      t("A verified store on Henry & Co. Marketplace with trust signals, delivery clarity, and a seller passport surfaced before checkout."),
     hero: {
       eyebrow: t("Store passport"),
       bodyFallback:
-        t("A verified seller on HenryCo Marketplace with trust signals, delivery clarity, and a transparent passport surfaced before every checkout."),
+        t("A verified seller on Henry & Co. Marketplace with trust signals, delivery clarity, and a transparent passport surfaced before every checkout."),
     },
     stats: {
       trustScore: t("Trust score"),
@@ -791,7 +791,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     },
     support: {
       eyebrow: t("Support"),
-      contactLinkLabel: t("Use HenryCo Marketplace to contact this store"),
+      contactLinkLabel: t("Use Henry & Co. Marketplace to contact this store"),
       contactBodySuffix:
         t(" — messages are logged and tied to your order reference so every update stays in one place."),
       ctaLabel: t("Contact this store"),
@@ -812,17 +812,17 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   sell: {
     metadata: {
-      title: t("Sell on HenryCo — selective marketplace for trust-led sellers"),
+      title: t("Sell on Henry & Co. — selective marketplace for trust-led sellers"),
       description:
-        t("Apply to sell on HenryCo Marketplace: trust-led positioning, premium storefronts, and a unified workspace for orders, payouts, and support."),
+        t("Apply to sell on Henry & Co. Marketplace: trust-led positioning, premium storefronts, and a unified workspace for orders, payouts, and support."),
     },
     hero: {
-      kicker: t("Sell on HenryCo"),
+      kicker: t("Sell on Henry & Co."),
       title: t("Selective by design. Built for sellers who lead on trust."),
-      body: t("HenryCo Marketplace favours sellers who care about presentation, reliable fulfillment, and honest buyer protection. The bar is explicit on this page; the seller application continues inside your HenryCo account."),
+      body: t("Henry & Co. Marketplace favours sellers who care about presentation, reliable fulfillment, and honest buyer protection. The bar is explicit on this page; the seller application continues inside your Henry & Co. account."),
       primaryCta: t("Open seller application"),
       secondaryCta: t("See seller pricing"),
-      signInCta: t("Sign in with HenryCo account"),
+      signInCta: t("Sign in with Henry & Co. account"),
       highlights: [
         { label: t("Selection"), value: t("Manual review, not pay-to-list") },
         { label: t("Storefront"), value: t("Trust passport visible to buyers") },
@@ -841,9 +841,9 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
       kicker: t("How onboarding works"),
       stepLabel: t("Step"),
       steps: [
-        { step: "01", title: t("Start the seller application"), body: t("Open the application from inside your HenryCo account — drafts save automatically while you assemble details.") },
+        { step: "01", title: t("Start the seller application"), body: t("Open the application from inside your Henry & Co. account — drafts save automatically while you assemble details.") },
         { step: "02", title: t("Add business details"), body: t("Business name, store profile, product focus, and any verification documents that explain how you fulfil orders.") },
-        { step: "03", title: t("Application review"), body: t("The HenryCo team reviews documents, trust signals, and store readiness — not just a paid badge.") },
+        { step: "03", title: t("Application review"), body: t("The Henry & Co. team reviews documents, trust signals, and store readiness — not just a paid badge.") },
         { step: "04", title: t("Vendor onboarding"), body: t("Approved sellers continue into vendor onboarding where pricing, posting fees, payout windows, and policy rules stay visible before publishing opens.") },
       ],
       callout: {
@@ -875,7 +875,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   sellPricing: {
     metadata: {
-      title: t("Seller pricing — HenryCo Marketplace"),
+      title: t("Seller pricing — Henry & Co. Marketplace"),
       description:
         t("Plan fees, listing fees, featured-slot fees, transaction commission, and payout processing are all stated up front — before you publish inventory, not after."),
     },
@@ -905,7 +905,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
       ctaTemplate: t("Start with {plan}"),
     },
     economics: {
-      kicker: t("How HenryCo makes money"),
+      kicker: t("How Henry & Co. makes money"),
       title: t("Stated up front, deducted in the open."),
       items: [
         t("Transaction commissions are deducted from each vendor order-group settlement before payout release."),
@@ -922,7 +922,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     },
     closing: {
       kicker: t("Ready to apply?"),
-      title: t("Application opens in your HenryCo account."),
+      title: t("Application opens in your Henry & Co. account."),
       body: t("You can save the draft and return — pricing visible here applies once vendor onboarding completes."),
       primaryCta: t("Apply as seller"),
       secondaryCta: t("Trust standards"),
@@ -930,7 +930,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   help: {
     metadata: {
-      title: t("Help centre — HenryCo Marketplace"),
+      title: t("Help centre — Henry & Co. Marketplace"),
       description:
         t("Browse the answers buyers and sellers ask most. If you do not find what you need, open a support ticket and a person on the team will read it."),
     },
@@ -948,7 +948,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   trust: {
     metadata: {
-      title: t("Trust & safety — HenryCo Marketplace"),
+      title: t("Trust & safety — Henry & Co. Marketplace"),
       description:
         t("Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, escrow holds, disputes, and payout release all leave a server-side paper trail."),
     },
@@ -971,7 +971,7 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
         },
         {
           title: t("Escrow control"),
-          body: t("Buyer funds are held by HenryCo first, then move into releasable payout only after delivery and trust checks clear."),
+          body: t("Buyer funds are held by Henry & Co. first, then move into releasable payout only after delivery and trust checks clear."),
         },
         {
           title: t("Anti-fraud review"),
@@ -997,11 +997,11 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo Marketplace"),
+      titleTemplate: t("{collection} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Explore {collection} on HenryCo Marketplace — a curated rail of verified products with trust signals, delivery clarity, and seller passports surfaced before checkout."),
+        t("Explore {collection} on Henry & Co. Marketplace — a curated rail of verified products with trust signals, delivery clarity, and seller passports surfaced before checkout."),
       fallbackDescription:
-        t("A curated collection on HenryCo Marketplace with verified products, trust signals, delivery clarity, and seller passports surfaced before checkout."),
+        t("A curated collection on Henry & Co. Marketplace with verified products, trust signals, delivery clarity, and seller passports surfaced before checkout."),
     },
     hero: {
       primaryCta: t("Open full search"),
@@ -1021,12 +1021,12 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo Marketplace"),
+      titleTemplate: t("{policy} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{policy} on HenryCo Marketplace — server-logged enforcement, escrow controls, and trust posture surfaced before checkout."),
-      fallbackTitle: t("Marketplace policy — HenryCo Marketplace"),
+        t("{policy} on Henry & Co. Marketplace — server-logged enforcement, escrow controls, and trust posture surfaced before checkout."),
+      fallbackTitle: t("Marketplace policy — Henry & Co. Marketplace"),
       fallbackDescription:
-        t("A HenryCo Marketplace policy — server-logged enforcement, escrow controls, and trust posture surfaced before checkout."),
+        t("A Henry & Co. Marketplace policy — server-logged enforcement, escrow controls, and trust posture surfaced before checkout."),
     },
     hero: {
       backToTrust: t("Back to trust standards"),
@@ -1062,11 +1062,11 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} on HenryCo Marketplace — verified stock, trusted delivery, and seller passport visible before checkout."),
+        t("{title} on Henry & Co. Marketplace — verified stock, trusted delivery, and seller passport visible before checkout."),
       fallbackDescription:
-        t("A verified HenryCo Marketplace listing with trust signals, delivery clarity, and seller passport surfaced before checkout."),
+        t("A verified Henry & Co. Marketplace listing with trust signals, delivery clarity, and seller passport surfaced before checkout."),
     },
     fulfillment: {
       sellerTrustLabel: t("Seller trust"),
@@ -1136,19 +1136,19 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("Marché premium raffiné"),
     heroTitle: t("Achetez auprès de boutiques vérifiées, sans bruit ni doute sur la confiance."),
     heroBody:
-      t("HenryCo Marketplace transforme le commerce multi-vendeurs en une expérience plus calme : découverte plus claire, ajout rapide depuis chaque carte, vision nette des commandes fractionnées, meilleurs passeports vendeurs et un seul compte HenryCo pour commandes, paiements, avis et support."),
+      t("Henry & Co. Marketplace transforme le commerce multi-vendeurs en une expérience plus calme : découverte plus claire, ajout rapide depuis chaque carte, vision nette des commandes fractionnées, meilleurs passeports vendeurs et un seul compte Henry & Co. pour commandes, paiements, avis et support."),
     primaryCta: t("Explorer le catalogue"),
-    secondaryCta: t("Vendre sur HenryCo"),
+    secondaryCta: t("Vendre sur Henry & Co."),
     quickCards: [
       { title: t("Ajout rapide partout"), body: t("Contrôles panier discrets, mini-panier mis à jour instantanément, sans rafraîchissements maladroits.") },
       { title: t("Rails de confiance vérifiés"), body: t("Passeports vendeurs, promesses de livraison, qualité des avis et propriété du stock restent faciles à lire.") },
-      { title: t("Un seul compte, moins de friction"), body: t("Commandes, paiements, liste de souhaits, abonnements et notifications restent dans un seul compte HenryCo.") },
+      { title: t("Un seul compte, moins de friction"), body: t("Commandes, paiements, liste de souhaits, abonnements et notifications restent dans un seul compte Henry & Co.") },
     ],
     whyKicker: t("Pourquoi c’est différent"),
     whyTitle: t("La confiance est visible avant le paiement."),
     whyCards: [
       { title: t("La confiance est visible avant le paiement"), body: t("Niveau de vérification, taux de litiges, réactivité du support et fiabilité de l’exécution restent proches de la décision d’achat.") },
-      { title: t("La clarté des commandes fractionnées reste lisible"), body: t("Quand le stock vient de différents vendeurs ou de HenryCo, la segmentation de livraison reste évidente au lieu de devenir confuse.") },
+      { title: t("La clarté des commandes fractionnées reste lisible"), body: t("Quand le stock vient de différents vendeurs ou de Henry & Co., la segmentation de livraison reste évidente au lieu de devenir confuse.") },
       { title: t("Des vendeurs sélectionnés, pas empilés dans une grille"), body: t("Le marché privilégie des boutiques plus solides, des fiches plus propres et une meilleure responsabilité après commande.") },
     ],
     emptyTitle: t("Le catalogue est en préparation."),
@@ -1169,12 +1169,12 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("Normes marketplace"),
     standardsTitle: t("Conçu pour la confiance, la clarté et une expérience d’achat plus calme."),
     standardsBullets: [
-      t("Les candidatures vendeurs, la modération et les validations passent par des files de revue HenryCo dédiées."),
+      t("Les candidatures vendeurs, la modération et les validations passent par des files de revue Henry & Co. dédiées."),
       t("Les mises à jour de commande, les avis, le support et les paiements restent liés au même compte acheteur."),
       t("Le support, l’examen des paiements et les opérations de livraison restent organisés pour des réponses cohérentes."),
     ],
     sellerKicker: t("Qualité vendeur"),
-    sellerTitle: t("Les vendeurs sérieux commencent dans leur compte HenryCo."),
+    sellerTitle: t("Les vendeurs sérieux commencent dans leur compte Henry & Co."),
     sellerBody:
       t("Les visiteurs publics peuvent découvrir la vente sur /sell, tandis que la candidature, l’avancement du brouillon, les mises à jour de revue et le statut d’approbation restent dans l’expérience vendeur."),
     sellerBullets: [
@@ -1189,19 +1189,19 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("Indice de confiance"),
   },
   kpiHints: {
-    verifiedStores: t("Vendeurs sélectionnés et stock appartenant à HenryCo avec une responsabilité plus claire."),
+    verifiedStores: t("Vendeurs sélectionnés et stock appartenant à Henry & Co. avec une responsabilité plus claire."),
     activeListings: t("Annonces approuvées affichées avec des informations claires sur la livraison, la confiance et la propriété."),
     trustRating: t("La qualité des avis marketplace et la fiabilité des vendeurs apparaissent avant le paiement."),
   },
   footer: {
-    brandSubtitle: t("Commerce raffiné avec un seul compte HenryCo connecté"),
+    brandSubtitle: t("Commerce raffiné avec un seul compte Henry & Co. connecté"),
     brandBody:
-      t("HenryCo Marketplace est pensé pour des achats à forte confiance, des vendeurs vérifiés et une expérience plus propre du paiement à la livraison."),
+      t("Henry & Co. Marketplace est pensé pour des achats à forte confiance, des vendeurs vérifiés et une expérience plus propre du paiement à la livraison."),
     shopTitle: t("Acheter"),
     sellTitle: t("Vendre"),
     supportTitle: t("Support"),
     supportBody:
-      t("Commandes, échanges vendeurs, mises à jour du support et paiements restent liés dans un seul compte HenryCo."),
+      t("Commandes, échanges vendeurs, mises à jour du support et paiements restent liés dans un seul compte Henry & Co."),
     shopLinks: [
       { href: "/search", label: t("Rechercher dans le marketplace") },
       { href: "/deals", label: t("Offres et éditions limitées") },
@@ -1210,7 +1210,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("Support et résolution") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("Pourquoi vendre sur HenryCo") },
+      { href: "/sell", label: t("Pourquoi vendre sur Henry & Co.") },
       { href: "/sell/pricing", label: t("Tarifs et frais vendeur") },
       { href: "/policies/seller-policy", label: t("Politique vendeur") },
       { href: "/account/seller-application", label: t("Candidature vendeur") },
@@ -1218,7 +1218,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("Stock HenryCo"),
+    stockedByHenryCo: t("Stock Henry & Co."),
     verifiedSeller: t("Vendeur vérifié"),
     onlyLeft: t("Plus que {count}"),
     saveToWishlist: t("Ajouter à la liste"),
@@ -1256,7 +1256,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Suivi de commande — Marketplace HenryCo"),
+      title: t("Suivi de commande — Marketplace Henry & Co."),
       description:
         t("Suivez chaque segment vendeur, mise à jour de paiement et jalon d'expédition au même endroit. L'entiercement reste actif jusqu'à confirmation de la livraison."),
     },
@@ -1273,7 +1273,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Trace de paiement"),
       walletBody: t("Le solde du portefeuille a été débité et la commande est mise sous entiercement jusqu'à l'expédition."),
-      proofBody: t("Le justificatif de virement est joint pour examen par la finance HenryCo."),
+      proofBody: t("Le justificatif de virement est joint pour examen par la finance Henry & Co."),
       awaitingBody: t("Le paiement attend la pièce justificative finance ou la réconciliation à la livraison."),
       methodLabel: t("Méthode"),
       statusLabel: t("Statut"),
@@ -1289,7 +1289,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Segments vendeurs"),
       title: t("Chaque vendeur reste responsable de sa propre expédition."),
-      henrycoSegment: t("Segment HenryCo"),
+      henrycoSegment: t("Segment Henry & Co."),
       fulfillmentLabel: t("Expédition"),
       trackingLabel: t("Suivi"),
       payoutLabel: t("Versement"),
@@ -1297,7 +1297,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Confirmation de réception"),
-      body: t("Confirmez la réception une fois la commande satisfaisante. HenryCo ne libère le versement vendeur qu'après confirmation de livraison ou éligibilité à une libération automatique."),
+      body: t("Confirmez la réception une fois la commande satisfaisante. Henry & Co. ne libère le versement vendeur qu'après confirmation de livraison ou éligibilité à une libération automatique."),
       confirmCta: t("Confirmer la réception"),
     },
     help: {
@@ -1310,9 +1310,9 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Offres vérifiées — Marketplace HenryCo"),
+      title: t("Offres vérifiées — Marketplace Henry & Co."),
       description:
-        t("Des remises filtrées sur la confiance, la disponibilité réelle des stocks et la responsabilité des vendeurs. Seules les annonces vérifiées aux signaux propres apparaissent sur la page des offres HenryCo."),
+        t("Des remises filtrées sur la confiance, la disponibilité réelle des stocks et la responsabilité des vendeurs. Seules les annonces vérifiées aux signaux propres apparaissent sur la page des offres Henry & Co."),
     },
     pageIntro: {
       kicker: t("Offres vérifiées"),
@@ -1349,17 +1349,17 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Ouvrir la recherche complète"),
     },
     metadata: {
-      titleTemplate: t("{category} — Marketplace HenryCo"),
+      titleTemplate: t("{category} — Marketplace Henry & Co."),
       descriptionTemplate:
-        t("Explorez les produits vérifiés de {category} sur HenryCo Marketplace, avec des signaux de confiance, des informations de livraison claires et des passeports vendeurs visibles avant le paiement."),
+        t("Explorez les produits vérifiés de {category} sur Henry & Co. Marketplace, avec des signaux de confiance, des informations de livraison claires et des passeports vendeurs visibles avant le paiement."),
       fallbackDescription:
-        t("Parcourez une catégorie sélectionnée du HenryCo Marketplace avec des signaux de confiance, une livraison plus claire et des passeports vendeurs avant paiement."),
+        t("Parcourez une catégorie sélectionnée du Henry & Co. Marketplace avec des signaux de confiance, une livraison plus claire et des passeports vendeurs avant paiement."),
     },
   },
   brand: {
     eyebrow: t("Marque"),
     bodyFallback:
-      t("Une boutique vérifiée sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant le paiement."),
+      t("Une boutique vérifiée sur Henry & Co. Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant le paiement."),
     searchCta: t("Rechercher dans cette marque"),
     trustCta: t("Standards de confiance"),
     stats: {
@@ -1371,20 +1371,20 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("En direct de {brand}"),
     openFullSearch: t("Ouvrir la recherche complète"),
-    metadataTitle: t("{brand} — Marketplace HenryCo"),
+    metadataTitle: t("{brand} — Marketplace Henry & Co."),
     metadataDescription:
-      t("Explorez les produits vérifiés de {brand} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et des passeports vendeurs visibles avant le paiement."),
+      t("Explorez les produits vérifiés de {brand} sur Henry & Co. Marketplace, avec des signaux de confiance, une livraison plus claire et des passeports vendeurs visibles avant le paiement."),
   },
   store: {
-    metadataTitle: t("{store} — Marketplace HenryCo"),
+    metadataTitle: t("{store} — Marketplace Henry & Co."),
     metadataDescription:
-      t("Parcourez les produits vérifiés de {store} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et le passeport vendeur visibles avant le paiement."),
+      t("Parcourez les produits vérifiés de {store} sur Henry & Co. Marketplace, avec des signaux de confiance, une livraison plus claire et le passeport vendeur visibles avant le paiement."),
     metadataDescriptionFallback:
-      t("Une boutique vérifiée sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant chaque paiement."),
+      t("Une boutique vérifiée sur Henry & Co. Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant chaque paiement."),
     hero: {
       eyebrow: t("Passeport boutique"),
       bodyFallback:
-        t("Un vendeur vérifié sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport transparent affiché avant chaque paiement."),
+        t("Un vendeur vérifié sur Henry & Co. Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport transparent affiché avant chaque paiement."),
     },
     stats: {
       trustScore: t("Score de confiance"),
@@ -1397,7 +1397,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Support"),
-      contactLinkLabel: t("Utilisez HenryCo Marketplace pour contacter cette boutique"),
+      contactLinkLabel: t("Utilisez Henry & Co. Marketplace pour contacter cette boutique"),
       contactBodySuffix:
         t(" — les messages sont enregistrés et rattachés à la référence de votre commande pour que chaque mise à jour reste au même endroit."),
       ctaLabel: t("Contacter cette boutique"),
@@ -1418,7 +1418,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   help: {
     metadata: {
-      title: t("Centre d’aide — Marketplace HenryCo"),
+      title: t("Centre d’aide — Marketplace Henry & Co."),
       description:
         t("Parcourez les questions les plus posées par les acheteurs et vendeurs. Si vous ne trouvez pas ce qu’il vous faut, ouvrez un ticket et un membre de l’équipe le lira."),
     },
@@ -1436,17 +1436,17 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Vendre sur HenryCo — marketplace sélective pour des vendeurs de confiance"),
+      title: t("Vendre sur Henry & Co. — marketplace sélective pour des vendeurs de confiance"),
       description:
-        t("Postulez pour vendre sur HenryCo Marketplace : positionnement axé sur la confiance, vitrines premium et un espace unifié pour commandes, paiements et support."),
+        t("Postulez pour vendre sur Henry & Co. Marketplace : positionnement axé sur la confiance, vitrines premium et un espace unifié pour commandes, paiements et support."),
     },
     hero: {
-      kicker: t("Vendre sur HenryCo"),
+      kicker: t("Vendre sur Henry & Co."),
       title: t("Sélective par essence. Conçue pour les vendeurs qui misent sur la confiance."),
-      body: t("HenryCo Marketplace privilégie les vendeurs soigneux dans leur présentation, fiables dans l’exécution et honnêtes sur la protection des acheteurs. Le niveau attendu est explicité sur cette page ; la candidature vendeur se poursuit dans votre compte HenryCo."),
+      body: t("Henry & Co. Marketplace privilégie les vendeurs soigneux dans leur présentation, fiables dans l’exécution et honnêtes sur la protection des acheteurs. Le niveau attendu est explicité sur cette page ; la candidature vendeur se poursuit dans votre compte Henry & Co."),
       primaryCta: t("Ouvrir la candidature vendeur"),
       secondaryCta: t("Voir les tarifs vendeur"),
-      signInCta: t("Se connecter avec un compte HenryCo"),
+      signInCta: t("Se connecter avec un compte Henry & Co."),
       highlights: [
         { label: t("Sélection"), value: t("Revue manuelle, pas de mise en ligne payante") },
         { label: t("Vitrine"), value: t("Passeport de confiance visible par les acheteurs") },
@@ -1465,9 +1465,9 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Comment se passe l’onboarding"),
       stepLabel: t("Étape"),
       steps: [
-        { step: "01", title: t("Lancer la candidature vendeur"), body: t("Ouvrez la candidature depuis votre compte HenryCo — les brouillons s’enregistrent automatiquement pendant que vous rassemblez les informations.") },
+        { step: "01", title: t("Lancer la candidature vendeur"), body: t("Ouvrez la candidature depuis votre compte Henry & Co. — les brouillons s’enregistrent automatiquement pendant que vous rassemblez les informations.") },
         { step: "02", title: t("Ajouter les détails de l’activité"), body: t("Nom d’entreprise, profil de boutique, axe produit et tout document de vérification expliquant comment vous honorez vos commandes.") },
-        { step: "03", title: t("Revue de la candidature"), body: t("L’équipe HenryCo examine les documents, les signaux de confiance et la solidité de la boutique — pas seulement un badge payant.") },
+        { step: "03", title: t("Revue de la candidature"), body: t("L’équipe Henry & Co. examine les documents, les signaux de confiance et la solidité de la boutique — pas seulement un badge payant.") },
         { step: "04", title: t("Onboarding vendeur"), body: t("Les vendeurs approuvés continuent l’onboarding où tarifs, frais de publication, fenêtres de paiement et règles restent visibles avant la mise en ligne.") },
       ],
       callout: {
@@ -1499,7 +1499,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Tarifs vendeur — HenryCo Marketplace"),
+      title: t("Tarifs vendeur — Henry & Co. Marketplace"),
       description:
         t("Frais de plan, frais de mise en ligne, frais de mise en avant, commission de transaction et traitement des paiements sont tous annoncés en amont — avant la publication, pas après."),
     },
@@ -1529,7 +1529,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Commencer avec {plan}"),
     },
     economics: {
-      kicker: t("Comment HenryCo gagne de l’argent"),
+      kicker: t("Comment Henry & Co. gagne de l’argent"),
       title: t("Annoncé en amont, déduit à la vue de tous."),
       items: [
         t("Les commissions de transaction sont prélevées sur chaque règlement de groupe-commande vendeur avant la libération du versement."),
@@ -1546,7 +1546,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Prêt à candidater ?"),
-      title: t("La candidature s’ouvre dans votre compte HenryCo."),
+      title: t("La candidature s’ouvre dans votre compte Henry & Co."),
       body: t("Vous pouvez enregistrer le brouillon et revenir — la tarification affichée ici s’applique une fois l’onboarding vendeur terminé."),
       primaryCta: t("Postuler comme vendeur"),
       secondaryCta: t("Standards de confiance"),
@@ -1554,7 +1554,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("Confiance & sécurité — HenryCo Marketplace"),
+      title: t("Confiance & sécurité — Henry & Co. Marketplace"),
       description:
         t("La confiance définit ce qu’un vendeur peut faire, comment l’argent circule et comment la modération réagit. Niveaux vendeurs, séquestre, litiges et libération des paiements laissent une trace serveur complète."),
     },
@@ -1577,7 +1577,7 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Contrôle du séquestre"),
-          body: t("Les fonds de l’acheteur sont d’abord détenus par HenryCo, puis libérés au paiement seulement après livraison et contrôles validés."),
+          body: t("Les fonds de l’acheteur sont d’abord détenus par Henry & Co., puis libérés au paiement seulement après livraison et contrôles validés."),
         },
         {
           title: t("Revue anti-fraude"),
@@ -1603,11 +1603,11 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — Marketplace HenryCo"),
+      titleTemplate: t("{collection} — Marketplace Henry & Co."),
       descriptionTemplate:
-        t("Découvrez {collection} sur HenryCo Marketplace — une sélection curatée de produits vérifiés, avec signaux de confiance, livraison plus claire et passeports vendeurs avant le paiement."),
+        t("Découvrez {collection} sur Henry & Co. Marketplace — une sélection curatée de produits vérifiés, avec signaux de confiance, livraison plus claire et passeports vendeurs avant le paiement."),
       fallbackDescription:
-        t("Une collection curatée sur HenryCo Marketplace, avec des produits vérifiés, des signaux de confiance, une livraison plus claire et des passeports vendeurs avant le paiement."),
+        t("Une collection curatée sur Henry & Co. Marketplace, avec des produits vérifiés, des signaux de confiance, une livraison plus claire et des passeports vendeurs avant le paiement."),
     },
     hero: {
       primaryCta: t("Ouvrir la recherche complète"),
@@ -1627,12 +1627,12 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — Marketplace HenryCo"),
+      titleTemplate: t("{policy} — Marketplace Henry & Co."),
       descriptionTemplate:
-        t("{policy} sur HenryCo Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement."),
-      fallbackTitle: t("Politique du marché — Marketplace HenryCo"),
+        t("{policy} sur Henry & Co. Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement."),
+      fallbackTitle: t("Politique du marché — Marketplace Henry & Co."),
       fallbackDescription:
-        t("Une politique de HenryCo Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement."),
+        t("Une politique de Henry & Co. Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement."),
     },
     hero: {
       backToTrust: t("Retour aux standards de confiance"),
@@ -1668,11 +1668,11 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} sur HenryCo Marketplace — stock vérifié, livraison fiable et passeport vendeur visibles avant le paiement."),
+        t("{title} sur Henry & Co. Marketplace — stock vérifié, livraison fiable et passeport vendeur visibles avant le paiement."),
       fallbackDescription:
-        t("Une annonce vérifiée sur HenryCo Marketplace, avec signaux de confiance, clarté de livraison et passeport vendeur visibles avant le paiement."),
+        t("Une annonce vérifiée sur Henry & Co. Marketplace, avec signaux de confiance, clarté de livraison et passeport vendeur visibles avant le paiement."),
     },
     fulfillment: {
       sellerTrustLabel: t("Confiance vendeur"),
@@ -1742,19 +1742,19 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("Marketplace premium refinado"),
     heroTitle: t("Compra en tiendas verificadas, sin ruido, desorden ni dudas sobre la confianza."),
     heroBody:
-      t("HenryCo Marketplace convierte el comercio multi-vendedor en una experiencia más serena: descubrimiento más claro, añadido rápido desde cada ficha, claridad en pedidos divididos, mejores pasaportes de vendedor y una única cuenta HenryCo para pedidos, pagos, reseñas y soporte."),
+      t("Henry & Co. Marketplace convierte el comercio multi-vendedor en una experiencia más serena: descubrimiento más claro, añadido rápido desde cada ficha, claridad en pedidos divididos, mejores pasaportes de vendedor y una única cuenta Henry & Co. para pedidos, pagos, reseñas y soporte."),
     primaryCta: t("Explorar el catálogo"),
-    secondaryCta: t("Vende en HenryCo"),
+    secondaryCta: t("Vende en Henry & Co."),
     quickCards: [
       { title: t("Añadido rápido en todas partes"), body: t("Controles de carrito discretos a nivel de ficha, actualizaciones instantáneas del mini-carrito y sin recargas torpes.") },
       { title: t("Vías de confianza verificadas"), body: t("Pasaportes de vendedor, promesas de entrega, calidad de reseñas y propiedad del stock siguen siendo fáciles de leer.") },
-      { title: t("Una cuenta, menos fricción"), body: t("Pedidos, pagos, lista de deseos, seguimientos y notificaciones permanecen juntos en una sola cuenta HenryCo.") },
+      { title: t("Una cuenta, menos fricción"), body: t("Pedidos, pagos, lista de deseos, seguimientos y notificaciones permanecen juntos en una sola cuenta Henry & Co.") },
     ],
     whyKicker: t("Por qué se siente diferente"),
     whyTitle: t("La confianza es visible antes del pago."),
     whyCards: [
       { title: t("La confianza es visible antes del pago"), body: t("El nivel de verificación, la tasa de disputas, la capacidad de respuesta del soporte y la fiabilidad del cumplimiento se mantienen cerca de la decisión de compra.") },
-      { title: t("La claridad de los pedidos divididos sigue siendo legible"), body: t("Cuando el inventario proviene de varios vendedores o del stock de HenryCo, la segmentación de entrega sigue siendo evidente en vez de generar confusión al pagar.") },
+      { title: t("La claridad de los pedidos divididos sigue siendo legible"), body: t("Cuando el inventario proviene de varios vendedores o del stock de Henry & Co., la segmentación de entrega sigue siendo evidente en vez de generar confusión al pagar.") },
       { title: t("Los vendedores son seleccionados, no amontonados en una cuadrícula"), body: t("El marketplace prioriza tiendas más sólidas, fichas más limpias y una mejor responsabilidad post-compra antes que la sobrecarga del catálogo.") },
     ],
     emptyTitle: t("El catálogo se está preparando."),
@@ -1775,12 +1775,12 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("Estándares del marketplace"),
     standardsTitle: t("Diseñado para la confianza, la claridad y una experiencia de compra más serena."),
     standardsBullets: [
-      t("Las candidaturas de vendedores, la moderación y las aprobaciones se revisan a través de canales dedicados de HenryCo."),
+      t("Las candidaturas de vendedores, la moderación y las aprobaciones se revisan a través de canales dedicados de Henry & Co."),
       t("Las actualizaciones de pedido, las reseñas, el soporte y los pagos permanecen conectados a la misma cuenta de comprador."),
       t("El soporte, la revisión de pagos y las operaciones de entrega se mantienen organizados para que las respuestas sigan siendo coherentes."),
     ],
     sellerKicker: t("Calidad del vendedor"),
-    sellerTitle: t("Los vendedores serios empiezan dentro de su cuenta HenryCo."),
+    sellerTitle: t("Los vendedores serios empiezan dentro de su cuenta Henry & Co."),
     sellerBody:
       t("Los visitantes públicos pueden conocer la venta en /sell, mientras que la candidatura, el progreso del borrador, las actualizaciones de revisión y el estado de aprobación permanecen dentro de la experiencia del vendedor."),
     sellerBullets: [
@@ -1795,19 +1795,19 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("Calificación de confianza"),
   },
   kpiHints: {
-    verifiedStores: t("Vendedores curados e inventario propiedad de HenryCo con responsabilidad más clara."),
+    verifiedStores: t("Vendedores curados e inventario propiedad de Henry & Co. con responsabilidad más clara."),
     activeListings: t("Listados aprobados mostrados con claridad de entrega, confianza y propiedad."),
     trustRating: t("La calidad de las reseñas del marketplace y la fiabilidad del vendedor aparecen antes del pago."),
   },
   footer: {
-    brandSubtitle: t("Comercio refinado con una cuenta HenryCo conectada"),
+    brandSubtitle: t("Comercio refinado con una cuenta Henry & Co. conectada"),
     brandBody:
-      t("HenryCo Marketplace está diseñado para compras de alta confianza, vendedores verificados y una experiencia más limpia del pago a la entrega."),
+      t("Henry & Co. Marketplace está diseñado para compras de alta confianza, vendedores verificados y una experiencia más limpia del pago a la entrega."),
     shopTitle: t("Comprar"),
     sellTitle: t("Vender"),
     supportTitle: t("Soporte"),
     supportBody:
-      t("Pedidos, conversaciones con vendedores, actualizaciones de soporte y registros de pago permanecen conectados en una sola cuenta HenryCo."),
+      t("Pedidos, conversaciones con vendedores, actualizaciones de soporte y registros de pago permanecen conectados en una sola cuenta Henry & Co."),
     shopLinks: [
       { href: "/search", label: t("Buscar en el marketplace") },
       { href: "/deals", label: t("Ofertas y ediciones limitadas") },
@@ -1816,7 +1816,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("Soporte y resolución") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("Por qué vender en HenryCo") },
+      { href: "/sell", label: t("Por qué vender en Henry & Co.") },
       { href: "/sell/pricing", label: t("Precios y tarifas del vendedor") },
       { href: "/policies/seller-policy", label: t("Política del vendedor") },
       { href: "/account/seller-application", label: t("Candidatura de vendedor") },
@@ -1824,7 +1824,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("Stock HenryCo"),
+    stockedByHenryCo: t("Stock Henry & Co."),
     verifiedSeller: t("Vendedor verificado"),
     onlyLeft: t("Solo quedan {count}"),
     saveToWishlist: t("Guardar en deseos"),
@@ -1862,7 +1862,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Seguimiento de pedido — HenryCo Marketplace"),
+      title: t("Seguimiento de pedido — Henry & Co. Marketplace"),
       description:
         t("Sigue cada segmento de vendedor, novedad de pago e hito de envío en un solo sitio. El depósito en garantía se mantiene hasta que se confirme la entrega."),
     },
@@ -1879,7 +1879,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Registro de pago"),
       walletBody: t("Se cargó el saldo de la cartera y el pedido queda en depósito hasta el envío."),
-      proofBody: t("Se adjuntó el comprobante de transferencia para revisión de finanzas de HenryCo."),
+      proofBody: t("Se adjuntó el comprobante de transferencia para revisión de finanzas de Henry & Co."),
       awaitingBody: t("El pago espera el comprobante de finanzas o la conciliación tras la entrega."),
       methodLabel: t("Método"),
       statusLabel: t("Estado"),
@@ -1895,7 +1895,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Segmentos de vendedor"),
       title: t("Cada vendedor responde por su propio envío."),
-      henrycoSegment: t("Segmento HenryCo"),
+      henrycoSegment: t("Segmento Henry & Co."),
       fulfillmentLabel: t("Envío"),
       trackingLabel: t("Seguimiento"),
       payoutLabel: t("Liquidación"),
@@ -1903,7 +1903,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Confirmación de recepción"),
-      body: t("Confirma la recepción cuando el pedido sea satisfactorio. HenryCo solo libera la liquidación al vendedor tras confirmar la entrega o si el pedido cumple la liberación automática."),
+      body: t("Confirma la recepción cuando el pedido sea satisfactorio. Henry & Co. solo libera la liquidación al vendedor tras confirmar la entrega o si el pedido cumple la liberación automática."),
       confirmCta: t("Confirmar recepción"),
     },
     help: {
@@ -1916,9 +1916,9 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Ofertas verificadas — HenryCo Marketplace"),
+      title: t("Ofertas verificadas — Henry & Co. Marketplace"),
       description:
-        t("Descuentos filtrados por confianza, certeza de stock y responsabilidad del vendedor. En la página de ofertas de HenryCo solo aparecen listados verificados con señales limpias."),
+        t("Descuentos filtrados por confianza, certeza de stock y responsabilidad del vendedor. En la página de ofertas de Henry & Co. solo aparecen listados verificados con señales limpias."),
     },
     pageIntro: {
       kicker: t("Ofertas verificadas"),
@@ -1938,7 +1938,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("Marca"),
     bodyFallback:
-      t("Una tienda verificada en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago."),
+      t("Una tienda verificada en Henry & Co. Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago."),
     searchCta: t("Buscar en esta marca"),
     trustCta: t("Estándares de confianza"),
     stats: {
@@ -1950,20 +1950,20 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("En directo desde {brand}"),
     openFullSearch: t("Abrir búsqueda completa"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Explora productos verificados de {brand} en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaportes de vendedor visibles antes del pago."),
+      t("Explora productos verificados de {brand} en Henry & Co. Marketplace, con señales de confianza, claridad de entrega y pasaportes de vendedor visibles antes del pago."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Explora los productos verificados de {store} en HenryCo Marketplace, con señales de confianza, claridad de entrega y el pasaporte del vendedor visibles antes del pago."),
+      t("Explora los productos verificados de {store} en Henry & Co. Marketplace, con señales de confianza, claridad de entrega y el pasaporte del vendedor visibles antes del pago."),
     metadataDescriptionFallback:
-      t("Una tienda verificada en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes de cada pago."),
+      t("Una tienda verificada en Henry & Co. Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes de cada pago."),
     hero: {
       eyebrow: t("Pasaporte de la tienda"),
       bodyFallback:
-        t("Un vendedor verificado en HenryCo Marketplace, con señales de confianza, claridad de entrega y un pasaporte transparente visible antes de cada pago."),
+        t("Un vendedor verificado en Henry & Co. Marketplace, con señales de confianza, claridad de entrega y un pasaporte transparente visible antes de cada pago."),
     },
     stats: {
       trustScore: t("Puntuación de confianza"),
@@ -1976,7 +1976,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Soporte"),
-      contactLinkLabel: t("Usa HenryCo Marketplace para contactar con esta tienda"),
+      contactLinkLabel: t("Usa Henry & Co. Marketplace para contactar con esta tienda"),
       contactBodySuffix:
         t(" — los mensajes quedan registrados y vinculados a la referencia de tu pedido para que cada actualización se mantenga en un solo lugar."),
       ctaLabel: t("Contactar con esta tienda"),
@@ -1997,7 +1997,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   help: {
     metadata: {
-      title: t("Centro de ayuda — HenryCo Marketplace"),
+      title: t("Centro de ayuda — Henry & Co. Marketplace"),
       description:
         t("Consulta las dudas más frecuentes de compradores y vendedores. Si no encuentras lo que buscas, abre un ticket y una persona del equipo lo leerá."),
     },
@@ -2015,17 +2015,17 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Vender en HenryCo — marketplace selectivo para vendedores de confianza"),
+      title: t("Vender en Henry & Co. — marketplace selectivo para vendedores de confianza"),
       description:
-        t("Solicita vender en HenryCo Marketplace: posicionamiento basado en la confianza, escaparates premium y un espacio unificado para pedidos, pagos y soporte."),
+        t("Solicita vender en Henry & Co. Marketplace: posicionamiento basado en la confianza, escaparates premium y un espacio unificado para pedidos, pagos y soporte."),
     },
     hero: {
-      kicker: t("Vender en HenryCo"),
+      kicker: t("Vender en Henry & Co."),
       title: t("Selectivo por diseño. Pensado para vendedores que priorizan la confianza."),
-      body: t("HenryCo Marketplace favorece a vendedores cuidadosos en la presentación, fiables en el cumplimiento y honestos con la protección al comprador. El nivel exigido se explica en esta página; la solicitud de vendedor continúa dentro de tu cuenta HenryCo."),
+      body: t("Henry & Co. Marketplace favorece a vendedores cuidadosos en la presentación, fiables en el cumplimiento y honestos con la protección al comprador. El nivel exigido se explica en esta página; la solicitud de vendedor continúa dentro de tu cuenta Henry & Co."),
       primaryCta: t("Abrir solicitud de vendedor"),
       secondaryCta: t("Ver tarifas de vendedor"),
-      signInCta: t("Iniciar sesión con cuenta HenryCo"),
+      signInCta: t("Iniciar sesión con cuenta Henry & Co."),
       highlights: [
         { label: t("Selección"), value: t("Revisión manual, no pago por listar") },
         { label: t("Escaparate"), value: t("Pasaporte de confianza visible para compradores") },
@@ -2044,9 +2044,9 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Cómo funciona el onboarding"),
       stepLabel: t("Paso"),
       steps: [
-        { step: "01", title: t("Iniciar la solicitud de vendedor"), body: t("Abre la solicitud desde tu cuenta HenryCo — los borradores se guardan automáticamente mientras reúnes la información.") },
+        { step: "01", title: t("Iniciar la solicitud de vendedor"), body: t("Abre la solicitud desde tu cuenta Henry & Co. — los borradores se guardan automáticamente mientras reúnes la información.") },
         { step: "02", title: t("Añadir los datos del negocio"), body: t("Nombre de la empresa, perfil de tienda, enfoque de producto y los documentos de verificación que explican cómo cumples los pedidos.") },
-        { step: "03", title: t("Revisión de la solicitud"), body: t("El equipo de HenryCo revisa documentos, señales de confianza y la solidez de la tienda — no solo una insignia de pago.") },
+        { step: "03", title: t("Revisión de la solicitud"), body: t("El equipo de Henry & Co. revisa documentos, señales de confianza y la solidez de la tienda — no solo una insignia de pago.") },
         { step: "04", title: t("Onboarding del vendedor"), body: t("Los vendedores aprobados continúan con el onboarding, donde tarifas, comisiones de publicación, ventanas de cobro y políticas son visibles antes de publicar.") },
       ],
       callout: {
@@ -2078,7 +2078,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Tarifas para vendedores — HenryCo Marketplace"),
+      title: t("Tarifas para vendedores — Henry & Co. Marketplace"),
       description:
         t("Tarifas de plan, de publicación, de destacados, comisión por transacción y procesamiento de cobros se declaran por adelantado — antes de publicar inventario, no después."),
     },
@@ -2108,7 +2108,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Empezar con {plan}"),
     },
     economics: {
-      kicker: t("Cómo gana dinero HenryCo"),
+      kicker: t("Cómo gana dinero Henry & Co."),
       title: t("Declarado por adelantado, deducido a la vista."),
       items: [
         t("Las comisiones por transacción se descuentan en cada liquidación del grupo-pedido del vendedor antes de liberar el cobro."),
@@ -2125,7 +2125,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("¿Listo para postularte?"),
-      title: t("La solicitud se abre en tu cuenta de HenryCo."),
+      title: t("La solicitud se abre en tu cuenta de Henry & Co."),
       body: t("Puedes guardar el borrador y volver — la tarificación visible aquí se aplica una vez completado el onboarding de vendedor."),
       primaryCta: t("Postularme como vendedor"),
       secondaryCta: t("Estándares de confianza"),
@@ -2133,7 +2133,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("Confianza y seguridad — HenryCo Marketplace"),
+      title: t("Confianza y seguridad — Henry & Co. Marketplace"),
       description:
         t("La confianza define lo que puede hacer un vendedor, cómo se mueve el dinero y cómo responde la moderación. Niveles de vendedor, custodia, disputas y liberación de pagos dejan rastro en el servidor."),
     },
@@ -2156,7 +2156,7 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Control de custodia"),
-          body: t("Los fondos del comprador los retiene HenryCo primero y solo se liberan al pago cuando la entrega y los controles de confianza están validados."),
+          body: t("Los fondos del comprador los retiene Henry & Co. primero y solo se liberan al pago cuando la entrega y los controles de confianza están validados."),
         },
         {
           title: t("Revisión antifraude"),
@@ -2182,11 +2182,11 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo Marketplace"),
+      titleTemplate: t("{collection} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Descubre {collection} en HenryCo Marketplace — una selección curada de productos verificados, con señales de confianza, claridad en la entrega y pasaportes de vendedor visibles antes del pago."),
+        t("Descubre {collection} en Henry & Co. Marketplace — una selección curada de productos verificados, con señales de confianza, claridad en la entrega y pasaportes de vendedor visibles antes del pago."),
       fallbackDescription:
-        t("Una colección curada en HenryCo Marketplace, con productos verificados, señales de confianza, entrega clara y pasaportes de vendedor visibles antes del pago."),
+        t("Una colección curada en Henry & Co. Marketplace, con productos verificados, señales de confianza, entrega clara y pasaportes de vendedor visibles antes del pago."),
     },
     hero: {
       primaryCta: t("Abrir búsqueda completa"),
@@ -2206,12 +2206,12 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo Marketplace"),
+      titleTemplate: t("{policy} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{policy} en HenryCo Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago."),
-      fallbackTitle: t("Política del marketplace — HenryCo Marketplace"),
+        t("{policy} en Henry & Co. Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago."),
+      fallbackTitle: t("Política del marketplace — Henry & Co. Marketplace"),
       fallbackDescription:
-        t("Una política de HenryCo Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago."),
+        t("Una política de Henry & Co. Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago."),
     },
     hero: {
       backToTrust: t("Volver a los estándares de confianza"),
@@ -2247,11 +2247,11 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} en HenryCo Marketplace — stock verificado, entrega fiable y pasaporte del vendedor visibles antes del pago."),
+        t("{title} en Henry & Co. Marketplace — stock verificado, entrega fiable y pasaporte del vendedor visibles antes del pago."),
       fallbackDescription:
-        t("Un anuncio verificado en HenryCo Marketplace con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago."),
+        t("Un anuncio verificado en Henry & Co. Marketplace con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago."),
     },
     fulfillment: {
       sellerTrustLabel: t("Confianza del vendedor"),
@@ -2321,19 +2321,19 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("Marketplace premium refinado"),
     heroTitle: t("Compre em lojas verificadas, sem ruído, desorganização nem dúvidas sobre confiança."),
     heroBody:
-      t("O HenryCo Marketplace transforma o comércio multifornecedor numa experiência mais serena: descoberta mais clara, adição rápida a partir de cada cartão, clareza nos pedidos divididos, melhores passaportes de vendedor e uma única conta HenryCo para encomendas, pagamentos, avaliações e suporte."),
+      t("O Henry & Co. Marketplace transforma o comércio multifornecedor numa experiência mais serena: descoberta mais clara, adição rápida a partir de cada cartão, clareza nos pedidos divididos, melhores passaportes de vendedor e uma única conta Henry & Co. para encomendas, pagamentos, avaliações e suporte."),
     primaryCta: t("Explorar o catálogo"),
-    secondaryCta: t("Vender na HenryCo"),
+    secondaryCta: t("Vender na Henry & Co."),
     quickCards: [
       { title: t("Adição rápida em todo o lado"), body: t("Controlos discretos de carrinho ao nível do cartão, atualizações instantâneas do mini-carrinho e sem recarregamentos atrapalhados.") },
       { title: t("Trilhos de confiança verificados"), body: t("Passaportes de vendedor, promessas de entrega, qualidade das avaliações e propriedade do stock permanecem fáceis de ler.") },
-      { title: t("Uma conta, menos fricção"), body: t("Encomendas, pagamentos, lista de desejos, seguimentos e notificações ficam juntos numa única conta HenryCo.") },
+      { title: t("Uma conta, menos fricção"), body: t("Encomendas, pagamentos, lista de desejos, seguimentos e notificações ficam juntos numa única conta Henry & Co.") },
     ],
     whyKicker: t("Porque é diferente"),
     whyTitle: t("A confiança é visível antes do pagamento."),
     whyCards: [
       { title: t("A confiança é visível antes do pagamento"), body: t("O nível de verificação, a taxa de disputas, a capacidade de resposta do suporte e a fiabilidade do cumprimento ficam perto da decisão de compra.") },
-      { title: t("A clareza dos pedidos divididos continua legível"), body: t("Quando o stock vem de vários vendedores ou da HenryCo, a segmentação de entrega permanece evidente em vez de se tornar uma confusão no checkout.") },
+      { title: t("A clareza dos pedidos divididos continua legível"), body: t("Quando o stock vem de vários vendedores ou da Henry & Co., a segmentação de entrega permanece evidente em vez de se tornar uma confusão no checkout.") },
       { title: t("Os vendedores são selecionados, não despejados numa grelha"), body: t("O marketplace favorece lojas mais sólidas, fichas mais limpas e melhor responsabilidade pós-encomenda em vez de sobrecarga de catálogo.") },
     ],
     emptyTitle: t("O catálogo está a ser preparado."),
@@ -2354,12 +2354,12 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("Padrões do marketplace"),
     standardsTitle: t("Concebido para confiança, clareza e uma experiência de compra mais serena."),
     standardsBullets: [
-      t("As candidaturas de vendedores, a moderação e as aprovações são revistas em canais dedicados da HenryCo."),
+      t("As candidaturas de vendedores, a moderação e as aprovações são revistas em canais dedicados da Henry & Co."),
       t("As atualizações de encomenda, avaliações, suporte e pagamentos permanecem ligados à mesma conta de comprador."),
       t("Suporte, revisão de pagamentos e operações de entrega mantêm-se organizados para que as respostas continuem coerentes."),
     ],
     sellerKicker: t("Qualidade do vendedor"),
-    sellerTitle: t("Os vendedores sérios começam dentro da sua conta HenryCo."),
+    sellerTitle: t("Os vendedores sérios começam dentro da sua conta Henry & Co."),
     sellerBody:
       t("Os visitantes públicos podem conhecer a venda em /sell, enquanto a candidatura, o progresso do rascunho, as atualizações de revisão e o estado de aprovação permanecem dentro da experiência do vendedor."),
     sellerBullets: [
@@ -2374,19 +2374,19 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("Pontuação de confiança"),
   },
   kpiHints: {
-    verifiedStores: t("Vendedores curados e inventário da HenryCo com responsabilidade mais clara."),
+    verifiedStores: t("Vendedores curados e inventário da Henry & Co. com responsabilidade mais clara."),
     activeListings: t("Anúncios aprovados apresentados com clareza de entrega, confiança e propriedade."),
     trustRating: t("A qualidade das avaliações do marketplace e a fiabilidade do vendedor aparecem antes do pagamento."),
   },
   footer: {
-    brandSubtitle: t("Comércio refinado com uma conta HenryCo ligada"),
+    brandSubtitle: t("Comércio refinado com uma conta Henry & Co. ligada"),
     brandBody:
-      t("O HenryCo Marketplace foi concebido para compras de alta confiança, vendedores verificados e uma experiência mais limpa do pagamento à entrega."),
+      t("O Henry & Co. Marketplace foi concebido para compras de alta confiança, vendedores verificados e uma experiência mais limpa do pagamento à entrega."),
     shopTitle: t("Comprar"),
     sellTitle: t("Vender"),
     supportTitle: t("Suporte"),
     supportBody:
-      t("Encomendas, conversas com vendedores, atualizações de suporte e registos de pagamento permanecem ligados numa única conta HenryCo."),
+      t("Encomendas, conversas com vendedores, atualizações de suporte e registos de pagamento permanecem ligados numa única conta Henry & Co."),
     shopLinks: [
       { href: "/search", label: t("Pesquisar no marketplace") },
       { href: "/deals", label: t("Ofertas e edições limitadas") },
@@ -2395,7 +2395,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("Suporte e resolução") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("Porquê vender na HenryCo") },
+      { href: "/sell", label: t("Porquê vender na Henry & Co.") },
       { href: "/sell/pricing", label: t("Preços e taxas do vendedor") },
       { href: "/policies/seller-policy", label: t("Política do vendedor") },
       { href: "/account/seller-application", label: t("Candidatura de vendedor") },
@@ -2403,7 +2403,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("Stock HenryCo"),
+    stockedByHenryCo: t("Stock Henry & Co."),
     verifiedSeller: t("Vendedor verificado"),
     onlyLeft: t("Só restam {count}"),
     saveToWishlist: t("Guardar nos desejos"),
@@ -2441,7 +2441,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Acompanhamento do pedido — HenryCo Marketplace"),
+      title: t("Acompanhamento do pedido — Henry & Co. Marketplace"),
       description:
         t("Acompanha cada segmento de vendedor, atualização de pagamento e marco de entrega num só lugar. O depósito em garantia mantém-se ativo até confirmar a entrega."),
     },
@@ -2458,7 +2458,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Registo de pagamento"),
       walletBody: t("O saldo da carteira foi debitado e o pedido fica em depósito até à entrega."),
-      proofBody: t("O comprovativo de transferência foi anexado para análise da equipa financeira da HenryCo."),
+      proofBody: t("O comprovativo de transferência foi anexado para análise da equipa financeira da Henry & Co."),
       awaitingBody: t("O pagamento aguarda a evidência financeira ou a reconciliação na entrega."),
       methodLabel: t("Método"),
       statusLabel: t("Estado"),
@@ -2474,7 +2474,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Segmentos de vendedor"),
       title: t("Cada vendedor responde pela sua própria expedição."),
-      henrycoSegment: t("Segmento HenryCo"),
+      henrycoSegment: t("Segmento Henry & Co."),
       fulfillmentLabel: t("Expedição"),
       trackingLabel: t("Acompanhamento"),
       payoutLabel: t("Pagamento"),
@@ -2482,7 +2482,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Confirmação de receção"),
-      body: t("Confirma a receção quando o pedido estiver satisfatório. A HenryCo só liberta o pagamento ao vendedor após confirmação da entrega ou quando o pedido cumpre a libertação automática."),
+      body: t("Confirma a receção quando o pedido estiver satisfatório. A Henry & Co. só liberta o pagamento ao vendedor após confirmação da entrega ou quando o pedido cumpre a libertação automática."),
       confirmCta: t("Confirmar receção"),
     },
     help: {
@@ -2495,9 +2495,9 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Ofertas verificadas — HenryCo Marketplace"),
+      title: t("Ofertas verificadas — Henry & Co. Marketplace"),
       description:
-        t("Descontos filtrados por confiança, certeza de stock e responsabilidade do vendedor. Na página de ofertas da HenryCo só aparecem anúncios verificados com sinais limpos."),
+        t("Descontos filtrados por confiança, certeza de stock e responsabilidade do vendedor. Na página de ofertas da Henry & Co. só aparecem anúncios verificados com sinais limpos."),
     },
     pageIntro: {
       kicker: t("Ofertas verificadas"),
@@ -2517,7 +2517,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("Marca"),
     bodyFallback:
-      t("Uma loja verificada na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento."),
+      t("Uma loja verificada na Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento."),
     searchCta: t("Pesquisar nesta marca"),
     trustCta: t("Padrões de confiança"),
     stats: {
@@ -2529,20 +2529,20 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("Em direto de {brand}"),
     openFullSearch: t("Abrir pesquisa completa"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Explora produtos verificados de {brand} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento."),
+      t("Explora produtos verificados de {brand} na Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Explora os produtos verificados de {store} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e o passaporte do vendedor visíveis antes do pagamento."),
+      t("Explora os produtos verificados de {store} na Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e o passaporte do vendedor visíveis antes do pagamento."),
     metadataDescriptionFallback:
-      t("Uma loja verificada na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes de cada pagamento."),
+      t("Uma loja verificada na Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes de cada pagamento."),
     hero: {
       eyebrow: t("Passaporte da loja"),
       bodyFallback:
-        t("Um vendedor verificado na HenryCo Marketplace, com sinais de confiança, clareza de entrega e um passaporte transparente visível antes de cada pagamento."),
+        t("Um vendedor verificado na Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e um passaporte transparente visível antes de cada pagamento."),
     },
     stats: {
       trustScore: t("Pontuação de confiança"),
@@ -2555,7 +2555,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Suporte"),
-      contactLinkLabel: t("Usa a HenryCo Marketplace para contactar esta loja"),
+      contactLinkLabel: t("Usa a Henry & Co. Marketplace para contactar esta loja"),
       contactBodySuffix:
         t(" — as mensagens ficam registadas e ligadas à referência do teu pedido para que cada atualização permaneça num só lugar."),
       ctaLabel: t("Contactar esta loja"),
@@ -2594,16 +2594,16 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Abrir pesquisa completa"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Explora produtos verificados em {category} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento."),
+        t("Explora produtos verificados em {category} na Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento."),
       fallbackDescription:
-        t("Percorre uma categoria curada da HenryCo Marketplace com sinais de confiança, clareza de entrega e passaportes de vendedor antes do pagamento."),
+        t("Percorre uma categoria curada da Henry & Co. Marketplace com sinais de confiança, clareza de entrega e passaportes de vendedor antes do pagamento."),
     },
   },
   help: {
     metadata: {
-      title: t("Centro de ajuda — HenryCo Marketplace"),
+      title: t("Centro de ajuda — Henry & Co. Marketplace"),
       description:
         t("Consulta as dúvidas mais comuns de compradores e vendedores. Se não encontrares o que precisas, abre um pedido de apoio e alguém da equipa lê-o."),
     },
@@ -2621,17 +2621,17 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Vender na HenryCo — marketplace seletivo para vendedores de confiança"),
+      title: t("Vender na Henry & Co. — marketplace seletivo para vendedores de confiança"),
       description:
-        t("Candidata-te para vender na HenryCo Marketplace: posicionamento de confiança, montras premium e um espaço unificado para encomendas, pagamentos e apoio."),
+        t("Candidata-te para vender na Henry & Co. Marketplace: posicionamento de confiança, montras premium e um espaço unificado para encomendas, pagamentos e apoio."),
     },
     hero: {
-      kicker: t("Vender na HenryCo"),
+      kicker: t("Vender na Henry & Co."),
       title: t("Seletiva por natureza. Pensada para vendedores que apostam na confiança."),
-      body: t("A HenryCo Marketplace prefere vendedores cuidadosos na apresentação, fiáveis no cumprimento e honestos na proteção ao comprador. O nível exigido fica explícito nesta página; a candidatura de vendedor continua dentro da tua conta HenryCo."),
+      body: t("A Henry & Co. Marketplace prefere vendedores cuidadosos na apresentação, fiáveis no cumprimento e honestos na proteção ao comprador. O nível exigido fica explícito nesta página; a candidatura de vendedor continua dentro da tua conta Henry & Co."),
       primaryCta: t("Abrir candidatura de vendedor"),
       secondaryCta: t("Ver preços de vendedor"),
-      signInCta: t("Iniciar sessão com a conta HenryCo"),
+      signInCta: t("Iniciar sessão com a conta Henry & Co."),
       highlights: [
         { label: t("Seleção"), value: t("Análise manual, sem listagem paga") },
         { label: t("Montra"), value: t("Passaporte de confiança visível para compradores") },
@@ -2650,9 +2650,9 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Como funciona o onboarding"),
       stepLabel: t("Passo"),
       steps: [
-        { step: "01", title: t("Iniciar a candidatura de vendedor"), body: t("Abre a candidatura a partir da tua conta HenryCo — os rascunhos são guardados automaticamente enquanto reúnes os detalhes.") },
+        { step: "01", title: t("Iniciar a candidatura de vendedor"), body: t("Abre a candidatura a partir da tua conta Henry & Co. — os rascunhos são guardados automaticamente enquanto reúnes os detalhes.") },
         { step: "02", title: t("Adicionar dados do negócio"), body: t("Nome da empresa, perfil da loja, foco de produto e quaisquer documentos de verificação que expliquem como cumpres encomendas.") },
-        { step: "03", title: t("Análise da candidatura"), body: t("A equipa HenryCo analisa documentos, sinais de confiança e a robustez da loja — não apenas um emblema pago.") },
+        { step: "03", title: t("Análise da candidatura"), body: t("A equipa Henry & Co. analisa documentos, sinais de confiança e a robustez da loja — não apenas um emblema pago.") },
         { step: "04", title: t("Onboarding de vendedor"), body: t("Os vendedores aprovados seguem para o onboarding onde preços, taxas de publicação, janelas de pagamento e regras ficam visíveis antes de publicares.") },
       ],
       callout: {
@@ -2684,7 +2684,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Preços para vendedores — HenryCo Marketplace"),
+      title: t("Preços para vendedores — Henry & Co. Marketplace"),
       description:
         t("Taxas de plano, taxas de publicação, taxas de destaque, comissão por transação e processamento de pagamento são todas declaradas à partida — antes de publicares inventário, não depois."),
     },
@@ -2714,7 +2714,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Começar com {plan}"),
     },
     economics: {
-      kicker: t("Como a HenryCo ganha dinheiro"),
+      kicker: t("Como a Henry & Co. ganha dinheiro"),
       title: t("Declarado à partida, deduzido à vista."),
       items: [
         t("As comissões por transação são deduzidas em cada liquidação do grupo-encomenda do vendedor antes da libertação do pagamento."),
@@ -2731,7 +2731,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Pronto para te candidatares?"),
-      title: t("A candidatura abre na tua conta HenryCo."),
+      title: t("A candidatura abre na tua conta Henry & Co."),
       body: t("Podes guardar o rascunho e voltar — a tarificação visível aqui aplica-se assim que o onboarding de vendedor estiver concluído."),
       primaryCta: t("Candidatar como vendedor"),
       secondaryCta: t("Padrões de confiança"),
@@ -2739,7 +2739,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("Confiança e segurança — HenryCo Marketplace"),
+      title: t("Confiança e segurança — Henry & Co. Marketplace"),
       description:
         t("A confiança define o que um vendedor pode fazer, como o dinheiro se move e como a moderação responde. Níveis de vendedor, custódia, disputas e libertação de pagamentos deixam rasto no servidor."),
     },
@@ -2762,7 +2762,7 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Controlo da custódia"),
-          body: t("Os fundos do comprador ficam primeiro retidos pela HenryCo e só são libertados após confirmação da entrega e das verificações de confiança."),
+          body: t("Os fundos do comprador ficam primeiro retidos pela Henry & Co. e só são libertados após confirmação da entrega e das verificações de confiança."),
         },
         {
           title: t("Revisão antifraude"),
@@ -2788,11 +2788,11 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo Marketplace"),
+      titleTemplate: t("{collection} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Explore {collection} no HenryCo Marketplace — uma seleção curada de produtos verificados, com sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout."),
+        t("Explore {collection} no Henry & Co. Marketplace — uma seleção curada de produtos verificados, com sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout."),
       fallbackDescription:
-        t("Uma coleção curada no HenryCo Marketplace, com produtos verificados, sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout."),
+        t("Uma coleção curada no Henry & Co. Marketplace, com produtos verificados, sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout."),
     },
     hero: {
       primaryCta: t("Abrir busca completa"),
@@ -2812,12 +2812,12 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo Marketplace"),
+      titleTemplate: t("{policy} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{policy} no HenryCo Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout."),
-      fallbackTitle: t("Política do marketplace — HenryCo Marketplace"),
+        t("{policy} no Henry & Co. Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout."),
+      fallbackTitle: t("Política do marketplace — Henry & Co. Marketplace"),
       fallbackDescription:
-        t("Uma política do HenryCo Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout."),
+        t("Uma política do Henry & Co. Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout."),
     },
     hero: {
       backToTrust: t("Voltar aos padrões de confiança"),
@@ -2853,11 +2853,11 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} no HenryCo Marketplace — stock verificado, entrega fiável e passaporte do vendedor visíveis antes do pagamento."),
+        t("{title} no Henry & Co. Marketplace — stock verificado, entrega fiável e passaporte do vendedor visíveis antes do pagamento."),
       fallbackDescription:
-        t("Um anúncio verificado no HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento."),
+        t("Um anúncio verificado no Henry & Co. Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento."),
     },
     fulfillment: {
       sellerTrustLabel: t("Confiança do vendedor"),
@@ -2927,19 +2927,19 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("Veredelter Premium-Marktplatz"),
     heroTitle: t("Kaufe bei verifizierten Shops ein – ohne Lärm, Unordnung oder Zweifel an der Vertrauenswürdigkeit."),
     heroBody:
-      t("HenryCo Marketplace macht aus Multi-Anbieter-Handel ein ruhigeres Erlebnis: klarere Entdeckung, schnelles Hinzufügen direkt von jeder Karte, transparente geteilte Bestellungen, stärkere Verkäuferpässe und ein einziges HenryCo-Konto für Bestellungen, Zahlungen, Bewertungen und Support."),
+      t("Henry & Co. Marketplace macht aus Multi-Anbieter-Handel ein ruhigeres Erlebnis: klarere Entdeckung, schnelles Hinzufügen direkt von jeder Karte, transparente geteilte Bestellungen, stärkere Verkäuferpässe und ein einziges Henry & Co.-Konto für Bestellungen, Zahlungen, Bewertungen und Support."),
     primaryCta: t("Katalog entdecken"),
-    secondaryCta: t("Auf HenryCo verkaufen"),
+    secondaryCta: t("Auf Henry & Co. verkaufen"),
     quickCards: [
       { title: t("Schnelles Hinzufügen überall"), body: t("Dezente Warenkorbsteuerung auf Kartenebene, sofortige Mini-Warenkorb-Updates und keine umständlichen Reloads.") },
       { title: t("Verifizierte Vertrauensschienen"), body: t("Verkäuferpässe, Lieferversprechen, Bewertungsqualität und Bestandsbesitz bleiben einfach lesbar.") },
-      { title: t("Ein Konto, weniger Reibung"), body: t("Bestellungen, Zahlungen, Wunschliste, Follows und Benachrichtigungen bleiben in einem HenryCo-Konto vereint.") },
+      { title: t("Ein Konto, weniger Reibung"), body: t("Bestellungen, Zahlungen, Wunschliste, Follows und Benachrichtigungen bleiben in einem Henry & Co.-Konto vereint.") },
     ],
     whyKicker: t("Warum sich das anders anfühlt"),
     whyTitle: t("Vertrauen ist vor der Zahlung sichtbar."),
     whyCards: [
       { title: t("Vertrauen ist vor der Zahlung sichtbar"), body: t("Verifizierungsgrad, Streitfallquote, Reaktionsfähigkeit des Supports und Zuverlässigkeit der Erfüllung bleiben nahe an der Kaufentscheidung.") },
-      { title: t("Klarheit bei geteilten Bestellungen bleibt lesbar"), body: t("Wenn der Bestand von verschiedenen Verkäufern oder aus HenryCo-Lager kommt, bleibt die Liefersegmentierung offensichtlich, statt zu Checkout-Verwirrung zu führen.") },
+      { title: t("Klarheit bei geteilten Bestellungen bleibt lesbar"), body: t("Wenn der Bestand von verschiedenen Verkäufern oder aus Henry & Co.-Lager kommt, bleibt die Liefersegmentierung offensichtlich, statt zu Checkout-Verwirrung zu führen.") },
       { title: t("Verkäufer werden kuratiert, nicht in ein Raster gekippt"), body: t("Der Marktplatz bevorzugt stärkere Shops, sauberere Angebote und bessere Nachkauf-Verantwortung gegenüber Katalog-Wildwuchs.") },
     ],
     emptyTitle: t("Der Katalog wird vorbereitet."),
@@ -2960,12 +2960,12 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("Marketplace-Standards"),
     standardsTitle: t("Gebaut für Vertrauen, Klarheit und ein ruhigeres Kauferlebnis."),
     standardsBullets: [
-      t("Verkäuferbewerbungen, Moderation und Freigaben laufen durch dedizierte HenryCo-Prüfschienen."),
+      t("Verkäuferbewerbungen, Moderation und Freigaben laufen durch dedizierte Henry & Co.-Prüfschienen."),
       t("Bestellaktualisierungen, Bewertungen, Support und Zahlungen bleiben mit demselben Käuferkonto verbunden."),
       t("Support, Zahlungsprüfung und Lieferoperationen bleiben organisiert, damit die Antworten konsistent bleiben."),
     ],
     sellerKicker: t("Verkäuferqualität"),
-    sellerTitle: t("Ernsthafte Verkäufer starten in ihrem HenryCo-Konto."),
+    sellerTitle: t("Ernsthafte Verkäufer starten in ihrem Henry & Co.-Konto."),
     sellerBody:
       t("Öffentliche Besucher können auf /sell mehr über den Verkauf erfahren, während Bewerbung, Entwurfsfortschritt, Prüfungs­updates und Freigabestatus innerhalb des Verkäufer-Erlebnisses bleiben."),
     sellerBullets: [
@@ -2980,19 +2980,19 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("Vertrauensbewertung"),
   },
   kpiHints: {
-    verifiedStores: t("Kuratierte Verkäufer und HenryCo-eigener Bestand mit klarerer Verantwortlichkeit."),
+    verifiedStores: t("Kuratierte Verkäufer und Henry & Co.-eigener Bestand mit klarerer Verantwortlichkeit."),
     activeListings: t("Genehmigte Angebote mit Liefer-, Vertrauens- und Eigentumsklarheit angezeigt."),
     trustRating: t("Marketplace-Bewertungsqualität und Verkäuferzuverlässigkeit erscheinen vor der Zahlung."),
   },
   footer: {
-    brandSubtitle: t("Veredelter Handel mit einem verbundenen HenryCo-Konto"),
+    brandSubtitle: t("Veredelter Handel mit einem verbundenen Henry & Co.-Konto"),
     brandBody:
-      t("HenryCo Marketplace ist für Einkäufe mit hohem Vertrauen, verifizierte Verkäufer und ein saubereres Erlebnis vom Checkout bis zur Lieferung gebaut."),
+      t("Henry & Co. Marketplace ist für Einkäufe mit hohem Vertrauen, verifizierte Verkäufer und ein saubereres Erlebnis vom Checkout bis zur Lieferung gebaut."),
     shopTitle: t("Einkaufen"),
     sellTitle: t("Verkaufen"),
     supportTitle: t("Support"),
     supportBody:
-      t("Bestellungen, Verkäufergespräche, Support-Updates und Zahlungseinträge bleiben in einem HenryCo-Konto verbunden."),
+      t("Bestellungen, Verkäufergespräche, Support-Updates und Zahlungseinträge bleiben in einem Henry & Co.-Konto verbunden."),
     shopLinks: [
       { href: "/search", label: t("Im Marketplace suchen") },
       { href: "/deals", label: t("Angebote und zeitlich begrenzte Editionen") },
@@ -3001,7 +3001,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("Support und Lösung") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("Warum auf HenryCo verkaufen") },
+      { href: "/sell", label: t("Warum auf Henry & Co. verkaufen") },
       { href: "/sell/pricing", label: t("Preise und Gebühren für Verkäufer") },
       { href: "/policies/seller-policy", label: t("Verkäuferrichtlinie") },
       { href: "/account/seller-application", label: t("Verkäuferbewerbung") },
@@ -3009,7 +3009,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("Von HenryCo geführt"),
+    stockedByHenryCo: t("Von Henry & Co. geführt"),
     verifiedSeller: t("Verifizierter Verkäufer"),
     onlyLeft: t("Nur noch {count}"),
     saveToWishlist: t("Auf Wunschliste setzen"),
@@ -3047,7 +3047,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Bestellverfolgung — HenryCo Marketplace"),
+      title: t("Bestellverfolgung — Henry & Co. Marketplace"),
       description:
         t("Verfolge jedes Händler-Segment, jede Zahlungsaktualisierung und jeden Versandmeilenstein an einem Ort. Die Treuhand bleibt aktiv, bis die Lieferung bestätigt ist."),
     },
@@ -3064,7 +3064,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Zahlungsnachweis"),
       walletBody: t("Das Wallet-Guthaben wurde belastet und die Bestellung liegt bis zur Erfüllung in der Treuhand."),
-      proofBody: t("Der Überweisungsbeleg ist zur Prüfung durch das HenryCo-Finanzteam angehängt."),
+      proofBody: t("Der Überweisungsbeleg ist zur Prüfung durch das Henry & Co.-Finanzteam angehängt."),
       awaitingBody: t("Die Zahlung wartet auf den Finanznachweis oder den Abgleich bei Lieferung."),
       methodLabel: t("Methode"),
       statusLabel: t("Status"),
@@ -3080,7 +3080,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Händler-Segmente"),
       title: t("Jeder Händler steht für seinen eigenen Versand ein."),
-      henrycoSegment: t("HenryCo-Segment"),
+      henrycoSegment: t("Henry & Co.-Segment"),
       fulfillmentLabel: t("Versand"),
       trackingLabel: t("Sendungsverfolgung"),
       payoutLabel: t("Auszahlung"),
@@ -3088,7 +3088,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Abschlussbestätigung"),
-      body: t("Bestätige den Abschluss, sobald die Bestellung in Ordnung ist. HenryCo gibt die Händlerauszahlung erst nach bestätigter Lieferung oder bei Eignung für die automatische Freigabe frei."),
+      body: t("Bestätige den Abschluss, sobald die Bestellung in Ordnung ist. Henry & Co. gibt die Händlerauszahlung erst nach bestätigter Lieferung oder bei Eignung für die automatische Freigabe frei."),
       confirmCta: t("Abschluss bestätigen"),
     },
     help: {
@@ -3101,9 +3101,9 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Geprüfte Angebote — HenryCo Marketplace"),
+      title: t("Geprüfte Angebote — Henry & Co. Marketplace"),
       description:
-        t("Rabatte gefiltert nach Vertrauen, verlässlicher Bestandslage und Händlerverantwortung. Auf der HenryCo-Deals-Seite erscheinen nur verifizierte Listings mit sauberen Vertrauenssignalen."),
+        t("Rabatte gefiltert nach Vertrauen, verlässlicher Bestandslage und Händlerverantwortung. Auf der Henry & Co.-Deals-Seite erscheinen nur verifizierte Listings mit sauberen Vertrauenssignalen."),
     },
     pageIntro: {
       kicker: t("Geprüfte Angebote"),
@@ -3123,7 +3123,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("Marke"),
     bodyFallback:
-      t("Ein verifizierter Shop auf HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout."),
+      t("Ein verifizierter Shop auf Henry & Co. Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout."),
     searchCta: t("In dieser Marke suchen"),
     trustCta: t("Vertrauensstandards"),
     stats: {
@@ -3135,20 +3135,20 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("Live von {brand}"),
     openFullSearch: t("Volle Suche öffnen"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Entdecke verifizierte Produkte von {brand} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout."),
+      t("Entdecke verifizierte Produkte von {brand} auf Henry & Co. Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Entdecke verifizierte Produkte von {store} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout."),
+      t("Entdecke verifizierte Produkte von {store} auf Henry & Co. Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout."),
     metadataDescriptionFallback:
-      t("Ein verifizierter Shop auf HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor jedem Checkout."),
+      t("Ein verifizierter Shop auf Henry & Co. Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor jedem Checkout."),
     hero: {
       eyebrow: t("Shop-Passport"),
       bodyFallback:
-        t("Eine verifizierte Verkäufer:in auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einem transparenten Passport schon vor jedem Checkout."),
+        t("Eine verifizierte Verkäufer:in auf Henry & Co. Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einem transparenten Passport schon vor jedem Checkout."),
     },
     stats: {
       trustScore: t("Vertrauensscore"),
@@ -3161,7 +3161,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Support"),
-      contactLinkLabel: t("Nutze HenryCo Marketplace, um diesen Shop zu kontaktieren"),
+      contactLinkLabel: t("Nutze Henry & Co. Marketplace, um diesen Shop zu kontaktieren"),
       contactBodySuffix:
         t(" — Nachrichten werden protokolliert und an deine Bestellreferenz gebunden, damit jede Aktualisierung an einem Ort bleibt."),
       ctaLabel: t("Diesen Shop kontaktieren"),
@@ -3200,16 +3200,16 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Volle Suche öffnen"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Entdecke verifizierte Produkte in {category} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports schon vor dem Checkout."),
+        t("Entdecke verifizierte Produkte in {category} auf Henry & Co. Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports schon vor dem Checkout."),
       fallbackDescription:
-        t("Stöbere durch eine kuratierte Kategorie im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout."),
+        t("Stöbere durch eine kuratierte Kategorie im Henry & Co. Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout."),
     },
   },
   help: {
     metadata: {
-      title: t("Hilfe-Center — HenryCo Marketplace"),
+      title: t("Hilfe-Center — Henry & Co. Marketplace"),
       description:
         t("Sieh dir die häufigsten Fragen von Käufer:innen und Verkäufer:innen an. Wenn du nicht fündig wirst, öffne ein Support-Ticket – ein Mensch aus dem Team liest es."),
     },
@@ -3227,17 +3227,17 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Auf HenryCo verkaufen — selektiver Marketplace für Vertrauens-Händler:innen"),
+      title: t("Auf Henry & Co. verkaufen — selektiver Marketplace für Vertrauens-Händler:innen"),
       description:
-        t("Bewirb dich für den Verkauf auf HenryCo Marketplace: vertrauensorientierte Positionierung, Premium-Storefronts und ein einheitlicher Workspace für Bestellungen, Auszahlungen und Support."),
+        t("Bewirb dich für den Verkauf auf Henry & Co. Marketplace: vertrauensorientierte Positionierung, Premium-Storefronts und ein einheitlicher Workspace für Bestellungen, Auszahlungen und Support."),
     },
     hero: {
-      kicker: t("Auf HenryCo verkaufen"),
+      kicker: t("Auf Henry & Co. verkaufen"),
       title: t("Selektiv von Grund auf. Gemacht für Händler:innen, die Vertrauen führen."),
-      body: t("HenryCo Marketplace bevorzugt Händler:innen, die auf Präsentation achten, verlässlich liefern und Käuferschutz ernst nehmen. Die Anforderungen sind auf dieser Seite klar; die Händler-Bewerbung läuft in deinem HenryCo-Konto weiter."),
+      body: t("Henry & Co. Marketplace bevorzugt Händler:innen, die auf Präsentation achten, verlässlich liefern und Käuferschutz ernst nehmen. Die Anforderungen sind auf dieser Seite klar; die Händler-Bewerbung läuft in deinem Henry & Co.-Konto weiter."),
       primaryCta: t("Händler-Bewerbung öffnen"),
       secondaryCta: t("Händler-Preise ansehen"),
-      signInCta: t("Mit HenryCo-Konto anmelden"),
+      signInCta: t("Mit Henry & Co.-Konto anmelden"),
       highlights: [
         { label: t("Auswahl"), value: t("Manuelle Prüfung statt Bezahllisting") },
         { label: t("Storefront"), value: t("Trust-Passport für Käufer:innen sichtbar") },
@@ -3256,9 +3256,9 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("So läuft das Onboarding"),
       stepLabel: t("Schritt"),
       steps: [
-        { step: "01", title: t("Händler-Bewerbung starten"), body: t("Öffne die Bewerbung aus deinem HenryCo-Konto heraus — Entwürfe werden automatisch gespeichert, während du die Details zusammenstellst.") },
+        { step: "01", title: t("Händler-Bewerbung starten"), body: t("Öffne die Bewerbung aus deinem Henry & Co.-Konto heraus — Entwürfe werden automatisch gespeichert, während du die Details zusammenstellst.") },
         { step: "02", title: t("Geschäftsdaten ergänzen"), body: t("Firmenname, Shop-Profil, Produkt-Fokus und alle Verifizierungsdokumente, die zeigen, wie du Bestellungen erfüllst.") },
-        { step: "03", title: t("Prüfung der Bewerbung"), body: t("Das HenryCo-Team prüft Dokumente, Vertrauenssignale und Shop-Reife — nicht nur ein bezahltes Abzeichen.") },
+        { step: "03", title: t("Prüfung der Bewerbung"), body: t("Das Henry & Co.-Team prüft Dokumente, Vertrauenssignale und Shop-Reife — nicht nur ein bezahltes Abzeichen.") },
         { step: "04", title: t("Vendor-Onboarding"), body: t("Freigegebene Händler:innen gehen ins Vendor-Onboarding, wo Preise, Listing-Gebühren, Auszahlungsfenster und Richtlinien vor der Veröffentlichung sichtbar bleiben.") },
       ],
       callout: {
@@ -3290,7 +3290,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Verkäuferpreise — HenryCo Marketplace"),
+      title: t("Verkäuferpreise — Henry & Co. Marketplace"),
       description:
         t("Plangebühren, Listing-Gebühren, Gebühren für Featured-Slots, Transaktionsprovision und Auszahlungsabwicklung werden alle vorab ausgewiesen — vor der Veröffentlichung deines Bestands, nicht danach."),
     },
@@ -3320,7 +3320,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Mit {plan} starten"),
     },
     economics: {
-      kicker: t("Wie HenryCo Geld verdient"),
+      kicker: t("Wie Henry & Co. Geld verdient"),
       title: t("Vorab ausgewiesen, offen abgezogen."),
       items: [
         t("Transaktionsprovisionen werden bei jeder Vendor-Bestellgruppen-Abrechnung vor der Auszahlung abgezogen."),
@@ -3337,7 +3337,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Bereit für die Bewerbung?"),
-      title: t("Die Bewerbung öffnet sich in deinem HenryCo-Konto."),
+      title: t("Die Bewerbung öffnet sich in deinem Henry & Co.-Konto."),
       body: t("Du kannst den Entwurf speichern und zurückkehren — die hier sichtbare Preisgestaltung gilt, sobald das Vendor-Onboarding abgeschlossen ist."),
       primaryCta: t("Als Verkäufer bewerben"),
       secondaryCta: t("Vertrauensstandards"),
@@ -3345,7 +3345,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("Vertrauen & Sicherheit — HenryCo Marketplace"),
+      title: t("Vertrauen & Sicherheit — Henry & Co. Marketplace"),
       description:
         t("Vertrauen bestimmt, was ein Verkäufer darf, wie Geld fließt und wie die Moderation reagiert. Verkäuferstufen, Treuhand, Streitfälle und Auszahlungsfreigaben hinterlassen einen serverseitigen Audit-Trail."),
     },
@@ -3368,7 +3368,7 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Treuhand-Kontrolle"),
-          body: t("Käufergelder werden zuerst von HenryCo gehalten und erst nach Lieferung und Vertrauensprüfung zur Auszahlung freigegeben."),
+          body: t("Käufergelder werden zuerst von Henry & Co. gehalten und erst nach Lieferung und Vertrauensprüfung zur Auszahlung freigegeben."),
         },
         {
           title: t("Anti-Betrugs-Prüfung"),
@@ -3394,11 +3394,11 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo Marketplace"),
+      titleTemplate: t("{collection} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Entdecken Sie {collection} auf dem HenryCo Marketplace — eine kuratierte Auswahl geprüfter Produkte mit Vertrauenssignalen, klaren Lieferinformationen und Verkäuferpässen vor dem Checkout."),
+        t("Entdecken Sie {collection} auf dem Henry & Co. Marketplace — eine kuratierte Auswahl geprüfter Produkte mit Vertrauenssignalen, klaren Lieferinformationen und Verkäuferpässen vor dem Checkout."),
       fallbackDescription:
-        t("Eine kuratierte Kollektion auf dem HenryCo Marketplace mit geprüften Produkten, Vertrauenssignalen, klarer Lieferung und sichtbaren Verkäuferpässen vor dem Checkout."),
+        t("Eine kuratierte Kollektion auf dem Henry & Co. Marketplace mit geprüften Produkten, Vertrauenssignalen, klarer Lieferung und sichtbaren Verkäuferpässen vor dem Checkout."),
     },
     hero: {
       primaryCta: t("Vollständige Suche öffnen"),
@@ -3418,12 +3418,12 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo Marketplace"),
+      titleTemplate: t("{policy} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{policy} im HenryCo Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar."),
-      fallbackTitle: t("Marketplace-Richtlinie — HenryCo Marketplace"),
+        t("{policy} im Henry & Co. Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar."),
+      fallbackTitle: t("Marketplace-Richtlinie — Henry & Co. Marketplace"),
       fallbackDescription:
-        t("Eine Richtlinie des HenryCo Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar."),
+        t("Eine Richtlinie des Henry & Co. Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar."),
     },
     hero: {
       backToTrust: t("Zurück zu den Vertrauensstandards"),
@@ -3459,11 +3459,11 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} im HenryCo Marketplace — geprüfter Lagerbestand, verlässliche Lieferung und sichtbarer Verkäuferpass vor dem Checkout."),
+        t("{title} im Henry & Co. Marketplace — geprüfter Lagerbestand, verlässliche Lieferung und sichtbarer Verkäuferpass vor dem Checkout."),
       fallbackDescription:
-        t("Ein geprüftes Angebot im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferung und sichtbarem Verkäuferpass vor dem Checkout."),
+        t("Ein geprüftes Angebot im Henry & Co. Marketplace mit Vertrauenssignalen, klarer Lieferung und sichtbarem Verkäuferpass vor dem Checkout."),
     },
     fulfillment: {
       sellerTrustLabel: t("Verkäufervertrauen"),
@@ -3533,19 +3533,19 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("Marketplace premium raffinato"),
     heroTitle: t("Acquista da negozi verificati, senza rumore, disordine o dubbi sulla fiducia."),
     heroBody:
-      t("HenryCo Marketplace trasforma il commercio multi-venditore in un'esperienza più serena: scoperta più chiara, aggiunta rapida da ogni scheda, chiarezza sugli ordini frazionati, passaporti venditore più solidi e un unico account HenryCo per ordini, pagamenti, recensioni e supporto."),
+      t("Henry & Co. Marketplace trasforma il commercio multi-venditore in un'esperienza più serena: scoperta più chiara, aggiunta rapida da ogni scheda, chiarezza sugli ordini frazionati, passaporti venditore più solidi e un unico account Henry & Co. per ordini, pagamenti, recensioni e supporto."),
     primaryCta: t("Esplora il catalogo"),
-    secondaryCta: t("Vendi su HenryCo"),
+    secondaryCta: t("Vendi su Henry & Co."),
     quickCards: [
       { title: t("Aggiunta rapida ovunque"), body: t("Controlli carrello discreti a livello di scheda, aggiornamenti istantanei del mini-carrello e nessun ricaricamento maldestro.") },
       { title: t("Binari di fiducia verificati"), body: t("Passaporti venditore, promesse di consegna, qualità delle recensioni e proprietà dello stock restano facili da leggere.") },
-      { title: t("Un account, meno attriti"), body: t("Ordini, pagamenti, lista dei desideri, follow e notifiche restano insieme in un unico account HenryCo.") },
+      { title: t("Un account, meno attriti"), body: t("Ordini, pagamenti, lista dei desideri, follow e notifiche restano insieme in un unico account Henry & Co.") },
     ],
     whyKicker: t("Perché si percepisce diverso"),
     whyTitle: t("La fiducia è visibile prima del pagamento."),
     whyCards: [
       { title: t("La fiducia è visibile prima del pagamento"), body: t("Livello di verifica, tasso di contestazioni, reattività del supporto e affidabilità dell'evasione restano vicini alla decisione d'acquisto.") },
-      { title: t("La chiarezza degli ordini frazionati resta leggibile"), body: t("Quando lo stock arriva da venditori diversi o dallo stock HenryCo, la segmentazione della consegna resta evidente invece di diventare confusione al checkout.") },
+      { title: t("La chiarezza degli ordini frazionati resta leggibile"), body: t("Quando lo stock arriva da venditori diversi o dallo stock Henry & Co., la segmentazione della consegna resta evidente invece di diventare confusione al checkout.") },
       { title: t("I venditori sono selezionati, non ammassati in una griglia"), body: t("Il marketplace favorisce negozi più solidi, schede più pulite e una migliore responsabilità post-ordine invece dell'eccesso di catalogo.") },
     ],
     emptyTitle: t("Il catalogo è in preparazione."),
@@ -3566,12 +3566,12 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("Standard del marketplace"),
     standardsTitle: t("Pensato per fiducia, chiarezza e un'esperienza d'acquisto più serena."),
     standardsBullets: [
-      t("Candidature dei venditori, moderazione e approvazioni passano attraverso canali di revisione HenryCo dedicati."),
+      t("Candidature dei venditori, moderazione e approvazioni passano attraverso canali di revisione Henry & Co. dedicati."),
       t("Aggiornamenti ordine, recensioni, supporto e pagamenti restano collegati allo stesso account acquirente."),
       t("Supporto, revisione dei pagamenti e operazioni di consegna restano organizzati perché le risposte rimangano coerenti."),
     ],
     sellerKicker: t("Qualità del venditore"),
-    sellerTitle: t("I venditori seri partono dal proprio account HenryCo."),
+    sellerTitle: t("I venditori seri partono dal proprio account Henry & Co."),
     sellerBody:
       t("I visitatori pubblici possono scoprire la vendita su /sell, mentre la candidatura, l'avanzamento della bozza, gli aggiornamenti della revisione e lo stato di approvazione restano nell'esperienza del venditore."),
     sellerBullets: [
@@ -3586,19 +3586,19 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("Valutazione di fiducia"),
   },
   kpiHints: {
-    verifiedStores: t("Venditori curati e inventario di proprietà di HenryCo con responsabilità più chiara."),
+    verifiedStores: t("Venditori curati e inventario di proprietà di Henry & Co. con responsabilità più chiara."),
     activeListings: t("Annunci approvati mostrati con chiarezza di consegna, fiducia e proprietà."),
     trustRating: t("La qualità delle recensioni del marketplace e l'affidabilità del venditore appaiono prima del pagamento."),
   },
   footer: {
-    brandSubtitle: t("Commercio raffinato con un account HenryCo connesso"),
+    brandSubtitle: t("Commercio raffinato con un account Henry & Co. connesso"),
     brandBody:
-      t("HenryCo Marketplace è pensato per acquisti ad alta fiducia, venditori verificati e un'esperienza più pulita dal checkout alla consegna."),
+      t("Henry & Co. Marketplace è pensato per acquisti ad alta fiducia, venditori verificati e un'esperienza più pulita dal checkout alla consegna."),
     shopTitle: t("Acquista"),
     sellTitle: t("Vendi"),
     supportTitle: t("Supporto"),
     supportBody:
-      t("Ordini, conversazioni con i venditori, aggiornamenti del supporto e registrazioni dei pagamenti restano collegati in un unico account HenryCo."),
+      t("Ordini, conversazioni con i venditori, aggiornamenti del supporto e registrazioni dei pagamenti restano collegati in un unico account Henry & Co."),
     shopLinks: [
       { href: "/search", label: t("Cerca nel marketplace") },
       { href: "/deals", label: t("Offerte ed edizioni a tempo") },
@@ -3607,7 +3607,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("Supporto e risoluzione") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("Perché vendere su HenryCo") },
+      { href: "/sell", label: t("Perché vendere su Henry & Co.") },
       { href: "/sell/pricing", label: t("Prezzi e tariffe per i venditori") },
       { href: "/policies/seller-policy", label: t("Politica del venditore") },
       { href: "/account/seller-application", label: t("Candidatura venditore") },
@@ -3615,7 +3615,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("Stock HenryCo"),
+    stockedByHenryCo: t("Stock Henry & Co."),
     verifiedSeller: t("Venditore verificato"),
     onlyLeft: t("Solo {count} rimasti"),
     saveToWishlist: t("Salva nella lista"),
@@ -3653,7 +3653,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Tracciamento ordine — HenryCo Marketplace"),
+      title: t("Tracciamento ordine — Henry & Co. Marketplace"),
       description:
         t("Segui ogni segmento venditore, aggiornamento di pagamento e tappa di consegna in un unico posto. L'escrow resta attivo finché la consegna non è confermata."),
     },
@@ -3670,7 +3670,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Traccia di pagamento"),
       walletBody: t("Il saldo del portafoglio è stato addebitato e l'ordine resta in escrow fino all'evasione."),
-      proofBody: t("La ricevuta di bonifico è allegata per la verifica del team finanziario HenryCo."),
+      proofBody: t("La ricevuta di bonifico è allegata per la verifica del team finanziario Henry & Co."),
       awaitingBody: t("Il pagamento attende l'evidenza finanziaria o la riconciliazione alla consegna."),
       methodLabel: t("Metodo"),
       statusLabel: t("Stato"),
@@ -3686,7 +3686,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Segmenti venditore"),
       title: t("Ogni venditore risponde della propria spedizione."),
-      henrycoSegment: t("Segmento HenryCo"),
+      henrycoSegment: t("Segmento Henry & Co."),
       fulfillmentLabel: t("Evasione"),
       trackingLabel: t("Tracciamento"),
       payoutLabel: t("Pagamento"),
@@ -3694,7 +3694,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Conferma di completamento"),
-      body: t("Conferma il completamento quando l'ordine è soddisfacente. HenryCo rilascia il pagamento al venditore solo dopo la conferma della consegna o se l'ordine rientra nel rilascio automatico."),
+      body: t("Conferma il completamento quando l'ordine è soddisfacente. Henry & Co. rilascia il pagamento al venditore solo dopo la conferma della consegna o se l'ordine rientra nel rilascio automatico."),
       confirmCta: t("Conferma completamento"),
     },
     help: {
@@ -3707,9 +3707,9 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Offerte verificate — HenryCo Marketplace"),
+      title: t("Offerte verificate — Henry & Co. Marketplace"),
       description:
-        t("Sconti filtrati per affidabilità, disponibilità reale di magazzino e responsabilità del venditore. Nella pagina offerte di HenryCo appaiono solo annunci verificati con segnali puliti."),
+        t("Sconti filtrati per affidabilità, disponibilità reale di magazzino e responsabilità del venditore. Nella pagina offerte di Henry & Co. appaiono solo annunci verificati con segnali puliti."),
     },
     pageIntro: {
       kicker: t("Offerte verificate"),
@@ -3729,7 +3729,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("Marchio"),
     bodyFallback:
-      t("Un negozio verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima del pagamento."),
+      t("Un negozio verificato su Henry & Co. Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima del pagamento."),
     searchCta: t("Cerca in questo marchio"),
     trustCta: t("Standard di fiducia"),
     stats: {
@@ -3741,20 +3741,20 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("In diretta da {brand}"),
     openFullSearch: t("Apri la ricerca completa"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Esplora i prodotti verificati di {brand} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporti dei venditori visibili prima del pagamento."),
+      t("Esplora i prodotti verificati di {brand} su Henry & Co. Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporti dei venditori visibili prima del pagamento."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Esplora i prodotti verificati di {store} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e il passaporto del venditore visibili prima del pagamento."),
+      t("Esplora i prodotti verificati di {store} su Henry & Co. Marketplace, con segnali di affidabilità, chiarezza sulla consegna e il passaporto del venditore visibili prima del pagamento."),
     metadataDescriptionFallback:
-      t("Un negozio verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima di ogni pagamento."),
+      t("Un negozio verificato su Henry & Co. Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima di ogni pagamento."),
     hero: {
       eyebrow: t("Passaporto del negozio"),
       bodyFallback:
-        t("Un venditore verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e un passaporto trasparente visibile prima di ogni pagamento."),
+        t("Un venditore verificato su Henry & Co. Marketplace, con segnali di affidabilità, chiarezza sulla consegna e un passaporto trasparente visibile prima di ogni pagamento."),
     },
     stats: {
       trustScore: t("Punteggio di fiducia"),
@@ -3767,7 +3767,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Supporto"),
-      contactLinkLabel: t("Usa HenryCo Marketplace per contattare questo negozio"),
+      contactLinkLabel: t("Usa Henry & Co. Marketplace per contattare questo negozio"),
       contactBodySuffix:
         t(" — i messaggi vengono registrati e collegati al riferimento del tuo ordine, così ogni aggiornamento resta in un unico posto."),
       ctaLabel: t("Contatta questo negozio"),
@@ -3806,16 +3806,16 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Apri ricerca completa"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Esplora prodotti verificati in {category} su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporti venditore visibili prima del pagamento."),
+        t("Esplora prodotti verificati in {category} su Henry & Co. Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporti venditore visibili prima del pagamento."),
       fallbackDescription:
-        t("Sfoglia una categoria curata di HenryCo Marketplace con segnali di fiducia, chiarezza sulla consegna e passaporti venditore prima del pagamento."),
+        t("Sfoglia una categoria curata di Henry & Co. Marketplace con segnali di fiducia, chiarezza sulla consegna e passaporti venditore prima del pagamento."),
     },
   },
   help: {
     metadata: {
-      title: t("Centro assistenza — HenryCo Marketplace"),
+      title: t("Centro assistenza — Henry & Co. Marketplace"),
       description:
         t("Sfoglia le domande più frequenti di chi compra e di chi vende. Se non trovi quello che cerchi, apri un ticket di assistenza e una persona del team lo leggerà."),
     },
@@ -3833,17 +3833,17 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Vendere su HenryCo — marketplace selettivo per venditori di fiducia"),
+      title: t("Vendere su Henry & Co. — marketplace selettivo per venditori di fiducia"),
       description:
-        t("Candidati per vendere su HenryCo Marketplace: posizionamento fondato sulla fiducia, vetrine premium e uno spazio unico per ordini, pagamenti e supporto."),
+        t("Candidati per vendere su Henry & Co. Marketplace: posizionamento fondato sulla fiducia, vetrine premium e uno spazio unico per ordini, pagamenti e supporto."),
     },
     hero: {
-      kicker: t("Vendere su HenryCo"),
+      kicker: t("Vendere su Henry & Co."),
       title: t("Selettivo per scelta. Pensato per venditori che mettono la fiducia al primo posto."),
-      body: t("HenryCo Marketplace privilegia venditori attenti alla presentazione, affidabili nelle consegne e onesti sulla protezione dell’acquirente. Il livello richiesto è esplicitato qui; la candidatura venditore prosegue dentro il tuo account HenryCo."),
+      body: t("Henry & Co. Marketplace privilegia venditori attenti alla presentazione, affidabili nelle consegne e onesti sulla protezione dell’acquirente. Il livello richiesto è esplicitato qui; la candidatura venditore prosegue dentro il tuo account Henry & Co."),
       primaryCta: t("Apri candidatura venditore"),
       secondaryCta: t("Vedi i prezzi venditore"),
-      signInCta: t("Accedi con account HenryCo"),
+      signInCta: t("Accedi con account Henry & Co."),
       highlights: [
         { label: t("Selezione"), value: t("Revisione manuale, non listing a pagamento") },
         { label: t("Vetrina"), value: t("Passaporto di fiducia visibile agli acquirenti") },
@@ -3862,9 +3862,9 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Come funziona l’onboarding"),
       stepLabel: t("Passo"),
       steps: [
-        { step: "01", title: t("Avviare la candidatura venditore"), body: t("Apri la candidatura dal tuo account HenryCo — le bozze si salvano automaticamente mentre raccogli i dettagli.") },
+        { step: "01", title: t("Avviare la candidatura venditore"), body: t("Apri la candidatura dal tuo account Henry & Co. — le bozze si salvano automaticamente mentre raccogli i dettagli.") },
         { step: "02", title: t("Aggiungere i dati aziendali"), body: t("Ragione sociale, profilo store, focus prodotto e ogni documento di verifica che spiega come gestisci gli ordini.") },
-        { step: "03", title: t("Revisione della candidatura"), body: t("Il team HenryCo esamina documenti, segnali di fiducia e maturità dello store — non solo un badge a pagamento.") },
+        { step: "03", title: t("Revisione della candidatura"), body: t("Il team Henry & Co. esamina documenti, segnali di fiducia e maturità dello store — non solo un badge a pagamento.") },
         { step: "04", title: t("Onboarding venditore"), body: t("I venditori approvati proseguono con l’onboarding, dove prezzi, commissioni di pubblicazione, finestre di pagamento e regole sono visibili prima della pubblicazione.") },
       ],
       callout: {
@@ -3896,7 +3896,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Prezzi per venditori — HenryCo Marketplace"),
+      title: t("Prezzi per venditori — Henry & Co. Marketplace"),
       description:
         t("Commissioni di piano, commissioni di pubblicazione, commissioni dei posti in evidenza, commissione di transazione e processamento dei pagamenti sono tutte dichiarate in anticipo — prima di pubblicare l’inventario, non dopo."),
     },
@@ -3926,7 +3926,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Inizia con {plan}"),
     },
     economics: {
-      kicker: t("Come HenryCo guadagna"),
+      kicker: t("Come Henry & Co. guadagna"),
       title: t("Dichiarato in anticipo, dedotto a vista."),
       items: [
         t("Le commissioni di transazione vengono dedotte da ogni liquidazione del gruppo-ordine venditore prima del rilascio del pagamento."),
@@ -3943,7 +3943,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Pronto a candidarti?"),
-      title: t("La candidatura si apre nel tuo account HenryCo."),
+      title: t("La candidatura si apre nel tuo account Henry & Co."),
       body: t("Puoi salvare la bozza e tornare — i prezzi visibili qui si applicano una volta completato l’onboarding venditore."),
       primaryCta: t("Candidati come venditore"),
       secondaryCta: t("Standard di fiducia"),
@@ -3951,7 +3951,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("Affidabilità e sicurezza — HenryCo Marketplace"),
+      title: t("Affidabilità e sicurezza — Henry & Co. Marketplace"),
       description:
         t("La fiducia regola cosa può fare un venditore, come si muove il denaro e come reagisce la moderazione. Livelli del venditore, deposito, dispute e rilascio dei pagamenti lasciano una traccia lato server."),
     },
@@ -3974,7 +3974,7 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Controllo del deposito"),
-          body: t("I fondi dell’acquirente vengono prima trattenuti da HenryCo e poi spostati in pagamento rilasciabile solo dopo consegna e controlli di fiducia superati."),
+          body: t("I fondi dell’acquirente vengono prima trattenuti da Henry & Co. e poi spostati in pagamento rilasciabile solo dopo consegna e controlli di fiducia superati."),
         },
         {
           title: t("Revisione antifrode"),
@@ -4000,11 +4000,11 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo Marketplace"),
+      titleTemplate: t("{collection} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Esplora {collection} su HenryCo Marketplace — una selezione curata di prodotti verificati, con segnali di fiducia, chiarezza nella consegna e passaporti venditore visibili prima del checkout."),
+        t("Esplora {collection} su Henry & Co. Marketplace — una selezione curata di prodotti verificati, con segnali di fiducia, chiarezza nella consegna e passaporti venditore visibili prima del checkout."),
       fallbackDescription:
-        t("Una collezione curata su HenryCo Marketplace, con prodotti verificati, segnali di fiducia, consegna chiara e passaporti venditore visibili prima del checkout."),
+        t("Una collezione curata su Henry & Co. Marketplace, con prodotti verificati, segnali di fiducia, consegna chiara e passaporti venditore visibili prima del checkout."),
     },
     hero: {
       primaryCta: t("Apri ricerca completa"),
@@ -4024,12 +4024,12 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo Marketplace"),
+      titleTemplate: t("{policy} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{policy} su HenryCo Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout."),
-      fallbackTitle: t("Politica del marketplace — HenryCo Marketplace"),
+        t("{policy} su Henry & Co. Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout."),
+      fallbackTitle: t("Politica del marketplace — Henry & Co. Marketplace"),
       fallbackDescription:
-        t("Una politica di HenryCo Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout."),
+        t("Una politica di Henry & Co. Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout."),
     },
     hero: {
       backToTrust: t("Torna agli standard di fiducia"),
@@ -4065,11 +4065,11 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} su HenryCo Marketplace — stock verificato, consegna affidabile e passaporto venditore visibili prima del pagamento."),
+        t("{title} su Henry & Co. Marketplace — stock verificato, consegna affidabile e passaporto venditore visibili prima del pagamento."),
       fallbackDescription:
-        t("Un annuncio verificato su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporto venditore visibili prima del pagamento."),
+        t("Un annuncio verificato su Henry & Co. Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporto venditore visibili prima del pagamento."),
     },
     fulfillment: {
       sellerTrustLabel: t("Affidabilità venditore"),
@@ -4139,19 +4139,19 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("سوق مميّز ومُتقن"),
     heroTitle: t("اشترِ من متاجر موثّقة، دون ضجيج أو فوضى أو شكوك في الثقة."),
     heroBody:
-      t("يحوّل HenryCo Marketplace تجارة البائعين المتعدّدين إلى تجربة أكثر هدوءًا: اكتشاف أوضح، إضافة سريعة من كل بطاقة، وضوح للطلبات المقسّمة، جوازات بائع أقوى، وحساب HenryCo واحد للطلبات والمدفوعات والمراجعات والدعم."),
+      t("يحوّل Henry & Co. Marketplace تجارة البائعين المتعدّدين إلى تجربة أكثر هدوءًا: اكتشاف أوضح، إضافة سريعة من كل بطاقة، وضوح للطلبات المقسّمة، جوازات بائع أقوى، وحساب Henry & Co. واحد للطلبات والمدفوعات والمراجعات والدعم."),
     primaryCta: t("استكشف الكتالوج"),
-    secondaryCta: t("بِع على HenryCo"),
+    secondaryCta: t("بِع على Henry & Co."),
     quickCards: [
       { title: t("إضافة سريعة في كل مكان"), body: t("عناصر تحكّم سلة هادئة على مستوى البطاقة، وتحديثات فورية للسلة المصغّرة، دون عمليات إعادة تحميل مرتبكة.") },
       { title: t("مسارات ثقة موثّقة"), body: t("تظل جوازات البائع، ووعود التسليم، وجودة المراجعات، وملكية المخزون سهلة القراءة.") },
-      { title: t("حساب واحد، احتكاك أقل"), body: t("تبقى الطلبات والمدفوعات وقائمة الرغبات والمتابعات والإشعارات معًا في حساب HenryCo واحد.") },
+      { title: t("حساب واحد، احتكاك أقل"), body: t("تبقى الطلبات والمدفوعات وقائمة الرغبات والمتابعات والإشعارات معًا في حساب Henry & Co. واحد.") },
     ],
     whyKicker: t("لماذا يبدو مختلفًا"),
     whyTitle: t("الثقة مرئية قبل الدفع."),
     whyCards: [
       { title: t("الثقة مرئية قبل الدفع"), body: t("يظل مستوى التوثيق، ونسبة النزاعات، وسرعة استجابة الدعم، وموثوقية التنفيذ قريبًا من قرار الشراء.") },
-      { title: t("وضوح الطلبات المقسّمة يبقى مقروءًا"), body: t("عندما يأتي المخزون من بائعين مختلفين أو من مخزون HenryCo، يظل تقسيم التسليم واضحًا بدل أن يتحوّل إلى ارتباك عند الدفع.") },
+      { title: t("وضوح الطلبات المقسّمة يبقى مقروءًا"), body: t("عندما يأتي المخزون من بائعين مختلفين أو من مخزون Henry & Co.، يظل تقسيم التسليم واضحًا بدل أن يتحوّل إلى ارتباك عند الدفع.") },
       { title: t("البائعون يتم تنسيقهم لا حشدهم في شبكة"), body: t("يفضّل السوق المتاجر الأقوى، والقوائم الأنظف، والمساءلة الأفضل بعد الطلب على تضخّم الكتالوج.") },
     ],
     emptyTitle: t("يجري إعداد الكتالوج."),
@@ -4172,12 +4172,12 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("معايير السوق"),
     standardsTitle: t("مصمّم للثقة والوضوح وتجربة شراء أكثر هدوءًا."),
     standardsBullets: [
-      t("تمرّ طلبات البائعين والإشراف والاعتمادات عبر قنوات مراجعة مخصّصة في HenryCo."),
+      t("تمرّ طلبات البائعين والإشراف والاعتمادات عبر قنوات مراجعة مخصّصة في Henry & Co."),
       t("تظل تحديثات الطلبات والمراجعات والدعم والمدفوعات مرتبطة بنفس حساب المشتري."),
       t("يبقى الدعم ومراجعة المدفوعات وعمليات التسليم منظّمًا لتظل الردود متناسقة."),
     ],
     sellerKicker: t("جودة البائع"),
-    sellerTitle: t("البائعون الجادّون يبدؤون من داخل حساب HenryCo الخاص بهم."),
+    sellerTitle: t("البائعون الجادّون يبدؤون من داخل حساب Henry & Co. الخاص بهم."),
     sellerBody:
       t("يمكن للزوّار العموميين التعرّف على البيع عبر /sell، بينما يبقى التقديم وتقدّم المسودّة وتحديثات المراجعة وحالة الاعتماد داخل تجربة البائع."),
     sellerBullets: [
@@ -4192,19 +4192,19 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("تقييم الثقة"),
   },
   kpiHints: {
-    verifiedStores: t("بائعون منسّقون ومخزون مملوك من HenryCo بمساءلة أوضح."),
+    verifiedStores: t("بائعون منسّقون ومخزون مملوك من Henry & Co. بمساءلة أوضح."),
     activeListings: t("قوائم معتمدة تُعرض مع وضوح في التسليم والثقة والملكية."),
     trustRating: t("تظهر جودة مراجعات السوق وموثوقية البائع قبل الدفع."),
   },
   footer: {
-    brandSubtitle: t("تجارة مُتقنة مع حساب HenryCo متّصل"),
+    brandSubtitle: t("تجارة مُتقنة مع حساب Henry & Co. متّصل"),
     brandBody:
-      t("صُمّم HenryCo Marketplace من أجل مشتريات عالية الثقة، وبائعين موثّقين، وتجربة أنظف من الدفع إلى التسليم."),
+      t("صُمّم Henry & Co. Marketplace من أجل مشتريات عالية الثقة، وبائعين موثّقين، وتجربة أنظف من الدفع إلى التسليم."),
     shopTitle: t("تسوّق"),
     sellTitle: t("بِع"),
     supportTitle: t("الدعم"),
     supportBody:
-      t("تبقى الطلبات ومحادثات البائعين وتحديثات الدعم وسجلات الدفع متّصلة في حساب HenryCo واحد."),
+      t("تبقى الطلبات ومحادثات البائعين وتحديثات الدعم وسجلات الدفع متّصلة في حساب Henry & Co. واحد."),
     shopLinks: [
       { href: "/search", label: t("ابحث في السوق") },
       { href: "/deals", label: t("عروض وإصدارات محدودة") },
@@ -4213,7 +4213,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("الدعم وحلّ المشكلات") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("لماذا تبيع على HenryCo") },
+      { href: "/sell", label: t("لماذا تبيع على Henry & Co.") },
       { href: "/sell/pricing", label: t("الأسعار ورسوم البائع") },
       { href: "/policies/seller-policy", label: t("سياسة البائع") },
       { href: "/account/seller-application", label: t("تقديم البائع") },
@@ -4221,7 +4221,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("مخزون HenryCo"),
+    stockedByHenryCo: t("مخزون Henry & Co."),
     verifiedSeller: t("بائع موثّق"),
     onlyLeft: t("متبقّي {count} فقط"),
     saveToWishlist: t("حفظ في قائمة الرغبات"),
@@ -4259,7 +4259,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("تتبّع الطلب — HenryCo Marketplace"),
+      title: t("تتبّع الطلب — Henry & Co. Marketplace"),
       description:
         t("تابِع كل قِسم بائع، وكل تحديث دفع، وكل مرحلة شحن في مكان واحد. يبقى الضمان نشطًا حتى يتم تأكيد التسليم."),
     },
@@ -4276,7 +4276,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("سجلّ الدفع"),
       walletBody: t("تم خصم رصيد المحفظة، والطلب محتجَز في الضمان حتى يكتمل الشحن."),
-      proofBody: t("أُرفِق إثبات التحويل لمراجعة فريق المالية في HenryCo."),
+      proofBody: t("أُرفِق إثبات التحويل لمراجعة فريق المالية في Henry & Co."),
       awaitingBody: t("الدفع بانتظار إثبات من الفريق المالي أو مطابقة عند التسليم."),
       methodLabel: t("الطريقة"),
       statusLabel: t("الحالة"),
@@ -4292,7 +4292,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("أقسام البائعين"),
       title: t("كل بائع مسؤول عن شحنته الخاصة."),
-      henrycoSegment: t("قِسم HenryCo"),
+      henrycoSegment: t("قِسم Henry & Co."),
       fulfillmentLabel: t("الشحن"),
       trackingLabel: t("التتبّع"),
       payoutLabel: t("تحويل الأموال"),
@@ -4300,7 +4300,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("تأكيد الاستلام"),
-      body: t("أكِّد الاستلام عندما يكون الطلب مرضيًا. لا تُفرج HenryCo عن مستحقّات البائع إلا بعد تأكيد التسليم أو عند استيفاء شروط الإفراج التلقائي."),
+      body: t("أكِّد الاستلام عندما يكون الطلب مرضيًا. لا تُفرج Henry & Co. عن مستحقّات البائع إلا بعد تأكيد التسليم أو عند استيفاء شروط الإفراج التلقائي."),
       confirmCta: t("تأكيد الاستلام"),
     },
     help: {
@@ -4313,9 +4313,9 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("عروض موثّقة — HenryCo Marketplace"),
+      title: t("عروض موثّقة — Henry & Co. Marketplace"),
       description:
-        t("تخفيضات مفلترة وفق الثقة، ووضوح توافر المخزون، ومسؤولية البائع. على صفحة العروض في HenryCo لا تظهر سوى المنتجات الموثّقة التي تحمل إشارات ثقة نظيفة."),
+        t("تخفيضات مفلترة وفق الثقة، ووضوح توافر المخزون، ومسؤولية البائع. على صفحة العروض في Henry & Co. لا تظهر سوى المنتجات الموثّقة التي تحمل إشارات ثقة نظيفة."),
     },
     pageIntro: {
       kicker: t("عروض موثّقة"),
@@ -4335,7 +4335,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("العلامة التجارية"),
     bodyFallback:
-      t("متجر موثّق على HenryCo Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع."),
+      t("متجر موثّق على Henry & Co. Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع."),
     searchCta: t("ابحث داخل هذه العلامة"),
     trustCta: t("معايير الثقة"),
     stats: {
@@ -4347,20 +4347,20 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("مباشر من {brand}"),
     openFullSearch: t("فتح البحث الكامل"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("استكشف المنتجات الموثّقة من {brand} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل إتمام الدفع."),
+      t("استكشف المنتجات الموثّقة من {brand} على Henry & Co. Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل إتمام الدفع."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("تصفّح المنتجات الموثّقة من {store} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع."),
+      t("تصفّح المنتجات الموثّقة من {store} على Henry & Co. Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع."),
     metadataDescriptionFallback:
-      t("متجر موثّق على HenryCo Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل كل عملية دفع."),
+      t("متجر موثّق على Henry & Co. Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل كل عملية دفع."),
     hero: {
       eyebrow: t("جواز المتجر"),
       bodyFallback:
-        t("بائع موثّق على HenryCo Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجواز سفر شفّاف يظهر قبل كل عملية دفع."),
+        t("بائع موثّق على Henry & Co. Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجواز سفر شفّاف يظهر قبل كل عملية دفع."),
     },
     stats: {
       trustScore: t("درجة الثقة"),
@@ -4373,7 +4373,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("الدعم"),
-      contactLinkLabel: t("استخدم HenryCo Marketplace للتواصل مع هذا المتجر"),
+      contactLinkLabel: t("استخدم Henry & Co. Marketplace للتواصل مع هذا المتجر"),
       contactBodySuffix:
         t(" — تُسجَّل الرسائل وتُربط بمرجع طلبك، حتى يبقى كل تحديث في مكان واحد."),
       ctaLabel: t("تواصل مع هذا المتجر"),
@@ -4412,16 +4412,16 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("افتح البحث الكامل"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("استكشف منتجات موثّقة ضمن {category} على HenryCo Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين ظاهرة قبل الدفع."),
+        t("استكشف منتجات موثّقة ضمن {category} على Henry & Co. Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين ظاهرة قبل الدفع."),
       fallbackDescription:
-        t("تصفّح فئة منتقاة على HenryCo Marketplace مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين قبل الدفع."),
+        t("تصفّح فئة منتقاة على Henry & Co. Marketplace مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين قبل الدفع."),
     },
   },
   help: {
     metadata: {
-      title: t("مركز المساعدة — HenryCo Marketplace"),
+      title: t("مركز المساعدة — Henry & Co. Marketplace"),
       description:
         t("تصفّح الأسئلة الأكثر تكرارًا بين المشترين والبائعين. إن لم تجد ما تبحث عنه، افتح تذكرة دعم وسيقرؤها شخص من الفريق."),
     },
@@ -4439,17 +4439,17 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("بِع على HenryCo — سوق انتقائي للبائعين الذين يقودون بالثقة"),
+      title: t("بِع على Henry & Co. — سوق انتقائي للبائعين الذين يقودون بالثقة"),
       description:
-        t("قدِّم طلبًا للبيع على HenryCo Marketplace: تموضع يقوده مبدأ الثقة، واجهات متاجر فاخرة، ومساحة عمل موحَّدة للطلبات والمدفوعات والدعم."),
+        t("قدِّم طلبًا للبيع على Henry & Co. Marketplace: تموضع يقوده مبدأ الثقة، واجهات متاجر فاخرة، ومساحة عمل موحَّدة للطلبات والمدفوعات والدعم."),
     },
     hero: {
-      kicker: t("بِع على HenryCo"),
+      kicker: t("بِع على Henry & Co."),
       title: t("انتقائيٌّ بطبيعته. مصمَّم للبائعين الذين يقودون بالثقة."),
-      body: t("تُفضّل HenryCo Marketplace البائعين الذين يهتمّون بالعرض، ويُنفّذون الطلبات بموثوقية، ويحترمون حماية المشتري بصدق. تجد المعايير صريحةً في هذه الصفحة، ثم يستمرّ طلب البيع داخل حساب HenryCo الخاص بك."),
+      body: t("تُفضّل Henry & Co. Marketplace البائعين الذين يهتمّون بالعرض، ويُنفّذون الطلبات بموثوقية، ويحترمون حماية المشتري بصدق. تجد المعايير صريحةً في هذه الصفحة، ثم يستمرّ طلب البيع داخل حساب Henry & Co. الخاص بك."),
       primaryCta: t("فتح طلب البيع"),
       secondaryCta: t("الاطّلاع على أسعار البائعين"),
-      signInCta: t("تسجيل الدخول بحساب HenryCo"),
+      signInCta: t("تسجيل الدخول بحساب Henry & Co."),
       highlights: [
         { label: t("الانتقاء"), value: t("مراجعة يدوية، لا إدراج مدفوع") },
         { label: t("الواجهة"), value: t("جواز ثقة ظاهر للمشترين") },
@@ -4468,9 +4468,9 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("كيف يسير الانضمام"),
       stepLabel: t("خطوة"),
       steps: [
-        { step: "01", title: t("بدء طلب البيع"), body: t("افتح الطلب من داخل حساب HenryCo — تُحفَظ المسوّدات تلقائيًا أثناء تجميع التفاصيل.") },
+        { step: "01", title: t("بدء طلب البيع"), body: t("افتح الطلب من داخل حساب Henry & Co. — تُحفَظ المسوّدات تلقائيًا أثناء تجميع التفاصيل.") },
         { step: "02", title: t("إضافة بيانات النشاط"), body: t("اسم النشاط، ملف المتجر، تركيز المنتجات، وأي مستندات تحقُّق توضّح كيف تُلبّي الطلبات.") },
-        { step: "03", title: t("مراجعة الطلب"), body: t("يراجع فريق HenryCo المستندات وإشارات الثقة وجاهزية المتجر — لا مجرد شارة مدفوعة.") },
+        { step: "03", title: t("مراجعة الطلب"), body: t("يراجع فريق Henry & Co. المستندات وإشارات الثقة وجاهزية المتجر — لا مجرد شارة مدفوعة.") },
         { step: "04", title: t("انضمام البائع"), body: t("يواصل البائعون الموافَق عليهم خطوات الانضمام، حيث تظهر الأسعار ورسوم النشر ونوافذ التحويل وقواعد السياسات قبل النشر.") },
       ],
       callout: {
@@ -4502,7 +4502,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("تسعير البائعين — HenryCo Marketplace"),
+      title: t("تسعير البائعين — Henry & Co. Marketplace"),
       description:
         t("رسوم الخطة، ورسوم النشر، ورسوم الإبراز، وعمولة المعاملة، ومعالجة التحويل كلّها معلنة سلفًا — قبل نشر مخزونك، لا بعده."),
     },
@@ -4532,7 +4532,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("ابدأ بـ {plan}"),
     },
     economics: {
-      kicker: t("كيف تكسب HenryCo"),
+      kicker: t("كيف تكسب Henry & Co."),
       title: t("معلَن سلفًا، يُخصم على مرأى الجميع."),
       items: [
         t("تُخصم عمولات المعاملات من كل تسوية مجموعة-طلب لدى البائع قبل تحرير التحويل."),
@@ -4549,7 +4549,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("هل أنت جاهز للتقديم؟"),
-      title: t("يفتح الطلب داخل حساب HenryCo الخاص بك."),
+      title: t("يفتح الطلب داخل حساب Henry & Co. الخاص بك."),
       body: t("يمكنك حفظ المسودّة والعودة لاحقًا — التسعير الظاهر هنا يُطبَّق فور اكتمال انضمام البائع."),
       primaryCta: t("قدّم بصفتك بائعًا"),
       secondaryCta: t("معايير الثقة"),
@@ -4557,7 +4557,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("الثقة والسلامة — HenryCo Marketplace"),
+      title: t("الثقة والسلامة — Henry & Co. Marketplace"),
       description:
         t("تحكم الثقة ما يمكن للبائع فعله، وكيف يتحرّك المال، وكيف تستجيب المراجعة. مستويات البائع، الإيداع الوسيط، النزاعات وتحرير الدفعات تترك أثرًا كاملًا على الخادم."),
     },
@@ -4580,7 +4580,7 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("التحكّم بالإيداع الوسيط"),
-          body: t("تحتجز HenryCo أموال المشتري أولًا، ولا تتحوّل إلى تحويل قابل للإفراج إلا بعد تسليم ناجح واجتياز فحوصات الثقة."),
+          body: t("تحتجز Henry & Co. أموال المشتري أولًا، ولا تتحوّل إلى تحويل قابل للإفراج إلا بعد تسليم ناجح واجتياز فحوصات الثقة."),
         },
         {
           title: t("مراجعة مكافحة الاحتيال"),
@@ -4606,11 +4606,11 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — متجر HenryCo"),
+      titleTemplate: t("{collection} — متجر Henry & Co."),
       descriptionTemplate:
-        t("اكتشف {collection} على متجر HenryCo — مجموعة مختارة من المنتجات الموثوقة، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل الدفع."),
+        t("اكتشف {collection} على متجر Henry & Co. — مجموعة مختارة من المنتجات الموثوقة، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل الدفع."),
       fallbackDescription:
-        t("مجموعة مختارة على متجر HenryCo، تضم منتجات موثوقة وإشارات ثقة وتوصيلًا واضحًا وجوازات بائعين ظاهرة قبل الدفع."),
+        t("مجموعة مختارة على متجر Henry & Co.، تضم منتجات موثوقة وإشارات ثقة وتوصيلًا واضحًا وجوازات بائعين ظاهرة قبل الدفع."),
     },
     hero: {
       primaryCta: t("افتح البحث الكامل"),
@@ -4630,12 +4630,12 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — متجر HenryCo"),
+      titleTemplate: t("{policy} — متجر Henry & Co."),
       descriptionTemplate:
-        t("{policy} على متجر HenryCo — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع."),
-      fallbackTitle: t("سياسة المتجر — متجر HenryCo"),
+        t("{policy} على متجر Henry & Co. — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع."),
+      fallbackTitle: t("سياسة المتجر — متجر Henry & Co."),
       fallbackDescription:
-        t("سياسة من متجر HenryCo — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع."),
+        t("سياسة من متجر Henry & Co. — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع."),
     },
     hero: {
       backToTrust: t("عودة إلى معايير الثقة"),
@@ -4671,11 +4671,11 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} على HenryCo Marketplace — مخزون موثّق وتوصيل موثوق وجواز البائع ظاهرة قبل الدفع."),
+        t("{title} على Henry & Co. Marketplace — مخزون موثّق وتوصيل موثوق وجواز البائع ظاهرة قبل الدفع."),
       fallbackDescription:
-        t("إعلان موثّق على HenryCo Marketplace مع إشارات الثقة ووضوح التوصيل وجواز البائع المعروض قبل الدفع."),
+        t("إعلان موثّق على Henry & Co. Marketplace مع إشارات الثقة ووضوح التوصيل وجواز البائع المعروض قبل الدفع."),
     },
     fulfillment: {
       sellerTrustLabel: t("ثقة البائع"),
@@ -4745,19 +4745,19 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     heroKicker: t("精致的高端市集"),
     heroTitle: t("在通过认证的店铺安心选购,没有杂音、混乱或对信任的疑虑。"),
     heroBody:
-      t("HenryCo Marketplace 把多商家交易转化为更安静的体验:更清晰的发现、卡片上即可快速加入、更明确的拆单展示、更稳健的卖家通行证,以及一个统一的 HenryCo 账户来管理订单、付款、评价和支持。"),
+      t("Henry & Co. Marketplace 把多商家交易转化为更安静的体验:更清晰的发现、卡片上即可快速加入、更明确的拆单展示、更稳健的卖家通行证,以及一个统一的 Henry & Co. 账户来管理订单、付款、评价和支持。"),
     primaryCta: t("浏览商品目录"),
-    secondaryCta: t("入驻 HenryCo"),
+    secondaryCta: t("入驻 Henry & Co."),
     quickCards: [
       { title: t("到处都能快速加入"), body: t("卡片层级的低干扰购物车控件,迷你购物车即时更新,无需笨拙的页面刷新。") },
       { title: t("通过认证的信任通道"), body: t("卖家通行证、配送承诺、评价质量与库存归属始终一目了然。") },
-      { title: t("一个账户,更少摩擦"), body: t("订单、付款、心愿单、关注与通知集中在同一个 HenryCo 账户中。") },
+      { title: t("一个账户,更少摩擦"), body: t("订单、付款、心愿单、关注与通知集中在同一个 Henry & Co. 账户中。") },
     ],
     whyKicker: t("为什么感觉不一样"),
     whyTitle: t("信任在付款之前就已经可见。"),
     whyCards: [
       { title: t("信任在付款之前就已经可见"), body: t("认证等级、争议率、客服响应与履约可靠性始终贴近购买决策。") },
-      { title: t("拆单展示依然清晰可读"), body: t("当库存来自不同卖家或 HenryCo 自营库存时,配送分段依旧清晰,而不会变成结算时的混乱。") },
+      { title: t("拆单展示依然清晰可读"), body: t("当库存来自不同卖家或 Henry & Co. 自营库存时,配送分段依旧清晰,而不会变成结算时的混乱。") },
       { title: t("卖家是经过精选,而非堆进网格"), body: t("市集偏好更扎实的店铺、更整洁的商品页和更好的售后责任,而不是目录的堆积。") },
     ],
     emptyTitle: t("商品目录正在准备中。"),
@@ -4778,12 +4778,12 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     standardsKicker: t("市集标准"),
     standardsTitle: t("为信任、清晰与更安静的购物体验而设计。"),
     standardsBullets: [
-      t("卖家入驻、内容审核与上架审批都经过 HenryCo 专属的审核通道。"),
+      t("卖家入驻、内容审核与上架审批都经过 Henry & Co. 专属的审核通道。"),
       t("订单更新、评价、客服与付款始终与同一个买家账户保持关联。"),
       t("客服、付款审核与配送运营保持有序,以便回复一致。"),
     ],
     sellerKicker: t("卖家质量"),
-    sellerTitle: t("认真的卖家从他们的 HenryCo 账户内开始。"),
+    sellerTitle: t("认真的卖家从他们的 Henry & Co. 账户内开始。"),
     sellerBody:
       t("公开访客可以在 /sell 了解入驻,而申请、草稿进度、审核更新与上线状态都保留在卖家体验内部。"),
     sellerBullets: [
@@ -4798,19 +4798,19 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     trustRating: t("信任评分"),
   },
   kpiHints: {
-    verifiedStores: t("精选卖家与 HenryCo 自营库存,带来更清晰的责任划分。"),
+    verifiedStores: t("精选卖家与 Henry & Co. 自营库存,带来更清晰的责任划分。"),
     activeListings: t("已审核的商品,以清晰的配送、信任与归属信息呈现。"),
     trustRating: t("市集评价质量与卖家可靠性会在付款之前显示。"),
   },
   footer: {
-    brandSubtitle: t("精致交易,搭配互联的 HenryCo 账户"),
+    brandSubtitle: t("精致交易,搭配互联的 Henry & Co. 账户"),
     brandBody:
-      t("HenryCo Marketplace 为高信任度的购物、认证卖家以及从结算到配送都更清爽的体验而打造。"),
+      t("Henry & Co. Marketplace 为高信任度的购物、认证卖家以及从结算到配送都更清爽的体验而打造。"),
     shopTitle: t("购物"),
     sellTitle: t("出售"),
     supportTitle: t("支持"),
     supportBody:
-      t("订单、与卖家的对话、客服更新与付款记录在同一个 HenryCo 账户内保持互联。"),
+      t("订单、与卖家的对话、客服更新与付款记录在同一个 Henry & Co. 账户内保持互联。"),
     shopLinks: [
       { href: "/search", label: t("搜索市集") },
       { href: "/deals", label: t("优惠与限定版") },
@@ -4819,7 +4819,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       { href: "/help", label: t("支持与解决") },
     ],
     sellLinks: [
-      { href: "/sell", label: t("为什么在 HenryCo 出售") },
+      { href: "/sell", label: t("为什么在 Henry & Co. 出售") },
       { href: "/sell/pricing", label: t("卖家定价与费率") },
       { href: "/policies/seller-policy", label: t("卖家政策") },
       { href: "/account/seller-application", label: t("卖家申请") },
@@ -4827,7 +4827,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     ],
   },
   productCard: {
-    stockedByHenryCo: t("HenryCo 自营"),
+    stockedByHenryCo: t("Henry & Co. 自营"),
     verifiedSeller: t("认证卖家"),
     onlyLeft: t("仅剩 {count} 件"),
     saveToWishlist: t("加入心愿单"),
@@ -4865,7 +4865,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("订单跟踪 — HenryCo Marketplace"),
+      title: t("订单跟踪 — Henry & Co. Marketplace"),
       description:
         t("把每一个卖家分段、每一次付款进展、每一个履约里程碑集中在同一处呈现。在确认收货之前,代管资金始终生效。"),
     },
@@ -4882,7 +4882,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("付款记录"),
       walletBody: t("钱包余额已扣款,订单进入代管,等待履约。"),
-      proofBody: t("转账凭证已附上,等待 HenryCo 财务核验。"),
+      proofBody: t("转账凭证已附上,等待 Henry & Co. 财务核验。"),
       awaitingBody: t("付款正在等待财务凭证或交付对账。"),
       methodLabel: t("方式"),
       statusLabel: t("状态"),
@@ -4898,7 +4898,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("卖家分段"),
       title: t("每位卖家对自己的发货负责。"),
-      henrycoSegment: t("HenryCo 分段"),
+      henrycoSegment: t("Henry & Co. 分段"),
       fulfillmentLabel: t("履约"),
       trackingLabel: t("物流跟踪"),
       payoutLabel: t("结算"),
@@ -4906,7 +4906,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("完成确认"),
-      body: t("当订单令你满意时请确认完成。HenryCo 只在确认送达或订单符合自动放款条件后,才会向卖家释放结算款项。"),
+      body: t("当订单令你满意时请确认完成。Henry & Co. 只在确认送达或订单符合自动放款条件后,才会向卖家释放结算款项。"),
       confirmCta: t("确认完成"),
     },
     help: {
@@ -4919,9 +4919,9 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("已核验优惠 — HenryCo Marketplace"),
+      title: t("已核验优惠 — Henry & Co. Marketplace"),
       description:
-        t("依据信任、库存可靠度与卖家责任筛选的折扣。HenryCo 优惠页只显示信任信号干净、已通过核验的商品。"),
+        t("依据信任、库存可靠度与卖家责任筛选的折扣。Henry & Co. 优惠页只显示信任信号干净、已通过核验的商品。"),
     },
     pageIntro: {
       kicker: t("已核验优惠"),
@@ -4941,7 +4941,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("品牌"),
     bodyFallback:
-      t("HenryCo Marketplace 上经过认证的店铺,信任信号、配送清晰度与卖家护照在结账前即可查看。"),
+      t("Henry & Co. Marketplace 上经过认证的店铺,信任信号、配送清晰度与卖家护照在结账前即可查看。"),
     searchCta: t("在该品牌内搜索"),
     trustCta: t("信任标准"),
     stats: {
@@ -4953,20 +4953,20 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("来自 {brand} 的实时上架"),
     openFullSearch: t("打开完整搜索"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("在 HenryCo Marketplace 浏览 {brand} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。"),
+      t("在 Henry & Co. Marketplace 浏览 {brand} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。"),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("在 HenryCo Marketplace 浏览 {store} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。"),
+      t("在 Henry & Co. Marketplace 浏览 {store} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。"),
     metadataDescriptionFallback:
-      t("HenryCo Marketplace 上经过认证的店铺,每次结账前都能查看信任信号、配送清晰度与卖家护照。"),
+      t("Henry & Co. Marketplace 上经过认证的店铺,每次结账前都能查看信任信号、配送清晰度与卖家护照。"),
     hero: {
       eyebrow: t("店铺护照"),
       bodyFallback:
-        t("HenryCo Marketplace 上经过认证的卖家,信任信号、配送清晰度与透明护照在每次结账前都可清楚查看。"),
+        t("Henry & Co. Marketplace 上经过认证的卖家,信任信号、配送清晰度与透明护照在每次结账前都可清楚查看。"),
     },
     stats: {
       trustScore: t("信任评分"),
@@ -4979,7 +4979,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("客户支持"),
-      contactLinkLabel: t("通过 HenryCo Marketplace 联系该店铺"),
+      contactLinkLabel: t("通过 Henry & Co. Marketplace 联系该店铺"),
       contactBodySuffix:
         t(" —— 消息会被记录并与你的订单编号关联,所有更新都集中在同一处。"),
       ctaLabel: t("联系该店铺"),
@@ -5018,16 +5018,16 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("打开完整搜索"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("在 HenryCo Marketplace 探索 {category} 中已验证的商品,结算前即可看到信任信号、清晰的配送说明与商家信任护照。"),
+        t("在 Henry & Co. Marketplace 探索 {category} 中已验证的商品,结算前即可看到信任信号、清晰的配送说明与商家信任护照。"),
       fallbackDescription:
-        t("在 HenryCo Marketplace 浏览一个精选品类,结算前即可看到信任信号、清晰的配送说明与商家信任护照。"),
+        t("在 Henry & Co. Marketplace 浏览一个精选品类,结算前即可看到信任信号、清晰的配送说明与商家信任护照。"),
     },
   },
   help: {
     metadata: {
-      title: t("帮助中心 — HenryCo Marketplace"),
+      title: t("帮助中心 — Henry & Co. Marketplace"),
       description:
         t("浏览买家和卖家最常问的问题。如果没找到所需答案,提交一张工单,团队会有专人查看。"),
     },
@@ -5045,7 +5045,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("信任与安全 — HenryCo Marketplace"),
+      title: t("信任与安全 — Henry & Co. Marketplace"),
       description:
         t("信任决定了卖家可以做什么、资金如何流动以及审核如何响应。卖家等级、托管、争议与放款释放都会在服务器留下完整记录。"),
     },
@@ -5068,7 +5068,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("托管控制"),
-          body: t("买家资金先由 HenryCo 托管,通过交付与信任审核后才进入可释放的放款。"),
+          body: t("买家资金先由 Henry & Co. 托管,通过交付与信任审核后才进入可释放的放款。"),
         },
         {
           title: t("反欺诈审查"),
@@ -5094,17 +5094,17 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("在 HenryCo 开店 — 面向以信任为本的卖家的精选商城"),
+      title: t("在 Henry & Co. 开店 — 面向以信任为本的卖家的精选商城"),
       description:
-        t("申请加入 HenryCo Marketplace 销售:以信任为核心的定位、精致店铺,以及统一的订单、结算与支持工作台。"),
+        t("申请加入 Henry & Co. Marketplace 销售:以信任为核心的定位、精致店铺,以及统一的订单、结算与支持工作台。"),
     },
     hero: {
-      kicker: t("在 HenryCo 开店"),
+      kicker: t("在 Henry & Co. 开店"),
       title: t("天生精选。专为以信任领跑的卖家而生。"),
-      body: t("HenryCo Marketplace 优先考虑注重呈现、按时履约且诚实保障买家权益的卖家。本页清晰列出门槛;卖家申请将在你的 HenryCo 账户内继续完成。"),
+      body: t("Henry & Co. Marketplace 优先考虑注重呈现、按时履约且诚实保障买家权益的卖家。本页清晰列出门槛;卖家申请将在你的 Henry & Co. 账户内继续完成。"),
       primaryCta: t("开始卖家申请"),
       secondaryCta: t("查看卖家定价"),
-      signInCta: t("用 HenryCo 账户登录"),
+      signInCta: t("用 Henry & Co. 账户登录"),
       highlights: [
         { label: t("选择"), value: t("人工审核,而非付费上架") },
         { label: t("店铺"), value: t("买家可见的信任护照") },
@@ -5123,9 +5123,9 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("入驻流程"),
       stepLabel: t("步骤"),
       steps: [
-        { step: "01", title: t("提交卖家申请"), body: t("从 HenryCo 账户内打开申请 — 在你整理资料时,草稿会自动保存。") },
+        { step: "01", title: t("提交卖家申请"), body: t("从 Henry & Co. 账户内打开申请 — 在你整理资料时,草稿会自动保存。") },
         { step: "02", title: t("补充经营资料"), body: t("公司名称、店铺简介、品类聚焦,以及说明你如何履约的核验文件。") },
-        { step: "03", title: t("申请审核"), body: t("HenryCo 团队会审核文件、信任信号与店铺准备度 — 而不仅看一个付费徽章。") },
+        { step: "03", title: t("申请审核"), body: t("Henry & Co. 团队会审核文件、信任信号与店铺准备度 — 而不仅看一个付费徽章。") },
         { step: "04", title: t("卖家入驻"), body: t("通过的卖家进入入驻流程,定价、上架费、结算周期与政策规则会在开放发布之前清晰可见。") },
       ],
       callout: {
@@ -5157,7 +5157,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("卖家定价 — HenryCo 商城"),
+      title: t("卖家定价 — Henry & Co. 商城"),
       description:
         t("套餐费、上架费、推荐位费、交易佣金与结算手续费均提前公开 — 在发布商品之前,不是之后。"),
     },
@@ -5187,7 +5187,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("选择 {plan} 开始"),
     },
     economics: {
-      kicker: t("HenryCo 如何盈利"),
+      kicker: t("Henry & Co. 如何盈利"),
       title: t("提前声明,公开扣除。"),
       items: [
         t("交易佣金会在卖家订单组结算释放结算款之前先行扣除。"),
@@ -5204,7 +5204,7 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("准备好申请了吗?"),
-      title: t("申请将在你的 HenryCo 账户中打开。"),
+      title: t("申请将在你的 Henry & Co. 账户中打开。"),
       body: t("你可以保存草稿稍后再来 — 这里展示的定价将在卖家入驻完成后即刻生效。"),
       primaryCta: t("申请成为卖家"),
       secondaryCta: t("信任标准"),
@@ -5212,11 +5212,11 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo 商城"),
+      titleTemplate: t("{collection} — Henry & Co. 商城"),
       descriptionTemplate:
-        t("在 HenryCo 商城探索 {collection} — 一组精选的可信商品,提供信任信号、清晰的配送信息,并在结账前展示卖家信任护照。"),
+        t("在 Henry & Co. 商城探索 {collection} — 一组精选的可信商品,提供信任信号、清晰的配送信息,并在结账前展示卖家信任护照。"),
       fallbackDescription:
-        t("HenryCo 商城上的一组精选合集,涵盖可信商品、信任信号、清晰配送以及结账前可见的卖家信任护照。"),
+        t("Henry & Co. 商城上的一组精选合集,涵盖可信商品、信任信号、清晰配送以及结账前可见的卖家信任护照。"),
     },
     hero: {
       primaryCta: t("打开完整搜索"),
@@ -5236,12 +5236,12 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo 商城"),
+      titleTemplate: t("{policy} — Henry & Co. 商城"),
       descriptionTemplate:
-        t("HenryCo 商城的 {policy} — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。"),
-      fallbackTitle: t("商城政策 — HenryCo 商城"),
+        t("Henry & Co. 商城的 {policy} — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。"),
+      fallbackTitle: t("商城政策 — Henry & Co. 商城"),
       fallbackDescription:
-        t("HenryCo 商城的一项政策 — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。"),
+        t("Henry & Co. 商城的一项政策 — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。"),
     },
     hero: {
       backToTrust: t("返回信任标准"),
@@ -5277,11 +5277,11 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo 商城"),
+      titleTemplate: t("{title} — Henry & Co. 商城"),
       descriptionTemplate:
-        t("{title} 在 HenryCo 商城 — 已核验库存、可靠配送与卖家护照在结账前一目了然。"),
+        t("{title} 在 Henry & Co. 商城 — 已核验库存、可靠配送与卖家护照在结账前一目了然。"),
       fallbackDescription:
-        t("HenryCo 商城上的已核验商品,信任信号、配送说明与卖家护照都在结账前清晰呈现。"),
+        t("Henry & Co. 商城上的已核验商品,信任信号、配送说明与卖家护照都在结账前清晰呈现。"),
     },
     fulfillment: {
       sellerTrustLabel: t("卖家信任"),
@@ -5362,7 +5362,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("ऑर्डर ट्रैकिंग — HenryCo Marketplace"),
+      title: t("ऑर्डर ट्रैकिंग — Henry & Co. Marketplace"),
       description:
         t("हर विक्रेता सेगमेंट, पेमेंट अपडेट और डिलीवरी पड़ाव एक ही जगह पर ट्रैक करें। डिलीवरी पुष्ट होने तक एस्क्रो चालू रहता है।"),
     },
@@ -5379,7 +5379,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("पेमेंट रिकॉर्ड"),
       walletBody: t("वॉलेट बैलेंस से कटौती हो गई है और ऑर्डर डिलीवरी तक एस्क्रो में सुरक्षित है।"),
-      proofBody: t("ट्रांसफ़र का प्रमाण HenryCo फ़ाइनेंस की समीक्षा के लिए लगा दिया गया है।"),
+      proofBody: t("ट्रांसफ़र का प्रमाण Henry & Co. फ़ाइनेंस की समीक्षा के लिए लगा दिया गया है।"),
       awaitingBody: t("पेमेंट फ़ाइनेंस के प्रमाण या डिलीवरी मिलान का इंतज़ार कर रहा है।"),
       methodLabel: t("तरीक़ा"),
       statusLabel: t("स्थिति"),
@@ -5395,7 +5395,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("विक्रेता सेगमेंट"),
       title: t("हर विक्रेता अपनी डिस्पैच के लिए ज़िम्मेदार रहता है।"),
-      henrycoSegment: t("HenryCo सेगमेंट"),
+      henrycoSegment: t("Henry & Co. सेगमेंट"),
       fulfillmentLabel: t("फ़ुलफ़िलमेंट"),
       trackingLabel: t("ट्रैकिंग"),
       payoutLabel: t("पेआउट"),
@@ -5403,7 +5403,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("पूरा होने की पुष्टि"),
-      body: t("ऑर्डर ठीक हो तो पूरा होने की पुष्टि करें। HenryCo विक्रेता का पेआउट तभी जारी करता है जब डिलीवरी पुष्ट हो जाए या ऑर्डर ऑटो-रिलीज़ की शर्तें पूरी कर ले।"),
+      body: t("ऑर्डर ठीक हो तो पूरा होने की पुष्टि करें। Henry & Co. विक्रेता का पेआउट तभी जारी करता है जब डिलीवरी पुष्ट हो जाए या ऑर्डर ऑटो-रिलीज़ की शर्तें पूरी कर ले।"),
       confirmCta: t("पूरा होने की पुष्टि करें"),
     },
     help: {
@@ -5416,9 +5416,9 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("सत्यापित डील्स — HenryCo Marketplace"),
+      title: t("सत्यापित डील्स — Henry & Co. Marketplace"),
       description:
-        t("भरोसे, स्टॉक की पक्की उपलब्धता और विक्रेता ज़िम्मेदारी के आधार पर छँटी हुई छूट। HenryCo डील्स पेज पर सिर्फ़ साफ़ ट्रस्ट संकेतों वाले सत्यापित प्रोडक्ट ही दिखते हैं।"),
+        t("भरोसे, स्टॉक की पक्की उपलब्धता और विक्रेता ज़िम्मेदारी के आधार पर छँटी हुई छूट। Henry & Co. डील्स पेज पर सिर्फ़ साफ़ ट्रस्ट संकेतों वाले सत्यापित प्रोडक्ट ही दिखते हैं।"),
     },
     pageIntro: {
       kicker: t("सत्यापित डील्स"),
@@ -5438,7 +5438,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("ब्रांड"),
     bodyFallback:
-      t("HenryCo Marketplace पर एक सत्यापित स्टोर — ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट चेकआउट से पहले ही दिखते हैं।"),
+      t("Henry & Co. Marketplace पर एक सत्यापित स्टोर — ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट चेकआउट से पहले ही दिखते हैं।"),
     searchCta: t("इस ब्रांड में खोजें"),
     trustCta: t("ट्रस्ट मानक"),
     stats: {
@@ -5450,20 +5450,20 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("{brand} से लाइव"),
     openFullSearch: t("पूरी खोज खोलें"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("HenryCo Marketplace पर {brand} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।"),
+      t("Henry & Co. Marketplace पर {brand} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।"),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("HenryCo Marketplace पर {store} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।"),
+      t("Henry & Co. Marketplace पर {store} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।"),
     metadataDescriptionFallback:
-      t("HenryCo Marketplace पर एक सत्यापित स्टोर — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट दिखाई देते हैं।"),
+      t("Henry & Co. Marketplace पर एक सत्यापित स्टोर — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट दिखाई देते हैं।"),
     hero: {
       eyebrow: t("स्टोर पासपोर्ट"),
       bodyFallback:
-        t("HenryCo Marketplace पर एक सत्यापित विक्रेता — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और पारदर्शी पासपोर्ट सामने रहते हैं।"),
+        t("Henry & Co. Marketplace पर एक सत्यापित विक्रेता — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और पारदर्शी पासपोर्ट सामने रहते हैं।"),
     },
     stats: {
       trustScore: t("ट्रस्ट स्कोर"),
@@ -5476,7 +5476,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("सहायता"),
-      contactLinkLabel: t("इस स्टोर से बात करने के लिए HenryCo Marketplace का उपयोग करें"),
+      contactLinkLabel: t("इस स्टोर से बात करने के लिए Henry & Co. Marketplace का उपयोग करें"),
       contactBodySuffix:
         t(" — संदेश रिकॉर्ड होते हैं और आपके ऑर्डर रेफ़रेंस से जुड़े रहते हैं, ताकि हर अपडेट एक ही जगह बना रहे।"),
       ctaLabel: t("इस स्टोर से संपर्क करें"),
@@ -5515,16 +5515,16 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("पूरी सर्च खोलें"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("HenryCo Marketplace पर {category} में सत्यापित प्रोडक्ट देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।"),
+        t("Henry & Co. Marketplace पर {category} में सत्यापित प्रोडक्ट देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।"),
       fallbackDescription:
-        t("HenryCo Marketplace की एक क्यूरेटेड कैटेगरी देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।"),
+        t("Henry & Co. Marketplace की एक क्यूरेटेड कैटेगरी देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।"),
     },
   },
   help: {
     metadata: {
-      title: t("मदद केंद्र — HenryCo Marketplace"),
+      title: t("मदद केंद्र — Henry & Co. Marketplace"),
       description:
         t("ख़रीदार और विक्रेता जो सवाल सबसे ज़्यादा पूछते हैं, उन्हें देखें। ज़रूरत की जानकारी न मिले, तो सपोर्ट टिकट खोलें — टीम का कोई व्यक्ति उसे पढ़ेगा।"),
     },
@@ -5542,7 +5542,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   trust: {
     metadata: {
-      title: t("ट्रस्ट और सुरक्षा — HenryCo Marketplace"),
+      title: t("ट्रस्ट और सुरक्षा — Henry & Co. Marketplace"),
       description:
         t("ट्रस्ट यह तय करता है कि सेलर क्या कर सकता है, पैसा कैसे चलता है और मॉडरेशन कैसे जवाब देती है। सेलर टियर, एस्क्रो, विवाद और पेआउट रिलीज़ — सबका सर्वर-साइड रिकॉर्ड बनता है।"),
     },
@@ -5565,7 +5565,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("एस्क्रो कंट्रोल"),
-          body: t("बायर का पैसा पहले HenryCo के पास रहता है — डिलीवरी और ट्रस्ट चेक पास होने पर ही पेआउट में जाता है।"),
+          body: t("बायर का पैसा पहले Henry & Co. के पास रहता है — डिलीवरी और ट्रस्ट चेक पास होने पर ही पेआउट में जाता है।"),
         },
         {
           title: t("एंटी-फ्रॉड समीक्षा"),
@@ -5591,17 +5591,17 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("HenryCo पर बेचें — भरोसे की अगुवाई करने वाले विक्रेताओं के लिए चुनिंदा मार्केटप्लेस"),
+      title: t("Henry & Co. पर बेचें — भरोसे की अगुवाई करने वाले विक्रेताओं के लिए चुनिंदा मार्केटप्लेस"),
       description:
-        t("HenryCo Marketplace पर बेचने के लिए आवेदन करें: भरोसे पर टिकी पोज़िशनिंग, प्रीमियम स्टोरफ्रंट और ऑर्डर, भुगतान व सपोर्ट के लिए एक ही जगह काम करने की सुविधा।"),
+        t("Henry & Co. Marketplace पर बेचने के लिए आवेदन करें: भरोसे पर टिकी पोज़िशनिंग, प्रीमियम स्टोरफ्रंट और ऑर्डर, भुगतान व सपोर्ट के लिए एक ही जगह काम करने की सुविधा।"),
     },
     hero: {
-      kicker: t("HenryCo पर बेचें"),
+      kicker: t("Henry & Co. पर बेचें"),
       title: t("मूल रूप से चयनात्मक। उन विक्रेताओं के लिए जो भरोसे की अगुवाई करते हैं।"),
-      body: t("HenryCo Marketplace उन विक्रेताओं को तरजीह देता है जो प्रस्तुति का ख़याल रखते हैं, भरोसेमंद डिलीवरी करते हैं और ख़रीदार सुरक्षा को सच्चे मन से निभाते हैं। मानक इस पेज पर खुलकर बताए गए हैं; विक्रेता आवेदन आपके HenryCo अकाउंट के अंदर जारी रहता है।"),
+      body: t("Henry & Co. Marketplace उन विक्रेताओं को तरजीह देता है जो प्रस्तुति का ख़याल रखते हैं, भरोसेमंद डिलीवरी करते हैं और ख़रीदार सुरक्षा को सच्चे मन से निभाते हैं। मानक इस पेज पर खुलकर बताए गए हैं; विक्रेता आवेदन आपके Henry & Co. अकाउंट के अंदर जारी रहता है।"),
       primaryCta: t("विक्रेता आवेदन खोलें"),
       secondaryCta: t("विक्रेता मूल्य देखें"),
-      signInCta: t("HenryCo अकाउंट से साइन इन करें"),
+      signInCta: t("Henry & Co. अकाउंट से साइन इन करें"),
       highlights: [
         { label: t("चयन"), value: t("मैनुअल समीक्षा, पेड-लिस्टिंग नहीं") },
         { label: t("स्टोरफ्रंट"), value: t("ख़रीदारों को दिखता ट्रस्ट पासपोर्ट") },
@@ -5620,9 +5620,9 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("ऑनबोर्डिंग कैसे होती है"),
       stepLabel: t("चरण"),
       steps: [
-        { step: "01", title: t("विक्रेता आवेदन शुरू करें"), body: t("आवेदन अपने HenryCo अकाउंट से खोलें — जैसे-जैसे विवरण जोड़ते जाएँ, ड्राफ़्ट अपने आप सेव होते जाते हैं।") },
+        { step: "01", title: t("विक्रेता आवेदन शुरू करें"), body: t("आवेदन अपने Henry & Co. अकाउंट से खोलें — जैसे-जैसे विवरण जोड़ते जाएँ, ड्राफ़्ट अपने आप सेव होते जाते हैं।") },
         { step: "02", title: t("व्यवसाय विवरण जोड़ें"), body: t("व्यवसाय का नाम, स्टोर प्रोफ़ाइल, प्रोडक्ट फ़ोकस और वे वेरिफ़िकेशन डॉक्युमेंट जो बताते हैं कि आप ऑर्डर कैसे पूरे करते हैं।") },
-        { step: "03", title: t("आवेदन की समीक्षा"), body: t("HenryCo टीम दस्तावेज़, ट्रस्ट संकेत और स्टोर की तैयारी देखती है — सिर्फ़ कोई पेड बैज नहीं।") },
+        { step: "03", title: t("आवेदन की समीक्षा"), body: t("Henry & Co. टीम दस्तावेज़, ट्रस्ट संकेत और स्टोर की तैयारी देखती है — सिर्फ़ कोई पेड बैज नहीं।") },
         { step: "04", title: t("वेंडर ऑनबोर्डिंग"), body: t("स्वीकृत विक्रेता वेंडर ऑनबोर्डिंग में जाते हैं, जहाँ कीमतें, लिस्टिंग शुल्क, पेआउट विंडो और नीतियाँ पब्लिश से पहले ही दिखती हैं।") },
       ],
       callout: {
@@ -5654,7 +5654,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("विक्रेता कीमत — HenryCo Marketplace"),
+      title: t("विक्रेता कीमत — Henry & Co. Marketplace"),
       description:
         t("प्लान शुल्क, लिस्टिंग शुल्क, फ़ीचर्ड स्लॉट शुल्क, ट्रांज़ैक्शन कमीशन और पेआउट प्रोसेसिंग — सब पहले से बताए जाते हैं, इन्वेंट्री पब्लिश करने से पहले, बाद में नहीं।"),
     },
@@ -5684,7 +5684,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("{plan} से शुरू करें"),
     },
     economics: {
-      kicker: t("HenryCo कैसे कमाता है"),
+      kicker: t("Henry & Co. कैसे कमाता है"),
       title: t("पहले से बताया, खुले में काटा।"),
       items: [
         t("हर वेंडर ऑर्डर-ग्रुप सेटलमेंट से पेआउट रिलीज़ से पहले ट्रांज़ैक्शन कमीशन काटा जाता है।"),
@@ -5701,7 +5701,7 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("आवेदन के लिए तैयार?"),
-      title: t("आवेदन आपके HenryCo अकाउंट में खुलेगा।"),
+      title: t("आवेदन आपके Henry & Co. अकाउंट में खुलेगा।"),
       body: t("आप ड्राफ्ट सेव कर वापस आ सकते हैं — यहाँ दिख रही कीमत वेंडर ऑनबोर्डिंग पूरा होते ही लागू हो जाती है।"),
       primaryCta: t("विक्रेता के रूप में आवेदन"),
       secondaryCta: t("ट्रस्ट मानक"),
@@ -5709,11 +5709,11 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — HenryCo मार्केटप्लेस"),
+      titleTemplate: t("{collection} — Henry & Co. मार्केटप्लेस"),
       descriptionTemplate:
-        t("HenryCo मार्केटप्लेस पर {collection} देखें — सत्यापित प्रोडक्ट्स की क्यूरेटेड लाइन-अप, ट्रस्ट सिग्नल, स्पष्ट डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।"),
+        t("Henry & Co. मार्केटप्लेस पर {collection} देखें — सत्यापित प्रोडक्ट्स की क्यूरेटेड लाइन-अप, ट्रस्ट सिग्नल, स्पष्ट डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।"),
       fallbackDescription:
-        t("HenryCo मार्केटप्लेस का एक क्यूरेटेड कलेक्शन — सत्यापित प्रोडक्ट्स, ट्रस्ट सिग्नल, साफ डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।"),
+        t("Henry & Co. मार्केटप्लेस का एक क्यूरेटेड कलेक्शन — सत्यापित प्रोडक्ट्स, ट्रस्ट सिग्नल, साफ डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।"),
     },
     hero: {
       primaryCta: t("पूरी सर्च खोलें"),
@@ -5733,12 +5733,12 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — HenryCo मार्केटप्लेस"),
+      titleTemplate: t("{policy} — Henry & Co. मार्केटप्लेस"),
       descriptionTemplate:
-        t("HenryCo मार्केटप्लेस पर {policy} — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।"),
-      fallbackTitle: t("मार्केटप्लेस नीति — HenryCo मार्केटप्लेस"),
+        t("Henry & Co. मार्केटप्लेस पर {policy} — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।"),
+      fallbackTitle: t("मार्केटप्लेस नीति — Henry & Co. मार्केटप्लेस"),
       fallbackDescription:
-        t("HenryCo मार्केटप्लेस की एक नीति — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।"),
+        t("Henry & Co. मार्केटप्लेस की एक नीति — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।"),
     },
     hero: {
       backToTrust: t("ट्रस्ट मानकों पर लौटें"),
@@ -5774,11 +5774,11 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} HenryCo Marketplace पर — चेकआउट से पहले सत्यापित स्टॉक, भरोसेमंद डिलीवरी और सेलर पासपोर्ट सबकुछ साफ़।"),
+        t("{title} Henry & Co. Marketplace पर — चेकआउट से पहले सत्यापित स्टॉक, भरोसेमंद डिलीवरी और सेलर पासपोर्ट सबकुछ साफ़।"),
       fallbackDescription:
-        t("HenryCo Marketplace पर एक सत्यापित लिस्टिंग — चेकआउट से पहले ट्रस्ट सिग्नल, डिलीवरी की स्पष्टता और सेलर पासपोर्ट साफ़ दिखते हैं।"),
+        t("Henry & Co. Marketplace पर एक सत्यापित लिस्टिंग — चेकआउट से पहले ट्रस्ट सिग्नल, डिलीवरी की स्पष्टता और सेलर पासपोर्ट साफ़ दिखते हैं।"),
     },
     fulfillment: {
       sellerTrustLabel: t("सेलर ट्रस्ट"),
@@ -5859,7 +5859,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Nsochi iwu — HenryCo Marketplace"),
+      title: t("Nsochi iwu — Henry & Co. Marketplace"),
       description:
         t("Soro akụkụ onye nke ọ bụla na-ere ahịa, mmelite ịkwụ ụgwọ, na ihe ndọrọ nsonye dị mkpa n'otu ebe. Escrow nọgide na-arụ ọrụ ruo mgbe a kwadoro nnyefe."),
     },
@@ -5876,7 +5876,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Ndekọ ịkwụ ụgwọ"),
       walletBody: t("E sitere n'akpa ego wepụ ego, iwu nọkwa n'escrow ruo mgbe nnyefe gachara."),
-      proofBody: t("E tinyere ihe akaebe nke nkwụnye ego ka ndị na-elekọta ego HenryCo nyochaa ya."),
+      proofBody: t("E tinyere ihe akaebe nke nkwụnye ego ka ndị na-elekọta ego Henry & Co. nyochaa ya."),
       awaitingBody: t("Ịkwụ ụgwọ na-eche ihe akaebe sitere n'aka ndị na-elekọta ego ma ọ bụ idokọ mgbe nnyefe ruru."),
       methodLabel: t("Ụzọ"),
       statusLabel: t("Ọnọdụ"),
@@ -5892,7 +5892,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Akụkụ ndị na-ere ahịa"),
       title: t("Onye nke ọ bụla na-ere ahịa na-aza maka mbufe nke ya."),
-      henrycoSegment: t("Akụkụ HenryCo"),
+      henrycoSegment: t("Akụkụ Henry & Co."),
       fulfillmentLabel: t("Mbufe"),
       trackingLabel: t("Nsochi"),
       payoutLabel: t("Nkwụghachi ụgwọ"),
@@ -5900,7 +5900,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Nkwado nke ngwụcha"),
-      body: t("Kwado mgwụcha mgbe iwu ahụ dị mma. HenryCo na-ahapụ nkwụghachi ụgwọ onye na-ere ahịa naanị mgbe a kwadoro nnyefe ma ọ bụ mgbe iwu ahụ ruru ihe ọkpụkpụ na-ahapụ onwe ya."),
+      body: t("Kwado mgwụcha mgbe iwu ahụ dị mma. Henry & Co. na-ahapụ nkwụghachi ụgwọ onye na-ere ahịa naanị mgbe a kwadoro nnyefe ma ọ bụ mgbe iwu ahụ ruru ihe ọkpụkpụ na-ahapụ onwe ya."),
       confirmCta: t("Kwado ngwụcha"),
     },
     help: {
@@ -5913,9 +5913,9 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Mbelata ọnụahịa enyochara — HenryCo Marketplace"),
+      title: t("Mbelata ọnụahịa enyochara — Henry & Co. Marketplace"),
       description:
-        t("Mbelata ọnụahịa esiwo nzọcha ntụkwasị obi, nkwado ngwongwo dị n'ụlọ ahịa, na ọrụ onye na-ere ahịa. Naanị ndepụta enyochara nke nwere akara ntụkwasị obi dị ọcha na-apụta na peeji deals nke HenryCo."),
+        t("Mbelata ọnụahịa esiwo nzọcha ntụkwasị obi, nkwado ngwongwo dị n'ụlọ ahịa, na ọrụ onye na-ere ahịa. Naanị ndepụta enyochara nke nwere akara ntụkwasị obi dị ọcha na-apụta na peeji deals nke Henry & Co."),
     },
     pageIntro: {
       kicker: t("Mbelata ọnụahịa enyochara"),
@@ -5935,7 +5935,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("Akaraaka ahịa"),
     bodyFallback:
-      t("Ụlọ ahịa enyochara n'elu HenryCo Marketplace, ebe akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ."),
+      t("Ụlọ ahịa enyochara n'elu Henry & Co. Marketplace, ebe akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ."),
     searchCta: t("Chọọ n'ime akaraaka ahịa a"),
     trustCta: t("Ọkwa ntụkwasị obi"),
     stats: {
@@ -5947,20 +5947,20 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("Ọkụ ọkụ site na {brand}"),
     openFullSearch: t("Mepee nchọta zuru oke"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Lelee ngwa ahịa enyochara nke {brand} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ ndị na-ere ahịa na-egosi tupu ịkwụ ụgwọ."),
+      t("Lelee ngwa ahịa enyochara nke {brand} na Henry & Co. Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ ndị na-ere ahịa na-egosi tupu ịkwụ ụgwọ."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Lelee ngwa ahịa enyochara nke {store} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ."),
+      t("Lelee ngwa ahịa enyochara nke {store} na Henry & Co. Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ."),
     metadataDescriptionFallback:
-      t("Ụlọ ahịa enyochara n'elu HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ ọ bụla."),
+      t("Ụlọ ahịa enyochara n'elu Henry & Co. Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ ọ bụla."),
     hero: {
       eyebrow: t("Paspọtụ ụlọ ahịa"),
       bodyFallback:
-        t("Onye na-ere ahịa enyochara n'elu HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ doro anya na-egosi tupu ịkwụ ụgwọ ọ bụla."),
+        t("Onye na-ere ahịa enyochara n'elu Henry & Co. Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ doro anya na-egosi tupu ịkwụ ụgwọ ọ bụla."),
     },
     stats: {
       trustScore: t("Akara ntụkwasị obi"),
@@ -5973,7 +5973,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Nkwado"),
-      contactLinkLabel: t("Jiri HenryCo Marketplace kpọtụrụ ụlọ ahịa a"),
+      contactLinkLabel: t("Jiri Henry & Co. Marketplace kpọtụrụ ụlọ ahịa a"),
       contactBodySuffix:
         t(" — a na-edekọ ozi ma jikọta ya na nrụtụaka iwu gị ka mmelite ọ bụla na-anọgide n'otu ebe."),
       ctaLabel: t("Kpọtụrụ ụlọ ahịa a"),
@@ -6012,16 +6012,16 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Mepee ọchụchọ zuru ezu"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Chọpụta ngwa ahịa enyochara n'ime {category} na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa nke pụtara tupu ịkwụ ụgwọ."),
+        t("Chọpụta ngwa ahịa enyochara n'ime {category} na Henry & Co. Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa nke pụtara tupu ịkwụ ụgwọ."),
       fallbackDescription:
-        t("Tụgharịa n'ime ụdị a họpụtara na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ."),
+        t("Tụgharịa n'ime ụdị a họpụtara na Henry & Co. Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ."),
     },
   },
   trust: {
     metadata: {
-      title: t("Ntụkwasị obi & nchekwa — HenryCo Marketplace"),
+      title: t("Ntụkwasị obi & nchekwa — Henry & Co. Marketplace"),
       description:
         t("Ntụkwasị obi na-achịkwa ihe onye na-ere ahịa nwere ike ime, otú ego si agagharị, na otú nlekota si aza. Ọkwa ndị na-ere ahịa, nchekwa ego site n'aka onye nnọchi anya, esemokwu, na ntọhapụ ego niile na-ahapụ ndekọ na sava."),
     },
@@ -6044,7 +6044,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Njikwa nchekwa ego"),
-          body: t("Ego onye na-azụ ahịa na-anọ buru ụzọ n'aka HenryCo, ma na-aga naanị na ntọhapụ mgbe nyefere agachara nyochaa."),
+          body: t("Ego onye na-azụ ahịa na-anọ buru ụzọ n'aka Henry & Co., ma na-aga naanị na ntọhapụ mgbe nyefere agachara nyochaa."),
         },
         {
           title: t("Nyocha mgbochi aghụghọ"),
@@ -6070,7 +6070,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   help: {
     metadata: {
-      title: t("Ebe enyemaka — HenryCo Marketplace"),
+      title: t("Ebe enyemaka — Henry & Co. Marketplace"),
       description:
         t("Lelee ajụjụ ndị ndị na-azụ ahịa na ndị na-ere ahịa na-ajụkarị. Ọ bụrụ na ị chọtaghị ihe ị chọrọ, mepee tiketi nkwado — mmadụ n'ime otu ga-agụ ya."),
     },
@@ -6088,17 +6088,17 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Ree ahịa na HenryCo — ahịa a họpụtara maka ndị na-ere ahịa na-eduga na ntụkwasị obi"),
+      title: t("Ree ahịa na Henry & Co. — ahịa a họpụtara maka ndị na-ere ahịa na-eduga na ntụkwasị obi"),
       description:
-        t("Tinye akwụkwọ maka ire ahịa na HenryCo Marketplace: njikere nke dabere na ntụkwasị obi, ụlọ ahịa mara mma na otu ebe maka iwu ahịa, ịkwụ ụgwọ na nkwado."),
+        t("Tinye akwụkwọ maka ire ahịa na Henry & Co. Marketplace: njikere nke dabere na ntụkwasị obi, ụlọ ahịa mara mma na otu ebe maka iwu ahịa, ịkwụ ụgwọ na nkwado."),
     },
     hero: {
-      kicker: t("Ree ahịa na HenryCo"),
+      kicker: t("Ree ahịa na Henry & Co."),
       title: t("Nhọrọ site na atụmatụ. E meere ya maka ndị na-ere ahịa nke na-eduga na ntụkwasị obi."),
-      body: t("HenryCo Marketplace na-eburu ụzọ họrọ ndị na-ere ahịa na-eche maka ngosi, ndị nwere ntụkwasị obi na nnyefe, na ndị ji obi eziokwu na-echekwa ndị na-azụ ahịa. Ihe a chọrọ doro anya na ibe a; akwụkwọ ire ahịa na-aga n'ihu n'akaụntụ HenryCo gị."),
+      body: t("Henry & Co. Marketplace na-eburu ụzọ họrọ ndị na-ere ahịa na-eche maka ngosi, ndị nwere ntụkwasị obi na nnyefe, na ndị ji obi eziokwu na-echekwa ndị na-azụ ahịa. Ihe a chọrọ doro anya na ibe a; akwụkwọ ire ahịa na-aga n'ihu n'akaụntụ Henry & Co. gị."),
       primaryCta: t("Mepee akwụkwọ ire ahịa"),
       secondaryCta: t("Lee ego ndị na-ere ahịa"),
-      signInCta: t("Banye site na akaụntụ HenryCo"),
+      signInCta: t("Banye site na akaụntụ Henry & Co."),
       highlights: [
         { label: t("Nhọrọ"), value: t("Nyocha aka, ọ bụghị ịkwụ ụgwọ idepụta") },
         { label: t("Ụlọ ahịa"), value: t("Paspọtụ ntụkwasị obi ka ndị na-azụ ahịa hụ") },
@@ -6117,9 +6117,9 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Otu mmalite si arụ ọrụ"),
       stepLabel: t("Nzọụkwụ"),
       steps: [
-        { step: "01", title: t("Bido akwụkwọ ire ahịa"), body: t("Mepee akwụkwọ ahụ site n'akaụntụ HenryCo gị — ndepụta na-echekwa onwe ya ka ị na-achịkọta ihe niile.") },
+        { step: "01", title: t("Bido akwụkwọ ire ahịa"), body: t("Mepee akwụkwọ ahụ site n'akaụntụ Henry & Co. gị — ndepụta na-echekwa onwe ya ka ị na-achịkọta ihe niile.") },
         { step: "02", title: t("Tinye nkọwa azụmaahịa"), body: t("Aha azụmaahịa, profaịlụ ụlọ ahịa, ihe nzukọ ngwa ahịa, na akwụkwọ nyocha ọ bụla na-akọwa ka i si emezu iwu ahịa.") },
-        { step: "03", title: t("Nyochaa akwụkwọ"), body: t("Otu HenryCo na-enyocha akwụkwọ, ihe ịrịba ama ntụkwasị obi na njikere ụlọ ahịa — ọ bụghị naanị baajị akwụ ụgwọ.") },
+        { step: "03", title: t("Nyochaa akwụkwọ"), body: t("Otu Henry & Co. na-enyocha akwụkwọ, ihe ịrịba ama ntụkwasị obi na njikere ụlọ ahịa — ọ bụghị naanị baajị akwụ ụgwọ.") },
         { step: "04", title: t("Mmebata onye na-ere ahịa"), body: t("Ndị enyere ohere na-aga n'ihu na mmebata, ebe ego, ụgwọ idepụta, oge nkwụ ụgwọ na iwu pụtara tupu ibido ibipụta.") },
       ],
       callout: {
@@ -6151,7 +6151,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Ọnụahịa onye na-ere ahịa — HenryCo Marketplace"),
+      title: t("Ọnụahịa onye na-ere ahịa — Henry & Co. Marketplace"),
       description:
         t("Ụgwọ atụmatụ, ụgwọ idepụta, ụgwọ oghere edobere, ego nrụaka azụmaahịa na nhazi nkwụ ụgwọ — niile na-egosi mbụ, tupu ibipụta ngwaahịa, ọ bụghị emesia."),
     },
@@ -6181,7 +6181,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Jiri {plan} bido"),
     },
     economics: {
-      kicker: t("Otú HenryCo si akpata ego"),
+      kicker: t("Otú Henry & Co. si akpata ego"),
       title: t("E kwupụtara mbụ, a wepụrụ n'ihu mmadụ."),
       items: [
         t("A na-ewepụ ego nrụaka azụmaahịa n'otu otu nkwụghachi nke ìgwè iwu onye na-ere ahịa tupu ahapụ nkwụ ụgwọ."),
@@ -6198,7 +6198,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Ị dị njikere ịtinye akwụkwọ?"),
-      title: t("Akwụkwọ a na-emepe n'akaụntụ HenryCo gị."),
+      title: t("Akwụkwọ a na-emepe n'akaụntụ Henry & Co. gị."),
       body: t("Ị nwere ike ichekwa edemede ma laghachi — ọnụahịa a na-egosi ebe a na-arụ ọrụ ozugbo mmebata onye na-ere zuru oke."),
       primaryCta: t("Tinye akwụkwọ dị ka onye na-ere"),
       secondaryCta: t("Ụkpụrụ ntụkwasị obi"),
@@ -6206,11 +6206,11 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — Ahịa HenryCo"),
+      titleTemplate: t("{collection} — Ahịa Henry & Co."),
       descriptionTemplate:
-        t("Lelee {collection} n'elu Ahịa HenryCo — usoro ngwaahịa enyochara, jiri akara ntụkwasị obi, nkọwa nbuga doro anya, na paspọtụ ndị na-ere ahịa pụta ìhè tupu ịkwụ ụgwọ."),
+        t("Lelee {collection} n'elu Ahịa Henry & Co. — usoro ngwaahịa enyochara, jiri akara ntụkwasị obi, nkọwa nbuga doro anya, na paspọtụ ndị na-ere ahịa pụta ìhè tupu ịkwụ ụgwọ."),
       fallbackDescription:
-        t("Otu nchịkọta ahọpụtara n'Ahịa HenryCo, jikọtara ngwaahịa enyochara, akara ntụkwasị obi, nbuga doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ."),
+        t("Otu nchịkọta ahọpụtara n'Ahịa Henry & Co., jikọtara ngwaahịa enyochara, akara ntụkwasị obi, nbuga doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ."),
     },
     hero: {
       primaryCta: t("Mepee nchọcha zuru oke"),
@@ -6219,7 +6219,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     sidebar: {
       itemsLabel: t("Ihe dị na nchịkọta"),
       editedByLabel: t("Onye haziri"),
-      editedByValue: t("Ọrụ Ahịa HenryCo"),
+      editedByValue: t("Ọrụ Ahịa Henry & Co."),
       buyerProtectionLabel: t("Nchekwa onye azụ ahịa"),
       buyerProtectionValue: t("Ịkwụ ụgwọ esinyere n'isi"),
     },
@@ -6230,12 +6230,12 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — Ahịa HenryCo"),
+      titleTemplate: t("{policy} — Ahịa Henry & Co."),
       descriptionTemplate:
-        t("{policy} n'elu Ahịa HenryCo — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ."),
-      fallbackTitle: t("Iwu ahịa — Ahịa HenryCo"),
+        t("{policy} n'elu Ahịa Henry & Co. — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ."),
+      fallbackTitle: t("Iwu ahịa — Ahịa Henry & Co."),
       fallbackDescription:
-        t("Otu iwu Ahịa HenryCo — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ."),
+        t("Otu iwu Ahịa Henry & Co. — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ."),
     },
     hero: {
       backToTrust: t("Laghachi n'ụkpụrụ ntụkwasị obi"),
@@ -6252,7 +6252,7 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       fallback: t("Ndị sonye na ahịa"),
     },
     enforcementBySlug: {
-      buyerProtection: t("Ego e ji n'aka HenryCo + mgbochi ụgwọ na esemokwu"),
+      buyerProtection: t("Ego e ji n'aka Henry & Co. + mgbochi ụgwọ na esemokwu"),
       sellerPolicy: t("Nyochaa site n'ọkwa ntụkwasị obi + ego e debere"),
       fallback: t("Aka e dekọtara na sava"),
     },
@@ -6271,11 +6271,11 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} na HenryCo Marketplace — ngwaahịa anwapụtara, nbufe a tụkwasịrị obi na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ."),
+        t("{title} na Henry & Co. Marketplace — ngwaahịa anwapụtara, nbufe a tụkwasịrị obi na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ."),
       fallbackDescription:
-        t("Edemede anwapụtara na HenryCo Marketplace — akara ntụkwasị obi, doro anya nbufe na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ."),
+        t("Edemede anwapụtara na Henry & Co. Marketplace — akara ntụkwasị obi, doro anya nbufe na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ."),
     },
     fulfillment: {
       sellerTrustLabel: t("Ntụkwasị obi onye na-ere"),
@@ -6356,7 +6356,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Ìtọpinpin àṣẹ — HenryCo Marketplace"),
+      title: t("Ìtọpinpin àṣẹ — Henry & Co. Marketplace"),
       description:
         t("Tọpinpin gbogbo apá olùtà, ìmúdójúìwọ̀n ìsanwó, àti àmì ìfijiṣẹ́ ní ibì kan náà. Escrow yóò máa wà títí di ìgbà tí a ó fi fìdí ìfijiṣẹ́ múlẹ̀."),
     },
@@ -6373,7 +6373,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Àkọsílẹ̀ ìsanwó"),
       walletBody: t("A ti yọ owó kúrò nínú àpamọ́wọ́, àṣẹ náà sì wà nínú escrow títí ìfijiṣẹ́ yóò fi parí."),
-      proofBody: t("A ti fi ẹ̀rí ìfìránṣẹ́ owó hàn fún àyẹ̀wò ẹgbẹ́ ìṣúná HenryCo."),
+      proofBody: t("A ti fi ẹ̀rí ìfìránṣẹ́ owó hàn fún àyẹ̀wò ẹgbẹ́ ìṣúná Henry & Co."),
       awaitingBody: t("Ìsanwó ń dúró de ẹ̀rí ìṣúná tàbí ìbámu ní àkókò ìfijiṣẹ́."),
       methodLabel: t("Ọ̀nà"),
       statusLabel: t("Ipò"),
@@ -6389,7 +6389,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Apá olùtà"),
       title: t("Olùtà kọ̀ọ̀kan ń jíhìn fún ìfìránṣẹ́ tirẹ̀."),
-      henrycoSegment: t("Apá HenryCo"),
+      henrycoSegment: t("Apá Henry & Co."),
       fulfillmentLabel: t("Ìfijiṣẹ́"),
       trackingLabel: t("Ìtọpinpin"),
       payoutLabel: t("Ìsanpadà"),
@@ -6397,7 +6397,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Ìfìdí ìparí múlẹ̀"),
-      body: t("Fìdí ìparí múlẹ̀ nígbà tí àṣẹ náà bá tẹ́ ọ lọ́rùn. HenryCo kì í tu ìsanpadà fún olùtà sílẹ̀ àfi lẹ́yìn tí a bá ti fìdí ìfijiṣẹ́ múlẹ̀ tàbí tí àṣẹ náà bá yẹ fún ìtusílẹ̀ alátọwọ́dá-fúnra-rẹ̀."),
+      body: t("Fìdí ìparí múlẹ̀ nígbà tí àṣẹ náà bá tẹ́ ọ lọ́rùn. Henry & Co. kì í tu ìsanpadà fún olùtà sílẹ̀ àfi lẹ́yìn tí a bá ti fìdí ìfijiṣẹ́ múlẹ̀ tàbí tí àṣẹ náà bá yẹ fún ìtusílẹ̀ alátọwọ́dá-fúnra-rẹ̀."),
       confirmCta: t("Fìdí ìparí múlẹ̀"),
     },
     help: {
@@ -6410,9 +6410,9 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Àwọn àdínkù tí a fọwọ́sí — HenryCo Marketplace"),
+      title: t("Àwọn àdínkù tí a fọwọ́sí — Henry & Co. Marketplace"),
       description:
-        t("Àdínkù tí a yan nípasẹ̀ ìgbẹ́kẹ̀lé, dájúdájú ohun-ọjà tó wà ní ìpamọ́, àti ojúṣe olùtà. Lórí ojú-ìwé deals HenryCo, kìkì àwọn àkọsílẹ̀ tó a ti fọwọ́sí pẹ̀lú àmì ìgbẹ́kẹ̀lé mímọ́ ló máa farahàn."),
+        t("Àdínkù tí a yan nípasẹ̀ ìgbẹ́kẹ̀lé, dájúdájú ohun-ọjà tó wà ní ìpamọ́, àti ojúṣe olùtà. Lórí ojú-ìwé deals Henry & Co., kìkì àwọn àkọsílẹ̀ tó a ti fọwọ́sí pẹ̀lú àmì ìgbẹ́kẹ̀lé mímọ́ ló máa farahàn."),
     },
     pageIntro: {
       kicker: t("Àwọn àdínkù tí a fọwọ́sí"),
@@ -6432,7 +6432,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   brand: {
     eyebrow: t("Àmì-ọjà"),
     bodyFallback:
-      t("Ilé-ìtajà tí a ti fọwọ́sí lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé pípé fún ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú ìsanwó."),
+      t("Ilé-ìtajà tí a ti fọwọ́sí lórí Henry & Co. Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé pípé fún ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú ìsanwó."),
     searchCta: t("Ṣe ìwákiri nínú àmì-ọjà yìí"),
     trustCta: t("Ìlànà ìgbẹ́kẹ̀lé"),
     stats: {
@@ -6444,20 +6444,20 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     liveKicker: t("Tààrà láti {brand}"),
     openFullSearch: t("Ṣí ìwákiri kíkún"),
-    metadataTitle: t("{brand} — HenryCo Marketplace"),
+    metadataTitle: t("{brand} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {brand} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà ṣáájú ìsanwó."),
+      t("Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {brand} lórí Henry & Co. Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà ṣáájú ìsanwó."),
   },
   store: {
-    metadataTitle: t("{store} — HenryCo Marketplace"),
+    metadataTitle: t("{store} — Henry & Co. Marketplace"),
     metadataDescription:
-      t("Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {store} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tó hàn ṣáájú ìsanwó."),
+      t("Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {store} lórí Henry & Co. Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tó hàn ṣáájú ìsanwó."),
     metadataDescriptionFallback:
-      t("Ilé-ìtajà tí a ti fọwọ́sí lórí HenryCo Marketplace — àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú gbogbo ìsanwó."),
+      t("Ilé-ìtajà tí a ti fọwọ́sí lórí Henry & Co. Marketplace — àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú gbogbo ìsanwó."),
     hero: {
       eyebrow: t("Ìwé-ìrìnnà ilé-ìtajà"),
       bodyFallback:
-        t("Olùtà tí a ti fọwọ́sí lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà tí ó hàn kedere ṣáájú gbogbo ìsanwó."),
+        t("Olùtà tí a ti fọwọ́sí lórí Henry & Co. Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà tí ó hàn kedere ṣáájú gbogbo ìsanwó."),
     },
     stats: {
       trustScore: t("Ìkà ìgbẹ́kẹ̀lé"),
@@ -6470,7 +6470,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Ìrànlọ́wọ́"),
-      contactLinkLabel: t("Lo HenryCo Marketplace láti bá ilé-ìtajà yìí sọ̀rọ̀"),
+      contactLinkLabel: t("Lo Henry & Co. Marketplace láti bá ilé-ìtajà yìí sọ̀rọ̀"),
       contactBodySuffix:
         t(" — a ń kọ àwọn ìfọ̀rọ̀wérọ̀ sílẹ̀, a sì ń so wọ́n mọ́ ìtọ́kasí àṣẹ rẹ kí gbogbo àfikún ìmúdójúìwọ̀n máa wà ní ibìkan ṣoṣo."),
       ctaLabel: t("Bá ilé-ìtajà yìí sọ̀rọ̀"),
@@ -6509,16 +6509,16 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Ṣí àwárí kíkún"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Ṣàwárí àwọn ọjà tó jẹ́ ìmúdájú nínú {category} lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà tó wà ní ṣíṣí kí o tó san owó."),
+        t("Ṣàwárí àwọn ọjà tó jẹ́ ìmúdájú nínú {category} lórí Henry & Co. Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà tó wà ní ṣíṣí kí o tó san owó."),
       fallbackDescription:
-        t("Ṣàwárí ẹka tí a yàn pẹ̀lú àmọ̀ lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà kí o tó san owó."),
+        t("Ṣàwárí ẹka tí a yàn pẹ̀lú àmọ̀ lórí Henry & Co. Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà kí o tó san owó."),
     },
   },
   trust: {
     metadata: {
-      title: t("Ìgbẹ́kẹ̀lé àti ààbò — HenryCo Marketplace"),
+      title: t("Ìgbẹ́kẹ̀lé àti ààbò — Henry & Co. Marketplace"),
       description:
         t("Ìgbẹ́kẹ̀lé ló ń pinnu ohun tí olùtà lè ṣe, bí owó ṣe ń gbé, àti bí ìtọ́jú ṣe ń dáhùn. Ìpele olùtà, owó tí a fi pamọ́, àríyànjiyàn, àti ìtúsílẹ̀ owó gbogbo ń fi àkọsílẹ̀ silẹ̀ lórí sáfà."),
     },
@@ -6541,7 +6541,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Ìṣàkóso owó tí a fi pamọ́"),
-          body: t("HenryCo ló ń kọ́kọ́ di owó olùra mu, lẹ́yìn náà ni a ó tú u silẹ̀ fún ìsanwó lẹ́yìn ìfijíṣẹ́ àti àyẹ̀wò ìgbẹ́kẹ̀lé."),
+          body: t("Henry & Co. ló ń kọ́kọ́ di owó olùra mu, lẹ́yìn náà ni a ó tú u silẹ̀ fún ìsanwó lẹ́yìn ìfijíṣẹ́ àti àyẹ̀wò ìgbẹ́kẹ̀lé."),
         },
         {
           title: t("Ìwádìí ìpaniyàn àyíká"),
@@ -6567,7 +6567,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   help: {
     metadata: {
-      title: t("Ibùdó ìrànlọ́wọ́ — HenryCo Marketplace"),
+      title: t("Ibùdó ìrànlọ́wọ́ — Henry & Co. Marketplace"),
       description:
         t("Ṣàwárí àwọn ìbéèrè tí àwọn olùra àti àwọn olùtà sábà máa ń bi. Tí o kò bá rí ohun tí o nílò, ṣí ìwé ìbéèrè ìrànlọ́wọ́, ẹnìkan láti inú ẹgbẹ́ yóò kà á."),
     },
@@ -6585,17 +6585,17 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Tàjà lórí HenryCo — ọjà tí a yàn fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé"),
+      title: t("Tàjà lórí Henry & Co. — ọjà tí a yàn fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé"),
       description:
-        t("Forúkọsílẹ̀ láti tà lórí HenryCo Marketplace: àfihàn tí ó dá lórí ìgbẹ́kẹ̀lé, àwọn ilé-ìtajà tó tóótun, àti àyè iṣẹ́ kan ṣoṣo fún àwọn àṣẹ, ìsanwó, àti ìrànlọ́wọ́."),
+        t("Forúkọsílẹ̀ láti tà lórí Henry & Co. Marketplace: àfihàn tí ó dá lórí ìgbẹ́kẹ̀lé, àwọn ilé-ìtajà tó tóótun, àti àyè iṣẹ́ kan ṣoṣo fún àwọn àṣẹ, ìsanwó, àti ìrànlọ́wọ́."),
     },
     hero: {
-      kicker: t("Tàjà lórí HenryCo"),
+      kicker: t("Tàjà lórí Henry & Co."),
       title: t("Ó yàn nínú ìṣètò. A ṣe é fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé."),
-      body: t("HenryCo Marketplace fẹ́ràn àwọn olùtà tí ó ń bìkítà nípa ìfihàn, ìfijíṣẹ́ tí ó gbẹ́kẹ̀lé, àti ìdáàbòbò olùra ní òtítọ́. Ìwọ̀n náà hàn lójú ojú-ìwé yìí; ìwé ìfiránṣẹ́ olùtà yóò máa bá a lọ nínú àkántì HenryCo rẹ."),
+      body: t("Henry & Co. Marketplace fẹ́ràn àwọn olùtà tí ó ń bìkítà nípa ìfihàn, ìfijíṣẹ́ tí ó gbẹ́kẹ̀lé, àti ìdáàbòbò olùra ní òtítọ́. Ìwọ̀n náà hàn lójú ojú-ìwé yìí; ìwé ìfiránṣẹ́ olùtà yóò máa bá a lọ nínú àkántì Henry & Co. rẹ."),
       primaryCta: t("Ṣí ìwé ìfiránṣẹ́ olùtà"),
       secondaryCta: t("Wo iye olùtà"),
-      signInCta: t("Forúkọsílẹ̀ pẹ̀lú àkántì HenryCo"),
+      signInCta: t("Forúkọsílẹ̀ pẹ̀lú àkántì Henry & Co."),
       highlights: [
         { label: t("Ìyàn"), value: t("Àyẹ̀wò ọwọ́, kì í ṣe ìsanwó láti darapọ̀") },
         { label: t("Ilé-ìtajà"), value: t("Ìwé-ìrìnnà ìgbẹ́kẹ̀lé tí ó hàn fún olùra") },
@@ -6614,9 +6614,9 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Bí ìbẹ̀rẹ̀ ṣe ń lọ"),
       stepLabel: t("Ìgbésẹ̀"),
       steps: [
-        { step: "01", title: t("Bẹ̀rẹ̀ ìwé ìfiránṣẹ́ olùtà"), body: t("Ṣí ìwé náà láti inú àkántì HenryCo rẹ — àwọn àkọsílẹ̀ máa wà ní fífipamọ́ aládàáṣe nígbà tí o ń kó àwọn ìwífún jọ.") },
+        { step: "01", title: t("Bẹ̀rẹ̀ ìwé ìfiránṣẹ́ olùtà"), body: t("Ṣí ìwé náà láti inú àkántì Henry & Co. rẹ — àwọn àkọsílẹ̀ máa wà ní fífipamọ́ aládàáṣe nígbà tí o ń kó àwọn ìwífún jọ.") },
         { step: "02", title: t("Fi àwọn ẹ̀ka iṣẹ́ kún"), body: t("Orúkọ iṣẹ́, profàìlì ilé-ìtajà, ìdojúkọ ọjà, àti àwọn ìwé ìjẹ́rìí tí ó ṣàlàyé bí o ṣe ń mú àwọn àṣẹ ṣẹ.") },
-        { step: "03", title: t("Àyẹ̀wò ìwé ìfiránṣẹ́"), body: t("Ẹgbẹ́ HenryCo ń ṣàyẹ̀wò àwọn ìwé, àwọn àmì ìgbẹ́kẹ̀lé, àti ìmúrasílẹ̀ ilé-ìtajà — kì í ṣe àmì tí ó san owó nìkan.") },
+        { step: "03", title: t("Àyẹ̀wò ìwé ìfiránṣẹ́"), body: t("Ẹgbẹ́ Henry & Co. ń ṣàyẹ̀wò àwọn ìwé, àwọn àmì ìgbẹ́kẹ̀lé, àti ìmúrasílẹ̀ ilé-ìtajà — kì í ṣe àmì tí ó san owó nìkan.") },
         { step: "04", title: t("Ìbẹ̀rẹ̀ olùtà"), body: t("Àwọn olùtà tí a fọwọ́sí máa tẹ̀síwájú sí ìbẹ̀rẹ̀, níbi tí àwọn iye, owó fíkún, àkókò ìsanwó, àti ìlànà ti hàn ṣáájú ìpolówó.") },
       ],
       callout: {
@@ -6648,7 +6648,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Iye olùtà — HenryCo Marketplace"),
+      title: t("Iye olùtà — Henry & Co. Marketplace"),
       description:
         t("Owó ètò, owó ìpolówó, owó àyè àkànṣe, ìpín ọjà, àti ìṣiṣẹ́ ìsanwó — gbogbo wọn ni a sọ ṣáájú, ṣáájú kí o tó tẹ ọjà jáde, kì í ṣe lẹ́yìn rẹ̀."),
     },
@@ -6678,7 +6678,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Bẹ̀rẹ̀ pẹ̀lú {plan}"),
     },
     economics: {
-      kicker: t("Bí HenryCo ṣe ń jèrè owó"),
+      kicker: t("Bí Henry & Co. ṣe ń jèrè owó"),
       title: t("À ti sọ ṣáájú, à ń yọ kúrò ní ojú gbangba."),
       items: [
         t("A ó yọ ìpín ọjà kúrò nínú ìpòkànpò ẹgbẹ́-àṣẹ olùtà kọ̀ọ̀kan kí a tó tú ìsanwó sílẹ̀."),
@@ -6695,7 +6695,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Ṣé o ti ṣetán láti fọ̀wọ́sí?"),
-      title: t("Ìfiránṣẹ́ máa ṣí nínú àkántì HenryCo rẹ."),
+      title: t("Ìfiránṣẹ́ máa ṣí nínú àkántì Henry & Co. rẹ."),
       body: t("O lè tọ́jú ọ̀rọ̀ ìkọ̀wé, kí o sì pa dà — iye tí ó hàn níbí ní yóò ṣiṣẹ́ ní kété tí mmebata olùtà bá parí."),
       primaryCta: t("Forúkọsílẹ̀ gẹ́gẹ́ bí olùtà"),
       secondaryCta: t("Ìlànà ìgbẹ́kẹ̀lé"),
@@ -6703,11 +6703,11 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — Ọjà HenryCo"),
+      titleTemplate: t("{collection} — Ọjà Henry & Co."),
       descriptionTemplate:
-        t("Ṣàwárí {collection} lórí Ọjà HenryCo — ètò àtìmọ̀le ti àwọn ọjà tí a ti fọwọ́sí, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkọ̀ngbé ìfijíṣẹ́, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó."),
+        t("Ṣàwárí {collection} lórí Ọjà Henry & Co. — ètò àtìmọ̀le ti àwọn ọjà tí a ti fọwọ́sí, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkọ̀ngbé ìfijíṣẹ́, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó."),
       fallbackDescription:
-        t("Àkójọpọ̀ tí a ṣe àtìmọ̀le lórí Ọjà HenryCo, pẹ̀lú àwọn ọjà tí a ti fọwọ́sí, àmì ìgbẹ́kẹ̀lé, ìfijíṣẹ́ tó kọ̀ngbé, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó."),
+        t("Àkójọpọ̀ tí a ṣe àtìmọ̀le lórí Ọjà Henry & Co., pẹ̀lú àwọn ọjà tí a ti fọwọ́sí, àmì ìgbẹ́kẹ̀lé, ìfijíṣẹ́ tó kọ̀ngbé, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó."),
     },
     hero: {
       primaryCta: t("Ṣí ìwákírí kíkún"),
@@ -6716,7 +6716,7 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     sidebar: {
       itemsLabel: t("Àwọn nǹkan nínú àkójọpọ̀"),
       editedByLabel: t("Ẹni tí ó ṣàtìmọ̀le"),
-      editedByValue: t("Ìmọ̀ Ọjà HenryCo"),
+      editedByValue: t("Ìmọ̀ Ọjà Henry & Co."),
       buyerProtectionLabel: t("Ààbò olùrà"),
       buyerProtectionValue: t("Ìsanwó nínú àbò"),
     },
@@ -6727,12 +6727,12 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — Ọjà HenryCo"),
+      titleTemplate: t("{policy} — Ọjà Henry & Co."),
       descriptionTemplate:
-        t("{policy} lórí Ọjà HenryCo — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó."),
-      fallbackTitle: t("Ìlànà ọjà — Ọjà HenryCo"),
+        t("{policy} lórí Ọjà Henry & Co. — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó."),
+      fallbackTitle: t("Ìlànà ọjà — Ọjà Henry & Co."),
       fallbackDescription:
-        t("Ìlànà kan ti Ọjà HenryCo — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó."),
+        t("Ìlànà kan ti Ọjà Henry & Co. — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó."),
     },
     hero: {
       backToTrust: t("Padà sí àwọn ìlànà ìgbẹ́kẹ̀lé"),
@@ -6768,11 +6768,11 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} lórí HenryCo Marketplace — ọjà ti a fọwọ́ sí, ìfijíṣẹ́ tó gbára lé, àti àwòrán olùtàjà tó hàn kí o tó san owó."),
+        t("{title} lórí Henry & Co. Marketplace — ọjà ti a fọwọ́ sí, ìfijíṣẹ́ tó gbára lé, àti àwòrán olùtàjà tó hàn kí o tó san owó."),
       fallbackDescription:
-        t("Àkọsílẹ̀ tí a fọwọ́ sí lórí HenryCo Marketplace — pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkún ìfijíṣẹ́, àti àwòrán olùtàjà tó hàn kí o tó san owó."),
+        t("Àkọsílẹ̀ tí a fọwọ́ sí lórí Henry & Co. Marketplace — pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkún ìfijíṣẹ́, àti àwòrán olùtàjà tó hàn kí o tó san owó."),
     },
     fulfillment: {
       sellerTrustLabel: t("Ìgbẹ́kẹ̀lé olùtàjà"),
@@ -6839,15 +6839,15 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   const t = (s: string) => translateSurfaceLabel(locale, s);
   return {
   store: {
-    metadataTitle: t("{store} — Kasuwar HenryCo"),
+    metadataTitle: t("{store} — Kasuwar Henry & Co."),
     metadataDescription:
-      t("Bincika kayayyaki da aka tantance na {store} a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin biyan kuɗi."),
+      t("Bincika kayayyaki da aka tantance na {store} a Kasuwar Henry & Co., da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin biyan kuɗi."),
     metadataDescriptionFallback:
-      t("Kantin da aka tantance a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin kowane biyan kuɗi."),
+      t("Kantin da aka tantance a Kasuwar Henry & Co., da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin kowane biyan kuɗi."),
     hero: {
       eyebrow: t("Fasfo na kanti"),
       bodyFallback:
-        t("Mai sayarwa da aka tantance a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo bayyananne da ake gani kafin kowane biyan kuɗi."),
+        t("Mai sayarwa da aka tantance a Kasuwar Henry & Co., da alamomin amincewa, isarwa mai sarari, da fasfo bayyananne da ake gani kafin kowane biyan kuɗi."),
     },
     stats: {
       trustScore: t("Maki na amincewa"),
@@ -6860,7 +6860,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     support: {
       eyebrow: t("Tallafi"),
-      contactLinkLabel: t("Yi amfani da Kasuwar HenryCo don tuntuɓar wannan kanti"),
+      contactLinkLabel: t("Yi amfani da Kasuwar Henry & Co. don tuntuɓar wannan kanti"),
       contactBodySuffix:
         t(" — ana adana saƙonni kuma a haɗa su da lambar odar ka don kowane sabuntawa ya kasance a wuri ɗaya."),
       ctaLabel: t("Tuntuɓi wannan kanti"),
@@ -6894,7 +6894,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   track: {
     metadata: {
-      title: t("Bin diddigin oda — HenryCo Marketplace"),
+      title: t("Bin diddigin oda — Henry & Co. Marketplace"),
       description:
         t("Bibi kowane sashe na mai sayarwa, sabuntawar biyan kuɗi, da matakin isarwa a wuri ɗaya. Escrow ya kasance a aiki har sai an tabbatar da isarwa."),
     },
@@ -6911,7 +6911,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Bayanin biyan kuɗi"),
       walletBody: t("An cire kuɗi daga walat, kuma odar tana cikin escrow har sai an isar da kayan."),
-      proofBody: t("An haɗa hujjar canja wurin kuɗi don bita daga ƙungiyar kuɗi ta HenryCo."),
+      proofBody: t("An haɗa hujjar canja wurin kuɗi don bita daga ƙungiyar kuɗi ta Henry & Co."),
       awaitingBody: t("Biyan kuɗi yana jiran hujja daga ƙungiyar kuɗi ko daidaita lokacin isarwa."),
       methodLabel: t("Hanya"),
       statusLabel: t("Matsayi"),
@@ -6927,7 +6927,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     segments: {
       kicker: t("Sassan masu sayarwa"),
       title: t("Kowane mai sayarwa yana da alhakin nasa isarwar."),
-      henrycoSegment: t("Sashen HenryCo"),
+      henrycoSegment: t("Sashen Henry & Co."),
       fulfillmentLabel: t("Isarwa"),
       trackingLabel: t("Bin diddigi"),
       payoutLabel: t("Biyan mai sayarwa"),
@@ -6935,7 +6935,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     completion: {
       kicker: t("Tabbatar da kammala"),
-      body: t("Tabbatar da kammalawa lokacin da oda ta ƙayatar. HenryCo na sakin biyan mai sayarwa ne kawai bayan an tabbatar da isarwa ko lokacin da odar ta cika ƙa'idodin sakin atomatik."),
+      body: t("Tabbatar da kammalawa lokacin da oda ta ƙayatar. Henry & Co. na sakin biyan mai sayarwa ne kawai bayan an tabbatar da isarwa ko lokacin da odar ta cika ƙa'idodin sakin atomatik."),
       confirmCta: t("Tabbatar da kammala"),
     },
     help: {
@@ -6948,9 +6948,9 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   deals: {
     metadata: {
-      title: t("Tayin da aka tabbatar — HenryCo Marketplace"),
+      title: t("Tayin da aka tabbatar — Henry & Co. Marketplace"),
       description:
-        t("Ragi da aka tace bisa amincewa, tabbacin kayan a cikin ɗakin ajiya, da ɗawainiyar mai sayarwa. A shafin tayin HenryCo, sai jeren da aka tabbatar wanda yake da alamomin amincewa masu tsabta ne kawai suke fitowa."),
+        t("Ragi da aka tace bisa amincewa, tabbacin kayan a cikin ɗakin ajiya, da ɗawainiyar mai sayarwa. A shafin tayin Henry & Co., sai jeren da aka tabbatar wanda yake da alamomin amincewa masu tsabta ne kawai suke fitowa."),
     },
     pageIntro: {
       kicker: t("Tayin da aka tabbatar"),
@@ -6987,16 +6987,16 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       openSearch: t("Buɗe cikakken bincike"),
     },
     metadata: {
-      titleTemplate: t("{category} — HenryCo Marketplace"),
+      titleTemplate: t("{category} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("Bincika tabbatattun kayayyaki a cikin {category} a HenryCo Marketplace, tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya."),
+        t("Bincika tabbatattun kayayyaki a cikin {category} a Henry & Co. Marketplace, tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya."),
       fallbackDescription:
-        t("Bincika zaɓaɓɓen nau'i a HenryCo Marketplace tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya."),
+        t("Bincika zaɓaɓɓen nau'i a Henry & Co. Marketplace tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya."),
     },
   },
   trust: {
     metadata: {
-      title: t("Aminci da tsaro — HenryCo Marketplace"),
+      title: t("Aminci da tsaro — Henry & Co. Marketplace"),
       description:
         t("Amincin shi ke tantance abin da mai sayarwa zai iya yi, yadda kuɗi suke gudana, da kuma yadda kulawa take amsawa. Matakan mai sayarwa, ajiyar amana, jayayya da sakin kuɗaɗen biya duk suna barin tarihi a sabar."),
     },
@@ -7019,7 +7019,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
         },
         {
           title: t("Sarrafa ajiyar amana"),
-          body: t("Kuɗin mai siye yana farkon zama a hannun HenryCo, sannan kawai ya zama mai saki bayan an tabbatar da isarwa da bincike na aminci."),
+          body: t("Kuɗin mai siye yana farkon zama a hannun Henry & Co., sannan kawai ya zama mai saki bayan an tabbatar da isarwa da bincike na aminci."),
         },
         {
           title: t("Bincike kan zamba"),
@@ -7045,7 +7045,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   help: {
     metadata: {
-      title: t("Cibiyar taimako — HenryCo Marketplace"),
+      title: t("Cibiyar taimako — Henry & Co. Marketplace"),
       description:
         t("Karanta tambayoyin da masu siye da masu sayarwa suka fi yawan yi. Idan ba ka samu abin da kake nema ba, buɗe tikitin tallafi, wani daga ƙungiyar zai karanta shi."),
     },
@@ -7063,17 +7063,17 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sell: {
     metadata: {
-      title: t("Sayar a HenryCo — kasuwa zaɓaɓɓa ga masu sayar da ke jagorancin amincewa"),
+      title: t("Sayar a Henry & Co. — kasuwa zaɓaɓɓa ga masu sayar da ke jagorancin amincewa"),
       description:
-        t("Nemi izinin sayarwa a HenryCo Marketplace: matsayi da aka kafa kan amincewa, shagunan inganci, da wuri ɗaya don odoji, biyan kuɗi da tallafi."),
+        t("Nemi izinin sayarwa a Henry & Co. Marketplace: matsayi da aka kafa kan amincewa, shagunan inganci, da wuri ɗaya don odoji, biyan kuɗi da tallafi."),
     },
     hero: {
-      kicker: t("Sayar a HenryCo"),
+      kicker: t("Sayar a Henry & Co."),
       title: t("Zaɓaɓɓa daga tushe. An gina ta don masu sayarwa da ke jagorancin amincewa."),
-      body: t("HenryCo Marketplace yana fifita masu sayarwa da ke kula da gabatarwa, masu kuɗi a isarwa da masu gaskiya wajen kare mai siye. Sharuɗɗan a fili suke a wannan shafin; aikace-aikacen mai sayarwa zai ci gaba a cikin asusunka na HenryCo."),
+      body: t("Henry & Co. Marketplace yana fifita masu sayarwa da ke kula da gabatarwa, masu kuɗi a isarwa da masu gaskiya wajen kare mai siye. Sharuɗɗan a fili suke a wannan shafin; aikace-aikacen mai sayarwa zai ci gaba a cikin asusunka na Henry & Co."),
       primaryCta: t("Buɗe aikace-aikacen mai sayarwa"),
       secondaryCta: t("Duba farashin mai sayarwa"),
-      signInCta: t("Shiga da asusun HenryCo"),
+      signInCta: t("Shiga da asusun Henry & Co."),
       highlights: [
         { label: t("Zaɓi"), value: t("Bita ta hannu, ba listing mai biyan kuɗi ba") },
         { label: t("Shago"), value: t("Fasfo ɗin amincewa wanda masu siye ke iya gani") },
@@ -7092,9 +7092,9 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       kicker: t("Yadda fara aiki ke gudana"),
       stepLabel: t("Mataki"),
       steps: [
-        { step: "01", title: t("Fara aikace-aikacen mai sayarwa"), body: t("Buɗe aikace-aikacen daga asusunka na HenryCo — daftarin yana ajiyewa kai tsaye yayin da kake tara cikakkun bayanai.") },
+        { step: "01", title: t("Fara aikace-aikacen mai sayarwa"), body: t("Buɗe aikace-aikacen daga asusunka na Henry & Co. — daftarin yana ajiyewa kai tsaye yayin da kake tara cikakkun bayanai.") },
         { step: "02", title: t("Ƙara cikakkun bayanan kasuwanci"), body: t("Sunan kasuwanci, bayanin shago, mai da hankali kan samfuri, da duk wani takardun tabbatarwa da ke bayyana yadda kake cika odoji.") },
-        { step: "03", title: t("Bita na aikace-aikacen"), body: t("Ƙungiyar HenryCo tana bitar takardu, alamomin amincewa, da shirin shago — ba kawai alamar biyan kuɗi ba.") },
+        { step: "03", title: t("Bita na aikace-aikacen"), body: t("Ƙungiyar Henry & Co. tana bitar takardu, alamomin amincewa, da shirin shago — ba kawai alamar biyan kuɗi ba.") },
         { step: "04", title: t("Fara aikin mai siyarwa"), body: t("Masu sayarwa da aka amince da su za su ci gaba zuwa fara aiki inda farashi, kudin shigarwa, lokutan biyan kuɗi da ƙa'idoji ke a sarari kafin a fara bugawa.") },
       ],
       callout: {
@@ -7126,7 +7126,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   sellPricing: {
     metadata: {
-      title: t("Farashin mai sayarwa — HenryCo Marketplace"),
+      title: t("Farashin mai sayarwa — Henry & Co. Marketplace"),
       description:
         t("Kudin tsari, kudin shigarwa, kudin matsayi na musamman, kwamishan kasuwanci da sarrafa biyan kuɗi — duk ana ambata su a gaba, kafin a buga kayan, ba bayan ba."),
     },
@@ -7156,7 +7156,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
       ctaTemplate: t("Fara da {plan}"),
     },
     economics: {
-      kicker: t("Yadda HenryCo ke samun kuɗi"),
+      kicker: t("Yadda Henry & Co. ke samun kuɗi"),
       title: t("An ambato a gaba, an cire a sarari."),
       items: [
         t("Ana cire kwamishan kasuwanci daga kowane biyan ƙungiya-oda ta mai sayarwa kafin a saki biyan."),
@@ -7173,7 +7173,7 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     },
     closing: {
       kicker: t("Shirye don nema?"),
-      title: t("Aikace-aikacen yana buɗewa a cikin asusun HenryCo naka."),
+      title: t("Aikace-aikacen yana buɗewa a cikin asusun Henry & Co. naka."),
       body: t("Za ka iya adana zane ka dawo — farashin da yake bayyana anan zai fara aiki da zaran an gama shigar mai sayarwa."),
       primaryCta: t("Nemi a matsayin mai sayarwa"),
       secondaryCta: t("Matsayin amana"),
@@ -7181,11 +7181,11 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   collections: {
     metadata: {
-      titleTemplate: t("{collection} — Kasuwar HenryCo"),
+      titleTemplate: t("{collection} — Kasuwar Henry & Co."),
       descriptionTemplate:
-        t("Bincika {collection} a Kasuwar HenryCo — zaɓaɓɓun kayayyaki masu tantancewa, tare da alamomin amincewa, kyakkyawan bayanin isarwa, da fasfo na masu sayarwa kafin biyan kuɗi."),
+        t("Bincika {collection} a Kasuwar Henry & Co. — zaɓaɓɓun kayayyaki masu tantancewa, tare da alamomin amincewa, kyakkyawan bayanin isarwa, da fasfo na masu sayarwa kafin biyan kuɗi."),
       fallbackDescription:
-        t("Tarin zaɓaɓɓu a Kasuwar HenryCo, da kayayyaki masu tantancewa, alamomin amincewa, isarwa mai sarari, da fasfo na masu sayarwa da ake gani kafin biyan kuɗi."),
+        t("Tarin zaɓaɓɓu a Kasuwar Henry & Co., da kayayyaki masu tantancewa, alamomin amincewa, isarwa mai sarari, da fasfo na masu sayarwa da ake gani kafin biyan kuɗi."),
     },
     hero: {
       primaryCta: t("Buɗe cikakken bincike"),
@@ -7205,12 +7205,12 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   policies: {
     metadata: {
-      titleTemplate: t("{policy} — Kasuwar HenryCo"),
+      titleTemplate: t("{policy} — Kasuwar Henry & Co."),
       descriptionTemplate:
-        t("{policy} a Kasuwar HenryCo — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi."),
-      fallbackTitle: t("Manufar kasuwa — Kasuwar HenryCo"),
+        t("{policy} a Kasuwar Henry & Co. — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi."),
+      fallbackTitle: t("Manufar kasuwa — Kasuwar Henry & Co."),
       fallbackDescription:
-        t("Wata manufa ta Kasuwar HenryCo — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi."),
+        t("Wata manufa ta Kasuwar Henry & Co. — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi."),
     },
     hero: {
       backToTrust: t("Komawa zuwa matakan amincewa"),
@@ -7246,11 +7246,11 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
   },
   product: {
     metadata: {
-      titleTemplate: t("{title} — HenryCo Marketplace"),
+      titleTemplate: t("{title} — Henry & Co. Marketplace"),
       descriptionTemplate:
-        t("{title} a HenryCo Marketplace — ɗakin kaya da aka tabbatar, isar da kaya mai aminci, da fasfo na mai sayarwa duka a fili kafin biya."),
+        t("{title} a Henry & Co. Marketplace — ɗakin kaya da aka tabbatar, isar da kaya mai aminci, da fasfo na mai sayarwa duka a fili kafin biya."),
       fallbackDescription:
-        t("Tallar da aka tabbatar a HenryCo Marketplace — alamomin amana, ƙayyadaddun lokutan isarwa, da fasfo na mai sayarwa duk a fili kafin biya."),
+        t("Tallar da aka tabbatar a Henry & Co. Marketplace — alamomin amana, ƙayyadaddun lokutan isarwa, da fasfo na mai sayarwa duk a fili kafin biya."),
     },
     fulfillment: {
       sellerTrustLabel: t("Amincin mai sayarwa"),

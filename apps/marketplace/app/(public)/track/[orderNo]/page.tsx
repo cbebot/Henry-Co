@@ -117,7 +117,7 @@ export default async function TrackOrderPage({
               </p>
             </div>
             <dl className="grid gap-3 text-sm sm:grid-cols-3 lg:min-w-[520px]">
-              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--home-surface-02)] p-4">
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
                   {t.paymentRecord.methodLabel}
                 </dt>
@@ -125,7 +125,7 @@ export default async function TrackOrderPage({
                   {order.paymentRecord.method.replace(/_/g, " ")}
                 </dd>
               </div>
-              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--home-surface-02)] p-4">
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
                   {t.paymentRecord.statusLabel}
                 </dt>
@@ -133,7 +133,7 @@ export default async function TrackOrderPage({
                   {order.paymentRecord.status.replace(/_/g, " ")}
                 </dd>
               </div>
-              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--home-surface-02)] p-4">
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
                   {t.paymentRecord.proofLabel}
                 </dt>

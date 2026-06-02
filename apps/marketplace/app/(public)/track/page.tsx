@@ -62,7 +62,7 @@ export default async function TrackIndexPage() {
 
       <section
         aria-label={t("Need help finding your order?")}
-        className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-6"
+        className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--home-surface-02)] p-6"
       >
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
           <LifeBuoy className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />

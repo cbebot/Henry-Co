@@ -104,7 +104,7 @@ export async function PublicFooter() {
           <div className="space-y-5">
             <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
               <Sparkles className="h-3.5 w-3.5" />
-              {translateSurfaceLabel(locale, "HenryCo Marketplace")}
+              {translateSurfaceLabel(locale, "Henry & Co. Marketplace")}
             </div>
             <p className="max-w-md text-sm leading-7 text-[var(--market-muted)]">
               {copy.footer.brandBody}
@@ -126,7 +126,7 @@ export async function PublicFooter() {
               ...copy.footer.sellLinks,
               {
                 href: getAccountUrl("/marketplace"),
-                label: translateSurfaceLabel(locale, "HenryCo account"),
+                label: translateSurfaceLabel(locale, "Your account"),
                 external: true,
               },
             ]}
@@ -153,7 +153,7 @@ export async function PublicFooter() {
 
         <div className="mt-10 flex flex-col items-start gap-3 border-t border-[var(--market-line)] pt-5 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>&copy; {new Date().getFullYear()} {translateSurfaceLabel(locale, "HenryCo Marketplace")}. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
+            <span>&copy; {new Date().getFullYear()} {translateSurfaceLabel(locale, "Henry & Co. Marketplace")}. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
             <a
               href={getHubUrl("/privacy")}
               target="_blank"
@@ -173,7 +173,7 @@ export async function PublicFooter() {
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
-            {translateSurfaceLabel(locale, "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
+            {translateSurfaceLabel(locale, "Designed and built in-house by Henry & Co. Studio for the Henry & Co. ecosystem")}
           </span>
         </div>
       </div>
@@ -276,7 +276,7 @@ export function VendorCard({
 
   return (
     <Link href={`/store/${vendor.slug}`} className="group block">
-      <article className="overflow-hidden rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+      <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] shadow-[0_30px_90px_-45px_rgb(var(--home-ink-rgb)/0.18)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[color:var(--home-accent)]/50">
         <div className="relative h-44 overflow-hidden">
           <DivisionImage
             src={imageSrc}
@@ -286,12 +286,12 @@ export function VendorCard({
             className="object-cover transition duration-500 group-hover:scale-[1.04]"
             radius="0"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.85)] via-[rgba(4,7,13,0.18)] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--home-ink-rgb)/0.78)] via-[rgb(var(--home-ink-rgb)/0.16)] to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-wrap gap-1.5 p-5">
             {vendor.badges.slice(0, 3).map((badge) => (
               <span
                 key={badge}
-                className="rounded-full border border-white/15 bg-[rgba(4,7,13,0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)] backdrop-blur-md"
+                className="rounded-full border border-[color:var(--home-sheet)]/25 bg-[rgb(var(--home-ink-rgb)/0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-sheet)] backdrop-blur-md"
               >
                 {badge}
               </span>
@@ -353,7 +353,7 @@ export function CollectionCard({
   const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
     <Link href={`/collections/${collection.slug}`} className="group block">
-      <article className="rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+      <article className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6 shadow-[0_30px_90px_-45px_rgb(var(--home-ink-rgb)/0.18)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[color:var(--home-accent)]/50">
         <p className="market-kicker">{collection.kicker}</p>
         <h3 className="mt-4 text-[1.5rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.7rem]">
           {collection.title}
