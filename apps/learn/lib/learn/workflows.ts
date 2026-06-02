@@ -115,9 +115,9 @@ function teacherApplicationStatusDescription(status: LearnTeacherApplication["st
     case "under_review":
       return "Your teaching application is now being reviewed by the academy team.";
     case "changes_requested":
-      return "HenryCo Learn needs a few updates before the application can move forward.";
+      return "Henry Onyx Learn needs a few updates before the application can move forward.";
     case "approved":
-      return "You are approved to move into instructor onboarding with HenryCo Learn.";
+      return "You are approved to move into instructor onboarding with Henry Onyx Learn.";
     case "rejected":
       return "The current teaching application was not approved for onboarding.";
     default:
@@ -503,7 +503,7 @@ export async function toggleSavedCourse(input: {
     email: identity.normalizedEmail,
     activityType: "learn_course_saved",
     title: `Saved ${course.title}`,
-    description: "Course bookmarked inside HenryCo Learn.",
+    description: "Course bookmarked inside Henry Onyx Learn.",
     referenceType: "learn_course",
     referenceId: course.id,
     actionUrl: `${getDivisionUrl("learn")}/courses/${course.slug}`,
@@ -583,7 +583,7 @@ async function issueCertificateIfEligible(input: {
     email: input.identity.normalizedEmail,
     activityType: "learn_certificate_issued",
     title: `Earned certificate for ${input.course.title}`,
-    description: "A verified HenryCo Learn certificate is now available.",
+    description: "A verified Henry Onyx Learn certificate is now available.",
     status: "issued",
     referenceType: "learn_certificate",
     referenceId: certificate.id,
@@ -1171,7 +1171,7 @@ export async function submitTeacherApplication(input: {
     email: identity.normalizedEmail,
     activityType: "learn_teacher_application_submitted",
     title: "Teaching application received",
-    description: `Applied to teach ${application.teachingTopics.join(", ") || application.expertiseArea} through HenryCo Learn.`,
+    description: `Applied to teach ${application.teachingTopics.join(", ") || application.expertiseArea} through Henry Onyx Learn.`,
     status: application.status,
     referenceType: "learn_teacher_application",
     referenceId: application.id,
@@ -1187,7 +1187,7 @@ export async function submitTeacherApplication(input: {
     userId: identity.userId,
     email: identity.normalizedEmail,
     title: "Teaching application submitted",
-    body: "HenryCo Learn has recorded your teaching application and the academy team will review it shortly.",
+    body: "Henry Onyx Learn has recorded your teaching application and the academy team will review it shortly.",
     category: "learn",
     actionUrl: getLearnUrl("/teach"),
     actionLabel: "Review application",
@@ -1206,7 +1206,7 @@ export async function submitTeacherApplication(input: {
 
   await sendOwnerAlert({
     title: `Teaching application: ${application.fullName}`,
-    body: `${application.fullName} submitted a HenryCo Learn teaching application in ${application.expertiseArea}.`,
+    body: `${application.fullName} submitted a Henry Onyx Learn teaching application in ${application.expertiseArea}.`,
     entityType: "learn_teacher_application",
     entityId: application.id,
     actionUrl: `${getDivisionUrl("learn")}/owner/instructors`,
@@ -1375,7 +1375,7 @@ export async function reviewTeacherApplication(input: {
 
   await sendOwnerAlert({
     title: `Teaching application ${teacherApplicationStatusLabel(updated.status).toLowerCase()}: ${updated.fullName}`,
-    body: `${updated.fullName}'s HenryCo Learn teaching application is now ${teacherApplicationStatusLabel(updated.status).toLowerCase()}.`,
+    body: `${updated.fullName}'s Henry Onyx Learn teaching application is now ${teacherApplicationStatusLabel(updated.status).toLowerCase()}.`,
     entityType: "learn_teacher_application",
     entityId: updated.id,
     actionUrl: `${getDivisionUrl("learn")}/owner/instructors`,
@@ -1492,7 +1492,7 @@ export async function confirmEnrollmentPayment(input: {
     userId: updatedPayment.userId,
     email: updatedPayment.normalizedEmail,
     title: `${course.title} payment confirmed`,
-    body: "The enrollment is now active in HenryCo Learn.",
+    body: "The enrollment is now active in Henry Onyx Learn.",
     category: "learn",
     actionUrl: getLearnCourseRoomUrl(course.id),
     actionLabel: "Open course",
@@ -1595,7 +1595,7 @@ export async function saveCourseDefinition(input: {
 
   await sendOwnerAlert({
     title: `Course saved: ${input.title}`,
-    body: "A course definition was created or updated inside HenryCo Learn.",
+    body: "A course definition was created or updated inside Henry Onyx Learn.",
     entityType: "course",
     entityId: id,
     actionUrl: `${getDivisionUrl("learn")}/owner/courses`,
@@ -1930,7 +1930,7 @@ export async function publishAcademyAnnouncement(input: {
 
   await sendOwnerAlert({
     title: `Announcement sent: ${input.title}`,
-    body: `HenryCo Learn sent an academy announcement to ${uniqueTargets.size} learner accounts.`,
+    body: `Henry Onyx Learn sent an academy announcement to ${uniqueTargets.size} learner accounts.`,
     entityType: "announcement",
     entityId: announcementId,
     actionUrl: `${getDivisionUrl("learn")}/owner/settings`,

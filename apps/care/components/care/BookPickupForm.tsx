@@ -1830,8 +1830,8 @@ export default function BookPickupForm({
 
               <div className="grid gap-3 rounded-[1.4rem] border border-black/10 bg-white/82 p-4 dark:border-white/10 dark:bg-white/[0.05]">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailPill label={t("Account name")} copyValue={paymentSettings.accountName || "HenryCo Care"}>
-                    {paymentSettings.accountName || "HenryCo Care"}
+                  <DetailPill label={t("Account name")} copyValue={paymentSettings.accountName || "Henry Onyx Care"}>
+                    {paymentSettings.accountName || "Henry Onyx Care"}
                   </DetailPill>
                   <DetailPill label={t("Bank name")} copyValue={paymentSettings.bankName || undefined}>
                     {paymentSettings.bankName || t("Configured after save")}

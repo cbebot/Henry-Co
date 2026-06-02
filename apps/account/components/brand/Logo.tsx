@@ -31,7 +31,7 @@ export default function Logo({
       size={size}
       accent={accent}
       className={className}
-      label="Henry & Co."
+      label="Henry Onyx"
     />
   );
 }

@@ -9,7 +9,7 @@ import { createExpenseAction } from "../../owner/actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Expenses | Henry & Co. Fabric Care",
+  title: "Support Expenses | Henry Onyx Fabric Care",
   description: "Support refunds, communication, and service recovery costs.",
 };
 

@@ -44,7 +44,7 @@ export type AuthCopy = {
 const EN: AuthCopy = {
   login: {
     heading: "Welcome back",
-    subheading: "Sign in to continue with your Henry & Co. account.",
+    subheading: "Sign in to continue with your Henry Onyx account.",
     emailLabel: "Email address",
     passwordLabel: "Password",
     rememberMe: "Remember me",
@@ -55,7 +55,7 @@ const EN: AuthCopy = {
   },
   signup: {
     heading: "Create your account",
-    subheading: "Set up one account for all Henry & Co. divisions.",
+    subheading: "Set up one account for all Henry Onyx divisions.",
     fullNameLabel: "Full name",
     emailLabel: "Email address",
     passwordLabel: "Password",
@@ -84,7 +84,7 @@ const EN: AuthCopy = {
 const FR: Partial<AuthCopy> = {
   login: {
     heading: "Bon retour",
-    subheading: "Connectez-vous pour continuer avec votre compte Henry & Co.",
+    subheading: "Connectez-vous pour continuer avec votre compte Henry Onyx",
     emailLabel: "Adresse e-mail",
     passwordLabel: "Mot de passe",
     rememberMe: "Se souvenir de moi",
@@ -95,7 +95,7 @@ const FR: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Créer votre compte",
-    subheading: "Un seul compte pour toutes les divisions Henry & Co.",
+    subheading: "Un seul compte pour toutes les divisions Henry Onyx",
     fullNameLabel: "Nom complet",
     emailLabel: "Adresse e-mail",
     passwordLabel: "Mot de passe",
@@ -124,7 +124,7 @@ const FR: Partial<AuthCopy> = {
 const ES: Partial<AuthCopy> = {
   login: {
     heading: "Bienvenido de vuelta",
-    subheading: "Inicia sesión para continuar con tu cuenta Henry & Co.",
+    subheading: "Inicia sesión para continuar con tu cuenta Henry Onyx",
     emailLabel: "Correo electrónico",
     passwordLabel: "Contraseña",
     rememberMe: "Recuérdame",
@@ -135,7 +135,7 @@ const ES: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Crea tu cuenta",
-    subheading: "Una sola cuenta para todas las divisiones de Henry & Co.",
+    subheading: "Una sola cuenta para todas las divisiones de Henry Onyx",
     fullNameLabel: "Nombre completo",
     emailLabel: "Correo electrónico",
     passwordLabel: "Contraseña",
@@ -164,7 +164,7 @@ const ES: Partial<AuthCopy> = {
 const PT: Partial<AuthCopy> = {
   login: {
     heading: "Bem-vindo de volta",
-    subheading: "Faça login para continuar com sua conta Henry & Co.",
+    subheading: "Faça login para continuar com sua conta Henry Onyx",
     emailLabel: "Endereço de e-mail",
     passwordLabel: "Senha",
     rememberMe: "Lembrar de mim",
@@ -175,7 +175,7 @@ const PT: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Crie sua conta",
-    subheading: "Uma conta para todas as divisões da Henry & Co.",
+    subheading: "Uma conta para todas as divisões da Henry Onyx",
     fullNameLabel: "Nome completo",
     emailLabel: "Endereço de e-mail",
     passwordLabel: "Senha",
@@ -204,7 +204,7 @@ const PT: Partial<AuthCopy> = {
 const AR: Partial<AuthCopy> = {
   login: {
     heading: "مرحباً بعودتك",
-    subheading: "سجّل الدخول للمتابعة مع حسابك في Henry & Co.",
+    subheading: "سجّل الدخول للمتابعة مع حسابك في Henry Onyx",
     emailLabel: "البريد الإلكتروني",
     passwordLabel: "كلمة المرور",
     rememberMe: "تذكّرني",
@@ -215,7 +215,7 @@ const AR: Partial<AuthCopy> = {
   },
   signup: {
     heading: "أنشئ حسابك",
-    subheading: "حساب واحد لجميع أقسام Henry & Co.",
+    subheading: "حساب واحد لجميع أقسام Henry Onyx",
     fullNameLabel: "الاسم الكامل",
     emailLabel: "البريد الإلكتروني",
     passwordLabel: "كلمة المرور",
@@ -246,7 +246,7 @@ const AR: Partial<AuthCopy> = {
 const DE: Partial<AuthCopy> = {
   login: {
     heading: "Willkommen zurück",
-    subheading: "Melden Sie sich an, um mit Ihrem Henry & Co.-Konto fortzufahren.",
+    subheading: "Melden Sie sich an, um mit Ihrem Henry Onyx-Konto fortzufahren.",
     emailLabel: "E-Mail-Adresse",
     passwordLabel: "Passwort",
     rememberMe: "Angemeldet bleiben",
@@ -257,7 +257,7 @@ const DE: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Konto erstellen",
-    subheading: "Ein Konto für alle Henry & Co.-Bereiche.",
+    subheading: "Ein Konto für alle Henry Onyx-Bereiche.",
     fullNameLabel: "Vollständiger Name",
     emailLabel: "E-Mail-Adresse",
     passwordLabel: "Passwort",
@@ -286,7 +286,7 @@ const DE: Partial<AuthCopy> = {
 const ZH: Partial<AuthCopy> = {
   login: {
     heading: "欢迎回来",
-    subheading: "登录以继续使用您的 Henry & Co. 账户。",
+    subheading: "登录以继续使用您的 Henry Onyx 账户。",
     emailLabel: "电子邮件地址",
     passwordLabel: "密码",
     rememberMe: "记住我",
@@ -297,7 +297,7 @@ const ZH: Partial<AuthCopy> = {
   },
   signup: {
     heading: "创建您的账户",
-    subheading: "一个账户，畅享所有 Henry & Co. 服务。",
+    subheading: "一个账户，畅享所有 Henry Onyx 服务。",
     fullNameLabel: "全名",
     emailLabel: "电子邮件地址",
     passwordLabel: "密码",
@@ -326,7 +326,7 @@ const ZH: Partial<AuthCopy> = {
 const HI: Partial<AuthCopy> = {
   login: {
     heading: "वापस स्वागत है",
-    subheading: "अपने Henry & Co. खाते के साथ जारी रखने के लिए साइन इन करें।",
+    subheading: "अपने Henry Onyx खाते के साथ जारी रखने के लिए साइन इन करें।",
     emailLabel: "ईमेल पता",
     passwordLabel: "पासवर्ड",
     rememberMe: "मुझे याद रखें",
@@ -337,7 +337,7 @@ const HI: Partial<AuthCopy> = {
   },
   signup: {
     heading: "अपना खाता बनाएं",
-    subheading: "Henry & Co. के सभी विभागों के लिए एक खाता।",
+    subheading: "Henry Onyx के सभी विभागों के लिए एक खाता।",
     fullNameLabel: "पूरा नाम",
     emailLabel: "ईमेल पता",
     passwordLabel: "पासवर्ड",
@@ -368,7 +368,7 @@ const HI: Partial<AuthCopy> = {
 const IG: Partial<AuthCopy> = {
   login: {
     heading: "Nnọọ, ọ bịakwasịa",
-    subheading: "Banye ka ị gaa n'ihu na akaụntụ gị nke Henry & Co.",
+    subheading: "Banye ka ị gaa n'ihu na akaụntụ gị nke Henry Onyx",
     emailLabel: "Adreesị email",
     passwordLabel: "Paswọọdụ",
     rememberMe: "Cheta m",
@@ -379,7 +379,7 @@ const IG: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Mepụta akaụntụ gị",
-    subheading: "Otu akaụntụ maka ngalaba Henry & Co. niile.",
+    subheading: "Otu akaụntụ maka ngalaba Henry Onyx niile.",
     fullNameLabel: "Aha zuru oke",
     emailLabel: "Adreesị email",
     passwordLabel: "Paswọọdụ",
@@ -408,7 +408,7 @@ const IG: Partial<AuthCopy> = {
 const YO: Partial<AuthCopy> = {
   login: {
     heading: "Ẹ káàbọ̀ padà",
-    subheading: "Wọlé láti bá àkọọ́lẹ̀ rẹ Henry & Co. lọ siwájú.",
+    subheading: "Wọlé láti bá àkọọ́lẹ̀ rẹ Henry Onyx lọ siwájú.",
     emailLabel: "Àdírẹ́sì ímeèlì",
     passwordLabel: "Ọ̀rọ̀ aṣínà",
     rememberMe: "Rántí mi",
@@ -419,7 +419,7 @@ const YO: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Ṣẹ̀dá àkọọ́lẹ̀ rẹ",
-    subheading: "Àkọọ́lẹ̀ kan fún gbogbo ẹ̀ka Henry & Co.",
+    subheading: "Àkọọ́lẹ̀ kan fún gbogbo ẹ̀ka Henry Onyx",
     fullNameLabel: "Orúkọ ní kíkún",
     emailLabel: "Àdírẹ́sì ímeèlì",
     passwordLabel: "Ọ̀rọ̀ aṣínà",
@@ -448,7 +448,7 @@ const YO: Partial<AuthCopy> = {
 const HA: Partial<AuthCopy> = {
   login: {
     heading: "Barka da dawowar ku",
-    subheading: "Yi shiga don ci gaba da asusun ku na Henry & Co.",
+    subheading: "Yi shiga don ci gaba da asusun ku na Henry Onyx",
     emailLabel: "Adireshin imel",
     passwordLabel: "Kalmar sirri",
     rememberMe: "Ka tuna ni",
@@ -459,7 +459,7 @@ const HA: Partial<AuthCopy> = {
   },
   signup: {
     heading: "Ƙirƙiri asusun ku",
-    subheading: "Asusu ɗaya don dukkan sassan Henry & Co.",
+    subheading: "Asusu ɗaya don dukkan sassan Henry Onyx",
     fullNameLabel: "Cikakken suna",
     emailLabel: "Adireshin imel",
     passwordLabel: "Kalmar sirri",
@@ -488,7 +488,7 @@ const HA: Partial<AuthCopy> = {
 const IT: Partial<AuthCopy> = {
   "login": {
     "heading": "Bentornato",
-    "subheading": "Accedi per continuare con il tuo account Henry & Co.",
+    "subheading": "Accedi per continuare con il tuo account Henry Onyx",
     "emailLabel": "Indirizzo e-mail",
     "passwordLabel": "Password",
     "rememberMe": "Ricordami",
@@ -499,7 +499,7 @@ const IT: Partial<AuthCopy> = {
   },
   "signup": {
     "heading": "Crea il tuo account",
-    "subheading": "Configura un unico account per tutte le divisioni Henry & Co.",
+    "subheading": "Configura un unico account per tutte le divisioni Henry Onyx",
     "fullNameLabel": "Nome completo",
     "emailLabel": "Indirizzo e-mail",
     "passwordLabel": "Password",

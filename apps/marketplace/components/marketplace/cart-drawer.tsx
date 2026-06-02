@@ -86,7 +86,7 @@ export function MarketplaceCartDrawer() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--home-ink-60)]">
-                            {item.inventoryOwnerType === "company" ? "Henry & Co. stocked" : item.vendorName || "Verified store"}
+                            {item.inventoryOwnerType === "company" ? "Henry Onyx stocked" : item.vendorName || "Verified store"}
                           </p>
                           <p className="mt-1 text-base font-semibold leading-6">{item.title}</p>
                           <p className="mt-1 text-sm text-[var(--home-ink-65)]">{item.deliveryNote}</p>

@@ -13,15 +13,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (runtime.workspaceHost) {
     return {
-      title: "Henry & Co. Staff Workspace",
+      title: "Henry Onyx Staff Workspace",
       description:
         "Role-aware internal workspace for HenryCo staff, managers, operators, and shared division teams.",
     };
   }
 
   return {
-    title: "Henry & Co. Company Hub",
-    description: "Premium multi-division ecosystem for Henry & Co.",
+    title: "Henry Onyx Company Hub",
+    description: "Premium multi-division ecosystem for Henry Onyx",
   };
 }
 

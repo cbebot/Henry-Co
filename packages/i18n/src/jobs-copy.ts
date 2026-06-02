@@ -1035,7 +1035,7 @@ const EN: JobsCopy = {
     networkError: "Network error. Please try again.",
   },
   hirePage: {
-    metaTitle: "Hire with clarity — HenryCo Jobs",
+    metaTitle: "Hire with clarity — Henry Onyx Jobs",
     metaDescription:
       "Post real roles, read applications in one place, and move candidates through visible stages. Employers and posts are reviewed to protect quality.",
     eyebrow: "For employers",
@@ -1084,7 +1084,7 @@ const EN: JobsCopy = {
     questionsPrefix: "Questions?",
   },
   candidateHome: {
-    metaTitle: "Candidate Hub — HenryCo Jobs",
+    metaTitle: "Candidate Hub — Henry Onyx Jobs",
     metaDescription:
       "Track your profile, applications, saved roles, and recruiter updates — all in one place.",
     pageTitle: "Candidate hub",
@@ -1645,7 +1645,7 @@ const FR: DeepPartial<JobsCopy> = {
     networkError: "Erreur réseau. Veuillez réessayer.",
   },
   hirePage: {
-    metaTitle: "Recrutez avec clarté — HenryCo Jobs",
+    metaTitle: "Recrutez avec clarté — Henry Onyx Jobs",
     metaDescription:
       "Publiez de vraies offres, lisez les candidatures au même endroit et faites avancer les candidats à travers des étapes visibles.",
     eyebrow: "Pour les employeurs",
@@ -1694,7 +1694,7 @@ const FR: DeepPartial<JobsCopy> = {
     questionsPrefix: "Des questions ?",
   },
   candidateHome: {
-    metaTitle: "Espace candidat — HenryCo Jobs",
+    metaTitle: "Espace candidat — Henry Onyx Jobs",
     metaDescription:
       "Suivez votre profil, vos candidatures, les offres sauvegardées et les mises à jour des recruteurs — tout en un seul endroit.",
     pageTitle: "Espace candidat",
@@ -2255,7 +2255,7 @@ const ES: DeepPartial<JobsCopy> = {
     networkError: "Error de red. Por favor, inténtalo de nuevo.",
   },
   hirePage: {
-    metaTitle: "Contrata con claridad — HenryCo Jobs",
+    metaTitle: "Contrata con claridad — Henry Onyx Jobs",
     metaDescription:
       "Publica roles reales, lee candidaturas en un solo lugar y avanza a los candidatos en etapas visibles.",
     eyebrow: "Para empleadores",
@@ -2304,7 +2304,7 @@ const ES: DeepPartial<JobsCopy> = {
     questionsPrefix: "¿Preguntas?",
   },
   candidateHome: {
-    metaTitle: "Hub del candidato — HenryCo Jobs",
+    metaTitle: "Hub del candidato — Henry Onyx Jobs",
     metaDescription:
       "Sigue tu perfil, candidaturas, roles guardados y actualizaciones de reclutadores — todo en un solo lugar.",
     pageTitle: "Hub del candidato",
@@ -2865,7 +2865,7 @@ const PT: DeepPartial<JobsCopy> = {
     networkError: "Erro de rede. Por favor, tente novamente.",
   },
   hirePage: {
-    metaTitle: "Contrate com clareza — HenryCo Jobs",
+    metaTitle: "Contrate com clareza — Henry Onyx Jobs",
     metaDescription:
       "Publique vagas reais, leia candidaturas num só lugar e mova candidatos por etapas visíveis.",
     eyebrow: "Para empregadores",
@@ -2914,7 +2914,7 @@ const PT: DeepPartial<JobsCopy> = {
     questionsPrefix: "Dúvidas?",
   },
   candidateHome: {
-    metaTitle: "Hub do candidato — HenryCo Jobs",
+    metaTitle: "Hub do candidato — Henry Onyx Jobs",
     metaDescription:
       "Acompanhe o seu perfil, candidaturas, vagas guardadas e atualizações de recrutadores — tudo num só lugar.",
     pageTitle: "Hub do candidato",
@@ -3470,7 +3470,7 @@ const AR: DeepPartial<JobsCopy> = {
     networkError: "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
   },
   hirePage: {
-    metaTitle: "وظِّف بوضوح — HenryCo Jobs",
+    metaTitle: "وظِّف بوضوح — Henry Onyx Jobs",
     metaDescription:
       "انشر وظائف حقيقية، واقرأ الطلبات في مكان واحد، وانقل المرشحين عبر مراحل مرئية.",
     eyebrow: "للأصحاب العمل",
@@ -3519,7 +3519,7 @@ const AR: DeepPartial<JobsCopy> = {
     questionsPrefix: "أسئلة؟",
   },
   candidateHome: {
-    metaTitle: "مركز المرشح — HenryCo Jobs",
+    metaTitle: "مركز المرشح — Henry Onyx Jobs",
     metaDescription:
       "تتبع ملفك الشخصي والطلبات والأدوار المحفوظة وتحديثات المُوظِّفين — كل شيء في مكان واحد.",
     pageTitle: "مركز المرشح",
@@ -4079,7 +4079,7 @@ const IG: DeepPartial<JobsCopy> = {
     networkError: "Njehie netwọk. Biko nwalee ọzọ.",
   },
   hirePage: {
-    metaTitle: "Nweta ndị ọrụ n'ìhè — HenryCo Jobs",
+    metaTitle: "Nweta ndị ọrụ n'ìhè — Henry Onyx Jobs",
     metaDescription:
       "Bipụta ọrụ n'ezie, gụọ arịrịọ n'otu ebe, kewaa ndị ọrụ n'oge ndị dị ka ọ dị.",
     eyebrow: "Maka ndị nọ n'ọrụ",
@@ -4128,7 +4128,7 @@ const IG: DeepPartial<JobsCopy> = {
     questionsPrefix: "Ajụjụ?",
   },
   candidateHome: {
-    metaTitle: "Ebe onye na-achọ ọrụ — HenryCo Jobs",
+    metaTitle: "Ebe onye na-achọ ọrụ — Henry Onyx Jobs",
     metaDescription:
       "Sọpụrụ profaịl gị, arịrịọ, ọrụ echedoro, na mmelite site ndị ọrụ — ihe nile n'otu ebe.",
     pageTitle: "Ebe onye na-achọ ọrụ",
@@ -4687,7 +4687,7 @@ const YO: DeepPartial<JobsCopy> = {
     networkError: "Àṣìṣe nẹ́tíwọ̀ọ̀kì. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan si.",
   },
   hirePage: {
-    metaTitle: "Gbà iṣẹ́ pẹ̀lú ìtọ́sọ́nà — HenryCo Jobs",
+    metaTitle: "Gbà iṣẹ́ pẹ̀lú ìtọ́sọ́nà — Henry Onyx Jobs",
     metaDescription:
       "Ṣeéde àwọn ipa gidi, ka àwọn ohun elo ní ibi kan, kí o sì gbé àwọn oludije lọ nípa àwọn ìpele tí a lè ríi.",
     eyebrow: "Fún àwọn agbanisẹ́ṣẹ",
@@ -4736,7 +4736,7 @@ const YO: DeepPartial<JobsCopy> = {
     questionsPrefix: "Àwọn ìbéèrè?",
   },
   candidateHome: {
-    metaTitle: "Ibùdó oludije — HenryCo Jobs",
+    metaTitle: "Ibùdó oludije — Henry Onyx Jobs",
     metaDescription:
       "Tọpìnpìn àkọsílẹ̀ rẹ, àwọn ohun elo, àwọn ipa tí a fi pamọ́, àti àwọn ìmúdójúìwọ̀n láti ọ̀dọ̀ àwọn agbẹjọ — gbogbo wọn ní ibi kan.",
     pageTitle: "Ibùdó oludije",
@@ -5295,7 +5295,7 @@ const HA: DeepPartial<JobsCopy> = {
     networkError: "Matsalar cibiyar sadarwa. Da fatan za a sake gwadawa.",
   },
   hirePage: {
-    metaTitle: "Yi hayar ma'aikata da fayyace — HenryCo Jobs",
+    metaTitle: "Yi hayar ma'aikata da fayyace — Henry Onyx Jobs",
     metaDescription:
       "Buga ayyuka na gaske, karanta nema a wuri guda, kuma matsa 'yan takara ta matakai bayyanannun.",
     eyebrow: "Ga ma'aikata",
@@ -5344,7 +5344,7 @@ const HA: DeepPartial<JobsCopy> = {
     questionsPrefix: "Tambayoyi?",
   },
   candidateHome: {
-    metaTitle: "Cibiyar dan takara — HenryCo Jobs",
+    metaTitle: "Cibiyar dan takara — Henry Onyx Jobs",
     metaDescription:
       "Bi sawun bayananku, nema, rawar da aka ajiye, da sabuntawa daga masu daukar ma'aikata — duk a wuri guda.",
     pageTitle: "Cibiyar dan takara",
@@ -5904,7 +5904,7 @@ const DE: DeepPartial<JobsCopy> = {
     networkError: "Netzwerkfehler. Bitte versuche es erneut.",
   },
   hirePage: {
-    metaTitle: "Klar einstellen — HenryCo Jobs",
+    metaTitle: "Klar einstellen — Henry Onyx Jobs",
     metaDescription:
       "Echte Stellen ausschreiben, Bewerbungen an einem Ort lesen, Kandidaten durch sichtbare Stufen führen.",
     eyebrow: "Für Arbeitgeber",
@@ -5953,7 +5953,7 @@ const DE: DeepPartial<JobsCopy> = {
     questionsPrefix: "Fragen?",
   },
   candidateHome: {
-    metaTitle: "Kandidaten-Hub — HenryCo Jobs",
+    metaTitle: "Kandidaten-Hub — Henry Onyx Jobs",
     metaDescription:
       "Verfolgen Sie Ihr Profil, Bewerbungen, gespeicherte Stellen und Recruiter-Updates — alles an einem Ort.",
     pageTitle: "Kandidaten-Hub",
@@ -6473,7 +6473,7 @@ const ZH: DeepPartial<JobsCopy> = {
     networkError: "网络错误，请重试。",
   },
   hirePage: {
-    metaTitle: "清晰招聘 — HenryCo Jobs",
+    metaTitle: "清晰招聘 — Henry Onyx Jobs",
     metaDescription:
       "发布真实职位，在一处阅读申请，通过可见阶段推进候选人流程。",
     eyebrow: "面向雇主",
@@ -6522,7 +6522,7 @@ const ZH: DeepPartial<JobsCopy> = {
     questionsPrefix: "有疑问？",
   },
   candidateHome: {
-    metaTitle: "候选人中心 — HenryCo Jobs",
+    metaTitle: "候选人中心 — Henry Onyx Jobs",
     metaDescription:
       "在一处跟踪您的档案、申请、保存的职位和招聘方更新。",
     pageTitle: "候选人中心",
@@ -7081,7 +7081,7 @@ const HI: DeepPartial<JobsCopy> = {
     networkError: "नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।",
   },
   hirePage: {
-    metaTitle: "स्पष्टता से भर्ती करें — HenryCo Jobs",
+    metaTitle: "स्पष्टता से भर्ती करें — Henry Onyx Jobs",
     metaDescription:
       "वास्तविक भूमिकाएँ पोस्ट करें, एक स्थान पर आवेदन पढ़ें और दृश्यमान चरणों के माध्यम से उम्मीदवारों को आगे बढ़ाएं।",
     eyebrow: "नियोक्ताओं के लिए",
@@ -7130,7 +7130,7 @@ const HI: DeepPartial<JobsCopy> = {
     questionsPrefix: "प्रश्न?",
   },
   candidateHome: {
-    metaTitle: "उम्मीदवार हब — HenryCo Jobs",
+    metaTitle: "उम्मीदवार हब — Henry Onyx Jobs",
     metaDescription:
       "अपनी प्रोफाइल, आवेदन, सहेजी गई भूमिकाएं और भर्तीकर्ता अपडेट ट्रैक करें — सब एक जगह।",
     pageTitle: "उम्मीदवार हब",
@@ -7682,7 +7682,7 @@ const IT: DeepPartial<JobsCopy> = {
     "networkError": "Errore di rete. Riprova."
   },
   "hirePage": {
-    "metaTitle": "Assumi con chiarezza — HenryCo Jobs",
+    "metaTitle": "Assumi con chiarezza — Henry Onyx Jobs",
     "metaDescription": "Pubblica ruoli reali, leggi le candidature in un unico posto e avanza i candidati attraverso fasi visibili.",
     "eyebrow": "Per i datori di lavoro",
     "heroTitle": "Assumi con chiarezza, senza il caos.",
@@ -7722,7 +7722,7 @@ const IT: DeepPartial<JobsCopy> = {
     "questionsPrefix": "Domande?"
   },
   "candidateHome": {
-    "metaTitle": "Hub candidato — HenryCo Jobs",
+    "metaTitle": "Hub candidato — Henry Onyx Jobs",
     "metaDescription": "Tieni traccia del tuo profilo, candidature, ruoli salvati e aggiornamenti dei recruiter — tutto in un unico posto.",
     "pageTitle": "Hub candidato",
     "pageSubtitle": "Tieni traccia del tuo profilo, candidature, ruoli salvati e aggiornamenti dei recruiter — tutto in un unico posto.",

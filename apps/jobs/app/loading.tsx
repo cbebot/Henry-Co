@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <div className="jobs-page">
       <PublicRouteLoader
-        eyebrow="HenryCo Jobs"
+        eyebrow="Henry Onyx Jobs"
         title="Gathering this page for you"
         subtitle="We are loading the latest jobs and updates. You can keep this tab open — nothing is wrong on your side."
         className="mx-auto max-w-7xl"

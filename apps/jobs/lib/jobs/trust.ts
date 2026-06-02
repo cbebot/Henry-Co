@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // apps/jobs/lib/jobs/trust.ts
-// Server-side employer and candidate trust scoring for HenryCo Jobs.
+// Server-side employer and candidate trust scoring for Henry Onyx Jobs.
 //
 // Design principles:
 //  - Explainable: every signal is named and returned alongside the score.
@@ -35,7 +35,7 @@ export type EmployerTrustSignals = {
   responseSlaHours: number;
   /** Interviews cancelled < 2 hours before or marked no-show by candidate. */
   noShowCount: number;
-  /** Applications that reached "hired" stage in HenryCo Jobs. */
+  /** Applications that reached "hired" stage in Henry Onyx Jobs. */
   completedHirings: number;
   /** Total applications received (used for context). */
   totalApplications: number;
@@ -138,7 +138,7 @@ export function computeEmployerTrustProfile(
     score += 5;
     reasons.push("One completed hire is on record.");
   } else {
-    coaching.push("Completing hires through HenryCo Jobs builds measurable hiring credibility.");
+    coaching.push("Completing hires through Henry Onyx Jobs builds measurable hiring credibility.");
   }
 
   // No-show penalty — interview abandonment harms candidate trust

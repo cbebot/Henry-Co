@@ -412,7 +412,7 @@ export default async function ProjectDetailPage({
           nextAction: localizedProjectNextAction,
         }}
         serviceName={service?.name || project.serviceId}
-        teamLine={team?.name || project.teamId || "HenryCo Studio"}
+        teamLine={team?.name || project.teamId || "Henry Onyx Studio"}
         proposalCurrency={proposalCurrency}
         paymentOverview={{
           outstanding: paymentOverview.outstanding,
@@ -694,7 +694,7 @@ export default async function ProjectDetailPage({
                     required
                     rows={4}
                     className="studio-textarea min-h-28 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder={t("How was the experience working with HenryCo Studio?")}
+                    placeholder={t("How was the experience working with Henry Onyx Studio?")}
                   />
                   <StudioSubmitButton label={t("Publish review")} pendingLabel={t("Publishing…")} />
                 </form>
@@ -720,7 +720,7 @@ export default async function ProjectDetailPage({
                 <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
                   <div className="text-sm font-semibold text-[var(--studio-ink)]">{t("Need help with your payment?")}</div>
                   <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                    {t("Contact our finance team directly, or sign in to your HenryCo account for full support.")}
+                    {t("Contact our finance team directly, or sign in to your Henry Onyx account for full support.")}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-3">
                     {platform.paymentSupportEmail ? (
@@ -729,7 +729,7 @@ export default async function ProjectDetailPage({
                       </a>
                     ) : null}
                     <Link href={platform.accountDashboardUrl} className="studio-button-primary inline-flex rounded-full px-4 py-3 text-sm font-semibold">
-                      {t("Open HenryCo account")}
+                      {t("Open Henry Onyx account")}
                     </Link>
                   </div>
                 </div>

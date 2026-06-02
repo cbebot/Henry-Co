@@ -56,13 +56,13 @@ export type LearnCertificationsCopy = {
 
 const LEARN_CERTIFICATIONS_COPY_EN: LearnCertificationsCopy = {
   meta: {
-    title: "Certificates - HenryCo Learn",
+    title: "Certificates - Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Verified certificates",
     title: "Credentials you can show. Anyone can verify.",
     body:
-      "Certificate-eligible courses carry a badge. Finish the required lessons, pass any assessments, and HenryCo Learn records the completion. You get a downloadable PDF plus a public verification code for employers, clients, and partners.",
+      "Certificate-eligible courses carry a badge. Finish the required lessons, pass any assessments, and Henry Onyx Learn records the completion. You get a downloadable PDF plus a public verification code for employers, clients, and partners.",
     asideFormatLabel: "Format",
     asideFormatValue: "Downloadable PDF + public link",
     asideVerificationLabel: "Verification",
@@ -86,7 +86,7 @@ const LEARN_CERTIFICATIONS_COPY_EN: LearnCertificationsCopy = {
     eyebrow: "Verify someone’s certificate",
     title: "Enter the code, see whether the record matches.",
     body:
-      "Enter the code printed on their credential. You’ll see whether HenryCo Learn has a matching, active record — no account required to check.",
+      "Enter the code printed on their credential. You’ll see whether Henry Onyx Learn has a matching, active record — no account required to check.",
     inputPlaceholder: "Verification code",
     submit: "Verify",
   },
@@ -107,13 +107,13 @@ const LEARN_CERTIFICATIONS_COPY_EN: LearnCertificationsCopy = {
 
 const LEARN_CERTIFICATIONS_COPY_FR: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Certificats — HenryCo Learn",
+    title: "Certificats — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Certificats vérifiés",
     title: "Des titres que vous pouvez présenter. N’importe qui peut les vérifier.",
     body:
-      "Les cours éligibles à un certificat portent un badge. Terminez les leçons requises, réussissez les évaluations éventuelles et HenryCo Learn enregistre l’achèvement. Vous recevez un PDF téléchargeable ainsi qu’un code de vérification public pour vos employeurs, clients et partenaires.",
+      "Les cours éligibles à un certificat portent un badge. Terminez les leçons requises, réussissez les évaluations éventuelles et Henry Onyx Learn enregistre l’achèvement. Vous recevez un PDF téléchargeable ainsi qu’un code de vérification public pour vos employeurs, clients et partenaires.",
     asideFormatLabel: "Format",
     asideFormatValue: "PDF téléchargeable + lien public",
     asideVerificationLabel: "Vérification",
@@ -137,7 +137,7 @@ const LEARN_CERTIFICATIONS_COPY_FR: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Vérifier le certificat de quelqu’un",
     title: "Saisissez le code et voyez si le dossier correspond.",
     body:
-      "Saisissez le code imprimé sur leur titre. Vous verrez si HenryCo Learn possède un dossier correspondant et actif — aucun compte n’est requis pour vérifier.",
+      "Saisissez le code imprimé sur leur titre. Vous verrez si Henry Onyx Learn possède un dossier correspondant et actif — aucun compte n’est requis pour vérifier.",
     inputPlaceholder: "Code de vérification",
     submit: "Vérifier",
   },
@@ -158,13 +158,13 @@ const LEARN_CERTIFICATIONS_COPY_FR: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_ES: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Certificados — HenryCo Learn",
+    title: "Certificados — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Certificados verificados",
     title: "Credenciales que puedes mostrar. Cualquiera puede verificarlas.",
     body:
-      "Los cursos elegibles para un certificado llevan una insignia. Termina las lecciones requeridas, supera las evaluaciones que correspondan y HenryCo Learn registrará la finalización. Recibes un PDF descargable y un código de verificación público para empleadores, clientes y socios.",
+      "Los cursos elegibles para un certificado llevan una insignia. Termina las lecciones requeridas, supera las evaluaciones que correspondan y Henry Onyx Learn registrará la finalización. Recibes un PDF descargable y un código de verificación público para empleadores, clientes y socios.",
     asideFormatLabel: "Formato",
     asideFormatValue: "PDF descargable + enlace público",
     asideVerificationLabel: "Verificación",
@@ -188,7 +188,7 @@ const LEARN_CERTIFICATIONS_COPY_ES: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Verificar el certificado de alguien",
     title: "Introduce el código y comprueba si el registro coincide.",
     body:
-      "Introduce el código impreso en su credencial. Verás si HenryCo Learn cuenta con un registro coincidente y activo, sin necesidad de cuenta para comprobarlo.",
+      "Introduce el código impreso en su credencial. Verás si Henry Onyx Learn cuenta con un registro coincidente y activo, sin necesidad de cuenta para comprobarlo.",
     inputPlaceholder: "Código de verificación",
     submit: "Verificar",
   },
@@ -209,13 +209,13 @@ const LEARN_CERTIFICATIONS_COPY_ES: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_PT: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Certificados — HenryCo Learn",
+    title: "Certificados — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Certificados verificados",
     title: "Credenciais que pode mostrar. Qualquer pessoa pode verificá-las.",
     body:
-      "Os cursos elegíveis para certificado têm um distintivo. Conclua as lições obrigatórias, passe nas avaliações aplicáveis e o HenryCo Learn regista a conclusão. Recebe um PDF para descarregar e um código de verificação público para empregadores, clientes e parceiros.",
+      "Os cursos elegíveis para certificado têm um distintivo. Conclua as lições obrigatórias, passe nas avaliações aplicáveis e o Henry Onyx Learn regista a conclusão. Recebe um PDF para descarregar e um código de verificação público para empregadores, clientes e parceiros.",
     asideFormatLabel: "Formato",
     asideFormatValue: "PDF descarregável + ligação pública",
     asideVerificationLabel: "Verificação",
@@ -239,7 +239,7 @@ const LEARN_CERTIFICATIONS_COPY_PT: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Verificar o certificado de alguém",
     title: "Introduza o código e veja se o registo corresponde.",
     body:
-      "Introduza o código impresso na credencial. Verá se o HenryCo Learn tem um registo correspondente e ativo — não é preciso ter conta para verificar.",
+      "Introduza o código impresso na credencial. Verá se o Henry Onyx Learn tem um registo correspondente e ativo — não é preciso ter conta para verificar.",
     inputPlaceholder: "Código de verificação",
     submit: "Verificar",
   },
@@ -260,13 +260,13 @@ const LEARN_CERTIFICATIONS_COPY_PT: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_AR: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "الشهادات — HenryCo Learn",
+    title: "الشهادات — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "شهادات موثَّقة",
     title: "شهادات يمكنك إبرازها، ويستطيع الجميع التحقُّق منها.",
     body:
-      "تحمل الدورات المؤهَّلة للشهادة شارةً مميَّزة. أكمِل الدروس المطلوبة، واجتَز التقييمات إن وُجدت، فيسجِّل HenryCo Learn إتمامك. ستحصل على ملف PDF قابل للتنزيل ورمز تحقُّق علني يستخدمه أصحاب العمل والعملاء والشركاء.",
+      "تحمل الدورات المؤهَّلة للشهادة شارةً مميَّزة. أكمِل الدروس المطلوبة، واجتَز التقييمات إن وُجدت، فيسجِّل Henry Onyx Learn إتمامك. ستحصل على ملف PDF قابل للتنزيل ورمز تحقُّق علني يستخدمه أصحاب العمل والعملاء والشركاء.",
     asideFormatLabel: "الصيغة",
     asideFormatValue: "ملف PDF للتنزيل + رابط علني",
     asideVerificationLabel: "التحقُّق",
@@ -290,7 +290,7 @@ const LEARN_CERTIFICATIONS_COPY_AR: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "التحقُّق من شهادة شخص آخر",
     title: "أدخِل الرمز ولاحِظ ما إذا كان السجلُّ مطابقًا.",
     body:
-      "أدخِل الرمز المطبوع على شهادته. سترى ما إذا كان HenryCo Learn يمتلك سجلًّا مطابقًا وفعَّالًا — لا حاجة إلى حساب للتحقُّق.",
+      "أدخِل الرمز المطبوع على شهادته. سترى ما إذا كان Henry Onyx Learn يمتلك سجلًّا مطابقًا وفعَّالًا — لا حاجة إلى حساب للتحقُّق.",
     inputPlaceholder: "رمز التحقُّق",
     submit: "تحقَّق",
   },
@@ -311,13 +311,13 @@ const LEARN_CERTIFICATIONS_COPY_AR: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_DE: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Zertifikate — HenryCo Learn",
+    title: "Zertifikate — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Verifizierte Zertifikate",
     title: "Nachweise, die Sie zeigen können. Jeder kann sie verifizieren.",
     body:
-      "Zertifikatsfähige Kurse tragen ein Abzeichen. Schließen Sie die geforderten Lektionen ab, bestehen Sie etwaige Prüfungen, und HenryCo Learn verzeichnet den Abschluss. Sie erhalten ein herunterladbares PDF sowie einen öffentlichen Verifizierungscode für Arbeitgeber, Kundschaft und Partner.",
+      "Zertifikatsfähige Kurse tragen ein Abzeichen. Schließen Sie die geforderten Lektionen ab, bestehen Sie etwaige Prüfungen, und Henry Onyx Learn verzeichnet den Abschluss. Sie erhalten ein herunterladbares PDF sowie einen öffentlichen Verifizierungscode für Arbeitgeber, Kundschaft und Partner.",
     asideFormatLabel: "Format",
     asideFormatValue: "Herunterladbares PDF + öffentlicher Link",
     asideVerificationLabel: "Verifizierung",
@@ -341,7 +341,7 @@ const LEARN_CERTIFICATIONS_COPY_DE: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Zertifikat einer Person verifizieren",
     title: "Geben Sie den Code ein und sehen Sie, ob der Datensatz übereinstimmt.",
     body:
-      "Geben Sie den auf dem Nachweis abgedruckten Code ein. Sie sehen, ob HenryCo Learn einen passenden, aktiven Datensatz führt — ohne Konto.",
+      "Geben Sie den auf dem Nachweis abgedruckten Code ein. Sie sehen, ob Henry Onyx Learn einen passenden, aktiven Datensatz führt — ohne Konto.",
     inputPlaceholder: "Verifizierungscode",
     submit: "Verifizieren",
   },
@@ -362,13 +362,13 @@ const LEARN_CERTIFICATIONS_COPY_DE: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_IT: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Certificati — HenryCo Learn",
+    title: "Certificati — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Certificati verificati",
     title: "Credenziali da mostrare. Verificabili da chiunque.",
     body:
-      "I corsi idonei al certificato portano un distintivo. Completa le lezioni richieste, supera le eventuali valutazioni e HenryCo Learn registra il completamento. Ricevi un PDF scaricabile e un codice di verifica pubblico per datori di lavoro, clienti e partner.",
+      "I corsi idonei al certificato portano un distintivo. Completa le lezioni richieste, supera le eventuali valutazioni e Henry Onyx Learn registra il completamento. Ricevi un PDF scaricabile e un codice di verifica pubblico per datori di lavoro, clienti e partner.",
     asideFormatLabel: "Formato",
     asideFormatValue: "PDF scaricabile + link pubblico",
     asideVerificationLabel: "Verifica",
@@ -392,7 +392,7 @@ const LEARN_CERTIFICATIONS_COPY_IT: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Verifica il certificato di qualcuno",
     title: "Inserisci il codice e controlla se il record corrisponde.",
     body:
-      "Inserisci il codice riportato sulla credenziale. Vedrai se HenryCo Learn ha un record corrispondente e attivo — non serve un account per controllare.",
+      "Inserisci il codice riportato sulla credenziale. Vedrai se Henry Onyx Learn ha un record corrispondente e attivo — non serve un account per controllare.",
     inputPlaceholder: "Codice di verifica",
     submit: "Verifica",
   },
@@ -413,13 +413,13 @@ const LEARN_CERTIFICATIONS_COPY_IT: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_ZH: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "证书 — HenryCo Learn",
+    title: "证书 — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "经核验的证书",
     title: "可以展示的凭证，人人都能核验。",
     body:
-      "可获取证书的课程会带有徽章标识。完成必修课时、通过相应的评估后，HenryCo Learn 会记录你的完成情况。你将获得可下载的 PDF，以及面向雇主、客户与合作伙伴的公开核验代码。",
+      "可获取证书的课程会带有徽章标识。完成必修课时、通过相应的评估后，Henry Onyx Learn 会记录你的完成情况。你将获得可下载的 PDF，以及面向雇主、客户与合作伙伴的公开核验代码。",
     asideFormatLabel: "形式",
     asideFormatValue: "可下载的 PDF + 公开链接",
     asideVerificationLabel: "核验",
@@ -443,7 +443,7 @@ const LEARN_CERTIFICATIONS_COPY_ZH: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "核验他人的证书",
     title: "输入代码，查看记录是否匹配。",
     body:
-      "输入凭证上的代码。你将看到 HenryCo Learn 是否拥有对应且有效的记录 — 无需账户即可查询。",
+      "输入凭证上的代码。你将看到 Henry Onyx Learn 是否拥有对应且有效的记录 — 无需账户即可查询。",
     inputPlaceholder: "核验代码",
     submit: "核验",
   },
@@ -464,13 +464,13 @@ const LEARN_CERTIFICATIONS_COPY_ZH: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_HI: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "प्रमाणपत्र — HenryCo Learn",
+    title: "प्रमाणपत्र — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "सत्यापित प्रमाणपत्र",
     title: "ऐसे प्रमाण जिन्हें आप दिखा सकें — और कोई भी जाँच सके।",
     body:
-      "प्रमाणपत्र-योग्य कोर्स पर एक बैज होता है। आवश्यक पाठ पूरे करें, जहाँ आवश्यक हो वहाँ मूल्यांकन उत्तीर्ण करें, और HenryCo Learn आपकी पूर्णता दर्ज कर लेगा। आपको डाउनलोड करने योग्य PDF और नियोक्ताओं, ग्राहकों व साझेदारों के लिए एक सार्वजनिक सत्यापन कोड मिलेगा।",
+      "प्रमाणपत्र-योग्य कोर्स पर एक बैज होता है। आवश्यक पाठ पूरे करें, जहाँ आवश्यक हो वहाँ मूल्यांकन उत्तीर्ण करें, और Henry Onyx Learn आपकी पूर्णता दर्ज कर लेगा। आपको डाउनलोड करने योग्य PDF और नियोक्ताओं, ग्राहकों व साझेदारों के लिए एक सार्वजनिक सत्यापन कोड मिलेगा।",
     asideFormatLabel: "स्वरूप",
     asideFormatValue: "डाउनलोड योग्य PDF + सार्वजनिक लिंक",
     asideVerificationLabel: "सत्यापन",
@@ -494,7 +494,7 @@ const LEARN_CERTIFICATIONS_COPY_HI: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "किसी का प्रमाणपत्र सत्यापित करें",
     title: "कोड दर्ज करें और देखें कि रिकॉर्ड मेल खाता है या नहीं।",
     body:
-      "उनके क्रेडेंशियल पर मुद्रित कोड दर्ज करें। आप देखेंगे कि HenryCo Learn के पास उससे मेल खाता और सक्रिय रिकॉर्ड है या नहीं — जाँचने के लिए खाते की आवश्यकता नहीं।",
+      "उनके क्रेडेंशियल पर मुद्रित कोड दर्ज करें। आप देखेंगे कि Henry Onyx Learn के पास उससे मेल खाता और सक्रिय रिकॉर्ड है या नहीं — जाँचने के लिए खाते की आवश्यकता नहीं।",
     inputPlaceholder: "सत्यापन कोड",
     submit: "सत्यापित करें",
   },
@@ -515,13 +515,13 @@ const LEARN_CERTIFICATIONS_COPY_HI: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_IG: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Asambodo — HenryCo Learn",
+    title: "Asambodo — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Asambodo a kwadoro",
     title: "Akaebe ị nwere ike igosi. Onye ọ bụla nwere ike nyochaa ya.",
     body:
-      "Nkuzi ndị ruru eru maka asambodo na-eburu akara pụrụ iche. Mechaa ihe ọmụmụ achọrọ, gafee ule ọ bụla a chọrọ, HenryCo Learn ga-edekọ mmecha gị. Ị ga-enweta PDF enwere ike ibudata yana koodu nyocha ọha maka ndị ọrụ na-enye gị ọrụ, ndị ahịa na ndị mmekọ.",
+      "Nkuzi ndị ruru eru maka asambodo na-eburu akara pụrụ iche. Mechaa ihe ọmụmụ achọrọ, gafee ule ọ bụla a chọrọ, Henry Onyx Learn ga-edekọ mmecha gị. Ị ga-enweta PDF enwere ike ibudata yana koodu nyocha ọha maka ndị ọrụ na-enye gị ọrụ, ndị ahịa na ndị mmekọ.",
     asideFormatLabel: "Ụdị",
     asideFormatValue: "PDF enwere ike ibudata + njikọ ọha",
     asideVerificationLabel: "Nyocha",
@@ -545,7 +545,7 @@ const LEARN_CERTIFICATIONS_COPY_IG: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Nyochaa asambodo onye ọzọ",
     title: "Tinye koodu wee hụ ma ndekọ ọ dabara.",
     body:
-      "Tinye koodu e bibiri n’akaebe ya. Ị ga-ahụ ma HenryCo Learn nwere ndekọ dabara adaba na nke na-arụ ọrụ — ọ dịghị mkpa akaụntụ iji nyochaa.",
+      "Tinye koodu e bibiri n’akaebe ya. Ị ga-ahụ ma Henry Onyx Learn nwere ndekọ dabara adaba na nke na-arụ ọrụ — ọ dịghị mkpa akaụntụ iji nyochaa.",
     inputPlaceholder: "Koodu nyocha",
     submit: "Nyochaa",
   },
@@ -566,13 +566,13 @@ const LEARN_CERTIFICATIONS_COPY_IG: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_YO: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Àwọn ẹ̀rí — HenryCo Learn",
+    title: "Àwọn ẹ̀rí — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Ẹ̀rí tí a ti ṣe àyẹ̀wò",
     title: "Ẹ̀rí tí o lè fihàn. Ẹnikẹ́ni lè ṣàyẹ̀wò rẹ̀.",
     body:
-      "Àwọn ẹ̀kọ́ tó yẹ fún ẹ̀rí máa ń mú bàjì pàtàkì. Parí àwọn ẹ̀kọ́ tí a béèrè, gba àwọn ìdánwò níbi tó yẹ, HenryCo Learn yóò sì ṣàkọsílẹ̀ pípari rẹ. Ìwọ yóò gba PDF tí o lè gba sílẹ̀ àti kóòdù ìmúlò gbangba fún àwọn agbanisíṣẹ́, oníbàárà, àti alábàákẹ́gbẹ́.",
+      "Àwọn ẹ̀kọ́ tó yẹ fún ẹ̀rí máa ń mú bàjì pàtàkì. Parí àwọn ẹ̀kọ́ tí a béèrè, gba àwọn ìdánwò níbi tó yẹ, Henry Onyx Learn yóò sì ṣàkọsílẹ̀ pípari rẹ. Ìwọ yóò gba PDF tí o lè gba sílẹ̀ àti kóòdù ìmúlò gbangba fún àwọn agbanisíṣẹ́, oníbàárà, àti alábàákẹ́gbẹ́.",
     asideFormatLabel: "Ìrísí",
     asideFormatValue: "PDF tí a lè gba sílẹ̀ + ìjápọ̀ gbangba",
     asideVerificationLabel: "Ìmúlò",
@@ -596,7 +596,7 @@ const LEARN_CERTIFICATIONS_COPY_YO: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Ṣàyẹ̀wò ẹ̀rí ẹlòmíràn",
     title: "Tẹ kóòdù sí, kí o sì rí bí àkọsílẹ̀ ṣe bá a mu.",
     body:
-      "Tẹ kóòdù tí a tẹ̀ sára ẹ̀rí wọn sí. Ìwọ yóò rí bóyá HenryCo Learn ní àkọsílẹ̀ tó bá a mu àti tí ń ṣiṣẹ́ — kò sí àkáyángá tó pọndandan kí o tó ṣàyẹ̀wò.",
+      "Tẹ kóòdù tí a tẹ̀ sára ẹ̀rí wọn sí. Ìwọ yóò rí bóyá Henry Onyx Learn ní àkọsílẹ̀ tó bá a mu àti tí ń ṣiṣẹ́ — kò sí àkáyángá tó pọndandan kí o tó ṣàyẹ̀wò.",
     inputPlaceholder: "Kóòdù ìmúlò",
     submit: "Ṣàyẹ̀wò",
   },
@@ -617,13 +617,13 @@ const LEARN_CERTIFICATIONS_COPY_YO: DeepPartial<LearnCertificationsCopy> = {
 
 const LEARN_CERTIFICATIONS_COPY_HA: DeepPartial<LearnCertificationsCopy> = {
   meta: {
-    title: "Takaddun shaida — HenryCo Learn",
+    title: "Takaddun shaida — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Takaddun shaida da aka tabbatar",
     title: "Takaddun da za ku iya nunawa. Kowa zai iya tabbatar da su.",
     body:
-      "Kwasa-kwasai da suka cancanci takaddar shaida suna ɗauke da alama ta musamman. Kammala darussan da ake buƙata, ku ci kowane gwajin da ya zama dole, sai HenryCo Learn ya rubuta cikar ku. Kuna karɓa PDF mai sauke da kuma lambar tabbatarwa ta jama’a domin masu ɗaukar aiki, abokan ciniki da abokan haɗin gwiwa.",
+      "Kwasa-kwasai da suka cancanci takaddar shaida suna ɗauke da alama ta musamman. Kammala darussan da ake buƙata, ku ci kowane gwajin da ya zama dole, sai Henry Onyx Learn ya rubuta cikar ku. Kuna karɓa PDF mai sauke da kuma lambar tabbatarwa ta jama’a domin masu ɗaukar aiki, abokan ciniki da abokan haɗin gwiwa.",
     asideFormatLabel: "Salo",
     asideFormatValue: "PDF mai sauke + hanyar jama’a",
     asideVerificationLabel: "Tabbatarwa",
@@ -647,7 +647,7 @@ const LEARN_CERTIFICATIONS_COPY_HA: DeepPartial<LearnCertificationsCopy> = {
     eyebrow: "Tabbatar da takarda ta wani",
     title: "Shigar da lamba, ka ga ko rikodin ya yi daidai.",
     body:
-      "Shigar da lambar da aka buga a kan takardar shaidarsu. Za ku ga ko HenryCo Learn yana da rikodin da ya yi daidai kuma yake aiki — ba a buƙatar asusu domin bincika.",
+      "Shigar da lambar da aka buga a kan takardar shaidarsu. Za ku ga ko Henry Onyx Learn yana da rikodin da ya yi daidai kuma yake aiki — ba a buƙatar asusu domin bincika.",
     inputPlaceholder: "Lambar tabbatarwa",
     submit: "Tabbatar",
   },

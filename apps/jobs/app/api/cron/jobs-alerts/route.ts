@@ -272,7 +272,7 @@ async function runAlerts(request: Request) {
         {
           key: "job_alert",
           heading: "New jobs matched your alert",
-          summary: `HenryCo Jobs found ${topMatches.length} fresh role${topMatches.length === 1 ? "" : "s"} for ${metadata.label || "your saved alert"}.`,
+          summary: `Henry Onyx Jobs found ${topMatches.length} fresh role${topMatches.length === 1 ? "" : "s"} for ${metadata.label || "your saved alert"}.`,
           detailLines: topMatches.map((job) => `${job.title} · ${job.employerName} · ${job.location}`),
           ctaLabel: "Open alerts",
           ctaHref: "/candidate/alerts",

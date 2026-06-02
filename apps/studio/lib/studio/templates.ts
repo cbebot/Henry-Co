@@ -1,7 +1,7 @@
 import type { StudioLeader, StudioTemplate } from "@/lib/studio/types";
 
 /**
- * Ready-made HenryCo Studio websites. These sites are built and owned by
+ * Ready-made Henry Onyx Studio websites. These sites are built and owned by
  * the studio — clients pick one, supply brand assets and copy, and the
  * studio launches a customised version inside the stated ready-in window.
  *
@@ -651,7 +651,7 @@ export const studioLeadership: StudioLeader[] = [
     id: "lead-founder",
     name: "Henry Chukwuemeka",
     role: "Founder & Studio Lead",
-    bio: "Founder of Henry & Co. Sets the studio's standard for clarity, calm delivery, and the discipline behind every milestone.",
+    bio: "Founder of Henry Onyx Sets the studio's standard for clarity, calm delivery, and the discipline behind every milestone.",
     focus: ["Studio direction", "Senior strategy", "Final scope sign-off"],
   },
   {

@@ -180,7 +180,7 @@ export default async function JobsInterviewDetailPage({
                 <>
                   <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("The live provider is not attached yet.")}</p>
                   <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-                    {t("HenryCo Jobs now preserves the interview-room architecture, but this session is still waiting for final timing or a video room provider attachment.")}
+                    {t("Henry Onyx Jobs now preserves the interview-room architecture, but this session is still waiting for final timing or a video room provider attachment.")}
                   </p>
                   <a href={session.supportHref} className="acct-button-secondary mt-4 rounded-xl">
                     {t("Request timing or reschedule")}

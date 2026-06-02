@@ -20,7 +20,7 @@ function describeAlertCriteria(criteria: Record<string, unknown>, locale: AppLoc
     typeof criteria.mode === "string" && criteria.mode ? `${t("Mode")}: ${criteria.mode}` : null,
   ].filter(Boolean);
 
-  return segments.length > 0 ? segments.join(" | ") : t("Any matching HenryCo Jobs role.");
+  return segments.length > 0 ? segments.join(" | ") : t("Any matching Henry Onyx Jobs role.");
 }
 
 export default async function CandidateAlertsPage({

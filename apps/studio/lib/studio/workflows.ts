@@ -113,7 +113,7 @@ function domainIntentBullet(intent: StudioDomainIntent | null | undefined): stri
       : "Domain: client will connect an existing domain at launch";
   }
   if (intent.path === "later") {
-    return "Domain: choose with HenryCo before go-live";
+    return "Domain: choose with Henry Onyx before go-live";
   }
   const label = cleanText(intent.desiredLabel) || "preferred name TBD";
   const backup = cleanText(intent.backupLabel);
@@ -751,7 +751,7 @@ export async function setPaymentStatus(input: {
     const updatedProject: StudioProject = {
       ...project,
       status: "active",
-      nextAction: "HenryCo Studio has moved the project into active delivery.",
+      nextAction: "Henry Onyx Studio has moved the project into active delivery.",
       milestones,
       updatedAt: new Date().toISOString(),
     };

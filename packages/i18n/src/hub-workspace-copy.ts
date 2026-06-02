@@ -27,12 +27,12 @@ export type HubWorkspaceCopy = {
 
 const HUB_WORKSPACE_COPY_EN: HubWorkspaceCopy = {
   metadata: {
-    title: "Henry & Co. Staff HQ",
+    title: "Henry Onyx Staff HQ",
     description:
       "Role-aware HenryCo Staff HQ for managers, operators, finance reviewers, and cross-division teams.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Staff Workspace",
     statusLabel: "Loading workspace",
   },
@@ -40,12 +40,12 @@ const HUB_WORKSPACE_COPY_EN: HubWorkspaceCopy = {
 
 const HUB_WORKSPACE_COPY_FR: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — QG du personnel",
+    title: "Henry Onyx — QG du personnel",
     description:
       "QG du personnel HenryCo selon le rôle : pour les responsables, opérateurs, contrôleurs financiers et équipes inter-divisions.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Espace de travail du personnel",
     statusLabel: "Chargement de l’espace de travail",
   },
@@ -53,12 +53,12 @@ const HUB_WORKSPACE_COPY_FR: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_ES: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Central del personal",
+    title: "Henry Onyx — Central del personal",
     description:
       "Central del personal HenryCo según el rol: para responsables, operadores, revisores financieros y equipos interdivisionales.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Espacio de trabajo del personal",
     statusLabel: "Cargando el espacio de trabajo",
   },
@@ -66,12 +66,12 @@ const HUB_WORKSPACE_COPY_ES: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_PT: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Central da equipa",
+    title: "Henry Onyx — Central da equipa",
     description:
       "Central da equipa HenryCo orientada por função: para responsáveis, operadores, revisores financeiros e equipas entre divisões.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Espaço de trabalho da equipa",
     statusLabel: "A carregar o espaço de trabalho",
   },
@@ -79,12 +79,12 @@ const HUB_WORKSPACE_COPY_PT: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_AR: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — مقر فريق العمل",
+    title: "Henry Onyx — مقر فريق العمل",
     description:
       "مقر فريق العمل في HenryCo بحسب الدور: للمديرين والمشغلين ومراجعي الشؤون المالية والفرق العاملة عبر الأقسام.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "مساحة عمل الفريق",
     statusLabel: "جارٍ تحميل مساحة العمل",
   },
@@ -92,12 +92,12 @@ const HUB_WORKSPACE_COPY_AR: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_DE: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Mitarbeiterzentrale",
+    title: "Henry Onyx — Mitarbeiterzentrale",
     description:
       "Rollenbasierte HenryCo-Mitarbeiterzentrale für Führungskräfte, Operatoren, Finanzprüfer und divisionsübergreifende Teams.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Mitarbeiter-Arbeitsbereich",
     statusLabel: "Arbeitsbereich wird geladen",
   },
@@ -105,12 +105,12 @@ const HUB_WORKSPACE_COPY_DE: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_IT: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Quartier generale del personale",
+    title: "Henry Onyx — Quartier generale del personale",
     description:
       "Quartier generale del personale HenryCo basato sul ruolo: per responsabili, operatori, revisori finanziari e team interdivisionali.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Spazio di lavoro del personale",
     statusLabel: "Caricamento dello spazio di lavoro",
   },
@@ -118,12 +118,12 @@ const HUB_WORKSPACE_COPY_IT: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_ZH: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. 员工总部",
+    title: "Henry Onyx 员工总部",
     description:
       "HenryCo 员工总部按角色划分,服务于管理者、运营人员、财务审核人员及跨部门团队。",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "员工工作区",
     statusLabel: "正在加载工作区",
   },
@@ -131,12 +131,12 @@ const HUB_WORKSPACE_COPY_ZH: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_HI: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — स्टाफ़ मुख्यालय",
+    title: "Henry Onyx — स्टाफ़ मुख्यालय",
     description:
       "HenryCo स्टाफ़ मुख्यालय भूमिका के अनुसार: प्रबंधकों, संचालकों, वित्तीय समीक्षकों और क्रॉस-डिवीज़न टीमों के लिए।",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "स्टाफ़ कार्यक्षेत्र",
     statusLabel: "कार्यक्षेत्र लोड हो रहा है",
   },
@@ -144,12 +144,12 @@ const HUB_WORKSPACE_COPY_HI: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_IG: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Isi Ụlọ Ọrụ Ndị Ọrụ",
+    title: "Henry Onyx — Isi Ụlọ Ọrụ Ndị Ọrụ",
     description:
       "Isi ụlọ ọrụ HenryCo dabere n’ọrụ onye ọ bụla na-arụ — maka ndị nlekọta, ndị na-arụ ọrụ, ndị na-enyocha ego, na otu na-arụkọ ọrụ n’etiti ngalaba.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Ebe ọrụ ndị ọrụ",
     statusLabel: "Na-ebudata ebe ọrụ",
   },
@@ -157,12 +157,12 @@ const HUB_WORKSPACE_COPY_IG: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_YO: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Olú-Ọ́fíìsì Òṣìṣẹ́",
+    title: "Henry Onyx — Olú-Ọ́fíìsì Òṣìṣẹ́",
     description:
       "Olú-ọ́fíìsì òṣìṣẹ́ HenryCo tó dá lórí ipa: fún àwọn olùdarí, òṣìṣẹ́ ẹ̀rọ, olùṣàyẹ̀wò ìnáwó àti àwọn ẹgbẹ́ tó ń ṣiṣẹ́ kọjá àwọn ìpín.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Àyè iṣẹ́ òṣìṣẹ́",
     statusLabel: "Ń gbé àyè iṣẹ́ wọlé",
   },
@@ -170,12 +170,12 @@ const HUB_WORKSPACE_COPY_YO: DeepPartial<HubWorkspaceCopy> = {
 
 const HUB_WORKSPACE_COPY_HA: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
-    title: "Henry & Co. — Babbar Cibiyar Ma’aikata",
+    title: "Henry Onyx — Babbar Cibiyar Ma’aikata",
     description:
       "Babbar cibiyar ma’aikatan HenryCo gwargwadon matsayi — ga manyan masu kula, ma’aikata, masu duba al’amuran kuɗi, da ƙungiyoyin da ke aiki tsakanin rassa.",
   },
   loader: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Filin aikin ma’aikata",
     statusLabel: "Ana loda filin aiki",
   },

@@ -72,7 +72,7 @@ export default async function MarketplaceHomePage() {
           style={{ background: "radial-gradient(circle, var(--home-accent) 0%, transparent 68%)" }}
         />
         <div className="home-shell relative">
-          <Eyebrow className="home-rise">{t("Henry & Co. Marketplace")}</Eyebrow>
+          <Eyebrow className="home-rise">{t("Henry Onyx Marketplace")}</Eyebrow>
           <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-[1.5fr_1fr] lg:items-end">
             <div>
               <DisplayHeading level={1} size="xl" className="home-rise home-delay-1 max-w-2xl">
@@ -81,7 +81,7 @@ export default async function MarketplaceHomePage() {
               </DisplayHeading>
               <Lede className="mt-6 max-w-xl home-rise home-delay-2">
                 {t(
-                  "A calmer marketplace — curated sellers, honest delivery, and every order on one Henry & Co. record.",
+                  "A calmer marketplace — curated sellers, honest delivery, and every order on one Henry Onyx record.",
                 )}
               </Lede>
               <div className="mt-9 flex flex-wrap items-center gap-3 home-rise home-delay-3">
@@ -94,7 +94,7 @@ export default async function MarketplaceHomePage() {
                   {t("Explore the catalog")}
                 </PublicCTA>
                 <PublicCTA href="/sell" variant="secondary" size="lg">
-                  {t("Sell on Henry & Co.")}
+                  {t("Sell on Henry Onyx")}
                 </PublicCTA>
               </div>
             </div>
@@ -144,7 +144,7 @@ export default async function MarketplaceHomePage() {
             <EditorialRow
               index="03"
               title={t("One record")}
-              body={t("Orders, payments, reviews, and support live in one Henry & Co. account.")}
+              body={t("Orders, payments, reviews, and support live in one Henry Onyx account.")}
             />
           </EditorialList>
         </div>
@@ -159,7 +159,7 @@ export default async function MarketplaceHomePage() {
               size="display"
               eyebrow={t("Featured")}
               title={t("Worth a closer look.")}
-              lede={t("Hand-picked listings from verified Henry & Co. sellers.")}
+              lede={t("Hand-picked listings from verified Henry Onyx sellers.")}
             />
             <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
               {copy.home.browseAll}

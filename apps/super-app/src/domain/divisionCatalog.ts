@@ -4,7 +4,7 @@ import type { Division, DivisionSector } from "@/domain/division";
 export const DIVISION_CATALOG: Division[] = [
   {
     slug: "fabric-care",
-    name: "Henry & Co. Fabric Care",
+    name: "Henry Onyx Fabric Care",
     shortName: "Fabric Care",
     status: "active",
     featured: true,
@@ -16,7 +16,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "studio",
-    name: "HenryCo Studio",
+    name: "Henry Onyx Studio",
     shortName: "Studio",
     status: "active",
     featured: true,
@@ -29,7 +29,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "marketplace",
-    name: "Henry & Co. Marketplace",
+    name: "Henry Onyx Marketplace",
     shortName: "Marketplace",
     status: "active",
     featured: true,
@@ -41,7 +41,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "jobs",
-    name: "HenryCo Jobs",
+    name: "Henry Onyx Jobs",
     shortName: "Jobs",
     status: "active",
     featured: true,
@@ -53,7 +53,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "property",
-    name: "HenryCo Property",
+    name: "Henry Onyx Property",
     shortName: "Property",
     status: "active",
     featured: true,
@@ -65,7 +65,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "learn",
-    name: "HenryCo Learn",
+    name: "Henry Onyx Learn",
     shortName: "Learn",
     status: "active",
     featured: true,
@@ -77,7 +77,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "logistics",
-    name: "HenryCo Logistics",
+    name: "Henry Onyx Logistics",
     shortName: "Logistics",
     status: "active",
     featured: true,
@@ -89,7 +89,7 @@ export const DIVISION_CATALOG: Division[] = [
   },
   {
     slug: "buildings-interiors",
-    name: "Henry & Co. Buildings & Interiors",
+    name: "Henry Onyx Buildings & Interiors",
     shortName: "Buildings",
     status: "coming_soon",
     featured: true,

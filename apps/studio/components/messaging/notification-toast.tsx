@@ -120,7 +120,7 @@ export function NotificationToast({
               id: raw.id,
               projectId: raw.project_id,
               projectTitle,
-              senderName: raw.sender || "HenryCo Studio",
+              senderName: raw.sender || "Henry Onyx Studio",
               body: excerpt(raw.body || "(attachment)", 80),
               arrivedAt: Date.now(),
               href: hrefForProject(raw.project_id),

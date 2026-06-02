@@ -7,7 +7,7 @@ import Logo from "@/components/brand/Logo";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Account verified — Henry & Co." };
+export const metadata = { title: "Account verified — Henry Onyx" };
 
 /**
  * Premium landing the user lands on after the email-confirmation callback

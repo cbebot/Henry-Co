@@ -3,7 +3,7 @@
 @import "../../../packages/ui/src/styles/public-design.css";
 @source "../../../packages/ui/src";
 
-/* HenryCo Hub — shared account surface tokens + HQ command center */
+/* Henry Onyx Hub — shared account surface tokens + HQ command center */
 :root {
   --acct-bg: #fafaf8;
   --acct-bg-soft: #ffffff;

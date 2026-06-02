@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-02T10:08:29.099Z",
+  "generatedAt": "2026-06-02T20:20:03.821Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1333,
-    "entries": 1286,
+    "scannedFiles": 1334,
+    "entries": 1291,
     "counts": {
       "OK": 2,
-      "GAP": 1218,
-      "EXEMPT": 23,
+      "GAP": 1215,
+      "EXEMPT": 31,
       "AMBIGUOUS": 43
     },
-    "durationMs": 3527
+    "durationMs": 3797
   },
   "entriesByFile": {
     "apps/account/app/(account)/layout.tsx": [
@@ -200,7 +200,7 @@
         "line": 63,
         "col": 16,
         "kind": "jsx_text",
-        "text": "HENRY &amp; CO.",
+        "text": "HENRY ONYX",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -4097,6 +4097,88 @@
         "reason": "hardcoded JSX text content"
       }
     ],
+    "apps/hub/app/(site)/search/HubSearchExperience.tsx": [
+      {
+        "line": 585,
+        "col": 22,
+        "kind": "attr:label",
+        "text": "Clear search",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 585,
+        "col": 17,
+        "kind": "attr:aria-label",
+        "text": "Clear search",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 625,
+        "col": 36,
+        "kind": "attr:label",
+        "text": "Filter results by division",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 625,
+        "col": 31,
+        "kind": "attr:aria-label",
+        "text": "Filter results by division",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 696,
+        "col": 61,
+        "kind": "attr:label",
+        "text": "Search results",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 696,
+        "col": 56,
+        "kind": "attr:aria-label",
+        "text": "Search results",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 1026,
+        "col": 22,
+        "kind": "jsx_text",
+        "text": "Focus search",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 1030,
+        "col": 22,
+        "kind": "jsx_text",
+        "text": "Move between results",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 1034,
+        "col": 22,
+        "kind": "jsx_text",
+        "text": "Open the highlighted route",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      },
+      {
+        "line": 1088,
+        "col": 93,
+        "kind": "jsx_text",
+        "text": "Or jump to a top route",
+        "classification": "EXEMPT",
+        "reason": "matches exempt.json strings allow-list"
+      }
+    ],
     "apps/hub/app/components/OwnerDashboardClient.tsx": [
       {
         "line": 300,
@@ -4797,14 +4879,6 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 34,
-        "col": 79,
-        "kind": "jsx_text",
-        "text": "Henry &amp; Co.",
-        "classification": "EXEMPT",
-        "reason": "matches exempt.json strings allow-list"
-      },
-      {
         "line": 61,
         "col": 75,
         "kind": "jsx_text",
@@ -5068,7 +5142,7 @@
         "line": 12,
         "col": 77,
         "kind": "jsx_text",
-        "text": "Securing your HenryCo Jobs session",
+        "text": "Securing your Henry Onyx Jobs session",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -5256,7 +5330,7 @@
         "line": 41,
         "col": 40,
         "kind": "jsx_text",
-        "text": "HenryCo Learn",
+        "text": "Henry Onyx Learn",
         "classification": "AMBIGUOUS",
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
@@ -6574,7 +6648,7 @@
         "line": 258,
         "col": 18,
         "kind": "attr:label",
-        "text": "HenryCo Marketplace home",
+        "text": "Henry Onyx Marketplace home",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
@@ -6582,7 +6656,7 @@
         "line": 258,
         "col": 13,
         "kind": "attr:aria-label",
-        "text": "HenryCo Marketplace home",
+        "text": "Henry Onyx Marketplace home",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       }
@@ -7582,7 +7656,7 @@
         "line": 35,
         "col": 39,
         "kind": "jsx_text",
-        "text": "About Henry & Co. Studio",
+        "text": "About Henry Onyx Studio",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       },
@@ -7608,7 +7682,7 @@
         "line": 76,
         "col": 37,
         "kind": "jsx_text",
-        "text": "Ready-made by Henry & Co. Studio",
+        "text": "Ready-made by Henry Onyx Studio",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -7730,7 +7804,7 @@
         "line": 194,
         "col": 39,
         "kind": "jsx_text",
-        "text": "Why choose Henry & Co.",
+        "text": "Why choose Henry Onyx",
         "classification": "AMBIGUOUS",
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
@@ -7800,7 +7874,7 @@
         "line": 101,
         "col": 39,
         "kind": "jsx_text",
-        "text": "Why clients choose Henry & Co.",
+        "text": "Why clients choose Henry Onyx",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -8058,7 +8132,7 @@
         "line": 76,
         "col": 15,
         "kind": "attr:title",
-        "text": "HenryCo account home",
+        "text": "Henry Onyx account home",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
       }
@@ -8340,7 +8414,7 @@
         "line": 521,
         "col": 13,
         "kind": "attr:title",
-        "text": "Transfer guidance is based on HenryCo’s live company account record.",
+        "text": "Transfer guidance is based on Henry Onyx’s live company account record.",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
@@ -9130,7 +9204,7 @@
         "line": 208,
         "col": 11,
         "kind": "attr:title",
-        "text": "Transfer to HenryCo’s verified company account",
+        "text": "Transfer to Henry Onyx’s verified company account",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
@@ -9485,24 +9559,6 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       }
     ],
-    "apps/studio/components/studio/theme-toggle.tsx": [
-      {
-        "line": 26,
-        "col": 12,
-        "kind": "attr:label",
-        "text": "Toggle theme",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:label)"
-      },
-      {
-        "line": 26,
-        "col": 7,
-        "kind": "attr:aria-label",
-        "text": "Toggle theme",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:aria-label)"
-      }
-    ],
     "apps/super-app/app/+not-found.tsx": [
       {
         "line": 12,
@@ -9622,7 +9678,7 @@
         "line": 26,
         "col": 28,
         "kind": "jsx_text",
-        "text": "Henry &amp; Co. Company Hub",
+        "text": "Henry Onyx Company Hub",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       },
@@ -9868,9 +9924,9 @@
         "line": 52,
         "col": 35,
         "kind": "jsx_text",
-        "text": "HENRY & CO.",
-        "classification": "EXEMPT",
-        "reason": "matches exempt.json strings allow-list"
+        "text": "HENRY ONYX",
+        "classification": "GAP",
+        "reason": "hardcoded JSX text content"
       }
     ],
     "packages/branded-documents/src/components/SignatureBlock.tsx": [
@@ -9908,7 +9964,7 @@
         "line": 238,
         "col": 62,
         "kind": "jsx_text",
-        "text": "HenryCo Learn",
+        "text": "Henry Onyx Learn",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       },
@@ -9964,7 +10020,7 @@
         "line": 295,
         "col": 42,
         "kind": "jsx_text",
-        "text": "HENRY & CO. · HenryCo Learn academic certificate",
+        "text": "HENRY ONYX · Henry Onyx Learn academic certificate",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       },
@@ -10870,7 +10926,7 @@
         "line": 73,
         "col": 14,
         "kind": "jsx_text",
-        "text": "HENRY &amp; CO.",
+        "text": "HENRY ONYX",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -10899,24 +10955,6 @@
         "col": 13,
         "kind": "attr:aria-label",
         "text": "Toggle menu",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:aria-label)"
-      }
-    ],
-    "packages/ui/src/public/theme-toggle.tsx": [
-      {
-        "line": 15,
-        "col": 12,
-        "kind": "attr:label",
-        "text": "Toggle theme",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:label)"
-      },
-      {
-        "line": 15,
-        "col": 7,
-        "kind": "attr:aria-label",
-        "text": "Toggle theme",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       }

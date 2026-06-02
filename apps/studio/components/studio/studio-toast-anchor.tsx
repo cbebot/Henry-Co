@@ -11,7 +11,7 @@ const TOAST_COPY: Record<string, { title: string; body: string }> = {
   },
   proof_uploaded: {
     title: "Proof uploaded",
-    body: "Finance will verify your transfer. If you continue in your HenryCo account, the Studio hub reflects status as soon as it is confirmed.",
+    body: "Finance will verify your transfer. If you continue in your Henry Onyx account, the Studio hub reflects status as soon as it is confirmed.",
   },
   proof_required: {
     title: "Add a proof file",

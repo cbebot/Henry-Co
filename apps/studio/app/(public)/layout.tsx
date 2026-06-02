@@ -97,9 +97,9 @@ export default async function PublicLayout({ children }: { children: React.React
           statement: t(
             "Serious software, delivered with sharper process — every brief to launch on one record.",
           ),
-          divisionsLabel: t("The Henry & Co. group"),
+          divisionsLabel: t("The Henry Onyx group"),
           rightsReserved: t("All rights reserved."),
-          attribution: t("Built in-house by Henry & Co. Studio."),
+          attribution: t("Built in-house by Henry Onyx Studio."),
         }}
         columns={footerColumns}
         support={{

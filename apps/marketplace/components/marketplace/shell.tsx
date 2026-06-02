@@ -77,9 +77,9 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
           statement: t(
             "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",
           ),
-          divisionsLabel: t("The Henry & Co. group"),
+          divisionsLabel: t("The Henry Onyx group"),
           rightsReserved: t("All rights reserved."),
-          attribution: t("Built in-house by Henry & Co. Studio."),
+          attribution: t("Built in-house by Henry Onyx Studio."),
         }}
         columns={footerColumns}
         support={{ email: BRAND_EMAILS.marketplace, phone: "+234 913 395 7084" }}
@@ -104,7 +104,7 @@ export async function PublicFooter() {
           <div className="space-y-5">
             <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
               <Sparkles className="h-3.5 w-3.5" />
-              {translateSurfaceLabel(locale, "Henry & Co. Marketplace")}
+              {translateSurfaceLabel(locale, "Henry Onyx Marketplace")}
             </div>
             <p className="max-w-md text-sm leading-7 text-[var(--market-muted)]">
               {copy.footer.brandBody}
@@ -153,7 +153,7 @@ export async function PublicFooter() {
 
         <div className="mt-10 flex flex-col items-start gap-3 border-t border-[var(--market-line)] pt-5 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>&copy; {new Date().getFullYear()} {translateSurfaceLabel(locale, "Henry & Co. Marketplace")}. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
+            <span>&copy; {new Date().getFullYear()} {translateSurfaceLabel(locale, "Henry Onyx Marketplace")}. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
             <a
               href={getHubUrl("/privacy")}
               target="_blank"
@@ -173,7 +173,7 @@ export async function PublicFooter() {
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
-            {translateSurfaceLabel(locale, "Designed and built in-house by Henry & Co. Studio for the Henry & Co. ecosystem")}
+            {translateSurfaceLabel(locale, "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem")}
           </span>
         </div>
       </div>

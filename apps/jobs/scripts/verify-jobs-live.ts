@@ -460,7 +460,7 @@ async function main() {
     formData: profileForm,
   });
 
-  const resumeFile = new File([`HenryCo Jobs resume ${stamp}`], `henryco-resume-${stamp}.pdf`, {
+  const resumeFile = new File([`Henry Onyx Jobs resume ${stamp}`], `henryco-resume-${stamp}.pdf`, {
     type: "application/pdf",
   });
   await write.uploadCandidateAsset({
@@ -476,7 +476,7 @@ async function main() {
   employerForm.set("tagline", "Premium hiring for operations systems talent.");
   employerForm.set(
     "description",
-    "A verification sandbox employer used to validate HenryCo Jobs live employer onboarding and trust workflows."
+    "A verification sandbox employer used to validate Henry Onyx Jobs live employer onboarding and trust workflows."
   );
   employerForm.set("industry", "Operations Systems");
   employerForm.set("locations", "Lagos, Remote");

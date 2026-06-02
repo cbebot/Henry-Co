@@ -154,13 +154,13 @@ function dedupedHosts(...candidates: Array<string | null | undefined>): string[]
 
 export const COMPANY = {
   group: {
-    name: "Henry & Co.",
-    legalName: "Henry Holdings Limited",
+    name: "Henry Onyx",
+    legalName: "Henry Onyx Limited",
     baseDomain: BASE_DOMAIN,
     mission:
       "A premium group of service businesses built on clarity, trust, and operational excellence.",
     promise:
-      "Every Henry & Co. division should feel premium, dependable, and beautifully structured.",
+      "Every Henry Onyx division should feel premium, dependable, and beautifully structured.",
     supportEmail: BRAND_EMAILS.hello,
     supportPhone: GROUP_SUPPORT_PHONE,
   },
@@ -168,12 +168,12 @@ export const COMPANY = {
   divisions: {
     hub: {
       key: "hub",
-      name: "Henry & Co.",
+      name: "Henry Onyx",
       shortName: "Hub",
       sub: "Group Directory",
-      tagline: "The ecosystem hub for every Henry & Co. business.",
+      tagline: "The ecosystem hub for every Henry Onyx business.",
       description:
-        "Explore all Henry & Co. divisions from one premium central discovery experience.",
+        "Explore all Henry Onyx divisions from one premium central discovery experience.",
       path: "/",
       subdomain: null,
       accent: "#C9A227",
@@ -192,14 +192,14 @@ export const COMPANY = {
       publicNav: [
         { label: "Directory", href: "/#directory" },
         { label: "How It Works", href: "/#how" },
-        { label: "Why Henry & Co.", href: "/#why" },
+        { label: "Why Henry Onyx", href: "/#why" },
         { label: "FAQ", href: "/#faq" }
       ],
     },
 
     care: {
       key: "care",
-      name: "Henry & Co. Fabric Care",
+      name: "Henry Onyx Fabric Care",
       shortName: "Fabric Care",
       sub: "Garment care, home cleaning, office cleaning, and pickup delivery",
       tagline: "A premium care company for garments, homes, offices, and recurring service.",
@@ -235,12 +235,12 @@ export const COMPANY = {
 
     building: {
       key: "building",
-      name: "Henry & Co. Building",
+      name: "Henry Onyx Building",
       shortName: "Building",
       sub: "Construction & Project Delivery",
       tagline: "Modern construction, delivery, and project confidence.",
       description:
-        "Construction and project services under the Henry & Co. premium operating standard.",
+        "Construction and project services under the Henry Onyx premium operating standard.",
       path: "/",
       subdomain: "building",
       accent: "#C9A227",
@@ -259,7 +259,7 @@ export const COMPANY = {
 
     hotel: {
       key: "hotel",
-      name: "Henry & Co. Hotels",
+      name: "Henry Onyx Hotels",
       shortName: "Hotels",
       sub: "Hospitality & Stays",
       tagline: "Premium stays, bookings, and guest experience.",
@@ -283,13 +283,13 @@ export const COMPANY = {
 
     marketplace: {
       key: "marketplace",
-      name: "Henry & Co. Marketplace",
+      name: "Henry Onyx Marketplace",
       shortName: "Marketplace",
       sub: "Premium multi-vendor commerce",
       tagline:
         "A calmer marketplace for premium buyers, accountable sellers, and sharper operators.",
       description:
-        "Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and Henry & Co. teams.",
+        "Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and Henry Onyx teams.",
       path: "/",
       subdomain: "marketplace",
       accent: "#B2863B",
@@ -318,13 +318,13 @@ export const COMPANY = {
 
     property: {
       key: "property",
-      name: "Henry & Co. Property",
+      name: "Henry Onyx Property",
       shortName: "Property",
       sub: "Premium rentals, listings, and managed property operations",
       tagline:
         "A calmer property platform for high-trust discovery, sharper operations, and managed-property confidence.",
       description:
-        "Henry & Co. Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.",
+        "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.",
       path: "/",
       subdomain: "property",
       accent: "#B06C3E",
@@ -354,13 +354,13 @@ export const COMPANY = {
 
     logistics: {
       key: "logistics",
-      name: "Henry & Co. Logistics",
+      name: "Henry Onyx Logistics",
       shortName: "Logistics",
       sub: "Pickup, dispatch, delivery, and fleet operations",
       tagline:
         "Premium dispatch and delivery operations with sharper booking, cleaner tracking, and confident execution.",
       description:
-        "Henry & Co. Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
+        "Henry Onyx Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
       path: "/",
       subdomain: "logistics",
       accent: "#D06F32",
@@ -388,13 +388,13 @@ export const COMPANY = {
 
     studio: {
       key: "studio",
-      name: "Henry & Co. Studio",
+      name: "Henry Onyx Studio",
       shortName: "Studio",
       sub: "Premium digital products, software systems, and brand execution",
       tagline:
         "A premium product studio for websites, apps, internal systems, brand systems, and elite delivery.",
       description:
-        "Henry & Co. Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.",
+        "Henry Onyx Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.",
       path: "/",
       subdomain: "studio",
       accent: "#4AC1C5",
@@ -423,13 +423,13 @@ export const COMPANY = {
 
     jobs: {
       key: "jobs",
-      name: "Henry & Co. Jobs",
+      name: "Henry Onyx Jobs",
       shortName: "Jobs",
       sub: "Hiring, verified talent, and recruitment operations",
       tagline:
         "A premium hiring operating system for serious employers, verified talent, and cleaner recruitment.",
       description:
-        "Henry & Co. Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry & Co. hiring into one premium operating system.",
+        "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one premium operating system.",
       path: "/",
       subdomain: "jobs",
       accent: "#0E7C86",
@@ -438,12 +438,12 @@ export const COMPANY = {
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
       supportPhone: "+2349133957084",
-      // Public chrome primary nav. "Careers" (internal Henry & Co. hiring)
+      // Public chrome primary nav. "Careers" (internal Henry Onyx hiring)
       // removed from primary because it semantically collides with
       // "Find jobs" — candidates routinely clicked it expecting public
-      // listings. "Careers" still lives in the footer ("Work at Henry & Co.")
+      // listings. "Careers" still lives in the footer ("Work at Henry Onyx")
       // and the employer/candidate-aware account-chip menu, so the
-      // work-for-Henry & Co. surface is preserved where context disambiguates.
+      // work-for-Henry Onyx surface is preserved where context disambiguates.
       //
       // NOTE: A "Categories" nav entry was considered but NOT added — the
       // route `/categories` has no index `page.tsx` (only `[slug]`), so a
@@ -461,13 +461,13 @@ export const COMPANY = {
 
     learn: {
       key: "learn",
-      name: "Henry & Co. Learn",
+      name: "Henry Onyx Learn",
       shortName: "Learn",
       sub: "Courses, paths, quizzes, and verified certificates",
       tagline:
         "Practical courses you can finish—with clear progress, fair assessments, and credentials employers can check.",
       description:
-        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn Henry & Co. certificates with a public verification code. Your enrollments and progress also appear in your Henry & Co. account dashboard.",
+        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn Henry Onyx certificates with a public verification code. Your enrollments and progress also appear in your Henry Onyx account dashboard.",
       path: "/",
       subdomain: "learn",
       accent: "#3C8C7A",
@@ -507,7 +507,7 @@ export function getDivisionUrl(key: DivisionKey) {
 }
 
 /**
- * Map the CODE shorthand "HenryCo" → the user-facing brand "Henry & Co." in any
+ * Map the CODE shorthand "HenryCo" → the user-facing brand "Henry Onyx" in any
  * dynamic / CMS-authored text before it reaches the UI.
  *
  * "HenryCo" is the internal shorthand only (package names, identifiers, the
@@ -520,7 +520,7 @@ export function getDivisionUrl(key: DivisionKey) {
  * Surgical by construction: `\bHenryCo\b` matches only the standalone word, so
  * identifiers (`HenryCoLogo` — no word boundary) and the lowercase domain
  * (`henrycogroup.com`) are left untouched. "HenryCo Group" collapses to the
- * brand (not "Henry & Co. Group"), matching the V3 legal-rename migration.
+ * brand (not "Henry Onyx Group"), matching the V3 identity-rename migration.
  */
 export function toBrandName(value: string | null | undefined): string {
   return String(value ?? "")
@@ -531,7 +531,7 @@ export function toBrandName(value: string | null | undefined): string {
 /**
  * The canonical, ordered list of LIVE public divisions for shared chrome
  * (footers, directories, cross-sell nav). Names come straight from config — so
- * every site renders the same correct "Henry & Co. <Division>" label — and URLs
+ * every site renders the same correct "Henry Onyx <Division>" label — and URLs
  * route through `getDivisionUrl`, so the henry.holdings domain migration stays a
  * single config flip with ZERO hardcoded domains. `hub` (the group itself) and
  * not-yet-live divisions (`building`, `hotel`) are intentionally excluded.

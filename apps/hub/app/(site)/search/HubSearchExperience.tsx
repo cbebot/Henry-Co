@@ -464,7 +464,7 @@ export function HubSearchExperience({
   // ---- derived display copy --------------------------------------------
   const scopeLabel = scope === "all" ? "all divisions" : divisionMeta(scope).label;
   const statusLine = (() => {
-    if (loading && flat.length === 0) return "Searching across Henry & Co.…";
+    if (loading && flat.length === 0) return "Searching across Henry Onyx…";
     if (!queryActive) return `Top routes across ${chipDivisions.length} divisions`;
     if (snapshot.source === "live") {
       const base = `${snapshot.total} ${snapshot.total === 1 ? "result" : "results"}`;
@@ -514,7 +514,7 @@ export function HubSearchExperience({
             className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55"
           >
             <Compass className="h-3.5 w-3.5 text-[color:var(--accent,#C9A227)]" aria-hidden />
-            Henry &amp; Co. · Universal search
+            Henry Onyx · Universal search
           </motion.p>
           {firstName ? (
             <motion.p {...reveal(0.02)} className="mt-4 text-sm font-medium text-white/55">
@@ -526,7 +526,7 @@ export function HubSearchExperience({
             className="mt-3 text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3.1rem]"
           >
             Search everything{" "}
-            <span className="text-[color:var(--accent,#C9A227)]">Henry &amp; Co.</span> operates.
+            <span className="text-[color:var(--accent,#C9A227)]">Henry Onyx</span> operates.
           </motion.h1>
           <motion.p {...reveal(0.06)} className="mt-5 max-w-2xl text-[15px] leading-7 text-white/68 sm:text-base">
             One entry point across marketplace, property, jobs, learning, care, logistics, and studio —
@@ -547,7 +547,7 @@ export function HubSearchExperience({
           }}
         >
           <label className="sr-only" htmlFor="hub-search-input">
-            Search Henry &amp; Co.
+            Search Henry Onyx
           </label>
           <div
             className={cn(
@@ -966,7 +966,7 @@ function EmptyState({ recents, onPick }: { recents: string[]; onPick: (q: string
           Try a division, a workflow, or what you want to get done.
         </p>
         <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
-          Every Henry &amp; Co. route is one search away — orders, deliveries, viewings, bookings,
+          Every Henry Onyx route is one search away — orders, deliveries, viewings, bookings,
           certificates, wallet. Start typing, or pick a prompt.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">

@@ -38,7 +38,7 @@ function getViewerLabel(firstName: string | null, fullName: string | null, email
 }
 
 function getViewerInitials(fullName: string | null, email: string | null) {
-  const source = fullName || email || "Henry & Co.";
+  const source = fullName || email || "Henry Onyx";
   const parts = source
     .split(/[\s._-]+/)
     .map((segment) => segment.trim())
@@ -255,7 +255,7 @@ export function PublicHeaderClient() {
           <Link
             href="/"
             className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] rounded-2xl"
-            aria-label="Henry & Co. Marketplace home"
+            aria-label="Henry Onyx Marketplace home"
           >
             <span
               className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-accent-text)] shadow-[0_18px_40px_-30px_rgb(var(--home-ink-rgb)/0.4)]"
@@ -264,7 +264,7 @@ export function PublicHeaderClient() {
             </span>
             <div className="hidden min-w-0 sm:block">
               <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[color:var(--home-accent-text)]">
-                Henry &amp; Co. Marketplace
+                Henry Onyx Marketplace
               </p>
               <p className="truncate text-sm text-[color:var(--home-ink-65)]">
                 {surfaceCopy.marketplaceHeader.brandSubtitle}
@@ -281,7 +281,7 @@ export function PublicHeaderClient() {
             href={getHubUrl("/search")}
             className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition-colors hover:bg-[color:var(--home-surface-07)] xl:inline-flex"
           >
-            {translateSurfaceLabel(locale, "Search Henry & Co.")}
+            {translateSurfaceLabel(locale, "Search Henry Onyx")}
           </Link>
 
           <form
@@ -543,7 +543,7 @@ export function PublicHeaderClient() {
               onClick={closeDrawer}
               className="rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
             >
-              {translateSurfaceLabel(locale, "Search Henry & Co.")}
+              {translateSurfaceLabel(locale, "Search Henry Onyx")}
             </Link>
             {runtime.shell.viewer.signedIn ? (
               <>

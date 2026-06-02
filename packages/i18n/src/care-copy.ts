@@ -304,7 +304,7 @@ const EN: CareCopy = {
   },
   staffManager: {
     metadata: {
-      title: "Manager Dashboard | Henry & Co. Fabric Care",
+      title: "Manager Dashboard | Henry Onyx Fabric Care",
       description:
         "Manager command dashboard for intake, live operations, inflow, and expense control.",
     },
@@ -355,7 +355,7 @@ const EN: CareCopy = {
   },
   staffOwner: {
     metadata: {
-      title: "Owner Dashboard | Henry & Co. Fabric Care",
+      title: "Owner Dashboard | Henry Onyx Fabric Care",
       description:
         "Owner control room for bookings, finance, security, reviews, and company-wide operations.",
     },
@@ -561,7 +561,7 @@ const FR: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Tableau de bord du responsable | Henry & Co. Fabric Care",
+      title: "Tableau de bord du responsable | Henry Onyx Fabric Care",
       description:
         "Tableau de commande du responsable pour la prise en charge, les opérations en direct, les entrées et le contrôle des dépenses.",
     },
@@ -612,7 +612,7 @@ const FR: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Tableau du propriétaire | Henry & Co. Fabric Care",
+      title: "Tableau du propriétaire | Henry Onyx Fabric Care",
       description:
         "Salle de commande du propriétaire pour les réservations, les finances, la sécurité, les avis et les opérations à l'échelle de l'entreprise.",
     },
@@ -818,7 +818,7 @@ const ES: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Panel del gerente | Henry & Co. Fabric Care",
+      title: "Panel del gerente | Henry Onyx Fabric Care",
       description:
         "Panel de mando del gerente para recepción, operaciones en vivo, entradas y control de gastos.",
     },
@@ -869,7 +869,7 @@ const ES: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Panel del propietario | Henry & Co. Fabric Care",
+      title: "Panel del propietario | Henry Onyx Fabric Care",
       description:
         "Sala de control del propietario para reservas, finanzas, seguridad, reseñas y operaciones de toda la empresa.",
     },
@@ -1075,7 +1075,7 @@ const PT: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Painel do gerente | Henry & Co. Fabric Care",
+      title: "Painel do gerente | Henry Onyx Fabric Care",
       description:
         "Painel de comando do gerente para recepção, operações ao vivo, entradas e controle de despesas.",
     },
@@ -1126,7 +1126,7 @@ const PT: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Painel do proprietário | Henry & Co. Fabric Care",
+      title: "Painel do proprietário | Henry Onyx Fabric Care",
       description:
         "Sala de controle do proprietário para reservas, finanças, segurança, avaliações e operações de toda a empresa.",
     },
@@ -1332,7 +1332,7 @@ const AR: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "لوحة قيادة المدير | Henry & Co. Fabric Care",
+      title: "لوحة قيادة المدير | Henry Onyx Fabric Care",
       description:
         "لوحة قيادة المدير للاستلام والعمليات المباشرة والتدفقات الواردة وضبط المصروفات.",
     },
@@ -1383,7 +1383,7 @@ const AR: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "لوحة المالك | Henry & Co. Fabric Care",
+      title: "لوحة المالك | Henry Onyx Fabric Care",
       description:
         "غرفة تحكم المالك للحجوزات والمالية والأمان والتقييمات وعمليات الشركة بالكامل.",
     },
@@ -1589,7 +1589,7 @@ const IG: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Dashboard Onye Nlekọta | Henry & Co. Fabric Care",
+      title: "Dashboard Onye Nlekọta | Henry Onyx Fabric Care",
       description:
         "Dashboard nke onye nlekọta maka nnata, ọrụ ndụ, mbata ego, na njikwa mmefu.",
     },
@@ -1640,7 +1640,7 @@ const IG: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Dashboard onye nwe | Henry & Co. Fabric Care",
+      title: "Dashboard onye nwe | Henry Onyx Fabric Care",
       description:
         "Ụlọ ọrụ njikwa onye nwe maka ndokwa, ego, nchekwa, nyocha, na ọrụ ụlọ ọrụ niile.",
     },
@@ -1846,7 +1846,7 @@ const YO: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Pẹpẹ Onítọ́jú | Henry & Co. Fabric Care",
+      title: "Pẹpẹ Onítọ́jú | Henry Onyx Fabric Care",
       description:
         "Pẹpẹ ìdarí onítọ́jú fún gbígbà, iṣẹ́ alaaye, owó tó ń wọlé, àti ìṣàkóso owó tí ó ń jáde.",
     },
@@ -1897,7 +1897,7 @@ const YO: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Pátákó onílé | Henry & Co. Fabric Care",
+      title: "Pátákó onílé | Henry Onyx Fabric Care",
       description:
         "Iyàrá ìdarí onílé fún ìbúkún ìwé, ìnáwó, ààbò, àyẹ̀wò, àti àwọn iṣẹ́ ilé-iṣẹ́ jákèjádò.",
     },
@@ -2103,7 +2103,7 @@ const HA: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Dashbod na Manaja | Henry & Co. Fabric Care",
+      title: "Dashbod na Manaja | Henry Onyx Fabric Care",
       description:
         "Dashbod na umarni ga manaja domin shigarwa, ayyukan kai tsaye, kuɗin shiga, da sarrafa kashe kuɗi.",
     },
@@ -2154,7 +2154,7 @@ const HA: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Dashboard na mai shi | Henry & Co. Fabric Care",
+      title: "Dashboard na mai shi | Henry Onyx Fabric Care",
       description:
         "Dakin kula da mai shi don adireshin ajiyar, kuɗi, tsaro, sake duba, da ayyukan kamfani gabaɗaya.",
     },
@@ -2360,7 +2360,7 @@ const DE: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Manager-Dashboard | Henry & Co. Fabric Care",
+      title: "Manager-Dashboard | Henry Onyx Fabric Care",
       description:
         "Manager-Befehlsdashboard für Annahme, Live-Betrieb, Eingänge und Ausgabenkontrolle.",
     },
@@ -2411,7 +2411,7 @@ const DE: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Inhaber-Dashboard | Henry & Co. Fabric Care",
+      title: "Inhaber-Dashboard | Henry Onyx Fabric Care",
       description:
         "Steuerzentrale des Inhabers für Buchungen, Finanzen, Sicherheit, Bewertungen und unternehmensweite Abläufe.",
     },
@@ -2617,7 +2617,7 @@ const ZH: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "经理仪表板 | Henry & Co. Fabric Care",
+      title: "经理仪表板 | Henry Onyx Fabric Care",
       description: "经理指挥仪表板，用于收件、实时运营、收入和支出管理。",
     },
     hero: {
@@ -2667,7 +2667,7 @@ const ZH: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "业主仪表板 | Henry & Co. Fabric Care",
+      title: "业主仪表板 | Henry Onyx Fabric Care",
       description: "业主控制中心,用于预订、财务、安全、评价及全公司运营。",
     },
     hero: {
@@ -2872,7 +2872,7 @@ const HI: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "मैनेजर डैशबोर्ड | Henry & Co. Fabric Care",
+      title: "मैनेजर डैशबोर्ड | Henry Onyx Fabric Care",
       description:
         "इनटेक, लाइव संचालन, आवक और व्यय नियंत्रण के लिए मैनेजर कमांड डैशबोर्ड।",
     },
@@ -2923,7 +2923,7 @@ const HI: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "मालिक डैशबोर्ड | Henry & Co. Fabric Care",
+      title: "मालिक डैशबोर्ड | Henry Onyx Fabric Care",
       description:
         "बुकिंग, वित्त, सुरक्षा, समीक्षा और कंपनी-व्यापी संचालन के लिए मालिक का नियंत्रण कक्ष।",
     },
@@ -3129,7 +3129,7 @@ const IT: DeepPartial<CareCopy> = {
   },
   staffManager: {
     metadata: {
-      title: "Dashboard del Manager | Henry & Co. Fabric Care",
+      title: "Dashboard del Manager | Henry Onyx Fabric Care",
       description:
         "Dashboard di comando del manager per accettazione, operazioni in tempo reale, entrate e controllo delle spese.",
     },
@@ -3180,7 +3180,7 @@ const IT: DeepPartial<CareCopy> = {
   },
   staffOwner: {
     metadata: {
-      title: "Dashboard proprietario | Henry & Co. Fabric Care",
+      title: "Dashboard proprietario | Henry Onyx Fabric Care",
       description:
         "Sala di controllo del proprietario per prenotazioni, finanza, sicurezza, recensioni e operazioni aziendali.",
     },

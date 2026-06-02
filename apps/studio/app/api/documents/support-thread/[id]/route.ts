@@ -76,8 +76,8 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
       senderName: isCustomer
         ? customerName
         : senderType === "system"
-          ? "HenryCo"
-          : "HenryCo Studio",
+          ? "Henry Onyx"
+          : "Henry Onyx Studio",
       body: asString(raw.body),
       createdAt: asString(raw.created_at, new Date().toISOString()),
       attachments: Array.isArray(raw.attachments)

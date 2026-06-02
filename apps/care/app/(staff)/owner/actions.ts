@@ -1259,7 +1259,7 @@ async function sendBookingStatusEmail(input: { bookingId: string }) {
       const whatsappResult = await sendWhatsAppText({
         phone: booking.phone,
         body: [
-          `HenryCo Care update • ${booking.tracking_code}`,
+          `Henry Onyx Care update • ${booking.tracking_code}`,
           normalizeDisplayName(booking.customer_name, "Customer"),
           "",
           `${statusLabel}`,
@@ -1387,7 +1387,7 @@ async function queuePickedUpPaymentRequest(input: {
     const amountText = `NGN ${amountDue.toLocaleString()}`;
     const instructions =
       settings.payment_instructions ||
-      "Please send payment confirmation to the Henry & Co. Care team.";
+      "Please send payment confirmation to the Henry Onyx Care team.";
     const templateBody =
       settings.picked_up_email_body ||
       [
@@ -1405,14 +1405,14 @@ async function queuePickedUpPaymentRequest(input: {
         "{payment_instructions}",
         "",
         "Thank you,",
-        "Henry & Co. Fabric Care",
+        "Henry Onyx Fabric Care",
       ].join("\n");
 
     const templateVariables = {
       customer_name: String((bookingState as any).customer_name || "Customer"),
       tracking_code: String((bookingState as any).tracking_code || ""),
       amount_due: amountText,
-      account_name: settings.payment_account_name || settings.company_account_name || "Henry & Co. Care",
+      account_name: settings.payment_account_name || settings.company_account_name || "Henry Onyx Care",
       account_number:
         settings.payment_account_number || settings.company_account_number || "Not provided yet",
       bank_name: settings.payment_bank_name || settings.company_bank_name || "Not provided yet",

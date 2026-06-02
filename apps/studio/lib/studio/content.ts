@@ -280,7 +280,7 @@ export const studioDifferentiators: StudioDifferentiator[] = [
   {
     id: "diff-match-layer",
     name: "Expert Match Layer",
-    description: "Projects can be routed to the best-fit HenryCo team based on delivery style, scope complexity, and business context.",
+    description: "Projects can be routed to the best-fit Henry Onyx team based on delivery style, scope complexity, and business context.",
     pros: ["Improves trust", "Makes the platform feel premium", "Routes work cleanly"],
     cons: ["Needs good scoring logic"],
     difficulty: "high",
@@ -342,7 +342,7 @@ export const studioFaqs = [
   {
     question: "Can you handle both design and software delivery?",
     answer:
-      "Yes. HenryCo Studio covers brand systems, websites, e-commerce, internal platforms, client portals, and mobile products. The brief flow is built to route the work to the right combination of strategy, design, and engineering.",
+      "Yes. Henry Onyx Studio covers brand systems, websites, e-commerce, internal platforms, client portals, and mobile products. The brief flow is built to route the work to the right combination of strategy, design, and engineering.",
   },
   {
     question: "How are projects priced?",
@@ -352,12 +352,12 @@ export const studioFaqs = [
   {
     question: "How will I receive updates?",
     answer:
-      "Studio sends email updates for inquiry receipt, proposals, payment checkpoints, milestone readiness, revisions, and final delivery. WhatsApp updates can also be used when the shared HenryCo messaging setup supports the contact path cleanly.",
+      "Studio sends email updates for inquiry receipt, proposals, payment checkpoints, milestone readiness, revisions, and final delivery. WhatsApp updates can also be used when the shared Henry Onyx messaging setup supports the contact path cleanly.",
   },
   {
-    question: "Will this later connect to the HenryCo account dashboard?",
+    question: "Will this later connect to the Henry Onyx account dashboard?",
     answer:
-      "Yes. Studio projects can connect with your HenryCo account so project history, invoices, files, and support updates stay easy to revisit.",
+      "Yes. Studio projects can connect with your Henry Onyx account so project history, invoices, files, and support updates stay easy to revisit.",
   },
 ];
 
@@ -382,7 +382,7 @@ export const studioTestimonials = [
 export const studioProcess = [
   "Define whether the request is package-fit or custom from the start.",
   "Capture commercial goals, delivery constraints, features, references, and buyer context.",
-  "Route the project to the best-fit HenryCo team or team mix.",
+  "Route the project to the best-fit Henry Onyx team or team mix.",
   "Send a proposal with scope logic, milestone pricing, and next-step clarity.",
   "Activate the workspace after deposit confirmation and manage delivery through milestones, updates, files, and revisions.",
 ];
@@ -420,7 +420,7 @@ export const studioTrustSignals = [
   "Proposals show investment, milestones, delivery logic, and deposit structure in one clear view.",
   "Files, revisions, messages, and approvals can live inside the same delivery surface instead of being scattered.",
   "Access to proposals, files, approvals, and payment steps is protected through secure links and account-aware checks.",
-  "HenryCo account history is designed to keep proposals, projects, payments, documents, and support context in one place.",
+  "Henry Onyx account history is designed to keep proposals, projects, payments, documents, and support context in one place.",
 ];
 
 export const studioValueComparisons: StudioValueComparison[] = [
@@ -433,7 +433,7 @@ export const studioValueComparisons: StudioValueComparison[] = [
     ],
   },
   {
-    title: "HenryCo Studio flow",
+    title: "Henry Onyx Studio flow",
     points: [
       "A structured buying path for both packages and serious custom work.",
       "Proposal, milestones, updates, and payment checkpoints visible in one connected workspace.",

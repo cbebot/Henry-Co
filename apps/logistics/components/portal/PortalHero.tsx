@@ -4,7 +4,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 
 /**
- * PortalHero — editorial-premium hero for HenryCo Logistics public surfaces.
+ * PortalHero — editorial-premium hero for Henry Onyx Logistics public surfaces.
  *
  * Owner-validated pattern (feedback_no_giant_hero_text.md):
  *  - Hero ≠ giant headline; hero = capability evidence above the fold.

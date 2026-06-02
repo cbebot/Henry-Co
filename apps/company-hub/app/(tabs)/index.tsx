@@ -96,7 +96,7 @@ export default function HomeScreen() {
           <View className="px-6 pb-10 pt-10">
             <Animated.View entering={FadeInDown.duration(520).springify()}>
               <Text className="text-xs font-bold uppercase tracking-[0.35em] text-[#C9A227]">
-                Henry &amp; Co.
+                Henry Onyx
               </Text>
             </Animated.View>
             <Animated.View entering={FadeInUp.delay(80).duration(560).springify()}>
@@ -109,7 +109,7 @@ export default function HomeScreen() {
                 }}
               >
                 Explore the businesses, services, and operating divisions of
-                Henry &amp; Co.
+                Henry Onyx
               </Text>
             </Animated.View>
             <Animated.View entering={FadeInUp.delay(140).duration(560).springify()}>
@@ -117,7 +117,7 @@ export default function HomeScreen() {
                 className="mt-4 max-w-xl text-base leading-7"
                 style={{ color: heroTextMuted }}
               >
-                Henry &amp; Co. brings together focused businesses under one
+                Henry Onyx brings together focused businesses under one
                 respected group identity.
               </Text>
             </Animated.View>
@@ -136,7 +136,7 @@ export default function HomeScreen() {
             <NewsCard
               title="Company-wide platform stabilization"
               date="April 5, 2026"
-              excerpt="Ongoing MVP stabilization across all Henry & Co. divisions — refining connected experiences, polishing interfaces, and ensuring consistent quality from Care through Logistics and beyond."
+              excerpt="Ongoing MVP stabilization across all Henry Onyx divisions — refining connected experiences, polishing interfaces, and ensuring consistent quality from Care through Logistics and beyond."
               onPress={() => {}}
             />
           </View>

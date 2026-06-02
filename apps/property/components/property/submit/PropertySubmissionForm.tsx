@@ -236,7 +236,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         type: "success",
         text:
           payload.message ||
-          t("Listing submitted. HenryCo Property queued moderation and trust review."),
+          t("Listing submitted. Henry Onyx Property queued moderation and trust review."),
       });
       setSubmissionFeedback(payload.submission);
       formRef.current?.reset();

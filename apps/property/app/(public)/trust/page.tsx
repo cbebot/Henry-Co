@@ -19,9 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getPropertyPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
-    title: t("Trust standards | HenryCo Property"),
+    title: t("Trust standards | Henry Onyx Property"),
     description: t(
-      "How HenryCo Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
+      "How Henry Onyx Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
     ),
   };
 }

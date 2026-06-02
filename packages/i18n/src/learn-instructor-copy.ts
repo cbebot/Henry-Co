@@ -36,13 +36,13 @@ export type LearnInstructorCopy = {
 
 const LEARN_INSTRUCTOR_COPY_EN: LearnInstructorCopy = {
   meta: {
-    title: "Instructor - HenryCo Learn",
+    title: "Instructor - Henry Onyx Learn",
   },
   hero: {
     kicker: "Instructor",
     title: "Author courses, grade work, and watch your learners progress.",
     description:
-      "Build the syllabus, attach lessons + quizzes, review submissions, and track payouts. This is your full workspace as an authorised HenryCo Learn instructor.",
+      "Build the syllabus, attach lessons + quizzes, review submissions, and track payouts. This is your full workspace as an authorised Henry Onyx Learn instructor.",
   },
   stats: {
     activeEnrollments: "Active enrollments",
@@ -65,13 +65,13 @@ const LEARN_INSTRUCTOR_COPY_EN: LearnInstructorCopy = {
 
 const LEARN_INSTRUCTOR_COPY_FR: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Formateur — HenryCo Learn",
+    title: "Formateur — Henry Onyx Learn",
   },
   hero: {
     kicker: "Formateur",
     title: "Concevez des cours, corrigez les travaux et suivez la progression de vos apprenants.",
     description:
-      "Construisez le programme, ajoutez leçons et quiz, examinez les rendus et suivez les versements. C’est votre espace de travail complet en tant que formateur HenryCo Learn autorisé.",
+      "Construisez le programme, ajoutez leçons et quiz, examinez les rendus et suivez les versements. C’est votre espace de travail complet en tant que formateur Henry Onyx Learn autorisé.",
   },
   stats: {
     activeEnrollments: "Inscriptions actives",
@@ -94,13 +94,13 @@ const LEARN_INSTRUCTOR_COPY_FR: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_ES: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Instructor — HenryCo Learn",
+    title: "Instructor — Henry Onyx Learn",
   },
   hero: {
     kicker: "Instructor",
     title: "Crea cursos, califica trabajos y sigue el progreso de tus alumnos.",
     description:
-      "Construye el temario, añade lecciones y cuestionarios, revisa entregas y controla los pagos. Este es tu espacio de trabajo completo como instructor autorizado de HenryCo Learn.",
+      "Construye el temario, añade lecciones y cuestionarios, revisa entregas y controla los pagos. Este es tu espacio de trabajo completo como instructor autorizado de Henry Onyx Learn.",
   },
   stats: {
     activeEnrollments: "Inscripciones activas",
@@ -123,13 +123,13 @@ const LEARN_INSTRUCTOR_COPY_ES: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_PT: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Formador — HenryCo Learn",
+    title: "Formador — Henry Onyx Learn",
   },
   hero: {
     kicker: "Formador",
     title: "Crie cursos, avalie trabalhos e acompanhe a progressão dos seus alunos.",
     description:
-      "Monte o programa, adicione lições e questionários, reveja entregas e acompanhe pagamentos. Este é o seu espaço de trabalho completo como formador autorizado da HenryCo Learn.",
+      "Monte o programa, adicione lições e questionários, reveja entregas e acompanhe pagamentos. Este é o seu espaço de trabalho completo como formador autorizado da Henry Onyx Learn.",
   },
   stats: {
     activeEnrollments: "Inscrições ativas",
@@ -152,13 +152,13 @@ const LEARN_INSTRUCTOR_COPY_PT: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_AR: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "المُدرِّس — HenryCo Learn",
+    title: "المُدرِّس — Henry Onyx Learn",
   },
   hero: {
     kicker: "المُدرِّس",
     title: "أنشئ الدورات، صحِّح الأعمال، وتابع تقدُّم متعلِّميك.",
     description:
-      "ابنِ المنهج، أضف الدروس والاختبارات، راجع التسليمات، وتابع المدفوعات. هذه هي مساحة العمل الكاملة لك كمُدرِّس معتمد في HenryCo Learn.",
+      "ابنِ المنهج، أضف الدروس والاختبارات، راجع التسليمات، وتابع المدفوعات. هذه هي مساحة العمل الكاملة لك كمُدرِّس معتمد في Henry Onyx Learn.",
   },
   stats: {
     activeEnrollments: "التسجيلات النشِطة",
@@ -181,7 +181,7 @@ const LEARN_INSTRUCTOR_COPY_AR: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_DE: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Lehrkraft — HenryCo Learn",
+    title: "Lehrkraft — Henry Onyx Learn",
   },
   hero: {
     kicker: "Lehrkraft",
@@ -210,13 +210,13 @@ const LEARN_INSTRUCTOR_COPY_DE: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_IT: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Docente — HenryCo Learn",
+    title: "Docente — Henry Onyx Learn",
   },
   hero: {
     kicker: "Docente",
     title: "Crea corsi, valuta i lavori e segui i progressi dei tuoi allievi.",
     description:
-      "Costruisci il programma, aggiungi lezioni e quiz, esamina le consegne e tieni traccia dei pagamenti. Questo è il tuo spazio di lavoro completo come docente autorizzato HenryCo Learn.",
+      "Costruisci il programma, aggiungi lezioni e quiz, esamina le consegne e tieni traccia dei pagamenti. Questo è il tuo spazio di lavoro completo come docente autorizzato Henry Onyx Learn.",
   },
   stats: {
     activeEnrollments: "Iscrizioni attive",
@@ -239,13 +239,13 @@ const LEARN_INSTRUCTOR_COPY_IT: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_ZH: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "讲师 — HenryCo Learn",
+    title: "讲师 — Henry Onyx Learn",
   },
   hero: {
     kicker: "讲师",
     title: "创建课程、评阅作业并关注学员的进度。",
     description:
-      "搭建大纲、添加课时与测验、审阅提交并跟踪结算。这里是您作为获授权 HenryCo Learn 讲师的完整工作空间。",
+      "搭建大纲、添加课时与测验、审阅提交并跟踪结算。这里是您作为获授权 Henry Onyx Learn 讲师的完整工作空间。",
   },
   stats: {
     activeEnrollments: "在读报名",
@@ -268,13 +268,13 @@ const LEARN_INSTRUCTOR_COPY_ZH: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_HI: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "प्रशिक्षक — HenryCo Learn",
+    title: "प्रशिक्षक — Henry Onyx Learn",
   },
   hero: {
     kicker: "प्रशिक्षक",
     title: "कोर्स बनाएं, कार्य का मूल्यांकन करें और अपने शिक्षार्थियों की प्रगति देखें।",
     description:
-      "पाठ्यक्रम तैयार करें, पाठ व क्विज़ जोड़ें, सबमिशन की समीक्षा करें और भुगतान ट्रैक करें। यह HenryCo Learn के अधिकृत प्रशिक्षक के रूप में आपका पूरा कार्यक्षेत्र है।",
+      "पाठ्यक्रम तैयार करें, पाठ व क्विज़ जोड़ें, सबमिशन की समीक्षा करें और भुगतान ट्रैक करें। यह Henry Onyx Learn के अधिकृत प्रशिक्षक के रूप में आपका पूरा कार्यक्षेत्र है।",
   },
   stats: {
     activeEnrollments: "सक्रिय नामांकन",
@@ -297,13 +297,13 @@ const LEARN_INSTRUCTOR_COPY_HI: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_IG: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Onye nkuzi — HenryCo Learn",
+    title: "Onye nkuzi — Henry Onyx Learn",
   },
   hero: {
     kicker: "Onye nkuzi",
     title: "Dee nkuzi, kwue ọrụ, ma na-elebara anya ọganihu ndị mmụta gị.",
     description:
-      "Wuo usoro mmụta, tinye ihe ọmụmụ na ule nta, lebara nyefe anya, ma soro ụgwọ ndị a kwụrụ. Nke a bụ ebe ọrụ gị zuru oke dị ka onye nkuzi enyere ikike na HenryCo Learn.",
+      "Wuo usoro mmụta, tinye ihe ọmụmụ na ule nta, lebara nyefe anya, ma soro ụgwọ ndị a kwụrụ. Nke a bụ ebe ọrụ gị zuru oke dị ka onye nkuzi enyere ikike na Henry Onyx Learn.",
   },
   stats: {
     activeEnrollments: "Ndebanye aha na-arụ ọrụ",
@@ -326,13 +326,13 @@ const LEARN_INSTRUCTOR_COPY_IG: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_YO: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Olùkọ́ — HenryCo Learn",
+    title: "Olùkọ́ — Henry Onyx Learn",
   },
   hero: {
     kicker: "Olùkọ́",
     title: "Ṣe àwọn ẹ̀kọ́, tọ́ ìṣẹ́ wò, kí o sì máa tẹ̀lé ìlọsíwájú àwọn akẹ́kọ̀ọ́ rẹ.",
     description:
-      "Ṣe ètò ẹ̀kọ́, fi àwọn ẹ̀kọ́ àti ìdánwò ọ̀rọ̀-kúkurú kún un, ṣàyẹ̀wò ohun tí wọ́n fi sílẹ̀, kí o sì tẹ̀lé àwọn ìsanwó. Èyí ni àyè iṣẹ́ rẹ kíkún gẹ́gẹ́ bí olùkọ́ tó ní ìfọwọ́sí ní HenryCo Learn.",
+      "Ṣe ètò ẹ̀kọ́, fi àwọn ẹ̀kọ́ àti ìdánwò ọ̀rọ̀-kúkurú kún un, ṣàyẹ̀wò ohun tí wọ́n fi sílẹ̀, kí o sì tẹ̀lé àwọn ìsanwó. Èyí ni àyè iṣẹ́ rẹ kíkún gẹ́gẹ́ bí olùkọ́ tó ní ìfọwọ́sí ní Henry Onyx Learn.",
   },
   stats: {
     activeEnrollments: "Àwọn ìforúkọsílẹ̀ tó ń ṣiṣẹ́",
@@ -355,13 +355,13 @@ const LEARN_INSTRUCTOR_COPY_YO: DeepPartial<LearnInstructorCopy> = {
 
 const LEARN_INSTRUCTOR_COPY_HA: DeepPartial<LearnInstructorCopy> = {
   meta: {
-    title: "Malami — HenryCo Learn",
+    title: "Malami — Henry Onyx Learn",
   },
   hero: {
     kicker: "Malami",
     title: "Rubuta kwasa-kwasai, lissafa aikin, kuma ku kalli ci gaban ɗalibanku.",
     description:
-      "Gina tsarin koyarwa, ƙara darussa da gwajen tambayoyi, dubi abubuwan da aka shigar, kuma bibiyi biyan kuɗi. Wannan ne cikakken wurin aikinku a matsayinku na malamin HenryCo Learn da aka ba wa izini.",
+      "Gina tsarin koyarwa, ƙara darussa da gwajen tambayoyi, dubi abubuwan da aka shigar, kuma bibiyi biyan kuɗi. Wannan ne cikakken wurin aikinku a matsayinku na malamin Henry Onyx Learn da aka ba wa izini.",
   },
   stats: {
     activeEnrollments: "Rajistar masu aiki",

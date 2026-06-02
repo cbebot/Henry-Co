@@ -31,7 +31,7 @@ export default async function TalentPage() {
                 {t("Build a profile that employers actually trust.")}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
-                {t("HenryCo Jobs uses your profile completeness, uploaded documents, verified skills, and work history to help employers see the real you — not just a name and a CV attachment.")}
+                {t("Henry Onyx Jobs uses your profile completeness, uploaded documents, verified skills, and work history to help employers see the real you — not just a name and a CV attachment.")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link

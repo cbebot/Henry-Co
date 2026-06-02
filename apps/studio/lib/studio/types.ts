@@ -62,7 +62,7 @@ export type StudioCaseStudy = {
 
 /**
  * Ready-made studio website. Distinct from packages and services — these are
- * pre-built, production-ready sites HenryCo Studio owns and ships to clients
+ * pre-built, production-ready sites Henry Onyx Studio owns and ships to clients
  * with a customisation pass. Listed on /pick and detailed at /pick/[slug].
  */
 export type StudioTemplate = {
@@ -99,7 +99,7 @@ export type StudioTemplate = {
 };
 
 /**
- * HenryCo Studio leadership profile. Surfaced on /teams alongside the four
+ * Henry Onyx Studio leadership profile. Surfaced on /teams alongside the four
  * delivery pods. Studio purposely does not publish individual operator
  * headshots for the four delivery teams (Orbit / Axis / Nova / Vector) —
  * but the leadership panel is named so prospects know who's accountable.

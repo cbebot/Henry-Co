@@ -36,7 +36,7 @@ export function SellerStatusCard({
         <Section
           kicker="Vendor"
           headline="Become a seller"
-          description="Apply to open a store on HenryCo Marketplace."
+          description="Apply to open a store on Henry Onyx Marketplace."
           action={
             <ActionButton
               href={marketplaceUrl("/account/seller-application/start")}

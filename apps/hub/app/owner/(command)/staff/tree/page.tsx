@@ -31,7 +31,7 @@ export default async function StaffTreePage() {
         <div className="relative pl-8 sm:pl-12">
           <div className="rounded-[1.25rem] border border-[var(--acct-gold)]/35 bg-[var(--acct-gold-soft)] px-4 py-3">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">Root</div>
-            <div className="mt-1 text-lg font-semibold text-[var(--acct-ink)]">Henry &amp; Co.</div>
+            <div className="mt-1 text-lg font-semibold text-[var(--acct-ink)]">Henry Onyx</div>
             <p className="mt-1 text-sm text-[var(--acct-muted)]">{data.metrics.total} people in workforce directory</p>
           </div>
 

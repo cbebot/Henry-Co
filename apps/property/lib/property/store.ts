@@ -66,7 +66,7 @@ function buildRuntimeMetrics(input: Omit<PropertySnapshot, "metrics">): Property
     {
       label: "Live listings",
       value: String(approvedListings),
-      hint: "Public inventory currently available on HenryCo Property.",
+      hint: "Public inventory currently available on Henry Onyx Property.",
     },
     {
       label: "Managed portfolio",

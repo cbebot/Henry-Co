@@ -30,9 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLogisticsPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
-    title: t("Track shipment | HenryCo Logistics"),
+    title: t("Track shipment | Henry Onyx Logistics"),
     description: t(
-      "Track your HenryCo Logistics shipment with milestone visibility and honest map context.",
+      "Track your Henry Onyx Logistics shipment with milestone visibility and honest map context.",
     ),
   };
 }

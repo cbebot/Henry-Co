@@ -36,7 +36,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const locale = await getAccountAppLocale();
   const copy = getAuthSessionCopy(locale);
-  return { title: `${copy.reauth.headingFallback} — Henry & Co.` };
+  return { title: `${copy.reauth.headingFallback} — Henry Onyx` };
 }
 
 type ReauthSearchParams = {

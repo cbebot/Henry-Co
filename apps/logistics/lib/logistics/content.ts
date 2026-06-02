@@ -8,7 +8,7 @@ import type {
 } from "@/lib/logistics/types";
 
 export const DEFAULT_LOGISTICS_SETTINGS: LogisticsSettings = {
-  businessName: "HenryCo Logistics",
+  businessName: "Henry Onyx Logistics",
   supportEmail: BRAND_EMAILS.logistics,
   supportPhone: "+2349133957084",
   currency: "NGN",

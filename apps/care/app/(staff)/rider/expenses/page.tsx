@@ -9,7 +9,7 @@ import { createExpenseAction } from "../../owner/actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Rider Expenses | Henry & Co. Fabric Care",
+  title: "Rider Expenses | Henry Onyx Fabric Care",
   description: "Rider fuel, toll, repair, and movement expense recording.",
 };
 

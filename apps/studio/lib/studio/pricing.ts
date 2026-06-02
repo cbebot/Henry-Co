@@ -40,7 +40,7 @@ type EstimateInput = {
     StudioCustomRequest,
     "projectType" | "platformPreference" | "pageRequirements" | "addonServices"
   > | null;
-  /** Tech-stack picks. Optional — `HenryCo recommends ...` selections cost 0. */
+  /** Tech-stack picks. Optional — `Henry Onyx recommends ...` selections cost 0. */
   techStack?: {
     framework?: string | null;
     backend?: string | null;

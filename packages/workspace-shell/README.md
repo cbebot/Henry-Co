@@ -32,7 +32,7 @@ import { workspaceNav, workspaceMobileNav } from "@/lib/navigation";
 
 const BRAND: WorkspaceBrand = {
   shortName: "Candidate hub",
-  kicker: "HenryCo Jobs",
+  kicker: "Henry Onyx Jobs",
   href: "/candidate",
   icon: Sparkles,
 };

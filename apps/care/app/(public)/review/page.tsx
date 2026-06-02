@@ -5,8 +5,8 @@ import ReviewForm from "@/components/care/ReviewForm";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const metadata: Metadata = {
-  title: "Verified Review | HenryCo Care",
-  description: "Leave a verified review for a completed HenryCo Care booking.",
+  title: "Verified Review | Henry Onyx Care",
+  description: "Leave a verified review for a completed Henry Onyx Care booking.",
 };
 
 export default async function ReviewPage({
@@ -42,7 +42,7 @@ export default async function ReviewPage({
             Leave a review tied to a real completed booking.
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
-            HenryCo Care keeps public feedback genuine and linked to completed bookings. Garment
+            Henry Onyx Care keeps public feedback genuine and linked to completed bookings. Garment
             care, home cleaning, and office cleaning clients can all share their experience here.
           </p>
 

@@ -19,7 +19,7 @@ export async function generateMetadata({
   const { projectId } = await params;
   const initial = await fetchThreadInitialState(projectId).catch(() => null);
   if (!initial) {
-    return { title: "Project conversation · HenryCo Studio" };
+    return { title: "Project conversation · Henry Onyx Studio" };
   }
   // WAVE1 — wrap the Supabase-row-derived project title so the document
   // title / description render in the viewer's locale via the cached DeepL
@@ -34,8 +34,8 @@ export async function generateMetadata({
     machineTranslate: locale !== "en",
   });
   return {
-    title: `${localizedProjectTitle} · Messages · HenryCo Studio`,
-    description: `Conversation with the HenryCo Studio team for ${localizedProjectTitle}.`,
+    title: `${localizedProjectTitle} · Messages · Henry Onyx Studio`,
+    description: `Conversation with the Henry Onyx Studio team for ${localizedProjectTitle}.`,
     robots: { index: false, follow: false },
   };
 }

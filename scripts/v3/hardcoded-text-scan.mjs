@@ -115,6 +115,8 @@ const I18N_MARKER_PATTERNS = [
 // overrides — this in-code allow-list is for universals only.
 const BUILTIN_EXEMPT_STRINGS = new Set([
   "HenryCo",
+  "Henry Onyx",
+  "Henry Onyx Limited",
   "Henry & Co.",
   "Henry & Co",
   "HENRYCO",

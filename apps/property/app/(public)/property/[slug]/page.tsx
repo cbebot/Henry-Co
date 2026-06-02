@@ -95,7 +95,7 @@ function getViewingFlow(listingTitle: string, locale: AppLocale) {
   return [
     {
       title: t("Request is logged"),
-      body: `${t("Your request for")} ${listingTitle} ${t("is written into HenryCo Property's viewing queue instead of being left in a chat thread.")}`,
+      body: `${t("Your request for")} ${listingTitle} ${t("is written into Henry Onyx Property's viewing queue instead of being left in a chat thread.")}`,
     },
     {
       title: t("Access and location are confirmed"),
@@ -268,7 +268,7 @@ export default async function PropertyDetailPage({
         {messages.inquiry === "sent" ? (
           <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
             {t(
-              "Inquiry submitted. HenryCo Property has placed it in the follow-up queue and the next response will stay tied to your account.",
+              "Inquiry submitted. Henry Onyx Property has placed it in the follow-up queue and the next response will stay tied to your account.",
             )}
           </p>
         ) : null}
@@ -587,7 +587,7 @@ export default async function PropertyDetailPage({
                     required
                     rows={4}
                     className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder={t("What would you like HenryCo Property to clarify for you?")}
+                    placeholder={t("What would you like Henry Onyx Property to clarify for you?")}
                   />
                 </label>
 

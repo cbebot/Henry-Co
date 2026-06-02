@@ -69,7 +69,7 @@ export function CertificateDownloadButton({
   const endpoint = `/api/certificates/${encodeURIComponent(verificationCode)}/pdf`;
   const namePart = (learnerName || "certificate").replace(/[^A-Za-z0-9]+/g, "-").slice(0, 32) || "certificate";
   const filename = `HenryCo-Certificate-${namePart}.pdf`;
-  const shareTitle = courseTitle ? `HenryCo Learn certificate — ${courseTitle}` : "HenryCo Learn certificate";
+  const shareTitle = courseTitle ? `Henry Onyx Learn certificate — ${courseTitle}` : "Henry Onyx Learn certificate";
 
   const handleClick = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {

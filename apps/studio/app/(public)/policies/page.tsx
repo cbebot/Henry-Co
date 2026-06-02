@@ -4,9 +4,9 @@ import { ArrowRight, ScrollText, ShieldCheck } from "lucide-react";
 import { studioPolicyIndex } from "@/lib/studio/policies";
 
 export const metadata: Metadata = {
-  title: "Policies & governance | Henry & Co. Studio",
+  title: "Policies & governance | Henry Onyx Studio",
   description:
-    "The agreements that govern every Henry & Co. Studio engagement — terms, privacy, refunds, intellectual property, security, delivery SLA, and acceptable use.",
+    "The agreements that govern every Henry Onyx Studio engagement — terms, privacy, refunds, intellectual property, security, delivery SLA, and acceptable use.",
   alternates: { canonical: "/policies" },
   robots: { index: true, follow: true },
 };
@@ -24,7 +24,7 @@ export default function StudioPoliciesPage() {
           Real agreements. In writing. Before any money moves.
         </h1>
         <p className="mt-5 text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          These are the agreements every Henry & Co. Studio engagement runs against. They are not
+          These are the agreements every Henry Onyx Studio engagement runs against. They are not
           stock templates. They are written against how the platform actually operates — bank
           transfer in naira, milestone discipline in the portal, NDPA-aligned data handling, and
           IP transfer on verified final payment. Read them once and they will hold up across
@@ -94,7 +94,7 @@ export default function StudioPoliciesPage() {
             Bank transfer to the verified company account.
           </h3>
           <p className="mt-2 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-            Always to <strong>{`Henry Holdings Limited`}</strong> If anyone, internal or external,
+            Always to <strong>{`Henry Onyx Limited`}</strong> If anyone, internal or external,
             asks you to pay anywhere else, treat it as fraud and contact finance.
           </p>
         </div>

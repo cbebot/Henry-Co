@@ -84,7 +84,7 @@ export type HubOwnerAiCopy = {
 const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
   overview: {
     metadata: {
-      title: "AI & helper layer · Henry & Co.",
+      title: "AI & helper layer · Henry Onyx",
       description:
         "Evidence-based executive assistance for the HenryCo owner — briefings, action cards, and division pressure built from live Supabase signals.",
     },
@@ -123,7 +123,7 @@ const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
   },
   insights: {
     metadata: {
-      title: "Helper insights · Henry & Co.",
+      title: "Helper insights · Henry Onyx",
       description:
         "Recommendations for the HenryCo owner constrained to the live evidence already visible in the production system.",
     },
@@ -140,7 +140,7 @@ const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
   },
   signals: {
     metadata: {
-      title: "Live signals · Henry & Co.",
+      title: "Live signals · Henry Onyx",
       description:
         "Live anomaly and pressure signals from real bookings, invoices, support threads, queue rows, and automation runs in the HenryCo Supabase project.",
     },
@@ -160,7 +160,7 @@ const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
 const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA et couche assistante · Henry & Co.",
+      title: "IA et couche assistante · Henry Onyx",
       description:
         "Assistance exécutive fondée sur les preuves pour le propriétaire HenryCo — synthèses, fiches d’action et pression par division issues des signaux Supabase en direct.",
     },
@@ -199,7 +199,7 @@ const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Recommandations de l’assistant · Henry & Co.",
+      title: "Recommandations de l’assistant · Henry Onyx",
       description:
         "Recommandations pour le propriétaire HenryCo limitées aux preuves vivantes déjà visibles dans le système de production.",
     },
@@ -216,7 +216,7 @@ const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Signaux en direct · Henry & Co.",
+      title: "Signaux en direct · Henry Onyx",
       description:
         "Signaux d’anomalie et de pression en direct issus de vraies réservations, factures, fils de support, lignes de file et exécutions d’automatisation du projet Supabase HenryCo.",
     },
@@ -236,7 +236,7 @@ const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA y capa asistente · Henry & Co.",
+      title: "IA y capa asistente · Henry Onyx",
       description:
         "Asistencia ejecutiva basada en evidencia para el propietario de HenryCo: resúmenes, tarjetas de acción y presión por división construidas a partir de señales en vivo de Supabase.",
     },
@@ -275,7 +275,7 @@ const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Recomendaciones del asistente · Henry & Co.",
+      title: "Recomendaciones del asistente · Henry Onyx",
       description:
         "Recomendaciones para el propietario de HenryCo limitadas a la evidencia en vivo ya visible en el sistema de producción.",
     },
@@ -292,7 +292,7 @@ const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Señales en vivo · Henry & Co.",
+      title: "Señales en vivo · Henry Onyx",
       description:
         "Señales de anomalía y presión en vivo procedentes de reservas, facturas, hilos de soporte, filas de cola y ejecuciones automatizadas reales del proyecto Supabase de HenryCo.",
     },
@@ -312,7 +312,7 @@ const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA e camada assistente · Henry & Co.",
+      title: "IA e camada assistente · Henry Onyx",
       description:
         "Assistência executiva baseada em evidências para o proprietário HenryCo — resumos, cartões de acção e pressão por divisão construídos a partir de sinais ao vivo do Supabase.",
     },
@@ -351,7 +351,7 @@ const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Recomendações do assistente · Henry & Co.",
+      title: "Recomendações do assistente · Henry Onyx",
       description:
         "Recomendações para o proprietário HenryCo limitadas à evidência ao vivo já visível no sistema de produção.",
     },
@@ -368,7 +368,7 @@ const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Sinais ao vivo · Henry & Co.",
+      title: "Sinais ao vivo · Henry Onyx",
       description:
         "Sinais de anomalia e pressão ao vivo a partir de reservas, facturas, tópicos de suporte, linhas de fila e execuções automatizadas reais do projecto Supabase da HenryCo.",
     },
@@ -388,7 +388,7 @@ const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "الذكاء الاصطناعي وطبقة المساعد · Henry & Co.",
+      title: "الذكاء الاصطناعي وطبقة المساعد · Henry Onyx",
       description:
         "مساعدة تنفيذية مبنية على الأدلة لمالك HenryCo — موجزات وبطاقات إجراء وضغط الأقسام تُبنى من إشارات Supabase الحية.",
     },
@@ -427,7 +427,7 @@ const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "توصيات المساعد · Henry & Co.",
+      title: "توصيات المساعد · Henry Onyx",
       description:
         "توصيات لمالك HenryCo مقيدة بالأدلة الحية الظاهرة بالفعل في نظام الإنتاج.",
     },
@@ -444,7 +444,7 @@ const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "إشارات حية · Henry & Co.",
+      title: "إشارات حية · Henry Onyx",
       description:
         "إشارات شذوذ وضغط حية من الحجوزات والفواتير ومحادثات الدعم وصفوف الطوابير وعمليات الأتمتة الفعلية في مشروع Supabase الخاص بـ HenryCo.",
     },
@@ -464,7 +464,7 @@ const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "KI- und Assistenten-Ebene · Henry & Co.",
+      title: "KI- und Assistenten-Ebene · Henry Onyx",
       description:
         "Evidenzbasierte Executive-Unterstützung für den HenryCo-Eigentümer — Briefings, Aktionskarten und Bereichsdruck, gebaut aus Live-Supabase-Signalen.",
     },
@@ -503,7 +503,7 @@ const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Assistenten-Empfehlungen · Henry & Co.",
+      title: "Assistenten-Empfehlungen · Henry Onyx",
       description:
         "Empfehlungen für den HenryCo-Eigentümer, beschränkt auf die in der Produktion bereits sichtbare Live-Evidenz.",
     },
@@ -520,7 +520,7 @@ const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Live-Signale · Henry & Co.",
+      title: "Live-Signale · Henry Onyx",
       description:
         "Live-Anomalie- und Drucksignale aus echten Buchungen, Rechnungen, Support-Threads, Warteschlangen und Automations-Läufen im HenryCo-Supabase-Projekt.",
     },
@@ -540,7 +540,7 @@ const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA e livello assistente · Henry & Co.",
+      title: "IA e livello assistente · Henry Onyx",
       description:
         "Assistenza esecutiva basata sulle evidenze per il proprietario HenryCo: sintesi, schede d’azione e pressione per divisione costruite da segnali Supabase in tempo reale.",
     },
@@ -579,7 +579,7 @@ const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Raccomandazioni dell’assistente · Henry & Co.",
+      title: "Raccomandazioni dell’assistente · Henry Onyx",
       description:
         "Raccomandazioni per il proprietario HenryCo limitate all’evidenza viva già visibile nel sistema di produzione.",
     },
@@ -596,7 +596,7 @@ const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Segnali in tempo reale · Henry & Co.",
+      title: "Segnali in tempo reale · Henry Onyx",
       description:
         "Segnali di anomalia e pressione in tempo reale da prenotazioni, fatture, thread di supporto, righe di coda ed esecuzioni di automazione reali nel progetto Supabase di HenryCo.",
     },
@@ -616,7 +616,7 @@ const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "AI 与助手层 · Henry & Co.",
+      title: "AI 与助手层 · Henry Onyx",
       description: "面向 HenryCo 业主的循证高管协助 — 简报、行动卡和业务部门压力均基于 Supabase 实时信号生成。",
     },
     hero: {
@@ -653,7 +653,7 @@ const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "助手洞察 · Henry & Co.",
+      title: "助手洞察 · Henry Onyx",
       description: "面向 HenryCo 业主的建议,仅限于生产系统中已经可见的实时证据。",
     },
     hero: {
@@ -669,7 +669,7 @@ const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "实时信号 · Henry & Co.",
+      title: "实时信号 · Henry Onyx",
       description: "来自 HenryCo Supabase 项目中真实预订、发票、支持工单、队列行和自动化运行的实时异常与压力信号。",
     },
     hero: {
@@ -687,7 +687,7 @@ const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "AI और सहायक परत · Henry & Co.",
+      title: "AI और सहायक परत · Henry Onyx",
       description:
         "HenryCo मालिक के लिए साक्ष्य-आधारित कार्यकारी सहायता — ब्रीफिंग, एक्शन कार्ड और डिवीज़न दबाव लाइव Supabase संकेतों से तैयार।",
     },
@@ -726,7 +726,7 @@ const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "सहायक सिफ़ारिशें · Henry & Co.",
+      title: "सहायक सिफ़ारिशें · Henry Onyx",
       description:
         "HenryCo मालिक के लिए सिफ़ारिशें जो प्रोडक्शन सिस्टम में पहले से दिखाई दे रहे लाइव साक्ष्य तक सीमित हैं।",
     },
@@ -743,7 +743,7 @@ const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "लाइव संकेत · Henry & Co.",
+      title: "लाइव संकेत · Henry Onyx",
       description:
         "HenryCo Supabase प्रोजेक्ट में मौजूद असली बुकिंग, इनवॉइस, सपोर्ट थ्रेड, क़तार पंक्तियों और ऑटोमेशन रन से उत्पन्न लाइव विसंगति और दबाव संकेत।",
     },
@@ -763,7 +763,7 @@ const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "AI na ọkwa enyemaka · Henry & Co.",
+      title: "AI na ọkwa enyemaka · Henry Onyx",
       description:
         "Enyemaka nke ndị isi dabere n'ihe àmà maka onye nwe HenryCo — nchịkọta, kaadị omume na mpịkọta ngalaba sitere na mgbaàmà Supabase dị ndụ.",
     },
@@ -802,7 +802,7 @@ const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Ndụmọdụ enyemaka · Henry & Co.",
+      title: "Ndụmọdụ enyemaka · Henry Onyx",
       description:
         "Ndụmọdụ maka onye nwe HenryCo nke a kpọchiri n'ihe àmà dị ndụ nke a na-ahụ na sistemụ mmepụta.",
     },
@@ -819,7 +819,7 @@ const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Mgbaàmà dị ndụ · Henry & Co.",
+      title: "Mgbaàmà dị ndụ · Henry Onyx",
       description:
         "Mgbaàmà rụrụ arụ na mpịkọta dị ndụ sitere na nlekọta, ụgwọ, eziokwu nkwado, ahịrị usoro na mmegharị akpaka dị adị na ọrụ Supabase HenryCo.",
     },
@@ -839,7 +839,7 @@ const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "AI àti ìpele olùrànlọ́wọ́ · Henry & Co.",
+      title: "AI àti ìpele olùrànlọ́wọ́ · Henry Onyx",
       description:
         "Ìrànlọ́wọ́ olórí tó dá lórí ẹ̀rí fún onílé HenryCo — àkójọpọ̀, káàdì ìṣe, àti ìpá ìpín tí a kọ́ láti ara àmì Supabase aláàyè.",
     },
@@ -878,7 +878,7 @@ const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Àbá olùrànlọ́wọ́ · Henry & Co.",
+      title: "Àbá olùrànlọ́wọ́ · Henry Onyx",
       description:
         "Àbá fún onílé HenryCo tó dín kù sí ẹ̀rí aláàyè tí ó ti rí nínú ètò ìmújáde.",
     },
@@ -895,7 +895,7 @@ const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Àmì aláàyè · Henry & Co.",
+      title: "Àmì aláàyè · Henry Onyx",
       description:
         "Àmì àìpé àti àmì ìpá aláàyè láti ara ìfìbúkù, ìwé owó, ìjíròrò ìtìlẹ́yìn, ìlà ìtò, àti ìṣiṣẹ́ aládàákọ́ tó wà ní ojúlówó nínú iṣẹ́ Supabase HenryCo.",
     },
@@ -915,7 +915,7 @@ const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_HA: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "AI da kuma sashin mai taimako · Henry & Co.",
+      title: "AI da kuma sashin mai taimako · Henry Onyx",
       description:
         "Taimakon shugabanci wanda ya dogara da hujja ga mai kamfanin HenryCo — taƙaitawa, katuna na aiki, da matsi na sashe da aka gina daga alamomin Supabase masu rai.",
     },
@@ -954,7 +954,7 @@ const HUB_OWNER_AI_COPY_HA: DeepPartial<HubOwnerAiCopy> = {
   },
   insights: {
     metadata: {
-      title: "Shawarwarin mai taimako · Henry & Co.",
+      title: "Shawarwarin mai taimako · Henry Onyx",
       description:
         "Shawarwari ga mai kamfanin HenryCo waɗanda aka iyakance ga hujjar rai da ake gani a tsarin samarwa.",
     },
@@ -971,7 +971,7 @@ const HUB_OWNER_AI_COPY_HA: DeepPartial<HubOwnerAiCopy> = {
   },
   signals: {
     metadata: {
-      title: "Alamomi masu rai · Henry & Co.",
+      title: "Alamomi masu rai · Henry Onyx",
       description:
         "Alamomin rashin daidaito da matsi masu rai daga ainihin ajiya, lissafi, tattaunawar tallafi, jerin layi, da gudanar da kai tsaye a aikin Supabase na HenryCo.",
     },

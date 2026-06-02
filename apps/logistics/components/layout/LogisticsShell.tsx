@@ -160,7 +160,7 @@ export default function LogisticsShell({
                 href={getHubUrl("/")}
                 className="text-white/75 transition hover:text-white"
               >
-                {t("Henry & Co.")}
+                {t("Henry Onyx")}
               </a>
               <a
                 href={getHubUrl("/preferences")}
@@ -189,7 +189,7 @@ export default function LogisticsShell({
             <div>© {new Date().getFullYear()} {t(logistics.name)}. {t("All rights reserved.")}</div>
             <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
               <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--logistics-accent-soft)]" />
-              {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
+              {t("Designed and built in-house by Henry Onyx Studio for the HenryCo ecosystem")}
             </span>
           </div>
         </div>

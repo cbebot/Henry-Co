@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLogisticsPublicLocale();
   return {
     ...createDivisionMetadata("logistics", {
-      title: `${logistics.name} | Henry & Co.`,
+      title: `${logistics.name} | Henry Onyx`,
       description: logistics.description,
       openGraphDescription: logistics.tagline,
       path: "/",

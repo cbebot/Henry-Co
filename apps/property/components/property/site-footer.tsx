@@ -89,7 +89,7 @@ export async function PropertySiteFooter() {
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--property-accent-strong)]" />
-            {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
+            {t("Designed and built in-house by Henry Onyx Studio for the HenryCo ecosystem")}
           </span>
         </div>
       </div>

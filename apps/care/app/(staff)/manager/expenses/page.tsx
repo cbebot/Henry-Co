@@ -18,7 +18,7 @@ import { createExpenseAction } from "../../owner/actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Manager Expenses | Henry & Co. Fabric Care",
+  title: "Manager Expenses | Henry Onyx Fabric Care",
   description:
     "Manager expense control room for recording operational costs with clean auditability.",
 };

@@ -369,10 +369,10 @@ export function guidedAnswersToStructured(
     "Best-fit recommendation";
   const frameworkPreference =
     filterPricedOptions(config.frameworkOptions, serviceKind)[0]?.label ||
-    "HenryCo's framework recommendation";
+    "Henry Onyx's framework recommendation";
   const backendPreference =
     filterPricedOptions(config.backendOptions, serviceKind)[0]?.label ||
-    "HenryCo recommends the backend";
+    "Henry Onyx recommends the backend";
 
   const scopeBits = [
     projectType,
@@ -389,7 +389,7 @@ export function guidedAnswersToStructured(
     preferredLanguage: "English",
     frameworkPreference,
     backendPreference,
-    hostingPreference: config.hostingOptions[0] || "HenryCo recommends the host",
+    hostingPreference: config.hostingOptions[0] || "Henry Onyx recommends the host",
     pageRequirements,
     requiredFeatures,
     addonServices,

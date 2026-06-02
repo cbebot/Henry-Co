@@ -23,7 +23,7 @@ import { letterSpacing, palette, typeScale } from "../tokens";
  * Data-light by design — the consumer (delivery handoff cron + the
  * /api/studio/asset-packs/generate route) supplies the project's
  * brand kit. When no brand kit is supplied, the doc renders a baseline
- * "HenryCo Studio default kit" page so the asset pack is never empty.
+ * "Henry Onyx Studio default kit" page so the asset pack is never empty.
  */
 
 export type StudioBrandColour = {
@@ -258,7 +258,7 @@ export function StudioBrandGuidelinesDocument({ brand, project, studio }: Studio
 
       <LegalFooter
         lines={[
-          "Brand guidelines are issued for the licensee and engagement scope agreed with HenryCo Studio. Redistribution, sub-licensing, or use outside the agreed engagement requires written consent.",
+          "Brand guidelines are issued for the licensee and engagement scope agreed with Henry Onyx Studio. Redistribution, sub-licensing, or use outside the agreed engagement requires written consent.",
           "Where third-party fonts or imagery are referenced, those assets remain under the licence of their original rights-holders.",
         ]}
       />

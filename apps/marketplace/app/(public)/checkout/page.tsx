@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
 const CHECKOUT_ERROR_COPY: Record<string, { title: string; body: string }> = {
   "wallet-unavailable": {
     title: "Wallet isn't ready for marketplace debits yet",
-    body: "Your Henry & Co. wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
+    body: "Your Henry Onyx wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
   },
   "insufficient-balance": {
     title: "Wallet balance didn't cover the order",
@@ -88,8 +88,8 @@ export default async function CheckoutPage({
       <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
         <PageIntro
           kicker="Checkout"
-          title="Sign in with your Henry & Co. account to continue."
-          description="Browsing stays open, but checkout uses your Henry & Co. account so orders, payments, addresses, notifications, and support history stay together — across every device, every session."
+          title="Sign in with your Henry Onyx account to continue."
+          description="Browsing stays open, but checkout uses your Henry Onyx account so orders, payments, addresses, notifications, and support history stay together — across every device, every session."
         />
         <div className="grid gap-6 lg:grid-cols-[1.02fr,0.98fr]">
           <EmptyState
@@ -99,13 +99,13 @@ export default async function CheckoutPage({
             ctaLabel="Sign in to continue"
           />
           <section className="market-paper rounded-[2rem] p-6 sm:p-8">
-            <p className="market-kicker">Why Henry & Co. checkout</p>
+            <p className="market-kicker">Why Henry Onyx checkout</p>
             <div className="mt-5 space-y-4">
               {[
                 {
                   icon: LockKeyhole,
                   title: "Account-protected",
-                  body: "Your card, address, and order history live in one Henry & Co. account — never re-keyed across surfaces.",
+                  body: "Your card, address, and order history live in one Henry Onyx account — never re-keyed across surfaces.",
                 },
                 {
                   icon: ShieldCheck,

@@ -202,7 +202,7 @@ async function main() {
   await supabase.from("company_divisions").upsert(
     {
       slug: "jobs",
-      name: "HenryCo Jobs",
+      name: "Henry Onyx Jobs",
       tagline: "Hiring, verified talent, and recruitment operations",
       category: "Jobs",
       status: "active",
@@ -232,7 +232,7 @@ async function main() {
       is_published: true,
       is_featured: true,
       description:
-        "HenryCo Jobs is the hiring operating system for HenryCo and trusted external employers.",
+        "Henry Onyx Jobs is the hiring operating system for HenryCo and trusted external employers.",
       primary_url: jobsBaseUrl,
     },
     { onConflict: "slug" }
@@ -241,7 +241,7 @@ async function main() {
   const employers = [
     {
       slug: "henryco-group",
-      name: "Henry & Co.",
+      name: "Henry Onyx",
       category: "Internal Hiring",
       href: "https://henrycogroup.com",
       tagline: "Internal hiring for shared HenryCo teams and division leadership.",
@@ -261,12 +261,12 @@ async function main() {
     },
     {
       slug: "care",
-      name: "Henry & Co Fabric Care",
+      name: "Henry Onyx Fabric Care",
       category: "Fabric Care",
       href: "https://care.henrycogroup.com",
       tagline: "Premium garment, home, and office care operations.",
       description:
-        "HenryCo Fabric Care hires for service operations, support, logistics coordination, and leadership execution.",
+        "Henry Onyx Fabric Care hires for service operations, support, logistics coordination, and leadership execution.",
       employerType: "external",
       industry: "Fabric Care",
       locations: ["Enugu", "Lagos"],
@@ -281,12 +281,12 @@ async function main() {
     },
     {
       slug: "studio",
-      name: "HenryCo Studio",
+      name: "Henry Onyx Studio",
       category: "Product Studio",
       href: "https://studio.henrycogroup.com",
       tagline: "Premium digital product, brand, and software delivery.",
       description:
-        "HenryCo Studio hires for product, design, and engineering execution with a high bar for craft and systems thinking.",
+        "Henry Onyx Studio hires for product, design, and engineering execution with a high bar for craft and systems thinking.",
       employerType: "external",
       industry: "Software and Product Design",
       locations: ["Remote", "Lagos"],
@@ -378,7 +378,7 @@ async function main() {
    *    talent because they compete with global remote pay.
    *  - Care roles trend service-business mid-market — strong relative to
    *    local peers, calibrated to operational scope.
-   *  - Henry & Co. internal leadership roles sit at the top of the local
+   *  - Henry Onyx internal leadership roles sit at the top of the local
    *    band; cross-functional impact + verified-employer trust earns it.
    */
   const jobs = [
@@ -387,7 +387,7 @@ async function main() {
       title: "Head of Recruitment Operations",
       subtitle: "Build the HenryCo hiring operating system",
       employerSlug: "henryco-group",
-      employerName: "Henry & Co.",
+      employerName: "Henry Onyx",
       categoryName: "Recruitment",
       categorySlug: "recruitment",
       location: "Remote",
@@ -436,7 +436,7 @@ async function main() {
       title: "Senior Fabric Care Operations Manager",
       subtitle: "Frontline execution, dispatch handoffs, and service NPS",
       employerSlug: "care",
-      employerName: "Henry & Co Fabric Care",
+      employerName: "Henry Onyx Fabric Care",
       categoryName: "Operations",
       categorySlug: "operations",
       location: "Enugu",
@@ -447,7 +447,7 @@ async function main() {
       summary:
         "Lead the daily fulfillment loop across garment care, home cleaning, and pickup-delivery — 12-20 frontline staff, measurable quality bar, clear handoffs.",
       description:
-        "HenryCo Care runs a premium service operation with a real customer expectation behind every booking. You'll own the daily loop end-to-end: morning dispatch, in-shift quality audits, exception management, and the recovery flow when something slips. Direct ownership of NPS and on-time delivery rate.",
+        "Henry Onyx Care runs a premium service operation with a real customer expectation behind every booking. You'll own the daily loop end-to-end: morning dispatch, in-shift quality audits, exception management, and the recovery flow when something slips. Direct ownership of NPS and on-time delivery rate.",
       responsibilities: [
         "Run the morning dispatch and end-of-day reconciliation cadence",
         "Lead a frontline team of 12-20 across garment care, home cleaning, and pickup",
@@ -484,7 +484,7 @@ async function main() {
       title: "Product Designer, Studio Systems",
       subtitle: "Design the workflow surfaces that ship to premium clients",
       employerSlug: "studio",
-      employerName: "HenryCo Studio",
+      employerName: "Henry Onyx Studio",
       categoryName: "Design",
       categorySlug: "design",
       location: "Remote",
@@ -493,7 +493,7 @@ async function main() {
       seniority: "Mid-level",
       team: "Product Design",
       summary:
-        "Design multi-step product workflows across HenryCo Studio's delivery surfaces and premium client systems — partnering directly with engineering on production fidelity.",
+        "Design multi-step product workflows across Henry Onyx Studio's delivery surfaces and premium client systems — partnering directly with engineering on production fidelity.",
       description:
         "This is a senior-leaning mid-level contract role with a full design partnership. You'll work on navigation, workflow UX, and premium interaction patterns that ship to live clients. Tight pairing with engineering — your work hits production, not just Figma archives.",
       responsibilities: [
@@ -531,7 +531,7 @@ async function main() {
       title: "Senior Backend Engineer",
       subtitle: "Service architecture, data models, and shipping discipline",
       employerSlug: "studio",
-      employerName: "HenryCo Studio",
+      employerName: "Henry Onyx Studio",
       categoryName: "Engineering",
       categorySlug: "engineering",
       location: "Remote",
@@ -581,7 +581,7 @@ async function main() {
       title: "Frontend Engineer (Mid-level)",
       subtitle: "Ship product surfaces in Next.js with design-system rigor",
       employerSlug: "studio",
-      employerName: "HenryCo Studio",
+      employerName: "Henry Onyx Studio",
       categoryName: "Engineering",
       categorySlug: "engineering",
       location: "Remote",
@@ -590,7 +590,7 @@ async function main() {
       seniority: "Mid-level",
       team: "Engineering",
       summary:
-        "Build production frontend across HenryCo Studio's product surfaces. Strong design-system pairing, real performance budgets, and accessibility as a daily habit.",
+        "Build production frontend across Henry Onyx Studio's product surfaces. Strong design-system pairing, real performance budgets, and accessibility as a daily habit.",
       description:
         "Build the surfaces customers actually use. You'll work in Next.js (App Router), TypeScript, and Tailwind, with a design-token system instead of hand-rolled colors. Performance budgets are real (LCP, CLS); accessibility is a habit, not a checklist.",
       responsibilities: [
@@ -628,7 +628,7 @@ async function main() {
       title: "Customer Support Lead",
       subtitle: "Thread quality, agent coaching, and SLA discipline",
       employerSlug: "care",
-      employerName: "Henry & Co Fabric Care",
+      employerName: "Henry Onyx Fabric Care",
       categoryName: "Customer Support",
       categorySlug: "customer-support",
       location: "Lagos",
@@ -637,7 +637,7 @@ async function main() {
       seniority: "Mid-level",
       team: "Customer Experience",
       summary:
-        "Own the support-thread quality bar across HenryCo Care customers. Lead 4-6 agents, instrument response-time SLAs, and run a weekly review cadence with operations.",
+        "Own the support-thread quality bar across Henry Onyx Care customers. Lead 4-6 agents, instrument response-time SLAs, and run a weekly review cadence with operations.",
       description:
         "Care customers reach us through a shared HenryCo support thread. You'll own the quality and tone of every reply, lead a small support team, and partner with operations on the recovery loop when something goes wrong on the service side.",
       responsibilities: [
@@ -675,7 +675,7 @@ async function main() {
       title: "Logistics Dispatch Operations Lead",
       subtitle: "Route discipline, rider performance, and exception recovery",
       employerSlug: "henryco-group",
-      employerName: "Henry & Co.",
+      employerName: "Henry Onyx",
       categoryName: "Logistics",
       categorySlug: "logistics",
       location: "Lagos",
@@ -684,9 +684,9 @@ async function main() {
       seniority: "Senior",
       team: "Logistics Dispatch",
       summary:
-        "Run the daily dispatch board across HenryCo Logistics — route assignment, rider performance, exception recovery, and proof-of-delivery hygiene.",
+        "Run the daily dispatch board across Henry Onyx Logistics — route assignment, rider performance, exception recovery, and proof-of-delivery hygiene.",
       description:
-        "HenryCo Logistics moves shipments for both internal divisions (Care pickups, Studio courier) and external customers. You're the calm in the dispatch room: route assignment, rider coaching, and recovery when something slips. Direct partnership with the dispatch tooling team on what to build next.",
+        "Henry Onyx Logistics moves shipments for both internal divisions (Care pickups, Studio courier) and external customers. You're the calm in the dispatch room: route assignment, rider coaching, and recovery when something slips. Direct partnership with the dispatch tooling team on what to build next.",
       responsibilities: [
         "Run the morning dispatch board; assign routes against rider performance",
         "Lead a rider pool of 8-15 across same-day, scheduled, and inter-city",
@@ -722,7 +722,7 @@ async function main() {
       title: "Talent Acquisition Specialist",
       subtitle: "Own pipelines for 3-5 concurrent roles across HenryCo",
       employerSlug: "henryco-group",
-      employerName: "Henry & Co.",
+      employerName: "Henry Onyx",
       categoryName: "Recruitment",
       categorySlug: "recruitment",
       location: "Remote",
@@ -769,7 +769,7 @@ async function main() {
       title: "Brand Designer (Contract)",
       subtitle: "Brand systems, identity, and editorial design for premium clients",
       employerSlug: "studio",
-      employerName: "HenryCo Studio",
+      employerName: "Henry Onyx Studio",
       categoryName: "Design",
       categorySlug: "design",
       location: "Remote",
@@ -778,7 +778,7 @@ async function main() {
       seniority: "Mid-level",
       team: "Brand & Editorial",
       summary:
-        "Design brand systems and editorial identity for HenryCo Studio's premium client engagements — multi-surface, system-grade, photography-aware.",
+        "Design brand systems and editorial identity for Henry Onyx Studio's premium client engagements — multi-surface, system-grade, photography-aware.",
       description:
         "Studio's brand work is editorial-grade: type, color, photography direction, and a brand system that survives a real product roadmap. You'll lead 2-3 concurrent brand engagements with full creative ownership, partnering with the product designer where the brand meets the product surface.",
       responsibilities: [
@@ -815,7 +815,7 @@ async function main() {
       title: "Finance Operations Analyst",
       subtitle: "Invoice cadence, account reconciliation, and vendor compliance",
       employerSlug: "henryco-group",
-      employerName: "Henry & Co.",
+      employerName: "Henry Onyx",
       categoryName: "Finance",
       categorySlug: "finance",
       location: "Remote",

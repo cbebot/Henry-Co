@@ -95,7 +95,7 @@ export function PropertyListingDocument({ listing, agent }: PropertyListingProps
   return (
     <BrandedDocument
       metadata={{
-        title: `${listing.title} — HenryCo Property`,
+        title: `${listing.title} — Henry Onyx Property`,
         subject: "Property listing one-pager",
         keywords: ["property", "real-estate", listing.transactionType, listing.title],
       }}
@@ -162,7 +162,7 @@ export function PropertyListingDocument({ listing, agent }: PropertyListingProps
       <LegalFooter
         lines={[
           "Listing data is published for marketing purposes. Final terms — including price, condition, and availability — are confirmed in writing through the agent above.",
-          "Henry Holdings Limited does not act as principal for any sale or lease unless explicitly stated; brokerage fees are governed by the engagement agreement.",
+          "Henry Onyx Limited does not act as principal for any sale or lease unless explicitly stated; brokerage fees are governed by the engagement agreement.",
         ]}
       />
     </BrandedDocument>

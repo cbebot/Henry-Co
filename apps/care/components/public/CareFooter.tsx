@@ -12,7 +12,7 @@ const careDivision = getDivisionConfig("care");
 /**
  * Footer brand mark — always renders CareMonogram. The operator-uploaded
  * `division.logoUrl` is intentionally not consulted here. Care is a
- * sub-brand of Henry & Co. and must own its own monogram across every
+ * sub-brand of Henry Onyx and must own its own monogram across every
  * surface; allowing a stale operator upload to override it (which used
  * to leak the parent HenryCoMonogram into Care chrome) breaks the brand
  * system. Same rule was applied to the navbar BrandMark in c1acf32 —
@@ -99,14 +99,14 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
           items={[
             { href: "/book", label: t("Book a service") },
             { href: "/track", label: t("Track a booking") },
-            { href: "/about", label: t("About HenryCo Care") },
+            { href: "/about", label: t("About Henry Onyx Care") },
             { href: "/contact", label: t("Contact and support") },
           ]}
         />
         <FooterColumn
           title="HenryCo"
           items={[
-            { href: getHubUrl("/"), label: t("Henry & Co."), external: true },
+            { href: getHubUrl("/"), label: t("Henry Onyx"), external: true },
             { href: getHubUrl("/preferences"), label: t("Preferences"), external: true },
             { href: getHubUrl("/privacy"), label: t("Privacy"), external: true },
             { href: getHubUrl("/terms"), label: t("Terms"), external: true },
@@ -119,7 +119,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
           <div>© {year} {t(division.name)}. {t("All rights reserved.")}</div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]/85" />
-            {t("Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
+            {t("Designed and built in-house by Henry Onyx Studio for the HenryCo ecosystem")}
           </span>
         </div>
       </div>

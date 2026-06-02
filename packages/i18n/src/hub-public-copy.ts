@@ -172,7 +172,7 @@ export type HubPublicCopy = {
 
 const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
   search: {
-    title: "Search Henry & Co.",
+    title: "Search Henry Onyx",
     description: "Find divisions, account workflows, and support routes from one place.",
     placeholder: "Search divisions, orders, jobs, tracking…",
     signInLabel: "Sign in to continue",
@@ -197,7 +197,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
       topicsTitle: "Pick what you want to hear about",
       topicsHint: "You can change or remove any of these later.",
       consent:
-        "I agree to receive these newsletters from Henry & Co. I can unsubscribe any time, and sends are paused during active support or billing issues.",
+        "I agree to receive these newsletters from Henry Onyx I can unsubscribe any time, and sends are paused during active support or billing issues.",
       submit: "Subscribe",
       submitting: "Subscribing…",
       successCreatedTitle: "You're subscribed",
@@ -212,7 +212,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
   },
   footer: {
     description:
-      "A premium multi-division corporate gateway designed to present the Henry & Co. ecosystem with clarity, trust, and long-term brand discipline.",
+      "A premium multi-division corporate gateway designed to present the Henry Onyx ecosystem with clarity, trust, and long-term brand discipline.",
     columnCompany: "Company",
     columnLegal: "Legal",
     home: "Home",
@@ -221,10 +221,10 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     privacyPolicy: "Privacy policy",
     termsConditions: "Terms & conditions",
     allRightsReserved: "All rights reserved.",
-    builtBy: "Designed and built in-house by Henry & Co. Studio for the Henry & Co. ecosystem",
+    builtBy: "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem",
   },
   contactHero: {
-    eyebrow: "Contact Henry & Co.",
+    eyebrow: "Contact Henry Onyx",
     title:
       "Group-level conversations — partnerships, media, suppliers, investors, and anything that belongs to the parent company.",
     body:
@@ -245,11 +245,11 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     metaCorporateGrade: "Corporate-grade",
     serverWarning: "Some content may still be refreshing.",
     pageSectionsAria: "Page sections",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "The same operating standard our customers, partners, and teams trust.",
     footerBody:
-      "Every Henry & Co. company surface — about, contact, governance, policy — ships under one editorial standard so what you read in public matches what we hold ourselves to in private.",
+      "Every Henry Onyx company surface — about, contact, governance, policy — ships under one editorial standard so what you read in public matches what we hold ourselves to in private.",
     footerUseCase: "Use case",
     footerUseCaseValue: "Customers · Partners · Media",
     footerStandard: "Standard",
@@ -259,7 +259,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     eyebrow: "About this company",
     title: "One company, several focused businesses, one operating standard.",
     body:
-      "Henry & Co. is a multi-division operating group. Each division runs its own market — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — on the same standard of presentation, booking, pricing, and follow-through. The hub exists so customers, partners, and stakeholders can see the whole company in one place and reach the right business in one step. We grow by adding divisions inside this framework, not by stretching one brand thin.",
+      "Henry Onyx is a multi-division operating group. Each division runs its own market — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — on the same standard of presentation, booking, pricing, and follow-through. The hub exists so customers, partners, and stakeholders can see the whole company in one place and reach the right business in one step. We grow by adding divisions inside this framework, not by stretching one brand thin.",
     figureDivisionsLive: "Divisions live",
     figureYearEstablished: "Year established",
     figureOperatingCity: "Operating city",
@@ -284,22 +284,22 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     modalCloseAria: "Close profile",
     modalEyebrow: "Leadership profile",
     modalBioFallback:
-      "This profile is part of the Henry & Co. public leadership board.",
+      "This profile is part of the Henry Onyx public leadership board.",
     emptyTitle: "Leadership information will appear here",
     emptyBody:
       "Publish leadership profiles from the owner dashboard to present ownership, management, and trusted company representatives in a polished public format.",
     sharedSectionDescription:
-      "Profiles in this section reinforce the people, stewardship, and operational accountability behind Henry & Co.",
+      "Profiles in this section reinforce the people, stewardship, and operational accountability behind Henry Onyx",
     headerEyebrow: "Leadership board",
     headerTitle: "Leadership and stewardship",
     headerBody:
-      "Meet the people shaping Henry & Co. across ownership, public leadership, operational direction, and long-term accountability.",
+      "Meet the people shaping Henry Onyx across ownership, public leadership, operational direction, and long-term accountability.",
     metricProfiles: "Profiles",
     metricOwnership: "Ownership",
     metricManagement: "Management",
     spotlightEyebrow: "Spotlight profile",
     spotlightBioFallback:
-      "This leadership profile reflects the individuals responsible for direction, governance, and premium execution across Henry & Co.",
+      "This leadership profile reflects the individuals responsible for direction, governance, and premium execution across Henry Onyx",
     sectionOwnershipTitle: "Ownership",
     sectionOwnershipEyebrow: "Company leadership",
     sectionManagementTitle: "Management",
@@ -313,40 +313,40 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     eyebrow: "Frequently asked",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Company",
     linkHome: "Home",
     linkAbout: "About",
     linkContact: "Contact",
     linkSearch: "Search",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Henry & Co. account",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Henry Onyx account",
     linkLanguagePrefs: "Language & preferences",
     linkEmailPrefs: "Email preferences",
     colLegal: "Legal",
     linkPrivacy: "Privacy",
     linkTerms: "Terms",
     allRightsReserved: "All rights reserved.",
-    builtBy: "Designed and built in-house by Henry & Co. Studio for the Henry & Co. ecosystem",
+    builtBy: "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem",
     menuDivisionsDirectory: "Divisions directory",
     menuAbout: "About",
     menuContact: "Contact",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Unsubscribe — Henry & Co.",
-    metaDescription: "One-click unsubscribe from Henry & Co. newsletters.",
+    metaTitle: "Unsubscribe — Henry Onyx",
+    metaDescription: "One-click unsubscribe from Henry Onyx newsletters.",
     eyebrow: "Newsletter",
     missingTitle: "Unsubscribe link missing.",
     missingBody:
-      "Open the “Unsubscribe” link from any Henry & Co. email to land here with a valid token. If your link has expired, contact us and we’ll honor it manually.",
+      "Open the “Unsubscribe” link from any Henry Onyx email to land here with a valid token. If your link has expired, contact us and we’ll honor it manually.",
     missingCtaContact: "Contact support",
     missingCtaBack: "Back to newsletters",
     errorTitle: "We couldn’t unsubscribe you.",
     errorManualNote:
-      "If this keeps happening, reply “unsubscribe” to any Henry & Co. email and our team will honor it manually.",
+      "If this keeps happening, reply “unsubscribe” to any Henry Onyx email and our team will honor it manually.",
     successTitle: "You’re unsubscribed.",
     successBody:
-      "{{email}} won’t receive Henry & Co. newsletters. Transactional messages (receipts, shipping, verification, security) still send because we have to.",
+      "{{email}} won’t receive Henry Onyx newsletters. Transactional messages (receipts, shipping, verification, security) still send because we have to.",
     changedMind: "Changed your mind?",
     ctaSubscribeAgain: "Subscribe again",
     ctaManagePrefs: "Manage all preferences",
@@ -356,7 +356,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
 const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Une passerelle corporate multi-divisions premium, conçue pour présenter l’écosystème Henry & Co. avec clarté, confiance et une discipline de marque de long terme.",
+      "Une passerelle corporate multi-divisions premium, conçue pour présenter l’écosystème Henry Onyx avec clarté, confiance et une discipline de marque de long terme.",
     columnCompany: "Entreprise",
     columnLegal: "Mentions légales",
     home: "Accueil",
@@ -365,10 +365,10 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Politique de confidentialité",
     termsConditions: "Conditions générales",
     allRightsReserved: "Tous droits réservés.",
-    builtBy: "Conçu et développé en interne par Henry & Co. Studio pour l’écosystème Henry & Co.",
+    builtBy: "Conçu et développé en interne par Henry Onyx Studio pour l’écosystème Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Contacter Henry & Co.",
+    eyebrow: "Contacter Henry Onyx",
     title:
       "Conversations au niveau du groupe — partenariats, médias, fournisseurs, investisseurs, et tout ce qui relève de la maison mère.",
     body:
@@ -389,11 +389,11 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Niveau corporate",
     serverWarning: "Certains contenus sont peut-être encore en cours d’actualisation.",
     pageSectionsAria: "Sections de la page",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "Le même standard opérationnel auquel se fient nos clients, partenaires et équipes.",
     footerBody:
-      "Chaque surface corporate Henry & Co. — à propos, contact, gouvernance, politique — est publiée selon un seul standard éditorial : ce que vous lisez en public reflète ce que nous tenons en privé.",
+      "Chaque surface corporate Henry Onyx — à propos, contact, gouvernance, politique — est publiée selon un seul standard éditorial : ce que vous lisez en public reflète ce que nous tenons en privé.",
     footerUseCase: "Cas d’usage",
     footerUseCaseValue: "Clients · Partenaires · Médias",
     footerStandard: "Standard",
@@ -403,7 +403,7 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     eyebrow: "À propos de cette entreprise",
     title: "Une entreprise, plusieurs activités ciblées, un seul standard opérationnel.",
     body:
-      "Henry & Co. est un groupe opérationnel multi-divisions. Chaque division pilote son propre marché — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — avec le même niveau d’exigence en matière de présentation, de réservation, de tarification et de suivi. Le hub existe pour que clients, partenaires et parties prenantes voient l’entreprise dans son ensemble et rejoignent la bonne activité en une étape. Nous grandissons en ajoutant des divisions dans ce cadre, sans étirer une marque unique.",
+      "Henry Onyx est un groupe opérationnel multi-divisions. Chaque division pilote son propre marché — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — avec le même niveau d’exigence en matière de présentation, de réservation, de tarification et de suivi. Le hub existe pour que clients, partenaires et parties prenantes voient l’entreprise dans son ensemble et rejoignent la bonne activité en une étape. Nous grandissons en ajoutant des divisions dans ce cadre, sans étirer une marque unique.",
     figureDivisionsLive: "Divisions actives",
     figureYearEstablished: "Année de création",
     figureOperatingCity: "Ville d’exploitation",
@@ -428,22 +428,22 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Fermer le profil",
     modalEyebrow: "Profil de direction",
     modalBioFallback:
-      "Ce profil fait partie du conseil de direction public de Henry & Co.",
+      "Ce profil fait partie du conseil de direction public de Henry Onyx",
     emptyTitle: "Les informations de direction apparaîtront ici",
     emptyBody:
       "Publiez des profils de direction depuis le tableau de bord propriétaire pour présenter l’actionnariat, la direction et les représentants de confiance de l’entreprise dans un format public soigné.",
     sharedSectionDescription:
-      "Les profils de cette section incarnent les personnes, la gouvernance et la responsabilité opérationnelle qui portent le groupe Henry & Co.",
+      "Les profils de cette section incarnent les personnes, la gouvernance et la responsabilité opérationnelle qui portent le groupe Henry Onyx",
     headerEyebrow: "Conseil de direction",
     headerTitle: "Direction et gouvernance",
     headerBody:
-      "Découvrez les personnes qui façonnent Henry & Co. — actionnariat, leadership public, direction opérationnelle et responsabilité de long terme.",
+      "Découvrez les personnes qui façonnent Henry Onyx — actionnariat, leadership public, direction opérationnelle et responsabilité de long terme.",
     metricProfiles: "Profils",
     metricOwnership: "Actionnariat",
     metricManagement: "Direction",
     spotlightEyebrow: "Profil en lumière",
     spotlightBioFallback:
-      "Ce profil de direction représente les personnes responsables de l’orientation, de la gouvernance et de l’exécution premium au sein du groupe Henry & Co.",
+      "Ce profil de direction représente les personnes responsables de l’orientation, de la gouvernance et de l’exécution premium au sein du groupe Henry Onyx",
     sectionOwnershipTitle: "Actionnariat",
     sectionOwnershipEyebrow: "Direction de l’entreprise",
     sectionManagementTitle: "Direction",
@@ -457,40 +457,40 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     eyebrow: "Questions fréquentes",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Entreprise",
     linkHome: "Accueil",
     linkAbout: "À propos",
     linkContact: "Contact",
     linkSearch: "Rechercher",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Compte Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Compte Henry Onyx",
     linkLanguagePrefs: "Langue et préférences",
     linkEmailPrefs: "Préférences e-mail",
     colLegal: "Mentions légales",
     linkPrivacy: "Confidentialité",
     linkTerms: "Conditions",
     allRightsReserved: "Tous droits réservés.",
-    builtBy: "Conçu et développé en interne par Henry & Co. Studio pour l'écosystème Henry & Co.",
+    builtBy: "Conçu et développé en interne par Henry Onyx Studio pour l'écosystème Henry Onyx",
     menuDivisionsDirectory: "Annuaire des divisions",
     menuAbout: "À propos",
     menuContact: "Contact",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Se désabonner — Henry & Co.",
-    metaDescription: "Désabonnement en un clic des newsletters Henry & Co..",
+    metaTitle: "Se désabonner — Henry Onyx",
+    metaDescription: "Désabonnement en un clic des newsletters Henry Onyx.",
     eyebrow: "Newsletter",
     missingTitle: "Lien de désabonnement manquant.",
     missingBody:
-      "Ouvrez le lien « Se désabonner » d'un e-mail Henry & Co. pour arriver ici avec un jeton valide. Si votre lien a expiré, contactez-nous et nous l'honorerons manuellement.",
+      "Ouvrez le lien « Se désabonner » d'un e-mail Henry Onyx pour arriver ici avec un jeton valide. Si votre lien a expiré, contactez-nous et nous l'honorerons manuellement.",
     missingCtaContact: "Contacter l'assistance",
     missingCtaBack: "Retour aux newsletters",
     errorTitle: "Nous n'avons pas pu vous désabonner.",
     errorManualNote:
-      "Si cela continue, répondez « désabonner » à n'importe quel e-mail Henry & Co. et notre équipe l'honorera manuellement.",
+      "Si cela continue, répondez « désabonner » à n'importe quel e-mail Henry Onyx et notre équipe l'honorera manuellement.",
     successTitle: "Vous êtes désabonné(e).",
     successBody:
-      "{{email}} ne recevra plus les newsletters Henry & Co.. Les messages transactionnels (reçus, livraison, vérification, sécurité) continuent d'être envoyés car nous y sommes tenus.",
+      "{{email}} ne recevra plus les newsletters Henry Onyx. Les messages transactionnels (reçus, livraison, vérification, sécurité) continuent d'être envoyés car nous y sommes tenus.",
     changedMind: "Vous avez changé d'avis ?",
     ctaSubscribeAgain: "Se réabonner",
     ctaManagePrefs: "Gérer toutes les préférences",
@@ -499,7 +499,7 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Una puerta de entrada corporativa multidivisión premium, concebida para presentar el ecosistema Henry & Co. con claridad, confianza y una disciplina de marca a largo plazo.",
+      "Una puerta de entrada corporativa multidivisión premium, concebida para presentar el ecosistema Henry Onyx con claridad, confianza y una disciplina de marca a largo plazo.",
     columnCompany: "Empresa",
     columnLegal: "Aviso legal",
     home: "Inicio",
@@ -508,10 +508,10 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Política de privacidad",
     termsConditions: "Términos y condiciones",
     allRightsReserved: "Todos los derechos reservados.",
-    builtBy: "Diseñado y construido internamente por Henry & Co. Studio para el ecosistema Henry & Co.",
+    builtBy: "Diseñado y construido internamente por Henry Onyx Studio para el ecosistema Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Contactar con Henry & Co.",
+    eyebrow: "Contactar con Henry Onyx",
     title:
       "Conversaciones a nivel de grupo: alianzas, medios, proveedores, inversores y todo lo que corresponda a la matriz.",
     body:
@@ -532,11 +532,11 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Nivel corporativo",
     serverWarning: "Algunos contenidos aún pueden estar actualizándose.",
     pageSectionsAria: "Secciones de la página",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "El mismo estándar operativo en el que confían nuestros clientes, socios y equipos.",
     footerBody:
-      "Cada superficie corporativa de Henry & Co. — acerca de, contacto, gobierno, política — se publica bajo un único estándar editorial, para que lo que se lee en público coincida con lo que mantenemos en privado.",
+      "Cada superficie corporativa de Henry Onyx — acerca de, contacto, gobierno, política — se publica bajo un único estándar editorial, para que lo que se lee en público coincida con lo que mantenemos en privado.",
     footerUseCase: "Caso de uso",
     footerUseCaseValue: "Clientes · Socios · Medios",
     footerStandard: "Estándar",
@@ -546,7 +546,7 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     eyebrow: "Sobre esta empresa",
     title: "Una empresa, varios negocios enfocados, un único estándar operativo.",
     body:
-      "Henry & Co. es un grupo operativo multidivisión. Cada división opera su propio mercado — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — bajo el mismo estándar de presentación, reservas, precios y seguimiento. El hub existe para que clientes, socios y grupos de interés vean la empresa en su conjunto y lleguen al negocio adecuado en un solo paso. Crecemos añadiendo divisiones dentro de este marco, no estirando una sola marca.",
+      "Henry Onyx es un grupo operativo multidivisión. Cada división opera su propio mercado — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — bajo el mismo estándar de presentación, reservas, precios y seguimiento. El hub existe para que clientes, socios y grupos de interés vean la empresa en su conjunto y lleguen al negocio adecuado en un solo paso. Crecemos añadiendo divisiones dentro de este marco, no estirando una sola marca.",
     figureDivisionsLive: "Divisiones activas",
     figureYearEstablished: "Año de fundación",
     figureOperatingCity: "Ciudad de operación",
@@ -571,22 +571,22 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Cerrar perfil",
     modalEyebrow: "Perfil de dirección",
     modalBioFallback:
-      "Este perfil forma parte del consejo público de liderazgo de Henry & Co.",
+      "Este perfil forma parte del consejo público de liderazgo de Henry Onyx",
     emptyTitle: "Aquí aparecerá la información de liderazgo",
     emptyBody:
       "Publique perfiles de liderazgo desde el panel del propietario para presentar la propiedad, la dirección y los representantes de confianza de la empresa en un formato público cuidado.",
     sharedSectionDescription:
-      "Los perfiles de esta sección reflejan las personas, la administración y la responsabilidad operativa que sostienen al grupo Henry & Co.",
+      "Los perfiles de esta sección reflejan las personas, la administración y la responsabilidad operativa que sostienen al grupo Henry Onyx",
     headerEyebrow: "Consejo de liderazgo",
     headerTitle: "Liderazgo y gobierno",
     headerBody:
-      "Conozca a las personas que dan forma a Henry & Co. en propiedad, liderazgo público, dirección operativa y responsabilidad a largo plazo.",
+      "Conozca a las personas que dan forma a Henry Onyx en propiedad, liderazgo público, dirección operativa y responsabilidad a largo plazo.",
     metricProfiles: "Perfiles",
     metricOwnership: "Propiedad",
     metricManagement: "Dirección",
     spotlightEyebrow: "Perfil en foco",
     spotlightBioFallback:
-      "Este perfil de liderazgo representa a las personas responsables de la dirección, el gobierno y la ejecución premium en el grupo Henry & Co.",
+      "Este perfil de liderazgo representa a las personas responsables de la dirección, el gobierno y la ejecución premium en el grupo Henry Onyx",
     sectionOwnershipTitle: "Propiedad",
     sectionOwnershipEyebrow: "Liderazgo de la empresa",
     sectionManagementTitle: "Dirección",
@@ -600,40 +600,40 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     eyebrow: "Preguntas frecuentes",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Empresa",
     linkHome: "Inicio",
     linkAbout: "Acerca de",
     linkContact: "Contacto",
     linkSearch: "Buscar",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Cuenta Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Cuenta Henry Onyx",
     linkLanguagePrefs: "Idioma y preferencias",
     linkEmailPrefs: "Preferencias de correo",
     colLegal: "Aviso legal",
     linkPrivacy: "Privacidad",
     linkTerms: "Condiciones",
     allRightsReserved: "Todos los derechos reservados.",
-    builtBy: "Diseñado y construido internamente por Henry & Co. Studio para el ecosistema Henry & Co.",
+    builtBy: "Diseñado y construido internamente por Henry Onyx Studio para el ecosistema Henry Onyx",
     menuDivisionsDirectory: "Directorio de divisiones",
     menuAbout: "Acerca de",
     menuContact: "Contacto",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Cancelar suscripción — Henry & Co.",
-    metaDescription: "Cancela tu suscripción a los boletines de Henry & Co. con un clic.",
+    metaTitle: "Cancelar suscripción — Henry Onyx",
+    metaDescription: "Cancela tu suscripción a los boletines de Henry Onyx con un clic.",
     eyebrow: "Boletín",
     missingTitle: "Enlace de cancelación no encontrado.",
     missingBody:
-      "Abre el enlace «Cancelar suscripción» de cualquier correo de Henry & Co. para llegar aquí con un token válido. Si tu enlace ha caducado, contáctanos y lo gestionaremos manualmente.",
+      "Abre el enlace «Cancelar suscripción» de cualquier correo de Henry Onyx para llegar aquí con un token válido. Si tu enlace ha caducado, contáctanos y lo gestionaremos manualmente.",
     missingCtaContact: "Contactar con soporte",
     missingCtaBack: "Volver a los boletines",
     errorTitle: "No hemos podido cancelar tu suscripción.",
     errorManualNote:
-      "Si el problema persiste, responde «cancelar suscripción» a cualquier correo de Henry & Co. y nuestro equipo lo gestionará manualmente.",
+      "Si el problema persiste, responde «cancelar suscripción» a cualquier correo de Henry Onyx y nuestro equipo lo gestionará manualmente.",
     successTitle: "Ya estás dado de baja.",
     successBody:
-      "{{email}} no recibirá más boletines de Henry & Co.. Los mensajes transaccionales (recibos, envíos, verificación, seguridad) seguirán enviándose porque estamos obligados a ello.",
+      "{{email}} no recibirá más boletines de Henry Onyx. Los mensajes transaccionales (recibos, envíos, verificación, seguridad) seguirán enviándose porque estamos obligados a ello.",
     changedMind: "¿Has cambiado de opinión?",
     ctaSubscribeAgain: "Suscribirse de nuevo",
     ctaManagePrefs: "Gestionar todas las preferencias",
@@ -642,7 +642,7 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Um portal corporativo multidivisional premium, concebido para apresentar o ecossistema Henry & Co. com clareza, confiança e disciplina de marca a longo prazo.",
+      "Um portal corporativo multidivisional premium, concebido para apresentar o ecossistema Henry Onyx com clareza, confiança e disciplina de marca a longo prazo.",
     columnCompany: "Empresa",
     columnLegal: "Jurídico",
     home: "Início",
@@ -651,10 +651,10 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Política de privacidade",
     termsConditions: "Termos e condições",
     allRightsReserved: "Todos os direitos reservados.",
-    builtBy: "Concebido e desenvolvido internamente pelo Henry & Co. Studio para o ecossistema Henry & Co.",
+    builtBy: "Concebido e desenvolvido internamente pelo Henry Onyx Studio para o ecossistema Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Contactar a Henry & Co.",
+    eyebrow: "Contactar a Henry Onyx",
     title:
       "Conversas a nível de grupo — parcerias, imprensa, fornecedores, investidores e tudo o que pertence à empresa-mãe.",
     body:
@@ -675,11 +675,11 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Nível corporativo",
     serverWarning: "Alguns conteúdos podem ainda estar a ser actualizados.",
     pageSectionsAria: "Secções da página",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "O mesmo padrão operacional em que confiam os nossos clientes, parceiros e equipas.",
     footerBody:
-      "Cada superfície corporativa da Henry & Co. — sobre, contacto, governança, política — é publicada sob um único padrão editorial, para que o que se lê em público corresponda ao que mantemos em privado.",
+      "Cada superfície corporativa da Henry Onyx — sobre, contacto, governança, política — é publicada sob um único padrão editorial, para que o que se lê em público corresponda ao que mantemos em privado.",
     footerUseCase: "Caso de utilização",
     footerUseCaseValue: "Clientes · Parceiros · Media",
     footerStandard: "Padrão",
@@ -689,7 +689,7 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     eyebrow: "Sobre esta empresa",
     title: "Uma empresa, vários negócios focados, um único padrão operacional.",
     body:
-      "A Henry & Co. é um grupo operacional multidivisional. Cada divisão dirige o seu próprio mercado — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — sob o mesmo padrão de apresentação, reservas, preços e acompanhamento. O hub existe para que clientes, parceiros e partes interessadas vejam a empresa no seu conjunto e cheguem ao negócio certo num só passo. Crescemos acrescentando divisões dentro desta estrutura, e não esticando uma única marca.",
+      "A Henry Onyx é um grupo operacional multidivisional. Cada divisão dirige o seu próprio mercado — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — sob o mesmo padrão de apresentação, reservas, preços e acompanhamento. O hub existe para que clientes, parceiros e partes interessadas vejam a empresa no seu conjunto e cheguem ao negócio certo num só passo. Crescemos acrescentando divisões dentro desta estrutura, e não esticando uma única marca.",
     figureDivisionsLive: "Divisões activas",
     figureYearEstablished: "Ano de fundação",
     figureOperatingCity: "Cidade de operação",
@@ -714,22 +714,22 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Fechar perfil",
     modalEyebrow: "Perfil de liderança",
     modalBioFallback:
-      "Este perfil faz parte do conselho público de liderança da Henry & Co.",
+      "Este perfil faz parte do conselho público de liderança da Henry Onyx",
     emptyTitle: "Aqui aparecerão as informações de liderança",
     emptyBody:
       "Publique perfis de liderança a partir do painel do proprietário para apresentar a propriedade, a gestão e os representantes de confiança da empresa num formato público cuidado.",
     sharedSectionDescription:
-      "Os perfis desta secção representam as pessoas, a administração e a responsabilidade operacional que sustentam o grupo Henry & Co.",
+      "Os perfis desta secção representam as pessoas, a administração e a responsabilidade operacional que sustentam o grupo Henry Onyx",
     headerEyebrow: "Conselho de liderança",
     headerTitle: "Liderança e governança",
     headerBody:
-      "Conheça as pessoas que moldam a Henry & Co. — propriedade, liderança pública, direcção operacional e responsabilidade de longo prazo.",
+      "Conheça as pessoas que moldam a Henry Onyx — propriedade, liderança pública, direcção operacional e responsabilidade de longo prazo.",
     metricProfiles: "Perfis",
     metricOwnership: "Propriedade",
     metricManagement: "Gestão",
     spotlightEyebrow: "Perfil em destaque",
     spotlightBioFallback:
-      "Este perfil de liderança reflecte as pessoas responsáveis pela direcção, governança e execução premium no grupo Henry & Co.",
+      "Este perfil de liderança reflecte as pessoas responsáveis pela direcção, governança e execução premium no grupo Henry Onyx",
     sectionOwnershipTitle: "Propriedade",
     sectionOwnershipEyebrow: "Liderança da empresa",
     sectionManagementTitle: "Gestão",
@@ -743,40 +743,40 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     eyebrow: "Perguntas frequentes",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Empresa",
     linkHome: "Início",
     linkAbout: "Sobre",
     linkContact: "Contacto",
     linkSearch: "Pesquisar",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Conta Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Conta Henry Onyx",
     linkLanguagePrefs: "Idioma e preferências",
     linkEmailPrefs: "Preferências de e-mail",
     colLegal: "Jurídico",
     linkPrivacy: "Privacidade",
     linkTerms: "Termos",
     allRightsReserved: "Todos os direitos reservados.",
-    builtBy: "Projetado e desenvolvido internamente pela Henry & Co. Studio para o ecossistema Henry & Co.",
+    builtBy: "Projetado e desenvolvido internamente pela Henry Onyx Studio para o ecossistema Henry Onyx",
     menuDivisionsDirectory: "Diretório de divisões",
     menuAbout: "Sobre",
     menuContact: "Contacto",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Cancelar subscrição — Henry & Co.",
-    metaDescription: "Cancelamento de subscrição das newsletters Henry & Co. com um clique.",
+    metaTitle: "Cancelar subscrição — Henry Onyx",
+    metaDescription: "Cancelamento de subscrição das newsletters Henry Onyx com um clique.",
     eyebrow: "Newsletter",
     missingTitle: "Ligação de cancelamento em falta.",
     missingBody:
-      "Abra a ligação «Cancelar subscrição» de qualquer e-mail Henry & Co. para chegar aqui com um token válido. Se a sua ligação expirou, contacte-nos e iremos processá-lo manualmente.",
+      "Abra a ligação «Cancelar subscrição» de qualquer e-mail Henry Onyx para chegar aqui com um token válido. Se a sua ligação expirou, contacte-nos e iremos processá-lo manualmente.",
     missingCtaContact: "Contactar suporte",
     missingCtaBack: "Voltar às newsletters",
     errorTitle: "Não foi possível cancelar a sua subscrição.",
     errorManualNote:
-      "Se isto continuar, responda «cancelar subscrição» a qualquer e-mail Henry & Co. e a nossa equipa irá processá-lo manualmente.",
+      "Se isto continuar, responda «cancelar subscrição» a qualquer e-mail Henry Onyx e a nossa equipa irá processá-lo manualmente.",
     successTitle: "Subscrição cancelada.",
     successBody:
-      "{{email}} não receberá mais newsletters Henry & Co.. As mensagens transacionais (recibos, envio, verificação, segurança) continuam a ser enviadas porque somos obrigados a isso.",
+      "{{email}} não receberá mais newsletters Henry Onyx. As mensagens transacionais (recibos, envio, verificação, segurança) continuam a ser enviadas porque somos obrigados a isso.",
     changedMind: "Mudou de ideias?",
     ctaSubscribeAgain: "Subscrever novamente",
     ctaManagePrefs: "Gerir todas as preferências",
@@ -785,7 +785,7 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "بوّابة مؤسسية متعددة الأقسام بمستوى راقٍ، صُمّمت لتقديم منظومة Henry & Co. بوضوح وثقة وانضباط راسخ في هوية العلامة على المدى الطويل.",
+      "بوّابة مؤسسية متعددة الأقسام بمستوى راقٍ، صُمّمت لتقديم منظومة Henry Onyx بوضوح وثقة وانضباط راسخ في هوية العلامة على المدى الطويل.",
     columnCompany: "الشركة",
     columnLegal: "الجوانب القانونية",
     home: "الرئيسية",
@@ -794,10 +794,10 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "سياسة الخصوصية",
     termsConditions: "الشروط والأحكام",
     allRightsReserved: "جميع الحقوق محفوظة.",
-    builtBy: "صُمِّمت وطُوِّرت داخليًا في Henry & Co. Studio لخدمة منظومة Henry & Co.",
+    builtBy: "صُمِّمت وطُوِّرت داخليًا في Henry Onyx Studio لخدمة منظومة Henry Onyx",
   },
   contactHero: {
-    eyebrow: "تواصل مع Henry & Co.",
+    eyebrow: "تواصل مع Henry Onyx",
     title:
       "تواصل على مستوى المجموعة — الشراكات، الإعلام، الموردون، المستثمرون، وكل ما يخص الشركة الأم.",
     body:
@@ -818,11 +818,11 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "بمستوى مؤسسي",
     serverWarning: "قد يكون بعض المحتوى لا يزال قيد التحديث.",
     pageSectionsAria: "أقسام الصفحة",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "نفس معيار التشغيل الذي يثق به عملاؤنا وشركاؤنا وفِرَقنا.",
     footerBody:
-      "كل واجهة مؤسسية لـ Henry & Co. — نبذة، تواصل، حوكمة، سياسات — تُنشر وفق معيار تحريري واحد، فيكون ما تقرأه علنًا مطابقًا لما نلتزم به بيننا.",
+      "كل واجهة مؤسسية لـ Henry Onyx — نبذة، تواصل، حوكمة، سياسات — تُنشر وفق معيار تحريري واحد، فيكون ما تقرأه علنًا مطابقًا لما نلتزم به بيننا.",
     footerUseCase: "حالة الاستخدام",
     footerUseCaseValue: "العملاء · الشركاء · الإعلام",
     footerStandard: "المعيار",
@@ -832,7 +832,7 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     eyebrow: "نبذة عن هذه الشركة",
     title: "شركة واحدة، عدة أنشطة مركّزة، ومعيار تشغيل موحَّد.",
     body:
-      "Henry & Co. مجموعة تشغيلية متعددة الأقسام. كل قسم يدير سوقه الخاص — Care وMarketplace وProperty وLogistics وStudio وJobs وLearn — على المعيار ذاته من حيث العرض والحجز والتسعير والمتابعة. وُجد هذا المركز ليرى العملاء والشركاء وأصحاب المصلحة الشركة كلها في مكان واحد، ويصلوا إلى النشاط المناسب في خطوة واحدة. ننمو بإضافة أقسام جديدة داخل هذا الإطار، لا بمدّ علامة واحدة فوق طاقتها.",
+      "Henry Onyx مجموعة تشغيلية متعددة الأقسام. كل قسم يدير سوقه الخاص — Care وMarketplace وProperty وLogistics وStudio وJobs وLearn — على المعيار ذاته من حيث العرض والحجز والتسعير والمتابعة. وُجد هذا المركز ليرى العملاء والشركاء وأصحاب المصلحة الشركة كلها في مكان واحد، ويصلوا إلى النشاط المناسب في خطوة واحدة. ننمو بإضافة أقسام جديدة داخل هذا الإطار، لا بمدّ علامة واحدة فوق طاقتها.",
     figureDivisionsLive: "الأقسام النشطة",
     figureYearEstablished: "سنة التأسيس",
     figureOperatingCity: "مدينة التشغيل",
@@ -857,22 +857,22 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "إغلاق الملف",
     modalEyebrow: "ملف قيادي",
     modalBioFallback:
-      "هذا الملف جزء من مجلس القيادة العام لـ Henry & Co.",
+      "هذا الملف جزء من مجلس القيادة العام لـ Henry Onyx",
     emptyTitle: "ستظهر هنا معلومات القيادة",
     emptyBody:
       "انشر ملفات القيادة من لوحة المالك لتقديم الملكية والإدارة وممثلي الشركة الموثوقين في صورة عامة متقَنة.",
     sharedSectionDescription:
-      "تُجسّد ملفات هذا القسم الأشخاصَ والمسؤوليةَ التشغيليةَ والإشرافَ القائم خلف مجموعة Henry & Co.",
+      "تُجسّد ملفات هذا القسم الأشخاصَ والمسؤوليةَ التشغيليةَ والإشرافَ القائم خلف مجموعة Henry Onyx",
     headerEyebrow: "مجلس القيادة",
     headerTitle: "القيادة والإشراف",
     headerBody:
-      "تعرَّف على من يُشكِّلون Henry & Co. في الملكية والقيادة العامة والتوجيه التشغيلي والمسؤولية على المدى الطويل.",
+      "تعرَّف على من يُشكِّلون Henry Onyx في الملكية والقيادة العامة والتوجيه التشغيلي والمسؤولية على المدى الطويل.",
     metricProfiles: "الملفات",
     metricOwnership: "الملكية",
     metricManagement: "الإدارة",
     spotlightEyebrow: "ملف الضوء",
     spotlightBioFallback:
-      "يعكس هذا الملف القيادي الأشخاصَ المسؤولين عن التوجه والحوكمة وجودة التنفيذ في مجموعة Henry & Co.",
+      "يعكس هذا الملف القيادي الأشخاصَ المسؤولين عن التوجه والحوكمة وجودة التنفيذ في مجموعة Henry Onyx",
     sectionOwnershipTitle: "الملكية",
     sectionOwnershipEyebrow: "قيادة الشركة",
     sectionManagementTitle: "الإدارة",
@@ -886,40 +886,40 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     eyebrow: "الأسئلة الشائعة",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "الشركة",
     linkHome: "الرئيسية",
     linkAbout: "من نحن",
     linkContact: "اتصل بنا",
     linkSearch: "بحث",
     colHenryCo: "هنري كو",
-    linkHenryCoAccount: "حساب Henry & Co.",
+    linkHenryCoAccount: "حساب Henry Onyx",
     linkLanguagePrefs: "اللغة والتفضيلات",
     linkEmailPrefs: "تفضيلات البريد الإلكتروني",
     colLegal: "القانوني",
     linkPrivacy: "الخصوصية",
     linkTerms: "الشروط",
     allRightsReserved: "جميع الحقوق محفوظة.",
-    builtBy: "صُمِّم وطُوِّر داخلياً بواسطة Henry & Co. Studio لمنظومة Henry & Co.",
+    builtBy: "صُمِّم وطُوِّر داخلياً بواسطة Henry Onyx Studio لمنظومة Henry Onyx",
     menuDivisionsDirectory: "دليل الأقسام",
     menuAbout: "من نحن",
     menuContact: "اتصل بنا",
   },
   newsletterUnsubscribe: {
-    metaTitle: "إلغاء الاشتراك — Henry & Co.",
-    metaDescription: "إلغاء اشتراك بنقرة واحدة من نشرات Henry & Co. الإخبارية.",
+    metaTitle: "إلغاء الاشتراك — Henry Onyx",
+    metaDescription: "إلغاء اشتراك بنقرة واحدة من نشرات Henry Onyx الإخبارية.",
     eyebrow: "النشرة البريدية",
     missingTitle: "رابط إلغاء الاشتراك مفقود.",
     missingBody:
-      "افتح رابط «إلغاء الاشتراك» من أي بريد إلكتروني من Henry & Co. للوصول هنا برمز تحقق صالح. إذا انتهت صلاحية رابطك، تواصل معنا وسنتعامل مع الطلب يدوياً.",
+      "افتح رابط «إلغاء الاشتراك» من أي بريد إلكتروني من Henry Onyx للوصول هنا برمز تحقق صالح. إذا انتهت صلاحية رابطك، تواصل معنا وسنتعامل مع الطلب يدوياً.",
     missingCtaContact: "التواصل مع الدعم",
     missingCtaBack: "العودة إلى النشرات",
     errorTitle: "لم نتمكن من إلغاء اشتراكك.",
     errorManualNote:
-      "إذا استمر هذا، أرسل رداً بكلمة «إلغاء الاشتراك» على أي بريد من Henry & Co. وسيتولى فريقنا الأمر يدوياً.",
+      "إذا استمر هذا، أرسل رداً بكلمة «إلغاء الاشتراك» على أي بريد من Henry Onyx وسيتولى فريقنا الأمر يدوياً.",
     successTitle: "تم إلغاء اشتراكك.",
     successBody:
-      "لن يتلقى {{email}} نشرات Henry & Co. الإخبارية. تستمر الرسائل التعاملية (الإيصالات، الشحن، التحقق، الأمان) في الإرسال لأننا ملزمون بذلك.",
+      "لن يتلقى {{email}} نشرات Henry Onyx الإخبارية. تستمر الرسائل التعاملية (الإيصالات، الشحن، التحقق، الأمان) في الإرسال لأننا ملزمون بذلك.",
     changedMind: "هل غيّرت رأيك؟",
     ctaSubscribeAgain: "الاشتراك مجدداً",
     ctaManagePrefs: "إدارة كل التفضيلات",
@@ -937,10 +937,10 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Datenschutzerklärung",
     termsConditions: "Allgemeine Geschäftsbedingungen",
     allRightsReserved: "Alle Rechte vorbehalten.",
-    builtBy: "Konzipiert und intern entwickelt vom Henry & Co. Studio für das Henry & Co.-Ökosystem",
+    builtBy: "Konzipiert und intern entwickelt vom Henry Onyx Studio für das Henry Onyx-Ökosystem",
   },
   contactHero: {
-    eyebrow: "Henry & Co. kontaktieren",
+    eyebrow: "Henry Onyx kontaktieren",
     title:
       "Gespräche auf Konzernebene — Partnerschaften, Medien, Lieferanten, Investoren und alles, was zur Muttergesellschaft gehört.",
     body:
@@ -961,11 +961,11 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Auf Konzernniveau",
     serverWarning: "Einige Inhalte werden möglicherweise noch aktualisiert.",
     pageSectionsAria: "Seitenabschnitte",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "Derselbe operative Standard, dem unsere Kunden, Partner und Teams vertrauen.",
     footerBody:
-      "Jede Konzernfläche von Henry & Co. — Über uns, Kontakt, Governance, Richtlinien — folgt einem einheitlichen redaktionellen Standard, sodass das, was Sie öffentlich lesen, dem entspricht, woran wir uns intern halten.",
+      "Jede Konzernfläche von Henry Onyx — Über uns, Kontakt, Governance, Richtlinien — folgt einem einheitlichen redaktionellen Standard, sodass das, was Sie öffentlich lesen, dem entspricht, woran wir uns intern halten.",
     footerUseCase: "Anwendungsfall",
     footerUseCaseValue: "Kunden · Partner · Medien",
     footerStandard: "Standard",
@@ -975,7 +975,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     eyebrow: "Über dieses Unternehmen",
     title: "Ein Unternehmen, mehrere fokussierte Geschäftsbereiche, ein einheitlicher operativer Standard.",
     body:
-      "Henry & Co. ist eine operative Gruppe mit mehreren Divisionen. Jede Division betreibt ihren eigenen Markt — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — auf demselben Niveau in Präsentation, Buchung, Preisgestaltung und Nachverfolgung. Das Hub existiert, damit Kunden, Partner und Stakeholder das gesamte Unternehmen an einem Ort sehen und das richtige Geschäft in einem Schritt erreichen. Wir wachsen, indem wir Divisionen innerhalb dieses Rahmens hinzufügen — nicht, indem wir eine einzelne Marke überdehnen.",
+      "Henry Onyx ist eine operative Gruppe mit mehreren Divisionen. Jede Division betreibt ihren eigenen Markt — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — auf demselben Niveau in Präsentation, Buchung, Preisgestaltung und Nachverfolgung. Das Hub existiert, damit Kunden, Partner und Stakeholder das gesamte Unternehmen an einem Ort sehen und das richtige Geschäft in einem Schritt erreichen. Wir wachsen, indem wir Divisionen innerhalb dieses Rahmens hinzufügen — nicht, indem wir eine einzelne Marke überdehnen.",
     figureDivisionsLive: "Aktive Divisionen",
     figureYearEstablished: "Gründungsjahr",
     figureOperatingCity: "Geschäftssitz",
@@ -1000,7 +1000,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Profil schließen",
     modalEyebrow: "Führungsprofil",
     modalBioFallback:
-      "Dieses Profil gehört zum öffentlichen Führungsgremium von Henry & Co.",
+      "Dieses Profil gehört zum öffentlichen Führungsgremium von Henry Onyx",
     emptyTitle: "Hier erscheinen Informationen zur Führung",
     emptyBody:
       "Veröffentlichen Sie Führungsprofile über das Eigentümer-Dashboard, um Eigentum, Geschäftsleitung und vertrauenswürdige Unternehmensvertreter in einem klaren öffentlichen Format darzustellen.",
@@ -1009,7 +1009,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     headerEyebrow: "Führungsgremium",
     headerTitle: "Führung und Verantwortung",
     headerBody:
-      "Lernen Sie die Menschen kennen, die Henry & Co. prägen — von Eigentum über öffentliche Führung und operative Ausrichtung bis hin zur langfristigen Verantwortung.",
+      "Lernen Sie die Menschen kennen, die Henry Onyx prägen — von Eigentum über öffentliche Führung und operative Ausrichtung bis hin zur langfristigen Verantwortung.",
     metricProfiles: "Profile",
     metricOwnership: "Eigentum",
     metricManagement: "Geschäftsleitung",
@@ -1029,40 +1029,40 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     eyebrow: "Häufig gestellte Fragen",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Unternehmen",
     linkHome: "Startseite",
     linkAbout: "Über uns",
     linkContact: "Kontakt",
     linkSearch: "Suche",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Henry & Co.-Konto",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Henry Onyx-Konto",
     linkLanguagePrefs: "Sprache & Einstellungen",
     linkEmailPrefs: "E-Mail-Einstellungen",
     colLegal: "Rechtliches",
     linkPrivacy: "Datenschutz",
     linkTerms: "Nutzungsbedingungen",
     allRightsReserved: "Alle Rechte vorbehalten.",
-    builtBy: "Intern entworfen und entwickelt von Henry & Co. Studio für das Henry & Co.-Ökosystem",
+    builtBy: "Intern entworfen und entwickelt von Henry Onyx Studio für das Henry Onyx-Ökosystem",
     menuDivisionsDirectory: "Abteilungsverzeichnis",
     menuAbout: "Über uns",
     menuContact: "Kontakt",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Abmelden — Henry & Co.",
-    metaDescription: "Mit einem Klick von Henry & Co.-Newslettern abmelden.",
+    metaTitle: "Abmelden — Henry Onyx",
+    metaDescription: "Mit einem Klick von Henry Onyx-Newslettern abmelden.",
     eyebrow: "Newsletter",
     missingTitle: "Abmeldelink fehlt.",
     missingBody:
-      "Öffnen Sie den Link „Abmelden“ aus einer Henry & Co.-E-Mail, um mit einem gültigen Token hierher zu gelangen. Falls Ihr Link abgelaufen ist, kontaktieren Sie uns und wir bearbeiten die Abmeldung manuell.",
+      "Öffnen Sie den Link „Abmelden“ aus einer Henry Onyx-E-Mail, um mit einem gültigen Token hierher zu gelangen. Falls Ihr Link abgelaufen ist, kontaktieren Sie uns und wir bearbeiten die Abmeldung manuell.",
     missingCtaContact: "Support kontaktieren",
     missingCtaBack: "Zurück zu den Newslettern",
     errorTitle: "Wir konnten Sie nicht abmelden.",
     errorManualNote:
-      "Wenn das Problem weiterhin besteht, antworten Sie auf eine Henry & Co.-E-Mail mit „abmelden“ und unser Team bearbeitet dies manuell.",
+      "Wenn das Problem weiterhin besteht, antworten Sie auf eine Henry Onyx-E-Mail mit „abmelden“ und unser Team bearbeitet dies manuell.",
     successTitle: "Sie sind abgemeldet.",
     successBody:
-      "{{email}} erhält keine Henry & Co.-Newsletter mehr. Transaktionsnachrichten (Quittungen, Versand, Verifizierung, Sicherheit) werden weiterhin gesendet, weil wir dazu verpflichtet sind.",
+      "{{email}} erhält keine Henry Onyx-Newsletter mehr. Transaktionsnachrichten (Quittungen, Versand, Verifizierung, Sicherheit) werden weiterhin gesendet, weil wir dazu verpflichtet sind.",
     changedMind: "Haben Sie Ihre Meinung geändert?",
     ctaSubscribeAgain: "Erneut abonnieren",
     ctaManagePrefs: "Alle Einstellungen verwalten",
@@ -1071,7 +1071,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Un portale corporate multi-divisione di livello premium, concepito per presentare l’ecosistema Henry & Co. con chiarezza, fiducia e una disciplina di marca a lungo termine.",
+      "Un portale corporate multi-divisione di livello premium, concepito per presentare l’ecosistema Henry Onyx con chiarezza, fiducia e una disciplina di marca a lungo termine.",
     columnCompany: "Azienda",
     columnLegal: "Note legali",
     home: "Home",
@@ -1080,10 +1080,10 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Informativa sulla privacy",
     termsConditions: "Termini e condizioni",
     allRightsReserved: "Tutti i diritti riservati.",
-    builtBy: "Progettato e realizzato internamente da Henry & Co. Studio per l’ecosistema Henry & Co.",
+    builtBy: "Progettato e realizzato internamente da Henry Onyx Studio per l’ecosistema Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Contattare Henry & Co.",
+    eyebrow: "Contattare Henry Onyx",
     title:
       "Conversazioni a livello di gruppo — partnership, media, fornitori, investitori e tutto ciò che riguarda la casa madre.",
     body:
@@ -1104,11 +1104,11 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Livello corporate",
     serverWarning: "Alcuni contenuti potrebbero essere ancora in aggiornamento.",
     pageSectionsAria: "Sezioni della pagina",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "Lo stesso standard operativo a cui si affidano clienti, partner e team.",
     footerBody:
-      "Ogni superficie corporate di Henry & Co. — chi siamo, contatti, governance, policy — viene pubblicata seguendo un unico standard editoriale: ciò che si legge in pubblico corrisponde a ciò che teniamo in privato.",
+      "Ogni superficie corporate di Henry Onyx — chi siamo, contatti, governance, policy — viene pubblicata seguendo un unico standard editoriale: ciò che si legge in pubblico corrisponde a ciò che teniamo in privato.",
     footerUseCase: "Caso d’uso",
     footerUseCaseValue: "Clienti · Partner · Media",
     footerStandard: "Standard",
@@ -1118,7 +1118,7 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     eyebrow: "Su questa azienda",
     title: "Un’azienda, più attività focalizzate, un unico standard operativo.",
     body:
-      "Henry & Co. è un gruppo operativo multi-divisione. Ogni divisione guida il proprio mercato — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — con lo stesso standard di presentazione, prenotazione, pricing e follow-up. L’hub esiste affinché clienti, partner e stakeholder possano vedere l’intera azienda in un unico luogo e raggiungere il business giusto in un solo passo. Cresciamo aggiungendo divisioni dentro questo quadro, non estendendo un singolo marchio fino a snaturarlo.",
+      "Henry Onyx è un gruppo operativo multi-divisione. Ogni divisione guida il proprio mercato — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — con lo stesso standard di presentazione, prenotazione, pricing e follow-up. L’hub esiste affinché clienti, partner e stakeholder possano vedere l’intera azienda in un unico luogo e raggiungere il business giusto in un solo passo. Cresciamo aggiungendo divisioni dentro questo quadro, non estendendo un singolo marchio fino a snaturarlo.",
     figureDivisionsLive: "Divisioni attive",
     figureYearEstablished: "Anno di fondazione",
     figureOperatingCity: "Città operativa",
@@ -1143,22 +1143,22 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Chiudi profilo",
     modalEyebrow: "Profilo di leadership",
     modalBioFallback:
-      "Questo profilo fa parte del consiglio pubblico di leadership di Henry & Co.",
+      "Questo profilo fa parte del consiglio pubblico di leadership di Henry Onyx",
     emptyTitle: "Qui appariranno le informazioni di leadership",
     emptyBody:
       "Pubblica i profili di leadership dal pannello del titolare per presentare proprietà, direzione e rappresentanti aziendali di fiducia in un formato pubblico curato.",
     sharedSectionDescription:
-      "I profili di questa sezione rappresentano le persone, la responsabilità e la cura operativa che sostengono il gruppo Henry & Co.",
+      "I profili di questa sezione rappresentano le persone, la responsabilità e la cura operativa che sostengono il gruppo Henry Onyx",
     headerEyebrow: "Consiglio di leadership",
     headerTitle: "Leadership e responsabilità",
     headerBody:
-      "Scopri le persone che danno forma a Henry & Co. tra proprietà, leadership pubblica, direzione operativa e responsabilità di lungo periodo.",
+      "Scopri le persone che danno forma a Henry Onyx tra proprietà, leadership pubblica, direzione operativa e responsabilità di lungo periodo.",
     metricProfiles: "Profili",
     metricOwnership: "Proprietà",
     metricManagement: "Direzione",
     spotlightEyebrow: "Profilo in primo piano",
     spotlightBioFallback:
-      "Questo profilo di leadership rappresenta le persone responsabili di indirizzo, governance ed esecuzione premium nel gruppo Henry & Co.",
+      "Questo profilo di leadership rappresenta le persone responsabili di indirizzo, governance ed esecuzione premium nel gruppo Henry Onyx",
     sectionOwnershipTitle: "Proprietà",
     sectionOwnershipEyebrow: "Leadership aziendale",
     sectionManagementTitle: "Direzione",
@@ -1172,40 +1172,40 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     eyebrow: "Domande frequenti",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Azienda",
     linkHome: "Home",
     linkAbout: "Chi siamo",
     linkContact: "Contatto",
     linkSearch: "Cerca",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Account Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Account Henry Onyx",
     linkLanguagePrefs: "Lingua e preferenze",
     linkEmailPrefs: "Preferenze e-mail",
     colLegal: "Note legali",
     linkPrivacy: "Privacy",
     linkTerms: "Termini",
     allRightsReserved: "Tutti i diritti riservati.",
-    builtBy: "Progettato e sviluppato internamente da Henry & Co. Studio per l'ecosistema Henry & Co.",
+    builtBy: "Progettato e sviluppato internamente da Henry Onyx Studio per l'ecosistema Henry Onyx",
     menuDivisionsDirectory: "Elenco divisioni",
     menuAbout: "Chi siamo",
     menuContact: "Contatto",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Annulla iscrizione — Henry & Co.",
-    metaDescription: "Annulla l'iscrizione alle newsletter Henry & Co. con un clic.",
+    metaTitle: "Annulla iscrizione — Henry Onyx",
+    metaDescription: "Annulla l'iscrizione alle newsletter Henry Onyx con un clic.",
     eyebrow: "Newsletter",
     missingTitle: "Link di annullamento mancante.",
     missingBody:
-      "Apri il link «Annulla iscrizione» da qualsiasi e-mail Henry & Co. per arrivare qui con un token valido. Se il tuo link è scaduto, contattaci e lo gestiremo manualmente.",
+      "Apri il link «Annulla iscrizione» da qualsiasi e-mail Henry Onyx per arrivare qui con un token valido. Se il tuo link è scaduto, contattaci e lo gestiremo manualmente.",
     missingCtaContact: "Contatta l'assistenza",
     missingCtaBack: "Torna alle newsletter",
     errorTitle: "Non siamo riusciti a disiscriverti.",
     errorManualNote:
-      "Se il problema persiste, rispondi «annulla iscrizione» a qualsiasi e-mail Henry & Co. e il nostro team provvederà manualmente.",
+      "Se il problema persiste, rispondi «annulla iscrizione» a qualsiasi e-mail Henry Onyx e il nostro team provvederà manualmente.",
     successTitle: "Sei disiscritto.",
     successBody:
-      "{{email}} non riceverà più le newsletter Henry & Co.. I messaggi transazionali (ricevute, spedizioni, verifica, sicurezza) continueranno ad essere inviati perché siamo obbligati a farlo.",
+      "{{email}} non riceverà più le newsletter Henry Onyx. I messaggi transazionali (ricevute, spedizioni, verifica, sicurezza) continueranno ad essere inviati perché siamo obbligati a farlo.",
     changedMind: "Hai cambiato idea?",
     ctaSubscribeAgain: "Iscriviti di nuovo",
     ctaManagePrefs: "Gestisci tutte le preferenze",
@@ -1214,7 +1214,7 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "一座面向多业务板块的高级企业门户,以清晰、可信与长期一致的品牌纪律,呈现 Henry & Co. 的完整生态。",
+      "一座面向多业务板块的高级企业门户,以清晰、可信与长期一致的品牌纪律,呈现 Henry Onyx 的完整生态。",
     columnCompany: "公司",
     columnLegal: "法律",
     home: "首页",
@@ -1223,10 +1223,10 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "隐私政策",
     termsConditions: "条款与条件",
     allRightsReserved: "保留所有权利。",
-    builtBy: "由 Henry & Co. Studio 内部为 Henry & Co. 生态量身设计与打造",
+    builtBy: "由 Henry Onyx Studio 内部为 Henry Onyx 生态量身设计与打造",
   },
   contactHero: {
-    eyebrow: "联系 Henry & Co.",
+    eyebrow: "联系 Henry Onyx",
     title:
       "集团层面的沟通——合作、媒体、供应商、投资者,以及一切属于母公司的事务。",
     body:
@@ -1247,11 +1247,11 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "企业级",
     serverWarning: "部分内容可能仍在更新中。",
     pageSectionsAria: "页面栏目",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "与客户、合作伙伴及团队所信赖的运营标准始终一致。",
     footerBody:
-      "Henry & Co. 旗下的每一处对外页面——关于、联系、治理、政策——皆遵循同一套编辑标准发布,公开呈现与内部坚持完全一致。",
+      "Henry Onyx 旗下的每一处对外页面——关于、联系、治理、政策——皆遵循同一套编辑标准发布,公开呈现与内部坚持完全一致。",
     footerUseCase: "适用场景",
     footerUseCaseValue: "客户 · 合作伙伴 · 媒体",
     footerStandard: "标准",
@@ -1261,7 +1261,7 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     eyebrow: "关于本公司",
     title: "一家公司,多项专注业务,统一的运营标准。",
     body:
-      "Henry & Co. 是一家多业务板块的运营集团。各板块各自经营自有市场——Care、Marketplace、Property、Logistics、Studio、Jobs、Learn——并按同一标准完成呈现、预订、定价与后续跟进。本中心存在的意义,是让客户、合作伙伴与利益相关方在同一入口看见公司全貌,并在一步之内抵达对应业务。我们的成长方式,是在这套框架内增设业务板块,而非将单一品牌过度拉伸。",
+      "Henry Onyx 是一家多业务板块的运营集团。各板块各自经营自有市场——Care、Marketplace、Property、Logistics、Studio、Jobs、Learn——并按同一标准完成呈现、预订、定价与后续跟进。本中心存在的意义,是让客户、合作伙伴与利益相关方在同一入口看见公司全貌,并在一步之内抵达对应业务。我们的成长方式,是在这套框架内增设业务板块,而非将单一品牌过度拉伸。",
     figureDivisionsLive: "在线业务板块",
     figureYearEstablished: "成立年份",
     figureOperatingCity: "运营所在地",
@@ -1286,22 +1286,22 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "关闭介绍",
     modalEyebrow: "领导团队介绍",
     modalBioFallback:
-      "该介绍属于 Henry & Co. 公开发布的领导团队信息。",
+      "该介绍属于 Henry Onyx 公开发布的领导团队信息。",
     emptyTitle: "领导团队信息将在此显示",
     emptyBody:
       "请在所有者控制台中发布领导团队介绍,以体面而专业的方式向公众呈现公司的股东、管理层及主要代表。",
     sharedSectionDescription:
-      "此部分的介绍体现着 Henry & Co. 集团背后的人、所担负的治理责任与持续的运营守护。",
+      "此部分的介绍体现着 Henry Onyx 集团背后的人、所担负的治理责任与持续的运营守护。",
     headerEyebrow: "领导团队",
     headerTitle: "领导与治理",
     headerBody:
-      "认识塑造 Henry & Co. 的人——涵盖股东、对外领导、运营方向与长期责任。",
+      "认识塑造 Henry Onyx 的人——涵盖股东、对外领导、运营方向与长期责任。",
     metricProfiles: "介绍数量",
     metricOwnership: "股东",
     metricManagement: "管理层",
     spotlightEyebrow: "焦点介绍",
     spotlightBioFallback:
-      "该领导团队介绍代表 Henry & Co. 集团在方向、治理与高品质执行方面所依赖的核心成员。",
+      "该领导团队介绍代表 Henry Onyx 集团在方向、治理与高品质执行方面所依赖的核心成员。",
     sectionOwnershipTitle: "股东",
     sectionOwnershipEyebrow: "公司领导",
     sectionManagementTitle: "管理层",
@@ -1315,40 +1315,40 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     eyebrow: "常见问题",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "公司",
     linkHome: "首页",
     linkAbout: "关于我们",
     linkContact: "联系我们",
     linkSearch: "搜索",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Henry & Co.账户",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Henry Onyx账户",
     linkLanguagePrefs: "语言与偏好",
     linkEmailPrefs: "邮件偏好",
     colLegal: "法律",
     linkPrivacy: "隐私",
     linkTerms: "条款",
     allRightsReserved: "版权所有。",
-    builtBy: "由Henry & Co. Studio为Henry & Co.生态系统内部设计和构建",
+    builtBy: "由Henry Onyx Studio为Henry Onyx生态系统内部设计和构建",
     menuDivisionsDirectory: "部门目录",
     menuAbout: "关于我们",
     menuContact: "联系我们",
   },
   newsletterUnsubscribe: {
-    metaTitle: "取消订阅 — Henry & Co.",
-    metaDescription: "一键取消订阅Henry & Co.新闻通讯。",
+    metaTitle: "取消订阅 — Henry Onyx",
+    metaDescription: "一键取消订阅Henry Onyx新闻通讯。",
     eyebrow: "新闻通讯",
     missingTitle: "取消订阅链接缺失。",
     missingBody:
-      "打开任何Henry & Co.邮件中的「取消订阅」链接，携带有效令牌来到此页面。如果您的链接已过期，请联系我们，我们将手动处理。",
+      "打开任何Henry Onyx邮件中的「取消订阅」链接，携带有效令牌来到此页面。如果您的链接已过期，请联系我们，我们将手动处理。",
     missingCtaContact: "联系支持",
     missingCtaBack: "返回新闻通讯",
     errorTitle: "我们无法为您取消订阅。",
     errorManualNote:
-      "如果此情况持续发生，请回复任何Henry & Co.邮件并注明「取消订阅」，我们的团队将手动处理。",
+      "如果此情况持续发生，请回复任何Henry Onyx邮件并注明「取消订阅」，我们的团队将手动处理。",
     successTitle: "您已取消订阅。",
     successBody:
-      "{{email}} 将不再收到Henry & Co.新闻通讯。交易类消息（收据、配送、验证、安全）仍会发送，因为我们必须这样做。",
+      "{{email}} 将不再收到Henry Onyx新闻通讯。交易类消息（收据、配送、验证、安全）仍会发送，因为我们必须这样做。",
     changedMind: "改变主意了？",
     ctaSubscribeAgain: "重新订阅",
     ctaManagePrefs: "管理所有偏好",
@@ -1357,7 +1357,7 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Henry & Co. के पूरे तंत्र को स्पष्टता, भरोसे और दीर्घकालिक ब्रांड अनुशासन के साथ प्रस्तुत करने के लिए तैयार किया गया एक प्रीमियम बहु-डिवीज़न कॉर्पोरेट प्रवेशद्वार।",
+      "Henry Onyx के पूरे तंत्र को स्पष्टता, भरोसे और दीर्घकालिक ब्रांड अनुशासन के साथ प्रस्तुत करने के लिए तैयार किया गया एक प्रीमियम बहु-डिवीज़न कॉर्पोरेट प्रवेशद्वार।",
     columnCompany: "कंपनी",
     columnLegal: "क़ानूनी",
     home: "मुखपृष्ठ",
@@ -1366,10 +1366,10 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "गोपनीयता नीति",
     termsConditions: "नियम एवं शर्तें",
     allRightsReserved: "सर्वाधिकार सुरक्षित।",
-    builtBy: "Henry & Co. Studio द्वारा Henry & Co. तंत्र के लिए स्वयं अभिकल्पित एवं निर्मित",
+    builtBy: "Henry Onyx Studio द्वारा Henry Onyx तंत्र के लिए स्वयं अभिकल्पित एवं निर्मित",
   },
   contactHero: {
-    eyebrow: "Henry & Co. से संपर्क करें",
+    eyebrow: "Henry Onyx से संपर्क करें",
     title:
       "समूह स्तर की बातचीत — साझेदारियाँ, मीडिया, आपूर्तिकर्ता, निवेशक और मूल कंपनी से जुड़ा हर विषय।",
     body:
@@ -1390,11 +1390,11 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "कॉर्पोरेट स्तर",
     serverWarning: "कुछ सामग्री अभी भी अद्यतन हो रही हो सकती है।",
     pageSectionsAria: "पृष्ठ के खंड",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "वही परिचालन मानक जिस पर हमारे ग्राहक, साझेदार और टीमें भरोसा करती हैं।",
     footerBody:
-      "Henry & Co. की हर सार्वजनिक सतह — परिचय, संपर्क, अभिशासन, नीति — एक ही संपादकीय मानक के अंतर्गत प्रकाशित होती है, ताकि जो आप सार्वजनिक रूप से पढ़ते हैं वही हम भीतर से भी पालन करते हैं।",
+      "Henry Onyx की हर सार्वजनिक सतह — परिचय, संपर्क, अभिशासन, नीति — एक ही संपादकीय मानक के अंतर्गत प्रकाशित होती है, ताकि जो आप सार्वजनिक रूप से पढ़ते हैं वही हम भीतर से भी पालन करते हैं।",
     footerUseCase: "उपयोग",
     footerUseCaseValue: "ग्राहक · साझेदार · मीडिया",
     footerStandard: "मानक",
@@ -1404,7 +1404,7 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     eyebrow: "इस कंपनी के बारे में",
     title: "एक कंपनी, कई केंद्रित व्यवसाय, एक ही परिचालन मानक।",
     body:
-      "Henry & Co. एक बहु-डिवीज़न परिचालन समूह है। प्रत्येक डिवीज़न — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — अपने बाज़ार का संचालन उसी प्रस्तुति, बुकिंग, मूल्य-निर्धारण और अनुवर्ती सेवा के मानक पर करता है। यह हब इसलिए है कि ग्राहक, साझेदार और हितधारक पूरी कंपनी को एक ही जगह देख सकें और एक ही क़दम में सही व्यवसाय तक पहुँच सकें। हम इसी ढाँचे के भीतर नए डिवीज़न जोड़कर बढ़ते हैं, किसी एक ब्रांड को अधिक नहीं खींचते।",
+      "Henry Onyx एक बहु-डिवीज़न परिचालन समूह है। प्रत्येक डिवीज़न — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — अपने बाज़ार का संचालन उसी प्रस्तुति, बुकिंग, मूल्य-निर्धारण और अनुवर्ती सेवा के मानक पर करता है। यह हब इसलिए है कि ग्राहक, साझेदार और हितधारक पूरी कंपनी को एक ही जगह देख सकें और एक ही क़दम में सही व्यवसाय तक पहुँच सकें। हम इसी ढाँचे के भीतर नए डिवीज़न जोड़कर बढ़ते हैं, किसी एक ब्रांड को अधिक नहीं खींचते।",
     figureDivisionsLive: "सक्रिय डिवीज़न",
     figureYearEstablished: "स्थापना वर्ष",
     figureOperatingCity: "संचालन का शहर",
@@ -1429,22 +1429,22 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "परिचय बंद करें",
     modalEyebrow: "नेतृत्व परिचय",
     modalBioFallback:
-      "यह परिचय Henry & Co. के सार्वजनिक नेतृत्व मंडल का हिस्सा है।",
+      "यह परिचय Henry Onyx के सार्वजनिक नेतृत्व मंडल का हिस्सा है।",
     emptyTitle: "नेतृत्व की जानकारी यहाँ प्रकट होगी",
     emptyBody:
       "स्वामी डैशबोर्ड से नेतृत्व परिचय प्रकाशित कीजिए, ताकि कंपनी का स्वामित्व, प्रबंधन और भरोसेमंद प्रतिनिधि एक सुसज्जित सार्वजनिक रूप में दिखाई दें।",
     sharedSectionDescription:
-      "इस खंड के परिचय Henry & Co. समूह के पीछे खड़े लोगों, उनकी देखरेख और परिचालन उत्तरदायित्व को दर्शाते हैं।",
+      "इस खंड के परिचय Henry Onyx समूह के पीछे खड़े लोगों, उनकी देखरेख और परिचालन उत्तरदायित्व को दर्शाते हैं।",
     headerEyebrow: "नेतृत्व मंडल",
     headerTitle: "नेतृत्व और देखरेख",
     headerBody:
-      "उन लोगों से परिचित हों जो स्वामित्व, सार्वजनिक नेतृत्व, परिचालन दिशा और दीर्घकालिक उत्तरदायित्व के माध्यम से Henry & Co. को आकार देते हैं।",
+      "उन लोगों से परिचित हों जो स्वामित्व, सार्वजनिक नेतृत्व, परिचालन दिशा और दीर्घकालिक उत्तरदायित्व के माध्यम से Henry Onyx को आकार देते हैं।",
     metricProfiles: "परिचय",
     metricOwnership: "स्वामित्व",
     metricManagement: "प्रबंधन",
     spotlightEyebrow: "विशेष परिचय",
     spotlightBioFallback:
-      "यह नेतृत्व परिचय उन व्यक्तियों का प्रतिनिधित्व करता है जो Henry & Co. समूह की दिशा, अभिशासन और प्रीमियम क्रियान्वयन के लिए उत्तरदायी हैं।",
+      "यह नेतृत्व परिचय उन व्यक्तियों का प्रतिनिधित्व करता है जो Henry Onyx समूह की दिशा, अभिशासन और प्रीमियम क्रियान्वयन के लिए उत्तरदायी हैं।",
     sectionOwnershipTitle: "स्वामित्व",
     sectionOwnershipEyebrow: "कंपनी नेतृत्व",
     sectionManagementTitle: "प्रबंधन",
@@ -1458,40 +1458,40 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     eyebrow: "अक्सर पूछे जाने वाले प्रश्न",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "कंपनी",
     linkHome: "होम",
     linkAbout: "हमारे बारे में",
     linkContact: "संपर्क",
     linkSearch: "खोज",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Henry & Co. खाता",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Henry Onyx खाता",
     linkLanguagePrefs: "भाषा और प्राथमिकताएं",
     linkEmailPrefs: "ईमेल प्राथमिकताएं",
     colLegal: "कानूनी",
     linkPrivacy: "गोपनीयता",
     linkTerms: "शर्तें",
     allRightsReserved: "सर्वाधिकार सुरक्षित।",
-    builtBy: "Henry & Co. Studio द्वारा Henry & Co. पारिस्थितिकी तंत्र के लिए आंतरिक रूप से डिज़ाइन और निर्मित",
+    builtBy: "Henry Onyx Studio द्वारा Henry Onyx पारिस्थितिकी तंत्र के लिए आंतरिक रूप से डिज़ाइन और निर्मित",
     menuDivisionsDirectory: "डिवीजन निर्देशिका",
     menuAbout: "हमारे बारे में",
     menuContact: "संपर्क",
   },
   newsletterUnsubscribe: {
-    metaTitle: "सदस्यता रद्द करें — Henry & Co.",
-    metaDescription: "Henry & Co. न्यूज़लेटर से एक क्लिक में सदस्यता रद्द करें।",
+    metaTitle: "सदस्यता रद्द करें — Henry Onyx",
+    metaDescription: "Henry Onyx न्यूज़लेटर से एक क्लिक में सदस्यता रद्द करें।",
     eyebrow: "न्यूज़लेटर",
     missingTitle: "सदस्यता रद्द करने का लिंक नहीं मिला।",
     missingBody:
-      "किसी भी Henry & Co. ईमेल से «सदस्यता रद्द करें» लिंक खोलें और वैध टोकन के साथ यहां आएं। यदि आपका लिंक समाप्त हो गया है, तो हमसे संपर्क करें और हम इसे मैन्युअली पूरा करेंगे।",
+      "किसी भी Henry Onyx ईमेल से «सदस्यता रद्द करें» लिंक खोलें और वैध टोकन के साथ यहां आएं। यदि आपका लिंक समाप्त हो गया है, तो हमसे संपर्क करें और हम इसे मैन्युअली पूरा करेंगे।",
     missingCtaContact: "सहायता से संपर्क करें",
     missingCtaBack: "न्यूज़लेटर पर वापस जाएं",
     errorTitle: "हम आपकी सदस्यता रद्द नहीं कर सके।",
     errorManualNote:
-      "यदि यह जारी रहता है, किसी भी Henry & Co. ईमेल का जवाब «सदस्यता रद्द करें» लिखकर दें और हमारी टीम इसे मैन्युअली पूरा करेगी।",
+      "यदि यह जारी रहता है, किसी भी Henry Onyx ईमेल का जवाब «सदस्यता रद्द करें» लिखकर दें और हमारी टीम इसे मैन्युअली पूरा करेगी।",
     successTitle: "आपकी सदस्यता रद्द हो गई।",
     successBody:
-      "{{email}} को Henry & Co. न्यूज़लेटर नहीं मिलेंगे। लेन-देन संबंधी संदेश (रसीदें, शिपिंग, सत्यापन, सुरक्षा) अभी भी भेजे जाएंगे क्योंकि हमें ऐसा करना आवश्यक है।",
+      "{{email}} को Henry Onyx न्यूज़लेटर नहीं मिलेंगे। लेन-देन संबंधी संदेश (रसीदें, शिपिंग, सत्यापन, सुरक्षा) अभी भी भेजे जाएंगे क्योंकि हमें ऐसा करना आवश्यक है।",
     changedMind: "क्या आपने अपना मन बदल लिया?",
     ctaSubscribeAgain: "फिर से सदस्यता लें",
     ctaManagePrefs: "सभी प्राथमिकताएं प्रबंधित करें",
@@ -1500,7 +1500,7 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Ọnụ ụzọ ụlọọrụ dị elu nke nwere ọtụtụ ngalaba, eji egosi usoro Henry & Co. n’ụzọ doro anya, na-ewete ntụkwasị obi, na-edobekwa ọkwa aha ya ogologo oge.",
+      "Ọnụ ụzọ ụlọọrụ dị elu nke nwere ọtụtụ ngalaba, eji egosi usoro Henry Onyx n’ụzọ doro anya, na-ewete ntụkwasị obi, na-edobekwa ọkwa aha ya ogologo oge.",
     columnCompany: "Ụlọọrụ",
     columnLegal: "Iwu",
     home: "Mbụ",
@@ -1509,10 +1509,10 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Iwu nzuzo",
     termsConditions: "Usoro na ọnọdụ",
     allRightsReserved: "Ikike niile e debere.",
-    builtBy: "Atụpụtara ma rụpụta n’ime ụlọ site na Henry & Co. Studio maka usoro Henry & Co.",
+    builtBy: "Atụpụtara ma rụpụta n’ime ụlọ site na Henry Onyx Studio maka usoro Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Kpọtụrụ Henry & Co.",
+    eyebrow: "Kpọtụrụ Henry Onyx",
     title:
       "Mkparịta ụka n’ọkwa ụlọọrụ-nne — mmekorita, mgbasa ozi, ndị na-eweta ngwa ahịa, ndị mmega ego, na ihe ọ bụla metụtara ụlọọrụ-nne.",
     body:
@@ -1533,11 +1533,11 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "N’ọkwa ụlọọrụ",
     serverWarning: "Ụfọdụ ihe odide nwere ike ka na-emelite.",
     pageSectionsAria: "Akụkụ ibe a",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "Otu ọkwa ọrụ ahụ ndị ahịa anyị, ndị mmekọ, na ndị otu anyị tụkwasịrị obi na ya.",
     footerBody:
-      "Ihu ọ bụla nke ụlọọrụ Henry & Co. — banyere anyị, nkpọtụrụ, ọchịchị, iwu — na-eso otu ọkwa nchịkọta edemede, ka ihe ndị mmadụ na-agụ n’ihu ọha bụrụkwa ihe anyị na-edobe n’ime onwe anyị.",
+      "Ihu ọ bụla nke ụlọọrụ Henry Onyx — banyere anyị, nkpọtụrụ, ọchịchị, iwu — na-eso otu ọkwa nchịkọta edemede, ka ihe ndị mmadụ na-agụ n’ihu ọha bụrụkwa ihe anyị na-edobe n’ime onwe anyị.",
     footerUseCase: "Ihe e ji ya eme",
     footerUseCaseValue: "Ndị ahịa · Ndị mmekọ · Mgbasa ozi",
     footerStandard: "Ọkwa",
@@ -1547,7 +1547,7 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     eyebrow: "Banyere ụlọọrụ a",
     title: "Otu ụlọọrụ, ọtụtụ ụzọ azụmahịa lekwasịrị anya, otu ọkwa ọrụ.",
     body:
-      "Henry & Co. bụ otu ụlọọrụ-nne nwere ọtụtụ ngalaba. Ngalaba ọ bụla na-ejikwa ahịa nke aka ya — Care, Marketplace, Property, Logistics, Studio, Jobs, na Learn — n’otu ọkwa nke ngosipụta, ndokwa, ọnụ ahịa, na nlekọta. Ebe nzuko a dị ka ndị ahịa, ndị mmekọ, na ndị nwere mmasị wee hụ ụlọọrụ niile n’otu ebe ma rute n’azụmahịa ziri ezi n’otu nzọụkwụ. Anyị na-eto site n’itinye ngalaba ọhụrụ n’ime usoro a, ọ bụghị site n’ikwagharị otu ọkwa aha karịa ike ya.",
+      "Henry Onyx bụ otu ụlọọrụ-nne nwere ọtụtụ ngalaba. Ngalaba ọ bụla na-ejikwa ahịa nke aka ya — Care, Marketplace, Property, Logistics, Studio, Jobs, na Learn — n’otu ọkwa nke ngosipụta, ndokwa, ọnụ ahịa, na nlekọta. Ebe nzuko a dị ka ndị ahịa, ndị mmekọ, na ndị nwere mmasị wee hụ ụlọọrụ niile n’otu ebe ma rute n’azụmahịa ziri ezi n’otu nzọụkwụ. Anyị na-eto site n’itinye ngalaba ọhụrụ n’ime usoro a, ọ bụghị site n’ikwagharị otu ọkwa aha karịa ike ya.",
     figureDivisionsLive: "Ngalaba na-arụ ọrụ",
     figureYearEstablished: "Afọ a malitere ya",
     figureOperatingCity: "Obodo a na-arụ ọrụ",
@@ -1572,22 +1572,22 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Mechie akụkọ",
     modalEyebrow: "Akụkọ banyere onye nduzi",
     modalBioFallback:
-      "Akụkọ a so na ndị nduzi Henry & Co. e gosipụtara n’ihu ọha.",
+      "Akụkọ a so na ndị nduzi Henry Onyx e gosipụtara n’ihu ọha.",
     emptyTitle: "Ozi banyere ndị nduzi ga-apụta ebe a",
     emptyBody:
       "Tinye akụkọ ndị nduzi site n’ụlọ ọchịchị onye nwe iji gosipụta nweta, njikwa, na ndị nnọchi anya ụlọọrụ a tụkwasịrị obi n’ụdị mara mma maka ọha.",
     sharedSectionDescription:
-      "Akụkọ dị n’akụkụ a na-egosi mmadụ, nlekọta, na ọrụ nkwado dị n’azụ otu Henry & Co.",
+      "Akụkọ dị n’akụkụ a na-egosi mmadụ, nlekọta, na ọrụ nkwado dị n’azụ otu Henry Onyx",
     headerEyebrow: "Ọgbakọ ndị nduzi",
     headerTitle: "Nduzi na nlekọta",
     headerBody:
-      "Matakwuo ndị na-akpụzi Henry & Co. — site na nweta, nduzi ọha, ntụzịaka ọrụ, na ọrụ nkwado nke ogologo oge.",
+      "Matakwuo ndị na-akpụzi Henry Onyx — site na nweta, nduzi ọha, ntụzịaka ọrụ, na ọrụ nkwado nke ogologo oge.",
     metricProfiles: "Akụkọ",
     metricOwnership: "Nweta",
     metricManagement: "Njikwa",
     spotlightEyebrow: "Akụkọ pụrụ iche",
     spotlightBioFallback:
-      "Akụkọ nduzi a na-egosi ndị na-ahụ maka ntụzịaka, ọchịchị, na ọrụ dị elu n’otu Henry & Co.",
+      "Akụkọ nduzi a na-egosi ndị na-ahụ maka ntụzịaka, ọchịchị, na ọrụ dị elu n’otu Henry Onyx",
     sectionOwnershipTitle: "Nweta",
     sectionOwnershipEyebrow: "Ndị nduzi ụlọọrụ",
     sectionManagementTitle: "Njikwa",
@@ -1601,40 +1601,40 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     eyebrow: "Ajụjụ a na-ajụkarị",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Ụlọ ọrụ",
     linkHome: "Ụlọ",
     linkAbout: "Maka anyị",
     linkContact: "Kpọtụrụ anyị",
     linkSearch: "Chọọ",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Akaụntụ Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Akaụntụ Henry Onyx",
     linkLanguagePrefs: "Asụsụ & mmasị",
     linkEmailPrefs: "Mmasị imeli",
     colLegal: "Iwu",
     linkPrivacy: "Nzuzo",
     linkTerms: "Usoro",
     allRightsReserved: "Ikike nile echekwara.",
-    builtBy: "Achepụtara ma wuo n'ime ụlọ site na Henry & Co. Studio maka njikọ Henry & Co.",
+    builtBy: "Achepụtara ma wuo n'ime ụlọ site na Henry Onyx Studio maka njikọ Henry Onyx",
     menuDivisionsDirectory: "Ndepụta ngalaba",
     menuAbout: "Maka anyị",
     menuContact: "Kpọtụrụ anyị",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Wepụ onwe gị — Henry & Co.",
-    metaDescription: "Wepụ onwe gị na mbipụta ozi Henry & Co. n'otu ntụọ.",
+    metaTitle: "Wepụ onwe gị — Henry Onyx",
+    metaDescription: "Wepụ onwe gị na mbipụta ozi Henry Onyx n'otu ntụọ.",
     eyebrow: "Mbipụta ozi",
     missingTitle: "Njikọ iwepụ onwe gị adịghị.",
     missingBody:
-      "Mepee njikọ «Wepụ onwe gị» n'ozi imeli ọ bụla nke Henry & Co. iji bịa ebe a na token zuru oke. Ọ bụrụ na njikọ gị gasịrị, kpọtụrụ anyị ma anyị ga-eme ya n'aka.",
+      "Mepee njikọ «Wepụ onwe gị» n'ozi imeli ọ bụla nke Henry Onyx iji bịa ebe a na token zuru oke. Ọ bụrụ na njikọ gị gasịrị, kpọtụrụ anyị ma anyị ga-eme ya n'aka.",
     missingCtaContact: "Kpọtụrụ nkwado",
     missingCtaBack: "Laghachi na mbipụta ozi",
     errorTitle: "Anyị enweghị ike iwepụ gị.",
     errorManualNote:
-      "Ọ bụrụ na nke a na-aga n'ihu, zaa «wepụ onwe gị» na ozi imeli ọ bụla Henry & Co. ma ndị otu anyị ga-eme ya n'aka.",
+      "Ọ bụrụ na nke a na-aga n'ihu, zaa «wepụ onwe gị» na ozi imeli ọ bụla Henry Onyx ma ndị otu anyị ga-eme ya n'aka.",
     successTitle: "Ewepụrụ gị.",
     successBody:
-      "{{email}} agaghị enweta mbipụta ozi Henry & Co.. Ozi ahịa (영수증, nziga, nyochaa, nchedo) ka na-eziga n'ihi na anyị ga-eme ya.",
+      "{{email}} agaghị enweta mbipụta ozi Henry Onyx. Ozi ahịa (영수증, nziga, nyochaa, nchedo) ka na-eziga n'ihi na anyị ga-eme ya.",
     changedMind: "Ị gbanwere uche gị?",
     ctaSubscribeAgain: "Deere aha ọzọ",
     ctaManagePrefs: "Jikwaa nhọrọ niile",
@@ -1643,7 +1643,7 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Ẹnu-ọnà aláṣẹ-onírúurú-ẹ̀ka tó wúlò gan-an, tí a ṣètò láti fi ètò Henry & Co. hàn pẹ̀lú ìmọ́lẹ̀, ìgbẹ́kẹ̀lé, àti ìdánilójú orúkọ ẹ̀dá-iṣẹ́ tí kò ní pòórá lóòókán.",
+      "Ẹnu-ọnà aláṣẹ-onírúurú-ẹ̀ka tó wúlò gan-an, tí a ṣètò láti fi ètò Henry Onyx hàn pẹ̀lú ìmọ́lẹ̀, ìgbẹ́kẹ̀lé, àti ìdánilójú orúkọ ẹ̀dá-iṣẹ́ tí kò ní pòórá lóòókán.",
     columnCompany: "Iléeṣẹ́",
     columnLegal: "Òfin",
     home: "Ojú-ìwé àkọ́kọ́",
@@ -1652,10 +1652,10 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Ìlànà Ìpamọ́",
     termsConditions: "Àwọn Ìtọ́ni àti Àdéhùn",
     allRightsReserved: "Gbogbo ẹ̀tọ́ ni a fi pamọ́.",
-    builtBy: "A ṣe àpẹẹrẹ rẹ̀ a sì kọ́ ọ ní ilé nípasẹ̀ Henry & Co. Studio fún ètò Henry & Co.",
+    builtBy: "A ṣe àpẹẹrẹ rẹ̀ a sì kọ́ ọ ní ilé nípasẹ̀ Henry Onyx Studio fún ètò Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Bá Henry & Co. sọ̀rọ̀",
+    eyebrow: "Bá Henry Onyx sọ̀rọ̀",
     title:
       "Ìjíròrò ní ìpele iléeṣẹ́ òbí — àjọṣe-òwò, ìròyìn, awọn aṣàwòmí, awọn olówó, àti ohunkóhun tó jẹ́ ti iléeṣẹ́-òbí.",
     body:
@@ -1676,11 +1676,11 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Ìpele iléeṣẹ́",
     serverWarning: "Àwọn àkóónú kan lè ṣì wà nínú àtúnṣe.",
     pageSectionsAria: "Àwọn apá ojú-ìwé",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "Ìwọ̀n iṣẹ́ kan náà tí àwọn oníbàárà wa, àwọn alábàáṣe wa, àti àwọn ẹgbẹ́ wa ní ìgbẹ́kẹ̀lé sí.",
     footerBody:
-      "Gbogbo ìhà ojú-ọ̀nà Henry & Co. — nípa wa, olùbáni-sọ̀rọ̀, ìṣàkóso, ìlànà — ni a tẹ̀jáde lábẹ́ ìwọ̀n àtúnṣe kan kan ṣoṣo, kí ohun tí o kà ní gbangba bá ohun tí à ń mú ṣẹ ní ìkọ̀kọ̀ rí.",
+      "Gbogbo ìhà ojú-ọ̀nà Henry Onyx — nípa wa, olùbáni-sọ̀rọ̀, ìṣàkóso, ìlànà — ni a tẹ̀jáde lábẹ́ ìwọ̀n àtúnṣe kan kan ṣoṣo, kí ohun tí o kà ní gbangba bá ohun tí à ń mú ṣẹ ní ìkọ̀kọ̀ rí.",
     footerUseCase: "Ìlò",
     footerUseCaseValue: "Oníbàárà · Alábàáṣe · Ìròyìn",
     footerStandard: "Ìwọ̀n",
@@ -1690,7 +1690,7 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     eyebrow: "Nípa iléeṣẹ́ yìí",
     title: "Iléeṣẹ́ kan, ọ̀pọ̀lọpọ̀ òwò tó ní àfojúsùn, ìwọ̀n iṣẹ́ kan náà.",
     body:
-      "Henry & Co. jẹ́ ẹgbẹ́ iléeṣẹ́ aláṣẹ-onírúurú-ẹ̀ka. Ẹ̀ka kọ̀ọ̀kan ń darí ọjà tirẹ̀ — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — lórí ìwọ̀n kan náà ti ìfihàn, ìfijíṣẹ́, ìṣètò owó, àti ìtẹ̀síwájú. Hub yìí wà kí àwọn oníbàárà, alábàáṣe, àti àwọn olówó kópa lè rí gbogbo iléeṣẹ́ ní ibìkan, kí wọ́n sì dé ẹ̀ka tó yẹ ní ìgbésẹ̀ kan ṣoṣo. A ń dàgbà nípa fífi àwọn ẹ̀ka tuntun kún inú ètò yìí, kì í ṣe nípa nínà àmì-iléeṣẹ́ kan ju agbára rẹ̀ lọ.",
+      "Henry Onyx jẹ́ ẹgbẹ́ iléeṣẹ́ aláṣẹ-onírúurú-ẹ̀ka. Ẹ̀ka kọ̀ọ̀kan ń darí ọjà tirẹ̀ — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — lórí ìwọ̀n kan náà ti ìfihàn, ìfijíṣẹ́, ìṣètò owó, àti ìtẹ̀síwájú. Hub yìí wà kí àwọn oníbàárà, alábàáṣe, àti àwọn olówó kópa lè rí gbogbo iléeṣẹ́ ní ibìkan, kí wọ́n sì dé ẹ̀ka tó yẹ ní ìgbésẹ̀ kan ṣoṣo. A ń dàgbà nípa fífi àwọn ẹ̀ka tuntun kún inú ètò yìí, kì í ṣe nípa nínà àmì-iléeṣẹ́ kan ju agbára rẹ̀ lọ.",
     figureDivisionsLive: "Ẹ̀ka tó ń ṣiṣẹ́",
     figureYearEstablished: "Ọdún tí a dá iléeṣẹ́ sílẹ̀",
     figureOperatingCity: "Ìlú iṣẹ́",
@@ -1715,22 +1715,22 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Pa àpèjúwe",
     modalEyebrow: "Àpèjúwe olórí",
     modalBioFallback:
-      "Àpèjúwe yìí jẹ́ apá kan ìgbìmọ̀ aṣáájú-ọnà gbangba ti Henry & Co.",
+      "Àpèjúwe yìí jẹ́ apá kan ìgbìmọ̀ aṣáájú-ọnà gbangba ti Henry Onyx",
     emptyTitle: "Àlàyé olórí yóò hàn níbí",
     emptyBody:
       "Tẹ àwọn àpèjúwe olórí jáde láti inú pẹpẹ olúwa kí o lè fi ìní, ìṣàkóso, àti àwọn aṣojú igbẹ́kẹ̀lé iléeṣẹ́ hàn ní ọnà àtìnúwà fún gbangba.",
     sharedSectionDescription:
-      "Àwọn àpèjúwe nínú apá yìí ń jẹ́rìí àwọn ènìyàn, ìbojútó, àti àyípadà iṣẹ́ tí ó ń gbé ẹgbẹ́ Henry & Co. dúró.",
+      "Àwọn àpèjúwe nínú apá yìí ń jẹ́rìí àwọn ènìyàn, ìbojútó, àti àyípadà iṣẹ́ tí ó ń gbé ẹgbẹ́ Henry Onyx dúró.",
     headerEyebrow: "Ìgbìmọ̀ olórí",
     headerTitle: "Olórí àti ìbojútó",
     headerBody:
-      "Mọ àwọn ènìyàn tí ó ń ṣe ìrísí Henry & Co. — ìní, olórí gbangba, ìtọ́sọ́nà iṣẹ́, àti ojúṣe ìgbà-pípẹ́.",
+      "Mọ àwọn ènìyàn tí ó ń ṣe ìrísí Henry Onyx — ìní, olórí gbangba, ìtọ́sọ́nà iṣẹ́, àti ojúṣe ìgbà-pípẹ́.",
     metricProfiles: "Àpèjúwe",
     metricOwnership: "Ìní",
     metricManagement: "Ìṣàkóso",
     spotlightEyebrow: "Àpèjúwe pàtàkì",
     spotlightBioFallback:
-      "Àpèjúwe olórí yìí dúró fún àwọn ènìyàn tí ó ń ṣiṣẹ́ lórí ìtọ́sọ́nà, ìṣàkóso, àti iṣẹ́ tó dára gan-an ní ẹgbẹ́ Henry & Co.",
+      "Àpèjúwe olórí yìí dúró fún àwọn ènìyàn tí ó ń ṣiṣẹ́ lórí ìtọ́sọ́nà, ìṣàkóso, àti iṣẹ́ tó dára gan-an ní ẹgbẹ́ Henry Onyx",
     sectionOwnershipTitle: "Ìní",
     sectionOwnershipEyebrow: "Olórí iléeṣẹ́",
     sectionManagementTitle: "Ìṣàkóso",
@@ -1744,40 +1744,40 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     eyebrow: "Àwọn ìbéèrè tí a sábà máa ń béèrè",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Ilé-iṣẹ́",
     linkHome: "Ilé",
     linkAbout: "Nípa wa",
     linkContact: "Kàn sí wa",
     linkSearch: "Wá",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Àkọọ́lẹ̀ Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Àkọọ́lẹ̀ Henry Onyx",
     linkLanguagePrefs: "Èdè & àwọn àṣàyàn",
     linkEmailPrefs: "Àwọn àṣàyàn ímeèlì",
     colLegal: "Òfin",
     linkPrivacy: "Ìpamọ́",
     linkTerms: "Àwọn òfin",
     allRightsReserved: "Gbogbo ẹ̀tọ́ ni a tọ́jú.",
-    builtBy: "A ṣe àpẹẹrẹ rẹ̀ àti kọ́ rẹ̀ nínú ilé nípa Henry & Co. Studio fún ètò Henry & Co.",
+    builtBy: "A ṣe àpẹẹrẹ rẹ̀ àti kọ́ rẹ̀ nínú ilé nípa Henry Onyx Studio fún ètò Henry Onyx",
     menuDivisionsDirectory: "Àtọ́kàn àwọn ẹ̀ka",
     menuAbout: "Nípa wa",
     menuContact: "Kàn sí wa",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Yọ ìforúkọsílẹ̀ rẹ — Henry & Co.",
-    metaDescription: "Yọ ìforúkọsílẹ̀ rẹ nínú àwọn ìròyìn Henry & Co. pẹ̀lú tẹ kan.",
+    metaTitle: "Yọ ìforúkọsílẹ̀ rẹ — Henry Onyx",
+    metaDescription: "Yọ ìforúkọsílẹ̀ rẹ nínú àwọn ìròyìn Henry Onyx pẹ̀lú tẹ kan.",
     eyebrow: "Ìròyìn ìdúnnú",
     missingTitle: "Ọ̀nà ìsopọ̀ ìyọ ìforúkọsílẹ̀ kò sí.",
     missingBody:
-      "Ṣí ọ̀nà ìsopọ̀ «Yọ ìforúkọsílẹ̀ rẹ» láti èbí ímeèlì Henry & Co. kan láti dé ibí pẹ̀lú àmì tí ó wulo. Tí ọ̀nà ìsopọ̀ rẹ bá ti parí, kàn sí wa àti a ó gba rẹ pẹ̀lú ọwọ́.",
+      "Ṣí ọ̀nà ìsopọ̀ «Yọ ìforúkọsílẹ̀ rẹ» láti èbí ímeèlì Henry Onyx kan láti dé ibí pẹ̀lú àmì tí ó wulo. Tí ọ̀nà ìsopọ̀ rẹ bá ti parí, kàn sí wa àti a ó gba rẹ pẹ̀lú ọwọ́.",
     missingCtaContact: "Kàn sí àtìlẹyìn",
     missingCtaBack: "Padà sí àwọn ìròyìn",
     errorTitle: "A kò ṣe àṣeyọrí nínú ìyọ ìforúkọsílẹ̀ rẹ.",
     errorManualNote:
-      "Tí èyí bá ń ṣẹlẹ̀ tún, dahùn pẹ̀lú «yọ ìforúkọsílẹ̀» sí èbí ímeèlì Henry & Co. kan àti ẹgbẹ́ wa ó ò gba rẹ pẹ̀lú ọwọ́.",
+      "Tí èyí bá ń ṣẹlẹ̀ tún, dahùn pẹ̀lú «yọ ìforúkọsílẹ̀» sí èbí ímeèlì Henry Onyx kan àti ẹgbẹ́ wa ó ò gba rẹ pẹ̀lú ọwọ́.",
     successTitle: "A ti yọ ìforúkọsílẹ̀ rẹ.",
     successBody:
-      "{{email}} kò ní gba àwọn ìròyìn Henry & Co. mọ̀. Àwọn ìránṣẹ́ ohun ìdúnàádúrà (àwọn rísítì, gbigbe, ìjẹrìísí, ààbò) ṣì máa ń ránṣẹ́ nítorí pé ó jẹ́ dandan.",
+      "{{email}} kò ní gba àwọn ìròyìn Henry Onyx mọ̀. Àwọn ìránṣẹ́ ohun ìdúnàádúrà (àwọn rísítì, gbigbe, ìjẹrìísí, ààbò) ṣì máa ń ránṣẹ́ nítorí pé ó jẹ́ dandan.",
     changedMind: "Ṣé o ti yí ọkàn rẹ padà?",
     ctaSubscribeAgain: "Forúkọ sílẹ̀ lẹ́ẹ̀kan sí",
     ctaManagePrefs: "Ṣàkóso gbogbo àwọn àṣàyàn",
@@ -1786,7 +1786,7 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Ƙofar kamfani mai daraja da ke haɗa rassa daban-daban, an ƙera ta domin gabatar da tsarin Henry & Co. cikin tsabta, amincewa, da kuma horon sunan kamfani na dogon lokaci.",
+      "Ƙofar kamfani mai daraja da ke haɗa rassa daban-daban, an ƙera ta domin gabatar da tsarin Henry Onyx cikin tsabta, amincewa, da kuma horon sunan kamfani na dogon lokaci.",
     columnCompany: "Kamfani",
     columnLegal: "Doka",
     home: "Babbar shafi",
@@ -1795,10 +1795,10 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     privacyPolicy: "Manufar sirri",
     termsConditions: "Sharuɗɗa da yarjejeniyoyi",
     allRightsReserved: "Duk haƙƙoƙin an kiyaye.",
-    builtBy: "An tsara shi kuma an gina shi a cikin gida ta hannun Henry & Co. Studio domin tsarin Henry & Co.",
+    builtBy: "An tsara shi kuma an gina shi a cikin gida ta hannun Henry Onyx Studio domin tsarin Henry Onyx",
   },
   contactHero: {
-    eyebrow: "Tuntubi Henry & Co.",
+    eyebrow: "Tuntubi Henry Onyx",
     title:
       "Tattaunawa a matakin kamfani-iyaye — haɗin gwiwa, kafofin watsa labarai, masu kawo kayayyaki, masu zuba jari, da kowane abu da ya shafi babban kamfani.",
     body:
@@ -1819,11 +1819,11 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     metaCorporateGrade: "Matakin kamfani",
     serverWarning: "Wasu abubuwan ciki na iya kasancewa ana sake sabunta su.",
     pageSectionsAria: "Sassan shafi",
-    footerEyebrow: "Henry & Co.",
+    footerEyebrow: "Henry Onyx",
     footerTitle:
       "Mizanin aiki iri ɗaya da abokan cinikinmu, abokan haɗin gwiwa, da ƙungiyoyinmu suke dogara da shi.",
     footerBody:
-      "Kowane fuska ta Henry & Co. — game da mu, tuntuɓa, shugabanci, manufa — ana buga shi a ƙarƙashin mizanin edita ɗaya, don abin da kake karanta a fili ya yi daidai da abin da muke kiyayewa a tsakaninmu.",
+      "Kowane fuska ta Henry Onyx — game da mu, tuntuɓa, shugabanci, manufa — ana buga shi a ƙarƙashin mizanin edita ɗaya, don abin da kake karanta a fili ya yi daidai da abin da muke kiyayewa a tsakaninmu.",
     footerUseCase: "Amfani",
     footerUseCaseValue: "Abokan ciniki · Abokan haɗin gwiwa · Kafofin watsa labarai",
     footerStandard: "Mizani",
@@ -1833,7 +1833,7 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     eyebrow: "Game da wannan kamfanin",
     title: "Kamfani ɗaya, kasuwanci da yawa masu mai da hankali, mizanin aiki ɗaya.",
     body:
-      "Henry & Co. rukuni ne na kamfani mai rassa da yawa. Kowane reshe yana gudanar da kasuwarsa — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — a kan mizanin gabatarwa, ajiyar wuri, farashi, da bibiyar lamari iri ɗaya. Wannan hub yana wanzuwa ne don abokan ciniki, abokan haɗin gwiwa, da masu ruwa-da-tsaki su iya ganin kamfanin gaba ɗaya a wuri ɗaya, kuma su kai ga kasuwancin da ya dace cikin mataki ɗaya. Muna girma ta hanyar ƙara sabbin rassa a cikin wannan tsarin, ba ta hanyar shimfiɗa suna ɗaya bayan ƙarfinsa ba.",
+      "Henry Onyx rukuni ne na kamfani mai rassa da yawa. Kowane reshe yana gudanar da kasuwarsa — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — a kan mizanin gabatarwa, ajiyar wuri, farashi, da bibiyar lamari iri ɗaya. Wannan hub yana wanzuwa ne don abokan ciniki, abokan haɗin gwiwa, da masu ruwa-da-tsaki su iya ganin kamfanin gaba ɗaya a wuri ɗaya, kuma su kai ga kasuwancin da ya dace cikin mataki ɗaya. Muna girma ta hanyar ƙara sabbin rassa a cikin wannan tsarin, ba ta hanyar shimfiɗa suna ɗaya bayan ƙarfinsa ba.",
     figureDivisionsLive: "Rassan da ke aiki",
     figureYearEstablished: "Shekarar kafuwa",
     figureOperatingCity: "Birnin da ake aiki",
@@ -1858,22 +1858,22 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     modalCloseAria: "Rufe bayani",
     modalEyebrow: "Bayanin shugabanci",
     modalBioFallback:
-      "Wannan bayanin yana cikin allon shugabancin Henry & Co. da aka bayyana a fili.",
+      "Wannan bayanin yana cikin allon shugabancin Henry Onyx da aka bayyana a fili.",
     emptyTitle: "Bayanin shugabanci zai bayyana a nan",
     emptyBody:
       "Buga bayanan shugabanci daga dashbod na mai kamfani don gabatar da mallaka, gudanarwa, da amintattun wakilan kamfani a cikin tsari mai kyau ga jama’a.",
     sharedSectionDescription:
-      "Bayanan da ke wannan sashin suna nuna mutanen, kulawa, da nauyin aiki da ke goyon bayan rukunin Henry & Co.",
+      "Bayanan da ke wannan sashin suna nuna mutanen, kulawa, da nauyin aiki da ke goyon bayan rukunin Henry Onyx",
     headerEyebrow: "Allon shugabanci",
     headerTitle: "Shugabanci da kulawa",
     headerBody:
-      "Ka san mutanen da ke siffanta Henry & Co. — mallaka, shugabanci na fili, jagorancin aiki, da alhakin dogon lokaci.",
+      "Ka san mutanen da ke siffanta Henry Onyx — mallaka, shugabanci na fili, jagorancin aiki, da alhakin dogon lokaci.",
     metricProfiles: "Bayanai",
     metricOwnership: "Mallaka",
     metricManagement: "Gudanarwa",
     spotlightEyebrow: "Bayani na musamman",
     spotlightBioFallback:
-      "Wannan bayanin shugabanci yana wakiltar mutanen da suke da alhakin shiriya, mulki, da aiki mai inganci a rukunin Henry & Co.",
+      "Wannan bayanin shugabanci yana wakiltar mutanen da suke da alhakin shiriya, mulki, da aiki mai inganci a rukunin Henry Onyx",
     sectionOwnershipTitle: "Mallaka",
     sectionOwnershipEyebrow: "Shugabancin kamfani",
     sectionManagementTitle: "Gudanarwa",
@@ -1887,40 +1887,40 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     eyebrow: "Tambayoyin da ake yawan yi",
   },
   publicSiteShell: {
-    brandFallback: "Henry & Co.",
+    brandFallback: "Henry Onyx",
     colCompany: "Kamfani",
     linkHome: "Gida",
     linkAbout: "Game da mu",
     linkContact: "Tuntuɓi mu",
     linkSearch: "Bincika",
-    colHenryCo: "Henry & Co.",
-    linkHenryCoAccount: "Asusun Henry & Co.",
+    colHenryCo: "Henry Onyx",
+    linkHenryCoAccount: "Asusun Henry Onyx",
     linkLanguagePrefs: "Harshe & zaɓuɓɓuka",
     linkEmailPrefs: "Zaɓuɓɓukan imel",
     colLegal: "Doka",
     linkPrivacy: "Sirri",
     linkTerms: "Sharuɗɗa",
     allRightsReserved: "An kiyaye dukkan haƙƙoƙi.",
-    builtBy: "An tsara kuma an gina shi ciki gida ta Henry & Co. Studio don tsarin Henry & Co.",
+    builtBy: "An tsara kuma an gina shi ciki gida ta Henry Onyx Studio don tsarin Henry Onyx",
     menuDivisionsDirectory: "Jerin sassan",
     menuAbout: "Game da mu",
     menuContact: "Tuntuɓi mu",
   },
   newsletterUnsubscribe: {
-    metaTitle: "Soke rajista — Henry & Co.",
-    metaDescription: "Soke rajista daga sanarwar Henry & Co. da danna ɗaya.",
+    metaTitle: "Soke rajista — Henry Onyx",
+    metaDescription: "Soke rajista daga sanarwar Henry Onyx da danna ɗaya.",
     eyebrow: "Sanarwa",
     missingTitle: "Hanyar soke rajista ta ɓace.",
     missingBody:
-      "Bude hanyar «Soke rajista» daga kowanne imel na Henry & Co. don isa nan da ingantaccen alama. Idan hanyar ka ta ƙare, tuntuɓi mu kuma za mu yarda da ita a hannu.",
+      "Bude hanyar «Soke rajista» daga kowanne imel na Henry Onyx don isa nan da ingantaccen alama. Idan hanyar ka ta ƙare, tuntuɓi mu kuma za mu yarda da ita a hannu.",
     missingCtaContact: "Tuntuɓi tallafi",
     missingCtaBack: "Koma sanarwa",
     errorTitle: "Ba mu iya soke rajistarka ba.",
     errorManualNote:
-      "Idan hakan ya ci gaba, amsa «soke rajista» zuwa kowanne imel na Henry & Co. kuma ƙungiyarmu za ta yarda a hannu.",
+      "Idan hakan ya ci gaba, amsa «soke rajista» zuwa kowanne imel na Henry Onyx kuma ƙungiyarmu za ta yarda a hannu.",
     successTitle: "An soke rajistarka.",
     successBody:
-      "{{email}} ba za ta karɓi sanarwar Henry & Co. ba. Saƙonni na ma'amala (rasa, jigilar kaya, tabbatarwa, tsaro) suna ci gaba da aika saboda dole ne.",
+      "{{email}} ba za ta karɓi sanarwar Henry Onyx ba. Saƙonni na ma'amala (rasa, jigilar kaya, tabbatarwa, tsaro) suna ci gaba da aika saboda dole ne.",
     changedMind: "Ka canza ra'ayinka?",
     ctaSubscribeAgain: "Yi rajista sake",
     ctaManagePrefs: "Sarrafa duk zaɓuɓɓuka",

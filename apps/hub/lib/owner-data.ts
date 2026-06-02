@@ -1146,7 +1146,7 @@ export async function getOwnerOverviewData() {
     .reduce((sum, row) => sum + toNumber(row.amount), 0);
   const activeStaff = workforce.filter((member) => member.status === "active").length;
   const queuedNotifications = [...dataset.careNotificationQueue, ...dataset.marketplaceNotificationQueue].length;
-  const companyTitle = toText(dataset.companySettings?.brand_title) || "Henry & Co.";
+  const companyTitle = toText(dataset.companySettings?.brand_title) || "Henry Onyx";
   const briefing = buildOwnerBriefing(signals, divisions, dataset);
 
   return {

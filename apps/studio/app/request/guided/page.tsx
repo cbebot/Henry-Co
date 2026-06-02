@@ -10,9 +10,9 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 export const maxDuration = 60;
 
 export const metadata: Metadata = {
-  title: "Answer a few questions — Henry & Co. Studio",
+  title: "Answer a few questions — Henry Onyx Studio",
   description:
-    "Shape your Henry & Co. Studio brief by answering a few quick questions. We turn your choices into a clear plan with honest pricing before you commit.",
+    "Shape your Henry Onyx Studio brief by answering a few quick questions. We turn your choices into a clear plan with honest pricing before you commit.",
   alternates: { canonical: "/request/guided" },
   robots: { index: true, follow: true },
 };

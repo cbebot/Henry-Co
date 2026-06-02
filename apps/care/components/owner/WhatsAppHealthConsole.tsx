@@ -142,7 +142,7 @@ export default function WhatsAppHealthConsole({
   const [status, setStatus] = useState(initialStatus);
   const [diagnostics, setDiagnostics] = useState(initialDiagnostics);
   const [probeTo, setProbeTo] = useState("");
-  const [probeBody, setProbeBody] = useState("HenryCo Care WhatsApp probe");
+  const [probeBody, setProbeBody] = useState("Henry Onyx Care WhatsApp probe");
   const [lastMutation, setLastMutation] = useState<MutationResult | null>(null);
   const [pendingAction, setPendingAction] = useState<"refresh" | "register" | "probe" | null>(null);
   const [pending, startTransition] = useTransition();

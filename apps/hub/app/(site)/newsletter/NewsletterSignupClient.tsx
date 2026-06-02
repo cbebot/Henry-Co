@@ -21,7 +21,7 @@ type SubmissionState =
 
 // Division names are brand proper nouns (left untranslated, like the public selector).
 const DIVISION_LABEL: Record<NewsletterDivision, string> = {
-  hub: "Henry & Co.",
+  hub: "Henry Onyx",
   account: "Account",
   care: "Care",
   jobs: "Jobs",

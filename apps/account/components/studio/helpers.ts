@@ -205,7 +205,7 @@ export function buildHeroCopy(state: HeroState, stats: StudioStats): HeroCopy {
     }
     return {
       headline: `${stats.metrics.activeProjects} active project${stats.metrics.activeProjects === 1 ? "" : "s"}.`,
-      blurb: "Live workspaces with milestone movement, payment checkpoints, and deliverables — all mirrored from HenryCo Studio into this room.",
+      blurb: "Live workspaces with milestone movement, payment checkpoints, and deliverables — all mirrored from Henry Onyx Studio into this room.",
       ctaPrimary: { label: "Open Studio", href: STUDIO_ORIGIN },
       ctaSecondary: { label: "Start a new brief", href: `${STUDIO_ORIGIN}/request` },
     };

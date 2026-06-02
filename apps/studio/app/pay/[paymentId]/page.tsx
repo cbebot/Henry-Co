@@ -30,7 +30,7 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Studio · Payment workspace",
   description:
-    "Send payment proof and track confirmation for your Henry & Co. Studio engagement.",
+    "Send payment proof and track confirmation for your Henry Onyx Studio engagement.",
   robots: { index: false, follow: false },
 };
 
@@ -157,7 +157,7 @@ export default async function StudioPaymentWorkspace({
       title: localizedProjectTitle,
       subtitle: milestone ? localizedMilestoneName : undefined,
       back: { href: projectHref, label: "Project workspace" },
-      account: { href: getStudioAccountUrl(), label: "HenryCo account home" },
+      account: { href: getStudioAccountUrl(), label: "Henry Onyx account home" },
       primaryCta: { href: projectHref, label: "Open project workspace" },
     },
     platform: {

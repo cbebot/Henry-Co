@@ -62,7 +62,7 @@ export async function runLogisticsAutomationCron() {
       title: "Operations stale check",
       description: `No shipment update for about ${Math.round(idleHours)} hours. Dispatch should verify rider status or customer contact.`,
       actor_user_id: null,
-      actor_name: "HenryCo Logistics automation",
+      actor_name: "Henry Onyx Logistics automation",
       actor_role: "system",
       meta: { fingerprint, idleHours: Math.round(idleHours), staleHours },
       customer_visible: false,

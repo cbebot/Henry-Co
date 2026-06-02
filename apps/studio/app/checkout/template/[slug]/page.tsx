@@ -82,7 +82,7 @@ function getDomainOptions(
     },
     {
       value: "new",
-      label: t("I want HenryCo to source one"),
+      label: t("I want Henry Onyx to source one"),
       body: t("We check availability and register on your behalf at cost."),
     },
     {
@@ -106,7 +106,7 @@ export async function generateMetadata({
     return { title: t("Reserve template"), robots: { index: false, follow: false } };
   }
   return {
-    title: `${t("Reserve")} ${template.name} | HenryCo Studio`,
+    title: `${t("Reserve")} ${template.name} | Henry Onyx Studio`,
     description: `${t("Reserve the build slot for")} ${template.name}. ${t("Pay the deposit and we kick off within")} ${template.readyInDays} ${t("days")}.`,
     alternates: { canonical: `/checkout/template/${template.slug}` },
     robots: { index: false, follow: false },
@@ -363,7 +363,7 @@ export default async function TemplateCheckoutPage({
             <span className="text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
               {t("I have read and agree to the")}{" "}
               <Link href="/policies/terms" className="font-semibold text-[var(--studio-signal)] hover:underline">
-                {t("HenryCo Studio Terms of Engagement")}
+                {t("Henry Onyx Studio Terms of Engagement")}
               </Link>
               ,{" "}
               <Link href="/policies/privacy" className="font-semibold text-[var(--studio-signal)] hover:underline">

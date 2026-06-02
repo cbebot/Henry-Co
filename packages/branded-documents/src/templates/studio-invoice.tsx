@@ -273,7 +273,7 @@ export function StudioInvoiceDocument({ invoice, project, client, studio }: Stud
 
       <LegalFooter
         lines={[
-          "Issued by Henry Holdings Limited through HenryCo Studio billing. Multi-currency settlement is captured at the gateway rate on the day of payment; both invoice currency and settled currency are recorded for audit.",
+          "Issued by Henry Onyx Limited through Henry Onyx Studio billing. Multi-currency settlement is captured at the gateway rate on the day of payment; both invoice currency and settled currency are recorded for audit.",
           "Disputes must be raised within seven calendar days of issue. Late payment may attract reminder schedule per the engagement agreement.",
         ]}
       />
