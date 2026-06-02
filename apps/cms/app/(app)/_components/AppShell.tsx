@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FileText,
   HelpCircle,
@@ -19,14 +20,17 @@ import { createCmsSupabaseBrowser } from "@/lib/supabase/browser";
 
 const NAV = [
   { label: "Overview", icon: ShieldCheck, href: "/dashboard", ready: true },
+  { label: "Company Pages", icon: FileText, href: "/pages", ready: true },
   { label: "Security", icon: Lock, href: "/settings", ready: true },
-  { label: "Company Pages", icon: FileText, href: "/dashboard", ready: false },
   { label: "Brand & Settings", icon: Settings, href: "/dashboard", ready: false },
   { label: "Divisions", icon: Layers, href: "/dashboard", ready: false },
   { label: "People", icon: Users, href: "/dashboard", ready: false },
   { label: "Homepage", icon: Home, href: "/dashboard", ready: false },
   { label: "FAQs", icon: HelpCircle, href: "/dashboard", ready: false },
 ] as const;
+
+const NAV_BASE =
+  "group flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors";
 
 export function AppShell({
   ownerEmail,
@@ -36,6 +40,7 @@ export function AppShell({
   children: ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [signingOut, setSigningOut] = useState(false);
 
   async function signOut() {
@@ -46,6 +51,11 @@ export function AppShell({
       router.push("/login");
       router.refresh();
     }
+  }
+
+  function isActive(href: string): boolean {
+    if (href === "/dashboard") return pathname === "/dashboard";
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
   return (
@@ -65,23 +75,40 @@ export function AppShell({
         <nav className="mt-8 flex-1 space-y-1">
           {NAV.map((item) => {
             const Icon = item.icon;
+            if (!item.ready) {
+              return (
+                <span
+                  key={item.label}
+                  aria-disabled
+                  className={`${NAV_BASE} cursor-default text-[var(--hc-ink-muted)] opacity-60`}
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon className="h-4 w-4" aria-hidden />
+                    {item.label}
+                  </span>
+                  <span className="rounded-full bg-[var(--owner-accent-soft)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--hc-accent-text)]">
+                    Soon
+                  </span>
+                </span>
+              );
+            }
+            const active = isActive(item.href);
             return (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
-                aria-disabled={!item.ready || undefined}
-                className="group flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--hc-ink-soft)] transition-colors hover:bg-[var(--hc-accent-soft)] hover:text-[var(--hc-ink)]"
+                aria-current={active ? "page" : undefined}
+                className={`${NAV_BASE} ${
+                  active
+                    ? "bg-[var(--hc-accent-soft)] text-[var(--hc-ink)]"
+                    : "text-[var(--hc-ink-soft)] hover:bg-[var(--hc-accent-soft)] hover:text-[var(--hc-ink)]"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <Icon className="h-4 w-4" aria-hidden />
                   {item.label}
                 </span>
-                {!item.ready ? (
-                  <span className="rounded-full bg-[var(--owner-accent-soft)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--hc-accent-text)]">
-                    Soon
-                  </span>
-                ) : null}
-              </a>
+              </Link>
             );
           })}
         </nav>
