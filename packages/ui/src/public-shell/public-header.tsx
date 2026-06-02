@@ -8,6 +8,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { BottomSheet, type BottomSheetCloseReason } from "../mobile/bottom-sheet";
+import { suppressSentinelPop } from "../mobile/use-android-back-close";
 import { cn } from "../lib/cn";
 import { ThemeToggle } from "../public/theme-toggle";
 import { HenryCoPublicSurfaceTokens } from "./surface-tokens";
@@ -180,6 +181,20 @@ export function PublicHeader({
   }, []);
 
   const closeDrawer = useCallback(() => setOpen(false), []);
+  // Internal (SPA) nav/CTA links defer the close one macrotask so Next's
+  // router.push commits its history entry BEFORE the BottomSheet unmounts.
+  // Otherwise the useAndroidBackClose cleanup's history.back() (fired on close)
+  // races and reverts the navigation — the reported "tap dismisses but never
+  // navigates" bug. The pathname effect above still closes on route change;
+  // this deferred close also covers same-route taps. (External <a> keeps the
+  // immediate close — full-page nav, no router.push race.)
+  const closeDrawerAfterNav = useCallback(() => {
+    // Tell the sheet's history sentinel that a navigation is consuming this
+    // history entry, so its close-time back() is skipped and cannot cancel the
+    // in-flight router.push (App Router commits the push later than a frame).
+    suppressSentinelPop();
+    setTimeout(() => setOpen(false), 0);
+  }, []);
 
   const focusRingBar =
     "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]";
@@ -467,7 +482,7 @@ export function PublicHeader({
               <Link
                 key={item.label}
                 href={item.href}
-                onClick={closeDrawer}
+                onClick={closeDrawerAfterNav}
                 className={sheetClass}
                 aria-current={active ? "page" : undefined}
               >
@@ -489,17 +504,17 @@ export function PublicHeader({
               <div className="flex justify-stretch px-0.5">{accountMenu}</div>
             ) : null}
             {auxLink ? (
-              <Link href={auxLink.href} onClick={closeDrawer} className={auxSheetClass}>
+              <Link href={auxLink.href} onClick={closeDrawerAfterNav} className={auxSheetClass}>
                 {localize(auxLink.label)}
               </Link>
             ) : null}
             {secondaryCta ? (
-              <Link href={secondaryCta.href} onClick={closeDrawer} className={secondarySheetClass}>
+              <Link href={secondaryCta.href} onClick={closeDrawerAfterNav} className={secondarySheetClass}>
                 {localize(secondaryCta.label)}
               </Link>
             ) : null}
             {primaryCta ? (
-              <Link href={primaryCta.href} onClick={closeDrawer} className={primarySheetClass}>
+              <Link href={primaryCta.href} onClick={closeDrawerAfterNav} className={primarySheetClass}>
                 {localize(primaryCta.label)}
               </Link>
             ) : null}
