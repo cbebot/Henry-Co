@@ -21,12 +21,12 @@ import { createCmsSupabaseBrowser } from "@/lib/supabase/browser";
 const NAV = [
   { label: "Overview", icon: ShieldCheck, href: "/dashboard", ready: true },
   { label: "Company Pages", icon: FileText, href: "/pages", ready: true },
+  { label: "Homepage", icon: Home, href: "/homepage", ready: true },
+  { label: "Divisions", icon: Layers, href: "/divisions", ready: true },
+  { label: "People", icon: Users, href: "/people", ready: true },
+  { label: "FAQs", icon: HelpCircle, href: "/faqs", ready: true },
+  { label: "Brand & Settings", icon: Settings, href: "/brand", ready: true },
   { label: "Security", icon: Lock, href: "/settings", ready: true },
-  { label: "Brand & Settings", icon: Settings, href: "/dashboard", ready: false },
-  { label: "Divisions", icon: Layers, href: "/dashboard", ready: false },
-  { label: "People", icon: Users, href: "/dashboard", ready: false },
-  { label: "Homepage", icon: Home, href: "/dashboard", ready: false },
-  { label: "FAQs", icon: HelpCircle, href: "/dashboard", ready: false },
 ] as const;
 
 const NAV_BASE =
