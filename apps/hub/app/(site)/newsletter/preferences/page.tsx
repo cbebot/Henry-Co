@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Manage newsletter preferences — Henry & Co.",
   description:
-    "Update which HenryCo newsletters you receive, pause promotional sends, or unsubscribe entirely.",
+    "Update which Henry & Co. newsletters you receive, pause promotional sends, or unsubscribe entirely.",
 };
 
 type SearchParams = {
@@ -28,7 +28,7 @@ export default async function NewsletterPreferencesPage({
       <main className="mx-auto w-full max-w-2xl px-5 py-16 text-[color:var(--foreground)]">
         <h1 className="text-2xl font-semibold">Preference link missing</h1>
         <p className="mt-3 text-[color:var(--muted-foreground)]">
-          Open the &ldquo;Manage preferences&rdquo; link from any HenryCo email to land here with a
+          Open the &ldquo;Manage preferences&rdquo; link from any Henry & Co. email to land here with a
           valid token. If your link has expired, subscribe again and we&rsquo;ll issue a new one.
         </p>
       </main>
@@ -58,7 +58,7 @@ export default async function NewsletterPreferencesPage({
         <h1 className="mt-3 text-2xl font-semibold">Your newsletter preferences</h1>
         <p className="mt-3 text-[color:var(--muted-foreground)]">
           Signed in as <span className="font-medium">{load.subscriber.email}</span>. Changes
-          apply to all HenryCo divisions.
+          apply to all Henry & Co. divisions.
         </p>
       </header>
       <NewsletterPreferencesClient

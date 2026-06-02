@@ -289,7 +289,7 @@ export const COMPANY = {
       tagline:
         "A calmer marketplace for premium buyers, accountable sellers, and sharper operators.",
       description:
-        "Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and HenryCo teams.",
+        "Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and Henry & Co. teams.",
       path: "/",
       subdomain: "marketplace",
       accent: "#B2863B",
@@ -318,13 +318,13 @@ export const COMPANY = {
 
     property: {
       key: "property",
-      name: "HenryCo Property",
+      name: "Henry & Co. Property",
       shortName: "Property",
       sub: "Premium rentals, listings, and managed property operations",
       tagline:
         "A calmer property platform for high-trust discovery, sharper operations, and managed-property confidence.",
       description:
-        "HenryCo Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.",
+        "Henry & Co. Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.",
       path: "/",
       subdomain: "property",
       accent: "#B06C3E",
@@ -354,13 +354,13 @@ export const COMPANY = {
 
     logistics: {
       key: "logistics",
-      name: "HenryCo Logistics",
+      name: "Henry & Co. Logistics",
       shortName: "Logistics",
       sub: "Pickup, dispatch, delivery, and fleet operations",
       tagline:
         "Premium dispatch and delivery operations with sharper booking, cleaner tracking, and confident execution.",
       description:
-        "HenryCo Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
+        "Henry & Co. Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
       path: "/",
       subdomain: "logistics",
       accent: "#D06F32",
@@ -388,13 +388,13 @@ export const COMPANY = {
 
     studio: {
       key: "studio",
-      name: "HenryCo Studio",
+      name: "Henry & Co. Studio",
       shortName: "Studio",
       sub: "Premium digital products, software systems, and brand execution",
       tagline:
         "A premium product studio for websites, apps, internal systems, brand systems, and elite delivery.",
       description:
-        "HenryCo Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.",
+        "Henry & Co. Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.",
       path: "/",
       subdomain: "studio",
       accent: "#4AC1C5",
@@ -423,13 +423,13 @@ export const COMPANY = {
 
     jobs: {
       key: "jobs",
-      name: "HenryCo Jobs",
+      name: "Henry & Co. Jobs",
       shortName: "Jobs",
       sub: "Hiring, verified talent, and recruitment operations",
       tagline:
         "A premium hiring operating system for serious employers, verified talent, and cleaner recruitment.",
       description:
-        "HenryCo Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal HenryCo hiring into one premium operating system.",
+        "Henry & Co. Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry & Co. hiring into one premium operating system.",
       path: "/",
       subdomain: "jobs",
       accent: "#0E7C86",
@@ -438,12 +438,12 @@ export const COMPANY = {
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
       supportPhone: "+2349133957084",
-      // Public chrome primary nav. "Careers" (internal HenryCo hiring)
+      // Public chrome primary nav. "Careers" (internal Henry & Co. hiring)
       // removed from primary because it semantically collides with
       // "Find jobs" — candidates routinely clicked it expecting public
-      // listings. "Careers" still lives in the footer ("Work at HenryCo")
+      // listings. "Careers" still lives in the footer ("Work at Henry & Co.")
       // and the employer/candidate-aware account-chip menu, so the
-      // work-for-HenryCo surface is preserved where context disambiguates.
+      // work-for-Henry & Co. surface is preserved where context disambiguates.
       //
       // NOTE: A "Categories" nav entry was considered but NOT added — the
       // route `/categories` has no index `page.tsx` (only `[slug]`), so a
@@ -461,13 +461,13 @@ export const COMPANY = {
 
     learn: {
       key: "learn",
-      name: "HenryCo Learn",
+      name: "Henry & Co. Learn",
       shortName: "Learn",
       sub: "Courses, paths, quizzes, and verified certificates",
       tagline:
         "Practical courses you can finish—with clear progress, fair assessments, and credentials employers can check.",
       description:
-        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn HenryCo certificates with a public verification code. Your enrollments and progress also appear in your HenryCo account dashboard.",
+        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn Henry & Co. certificates with a public verification code. Your enrollments and progress also appear in your Henry & Co. account dashboard.",
       path: "/",
       subdomain: "learn",
       accent: "#3C8C7A",
@@ -504,6 +504,69 @@ export function getDivisionUrl(key: DivisionKey) {
     return `https://${COMPANY.group.baseDomain}`;
   }
   return `https://${division.subdomain}.${COMPANY.group.baseDomain}`;
+}
+
+/**
+ * Map the CODE shorthand "HenryCo" → the user-facing brand "Henry & Co." in any
+ * dynamic / CMS-authored text before it reaches the UI.
+ *
+ * "HenryCo" is the internal shorthand only (package names, identifiers, the
+ * `henrycogroup.com` domain) and must NEVER surface in user-facing copy — the
+ * brand is always `COMPANY.group.name`. Static strings are fixed at rest, but
+ * CMS/DB-authored values (division names, taglines) can reintroduce the
+ * shorthand, so the read path runs them through this guard. The brand name is
+ * locale-invariant, so this is safe for every locale.
+ *
+ * Surgical by construction: `\bHenryCo\b` matches only the standalone word, so
+ * identifiers (`HenryCoLogo` — no word boundary) and the lowercase domain
+ * (`henrycogroup.com`) are left untouched. "HenryCo Group" collapses to the
+ * brand (not "Henry & Co. Group"), matching the V3 legal-rename migration.
+ */
+export function toBrandName(value: string | null | undefined): string {
+  return String(value ?? "")
+    .replace(/\bHenryCo Group\b/g, COMPANY.group.name)
+    .replace(/\bHenryCo\b/g, COMPANY.group.name);
+}
+
+/**
+ * The canonical, ordered list of LIVE public divisions for shared chrome
+ * (footers, directories, cross-sell nav). Names come straight from config — so
+ * every site renders the same correct "Henry & Co. <Division>" label — and URLs
+ * route through `getDivisionUrl`, so the henry.holdings domain migration stays a
+ * single config flip with ZERO hardcoded domains. `hub` (the group itself) and
+ * not-yet-live divisions (`building`, `hotel`) are intentionally excluded.
+ */
+export const PUBLIC_DIVISION_KEYS = [
+  "marketplace",
+  "studio",
+  "property",
+  "logistics",
+  "jobs",
+  "learn",
+  "care",
+] as const satisfies readonly DivisionKey[];
+
+export type PublicDivisionLink = {
+  key: DivisionKey;
+  name: string;
+  shortName: string;
+  url: string;
+  accent: string;
+  accentText: string;
+};
+
+export function getPublicDivisions(): PublicDivisionLink[] {
+  return PUBLIC_DIVISION_KEYS.map((key) => {
+    const division = COMPANY.divisions[key];
+    return {
+      key,
+      name: division.name,
+      shortName: division.shortName,
+      url: getDivisionUrl(key),
+      accent: division.accent,
+      accentText: division.accentText,
+    };
+  });
 }
 
 export function getHubUrl(path = "/") {

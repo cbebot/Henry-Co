@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { toBrandName } from "@henryco/config";
 import { fetchNoStore } from "./no-store-fetch";
 
 export type DivisionLink = { label: string; url: string };
@@ -159,10 +160,16 @@ export function normalizeDivision(
   linkedLead?: DivisionLeadRow | null
 ): DivisionRow {
   const slug = String(row.slug || row.id || "").trim().toLowerCase();
-  const highlights = toStringArray(row.highlights);
+  // Brand guard: CMS/DB-authored text may still carry the "HenryCo" code
+  // shorthand (the V3 legal-rename migration patched a different column,
+  // `display_name`, while this read path renders `name`). Normalise the
+  // user-facing label and prose to the brand HERE — the single path every
+  // published division flows through — so the directory can never render
+  // "HenryCo <Division>" regardless of the underlying data. See toBrandName.
+  const highlights = toStringArray(row.highlights).map((item) => toBrandName(item));
   const description =
     typeof row.description === "string" && row.description.trim()
-      ? row.description.trim()
+      ? toBrandName(row.description.trim())
       : null;
   const leadName = cleanOptionalText(row.lead_name) ?? cleanOptionalText(linkedLead?.full_name);
   const leadTitle =
@@ -176,8 +183,8 @@ export function normalizeDivision(
   return {
     id: String(row.id),
     key: slug || String(row.id),
-    name: String(row.name || "Untitled division"),
-    tagline: typeof row.tagline === "string" ? row.tagline : highlights[0] || null,
+    name: toBrandName(String(row.name || "Untitled division")),
+    tagline: typeof row.tagline === "string" ? toBrandName(row.tagline) : highlights[0] || null,
     description,
     accent: row.accent || inferAccent(slug, row.name),
     primary_url: row.primary_url || buildPrimaryUrl(slug),

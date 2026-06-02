@@ -22,7 +22,7 @@ export function PublicFooter({
   description,
   support,
   groups,
-  attribution = "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem",
+  attribution = "Designed and built in-house by Henry & Co. Studio for the Henry & Co. ecosystem",
   attributionHref,
   bottomLinks,
   afterDescription,

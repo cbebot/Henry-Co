@@ -12,3 +12,9 @@ export { Section, SectionHeader, Hairline, Reveal } from "./section";
 export { PublicCTA } from "./cta";
 export { PublicProofRail, type ProofItem } from "./proof-rail";
 export { EditorialList, EditorialRow, Card } from "./editorial";
+export {
+  PublicSiteFooter,
+  type PublicSiteFooterCopy,
+  type SiteFooterLink,
+  type SiteFooterColumn,
+} from "./site-footer";
