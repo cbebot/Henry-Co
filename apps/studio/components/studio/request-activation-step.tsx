@@ -49,7 +49,7 @@ function ReviewChips({ label, values }: { label: string; values: string[] }) {
         {values.map((value) => (
           <span
             key={value}
-            className="rounded-full border border-[var(--studio-line)] bg-black/10 px-3 py-1 text-[12.5px] font-medium text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.32)]"
+            className="rounded-full border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-3 py-1 text-[12.5px] font-medium text-[var(--studio-ink)] transition hover:border-[color:var(--home-accent-ring)]"
           >
             {value}
           </span>
@@ -64,7 +64,7 @@ function ReviewChips({ label, values }: { label: string; values: string[] }) {
 function ReviewNote({ label, value }: { label: string; value: string }) {
   if (!value.trim()) return null;
   return (
-    <div className="rounded-[1.3rem] border border-[var(--studio-line)] bg-black/10 p-4">
+    <div className="rounded-[1.3rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] p-4">
       <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
         <Quote className="h-3 w-3" aria-hidden />
         {label}
@@ -175,7 +175,7 @@ export function StudioRequestActivationStep({
                 )}
               </p>
             </div>
-            <div className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-black/20 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+            <div className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[color:var(--home-surface-07)] px-3 py-1.5">
               <Gauge className="h-3.5 w-3.5 text-[var(--studio-signal)]" aria-hidden />
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink)] tabular-nums">
                 {review.readinessScore}/100 · {t(readinessBand(review.readinessScore))}
@@ -191,7 +191,7 @@ export function StudioRequestActivationStep({
               <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--studio-ink-soft)]">
                 {t("Proforma estimate")}
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(217,168,109,0.4)] bg-[rgba(217,168,109,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-copper)]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--home-accent-text)]">
                 <Lock className="h-3 w-3" aria-hidden />
                 {t("Locked at acceptance")}
               </span>
@@ -292,7 +292,7 @@ export function StudioRequestActivationStep({
           </div>
 
           {hasScope ? (
-            <div className="space-y-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/[0.06] p-5">
+            <div className="space-y-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] p-5">
               <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-ink-soft)]">
                 {t("Scope captured")}
               </div>
@@ -341,7 +341,7 @@ export function StudioRequestActivationStep({
                 />
               </div>
               {selectedTeam ? (
-                <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+                <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-base font-semibold text-[var(--studio-ink)]">
                       {selectedTeam.name}
@@ -411,7 +411,7 @@ export function StudioRequestActivationStep({
               </div>
             </div>
 
-            <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
+            <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
               <input type="checkbox" name="depositNow" className="mt-1" />
               <span>
                 {t(
@@ -431,7 +431,7 @@ export function StudioRequestActivationStep({
               )}
             </p>
 
-            <div className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+            <div className="rounded-[1.5rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] p-5">
               <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden />
                 {t("What happens after you submit")}

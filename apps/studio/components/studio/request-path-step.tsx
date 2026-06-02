@@ -74,7 +74,7 @@ export function StudioRequestPathStep({
       <div
         role="radiogroup"
         aria-label={t("Buying lane")}
-        className="mt-5 grid grid-cols-2 gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 p-1.5"
+        className="mt-5 grid grid-cols-2 gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] p-1.5"
       >
         {[
           {
@@ -106,7 +106,7 @@ export function StudioRequestPathStep({
               className={joinClassNames(
                 "flex items-center justify-center gap-2 rounded-[0.95rem] px-3 py-2.5 text-sm font-semibold transition",
                 isActive
-                  ? "bg-[rgba(151,244,243,0.12)] text-[var(--studio-ink)] shadow-[inset_0_0_0_1px_rgba(151,244,243,0.45)]"
+                  ? "bg-[color:var(--home-accent-soft)] text-[var(--studio-ink)]"
                   : "text-[var(--studio-ink-soft)] hover:text-[var(--studio-ink)]"
               )}
             >
@@ -130,7 +130,7 @@ export function StudioRequestPathStep({
        * + 4-line content; with 5+ service kinds this stacked into a
        * dense card wall. The list form is denser and lets the user
        * scan headlines without scroll fatigue. */}
-      <ul className="mt-7 divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10">
+      <ul className="mt-7 divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)]">
         {services.map((service) => {
           const isActive = serviceKind === service.kind;
           return (
@@ -148,8 +148,8 @@ export function StudioRequestPathStep({
                 className={joinClassNames(
                   "relative flex w-full flex-col gap-2 px-4 py-3 text-left transition sm:px-5 sm:py-4",
                   isActive
-                    ? "bg-[rgba(151,244,243,0.06)]"
-                    : "hover:bg-[rgba(255,255,255,0.02)]"
+                    ? "bg-[color:var(--home-accent-soft)]"
+                    : "hover:bg-[color:var(--home-surface-04)]"
                 )}
               >
                 {isActive ? (
@@ -193,13 +193,13 @@ export function StudioRequestPathStep({
       {pathway === "package" ? (
         <div className="mt-7">
           {filteredPackages.length === 0 ? (
-            <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink-soft)]">
+            <div className="rounded-[1rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm text-[var(--studio-ink-soft)]">
               {t(
                 "No fixed package is available for this service yet. Switch to the custom project route.",
               )}
             </div>
           ) : null}
-          <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10">
+          <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)]">
             {filteredPackages.map((pkg) => {
               const isActive = selectedPackage?.id === pkg.id;
               return (
@@ -210,8 +210,8 @@ export function StudioRequestPathStep({
                     className={joinClassNames(
                       "relative flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition sm:px-5 sm:py-4",
                       isActive
-                        ? "bg-[rgba(151,244,243,0.06)]"
-                        : "hover:bg-[rgba(255,255,255,0.02)]"
+                        ? "bg-[color:var(--home-accent-soft)]"
+                        : "hover:bg-[color:var(--home-surface-04)]"
                     )}
                   >
                     {isActive ? (

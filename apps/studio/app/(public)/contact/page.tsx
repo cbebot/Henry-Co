@@ -31,7 +31,7 @@ export default async function ContactPage() {
           Talk to Studio.
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Direct line to the HenryCo Studio desk for premium web, apps, product UX,
+          Direct line to the Henry & Co. Studio desk for premium web, apps, product UX,
           branding, and custom software. Already know what to build? Skip to the
           structured brief.
         </p>

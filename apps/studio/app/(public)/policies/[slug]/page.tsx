@@ -21,12 +21,12 @@ export async function generateMetadata({
   const policy = getStudioPolicyBySlug(slug);
   if (!policy) {
     return {
-      title: "Policy not found | HenryCo Studio",
+      title: "Policy not found | Henry & Co. Studio",
       robots: { index: false, follow: false },
     };
   }
   return {
-    title: `${policy.title} | HenryCo Studio`,
+    title: `${policy.title} | Henry & Co. Studio`,
     description: policy.description,
     alternates: { canonical: `/policies/${policy.slug}` },
     robots: { index: true, follow: true },
@@ -88,7 +88,7 @@ export default async function StudioPolicyPage({
       <section className="mt-16 rounded-[1.5rem] border border-[var(--studio-signal)]/35 bg-[rgba(11,42,52,0.45)] p-6 sm:p-8">
         <p className="studio-kicker">Continue reading</p>
         <h2 className="mt-3 text-[1.3rem] font-semibold tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.5rem]">
-          The other agreements that govern HenryCo Studio engagements.
+          The other agreements that govern Henry & Co. Studio engagements.
         </h2>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {others.map((item) => (

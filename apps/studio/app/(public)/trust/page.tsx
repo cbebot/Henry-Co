@@ -98,7 +98,7 @@ export default async function TrustPage() {
 
       <section className="mt-16">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Why clients choose HenryCo</p>
+          <p className="studio-kicker">Why clients choose Henry & Co.</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         <ol className="mt-6 grid gap-8 md:grid-cols-2 md:divide-x md:divide-[var(--studio-line)]">
