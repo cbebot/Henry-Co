@@ -31,13 +31,22 @@ function deriveYearEstablished(settings: CompanySettingsRecord): string | null {
  * onto the theme-aware `--home-*` public design system so it matches the rest of
  * the now-light/dark hub (it previously hardcoded a permanent-dark palette).
  */
+export type AboutOwner = {
+  name: string;
+  role: string;
+  bio: string;
+  photoUrl: string;
+};
+
 export default function AboutHonestBlock({
   settings,
   divisions,
+  owner,
   copy,
 }: {
   settings: CompanySettingsRecord;
   divisions: DivisionRow[];
+  owner?: AboutOwner | null;
   copy: HubPublicCopy["aboutHonest"];
 }) {
   const liveCount = divisions.filter((d) => d.status === "active").length;
@@ -87,12 +96,44 @@ export default function AboutHonestBlock({
         <aside className="lg:pt-2">
           <div className="rounded-[1.6rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-6 sm:p-8">
             <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.founderEyebrow}</p>
-            <p className="mt-4 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
-              {copy.founderPlaceholderTitle}
-            </p>
-            <p className="mt-3 text-[13.5px] leading-7 text-[color:var(--home-ink-65)]">
-              {copy.founderPlaceholderBody}
-            </p>
+            {owner ? (
+              <>
+                <div className="mt-4 flex items-center gap-4">
+                  {owner.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={owner.photoUrl}
+                      alt={owner.name}
+                      className="h-16 w-16 shrink-0 rounded-full object-cover ring-1 ring-[color:var(--home-line-12)]"
+                    />
+                  ) : null}
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
+                      {owner.name}
+                    </p>
+                    {owner.role ? (
+                      <p className="mt-0.5 text-[12px] font-medium uppercase tracking-[0.14em] text-[color:var(--home-ink-50)]">
+                        {owner.role}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+                {owner.bio ? (
+                  <p className="mt-4 text-[13.5px] leading-7 text-[color:var(--home-ink-65)]">
+                    {owner.bio}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <>
+                <p className="mt-4 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
+                  {copy.founderPlaceholderTitle}
+                </p>
+                <p className="mt-3 text-[13.5px] leading-7 text-[color:var(--home-ink-65)]">
+                  {copy.founderPlaceholderBody}
+                </p>
+              </>
+            )}
             <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
               {noteLinks.map((link) => (
                 <li key={link.href}>
