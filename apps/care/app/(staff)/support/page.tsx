@@ -37,7 +37,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Overview | Henry & Co. Fabric Care",
+  title: "Support Overview | Henry Onyx Fabric Care",
   description:
     "Support command overview for inbox pressure, payment proof review, moderation, and channel health.",
 };

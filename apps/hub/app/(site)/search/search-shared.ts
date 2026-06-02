@@ -110,7 +110,7 @@ export type IconToken =
 export function divisionMeta(division: string): DivisionMeta {
   return (
     DIVISION_META[division as CrossDivisionSearchDivision] ?? {
-      label: division ? division.charAt(0).toUpperCase() + division.slice(1) : "Henry & Co.",
+      label: division ? division.charAt(0).toUpperCase() + division.slice(1) : "Henry Onyx",
       accent: "#C9A227",
       accentText: "#E8C24F",
       icon: "search",
@@ -291,7 +291,7 @@ export const EXAMPLE_PROMPTS: ReadonlyArray<string> = [
 
 /** Cycling placeholder hints (rotated client-side) so the field teaches itself. */
 export const PLACEHOLDER_HINTS: ReadonlyArray<string> = [
-  "Search Henry & Co. — divisions, orders, tracking, help…",
+  "Search Henry Onyx — divisions, orders, tracking, help…",
   "Try “marketplace orders” or “track a delivery”",
   "Try “book a care pickup” or “wallet withdrawal”",
   "Try “property viewings” or “verify a certificate”",

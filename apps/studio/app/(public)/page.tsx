@@ -49,18 +49,18 @@ export default async function StudioHomePage() {
           style={{ background: "radial-gradient(circle, var(--home-accent) 0%, transparent 68%)" }}
         />
         <div className="home-shell relative">
-          <Eyebrow className="home-rise">{t("Henry & Co. Studio")}</Eyebrow>
+          <Eyebrow className="home-rise">{t("Henry Onyx Studio")}</Eyebrow>
           <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-[1.55fr_1fr] lg:items-end">
             <div>
               <DisplayHeading level={1} size="xl" className="home-rise home-delay-1">
                 {t("The studio that builds")}{" "}
                 <span className="italic text-[color:var(--home-accent-text)]">
-                  {t("Henry & Co.")}
+                  {t("Henry Onyx")}
                 </span>
               </DisplayHeading>
               <Lede className="mt-6 max-w-xl home-rise home-delay-2">
                 {t(
-                  "Websites, apps, and platforms — shipped in-house for every Henry & Co. business. Now building yours.",
+                  "Websites, apps, and platforms — shipped in-house for every Henry Onyx business. Now building yours.",
                 )}
               </Lede>
               <div className="mt-9 flex flex-wrap items-center gap-3 home-rise home-delay-3">
@@ -130,7 +130,7 @@ export default async function StudioHomePage() {
             </DisplayHeading>
             <Lede className="mt-5 max-w-lg">
               {t(
-                "Scope, pricing, milestones, payments, and reviews live on one project record in your Henry & Co. account — nothing about your build in a back-channel.",
+                "Scope, pricing, milestones, payments, and reviews live on one project record in your Henry Onyx account — nothing about your build in a back-channel.",
               )}
             </Lede>
           </div>

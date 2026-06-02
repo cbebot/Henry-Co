@@ -65,7 +65,7 @@ export type LogisticsBookCopy = {
 
 const LOGISTICS_BOOK_COPY_EN: LogisticsBookCopy = {
   metadata: {
-    title: "Book a delivery | HenryCo Logistics",
+    title: "Book a delivery | Henry Onyx Logistics",
     description:
       "Submit a pickup and delivery request with governed pricing and live tracking.",
   },
@@ -125,7 +125,7 @@ const LOGISTICS_BOOK_COPY_EN: LogisticsBookCopy = {
 
 const LOGISTICS_BOOK_COPY_FR: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Réserver une livraison | HenryCo Logistics",
+    title: "Réserver une livraison | Henry Onyx Logistics",
     description:
       "Soumettez une demande d’enlèvement et de livraison avec une tarification encadrée et un suivi en direct.",
   },
@@ -185,7 +185,7 @@ const LOGISTICS_BOOK_COPY_FR: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_ES: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Reservar una entrega | HenryCo Logistics",
+    title: "Reservar una entrega | Henry Onyx Logistics",
     description:
       "Envíe una solicitud de recogida y entrega con precios regulados y seguimiento en directo.",
   },
@@ -245,7 +245,7 @@ const LOGISTICS_BOOK_COPY_ES: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_PT: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Reservar uma entrega | HenryCo Logistics",
+    title: "Reservar uma entrega | Henry Onyx Logistics",
     description:
       "Envie um pedido de recolha e entrega com preços regulamentados e rastreamento em tempo real.",
   },
@@ -305,7 +305,7 @@ const LOGISTICS_BOOK_COPY_PT: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_AR: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "حجز عملية توصيل | HenryCo Logistics",
+    title: "حجز عملية توصيل | Henry Onyx Logistics",
     description:
       "أرسل طلب استلام وتوصيل بتسعير منضبط ومتابعة لحظية.",
   },
@@ -365,7 +365,7 @@ const LOGISTICS_BOOK_COPY_AR: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_DE: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Lieferung buchen | HenryCo Logistics",
+    title: "Lieferung buchen | Henry Onyx Logistics",
     description:
       "Senden Sie eine Abhol- und Lieferanfrage mit kontrollierten Preisen und Live-Tracking.",
   },
@@ -425,7 +425,7 @@ const LOGISTICS_BOOK_COPY_DE: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_IT: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Prenota una consegna | HenryCo Logistics",
+    title: "Prenota una consegna | Henry Onyx Logistics",
     description:
       "Invia una richiesta di ritiro e consegna con tariffe regolate e tracciamento in tempo reale.",
   },
@@ -485,7 +485,7 @@ const LOGISTICS_BOOK_COPY_IT: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_ZH: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "预约配送 | HenryCo Logistics",
+    title: "预约配送 | Henry Onyx Logistics",
     description: "提交取件与配送请求,享受规范定价与实时追踪。",
   },
   hero: {
@@ -542,7 +542,7 @@ const LOGISTICS_BOOK_COPY_ZH: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_HI: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "डिलीवरी बुक करें | HenryCo Logistics",
+    title: "डिलीवरी बुक करें | Henry Onyx Logistics",
     description:
       "नियंत्रित मूल्य निर्धारण और लाइव ट्रैकिंग के साथ पिकअप और डिलीवरी का अनुरोध भेजें।",
   },
@@ -602,7 +602,7 @@ const LOGISTICS_BOOK_COPY_HI: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_IG: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Debe nnyefe | HenryCo Logistics",
+    title: "Debe nnyefe | Henry Onyx Logistics",
     description:
       "Zipu arịrịọ nnyefe na nbufe site n’ọnụahịa a chịkwara na nyocha ndụ.",
   },
@@ -662,7 +662,7 @@ const LOGISTICS_BOOK_COPY_IG: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_YO: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Ṣe ìfìránṣẹ́ | HenryCo Logistics",
+    title: "Ṣe ìfìránṣẹ́ | Henry Onyx Logistics",
     description:
       "Fi ìbéèrè fún ìgbé àti ìfijiṣẹ́ ránṣẹ́ pẹ̀lú ìṣètò owó tó tọ́ àti tóìṣe-pẹ̀lú-àkókò.",
   },
@@ -722,7 +722,7 @@ const LOGISTICS_BOOK_COPY_YO: DeepPartial<LogisticsBookCopy> = {
 
 const LOGISTICS_BOOK_COPY_HA: DeepPartial<LogisticsBookCopy> = {
   metadata: {
-    title: "Yi rijistar isar da kaya | HenryCo Logistics",
+    title: "Yi rijistar isar da kaya | Henry Onyx Logistics",
     description:
       "Aika buƙatar ɗauka da isar da kaya tare da farashi mai tsari da bibiyar lokaci-lokaci.",
   },

@@ -828,7 +828,7 @@ export async function submitApplication(input: {
       actionLabel: "Open candidate",
       emailKey: "internal_hiring_alert",
       emailHeading: "Internal hiring application received",
-      emailSummary: `${metadata.candidateName} applied to ${job.title} inside HenryCo Jobs.`,
+      emailSummary: `${metadata.candidateName} applied to ${job.title} inside Henry Onyx Jobs.`,
       emailDetailLines: [
         `Role: ${job.title}`,
         `Candidate: ${metadata.candidateName}`,
@@ -845,7 +845,7 @@ export async function submitApplication(input: {
     {
       key: "application_submitted",
       heading: "Application submitted",
-      summary: `Your application for ${job.title} at ${job.employerName} has been recorded inside HenryCo Jobs.`,
+      summary: `Your application for ${job.title} at ${job.employerName} has been recorded inside Henry Onyx Jobs.`,
       detailLines: [
         `Role: ${job.title}`,
         `Employer: ${job.employerName}`,
@@ -864,7 +864,7 @@ export async function submitApplication(input: {
 
   await sendJobsWhatsApp({
     phone: existingProfile?.phone || null,
-    body: `HenryCo Jobs: your application for ${job.title} at ${job.employerName} has been submitted. Track it in your candidate dashboard.`,
+    body: `Henry Onyx Jobs: your application for ${job.title} at ${job.employerName} has been submitted. Track it in your candidate dashboard.`,
     actorId: input.actor.userId,
     actorRole: input.actor.role,
     entityType: "jobs_application",
@@ -926,7 +926,7 @@ export async function createEmployerProfile(input: {
     activityType: JOBS_ACTIVITY_EMPLOYER_PROFILE,
     status: "active",
     title: name,
-    description: description || "Employer profile published into HenryCo Jobs.",
+    description: description || "Employer profile published into Henry Onyx Jobs.",
     referenceType: "jobs_employer",
     referenceId: slug,
     actionUrl: "/employer/company",
@@ -995,7 +995,7 @@ export async function createEmployerProfile(input: {
   await createJobsInAppNotification({
     userId: input.actor.userId,
     title: "Employer onboarding submitted",
-    body: `${name} is now inside HenryCo Jobs and awaiting verification review.`,
+    body: `${name} is now inside Henry Onyx Jobs and awaiting verification review.`,
     actionUrl: "/employer/company",
     actionLabel: "Open employer console",
     referenceType: "jobs_employer",
@@ -1007,7 +1007,7 @@ export async function createEmployerProfile(input: {
     {
       key: "employer_verification",
       heading: "Employer profile submitted",
-      summary: `${name} has been created inside HenryCo Jobs and is now awaiting verification review.`,
+      summary: `${name} has been created inside Henry Onyx Jobs and is now awaiting verification review.`,
       detailLines: [
         `Employer: ${name}`,
         `Website: ${website || companyPayload.href}`,
@@ -1030,7 +1030,7 @@ export async function createEmployerProfile(input: {
     actionLabel: "Review verification",
     emailKey: "recruiter_alert",
     emailHeading: "Employer verification queue update",
-    emailSummary: `${name} was just onboarded and is waiting for verification review inside HenryCo Jobs.`,
+    emailSummary: `${name} was just onboarded and is waiting for verification review inside Henry Onyx Jobs.`,
     emailDetailLines: [
       `Employer: ${name}`,
       `Industry: ${industry}`,
@@ -1099,7 +1099,7 @@ export async function createJobPost(input: {
 
   const slug = slugify(asText(input.formData.get("slug")) || `${title}-${employer?.employerSlug || "henryco"}`);
   const employerSlug = employer?.employerSlug || "henryco-group";
-  const employerName = employer?.employerName || "Henry & Co.";
+  const employerName = employer?.employerName || "Henry Onyx";
   const isPrivileged = input.actor.role === "owner" || input.actor.role === "manager";
   const [eligibility, subscription] = await Promise.all([
     getEmployerPostingEligibility({
@@ -1119,7 +1119,7 @@ export async function createJobPost(input: {
   // they already have for trust-tier and verification rules.
   if (!subscription.allowed && !isPrivileged) {
     throw new Error(
-      `A live HenryCo Jobs employer subscription is required to post roles. ` +
+      `A live Henry Onyx Jobs employer subscription is required to post roles. ` +
         `The current subscription status for ${employerSlug} is "${subscription.status}". ` +
         `Renew or talk to the HenryCo team before publishing this role.`
     );
@@ -1297,7 +1297,7 @@ export async function createJobPost(input: {
           : "Role submitted for review",
     body:
       moderationStatus === "approved"
-        ? `${title} is now live in HenryCo Jobs.`
+        ? `${title} is now live in Henry Onyx Jobs.`
         : moderationStatus === "draft"
           ? `${title} was saved as draft until trust, company readiness, and moderation requirements are complete.`
           : `${title} is now waiting in the moderation queue.`,
@@ -1427,7 +1427,7 @@ export async function advanceApplicationStage(input: {
 
   await sendJobsWhatsApp({
     phone: existing.candidatePhone,
-    body: `HenryCo Jobs: ${existing.jobTitle} at ${existing.employerName} moved to ${input.stage}. Open your dashboard for the full update.`,
+    body: `Henry Onyx Jobs: ${existing.jobTitle} at ${existing.employerName} moved to ${input.stage}. Open your dashboard for the full update.`,
     actorId: input.actor.userId,
     actorRole: input.actor.role,
     entityType: "jobs_application",
@@ -1595,7 +1595,7 @@ export async function updateEmployerVerification(input: {
       await createJobsInAppNotification({
         userId: memberUserId,
         title: "Employer verification updated",
-        body: `${employerName} is now ${input.status} in HenryCo Jobs.`,
+        body: `${employerName} is now ${input.status} in Henry Onyx Jobs.`,
         actionUrl: "/employer/company",
         actionLabel: "Open employer profile",
         priority: "high",
@@ -1610,7 +1610,7 @@ export async function updateEmployerVerification(input: {
         {
           key: "employer_verification",
           heading: "Employer verification updated",
-          summary: `${employerName} is now marked ${input.status} inside HenryCo Jobs.`,
+          summary: `${employerName} is now marked ${input.status} inside Henry Onyx Jobs.`,
           detailLines: [input.reason || "Open your employer console for the latest verification context."],
           ctaLabel: "Open employer console",
           ctaHref: toJobsUrl("/employer/company"),

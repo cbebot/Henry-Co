@@ -18,7 +18,7 @@ import { LinkAccountClient } from "./LinkAccountClient";
  */
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Confirm account link — Henry & Co." };
+export const metadata = { title: "Confirm account link — Henry Onyx" };
 
 type LinkAccountSearchParams = {
   intent?: string;

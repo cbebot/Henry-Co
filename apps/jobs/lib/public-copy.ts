@@ -130,7 +130,7 @@ const EN: JobsPublicCopy = {
     internalCareers: "Internal Careers",
   },
   home: {
-    kicker: "HenryCo Jobs",
+    kicker: "Henry Onyx Jobs",
     title: "Verified hiring. No noise.",
     subtitle:
       "Plain language, clear next steps, and employers checked where it matters &mdash; so fewer fake listings for candidates, fewer dead-end applications for teams.",
@@ -245,7 +245,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
     internalCareers: "Carrières internes",
   },
   home: {
-    kicker: "HenryCo Jobs",
+    kicker: "Henry Onyx Jobs",
     title: "Recrutement de talents vérifiés, sans le bruit habituel.",
     subtitle:
       "Que vous recrutiez ou cherchiez, vous obtenez un langage clair, des étapes évidentes et une équipe qui vérifie les employeurs et les annonces là où cela compte-pour moins de faux postes et moins de candidatures sans suite.",
@@ -360,7 +360,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
     internalCareers: "Carreras internas",
   },
   home: {
-    kicker: "HenryCo Jobs",
+    kicker: "Henry Onyx Jobs",
     title: "Contratación de talento verificado, sin el ruido habitual.",
     subtitle:
       "Si contratas o buscas, obtienes lenguaje claro, siguientes pasos evidentes y un equipo que revisa empleadores y publicaciones donde importa-para menos anuncios falsos y menos candidaturas sin salida.",
@@ -475,7 +475,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
     internalCareers: "Carreiras internas",
   },
   home: {
-    kicker: "HenryCo Jobs",
+    kicker: "Henry Onyx Jobs",
     title: "Contratação de talentos verificados, sem o ruído habitual.",
     subtitle:
       "Seja para contratar ou procurar, você recebe linguagem clara, próximos passos evidentes e uma equipe que verifica empregadores e vagas onde importa-para menos anúncios falsos e menos candidaturas sem retorno.",
@@ -590,7 +590,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
     internalCareers: "الوظائف الداخلية",
   },
   home: {
-    kicker: "HenryCo Jobs",
+    kicker: "Henry Onyx Jobs",
     title: "توظيف مواهب موثوقة من دون الضوضاء المعتادة.",
     subtitle:
       "سواء كنت توظف أو تبحث عن عمل، تحصل على لغة واضحة وخطوات تالية مباشرة وفريق يراجع أصحاب العمل والإعلانات حيث يهم-لذلك تقل الإعلانات الوهمية وتقل الطلبات التي لا تقود إلى نتيجة.",

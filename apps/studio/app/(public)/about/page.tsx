@@ -32,12 +32,12 @@ export default async function StudioAboutPage() {
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
         <div>
-          <p className="studio-kicker">About Henry & Co. Studio</p>
+          <p className="studio-kicker">About Henry Onyx Studio</p>
           <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
             A software studio built around clarity, delivery, and trust.
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-            Henry & Co. Studio designs and builds websites, commerce experiences, internal tools, and custom platforms for teams that need serious execution without a chaotic build process.
+            Henry Onyx Studio designs and builds websites, commerce experiences, internal tools, and custom platforms for teams that need serious execution without a chaotic build process.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link

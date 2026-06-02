@@ -90,10 +90,10 @@ export default function SettingsScreen() {
           className="mt-2 text-2xl font-bold"
           style={{ color: palette.textPrimary }}
         >
-          Henry &amp; Co. Hub
+          Henry Onyx Hub
         </Text>
         <Text className="mt-2 text-sm leading-5" style={{ color: palette.muted }}>
-          The official corporate directory for Henry &amp; Co. divisions and
+          The official corporate directory for Henry Onyx divisions and
           services—aligned with henrycogroup.com.
         </Text>
       </View>
@@ -236,11 +236,11 @@ export default function SettingsScreen() {
             className="text-lg font-bold"
             style={{ color: palette.textPrimary }}
           >
-            Henry &amp; Co. Hub v{appVersion}
+            Henry Onyx Hub v{appVersion}
           </Text>
           <Text className="mt-2 text-sm leading-5" style={{ color: palette.muted }}>
-            Built for the Henry &amp; Co. division network. One connected
-            entry point to discover, explore, and navigate all Henry &amp; Co.
+            Built for the Henry Onyx division network. One connected
+            entry point to discover, explore, and navigate all Henry Onyx
             services.
           </Text>
         </View>

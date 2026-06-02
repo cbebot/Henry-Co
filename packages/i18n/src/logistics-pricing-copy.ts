@@ -43,7 +43,7 @@ export type LogisticsPricingCopy = {
 
 const LOGISTICS_PRICING_COPY_EN: LogisticsPricingCopy = {
   metadata: {
-    title: "Pricing | HenryCo Logistics",
+    title: "Pricing | Henry Onyx Logistics",
     description:
       "Zone-based logistics pricing with indicative rate cards and promise windows.",
   },
@@ -74,7 +74,7 @@ const LOGISTICS_PRICING_COPY_EN: LogisticsPricingCopy = {
 
 const LOGISTICS_PRICING_COPY_FR: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Tarification | HenryCo Logistics",
+    title: "Tarification | Henry Onyx Logistics",
     description:
       "Tarification logistique par zone avec grilles tarifaires indicatives et fenêtres de promesse.",
   },
@@ -105,7 +105,7 @@ const LOGISTICS_PRICING_COPY_FR: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_ES: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Precios | HenryCo Logistics",
+    title: "Precios | Henry Onyx Logistics",
     description:
       "Precios logísticos por zona con tarifas indicativas y ventanas de promesa.",
   },
@@ -136,7 +136,7 @@ const LOGISTICS_PRICING_COPY_ES: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_PT: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Preços | HenryCo Logistics",
+    title: "Preços | Henry Onyx Logistics",
     description:
       "Preços logísticos por zona com tabelas tarifárias indicativas e janelas de promessa.",
   },
@@ -167,7 +167,7 @@ const LOGISTICS_PRICING_COPY_PT: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_AR: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "التسعير | HenryCo Logistics",
+    title: "التسعير | Henry Onyx Logistics",
     description:
       "تسعير لوجستي حسب المنطقة مع بطاقات أسعار إرشادية ونوافذ وعد التسليم.",
   },
@@ -198,7 +198,7 @@ const LOGISTICS_PRICING_COPY_AR: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_DE: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Preise | HenryCo Logistics",
+    title: "Preise | Henry Onyx Logistics",
     description:
       "Zonenbasierte Logistikpreise mit indikativen Tarifkarten und Versprechensfenstern.",
   },
@@ -229,7 +229,7 @@ const LOGISTICS_PRICING_COPY_DE: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_IT: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Prezzi | HenryCo Logistics",
+    title: "Prezzi | Henry Onyx Logistics",
     description:
       "Prezzi logistici per zona con tariffari indicativi e finestre di promessa.",
   },
@@ -260,7 +260,7 @@ const LOGISTICS_PRICING_COPY_IT: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_ZH: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "定价 | HenryCo Logistics",
+    title: "定价 | Henry Onyx Logistics",
     description: "基于区域的物流定价，附带参考费率卡和承诺时间窗口。",
   },
   hero: {
@@ -289,7 +289,7 @@ const LOGISTICS_PRICING_COPY_ZH: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_HI: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "मूल्य निर्धारण | HenryCo Logistics",
+    title: "मूल्य निर्धारण | Henry Onyx Logistics",
     description:
       "ज़ोन-आधारित लॉजिस्टिक्स मूल्य निर्धारण, संकेतात्मक दर कार्ड और वादा-समय खिड़कियों के साथ।",
   },
@@ -320,7 +320,7 @@ const LOGISTICS_PRICING_COPY_HI: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_IG: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Ọnụ ahịa | HenryCo Logistics",
+    title: "Ọnụ ahịa | Henry Onyx Logistics",
     description:
       "Ọnụ ahịa logistics dabere na mpaghara na kaadị ọnụ ego nrụnye na windo nkwa.",
   },
@@ -351,7 +351,7 @@ const LOGISTICS_PRICING_COPY_IG: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_YO: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Ìdíyelé | HenryCo Logistics",
+    title: "Ìdíyelé | Henry Onyx Logistics",
     description:
       "Ìdíyelé logistics tó dá lórí àgbègbè pẹ̀lú káàdì ìdíyelé àgbéyẹ̀wò àti àkókò ìlérí.",
   },
@@ -382,7 +382,7 @@ const LOGISTICS_PRICING_COPY_YO: DeepPartial<LogisticsPricingCopy> = {
 
 const LOGISTICS_PRICING_COPY_HA: DeepPartial<LogisticsPricingCopy> = {
   metadata: {
-    title: "Farashi | HenryCo Logistics",
+    title: "Farashi | Henry Onyx Logistics",
     description:
       "Farashin logistics bisa yanki tare da katunan farashi na ja-gora da tagogin alkawari.",
   },

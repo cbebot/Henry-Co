@@ -134,7 +134,7 @@ export function LogisticsB2BStatementDocument({
     <BrandedDocument
       metadata={{
         title: `B2B statement · ${account.name} · ${period.label}`,
-        subject: "HenryCo Logistics B2B statement",
+        subject: "Henry Onyx Logistics B2B statement",
         keywords: ["logistics", "b2b", "statement", "henryco", account.name],
       }}
       header={{
@@ -203,8 +203,8 @@ export function LogisticsB2BStatementDocument({
 
       <LegalFooter
         lines={[
-          "This statement summarises shipment activity booked through your Henry & Co. B2B account during the period above. Amounts are gross of any negotiated rebate, which is settled separately on the agreed cadence.",
-          "Discrepancies must be raised within the dispute window stated in your service agreement; Henry Holdings Limited cannot re-bill outside that window.",
+          "This statement summarises shipment activity booked through your Henry Onyx B2B account during the period above. Amounts are gross of any negotiated rebate, which is settled separately on the agreed cadence.",
+          "Discrepancies must be raised within the dispute window stated in your service agreement; Henry Onyx Limited cannot re-bill outside that window.",
         ]}
       />
     </BrandedDocument>

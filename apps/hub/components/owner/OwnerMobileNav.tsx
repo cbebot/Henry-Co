@@ -65,7 +65,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
         <div className="flex items-center gap-2.5">
           <Logo size={28} />
           <div>
-            <span className="text-sm font-semibold">Henry & Co.</span>
+            <span className="text-sm font-semibold">Henry Onyx</span>
             <span className="ml-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
               {t("CMD")}
             </span>

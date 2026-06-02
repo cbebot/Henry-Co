@@ -122,7 +122,7 @@ export default async function JobsPage() {
           "Browse live roles on {host}, save shortlists, and apply with one tap. Recruiter updates land in your account in real time.",
         ).replace("{host}", jobsHost)
       : t(
-          "Applications, saved roles, recruiter updates, and profile signal — all mirrored from HenryCo Jobs into your account.",
+          "Applications, saved roles, recruiter updates, and profile signal — all mirrored from Henry Onyx Jobs into your account.",
         );
 
   // ── NextStepRow picker ───────────────────────────────────────────

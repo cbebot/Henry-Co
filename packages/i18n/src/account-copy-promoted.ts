@@ -1076,13 +1076,13 @@ export const ACCOUNT_COPY_ES = {
   "divisionCare": {
     "metadata": {
       "title": "Care · reservas vinculadas",
-      "description": "Sigue cada reserva de HenryCo Care vinculada a esta cuenta: estado, verificación de pago y la próxima acción operativa, todo en un solo lugar."
+      "description": "Sigue cada reserva de Henry Onyx Care vinculada a esta cuenta: estado, verificación de pago y la próxima acción operativa, todo en un solo lugar."
     },
     "hero": {
       "eyebrow": "Care · en vivo",
       "sideKicker": "Cómo funciona esta sala",
       "sideTitle": "Reserva en Care, haz seguimiento aquí.",
-      "sideBody": "Cada reserva realizada en HenryCo Care se refleja en esta sala: código de seguimiento, estado del pago y la próxima acción operativa llegan aquí automáticamente. El panel se mantiene sincronizado mientras avanza el servicio.",
+      "sideBody": "Cada reserva realizada en Henry Onyx Care se refleja en esta sala: código de seguimiento, estado del pago y la próxima acción operativa llegan aquí automáticamente. El panel se mantiene sincronizado mientras avanza el servicio.",
       "breakdownLabel": "Por estado",
       "tilesAriaLabel": "Resumen de reservas Care",
       "tileLabels": {
@@ -1124,7 +1124,7 @@ export const ACCOUNT_COPY_ES = {
         "active": {
           "headlineTemplateSingular": "{count} servicio en marcha.",
           "headlineTemplatePlural": "{count} servicios en marcha.",
-          "blurb": "Seguimiento en vivo, verificación de pago y la próxima acción operativa se reflejan desde HenryCo Care hacia esta sala.",
+          "blurb": "Seguimiento en vivo, verificación de pago y la próxima acción operativa se reflejan desde Henry Onyx Care hacia esta sala.",
           "ctaPrimary": "Abrir seguimiento",
           "ctaSecondary": "Reservar un servicio"
         },
@@ -1253,7 +1253,7 @@ export const ACCOUNT_COPY_ES = {
   "divisionProperty": {
     "metadata": {
       "title": "Property · guardados y consultas",
-      "description": "Tu selección Property, consultas, visitas y seguimientos de anuncios — cada acción en HenryCo Property se refleja en esta sala de la cuenta."
+      "description": "Tu selección Property, consultas, visitas y seguimientos de anuncios — cada acción en Henry Onyx Property se refleja en esta sala de la cuenta."
     },
     "hero": {
       "eyebrow": "Property · en vivo",
@@ -1281,7 +1281,7 @@ export const ACCOUNT_COPY_ES = {
       "sideAriaLabel": "Cómo funciona esta sala",
       "sideKicker": "Cómo funciona esta sala",
       "sideTitle": "Descubre en Property, sigue aquí.",
-      "sideBody": "Guarda un anuncio, solicita una visita o abre una consulta en HenryCo Property — cada acción se refleja en esta sala de la cuenta para que puedas retomar donde lo dejaste en cualquier dispositivo.",
+      "sideBody": "Guarda un anuncio, solicita una visita o abre una consulta en Henry Onyx Property — cada acción se refleja en esta sala de la cuenta para que puedas retomar donde lo dejaste en cualquier dispositivo.",
       "sideBodyMuted": "Los anuncios gestionados por HenryCo llevan un distintivo Gestionado — la revisión, inspección y seguimiento del contrato los coordina el equipo de Property.",
       "breakdownAriaLabel": "Desglose de actividad",
       "breakdownLabel": "Por actividad",
@@ -1293,7 +1293,7 @@ export const ACCOUNT_COPY_ES = {
       },
       "state": {
         "empty": {
-          "headline": "Empieza a explorar HenryCo Property.",
+          "headline": "Empieza a explorar Henry Onyx Property.",
           "blurb": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por HenryCo. Guarda tus favoritos y cada consulta, visita o seguimiento de anuncio llega aquí automáticamente."
         },
         "discover": {
@@ -1306,13 +1306,13 @@ export const ACCOUNT_COPY_ES = {
           "viewingHeadlineTemplatePlural": "{count} visitas programadas.",
           "inquiryHeadlineTemplateSingular": "{count} consulta activa.",
           "inquiryHeadlineTemplatePlural": "{count} consultas activas.",
-          "blurb": "Tu selección, consultas y agenda de visitas viven en una sola sala. Retoma donde lo dejaste — cada acción se refleja desde HenryCo Property en tiempo real."
+          "blurb": "Tu selección, consultas y agenda de visitas viven en una sola sala. Retoma donde lo dejaste — cada acción se refleja desde Henry Onyx Property en tiempo real."
         }
       }
     },
     "sections": {
       "saved": "Selección guardada",
-      "savedMetaEmpty": "Guarda anuncios en HenryCo Property para construir tu selección.",
+      "savedMetaEmpty": "Guarda anuncios en Henry Onyx Property para construir tu selección.",
       "savedMetaTemplate": "{saved} guardados · {managed} gestionadas por HenryCo",
       "activity": "Actividad reciente",
       "activityMetaEmpty": "Consultas, visitas y revisiones de anuncios se reflejan aquí en tiempo real.",
@@ -1323,7 +1323,7 @@ export const ACCOUNT_COPY_ES = {
       "savedTitle": "Aún no hay propiedades guardadas",
       "savedBody": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por HenryCo en Property. Todo lo que guardes llega aquí automáticamente.",
       "activityTitle": "Aún no hay actividad en Property",
-      "activityBody": "Abre un anuncio en HenryCo Property para solicitar una visita o enviar una consulta — cada paso, desde tu primer mensaje hasta la revisión, aparecerá aquí."
+      "activityBody": "Abre un anuncio en Henry Onyx Property para solicitar una visita o enviar una consulta — cada paso, desde tu primer mensaje hasta la revisión, aparecerá aquí."
     },
     "activity": {
       "ariaLabel": "Actividad de Property",
@@ -1352,7 +1352,7 @@ export const ACCOUNT_COPY_ES = {
   "divisionJobs": {
     "metadata": {
       "title": "Empleos · panel de candidato",
-      "description": "Sigue cada solicitud de HenryCo Jobs, puesto guardado, actualización de reclutadores y señal de preparación de perfil vinculada a esta cuenta."
+      "description": "Sigue cada solicitud de Henry Onyx Jobs, puesto guardado, actualización de reclutadores y señal de preparación de perfil vinculada a esta cuenta."
     },
     "header": {
       "title": "Empleos",
@@ -1518,7 +1518,7 @@ export const ACCOUNT_COPY_ES = {
   "divisionMarketplace": {
     "metadata": {
       "title": "Marketplace · pedidos y actividad de vendedor",
-      "description": "Sigue cada pedido de HenryCo Marketplace, disputa y pago a vendedor vinculado a esta cuenta — actividad del comprador y espacio del vendedor, reflejados en una sola sala en tiempo real."
+      "description": "Sigue cada pedido de Henry Onyx Marketplace, disputa y pago a vendedor vinculado a esta cuenta — actividad del comprador y espacio del vendedor, reflejados en una sola sala en tiempo real."
     },
     "hero": {
       "eyebrow": "Marketplace · en vivo",
@@ -1558,7 +1558,7 @@ export const ACCOUNT_COPY_ES = {
       },
       "state": {
         "empty": {
-          "headline": "Empieza a comprar en HenryCo Marketplace.",
+          "headline": "Empieza a comprar en Henry Onyx Marketplace.",
           "blurb": "Pedidos, disputas, actividad de vendedor y pagos se reflejan en esta sala apenas hagas una transacción. Explora el marketplace para empezar.",
           "ctaPrimary": "Abrir Marketplace",
           "ctaSecondary": "Postular como vendedor"
@@ -1573,7 +1573,7 @@ export const ACCOUNT_COPY_ES = {
         "activeOrders": {
           "headlineTemplateSingular": "{count} pedido en curso.",
           "headlineTemplatePlural": "{count} pedidos en curso.",
-          "blurb": "Estado en vivo del pedido, estado de pago y seguimiento del vendedor se reflejan en esta sala desde HenryCo Marketplace en tiempo real.",
+          "blurb": "Estado en vivo del pedido, estado de pago y seguimiento del vendedor se reflejan en esta sala desde Henry Onyx Marketplace en tiempo real.",
           "ctaPrimary": "Abrir Marketplace",
           "ctaSecondary": "Postular como vendedor"
         },
@@ -1614,7 +1614,7 @@ export const ACCOUNT_COPY_ES = {
         "metaTemplateSingular": "{count} pedido · más reciente primero",
         "metaTemplatePlural": "{count} pedidos · más recientes primero",
         "emptyTitle": "Aún no hay pedidos",
-        "emptyBody": "Haz tu primer pedido en HenryCo Marketplace — estado del pedido, estado de pago y cualquier seguimiento llegan aquí automáticamente.",
+        "emptyBody": "Haz tu primer pedido en Henry Onyx Marketplace — estado del pedido, estado de pago y cualquier seguimiento llegan aquí automáticamente.",
         "ariaLabel": "Pedidos recientes"
       },
       "activity": {
@@ -1688,14 +1688,14 @@ export const ACCOUNT_COPY_ES = {
   "divisionLearn": {
     "metadata": {
       "title": "Learn · panel de aprendizaje",
-      "description": "Sigue cada inscripción en HenryCo Learn, lección, resultado de cuestionario, certificado, formación asignada y solicitud de docencia vinculada a esta cuenta — catálogo en Learn, progreso reflejado aquí."
+      "description": "Sigue cada inscripción en Henry Onyx Learn, lección, resultado de cuestionario, certificado, formación asignada y solicitud de docencia vinculada a esta cuenta — catálogo en Learn, progreso reflejado aquí."
     },
     "hero": {
       "ariaLabel": "Visión general de Learn",
       "eyebrow": "Learn · en vivo",
       "sideKicker": "Cómo funciona esta sala",
       "sideTitle": "Catálogo en Learn, progreso aquí.",
-      "sideBody": "Cada lección, cuestionario y certificado de HenryCo Learn se sincroniza en esta sala — retoma donde lo dejaste, ve tu progreso de un vistazo y mantén tus credenciales en un mismo lugar.",
+      "sideBody": "Cada lección, cuestionario y certificado de Henry Onyx Learn se sincroniza en esta sala — retoma donde lo dejaste, ve tu progreso de un vistazo y mantén tus credenciales en un mismo lugar.",
       "breakdownLabel": "Por estado",
       "breakdownAriaLabel": "Desglose de actividad de aprendizaje",
       "tilesAriaLabel": "Actividad de aprendizaje",
@@ -1721,17 +1721,17 @@ export const ACCOUNT_COPY_ES = {
         "certificates": "Certificados",
         "saved": "Guardados"
       },
-      "openLearnCta": "Abrir HenryCo Learn",
+      "openLearnCta": "Abrir Henry Onyx Learn",
       "applyToTeachCta": "Solicitar enseñar",
       "state": {
         "empty": {
-          "headline": "Comienza tu recorrido en HenryCo Learn.",
+          "headline": "Comienza tu recorrido en Henry Onyx Learn.",
           "blurb": "Explora el catálogo, inscríbete en un curso y cada lección, cuestionario y certificado se sincronizará automáticamente en esta sala."
         },
         "active": {
           "headlineTemplateSingular": "{count} curso en curso.",
           "headlineTemplatePlural": "{count} cursos en curso.",
-          "blurb": "Retoma donde lo dejaste — lecciones, cuestionarios, certificados y formación asignada se sincronizan desde HenryCo Learn a esta sala."
+          "blurb": "Retoma donde lo dejaste — lecciones, cuestionarios, certificados y formación asignada se sincronizan desde Henry Onyx Learn a esta sala."
         },
         "calm": {
           "headlineTemplateSingular": "{count} curso completado.",
@@ -1742,7 +1742,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "sections": {
       "coursesTitle": "Continuar aprendiendo",
-      "coursesMetaEmpty": "Explora el catálogo de HenryCo Learn para inscribirte en tu primer curso.",
+      "coursesMetaEmpty": "Explora el catálogo de Henry Onyx Learn para inscribirte en tu primer curso.",
       "coursesMetaTemplate": "{active} activos · {completed} completados",
       "extrasTitle": "Credenciales, asignaciones y enseñanza",
       "extrasMeta": "Certificados, formación asignada, cursos guardados y solicitud como docente viven aquí.",
@@ -1753,7 +1753,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "empty": {
       "coursesTitle": "Aún no hay cursos vinculados",
-      "coursesBody": "Explora el catálogo en HenryCo Learn e inscríbete. Tu lugar aparecerá aquí automáticamente.",
+      "coursesBody": "Explora el catálogo en Henry Onyx Learn e inscríbete. Tu lugar aparecerá aquí automáticamente.",
       "activityTitle": "Aún no hay actividad de Learn",
       "activityBody": "El progreso de cursos, resultados de cuestionarios, emisión de certificados y recibos de pago aparecen aquí en tiempo real."
     },
@@ -1774,7 +1774,7 @@ export const ACCOUNT_COPY_ES = {
       "topicsLabel": "Temas",
       "openApplicationCta": "Abrir solicitud",
       "applyToTeachCta": "Solicitar enseñar",
-      "teachingEmpty": "Revisamos las solicitudes de docencia manualmente. Postula en HenryCo Learn y el estado se sincronizará aquí."
+      "teachingEmpty": "Revisamos las solicitudes de docencia manualmente. Postula en Henry Onyx Learn y el estado se sincronizará aquí."
     },
     "activity": {
       "ariaLabel": "Actividad de Learn",
@@ -1784,7 +1784,7 @@ export const ACCOUNT_COPY_ES = {
   "divisionStudio": {
     "metadata": {
       "title": "Studio · salas de proyecto",
-      "description": "Sigue cada colaboración HenryCo Studio vinculada a esta cuenta — propuestas, hitos, pagos, entregables y actividad en una sola sala."
+      "description": "Sigue cada colaboración Henry Onyx Studio vinculada a esta cuenta — propuestas, hitos, pagos, entregables y actividad en una sola sala."
     },
     "hero": {
       "eyebrowLive": "Studio · en vivo",
@@ -1840,7 +1840,7 @@ export const ACCOUNT_COPY_ES = {
         "activeProjects": {
           "headlineTemplateSingular": "{count} proyecto activo.",
           "headlineTemplatePlural": "{count} proyectos activos.",
-          "blurb": "Salas activas con movimiento de hitos, puntos de pago y entregables — todo reflejado desde HenryCo Studio en esta sala.",
+          "blurb": "Salas activas con movimiento de hitos, puntos de pago y entregables — todo reflejado desde Henry Onyx Studio en esta sala.",
           "ctaPrimary": "Abrir Studio",
           "ctaSecondary": "Iniciar nuevo brief"
         },
@@ -1925,7 +1925,7 @@ export const ACCOUNT_COPY_ES = {
   "divisionLogistics": {
     "metadata": {
       "title": "Logística · entregas y envíos",
-      "description": "Cada recogida, entrega, ETA y prueba de entrega de HenryCo Logistics vinculados a esta cuenta — reflejados desde la red logística en una sola sala tranquila."
+      "description": "Cada recogida, entrega, ETA y prueba de entrega de Henry Onyx Logistics vinculados a esta cuenta — reflejados desde la red logística en una sola sala tranquila."
     },
     "hero": {
       "ariaLabel": "Resumen de logística",
@@ -3174,13 +3174,13 @@ export const ACCOUNT_COPY_PT = {
   "divisionCare": {
     "metadata": {
       "title": "Care · reservas vinculadas",
-      "description": "Acompanhe cada reserva HenryCo Care vinculada a esta conta — status, verificação de pagamento e o próximo passo operacional num só lugar."
+      "description": "Acompanhe cada reserva Henry Onyx Care vinculada a esta conta — status, verificação de pagamento e o próximo passo operacional num só lugar."
     },
     "hero": {
       "eyebrow": "Care · ao vivo",
       "sideKicker": "Como esta sala funciona",
       "sideTitle": "Reserve no Care, acompanhe aqui.",
-      "sideBody": "Toda reserva feita no HenryCo Care é espelhada nesta sala — código de rastreio, status de pagamento e o próximo passo operacional chegam aqui automaticamente. O painel abaixo permanece sincronizado enquanto o serviço avança.",
+      "sideBody": "Toda reserva feita no Henry Onyx Care é espelhada nesta sala — código de rastreio, status de pagamento e o próximo passo operacional chegam aqui automaticamente. O painel abaixo permanece sincronizado enquanto o serviço avança.",
       "breakdownLabel": "Por status",
       "tilesAriaLabel": "Resumo das reservas Care",
       "tileLabels": {
@@ -3222,7 +3222,7 @@ export const ACCOUNT_COPY_PT = {
         "active": {
           "headlineTemplateSingular": "{count} serviço em andamento.",
           "headlineTemplatePlural": "{count} serviços em andamento.",
-          "blurb": "Rastreio ao vivo, verificação de pagamento e próximo passo operacional espelhados do HenryCo Care para esta sala.",
+          "blurb": "Rastreio ao vivo, verificação de pagamento e próximo passo operacional espelhados do Henry Onyx Care para esta sala.",
           "ctaPrimary": "Abrir rastreio",
           "ctaSecondary": "Reservar um serviço"
         },
@@ -3351,7 +3351,7 @@ export const ACCOUNT_COPY_PT = {
   "divisionProperty": {
     "metadata": {
       "title": "Property · salvos e consultas",
-      "description": "Sua seleção Property, consultas, visitas e acompanhamentos de anúncios — cada ação no HenryCo Property é espelhada nesta sala da conta."
+      "description": "Sua seleção Property, consultas, visitas e acompanhamentos de anúncios — cada ação no Henry Onyx Property é espelhada nesta sala da conta."
     },
     "hero": {
       "eyebrow": "Property · ao vivo",
@@ -3379,7 +3379,7 @@ export const ACCOUNT_COPY_PT = {
       "sideAriaLabel": "Como esta sala funciona",
       "sideKicker": "Como esta sala funciona",
       "sideTitle": "Descubra no Property, acompanhe aqui.",
-      "sideBody": "Salve um anúncio, solicite uma visita ou abra uma consulta no HenryCo Property — cada ação é espelhada nesta sala da conta para você retomar de onde parou em qualquer dispositivo.",
+      "sideBody": "Salve um anúncio, solicite uma visita ou abra uma consulta no Henry Onyx Property — cada ação é espelhada nesta sala da conta para você retomar de onde parou em qualquer dispositivo.",
       "sideBodyMuted": "Os anúncios gerenciados pela HenryCo trazem um selo Gerenciado — revisão, inspeção e acompanhamento do contrato ficam a cargo da equipe Property.",
       "breakdownAriaLabel": "Detalhamento da atividade",
       "breakdownLabel": "Por atividade",
@@ -3391,7 +3391,7 @@ export const ACCOUNT_COPY_PT = {
       },
       "state": {
         "empty": {
-          "headline": "Comece a explorar o HenryCo Property.",
+          "headline": "Comece a explorar o Henry Onyx Property.",
           "blurb": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela HenryCo. Salve seus favoritos e cada consulta, visita ou acompanhamento de anúncio chega aqui automaticamente."
         },
         "discover": {
@@ -3404,13 +3404,13 @@ export const ACCOUNT_COPY_PT = {
           "viewingHeadlineTemplatePlural": "{count} visitas agendadas.",
           "inquiryHeadlineTemplateSingular": "{count} consulta ativa.",
           "inquiryHeadlineTemplatePlural": "{count} consultas ativas.",
-          "blurb": "Sua seleção, consultas e agenda de visitas vivem em uma só sala. Retome de onde parou — cada ação é espelhada do HenryCo Property em tempo real."
+          "blurb": "Sua seleção, consultas e agenda de visitas vivem em uma só sala. Retome de onde parou — cada ação é espelhada do Henry Onyx Property em tempo real."
         }
       }
     },
     "sections": {
       "saved": "Seleção salva",
-      "savedMetaEmpty": "Salve anúncios no HenryCo Property para montar sua seleção.",
+      "savedMetaEmpty": "Salve anúncios no Henry Onyx Property para montar sua seleção.",
       "savedMetaTemplate": "{saved} salvos · {managed} gerenciados pela HenryCo",
       "activity": "Atividade recente",
       "activityMetaEmpty": "Consultas, visitas e revisões de anúncios são espelhadas aqui em tempo real.",
@@ -3421,7 +3421,7 @@ export const ACCOUNT_COPY_PT = {
       "savedTitle": "Ainda não há imóveis salvos",
       "savedBody": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela HenryCo no Property. Tudo o que você salvar chega aqui automaticamente.",
       "activityTitle": "Ainda não há atividade em Property",
-      "activityBody": "Abra um anúncio no HenryCo Property para solicitar uma visita ou enviar uma consulta — cada passo, da primeira mensagem à revisão, aparecerá aqui."
+      "activityBody": "Abra um anúncio no Henry Onyx Property para solicitar uma visita ou enviar uma consulta — cada passo, da primeira mensagem à revisão, aparecerá aqui."
     },
     "activity": {
       "ariaLabel": "Atividade de Property",
@@ -3450,7 +3450,7 @@ export const ACCOUNT_COPY_PT = {
   "divisionJobs": {
     "metadata": {
       "title": "Vagas · painel do candidato",
-      "description": "Acompanhe cada candidatura HenryCo Jobs, vaga salva, atualização de recrutador e sinal de prontidão do perfil vinculado a esta conta."
+      "description": "Acompanhe cada candidatura Henry Onyx Jobs, vaga salva, atualização de recrutador e sinal de prontidão do perfil vinculado a esta conta."
     },
     "header": {
       "title": "Vagas",
@@ -3616,7 +3616,7 @@ export const ACCOUNT_COPY_PT = {
   "divisionMarketplace": {
     "metadata": {
       "title": "Marketplace · pedidos e atividade do vendedor",
-      "description": "Acompanhe cada pedido HenryCo Marketplace, disputa e repasse ao vendedor vinculado a esta conta — atividade do comprador e espaço do vendedor, refletidos em uma única sala em tempo real."
+      "description": "Acompanhe cada pedido Henry Onyx Marketplace, disputa e repasse ao vendedor vinculado a esta conta — atividade do comprador e espaço do vendedor, refletidos em uma única sala em tempo real."
     },
     "hero": {
       "eyebrow": "Marketplace · ao vivo",
@@ -3656,7 +3656,7 @@ export const ACCOUNT_COPY_PT = {
       },
       "state": {
         "empty": {
-          "headline": "Comece a comprar no HenryCo Marketplace.",
+          "headline": "Comece a comprar no Henry Onyx Marketplace.",
           "blurb": "Pedidos, disputas, atividade do vendedor e repasses são refletidos nesta sala assim que houver transação. Explore o marketplace para começar.",
           "ctaPrimary": "Abrir Marketplace",
           "ctaSecondary": "Candidatar-se a vendedor"
@@ -3671,7 +3671,7 @@ export const ACCOUNT_COPY_PT = {
         "activeOrders": {
           "headlineTemplateSingular": "{count} pedido em andamento.",
           "headlineTemplatePlural": "{count} pedidos em andamento.",
-          "blurb": "Status do pedido ao vivo, status de pagamento e follow-up do vendedor são refletidos nesta sala a partir do HenryCo Marketplace em tempo real.",
+          "blurb": "Status do pedido ao vivo, status de pagamento e follow-up do vendedor são refletidos nesta sala a partir do Henry Onyx Marketplace em tempo real.",
           "ctaPrimary": "Abrir Marketplace",
           "ctaSecondary": "Candidatar-se a vendedor"
         },
@@ -3712,7 +3712,7 @@ export const ACCOUNT_COPY_PT = {
         "metaTemplateSingular": "{count} pedido · mais recente primeiro",
         "metaTemplatePlural": "{count} pedidos · mais recentes primeiro",
         "emptyTitle": "Ainda sem pedidos",
-        "emptyBody": "Faça seu primeiro pedido no HenryCo Marketplace — status do pedido, status de pagamento e qualquer follow-up chegam aqui automaticamente.",
+        "emptyBody": "Faça seu primeiro pedido no Henry Onyx Marketplace — status do pedido, status de pagamento e qualquer follow-up chegam aqui automaticamente.",
         "ariaLabel": "Pedidos recentes"
       },
       "activity": {
@@ -3786,14 +3786,14 @@ export const ACCOUNT_COPY_PT = {
   "divisionLearn": {
     "metadata": {
       "title": "Learn · painel de aprendizagem",
-      "description": "Acompanhe cada inscrição no HenryCo Learn, aula, resultado de questionário, certificado, treinamento atribuído e candidatura para ensinar vinculada a esta conta — catálogo no Learn, progresso refletido aqui."
+      "description": "Acompanhe cada inscrição no Henry Onyx Learn, aula, resultado de questionário, certificado, treinamento atribuído e candidatura para ensinar vinculada a esta conta — catálogo no Learn, progresso refletido aqui."
     },
     "hero": {
       "ariaLabel": "Visão geral do Learn",
       "eyebrow": "Learn · ao vivo",
       "sideKicker": "Como esta sala funciona",
       "sideTitle": "Catálogo no Learn, progresso aqui.",
-      "sideBody": "Cada aula, questionário e certificado do HenryCo Learn sincroniza com esta sala — retome de onde parou, veja seu progresso de relance e mantenha suas credenciais em um só lugar.",
+      "sideBody": "Cada aula, questionário e certificado do Henry Onyx Learn sincroniza com esta sala — retome de onde parou, veja seu progresso de relance e mantenha suas credenciais em um só lugar.",
       "breakdownLabel": "Por estado",
       "breakdownAriaLabel": "Detalhamento de atividade de aprendizagem",
       "tilesAriaLabel": "Atividade de aprendizagem",
@@ -3819,17 +3819,17 @@ export const ACCOUNT_COPY_PT = {
         "certificates": "Certificados",
         "saved": "Salvos"
       },
-      "openLearnCta": "Abrir HenryCo Learn",
+      "openLearnCta": "Abrir Henry Onyx Learn",
       "applyToTeachCta": "Candidatar-se para ensinar",
       "state": {
         "empty": {
-          "headline": "Comece sua jornada no HenryCo Learn.",
+          "headline": "Comece sua jornada no Henry Onyx Learn.",
           "blurb": "Explore o catálogo, inscreva-se num curso e cada aula, questionário e certificado sincronizarão automaticamente nesta sala."
         },
         "active": {
           "headlineTemplateSingular": "{count} curso em andamento.",
           "headlineTemplatePlural": "{count} cursos em andamento.",
-          "blurb": "Retome de onde parou — aulas, questionários, certificados e treinamentos atribuídos sincronizam do HenryCo Learn para esta sala."
+          "blurb": "Retome de onde parou — aulas, questionários, certificados e treinamentos atribuídos sincronizam do Henry Onyx Learn para esta sala."
         },
         "calm": {
           "headlineTemplateSingular": "{count} curso concluído.",
@@ -3840,7 +3840,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "sections": {
       "coursesTitle": "Continuar aprendendo",
-      "coursesMetaEmpty": "Explore o catálogo do HenryCo Learn para se inscrever no seu primeiro curso.",
+      "coursesMetaEmpty": "Explore o catálogo do Henry Onyx Learn para se inscrever no seu primeiro curso.",
       "coursesMetaTemplate": "{active} ativos · {completed} concluídos",
       "extrasTitle": "Credenciais, atribuições e ensino",
       "extrasMeta": "Certificados, treinamentos atribuídos, cursos salvos e candidatura como instrutor ficam aqui.",
@@ -3851,7 +3851,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "empty": {
       "coursesTitle": "Ainda não há cursos vinculados",
-      "coursesBody": "Explore o catálogo no HenryCo Learn e inscreva-se. Seu lugar aparecerá aqui automaticamente.",
+      "coursesBody": "Explore o catálogo no Henry Onyx Learn e inscreva-se. Seu lugar aparecerá aqui automaticamente.",
       "activityTitle": "Ainda não há atividade Learn",
       "activityBody": "Progresso de cursos, resultados de questionários, emissão de certificados e recibos de pagamento aparecem aqui em tempo real."
     },
@@ -3872,7 +3872,7 @@ export const ACCOUNT_COPY_PT = {
       "topicsLabel": "Tópicos",
       "openApplicationCta": "Abrir candidatura",
       "applyToTeachCta": "Candidatar-se para ensinar",
-      "teachingEmpty": "Avaliamos candidaturas a docência manualmente. Candidate-se no HenryCo Learn e o status sincronizará de volta aqui."
+      "teachingEmpty": "Avaliamos candidaturas a docência manualmente. Candidate-se no Henry Onyx Learn e o status sincronizará de volta aqui."
     },
     "activity": {
       "ariaLabel": "Atividade Learn",
@@ -3882,7 +3882,7 @@ export const ACCOUNT_COPY_PT = {
   "divisionStudio": {
     "metadata": {
       "title": "Studio · salas de projeto",
-      "description": "Acompanhe cada colaboração HenryCo Studio ligada a esta conta — propostas, marcos, pagamentos, entregáveis e atividade numa única sala."
+      "description": "Acompanhe cada colaboração Henry Onyx Studio ligada a esta conta — propostas, marcos, pagamentos, entregáveis e atividade numa única sala."
     },
     "hero": {
       "eyebrowLive": "Studio · ao vivo",
@@ -3938,7 +3938,7 @@ export const ACCOUNT_COPY_PT = {
         "activeProjects": {
           "headlineTemplateSingular": "{count} projeto ativo.",
           "headlineTemplatePlural": "{count} projetos ativos.",
-          "blurb": "Salas ativas com movimento de marcos, pontos de pagamento e entregáveis — todos refletidos do HenryCo Studio nesta sala.",
+          "blurb": "Salas ativas com movimento de marcos, pontos de pagamento e entregáveis — todos refletidos do Henry Onyx Studio nesta sala.",
           "ctaPrimary": "Abrir Studio",
           "ctaSecondary": "Iniciar novo brief"
         },
@@ -4023,7 +4023,7 @@ export const ACCOUNT_COPY_PT = {
   "divisionLogistics": {
     "metadata": {
       "title": "Logística · entregas e envios",
-      "description": "Cada recolha, entrega, ETA e prova de entrega da HenryCo Logistics ligada a esta conta — espelhados da rede logística numa única sala calma."
+      "description": "Cada recolha, entrega, ETA e prova de entrega da Henry Onyx Logistics ligada a esta conta — espelhados da rede logística numa única sala calma."
     },
     "hero": {
       "ariaLabel": "Visão geral de logística",
@@ -5272,13 +5272,13 @@ export const ACCOUNT_COPY_AR = {
   "divisionCare": {
     "metadata": {
       "title": "Care · الحجوزات المرتبطة",
-      "description": "تابع كل حجز HenryCo Care مرتبط بهذا الحساب — الحالة، التحقق من الدفع، والخطوة التشغيلية التالية في مكان واحد."
+      "description": "تابع كل حجز Henry Onyx Care مرتبط بهذا الحساب — الحالة، التحقق من الدفع، والخطوة التشغيلية التالية في مكان واحد."
     },
     "hero": {
       "eyebrow": "Care · مباشر",
       "sideKicker": "كيف تعمل هذه الغرفة",
       "sideTitle": "احجز في Care، وتابع هنا.",
-      "sideBody": "كل حجز يتم في HenryCo Care يُعكس في هذه الغرفة — رمز التتبع وحالة الدفع والخطوة التشغيلية التالية تصل تلقائيًا. لوحة المعلومات تبقى متزامنة مع تقدّم الخدمة.",
+      "sideBody": "كل حجز يتم في Henry Onyx Care يُعكس في هذه الغرفة — رمز التتبع وحالة الدفع والخطوة التشغيلية التالية تصل تلقائيًا. لوحة المعلومات تبقى متزامنة مع تقدّم الخدمة.",
       "breakdownLabel": "حسب الحالة",
       "tilesAriaLabel": "ملخص حجوزات Care",
       "tileLabels": {
@@ -5320,7 +5320,7 @@ export const ACCOUNT_COPY_AR = {
         "active": {
           "headlineTemplateSingular": "{count} خدمة قيد التنفيذ.",
           "headlineTemplatePlural": "{count} خدمات قيد التنفيذ.",
-          "blurb": "التتبع المباشر، والتحقق من الدفع، والخطوة التشغيلية التالية تنعكس من HenryCo Care إلى هذه الغرفة.",
+          "blurb": "التتبع المباشر، والتحقق من الدفع، والخطوة التشغيلية التالية تنعكس من Henry Onyx Care إلى هذه الغرفة.",
           "ctaPrimary": "فتح التتبع",
           "ctaSecondary": "احجز خدمة"
         },
@@ -5449,7 +5449,7 @@ export const ACCOUNT_COPY_AR = {
   "divisionProperty": {
     "metadata": {
       "title": "Property · المحفوظات والاستفسارات",
-      "description": "قائمة Property المختصرة، الاستفسارات، المعاينات ومتابعات الإعلانات — كل إجراء على HenryCo Property يُعكس في غرفة هذا الحساب."
+      "description": "قائمة Property المختصرة، الاستفسارات، المعاينات ومتابعات الإعلانات — كل إجراء على Henry Onyx Property يُعكس في غرفة هذا الحساب."
     },
     "hero": {
       "eyebrow": "Property · مباشر",
@@ -5477,7 +5477,7 @@ export const ACCOUNT_COPY_AR = {
       "sideAriaLabel": "كيف تعمل هذه الغرفة",
       "sideKicker": "كيف تعمل هذه الغرفة",
       "sideTitle": "اكتشف على Property، وتابع هنا.",
-      "sideBody": "احفظ إعلانًا، أو اطلب معاينة، أو افتح استفسارًا على HenryCo Property — كل إجراء يُعكس في غرفة الحساب هذه لتتمكن من المتابعة من حيث توقفت عبر جميع أجهزتك.",
+      "sideBody": "احفظ إعلانًا، أو اطلب معاينة، أو افتح استفسارًا على Henry Onyx Property — كل إجراء يُعكس في غرفة الحساب هذه لتتمكن من المتابعة من حيث توقفت عبر جميع أجهزتك.",
       "sideBodyMuted": "الإعلانات التي تديرها HenryCo تحمل شارة مُدارة — تتولى المراجعة والمعاينة ومتابعة العقد فرقُ Property.",
       "breakdownAriaLabel": "تفصيل النشاط",
       "breakdownLabel": "حسب النشاط",
@@ -5489,7 +5489,7 @@ export const ACCOUNT_COPY_AR = {
       },
       "state": {
         "empty": {
-          "headline": "ابدأ استكشاف HenryCo Property.",
+          "headline": "ابدأ استكشاف Henry Onyx Property.",
           "blurb": "اكتشف الإيجارات السكنية وإعلانات البيع والمنازل التي تديرها HenryCo. احفظ ما يعجبك، وستصل كل استفسار أو معاينة أو متابعة إعلان إلى هنا تلقائيًا."
         },
         "discover": {
@@ -5502,13 +5502,13 @@ export const ACCOUNT_COPY_AR = {
           "viewingHeadlineTemplatePlural": "{count} معاينة مجدولة.",
           "inquiryHeadlineTemplateSingular": "{count} استفسار نشط.",
           "inquiryHeadlineTemplatePlural": "{count} استفسار نشط.",
-          "blurb": "قائمتك المختصرة واستفساراتك وجدول المعاينات في غرفة واحدة. تابع من حيث توقفت — تُعكس كل إجراءاتك من HenryCo Property في الوقت الفعلي."
+          "blurb": "قائمتك المختصرة واستفساراتك وجدول المعاينات في غرفة واحدة. تابع من حيث توقفت — تُعكس كل إجراءاتك من Henry Onyx Property في الوقت الفعلي."
         }
       }
     },
     "sections": {
       "saved": "القائمة المختصرة المحفوظة",
-      "savedMetaEmpty": "احفظ إعلانات على HenryCo Property لبناء قائمتك المختصرة.",
+      "savedMetaEmpty": "احفظ إعلانات على Henry Onyx Property لبناء قائمتك المختصرة.",
       "savedMetaTemplate": "{saved} محفوظة · {managed} تديرها HenryCo",
       "activity": "النشاط الأخير",
       "activityMetaEmpty": "تُعرض الاستفسارات والمعاينات ومراجعات الإعلانات هنا فور حدوثها.",
@@ -5519,7 +5519,7 @@ export const ACCOUNT_COPY_AR = {
       "savedTitle": "لا توجد عقارات محفوظة بعد",
       "savedBody": "اكتشف الإيجارات السكنية وإعلانات البيع والعقارات التي تديرها HenryCo على Property. كل ما تحفظه يصل إلى هنا تلقائيًا.",
       "activityTitle": "لا يوجد نشاط Property بعد",
-      "activityBody": "افتح إعلانًا على HenryCo Property لطلب معاينة أو إرسال استفسار — ستظهر هنا كل خطوة، من رسالتك الأولى وحتى المراجعة."
+      "activityBody": "افتح إعلانًا على Henry Onyx Property لطلب معاينة أو إرسال استفسار — ستظهر هنا كل خطوة، من رسالتك الأولى وحتى المراجعة."
     },
     "activity": {
       "ariaLabel": "نشاط Property",
@@ -5548,7 +5548,7 @@ export const ACCOUNT_COPY_AR = {
   "divisionJobs": {
     "metadata": {
       "title": "الوظائف · لوحة المرشح",
-      "description": "تابع كل طلب توظيف عبر HenryCo Jobs ووظيفة محفوظة وتحديث من المسؤول عن التوظيف ومؤشر جاهزية ملف مرتبط بهذا الحساب."
+      "description": "تابع كل طلب توظيف عبر Henry Onyx Jobs ووظيفة محفوظة وتحديث من المسؤول عن التوظيف ومؤشر جاهزية ملف مرتبط بهذا الحساب."
     },
     "header": {
       "title": "الوظائف",
@@ -5714,7 +5714,7 @@ export const ACCOUNT_COPY_AR = {
   "divisionMarketplace": {
     "metadata": {
       "title": "Marketplace · الطلبات ونشاط البائع",
-      "description": "تابع كل طلب من HenryCo Marketplace ونزاع وتحويل بائع مرتبط بهذا الحساب — نشاط المشتري ومساحة عمل البائع، يتم عكسهما في غرفة واحدة في الوقت الفعلي."
+      "description": "تابع كل طلب من Henry Onyx Marketplace ونزاع وتحويل بائع مرتبط بهذا الحساب — نشاط المشتري ومساحة عمل البائع، يتم عكسهما في غرفة واحدة في الوقت الفعلي."
     },
     "hero": {
       "eyebrow": "Marketplace · مباشر",
@@ -5754,7 +5754,7 @@ export const ACCOUNT_COPY_AR = {
       },
       "state": {
         "empty": {
-          "headline": "ابدأ التسوق في HenryCo Marketplace.",
+          "headline": "ابدأ التسوق في Henry Onyx Marketplace.",
           "blurb": "تنعكس الطلبات والنزاعات ونشاط البائع والتحويلات في هذه الغرفة فور أول معاملة. تصفّح marketplace للبدء.",
           "ctaPrimary": "افتح Marketplace",
           "ctaSecondary": "تقدّم لتكون بائعًا"
@@ -5769,7 +5769,7 @@ export const ACCOUNT_COPY_AR = {
         "activeOrders": {
           "headlineTemplateSingular": "{count} طلب قيد التنفيذ.",
           "headlineTemplatePlural": "{count} طلبات قيد التنفيذ.",
-          "blurb": "تنعكس حالة الطلب المباشرة وحالة الدفع ومتابعة البائع في هذه الغرفة من HenryCo Marketplace في الوقت الفعلي.",
+          "blurb": "تنعكس حالة الطلب المباشرة وحالة الدفع ومتابعة البائع في هذه الغرفة من Henry Onyx Marketplace في الوقت الفعلي.",
           "ctaPrimary": "افتح Marketplace",
           "ctaSecondary": "تقدّم لتكون بائعًا"
         },
@@ -5810,7 +5810,7 @@ export const ACCOUNT_COPY_AR = {
         "metaTemplateSingular": "{count} طلب · الأحدث أولًا",
         "metaTemplatePlural": "{count} طلبات · الأحدث أولًا",
         "emptyTitle": "لا توجد طلبات بعد",
-        "emptyBody": "ضع أول طلب لك على HenryCo Marketplace — تصل هنا تلقائيًا حالة الطلب وحالة الدفع وأي متابعة.",
+        "emptyBody": "ضع أول طلب لك على Henry Onyx Marketplace — تصل هنا تلقائيًا حالة الطلب وحالة الدفع وأي متابعة.",
         "ariaLabel": "طلبات حديثة"
       },
       "activity": {
@@ -5884,14 +5884,14 @@ export const ACCOUNT_COPY_AR = {
   "divisionLearn": {
     "metadata": {
       "title": "Learn · لوحة التعلّم",
-      "description": "تابع كل تسجيل في HenryCo Learn، درس، نتيجة اختبار، شهادة، تدريب مُسنَد إليك، وطلب تدريس مرتبط بهذا الحساب — الكتالوج على Learn، التقدّم يُعكَس هنا."
+      "description": "تابع كل تسجيل في Henry Onyx Learn، درس، نتيجة اختبار، شهادة، تدريب مُسنَد إليك، وطلب تدريس مرتبط بهذا الحساب — الكتالوج على Learn، التقدّم يُعكَس هنا."
     },
     "hero": {
       "ariaLabel": "نظرة عامة على Learn",
       "eyebrow": "Learn · مباشر",
       "sideKicker": "كيف تعمل هذه الغرفة",
       "sideTitle": "الكتالوج على Learn، التقدّم هنا.",
-      "sideBody": "كل درس واختبار وشهادة من HenryCo Learn يتزامن في هذه الغرفة — استأنف من حيث توقّفت، شاهد تقدّمك بلمحة، واحتفظ بشهاداتك في مكان واحد.",
+      "sideBody": "كل درس واختبار وشهادة من Henry Onyx Learn يتزامن في هذه الغرفة — استأنف من حيث توقّفت، شاهد تقدّمك بلمحة، واحتفظ بشهاداتك في مكان واحد.",
       "breakdownLabel": "حسب الحالة",
       "breakdownAriaLabel": "تفصيل نشاط التعلّم",
       "tilesAriaLabel": "نشاط التعلّم",
@@ -5917,17 +5917,17 @@ export const ACCOUNT_COPY_AR = {
         "certificates": "شهادات",
         "saved": "محفوظة"
       },
-      "openLearnCta": "فتح HenryCo Learn",
+      "openLearnCta": "فتح Henry Onyx Learn",
       "applyToTeachCta": "تقديم طلب للتدريس",
       "state": {
         "empty": {
-          "headline": "ابدأ رحلتك مع HenryCo Learn.",
+          "headline": "ابدأ رحلتك مع Henry Onyx Learn.",
           "blurb": "تصفّح الكتالوج، سجِّل في دورة، وسيتزامن كل درس واختبار وشهادة تلقائيًا في هذه الغرفة."
         },
         "active": {
           "headlineTemplateSingular": "{count} دورة قيد التقدّم.",
           "headlineTemplatePlural": "{count} دورات قيد التقدّم.",
-          "blurb": "استأنف من حيث توقّفت — الدروس والاختبارات والشهادات والتدريبات المُسنَدة تتزامن جميعها من HenryCo Learn إلى هذه الغرفة."
+          "blurb": "استأنف من حيث توقّفت — الدروس والاختبارات والشهادات والتدريبات المُسنَدة تتزامن جميعها من Henry Onyx Learn إلى هذه الغرفة."
         },
         "calm": {
           "headlineTemplateSingular": "{count} دورة مكتملة.",
@@ -5938,7 +5938,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "sections": {
       "coursesTitle": "تابع التعلّم",
-      "coursesMetaEmpty": "تصفّح كتالوج HenryCo Learn لتسجّل في أول دورة لك.",
+      "coursesMetaEmpty": "تصفّح كتالوج Henry Onyx Learn لتسجّل في أول دورة لك.",
       "coursesMetaTemplate": "{active} نشطة · {completed} مكتملة",
       "extrasTitle": "الاعتمادات والمهام والتدريس",
       "extrasMeta": "الشهادات والتدريبات المُسنَدة والدورات المحفوظة وطلب التدريس تعيش هنا.",
@@ -5949,7 +5949,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "empty": {
       "coursesTitle": "لا توجد دورات مرتبطة بعد",
-      "coursesBody": "تصفّح الكتالوج على HenryCo Learn وسجِّل. سيظهر مقعدك هنا تلقائيًا.",
+      "coursesBody": "تصفّح الكتالوج على Henry Onyx Learn وسجِّل. سيظهر مقعدك هنا تلقائيًا.",
       "activityTitle": "لا يوجد نشاط Learn بعد",
       "activityBody": "تقدّم الدورات، نتائج الاختبارات، إصدار الشهادات وإيصالات الدفع تظهر هنا فوريًا."
     },
@@ -5970,7 +5970,7 @@ export const ACCOUNT_COPY_AR = {
       "topicsLabel": "الموضوعات",
       "openApplicationCta": "فتح الطلب",
       "applyToTeachCta": "تقديم طلب للتدريس",
-      "teachingEmpty": "نراجع طلبات التدريس يدويًا. قدِّم على HenryCo Learn وستتزامن الحالة هنا."
+      "teachingEmpty": "نراجع طلبات التدريس يدويًا. قدِّم على Henry Onyx Learn وستتزامن الحالة هنا."
     },
     "activity": {
       "ariaLabel": "نشاط Learn",
@@ -5980,7 +5980,7 @@ export const ACCOUNT_COPY_AR = {
   "divisionStudio": {
     "metadata": {
       "title": "Studio · غرف المشاريع",
-      "description": "تتبّع كل تعاون HenryCo Studio مرتبط بهذا الحساب — العروض والمراحل والمدفوعات والتسليمات والنشاط في غرفة واحدة."
+      "description": "تتبّع كل تعاون Henry Onyx Studio مرتبط بهذا الحساب — العروض والمراحل والمدفوعات والتسليمات والنشاط في غرفة واحدة."
     },
     "hero": {
       "eyebrowLive": "Studio · مباشر",
@@ -6036,7 +6036,7 @@ export const ACCOUNT_COPY_AR = {
         "activeProjects": {
           "headlineTemplateSingular": "{count} مشروع نشط.",
           "headlineTemplatePlural": "{count} مشاريع نشطة.",
-          "blurb": "غرف نشطة بحركة مراحل ونقاط دفع وتسليمات — كلها منعكسة من HenryCo Studio في هذه الغرفة.",
+          "blurb": "غرف نشطة بحركة مراحل ونقاط دفع وتسليمات — كلها منعكسة من Henry Onyx Studio في هذه الغرفة.",
           "ctaPrimary": "افتح Studio",
           "ctaSecondary": "ابدأ بريفًا جديدًا"
         },
@@ -6121,7 +6121,7 @@ export const ACCOUNT_COPY_AR = {
   "divisionLogistics": {
     "metadata": {
       "title": "الخدمات اللوجستية · عمليات التسليم والشحنات",
-      "description": "كل استلام وتسليم ووقت وصول متوقّع وإثبات تسليم من HenryCo Logistics مرتبط بهذا الحساب — منعكسًا من شبكة الخدمات اللوجستية إلى غرفة واحدة هادئة."
+      "description": "كل استلام وتسليم ووقت وصول متوقّع وإثبات تسليم من Henry Onyx Logistics مرتبط بهذا الحساب — منعكسًا من شبكة الخدمات اللوجستية إلى غرفة واحدة هادئة."
     },
     "hero": {
       "ariaLabel": "نظرة عامة على الخدمات اللوجستية",

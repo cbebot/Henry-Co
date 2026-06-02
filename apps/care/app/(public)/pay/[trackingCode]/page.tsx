@@ -20,7 +20,7 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Care · Payment workspace",
   description:
-    "Send payment proof and track confirmation for your HenryCo Care booking.",
+    "Send payment proof and track confirmation for your Henry Onyx Care booking.",
   robots: { index: false, follow: false },
 };
 

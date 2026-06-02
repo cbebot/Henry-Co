@@ -56,8 +56,8 @@ export default function TermsScreen() {
 
         <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
           These Terms of Use (&quot;Terms&quot;) govern your access to and use
-          of the Henry &amp; Co. Hub mobile application (the &quot;App&quot;)
-          operated by Henry Holdings Limited (&quot;we&quot;, &quot;us&quot;, or
+          of the Henry Onyx Hub mobile application (the &quot;App&quot;)
+          operated by Henry Onyx Limited (&quot;we&quot;, &quot;us&quot;, or
           &quot;our&quot;). By downloading, installing, or using the App, you
           agree to be bound by these Terms.
         </Text>
@@ -85,7 +85,7 @@ export default function TermsScreen() {
 
         <Section title="3. Division Services">
           <Body>
-            The App serves as a navigation hub for Henry &amp; Co. divisions.
+            The App serves as a navigation hub for Henry Onyx divisions.
             Each division operates independently and may have its own terms of
             service, pricing, and policies. When you access a division&apos;s
             website or service through the App, you are subject to that
@@ -113,7 +113,7 @@ export default function TermsScreen() {
           <Body>
             All content, features, and functionality of the App, including but
             not limited to text, graphics, logos, icons, and software, are the
-            property of Henry Holdings Limited or its licensors and are protected
+            property of Henry Onyx Limited or its licensors and are protected
             by applicable intellectual property laws. Nothing in these Terms
             grants you any right, title, or interest in such intellectual
             property except for the limited licence described above.

@@ -9,7 +9,7 @@ const care = getDivisionConfig("care");
 export const metadata: Metadata = {
   title: `Staff Access | ${care.name}`,
   description:
-    "Secure internal access for HenryCo Care owner, manager, rider, support, and staff dashboards.",
+    "Secure internal access for Henry Onyx Care owner, manager, rider, support, and staff dashboards.",
   robots: {
     index: false,
     follow: false,

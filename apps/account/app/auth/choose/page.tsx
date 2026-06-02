@@ -17,7 +17,7 @@ import { loadDashboardOptions } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Choose your workspace — Henry & Co." };
+export const metadata = { title: "Choose your workspace — Henry Onyx" };
 
 const OPTION_ICON: Record<string, typeof UserCircle> = {
   customer: UserCircle,
@@ -45,7 +45,7 @@ const OPTION_ACCENT: Record<string, { ring: string; tint: string; ink: string }>
 
 /**
  * Premium role-chooser landing. Shown when an authenticated user has access
- * to more than one Henry & Co. dashboard space (e.g. they are a customer
+ * to more than one Henry Onyx dashboard space (e.g. they are a customer
  * AND a staff member). Each option is a full-width card on mobile, side-by-side
  * on tablet+, and submits a POST to `/api/auth/choose` so the cross-subdomain
  * redirect can set the remember-choice cookie before issuing the 303.
@@ -123,7 +123,7 @@ export default async function ChoosePage({
             {t("Choose your workspace")}
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--acct-muted)]">
-            {greeting} {t("You have access to more than one Henry & Co. space. Pick where you'd like to land — you can switch any time, and we can remember this choice on this browser.")}
+            {greeting} {t("You have access to more than one Henry Onyx space. Pick where you'd like to land — you can switch any time, and we can remember this choice on this browser.")}
           </p>
           {oauthErrorCopy ? (
             <p
@@ -140,7 +140,7 @@ export default async function ChoosePage({
           method="POST"
           action="/api/auth/choose"
           className="space-y-3"
-          aria-label={t("Pick a Henry & Co. dashboard")}
+          aria-label={t("Pick a Henry Onyx dashboard")}
         >
           {safeNext !== "/" ? (
             <input type="hidden" name="next" value={safeNext} />
@@ -248,7 +248,7 @@ export default async function ChoosePage({
         </form>
 
         <p className="mt-8 text-center text-[11px] text-[var(--acct-muted)]">
-          {t("You stay signed in across every Henry & Co. subdomain — switching spaces never asks for your password again.")}
+          {t("You stay signed in across every Henry Onyx subdomain — switching spaces never asks for your password again.")}
         </p>
       </div>
     </div>

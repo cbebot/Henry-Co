@@ -7,9 +7,9 @@ import NewsletterSignupClient from "./NewsletterSignupClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Newsletters — Henry & Co.",
+  title: "Newsletters — Henry Onyx",
   description:
-    "Subscribe to Henry & Co. newsletters. Pick what's useful, skip what isn't. Unsubscribe any time.",
+    "Subscribe to Henry Onyx newsletters. Pick what's useful, skip what isn't. Unsubscribe any time.",
 };
 
 export default async function NewsletterPage() {

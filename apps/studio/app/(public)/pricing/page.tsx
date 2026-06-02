@@ -129,7 +129,7 @@ export default async function PricingPage() {
               "You need a multi-role portal, client workspace, dashboard, or workflow-specific software system.",
               "The project combines web, admin, payments, operations, and automation into one platform.",
               "The product needs mobile, integrations, or a more deliberate architecture path than a package allows.",
-              "You want Henry & Co. to scope the exact experience rather than retrofit your needs into a predefined template.",
+              "You want Henry Onyx to scope the exact experience rather than retrofit your needs into a predefined template.",
             ].map((item) => (
               <li
                 key={item}

@@ -1,4 +1,4 @@
-# Henry & Co. Hub (mobile)
+# Henry Onyx Hub (mobile)
 
 Native **Expo (SDK 54)** app: company hub experience with **Expo Router** tabs, **NativeWind** (Tailwind), **React Native Paper** (MD3, gold `#C9A227`), and **expo-web-browser** for division sites.
 

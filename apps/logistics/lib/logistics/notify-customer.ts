@@ -67,8 +67,8 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
 
   const subjectBase =
     input.mode === "quote"
-      ? await tx("HenryCo Logistics quote")
-      : await tx("HenryCo Logistics booking");
+      ? await tx("Henry Onyx Logistics quote")
+      : await tx("Henry Onyx Logistics booking");
   const subject = `${subjectBase} — ${input.trackingCode}`;
 
   const greeting = await tx("Hi");
@@ -86,7 +86,7 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   const typicalWindowPrefix = await tx("Typical window");
   const hoursWord = await tx("hours (estimate, not a guarantee).");
   const trackPrefix = await tx("Track your shipment");
-  const signature = await tx("— HenryCo Logistics");
+  const signature = await tx("— Henry Onyx Logistics");
   const amountFormatted = new Intl.NumberFormat(locale, {
     maximumFractionDigits: 0,
   }).format(input.amountQuoted);

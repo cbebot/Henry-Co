@@ -78,14 +78,14 @@ const pageDefaults = (pageKey: string): PageRecord => {
     return {
       ...createFallbackCompanyPage("home"),
       slug: "home",
-      title: "Henry & Co.",
+      title: "Henry Onyx",
       subtitle: "Corporate Platform",
       hero_badge: "Group Platform",
       intro:
-        "Explore the businesses, services, and operating divisions of Henry & Co.",
+        "Explore the businesses, services, and operating divisions of Henry Onyx",
       primary_cta_label: "Explore divisions",
       primary_cta_href: "/#divisions",
-      secondary_cta_label: "About Henry & Co.",
+      secondary_cta_label: "About Henry Onyx",
       secondary_cta_href: "/about",
     };
   }
@@ -1702,7 +1702,7 @@ function BrandSettingsPreview({ settings, copy }: { settings: SettingsRecord; co
       <div className="mt-4 flex items-center gap-4">
         <RemoteImageFrame
           src={settings.logo_url}
-          alt={settings.brand_title || "Henry & Co."}
+          alt={settings.brand_title || "Henry Onyx"}
           wrapperClassName="h-16 w-16"
           imageClassName="p-2"
           fallback={<Sparkles className="h-6 w-6 text-[#C9A227]" />}
@@ -1710,7 +1710,7 @@ function BrandSettingsPreview({ settings, copy }: { settings: SettingsRecord; co
 
         <div className="min-w-0">
           <div className="text-lg font-semibold tracking-tight text-white">
-            {settings.brand_title || "Henry & Co."}
+            {settings.brand_title || "Henry Onyx"}
           </div>
           <div className="mt-1 text-xs uppercase tracking-[0.2em] text-white/45">
             {settings.brand_subtitle || copy.brandPreviewDefaultSubtitle}

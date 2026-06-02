@@ -1,7 +1,7 @@
 /**
  * Public design system — the shared site footer (V3-PUBLIC-DESIGN-01b).
  *
- * ONE footer for every Henry & Co. public site. It consumes the `--home-*` token
+ * ONE footer for every Henry Onyx public site. It consumes the `--home-*` token
  * layer (packages/ui/src/styles/public-design.css) so it is the same visual
  * family as the hero — Fraunces display, the one gold accent, the ink ramp, the
  * editorial section rhythm — in BOTH themes (the tokens flip on `.dark`).
@@ -13,7 +13,7 @@
  *
  * SOURCES OF TRUTH (no hardcoding):
  *   • Division names + URLs  ← @henryco/config getPublicDivisions() → the brand
- *     "Henry & Co. <Division>" label + getDivisionUrl(), so the henry.holdings
+ *     "Henry Onyx <Division>" label + getDivisionUrl(), so the henry.holdings
  *     domain migration stays a single config flip with ZERO hardcoded domains.
  *   • Brand + legal entity    ← COMPANY.group.name / .legalName.
  *   • Every other word        ← the `copy` prop (i18n). Zero hardcoded strings.
@@ -49,12 +49,12 @@ export type PublicSiteFooterCopy = {
   divisionsLabel: string;
   /** "All rights reserved." — follows the © {year} {legalName}. */
   rightsReserved: string;
-  /** The "built in-house by Henry & Co. Studio …" maker's mark (brand-correct). */
+  /** The "built in-house by Henry Onyx Studio …" maker's mark (brand-correct). */
   attribution: string;
 };
 
 /**
- * Render "Henry & Co." with the Fraunces ampersand as a quiet brand detail —
+ * Render "Henry Onyx" with the Fraunces ampersand as a quiet brand detail —
  * italic + accent-as-text (AA-safe on both themes). Falls back to a plain
  * wordmark for any brand string without a " & ".
  */

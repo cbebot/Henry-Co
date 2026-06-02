@@ -5,7 +5,7 @@ import { PublicHomeSkeleton } from "@henryco/ui/public-shell";
  *
  * Stripped of theater copy: previously composed
  *   <PublicRouteLoader title="Loading courses, certifications, and
- *      learning paths." subtitle="Curating the latest HenryCo Learn
+ *      learning paths." subtitle="Curating the latest Henry Onyx Learn
  *      programs ..." />
  * Replaced with the content-shaped `PublicHomeSkeleton` so the user
  * sees the Learn catalogue silhouette on first paint.

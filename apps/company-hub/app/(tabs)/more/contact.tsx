@@ -26,7 +26,7 @@ export default function ContactScreen() {
     >
       <View className="px-4 pt-4">
         <Text className="text-base leading-7" style={{ color: palette.textBody }}>
-          For general inquiries about Henry &amp; Co. and the divisions listed in
+          For general inquiries about Henry Onyx and the divisions listed in
           this app, reach us through the channels below. Division-specific
           requests are best routed through each division&apos;s site (use Visit
           Division from any card).

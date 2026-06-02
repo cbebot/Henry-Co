@@ -8,7 +8,7 @@ import { ImpersonateButton } from "./impersonate-button";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Staff Impersonation | Henry & Co. Fabric Care",
+  title: "Staff Impersonation | Henry Onyx Fabric Care",
   description:
     "View any staff dashboard exactly as they see it, with full audit trail.",
 };

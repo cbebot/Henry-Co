@@ -4,7 +4,7 @@ import { PublicHomeSkeleton } from "@henryco/ui/public-shell";
  * V3-05 (S2) — Marketplace root route fallback.
  *
  * Stripped of theater copy: previously
- *   eyebrow="HenryCo Marketplace"
+ *   eyebrow="Henry Onyx Marketplace"
  *   title="Loading marketplace"
  *   subtitle="Preparing products, stores, and your personalized experience."
  * — those strings were already ignored at the visible layer post PERF-01;

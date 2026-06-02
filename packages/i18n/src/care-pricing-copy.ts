@@ -51,7 +51,7 @@ const CARE_PRICING_COPY_EN: CarePricingCopy = {
   metadata: {
     title: "Pricing",
     description:
-      "Transparent garment pricing, home cleaning packages, office cleaning packages, and service add-ons across HenryCo Care.",
+      "Transparent garment pricing, home cleaning packages, office cleaning packages, and service add-ons across Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Pricing clarity",
@@ -89,7 +89,7 @@ const CARE_PRICING_COPY_FR: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Tarifs",
     description:
-      "Tarification transparente du textile, forfaits ménage à domicile, forfaits ménage de bureau et options de service à travers HenryCo Care.",
+      "Tarification transparente du textile, forfaits ménage à domicile, forfaits ménage de bureau et options de service à travers Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Tarifs en clair",
@@ -127,7 +127,7 @@ const CARE_PRICING_COPY_ES: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Tarifas",
     description:
-      "Precios transparentes para prendas, paquetes de limpieza para el hogar, paquetes de limpieza para oficina y servicios complementarios en HenryCo Care.",
+      "Precios transparentes para prendas, paquetes de limpieza para el hogar, paquetes de limpieza para oficina y servicios complementarios en Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Tarifas claras",
@@ -165,7 +165,7 @@ const CARE_PRICING_COPY_PT: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Preços",
     description:
-      "Preços transparentes para vestuário, pacotes de limpeza doméstica, pacotes de limpeza para escritório e complementos de serviço em todo o HenryCo Care.",
+      "Preços transparentes para vestuário, pacotes de limpeza doméstica, pacotes de limpeza para escritório e complementos de serviço em todo o Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Preços com clareza",
@@ -203,7 +203,7 @@ const CARE_PRICING_COPY_AR: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "الأسعار",
     description:
-      "أسعار شفّافة للملابس، باقات تنظيف للمنازل، باقات تنظيف للمكاتب، وخدمات إضافية في جميع أقسام HenryCo Care.",
+      "أسعار شفّافة للملابس، باقات تنظيف للمنازل، باقات تنظيف للمكاتب، وخدمات إضافية في جميع أقسام Henry Onyx Care.",
   },
   hero: {
     eyebrow: "وضوح في الأسعار",
@@ -241,7 +241,7 @@ const CARE_PRICING_COPY_DE: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Preise",
     description:
-      "Transparente Preise für Textilreinigung, Reinigungspakete für Privathaushalte, Bürorreinigungspakete und Zusatzleistungen bei HenryCo Care.",
+      "Transparente Preise für Textilreinigung, Reinigungspakete für Privathaushalte, Bürorreinigungspakete und Zusatzleistungen bei Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Preisklarheit",
@@ -279,7 +279,7 @@ const CARE_PRICING_COPY_IT: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Tariffe",
     description:
-      "Prezzi trasparenti per capi, pacchetti di pulizia per la casa, pacchetti di pulizia per ufficio e servizi aggiuntivi in tutto HenryCo Care.",
+      "Prezzi trasparenti per capi, pacchetti di pulizia per la casa, pacchetti di pulizia per ufficio e servizi aggiuntivi in tutto Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Tariffe chiare",
@@ -317,7 +317,7 @@ const CARE_PRICING_COPY_ZH: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "价格",
     description:
-      "HenryCo Care 全线提供透明的衣物清洗价格、家庭清洁套餐、办公清洁套餐及服务附加项。",
+      "Henry Onyx Care 全线提供透明的衣物清洗价格、家庭清洁套餐、办公清洁套餐及服务附加项。",
   },
   hero: {
     eyebrow: "价格清晰",
@@ -355,7 +355,7 @@ const CARE_PRICING_COPY_HI: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "मूल्य",
     description:
-      "HenryCo Care पर वस्त्रों की पारदर्शी कीमतें, घरेलू सफ़ाई पैकेज, कार्यालय सफ़ाई पैकेज और सेवा ऐड-ऑन।",
+      "Henry Onyx Care पर वस्त्रों की पारदर्शी कीमतें, घरेलू सफ़ाई पैकेज, कार्यालय सफ़ाई पैकेज और सेवा ऐड-ऑन।",
   },
   hero: {
     eyebrow: "स्पष्ट मूल्य",
@@ -393,7 +393,7 @@ const CARE_PRICING_COPY_IG: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Ọnụ ahịa",
     description:
-      "Ọnụ ahịa doro anya maka ịsa uwe, ngwugwu nhicha ụlọ, ngwugwu nhicha ọfịs, na ọrụ mgbakwunye n’ụlọ ọrụ HenryCo Care niile.",
+      "Ọnụ ahịa doro anya maka ịsa uwe, ngwugwu nhicha ụlọ, ngwugwu nhicha ọfịs, na ọrụ mgbakwunye n’ụlọ ọrụ Henry Onyx Care niile.",
   },
   hero: {
     eyebrow: "Ọnụ ahịa doro anya",
@@ -431,7 +431,7 @@ const CARE_PRICING_COPY_YO: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Iye owó",
     description:
-      "Iye owó tó ṣe kedere fún ìfọṣọ aṣọ, àwọn pákéjì ìmọ́tótó ilé, àwọn pákéjì ìmọ́tótó ọ́físì, àti ìṣẹ́ àfikún jákèjádò HenryCo Care.",
+      "Iye owó tó ṣe kedere fún ìfọṣọ aṣọ, àwọn pákéjì ìmọ́tótó ilé, àwọn pákéjì ìmọ́tótó ọ́físì, àti ìṣẹ́ àfikún jákèjádò Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Iye owó tó dájú",
@@ -469,7 +469,7 @@ const CARE_PRICING_COPY_HA: DeepPartial<CarePricingCopy> = {
   metadata: {
     title: "Farashi",
     description:
-      "Farashi a fili na wanke tufafi, fakitin tsabtace gida, fakitin tsabtace ofis, da ƙarin ayyuka a faɗin HenryCo Care.",
+      "Farashi a fili na wanke tufafi, fakitin tsabtace gida, fakitin tsabtace ofis, da ƙarin ayyuka a faɗin Henry Onyx Care.",
   },
   hero: {
     eyebrow: "Farashi a sarari",

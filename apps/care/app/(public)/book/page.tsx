@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${t("Book Service")} | ${care.name}`,
     description: t(
-      "Book garment care, home cleaning, or office cleaning with HenryCo Care. Clear estimates, premium support, and straightforward tracking from the first request."
+      "Book garment care, home cleaning, or office cleaning with Henry Onyx Care. Clear estimates, premium support, and straightforward tracking from the first request."
     ),
     alternates: { canonical: "/book" },
     robots: { index: true, follow: true },

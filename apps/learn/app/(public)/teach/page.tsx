@@ -147,7 +147,7 @@ export default async function TeachPage({
         </h1>
         <p className="mt-5 max-w-3xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
           {t(
-            "HenryCo Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.",
+            "Henry Onyx Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.",
           )}
         </p>
       </section>
@@ -193,7 +193,7 @@ export default async function TeachPage({
 
       <section className="mt-12">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-          {t("How HenryCo Learn treats teaching")}
+          {t("How Henry Onyx Learn treats teaching")}
         </p>
         <ul className="mt-8 grid gap-10 md:grid-cols-3 md:divide-x md:divide-[var(--learn-line)]">
           {pillars.map((item, i) => {

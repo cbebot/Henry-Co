@@ -178,7 +178,7 @@ export default function ReviewForm({
 
       {done ? (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-50">
-          {t("Review submitted successfully. Once it has been checked, it may appear on HenryCo Care public pages.")}
+          {t("Review submitted successfully. Once it has been checked, it may appear on Henry Onyx Care public pages.")}
         </div>
       ) : null}
     </div>

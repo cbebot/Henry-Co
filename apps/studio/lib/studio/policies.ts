@@ -1,4 +1,4 @@
-// Real, substantive Henry & Co. Studio governance copy. These are the
+// Real, substantive Henry Onyx Studio governance copy. These are the
 // agreements every Studio engagement runs against. They are written
 // against Nigerian operating context (NDPA, naira pricing, bank-transfer
 // settlement) and the actual milestone discipline shipped in the
@@ -28,8 +28,8 @@ export type PolicyDocument = {
   clauses: PolicyClause[];
 };
 
-const COMPANY_NAME = "Henry & Co. Studio";
-const PARENT = "Henry Holdings Limited";
+const COMPANY_NAME = "Henry Onyx Studio";
+const PARENT = "Henry Onyx Limited";
 const SUPPORT_EMAIL = BRAND_EMAILS.studio;
 const FINANCE_EMAIL = BRAND_EMAILS.finance;
 const PRIVACY_EMAIL = BRAND_EMAILS.privacy;
@@ -45,7 +45,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
     description:
       "The agreement that governs every Studio project — scope, payments, ownership, change control, and termination.",
     intent:
-      "These terms describe how Henry & Co. Studio engages with a client across a project lifecycle. They apply to every reservation, proposal, milestone, deliverable, and final handover unless the parties sign a separate written agreement that supersedes them.",
+      "These terms describe how Henry Onyx Studio engages with a client across a project lifecycle. They apply to every reservation, proposal, milestone, deliverable, and final handover unless the parties sign a separate written agreement that supersedes them.",
     lastUpdated: "2026-05-03",
     effectiveFrom: "2026-05-03",
     governingLaw: "Federal Republic of Nigeria",
@@ -53,7 +53,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "1. Parties and scope",
         body: [
-          `These Terms of Engagement (the "Terms") form a binding agreement between you, the client (the "Client"), and ${COMPANY_NAME}, a division of ${PARENT} ("Henry & Co. Studio", "we", "us", "our"). The Terms apply to every Studio engagement initiated through studio.henrycogroup.com — whether that engagement begins as a template reservation, an accepted proposal, or a custom brief.`,
+          `These Terms of Engagement (the "Terms") form a binding agreement between you, the client (the "Client"), and ${COMPANY_NAME}, a division of ${PARENT} ("Henry Onyx Studio", "we", "us", "our"). The Terms apply to every Studio engagement initiated through studio.henrycogroup.com — whether that engagement begins as a template reservation, an accepted proposal, or a custom brief.`,
           "By reserving a template, accepting a proposal, paying a deposit, uploading proof of payment, or otherwise instructing us to begin work, the Client confirms they have authority to enter this agreement on behalf of the named business and accepts these Terms in full.",
         ],
       },
@@ -85,7 +85,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
         heading: "5. Payment methods",
         body: [
           `Bank transfer to the verified ${PARENT} corporate account is the active payment method. Card and online-gateway payments may be added in the future and will be announced in writing. Payment proof — bank receipt, debit alert, or statement — must be uploaded inside the Client portal so finance can verify against the invoice reference.`,
-          "We do not accept cash, cheque, gift card, or cryptocurrency. We do not accept payment via personal accounts or alternative aliases of Henry & Co. staff. If anyone, internal or external, asks you to pay outside the verified company account, treat it as fraud and contact finance immediately.",
+          "We do not accept cash, cheque, gift card, or cryptocurrency. We do not accept payment via personal accounts or alternative aliases of Henry Onyx staff. If anyone, internal or external, asks you to pay outside the verified company account, treat it as fraud and contact finance immediately.",
         ],
       },
       {
@@ -103,8 +103,8 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "8. Intellectual property and licences",
         body: [
-          "Until the final balance is verified, all working files, designs, code, and intermediate deliverables remain the property of Henry & Co. Studio under a licence to the Client to review and approve them within this engagement.",
-          "On verified final payment, all custom work product (visual designs, copy, code we wrote, deliverable files) transfers to the Client. Pre-existing tools, libraries, frameworks, and any Henry & Co. internal components remain ours but are licensed to the Client perpetually for use within the delivered project.",
+          "Until the final balance is verified, all working files, designs, code, and intermediate deliverables remain the property of Henry Onyx Studio under a licence to the Client to review and approve them within this engagement.",
+          "On verified final payment, all custom work product (visual designs, copy, code we wrote, deliverable files) transfers to the Client. Pre-existing tools, libraries, frameworks, and any Henry Onyx internal components remain ours but are licensed to the Client perpetually for use within the delivered project.",
           "Third-party assets — fonts, stock imagery, plugins, hosted services — remain governed by their original licences and are listed in the handover document.",
         ],
       },
@@ -118,7 +118,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "10. Termination",
         body: [
-          "Either party may terminate by written notice through the portal or by email. Termination by the Client follows the refund schedule in the Refund and Cancellation Policy. Termination by Henry & Co. Studio for cause (non-payment, abusive conduct, illegality) is immediate and without refund of unused deposit.",
+          "Either party may terminate by written notice through the portal or by email. Termination by the Client follows the refund schedule in the Refund and Cancellation Policy. Termination by Henry Onyx Studio for cause (non-payment, abusive conduct, illegality) is immediate and without refund of unused deposit.",
           "On termination, all paid work is delivered; unpaid work is retained.",
         ],
       },
@@ -157,7 +157,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
     title: "Privacy Policy",
     shortTitle: "Privacy",
     description:
-      "How Henry & Co. Studio collects, uses, stores, and shares personal data — written against the Nigeria Data Protection Act (NDPA) 2023.",
+      "How Henry Onyx Studio collects, uses, stores, and shares personal data — written against the Nigeria Data Protection Act (NDPA) 2023.",
     intent:
       "We collect only what we need to run the engagement, store it inside controlled infrastructure, and delete it when it is no longer required. This policy explains what that means in concrete terms and how to exercise the rights the NDPA gives you.",
     lastUpdated: "2026-05-03",
@@ -179,7 +179,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
           "Identifiers: name, business name, email address, phone or WhatsApp number.",
           "Engagement data: brief content, references, brand assets, project files, and message history.",
           "Financial data: invoice records, bank reference numbers, and payment proof images you upload. We do not store full bank account numbers beyond what appears on uploaded proof.",
-          "Account data: shared Henry & Co. account identifiers, role memberships, sign-in events.",
+          "Account data: shared Henry Onyx account identifiers, role memberships, sign-in events.",
           "Technical data: IP address, browser fingerprint at sign-in, device type, time-zone — used for security and abuse prevention.",
         ],
       },
@@ -313,7 +313,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
         ],
       },
       {
-        heading: "5. Refunds for Henry & Co.-initiated cancellation",
+        heading: "5. Refunds for Henry Onyx-initiated cancellation",
         body: [
           "If we cancel an engagement for any reason other than your material breach, you receive a full refund of any payment made for work not yet delivered, with no per-milestone retention.",
         ],
@@ -360,7 +360,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "1. Pre-existing IP",
         body: [
-          "Each party retains ownership of intellectual property they brought into the engagement. The Client owns their brand assets, copy, customer data, and prior IP. Henry & Co. Studio owns its internal frameworks, design systems, code libraries, tooling, and accumulated know-how.",
+          "Each party retains ownership of intellectual property they brought into the engagement. The Client owns their brand assets, copy, customer data, and prior IP. Henry Onyx Studio owns its internal frameworks, design systems, code libraries, tooling, and accumulated know-how.",
         ],
       },
       {
@@ -370,9 +370,9 @@ export const studioPolicyIndex: PolicyDocument[] = [
         ],
       },
       {
-        heading: "3. Henry & Co. retained components",
+        heading: "3. Henry Onyx retained components",
         body: [
-          "Any Henry & Co. internal component — for example, our shared UI primitives, build tooling, design tokens, or analytics scaffolds — remains our property even when used inside your delivered project. We grant the Client a perpetual, worldwide, royalty-free licence to use these components inside the delivered project, but not to extract them and resell them or use them outside the project.",
+          "Any Henry Onyx internal component — for example, our shared UI primitives, build tooling, design tokens, or analytics scaffolds — remains our property even when used inside your delivered project. We grant the Client a perpetual, worldwide, royalty-free licence to use these components inside the delivered project, but not to extract them and resell them or use them outside the project.",
         ],
       },
       {
@@ -384,7 +384,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "5. Portfolio rights",
         body: [
-          "Unless the Client explicitly opts out in writing before kickoff, Henry & Co. Studio reserves the right to feature the delivered project in its portfolio, case studies, and marketing materials. Where Client confidentiality requires it, we redact sensitive figures and replace branding before publication.",
+          "Unless the Client explicitly opts out in writing before kickoff, Henry Onyx Studio reserves the right to feature the delivered project in its portfolio, case studies, and marketing materials. Where Client confidentiality requires it, we redact sensitive figures and replace branding before publication.",
         ],
       },
       {
@@ -407,7 +407,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
     title: "Security and Data Protection",
     shortTitle: "Security",
     description:
-      "How Henry & Co. Studio protects data — at rest, in transit, and across the team.",
+      "How Henry Onyx Studio protects data — at rest, in transit, and across the team.",
     intent:
       "Security is treated as a product surface, not paperwork. Every control we describe here is implemented in code or in our operations runbook.",
     lastUpdated: "2026-05-03",
@@ -417,7 +417,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "1. Authentication",
         body: [
-          "All access to the Client portal and Studio workspace is gated by the shared Henry & Co. account system. We support strong passwords and time-based one-time-password (TOTP) two-factor authentication. We log every successful and failed sign-in.",
+          "All access to the Client portal and Studio workspace is gated by the shared Henry Onyx account system. We support strong passwords and time-based one-time-password (TOTP) two-factor authentication. We log every successful and failed sign-in.",
         ],
       },
       {
@@ -453,7 +453,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "7. Access for staff",
         body: [
-          "Studio staff sign in through the shared Henry & Co. account with the same authentication safeguards as clients. Access is scoped through role memberships; we audit role membership monthly.",
+          "Studio staff sign in through the shared Henry Onyx account with the same authentication safeguards as clients. Access is scoped through role memberships; we audit role membership monthly.",
         ],
       },
       {
@@ -527,7 +527,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
     title: "Acceptable Use Policy",
     shortTitle: "Acceptable use",
     description:
-      "What Henry & Co. Studio will and will not build, and what conduct we expect inside the platform.",
+      "What Henry Onyx Studio will and will not build, and what conduct we expect inside the platform.",
     intent:
       "We protect both the team's wellbeing and the integrity of the platform by being explicit about what falls outside what we accept.",
     lastUpdated: "2026-05-03",
@@ -568,7 +568,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "5. Reporting misuse",
         body: [
-          `If you see something on a Henry & Co.-built surface that violates this policy, email ${ABUSE_EMAIL}. We investigate every credible report.`,
+          `If you see something on a Henry Onyx-built surface that violates this policy, email ${ABUSE_EMAIL}. We investigate every credible report.`,
         ],
       },
     ],

@@ -8,13 +8,13 @@ import {
 } from "@/lib/studio/templates";
 
 export const metadata: Metadata = {
-  title: "Ready-made websites and apps | Henry & Co. Studio",
+  title: "Ready-made websites and apps | Henry Onyx Studio",
   description:
-    "Pick a Henry & Co. Studio template — real prices, real timelines, real scope. Each template launches in days, not months, and customises around your brand.",
+    "Pick a Henry Onyx Studio template — real prices, real timelines, real scope. Each template launches in days, not months, and customises around your brand.",
   alternates: { canonical: "/pick" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Henry & Co. Studio templates — real prices, ready to launch",
+    title: "Henry Onyx Studio templates — real prices, ready to launch",
     description:
       "Browse ready-made websites, commerce sites, portals, and apps. Real prices, real timelines, no fake screenshots.",
     type: "website",
@@ -73,12 +73,12 @@ export default function StudioPickPage() {
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[92rem] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
       <section>
-        <p className="studio-kicker">Ready-made by Henry & Co. Studio</p>
+        <p className="studio-kicker">Ready-made by Henry Onyx Studio</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
           Pick a site. We launch a customised version in days.
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Every template is a real, production-ready Henry & Co. Studio site. Real prices.
+          Every template is a real, production-ready Henry Onyx Studio site. Real prices.
           Real timelines. Real scope. We tailor it to your brand and content, then ship.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">

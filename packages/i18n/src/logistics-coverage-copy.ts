@@ -40,7 +40,7 @@ export type LogisticsCoverageCopy = {
 
 const LOGISTICS_COVERAGE_COPY_EN: LogisticsCoverageCopy = {
   metadata: {
-    title: "Coverage | HenryCo Logistics",
+    title: "Coverage | Henry Onyx Logistics",
     description:
       "Service zones, ETAs, and base coverage we deliver across — published from the live logistics rate book.",
   },
@@ -65,7 +65,7 @@ const LOGISTICS_COVERAGE_COPY_EN: LogisticsCoverageCopy = {
 
 const LOGISTICS_COVERAGE_COPY_FR: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Zones de couverture | HenryCo Logistics",
+    title: "Zones de couverture | Henry Onyx Logistics",
     description:
       "Zones de service, ETA et couverture de base — publiées à partir du barème logistique en direct.",
   },
@@ -90,7 +90,7 @@ const LOGISTICS_COVERAGE_COPY_FR: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_ES: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Cobertura | HenryCo Logistics",
+    title: "Cobertura | Henry Onyx Logistics",
     description:
       "Zonas de servicio, ETAs y cobertura base donde entregamos — publicado desde el tarifario logístico en vivo.",
   },
@@ -115,7 +115,7 @@ const LOGISTICS_COVERAGE_COPY_ES: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_PT: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Cobertura | HenryCo Logistics",
+    title: "Cobertura | Henry Onyx Logistics",
     description:
       "Zonas de serviço, ETAs e cobertura base por onde entregamos — publicado a partir do tarifário logístico ao vivo.",
   },
@@ -140,7 +140,7 @@ const LOGISTICS_COVERAGE_COPY_PT: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_AR: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "نطاق التغطية | HenryCo Logistics",
+    title: "نطاق التغطية | Henry Onyx Logistics",
     description:
       "مناطق الخدمة، الأوقات التقديرية، والتغطية الأساسية التي نوصل إليها — منشورة من دليل أسعار اللوجستيات الحي.",
   },
@@ -164,7 +164,7 @@ const LOGISTICS_COVERAGE_COPY_AR: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_DE: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Liefergebiet | HenryCo Logistics",
+    title: "Liefergebiet | Henry Onyx Logistics",
     description:
       "Servicezonen, ETAs und Grundabdeckung, in die wir liefern — veröffentlicht aus dem laufenden Logistik-Tarifbuch.",
   },
@@ -189,7 +189,7 @@ const LOGISTICS_COVERAGE_COPY_DE: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_IT: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Copertura | HenryCo Logistics",
+    title: "Copertura | Henry Onyx Logistics",
     description:
       "Zone di servizio, ETA e copertura di base in cui consegniamo — pubblicate dal listino logistico in tempo reale.",
   },
@@ -214,7 +214,7 @@ const LOGISTICS_COVERAGE_COPY_IT: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_ZH: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "服务范围 | HenryCo Logistics",
+    title: "服务范围 | Henry Onyx Logistics",
     description: "我们覆盖的服务区域、预计送达时间与基础范围——发布自实时的物流计价手册。",
   },
   hero: {
@@ -237,7 +237,7 @@ const LOGISTICS_COVERAGE_COPY_ZH: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_HI: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "कवरेज | HenryCo Logistics",
+    title: "कवरेज | Henry Onyx Logistics",
     description:
       "हम जहाँ डिलीवर करते हैं वहाँ की सेवा क्षेत्र, ETA और बेस कवरेज — लाइव लॉजिस्टिक्स रेट बुक से प्रकाशित।",
   },
@@ -262,7 +262,7 @@ const LOGISTICS_COVERAGE_COPY_HI: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_IG: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Mpaghara Ozi | HenryCo Logistics",
+    title: "Mpaghara Ozi | Henry Onyx Logistics",
     description:
       "Mpaghara ọrụ, oge ETA, na nkwado mbụ ebe anyị na-ebuga — ebipụtara site na akwụkwọ ọnụahịa logistics dị ndụ.",
   },
@@ -287,7 +287,7 @@ const LOGISTICS_COVERAGE_COPY_IG: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_YO: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Agbègbè Ìfijíṣẹ́ | HenryCo Logistics",
+    title: "Agbègbè Ìfijíṣẹ́ | Henry Onyx Logistics",
     description:
       "Agbègbè iṣẹ́, ETA, àti àgbègbè ìpìlẹ̀ tí a ń fi jíṣẹ́ — tí a tẹ̀jáde láti inú ìwé ọ̀já lójisíìkì gidi.",
   },
@@ -312,7 +312,7 @@ const LOGISTICS_COVERAGE_COPY_YO: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_HA: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Yankin Isarwa | HenryCo Logistics",
+    title: "Yankin Isarwa | Henry Onyx Logistics",
     description:
       "Yankunan hidima, ETA, da yankin tushe da muke isarwa — wanda aka buga daga littafin farashin sufuri kai tsaye.",
   },

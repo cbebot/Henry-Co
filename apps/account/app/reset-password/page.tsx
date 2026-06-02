@@ -1,7 +1,7 @@
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import Logo from "@/components/brand/Logo";
 
-export const metadata = { title: "Set New Password — Henry & Co." };
+export const metadata = { title: "Set New Password — Henry Onyx" };
 
 export default function ResetPasswordPage() {
   return (

@@ -38,7 +38,7 @@ function getEmailCopy(locale: AppLocale) {
       footerManage: "Gerer le compte",
       footerReason: "Vous recevez ceci parce que vous avez un compte HenryCo.",
       welcomeSubject: "Bienvenue chez HenryCo",
-      welcomeTitle: (name: string) => `Bienvenue chez Henry & Co., ${name || "vous"} !`,
+      welcomeTitle: (name: string) => `Bienvenue chez Henry Onyx, ${name || "vous"} !`,
       welcomeIntro: "Votre compte HenryCo unifie est pret. Depuis ici, vous pouvez tout gerer sur Care, Marketplace, Studio et les autres services.",
       welcomeListIntro: "Voici ce que vous pouvez faire :",
       welcomeList: [
@@ -68,7 +68,7 @@ function getEmailCopy(locale: AppLocale) {
       footerManage: "Gestionar cuenta",
       footerReason: "Recibes esto porque tienes una cuenta con HenryCo.",
       welcomeSubject: "Bienvenido a HenryCo",
-      welcomeTitle: (name: string) => `Bienvenido a Henry & Co., ${name || "alli"}!`,
+      welcomeTitle: (name: string) => `Bienvenido a Henry Onyx, ${name || "alli"}!`,
       welcomeIntro: "Tu cuenta unificada de HenryCo ya esta lista. Desde aqui puedes gestionar Care, Marketplace, Studio y mas.",
       welcomeListIntro: "Esto es lo que puedes hacer:",
       welcomeList: [
@@ -98,7 +98,7 @@ function getEmailCopy(locale: AppLocale) {
       footerManage: "Gerir conta",
       footerReason: "Recebeu isto porque tem uma conta HenryCo.",
       welcomeSubject: "Bem-vindo a HenryCo",
-      welcomeTitle: (name: string) => `Bem-vindo a Henry & Co., ${name || "voce"}!`,
+      welcomeTitle: (name: string) => `Bem-vindo a Henry Onyx, ${name || "voce"}!`,
       welcomeIntro: "A sua conta unificada HenryCo esta pronta. A partir daqui pode gerir Care, Marketplace, Studio e muito mais.",
       welcomeListIntro: "Veja o que pode fazer:",
       welcomeList: [
@@ -128,7 +128,7 @@ function getEmailCopy(locale: AppLocale) {
       footerManage: "إدارة الحساب",
       footerReason: "وصلتك هذه الرسالة لأن لديك حسابًا لدى HenryCo.",
       welcomeSubject: "مرحبًا بك في HenryCo",
-      welcomeTitle: (name: string) => `مرحبًا بك في Henry & Co.، ${name || "هناك"}!`,
+      welcomeTitle: (name: string) => `مرحبًا بك في Henry Onyx، ${name || "هناك"}!`,
       welcomeIntro: "حسابك الموحد في HenryCo جاهز الآن. من هنا يمكنك إدارة Care وMarketplace وStudio والمزيد.",
       welcomeListIntro: "يمكنك الآن القيام بما يلي:",
       welcomeList: [
@@ -158,7 +158,7 @@ function getEmailCopy(locale: AppLocale) {
       footerManage: "Konto verwalten",
       footerReason: "Sie erhalten diese Nachricht, weil Sie ein HenryCo-Konto besitzen.",
       welcomeSubject: "Willkommen bei HenryCo",
-      welcomeTitle: (name: string) => `Willkommen bei Henry & Co., ${name || "da"}!`,
+      welcomeTitle: (name: string) => `Willkommen bei Henry Onyx, ${name || "da"}!`,
       welcomeIntro: "Ihr einheitliches HenryCo-Konto ist bereit. Von hier aus verwalten Sie Care, Marketplace, Studio und mehr.",
       welcomeListIntro: "Das koennen Sie jetzt tun:",
       welcomeList: [
@@ -188,7 +188,7 @@ function getEmailCopy(locale: AppLocale) {
       footerManage: "Gestisci account",
       footerReason: "Hai ricevuto questo messaggio perche hai un account HenryCo.",
       welcomeSubject: "Benvenuto in HenryCo",
-      welcomeTitle: (name: string) => `Benvenuto in Henry & Co., ${name || "li"}!`,
+      welcomeTitle: (name: string) => `Benvenuto in Henry Onyx, ${name || "li"}!`,
       welcomeIntro: "Il tuo account HenryCo unificato e pronto. Da qui puoi gestire Care, Marketplace, Studio e altro ancora.",
       welcomeListIntro: "Ecco cosa puoi fare:",
       welcomeList: [

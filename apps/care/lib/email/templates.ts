@@ -364,7 +364,7 @@ function renderHtml(layout: EmailLayout, settings: CareSettingsRecord, locale: s
     purpose: "care",
     supportEmail: settings.support_email || null,
     reasonLine: supportLine
-      ? `This is a HenryCo Care transactional message. ${supportLine}`
+      ? `This is a Henry Onyx Care transactional message. ${supportLine}`
       : undefined,
   });
   const isRtl = locale === "ar";
@@ -458,7 +458,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         eyebrow: "Booking confirmation",
         title: "Your service request is confirmed.",
         intro:
-          "HenryCo Care has registered the request and issued a live tracking code so you can follow every next step clearly. If payment is required before processing, the next message in this same email thread will carry the account details.",
+          "Henry Onyx Care has registered the request and issued a live tracking code so you can follow every next step clearly. If payment is required before processing, the next message in this same email thread will carry the account details.",
         highlightLabel: "Tracking code",
         highlightValue: props.trackingCode,
         sections: [
@@ -475,7 +475,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         closing: [
           "After payment, reply to this same email with your receipt so the team can verify and continue the booking.",
           "If any detail changes before dispatch, reply to this email or contact the Care desk.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
@@ -500,7 +500,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         primaryAction: { label: "Track the latest progress", href: props.trackUrl },
         closing: [
           "If you need to change access notes, delivery timing, or support details, reply to this email.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
@@ -521,7 +521,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
           { label: "Service family", value: props.serviceFamilyLabel },
         ],
         primaryAction: { label: "Open tracking", href: props.trackUrl },
-        closing: ["HenryCo Care"],
+        closing: ["Henry Onyx Care"],
       };
     }
     case "staff_invitation": {
@@ -529,9 +529,9 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
       return {
         subject: `Workspace access setup • ${props.roleLabel}`,
         templateKey: template.type,
-        preview: "Set a password and activate your internal HenryCo Care workspace access.",
+        preview: "Set a password and activate your internal Henry Onyx Care workspace access.",
         eyebrow: "Staff invitation",
-        title: "Your HenryCo Care workspace is ready.",
+        title: "Your Henry Onyx Care workspace is ready.",
         intro:
           "Use the secure setup link below to create a password and open the correct role-based dashboard.",
         sections: [
@@ -544,20 +544,20 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         closing: [
           "If the button does not open in your email app, copy the full secure setup link shown above into your browser.",
           "This setup link is sensitive and should only be used by the invited staff member.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
     case "password_recovery": {
       const props = template.props;
       return {
-        subject: "Recover your HenryCo Care workspace access",
+        subject: "Recover your Henry Onyx Care workspace access",
         templateKey: template.type,
         preview: "Use the secure link below to reset your workspace password.",
         eyebrow: "Access recovery",
         title: "Reset your internal workspace password.",
         intro:
-          "A recovery request was submitted for your HenryCo Care staff account. Use the secure link below to set a new password.",
+          "A recovery request was submitted for your Henry Onyx Care staff account. Use the secure link below to set a new password.",
         sections: [
           { label: "Account", value: props.staffName },
           { label: "Secure recovery link", value: props.recoveryUrl },
@@ -566,7 +566,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         closing: [
           "If the button does not open in your email app, copy the full recovery link shown above into your browser.",
           "If you did not request this, ignore the email and inform an owner or support lead.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
@@ -595,7 +595,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         closing: [
           "After making payment, reply to this same email with your receipt and keep the tracking code visible in the thread.",
           "If WhatsApp support is available for this account, you may also send the same proof there as a fallback.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
@@ -608,7 +608,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         eyebrow: "Payment verified",
         title: "Your payment has been verified.",
         intro:
-          "HenryCo Care has confirmed the payment against your booking and updated the account balance for the next operational step.",
+          "Henry Onyx Care has confirmed the payment against your booking and updated the account balance for the next operational step.",
         sections: [
           { label: "Customer", value: props.customerName },
           { label: "Tracking code", value: props.trackingCode },
@@ -618,7 +618,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
           ...(props.reference ? [{ label: "Reference", value: props.reference }] : []),
         ],
         primaryAction: { label: "Track booking", href: props.trackUrl },
-        closing: ["Thank you. The service will continue from the verified payment state.", "HenryCo Care"],
+        closing: ["Thank you. The service will continue from the verified payment state.", "Henry Onyx Care"],
       };
     }
     case "payment_receipt_received": {
@@ -642,7 +642,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         closing: [
           "You will receive a follow-up as soon as verification is complete.",
           "If you notice an error in the proof, reply to this same email with the corrected receipt.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
@@ -666,14 +666,14 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         primaryAction: { label: "Track booking", href: props.trackUrl },
         closing: [
           "Reply to this same email with the corrected proof or any clarification the support team requested.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
     case "review_request": {
       const props = template.props;
       return {
-        subject: `Share your HenryCo Care review • ${props.trackingCode}`,
+        subject: `Share your Henry Onyx Care review • ${props.trackingCode}`,
         templateKey: template.type,
         preview: "Your service is complete. Share a verified review if the experience met the standard.",
         eyebrow: "Review request",
@@ -686,7 +686,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
           { label: "Service line", value: props.serviceType },
         ],
         primaryAction: { label: "Leave a verified review", href: props.reviewUrl },
-        closing: ["Thank you for using HenryCo Care.", "HenryCo Care"],
+        closing: ["Thank you for using Henry Onyx Care.", "Henry Onyx Care"],
       };
     }
     case "contact_confirmation": {
@@ -694,7 +694,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
       return {
         subject: `We received your message • ${props.threadRef}`,
         templateKey: template.type,
-        preview: "HenryCo Care logged the request and assigned a live support reference.",
+        preview: "Henry Onyx Care logged the request and assigned a live support reference.",
         eyebrow: "Contact received",
         title: "Your message is now with the Care desk.",
         intro:
@@ -708,23 +708,23 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
           { label: "Service area", value: props.serviceCategoryLabel },
           { label: "Message preview", value: props.messagePreview },
         ],
-        primaryAction: { label: "Contact HenryCo Care", href: props.contactUrl },
+        primaryAction: { label: "Contact Henry Onyx Care", href: props.contactUrl },
         closing: [
           "Keep the support reference close if you need to continue the same conversation.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
     case "support_reply": {
       const props = template.props;
       return {
-        subject: `HenryCo Care support reply • ${props.threadRef}`,
+        subject: `Henry Onyx Care support reply • ${props.threadRef}`,
         templateKey: template.type,
-        preview: "A support specialist replied to your HenryCo Care request.",
+        preview: "A support specialist replied to your Henry Onyx Care request.",
         eyebrow: "Support reply",
         title: "A Care specialist has replied.",
         intro:
-          "The message below comes directly from the HenryCo Care support desk so the next step stays clear and documented.",
+          "The message below comes directly from the Henry Onyx Care support desk so the next step stays clear and documented.",
         highlightLabel: "Support reference",
         highlightValue: props.threadRef,
         sections: [
@@ -734,14 +734,14 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         primaryAction: { label: "Continue the conversation", href: props.contactUrl },
         closing: [
           "Reply to this email if you need to continue the same request.",
-          "HenryCo Care",
+          "Henry Onyx Care",
         ],
       };
     }
     case "owner_monthly_summary": {
       const props = template.props;
       return {
-        subject: `HenryCo Care monthly owner summary • ${props.monthLabel}`,
+        subject: `Henry Onyx Care monthly owner summary • ${props.monthLabel}`,
         templateKey: template.type,
         preview: `Owner summary for ${props.monthLabel}: inflow ${props.inflow}, outflow ${props.outflow}, net ${props.net}.`,
         eyebrow: "Owner monthly summary",
@@ -766,7 +766,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
             : []),
         ],
         primaryAction: { label: "Open owner finance", href: props.financeUrl },
-        closing: ["This summary is generated automatically from live Care operations data.", "HenryCo Care"],
+        closing: ["This summary is generated automatically from live Care operations data.", "Henry Onyx Care"],
       };
     }
     case "payment_reminder": {
@@ -792,13 +792,13 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
           { label: "Instructions", value: props.instructions },
         ],
         primaryAction: { label: "Track booking", href: props.trackUrl },
-        closing: ["Once transfer is complete, reply with payment confirmation so the team can close the balance.", "HenryCo Care"],
+        closing: ["Once transfer is complete, reply with payment confirmation so the team can close the balance.", "Henry Onyx Care"],
       };
     }
     case "service_reminder": {
       const props = template.props;
       return {
-        subject: `Plan your next ${props.serviceFamilyLabel.toLowerCase()} visit with HenryCo Care`,
+        subject: `Plan your next ${props.serviceFamilyLabel.toLowerCase()} visit with Henry Onyx Care`,
         templateKey: template.type,
         preview: `${props.timingLabel} is usually a good moment to schedule the next ${props.serviceFamilyLabel.toLowerCase()} visit.`,
         eyebrow: "Service reminder",
@@ -814,15 +814,15 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         ],
         primaryAction: { label: "Book the next service", href: props.bookUrl },
         secondaryAction: { label: "Pause reminders", href: props.unsubscribeUrl },
-        closing: ["If you prefer to pause these reminder emails, use the pause button above.", "HenryCo Care"],
+        closing: ["If you prefer to pause these reminder emails, use the pause button above.", "Henry Onyx Care"],
       };
     }
     case "customer_reengagement": {
       const props = template.props;
       return {
-        subject: "A quiet HenryCo Care check-in",
+        subject: "A quiet Henry Onyx Care check-in",
         templateKey: template.type,
-        preview: "A calm follow-up from HenryCo Care in case you want another pickup, cleaning visit, or premium care slot.",
+        preview: "A calm follow-up from Henry Onyx Care in case you want another pickup, cleaning visit, or premium care slot.",
         eyebrow: "Client follow-up",
         title: "Whenever you are ready, we can take the next one.",
         intro:
@@ -835,7 +835,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         ],
         primaryAction: { label: "Book again", href: props.bookUrl },
         secondaryAction: { label: "Pause outreach", href: props.unsubscribeUrl },
-        closing: ["If you no longer want these outreach notes, use the pause button above.", "HenryCo Care"],
+        closing: ["If you no longer want these outreach notes, use the pause button above.", "Henry Onyx Care"],
       };
     }
     case "admin_notification": {
@@ -849,7 +849,7 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
         intro: props.summary,
         lists: props.lines.length > 0 ? [{ title: "Details", items: props.lines }] : [],
         primaryAction: props.action ?? null,
-        closing: ["This message was generated by HenryCo Care operations."],
+        closing: ["This message was generated by Henry Onyx Care operations."],
       };
     }
   }

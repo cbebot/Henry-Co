@@ -31,7 +31,7 @@ export default function GlobalLoader({
       }
     | undefined;
 
-  const brandTitle = title?.trim() || company?.parentBrand?.trim() || "Henry & Co.";
+  const brandTitle = title?.trim() || company?.parentBrand?.trim() || "Henry Onyx";
   const brandSub = subtitle?.trim() || company?.title?.trim() || "Company Hub";
   const accent = accentOverride?.trim() || company?.accent?.trim() || "#C9A227";
   const statusText = statusLabel?.trim() || "Loading";

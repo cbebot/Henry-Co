@@ -15,7 +15,7 @@ export function isInternalCommsStorageError(error: { message?: string; code?: st
 }
 
 export const INTERNAL_COMMS_UNAVAILABLE =
-  "Internal messaging storage is not ready yet. Apply HenryCo Hub database migrations for internal communications, wait a minute for the schema cache to refresh, then reload this page.";
+  "Internal messaging storage is not ready yet. Apply Henry Onyx Hub database migrations for internal communications, wait a minute for the schema cache to refresh, then reload this page.";
 
 export function logInternalCommsError(scope: string, error: unknown) {
   console.error(`[internal-comms:${scope}]`, error);

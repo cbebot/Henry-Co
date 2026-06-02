@@ -10,7 +10,7 @@ import ReplyComposer from "@/components/support/ReplyComposer";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Reply to Thread | Henry & Co. Fabric Care",
+  title: "Reply to Thread | Henry Onyx Fabric Care",
   description: "Compose and send a reply to a support thread.",
 };
 

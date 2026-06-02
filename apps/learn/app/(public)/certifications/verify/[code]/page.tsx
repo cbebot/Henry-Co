@@ -48,12 +48,12 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
         record: data.course as unknown as Record<string, unknown>,
         field: "title",
         locale,
-        fallback: data.course.title ?? t("HenryCo Learn programme"),
+        fallback: data.course.title ?? t("Henry Onyx Learn programme"),
         machineTranslate: locale !== "en",
       })
-    : t("HenryCo Learn programme");
-  const title = `${learnerName} · ${courseTitle} — HenryCo Learn certificate`;
-  const description = `Verified HenryCo Learn certificate ${data.certificate.certificateNo}. ${t("This page is the live, public verification surface — no login required.")}`;
+    : t("Henry Onyx Learn programme");
+  const title = `${learnerName} · ${courseTitle} — Henry Onyx Learn certificate`;
+  const description = `Verified Henry Onyx Learn certificate ${data.certificate.certificateNo}. ${t("This page is the live, public verification surface — no login required.")}`;
 
   return {
     title,
@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
       title,
       description,
       type: "article",
-      siteName: "HenryCo Learn",
+      siteName: "Henry Onyx Learn",
     },
     twitter: {
       card: "summary_large_image",
@@ -125,7 +125,7 @@ export default async function CertificateVerifyPage({
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker={t("Certificate verification")}
-        title={t("Confirm this HenryCo Learn certificate is genuine.")}
+        title={t("Confirm this Henry Onyx Learn certificate is genuine.")}
         body={t("Enter or follow a verification code to see the official record: learner name, course, issue date, and status. This is the same check employers and partners use—no login required.")}
       />
 
@@ -155,7 +155,7 @@ export default async function CertificateVerifyPage({
 
             <div className="mt-8 rounded-[2rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.28em] text-[var(--learn-ink-soft)]">
-                {t("HenryCo Learn Certificate")}
+                {t("Henry Onyx Learn Certificate")}
               </p>
               <h1 className="mt-6 text-center text-[2.7rem] font-semibold tracking-[-0.06em] text-[var(--learn-ink)] sm:text-[3.8rem]">
                 {learnerName}
@@ -164,7 +164,7 @@ export default async function CertificateVerifyPage({
                 {t("has satisfied the learning and assessment requirements for")}
               </p>
               <p className="mt-4 text-center text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                {courseTitle || data.course?.title || t("HenryCo Learn program")}
+                {courseTitle || data.course?.title || t("Henry Onyx Learn program")}
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -213,7 +213,7 @@ export default async function CertificateVerifyPage({
             </div>
             <div className="mt-5 space-y-3">
               {[
-                t("The certificate number is unique inside HenryCo Learn."),
+                t("The certificate number is unique inside Henry Onyx Learn."),
                 t("The verification code resolves to the academy record, not a placeholder file."),
                 t("Completion and assessment status are tied to the course enrollment path."),
               ].map((item) => (

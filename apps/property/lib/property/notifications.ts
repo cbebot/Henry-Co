@@ -88,12 +88,12 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           templateKey: event,
           eyebrow: "Inquiry received",
           headline: "Your property inquiry is now in motion.",
-          summary: "HenryCo Property has logged the inquiry and routed it into the appropriate response queue.",
+          summary: "Henry Onyx Property has logged the inquiry and routed it into the appropriate response queue.",
           bullets: [listingTitle, locationLabel || null, "A relationship manager will follow up next."].filter(Boolean) as string[],
           ctaLabel: "Review the listing",
           ctaHref: resolvePropertyHref(payload.ctaHref, getPropertyUrl("/search")),
         },
-        whatsapp: `HenryCo Property: your inquiry for ${listingTitle} has been received.`,
+        whatsapp: `Henry Onyx Property: your inquiry for ${listingTitle} has been received.`,
       };
     case "viewing_requested":
       return {
@@ -103,12 +103,12 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           templateKey: event,
           eyebrow: "Viewing request",
           headline: "Your viewing request is logged.",
-          summary: "HenryCo Property captured the request and placed it in the scheduling queue.",
+          summary: "Henry Onyx Property captured the request and placed it in the scheduling queue.",
           bullets: [listingTitle, viewingTime || "Timing will be confirmed shortly"].filter(Boolean) as string[],
           ctaLabel: "Open your HenryCo account",
           ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
-        whatsapp: `HenryCo Property: your viewing request for ${listingTitle} is logged.`,
+        whatsapp: `Henry Onyx Property: your viewing request for ${listingTitle} is logged.`,
       };
     case "viewing_scheduled":
       return {
@@ -118,12 +118,12 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           templateKey: event,
           eyebrow: "Viewing scheduled",
           headline: "Your property viewing is confirmed.",
-          summary: "The appointment is scheduled and HenryCo Property will continue follow-up before the meeting.",
+          summary: "The appointment is scheduled and Henry Onyx Property will continue follow-up before the meeting.",
           bullets: [listingTitle, viewingTime].filter(Boolean) as string[],
           ctaLabel: "See viewing details",
           ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
-        whatsapp: `HenryCo Property: your viewing for ${listingTitle} is confirmed${viewingTime ? ` on ${viewingTime}` : ""}.`,
+        whatsapp: `Henry Onyx Property: your viewing for ${listingTitle} is confirmed${viewingTime ? ` on ${viewingTime}` : ""}.`,
       };
     case "viewing_reminder":
       return {
@@ -133,12 +133,12 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           templateKey: event,
           eyebrow: "Viewing reminder",
           headline: "Your viewing is coming up.",
-          summary: "This is a reminder from HenryCo Property to reduce missed appointments and keep coordination clear.",
+          summary: "This is a reminder from Henry Onyx Property to reduce missed appointments and keep coordination clear.",
           bullets: [listingTitle, viewingTime].filter(Boolean) as string[],
           ctaLabel: "Review appointment",
           ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
-        whatsapp: `HenryCo Property reminder: ${listingTitle}${viewingTime ? ` at ${viewingTime}` : ""}.`,
+        whatsapp: `Henry Onyx Property reminder: ${listingTitle}${viewingTime ? ` at ${viewingTime}` : ""}.`,
       };
     case "listing_submitted":
       return {
@@ -148,17 +148,17 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           templateKey: event,
           eyebrow: "Listing submission",
           headline: "Your listing is under review.",
-          summary: "HenryCo Property received the listing and queued it for editorial, trust, and operations review.",
+          summary: "Henry Onyx Property received the listing and queued it for editorial, trust, and operations review.",
           bullets: [listingTitle, "You will be notified after review or if changes are requested."],
           ctaLabel: "Open listing workspace",
           ctaHref: getSharedAccountPropertyUrl("listings"),
         },
-        whatsapp: `HenryCo Property: ${listingTitle} has been submitted for review.`,
+        whatsapp: `Henry Onyx Property: ${listingTitle} has been submitted for review.`,
       };
     case "listing_approved":
       return {
         title: "Listing approved",
-        body: `${listingTitle} is now live on HenryCo Property.`,
+        body: `${listingTitle} is now live on Henry Onyx Property.`,
         email: {
           templateKey: event,
           eyebrow: "Listing approved",
@@ -168,7 +168,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           ctaLabel: "View live listing",
           ctaHref: resolvePropertyHref(payload.ctaHref, getPropertyUrl("/search")),
         },
-        whatsapp: `HenryCo Property: ${listingTitle} is now live.`,
+        whatsapp: `Henry Onyx Property: ${listingTitle} is now live.`,
       };
     case "listing_rejected":
       return {
@@ -183,7 +183,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           ctaLabel: "Review listing notes",
           ctaHref: getSharedAccountPropertyUrl("listings"),
         },
-        whatsapp: `HenryCo Property updated ${listingTitle}. ${note || "Please review the moderation notes."}`,
+        whatsapp: `Henry Onyx Property updated ${listingTitle}. ${note || "Please review the moderation notes."}`,
       };
     case "managed_update":
       return {
@@ -193,12 +193,12 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           templateKey: event,
           eyebrow: "Managed-property operations",
           headline: "There is a new managed-property update.",
-          summary: note || "HenryCo Property recorded an important managed-property note.",
+          summary: note || "Henry Onyx Property recorded an important managed-property note.",
           bullets: [listingTitle || "Managed portfolio update"].filter(Boolean) as string[],
           ctaLabel: "Open managed-property workspace",
           ctaHref: getPropertyUrl("/managed"),
         },
-        whatsapp: `HenryCo Property managed update: ${note || listingTitle}.`,
+        whatsapp: `Henry Onyx Property managed update: ${note || listingTitle}.`,
       };
     case "support_alert":
     case "owner_alert":
@@ -210,13 +210,13 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
         email: {
           templateKey: event,
           eyebrow: "Operations alert",
-          headline: "HenryCo Property needs attention.",
+          headline: "Henry Onyx Property needs attention.",
           summary: note || "A tracked property workflow now needs an operator response.",
           bullets: [listingTitle || "Property workflow alert"].filter(Boolean) as string[],
           ctaLabel: "Open operations workspace",
           ctaHref: getPropertyWorkspaceUrl("/operations"),
         },
-        whatsapp: `HenryCo Property alert: ${note || listingTitle || "Operator attention required."}`,
+        whatsapp: `Henry Onyx Property alert: ${note || listingTitle || "Operator attention required."}`,
       };
   }
 }

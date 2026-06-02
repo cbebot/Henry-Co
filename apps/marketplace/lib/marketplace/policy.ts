@@ -32,7 +32,7 @@ export const sellerTrustTierRules = [
 export const ecosystemOffers = [
   {
     title: "Studio launch services",
-    body: "Sellers can buy HenryCo Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.",
+    body: "Sellers can buy Henry Onyx Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.",
     href: `${getDivisionUrl("studio")}/services`,
   },
   {
@@ -42,7 +42,7 @@ export const ecosystemOffers = [
   },
   {
     title: "Logistics verification",
-    body: "Delivery proof, tracking confidence, and payout-release evidence can route through HenryCo Logistics where supported.",
+    body: "Delivery proof, tracking confidence, and payout-release evidence can route through Henry Onyx Logistics where supported.",
     href: `${getDivisionUrl("logistics")}/track`,
   },
   {

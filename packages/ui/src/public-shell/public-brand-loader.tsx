@@ -13,7 +13,7 @@ import { cn } from "../lib/cn";
  * the visual footprint quiet so it doesn't feel like a marketing screen.
  */
 export function PublicBrandLoader({
-  brand = "Henry & Co.",
+  brand = "Henry Onyx",
   eyebrow,
   title = "One moment",
   subtitle,

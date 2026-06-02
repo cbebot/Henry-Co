@@ -233,7 +233,7 @@ export function mapMessageRow(
     id: clean(row.id),
     projectId: clean(row.project_id),
     senderId,
-    senderName: clean(row.sender) || (role === "client" ? "You" : "Henry & Co. Studio"),
+    senderName: clean(row.sender) || (role === "client" ? "You" : "Henry Onyx Studio"),
     senderRole: role,
     body: clean(row.body),
     attachments,

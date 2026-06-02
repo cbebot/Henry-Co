@@ -1,7 +1,7 @@
 import * as React from "react";
 
 /**
- * CareMonogram — the Henry & Co. Fabric Care brand mark.
+ * CareMonogram — the Henry Onyx Fabric Care brand mark.
  *
  * Sub-brand relationship to the parent: same serif H armature as the
  * HenryCoMonogram (so Care reads as part of the family), but the
@@ -31,7 +31,7 @@ export type CareMonogramProps = Omit<
 export function CareMonogram({
   size = 32,
   accent = "#6B7CFF",
-  label = "Henry & Co. Fabric Care",
+  label = "Henry Onyx Fabric Care",
   className,
   style,
   role,
@@ -54,7 +54,7 @@ export function CareMonogram({
       <title>{accessibleLabel}</title>
 
       {/* Serif H — identical armature to the parent monogram so Care
-          reads as part of the Henry & Co. family. */}
+          reads as part of the Henry Onyx family. */}
       <g fill="currentColor">
         <path d="M9 7 H17 V57 H9 Z" />
         <path d="M6.5 7 H19.5 V9 H6.5 Z" />

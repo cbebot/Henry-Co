@@ -1163,7 +1163,7 @@ export async function POST(request: Request) {
         }
         return respondSuccess(request, submitRedirect, {
           message:
-            "Listing submitted. HenryCo Property queued policy review, moderation, and follow-up notifications.",
+            "Listing submitted. Henry Onyx Property queued policy review, moderation, and follow-up notifications.",
           submission: {
             listingId: listing.id,
             listingSlug: listing.slug,
@@ -1373,7 +1373,7 @@ export async function POST(request: Request) {
           email: viewer.user.email,
           activityType: "property_listing_updated",
           title: `Updated ${listing.title}`,
-          description: "Listing details were revised inside HenryCo Property.",
+          description: "Listing details were revised inside Henry Onyx Property.",
           status: nextStatus,
           referenceType: "property_listing",
           referenceId: listing.id,
@@ -1399,7 +1399,7 @@ export async function POST(request: Request) {
 
         revalidatePropertyRoutes(listing.slug);
         return respondSuccess(request, withQuery(returnTo, "updated", "1"), {
-          message: "Listing updated and re-evaluated against HenryCo Property trust rules.",
+          message: "Listing updated and re-evaluated against Henry Onyx Property trust rules.",
           listing: {
             listingId: listing.id,
             status: nextStatus,
@@ -1625,7 +1625,7 @@ export async function POST(request: Request) {
             status: nextListingStatus,
             visibility: isPropertyListingPublicStatus(nextListingStatus) ? "public" : "private",
             verificationNotes: dedupe([
-              `${getInspectionStatusSummary(nextInspectionStatus)} by HenryCo Property`,
+              `${getInspectionStatusSummary(nextInspectionStatus)} by Henry Onyx Property`,
               ...listing.verificationNotes,
             ]).slice(0, 8),
           });

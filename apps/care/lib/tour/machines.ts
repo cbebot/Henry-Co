@@ -3,12 +3,12 @@ import type { TourMachine } from "./engine";
 export const publicTour: TourMachine = {
   id: "care-public",
   version: 1,
-  name: "HenryCo Care tour",
-  description: "A short walkthrough of HenryCo Care services and how to book one",
+  name: "Henry Onyx Care tour",
+  description: "A short walkthrough of Henry Onyx Care services and how to book one",
   steps: [
     {
       id: "welcome",
-      title: "About HenryCo Care",
+      title: "About Henry Onyx Care",
       body: "Premium garment care, home cleaning, and office cleaning. The tour points to where each service lives so the platform feels familiar from the first booking.",
       placement: "center",
     },
@@ -179,7 +179,7 @@ export const supportTour: TourMachine = {
     {
       id: "welcome",
       title: "Support workspace",
-      body: "You are the voice of HenryCo Care. Your job is to respond to customers promptly, resolve issues thoroughly, and ensure every interaction builds trust.",
+      body: "You are the voice of Henry Onyx Care. Your job is to respond to customers promptly, resolve issues thoroughly, and ensure every interaction builds trust.",
       placement: "center",
     },
     {

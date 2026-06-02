@@ -186,7 +186,7 @@ export function VendorPayoutStatementDocument({
     <BrandedDocument
       metadata={{
         title: `Vendor payout · ${vendor.name} · ${period.label}`,
-        subject: "HenryCo Marketplace vendor payout statement",
+        subject: "Henry Onyx Marketplace vendor payout statement",
         keywords: ["marketplace", "vendor", "payout", "statement", vendor.name],
       }}
       header={{
@@ -293,7 +293,7 @@ export function VendorPayoutStatementDocument({
       <LegalFooter
         lines={[
           "This statement reflects orders that cleared the auto-release window during the period above. Refunds or disputes opened after the cut-off appear on the next statement.",
-          "Tax position is the vendor's responsibility; Henry Holdings Limited withholds only the commission and processing fees disclosed in your vendor agreement.",
+          "Tax position is the vendor's responsibility; Henry Onyx Limited withholds only the commission and processing fees disclosed in your vendor agreement.",
           "Discrepancies must be raised within 14 days through the vendor workspace dispute channel; we cannot re-issue payouts outside that window.",
         ]}
       />

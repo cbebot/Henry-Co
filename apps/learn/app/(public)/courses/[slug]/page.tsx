@@ -463,7 +463,7 @@ export default async function CourseDetailPage({
       <section className="mt-16">
         <LearnSectionIntro
           kicker={t("What to expect")}
-          title={t("How this course works on HenryCo Learn")}
+          title={t("How this course works on Henry Onyx Learn")}
           body={t(
             "Lessons are meant to be taken in order. When you're enrolled, each step unlocks as you finish the one before it. If this program includes a certificate, you'll see exactly what you must complete—including any final quiz and passing score—inside your learning room and in your HenryCo account.",
           )}

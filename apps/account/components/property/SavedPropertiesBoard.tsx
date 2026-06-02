@@ -113,7 +113,7 @@ export default function SavedPropertiesBoard({
       <EmptyState
         icon={Building2}
         title={t("No saved properties yet")}
-        description={t("Start exploring HenryCo Property and the best listings you save will appear here with compare, inquiry, and follow-up actions.")}
+        description={t("Start exploring Henry Onyx Property and the best listings you save will appear here with compare, inquiry, and follow-up actions.")}
         action={
           <a
             href={propertyOrigin}

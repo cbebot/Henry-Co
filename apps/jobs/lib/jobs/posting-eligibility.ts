@@ -236,7 +236,7 @@ export async function getEmployerPostingEligibility(input: {
     {
       id: "email",
       label: "Verified account email",
-      detail: "HenryCo Jobs requires a verified email before an employer can submit a live role.",
+      detail: "Henry Onyx Jobs requires a verified email before an employer can submit a live role.",
       complete: emailVerified,
     },
     {

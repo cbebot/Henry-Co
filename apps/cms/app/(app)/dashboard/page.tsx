@@ -53,7 +53,7 @@ export default function DashboardPage() {
           Welcome back
         </h1>
         <p className="max-w-2xl text-sm leading-6 text-[var(--hc-ink-muted)]">
-          One audited console for every editable surface the public Henry &amp; Co. sites render —
+          One audited console for every editable surface the public Henry Onyx sites render —
           editing the real, live content. The secured shell is in place; the editing surfaces below
           arrive next.
         </p>

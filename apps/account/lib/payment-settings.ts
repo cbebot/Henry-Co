@@ -34,7 +34,7 @@ export const getSharedPaymentRail = cache(async (): Promise<SharedPaymentRail> =
     accountName:
       asNullableText(data?.payment_account_name) ??
       asNullableText(data?.company_account_name) ??
-      "Henry & Co.",
+      "Henry Onyx",
     accountNumber:
       asNullableText(data?.payment_account_number) ??
       asNullableText(data?.company_account_number),

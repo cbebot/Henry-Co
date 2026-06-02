@@ -190,7 +190,7 @@ const instructors: Array<Record<string, unknown>> = [
     slug: "emeka-odili",
     full_name: "Emeka Odili",
     title: "Vendor Trust Director",
-    bio: "Emeka leads seller trust, moderation quality, and vendor certification systems inside HenryCo Marketplace.",
+    bio: "Emeka leads seller trust, moderation quality, and vendor certification systems inside Henry Onyx Marketplace.",
     expertise: ["vendor trust", "moderation", "dispute prevention"],
     accent: "#8F6A2E",
     avatar_url: null,
@@ -651,7 +651,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
     title: "Logistics Rider Readiness",
     subtitle: "Dispatch safely, communicate clearly, and execute reliable proof-of-delivery routines.",
     summary: "An internal rider training program focused on dispatch readiness, customer handling, and delivery proof discipline.",
-    description: "Logistics Rider Readiness supports HenryCo Logistics teams with dispatch, safety, and proof-of-delivery standards.",
+    description: "Logistics Rider Readiness supports Henry Onyx Logistics teams with dispatch, safety, and proof-of-delivery standards.",
     duration_text: "1h 55m",
     estimated_minutes: 115,
     difficulty: "intermediate",
@@ -932,7 +932,7 @@ const paths: Array<Record<string, unknown>> = [
     slug: "marketplace-seller-academy",
     title: "Marketplace Seller Academy",
     summary: "From first storefront clarity to verified seller trust.",
-    description: "A structured academy path for new and growing vendors who want to launch well and earn trust inside HenryCo Marketplace.",
+    description: "A structured academy path for new and growing vendors who want to launch well and earn trust inside Henry Onyx Marketplace.",
     hero_image_url: null,
     audience: "Public vendors and seller teams",
     visibility: "public",
@@ -1015,8 +1015,8 @@ const reviews: Array<Record<string, unknown>> = [
   { id: seedId(1303), course_id: seedId(307), user_id: null, normalized_email: "client.onboarding@henrycogroup.com", rating: 4, title: "Helpful before kickoff", body: "The onboarding course answered questions we usually ask weeks later.", status: "published", created_at: createdAt, updated_at: updatedAt },
 ];
 const assignments: Array<Record<string, unknown>> = [
-  { id: seedId(1401), course_id: seedId(303), path_id: seedId(1102), user_id: null, normalized_email: "care.ops@henrycogroup.com", assignee_role: "care_staff", assigned_by_user_id: null, sponsor_name: "HenryCo Fabric Care", note: "Required for all new care staff within the first two weeks.", required: true, due_at: "2026-04-16T18:00:00.000Z", assigned_at: createdAt, status: "assigned" },
-  { id: seedId(1402), course_id: seedId(305), path_id: seedId(1103), user_id: null, normalized_email: "fleet.leads@henrycogroup.com", assignee_role: "logistics_lead", assigned_by_user_id: null, sponsor_name: "HenryCo Logistics", note: "Required before moving into independent dispatch coverage.", required: true, due_at: "2026-04-18T18:00:00.000Z", assigned_at: createdAt, status: "assigned" },
+  { id: seedId(1401), course_id: seedId(303), path_id: seedId(1102), user_id: null, normalized_email: "care.ops@henrycogroup.com", assignee_role: "care_staff", assigned_by_user_id: null, sponsor_name: "Henry Onyx Fabric Care", note: "Required for all new care staff within the first two weeks.", required: true, due_at: "2026-04-16T18:00:00.000Z", assigned_at: createdAt, status: "assigned" },
+  { id: seedId(1402), course_id: seedId(305), path_id: seedId(1103), user_id: null, normalized_email: "fleet.leads@henrycogroup.com", assignee_role: "logistics_lead", assigned_by_user_id: null, sponsor_name: "Henry Onyx Logistics", note: "Required before moving into independent dispatch coverage.", required: true, due_at: "2026-04-18T18:00:00.000Z", assigned_at: createdAt, status: "assigned" },
 ];
 const settings: Array<Record<string, unknown>> = [
   { id: seedId(1501), key: "bootstrap_version", value: { version: LEARN_BOOTSTRAP_VERSION }, created_at: createdAt, updated_at: updatedAt },

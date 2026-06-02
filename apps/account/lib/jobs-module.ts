@@ -240,7 +240,7 @@ function buildJobPreview(row: Record<string, unknown>) {
   return {
     slug,
     title: asText(metadata.title, "Role"),
-    employerName: asText(metadata.employerName, "HenryCo Jobs"),
+    employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
     employerSlug: asText(metadata.employerSlug),
     location: asText(metadata.location, "Remote"),
     workMode: asText(metadata.workMode, "remote"),
@@ -479,7 +479,7 @@ export async function getJobsModuleData(userId: string) {
       const role = linkedRole ?? {
         slug: jobSlug,
         title: asText(metadata.jobTitle, "Role"),
-        employerName: asText(metadata.employerName, "HenryCo Jobs"),
+        employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
         employerSlug: asText(metadata.employerSlug),
         location: "Remote",
         workMode: "remote",
@@ -500,7 +500,7 @@ export async function getJobsModuleData(userId: string) {
         id: applicationId,
         jobSlug,
         jobTitle: asText(metadata.jobTitle, "Role"),
-        employerName: asText(metadata.employerName, "HenryCo Jobs"),
+        employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
         stage,
         stageLabel: humanizeStage(stage),
         tone: stageTone(stage),
@@ -579,7 +579,7 @@ export async function getJobsModuleData(userId: string) {
       const role = jobsBySlug.get(asText(metadata.jobSlug)) ?? {
         slug: asText(metadata.jobSlug),
         title: asText(metadata.jobTitle, "Saved role"),
-        employerName: asText(metadata.employerName, "HenryCo Jobs"),
+        employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
         employerSlug: asText(metadata.employerSlug),
         location: asText(metadata.location, "Remote"),
         workMode: asText(metadata.workMode, "remote"),

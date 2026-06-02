@@ -70,7 +70,7 @@ export function DefaultOgTemplate({
             borderRadius: 2,
           }}
         />
-        <span>HENRY &amp; CO.</span>
+        <span>HENRY ONYX</span>
       </div>
       <div
         style={{

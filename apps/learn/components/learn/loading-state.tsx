@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
  * V3-05 — Learn loading-state primitives.
  *
  * Previously these surfaces painted theater hero copy like "Loading your
- * next academy view." and "Preparing HenryCo Learn" + body text as the
+ * next academy view." and "Preparing Henry Onyx Learn" + body text as the
  * LOUDEST element on the loading screen. That fakes activity instead of
  * signalling shape.
  *

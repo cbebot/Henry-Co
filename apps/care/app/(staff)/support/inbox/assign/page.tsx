@@ -8,7 +8,7 @@ import AssignForm from "@/components/support/AssignForm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Assign Thread | Henry & Co. Fabric Care",
+  title: "Assign Thread | Henry Onyx Fabric Care",
   description: "Assign a support thread to an agent.",
 };
 

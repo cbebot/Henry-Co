@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: care.name,
     description: t(
-      "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care.",
+      "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from Henry Onyx Care.",
     ),
   };
 }
@@ -485,7 +485,7 @@ export default async function CareHomePage() {
             </h2>
             <p className="mt-4 max-w-md text-sm leading-7 text-zinc-600 dark:text-white/72">
               {t(
-                "A garment order should feel different from a home clean or an office visit. HenryCo Care keeps each service clear so customers always understand what stage comes next.",
+                "A garment order should feel different from a home clean or an office visit. Henry Onyx Care keeps each service clear so customers always understand what stage comes next.",
               )}
             </p>
             <ul className="mt-7 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
@@ -662,7 +662,7 @@ export default async function CareHomePage() {
                   </p>
                   <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
                     {t(
-                      "HenryCo Care shows the service path, pickup logic, and support channels up front so customers do not have to guess what happens after they book.",
+                      "Henry Onyx Care shows the service path, pickup logic, and support channels up front so customers do not have to guess what happens after they book.",
                     )}
                   </p>
                 </div>
@@ -679,7 +679,7 @@ export default async function CareHomePage() {
           eyebrow={t("Ready when you are")}
           title={t("Book with clarity, then follow the service with confidence.")}
           body={t(
-            "From pickup windows to on-site visits and return delivery, HenryCo Care keeps every service update visible enough that you are not left guessing.",
+            "From pickup windows to on-site visits and return delivery, Henry Onyx Care keeps every service update visible enough that you are not left guessing.",
           )}
           aside={
             <div className="flex flex-col gap-3">

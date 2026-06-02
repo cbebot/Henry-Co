@@ -30,7 +30,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Owner Security | Henry & Co. Fabric Care",
+  title: "Owner Security | Henry Onyx Fabric Care",
   description:
     "Owner audit surface for access activity, transport health, freeze controls, and staff security posture.",
 };

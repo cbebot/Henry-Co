@@ -11,7 +11,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Archive | Henry & Co. Fabric Care",
+  title: "Support Archive | Henry Onyx Fabric Care",
   description:
     "Resolved support conversation history with searchable detail and quick reopen controls.",
 };

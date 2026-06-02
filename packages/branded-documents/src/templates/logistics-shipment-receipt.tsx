@@ -162,7 +162,7 @@ export function LogisticsShipmentReceiptDocument({
     <BrandedDocument
       metadata={{
         title: `Shipment receipt ${shipment.trackingCode}`,
-        subject: "HenryCo Logistics shipment receipt",
+        subject: "Henry Onyx Logistics shipment receipt",
         keywords: ["logistics", "shipment", "henryco", shipment.trackingCode],
       }}
       header={{
@@ -292,7 +292,7 @@ export function LogisticsShipmentReceiptDocument({
 
       <LegalFooter
         lines={[
-          "Henry Holdings Limited, through HenryCo Logistics, is the operator of record for this shipment. Insurance, claim windows, and lost-package liability are governed by the HenryCo Logistics service agreement.",
+          "Henry Onyx Limited, through Henry Onyx Logistics, is the operator of record for this shipment. Insurance, claim windows, and lost-package liability are governed by the Henry Onyx Logistics service agreement.",
           "If a discrepancy exists between this receipt and the live shipment record, contact logistics support within 7 days for the fastest resolution path.",
         ]}
       />

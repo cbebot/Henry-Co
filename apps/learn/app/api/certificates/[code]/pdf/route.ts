@@ -49,7 +49,7 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
       issuedAt: data.certificate.issuedAt,
       score: data.certificate.score ?? null,
       learnerName: learnerProfile?.fullName || "HenryCo learner",
-      courseTitle: data.course?.title || "HenryCo Learn programme",
+      courseTitle: data.course?.title || "Henry Onyx Learn programme",
       courseSlug: data.course?.slug || null,
       completionRule: data.course?.completionRule || null,
     },

@@ -112,7 +112,7 @@ function buildDashboardOptions(access: AccessSnapshot): DashboardOption[] {
       role: "super_admin",
       title: "Owner Console",
       description:
-        "Executive command, finance, workforce, and brand controls across every Henry & Co. division.",
+        "Executive command, finance, workforce, and brand controls across every Henry Onyx division.",
       href: getHqUrl("/owner"),
     });
   }
@@ -139,7 +139,7 @@ function buildDashboardOptions(access: AccessSnapshot): DashboardOption[] {
     role: "customer",
     title: "Customer Dashboard",
     description:
-      "Your personal Henry & Co. account — bookings, orders, wallet, and preferences.",
+      "Your personal Henry Onyx account — bookings, orders, wallet, and preferences.",
     href: getAccountUrl("/"),
   });
 

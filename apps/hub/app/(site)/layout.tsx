@@ -99,7 +99,7 @@ export async function generateMetadata(): Promise<Metadata> {
       record: settingsRecord,
       field: titleField,
       locale,
-      fallback: settings.default_meta_title || settings.brand_title || "Henry & Co.",
+      fallback: settings.default_meta_title || settings.brand_title || "Henry Onyx",
       machineTranslate,
     }),
     resolveLocalizedDynamicField({
@@ -109,7 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
       fallback:
         settings.default_meta_description ||
         settings.brand_description ||
-        "Explore the businesses, services, and operating divisions of Henry & Co.",
+        "Explore the businesses, services, and operating divisions of Henry Onyx",
       machineTranslate,
     }),
   ]);

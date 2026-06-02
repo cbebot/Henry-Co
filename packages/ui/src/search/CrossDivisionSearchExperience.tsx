@@ -137,7 +137,7 @@ const ICONS: Record<CrossDivisionSearchIcon, ComponentType<{ className?: string 
  * Pass `copy={getXxxCopy(locale).crossSearch}` to translate.
  */
 export type CrossDivisionSearchCopy = {
-  /** Eyebrow above the title, e.g. "Henry & Co. Search". */
+  /** Eyebrow above the title, e.g. "Henry Onyx Search". */
   eyebrow: string;
   /** Visually-hidden `<label>` for the search input. */
   inputLabel: string;
@@ -188,8 +188,8 @@ export type CrossDivisionSearchCopy = {
 };
 
 const DEFAULT_SEARCH_COPY: CrossDivisionSearchCopy = {
-  eyebrow: "Henry & Co. Search",
-  inputLabel: "Search Henry & Co.",
+  eyebrow: "Henry Onyx Search",
+  inputLabel: "Search Henry Onyx",
   searchButton: "Search",
   searchButtonPending: "Searching",
   queryPrefix: "Query",
@@ -197,14 +197,14 @@ const DEFAULT_SEARCH_COPY: CrossDivisionSearchCopy = {
   statusDefault: "Top routes across the ecosystem",
   matchSingular: "match",
   matchPlural: "matches",
-  protectedHintTitleZero: "Sign in to search private Henry & Co. workflows",
-  protectedHintTitleSome: "More Henry & Co. routes are available after sign in",
+  protectedHintTitleZero: "Sign in to search private Henry Onyx workflows",
+  protectedHintTitleSome: "More Henry Onyx routes are available after sign in",
   protectedHintBodyZero:
     "This query matches account-only routes such as orders, notifications, subscriptions, or support.",
   protectedHintBodySome:
     "This query also matches private account routes — orders, notifications, subscriptions, support. Sign in to land on the exact destination.",
   signInBadge: "Sign in",
-  browseNavLabel: "Browse the Henry & Co. ecosystem",
+  browseNavLabel: "Browse the Henry Onyx ecosystem",
   browseEyebrow: "Browse the ecosystem",
   topMatchesHeading: "Top matches",
   routeSingular: "route",
@@ -212,7 +212,7 @@ const DEFAULT_SEARCH_COPY: CrossDivisionSearchCopy = {
   emptyQueryEyebrow: "Nothing exact yet",
   emptyDefaultEyebrow: "Start here",
   emptyQueryHeading: "We didn't find an exact route — try a division name, workflow, or support intent.",
-  emptyDefaultHeading: "Browse the strongest entry points across Henry & Co..",
+  emptyDefaultHeading: "Browse the strongest entry points across Henry Onyx.",
   emptyBody:
     "Notifications, wallet, marketplace orders, jobs help, logistics tracking, property viewings — every one is one route away. These are the most-used entry points right now.",
 };
@@ -387,7 +387,7 @@ export function CrossDivisionSearchExperience({
   results,
   lockedResults = [],
   signInHref,
-  signInLabel = "Sign in to search your Henry & Co. workflows",
+  signInLabel = "Sign in to search your Henry Onyx workflows",
   copy = DEFAULT_SEARCH_COPY,
   onSignal,
 }: CrossDivisionSearchExperienceProps) {
@@ -769,7 +769,7 @@ export function CrossDivisionSearchExperience({
 
 export function HenryCoSearchBreadcrumb({
   href,
-  label = "Search Henry & Co.",
+  label = "Search Henry Onyx",
   className,
 }: {
   href: string;

@@ -90,7 +90,7 @@ export async function submitContactMessage(
     text,
     purpose: "support",
     replyTo: email,
-    fromName: "Henry & Co. Hub",
+    fromName: "Henry Onyx Hub",
   }).catch(() => ({
     status: "error" as const,
     provider: "none" as const,

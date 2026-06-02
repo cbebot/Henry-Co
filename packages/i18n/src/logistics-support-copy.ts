@@ -78,9 +78,9 @@ export type LogisticsSupportCopy = {
 
 const LOGISTICS_SUPPORT_COPY_EN: LogisticsSupportCopy = {
   metadata: {
-    title: "Support | HenryCo Logistics",
+    title: "Support | Henry Onyx Logistics",
     description:
-      "Contact HenryCo Logistics support or continue a conversation from your HenryCo account.",
+      "Contact Henry Onyx Logistics support or continue a conversation from your HenryCo account.",
   },
   hero: {
     eyebrow: "One desk · One thread",
@@ -142,9 +142,9 @@ const LOGISTICS_SUPPORT_COPY_EN: LogisticsSupportCopy = {
 
 const LOGISTICS_SUPPORT_COPY_FR: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Assistance | HenryCo Logistics",
+    title: "Assistance | Henry Onyx Logistics",
     description:
-      "Contactez l’assistance HenryCo Logistics ou poursuivez une conversation depuis votre compte HenryCo.",
+      "Contactez l’assistance Henry Onyx Logistics ou poursuivez une conversation depuis votre compte HenryCo.",
   },
   hero: {
     eyebrow: "Un bureau · Un fil",
@@ -206,9 +206,9 @@ const LOGISTICS_SUPPORT_COPY_FR: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_ES: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Soporte | HenryCo Logistics",
+    title: "Soporte | Henry Onyx Logistics",
     description:
-      "Contacta con el soporte de HenryCo Logistics o continúa una conversación desde tu cuenta HenryCo.",
+      "Contacta con el soporte de Henry Onyx Logistics o continúa una conversación desde tu cuenta HenryCo.",
   },
   hero: {
     eyebrow: "Un mostrador · Un hilo",
@@ -270,9 +270,9 @@ const LOGISTICS_SUPPORT_COPY_ES: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_PT: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Suporte | HenryCo Logistics",
+    title: "Suporte | Henry Onyx Logistics",
     description:
-      "Contacte o suporte HenryCo Logistics ou continue uma conversa a partir da sua conta HenryCo.",
+      "Contacte o suporte Henry Onyx Logistics ou continue uma conversa a partir da sua conta HenryCo.",
   },
   hero: {
     eyebrow: "Um balcão · Um fio",
@@ -334,9 +334,9 @@ const LOGISTICS_SUPPORT_COPY_PT: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_AR: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "الدعم | HenryCo Logistics",
+    title: "الدعم | Henry Onyx Logistics",
     description:
-      "تواصل مع دعم HenryCo Logistics أو تابع محادثة من حسابك في HenryCo.",
+      "تواصل مع دعم Henry Onyx Logistics أو تابع محادثة من حسابك في HenryCo.",
   },
   hero: {
     eyebrow: "مكتب واحد · محادثة واحدة",
@@ -398,7 +398,7 @@ const LOGISTICS_SUPPORT_COPY_AR: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_DE: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Support | HenryCo Logistics",
+    title: "Support | Henry Onyx Logistics",
     description:
       "Kontaktieren Sie den HenryCo-Logistics-Support oder setzen Sie ein Gespräch aus Ihrem HenryCo-Konto fort.",
   },
@@ -462,9 +462,9 @@ const LOGISTICS_SUPPORT_COPY_DE: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_IT: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Assistenza | HenryCo Logistics",
+    title: "Assistenza | Henry Onyx Logistics",
     description:
-      "Contatta l’assistenza HenryCo Logistics o prosegui una conversazione dal tuo account HenryCo.",
+      "Contatta l’assistenza Henry Onyx Logistics o prosegui una conversazione dal tuo account HenryCo.",
   },
   hero: {
     eyebrow: "Uno sportello · Un thread",
@@ -526,8 +526,8 @@ const LOGISTICS_SUPPORT_COPY_IT: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_ZH: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "支持 | HenryCo Logistics",
-    description: "联系 HenryCo Logistics 支持，或从您的 HenryCo 账户继续一条会话。",
+    title: "支持 | Henry Onyx Logistics",
+    description: "联系 Henry Onyx Logistics 支持，或从您的 HenryCo 账户继续一条会话。",
   },
   hero: {
     eyebrow: "一个档口 · 一条会话",
@@ -589,9 +589,9 @@ const LOGISTICS_SUPPORT_COPY_ZH: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_HI: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "सहायता | HenryCo Logistics",
+    title: "सहायता | Henry Onyx Logistics",
     description:
-      "HenryCo Logistics सहायता से संपर्क करें या अपने HenryCo खाते से बातचीत जारी रखें।",
+      "Henry Onyx Logistics सहायता से संपर्क करें या अपने HenryCo खाते से बातचीत जारी रखें।",
   },
   hero: {
     eyebrow: "एक डेस्क · एक थ्रेड",
@@ -653,9 +653,9 @@ const LOGISTICS_SUPPORT_COPY_HI: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_IG: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Nkwado | HenryCo Logistics",
+    title: "Nkwado | Henry Onyx Logistics",
     description:
-      "Kpọtụrụ nkwado HenryCo Logistics ma ọ bụ gaa n’ihu na mkparịta ụka sitere n’akaụntụ HenryCo gị.",
+      "Kpọtụrụ nkwado Henry Onyx Logistics ma ọ bụ gaa n’ihu na mkparịta ụka sitere n’akaụntụ HenryCo gị.",
   },
   hero: {
     eyebrow: "Otu ebe · Otu mkparịta ụka",
@@ -717,9 +717,9 @@ const LOGISTICS_SUPPORT_COPY_IG: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_YO: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Ìrànlọ́wọ́ | HenryCo Logistics",
+    title: "Ìrànlọ́wọ́ | Henry Onyx Logistics",
     description:
-      "Kàn sí ìrànlọ́wọ́ HenryCo Logistics tàbí tẹ̀síwájú ìjíròrò láti àkáǹtì HenryCo rẹ.",
+      "Kàn sí ìrànlọ́wọ́ Henry Onyx Logistics tàbí tẹ̀síwájú ìjíròrò láti àkáǹtì HenryCo rẹ.",
   },
   hero: {
     eyebrow: "Tábìlì kan · Ìjíròrò kan",
@@ -781,9 +781,9 @@ const LOGISTICS_SUPPORT_COPY_YO: DeepPartial<LogisticsSupportCopy> = {
 
 const LOGISTICS_SUPPORT_COPY_HA: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
-    title: "Taimako | HenryCo Logistics",
+    title: "Taimako | Henry Onyx Logistics",
     description:
-      "Tuntuɓi taimakon HenryCo Logistics ko ci gaba da tattaunawa daga asusunka na HenryCo.",
+      "Tuntuɓi taimakon Henry Onyx Logistics ko ci gaba da tattaunawa daga asusunka na HenryCo.",
   },
   hero: {
     eyebrow: "Teburi ɗaya · Tattaunawa ɗaya",

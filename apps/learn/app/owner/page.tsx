@@ -15,7 +15,7 @@ export default async function OwnerOverviewPage() {
     <LearnWorkspaceShell
       kicker={t("Academy Ops")}
       title={t("Run the academy with real visibility across learning, payments, assignments, and certificates.")}
-      description={t("HenryCo Learn keeps operations in focused views so content, learners, assignments, analytics, and announcements stay easy to manage at scale.")}
+      description={t("Henry Onyx Learn keeps operations in focused views so content, learners, assignments, analytics, and announcements stay easy to manage at scale.")}
       nav={ownerNav("/owner", t)}
     >
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">

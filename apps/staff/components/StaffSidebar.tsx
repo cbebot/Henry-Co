@@ -142,7 +142,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-[var(--staff-ink)]">
-            Henry & Co.
+            Henry Onyx
           </p>
           <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-gold)]">
             Staff HQ

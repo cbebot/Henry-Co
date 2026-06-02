@@ -46,7 +46,7 @@ export type LearnTrustCopy = {
 
 const LEARN_TRUST_COPY_EN: LearnTrustCopy = {
   meta: {
-    title: "Trust - HenryCo Learn",
+    title: "Trust - Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Trust & safety",
@@ -86,7 +86,7 @@ const LEARN_TRUST_COPY_EN: LearnTrustCopy = {
 
 const LEARN_TRUST_COPY_FR: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Confiance — HenryCo Learn",
+    title: "Confiance — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Confiance et sécurité",
@@ -126,7 +126,7 @@ const LEARN_TRUST_COPY_FR: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_ES: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Confianza — HenryCo Learn",
+    title: "Confianza — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Confianza y seguridad",
@@ -166,7 +166,7 @@ const LEARN_TRUST_COPY_ES: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_PT: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Confiança — HenryCo Learn",
+    title: "Confiança — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Confiança e segurança",
@@ -206,7 +206,7 @@ const LEARN_TRUST_COPY_PT: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_AR: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "الثقة — HenryCo Learn",
+    title: "الثقة — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "الثقة والأمان",
@@ -246,7 +246,7 @@ const LEARN_TRUST_COPY_AR: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_DE: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Vertrauen — HenryCo Learn",
+    title: "Vertrauen — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Vertrauen & Sicherheit",
@@ -286,7 +286,7 @@ const LEARN_TRUST_COPY_DE: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_IT: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Affidabilità — HenryCo Learn",
+    title: "Affidabilità — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Affidabilità e sicurezza",
@@ -326,7 +326,7 @@ const LEARN_TRUST_COPY_IT: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_ZH: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "信任 — HenryCo Learn",
+    title: "信任 — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "信任与安全",
@@ -366,7 +366,7 @@ const LEARN_TRUST_COPY_ZH: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_HI: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "विश्वास — HenryCo Learn",
+    title: "विश्वास — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "विश्वास और सुरक्षा",
@@ -406,7 +406,7 @@ const LEARN_TRUST_COPY_HI: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_IG: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Ntụkwasị obi — HenryCo Learn",
+    title: "Ntụkwasị obi — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Ntụkwasị obi na nchekwa",
@@ -446,7 +446,7 @@ const LEARN_TRUST_COPY_IG: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_YO: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Ìgbẹ́kẹ̀lé — HenryCo Learn",
+    title: "Ìgbẹ́kẹ̀lé — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Ìgbẹ́kẹ̀lé àti ààbò",
@@ -486,7 +486,7 @@ const LEARN_TRUST_COPY_YO: DeepPartial<LearnTrustCopy> = {
 
 const LEARN_TRUST_COPY_HA: DeepPartial<LearnTrustCopy> = {
   meta: {
-    title: "Aminci — HenryCo Learn",
+    title: "Aminci — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Aminci da tsaro",

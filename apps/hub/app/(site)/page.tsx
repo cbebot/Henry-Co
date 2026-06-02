@@ -22,13 +22,13 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
-  title: "Henry & Co. — Care, Marketplace, Property, Studio, and more",
+  title: "Henry Onyx — Care, Marketplace, Property, Studio, and more",
   description:
-    "Henry & Co. brings together garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
+    "Henry Onyx brings together garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
     type: "website",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
   },
@@ -145,7 +145,7 @@ export default async function HomePage() {
       record: settingsRecord,
       field: "brand_title",
       locale,
-      fallback: settings.brand_title ?? "Henry & Co.",
+      fallback: settings.brand_title ?? "Henry Onyx",
       machineTranslate,
     }),
     resolveLocalizedDynamicField({
@@ -279,7 +279,7 @@ export default async function HomePage() {
     logo: organizationLogo,
     description:
       brandDescriptionI18n ||
-      "Henry & Co. is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
+      "Henry Onyx is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
   };
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -299,7 +299,7 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
     <HubHomeClient
-      brandTitle={brandTitleI18n || "Henry & Co."}
+      brandTitle={brandTitleI18n || "Henry Onyx"}
       brandSub={brandSubtitleI18n || "Corporate Platform"}
       brandAccent={settings.brand_accent ?? "#C9A227"}
       brandLogoUrl={settings.logo_url ?? null}

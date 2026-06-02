@@ -18,7 +18,7 @@ import { updateRiderStatusAction } from "../../owner/actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Rider Deliveries | Henry & Co. Fabric Care",
+  title: "Rider Deliveries | Henry Onyx Fabric Care",
   description: "Delivery queue for garment returns that are already moving toward final handoff.",
 };
 

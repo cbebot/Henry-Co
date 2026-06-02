@@ -9,7 +9,7 @@ export async function generateMetadata() {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("How HenryCo Learn works") };
+  return { title: t("How Henry Onyx Learn works") };
 }
 
 export default async function AcademyPage() {
@@ -59,7 +59,7 @@ export default async function AcademyPage() {
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-              {t("How HenryCo Learn works")}
+              {t("How Henry Onyx Learn works")}
             </p>
             <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {t("From interested to finished, in plain steps.")}
@@ -141,7 +141,7 @@ export default async function AcademyPage() {
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t(
-              "The course room on HenryCo Learn is where you read lessons, submit quizzes, and download certificates. Your HenryCo account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
+              "The course room on Henry Onyx Learn is where you read lessons, submit quizzes, and download certificates. Your HenryCo account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
             )}
           </p>
           <a

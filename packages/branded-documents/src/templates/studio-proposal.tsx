@@ -332,7 +332,7 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
 
       <LegalFooter
         lines={[
-          "This proposal is governed by the HenryCo Studio engagement terms. Acceptance is recorded electronically with timestamp, IP address, user agent, and locale captured for audit replay.",
+          "This proposal is governed by the Henry Onyx Studio engagement terms. Acceptance is recorded electronically with timestamp, IP address, user agent, and locale captured for audit replay.",
           "Investment + deposit figures above are exclusive of statutory tax unless explicitly noted. Currency converts at the gateway rate on the day of settlement.",
         ]}
       />

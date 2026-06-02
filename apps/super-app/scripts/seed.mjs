@@ -21,7 +21,7 @@ const supabase = createClient(url, key, { auth: { persistSession: false } });
 const rows = [
   {
     slug: "fabric-care",
-    name: "Henry & Co. Fabric Care",
+    name: "Henry Onyx Fabric Care",
     status: "active",
     featured: true,
     summary:
@@ -32,7 +32,7 @@ const rows = [
   },
   {
     slug: "studio",
-    name: "HenryCo Studio",
+    name: "Henry Onyx Studio",
     status: "active",
     featured: true,
     summary: "Websites, mobile apps, UI systems, branding, e-commerce, and custom software.",
@@ -42,7 +42,7 @@ const rows = [
   },
   {
     slug: "marketplace",
-    name: "Henry & Co. Marketplace",
+    name: "Henry Onyx Marketplace",
     status: "active",
     featured: true,
     summary: "Premium multi-vendor commerce with trust signals and split-order clarity.",
@@ -52,7 +52,7 @@ const rows = [
   },
   {
     slug: "jobs",
-    name: "HenryCo Jobs",
+    name: "Henry Onyx Jobs",
     status: "active",
     featured: true,
     summary: "Hiring operating system for HenryCo and verified external employers.",
@@ -62,7 +62,7 @@ const rows = [
   },
   {
     slug: "property",
-    name: "HenryCo Property",
+    name: "Henry Onyx Property",
     status: "active",
     featured: true,
     summary: "Listings, viewing coordination, owner submissions, and managed-property services.",
@@ -72,7 +72,7 @@ const rows = [
   },
   {
     slug: "learn",
-    name: "HenryCo Learn",
+    name: "Henry Onyx Learn",
     status: "active",
     featured: true,
     summary: "Public courses, internal training, certifications, and partner enablement.",
@@ -82,7 +82,7 @@ const rows = [
   },
   {
     slug: "logistics",
-    name: "HenryCo Logistics",
+    name: "Henry Onyx Logistics",
     status: "active",
     featured: true,
     summary: "Pickup, dispatch, same-day and scheduled delivery with proof of delivery.",
@@ -92,7 +92,7 @@ const rows = [
   },
   {
     slug: "buildings-interiors",
-    name: "Henry & Co. Buildings & Interiors",
+    name: "Henry Onyx Buildings & Interiors",
     status: "coming_soon",
     featured: true,
     summary:

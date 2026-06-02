@@ -7,7 +7,7 @@ import { logProtectedPageAccess } from "@/lib/security/logger";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Notifications | Henry & Co. Fabric Care",
+  title: "Support Notifications | Henry Onyx Fabric Care",
   description: "Support-facing inbox, reply, review, and receipt-verification alerts.",
 };
 

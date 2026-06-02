@@ -2,7 +2,7 @@
 @import "../../../packages/ui/src/styles/globals.css";
 @source "../../../packages/ui/src";
 
-/* Henry & Co. Owner CMS — command chrome tokens (gold on navy), mirroring the
+/* Henry Onyx Owner CMS — command chrome tokens (gold on navy), mirroring the
    hub owner surface so the standalone CMS reads as the same premium system. */
 :root {
   --acct-bg: #fafaf8;

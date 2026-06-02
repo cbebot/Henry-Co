@@ -403,7 +403,7 @@ export function SearchExperience({
                     More arriving soon
                   </p>
                   <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--market-paper-white)]">
-                    HenryCo Marketplace is opening with a small, hand-picked set of vendors
+                    Henry Onyx Marketplace is opening with a small, hand-picked set of vendors
                     so the trust signals stay real.
                   </p>
                   <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">

@@ -40,7 +40,7 @@ export default async function OwnerInstructorsPage({
       ) : null}
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <LearnMetricCard label={t("Applications")} value={String(applications.length)} hint={t("All instructor applications currently stored in HenryCo Learn.")} />
+        <LearnMetricCard label={t("Applications")} value={String(applications.length)} hint={t("All instructor applications currently stored in Henry Onyx Learn.")} />
         <LearnMetricCard label={t("Open review")} value={String(activeApplications.length)} hint={t("Applications still moving through review or changes.")} />
         <LearnMetricCard label={t("Approved")} value={String(applications.filter((item) => item.status === "approved").length)} hint={t("Approved instructors ready for onboarding or content work.")} />
         <LearnMetricCard label={t("Public profiles")} value={String(snapshot.instructors.length)} hint={t("Published instructor spotlights already visible in the academy.")} />

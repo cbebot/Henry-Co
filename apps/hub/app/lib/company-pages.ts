@@ -161,7 +161,7 @@ export function normalizeCompanyPage(
   return {
     id: row?.id ? String(row.id) : undefined,
     slug: toText(row?.slug ?? row?.page_key, slugFallback),
-    title: toText(row?.title, "Henry & Co."),
+    title: toText(row?.title, "Henry Onyx"),
     subtitle: toNullableText(row?.subtitle),
     hero_badge: toNullableText(row?.hero_badge) ?? toNullableText(row?.hero_kicker),
     intro:
@@ -202,7 +202,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
 
   const base: CompanyPageRecord = {
     slug: pageSlug,
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Corporate platform",
     hero_badge: "Company page",
     intro:
@@ -359,12 +359,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               {
                 id: "about-not-tenancy",
                 title: "Property: agent, not party to tenancy",
-                body: "Henry & Co. Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by Henry & Co. Property in a managed-property capacity.",
+                body: "Henry Onyx Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by Henry Onyx Property in a managed-property capacity.",
               },
               {
                 id: "about-not-employer",
                 title: "Jobs: platform, not employer",
-                body: "Henry & Co. Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; Henry & Co. is not party to the employment relationship.",
+                body: "Henry Onyx Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; Henry Onyx is not party to the employment relationship.",
               },
               {
                 id: "about-not-instant",
@@ -394,7 +394,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
     case "contact":
       return {
         ...base,
-        title: "Contact Henry & Co.",
+        title: "Contact Henry Onyx",
         subtitle: "Reach the company",
         hero_badge: "Business enquiries",
         intro:
@@ -451,7 +451,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "1. Controller identity",
             title: "Who is responsible for this data",
             body:
-              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henrycogroup.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry & Co. divisions, and it is the entity legally answerable for how your data is handled.`,
+              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henrycogroup.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry Onyx divisions, and it is the entity legally answerable for how your data is handled.`,
             layout: "default",
             items: [
               { id: "privacy-controller-name", label: "Controller", value: LEGAL.entity.name },
@@ -716,7 +716,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "2. The platform",
             title: "What the divisions provide",
             body:
-              `${LEGAL.entity.tradingName} operates seven divisions on one platform. Each division has a defined market and a defined contract. Use of a division is bound by both these group-level terms and any division-specific service contract presented at checkout or onboarding.\n\n— In plain English: Henry & Co. is a group with seven divisions. These terms cover the group; each division can add its own service terms on top.`,
+              `${LEGAL.entity.tradingName} operates seven divisions on one platform. Each division has a defined market and a defined contract. Use of a division is bound by both these group-level terms and any division-specific service contract presented at checkout or onboarding.\n\n— In plain English: Henry Onyx is a group with seven divisions. These terms cover the group; each division can add its own service terms on top.`,
             layout: "cards",
             items: [
               { id: "terms-platform-logistics", title: COMPANY.divisions.logistics.name, body: COMPANY.divisions.logistics.description },
@@ -777,11 +777,11 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "6. Intellectual property",
             title: "Ownership of content and brand",
             body:
-              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry & Co. owns the brand. Copyright takedowns go to legal@henrycogroup.com.`,
+              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry Onyx owns the brand. Copyright takedowns go to legal@henrycogroup.com.`,
             layout: "default",
             items: [
-              { id: "terms-ip-user", label: "User content", value: "User retains ownership; Henry & Co. licence for service delivery" },
-              { id: "terms-ip-brand", label: "Brand IP", value: "Retained by Henry & Co." },
+              { id: "terms-ip-user", label: "User content", value: "User retains ownership; Henry Onyx licence for service delivery" },
+              { id: "terms-ip-brand", label: "Brand IP", value: "Retained by Henry Onyx" },
               { id: "terms-ip-takedown", label: "Takedown route", value: LEGAL.contacts.legal },
               { id: "terms-ip-statute", label: "Statute", value: "Copyright Act 2022 (Nigeria) §43" },
             ],
@@ -807,7 +807,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "8. Trust signals",
             title: "What trust badges mean and do not mean",
             body:
-              "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by Henry & Co. of any specific outcome.\n\n— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise.",
+              "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by Henry Onyx of any specific outcome.\n\n— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise.",
             layout: "default",
             items: [
               { id: "terms-trust-1", label: "What badges signal", value: "Verifiable inputs (KYC, history, dispute record)" },
@@ -832,7 +832,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "10. Limitation of liability",
             title: "What the platform is liable for",
             body:
-              "Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant Henry & Co. division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.\n\n— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months.",
+              "Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant Henry Onyx division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.\n\n— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months.",
             layout: "default",
             items: [
               { id: "terms-liability-floor", label: "Non-derogable floor", value: "FCCPA 2018 §128 consumer rights" },
@@ -978,8 +978,8 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henrycogroup.com and the registered office. We send formal notices to your account contact details.`,
             layout: "default",
             items: [
-              { id: "terms-notice-email", label: "Notice to Henry & Co. (email)", value: LEGAL.contacts.legal },
-              { id: "terms-notice-courier", label: "Notice to Henry & Co. (courier)", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state} (registered office)` },
+              { id: "terms-notice-email", label: "Notice to Henry Onyx (email)", value: LEGAL.contacts.legal },
+              { id: "terms-notice-courier", label: "Notice to Henry Onyx (courier)", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state} (registered office)` },
               { id: "terms-notice-user", label: "Notice to user", value: "Account email and phone" },
               { id: "terms-notice-hague", label: "Cross-border supplement", value: "Hague Service Convention where applicable" },
             ],
@@ -989,12 +989,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "22. Miscellaneous",
             title: "Severability, entire agreement, assignment, force majeure",
             body:
-              "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; Henry & Co. may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS).\n\n— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract.",
+              "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; Henry Onyx may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS).\n\n— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract.",
             layout: "default",
             items: [
               { id: "terms-misc-sever", label: "Severability", value: "Unenforceable clause excised; rest continues" },
               { id: "terms-misc-entire", label: "Entire agreement", value: "These terms + Privacy + division terms + signed addenda" },
-              { id: "terms-misc-assign", label: "Assignment", value: "User: with consent; Henry & Co.: to successor on merger or acquisition" },
+              { id: "terms-misc-assign", label: "Assignment", value: "User: with consent; Henry Onyx: to successor on merger or acquisition" },
               { id: "terms-misc-fm", label: "Force majeure", value: "Performance excused for events beyond reasonable control" },
             ],
           },

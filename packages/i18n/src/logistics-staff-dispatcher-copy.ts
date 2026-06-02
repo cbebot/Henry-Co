@@ -61,7 +61,7 @@ export type LogisticsStaffDispatcherCopy = {
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_EN: LogisticsStaffDispatcherCopy = {
   metadata: {
-    title: "Dispatch — HenryCo Logistics",
+    title: "Dispatch — Henry Onyx Logistics",
     description:
       "Live ops surface for dispatchers. Unassigned shipments, capacity, exceptions, and fleet utilisation in one view.",
   },
@@ -108,7 +108,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_EN: LogisticsStaffDispatcherCopy = {
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_FR: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Répartition — HenryCo Logistics",
+    title: "Répartition — Henry Onyx Logistics",
     description:
       "Surface ops en direct pour les répartiteurs. Expéditions non assignées, capacité, exceptions et utilisation de flotte dans une seule vue.",
   },
@@ -155,7 +155,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_FR: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_ES: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Despacho — HenryCo Logistics",
+    title: "Despacho — Henry Onyx Logistics",
     description:
       "Superficie ops en vivo para despachadores. Envíos sin asignar, capacidad, excepciones y utilización de flota en una sola vista.",
   },
@@ -202,7 +202,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_ES: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_PT: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Despacho — HenryCo Logistics",
+    title: "Despacho — Henry Onyx Logistics",
     description:
       "Superfície de operações ao vivo para despachantes. Envios sem atribuição, capacidade, exceções e utilização de frota numa vista única.",
   },
@@ -249,7 +249,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_PT: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_AR: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "الإرسال — HenryCo Logistics",
+    title: "الإرسال — Henry Onyx Logistics",
     description:
       "واجهة عمليات حية للمرسلين. الشحنات غير المعيَّنة، الطاقة، الاستثناءات، واستخدام الأسطول في عرض واحد.",
   },
@@ -296,7 +296,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_AR: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_DE: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Disposition — HenryCo Logistics",
+    title: "Disposition — Henry Onyx Logistics",
     description:
       "Live-Ops-Oberfläche für Disponenten. Nicht zugewiesene Sendungen, Kapazität, Ausnahmen und Flottenauslastung in einer Ansicht.",
   },
@@ -343,7 +343,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_DE: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_IT: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Dispaccio — HenryCo Logistics",
+    title: "Dispaccio — Henry Onyx Logistics",
     description:
       "Superficie operativa live per i dispatcher. Spedizioni non assegnate, capacità, eccezioni e utilizzo flotta in un’unica vista.",
   },
@@ -390,7 +390,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_IT: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_ZH: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "调度 — HenryCo Logistics",
+    title: "调度 — Henry Onyx Logistics",
     description: "面向调度员的实时运营视图。未指派货件、运力、异常和车队利用率,集中于一屏。",
   },
   hero: {
@@ -436,7 +436,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_ZH: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_HI: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "डिस्पैच — HenryCo Logistics",
+    title: "डिस्पैच — Henry Onyx Logistics",
     description:
       "डिस्पैचरों के लिए लाइव ऑप्स सतह। बिना सौंपी गई शिपमेंट, क्षमता, अपवाद, और बेड़े का उपयोग एक ही दृश्य में।",
   },
@@ -483,7 +483,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_HI: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_IG: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Nzipu — HenryCo Logistics",
+    title: "Nzipu — Henry Onyx Logistics",
     description:
       "Elu ọrụ ndị nzipu na-eme ngwa ngwa. Ngwaahịa enyebeghị, ike, ihe iwughị, na ojiji ụgbọala n’otu ngosipụta.",
   },
@@ -530,7 +530,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_IG: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_YO: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Ifiránṣẹ́ — HenryCo Logistics",
+    title: "Ifiránṣẹ́ — Henry Onyx Logistics",
     description:
       "Ojú-iṣẹ́ alààyè fún àwọn olùfiránṣẹ́. Àwọn ẹrù tí a kò tí ì pín, agbára, ìyàtọ̀, àti ìlò àwọn ọkọ̀ nínú ìwò kan.",
   },
@@ -577,7 +577,7 @@ const LOGISTICS_STAFF_DISPATCHER_COPY_YO: DeepPartial<LogisticsStaffDispatcherCo
 
 const LOGISTICS_STAFF_DISPATCHER_COPY_HA: DeepPartial<LogisticsStaffDispatcherCopy> = {
   metadata: {
-    title: "Aikawa — HenryCo Logistics",
+    title: "Aikawa — Henry Onyx Logistics",
     description:
       "Faifan ayyukan kai tsaye don masu aikawa. Kayayyaki da ba a ba su ba, ƙarfin aiki, abubuwan keɓance, da amfani da rundunar a wuri ɗaya.",
   },

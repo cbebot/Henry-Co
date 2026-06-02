@@ -7,7 +7,7 @@ import { getAccountAppLocale } from "@/lib/locale-server";
 export async function generateMetadata() {
   const locale = await getAccountAppLocale();
   const copy = getAuthCopy(locale);
-  return { title: `${copy.signup.submitButton} — Henry & Co.` };
+  return { title: `${copy.signup.submitButton} — Henry Onyx` };
 }
 
 export default async function SignupPage({

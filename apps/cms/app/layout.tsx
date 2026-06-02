@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 
 export const metadata: Metadata = {
-  title: "Henry & Co. — Owner CMS",
-  description: "Owner-only content management for the Henry & Co. public surfaces.",
+  title: "Henry Onyx — Owner CMS",
+  description: "Owner-only content management for the Henry Onyx public surfaces.",
   // Private surface: never index the admin.
   robots: { index: false, follow: false },
 };

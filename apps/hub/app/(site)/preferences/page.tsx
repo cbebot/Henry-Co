@@ -6,9 +6,9 @@ import PreferencesClient from "./PreferencesClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Preferences — Henry & Co.",
+  title: "Preferences — Henry Onyx",
   description:
-    "Manage your language, privacy, personalization, and experience preferences across all Henry & Co. sites.",
+    "Manage your language, privacy, personalization, and experience preferences across all Henry Onyx sites.",
 };
 
 export default async function PreferencesPage() {
