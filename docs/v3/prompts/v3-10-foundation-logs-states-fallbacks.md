@@ -1,23 +1,16 @@
 # V3-10 — Foundation: Logs, States, Fallbacks
 
-**Pass ID:** V3-10
-**Phase:** B (FOUNDATION LOCK)
-**Pillar:** P12 (Global, Observability)
-**Dependencies:** Phase A audit
-**Effort:** M (1–2 weeks)
-**Parallel-safe:** YES
-**Owner gate:** None
-**Risk class:** None
+> **STATUS: SHIPPED — PR #133.** Closed and certified inside Foundation Lock (V3-12, #168). `@henryco/observability` is live across all 10 apps with `emitEvent`, `logger`, `persistEvent`, `buildHealthResponse`/`healthStatusCode`, `audit-log`, and `redaction`; `/api/health` exists in every app; the audit scripts `scripts/v3/event-emission-audit.mjs` and `scripts/v3/sentry-adoption-audit.mjs` are committed. Treat this as the elevated canonical spec and the standing observability contract — V3-43 (workflow engine) and V3-89 (observability depth) build directly on it, and V3-94 re-runs the degraded-side-effect and health smoke. Residual hardening is named at the end, not reopened as scope.
+
+**Pass ID:** V3-10  ·  **Phase:** B (Foundation Lock)  ·  **Pillar:** P12 (Global, Observability)
+**Dependencies:** —  ·  **Effort:** M  ·  **Parallel-safe:** Y
+**Owner gate:** none  ·  **Risk class:** —
 
 ---
 
 ## Role
 
-You are the V3 Foundation engineer for HenryCo. You execute exactly this one pass, then stop and report.
-
-This pass closes the **logs/states/fallbacks** sub-bar. Owner's bar: "no major flows without logs, states, and fallback handling". Every mutating route logs structured events; every degraded side effect (e.g., email-send failure) reports explicitly; every read query has a fallback if the source is unavailable.
-
----
+You are the V3 Foundation engineer for Henry Onyx. You execute exactly this one pass, then stop and report. This pass closes the logs/states/fallbacks sub-bar: every mutating route logs structured entry/success/error, emits a typed `henry.<domain>.<noun>.<verb>` event, reports degraded side effects explicitly, and every external-service read has a documented non-crashing fallback. The line you must not cross: you adopt and extend `@henryco/observability` — you never fork it, never add a second logging library, and never log session tokens, payment bodies, or KYC bodies. Distributed traces, SLOs, and PR performance budgets are V3-89, not here.
 
 ## Project
 
@@ -26,309 +19,132 @@ This pass closes the **logs/states/fallbacks** sub-bar. Owner's bar: "no major f
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
 | Working branch | `v3/10-logs-states-fallbacks` |
-| Deploy | Vercel (10 web projects) |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
----
+## Audit summary
 
-## Audit summary (lifted from AUDIT-BASELINE.md §2.13 + §3 cross-cutting)
-
-> ### 2.13 Observability (`@henryco/observability`)
-> - Logger with PII redaction (default redact keys)
-> - Event-taxonomy emitter (`emitEvent`)
-> - Sentry config builders (server, client, edge) — decoupled from `@sentry/nextjs` version
-> - DASH-9 audit-log writer at `/audit-log` subpath (server-only)
-> - **GAP:** per-app Sentry `Sentry.init` adoption inventory unknown; some apps may not call it yet
-> - **GAP:** no traces / no SLOs / no performance-budget enforcement yet
-
-From intelligence-rollout-status: "routes now report degraded side effects explicitly" — this pattern exists for intelligence routes; extend to every mutating route.
-
-Owner: "no major flows without logs, states, and fallback handling".
-
----
+`@henryco/observability` already ships the spine: a PII-redacting `logger` (`packages/observability/src/logger.ts`), the typed event emitter `emitEvent` over the `HenryEventName` taxonomy (`events.ts`), the canonical `persistEvent` writer to the `henry_events` sink (`persist-event.ts`), Sentry config builders decoupled from `@sentry/nextjs` (`sentry/`), the DASH-9 server-only audit-log writer (`audit-log.ts`), and the redaction utility (`redaction.ts`). The gaps this pass closes: per-app Sentry `Sentry.init` adoption was unverified; mutating routes used raw `console.*` in places and did not uniformly emit typed events; degraded side effects (email-send, notification publish, search outbox) were swallowed on most routes; external-service reads (Typesense, Google Places, Cloudinary, Supabase Realtime/Storage, email/SMS/push providers, future payment/AI providers) had no documented fallbacks; not every route segment had an `error.tsx`; and `/api/health` was inconsistent. V3-02 (auth reliability) ships after V3-10, so V3-10 owns the initial sensitive-action route list itself and V3-02 extends it.
 
 ## Mandatory scope
 
 ### S1 — Sentry adoption inventory
+Ship `scripts/v3/sentry-adoption-audit.mjs` that checks, per app: `Sentry.init(buildServerSentryConfig())`, `Sentry.init(buildClientSentryConfig())`, and an `instrumentation.ts` wiring `@henryco/observability/sentry/instrumentation`. Wire Sentry into any app missing it using the existing builders — never hand-roll a config. Client Sentry must run with PII filtering active.
 
-For each of the 10 web apps:
-- Check if `Sentry.init(buildServerSentryConfig())` is called.
-- Check if `Sentry.init(buildClientSentryConfig())` is called.
-- Check if `instrumentation.ts` exists and wires Sentry per `@henryco/observability/sentry/instrumentation`.
+### S2 — Structured logger replaces every server-side `console.*`
+The bar: **zero `console.log` / `console.error` in any server-side code path.** Replace with `@henryco/observability` `logger` (`logger.info` / `logger.error`, with `logger.child({ … })` for context) across:
+- `apps/*/app/api/**/route.ts` (API handlers)
+- `apps/*/app/**/actions.ts` and `apps/*/app/**/actions/*.ts` (server actions)
+- `apps/*/middleware.ts`
+- `apps/*/lib/**/*.ts` (server-side libs)
+- `packages/*/src/server/**/*.ts` (shared server code)
 
-For any app missing Sentry init, wire it. Use the existing `@henryco/observability` builders.
+Exception: one-time CLI scripts under `scripts/` may keep console output. Every `catch` logs at the appropriate level — no silently swallowed exceptions.
 
-### S2 — Logger adoption inventory
-
-For each mutating route (POST/PATCH/PUT/DELETE handlers in `app/api/**/route.ts`):
-- Verify structured log entries on entry, success, error paths.
-- Use `@henryco/observability` `logger`, not `console.log`.
-- Include redacted payload preview where safe.
-
-Grep `apps/*/app/api/**/route.ts` for `console.log` and replace with `logger.info`. Grep for `console.error` and replace with `logger.error`.
-
-### S3 — Event-emission per mutating route
-
-Every mutating route emits a `@henryco/observability/emitEvent` call with:
-- `name: 'henry.<domain>.<object>.<verb>'` per the existing taxonomy.
-- `actor` resolved from session.
-- `properties` with redacted operation details.
-
-Audit + extend. Build a script `scripts/v3/event-emission-audit.mjs` that lists every mutating route and whether it emits a typed event.
+### S3 — Typed event emission per mutating route
+Ship `scripts/v3/event-emission-audit.mjs` that enumerates every mutating route (POST/PATCH/PUT/DELETE handlers + mutating server actions) and reports whether each calls `emitEvent`. The bar: **100% of enumerated mutating routes emit a typed event AND log structured entries on entry/success/error.** The script is the source of truth for "every" — if it reports any route missing emission or logging, the pass is not closed. Each emit uses the real signature:
+```ts
+emitEvent({
+  name: 'henry.<domain>.<noun>.<verb>',   // HenryEventName, must exist in events.ts
+  classification: 'user_action' | 'system_state',
+  outcome: 'success' | 'failure',
+  actorId,                                  // resolved from session
+  payload,                                  // redacted operation details
+});
+```
 
 ### S4 — Degraded side-effect reporting
+Every mutating route with side effects (email send, notification publish, search-index outbox, webhook deliver) returns a `degraded` array of side effects that failed without failing the primary action — e.g. `{ ok: true, id, degraded: ['email_send_failed', 'notification_publish_failed'] }`. Reference implementation: `apps/account/app/api/support/create/route.ts`. Apply across all payment-touching routes, all KYC submission routes, all notification-publishing routes, and every webhook receiver that triggers downstream side effects. Every fallback path also emits a typed event so degraded conditions are observable.
 
-For every mutating route that has side effects (email send, notification publish, search-index outbox write, webhook deliver), the route response:
-- Includes a `degraded` field listing side effects that failed but didn't fail the primary action.
-- e.g., `{ ok: true, id: '...', degraded: ['email_send_failed', 'notification_publish_failed'] }`.
+### S5 — Fallback handling for external-service reads
+Every read that depends on an external service has a documented, non-crashing fallback that returns degraded results (empty list, cached value, or a localized "service unavailable" message) and emits a typed event. Cover:
+- Typesense `/api/search` → graceful empty results (per V2-SEARCH-01) or direct DB query.
+- Google Places `/api/addresses/autocomplete` → fall back to user-typed text with `verified: false`.
+- Cloudinary / Supabase Storage image fetch → placeholder asset.
+- Supabase Realtime → UI shows `reconnecting` with last-known state preserved.
+- Email (Resend/Brevo), push/SMS (OneSignal/Twilio/Termii) → `degraded` flag per S4; user-visible delivery state shows `pending`.
+- DeepL runtime translation → fall back to the source-locale string and emit `henry.i18n.deepl.fallback`.
+- Future payment-provider calls (V3-14/15/16) → localized "service temporarily unavailable" + retry.
+- Future AI-provider calls (V3-26) → deterministic version where one exists.
 
-The intelligence-rollout pattern (`apps/account/app/api/support/create/route.ts`) is the reference. Apply across:
-- All payment-touching routes.
-- All KYC submission routes.
-- All notification-publishing routes.
-- All webhook-receiving routes (where the receiver triggers downstream side effects).
+### S6 — Audit-log adoption on sensitive routes
+`@henryco/observability/audit-log` (server-only, DASH-9 `add_audit_log_v2`) writes on every sensitive-action route. Because V3-02 ships after this pass, V3-10 enumerates the initial sensitive-action set itself: all payment-touching routes (placeholder until V3-13), all KYC submission routes, all password/email-change routes, all session-revocation routes, all admin (owner/staff) action routes, all data-export routes. Entries record actor, action, target, ip, ua, outcome, timestamp; retention ≥ 1 year. V3-02 extends this list.
 
-### S5 — Fallback handling for read queries
+### S7 — Error boundary on every route segment
+Every Next.js route group has an `error.tsx` that renders a human-readable fallback with retry, logs via `@henryco/observability` `logger`, and reports to Sentry. The fallback inherits the locked design tokens + PASS 25 typography:
+- Centered card on `surface-base`; section label `SOMETHING WENT WRONG` (label token, uppercase, localized).
+- Headline (h2 token), short human sentence per locale — never a stack trace.
+- Two buttons: primary **Try again** (`reset()`), secondary **Go home** (`router.push('/')`).
+- Caption line `ref <id> — share with support if this repeats` when the logger returns a reference id; that id is sent to Sentry so support can match.
 
-Every read query that depends on an external service (Typesense, Google Places, Cloudinary, payment provider, AI provider — when these come online):
-- Has a documented fallback if the service is unavailable.
-- The fallback returns degraded results (empty list, cached value, or "service unavailable" message) without crashing the page.
-
-Audit each:
-- Typesense `/api/search` — fallback to direct DB query OR graceful empty results (currently graceful empty per V2-SEARCH-01).
-- Google Places `/api/addresses/autocomplete` — fallback to user-provided text with `verified: false` flag.
-- Cloudinary image load failures — fallback to placeholder.
-- Future payment provider calls (V3-14/15/16) — fallback to "service temporarily unavailable" with retry option.
-- Future AI provider calls (V3-26) — fallback to deterministic version where possible.
-
-### S6 — Audit log adoption
-
-`@henryco/observability/audit-log` (DASH-9 writer) is server-only. Audit:
-- Every sensitive-action route (extends V3-02 work) writes audit log entry.
-- Audit log entries include: actor, action, target, ip, ua, outcome, timestamp.
-- Retention period: 1 year minimum.
-
-### S7 — Error boundaries on every route segment
-
-Every Next.js route group has an `error.tsx`:
-- Renders a human-readable fallback with retry option.
-- Logs the error via `@henryco/observability/logger`.
-- Sends to Sentry.
-
-Audit each app's route tree; add missing `error.tsx`.
-
-### S8 — Health check endpoint
-
-Each web app has `/api/health` returning:
-- `{ ok: true, version: '<commit-sha>', deploy: '<vercel-deploy-id>', uptime_seconds: N }`.
-- Used by Vercel monitoring + future SLO tooling.
+### S8 — Health endpoint, including unhealthy paths
+Each app exposes `/api/health` built with `buildHealthResponse(...)` and `healthStatusCode(...)` from `@henryco/observability/health`. It verifies a lightweight Supabase `SELECT 1` and that critical env vars are present (without revealing values). Returns **200** only if all checks pass; **503** with a structured body listing failed checks otherwise. Vercel polling and future SLO tooling consume the 503 signal.
 
 ### S9 — Owner-workspace observability tile
-
-Extend the owner dashboard with:
-- "Error rate (last 24h)" — pulled from Sentry stats API or aggregated event log.
-- "Degraded side effects (last 24h)" — grouped by type.
-- "Slowest routes (last 24h)" — p95 latency.
-
-If V3-89 (observability depth) hasn't shipped, this is a basic version. V3-89 will extend.
-
----
+Extend the owner dashboard with a tile showing "Error rate (last 24h)", "Degraded side effects (last 24h)" grouped by type, and "Slowest routes (last 24h)" p95. **Data source = the `henry_events` table (the canonical sink), not the Sentry stats API** (which requires a paid tier the project may not have). Follow the existing owner-tile server-action pattern (session-health-tile from V3-01). All strings localized via `@henryco/i18n` namespace `surface:owner-observability`. V3-89 extends this to traces/SLOs.
 
 ## Out of scope
-
-- Performance budget enforcement on PR (V3-89).
-- Distributed traces / OpenTelemetry (V3-89).
-- SLO definitions (V3-89).
-- Data lake / event tracking depth (V3-90).
-- A/B testing framework (V3-91).
-
----
-
-## V3-10 ADDENDUM — clarifications, applied before execution
-
-### A1. Rollback trigger threshold (MUST-FIX)
-
-During the 72-hour soak, if any of the following are true, revert and re-author:
-- Unhandled exception rate per 1000 requests rises more than 2x the pre-merge baseline (captured the day before deploy).
-- Any single new typed event emits at a rate >10x its expected order of magnitude (suggests an emit loop).
-- p95 server-response time on any of the top-10 routes degrades by more than 25%.
-
-Baseline numbers are captured by the executor in the pre-deploy step and pasted into the report.
-
-### A2. S6 dependency resolution (MUST-FIX)
-
-V3-02 (auth reliability) ships AFTER V3-10. Therefore V3-10 enumerates the initial sensitive-action route list itself:
-- All payment-touching routes (placeholder until V3-13).
-- All KYC submission routes.
-- All password/email change routes.
-- All session-revocation routes.
-- All admin-action routes (owner/staff dashboards).
-- All export-data routes.
-
-V3-02 will extend this list; V3-10 establishes the pattern and covers what already exists today.
-
-### A3. S2 grep scope expansion (MUST-FIX)
-
-Replace `console.*` with structured logger across:
-- `apps/*/app/api/**/route.ts` (API handlers).
-- `apps/*/app/**/actions.ts` (server actions).
-- `apps/*/app/**/actions/*.ts` (server actions, grouped).
-- `apps/*/middleware.ts` (middleware).
-- `apps/*/lib/**/*.ts` (server-side libs).
-- `packages/*/src/server/**/*.ts` (shared server code).
-
-The bar: zero `console.log` / `console.error` in any server-side code path. The exception is one-time CLI scripts under `scripts/`, which may keep console output.
-
-### A4. Mutating-route coverage bar (MUST-FIX)
-
-`>= 50 routes` is replaced with: `100% of mutating routes enumerated by scripts/v3/event-emission-audit.mjs emit a typed event AND log structured entries on entry/success/error.`
-
-The audit script is the source of truth for `every`. If the script reports any route missing emission or logging, the pass is not closed.
-
-### A5. S5 fallback list (MUST-FIX, completion)
-
-Extend S5 to also cover:
-- Resend / Brevo (email send) — degraded flag on the response per S4.
-- Supabase Realtime — UI shows `reconnecting` with last known state preserved.
-- Supabase Storage (image/file fetch) — placeholder asset.
-- OneSignal / Twilio / Termii (push, SMS) — degraded flag on the response; user-visible delivery state shows `pending`.
-- DeepL runtime translation — fall back to the source-locale string and emit `henry.i18n.deepl_fallback` event.
-
-Every fallback path emits a typed event so degraded conditions are observable.
-
-### A6. Health endpoint unhealthy paths (MUST-FIX)
-
-`/api/health` checks must verify:
-- Supabase connection (lightweight `SELECT 1`).
-- Critical env vars present (without revealing values).
-
-Returns 200 only if all checks pass. Returns 503 with a structured body listing failed checks otherwise. Vercel health-check polling and any future SLO tooling consume the 503 signal.
-
-### A7. Anti-patterns (MUST-FIX, add to prompt)
-
-- Do not log session tokens, refresh tokens, or auth headers.
-- Do not log full request bodies for payment or KYC routes.
-- Do not introduce a second logging library; use `@henryco/observability/logger` exclusively.
-- Do not silently swallow caught exceptions — every catch logs at appropriate level.
-- Do not write to Sentry from client code without PII filtering active.
-- Do not skip the redaction utility when logging objects that may contain user data.
-
-### A8. Error.tsx visual specification (SHOULD-FIX)
-
-The error boundary fallback inherits Pass 19 tokens + Pass 20 polish + Pass 25 typography. Layout:
-- Centered card on `surface-base`.
-- Section label `SOMETHING WENT WRONG` (label token, uppercase).
-- Headline using h2 token: a short human sentence per locale.
-- Body in body-sm: brief explanation, not a stack trace.
-- Two buttons: primary `Try again` (calls `reset()`), secondary `Go home` (`router.push('/')`).
-- Reference ID line in caption token if logger returns one: `ref <id> — share with support if this repeats`.
-- Reference ID is logged to Sentry too so support can match.
-
-### A9. Cross-Wave-B.1 merge coordination (MUST-FIX)
-
-V3-07 (hardcoded text), V3-09 (mobile consistency), and V3-10 all touch `error.tsx` files and mutating-route code. The conductor's merge order for Wave B.1 must be:
-
-1. V3-10
-2. V3-07
-3. V3-09
-4. V3-03
-5. V3-05
-
-V3-10 lands first because it establishes the `error.tsx` pattern that V3-07 then extracts strings from. V3-09's mobile work comes after the visual pattern is set. V3-03 and V3-05 have lower file overlap and land last.
-
-If any merge produces conflicts in `error.tsx` or shared logger calls, the conductor re-spawns a follow-up agent per the standard protocol.
-
-### A10. Owner observability tile (SHOULD-FIX)
-
-Use the aggregated event log as the data source for the tile, not the Sentry stats API. Reasons: Sentry stats API requires a paid plan tier and the project may not have it; the `henry_events` table is already the canonical event sink (per V3-01 slice 5b). Query pattern follows existing owner-tile server actions (e.g., session-health-tile from V3-01). All tile strings localized via `@henryco/i18n` namespace `surface:owner-observability`.
-
----
+- PR performance-budget enforcement, OpenTelemetry traces, SLO definitions → V3-89.
+- Data-lake / event-tracking depth → V3-90. A/B framework → V3-91.
 
 ## Dependencies
-
-- Phase A audit complete.
-
-Blocks:
-- V3-43 (workflow engine foundation) — assumes structured logs + events from every route.
-- V3-89 (observability depth) — extends this baseline.
-
----
+None upstream (V3-02 ships after and extends S6). Blocks: V3-43 (workflow engine assumes structured logs + typed events on every route) and V3-89 (extends this baseline into traces/SLOs/budgets).
 
 ## Inheritance
-
-- `@henryco/observability` package — extend adoption, don't fork.
-- DASH-9 `add_audit_log_v2` Supabase function — use for sensitive-action logging.
-- Existing event taxonomy in `@henryco/intelligence` — preserve.
-
----
+- `@henryco/observability` — `logger`, `emitEvent`, `persistEvent`, `audit-log`, `redaction`, `health`, `sentry/*`. Extend adoption; do not fork.
+- DASH-9 `add_audit_log_v2` Supabase function — for sensitive-action logging.
+- Existing `HenryEventName` taxonomy in `events.ts` — preserve and extend with the new names.
 
 ## Implementation requirements
 
 ### Files
-
 - `scripts/v3/event-emission-audit.mjs` (new)
 - `scripts/v3/sentry-adoption-audit.mjs` (new)
-- Per-app fixes for missing Sentry init / missing logger usage / missing event emission
-- Per-route fixes for degraded side-effect reporting
-- `apps/<app>/app/api/health/route.ts` (new — 10 apps; copy/paste pattern)
+- Per-app: missing `Sentry.init` / `instrumentation.ts`, `console.*` → `logger`, missing `emitEvent`, degraded-side-effect reporting.
+- `apps/<app>/app/api/health/route.ts` (new where missing — 10 apps, one pattern)
 - `apps/<app>/app/error.tsx` (new where missing)
-- `apps/hub/app/owner/(command)/dashboard/observability-tile.tsx` (new — V3-89 extends)
+- Owner observability tile under the hub owner workspace.
+- No migrations (the audit-log function and `henry_events` sink already exist).
 
-### No migrations.
+### Trust / safety / compliance
+PII redaction enforced via `@henryco/observability/redaction`. Never log passwords, tokens, auth headers, full payment bodies, or full KYC bodies. Sentry drops irrelevant events; client Sentry never emits without PII filtering. ANTI-CLONE P12 — full audit-log adoption on sensitive routes.
 
-### Integration changes
+### Mobile + desktop parity
+Server-side observability applies equally. Client-side Sentry verified on mobile web. The `error.tsx` fallback is responsive (mobile + desktop) and inherits the locked tokens.
 
-- Sentry projects per Vercel deploy (owner provisions DSN env vars per app if not already present).
+### i18n
+Error-page copy via `@henryco/i18n` namespace `surface:error`; owner tile via `surface:owner-observability`; degraded user-visible states ("pending", "reconnecting", "service unavailable") localized. No hardcoded user-facing strings.
 
----
-
-## Trust / safety / compliance
-
-- PII redaction enforced (already in `@henryco/observability/redaction`).
-- Logs never include passwords, tokens, full credit card numbers.
-- Sentry filtering rules to drop irrelevant events.
-- ANTI-CLONE Principle 12 — full audit log adoption.
-
-## Mobile + desktop parity
-
-- Server-side observability applies equally.
-- Client-side Sentry on mobile web verified.
-
-## i18n
-
-- Error page copy via `@henryco/i18n` namespace `surface:error`.
-
----
+### Brand & design system
+The `error.tsx` fallback and owner tile use locked `--site-*` / `--accent` tokens + Fraunces display where editorial; light + dark; CLS ≈ 0; contrast not regressed. Brand strings resolve from `@henryco/config`; zero hardcoded domains (`henryDomain()` / `henryWebRoot()` / `getHubUrl()`).
 
 ## Validation gates
+1. Standard CI: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`.
+2. Sentry-adoption audit: `Sentry.init` present in all 10 apps.
+3. Event-emission audit: 100% of mutating routes emit a typed event and log entry/success/error — script reports zero gaps.
+4. Health: `/api/health` returns 200 on all 10 apps when healthy and 503 with a structured failed-checks body when a dependency is down.
+5. Error-boundary smoke: trigger an intentional error → `error.tsx` renders, Sentry receives the event, logger emits a structured line with a ref id.
+6. Degraded smoke: simulate email-send failure on support-thread create → `degraded: ['email_send_failed']` returns to the client and a typed event emits.
 
-1. Standard CI.
-2. **Adoption audit** — Sentry init present in all 10 apps.
-3. **Event emission** — every mutating route emits a typed event (audit-script enforced).
-4. **Health endpoint** — 10/10 apps return 200 from `/api/health`.
-5. **Error boundary smoke** — trigger an intentional error; verify error.tsx renders + Sentry receives the event + logger emits structured log.
-6. **Degraded smoke** — simulate email-send failure on support thread create; verify `degraded: ['email_send_failed']` returns to client.
+### Rollback trigger threshold (soak)
+During the 72-hour soak, revert and re-author if any holds: unhandled-exception rate per 1000 requests rises >2× the pre-merge baseline; any single new typed event emits at >10× its expected order of magnitude (emit loop); p95 server response on any top-10 route degrades >25%. The executor captures pre-deploy baselines and pastes them into the report.
 
 ## Deployment gate
-
-- All gates pass.
-- 72-hour soak; baseline error rate captured.
+All gates green. 72-hour soak with the rollback thresholds above armed; pre-merge baseline error rate captured. Wave-B.1 merge order is V3-10 → V3-07 → V3-09 → V3-03 → V3-05 (V3-10 lands first because it establishes the `error.tsx` pattern V3-07 then extracts strings from); the conductor re-spawns a follow-up agent on any `error.tsx` or shared-logger conflict.
 
 ## Final report contract
-
-`.codex-temp/v3-10-logs-states-fallbacks/report.md` with the standard 9 sections + Sentry adoption matrix + event emission audit + degraded side-effect reference.
-
----
+`.codex-temp/v3-10-logs-states-fallbacks/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion), plus the Sentry adoption matrix, the event-emission audit output, and the degraded-side-effect reference table.
 
 ## Self-verification
-
-- [ ] Sentry init in all 10 web apps.
-- [ ] Structured logger replaces console.* in all mutating routes.
-- [ ] Every mutating route emits typed event.
-- [ ] Degraded side-effect reporting pattern applied to ≥ 50 routes.
-- [ ] Every external-service read has fallback.
-- [ ] Audit log adoption verified on sensitive routes.
-- [ ] Error boundaries on every route group.
-- [ ] Health endpoint in every app.
-- [ ] Owner observability tile rendering.
-- [ ] Report written. Hand-off: V3-43 (workflow engine foundation) consumes this.
+- [ ] S1: `sentry-adoption-audit.mjs` shipped; `Sentry.init` present in all 10 apps; client PII filtering active.
+- [ ] S2: zero server-side `console.*` across the enumerated paths; every catch logs.
+- [ ] S3: `event-emission-audit.mjs` reports 100% mutating-route emission + structured logging.
+- [ ] S4: degraded-side-effect `degraded[]` returned on every side-effecting mutating route.
+- [ ] S5: every external-service read has a documented, event-emitting fallback (incl. `henry.i18n.deepl.fallback`).
+- [ ] S6: audit-log written on every enumerated sensitive-action route.
+- [ ] S7: `error.tsx` present on every route segment, token-correct, localized, Sentry-wired.
+- [ ] S8: `/api/health` returns 200/503 correctly on all 10 apps.
+- [ ] S9: owner observability tile renders from `henry_events`, fully localized.
+- [ ] Brand/domain/i18n/token hard rules satisfied; rollback thresholds documented; report written and hands off to V3-43.

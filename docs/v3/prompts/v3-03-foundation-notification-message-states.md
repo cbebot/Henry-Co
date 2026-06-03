@@ -1,23 +1,15 @@
-# V3-03 — Foundation: Notification & Message States
+# V3-03 — Foundation Lock: Notification & Message States
 
-**Pass ID:** V3-03
-**Phase:** B (FOUNDATION LOCK)
-**Pillar:** P3 (Personalisation), P12 (Global)
-**Dependencies:** Phase A audit
-**Effort:** L (2–4 weeks)
-**Parallel-safe:** YES (with V3-01, V3-05, V3-07, V3-09, V3-10)
-**Owner gate:** None
-**Risk class:** None
+> **STATUS: SHIPPED — PR #131.** Merged and certified on `main` within the Phase B Foundation Lock (CERTIFIED at V3-12, PR #168). The message-level read-state columns, the sent/delivered/seen delivery-state machine, the redelivery cron, and the unified notification bell are live. This document is the elevated canonical spec and closure record. Anything still open is named under **Deferred / residual**.
+
+**Pass ID:** V3-03  ·  **Phase:** B (Foundation Lock)  ·  **Pillar:** P3 (Personalization), P12 (Global)
+**Dependencies:** —  ·  **Effort:** L  ·  **Parallel-safe:** Y (with V3-01, V3-05, V3-07, V3-09, V3-10)
+**Owner gate:** none  ·  **Risk class:** —
 
 ---
 
 ## Role
-
-You are the V3 Foundation engineer for HenryCo. You execute exactly this one pass, then stop and report.
-
-This pass closes the **notification & message states** sub-bar of FOUNDATION LOCK. The owner's most-cited gap (per PRODUCT-GAP-LEDGER) is that support thread + support message unread state is fake — only notifications carry `is_read`/`read_at`. This pass makes message-level state real, adds a delivery-state machine, and unifies the notification badge-count behavior across surfaces.
-
----
+You are the V3 Foundation engineer for Henry Onyx. You execute exactly this one pass, then stop and report. This pass closes the **notification & message states** sub-bar of Foundation Lock. The owner's most-cited gap: support-thread and support-message unread state is *fake* — only `customer_notifications` / `staff_notifications` carry `is_read`/`read_at`; the shared `support_threads` / `support_messages` tables do not. This pass makes message-level read state real, adds a `sent → delivered → seen → failed` delivery-state machine, retries transient in-app delivery, and unifies the notification badge across every shell. The line you must not cross: no new notification taxonomy, no authoring tool, no mobile push (those are later passes), and RLS must make it impossible to mark another user's message as read.
 
 ## Project
 
@@ -26,163 +18,57 @@ This pass closes the **notification & message states** sub-bar of FOUNDATION LOC
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
 | Working branch | `v3/03-notification-message-states` |
-| Deploy | Vercel (10 web projects) |
-| Backend | Supabase |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
----
+Branch off `origin/main` after a parallel-session check.
 
-## Audit summary (lifted from AUDIT-BASELINE.md §3.3 + §2.2 + PRODUCT-GAP-LEDGER)
+## Audit summary
+The customer + staff notification audience model is solid, with Supabase Realtime publication on the notification tables. The critical gap: `support_threads` and `support_messages` carry no `is_read`/`read_at`, so message-level unread state is fabricated in the UI — only notification-level unread persistence is real. Three further gaps: no delivery-state machine (sent/delivered/seen) exists in the WhatsApp-ledger sense; in-app (Realtime) delivery has no retry on transient failure (only email has the fallback cron); and the notification bell is wired inconsistently — six division shells still lack it. A separate audit finding recorded 409 `customer_notifications` rows pointing at legacy `/care?booking=%` URLs. This pass adds real per-message read state + denormalized thread unread counts (trigger-maintained), the delivery-state machine across messages and both notification tables, a Realtime-redelivery cron, the unified bell, read-receipt UI in `@henryco/messaging-thread`, and the owner-gated legacy-link backfill script. The notification-health tile it ships is consumed by V3-08 (empty-dashboard truth).
 
-> ### 3.3 Notifications & message states
-> - **Solid:** customer + staff notification audience model
-> - **Solid:** Realtime via Supabase publication on notification tables
-> - **CRITICAL GAP (PRODUCT-GAP-LEDGER):** `support_threads` + `support_messages` have NO `is_read`/`read_at` — message-level unread state is fake; only thread-level is real
-> - **CRITICAL GAP (PRODUCT-GAP-LEDGER 2026-04-09):** 409 customer_notifications referenced legacy `/care?booking=%` URLs at time of audit
-> - **Gap:** delivery state machine (sent/delivered/seen) per WhatsApp-style ledger not modeled
-> - **Gap:** notification retry on transient failure verified for email, not modeled for in-app delivery
+## Mandatory scope
 
-From PRODUCT-GAP-LEDGER §"Confirmed Functionality Gaps":
+### S1 — Message-level read state on `support_messages` + `support_threads`
+Add to `support_messages`: `is_read BOOLEAN NOT NULL DEFAULT FALSE`, `read_at TIMESTAMPTZ`, `read_by UUID` (which staff member marked read). Add to `support_threads`: `last_read_message_id UUID`, `last_staff_read_message_id UUID`, `unread_count_customer INTEGER NOT NULL DEFAULT 0`, `unread_count_staff INTEGER NOT NULL DEFAULT 0` (denormalized caches, trigger-maintained). RLS: a customer may update `is_read`/`read_at` only on their own thread's messages; staff may update only on threads they access via `is_staff_in()`. Backfill: set `is_read = true` for a user's own outbound messages, `is_read = false` for inbound, capped to the last 30 days per thread to avoid badge spam.
 
-> Support thread and support message unread state is still not real. The shared tables `support_threads` and `support_messages` do not carry `is_read` or `read_at`. Notifications do carry `is_read` and `read_at`, so only notification unread persistence is real today.
+### S2 — Delivery-state machine
+Add `delivery_state TEXT NOT NULL DEFAULT 'sent' CHECK (delivery_state IN ('sent','delivered','seen','failed'))` to `support_messages`, `customer_notifications`, and `staff_notifications`. Transitions: insert → `sent`; Realtime push acknowledged (publisher writes back via `notification_delivery_log`) → `delivered`; recipient reads (`is_read = true`) → `seen` + `read_at`; permanent failure (e.g. Resend hard bounce on email fallback) → `failed`. UI: a subtle delivery pip in the messaging thread (single tick = sent, double = delivered, double-blue = seen).
 
----
+### S3 — In-app redelivery on transient failure
+New cron `apps/account/app/api/cron/notification-redelivery/route.ts` on Vercel schedule `*/5 * * * *` (declared in `apps/account/vercel.json`), `CRON_SECRET`-gated fail-closed. It finds notifications still `sent` with `created_at > now() - 1 hour`, re-publishes via the Realtime channel, falls back to email after 1 hour if the user has email-fallback enabled, and marks `failed` after 24 hours. Email retry stays in the existing email-fallback cron.
 
-## Mandatory scope (what is in)
+### S4 — Legacy `/care?booking=` notification backfill (owner-gated apply)
+Implements the rewrite path for the 409 legacy notifications. Script `scripts/v3/notification-link-backfill.mjs`: read-only by default; finds `customer_notifications.action_url` matching legacy patterns (`/care?booking=%` and any siblings discovered during the run); rewrites to the current route format using the typed deep-link builders (`/care/bookings/<bookingId>` via the `@henryco/seo` builder, never string concat); dry-run prints count + samples; apply mode is gated by `OWNER_OK=true` + `--apply` and runs UPDATEs in batches of 100 with progress logging; idempotent and safe to re-run. The "rewrite vs accept" decision is owner-owned — V3-04 carries the forward-going enforcement; this script is the one-time remediation.
 
-### S1 — Message-level read state on `support_messages`
+### S5 — Unified notification bell
+Wire `@henryco/notifications-ui` `<NotificationBell />` into the six division shells still missing it (per the backlog E1 inventory: the gaps among care, jobs, learn, logistics, marketplace, property, studio shells + the hub owner workspace). The badge count = unread `customer_notifications` for customers, unread `staff_notifications` for staff; it updates live over the existing Realtime subscription and respects category mutes from `notification_signal_preferences`.
 
-Add columns:
-- `is_read BOOLEAN NOT NULL DEFAULT FALSE`
-- `read_at TIMESTAMPTZ`
-- `read_by UUID` — for staff messages, which staff member marked read
-
-Add columns to `support_threads`:
-- `last_read_message_id UUID REFERENCES support_messages(id)` — pointer to latest read message per the thread owner
-- `last_staff_read_message_id UUID` — pointer for staff-side
-- `unread_count_customer INTEGER` — denormalized cache, maintained by trigger
-- `unread_count_staff INTEGER` — denormalized cache, maintained by trigger
-
-Migration: `apps/hub/supabase/migrations/2026XXXXNNNNN_support_message_read_state.sql`. RLS policies:
-- Customer can update `is_read`/`read_at` on their own thread's messages only.
-- Staff can update on threads they have access to per `is_staff_in()`.
-- Triggers maintain `support_threads.unread_count_*` on insert/update of `support_messages`.
-
-Backfill: existing `support_messages` set `is_read=true` for messages sent by the user themselves (their own outbound is "read"); set `is_read=false` for inbound messages — but cap the "unread" at the last 30 days per thread to avoid badge spam.
-
-### S2 — Delivery state machine
-
-New column `delivery_state` on `support_messages` (NULL if not applicable):
-- `'sent'` — server has accepted the message
-- `'delivered'` — the recipient's notification was delivered (in-app realtime OR email-fallback successful)
-- `'seen'` — recipient has read the message (`is_read = true`)
-- `'failed'` — delivery failed permanently
-
-Same column added to `customer_notifications` and `staff_notifications`.
-
-Triggers/code:
-- On insert, `delivery_state = 'sent'`.
-- On Realtime push, `delivery_state = 'delivered'` (the publisher writes back via the notification-delivery-log table).
-- On read, `delivery_state = 'seen'` + `read_at` set.
-- On email-fallback delivery failure (Resend hard bounce), `delivery_state = 'failed'`.
-
-UI: subtle delivery state pip in messaging-thread (single tick = sent, double tick = delivered, double-tick-blue = seen) — WhatsApp-style.
-
-### S3 — Notification retry on transient failure
-
-Existing email-fallback cron handles email delivery retry. Extend to in-app:
-
-- If a Supabase Realtime push fails for a connected client (rare, but happens), the notification-delivery-log table records the failure.
-- A new cron `apps/account/app/api/cron/notification-redelivery/route.ts` runs every 5 minutes:
-  - Finds notifications where `delivery_state = 'sent'` and `created_at > now() - 1 hour`.
-  - Re-publishes via Realtime channel.
-  - After 1 hour with no delivery, falls back to email if user has email-fallback preference enabled.
-  - After 24 hours, marks as `'failed'`.
-
-### S4 — Legacy /care?booking= notification backfill
-
-Per PRODUCT-GAP-LEDGER 2026-04-09: 409 customer_notifications referenced `/care?booking=%` URLs at audit. Owner decision required: rewrite or accept.
-
-This pass implements the rewrite path:
-- Migration script `scripts/v3/notification-link-backfill.mjs` — finds notifications matching legacy patterns, rewrites to current route format (`/care/bookings/<bookingId>`).
-- Dry-run mode (default) outputs count + sample.
-- Apply mode requires `OWNER_OK=true` env var + `--apply` flag.
-- Idempotent — safe to re-run.
-
-### S5 — Notification badge unified
-
-The notification bell in every shell (currently inconsistent per V3-BACKLOG E1) renders:
-- Count = sum of unread `customer_notifications` for customer; unread `staff_notifications` for staff role.
-- Updates live via existing Realtime subscription.
-- Badge respects category mute preferences from `notification_signal_preferences`.
-
-Wire `@henryco/notifications-ui` bell into the 6 division shells still missing it (per V3-BACKLOG E1):
-- hub owner workspace
-- care, jobs, learn, logistics, marketplace, property, studio shells (the wired ones from V2 + the gaps from E1)
-
-### S6 — Message-thread read receipts UI
-
-In `@henryco/messaging-thread` (existing extracted package):
-- Show delivery state pip per outbound message.
-- Mark inbound message as `read` when scrolled into view (IntersectionObserver).
-- Auto-update `last_read_message_id` on the thread.
-- Unread divider rendered above the first unread message ("New" line).
-- Scroll-to-first-unread on thread open.
+### S6 — Read-receipt UI in `@henryco/messaging-thread`
+Render the delivery pip per outbound message; mark inbound messages read when scrolled into view (IntersectionObserver) and advance `last_read_message_id`; render a "New" divider above the first unread message; scroll-to-first-unread on thread open.
 
 ### S7 — Telemetry
-
-Add events:
-- `henry.notification.delivered`
-- `henry.notification.read`
-- `henry.notification.failed`
-- `henry.message.delivered`
-- `henry.message.read`
-- `henry.message.failed`
-
-Owner-workspace tile: "Notification health" — daily delivery success rate, average sent-to-read time, failure breakdown.
-
----
+Emit via `@henryco/observability`: `henry.notification.delivered`, `henry.notification.read`, `henry.notification.failed`, `henry.message.delivered`, `henry.message.read`, `henry.message.failed`. Ship an owner-workspace "Notification health" tile: daily delivery success rate, average sent-to-read time, failure breakdown.
 
 ## Out of scope
-
-- Notification authoring tool (V3-46 owner reports + V3-48 campaigns).
-- Push notifications to mobile (V3-87 + V3-88).
-- Per-user delivery preference UI redesign (existing `notification-preferences` UI preserved).
-- New notification categories (existing taxonomy preserved).
-
----
+- Notification authoring tool — V3-46 / V3-48.
+- Mobile push — V3-87 / V3-88.
+- Delivery-preference UI redesign + new categories (existing preserved).
 
 ## Dependencies
-
-- Phase A audit complete.
-
-Blocks:
-- V3-08 (empty dashboard truth) — the notification health tile is a dashboard module.
-- V3-37 (abandoned-task recovery) — relies on delivery state for retry decisions.
-- V3-45 (auto-remind) — relies on delivery state for retry.
-- V3-87 (mobile parity) — mobile read-receipt UI mirrors web.
-
----
+Depends on: Phase A audit. Blocks: **V3-08** (consumes the notification-health tile), **V3-37** (abandoned-task recovery uses delivery state for retry), **V3-45** (auto-remind uses delivery state), **V3-87** (mobile read-receipt UI mirrors web).
 
 ## Inheritance
-
-- `@henryco/notifications`, `@henryco/notifications-ui` — extend.
-- `@henryco/messaging-thread` — extend.
-- `customer_notifications`, `staff_notifications`, `support_threads`, `support_messages` — extend with new columns + triggers.
-- Supabase Realtime publication (`20260501130000_notification_realtime_publication.sql`) — extend to publish `delivery_state` changes.
-- `notification_delivery_log` (existing) — extend tracking.
-- Email-fallback cron — extend with new redelivery cron.
-
----
+`@henryco/notifications`, `@henryco/notifications-ui`, `@henryco/messaging-thread` (extend) · the `support_threads` / `support_messages` / `customer_notifications` / `staff_notifications` tables (extend with columns + triggers) · the existing notification Realtime publication (extend to publish `delivery_state`) · `notification_delivery_log` (extend) · the email-fallback cron · `@henryco/seo` deep-link builders for S4 rewrites · `@henryco/config` domain helpers for any URL.
 
 ## Implementation requirements
 
-### Migration
+### Files
+Migration `apps/hub/supabase/migrations/<ts>_support_message_read_state.sql` (columns + indexes + unread-count trigger + RLS). Backfill `scripts/v3/notification-link-backfill.mjs`. `packages/notifications/src/` (publisher sets `delivery_state='sent'`, writes `notification_delivery_log` on Realtime ack). `packages/notifications-ui/src/` (live-unread bell + mute logic). `packages/messaging-thread/src/` (pip, IntersectionObserver read-marking, "New" divider). Cron `apps/account/app/api/cron/notification-redelivery/route.ts` + `apps/account/vercel.json` entry. Per-app: `<NotificationBell />` in the six missing shells. Owner tile `apps/hub/app/owner/(command)/dashboard/notification-health-tile.tsx`.
 
-`apps/hub/supabase/migrations/2026XXXXNNNNN_message_read_state.sql`:
-
+### Migration (the load-bearing shape)
 ```sql
--- support_messages read state
 ALTER TABLE support_messages
   ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS read_at TIMESTAMPTZ,
@@ -199,130 +85,60 @@ ALTER TABLE support_threads
   ADD COLUMN IF NOT EXISTS unread_count_customer INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS unread_count_staff INTEGER NOT NULL DEFAULT 0;
 
--- customer_notifications + staff_notifications delivery_state
 ALTER TABLE customer_notifications
   ADD COLUMN IF NOT EXISTS delivery_state TEXT NOT NULL DEFAULT 'sent'
     CHECK (delivery_state IN ('sent','delivered','seen','failed'));
-
 ALTER TABLE staff_notifications
   ADD COLUMN IF NOT EXISTS delivery_state TEXT NOT NULL DEFAULT 'sent'
     CHECK (delivery_state IN ('sent','delivered','seen','failed'));
 
--- Triggers for unread_count denormalization (idempotent)
+-- Trigger maintains support_threads.unread_count_* on message insert/read-flip
 CREATE OR REPLACE FUNCTION update_thread_unread_counts()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Logic to update support_threads.unread_count_customer and unread_count_staff
-  -- based on insert/update of support_messages
-  -- (Full implementation in the migration file)
+RETURNS TRIGGER AS $$ BEGIN
+  -- recompute unread_count_customer / unread_count_staff for NEW.thread_id
   RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+END; $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TRIGGER trigger_support_messages_unread_count
   AFTER INSERT OR UPDATE OF is_read ON support_messages
   FOR EACH ROW EXECUTE FUNCTION update_thread_unread_counts();
 
--- RLS policies for update permissions on is_read
--- (Customer can update their own thread's message read state;
---  staff can update on threads they have access to per is_staff_in())
+-- RLS: customer updates is_read on own thread's messages; staff via is_staff_in()
 ```
 
-### Backfill script
+### Trust / safety / compliance
+`read_at` is personal data under NDPR/GDPR — respect the existing 30-day customer-notification purge. RLS strictly enforced: a user cannot mark another user's message read (test with customer/staff/owner contexts). Delivery-state changes audit-logged via `@henryco/observability/audit-log`. The backfill script is internally rate-limited and never reachable from a public endpoint.
 
-`scripts/v3/notification-link-backfill.mjs`:
-- Connects to Supabase (read-only by default).
-- Finds `customer_notifications` matching legacy URL patterns (`/care?booking=%`, others discovered during audit).
-- Generates rewrite mapping (legacy → current).
-- Dry-run reports count + samples.
-- Apply mode (gated by `OWNER_OK=true --apply`) executes UPDATE in batches of 100 with progress logging.
-- Idempotent.
+### Mobile + desktop parity
+Web: full S1–S7. The `@henryco/messaging-thread` read-receipt interface is built so it compiles for the Expo super-app chat surfaces (native wiring deferred to V3-87, but the package contract works on Expo).
 
-### Package changes
+### i18n
+New strings (pip tooltips, "New" divider, badge labels) flow through `@henryco/i18n` under `surface:notification-message`. Populate en-US; runtime DeepL fills the other 11 locales. No hardcoded user-facing text.
 
-`packages/notifications/src/`:
-- Extend publisher to set `delivery_state = 'sent'`.
-- Extend `publishCustomerNotification` to write to `notification_delivery_log` on successful Realtime push.
-
-`packages/notifications-ui/src/`:
-- Bell badge subscribes to live unread count.
-- Mute-category logic applied.
-
-`packages/messaging-thread/src/`:
-- Add delivery pip component.
-- Add IntersectionObserver for scroll-into-view read-marking.
-- Add "New" divider above first unread message.
-
-### New cron
-
-`apps/account/app/api/cron/notification-redelivery/route.ts`:
-- Vercel cron `*/5 * * * *` (every 5 min) in `apps/account/vercel.json`.
-- Requires `CRON_SECRET` per existing convention (fail-closed).
-- Logic per S3.
-
-### Per-app wiring
-
-The 6 division shells missing notifications-ui bell (per V3-BACKLOG E1):
-- Wire `<NotificationBell />` into each division's shell header.
-- Verify Realtime subscription mounts.
-
-### Owner-workspace tile
-
-`apps/hub/app/owner/(command)/dashboard/notification-health-tile.tsx`:
-- Shows delivery success rate (last 24h), average sent-to-read time, failure count.
-
----
-
-## Trust / safety / compliance
-
-- `read_at` is a personal data point per NDPR/GDPR; respect existing customer-notifications data-retention (30-day purge).
-- RLS strictly enforced: a user cannot mark another user's message as read.
-- Delivery state changes audit-logged at `@henryco/observability/audit-log` (already exists per DASH-9).
-- ANTI-CLONE: Principle 4 — backfill script is rate-limited internally; cannot be triggered from public endpoints.
-
-## Mobile + desktop parity
-
-- Web: full S1–S7.
-- Expo super-app: read-receipt UI mirrored in chat surfaces; deferred to V3-87 but design contract honored here so the package interface works on Expo.
-
-## i18n
-
-- New strings (delivery pip tooltips, "New" divider, badge count labels) go through `@henryco/i18n` namespace `surface:notification-message`.
-
----
+### Brand & design system
+Any user-facing brand string ("Henry Onyx") and division labels in tiles/bell come from `@henryco/config` — never hardcoded. The bell, pip, and health tile use locked tokens (`--site-*` / `--accent`, Fraunces for any display type), light + dark, mobile + desktop, CLS ≈ 0, contrast not regressed. All URLs via `@henryco/config` domain helpers and the `@henryco/seo` builders — zero literal domains.
 
 ## Validation gates
-
-1. Lint/typecheck/tests/build/i18n/a11y/PNH-04 — standard.
-2. RLS coverage: every new policy tested with three role contexts (customer, staff, owner).
-3. Migration runs idempotently on a staging clone.
-4. Backfill dry-run output reviewed by owner.
-5. Smoke verification:
-   - Send a support message; recipient sees delivery pip update sent → delivered → seen as they read.
-   - Bell badge updates in real-time when new message arrives.
-   - Mute a category; verify badge doesn't count muted notifications.
-   - Cron redelivers a "failed" Realtime push within 5 minutes.
+1. `pnpm lint` / `pnpm typecheck` / tests / `pnpm ci:validate` build / `pnpm i18n:check` / `pnpm a11y` / security-headers gate — all green. 2. RLS: every new policy tested under customer, staff, and owner contexts. 3. Migration runs idempotently on a staging clone. 4. Backfill dry-run output reviewed by the owner before any apply. 5. Smoke: send a support message → recipient's pip walks sent → delivered → seen as they read; bell badge updates live on new message; muting a category drops it from the count; the cron redelivers a stuck `sent` push within 5 minutes. 6. Real-browser light + dark + mobile + desktop on the bell + thread.
 
 ## Deployment gate
-
-- All gates pass.
-- Backfill apply-mode run only after owner explicit approval.
-- 48-hour soak after migration.
+All gates green; backfill apply-mode runs only after explicit owner approval; squash-merge to `main`; 48-hour soak after the migration with no delivery-failure spike.
 
 ## Final report contract
+`.codex-temp/v3-03-notification-message-states/report.md` with the standard 9 sections — exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification (48-h soak) · telemetry baseline (6 events) · deferred items · pass-closure assertion — plus the delivery-state-machine diagram and the backfill summary.
 
-`.codex-temp/v3-03-notification-message-states/report.md` with the standard 9 sections + delivery-state machine state diagram + backfill summary.
-
----
+## Deferred / residual (post-ship, this pass is merged)
+- Mobile push delivery + native read receipts → V3-87 / V3-88.
+- Operator-surface i18n completeness on notification copy → V3-07b.
 
 ## Self-verification
-
-- [ ] Migration applied; all new columns + triggers + indexes live.
-- [ ] `support_messages` carries real `is_read`/`read_at` everywhere.
-- [ ] Delivery state machine implemented + UI pip rendering.
-- [ ] Notification redelivery cron live + secret-gated.
-- [ ] Legacy /care?booking= notifications backfilled OR owner-deferred.
-- [ ] Bell wired in all 8 division shells + hub owner.
-- [ ] 6 new observability events emitting.
-- [ ] Owner-workspace notification-health tile rendering.
-- [ ] Report written. Hand-off named: V3-08 (empty dashboard truth) consumes the new health tile.
+- [ ] S1 migration live: `support_messages` carries real `is_read`/`read_at`/`read_by`; thread unread counts trigger-maintained; backfill capped to 30 days.
+- [ ] S2 delivery-state machine on messages + both notification tables; UI pip renders sent/delivered/seen.
+- [ ] S3 redelivery cron live, `CRON_SECRET`-gated, redelivers within 5 minutes and fails over to email after 1 hour.
+- [ ] S4 legacy `/care?booking=` notifications backfilled via typed builders (or owner-deferred); script idempotent + dry-run-first.
+- [ ] S5 bell wired in all six missing shells + hub owner; respects category mutes; updates live.
+- [ ] S6 read-receipt UI in `@henryco/messaging-thread` (pip, IntersectionObserver, "New" divider, scroll-to-first-unread).
+- [ ] S7 the 6 telemetry events emit; notification-health tile renders.
+- [ ] RLS proven: no user can mark another user's message read.
+- [ ] All new strings under `surface:notification-message`; brand + domains sourced from `@henryco/config`.
+- [ ] Report written; hand-off named: V3-08 (empty-dashboard truth) consumes the health tile.

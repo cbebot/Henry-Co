@@ -1,25 +1,15 @@
-# V3-02 — Foundation: Auth Reliability
+# V3-02 — Foundation Lock: Auth Reliability
 
-**Pass ID:** V3-02
-**Phase:** B (FOUNDATION LOCK)
-**Pillar:** P12 (Global, Mobile, Observability), P7 (Trust, Safety, Compliance)
-**Dependencies:** V3-01 (session persistence) must close first
-**Effort:** M (1–2 weeks)
-**Parallel-safe:** NO (depends on V3-01)
-**Owner gate:** None at start
-**Risk class:** Identity-touching
+> **STATUS: SHIPPED — PR #158** (hardening follow-up **V3-02b** shipped as **PR #163**). Merged and certified on `main` within the Phase B Foundation Lock (CERTIFIED at V3-12, PR #168). The auth-reliability primitives below are live: `@henryco/auth/server` `requireSensitiveAction` / `withSensitiveAction` / `evaluateSensitiveActionGuard` + rate limiter, `@henryco/auth/client` `logoutEverywhere` / `clearHenryCoStorage` / `fetchWithSensitiveAction` / `SensitiveActionModalProvider`, server `role-status.ts`, and the OAuth error/link-intent cookies. This document is the elevated canonical spec and closure record. Residual coverage tracked under **Deferred / residual** (V3-02b extended logout-everywhere to the remaining public shells and stages the sensitive-action guard for KYC/password-change/delete-account routes as each lands).
+
+**Pass ID:** V3-02  ·  **Phase:** B (Foundation Lock)  ·  **Pillar:** P12 (Global, Mobile, Observability), P7 (Trust, Safety, Compliance)
+**Dependencies:** V3-01  ·  **Effort:** M  ·  **Parallel-safe:** N (blocks on V3-01)
+**Owner gate:** none  ·  **Risk class:** Identity
 
 ---
 
 ## Role
-
-You are the V3 Foundation engineer for HenryCo. You execute exactly this one pass, then stop and report.
-
-This pass closes the **auth reliability** sub-bar of FOUNDATION LOCK. Authentication must be robust: OAuth UX is verified, logout is complete (clears everything), role chooser shows badge counts where useful, session-tampering defense is on every sensitive route, and KYC gating is consistent across the platform.
-
-You produce code, migrations (if needed), tests, and a final report.
-
----
+You are the V3 Foundation engineer for Henry Onyx. You execute exactly this one pass, then stop and report. This pass closes the **auth reliability** sub-bar of Foundation Lock: every OAuth path is verified, logout clears *everything*, the role chooser carries live badge counts, and a session-tampering / sensitive-action guard sits on every money- and identity-class route. Auth is the #1 trust surface — polish is trust. The line you must not cross: no new OAuth providers, no destructive shortcuts, no global reauth gate that breaks read-only browsing, and never `localStorage.clear()` (clear by HenryCo prefix only).
 
 ## Project
 
@@ -27,318 +17,93 @@ You produce code, migrations (if needed), tests, and a final report.
 |---|---|
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
-| Working branch for this pass | `v3/02-auth-reliability` |
-| Deploy | Vercel (10 web projects) |
-| Backend | Supabase (single project, multi-app) |
-| Auth | Supabase Auth via `@henryco/auth` |
-| OS context for executor | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Working branch | `v3/02-auth-reliability` |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
-Create branch from `main` after confirming V3-01 has merged.
+Branch off `origin/main` after confirming V3-01 has merged (a parallel-session check first — the tree is shared).
 
----
+## Audit summary
+`@henryco/auth` ships extracted helpers; Supabase Auth backs every flow with Resend → Brevo email fallback behind an HMAC-verified auth hook. V3-01 added the `hc_session_state` cookie, the multi-tab broadcast channel (`SESSION_CHANNEL_NAME`), and the `/auth/reauth` round-trip — this pass builds on all three. Four gaps remain: (1) OAuth (Google/Apple) is enabled in Supabase but the app-level UX and error paths are unverified; (2) logout is incomplete — it does not provably clear cookies, prefixed `localStorage`/`sessionStorage`, IndexedDB, or Service Worker caches across tabs; (3) the role chooser shows no per-role unread/pending/last-visited signal; (4) sensitive routes (wallet transfer, KYC, password change, account deletion, role change) have no consistent re-auth + cookie-integrity + audit guard. This pass closes all four and publishes the `requireSensitiveAction` contract that V3-14/15/16 payment-authorization routes will consume.
 
-## Audit summary (lifted from AUDIT-BASELINE.md §3.2)
-
-> ### 3.2 Auth reliability
-> - **Solid:** Resend → Brevo fallback for auth email; HMAC-verified auth hook
-> - **Solid:** `@henryco/auth` package with extracted helpers
-> - **Partial:** OAuth (Google/Apple/etc.) — Supabase has built-in but the app-level UX is unverified
-> - **Gap:** logout completeness — does logout clear all caches, all tabs, all stored drafts, all IndexedDB?
-> - **Gap:** role-chooser badge counts (V3-BACKLOG I1)
-> - **Gap:** session-tampering defense (signed-cookie check on sensitive paths)
-
-Owner anti-patterns to preserve from `feedback_*` memories:
-- Polish is trust — auth flows are the #1 trust surface.
-- Do not introduce destructive operations as shortcuts (no `git reset --hard` style auth fixes).
-
----
-
-## Mandatory scope (what is in)
+## Mandatory scope
 
 ### S1 — OAuth UX hardening
-
-Audit every OAuth path (Google, Apple, GitHub if enabled). For each:
-
-- Confirm Supabase Auth project has the provider enabled + correct redirect URLs.
-- Confirm the OAuth callback route (`apps/account/app/api/auth/callback/route.ts`) handles all error cases:
-  - User cancels in provider → redirect to `/auth/choose?error=cancelled&intent=oauth_cancel`
-  - Provider returns error → redirect to `/auth/choose?error=provider_error&detail=<sanitized>`
-  - Cookie set fails → fallback to magic-link path
-- Confirm OAuth account-linking behavior: signing in with Google when an email already exists with password-based auth must either auto-link (with consent) or surface a clear error.
-- UI: every OAuth button shows the provider name + their official mark per their brand guidelines.
-- After successful OAuth sign-in, the user lands at the role-aware redirect target (account customer → `/account`; staff → `/staffhq`; owner → `/owner`).
-
-Out of scope:
-- Adding NEW OAuth providers (only audit + harden existing).
-- Changing the auth chooser visual design (V3 PASS 25 ships typography polish; preserve).
+Audit every enabled OAuth provider (Google, Apple). Confirm Supabase has each provider + correct redirect URLs (built from `@henryco/config` domain helpers, never literals). Harden the callback at `apps/account/app/api/auth/callback/route.ts`: user-cancel → `/auth/choose?error=cancelled&intent=oauth_cancel`; provider error → `/auth/choose?error=provider_error&detail=<sanitized>`; cookie-set failure → magic-link fallback. Account-linking: signing in with Google against an existing password account either auto-links with consent or surfaces a clear error (state carried in `oauth-link-intent` cookie). Each OAuth button shows the provider's official mark per brand guidelines. Post-success lands at the role-aware target (customer → account home, staff → staff HQ via `getStaffHqUrl()`, owner → owner workspace via `getHqUrl()`). Out of scope: adding new providers; restyling the chooser.
 
 ### S2 — Logout completeness
+`packages/auth/src/client/logout-everywhere.ts` (`logoutEverywhere`) calls `supabase.auth.signOut()`, then `clearHenryCoStorage()` (`clear-henryco-storage.ts`, driven by the `known-storage.ts` prefix allowlist — `localStorage`/`sessionStorage` by HenryCo prefix, IndexedDB by known DB names, caches by name prefix), broadcasts `{ type: 'sign-out', reason }` over the shared channel, and redirects to `/auth/choose?signed_out=true` (via `getAccountUrl()`). Every "Sign out" control across the apps calls it. Tests: post-logout every HenryCo cookie is gone, every `henryco:`-prefixed storage key returns null, IndexedDB stores are deleted, and a new tab to a protected route redirects to the chooser. Never `localStorage.clear()`.
 
-A `logout` action must clear:
+### S3 — Role-chooser badge counts
+New route `apps/account/app/api/auth/role-status/route.ts` (backed by `packages/auth/src/server/role-status.ts`) returns `{ roles: [{ key, unreadCount, pendingActions, lastVisited }] }` for the authenticated user, derived from the notification + pending-action counts. The chooser at `apps/account/app/auth/choose/page.tsx` fetches on mount and renders per-role badges (e.g. owner "3 KYC submissions awaiting review"), updating live over the existing notification realtime channel. Single-role users skip the chooser (unchanged); this applies only when it would render. Never bypass `is_staff_in()` for role derivation.
 
-- Supabase Auth session (`signOut()`)
-- All cookies in `.henrycogroup.com` scope (`hc_*` cookies including `hc_dash_pref`, `hc_session_state`)
-- `localStorage` entries scoped to HenryCo (`localStorage.clear()` is too aggressive — clear by prefix `henryco:` only)
-- `sessionStorage` entries scoped to HenryCo
-- IndexedDB stores that hold HenryCo data (chat-composer drafts, branded-document caches, intelligence event queue)
-- Service Worker caches scoped to HenryCo (use `caches.keys()` + filter)
-- BroadcastChannel sign-out broadcast (already in V3-01)
+### S4 — Sensitive-action guard
+`packages/auth/src/server/sensitive-action-guard.ts` exposes `evaluateSensitiveActionGuard()`, the `withSensitiveAction()` wrapper, and `requireSensitiveAction()`. It reads the Supabase session, verifies the `hc_session_state` cookie's signed subject matches (`verify-supabase-session.ts`), and checks a recent-reauth cookie (`reauth-cookie.ts`, 5-minute validity). On absent/stale reauth it returns 401 with `WWW-Authenticate: SensitiveActionReauth` + `X-HenryCo-Reauth-Intent: <action>`; on success it writes `@henryco/observability/audit-log` `{ action, actor, ip, ua, outcome, reauthAt }`. A per-user rate limiter (`sensitive-action-rate-limit.ts`, max 5 attempts / 5 min) blocks brute force. Wire into: `apps/account/app/api/wallet/transfer/*`, `.../api/verification/*` (KYC), `.../api/auth/change-password/*`, `.../api/auth/delete-account/*`, `.../api/profile/role/*`, `.../api/security/*`, and it is the contract V3-14/15/16 payment-authorization routes consume. Client: `fetchWithSensitiveAction` + `SensitiveActionModalProvider` / `useSensitiveAction` (`client/sensitive-action-modal.tsx`) — on 401 + `SensitiveActionReauth`, render "Confirm your identity to continue" (password / magic-link / biometric on Expo), refresh the reauth cookie, retry the action.
 
-Implementation:
-- New helper `@henryco/auth/client/logout-everywhere.ts` that:
-  - Calls `supabase.auth.signOut()`
-  - Calls `clearHenryCoStorage()` (a single function that handles localStorage + sessionStorage + IndexedDB + caches by HenryCo-prefix scope)
-  - Broadcasts sign-out
-  - Redirects to `/auth/choose?signed_out=true`
-- Wire this helper from every "Sign out" button across all apps.
+### S5 — Magic-link UX
+Email arrives ≤ 30 s (Resend rate-limit + Brevo fallback). Link is single-use, 15-minute expiry (Supabase default — document). Success → role-aware redirect + "Welcome back". Expired → "Magic link expired. Send a new one?" with a resend button. Already-used → "This link was used. Sign in again."
 
-Tests:
-- After logout, every HenryCo cookie is gone (verify via `document.cookie`).
-- After logout, every `localStorage.getItem('henryco:*')` returns null.
-- After logout, IndexedDB.deleteDatabase ran for HenryCo stores.
-- After logout, opening a new tab to a protected route redirects to `/auth/choose`.
+### S6 — Password reset
+Reset email ≤ 30 s; link valid 30 min. Form: confirm twice + strength meter + show-password toggle, fully a11y-tested. After reset: auto sign-in + redirect + audit-log entry.
 
-### S3 — Role chooser badge counts
-
-The auth chooser screen (`/auth/choose`) shows per-role badges:
-
-- For users with multiple roles (e.g., customer + provider + owner), each role tile shows:
-  - Unread notification count for that role's surface
-  - Pending action count (e.g., owner has "3 KYC submissions awaiting review")
-  - Last visited timestamp ("Last visited 2 hours ago")
-
-Implementation:
-- New API route `apps/account/app/api/auth/role-status/route.ts` — returns `{ roles: [{ key, unreadCount, pendingActions, lastVisited }] }` for the authenticated user.
-- The role chooser fetches this on mount; renders badges.
-- The badges respect existing notification realtime channel — counts update live.
-
-If the user has only one role, the chooser is skipped per existing behavior; this change applies only when chooser would render.
-
-### S4 — Session-tampering defense on sensitive routes
-
-Every "sensitive action" route (wallet transfer, KYC submission, password change, payment authorization, account deletion, role/membership change) requires:
-
-- Re-authentication within the last 5 minutes OR an explicit re-auth challenge before the action proceeds.
-- Cookie-integrity check: server verifies the `hc_session_state` cookie's signed HMAC matches the Supabase Auth subject.
-- Audit log entry: `@henryco/observability/audit-log` writes `{ action, actor, ip, ua, outcome, reauthAt }`.
-
-Implementation:
-- New server helper `@henryco/auth/server/sensitive-action-guard.ts` — middleware function:
-  - Reads Supabase session.
-  - Reads `hc_last_reauth` cookie (timestamp; 5-min validity).
-  - If absent or stale, returns 401 with `WWW-Authenticate: SensitiveActionReauth` + `X-HenryCo-Reauth-Intent: <action-name>` header.
-  - On success, writes audit log entry.
-- Wire into the following routes (existing kyc-sensitive-action-gating logic is partial — this generalizes it):
-  - `apps/account/app/api/wallet/transfer/*`
-  - `apps/account/app/api/verification/*` (KYC)
-  - `apps/account/app/api/auth/change-password/*`
-  - `apps/account/app/api/auth/delete-account/*`
-  - `apps/account/app/api/profile/role/*`
-  - `apps/account/app/api/security/*`
-  - any payment-authorization route created later in V3-14/15/16 (this is the contract they consume)
-
-Client-side: when 401 + `SensitiveActionReauth` appears, the page surfaces a small modal "Confirm your identity to continue" with password OR magic-link OR biometric (if Expo super-app). On success, `hc_last_reauth` cookie is refreshed and the action retries.
-
-### S5 — Magic-link UX hardening
-
-The magic-link path:
-- Email arrives within 30 seconds (verify Resend rate-limit + Brevo fallback).
-- Link expires in 15 minutes (Supabase default; document).
-- Link is single-use (Supabase default; document).
-- After click, the user lands at the role-aware redirect with a "Welcome back" toast.
-- If link expired, show "Magic link expired. Send a new one?" with a button.
-- If link already used, show "This link was used. Sign in again."
-
-### S6 — Password reset flow
-
-- Reset email arrives within 30 seconds.
-- Reset link valid for 30 minutes.
-- Reset form: new password confirmed twice; strength meter; "show password" toggle; accessibility-tested.
-- After reset, automatic sign-in + redirect.
-- Audit log entry.
-
-### S7 — Logout from every-device
-
-Account `/security` screen has a "Sign out everywhere" button:
-- Calls Supabase `auth.signOut({ scope: 'global' })` — invalidates all refresh tokens.
-- Clears server-side session cache if any.
-- Audit log entry.
-- After completion, current device signs out (via S2 logout-everywhere).
+### S7 — Sign out everywhere
+`apps/account/app/security/page.tsx` gains a "Sign out everywhere" control calling `auth.signOut({ scope: 'global' })` (invalidates all refresh tokens) + audit-log entry, then signs out the current device via `logoutEverywhere` (S2).
 
 ### S8 — Telemetry
-
-Existing event names from `@henryco/intelligence` apply:
-- `henry.auth.session.started`
-- `henry.auth.session.ended`
-- `henry.auth.signin.failed`
-
-Add:
-- `henry.auth.oauth.completed`
-- `henry.auth.oauth.failed` with sanitized reason
-- `henry.auth.logout.everywhere`
-- `henry.auth.sensitive_action.reauth_required`
-- `henry.auth.sensitive_action.reauth_succeeded`
-- `henry.auth.role_chooser.viewed` (with role count)
-
-Owner-workspace tile (extends V3-01's session-health tile): show daily sign-in success rate, OAuth provider breakdown, sensitive-action reauth rate.
-
----
+Reuse `henry.auth.session.started` / `.ended` / `henry.auth.signin.failed`. Add `henry.auth.oauth.completed`, `henry.auth.oauth.failed` (sanitized reason), `henry.auth.logout.everywhere`, `henry.auth.sensitive_action.reauth_required`, `henry.auth.sensitive_action.reauth_succeeded`, `henry.auth.role_chooser.viewed` (role count). Extend V3-01's owner tile with daily sign-in success rate, OAuth provider breakdown, and sensitive-action reauth rate.
 
 ## Out of scope
-
-- Adding new OAuth providers (Apple/Google/GitHub only; no new providers).
-- Biometric auth on web (Web Authentication API is V4+).
-- MFA enrollment (V3-24 KYC may surface this).
-- Account-linking UX beyond OAuth (e.g., link your phone number for SMS-OTP — V3-24).
-- Session-cookie redesign (the cookie shape is fine).
-
----
+- New OAuth providers; web biometric (WebAuthn) — V4+.
+- MFA enrollment / phone-number linking — V3-24 (KYC).
+- Session-cookie redesign (shape is fine).
+- Threading `logoutEverywhere` through the remaining public shells — **V3-02b** (shipped, PR #163).
 
 ## Dependencies
+Depends on: **V3-01** (uses `hc_session_state`, the broadcast channel, and the reauth screen). Blocks: **V3-04** (deep-link auth round-trip), **V3-76** (public-API auth scopes assume this role + sensitive-action model).
 
-Depends on:
-- V3-01 (session persistence) — uses `hc_session_state` cookie + multi-tab broadcast.
-
-Blocks:
-- V3-04 (deep links) — auth round-trip preservation is the foundation for deep-link round-trips.
-- V3-76 (public API foundation) — auth scopes assume role + sensitive-action model.
-
----
-
-## Inheritance (reuse without redefining)
-
-- `@henryco/auth` package — extend.
-- `@henryco/observability/audit-log` — use for sensitive-action logging.
-- `@henryco/ui` — existing modal + toast primitives.
-- Existing `/auth/choose` + `/auth/callback` routes — extend, not replace.
-- Existing notification realtime channel — use for role-chooser badge live updates.
-
----
+## Inheritance
+`@henryco/auth` (extend) · `@henryco/observability/audit-log` · `@henryco/ui` modal + toast · existing `/auth/choose` + `/auth/callback` (extend, not replace) · notification realtime channel (live badges) · V3-01's session-state cookie + broadcast channel + reauth screen · `@henryco/config` domain helpers for every redirect URL.
 
 ## Implementation requirements
 
-### File-level deliverables
+### Files
+`packages/auth/src/client/`: `logout-everywhere.ts`, `clear-henryco-storage.ts`, `known-storage.ts`, `sensitive-action-modal.tsx`, `index.ts`. `packages/auth/src/server/`: `sensitive-action-guard.ts`, `sensitive-action-rate-limit.ts`, `role-status.ts`, `reauth-cookie.ts`, `verify-supabase-session.ts`, `oauth-error-cookie.ts`, `oauth-link-intent.ts`. New routes: `apps/account/app/api/auth/role-status/route.ts`. UI: `apps/account/app/auth/choose/page.tsx` (badges), `apps/account/app/security/page.tsx` ("Sign out everywhere"). Mount `SensitiveActionModalProvider` in the account layout. Tests: units for logout-everywhere, clear-henryco-storage, sensitive-action-guard, role-status; integration for OAuth callback error paths; e2e for chooser badges.
 
-**Package changes** (`packages/auth/src/`):
-- `client/logout-everywhere.ts` (new)
-- `client/clear-henryco-storage.ts` (new) — helper used by logout-everywhere
-- `server/sensitive-action-guard.ts` (new) — middleware
-- `server/role-status.ts` (new) — derives role badges from notification + action counts
-- `client/sensitive-action-modal.tsx` (new) — the reauth modal component
-- `index.ts` — export new surfaces
-
-**Per-app changes** (10 web apps):
-- Every "Sign out" button replaced with the `logout-everywhere` helper call. Grep for `signOut`, `auth.signOut`, "Sign out" — wire all of them.
-- The sensitive-action middleware is wired in each app's relevant routes (account is the primary host of these routes; others reference via API).
-
-**New routes:**
-- `apps/account/app/api/auth/role-status/route.ts` (new) — S3 endpoint
-- `apps/account/app/security/sign-out-everywhere/route.ts` (new) — S7 endpoint
-
-**UI changes:**
-- `apps/account/app/auth/choose/page.tsx` — extend with badge rendering for multi-role users
-- `apps/account/app/security/page.tsx` — add "Sign out everywhere" button
-
-**Tests:**
-- Unit tests for `logout-everywhere`, `clear-henryco-storage`, `sensitive-action-guard`, `role-status`
-- Integration tests for the OAuth callback error paths
-- e2e smoke for the auth chooser badge rendering
-
-### Migration changes
-
-None expected. Audit-log writes go to existing `audit_log_v2` table per DASH-9.
-
-### Integration changes
-
-None. Resend + Brevo + Supabase preserved.
-
-### Trust / safety / compliance requirements
-
-- Sensitive-action middleware emits audit log entries — ANTI-CLONE Principle 12.
-- `WWW-Authenticate: SensitiveActionReauth` header is non-standard but follows RFC 7235 extensibility — document in OpenAPI spec when V3-76 (API foundation) lands.
-- OAuth provider mark usage per provider brand guidelines (Google logo, Apple logo) — confirm with `apps/account/public/assets/oauth/*`.
-- Logout-everywhere clears storage but does NOT clear server-side data — users can't "delete account by logout" (that's a different action, V3-93 privacy data rights).
-- Sensitive-action reauth respects rate-limiting — don't allow brute-force via the modal (max 5 attempts per 5 min per user).
+### Trust / safety / compliance
+Sensitive-action guard writes an audit-log entry on every gated action. The `WWW-Authenticate: SensitiveActionReauth` extension follows RFC 7235 extensibility (document in the OpenAPI spec when V3-76 lands). OAuth marks per provider brand guidelines (`apps/account/public/assets/oauth/*`). `logoutEverywhere` clears client storage but never server data (account deletion is V3-93). Reauth modal is rate-limited (max 5/5 min/user). Error copy stays generic + actionable — never leak provider internals.
 
 ### Mobile + desktop parity
+Web: full S1–S8. The sensitive-action modal is responsive — bottom-sheet on mobile, modal on desktop. Native biometric reauth is V3-87.
 
-- Web: full S1–S8 implementation.
-- Expo: out-of-scope this pass; native biometric reauth is V3-87.
-- Sensitive-action modal is responsive — sheet UI on mobile, modal on desktop.
+### i18n
+All new strings (OAuth error messages, sensitive-action modal copy, chooser badges, logout/welcome toasts) flow through `@henryco/i18n` under `surface:auth-reliability`. Populate en-US; runtime DeepL fills the other 11 locales. No hardcoded user-facing text.
 
-### i18n requirement
-
-- All new user-facing strings (OAuth error messages, sensitive-action modal copy, role chooser badges, logout success toast) go through `@henryco/i18n` surface labels.
-- Namespace: `surface:auth-reliability`.
-- Populate en-US in this pass; runtime DeepL fills the 11 other locales.
-
----
+### Brand & design system
+Brand strings ("Henry Onyx") + division labels from `@henryco/config`; legal/compliance contexts use "Henry Onyx Limited". Chooser, security page, and reauth modal use locked tokens (`--site-*` / `--accent`, Fraunces display), light + dark, mobile + desktop, CLS ≈ 0, contrast not regressed. Every redirect/callback URL via the config domain helpers — zero literal domains.
 
 ## Validation gates
-
-1. **Lint / typecheck / tests / build** — standard CI.
-2. **i18n check** — new strings registered.
-3. **A11y** — `/auth/choose`, `/auth/reauth` (from V3-01), `/account/security`, sensitive-action modal — all WCAG AA.
-4. **PNH-04** — security headers preserved.
-5. **OAuth smoke** — sign in with Google + sign in with Apple — both succeed end-to-end.
-6. **Logout-everywhere smoke** — sign in on 3 devices; sign out everywhere on 1; confirm other 2 sign-out on next interaction.
-7. **Sensitive-action smoke** — attempt wallet transfer without recent reauth; confirm modal appears; confirm action proceeds after reauth.
-8. **Role-chooser badge smoke** — create a multi-role test user; confirm badges render with correct counts.
-
-### Live verification (after merge)
-
-- 48-hour soak.
-- Owner reviews the session-health tile + new auth-reliability metrics.
-- Run a quarterly "auth-failure" tabletop: simulated provider outage; confirm fallback paths function.
-
----
+1. `pnpm lint` / `pnpm typecheck` / tests / `pnpm ci:validate` build green. 2. `pnpm i18n:check`. 3. `pnpm a11y` on `/auth/choose`, `/auth/reauth`, `/account/security`, and the sensitive-action modal (WCAG AA). 4. Security-headers gate preserved. 5. OAuth smoke: Google + Apple sign-in end-to-end. 6. Logout-everywhere smoke: sign in on 3 sessions, sign out everywhere from one, confirm the others sign out on next interaction. 7. Sensitive-action smoke: attempt a wallet transfer without recent reauth → modal → proceeds after reauth → audit-log row written. 8. Role-chooser badge smoke with a multi-role fixture user (counts correct). 9. Real-browser light + dark + mobile + desktop on chooser/security/modal.
 
 ## Deployment gate
-
-- All validation gates passing.
-- Preview-deploy smoke evidence captured in `.codex-temp/v3-02/preview-smoke.md`.
-- Owner reviews PR.
-- Merge to `main`.
-- 48-hour soak.
-
----
+All gates green; preview-smoke evidence in `.codex-temp/v3-02-auth-reliability/preview-smoke.md`; owner reviews the PR; squash-merge to `main`; 48-hour soak (owner reviews sign-in success rate + reauth rate on the tile). The residual 48-h soak was owner-waived after green through +6h (see memory `project_henryco_v3_02_auth_reliability.md`).
 
 ## Final report contract
+`.codex-temp/v3-02-auth-reliability/report.md` with the standard 9 sections: exec summary · files changed · migration/RLS/env (audit-log writes to the existing `audit_log_v2` table — no new schema) · validation evidence · smoke · live verification (48-h soak) · telemetry baseline (6 new events) · deferred items (the V3-02b diff template — marketplace wiring is the reference) · pass-closure assertion. The report's §8 item 2 is the load-bearing V3-02b handoff.
 
-Write `.codex-temp/v3-02-auth-reliability/report.md` covering:
-
-1. Executive summary
-2. Files changed
-3. Migration / RLS / env confirmation (none expected)
-4. Validation gate evidence
-5. Smoke verification evidence
-6. Live verification evidence
-7. Telemetry baseline (5 new events)
-8. Deferred items
-9. Pass closure assertion
-
----
-
-## Anti-patterns this pass must avoid
-
-- Do not log out users without warning when token expires mid-action — that's V3-01's job to handle gracefully.
-- Do not introduce a global "reauth-everywhere" gate that breaks read-only browsing — sensitive-action guard is per-route.
-- Do not bypass `is_staff_in()` for role-status — preserve existing role-membership model.
-- Do not use `localStorage.clear()` — only clear by HenryCo prefix.
-- Do not store OAuth provider tokens in localStorage — Supabase Auth handles them.
-- Do not name OAuth providers in error toasts beyond brand mark display — keep error copy generic + actionable.
-
----
+## Deferred / residual (post-ship, this pass is merged)
+- **V3-02b (shipped, PR #163):** thread `onSignOut={logoutEverywhere}` through the remaining public-shell hosts (care, jobs, learn, logistics, property, studio public chromes + hub-public); marketplace was the template. Stage `requireSensitiveAction` for the KYC-submission, future password-change, and delete-account routes as each lands.
+- Native biometric reauth → V3-87.
 
 ## Self-verification
-
-- [ ] OAuth flows verified end-to-end for every enabled provider.
-- [ ] Logout-everywhere wired across all 10 apps.
-- [ ] Role chooser badges render for multi-role users.
-- [ ] Sensitive-action guard live on 7+ named routes.
-- [ ] Magic-link + password-reset flows pass timing + UX bar.
-- [ ] "Sign out everywhere" wired and tested.
-- [ ] 6 new observability events emitting.
-- [ ] PNH-04 baseline preserved.
-- [ ] Report written.
-- [ ] Hand-off named: V3-03 (notification/message states) and V3-04 (deep links).
+- [ ] S1 OAuth verified end-to-end for every enabled provider; all callback error paths land on the chooser with sanitized reasons.
+- [ ] S2 `logoutEverywhere` wired across all apps; provably clears cookies + prefixed storage + IndexedDB + caches; never `localStorage.clear()`.
+- [ ] S3 role-chooser badges render for multi-role users and update live; `is_staff_in()` not bypassed.
+- [ ] S4 `requireSensitiveAction` live on the 6+ named route groups; audit-log row + rate limiter verified; `fetchWithSensitiveAction` modal retries the action.
+- [ ] S5/S6 magic-link + password-reset meet the timing + UX bar; reset auto-signs-in with an audit entry.
+- [ ] S7 "Sign out everywhere" invalidates all refresh tokens + audit-logs, then signs out the current device.
+- [ ] S8 the 6 new telemetry events emit; owner tile shows sign-in + reauth metrics.
+- [ ] Security-headers baseline intact; no provider name leaked in error copy.
+- [ ] All new strings under `surface:auth-reliability`; brand + domains sourced from `@henryco/config`.
+- [ ] Report written (incl. the V3-02b handoff); hand-off named: V3-03 (notification/message states) and V3-04 (deep links).
