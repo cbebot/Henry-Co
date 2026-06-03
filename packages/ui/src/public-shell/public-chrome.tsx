@@ -62,8 +62,14 @@ export type PublicChromeAccount = {
 export type PublicChromeProps = {
   brand: PublicChromeBrand;
   items: readonly PublicChromeNavItem[];
-  /** Identity data — PublicChrome renders the theme-aware cluster itself. */
+  /** Identity data — PublicChrome renders the theme-aware Sign in / Get started
+   *  cluster itself when the visitor is signed OUT. */
   account?: PublicChromeAccount;
+  /** Signed-IN account control (avatar + dropdown: account / preferences /
+   *  settings / sign-out). Slot the existing PublicAccountChip here so the
+   *  account menu + sign-out are PRESERVED; PublicChrome renders it only when
+   *  `account.user` is set, and shows Sign in / Get started otherwise. */
+  accountMenu?: ReactNode;
   /** Built-in search pill (pass an href) or a fully custom node. */
   search?: { href: string; label?: string } | ReactNode;
   /** Optional thin announcement strip above the toolbar. */
@@ -128,14 +134,22 @@ function ChromeThemeToggle({ t }: { t: (s: string) => string }) {
  *  (copper). Signed-in → avatar + name → account. */
 function IdentityActions({
   account,
+  accountMenu,
   t,
   layout,
 }: {
   account: PublicChromeAccount;
+  accountMenu?: ReactNode;
   t: (s: string) => string;
   layout: "bar" | "sheet";
 }) {
   const sheet = layout === "sheet";
+  // Signed-in + a slotted account control (PublicAccountChip) → render it so the
+  // account dropdown + sign-out are preserved. Falls back to an avatar→account
+  // link if no menu was provided.
+  if (account.user && accountMenu) {
+    return <>{accountMenu}</>;
+  }
   if (account.user) {
     const name = account.user.displayName || account.user.email || t(account.accountLabel || "Account");
     return (
@@ -188,6 +202,7 @@ export function PublicChrome({
   brand,
   items,
   account,
+  accountMenu,
   search,
   prepend,
   showThemeToggle = true,
@@ -304,7 +319,7 @@ export function PublicChrome({
             <ChromeThemeToggle t={t} />
           </div>
         ) : null}
-        {account ? <IdentityActions account={account} t={t} layout="bar" /> : null}
+        {account ? <IdentityActions account={account} accountMenu={accountMenu} t={t} layout="bar" /> : null}
       </div>
 
       {/* Mobile cluster */}
@@ -393,7 +408,7 @@ export function PublicChrome({
 
         {account ? (
           <div className="mt-4 flex flex-col gap-2 border-t border-[color:var(--home-line)] pt-4" onClick={closeDrawerAfterNav}>
-            <IdentityActions account={account} t={t} layout="sheet" />
+            <IdentityActions account={account} accountMenu={accountMenu} t={t} layout="sheet" />
           </div>
         ) : null}
       </div>

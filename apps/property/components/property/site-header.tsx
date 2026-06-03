@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
@@ -22,7 +23,13 @@ const propertyNav = getSiteNavigationConfig("property");
  * copper accent (resolved from the page's .home-accent-scope). No per-division
  * className overrides — the source of the old "stubborn" light-bar desync.
  */
-export function PropertySiteHeader({ account }: { account: PublicChromeAccount }) {
+export function PropertySiteHeader({
+  account,
+  accountMenu,
+}: {
+  account: PublicChromeAccount;
+  accountMenu?: ReactNode;
+}) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
@@ -39,6 +46,7 @@ export function PropertySiteHeader({ account }: { account: PublicChromeAccount }
       items={propertyNav.primaryNav}
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
       account={account}
+      accountMenu={accountMenu}
       prepend={
         <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-6 lg:px-8">
           <span className="flex items-center gap-2">

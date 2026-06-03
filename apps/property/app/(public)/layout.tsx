@@ -1,5 +1,7 @@
 import { headers } from "next/headers";
+import { getAccountUrl } from "@henryco/config";
 import { PROPERTY_PUBLIC_THEME_STYLE } from "@/components/property/property-public-theme";
+import { PropertyAccountChip } from "@/components/property/PropertyAccountChip";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
 import { getPropertyViewer } from "@/lib/property/auth";
@@ -19,7 +21,7 @@ export default async function PublicLayout({ children }: { children: React.React
   const account = {
     user: viewer.user
       ? {
-          displayName: viewer.user.fullName || viewer.user.email,
+          displayName: viewer.user.fullName || viewer.user.email || "Account",
           email: viewer.user.email,
           avatarUrl: viewer.user.avatarUrl,
         }
@@ -29,12 +31,31 @@ export default async function PublicLayout({ children }: { children: React.React
     accountHref: getSharedAccountPropertyUrl(),
   };
 
+  // Signed-in only: the full account dropdown (preferences / settings / sign-out)
+  // is preserved by slotting the existing PublicAccountChip. PublicChrome renders
+  // the Sign in / Get started cluster itself when signed out.
+  const accountMenu = account.user ? (
+    <PropertyAccountChip
+      user={{
+        displayName: account.user.displayName,
+        email: account.user.email ?? undefined,
+        avatarUrl: account.user.avatarUrl ?? undefined,
+      }}
+      loginHref={account.loginHref}
+      signupHref={account.signupHref}
+      accountHref={account.accountHref}
+      preferencesHref={getAccountUrl("/settings")}
+      settingsHref={getAccountUrl("/security")}
+      showSignOut
+    />
+  ) : null;
+
   return (
     <div
       className="property-page property-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
       style={PROPERTY_PUBLIC_THEME_STYLE}
     >
-      <PropertySiteHeader account={account} />
+      <PropertySiteHeader account={account} accountMenu={accountMenu} />
       {children}
       <PropertySiteFooter />
     </div>
