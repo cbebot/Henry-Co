@@ -2,40 +2,32 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
-import { Laptop, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { cn } from "../cn";
 
-const MODES = ["light", "dark", "system"] as const;
-
+/**
+ * Binary theme toggle (light ⇄ dark) with a text label.
+ *
+ * Same contract as the icon-only `@henryco/ui/public` ThemeToggle: device-aware
+ * by default (system until first tap), then it flips + persists an explicit
+ * preference. No tri-state "system" position — see that file for the rationale.
+ */
 export function ThemeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = React.useState(false);
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  const raw = mounted ? (theme ?? "system") : "system";
-  const mode = (MODES.includes(raw as (typeof MODES)[number]) ? raw : "system") as (typeof MODES)[number];
-  const resolved = mounted && resolvedTheme === "dark" ? "dark" : "light";
-  const isDark = resolved === "dark";
-
-  const cycle = () => {
-    const i = MODES.indexOf(mode);
-    setTheme(MODES[(i + 1) % MODES.length]);
-  };
-
-  const label =
-    mode === "system"
-      ? `Theme: System (${isDark ? "dark" : "light"} now)`
-      : mode === "dark"
-        ? "Theme: Dark"
-        : "Theme: Light";
+  const isDark = mounted && resolvedTheme === "dark";
+  const nextTheme = isDark ? "light" : "dark";
+  const label = mounted ? `Switch to ${nextTheme} theme` : "Switch theme";
 
   return (
     <button
       type="button"
-      onClick={cycle}
+      onClick={() => setTheme(nextTheme)}
       className={cn(
         "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm",
         "border-black/10 bg-white/60 backdrop-blur hover:bg-white/80",
@@ -45,16 +37,8 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={label}
       title={label}
     >
-      {mode === "system" ? (
-        <Laptop className="h-4 w-4" />
-      ) : isDark ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
-      <span className="hidden sm:inline">
-        {mode === "system" ? "System" : isDark ? "Dark" : "Light"}
-      </span>
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      <span className="hidden sm:inline">{isDark ? "Dark" : "Light"}</span>
     </button>
   );
 }
