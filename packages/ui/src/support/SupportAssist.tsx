@@ -1613,8 +1613,13 @@ function SupportAssistStyles() {
         height: 2.5rem;
         padding: 0 0.95rem 0 0.65rem;
         border-radius: 9999px;
-        background: var(--hc-surface, #ffffff);
-        color: var(--hc-ink, #0a0a0a);
+        /* Theme-aware: --site-* flip via [data-theme] on public pages (set by
+           the pre-paint blocking script), so the trigger is light on a light
+           page and dark on a dark page. Fall back to the dark-first --hc-*
+           dashboard tokens where --site-* isn't defined (app dashboards), so
+           those keep their existing dark trigger. */
+        background: var(--site-surface-strong, var(--hc-surface, #ffffff));
+        color: var(--site-text, var(--hc-ink, #0a0a0a));
         border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
         cursor: pointer;
         font: inherit;
