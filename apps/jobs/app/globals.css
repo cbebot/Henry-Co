@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/styles/public-design.css";
 @import "../../../packages/workspace-shell/src/styles.css";
 @import "../../../packages/messaging-thread/src/styles.css";
 @source "../../../packages/ui/src";
@@ -212,9 +213,12 @@ textarea {
 }
 
 .jobs-shell {
+  /* Final layer = the theme-aware base canvas (in the public subtree --jobs-bg
+     is aliased to --home-canvas), with jobs' teal/brass glows floated on top. */
   background:
     radial-gradient(circle at 12% 0%, rgba(14, 124, 134, 0.14), transparent 42%),
-    radial-gradient(circle at 88% 8%, rgba(184, 138, 71, 0.1), transparent 38%);
+    radial-gradient(circle at 88% 8%, rgba(184, 138, 71, 0.1), transparent 38%),
+    var(--jobs-bg);
 }
 
 .jobs-public-header {
@@ -456,6 +460,29 @@ select.jobs-select option {
   cursor: not-allowed;
   pointer-events: none;
   filter: grayscale(0.2);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Flagship hero entrance — a single, orchestrated staggered reveal on
+   load. Base state is VISIBLE; the animation only runs when motion is
+   welcome, so reduced-motion (and the global kill-switch above) leave the
+   content fully visible — never a blank hero.
+   ────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .jobs-reveal {
+    animation: jobsReveal 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@keyframes jobsReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */

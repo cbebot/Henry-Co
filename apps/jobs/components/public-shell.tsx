@@ -1,17 +1,15 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { COMPANY, getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { getJobsPublicCopy } from "@/lib/public-copy";
 import { getJobsPublicLocale } from "@/lib/locale-server";
-import {
-  HenryCoPublicAccountPresets,
-  HenryCoSearchBreadcrumb,
-  PublicFooter,
-} from "@henryco/ui";
+import { HenryCoPublicAccountPresets } from "@henryco/ui";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
 import { HenryCoMonogram } from "@henryco/ui/brand";
-import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
+import { PublicChrome, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import { JobsAccountChip } from "@/components/JobsAccountChip";
+import { fraunces, JOBS_PUBLIC_THEME_STYLE } from "@/components/jobs-public-theme";
 import {
   getSharedAccountJobsUrl,
   getSharedAccountLoginUrl,
@@ -23,6 +21,15 @@ import { getJobsViewer } from "@/lib/auth";
 const jobs = getDivisionConfig("jobs");
 const accountJobsUrl = getSharedAccountJobsUrl();
 
+/**
+ * Jobs public shell — V3-PUBLIC-REBUILD-jobs.
+ *
+ * The marketing surface now rides the locked --home-* design system through
+ * JOBS_PUBLIC_THEME_STYLE (teal soul, Fraunces display) and wears the shared,
+ * theme-aware `PublicChrome` instead of the generic PublicHeader. Brand reads
+ * "JOBS / Henry Onyx"; the account dropdown + sign-out are preserved via the
+ * slotted JobsAccountChip; the page flips light⇄dark with device/toggle.
+ */
 export async function PublicShell({
   children,
   primaryCta,
@@ -59,85 +66,111 @@ export async function PublicShell({
     : null;
 
   return (
-    <div className="jobs-page jobs-shell">
-      <PublicHeader
+    <div
+      className={`${fraunces.variable} jobs-shell home-accent-scope flex min-h-screen flex-col text-[color:var(--home-ink)]`}
+      style={JOBS_PUBLIC_THEME_STYLE}
+    >
+      <PublicChrome
+        maxWidth="max-w-[92rem]"
+        accentStyle={JOBS_PUBLIC_THEME_STYLE}
         brand={{
-          name: t(jobs.name),
-          sub: t(jobs.sub),
-          mark: (
-            <span
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.06] text-white shadow-[0_10px_30px_rgba(0,0,0,0.18)]"
-              style={{ color: jobs.accent || "#C9A227" }}
-            >
-              <HenryCoMonogram size={28} accent={jobs.accent || "#C9A227"} />
-            </span>
-          ),
+          href: "/",
+          // "<DIVISION> / Henry Onyx" — eyebrow = the division, name = the brand.
+          name: COMPANY.group.name,
+          eyebrow: jobs.shortName,
+          mark: <HenryCoMonogram size={26} accent={jobs.accent || "#0E7C86"} />,
         }}
         items={[...getSiteNavigationConfig("jobs").primaryNav]}
-        primaryCta={resolvedPrimary}
-        secondaryCta={resolvedSecondary}
-        actions={
-          <HenryCoSearchBreadcrumb
-            href={getHubUrl("/search")}
-            className="hidden xl:inline-flex"
-          />
-        }
-        headerClassName="jobs-public-header"
-        auxLink={{ label: copy.shell.account, href: accountJobsUrl, external: true }}
+        search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
+        account={{
+          user: chipUser,
+          loginHref,
+          signupHref,
+          accountHref: accountJobsUrl,
+        }}
         accountMenu={
-          <JobsAccountChip
-            {...HenryCoPublicAccountPresets.standard}
-            user={chipUser}
-            loginHref={loginHref}
-            accountHref={accountJobsUrl}
-            preferencesHref={getAccountUrl("/settings")}
-            settingsHref={getAccountUrl("/security")}
-            signupHref={signupHref}
-            showSignOut
-            menuItems={[
-              { label: copy.shell.candidateHome, href: "/candidate" },
-              { label: copy.shell.applications, href: "/candidate/applications" },
-              { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" },
-              { label: copy.home.browseJobs, href: "/jobs" },
-              { label: copy.home.hireWithHenryCo, href: "/hire" },
-            ]}
-          />
+          chipUser ? (
+            <JobsAccountChip
+              {...HenryCoPublicAccountPresets.standard}
+              user={chipUser}
+              loginHref={loginHref}
+              accountHref={accountJobsUrl}
+              preferencesHref={getAccountUrl("/settings")}
+              settingsHref={getAccountUrl("/security")}
+              signupHref={signupHref}
+              showSignOut
+              buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
+              dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
+              menuItems={[
+                { label: copy.shell.candidateHome, href: "/candidate" },
+                { label: copy.shell.applications, href: "/candidate/applications" },
+                { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" },
+                { label: copy.home.browseJobs, href: "/jobs" },
+                { label: copy.home.hireWithHenryCo, href: "/hire" },
+              ]}
+            />
+          ) : null
+        }
+        primaryCta={resolvedPrimary}
+        auxLink={resolvedSecondary}
+        prepend={
+          <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-6 lg:px-10">
+            <span className="flex items-center gap-2">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
+              {t("Verified employers, candidate-safe applications, and recruiter pipelines on one record")}
+            </span>
+            <Link
+              href={accountJobsUrl}
+              className="hidden font-semibold text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)] lg:inline-flex"
+            >
+              {t("Henry Onyx account")}
+            </Link>
+          </div>
         }
       />
-      <main id="henryco-main" tabIndex={-1} className="jobs-main">{children}</main>
-      <PublicFooter
-        brand={t(jobs.name)}
-        description={t(jobs.description)}
-        support={{ email: jobs.supportEmail, phone: jobs.supportPhone }}
-        groups={[
+
+      <main id="henryco-main" tabIndex={-1} className="jobs-main flex-1">
+        {children}
+      </main>
+
+      <PublicSiteFooter
+        copy={{
+          statement: t(
+            "A premium hiring operating system — verified talent, trusted employers, and cleaner recruitment on one record.",
+          ),
+          divisionsLabel: t("The Henry Onyx group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry Onyx Jobs."),
+        }}
+        columns={[
           {
-            title: copy.shell.discover,
+            title: t(copy.shell.discover),
             links: [
-              { label: copy.shell.jobs, href: "/jobs" },
-              { label: copy.shell.talent, href: "/talent" },
-              { label: copy.shell.trust, href: "/trust" },
-              { label: copy.shell.help, href: "/help" },
+              { href: "/jobs", label: t(copy.shell.jobs) },
+              { href: "/talent", label: t(copy.shell.talent) },
+              { href: "/trust", label: t(copy.shell.trust) },
+              { href: "/help", label: t(copy.shell.help) },
             ],
           },
           {
-            title: copy.shell.forTeams,
+            title: t(copy.shell.forTeams),
             links: [
-              { label: copy.shell.candidateHome, href: "/candidate" },
-              { label: copy.home.hireWithHenryCo, href: "/hire" },
-              { label: copy.shell.employerWorkspace, href: "/employer" },
-              { label: copy.shell.recruiters, href: "/recruiter" },
-              { label: copy.shell.careers, href: "/careers" },
+              { href: "/candidate", label: t(copy.shell.candidateHome) },
+              { href: "/hire", label: t(copy.home.hireWithHenryCo) },
+              { href: "/employer", label: t(copy.shell.employerWorkspace) },
+              { href: "/recruiter", label: t(copy.shell.recruiters) },
             ],
           },
           {
-            title: copy.shell.henryCo,
+            title: t(copy.shell.henryCo),
             links: [
-              { label: copy.shell.account, href: accountJobsUrl, external: true },
-              { label: copy.shell.internalCareers, href: "/careers" },
-              { label: copy.shell.groupHub, href: getHubUrl(), external: true },
+              { href: accountJobsUrl, label: t(copy.shell.account) },
+              { href: "/careers", label: t(copy.shell.careers) },
+              { href: getHubUrl(), label: t(copy.shell.groupHub) },
             ],
           },
         ]}
+        support={{ email: jobs.supportEmail, phone: jobs.supportPhone }}
       />
     </div>
   );
