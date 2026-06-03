@@ -30,7 +30,7 @@ const standards = [
   {
     icon: ShieldCheck,
     title: "Managed vs non-managed clarity",
-    body: "Managed submissions imply HenryCo operational involvement after acceptance. Non-managed listings can still be reviewed without pretending HenryCo is running them.",
+    body: "Managed submissions imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed without pretending Henry Onyx is running them.",
   },
 ];
 
@@ -73,7 +73,7 @@ export default async function SubmitListingPage({
           className="
             mt-8 overflow-hidden rounded-[1.4rem]
             border border-[rgba(152,179,154,0.36)]
-            bg-gradient-to-br from-[rgba(152,179,154,0.10)] via-transparent to-[rgba(232,184,148,0.05)]
+            bg-gradient-to-br from-[rgba(152,179,154,0.10)] via-transparent to-[color:var(--home-accent-soft)]
           "
         >
           <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-start sm:justify-between sm:gap-10 sm:p-8">
@@ -144,13 +144,13 @@ export default async function SubmitListingPage({
         </div>
       ) : null}
       {params.verification && params.verification !== "verified" ? (
-        <div className="mt-4 border-l-2 border-[rgba(190,131,58,0.6)] pl-5">
+        <div className="mt-4 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
             {t("Verification pending")}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
             {t(
-              "Higher-risk property submissions stay in eligibility review until your HenryCo identity verification is approved.",
+              "Higher-risk property submissions stay in eligibility review until your Henry Onyx identity verification is approved.",
             )}
           </p>
           <Link
@@ -202,7 +202,7 @@ export default async function SubmitListingPage({
                   {viewer.user.email}
                 </span>
                 . {t(
-                  "Your submission will be linked to this HenryCo account for moderation, identity-aware trust review, and follow-up.",
+                  "Your submission will be linked to this Henry Onyx account for moderation, identity-aware trust review, and follow-up.",
                 )}
               </p>
             </div>
@@ -211,7 +211,7 @@ export default async function SubmitListingPage({
               <PropertyPublicAuthGate
                 title={t("Sign in to submit a listing")}
                 description={t(
-                  "Listing submissions require a HenryCo account so verification documents, moderation, and owner communications stay auditable and secure.",
+                  "Listing submissions require a Henry Onyx account so verification documents, moderation, and owner communications stay auditable and secure.",
                 )}
                 loginHref={submitLoginHref}
                 signupHref={submitSignupHref}

@@ -51,12 +51,12 @@ function getTrustCopy(
   const t = (text: string) => translateSurfaceLabel(locale, text);
   if (listing.managedByHenryCo) {
     return {
-      title: t("Managed by HenryCo"),
+      title: t("Managed by Henry Onyx"),
       body: t(
-        "HenryCo is involved beyond publication. That usually means clearer viewing coordination, tighter listing upkeep, and a more reliable post-inquiry path.",
+        "Henry Onyx is involved beyond publication. That usually means clearer viewing coordination, tighter listing upkeep, and a more reliable post-inquiry path.",
       ),
       bullets: [
-        t("Viewing coordination can stay with HenryCo instead of being passed around informally."),
+        t("Viewing coordination can stay with Henry Onyx instead of being passed around informally."),
         t("Listing updates and follow-through are handled with stronger operational continuity."),
         t("Managed properties can still require documents or extra checks before the next step moves forward."),
       ],
@@ -67,7 +67,7 @@ function getTrustCopy(
     return {
       title: t("Reviewed before publication"),
       body: t(
-        "This listing is not appearing here as an untouched upload. HenryCo has already reviewed the record before showing it publicly.",
+        "This listing is not appearing here as an untouched upload. Henry Onyx has already reviewed the record before showing it publicly.",
       ),
       bullets: [
         t("Trust notes stay visible so seekers understand what has been checked."),
@@ -80,10 +80,10 @@ function getTrustCopy(
   return {
     title: t("Serious-listing standard"),
     body: t(
-      "HenryCo expects pricing, media, and listing identity to be strong enough for real decision-making before a property is promoted publicly.",
+      "Henry Onyx expects pricing, media, and listing identity to be strong enough for real decision-making before a property is promoted publicly.",
     ),
     bullets: [
-      t("If a viewing is requested, HenryCo may still confirm access, location, or readiness before the appointment."),
+      t("If a viewing is requested, Henry Onyx may still confirm access, location, or readiness before the appointment."),
       t("Higher-risk listings can move through extra checks even after they appear live."),
       t("Managed and verified labels reflect a stronger operating path than a basic submission."),
     ],
@@ -100,13 +100,13 @@ function getViewingFlow(listingTitle: string, locale: AppLocale) {
     {
       title: t("Access and location are confirmed"),
       body: t(
-        "A HenryCo agent may confirm the property location, access conditions, or calendar before your appointment is finalised.",
+        "A Henry Onyx agent may confirm the property location, access conditions, or calendar before your appointment is finalised.",
       ),
     },
     {
       title: t("Post-viewing checks stay clear"),
       body: t(
-        "If you want to move forward, HenryCo may request identity, affordability, or company documents before the next approval step.",
+        "If you want to move forward, Henry Onyx may request identity, affordability, or company documents before the next approval step.",
       ),
     },
   ];
@@ -282,7 +282,7 @@ export default async function PropertyDetailPage({
         {messages.saved === "1" || messages.removed === "1" ? (
           <p className="border-l-2 border-[var(--property-line)] pl-4 text-sm leading-7 text-[var(--property-ink-soft)]">
             {messages.saved === "1"
-              ? t("Property saved to your HenryCo account history.")
+              ? t("Property saved to your Henry Onyx account history.")
               : t("Property removed from saved listings.")}
           </p>
         ) : null}
@@ -372,7 +372,7 @@ export default async function PropertyDetailPage({
             </div>
             <div className="mt-6 grid gap-8 md:grid-cols-[0.85fr,1.15fr]">
               <div className="flex items-start gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(191,122,71,0.1)] text-[var(--property-accent-strong)]">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[color:var(--home-accent-soft)] text-[var(--property-accent-strong)]">
                   <ShieldCheck className="h-5 w-5" />
                 </span>
                 <h2 className="text-[1.45rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.7rem]">
@@ -476,7 +476,7 @@ export default async function PropertyDetailPage({
                         {t("Inquiry status")}
                       </h3>
                       <p className="mt-1 text-sm leading-7 text-[var(--property-ink-soft)]">
-                        {t("Tracked in the HenryCo account timeline.")}
+                        {t("Tracked in the Henry Onyx account timeline.")}
                       </p>
                     </div>
                     <PropertyStatusBadge status={myInquiry.status} />
@@ -593,7 +593,7 @@ export default async function PropertyDetailPage({
 
                 <p className="text-xs leading-6 text-[var(--property-ink-muted)]">
                   {t(
-                    "HenryCo uses your account so replies, clarifications, and the next trust checks stay in one place.",
+                    "Henry Onyx uses your account so replies, clarifications, and the next trust checks stay in one place.",
                   )}
                 </p>
 
@@ -607,7 +607,7 @@ export default async function PropertyDetailPage({
                 <PropertyPublicAuthGate
                   title={t("Sign in to send an inquiry")}
                   description={t(
-                    "Inquiries are tied to your HenryCo account so agents can respond securely and you can track follow-up in one place.",
+                    "Inquiries are tied to your Henry Onyx account so agents can respond securely and you can track follow-up in one place.",
                   )}
                   loginHref={loginHref}
                   signupHref={signupHref}
@@ -706,7 +706,7 @@ export default async function PropertyDetailPage({
                   </div>
                   <p className="mt-2 text-xs leading-6 text-[var(--property-ink-muted)]">
                     {t(
-                      "HenryCo may confirm access, location, or listing readiness before the appointment is fixed. If you want to move forward after the viewing, extra documents can still be requested depending on the property and next step.",
+                      "Henry Onyx may confirm access, location, or listing readiness before the appointment is fixed. If you want to move forward after the viewing, extra documents can still be requested depending on the property and next step.",
                     )}
                   </p>
                 </div>
@@ -721,7 +721,7 @@ export default async function PropertyDetailPage({
                 <PropertyPublicAuthGate
                   title={t("Sign in to request a viewing")}
                   description={t(
-                    "Viewings are scheduled through your HenryCo account so confirmations, reminders, and updates stay in one secure timeline.",
+                    "Viewings are scheduled through your Henry Onyx account so confirmations, reminders, and updates stay in one secure timeline.",
                   )}
                   loginHref={loginHref}
                   signupHref={signupHref}

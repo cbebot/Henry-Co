@@ -68,14 +68,14 @@ const COPY: Record<
   verified: {
     label: "Verified property",
     summary:
-      "HenryCo has verified ownership, documents, and access. The listing carries the full trust posture before publication.",
+      "Henry Onyx has verified ownership, documents, and access. The listing carries the full trust posture before publication.",
     Icon: ShieldCheck,
-    tone: "text-[var(--property-accent-strong)]",
+    tone: "text-[var(--home-accent-text)]",
   },
   managed: {
-    label: "Managed by HenryCo",
+    label: "Managed by Henry Onyx",
     summary:
-      "Operations sit with HenryCo after move-in. Viewings, screening, and maintenance run on the same audit ledger as marketing.",
+      "Operations sit with Henry Onyx after move-in. Viewings, screening, and maintenance run on the same audit ledger as marketing.",
     Icon: ClipboardCheck,
     tone: "text-[var(--property-sage-soft)]",
   },
@@ -121,7 +121,7 @@ export function PropertyVerificationBadge({
         </span>
         <Link
           href="/trust"
-          className="text-[12px] font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
+          className="text-[12px] font-semibold text-[var(--home-accent-text)] underline-offset-4 transition hover:underline"
         >
           {t("What this means")}
         </Link>
@@ -164,7 +164,7 @@ export function PropertyVerificationBadgePill({
   const Icon = copy.Icon;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] ${copy.tone}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] ${copy.tone}`}
     >
       <Icon className="h-3 w-3" aria-hidden />
       {t(copy.label)}

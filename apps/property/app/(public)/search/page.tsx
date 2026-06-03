@@ -317,7 +317,7 @@ export default async function PropertySearchPage({
           <PropertyEmptyState
             title={t("No listings match this combination yet.")}
             body={t(
-              "Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want HenryCo to surface.",
+              "Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want Henry Onyx to surface.",
             )}
             action={
               <Link

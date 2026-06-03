@@ -71,7 +71,7 @@ function buildRuntimeMetrics(input: Omit<PropertySnapshot, "metrics">): Property
     {
       label: "Managed portfolio",
       value: String(managedPortfolio),
-      hint: "Active managed-property records tracked in HenryCo operations.",
+      hint: "Active managed-property records tracked in Henry Onyx operations.",
     },
     {
       label: "Viewing pipeline",
@@ -579,7 +579,7 @@ export async function createListingFromSubmission(input: {
     floorPlanUrl: null,
     amenities: input.amenities ?? [],
     trustBadges: [
-      Boolean(input.managedByHenryCo) ? "Managed by HenryCo" : "Submission under review",
+      Boolean(input.managedByHenryCo) ? "Managed by Henry Onyx" : "Submission under review",
       "Owner verification pending",
     ],
     headlineMetrics: [

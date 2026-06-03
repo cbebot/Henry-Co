@@ -82,7 +82,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
           type="button"
           onClick={() => openAt(0)}
           aria-label={`Open photo viewer for ${title}`}
-          className="group relative block aspect-[16/10] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_#C9A227)]"
+          className="group relative block aspect-[16/10] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_var(--home-accent))]"
         >
           <Image
             src={all[0] ?? hero}
@@ -105,7 +105,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
                 type="button"
                 onClick={() => openAt(i + 1)}
                 aria-label={`Open photo ${i + 2} of ${all.length}`}
-                className="group relative aspect-[4/3] overflow-hidden rounded-[1.4rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_#C9A227)]"
+                className="group relative aspect-[4/3] overflow-hidden rounded-[1.4rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_var(--home-accent))]"
               >
                 <Image
                   src={image}

@@ -334,7 +334,7 @@ export default async function PropertyHomePage() {
               search bar sits below it as a "go deeper" affordance,
               not a primary CTA. */}
           <aside className="lg:sticky lg:top-24">
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/15 p-6 sm:p-7">
+            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-sheet)] p-6 sm:p-7 shadow-[0_30px_90px_-55px_rgb(var(--home-ink-rgb)/0.18)]">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-accent-strong)]">
                 {copy.home.inventorySnapshot.title}
               </p>
@@ -437,7 +437,7 @@ export default async function PropertyHomePage() {
         ) : (
           // Empty state — designed, not "no items". Tells the visitor
           // exactly what's happening at the operator layer.
-          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-black/12 px-6 py-10 sm:px-10 sm:py-14">
+          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-6 py-10 sm:px-10 sm:py-14">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
               {copy.home.featuredEmpty.eyebrow}
             </p>
@@ -483,7 +483,7 @@ export default async function PropertyHomePage() {
             <div className="overflow-hidden rounded-[1.4rem] border border-[var(--property-line)]">
               <table className="w-full table-fixed border-collapse">
                 <thead>
-                  <tr className="bg-black/15 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
+                  <tr className="bg-[color:var(--home-surface-07)] text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                     <th scope="col" className="w-[44%] px-4 py-3 text-left sm:w-[42%] sm:px-6">
                       {copy.home.areasTable.headerArea}
                     </th>
@@ -548,7 +548,7 @@ export default async function PropertyHomePage() {
               </table>
             </div>
           ) : (
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/12 p-8">
+            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-8">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
                 {copy.home.areasTable.emptyEyebrow}
               </p>
@@ -632,7 +632,7 @@ export default async function PropertyHomePage() {
                             {service.bullets.slice(0, 4).map((bullet) => (
                               <li
                                 key={bullet}
-                                className="rounded-full border border-[var(--property-line)] bg-black/10 px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
+                                className="rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
                               >
                                 {bullet}
                               </li>
@@ -649,8 +649,8 @@ export default async function PropertyHomePage() {
 
           {/* Numerical column — managed economics visible up front */}
           <aside className="lg:pt-20">
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/15 p-6 sm:p-7">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-sage-soft)]">
+            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-sheet)] p-6 sm:p-7 shadow-[0_30px_90px_-55px_rgb(var(--home-ink-rgb)/0.18)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--home-accent-text)]">
                 {copy.home.managedAside.title}
               </p>
               <dl className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
@@ -696,7 +696,7 @@ export default async function PropertyHomePage() {
           <ol className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {localizedAgents.map((agent) => (
               <li key={agent.id} className="group/agent">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] border border-[var(--property-line)] bg-black/20">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] border border-[var(--property-line)] bg-[color:var(--home-surface-07)]">
                   {agent.photoUrl ? (
                     <Image
                       src={agent.photoUrl}
@@ -741,7 +741,7 @@ export default async function PropertyHomePage() {
           </ol>
         ) : (
           // Empty state — editorial. Operator-facing message.
-          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-black/12 p-8">
+          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-8">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
               {copy.home.agentsEmpty.eyebrow}
             </p>

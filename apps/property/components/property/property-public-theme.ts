@@ -46,7 +46,12 @@ export const PROPERTY_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--property-line" as string]: "var(--home-line)",
   ["--property-line-strong" as string]: "var(--home-line-15)",
   ["--property-accent" as string]: "var(--home-accent)",
-  ["--property-accent-strong" as string]: "var(--home-accent-strong)",
+  // --property-accent-strong is used pervasively as accent-AS-TEXT/icon across the
+  // public pages; map it to the theme-aware --home-accent-text (AA copper on paper
+  // AND on near-black) rather than --home-accent-strong (a deep fill copper that
+  // fails AA as text on the dark canvas). Sage tokens are made theme-aware in
+  // globals.css under .home-accent-scope (a single inline value can't flip).
+  ["--property-accent-strong" as string]: "var(--home-accent-text)",
   ["--property-accent-soft" as string]: "var(--home-accent-soft)",
   ["--property-shadow" as string]: "0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18)",
   ["--property-shadow-soft" as string]: "0 18px 60px -40px rgb(var(--home-ink-rgb) / 0.14)",

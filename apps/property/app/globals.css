@@ -516,3 +516,15 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .home-accent-scope .property-brand-mark::after {
   background: linear-gradient(135deg, transparent 10%, var(--home-accent-soft) 50%, transparent 90%);
 }
+/* Sage (the "managed / positive / good" secondary) is used as TEXT + borders on
+   the public pages, but its dark-first values (#98b39a / #e0efe0 near-white) are
+   illegible on warm paper. Make it theme-aware here (a single inline var can't
+   flip): a deep sage on light, a bright sage on near-black — AA either way. */
+.home-accent-scope {
+  --property-sage: #1f7a48;
+  --property-sage-soft: #1f7a48;
+}
+.dark .home-accent-scope {
+  --property-sage: #8fd6ad;
+  --property-sage-soft: #8fd6ad;
+}
