@@ -252,7 +252,7 @@ export function GuidedInterview({
               type="button"
               onClick={onBack}
               disabled={safeCursor === 0}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-4 py-2 text-[13px] font-semibold text-[var(--studio-ink-soft)] transition hover:border-[rgba(151,244,243,0.35)] hover:text-[var(--studio-ink)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-4 py-2 text-[13px] font-semibold text-[var(--studio-ink-soft)] transition hover:border-[color:var(--home-accent)] hover:text-[var(--studio-ink)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ArrowLeft className="h-4 w-4" />
               {t("Back")}

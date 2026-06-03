@@ -31,7 +31,7 @@ export default function StudioPoliciesPage() {
           every project.
         </p>
 
-        <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-2 text-[12px] font-semibold text-[var(--studio-ink-soft)]">
+        <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-[color:var(--home-surface)] px-4 py-2 text-[12px] font-semibold text-[var(--studio-ink-soft)]">
           <ShieldCheck className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
           Last reviewed {studioPolicyIndex[0].lastUpdated} · Governed by Nigerian law
         </div>
@@ -42,10 +42,10 @@ export default function StudioPoliciesPage() {
           <li key={policy.slug}>
             <Link
               href={`/policies/${policy.slug}`}
-              className="group flex h-full flex-col rounded-[1.4rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] p-5 transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)]"
+              className="group flex h-full flex-col rounded-[1.4rem] border border-[var(--studio-line)] bg-[color:var(--home-surface)] p-5 transition hover:-translate-y-0.5 hover:border-[color:var(--home-accent)]"
             >
               <div className="flex items-start justify-between gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.06)] text-[var(--studio-signal)]">
+                <span className="grid h-10 w-10 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]">
                   <ScrollText className="h-4 w-4" />
                 </span>
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
@@ -67,7 +67,7 @@ export default function StudioPoliciesPage() {
         ))}
       </ul>
 
-      <section className="mt-16 grid gap-8 rounded-[1.6rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] p-6 sm:p-8 md:grid-cols-3">
+      <section className="mt-16 grid gap-8 rounded-[1.6rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] p-6 sm:p-8 md:grid-cols-3">
         <div>
           <p className="studio-kicker">Engagement</p>
           <h3 className="mt-2 text-[1.1rem] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">

@@ -75,8 +75,8 @@ export function GuidedQuestionCard({
                   className={[
                     "group relative flex h-full w-full flex-col rounded-[1.1rem] border p-4 text-left transition duration-200 hover:-translate-y-0.5",
                     isSelected
-                      ? "border-[rgba(151,244,243,0.5)] bg-[rgba(151,244,243,0.08)]"
-                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.35)]",
+                      ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)]"
+                      : "border-[var(--studio-line)] bg-[color:var(--home-surface)] hover:border-[color:var(--home-accent)]",
                   ].join(" ")}
                 >
                   <span className="flex items-start justify-between gap-3">

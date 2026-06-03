@@ -38,6 +38,174 @@
   --home-accent-text: var(--accent-text-dark, var(--accent-text));
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   V3-STUDIO-LOADING-POLISH — public-subtree overrides for the legacy
+   dark-DESIGNED .studio-* utility classes.
+
+   The dashboards read --studio-* from :root (dark) and keep ALL the
+   base .studio-* rules below untouched. But several of those rules bake
+   in HARDCODED dark values (cyan gradients, dark-on-cyan text, teal/
+   copper dark glows) that don't flip when the public subtree aliases the
+   --studio-* tokens onto the light --home-* system. The result was old
+   cyan buttons + dark glows bleeding onto the warm-paper public pages.
+
+   Higher specificity (`.studio-public .studio-*`) wins on the public
+   subtree only; the dashboard's `:root .studio-*` is never affected.
+   Mirrors the shipped marketplace `.home-accent-scope .market-*` idea —
+   here the public wrapper class is `.studio-public`.
+   ────────────────────────────────────────────────────────────────── */
+
+/* Primary CTA — teal accent fill + accent-ink text, no dark cyan glow. */
+.studio-public .studio-button-primary {
+  background: var(--home-accent);
+  color: var(--home-accent-ink);
+  box-shadow: none;
+}
+.studio-public .studio-button-primary:hover {
+  transform: translateY(-1px);
+  background: var(--home-accent-strong);
+  box-shadow: 0 18px 44px -24px var(--home-accent-ring);
+}
+
+/* Secondary CTA — light hairline surface, not a white-on-white wash. */
+.studio-public .studio-button-secondary {
+  border-color: var(--home-line-15);
+  background: var(--home-surface-04);
+  color: var(--home-ink);
+}
+.studio-public .studio-button-secondary:hover {
+  border-color: var(--home-accent);
+  background: var(--home-surface-07);
+}
+
+/* Kicker / eyebrow — accent-as-text on canvas (AA), not bright dark cyan. */
+.studio-public .studio-kicker {
+  color: var(--home-accent-text);
+}
+
+/* Inputs — warm light fields, teal focus ring (the dark rgba sets read
+   as muddy near-invisible smudges on paper). */
+.studio-public .studio-input,
+.studio-public .studio-select,
+.studio-public .studio-textarea {
+  border-color: var(--home-line-15);
+  background: var(--home-surface);
+  color: var(--home-ink);
+}
+.studio-public .studio-input:focus,
+.studio-public .studio-select:focus,
+.studio-public .studio-textarea:focus {
+  border-color: var(--home-accent);
+  box-shadow: 0 0 0 3px var(--home-accent-ring);
+  background: var(--home-sheet);
+}
+.studio-public .studio-input::placeholder,
+.studio-public .studio-textarea::placeholder {
+  color: var(--home-ink-50);
+}
+.studio-public .studio-select option,
+.studio-public select.studio-select option {
+  background-color: var(--home-sheet);
+  color: var(--home-ink);
+}
+
+/* Brand mark — light tinted tile, no dark copper/cyan gradient. */
+.studio-public .studio-brand-mark {
+  border-color: var(--home-line-15);
+  background:
+    linear-gradient(145deg, var(--home-accent-soft), transparent),
+    var(--home-surface);
+  color: var(--home-ink);
+}
+
+/* Card / row tactile hover — teal accent on light, no dark drop glow. */
+.studio-public .studio-card-tactile:hover,
+.studio-public .studio-card-tactile:focus-visible {
+  border-color: var(--home-accent);
+  box-shadow: 0 24px 60px -34px var(--home-accent-ring);
+}
+.studio-public .studio-card-tactile:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--home-accent-ring),
+    0 0 0 4px var(--home-sheet),
+    0 24px 60px -34px var(--home-accent-ring);
+}
+.studio-public .studio-card-tactile::after {
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    var(--home-accent-soft) 100%
+  );
+}
+.studio-public .studio-row-tactile:hover,
+.studio-public .studio-row-tactile:focus-visible {
+  background: var(--home-accent-soft);
+}
+.studio-public .studio-row-tactile:focus-visible {
+  box-shadow: 0 0 0 2px var(--home-accent-ring);
+}
+
+/* Decorative glows — the dark teal/copper radial washes (rgba(88,212,210),
+   rgba(217,168,109), rgba(151,244,243)) are tuned for a near-black stage and
+   muddy the warm paper. Lighten/neutralize them to a barely-there accent
+   breath on the public subtree. */
+.studio-public .studio-mesh::before {
+  background:
+    linear-gradient(120deg, transparent 0%, var(--home-accent-soft) 22%, transparent 46%);
+  opacity: 0.5;
+}
+.studio-public .studio-mesh::after {
+  background: radial-gradient(circle, var(--home-accent-soft) 0%, transparent 68%);
+}
+.studio-public .studio-hero::before {
+  background: radial-gradient(circle, var(--home-accent-soft) 0%, transparent 72%);
+}
+.studio-public .studio-shell::before {
+  background-image:
+    linear-gradient(to right, var(--home-line-08) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--home-line-08) 1px, transparent 1px);
+  opacity: 0.4;
+}
+.studio-public .studio-shell::after {
+  background:
+    radial-gradient(circle at 10% 20%, var(--home-accent-soft), transparent 28%),
+    radial-gradient(circle at 90% 18%, var(--home-accent-soft), transparent 24%);
+}
+.studio-public .studio-receipt::after {
+  background: radial-gradient(circle, var(--home-accent-soft) 0%, transparent 66%);
+}
+
+/* Metallic rule — copper→cyan dark recipe → a clean teal hairline on paper. */
+.studio-public .studio-metal-rule {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--home-accent-soft) 20%,
+    var(--home-accent) 50%,
+    var(--home-accent-soft) 80%,
+    transparent 100%
+  );
+}
+
+/* Panels / muted panels — drop the dark blur-glass surface; sit on warm
+   sheets with a hairline so cards read crisp on paper. */
+.studio-public .studio-panel {
+  border-color: var(--home-line-12);
+  background: var(--home-sheet);
+  box-shadow: 0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18);
+  backdrop-filter: none;
+}
+.studio-public .studio-muted-panel {
+  border-color: var(--home-line);
+  background: var(--home-surface);
+}
+
+/* ::selection — teal wash, not the hardcoded dark cyan. */
+.studio-public ::selection {
+  background: var(--home-accent-soft);
+  color: var(--home-ink);
+}
+
 [data-workspace-division="studio"] {
   --ws-bg: var(--studio-bg);
   --ws-bg-soft: rgba(255, 255, 255, 0.025);

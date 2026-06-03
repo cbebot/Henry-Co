@@ -1,14 +1,16 @@
-import { PublicHomeSkeleton } from "@henryco/ui/public-shell";
+import { StudioPublicLoading } from "@/components/studio/studio-public-loading";
 
 /**
- * V3-05 (S2) — Studio public-shell route fallback.
+ * Studio public-shell route fallback.
  *
- * Stripped of theater copy: previously
- *   title="Loading studio"
- *   subtitle="Preparing services, teams, and portfolio experiences."
- * Replaced with the content-shaped `PublicHomeSkeleton` (4-card grid
- * matching the studio public landing). No warmup language.
+ * V3-STUDIO-LOADING-POLISH — the Studio public surface is LIGHT-PRIMARY
+ * (warm paper) + Fraunces + a teal accent. The shared `PublicHomeSkeleton`
+ * defaulted to `tone="onDark"` (white bars) which read wrong on the light
+ * canvas, and the dark dashboard body bled through before the page streamed.
+ * `StudioPublicLoading` is the self-contained light skeleton — it carries its
+ * own `.studio-public` theme so it resolves the same warm canvas + teal
+ * accent as the real pages. No dark flash.
  */
-export default function StudioPublicLoading() {
-  return <PublicHomeSkeleton variant="home" />;
+export default function StudioPublicLoading_Route() {
+  return <StudioPublicLoading variant="home" />;
 }

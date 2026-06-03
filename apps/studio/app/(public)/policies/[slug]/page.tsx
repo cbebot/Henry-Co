@@ -95,7 +95,7 @@ export default async function StudioPolicyPage({
             <li key={item.slug}>
               <Link
                 href={`/policies/${item.slug}`}
-                className="group flex items-center justify-between gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 transition hover:border-[rgba(151,244,243,0.45)]"
+                className="group flex items-center justify-between gap-3 rounded-2xl border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-4 py-3 transition hover:border-[color:var(--home-accent)]"
               >
                 <span>
                   <span className="block text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
