@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { Manrope } from "next/font/google";
-import { HenryCoPublicAccountPresets } from "@henryco/ui";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
-import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
-import { translateSurfaceLabel } from "@henryco/i18n";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
-import LogisticsShell from "@/components/layout/LogisticsShell";
-import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
-import { getLogisticsPublicChipUser } from "@/lib/logistics-public-viewer";
-import { LogisticsAccountChip } from "@/components/layout/LogisticsAccountChip";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import "./globals.css";
 
@@ -41,36 +34,19 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * Root layout — providers only. The public marketing/booking surface lives under
+ * the `(public)` route group (its own shell wraps PublicChrome + PublicSiteFooter
+ * on the theme-aware --home-* scope). Staff/operator workspaces ((staff)) and the
+ * auth/pay redirects render bare here and keep their own dark chrome/tokens.
+ */
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [lang, h, chipUser] = await Promise.all([
-    getLogisticsPublicLocale(),
-    headers(),
-    getLogisticsPublicChipUser(),
-  ]);
+  const lang = await getLogisticsPublicLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
-  const t = (text: string) => translateSurfaceLabel(lang, text);
-  const returnPath = h.get("x-logistics-return-path") || "/";
-  const accountSlot = (
-    <LogisticsAccountChip
-      {...HenryCoPublicAccountPresets.standard}
-      user={chipUser}
-      loginHref={getLogisticsSharedLoginUrl(returnPath)}
-      signupHref={getLogisticsSharedSignupUrl(returnPath)}
-      accountHref={getAccountUrl("/logistics")}
-      preferencesHref={getAccountUrl("/settings")}
-      settingsHref={getAccountUrl("/security")}
-      showSignOut
-      buttonClassName="border-[var(--logistics-line-strong)] bg-[rgba(215,117,57,0.14)] text-[var(--logistics-accent-soft)] hover:bg-[rgba(215,117,57,0.24)]"
-      dropdownClassName="border-[var(--logistics-line)] bg-[#120a14]"
-      menuItems={[
-        { label: t("Logistics in My Account"), href: getAccountUrl("/logistics"), external: true },
-      ]}
-    />
-  );
 
   return (
     <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
@@ -79,8 +55,8 @@ export default async function RootLayout({
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
-            <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
-            <SupportAssist division="logistics" accent="#D77539" />
+            {children}
+            <SupportAssist division="logistics" accent="#D06F32" />
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

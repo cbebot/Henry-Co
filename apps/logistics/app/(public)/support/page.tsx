@@ -72,7 +72,7 @@ export default async function SupportPage() {
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
+              <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
                 {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)]">
@@ -81,14 +81,14 @@ export default async function SupportPage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={getAccountUrl("/support")}
-                  className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]"
                 >
                   {copy.hero.ctas.openThread}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href={`mailto:${logistics.supportEmail}`}
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink-70)] transition hover:bg-[color:var(--home-surface-04)]"
                 >
                   {copy.hero.ctas.emailDispatch}
                 </a>
@@ -107,44 +107,44 @@ export default async function SupportPage() {
               </p>
               <ul className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
                 <li className="flex items-baseline gap-4 py-4">
-                  <Mail className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  <Mail className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {copy.channels.emailLabel}
                   </span>
                   <a
                     href={`mailto:${logistics.supportEmail}`}
-                    className="ml-auto text-right text-sm font-semibold tracking-tight text-white underline-offset-4 hover:underline"
+                    className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)] underline-offset-4 hover:underline"
                   >
                     {logistics.supportEmail}
                   </a>
                 </li>
                 <li className="flex items-baseline gap-4 py-4">
-                  <PhoneCall className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  <PhoneCall className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {copy.channels.phoneLabel}
                   </span>
                   <a
                     href={`tel:${logistics.supportPhone}`}
-                    className="ml-auto text-right text-sm font-semibold tracking-tight text-white underline-offset-4 hover:underline"
+                    className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)] underline-offset-4 hover:underline"
                   >
                     {logistics.supportPhone}
                   </a>
                 </li>
                 <li className="flex items-baseline gap-4 py-4">
-                  <Clock3 className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  <Clock3 className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {copy.channels.hoursLabel}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {pickupHoursLocalized}
                   </span>
                 </li>
                 <li className="flex items-baseline gap-4 py-4">
-                  <ShieldCheck className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  <ShieldCheck className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {copy.channels.operationsLabel}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {settings.operationsCity}, {settings.operationsRegion}
                   </span>
                 </li>
@@ -161,11 +161,11 @@ export default async function SupportPage() {
             <ul className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
               {helps.map(({ icon: Icon, title, body }) => (
                 <li key={title} className="flex gap-4 py-4">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent)]">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--logistics-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
                     <Icon className="h-4 w-4" />
                   </span>
                   <div>
-                    <h2 className="text-sm font-semibold tracking-tight text-white">{title}</h2>
+                    <h2 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">{title}</h2>
                     <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">
                       {body}
                     </p>
@@ -185,7 +185,7 @@ export default async function SupportPage() {
                   {copy.accountVsGuest.account.label}
                 </span>
                 <div>
-                  <h3 className="text-sm font-semibold tracking-tight text-white">
+                  <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {copy.accountVsGuest.account.title}
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">
@@ -198,7 +198,7 @@ export default async function SupportPage() {
                   {copy.accountVsGuest.guest.label}
                 </span>
                 <div>
-                  <h3 className="text-sm font-semibold tracking-tight text-white">
+                  <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {copy.accountVsGuest.guest.title}
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">
@@ -216,7 +216,7 @@ export default async function SupportPage() {
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
                 {copy.escalation.eyebrow}
               </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.escalation.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--logistics-muted)]">
@@ -226,14 +226,14 @@ export default async function SupportPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/track"
-                className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]"
               >
                 {copy.escalation.ctas.trackShipment}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href={getAccountUrl("/support")}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink-70)] transition hover:bg-[color:var(--home-surface-04)]"
               >
                 {copy.escalation.ctas.accountSupport}
               </Link>

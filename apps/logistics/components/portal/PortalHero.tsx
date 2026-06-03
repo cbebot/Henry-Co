@@ -134,7 +134,14 @@ export function PortalCapabilityStrip({
             }
           >
             <span className="log-pf__metric-label">{metric.label}</span>
-            <span className="log-pf__metric-value">
+            <span
+              className={
+                "log-pf__metric-value" +
+                (typeof metric.value === "string" && /[a-zA-Z]{4}|\s/.test(metric.value)
+                  ? " log-pf__metric-value--text"
+                  : "")
+              }
+            >
               {metric.currencyGlyph ? (
                 <span className="log-pf__metric-value-currency" aria-hidden>
                   {metric.currencyGlyph}

@@ -76,7 +76,7 @@ export default async function BusinessPage() {
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
+              <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
                 {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)]">
@@ -85,14 +85,14 @@ export default async function BusinessPage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/quote"
-                  className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]"
                 >
                   {copy.hero.quoteCta}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href={getAccountUrl("/logistics")}
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink-70)] transition hover:bg-[color:var(--home-surface-04)]"
                 >
                   {copy.hero.accountCta}
                 </Link>
@@ -126,11 +126,11 @@ export default async function BusinessPage() {
                   key={label}
                   className="flex items-baseline gap-3 border-b border-[var(--logistics-line)] py-3 last:border-b-0"
                 >
-                  <Icon className="h-3.5 w-3.5 text-[var(--logistics-accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  <Icon className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {value}
                   </span>
                 </li>
@@ -148,8 +148,8 @@ export default async function BusinessPage() {
               const Icon = item.icon;
               return (
                 <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                  <Icon className="h-5 w-5 text-[var(--logistics-accent)]" aria-hidden />
-                  <h2 className="mt-4 text-lg font-semibold tracking-tight text-white">
+                  <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <h2 className="mt-4 text-lg font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {item.title}
                   </h2>
                   <p className="mt-2 text-sm leading-7 text-[var(--logistics-muted)]">{item.body}</p>
@@ -173,7 +173,7 @@ export default async function BusinessPage() {
                   {copy.path.stepLabel} {item.step}
                 </span>
                 <div>
-                  <h3 className="text-sm font-semibold tracking-tight text-white">{item.title}</h3>
+                  <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">{item.title}</h3>
                   <p className="mt-1 max-w-2xl text-sm leading-relaxed text-[var(--logistics-muted)]">
                     {item.body}
                   </p>
@@ -230,7 +230,7 @@ export default async function BusinessPage() {
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
                 {copy.closing.eyebrow}
               </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.closing.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--logistics-muted)]">
@@ -240,14 +240,14 @@ export default async function BusinessPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/quote"
-                className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]"
               >
                 {copy.closing.quoteCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/support"
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink-70)] transition hover:bg-[color:var(--home-surface-04)]"
               >
                 {copy.closing.dispatchCta}
               </Link>

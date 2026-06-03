@@ -97,7 +97,7 @@ export function PortalLaneGrid({
   return (
     <div className="log-pf__lanes" role="list" aria-label={t("Logistics lanes")}>
       {clipped.map((lane) => (
-        <a key={lane.href} className="log-pf__lane" href={lane.href} role="listitem">
+        <a key={lane.title} className="log-pf__lane" href={lane.href} role="listitem">
           <span className="log-pf__lane-badge">{lane.badge}</span>
           <h3 className="log-pf__lane-title">{lane.title}</h3>
           <p className="log-pf__lane-body">{lane.body}</p>
