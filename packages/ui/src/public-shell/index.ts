@@ -1,6 +1,14 @@
 export { PublicHeader } from "./public-header";
 export type { PublicHeaderProps, PublicHeaderBrand, PublicNavItem } from "./public-header";
 
+export { PublicChrome } from "./public-chrome";
+export type {
+  PublicChromeProps,
+  PublicChromeBrand,
+  PublicChromeNavItem,
+  PublicChromeAccount,
+} from "./public-chrome";
+
 export { ConfiguredPublicHeader } from "./configured-public-header";
 
 export { PublicAccountChip } from "../public/public-account-chip";
