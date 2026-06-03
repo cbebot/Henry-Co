@@ -70,6 +70,10 @@ export type PublicChromeProps = {
    *  account menu + sign-out are PRESERVED; PublicChrome renders it only when
    *  `account.user` is set, and shows Sign in / Get started otherwise. */
   accountMenu?: ReactNode;
+  /** Extra toolbar actions (desktop + mobile) — e.g. a cart trigger,
+   *  notifications bell, vendor link. PublicChrome stays commerce-agnostic;
+   *  sites slot live-runtime controls here so a swap never drops them. */
+  extras?: ReactNode;
   /** Built-in search pill (pass an href) or a fully custom node. */
   search?: { href: string; label?: string } | ReactNode;
   /** Optional thin announcement strip above the toolbar. */
@@ -203,6 +207,7 @@ export function PublicChrome({
   items,
   account,
   accountMenu,
+  extras,
   search,
   prepend,
   showThemeToggle = true,
@@ -314,6 +319,7 @@ export function PublicChrome({
 
       <div className="hidden items-center gap-2 lg:flex">
         {searchNode}
+        {extras}
         {showThemeToggle ? (
           <div className="flex items-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-1">
             <ChromeThemeToggle t={t} />
@@ -324,6 +330,7 @@ export function PublicChrome({
 
       {/* Mobile cluster */}
       <div className="flex items-center gap-1.5 lg:hidden">
+        {extras}
         {showThemeToggle ? <ChromeThemeToggle t={t} /> : null}
         <button
           ref={triggerRef}
