@@ -36,7 +36,7 @@ export default async function TalentPage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={profileUrl}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                  className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                 >
                   {viewer.user ? t("Update profile") : t("Start your profile")}
                   <ArrowRight className="h-4 w-4" />
@@ -125,7 +125,7 @@ export default async function TalentPage() {
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href={profileUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 {viewer.user ? t("Open candidate hub") : t("Create candidate profile")}
                 <ArrowRight className="h-4 w-4" />

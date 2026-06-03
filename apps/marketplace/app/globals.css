@@ -3,6 +3,11 @@
 /* V3-PUBLIC-REBUILD-marketplace — the --home-* public design system (additive/inert;
    adopted on the public subtree via app/(public)/layout.tsx + .home-accent-scope). */
 @import "../../../packages/ui/src/styles/public-design.css";
+
+/* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
+   media query — without this, the toggled theme and `dark:` utilities decouple
+   (toggle dark on a light-OS device → bg-white renders solid white, etc.). */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 
 :root {

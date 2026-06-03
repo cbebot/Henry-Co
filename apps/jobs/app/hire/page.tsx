@@ -97,14 +97,14 @@ export default async function HirePage() {
               <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
                 {copy.heroBody}
               </p>
-              <p className="mt-4 inline-flex max-w-2xl items-start gap-2 rounded-2xl border border-black/10 bg-white/60 px-4 py-3 text-[13.5px] leading-7 text-[var(--jobs-muted)] dark:border-white/10 dark:bg-white/[0.03]">
+              <p className="mt-4 inline-flex max-w-2xl items-start gap-2 rounded-2xl border border-[color:var(--jobs-line)] bg-[color:var(--jobs-paper-soft)] px-4 py-3 text-[13.5px] leading-7 text-[var(--jobs-muted)]">
                 <Shield className="mt-0.5 h-4 w-4 shrink-0 text-[var(--jobs-accent)]" aria-hidden />
                 <span>{copy.shieldNotice}</span>
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={startUrl}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                  className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                 >
                   {viewer.user ? copy.ctaSignedIn : copy.ctaSignedOut}
                   <ArrowRight className="h-4 w-4" />
@@ -112,7 +112,7 @@ export default async function HirePage() {
                 {!viewer.user ? (
                   <Link
                     href={loginUrl}
-                    className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[var(--jobs-accent)]/40 dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
+                    className="jobs-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition"
                   >
                     {copy.ctaLogin}
                   </Link>
@@ -201,7 +201,7 @@ export default async function HirePage() {
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href={startUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 {viewer.user ? copy.ctaWorkspace : copy.ctaGetStarted}
                 <ArrowRight className="h-4 w-4" />

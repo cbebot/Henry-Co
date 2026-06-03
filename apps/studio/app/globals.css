@@ -5,6 +5,10 @@
 @import "../../../packages/ui/src/styles/public-design.css";
 @import "../../../packages/workspace-shell/src/styles.css";
 @import "../../../packages/messaging-thread/src/styles.css";
+
+/* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
+   media query — without this, the toggled theme and `dark:` utilities decouple. */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 @source "../../../packages/workspace-shell/src";
 @source "../../../packages/messaging-thread/src";

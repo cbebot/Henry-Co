@@ -3,6 +3,14 @@
 @import "../../../packages/ui/src/styles/public-design.css";
 @import "../../../packages/workspace-shell/src/styles.css";
 @import "../../../packages/messaging-thread/src/styles.css";
+
+/* Tailwind v4 ships `dark:` bound to @media(prefers-color-scheme) — the OS.
+   Our theme TOGGLE is class-based (.dark on <html> via next-themes). Without
+   this declaration the two decouple: tokens follow the toggle, `dark:`
+   utilities follow the OS, and when they disagree (user toggles against their
+   OS) `bg-white`/`text-white` etc. render solid-white / invisible. Rebind
+   `dark:` to the .dark class so every utility tracks the toggle. */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 @source "../../../packages/workspace-shell/src";
 @source "../../../packages/messaging-thread/src";
