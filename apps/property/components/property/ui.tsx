@@ -137,7 +137,7 @@ export function PropertyListingCard({
   const target = href || `/property/${listing.slug}`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40 hover:shadow-[0_22px_60px_rgba(0,0,0,0.18)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40 hover:shadow-[0_30px_80px_-50px_rgb(var(--home-ink-rgb)/0.18)]">
       <Link href={target} className="block">
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
@@ -319,7 +319,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <article className="overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)]">
+    <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)]">
       <div className="grid gap-0 sm:grid-cols-[0.5fr,1fr]">
         <div className="relative h-72 sm:h-full">
           <Image
@@ -388,7 +388,7 @@ export function PropertyManagedRecordCard({
   return (
     <article
       className={cn(
-        "rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6",
+        "rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6",
         compact && "p-5",
       )}
     >
@@ -710,7 +710,7 @@ export function PropertyPortfolioStats({
         </p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
           {statsCopy?.managedStockBody ??
-            "Listings currently running through HenryCo managed-property rails."}
+            "Listings currently running through Henry Onyx managed-property rails."}
         </p>
       </li>
       <li className="md:pl-8">
@@ -730,7 +730,7 @@ export function PropertyPortfolioStats({
         </p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
           {statsCopy?.managedValueBody ??
-            "Combined managed-property portfolio value under HenryCo trust operations."}
+            "Combined managed-property portfolio value under Henry Onyx trust operations."}
         </p>
       </li>
     </ol>

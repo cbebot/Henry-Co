@@ -79,7 +79,7 @@ export function PropertyMapView({
 
   return (
     <section
-      className="relative overflow-hidden rounded-[1.4rem] border border-[var(--property-line)] bg-black/15"
+      className="relative overflow-hidden rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)]"
       aria-label={t("Property map view")}
     >
       <div className="relative h-[28rem]">
@@ -169,8 +169,8 @@ function MapFallback({
     <div
       className={`absolute inset-0 ${
         tone === "map"
-          ? "bg-[radial-gradient(circle_at_30%_25%,rgba(232,184,148,0.18),transparent_55%),radial-gradient(circle_at_70%_75%,rgba(152,179,154,0.15),transparent_50%),#0b0705]"
-          : "bg-[radial-gradient(circle_at_25%_30%,rgba(232,184,148,0.1),transparent_60%),#0c0806]"
+          ? "bg-[radial-gradient(circle_at_30%_25%,rgba(232,184,148,0.18),transparent_55%),radial-gradient(circle_at_70%_75%,rgba(152,179,154,0.15),transparent_50%),var(--home-canvas-deep)]"
+          : "bg-[radial-gradient(circle_at_25%_30%,rgba(232,184,148,0.1),transparent_60%),var(--home-sheet)]"
       }`}
     >
       <svg
@@ -189,7 +189,7 @@ function MapFallback({
             <path
               d="M 10 0 L 0 0 0 10"
               fill="none"
-              stroke="rgba(255,255,255,0.04)"
+              stroke="rgb(var(--home-ink-rgb) / 0.06)"
               strokeWidth="0.4"
             />
           </pattern>
@@ -255,7 +255,7 @@ function SelectedAreaSheet({
       role="dialog"
       aria-modal="true"
       aria-labelledby="property-map-sheet-title"
-      className="absolute inset-x-0 bottom-0 max-h-[60%] overflow-y-auto rounded-t-[1.4rem] border-t border-[var(--property-line)] bg-[#0b0705] p-5 shadow-2xl sm:p-7"
+      className="absolute inset-x-0 bottom-0 max-h-[60%] overflow-y-auto rounded-t-[1.4rem] border-t border-[var(--property-line)] bg-[color:var(--home-sheet)] p-5 text-[color:var(--home-ink)] shadow-2xl sm:p-7"
     >
       <div className="flex items-start justify-between gap-4">
         <div>

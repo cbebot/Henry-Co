@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/styles/public-design.css";
 @source "../../../packages/ui/src";
 
 :root {
@@ -398,3 +399,132 @@ textarea {
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
 html, body { overflow-x: clip; max-width: 100vw; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
+
+/* =====================================================================
+   V3-PUBLIC-REBUILD-property — public-subtree retone.
+   The .property-* utilities are dark-first (white-alpha fills baked for
+   the ember stage) and are SHARED with the authenticated dashboards
+   (support/operations/moderation/agent/admin), which read --property-*
+   from :root. So we retone them ONLY under .home-accent-scope — the
+   public wrapper set in app/(public)/layout.tsx — to the theme-aware
+   --home-* tokens. Higher specificity wins on the public subtree; the
+   dashboard :root .property-* rules are untouched. Mirrors the shipped
+   marketplace `.home-accent-scope .market-*` recipe. The page markup's
+   var(--property-*) refs are flipped separately by PROPERTY_PUBLIC_THEME_STYLE
+   (components/property/property-public-theme.ts), which aliases --property-*
+   -> --home-* on the same wrapper; these rules cover the baked literals.
+   ===================================================================== */
+.home-accent-scope .property-panel {
+  background: var(--home-sheet);
+  border-color: var(--home-line);
+  box-shadow: 0 30px 90px -55px rgb(var(--home-ink-rgb) / 0.18);
+  backdrop-filter: none;
+}
+.home-accent-scope .property-paper {
+  background: var(--home-surface-04);
+  border-color: var(--home-line);
+  box-shadow: 0 18px 60px -45px rgb(var(--home-ink-rgb) / 0.14);
+}
+.home-accent-scope .property-soft {
+  background: var(--home-surface-04);
+  border-color: var(--home-line);
+}
+.home-accent-scope .property-button-primary {
+  background: var(--home-accent);
+  color: var(--home-accent-ink);
+  box-shadow: 0 18px 40px -24px rgb(var(--home-ink-rgb) / 0.25);
+}
+.home-accent-scope .property-button-primary:hover {
+  background: var(--home-accent-strong);
+  box-shadow: 0 22px 48px -24px rgb(var(--home-ink-rgb) / 0.3);
+}
+.home-accent-scope .property-button-secondary {
+  background: var(--home-surface-04);
+  border-color: var(--home-line);
+  color: var(--home-ink);
+}
+.home-accent-scope .property-button-secondary:hover {
+  background: var(--home-surface-07);
+  border-color: var(--home-line-15);
+}
+.home-accent-scope .property-input,
+.home-accent-scope .property-select,
+.home-accent-scope .property-textarea {
+  background: var(--home-surface-04);
+  border-color: var(--home-line);
+  color: var(--home-ink);
+}
+.home-accent-scope .property-input:focus,
+.home-accent-scope .property-select:focus,
+.home-accent-scope .property-textarea:focus {
+  border-color: var(--home-accent);
+  box-shadow: 0 0 0 3px var(--home-accent-soft);
+  background: var(--home-sheet);
+}
+.home-accent-scope .property-input::placeholder,
+.home-accent-scope .property-textarea::placeholder {
+  color: var(--home-ink-50);
+}
+.home-accent-scope .property-status-badge-neutral {
+  background: var(--home-surface-04);
+  border-color: var(--home-line);
+  color: var(--home-ink-65);
+}
+.home-accent-scope .property-status-badge-positive {
+  border-color: color-mix(in srgb, #2f8f5b 34%, transparent);
+  background: color-mix(in srgb, #2f8f5b 14%, transparent);
+  color: #1f7a48;
+}
+.home-accent-scope .property-status-badge-negative {
+  border-color: color-mix(in srgb, var(--home-accent) 34%, transparent);
+  background: var(--home-accent-soft);
+  color: var(--home-accent-text);
+}
+.home-accent-scope .property-nav-link-active {
+  background: var(--home-surface-07);
+  color: var(--home-ink);
+}
+.home-accent-scope .property-nav-link-idle {
+  color: var(--home-ink-65);
+}
+.home-accent-scope .property-nav-link-idle:hover {
+  color: var(--home-ink);
+}
+.home-accent-scope .property-kicker {
+  color: var(--home-accent-text);
+}
+/* Shell texture: redraw the grid + glow from theme-aware ink/accent so they
+   flip with the canvas (white-alpha grid lines vanished on warm paper). */
+.home-accent-scope.property-shell::before,
+.home-accent-scope .property-shell::before {
+  background-image:
+    linear-gradient(to right, rgb(var(--home-ink-rgb) / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--home-ink-rgb) / 0.04) 1px, transparent 1px);
+  opacity: 0.5;
+}
+.home-accent-scope.property-shell::after,
+.home-accent-scope .property-shell::after {
+  background:
+    radial-gradient(circle at 18% 18%, var(--home-accent-soft), transparent 26%),
+    radial-gradient(circle at 84% 14%, var(--home-accent-soft), transparent 22%);
+}
+.home-accent-scope .property-brand-mark {
+  background: var(--home-surface-07);
+  border-color: var(--home-line);
+  color: var(--home-accent-text);
+}
+.home-accent-scope .property-brand-mark::after {
+  background: linear-gradient(135deg, transparent 10%, var(--home-accent-soft) 50%, transparent 90%);
+}
+/* Sage (the "managed / positive / good" secondary) is used as TEXT + borders on
+   the public pages, but its dark-first values (#98b39a / #e0efe0 near-white) are
+   illegible on warm paper. Make it theme-aware here (a single inline var can't
+   flip): a deep sage on light, a bright sage on near-black — AA either way. */
+.home-accent-scope {
+  --property-sage: #1f7a48;
+  --property-sage-soft: #1f7a48;
+}
+.dark .home-accent-scope {
+  --property-sage: #8fd6ad;
+  --property-sage-soft: #8fd6ad;
+}

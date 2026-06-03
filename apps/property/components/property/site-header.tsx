@@ -47,7 +47,7 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
         </div>
       }
       afterBrand={
-        <div className="hidden rounded-full border border-[var(--property-line)] bg-black/10 px-3 py-2 text-xs text-[var(--property-ink-soft)] xl:flex">
+        <div className="hidden rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-3 py-2 text-xs text-[var(--property-ink-soft)] xl:flex">
           {t("Editorial listings for calmer decisions")}
         </div>
       }
@@ -73,12 +73,12 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
       actions={
         <HenryCoSearchBreadcrumb
           href={getHubUrl("/search")}
-          className="hidden xl:inline-flex border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] text-[var(--property-ink)] hover:bg-[rgba(255,255,255,0.07)] dark:border-[var(--property-line)] dark:bg-[rgba(255,255,255,0.03)]"
+          className="hidden xl:inline-flex border-[var(--property-line)] bg-[color:var(--home-surface-04)] text-[var(--property-ink)] hover:bg-[color:var(--home-surface-07)]"
         />
       }
       accountMenu={<div className="hidden sm:block">{accountSlot}</div>}
       themeToggleBeforeAccount
-      themeToggleClassName="hidden h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] px-0 py-0 sm:inline-flex"
+      themeToggleClassName="hidden h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-0 py-0 sm:inline-flex"
       mobileSheetBeforeNav={<div className="mb-1 flex flex-col items-stretch gap-2">{accountSlot}</div>}
       showAccountInMobileSheetFooter={false}
       getNavItemClassName={(_item, active, placement) => {
@@ -88,7 +88,7 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
             active ? "property-nav-link-active" : "property-nav-link-idle"
           );
         }
-        return "rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 px-4 py-3 text-sm font-medium text-[var(--property-ink)]";
+        return "rounded-[1.2rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-medium text-[var(--property-ink)]";
       }}
       menuButtonClassName="rounded-full border border-[var(--property-line)] bg-transparent shadow-none text-[var(--property-ink)] dark:bg-transparent dark:shadow-none"
     />

@@ -35,14 +35,14 @@ export async function PropertySiteFooter() {
         { href: getSharedAccountPropertyUrl(), label: t("Property activity") },
         {
           href: getSharedAccountLoginUrl({ propertyOrigin: getPropertyOrigin() }),
-          label: t("HenryCo account sign-in"),
+          label: t("Henry Onyx account sign-in"),
         },
       ],
     },
   ];
 
   return (
-    <footer className="mt-20 border-t border-[var(--property-line)] bg-[linear-gradient(180deg,rgba(17,12,9,0.14),rgba(17,12,9,0.52))]">
+    <footer className="mt-20 border-t border-[var(--property-line)] bg-[color:var(--home-canvas-deep)]">
       <div
         aria-hidden
         className="pointer-events-none mx-auto h-px max-w-[92rem] bg-gradient-to-r from-transparent via-[var(--property-accent-strong)]/40 to-transparent"
@@ -89,7 +89,7 @@ export async function PropertySiteFooter() {
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--property-accent-strong)]" />
-            {t("Designed and built in-house by Henry Onyx Studio for the HenryCo ecosystem")}
+            {t("Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem")}
           </span>
         </div>
       </div>

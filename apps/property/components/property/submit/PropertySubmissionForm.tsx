@@ -142,7 +142,7 @@ function UploadField({
   t: (text: string) => string;
 }) {
   return (
-    <label className="block rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
+    <label className="block rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold text-[var(--property-ink)]">
@@ -272,7 +272,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       <input type="hidden" name="listing_intent" value={effectiveIntent} />
       <input type="hidden" name="kind" value={blueprint.kind} />
 
-      <div className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+      <div className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
             <div className="text-lg font-semibold text-[var(--property-ink)]">
@@ -288,7 +288,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
               {t("Documents")}
             </div>
@@ -299,7 +299,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               {t("Direct uploads are preferred over links for authority, identity, and management review.")}
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
               {t("Media")}
             </div>
@@ -310,7 +310,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               {t("Better media improves approval speed, inspection preparation, and buyer trust.")}
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
               {t("Eligibility")}
             </div>
@@ -321,7 +321,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               {blueprint.eligibilityCopy}
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
               {t("Operating path")}
             </div>
@@ -405,7 +405,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             placeholder="+234..."
           />
         </label>
-        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
+        <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
             {t("Trust routing")}
           </div>
@@ -414,7 +414,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           </div>
           <div className="mt-2 text-xs leading-6 text-[var(--property-ink-soft)]">
             {t(
-              "HenryCo keeps this record private first, then decides whether it moves to documents, eligibility, inspection, or editorial review.",
+              "Henry Onyx keeps this record private first, then decides whether it moves to documents, eligibility, inspection, or editorial review.",
             )}
           </div>
         </div>
@@ -554,9 +554,9 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           )}
         </div>
       ) : (
-        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
+        <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
           {t(
-            "This path is inspection-led rather than publication-led. HenryCo still needs the location, authority, and access truth before deciding whether the property can move into a public listing workflow.",
+            "This path is inspection-led rather than publication-led. Henry Onyx still needs the location, authority, and access truth before deciding whether the property can move into a public listing workflow.",
           )}
         </div>
       )}
@@ -583,11 +583,11 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       </div>
 
       {blueprint.contextFields.length > 0 ? (
-        <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+        <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Path-specific details")}</div>
           <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
             {t(
-              "Only the details relevant to this listing path are shown below. HenryCo uses them to understand authority, occupancy, inspection access, and managed handoff reality.",
+              "Only the details relevant to this listing path are shown below. Henry Onyx uses them to understand authority, occupancy, inspection access, and managed handoff reality.",
             )}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -596,13 +596,13 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </section>
       ) : null}
 
-      <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+      <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Media and evidence")}</div>
             <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
               {t(
-                "Upload the real evidence directly. HenryCo stores review files against the listing so staff can assess them without chasing pasted links.",
+                "Upload the real evidence directly. Henry Onyx stores review files against the listing so staff can assess them without chasing pasted links.",
               )}
             </p>
           </div>
@@ -611,7 +611,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           </div>
         </div>
 
-        <label className="mt-5 block rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
+        <label className="mt-5 block rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
           <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
             <UploadCloud className="h-5 w-5" />
             <div className="text-sm font-semibold text-[var(--property-ink)]">{t("Property media")}</div>
@@ -651,8 +651,8 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-          <div className="text-lg font-semibold text-[var(--property-ink)]">{t("HenryCo checks")}</div>
+        <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
+          <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Henry Onyx checks")}</div>
           <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {blueprint.moderationChecks.map((item) => (
               <p key={item}>• {t(item)}</p>
@@ -660,7 +660,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           </div>
         </section>
 
-        <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+        <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
             <ShieldCheck className="h-5 w-5" />
             <div className="text-lg font-semibold text-[var(--property-ink)]">{t("What happens next")}</div>
@@ -688,7 +688,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </label>
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" name="managed_by_henryco" value="1" />
-          {t("Request HenryCo management")}
+          {t("Request Henry Onyx management")}
         </label>
       </div>
 
@@ -697,7 +697,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
             message.type === "success"
               ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
-              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[var(--property-alert)]"
+              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[#c0492a]"
           }`}
         >
           {message.text}
@@ -705,7 +705,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       ) : null}
 
       {submissionFeedback ? (
-        <div className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+        <div className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
@@ -718,7 +718,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
                 {submissionFeedback.policySummary}
               </p>
             </div>
-            <div className="rounded-full border border-[var(--property-line)] bg-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
+            <div className="rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
               {submissionFeedback.policyStatus.replaceAll("_", " ")}
             </div>
           </div>
@@ -727,7 +727,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             {submissionFeedback.guidanceBullets.map((item) => (
               <div
                 key={item}
-                className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
+                className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
               >
                 {item}
               </div>
@@ -758,7 +758,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
             message.type === "success"
               ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
-              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[var(--property-alert)]"
+              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[#c0492a]"
           }`}
         >
           {message.text}
@@ -766,7 +766,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       ) : null}
 
       {submissionFeedback ? (
-        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
+        <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
@@ -779,7 +779,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
                 {submissionFeedback.policySummary}
               </p>
             </div>
-            <div className="rounded-full border border-[var(--property-line)] bg-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
+            <div className="rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
               {submissionFeedback.policyStatus.replaceAll("_", " ")}
             </div>
           </div>
@@ -788,7 +788,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             {submissionFeedback.guidanceBullets.map((item) => (
               <div
                 key={item}
-                className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
+                className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
               >
                 {item}
               </div>
@@ -819,7 +819,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           type="submit"
           disabled={submitting}
           aria-busy={submitting}
-          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80 disabled:active:translate-y-0"
+          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80 disabled:active:translate-y-0"
         >
           <ButtonPendingContent
             pending={submitting}
@@ -831,7 +831,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </button>
         <Link
           href={getSharedAccountPropertyUrl("listings")}
-          className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px]"
+          className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
         >
           {t("Open property account")}
         </Link>

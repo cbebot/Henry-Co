@@ -31,13 +31,13 @@ const trustRails = [
     icon: ShieldCheck,
     title: "The public site is not an open dump",
     body:
-      "A listing does not go live just because somebody filled a form. HenryCo holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release.",
+      "A listing does not go live just because somebody filled a form. Henry Onyx holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release.",
   },
   {
     icon: FileCheck2,
     title: "Documents depend on the listing path",
     body:
-      "Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. HenryCo asks for the documents that actually explain the path instead of hiding requirements until later.",
+      "Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. Henry Onyx asks for the documents that actually explain the path instead of hiding requirements until later.",
   },
   {
     icon: CalendarRange,
@@ -51,7 +51,7 @@ const statusGuide = [
   {
     title: "Awaiting documents",
     body:
-      "HenryCo still needs stronger authority, ownership, management, or supporting evidence before the listing can move deeper into review.",
+      "Henry Onyx still needs stronger authority, ownership, management, or supporting evidence before the listing can move deeper into review.",
   },
   {
     title: "Awaiting eligibility",
@@ -61,7 +61,7 @@ const statusGuide = [
   {
     title: "Inspection requested or scheduled",
     body:
-      "HenryCo has decided that a site check matters for this listing path. The listing is not treated as fully trusted until that inspection rail is closed properly.",
+      "Henry Onyx has decided that a site check matters for this listing path. The listing is not treated as fully trusted until that inspection rail is closed properly.",
   },
   {
     title: "Under review, approved, or published",
@@ -72,19 +72,19 @@ const statusGuide = [
 
 const expectationColumns = [
   {
-    heading: "What HenryCo checks",
+    heading: "What Henry Onyx checks",
     bullets: [
       "Whether the submitter appears authorised to market, manage, or request inspection for the property.",
       "Whether the media, pricing, occupancy reality, and location context are serious enough for a premium platform.",
       "Whether the account trust posture is strong enough for higher-risk listing paths.",
-      "Whether a managed listing is truly asking for HenryCo operations, not just a badge.",
+      "Whether a managed listing is truly asking for Henry Onyx operations, not just a badge.",
     ],
   },
   {
     heading: "What owners and agents should expect",
     bullets: [
       "Direct uploads are better than pasted document links because staff need a reviewable file trail.",
-      "If a listing is weak, HenryCo may request better proof, stronger copy, or clearer readiness details before it moves.",
+      "If a listing is weak, Henry Onyx may request better proof, stronger copy, or clearer readiness details before it moves.",
       "Managed and non-managed listings are different paths; approval for one should not silently imply the other.",
       "If a listing gets held or escalated, the goal is cleaner publication truth, not bureaucratic noise.",
     ],
@@ -96,25 +96,25 @@ const policyCards = [
     icon: Building2,
     title: "Managed vs non-managed",
     body:
-      "Managed listings imply HenryCo operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact.",
+      "Managed listings imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact.",
   },
   {
     icon: ShieldCheck,
     title: "Duplicate-contact resistance",
     body:
-      "If the same email or phone appears across multiple HenryCo accounts or submissions, the listing may stay in manual review until the ownership picture is clearer.",
+      "If the same email or phone appears across multiple Henry Onyx accounts or submissions, the listing may stay in manual review until the ownership picture is clearer.",
   },
   {
     icon: CalendarRange,
     title: "Inspection and viewing continuity",
     body:
-      "HenryCo treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat.",
+      "Henry Onyx treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat.",
   },
 ];
 
 const nextSteps = [
   "Submitters see a private listing record first, not instant publication.",
-  "HenryCo reviews the evidence, the trust posture, and whether the listing belongs on a managed, non-managed, or inspection-sensitive rail.",
+  "Henry Onyx reviews the evidence, the trust posture, and whether the listing belongs on a managed, non-managed, or inspection-sensitive rail.",
   "If more information is needed, the listing can move into corrections, document hold, eligibility hold, or escalation before publication.",
   "Only after those checks are coherent should the listing move toward approval and public release.",
 ];
