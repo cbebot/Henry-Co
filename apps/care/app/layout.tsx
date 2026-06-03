@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       record: settings as unknown as Record<string, unknown>,
       field: "hero_title",
       locale,
-      fallback: "Henry Onyx Care",
+      fallback: "Henry Onyx Fabric Care",
       machineTranslate: locale !== "en",
     }),
     resolveLocalizedDynamicField({
@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       openGraphTitle: title,
       openGraphDescription: description,
-      siteName: "Henry Onyx Care",
+      siteName: "Henry Onyx Fabric Care",
       path: "/",
       icon,
       locale, // PASS 18C — emit hreflang + og:locale for the active locale.

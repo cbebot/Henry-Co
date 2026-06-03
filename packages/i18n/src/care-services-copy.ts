@@ -72,7 +72,7 @@ const CARE_SERVICES_COPY_EN: CareServicesCopy = {
   metadata: {
     titleTemplate: "Services | {division}",
     description:
-      "Explore garment care, home cleaning, office cleaning, pickup, delivery, and recurring services from Henry Onyx Care.",
+      "Explore garment care, home cleaning, office cleaning, pickup, delivery, and recurring services from Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Service collection",
@@ -128,7 +128,7 @@ const CARE_SERVICES_COPY_FR: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Services | {division}",
     description:
-      "Découvrez l’entretien textile, le nettoyage à domicile, le nettoyage de bureaux, l’enlèvement, la livraison et les prestations récurrentes de Henry Onyx Care.",
+      "Découvrez l’entretien textile, le nettoyage à domicile, le nettoyage de bureaux, l’enlèvement, la livraison et les prestations récurrentes de Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Collection de services",
@@ -184,7 +184,7 @@ const CARE_SERVICES_COPY_ES: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Servicios | {division}",
     description:
-      "Descubra el cuidado de prendas, la limpieza del hogar, la limpieza de oficinas, la recogida, la entrega y los servicios recurrentes de Henry Onyx Care.",
+      "Descubra el cuidado de prendas, la limpieza del hogar, la limpieza de oficinas, la recogida, la entrega y los servicios recurrentes de Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Colección de servicios",
@@ -240,7 +240,7 @@ const CARE_SERVICES_COPY_PT: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Serviços | {division}",
     description:
-      "Conheça os cuidados com vestuário, a limpeza residencial, a limpeza de escritórios, a recolha, a entrega e os serviços recorrentes da Henry Onyx Care.",
+      "Conheça os cuidados com vestuário, a limpeza residencial, a limpeza de escritórios, a recolha, a entrega e os serviços recorrentes da Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Coleção de serviços",
@@ -296,7 +296,7 @@ const CARE_SERVICES_COPY_AR: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "الخدمات | {division}",
     description:
-      "اكتشف خدمات العناية بالملابس، وتنظيف المنازل والمكاتب، والاستلام والتوصيل، والخدمات المتكررة من Henry Onyx Care.",
+      "اكتشف خدمات العناية بالملابس، وتنظيف المنازل والمكاتب، والاستلام والتوصيل، والخدمات المتكررة من Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "مجموعة الخدمات",
@@ -352,7 +352,7 @@ const CARE_SERVICES_COPY_DE: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Leistungen | {division}",
     description:
-      "Entdecken Sie Kleiderpflege, Wohnungs- und Büroreinigung, Abholung, Lieferung sowie wiederkehrende Leistungen von Henry Onyx Care.",
+      "Entdecken Sie Kleiderpflege, Wohnungs- und Büroreinigung, Abholung, Lieferung sowie wiederkehrende Leistungen von Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Leistungsspektrum",
@@ -408,7 +408,7 @@ const CARE_SERVICES_COPY_IT: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Servizi | {division}",
     description:
-      "Scopri la cura del guardaroba, la pulizia di case e uffici, il ritiro, la consegna e i servizi ricorrenti di Henry Onyx Care.",
+      "Scopri la cura del guardaroba, la pulizia di case e uffici, il ritiro, la consegna e i servizi ricorrenti di Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Collezione di servizi",
@@ -464,7 +464,7 @@ const CARE_SERVICES_COPY_ZH: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "服务 | {division}",
     description:
-      "了解 Henry Onyx Care 的衣物护理、家庭保洁、办公室保洁、取送以及周期性服务。",
+      "了解 Henry Onyx Fabric Care 的衣物护理、家庭保洁、办公室保洁、取送以及周期性服务。",
   },
   hero: {
     eyebrow: "服务体系",
@@ -520,7 +520,7 @@ const CARE_SERVICES_COPY_HI: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "सेवाएँ | {division}",
     description:
-      "Henry Onyx Care की वस्त्र देखभाल, घरेलू सफाई, कार्यालय सफाई, पिकअप, डिलीवरी और नियमित सेवाओं को जानिए।",
+      "Henry Onyx Fabric Care की वस्त्र देखभाल, घरेलू सफाई, कार्यालय सफाई, पिकअप, डिलीवरी और नियमित सेवाओं को जानिए।",
   },
   hero: {
     eyebrow: "सेवा संग्रह",
@@ -576,7 +576,7 @@ const CARE_SERVICES_COPY_IG: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Ọrụ | {division}",
     description:
-      "Mata banyere nlekọta uwe, nhicha ụlọ, nhicha ọfịs, mbu na nbuga, na ọrụ ndị na-aga n’ihu nke Henry Onyx Care.",
+      "Mata banyere nlekọta uwe, nhicha ụlọ, nhicha ọfịs, mbu na nbuga, na ọrụ ndị na-aga n’ihu nke Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Mkpokọta ọrụ",
@@ -632,7 +632,7 @@ const CARE_SERVICES_COPY_YO: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Iṣẹ́ | {division}",
     description:
-      "Wo ìtọ́jú aṣọ, ìmọ́tótó ilé, ìmọ́tótó ọ́fíìsì, gbígbé àti ìjíṣẹ́, àti àwọn iṣẹ́ tí ó máa ń tún padà láti Henry Onyx Care.",
+      "Wo ìtọ́jú aṣọ, ìmọ́tótó ilé, ìmọ́tótó ọ́fíìsì, gbígbé àti ìjíṣẹ́, àti àwọn iṣẹ́ tí ó máa ń tún padà láti Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Àkójọ iṣẹ́",
@@ -688,7 +688,7 @@ const CARE_SERVICES_COPY_HA: DeepPartial<CareServicesCopy> = {
   metadata: {
     titleTemplate: "Ayyuka | {division}",
     description:
-      "Bincika kulawar tufafi, tsaftar gida, tsaftar ofis, ɗauka da kawowa, da ayyuka masu maimaituwa daga Henry Onyx Care.",
+      "Bincika kulawar tufafi, tsaftar gida, tsaftar ofis, ɗauka da kawowa, da ayyuka masu maimaituwa daga Henry Onyx Fabric Care.",
   },
   hero: {
     eyebrow: "Tarin ayyuka",

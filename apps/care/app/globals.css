@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/styles/public-design.css";
+
+/* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
+   media query — without this, the toggled theme and `dark:` utilities decouple. */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 
 :root {
@@ -373,6 +378,16 @@ a {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--care-accent);
+}
+
+/* V3-PUBLIC-REBUILD — on the light-primary public surface the bright cobalt
+   --care-accent (#6B7CFF) only clears ~3.3:1 as small text on warm paper (AA
+   fail). Re-tone accent-AS-TEXT classes to the AA-safe --home-accent-text
+   (#4F5BD0 light / #AAB4FF dark — both AA); accent FILLS/borders keep the bright
+   cobalt. Scoped to .home-accent-scope so dashboards (dark canvas) are untouched. */
+.home-accent-scope .care-kicker,
+.home-accent-scope .care-accent-text {
+  color: var(--home-accent-text);
 }
 
 .care-status-line {

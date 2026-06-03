@@ -105,10 +105,16 @@ export default function TourProvider({
 
   const skipTour = useCallback(() => {
     setState((prev) => {
-      if (prev.machine && prev.scope) {
-        saveTourProgress(prev.scope, {
-          machineId: prev.machine.id,
-          version: prev.machine.version,
+      // The welcome PROMPT fires before any tour is active, so prev.machine is
+      // null there; fall back to the provider's machine/scope so dismissing the
+      // prompt ("Maybe later" / ✕) is persisted via hasSeenTour and the visitor
+      // is never re-prompted on later visits. (The HelpButton still re-opens it.)
+      const m = prev.machine ?? machine;
+      const s = prev.scope ?? scope;
+      if (m && s) {
+        saveTourProgress(s, {
+          machineId: m.id,
+          version: m.version,
           currentStep: prev.currentStep,
           completed: false,
           skipped: true,
@@ -118,7 +124,7 @@ export default function TourProvider({
       return { isActive: false, currentStep: 0, machine: null, scope: null };
     });
     setShouldPrompt(false);
-  }, []);
+  }, [machine, scope]);
 
   const endTour = useCallback(() => {
     setState({ isActive: false, currentStep: 0, machine: null, scope: null });

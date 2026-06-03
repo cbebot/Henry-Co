@@ -3,14 +3,9 @@ import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import { isRecoverableSupabaseAuthError } from "@henryco/config";
 import CarePublicShell from "@/components/public/CarePublicShell";
-import TourProvider from "@/components/tour/TourProvider";
-import TourOverlay from "@/components/tour/TourOverlay";
-import TourWelcomePrompt from "@/components/tour/TourWelcomePrompt";
-import HelpButton from "@/components/tour/HelpButton";
 import { RealtimeBrowserBridge } from "@/components/RealtimeBrowserBridge";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getCarePublicLocale } from "@/lib/locale-server";
-import { publicTour } from "@/lib/tour/machines";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const locale = await getCarePublicLocale();
@@ -42,20 +37,15 @@ export default async function PublicLayout({ children }: { children: React.React
   })();
 
   return (
-    <TourProvider scope="public" machine={publicTour}>
-      <LocaleProvider locale={locale}>
-        <RealtimeBrowserBridge viewer={viewer}>
-          <CarePublicShell>{children}</CarePublicShell>
-          <TourOverlay />
-          <TourWelcomePrompt machine={publicTour} scope="public" />
-          <HelpButton machine={publicTour} scope="public" />
-          {/* V3 PASS 21 — surface customer realtime signals (status
-              changes, payment requests, etc.) shell-wide on the care
-              public surfaces. Audience='customer' so staff signals do
-              not leak. */}
-          <NotificationsToastViewport audience="customer" />
-        </RealtimeBrowserBridge>
-      </LocaleProvider>
-    </TourProvider>
+    <LocaleProvider locale={locale}>
+      <RealtimeBrowserBridge viewer={viewer}>
+        <CarePublicShell>{children}</CarePublicShell>
+        {/* V3 PASS 21 — surface customer realtime signals (status
+            changes, payment requests, etc.) shell-wide on the care
+            public surfaces. Audience='customer' so staff signals do
+            not leak. */}
+        <NotificationsToastViewport audience="customer" />
+      </RealtimeBrowserBridge>
+    </LocaleProvider>
   );
 }

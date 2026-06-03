@@ -88,14 +88,14 @@ export type CareAboutCopy = {
 
 const CARE_ABOUT_COPY_EN: CareAboutCopy = {
   metadata: {
-    title: "About Henry Onyx Care",
+    title: "About Henry Onyx Fabric Care",
     description:
-      "Learn how Henry Onyx Care delivers premium garment care, home cleaning, office cleaning, and dependable service follow-through.",
+      "Learn how Henry Onyx Fabric Care delivers premium garment care, home cleaning, office cleaning, and dependable service follow-through.",
   },
   hero: {
-    eyebrow: "About Henry Onyx Care",
+    eyebrow: "About Henry Onyx Fabric Care",
     title: "Trust. Timing. Service quality.",
-    body: "Henry Onyx Care provides garment care, pickup and delivery, home cleaning, office cleaning, and recurring service plans through one polished customer experience — dependable execution, respectful handling, a finish clients are happy to invite back.",
+    body: "Henry Onyx Fabric Care provides garment care, pickup and delivery, home cleaning, office cleaning, and recurring service plans through one polished customer experience — dependable execution, respectful handling, a finish clients are happy to invite back.",
     bookCta: "Book a service",
     contactCta: "Contact the team",
   },
@@ -122,7 +122,7 @@ const CARE_ABOUT_COPY_EN: CareAboutCopy = {
     },
   },
   standards: {
-    eyebrow: "Why clients trust Henry Onyx Care",
+    eyebrow: "Why clients trust Henry Onyx Fabric Care",
     title: "Reliable service comes from standards clients can actually feel.",
     bullets: [
       "Clear communication before pickup, before arrival, and during every important update.",
@@ -170,9 +170,9 @@ const CARE_ABOUT_COPY_EN: CareAboutCopy = {
     },
   },
   closingCta: {
-    eyebrow: "Ready to experience Henry Onyx Care?",
+    eyebrow: "Ready to experience Henry Onyx Fabric Care?",
     title: "Book a premium care service with timing, clarity, and follow-through built in.",
-    body: "From garment pickup and delivery to recurring home and office cleaning, Henry Onyx Care is built to make dependable service feel easy.",
+    body: "From garment pickup and delivery to recurring home and office cleaning, Henry Onyx Fabric Care is built to make dependable service feel easy.",
     bookCta: "Book a service",
     exploreCta: "Explore services",
   },
@@ -180,14 +180,14 @@ const CARE_ABOUT_COPY_EN: CareAboutCopy = {
 
 const CARE_ABOUT_COPY_FR: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "À propos de Henry Onyx Care",
+    title: "À propos de Henry Onyx Fabric Care",
     description:
-      "Découvrez comment Henry Onyx Care assure l’entretien textile haut de gamme, le nettoyage à domicile, le nettoyage de bureaux et un suivi de service fiable.",
+      "Découvrez comment Henry Onyx Fabric Care assure l’entretien textile haut de gamme, le nettoyage à domicile, le nettoyage de bureaux et un suivi de service fiable.",
   },
   hero: {
-    eyebrow: "À propos de Henry Onyx Care",
+    eyebrow: "À propos de Henry Onyx Fabric Care",
     title: "Confiance. Ponctualité. Qualité de service.",
-    body: "Henry Onyx Care propose l’entretien textile, l’enlèvement et la livraison, le nettoyage à domicile, le nettoyage de bureaux et des forfaits récurrents au sein d’une seule expérience client soignée — exécution fiable, manipulation respectueuse, un rendu que les clients sont heureux de revoir.",
+    body: "Henry Onyx Fabric Care propose l’entretien textile, l’enlèvement et la livraison, le nettoyage à domicile, le nettoyage de bureaux et des forfaits récurrents au sein d’une seule expérience client soignée — exécution fiable, manipulation respectueuse, un rendu que les clients sont heureux de revoir.",
     bookCta: "Réserver une prestation",
     contactCta: "Contacter l’équipe",
   },
@@ -214,7 +214,7 @@ const CARE_ABOUT_COPY_FR: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Pourquoi les clients font confiance à Henry Onyx Care",
+    eyebrow: "Pourquoi les clients font confiance à Henry Onyx Fabric Care",
     title: "Un service fiable naît de standards que les clients ressentent vraiment.",
     bullets: [
       "Communication claire avant l’enlèvement, avant l’arrivée et à chaque mise à jour importante.",
@@ -262,23 +262,23 @@ const CARE_ABOUT_COPY_FR: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Prêt à découvrir Henry Onyx Care ?",
+    eyebrow: "Prêt à découvrir Henry Onyx Fabric Care ?",
     title: "Réservez une prestation premium avec ponctualité, clarté et suivi intégrés.",
-    body: "De l’enlèvement et de la livraison textile au nettoyage récurrent à domicile et en bureaux, Henry Onyx Care rend le service fiable simple et naturel.",
+    body: "De l’enlèvement et de la livraison textile au nettoyage récurrent à domicile et en bureaux, Henry Onyx Fabric Care rend le service fiable simple et naturel.",
     bookCta: "Réserver une prestation",
     exploreCta: "Découvrir les services",
   },
 };
 const CARE_ABOUT_COPY_ES: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Acerca de Henry Onyx Care",
+    title: "Acerca de Henry Onyx Fabric Care",
     description:
-      "Descubra cómo Henry Onyx Care ofrece cuidado de prendas premium, limpieza del hogar, limpieza de oficinas y un seguimiento de servicio fiable.",
+      "Descubra cómo Henry Onyx Fabric Care ofrece cuidado de prendas premium, limpieza del hogar, limpieza de oficinas y un seguimiento de servicio fiable.",
   },
   hero: {
-    eyebrow: "Acerca de Henry Onyx Care",
+    eyebrow: "Acerca de Henry Onyx Fabric Care",
     title: "Confianza. Puntualidad. Calidad de servicio.",
-    body: "Henry Onyx Care brinda cuidado de prendas, recogida y entrega, limpieza del hogar, limpieza de oficinas y planes de servicio recurrente dentro de una única experiencia de cliente cuidada: ejecución fiable, manipulación respetuosa y un acabado que los clientes están encantados de volver a recibir.",
+    body: "Henry Onyx Fabric Care brinda cuidado de prendas, recogida y entrega, limpieza del hogar, limpieza de oficinas y planes de servicio recurrente dentro de una única experiencia de cliente cuidada: ejecución fiable, manipulación respetuosa y un acabado que los clientes están encantados de volver a recibir.",
     bookCta: "Reservar un servicio",
     contactCta: "Contactar al equipo",
   },
@@ -305,7 +305,7 @@ const CARE_ABOUT_COPY_ES: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Por qué los clientes confían en Henry Onyx Care",
+    eyebrow: "Por qué los clientes confían en Henry Onyx Fabric Care",
     title: "Un servicio fiable nace de estándares que los clientes pueden sentir de verdad.",
     bullets: [
       "Comunicación clara antes de la recogida, antes de la llegada y en cada actualización importante.",
@@ -353,23 +353,23 @@ const CARE_ABOUT_COPY_ES: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "¿Listo para vivir Henry Onyx Care?",
+    eyebrow: "¿Listo para vivir Henry Onyx Fabric Care?",
     title: "Reserve un servicio premium con puntualidad, claridad y seguimiento incorporados.",
-    body: "Desde la recogida y entrega de prendas hasta la limpieza recurrente del hogar y de oficinas, Henry Onyx Care está pensado para que el servicio fiable resulte sencillo.",
+    body: "Desde la recogida y entrega de prendas hasta la limpieza recurrente del hogar y de oficinas, Henry Onyx Fabric Care está pensado para que el servicio fiable resulte sencillo.",
     bookCta: "Reservar un servicio",
     exploreCta: "Ver servicios",
   },
 };
 const CARE_ABOUT_COPY_PT: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Sobre a Henry Onyx Care",
+    title: "Sobre a Henry Onyx Fabric Care",
     description:
-      "Conheça como a Henry Onyx Care entrega cuidados premium com vestuário, limpeza residencial, limpeza de escritórios e um acompanhamento de serviço confiável.",
+      "Conheça como a Henry Onyx Fabric Care entrega cuidados premium com vestuário, limpeza residencial, limpeza de escritórios e um acompanhamento de serviço confiável.",
   },
   hero: {
-    eyebrow: "Sobre a Henry Onyx Care",
+    eyebrow: "Sobre a Henry Onyx Fabric Care",
     title: "Confiança. Pontualidade. Qualidade de serviço.",
-    body: "A Henry Onyx Care oferece cuidados com vestuário, recolha e entrega, limpeza residencial, limpeza de escritórios e planos de serviço recorrentes numa experiência de cliente cuidada — execução confiável, manuseio respeitoso e um acabamento que os clientes têm prazer em receber novamente.",
+    body: "A Henry Onyx Fabric Care oferece cuidados com vestuário, recolha e entrega, limpeza residencial, limpeza de escritórios e planos de serviço recorrentes numa experiência de cliente cuidada — execução confiável, manuseio respeitoso e um acabamento que os clientes têm prazer em receber novamente.",
     bookCta: "Reservar um serviço",
     contactCta: "Falar com a equipa",
   },
@@ -396,7 +396,7 @@ const CARE_ABOUT_COPY_PT: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Por que os clientes confiam na Henry Onyx Care",
+    eyebrow: "Por que os clientes confiam na Henry Onyx Fabric Care",
     title: "Um serviço confiável nasce de padrões que os clientes conseguem sentir.",
     bullets: [
       "Comunicação clara antes da recolha, antes da chegada e em cada atualização importante.",
@@ -444,23 +444,23 @@ const CARE_ABOUT_COPY_PT: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Pronto para experimentar a Henry Onyx Care?",
+    eyebrow: "Pronto para experimentar a Henry Onyx Fabric Care?",
     title: "Reserve um serviço premium com pontualidade, clareza e acompanhamento integrados.",
-    body: "Da recolha e entrega de vestuário à limpeza recorrente de lares e escritórios, a Henry Onyx Care foi pensada para tornar o serviço confiável simples.",
+    body: "Da recolha e entrega de vestuário à limpeza recorrente de lares e escritórios, a Henry Onyx Fabric Care foi pensada para tornar o serviço confiável simples.",
     bookCta: "Reservar um serviço",
     exploreCta: "Ver serviços",
   },
 };
 const CARE_ABOUT_COPY_AR: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "نبذة عن Henry Onyx Care",
+    title: "نبذة عن Henry Onyx Fabric Care",
     description:
-      "تعرّف على كيف توفّر Henry Onyx Care عناية فاخرة بالملابس، وتنظيف المنازل، وتنظيف المكاتب، ومتابعة خدمة يمكن الاعتماد عليها.",
+      "تعرّف على كيف توفّر Henry Onyx Fabric Care عناية فاخرة بالملابس، وتنظيف المنازل، وتنظيف المكاتب، ومتابعة خدمة يمكن الاعتماد عليها.",
   },
   hero: {
-    eyebrow: "نبذة عن Henry Onyx Care",
+    eyebrow: "نبذة عن Henry Onyx Fabric Care",
     title: "ثقة. التزام بالوقت. جودة خدمة.",
-    body: "تقدّم Henry Onyx Care العناية بالملابس، الاستلام والتوصيل، تنظيف المنازل، تنظيف المكاتب، وخططًا متكررة ضمن تجربة عميل واحدة متقنة — تنفيذ موثوق، تعامل محترم، ولمسة نهائية يسعد العملاء بإعادة استدعائها.",
+    body: "تقدّم Henry Onyx Fabric Care العناية بالملابس، الاستلام والتوصيل، تنظيف المنازل، تنظيف المكاتب، وخططًا متكررة ضمن تجربة عميل واحدة متقنة — تنفيذ موثوق، تعامل محترم، ولمسة نهائية يسعد العملاء بإعادة استدعائها.",
     bookCta: "احجز خدمة",
     contactCta: "تواصل مع الفريق",
   },
@@ -487,7 +487,7 @@ const CARE_ABOUT_COPY_AR: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "لماذا يثق العملاء بـ Henry Onyx Care",
+    eyebrow: "لماذا يثق العملاء بـ Henry Onyx Fabric Care",
     title: "الخدمة الموثوقة تنبع من معايير يستطيع العملاء أن يلمسوها بالفعل.",
     bullets: [
       "تواصل واضح قبل الاستلام، وقبل الوصول، وعند كل تحديث مهم.",
@@ -535,23 +535,23 @@ const CARE_ABOUT_COPY_AR: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "هل أنت مستعد لتجربة Henry Onyx Care؟",
+    eyebrow: "هل أنت مستعد لتجربة Henry Onyx Fabric Care؟",
     title: "احجز خدمة عناية فاخرة مع التزام بالوقت، ووضوح، ومتابعة مدمجة.",
-    body: "من استلام الملابس وتوصيلها إلى تنظيف المنازل والمكاتب المتكرر، صُممت Henry Onyx Care لتجعل الخدمة الموثوقة سهلة وميسّرة.",
+    body: "من استلام الملابس وتوصيلها إلى تنظيف المنازل والمكاتب المتكرر، صُممت Henry Onyx Fabric Care لتجعل الخدمة الموثوقة سهلة وميسّرة.",
     bookCta: "احجز خدمة",
     exploreCta: "استكشاف الخدمات",
   },
 };
 const CARE_ABOUT_COPY_DE: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Über Henry Onyx Care",
+    title: "Über Henry Onyx Fabric Care",
     description:
-      "Erfahren Sie, wie Henry Onyx Care Premium-Textilpflege, Heimreinigung, Büroreinigung und eine verlässliche Servicenachverfolgung liefert.",
+      "Erfahren Sie, wie Henry Onyx Fabric Care Premium-Textilpflege, Heimreinigung, Büroreinigung und eine verlässliche Servicenachverfolgung liefert.",
   },
   hero: {
-    eyebrow: "Über Henry Onyx Care",
+    eyebrow: "Über Henry Onyx Fabric Care",
     title: "Vertrauen. Pünktlichkeit. Servicequalität.",
-    body: "Henry Onyx Care bietet Textilpflege, Abholung und Lieferung, Heimreinigung, Büroreinigung und wiederkehrende Servicepakete in einem geschliffenen Kundenerlebnis — verlässliche Ausführung, respektvoller Umgang und ein Ergebnis, das Kunden gerne erneut beauftragen.",
+    body: "Henry Onyx Fabric Care bietet Textilpflege, Abholung und Lieferung, Heimreinigung, Büroreinigung und wiederkehrende Servicepakete in einem geschliffenen Kundenerlebnis — verlässliche Ausführung, respektvoller Umgang und ein Ergebnis, das Kunden gerne erneut beauftragen.",
     bookCta: "Service buchen",
     contactCta: "Team kontaktieren",
   },
@@ -578,7 +578,7 @@ const CARE_ABOUT_COPY_DE: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Warum Kunden Henry Onyx Care vertrauen",
+    eyebrow: "Warum Kunden Henry Onyx Fabric Care vertrauen",
     title: "Verlässlicher Service entsteht aus Standards, die Kunden wirklich spüren.",
     bullets: [
       "Klare Kommunikation vor der Abholung, vor der Ankunft und bei jedem wichtigen Update.",
@@ -626,23 +626,23 @@ const CARE_ABOUT_COPY_DE: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Bereit, Henry Onyx Care zu erleben?",
+    eyebrow: "Bereit, Henry Onyx Fabric Care zu erleben?",
     title: "Buchen Sie einen Premium-Service mit eingebauter Pünktlichkeit, Klarheit und Nachverfolgung.",
-    body: "Von der Abholung und Lieferung von Kleidung bis hin zu wiederkehrender Heim- und Büroreinigung ist Henry Onyx Care darauf ausgelegt, verlässlichen Service mühelos wirken zu lassen.",
+    body: "Von der Abholung und Lieferung von Kleidung bis hin zu wiederkehrender Heim- und Büroreinigung ist Henry Onyx Fabric Care darauf ausgelegt, verlässlichen Service mühelos wirken zu lassen.",
     bookCta: "Service buchen",
     exploreCta: "Services entdecken",
   },
 };
 const CARE_ABOUT_COPY_IT: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Su Henry Onyx Care",
+    title: "Su Henry Onyx Fabric Care",
     description:
-      "Scopri come Henry Onyx Care offre cura degli abiti premium, pulizia domestica, pulizia di uffici e un follow-up di servizio affidabile.",
+      "Scopri come Henry Onyx Fabric Care offre cura degli abiti premium, pulizia domestica, pulizia di uffici e un follow-up di servizio affidabile.",
   },
   hero: {
-    eyebrow: "Su Henry Onyx Care",
+    eyebrow: "Su Henry Onyx Fabric Care",
     title: "Fiducia. Puntualità. Qualità del servizio.",
-    body: "Henry Onyx Care offre cura degli abiti, ritiro e consegna, pulizia domestica, pulizia di uffici e piani ricorrenti in un’unica esperienza cliente curata: esecuzione affidabile, manipolazione rispettosa e un risultato che i clienti sono felici di richiamare.",
+    body: "Henry Onyx Fabric Care offre cura degli abiti, ritiro e consegna, pulizia domestica, pulizia di uffici e piani ricorrenti in un’unica esperienza cliente curata: esecuzione affidabile, manipolazione rispettosa e un risultato che i clienti sono felici di richiamare.",
     bookCta: "Prenota un servizio",
     contactCta: "Contatta il team",
   },
@@ -669,7 +669,7 @@ const CARE_ABOUT_COPY_IT: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Perché i clienti scelgono Henry Onyx Care",
+    eyebrow: "Perché i clienti scelgono Henry Onyx Fabric Care",
     title: "Un servizio affidabile nasce da standard che i clienti percepiscono davvero.",
     bullets: [
       "Comunicazione chiara prima del ritiro, prima dell’arrivo e a ogni aggiornamento importante.",
@@ -717,23 +717,23 @@ const CARE_ABOUT_COPY_IT: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Pronto a provare Henry Onyx Care?",
+    eyebrow: "Pronto a provare Henry Onyx Fabric Care?",
     title: "Prenota un servizio premium con puntualità, chiarezza e follow-up integrati.",
-    body: "Dal ritiro e dalla consegna degli abiti alla pulizia ricorrente di case e uffici, Henry Onyx Care è pensata per rendere il servizio affidabile semplice.",
+    body: "Dal ritiro e dalla consegna degli abiti alla pulizia ricorrente di case e uffici, Henry Onyx Fabric Care è pensata per rendere il servizio affidabile semplice.",
     bookCta: "Prenota un servizio",
     exploreCta: "Scopri i servizi",
   },
 };
 const CARE_ABOUT_COPY_ZH: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "关于 Henry Onyx Care",
+    title: "关于 Henry Onyx Fabric Care",
     description:
-      "了解 Henry Onyx Care 如何提供高端衣物护理、家庭清洁、办公室清洁,以及可靠的服务跟进。",
+      "了解 Henry Onyx Fabric Care 如何提供高端衣物护理、家庭清洁、办公室清洁,以及可靠的服务跟进。",
   },
   hero: {
-    eyebrow: "关于 Henry Onyx Care",
+    eyebrow: "关于 Henry Onyx Fabric Care",
     title: "信任。守时。服务品质。",
-    body: "Henry Onyx Care 在一套精致的客户体验中提供衣物护理、上门取送、家庭清洁、办公室清洁和长期服务计划——可靠的执行、尊重的处理,以及让客户乐于再次回来的完成度。",
+    body: "Henry Onyx Fabric Care 在一套精致的客户体验中提供衣物护理、上门取送、家庭清洁、办公室清洁和长期服务计划——可靠的执行、尊重的处理,以及让客户乐于再次回来的完成度。",
     bookCta: "预约服务",
     contactCta: "联系团队",
   },
@@ -760,7 +760,7 @@ const CARE_ABOUT_COPY_ZH: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "客户为何信任 Henry Onyx Care",
+    eyebrow: "客户为何信任 Henry Onyx Fabric Care",
     title: "可靠的服务来自客户能真正感受到的标准。",
     bullets: [
       "在取件前、到达前以及每一次重要更新时,均保持清晰沟通。",
@@ -808,23 +808,23 @@ const CARE_ABOUT_COPY_ZH: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "准备好体验 Henry Onyx Care 了吗?",
+    eyebrow: "准备好体验 Henry Onyx Fabric Care 了吗?",
     title: "预约一项高端护理服务,守时、清晰与跟进皆已内建。",
-    body: "从衣物的上门取送,到家庭与办公室的长期清洁,Henry Onyx Care 让可靠的服务变得轻松。",
+    body: "从衣物的上门取送,到家庭与办公室的长期清洁,Henry Onyx Fabric Care 让可靠的服务变得轻松。",
     bookCta: "预约服务",
     exploreCta: "探索服务",
   },
 };
 const CARE_ABOUT_COPY_HI: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Henry Onyx Care के बारे में",
+    title: "Henry Onyx Fabric Care के बारे में",
     description:
-      "जानें कि Henry Onyx Care कैसे प्रीमियम वस्त्र देखभाल, घरेलू सफाई, कार्यालय सफाई और भरोसेमंद सर्विस फॉलो-अप उपलब्ध कराता है।",
+      "जानें कि Henry Onyx Fabric Care कैसे प्रीमियम वस्त्र देखभाल, घरेलू सफाई, कार्यालय सफाई और भरोसेमंद सर्विस फॉलो-अप उपलब्ध कराता है।",
   },
   hero: {
-    eyebrow: "Henry Onyx Care के बारे में",
+    eyebrow: "Henry Onyx Fabric Care के बारे में",
     title: "भरोसा। समय पर सेवा। सेवा की गुणवत्ता।",
-    body: "Henry Onyx Care एक सुगठित ग्राहक अनुभव में वस्त्र देखभाल, पिकअप और डिलीवरी, घरेलू सफाई, कार्यालय सफाई और नियमित सर्विस प्लान उपलब्ध कराता है — भरोसेमंद निष्पादन, सम्मानजनक देखभाल, और एक ऐसा परिणाम जिसे ग्राहक खुशी से दोबारा बुलाते हैं।",
+    body: "Henry Onyx Fabric Care एक सुगठित ग्राहक अनुभव में वस्त्र देखभाल, पिकअप और डिलीवरी, घरेलू सफाई, कार्यालय सफाई और नियमित सर्विस प्लान उपलब्ध कराता है — भरोसेमंद निष्पादन, सम्मानजनक देखभाल, और एक ऐसा परिणाम जिसे ग्राहक खुशी से दोबारा बुलाते हैं।",
     bookCta: "सर्विस बुक करें",
     contactCta: "टीम से संपर्क करें",
   },
@@ -851,7 +851,7 @@ const CARE_ABOUT_COPY_HI: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "ग्राहक Henry Onyx Care पर भरोसा क्यों करते हैं",
+    eyebrow: "ग्राहक Henry Onyx Fabric Care पर भरोसा क्यों करते हैं",
     title: "भरोसेमंद सेवा उन मानकों से आती है जिन्हें ग्राहक सचमुच महसूस कर सकें।",
     bullets: [
       "पिकअप से पहले, आगमन से पहले और हर महत्वपूर्ण अपडेट पर स्पष्ट संवाद।",
@@ -899,23 +899,23 @@ const CARE_ABOUT_COPY_HI: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "क्या आप Henry Onyx Care का अनुभव लेने को तैयार हैं?",
+    eyebrow: "क्या आप Henry Onyx Fabric Care का अनुभव लेने को तैयार हैं?",
     title: "एक प्रीमियम केयर सर्विस बुक करें, जिसमें समयबद्धता, स्पष्टता और फॉलो-थ्रू पहले से ही शामिल हैं।",
-    body: "वस्त्र पिकअप और डिलीवरी से लेकर नियमित घरेलू और कार्यालय सफाई तक, Henry Onyx Care भरोसेमंद सेवा को आसान बनाने के लिए तैयार किया गया है।",
+    body: "वस्त्र पिकअप और डिलीवरी से लेकर नियमित घरेलू और कार्यालय सफाई तक, Henry Onyx Fabric Care भरोसेमंद सेवा को आसान बनाने के लिए तैयार किया गया है।",
     bookCta: "सर्विस बुक करें",
     exploreCta: "सेवाएँ देखें",
   },
 };
 const CARE_ABOUT_COPY_IG: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Maka Henry Onyx Care",
+    title: "Maka Henry Onyx Fabric Care",
     description:
-      "Mụta otú Henry Onyx Care si enye nlekọta uwe dị elu, nhicha ụlọ, nhicha ọfịs, na nsoghachi ọrụ a pụrụ ịdabere na ya.",
+      "Mụta otú Henry Onyx Fabric Care si enye nlekọta uwe dị elu, nhicha ụlọ, nhicha ọfịs, na nsoghachi ọrụ a pụrụ ịdabere na ya.",
   },
   hero: {
-    eyebrow: "Maka Henry Onyx Care",
+    eyebrow: "Maka Henry Onyx Fabric Care",
     title: "Ntụkwasị obi. Oge. Ogo ọrụ.",
-    body: "Henry Onyx Care na-enye nlekọta uwe, mbufe na nbubata, nhicha ụlọ, nhicha ọfịs, na atụmatụ ọrụ na-emegharị ugboro ugboro n’otu ahụmahụ ndị ahịa zuru oke — mmezu a pụrụ ịdabere na ya, njide nke nwere nkwanye ùgwù, na nkwụsị nke ndị ahịa na-aṅụrị ọṅụ ịkpọghachi ya.",
+    body: "Henry Onyx Fabric Care na-enye nlekọta uwe, mbufe na nbubata, nhicha ụlọ, nhicha ọfịs, na atụmatụ ọrụ na-emegharị ugboro ugboro n’otu ahụmahụ ndị ahịa zuru oke — mmezu a pụrụ ịdabere na ya, njide nke nwere nkwanye ùgwù, na nkwụsị nke ndị ahịa na-aṅụrị ọṅụ ịkpọghachi ya.",
     bookCta: "Debe ọrụ",
     contactCta: "Kpọtụrụ ndị otu",
   },
@@ -942,7 +942,7 @@ const CARE_ABOUT_COPY_IG: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Ihe kpatara ndị ahịa ji tụkwasị Henry Onyx Care obi",
+    eyebrow: "Ihe kpatara ndị ahịa ji tụkwasị Henry Onyx Fabric Care obi",
     title: "Ọrụ a pụrụ ịdabere na ya si na ụkpụrụ ndị ahịa nwere ike inwe mmetụta ya n’ezie.",
     bullets: [
       "Mkparịta ụka doro anya tupu mbufe, tupu mbata, na n’oge mmelite ọ bụla dị mkpa.",
@@ -990,23 +990,23 @@ const CARE_ABOUT_COPY_IG: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Ị dị njikere inweta ahụmahụ Henry Onyx Care?",
+    eyebrow: "Ị dị njikere inweta ahụmahụ Henry Onyx Fabric Care?",
     title: "Debe ọrụ nlekọta dị elu nwere oge, nghọta, na nsoghachi etinyere n’ime ya.",
-    body: "Site na mbufe na nbubata uwe ruo nhicha ụlọ na nhicha ọfịs na-emegharị, e wuru Henry Onyx Care iji mee ka ọrụ a pụrụ ịdabere na ya dị mfe.",
+    body: "Site na mbufe na nbubata uwe ruo nhicha ụlọ na nhicha ọfịs na-emegharị, e wuru Henry Onyx Fabric Care iji mee ka ọrụ a pụrụ ịdabere na ya dị mfe.",
     bookCta: "Debe ọrụ",
     exploreCta: "Chọpụta ọrụ",
   },
 };
 const CARE_ABOUT_COPY_YO: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Nípa Henry Onyx Care",
+    title: "Nípa Henry Onyx Fabric Care",
     description:
-      "Mọ bí Henry Onyx Care ṣe ń pèsè ìtọ́jú aṣọ pípé, ìmọ́tótó ilé, ìmọ́tótó ọ́fíìsì, àti ìtẹ̀lé iṣẹ́ tó gbára lé.",
+      "Mọ bí Henry Onyx Fabric Care ṣe ń pèsè ìtọ́jú aṣọ pípé, ìmọ́tótó ilé, ìmọ́tótó ọ́fíìsì, àti ìtẹ̀lé iṣẹ́ tó gbára lé.",
   },
   hero: {
-    eyebrow: "Nípa Henry Onyx Care",
+    eyebrow: "Nípa Henry Onyx Fabric Care",
     title: "Ìgbàgbọ́. Àkókò. Ìpele iṣẹ́.",
-    body: "Henry Onyx Care ń pèsè ìtọ́jú aṣọ, gbígba àti ìfijíṣẹ́, ìmọ́tótó ilé, ìmọ́tótó ọ́fíìsì, àti àwọn ètò iṣẹ́ alábáwí nínú ìrírí oníbàárà kan tó dán wíwà — ìṣe tó gbára lé, ìbáṣepọ̀ aláàánú, àti ìparí tí àwọn oníbàárà fẹ́ pe padà.",
+    body: "Henry Onyx Fabric Care ń pèsè ìtọ́jú aṣọ, gbígba àti ìfijíṣẹ́, ìmọ́tótó ilé, ìmọ́tótó ọ́fíìsì, àti àwọn ètò iṣẹ́ alábáwí nínú ìrírí oníbàárà kan tó dán wíwà — ìṣe tó gbára lé, ìbáṣepọ̀ aláàánú, àti ìparí tí àwọn oníbàárà fẹ́ pe padà.",
     bookCta: "Sọ iṣẹ́ kan",
     contactCta: "Kàn sí ẹgbẹ́",
   },
@@ -1033,7 +1033,7 @@ const CARE_ABOUT_COPY_YO: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Ìdí tí àwọn oníbàárà fi gbé Henry Onyx Care lé",
+    eyebrow: "Ìdí tí àwọn oníbàárà fi gbé Henry Onyx Fabric Care lé",
     title: "Iṣẹ́ tó gbára lé wá láti àwọn àjọwọ́ tí àwọn oníbàárà lè rí lójú gan-an.",
     bullets: [
       "Ìbáraẹnisọ̀rọ̀ tó ṣe kedere ṣáájú gbígba, ṣáájú dídé, àti nígbà gbogbo ìròyìn pàtàkì.",
@@ -1081,23 +1081,23 @@ const CARE_ABOUT_COPY_YO: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Ṣé o ti múra láti rí Henry Onyx Care?",
+    eyebrow: "Ṣé o ti múra láti rí Henry Onyx Fabric Care?",
     title: "Sọ iṣẹ́ ìtọ́jú pípé pẹ̀lú àkókò, kíkedere, àti ìtẹ̀lé tí a ti gbé sí inú rẹ̀.",
-    body: "Láti gbígba àti ìfijíṣẹ́ aṣọ títí dé ìmọ́tótó ilé àti ọ́fíìsì alábáwí, a ṣe Henry Onyx Care láti mú kí iṣẹ́ tó gbára lé rọrùn.",
+    body: "Láti gbígba àti ìfijíṣẹ́ aṣọ títí dé ìmọ́tótó ilé àti ọ́fíìsì alábáwí, a ṣe Henry Onyx Fabric Care láti mú kí iṣẹ́ tó gbára lé rọrùn.",
     bookCta: "Sọ iṣẹ́ kan",
     exploreCta: "Ṣàwárí iṣẹ́",
   },
 };
 const CARE_ABOUT_COPY_HA: DeepPartial<CareAboutCopy> = {
   metadata: {
-    title: "Game da Henry Onyx Care",
+    title: "Game da Henry Onyx Fabric Care",
     description:
-      "Gano yadda Henry Onyx Care ke ba da kulawar tufafi mai inganci, tsaftar gida, tsaftar ofis, da bibiyar sabis abin dogaro.",
+      "Gano yadda Henry Onyx Fabric Care ke ba da kulawar tufafi mai inganci, tsaftar gida, tsaftar ofis, da bibiyar sabis abin dogaro.",
   },
   hero: {
-    eyebrow: "Game da Henry Onyx Care",
+    eyebrow: "Game da Henry Onyx Fabric Care",
     title: "Aminci. Lokaci. Ingancin sabis.",
-    body: "Henry Onyx Care na ba da kulawar tufafi, ɗauka da kawowa, tsaftar gida, tsaftar ofis, da shirye-shiryen sabis akai-akai cikin abu ɗaya na ƙwarewar abokin ciniki — aiwatarwa abin dogaro, kulawa cikin girmamawa, da gama aiki da abokin ciniki ke jin daɗin sake kira.",
+    body: "Henry Onyx Fabric Care na ba da kulawar tufafi, ɗauka da kawowa, tsaftar gida, tsaftar ofis, da shirye-shiryen sabis akai-akai cikin abu ɗaya na ƙwarewar abokin ciniki — aiwatarwa abin dogaro, kulawa cikin girmamawa, da gama aiki da abokin ciniki ke jin daɗin sake kira.",
     bookCta: "Yi rajistar sabis",
     contactCta: "Tuntuɓi tawagar",
   },
@@ -1124,7 +1124,7 @@ const CARE_ABOUT_COPY_HA: DeepPartial<CareAboutCopy> = {
     },
   },
   standards: {
-    eyebrow: "Me ya sa abokan ciniki ke amincewa da Henry Onyx Care",
+    eyebrow: "Me ya sa abokan ciniki ke amincewa da Henry Onyx Fabric Care",
     title: "Sabis abin dogaro yana fitowa daga mizanai da abokan ciniki za su iya ji da gaske.",
     bullets: [
       "Bayyananniyar sadarwa kafin ɗauka, kafin zuwa, da kowane sabuntawa mai mahimmanci.",
@@ -1172,9 +1172,9 @@ const CARE_ABOUT_COPY_HA: DeepPartial<CareAboutCopy> = {
     },
   },
   closingCta: {
-    eyebrow: "Shin kana shirye don ƙwarewar Henry Onyx Care?",
+    eyebrow: "Shin kana shirye don ƙwarewar Henry Onyx Fabric Care?",
     title: "Yi rajistar sabis na kulawa mai inganci tare da lokaci, bayyanawa, da bibiya da aka gina ciki.",
-    body: "Daga ɗaukar tufafi da isarwa zuwa tsaftar gida da ofis akai-akai, an gina Henry Onyx Care don sanya sabis abin dogaro ya zama mai sauƙi.",
+    body: "Daga ɗaukar tufafi da isarwa zuwa tsaftar gida da ofis akai-akai, an gina Henry Onyx Fabric Care don sanya sabis abin dogaro ya zama mai sauƙi.",
     bookCta: "Yi rajistar sabis",
     exploreCta: "Bincika sabis",
   },

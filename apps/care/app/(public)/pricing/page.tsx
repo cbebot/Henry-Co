@@ -151,26 +151,26 @@ export default async function PricingPage() {
         } as CSSProperties
       }
     >
-      <div className="mx-auto max-w-[88rem] space-y-16">
+      <div className="mx-auto max-w-[92rem] space-y-16">
         <section>
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
-              <p className="care-kicker text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--accent)]">
+              <p className="care-kicker text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+              <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
                 {copy.hero.title}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
+              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)] sm:text-lg">
                 {copy.hero.body}
               </p>
             </div>
             {settings.pricing_note ? (
               <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                   <BadgeCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> {copy.hero.pricingNoteEyebrow}
                 </p>
-                <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
                   {settings.pricing_note}
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default async function PricingPage() {
         </section>
 
         <section>
-          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
+          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-[color:var(--home-line)]">
             <PackageList
               title={copy.packages.homeTitle}
               eyebrow={copy.packages.eyebrow}
@@ -200,7 +200,7 @@ export default async function PricingPage() {
         </section>
 
         <section>
-          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
+          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-[color:var(--home-line)]">
             <ModifierList
               title={copy.modifiers.addOnsTitle}
               eyebrow={copy.modifiers.eyebrow}
@@ -219,41 +219,41 @@ export default async function PricingPage() {
         <section className="space-y-14">
           {groupsLocalized.map((group) => (
             <div key={group.category}>
-              <div className="flex flex-col gap-3 border-b border-black/10 pb-5 dark:border-white/10 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-col gap-3 border-b border-[color:var(--home-line)] pb-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
                     {copy.garment.eyebrow}
                   </p>
-                  <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+                  <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                     {group.category}
                   </h2>
                 </div>
-                <p className="text-sm text-zinc-500 dark:text-white/56">{copy.garment.currentItemPricing}</p>
+                <p className="text-sm text-[color:var(--home-ink-50)]">{copy.garment.currentItemPricing}</p>
               </div>
-              <ul className="mt-2 divide-y divide-black/10 dark:divide-white/10">
+              <ul className="mt-2 divide-y divide-[color:var(--home-line)]">
                 {group.rows.map((item) => (
                   <li
                     key={item.id}
                     className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-center sm:gap-8"
                   >
                     <div>
-                      <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/48">
+                      <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                         {item.category}
                       </p>
-                      <h3 className="mt-1 text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+                      <h3 className="mt-1 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                         {item.item_name}
                       </h3>
                       {item.description ? (
-                        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+                        <p className="mt-2 max-w-2xl text-sm leading-7 text-[color:var(--home-ink-70)]">
                           {item.description}
                         </p>
                       ) : null}
                     </div>
                     <div className="text-left sm:text-right">
-                      <span className="text-2xl font-semibold tracking-[-0.02em] text-[color:var(--accent)]">
+                      <span className="text-2xl font-semibold tracking-[-0.02em] text-[color:var(--home-accent-text)]">
                         {formatMoney(item.price)}
                       </span>
-                      <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/48">
+                      <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)]">
                         {copy.garment.perUnit} {item.unit}
                       </p>
                     </div>
@@ -264,16 +264,16 @@ export default async function PricingPage() {
           ))}
         </section>
 
-        <section className="border-t border-black/10 pt-10 dark:border-white/10">
+        <section className="border-t border-[color:var(--home-line)] pt-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
                 {copy.cta.eyebrow}
               </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.cta.title}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
+              <p className="mt-3 text-sm leading-7 text-[color:var(--home-ink-70)]">
                 {copy.cta.body}
               </p>
             </div>
@@ -313,31 +313,31 @@ function PackageList({
 }) {
   return (
     <div>
-      <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
         {eyebrow}
       </p>
-      <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+      <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
         {title}
       </h2>
-      <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+      <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
         {items.map((item) => (
           <li
             key={item.id}
             className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"
           >
             <div>
-              <h3 className="text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+              <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                 {item.name}
               </h3>
-              <p className="mt-2 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+              <p className="mt-2 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
                 {item.summary}
               </p>
             </div>
             <div className="text-left sm:text-right">
-              <span className="text-2xl font-semibold tracking-[-0.02em] text-[color:var(--accent)]">
+              <span className="text-2xl font-semibold tracking-[-0.02em] text-[color:var(--home-accent-text)]">
                 {formatMoney(item.base_price)}
               </span>
-              <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/48">
+              <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)]">
                 {layout === "office"
                   ? `${item.staff_count} ${staffSuffix}`
                   : item.default_frequency.replaceAll("_", " ")}
@@ -361,27 +361,27 @@ function ModifierList({
 }) {
   return (
     <div>
-      <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
         {eyebrow}
       </p>
-      <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+      <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
         {title}
       </h2>
-      <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+      <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
         {items.map((item) => (
           <li
             key={item.id}
             className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"
           >
             <div>
-              <h3 className="text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+              <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                 {item.label}
               </h3>
-              <p className="mt-2 text-sm capitalize leading-7 text-zinc-600 dark:text-white/68">
+              <p className="mt-2 text-sm capitalize leading-7 text-[color:var(--home-ink-70)]">
                 {item.description}
               </p>
             </div>
-            <span className="text-left text-lg font-semibold tracking-[-0.02em] text-[color:var(--accent)] sm:text-right">
+            <span className="text-left text-lg font-semibold tracking-[-0.02em] text-[color:var(--home-accent-text)] sm:text-right">
               {formatMoney(item.amount)}
             </span>
           </li>
