@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { COMPANY, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
@@ -39,7 +39,10 @@ export function PropertySiteHeader({
       accentStyle={PROPERTY_PUBLIC_THEME_STYLE}
       brand={{
         href: "/",
-        name: property.name,
+        // Kicker = the division ("Property"); line = the brand ("Henry Onyx").
+        // Avoids the "PROPERTY / Henry Onyx Property" repeat — every site reads
+        // "<DIVISION> / Henry Onyx".
+        name: COMPANY.group.name,
         eyebrow: property.shortName,
         mark: <HenryCoMonogram size={26} accent={property.accent || "#B06C3E"} />,
       }}
