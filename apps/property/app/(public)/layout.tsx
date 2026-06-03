@@ -3,6 +3,7 @@ import { HenryCoPublicAccountPresets } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertyAccountChip } from "@/components/property/PropertyAccountChip";
+import { PROPERTY_PUBLIC_THEME_STYLE } from "@/components/property/property-public-theme";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
 import { getPropertyViewer } from "@/lib/property/auth";
@@ -47,7 +48,10 @@ export default async function PublicLayout({ children }: { children: React.React
   );
 
   return (
-    <div className="property-page property-shell">
+    <div
+      className="property-page property-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
+      style={PROPERTY_PUBLIC_THEME_STYLE}
+    >
       <PropertySiteHeader accountSlot={accountSlot} />
       {children}
       <PropertySiteFooter />
