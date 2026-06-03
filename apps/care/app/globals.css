@@ -380,6 +380,16 @@ a {
   color: var(--care-accent);
 }
 
+/* V3-PUBLIC-REBUILD — on the light-primary public surface the bright cobalt
+   --care-accent (#6B7CFF) only clears ~3.3:1 as small text on warm paper (AA
+   fail). Re-tone accent-AS-TEXT classes to the AA-safe --home-accent-text
+   (#4F5BD0 light / #AAB4FF dark — both AA); accent FILLS/borders keep the bright
+   cobalt. Scoped to .home-accent-scope so dashboards (dark canvas) are untouched. */
+.home-accent-scope .care-kicker,
+.home-accent-scope .care-accent-text {
+  color: var(--home-accent-text);
+}
+
 .care-status-line {
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(107, 124, 255, 0.82), transparent);

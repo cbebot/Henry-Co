@@ -1,11 +1,11 @@
 import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { CareAccountChip } from "@/components/public/CareAccountChip";
 import CareNavbar, { type DivisionPublicConfig } from "@/components/public/CareNavbar";
-import CareFooter from "@/components/public/CareFooter";
 import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
@@ -78,9 +78,48 @@ export default async function CarePublicShell({ children }: { children: ReactNod
         accountMenu={accountMenu}
       />
 
-      <div className="mx-auto w-full max-w-[88rem] flex-1 px-0">{children}</div>
+      <div className="flex-1">{children}</div>
 
-      <CareFooter division={publicCare} />
+      <PublicSiteFooter
+        copy={{
+          statement: t(
+            "Garment care, home cleaning, office cleaning, and pickup delivery — clear booking, careful handling, and responsive support from request to finish.",
+          ),
+          divisionsLabel: t("The Henry Onyx group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry Onyx Fabric Care."),
+        }}
+        columns={[
+          {
+            title: t("Explore"),
+            links: [
+              { href: "/", label: t("Home") },
+              { href: "/services", label: t("Services") },
+              { href: "/pricing", label: t("Pricing") },
+              { href: "/review", label: t("Reviews") },
+            ],
+          },
+          {
+            title: t("Booking"),
+            links: [
+              { href: "/book", label: t("Book a service") },
+              { href: "/track", label: t("Track a booking") },
+              { href: "/about", label: t("About") },
+              { href: "/contact", label: t("Contact and support") },
+            ],
+          },
+          {
+            title: t("Henry Onyx"),
+            links: [
+              { href: getHubUrl("/"), label: t("Group hub"), external: true },
+              { href: getHubUrl("/preferences"), label: t("Preferences"), external: true },
+              { href: getHubUrl("/privacy"), label: t("Privacy"), external: true },
+              { href: getHubUrl("/terms"), label: t("Terms"), external: true },
+            ],
+          },
+        ]}
+        support={{ email: publicCare.supportEmail, phone: publicCare.supportPhone }}
+      />
     </div>
   );
 }

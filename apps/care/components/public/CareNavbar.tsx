@@ -12,7 +12,7 @@ import {
   type PublicNavItem,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
-import { CareMonogram } from "@/components/brand/CareMonogram";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import { CARE_PUBLIC_THEME_STYLE } from "@/lib/care-public-theme";
 
 export type DivisionPublicConfig = {
@@ -31,7 +31,8 @@ const DEFAULT_TAGLINE = "Premium garment care, home cleaning, and recurring serv
 /**
  * Care public header — thin config wrapper over the shared, theme-aware
  * PublicChrome (V3-PUBLIC-REBUILD-care). Brand reads "FABRIC CARE / Henry Onyx"
- * (care's in-house CareMonogram as the mark); the account dropdown + sign-out
+ * (the shared HenryCoMonogram as the mark, standardised across every division);
+ * the account dropdown + sign-out
  * are preserved via the slotted CareAccountChip; the bar flips with the page and
  * wears care's cobalt accent (resolved from CARE_PUBLIC_THEME_STYLE).
  */
@@ -69,7 +70,7 @@ export default function CareNavbar({
         href: "/",
         name: COMPANY.group.name,
         eyebrow: division.shortName || "Fabric Care",
-        mark: <CareMonogram size={26} accent={division.accent || "#6B7CFF"} />,
+        mark: <HenryCoMonogram size={26} accent={division.accent || "#6B7CFF"} />,
       }}
       items={items}
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}

@@ -129,18 +129,18 @@ export default async function AboutPage() {
         } as CSSProperties
       }
     >
-      <div className="mx-auto max-w-[88rem] space-y-16">
+      <div className="mx-auto max-w-[92rem] space-y-16">
         <section>
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
                 <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+              <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
                 {heroTitle}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
+              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-65)] sm:text-lg">
                 {heroBody}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -153,12 +153,12 @@ export default async function AboutPage() {
                 </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 dark:border-white/15 dark:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition hover:border-[color:var(--accent)]/50"
                 >
                   {copy.hero.contactCta}
                 </Link>
               </div>
-              <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-zinc-500 dark:text-white/45">
+              <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                 {supportPhone}
               </p>
             </div>
@@ -166,13 +166,13 @@ export default async function AboutPage() {
               {heroFacts.map(({ icon: Icon, label, value }) => (
                 <li
                   key={label}
-                  className="flex items-baseline gap-3 border-b border-black/10 py-3 last:border-b-0 dark:border-white/10"
+                  className="flex items-baseline gap-3 border-b border-[color:var(--home-line)] py-3 last:border-b-0"
                 >
-                  <Icon className="h-3.5 w-3.5 text-[color:var(--accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
+                  <Icon className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {value}
                   </span>
                 </li>
@@ -182,19 +182,16 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-            {copy.lanes.eyebrow}
-          </p>
-          <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-black/10 dark:lg:divide-white/10">
+          <ul className="grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[color:var(--home-line)]">
             {lanes.map((item, i) => {
               const Icon = item.icon;
               return (
                 <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                  <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
-                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-65)]">
                     {item.body}
                   </p>
                 </li>
@@ -204,44 +201,38 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
+          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-[color:var(--home-line)]">
             <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {copy.standards.eyebrow}
-              </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+              <h2 className="text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.standards.title}
               </h2>
-              <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+              <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
                 {standards.map((item) => (
                   <li key={item} className="flex gap-3 py-4">
-                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                    <p className="text-sm leading-7 text-zinc-600 dark:text-white/68">{item}</p>
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--home-accent-text)]" />
+                    <p className="text-sm leading-7 text-[color:var(--home-ink-65)]">{item}</p>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="xl:pl-12">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {copy.flow.eyebrow}
-              </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+              <h2 className="text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.flow.title}
               </h2>
-              <ol className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+              <ol className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
                 {flow.map((item) => (
                   <li
                     key={item.step}
                     className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
                   >
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                       {copy.flow.stepLabel} {item.step}
                     </span>
                     <div>
-                      <h3 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                      <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                         {item.title}
                       </h3>
-                      <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
+                      <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-65)]">
                         {item.body}
                       </p>
                     </div>
@@ -253,19 +244,16 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-            {copy.reasons.eyebrow}
-          </p>
-          <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-black/10 dark:lg:divide-white/10">
+          <ul className="grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[color:var(--home-line)]">
             {reasons.map((item, i) => {
               const Icon = item.icon;
               return (
                 <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                  <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
-                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-65)]">
                     {item.body}
                   </p>
                 </li>
@@ -274,16 +262,16 @@ export default async function AboutPage() {
           </ul>
         </section>
 
-        <section className="border-t border-black/10 pt-10 dark:border-white/10">
+        <section className="border-t border-[color:var(--home-line)] pt-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
                 {copy.closingCta.eyebrow}
               </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.closingCta.title}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
+              <p className="mt-3 text-sm leading-7 text-[color:var(--home-ink-65)]">
                 {copy.closingCta.body}
               </p>
             </div>
@@ -297,7 +285,7 @@ export default async function AboutPage() {
               </Link>
               <Link
                 href="/services"
-                className="inline-flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 dark:border-white/15 dark:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition hover:border-[color:var(--accent)]/50"
               >
                 {copy.closingCta.exploreCta}
               </Link>

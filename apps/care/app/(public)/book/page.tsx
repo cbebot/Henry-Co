@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${t("Book Service")} | ${care.name}`,
     description: t(
-      "Book garment care, home cleaning, or office cleaning with Henry Onyx Care. Clear estimates, premium support, and straightforward tracking from the first request."
+      `Book garment care, home cleaning, or office cleaning with ${care.name}. Clear estimates, premium support, and straightforward tracking from the first request.`
     ),
     alternates: { canonical: "/book" },
     robots: { index: true, follow: true },
@@ -65,8 +65,8 @@ function MessageCard({
     <div
       className={`rounded-2xl border px-4 py-3 text-sm ${
         isSuccess
-          ? "border-emerald-300/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100"
-          : "border-red-300/30 bg-red-500/10 text-red-700 dark:text-red-100"
+          ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-600"
+          : "border-red-400/30 bg-red-500/10 text-red-600"
       }`}
     >
       {text}
@@ -141,7 +141,7 @@ export default async function BookPage({
     <main
       id="henryco-main"
       tabIndex={-1}
-      className="care-page min-h-screen px-3 py-8 text-zinc-950 sm:px-6 sm:py-12 lg:px-10 dark:text-white"
+      className="care-page min-h-screen px-3 py-8 text-[color:var(--home-ink)] sm:px-6 sm:py-12 lg:px-10"
       style={
         {
           "--accent": ACCENT,
@@ -152,37 +152,37 @@ export default async function BookPage({
       <div className="mx-auto grid max-w-[92rem] items-start gap-12 2xl:grid-cols-[1.15fr_0.85fr]">
         <section className="order-2 space-y-12 2xl:order-2">
           <div>
-            <p className="care-kicker inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--accent)]">
+            <p className="care-kicker inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
               <CalendarCheck2 className="h-3.5 w-3.5" />
               {t("Service booking")}
             </p>
-            <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+            <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
               {t("Book a service. One calm form.")}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)] sm:text-lg">
               {t(
-                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form makes the difference clear before you submit."
+                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form makes the difference clear up front."
               )}
             </p>
           </div>
 
           <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
               {t("What the request captures")}
             </p>
-            <ul className="mt-5 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+            <ul className="mt-5 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
               {captureItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.title} className="flex gap-4 py-4">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white/60 text-[color:var(--accent)] dark:border-white/10 dark:bg-white/[0.04]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
                       <Icon className="h-4 w-4" />
                     </span>
                     <div>
-                      <h2 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                      <h2 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                         {item.title}
                       </h2>
-                      <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
+                      <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
                         {item.body}
                       </p>
                     </div>
@@ -193,23 +193,23 @@ export default async function BookPage({
           </div>
 
           <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
               {t("How a request flows")}
             </p>
-            <ol className="mt-5 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+            <ol className="mt-5 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
               {flowSteps.map((item) => (
                 <li
                   key={item.step}
                   className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
                 >
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                     {t("Step")} {item.step}
                   </span>
                   <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                    <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                       {item.title}
                     </h3>
-                    <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
+                    <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
                       {item.body}
                     </p>
                   </div>
@@ -218,28 +218,28 @@ export default async function BookPage({
             </ol>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-2 md:divide-x md:divide-black/10 dark:md:divide-white/10">
+          <div className="grid gap-10 md:grid-cols-2 md:divide-x md:divide-[color:var(--home-line)]">
             <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                 {t("Wardrobe service")}
               </p>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-[color:var(--home-ink)]">
                 {t("Garments end in return delivery.")}
               </h3>
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+              <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
                 {t(
                   "Pickup, treatment, finishing, packing, and return delivery remain visible in their own tracking timeline."
                 )}
               </p>
             </div>
             <div className="md:pl-10">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                 {t("On-site service")}
               </p>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-[color:var(--home-ink)]">
                 {t("Homes and offices end in completed work.")}
               </h3>
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+              <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
                 {t(
                   "Home and office services focus on scheduling, arrival, service completion, and final sign-off rather than delivery movement."
                 )}
@@ -248,11 +248,11 @@ export default async function BookPage({
           </div>
 
           <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
               <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
               {t("Booking truth")}
             </p>
-            <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+            <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
               {t(
                 "One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record."
               )}
@@ -262,17 +262,17 @@ export default async function BookPage({
           <div className="flex flex-wrap gap-3">
             <Link
               href="/track"
-              className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 hover:bg-white dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-5 py-2.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--home-surface-07)]"
             >
-              <Search className="h-4 w-4 text-[color:var(--accent)]" />
+              <Search className="h-4 w-4 text-[color:var(--home-accent-text)]" />
               {t("Track an existing request")}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 hover:bg-white dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-5 py-2.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--home-surface-07)]"
             >
-              <Wallet className="h-4 w-4 text-[color:var(--accent)]" />
+              <Wallet className="h-4 w-4 text-[color:var(--home-accent-text)]" />
               {t("Review pricing")}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -280,16 +280,16 @@ export default async function BookPage({
         </section>
 
         <section className="order-1 2xl:order-1">
-          <div className="rounded-[1.6rem] border border-black/10 bg-white/85 p-5 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+          <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-5 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-8">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
               {t("Booking form")}
             </p>
-            <h2 className="mt-3 text-balance text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.02em] text-zinc-950 sm:text-[1.95rem] dark:text-white">
-              {t("Share the details with confidence.")}
+            <h2 className="mt-3 text-balance text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.02em] text-[color:var(--home-ink)] sm:text-[1.95rem]">
+              {t("Tell us what the job needs.")}
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+            <p className="mt-3 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
               {t(
-                "Choose the service, add the right details, review the current estimate, and send a clear request in one polished step."
+                "Choose the service, add the right details, review the current estimate, and send one clear request."
               )}
             </p>
 
@@ -304,7 +304,7 @@ export default async function BookPage({
               </div>
             ) : null}
 
-            <div className="mt-7 border-t border-black/10 pt-7 dark:border-white/10">
+            <div className="mt-7 border-t border-[color:var(--home-line)] pt-7">
               <BookPickupForm
                 locale={locale}
                 pricingItems={pricingItems}
@@ -326,8 +326,8 @@ export default async function BookPage({
               />
             </div>
 
-            <p className="mt-7 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
-              <CheckCircle2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+            <p className="mt-7 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
+              <CheckCircle2 className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
               {t("One tracking code per request")}
             </p>
           </div>

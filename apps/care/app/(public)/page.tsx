@@ -14,11 +14,6 @@ import {
 } from "lucide-react";
 import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
 import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
-import {
-  HenryCoHeroCard,
-  HenryCoTactileCard,
-  PublicSpotlight,
-} from "@henryco/ui/public-shell";
 
 import CareFlow from "@/components/care/CareFlow";
 import {
@@ -29,7 +24,7 @@ import {
 } from "@/lib/care-data";
 import { getCarePublicChipUser } from "@/lib/care-public-viewer";
 import { getCarePublicLocale } from "@/lib/locale-server";
-import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import { CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const revalidate = 60;
 
@@ -50,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: care.name,
     description: t(
-      "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from Henry Onyx Care.",
+      "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from Henry Onyx Fabric Care.",
     ),
   };
 }
@@ -234,241 +229,286 @@ export default async function CareHomePage() {
       className="overflow-hidden bg-transparent pb-24"
       style={
         {
-          "--accent": CARE_ACCENT,
           "--accent-secondary": CARE_ACCENT_SECONDARY,
         } as CSSProperties
       }
     >
-      {/* Premium editorial hero — pinned to a deliberate dark "stage"
-          surface that does not depend on the visitor's system theme. Above
-          the fold reads consistently in both light and dark, while below-
-          the-fold content continues to swap via care's theme tokens. This
-          is the editorial pattern owner asked for: the hero is the same
-          premium first impression on every device. */}
-      <div className="dark relative isolate overflow-hidden bg-[#06101e] text-white">
+      {/* Editorial hero — theme-aware on the shared --home-* canvas (light-primary,
+          flips to dark with the toggle), carrying care's cobalt soul through a
+          color-mix aurora + ink-alpha hairline grid. No permanent-dark stage:
+          the first impression rides the page like every shipped Henry Onyx site. */}
+      <section className="relative isolate overflow-hidden border-b border-[color:var(--home-line)]">
+        {/* Atmosphere — ink-alpha hairline grid + cobalt aurora. Decorative only;
+            both read on warm paper AND near-black because they derive from tokens. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(900px_440px_at_20%_-10%,rgba(107,124,255,0.18),transparent_55%),radial-gradient(720px_360px_at_80%_8%,rgba(51,211,199,0.10),transparent_55%),radial-gradient(900px_520px_at_50%_110%,rgba(38,22,82,0.65),transparent_60%)]"
+          className="pointer-events-none absolute inset-0 -z-10 opacity-70"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, var(--home-line-08) 1px, transparent 1px), linear-gradient(to bottom, var(--home-line-08) 1px, transparent 1px)",
+            backgroundSize: "34px 34px",
+            maskImage: "radial-gradient(ellipse 78% 60% at 50% 0%, black, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(ellipse 78% 60% at 50% 0%, black, transparent 80%)",
+          }}
         />
-      <section className="relative mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 sm:pt-12 lg:px-10 lg:pt-16">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-px max-w-[92rem] bg-gradient-to-r from-transparent via-[color:var(--accent)]/45 to-transparent"
+          className="pointer-events-none absolute left-[20%] top-[-18rem] -z-10 h-[34rem] w-[46rem] -translate-x-1/2 blur-3xl"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, color-mix(in srgb, var(--home-accent) 20%, transparent), transparent 70%)",
+          }}
         />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-[6%] top-[2rem] -z-10 h-[26rem] w-[34rem] blur-3xl"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, color-mix(in srgb, var(--accent-secondary, #33d3c7) 12%, transparent), transparent 68%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 sm:pt-12 lg:px-10 lg:pt-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-px max-w-[92rem] bg-gradient-to-r from-transparent via-[color:var(--home-accent)]/45 to-transparent"
+          />
 
-        {/* Top trust strip — 3 micro signals + the always-available track link.
-            Sets the operating-company tone before the headline lands. */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/60">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="inline-flex items-center gap-1.5 text-[color:var(--accent)]">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              {heroBadge}
-            </span>
-            <span aria-hidden className="hidden h-1 w-1 rounded-full bg-white/15 sm:inline-block" />
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
-              {settings.pickup_hours || t("Mon – Sat • 8:00 AM to 7:00 PM")}
-            </span>
-            <span aria-hidden className="hidden h-1 w-1 rounded-full bg-white/15 sm:inline-block" />
-            <span className="inline-flex items-center gap-1.5">
-              <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-              {t("Reviewed by clients across homes, offices, and wardrobes")}
-            </span>
-          </div>
-          <Link
-            href="/track"
-            className="inline-flex items-center gap-1.5 text-white/70 transition hover:text-white"
-          >
-            {t("Track a booking")}
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
-          <div>
-            {chipUser ? (
-              <p className="text-sm font-semibold tracking-tight text-white/72">
-                {t("Welcome back")}
-                {careHeroFirstName ? `, ${careHeroFirstName}` : ""}.{" "}
-                <Link
-                  href="/track"
-                  className="text-[color:var(--accent)] underline-offset-4 transition hover:underline"
-                >
-                  {t("Continue tracking your last request")}
-                </Link>
-              </p>
-            ) : null}
-
-            <h1
-              className={`max-w-3xl text-balance care-display text-white ${chipUser ? "mt-5" : ""}`}
+          {/* Top trust strip — 3 micro signals + the always-available track link.
+              Sets the operating-company tone before the headline lands. */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-60)]">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <span className="inline-flex items-center gap-1.5 text-[color:var(--home-accent-text)]">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {heroBadge}
+              </span>
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[color:var(--home-line-15)] sm:inline-block" />
+              <span className="inline-flex items-center gap-1.5">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500/85" />
+                {settings.pickup_hours || t("Mon – Sat • 8:00 AM to 7:00 PM")}
+              </span>
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[color:var(--home-line-15)] sm:inline-block" />
+              <span className="inline-flex items-center gap-1.5">
+                <Star className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
+                {t("Reviewed by clients across homes, offices, and wardrobes")}
+              </span>
+            </div>
+            <Link
+              href="/track"
+              className="inline-flex items-center gap-1.5 text-[color:var(--home-ink-65)] transition hover:text-[color:var(--home-ink)]"
             >
-              {heroTitle}
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-white/72 sm:text-lg">
-              {heroSubtitle}
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                href="/book"
-                className="care-button-primary inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]"
-              >
-                {t("Book a service")}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-transparent px-6 py-3.5 text-sm font-semibold text-white transition outline-none hover:border-white/30 hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]"
-              >
-                {t("Review pricing")}
-              </Link>
-            </div>
-
-            {/* Three concierge service paths — clear next step for every
-                kind of visitor. HenryCoTactileCard scopes hover lift to fine
-                pointers only so touch devices never see the stuck-hover
-                state the owner flagged. Each card lands directly in the
-                booking flow with the right service preselected. */}
-            <div className="mt-9 grid gap-3 sm:grid-cols-3">
-              {[
-                {
-                  href: "/book?service=garments",
-                  eyebrow: t("Garments"),
-                  title: t("Pickup, treatment, and return delivery."),
-                },
-                {
-                  href: "/book?service=home",
-                  eyebrow: t("Homes"),
-                  title: t("Move-out, deep, and recurring home care."),
-                },
-                {
-                  href: "/book?service=office",
-                  eyebrow: t("Offices"),
-                  title: t("After-hours and recurring workplace cleaning."),
-                },
-              ].map((path) => (
-                <HenryCoTactileCard key={path.href} href={path.href} ariaLabel={`${path.eyebrow}: ${path.title}`}>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                      {path.eyebrow}
-                    </p>
-                    <p className="mt-2 text-[15px] font-semibold leading-snug tracking-[-0.005em] text-white">
-                      {path.title}
-                    </p>
-                  </div>
-                  <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65 transition [@media(hover:hover)]:group-hover:text-white">
-                    {t("Start booking")}
-                    <ArrowRight className="h-3 w-3 transition [@media(hover:hover)]:group-hover:translate-x-0.5" />
-                  </div>
-                </HenryCoTactileCard>
-              ))}
-            </div>
+              {t("Track a booking")}
+              <ArrowRight className="h-3 w-3" />
+            </Link>
           </div>
 
-          {/* Aside — when imagery configured, full-bleed photographic spread
-              with a single editorial caption. When not configured, the
-              HenryCoHeroCard primitive renders the calm service-desk dial
-              (hours + phone + recurring care) with mobile-safe typography
-              and consistent motion across every HenryCo public surface. */}
-          <aside>
-            {heroImageUrl ? (
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.65)]">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${heroImageUrl})` }}
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.06)_0%,rgba(7,17,31,0.20)_55%,rgba(7,17,31,0.85)_100%)]" />
-                <div className="relative flex min-h-[22rem] flex-col justify-end p-6 sm:p-8">
-                  <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-black/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur-sm">
-                    <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />
-                    {t("Signature service")}
-                  </div>
-                  <p
-                    className="mt-4 max-w-md text-balance font-semibold text-white"
-                    style={{
-                      fontSize: "clamp(1.4rem, 3.4vw + 0.5rem, 1.85rem)",
-                      lineHeight: 1.12,
-                      letterSpacing: "-0.015em",
-                      overflowWrap: "break-word",
-                      hyphens: "auto",
-                    }}
+          <div className="mt-8 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+            <div>
+              {chipUser ? (
+                <p className="text-sm font-semibold tracking-tight text-[color:var(--home-ink-70)]">
+                  {t("Welcome back")}
+                  {careHeroFirstName ? `, ${careHeroFirstName}` : ""}.{" "}
+                  <Link
+                    href="/track"
+                    className="text-[color:var(--home-accent-text)] underline-offset-4 transition hover:underline"
                   >
-                    {t("Hand off the work — see it move, finish, and come back to you.")}
-                  </p>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-white/72">
-                    {t("Every booking gets one tracking code, one calm service flow, and a real human on the line if the day asks for it.")}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <HenryCoHeroCard
-                tone="spotlight"
-                accentVar="var(--accent, #6b7cff)"
-                eyebrow={t("At your service")}
-                title={t("Hand off the work — we keep it moving.")}
-                body={t("One tracking code per request, one calm service flow, and a real human on the line whenever the day asks for it.")}
-                rows={[
-                  {
-                    key: "hours",
-                    icon: <Clock3 className="h-4 w-4" />,
-                    label: t("Service hours"),
-                    value: settings.pickup_hours || "Mon–Sat · 8:00 AM – 7:00 PM",
-                  },
-                  {
-                    key: "desk",
-                    icon: <PhoneCall className="h-4 w-4" />,
-                    label: t("Talk to the desk"),
-                    value: supportPhone || supportEmail || BRAND_EMAILS.care,
-                  },
-                  {
-                    key: "recurring",
-                    icon: <Repeat className="h-4 w-4" />,
-                    label: t("Recurring care"),
-                    value: t("Saved schedules · steady follow-through"),
-                  },
-                ]}
-              />
-            )}
-          </aside>
-        </div>
+                    {t("Continue tracking your last request")}
+                  </Link>
+                </p>
+              ) : null}
 
-        {/* Editorial "what happens next" rail — sets expectations before the
-            visitor scrolls into product detail. Three steps, hairline only. */}
-        <div className="mt-12 grid gap-6 border-y border-white/10 py-6 sm:grid-cols-3">
-          {[
-            {
-              step: "01",
-              title: t("Tell us what you need"),
-              body: t("Pick a service, add the details, and review the current estimate."),
-            },
-            {
-              step: "02",
-              title: t("Receive one tracking code"),
-              body: t("One code per request keeps pickup, treatment, and delivery visible."),
-            },
-            {
-              step: "03",
-              title: t("Finish on the right note"),
-              body: t("Garments come back to you. Homes and offices end in completed work."),
-            },
-          ].map((item, index) => (
-            <div
-              key={item.step}
-              className={index > 0 ? "sm:border-l sm:border-white/10 sm:pl-6" : ""}
-            >
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {t("Step")} {item.step}
+              <h1
+                className={`max-w-3xl text-balance care-display text-[color:var(--home-ink)] ${chipUser ? "mt-5" : ""}`}
+              >
+                {heroTitle}
+              </h1>
+
+              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)] sm:text-lg">
+                {heroSubtitle}
               </p>
-              <p className="mt-3 text-base font-semibold tracking-[-0.005em] text-white">
-                {item.title}
-              </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-white/68">{item.body}</p>
+
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link
+                  href="/book"
+                  className="care-button-primary inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
+                >
+                  {t("Book a service")}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-3 rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-02)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-ink)] transition outline-none hover:border-[color:var(--home-line-15)] hover:bg-[color:var(--home-surface-04)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
+                >
+                  {t("Review pricing")}
+                </Link>
+              </div>
+
+              {/* Three concierge service paths — clear next step for every kind of
+                  visitor. Hover lift is scoped to fine pointers so touch devices
+                  never see a stuck-hover state. Each card lands directly in the
+                  booking flow with the right service preselected. */}
+              <div className="mt-9 grid gap-3 sm:grid-cols-3">
+                {[
+                  {
+                    href: "/book?service=garments",
+                    eyebrow: t("Garments"),
+                    title: t("Pickup, treatment, and return delivery."),
+                  },
+                  {
+                    href: "/book?service=home",
+                    eyebrow: t("Homes"),
+                    title: t("Move-out, deep, and recurring home care."),
+                  },
+                  {
+                    href: "/book?service=office",
+                    eyebrow: t("Offices"),
+                    title: t("After-hours and recurring workplace cleaning."),
+                  },
+                ].map((path) => (
+                  <Link
+                    key={path.href}
+                    href={path.href}
+                    aria-label={`${path.eyebrow}: ${path.title}`}
+                    className="group flex flex-col justify-between gap-4 rounded-2xl border border-[color:var(--home-line)] bg-[color:var(--home-surface-02)] p-4 outline-none transition hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-04)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45 active:translate-y-[0.5px] [@media(hover:hover)]:hover:-translate-y-0.5"
+                  >
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
+                        {path.eyebrow}
+                      </p>
+                      <p className="mt-2 text-[15px] font-semibold leading-snug tracking-[-0.005em] text-[color:var(--home-ink)]">
+                        {path.title}
+                      </p>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-60)] transition [@media(hover:hover)]:group-hover:text-[color:var(--home-ink)]">
+                      {t("Start booking")}
+                      <ArrowRight className="h-3 w-3 transition [@media(hover:hover)]:group-hover:translate-x-0.5" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
-          ))}
+
+            {/* Aside — when imagery is configured, a full-bleed photographic spread
+                with a single editorial caption (white ink sits on the photo, not the
+                page). Otherwise a theme-aware service-desk dial (hours + phone +
+                recurring care) on --home-* tokens that flips with the page. */}
+            <aside>
+              {heroImageUrl ? (
+                <div className="relative overflow-hidden rounded-[2rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] shadow-[0_30px_80px_-40px_rgb(var(--home-ink-rgb)/0.45)]">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${heroImageUrl})` }}
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.06)_0%,rgba(7,17,31,0.20)_55%,rgba(7,17,31,0.85)_100%)]" />
+                  <div className="relative flex min-h-[22rem] flex-col justify-end p-6 sm:p-8">
+                    <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-black/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur-sm">
+                      <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent)]" />
+                      {t("Signature service")}
+                    </div>
+                    <p
+                      className="mt-4 max-w-md text-balance font-semibold text-white"
+                      style={{
+                        fontSize: "clamp(1.4rem, 3.4vw + 0.5rem, 1.85rem)",
+                        lineHeight: 1.12,
+                        letterSpacing: "-0.015em",
+                        overflowWrap: "break-word",
+                        hyphens: "auto",
+                      }}
+                    >
+                      {t("Hand it off. Watch it move, finish, and come back to you.")}
+                    </p>
+                    <p className="mt-3 max-w-md text-sm leading-relaxed text-white/75">
+                      {t("Every booking gets one tracking code, one calm service flow, and a real person on the line when the day calls for one.")}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative overflow-hidden rounded-[2rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6 shadow-[0_30px_80px_-45px_rgb(var(--home-ink-rgb)/0.32)] sm:p-8">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
+                    {t("At your service")}
+                  </p>
+                  <p className="mt-3 max-w-sm text-balance care-section-title text-[1.5rem] leading-tight text-[color:var(--home-ink)]">
+                    {t("Hand it off. We keep it moving.")}
+                  </p>
+                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-[color:var(--home-ink-70)]">
+                    {t("One tracking code per request, one calm service flow, and a real person on the line when the day calls for one.")}
+                  </p>
+                  <dl className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
+                    {[
+                      {
+                        key: "hours",
+                        icon: <Clock3 className="h-4 w-4" />,
+                        label: t("Service hours"),
+                        value: settings.pickup_hours || "Mon–Sat · 8:00 AM – 7:00 PM",
+                      },
+                      {
+                        key: "desk",
+                        icon: <PhoneCall className="h-4 w-4" />,
+                        label: t("Talk to the desk"),
+                        value: supportPhone || supportEmail || BRAND_EMAILS.care,
+                      },
+                      {
+                        key: "recurring",
+                        icon: <Repeat className="h-4 w-4" />,
+                        label: t("Recurring care"),
+                        value: t("Saved schedules · steady follow-through"),
+                      },
+                    ].map((row) => (
+                      <div key={row.key} className="flex items-center gap-3 py-3.5">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]">
+                          {row.icon}
+                        </span>
+                        <div className="min-w-0">
+                          <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
+                            {row.label}
+                          </dt>
+                          <dd className="mt-0.5 truncate text-sm font-semibold text-[color:var(--home-ink)]">
+                            {row.value}
+                          </dd>
+                        </div>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+            </aside>
+          </div>
+
+          {/* Editorial "what happens next" rail — sets expectations before the
+              visitor scrolls into product detail. Three steps, hairline only. */}
+          <div className="mt-12 grid gap-6 border-y border-[color:var(--home-line)] py-6 sm:grid-cols-3">
+            {[
+              {
+                step: "01",
+                title: t("Tell us what you need"),
+                body: t("Pick a service, add the details, and review the current estimate."),
+              },
+              {
+                step: "02",
+                title: t("Receive one tracking code"),
+                body: t("One code per request keeps pickup, treatment, and delivery visible."),
+              },
+              {
+                step: "03",
+                title: t("Finish on the right note"),
+                body: t("Garments come back to you. Homes and offices end in completed work."),
+              },
+            ].map((item, index) => (
+              <div
+                key={item.step}
+                className={index > 0 ? "sm:border-l sm:border-[color:var(--home-line)] sm:pl-6" : ""}
+              >
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
+                  {t("Step")} {item.step}
+                </p>
+                <p className="mt-3 text-base font-semibold tracking-[-0.005em] text-[color:var(--home-ink)]">
+                  {item.title}
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--home-ink-65)]">{item.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-      </div>
 
       {/* CareFlow — real product, kept untouched */}
       <section id="services" className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
@@ -476,25 +516,25 @@ export default async function CareHomePage() {
       </section>
 
       {/* Service journeys + Client profiles — editorial 2-col split, divided lists, no inner panels */}
-      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+      <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-12 xl:grid-cols-[0.9fr,1.1fr]">
           <div>
             <p className="care-kicker">{t("Service journeys")}</p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
+            <h2 className="mt-4 max-w-md text-balance care-section-title text-[color:var(--home-ink)]">
               {t("Service timelines that match the work being done.")}
             </h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-zinc-600 dark:text-white/72">
+            <p className="mt-4 max-w-md text-sm leading-7 text-[color:var(--home-ink-70)]">
               {t(
-                "A garment order should feel different from a home clean or an office visit. Henry Onyx Care keeps each service clear so customers always understand what stage comes next.",
+                "A garment order should feel different from a home clean or an office visit. Henry Onyx Fabric Care keeps each service clear so customers always understand what stage comes next.",
               )}
             </p>
-            <ul className="mt-7 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+            <ul className="mt-7 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
               {serviceJourneys.map((item) => (
                 <li key={item.title} className="py-5">
-                  <h3 className="text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {item.title}
                   </h3>
-                  <p className="mt-1.5 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  <p className="mt-1.5 max-w-2xl text-sm leading-7 text-[color:var(--home-ink-70)]">
                     {item.body}
                   </p>
                 </li>
@@ -503,20 +543,19 @@ export default async function CareHomePage() {
           </div>
 
           <div>
-            <p className="care-kicker">{t("Who Care fits")}</p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
+            <h2 className="max-w-md text-balance care-section-title text-[color:var(--home-ink)]">
               {t("Three audiences. One operating standard.")}
             </h2>
-            <ul className="mt-7 grid gap-8 sm:grid-cols-3 sm:divide-x sm:divide-black/10 dark:sm:divide-white/10">
+            <ul className="mt-7 grid gap-8 sm:grid-cols-3 sm:divide-x sm:divide-[color:var(--home-line)]">
               {clientProfiles.map((item, i) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.title} className={i > 0 ? "sm:pl-6" : ""}>
-                    <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
-                    <h3 className="mt-4 text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+                    <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
+                    <h3 className="mt-4 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                       {item.title}
                     </h3>
-                    <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                    <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
                       {item.body}
                     </p>
                   </li>
@@ -531,11 +570,10 @@ export default async function CareHomePage() {
       <section id="pickup" className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-2">
           <div className="care-card rounded-[2.2rem] p-7 sm:p-8">
-            <p className="care-kicker">{t("Residential care")}</p>
-            <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
+            <h2 className="care-section-title text-[color:var(--home-ink)]">
               {t("Home care planned around your property and your schedule.")}
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
               {t(
                 "Move from a one-time clean into recurring home care without losing clarity around scope, timing, staffing, or access notes.",
               )}
@@ -554,11 +592,10 @@ export default async function CareHomePage() {
           </div>
 
           <div className="care-card rounded-[2.2rem] p-7 sm:p-8">
-            <p className="care-kicker">{t("Commercial coverage")}</p>
-            <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
+            <h2 className="care-section-title text-[color:var(--home-ink)]">
               {t("Office cleaning built for reliable business continuity.")}
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
               {t(
                 "After-hours cleaning, site access coordination, and recurring workplace care are handled with the same reliability clients expect from any serious service partner.",
               )}
@@ -583,30 +620,30 @@ export default async function CareHomePage() {
         <div className="grid gap-12 xl:grid-cols-[1.05fr,0.95fr]">
           <div>
             <p className="care-kicker">{t("Current garment pricing")}</p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
+            <h2 className="mt-4 max-w-md text-balance care-section-title text-[color:var(--home-ink)]">
               {t("Garment pricing stays transparent and current.")}
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
               {t(
                 "Dry cleaning, laundry, pressing, and treatment prices stay clear before you book, so the estimate you review feels grounded and believable.",
               )}
             </p>
-            <ul className="mt-7 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+            <ul className="mt-7 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
               {garmentPreviewLocalized.map((item) => (
                 <li key={item.id} className="flex items-baseline justify-between gap-6 py-4">
                   <div className="min-w-0">
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/45">
+                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                       {item.category}
                     </p>
-                    <p className="mt-1 text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+                    <p className="mt-1 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                       {item.item_name}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[1.5rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
+                    <p className="text-[1.5rem] font-semibold leading-tight tracking-tight text-[color:var(--home-accent-text)]">
                       {formatMoney(item.price)}
                     </p>
-                    <p className="mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/45">
+                    <p className="mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)]">
                       /{item.unit}
                     </p>
                   </div>
@@ -619,26 +656,26 @@ export default async function CareHomePage() {
             <p className="care-kicker">
               {hasReviews ? t("Client reviews") : t("Service trust")}
             </p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
+            <h2 className="mt-4 max-w-md text-balance care-section-title text-[color:var(--home-ink)]">
               {hasReviews
                 ? t("Real feedback from clients who have experienced the service.")
                 : t("Trust signals that make the service feel credible before the first booking.")}
             </h2>
             <div className="mt-7">
               {hasReviews ? (
-                <ul className="divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+                <ul className="divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
                   {reviewsLocalized.map((review) => (
                     <li key={review.id} className="py-5">
-                      <div className="flex items-center gap-1 text-[color:var(--accent)]">
+                      <div className="flex items-center gap-1 text-[color:var(--home-accent-text)]">
                         {stars(review.rating).map((_, index) => (
                           <Star key={index} className="h-3.5 w-3.5 fill-current" />
                         ))}
                       </div>
-                      <p className="mt-3 text-sm leading-7 text-zinc-700 dark:text-white/72">
+                      <p className="mt-3 text-sm leading-7 text-[color:var(--home-ink-70)]">
                         “{review.review_text}”
                       </p>
                       {review.photo_url ? (
-                        <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-black/10 dark:border-white/10">
+                        <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-[color:var(--home-line)]">
                           <Image
                             src={review.photo_url}
                             alt={`Review image from ${review.customer_name}`}
@@ -649,20 +686,20 @@ export default async function CareHomePage() {
                           />
                         </div>
                       ) : null}
-                      <p className="mt-3 text-sm font-semibold text-zinc-950 dark:text-white">
+                      <p className="mt-3 text-sm font-semibold text-[color:var(--home-ink)]">
                         {review.customer_name}
                       </p>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
-                  <p className="text-[1.15rem] font-semibold leading-snug tracking-tight text-zinc-950 dark:text-white">
+                <div className="border-l-2 border-[color:var(--home-accent)]/55 pl-5">
+                  <p className="text-[1.15rem] font-semibold leading-snug tracking-tight text-[color:var(--home-ink)]">
                     {t("Clear pricing, tracked handoffs, and direct support stay visible from the start.")}
                   </p>
-                  <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  <p className="mt-3 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
                     {t(
-                      "Henry Onyx Care shows the service path, pickup logic, and support channels up front so customers do not have to guess what happens after they book.",
+                      "Henry Onyx Fabric Care shows the service path, pickup logic, and support channels up front. No guesswork after you book.",
                     )}
                   </p>
                 </div>
@@ -672,34 +709,53 @@ export default async function CareHomePage() {
         </div>
       </section>
 
-      {/* Closing band — Spotlight contrast, no panel-on-panel */}
-      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <PublicSpotlight
-          tone="contrast"
-          eyebrow={t("Ready when you are")}
-          title={t("Book with clarity, then follow the service with confidence.")}
-          body={t(
-            "From pickup windows to on-site visits and return delivery, Henry Onyx Care keeps every service update visible enough that you are not left guessing.",
-          )}
-          aside={
-            <div className="flex flex-col gap-3">
+      {/* Closing band — Care-native cobalt CTA (theme-aware, no off-brand contrast tone) */}
+      <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+        <div
+          className="relative overflow-hidden rounded-[2.4rem] border border-[color:var(--care-border)] px-6 py-12 sm:px-12 sm:py-16"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in srgb, var(--accent) 9%, var(--home-sheet)) 0%, var(--home-sheet) 48%, color-mix(in srgb, var(--accent-secondary, #33d3c7) 9%, var(--home-sheet)) 100%)",
+          }}
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-3xl"
+            style={{
+              background:
+                "radial-gradient(circle, color-mix(in srgb, var(--accent) 24%, transparent), transparent 70%)",
+            }}
+          />
+          <div className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div>
+              <p className="care-kicker">{t("Ready when you are")}</p>
+              <h2 className="mt-4 max-w-2xl text-balance care-section-title text-[color:var(--care-text)]">
+                {t("Book with clarity, then follow the service with confidence.")}
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--care-muted)]">
+                {t(
+                  "From pickup windows to on-site visits and return delivery, Henry Onyx keeps every service update visible. No guessing.",
+                )}
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 lg:items-end">
               <Link
                 href="/book"
-                className="care-button-primary inline-flex items-center justify-between gap-2 rounded-full px-6 py-3.5 text-sm font-semibold"
+                className="care-button-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold"
               >
                 {t("Plan service")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/services"
-                className="inline-flex items-center justify-between gap-2 rounded-full border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/[0.04]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--care-border)] bg-[color:var(--home-surface-04)] px-6 py-3.5 text-sm font-semibold text-[color:var(--care-text)] transition hover:border-[color:var(--accent)] hover:bg-[color:var(--home-surface-07)]"
               >
                 {t("Explore service families")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-          }
-        />
+          </div>
+        </div>
       </section>
     </main>
   );
@@ -717,19 +773,19 @@ function PackageCard({
   meta: string;
 }) {
   return (
-    <div className="rounded-[1.4rem] border border-black/10 bg-black/[0.02] p-5 dark:border-white/10 dark:bg-white/[0.03]">
+    <div className="rounded-[1.4rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-02)] p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
+          <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
             {title}
           </h3>
-          <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">{body}</p>
+          <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">{body}</p>
         </div>
         <div className="text-right">
-          <p className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
+          <p className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--home-accent-text)]">
             {value}
           </p>
-          <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/45">
+          <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)]">
             {meta}
           </p>
         </div>
