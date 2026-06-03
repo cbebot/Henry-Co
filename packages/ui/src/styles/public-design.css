@@ -176,6 +176,28 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+ *  ACCENT SCOPE (§9 fix) — re-resolve the accent ramp on a division's PUBLIC
+ *  subtree. :root computes `--home-accent: var(--accent)` ONCE (where --accent is
+ *  unset → the gold fallback), so the substituted value inherits and setting
+ *  --accent on a descendant wrapper does NOT retro-resolve the ramp. A site adds
+ *  `.home-accent-scope` to its public wrapper and sets --accent / --accent-text
+ *  (from company.ts) on the SAME element; the ramp below re-resolves color-mix
+ *  against that accent, and the .dark rule lifts accent-as-text to AA on the
+ *  near-black canvas. (The hub never needed this — its accent IS the gold
+ *  fallback; studio/marketplace and the other non-gold divisions do.)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.home-accent-scope {
+  --home-accent: var(--accent, #c9a227);
+  --home-accent-strong: color-mix(in srgb, var(--accent, #c9a227) 82%, #000 18%);
+  --home-accent-soft: color-mix(in srgb, var(--accent, #c9a227) 12%, transparent);
+  --home-accent-ring: color-mix(in srgb, var(--accent, #c9a227) 34%, transparent);
+  --home-accent-text: var(--accent-text, #8a6f00);
+}
+.dark .home-accent-scope {
+  --home-accent-text: var(--accent-text-dark, var(--accent-text, #e5c870));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
  *  TYPE SCALE — utility classes. A deliberate ramp (display → caption), not
  *  arbitrary sizes. Display tiers are the editorial serif; text tiers are system
  *  sans; numerics are mono. Sizes are fluid clamps capped to honour "gravity, not

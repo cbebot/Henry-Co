@@ -19,6 +19,8 @@ import { BRAND_EMAILS, getAccountUrl, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { MarketplaceToastStack } from "@/components/marketplace/toast-stack";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -39,12 +41,49 @@ export function PublicHeader(_props: {
   return <PublicHeaderClient />;
 }
 
-export function PublicSurface({ children }: { children: React.ReactNode }) {
+export async function PublicSurface({ children }: { children: React.ReactNode }) {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+  const footerColumns = [
+    { title: copy.footer.shopTitle, links: copy.footer.shopLinks },
+    {
+      title: copy.footer.sellTitle,
+      links: [
+        ...copy.footer.sellLinks,
+        { href: getAccountUrl("/marketplace"), label: t("Your account") },
+      ],
+    },
+    {
+      title: copy.footer.supportTitle,
+      links: [
+        { href: "/help", label: t("Help and support") },
+        { href: getHubUrl("/contact"), label: t("Contact") },
+        { href: "/trust", label: t("Trust") },
+      ],
+    },
+  ];
   return (
-    <div className="market-page">
+    <div
+      className="market-page home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
+      style={MARKETPLACE_PUBLIC_THEME_STYLE}
+    >
       <PublicHeader signedIn={false} />
-      <main id="henryco-main" tabIndex={-1}>{children}</main>
-      <PublicFooter />
+      <main id="henryco-main" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
+      <PublicSiteFooter
+        copy={{
+          statement: t(
+            "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",
+          ),
+          divisionsLabel: t("The Henry Onyx group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry Onyx Studio."),
+        }}
+        columns={footerColumns}
+        support={{ email: BRAND_EMAILS.marketplace, phone: "+234 913 395 7084" }}
+      />
       <MarketplaceCartDrawer />
       <MarketplaceToastStack />
     </div>
@@ -87,7 +126,7 @@ export async function PublicFooter() {
               ...copy.footer.sellLinks,
               {
                 href: getAccountUrl("/marketplace"),
-                label: translateSurfaceLabel(locale, "HenryCo account"),
+                label: translateSurfaceLabel(locale, "Your account"),
                 external: true,
               },
             ]}
@@ -134,7 +173,7 @@ export async function PublicFooter() {
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
-            {translateSurfaceLabel(locale, "Designed and built in-house by Henry Onyx Studio for the HenryCo ecosystem")}
+            {translateSurfaceLabel(locale, "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem")}
           </span>
         </div>
       </div>
@@ -237,7 +276,7 @@ export function VendorCard({
 
   return (
     <Link href={`/store/${vendor.slug}`} className="group block">
-      <article className="overflow-hidden rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+      <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] shadow-[0_30px_90px_-45px_rgb(var(--home-ink-rgb)/0.18)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[color:var(--home-accent)]/50">
         <div className="relative h-44 overflow-hidden">
           <DivisionImage
             src={imageSrc}
@@ -247,12 +286,12 @@ export function VendorCard({
             className="object-cover transition duration-500 group-hover:scale-[1.04]"
             radius="0"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.85)] via-[rgba(4,7,13,0.18)] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--home-ink-rgb)/0.78)] via-[rgb(var(--home-ink-rgb)/0.16)] to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-wrap gap-1.5 p-5">
             {vendor.badges.slice(0, 3).map((badge) => (
               <span
                 key={badge}
-                className="rounded-full border border-white/15 bg-[rgba(4,7,13,0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)] backdrop-blur-md"
+                className="rounded-full border border-[color:var(--home-sheet)]/25 bg-[rgb(var(--home-ink-rgb)/0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-sheet)] backdrop-blur-md"
               >
                 {badge}
               </span>
@@ -314,7 +353,7 @@ export function CollectionCard({
   const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
     <Link href={`/collections/${collection.slug}`} className="group block">
-      <article className="rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+      <article className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6 shadow-[0_30px_90px_-45px_rgb(var(--home-ink-rgb)/0.18)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[color:var(--home-accent)]/50">
         <p className="market-kicker">{collection.kicker}</p>
         <h3 className="mt-4 text-[1.5rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.7rem]">
           {collection.title}

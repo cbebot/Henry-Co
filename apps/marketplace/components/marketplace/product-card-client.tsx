@@ -71,11 +71,12 @@ export function ProductCardClient({
     <motion.article
       whileHover={{ y: -6 }}
       className={cn(
-        "group relative z-10 flex h-full scroll-mt-40 flex-col overflow-hidden rounded-[2rem] border border-[var(--market-line)] bg-[linear-gradient(180deg,rgba(16,21,32,0.96),rgba(10,14,23,0.9))] shadow-[0_26px_90px_rgba(0,0,0,0.24)] transition duration-300",
-        justAdded && "border-[rgba(117,209,255,0.34)] shadow-[0_36px_110px_rgba(117,209,255,0.18)]"
+        "group relative z-10 flex h-full scroll-mt-40 flex-col overflow-hidden rounded-[2rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-sheet)] shadow-[0_26px_90px_-60px_rgb(var(--home-ink-rgb)/0.28)] transition duration-300",
+        justAdded &&
+          "border-[color:var(--home-accent)] shadow-[0_36px_110px_-60px_var(--home-accent-soft)]"
       )}
     >
-      <div className="relative aspect-[4/4.6] overflow-hidden bg-[var(--market-soft-wash)]">
+      <div className="relative aspect-[4/4.6] overflow-hidden bg-[color:var(--home-surface-04)]">
         <DivisionImage
           src={product.gallery[0] || fallbackImage}
           alt={product.title}
@@ -86,15 +87,15 @@ export function ProductCardClient({
           loading={priority ? "eager" : "lazy"}
           radius="0"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.9)] via-[rgba(4,7,13,0.12)] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--home-ink-rgb)/0.42)] via-[rgb(var(--home-ink-rgb)/0.06)] to-transparent" />
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full border border-[rgba(255,255,255,0.14)] bg-[rgba(4,7,13,0.62)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
+          <span className="rounded-full border border-[color:var(--home-line-15)] bg-[color:var(--home-glass-strong)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-80)] backdrop-blur-xl">
               {product.inventoryOwnerType === "company" ? copy.productCard.stockedByHenryCo : copy.productCard.verifiedSeller}
             </span>
             {product.stock > 0 && product.stock <= 3 ? (
-              <span className="rounded-full bg-[rgba(255,171,151,0.92)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-noir)]">
+              <span className="rounded-full bg-[color:var(--home-accent)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-accent-ink)]">
                 {copy.productCard.onlyLeft.replace("{count}", String(product.stock))}
               </span>
             ) : null}
@@ -106,15 +107,15 @@ export function ProductCardClient({
             aria-pressed={wishlisted}
             onClick={() => void toggleWishlist(product.slug)}
             className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] disabled:cursor-wait disabled:active:translate-y-0",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] disabled:cursor-wait disabled:active:translate-y-0",
               wishlisted
-                ? "border-[rgba(255,171,151,0.48)] bg-[rgba(255,171,151,0.16)] text-[var(--market-alert)]"
-                : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] text-[var(--market-paper-white)] hover:bg-[rgba(255,255,255,0.18)]"
+                ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
+                : "border-[color:var(--home-line-15)] bg-[color:var(--home-glass-strong)] text-[color:var(--home-ink-75)] hover:bg-[color:var(--home-sheet)]"
             )}
             aria-label={wishlisted ? copy.productCard.removeFromWishlist : copy.productCard.saveToWishlist}
           >
             {saving ? (
-              <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.productCard.updatingWishlist} />
+              <HenryCoActivityIndicator size="sm" className="text-[color:var(--home-ink-75)]" label={copy.productCard.updatingWishlist} />
             ) : (
               <Heart className={cn("h-4 w-4", wishlisted ? "fill-current" : "")} />
             )}
@@ -123,10 +124,10 @@ export function ProductCardClient({
 
         {product.reviewCount > 0 ? (
           <div className="absolute inset-x-0 bottom-0 p-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.12)] bg-[rgba(4,7,13,0.58)] px-3 py-1 text-xs text-[var(--market-paper-white)] backdrop-blur-xl">
-              <Star className="h-3.5 w-3.5 fill-[var(--market-brass)] text-[var(--market-brass)]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-glass-strong)] px-3 py-1 text-xs text-[color:var(--home-ink-80)] backdrop-blur-xl">
+              <Star className="h-3.5 w-3.5 fill-[var(--home-accent)] text-[var(--home-accent)]" />
               <span className="font-semibold">{product.rating.toFixed(1)}</span>
-              <span className="text-[rgba(255,255,255,0.66)]">({product.reviewCount})</span>
+              <span className="text-[color:var(--home-ink-55)]">({product.reviewCount})</span>
             </div>
           </div>
         ) : null}
@@ -135,33 +136,36 @@ export function ProductCardClient({
       <div className="flex flex-1 flex-col gap-5 p-5">
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-muted)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
               {product.categorySlug.replace(/-/g, " ")}
             </p>
             {product.codEligible ? (
-              <span className="rounded-full border border-[rgba(144,215,186,0.22)] bg-[rgba(144,215,186,0.12)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-success)]">
+              <span className="rounded-full border border-[color:var(--home-accent-ring)] bg-[color:var(--home-accent-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-accent-text)]">
                 {copy.productCard.codReady}
               </span>
             ) : null}
           </div>
           <div className="space-y-2">
-            <h3 className="text-[1.28rem] font-semibold tracking-tight text-[var(--market-paper-white)]">
+            <h3
+              className="text-[1.28rem] font-semibold tracking-tight text-[color:var(--home-ink-92)]"
+              style={{ fontFamily: "var(--home-font-display)" }}
+            >
               {product.title}
             </h3>
-            <p className="text-sm leading-7 text-[var(--market-muted)]">{product.summary}</p>
+            <p className="text-sm leading-7 text-[color:var(--home-ink-70)]">{product.summary}</p>
           </div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--market-muted)]">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[color:var(--home-ink-55)]">
             {product.deliveryNote || product.leadTime}
           </p>
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-4">
           <div>
-            <p className="text-2xl font-semibold text-[var(--market-paper-white)]">
+            <p className="text-2xl font-semibold text-[color:var(--home-ink-92)]">
               {formatCurrency(product.basePrice, product.currency)}
             </p>
             {product.compareAtPrice ? (
-              <p className="text-sm text-[var(--market-muted)] line-through">
+              <p className="text-sm text-[color:var(--home-ink-55)] line-through">
                 {formatCurrency(product.compareAtPrice, product.currency)}
               </p>
             ) : null}
@@ -174,17 +178,17 @@ export function ProductCardClient({
               aria-busy={adding}
               onClick={() => void handleAddToCart()}
               className={cn(
-                "inline-flex h-11 w-11 items-center justify-center rounded-full transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] disabled:cursor-wait disabled:active:translate-y-0",
+                "inline-flex h-11 w-11 items-center justify-center rounded-full transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] disabled:cursor-wait disabled:active:translate-y-0",
                 adding
-                  ? "bg-[rgba(221,182,120,0.9)] text-[var(--market-noir)]"
+                  ? "bg-[color:var(--home-accent-strong)] text-[color:var(--home-accent-ink)]"
                   : justAdded
-                    ? "bg-[var(--market-success)] text-[var(--market-noir)]"
+                    ? "bg-[color:var(--home-accent-strong)] text-[color:var(--home-accent-ink)]"
                     : "market-button-primary"
               )}
               aria-label={`${copy.productCard.addToCart} ${product.title}`}
             >
               {adding ? (
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label={copy.productCard.addingToCart} />
+                <HenryCoActivityIndicator size="sm" className="text-[color:var(--home-accent-ink)]" label={copy.productCard.addingToCart} />
               ) : (
                 <ShoppingBag className="h-4 w-4" />
               )}
@@ -192,7 +196,7 @@ export function ProductCardClient({
 
             <Link
               href={`/product/${product.slug}`}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--market-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 text-sm font-semibold text-[var(--market-paper-white)] transition outline-none hover:border-[rgba(117,209,255,0.42)] hover:bg-[rgba(255,255,255,0.06)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] px-4 text-sm font-semibold text-[color:var(--home-ink-80)] transition outline-none hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
             >
               {copy.productCard.view}
             </Link>

@@ -29,14 +29,14 @@ export const metadata: Metadata = {
 };
 
 const MARKETPLACE_THEME: PaymentSurfaceTheme = {
-  accentVar: "var(--market-brass, #c8a36a)",
+  accentVar: "var(--market-brass, var(--home-accent))",
   heroTone: "spotlight",
   rootStyle: {
-    ["--payment-accent" as never]: "var(--market-brass, #c8a36a)",
-    ["--payment-ink" as never]: "var(--market-ink, #f7f2ea)",
-    ["--payment-soft" as never]: "var(--market-muted, rgba(224,216,204,0.74))",
-    ["--payment-line" as never]: "var(--market-line-strong, rgba(196,171,130,0.22))",
-    ["--payment-surface" as never]: "rgba(255,255,255,0.04)",
+    ["--payment-accent" as never]: "var(--market-brass, var(--home-accent))",
+    ["--payment-ink" as never]: "var(--market-ink, var(--home-ink))",
+    ["--payment-soft" as never]: "var(--market-muted, var(--home-ink-70))",
+    ["--payment-line" as never]: "var(--market-line-strong, var(--home-line-15))",
+    ["--payment-surface" as never]: "var(--home-surface-04)",
   } as CSSProperties,
 };
 

@@ -8,7 +8,7 @@ import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { logoutEverywhere } from "@henryco/auth/client";
 import { HenryCoMonogram } from "@henryco/ui/brand";
-import { BottomSheet, type BottomSheetCloseReason } from "@henryco/ui/mobile";
+import { BottomSheet } from "@henryco/ui/mobile";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 import {
   Bell,
@@ -25,7 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useId, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { buildSharedAccountLoginUrl, buildSharedAccountSignupUrl } from "@/lib/marketplace/shared-account";
 import { cn } from "@/lib/utils";
@@ -38,7 +38,7 @@ function getViewerLabel(firstName: string | null, fullName: string | null, email
 }
 
 function getViewerInitials(fullName: string | null, email: string | null) {
-  const source = fullName || email || "HenryCo";
+  const source = fullName || email || "Henry Onyx";
   const parts = source
     .split(/[\s._-]+/)
     .map((segment) => segment.trim())
@@ -84,7 +84,7 @@ function MobileSignOutRow({ onNavigate }: { onNavigate: () => void }) {
             setBusy(false);
           }
         }}
-        className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 disabled:cursor-wait disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-200 disabled:cursor-wait disabled:opacity-60"
       >
         <ButtonPendingContent
           pending={busy}
@@ -99,7 +99,7 @@ function MobileSignOutRow({ onNavigate }: { onNavigate: () => void }) {
           </>
         </ButtonPendingContent>
       </button>
-      {error ? <p className="text-center text-xs font-medium text-red-200">{error}</p> : null}
+      {error ? <p className="text-center text-xs font-medium text-red-700 dark:text-red-200">{error}</p> : null}
     </div>
   );
 }
@@ -120,7 +120,7 @@ function AccountAvatar({
   return (
     <span
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] text-xs font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)]",
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-07)] text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink)]",
         className
       )}
     >
@@ -236,7 +236,7 @@ export function PublicHeaderClient() {
   // `window.scrollTo` restore), so this entire effect is gone.
   const closeDrawer = useCallback(() => setMobileOpenPath(null), [setMobileOpenPath]);
   const handleSheetClose = useCallback(
-    (_reason: BottomSheetCloseReason) => setMobileOpenPath(null),
+    () => setMobileOpenPath(null),
     [setMobileOpenPath],
   );
 
@@ -250,51 +250,50 @@ export function PublicHeaderClient() {
        * `document.body`, so it renders its own backdrop outside any
        * sticky/transform ancestor and cannot orphan when the page is
        * scrolled. */}
-      <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
-        <div className="flex items-center gap-3 border-b border-[var(--market-line)] px-4 py-3 sm:px-5">
+      <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem] bg-[color:var(--home-glass)] backdrop-blur-2xl">
+        <div className="flex items-center gap-3 border-b border-[color:var(--home-line)] px-4 py-3 sm:px-5">
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] rounded-2xl"
+            className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] rounded-2xl"
             aria-label="Henry Onyx Marketplace home"
           >
             <span
-              className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-[var(--market-paper-white)] shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
-              style={{ color: "#F6E7C7" }}
+              className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-accent-text)] shadow-[0_18px_40px_-30px_rgb(var(--home-ink-rgb)/0.4)]"
             >
               <HenryCoMonogram size={32} accent="#B2863B" />
             </span>
             <div className="hidden min-w-0 sm:block">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[var(--market-brass)]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[color:var(--home-accent-text)]">
                 Henry Onyx Marketplace
               </p>
-              <p className="truncate text-sm text-[var(--market-muted)]">
+              <p className="truncate text-sm text-[color:var(--home-ink-65)]">
                 {surfaceCopy.marketplaceHeader.brandSubtitle}
               </p>
             </div>
           </Link>
 
-          <div className="hidden items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] lg:inline-flex">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--market-brass)]" />
+          <div className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-65)] lg:inline-flex">
+            <Sparkles className="h-3.5 w-3.5 text-[color:var(--home-accent)]" />
             {surfaceCopy.marketplaceHeader.liveCatalog}
           </div>
 
           <Link
             href={getHubUrl("/search")}
-            className="hidden items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)] xl:inline-flex"
+            className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition-colors hover:bg-[color:var(--home-surface-07)] xl:inline-flex"
           >
-            Search HenryCo
+            {translateSurfaceLabel(locale, "Search Henry Onyx")}
           </Link>
 
           <form
             action="/search"
             method="GET"
-            className="hidden flex-1 items-center gap-3 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 shadow-[0_18px_44px_rgba(0,0,0,0.18)] lg:flex"
+            className="hidden flex-1 items-center gap-3 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 lg:flex"
           >
-            <Search className="h-4 w-4 text-[var(--market-muted)]" />
+            <Search className="h-4 w-4 text-[color:var(--home-ink-50)]" />
             <input
               name="q"
               placeholder={surfaceCopy.marketplaceHeader.longSearchPlaceholder}
-              className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
+              className="w-full bg-transparent text-sm text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-50)]"
             />
             <button className="market-button-primary rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em]">
               {translateSurfaceLabel(locale, "Search")}
@@ -308,11 +307,11 @@ export function PublicHeaderClient() {
             {runtime.shell.viewer.signedIn ? (
               <Link
                 href={notificationsHref}
-                className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)]"
+                className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] transition-colors hover:bg-[color:var(--home-surface-07)]"
               >
                 <Bell className="h-4 w-4" />
                 {runtime.shell.unreadNotificationCount ? (
-                  <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-alert)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                  <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[color:var(--home-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--home-accent-ink)]">
                     {Math.min(runtime.shell.unreadNotificationCount, 99)}
                   </span>
                 ) : null}
@@ -327,12 +326,12 @@ export function PublicHeaderClient() {
                   ? `${translateSurfaceLabel(locale, "Cart")} (${runtime.shell.cart.count})`
                   : translateSurfaceLabel(locale, "Cart")
               }
-              className="relative inline-flex h-11 items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 text-sm font-semibold text-[var(--market-paper-white)]"
+              className="relative inline-flex h-11 items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 text-sm font-semibold text-[color:var(--home-ink)] transition-colors hover:bg-[color:var(--home-surface-07)]"
             >
               <ShoppingBag className="h-4 w-4" />
               <span className="hidden sm:inline">{translateSurfaceLabel(locale, "Cart")}</span>
               {runtime.shell.cart.count ? (
-                <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:var(--home-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--home-accent-ink)]">
                   {runtime.shell.cart.count}
                 </span>
               ) : null}
@@ -341,7 +340,7 @@ export function PublicHeaderClient() {
             {runtime.shell.viewer.canOpenVendorWorkspace ? (
               <Link
                 href="/vendor"
-                className="hidden rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)] lg:inline-flex"
+                className="hidden rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition-colors hover:bg-[color:var(--home-surface-07)] lg:inline-flex"
               >
                 {translateSurfaceLabel(locale, "Vendor")}
               </Link>
@@ -349,7 +348,7 @@ export function PublicHeaderClient() {
 
             <div className="hidden sm:block">
               <PublicAccountChip
-                {...HenryCoPublicAccountPresets.onDarkMarketing}
+                {...HenryCoPublicAccountPresets.standard}
                 user={chipUser}
                 loginHref={loginHref}
                 accountHref={getAccountUrl("/")}
@@ -374,14 +373,14 @@ export function PublicHeaderClient() {
                         {
                           label: translateSurfaceLabel(locale, "Saved items"),
                           href: "/account/wishlist",
-                          icon: <Heart className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />,
+                          icon: <Heart className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />,
                         },
                         {
                           label: translateSurfaceLabel(locale, "Cart"),
                           onClick: () => runtime.openCart(),
-                          icon: <ShoppingBag className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />,
+                          icon: <ShoppingBag className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />,
                           badge: runtime.shell.cart.count ? (
-                            <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                            <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:var(--home-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--home-accent-ink)]">
                               {runtime.shell.cart.count}
                             </span>
                           ) : null,
@@ -389,7 +388,7 @@ export function PublicHeaderClient() {
                         {
                           label: translateSurfaceLabel(locale, "Orders"),
                           href: "/account/orders",
-                          icon: <Package className="h-4 w-4 text-zinc-500" aria-hidden />,
+                          icon: <Package className="h-4 w-4 text-[color:var(--home-ink-50)]" aria-hidden />,
                         },
                       ]
                     : []
@@ -400,7 +399,7 @@ export function PublicHeaderClient() {
             {runtime.shell.viewer.signedIn ? (
               <Link
                 href={getAccountUrl("/")}
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] sm:hidden"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-07)] sm:hidden"
                 aria-label={`${surfaceCopy.publicAccount.openAccountFor.replace("{name}", accountIdentity)}`}
               >
                 <AccountAvatar
@@ -414,14 +413,14 @@ export function PublicHeaderClient() {
               <div className="flex items-center gap-1.5 sm:hidden">
                 <Link
                   href={loginHref}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-3 text-xs font-semibold text-[var(--market-paper-white)]"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 text-xs font-semibold text-[color:var(--home-ink)]"
                   aria-label={surfaceCopy.publicAccount.signInAria}
                 >
                   {translateSurfaceLabel(locale, "Sign in")}
                 </Link>
                 <Link
                   href={signupHref}
-                  className="inline-flex h-10 items-center justify-center rounded-full bg-[var(--market-brass)] px-3 text-xs font-bold text-[var(--market-noir)]"
+                  className="inline-flex h-10 items-center justify-center rounded-full bg-[color:var(--home-accent)] px-3 text-xs font-bold text-[color:var(--home-accent-ink)]"
                   aria-label={surfaceCopy.publicAccount.signUpAria}
                 >
                   {translateSurfaceLabel(locale, "Join")}
@@ -433,7 +432,7 @@ export function PublicHeaderClient() {
               ref={triggerRef}
               type="button"
               onClick={() => setMobileOpenPath((openPath) => (openPath === currentPath ? null : currentPath))}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--market-noir)] lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] lg:hidden"
               aria-haspopup="dialog"
               aria-expanded={mobileOpen}
               aria-controls={drawerId}
@@ -453,10 +452,10 @@ export function PublicHeaderClient() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition",
+                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
                     active
-                      ? "bg-[rgba(255,255,255,0.08)] text-[var(--market-paper-white)]"
-                      : "text-[var(--market-muted)] hover:bg-[rgba(255,255,255,0.05)] hover:text-[var(--market-paper-white)]"
+                      ? "bg-[color:var(--home-accent-soft)] text-[color:var(--home-ink)]"
+                      : "text-[color:var(--home-ink-65)] hover:bg-[color:var(--home-surface-04)] hover:text-[color:var(--home-ink)]"
                   )}
                 >
                   {item.label}
@@ -464,7 +463,7 @@ export function PublicHeaderClient() {
               );
             })}
           </nav>
-          <p className="text-sm text-[var(--market-muted)]">
+          <p className="text-sm text-[color:var(--home-ink-65)]">
             {surfaceCopy.marketplaceHeader.searchSummary}
           </p>
         </div>
@@ -488,14 +487,14 @@ export function PublicHeaderClient() {
         triggerRef={triggerRef}
         initialFocusRef={closeRef}
       >
-        <header className="flex items-start justify-between gap-3 border-b border-[var(--market-line)] px-5 pb-4 pt-2">
+        <header className="flex items-start justify-between gap-3 border-b border-[color:var(--home-line)] px-5 pb-4 pt-2">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
               {surfaceCopy.marketplaceHeader.brandSubtitle}
             </p>
             <p
               id={drawerTitleId}
-              className="mt-1 line-clamp-2 text-base font-semibold tracking-tight text-[var(--market-paper-white)]"
+              className="mt-1 line-clamp-2 text-base font-semibold tracking-tight text-[color:var(--home-ink)]"
             >
               {translateSurfaceLabel(locale, "Open navigation")}
             </p>
@@ -504,7 +503,7 @@ export function PublicHeaderClient() {
             ref={closeRef}
             type="button"
             onClick={closeDrawer}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-muted)] transition hover:text-[var(--market-paper-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line-12)] text-[color:var(--home-ink-65)] transition-colors hover:text-[color:var(--home-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)]"
             aria-label={translateSurfaceLabel(locale, "Close navigation")}
           >
             <X className="h-4 w-4" />
@@ -518,13 +517,13 @@ export function PublicHeaderClient() {
           <form
             action="/search"
             method="GET"
-            className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3"
+            className="flex items-center gap-3 rounded-[1.5rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3"
           >
-            <Search className="h-4 w-4 text-[var(--market-muted)]" />
+            <Search className="h-4 w-4 text-[color:var(--home-ink-50)]" />
             <input
               name="q"
               placeholder={surfaceCopy.marketplaceHeader.shortSearchPlaceholder}
-              className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
+              className="w-full bg-transparent text-sm text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-50)]"
             />
           </form>
 
@@ -534,7 +533,7 @@ export function PublicHeaderClient() {
                 key={item.href}
                 href={item.href}
                 onClick={closeDrawer}
-                className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                className="rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
               >
                 {item.label}
               </Link>
@@ -542,26 +541,26 @@ export function PublicHeaderClient() {
             <Link
               href={getHubUrl("/search")}
               onClick={closeDrawer}
-              className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+              className="rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
             >
-              Search HenryCo
+              {translateSurfaceLabel(locale, "Search Henry Onyx")}
             </Link>
             {runtime.shell.viewer.signedIn ? (
               <>
                 <Link
                   href={getAccountUrl("/")}
                   onClick={closeDrawer}
-                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-07)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
                 >
-                  <UserRound className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                  <UserRound className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
                   {translateSurfaceLabel(locale, "Profile & account")}
                 </Link>
                 <Link
                   href="/account/wishlist"
                   onClick={closeDrawer}
-                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
                 >
-                  <Heart className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                  <Heart className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
                   {translateSurfaceLabel(locale, "Saved items")}
                 </Link>
                 <button
@@ -570,14 +569,14 @@ export function PublicHeaderClient() {
                     runtime.openCart();
                     closeDrawer();
                   }}
-                  className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-left text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-left text-sm font-semibold text-[color:var(--home-ink)]"
                 >
                   <span className="flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                    <ShoppingBag className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
                     {translateSurfaceLabel(locale, "Cart")}
                   </span>
                   {runtime.shell.cart.count ? (
-                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:var(--home-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--home-accent-ink)]">
                       {runtime.shell.cart.count}
                     </span>
                   ) : null}
@@ -585,9 +584,9 @@ export function PublicHeaderClient() {
                 <Link
                   href="/account/orders"
                   onClick={closeDrawer}
-                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
                 >
-                  <Package className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
+                  <Package className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
                   {translateSurfaceLabel(locale, "Orders")}
                 </Link>
                 <a
@@ -595,9 +594,9 @@ export function PublicHeaderClient() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={closeDrawer}
-                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
                 >
-                  <Globe className="h-4 w-4 text-zinc-400" aria-hidden />
+                  <Globe className="h-4 w-4 text-[color:var(--home-ink-50)]" aria-hidden />
                   {translateSurfaceLabel(locale, "Language & preferences")}
                 </a>
                 <a
@@ -605,9 +604,9 @@ export function PublicHeaderClient() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={closeDrawer}
-                  className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="flex items-center gap-2 rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
                 >
-                  <Settings2 className="h-4 w-4 text-zinc-400" aria-hidden />
+                  <Settings2 className="h-4 w-4 text-[color:var(--home-ink-50)]" aria-hidden />
                   {translateSurfaceLabel(locale, "Settings")}
                 </a>
                 <MobileSignOutRow onNavigate={closeDrawer} />
@@ -617,14 +616,14 @@ export function PublicHeaderClient() {
                 <Link
                   href={loginHref}
                   onClick={closeDrawer}
-                  className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  className="rounded-[1.35rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
                 >
                   {translateSurfaceLabel(locale, "Sign in")}
                 </Link>
                 <Link
                   href={signupHref}
                   onClick={closeDrawer}
-                  className="rounded-[1.35rem] border border-[var(--market-brass)] bg-[var(--market-brass)] px-4 py-3 text-sm font-bold text-[var(--market-noir)]"
+                  className="rounded-[1.35rem] border border-transparent bg-[color:var(--home-accent)] px-4 py-3 text-sm font-bold text-[color:var(--home-accent-ink)]"
                 >
                   {translateSurfaceLabel(locale, "Get started")}
                 </Link>

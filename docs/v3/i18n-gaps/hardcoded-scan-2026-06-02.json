@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-02T20:20:03.821Z",
+  "generatedAt": "2026-06-02T22:24:03.018Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
     "scannedFiles": 1334,
-    "entries": 1291,
+    "entries": 1289,
     "counts": {
       "OK": 2,
-      "GAP": 1215,
+      "GAP": 1213,
       "EXEMPT": 31,
       "AMBIGUOUS": 43
     },
-    "durationMs": 3797
+    "durationMs": 5043
   },
   "entriesByFile": {
     "apps/account/app/(account)/layout.tsx": [
@@ -5396,7 +5396,7 @@
         "line": 91,
         "col": 11,
         "kind": "attr:title",
-        "text": "Sign in with your HenryCo account to continue.",
+        "text": "Sign in with your Henry Onyx account to continue.",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
@@ -5412,17 +5412,7 @@
         "line": 102,
         "col": 41,
         "kind": "jsx_text",
-        "text": "Why HenryCo checkout",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      }
-    ],
-    "apps/marketplace/app/(public)/page.tsx": [
-      {
-        "line": 49,
-        "col": 46,
-        "kind": "jsx_text",
-        "text": "0 && productCount",
+        "text": "Why Henry Onyx checkout",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -5445,16 +5435,6 @@
         "text": "Find it fast. Trust what you see.",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
-      }
-    ],
-    "apps/marketplace/app/(public)/sell/pricing/page.tsx": [
-      {
-        "line": 88,
-        "col": 44,
-        "kind": "jsx_text",
-        "text": "0 && i",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
       }
     ],
     "apps/marketplace/app/(public)/trust/page.tsx": [
@@ -6464,7 +6444,7 @@
     "apps/marketplace/components/marketplace/cart-drawer.tsx": [
       {
         "line": 105,
-        "col": 114,
+        "col": 104,
         "kind": "attr:label",
         "text": "Updating cart",
         "classification": "GAP",
@@ -6472,7 +6452,7 @@
       },
       {
         "line": 119,
-        "col": 114,
+        "col": 104,
         "kind": "attr:label",
         "text": "Updating cart",
         "classification": "GAP",
@@ -6585,7 +6565,7 @@
     ],
     "apps/marketplace/components/marketplace/product-card-client.tsx": [
       {
-        "line": 96,
+        "line": 97,
         "col": 28,
         "kind": "jsx_text",
         "text": "0 && product.stock",

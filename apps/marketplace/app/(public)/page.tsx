@@ -1,19 +1,21 @@
-import Link from "next/link";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import {
-  ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  Store,
-  Truck,
-  WandSparkles,
-} from "lucide-react";
-import { PublicSpotlight } from "@henryco/ui/public-shell";
+  Body,
+  DisplayHeading,
+  EditorialList,
+  EditorialRow,
+  Eyebrow,
+  Lede,
+  PublicCTA,
+  PublicProofRail,
+  Section,
+  SectionHeader,
+} from "@henryco/ui/public-design";
 import {
-  CampaignBanner,
   CollectionCard,
   EmptyState,
   ProductCard,
-  TrustPassport,
   VendorCard,
 } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
@@ -22,355 +24,260 @@ import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
-/* TODO(wave3-catalogue): paginate translation — the marketplace home page
-   renders many catalogue rows (featured products, categories, collections,
-   vendors). Wrapping every row through resolveLocalizedDynamicField would
-   compound DeepL spend on a hot landing route; defer until cache layer
-   lands so translations can be memoized per locale + record version. */
+/* TODO(wave3-catalogue): paginate translation — the home page renders many
+   catalogue rows (featured products, categories, collections, vendors). Wrapping
+   every row through resolveLocalizedDynamicField would compound DeepL spend on a
+   hot landing route; defer until the cache layer lands so translations can be
+   memoized per locale + record version. */
 
+/**
+ * Marketplace home — the calmer-commerce showcase, on the locked --home-* public
+ * design system. Narrative arc, one breath per section, one climax:
+ *   Hook (the calm-commerce promise) → The one reason (trust on one record) →
+ *   Real proof (honest counts) → Featured discovery (image cards) → Invitation.
+ *
+ * Server component; sources the SAME catalog as before (getMarketplaceHomeData /
+ * getMarketplacePublicCopy) and re-presents it. Surface labels run through
+ * translateSurfaceLabel (Pattern B); catalogue ROW text (titles, vendor names) is
+ * Supabase-source language — per-row translation is the wave-3 follow-up above.
+ * No hardcoded user-facing strings; no hardcoded domains. The bronze accent is the
+ * single focal mark per beat — never sprinkled.
+ */
 export default async function MarketplaceHomePage() {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
   const data = await getMarketplaceHomeData();
-  const featuredProducts = data.products.filter((item) => item.featured).slice(0, 6);
-  const newInProducts = [...data.products].slice(0, 4);
-  const featuredCategories = data.categories.filter((item) => item.featured).slice(0, 4);
-  const leadVendor = data.vendors[0] ?? null;
-  const supportVendor = data.vendors[1] ?? leadVendor;
-  const [sellerBodyStart, sellerBodyEnd = ""] = copy.home.sellerBody.split("/sell");
-  /*
-   * CHROME-01B FIX 5: marketplace KPI reframing. Below 20 active listings
-   * we replace the raw catalog count with a curatorial line ("Selective
-   * catalog · quality over volume") so a small grid does not undermine the
-   * premium positioning the hero is making.
-   */
-  const PRODUCT_COUNT_THRESHOLD = 20;
-  const productCount = data.products.length;
-  const reframeActiveListings = productCount > 0 && productCount < PRODUCT_COUNT_THRESHOLD;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  const kpis = data.kpis.map((item, index) => {
-    const isActiveListings = index === 1;
-    const reframed = isActiveListings && reframeActiveListings;
-    return {
-      ...item,
-      label: reframed
-        ? "Selective catalog"
-        : index === 0
-          ? copy.kpiLabels.verifiedStores
-          : index === 1
-            ? copy.kpiLabels.activeListings
-            : copy.kpiLabels.trustRating,
-      value: reframed ? "Quality over volume" : item.value,
-      hint: reframed
-        ? "We onboard sellers slowly so listings are vetted before they go public."
-        : index === 0
-          ? copy.kpiHints.verifiedStores
-          : index === 1
-            ? copy.kpiHints.activeListings
-            : copy.kpiHints.trustRating,
-    };
-  });
+  const proof = (n: number) => (n > 0 ? String(n) : null);
+
+  const reviewAverage = data.reviews.length
+    ? data.reviews.reduce((sum, review) => sum + review.rating, 0) / data.reviews.length
+    : 0;
+
+  const featuredProducts = data.products.filter((item) => item.featured).slice(0, 6);
+  const discoveryProducts = (featuredProducts.length >= 3 ? featuredProducts : data.products).slice(0, 6);
+  const featuredCollections = data.collections.slice(0, 3);
+  const featuredVendors = data.vendors.slice(0, 4);
+  const featuredCategories = data.categories.filter((item) => item.featured).slice(0, 5);
+  const hasCatalog = data.products.length > 0;
 
   return (
-    <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-6 sm:px-6 sm:py-8 xl:px-8">
-      <section className="grid gap-6 xl:grid-cols-[1.18fr,0.82fr]">
-        <article className="market-panel relative overflow-hidden rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-7 xl:rounded-[2.8rem] xl:p-9">
-          <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(154,174,164,0.18),transparent_64%)] xl:block" />
-          <div className="relative max-w-4xl space-y-5 sm:space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] sm:px-4 sm:py-2 sm:text-xs">
-              <Sparkles className="h-3.5 w-3.5 text-[var(--market-brass)]" />
-              {copy.home.heroKicker}
-            </div>
-            <div className="space-y-3 sm:space-y-4">
-              <h1 className="market-display max-w-3xl text-[var(--market-paper-white)]">
-                {copy.home.heroTitle}
-              </h1>
-              <p className="max-w-2xl text-pretty text-[15px] leading-7 text-[var(--market-muted)] sm:text-base sm:leading-8">
-                {copy.home.heroBody}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2.5 sm:gap-3">
-              <Link
-                href="/search"
-                className="market-button-primary inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
-              >
-                {copy.home.primaryCta} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/sell"
-                className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
-              >
-                {copy.home.secondaryCta}
-              </Link>
-            </div>
-            {kpis.length ? (
-              <dl className="mt-2 grid grid-cols-3 gap-3 rounded-2xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.025)] p-4 sm:gap-5 sm:p-5">
-                {kpis.slice(0, 3).map((kpi) => {
-                  const isShortValue = /^[\d.,%]+$/.test(kpi.value);
-                  return (
-                    <div key={kpi.label} className="min-w-0">
-                      <dt className="truncate text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                        {kpi.label}
-                      </dt>
-                      <dd
-                        className={
-                          isShortValue
-                            ? "mt-1 truncate text-xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-2xl"
-                            : "mt-1 text-balance text-sm font-semibold leading-snug tracking-tight text-[var(--market-paper-white)] sm:text-base"
-                        }
-                      >
-                        {kpi.value}
-                      </dd>
-                    </div>
-                  );
-                })}
-              </dl>
-            ) : null}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]/85">
-              <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-[var(--market-brass)]" />
-                {copy.trustPassport.title}
-              </span>
-              <span className="hidden h-1 w-1 rounded-full bg-[var(--market-line)] sm:inline-block" />
-              <span className="inline-flex items-center gap-1.5">
-                <Truck className="h-3.5 w-3.5 text-[var(--market-brass)]" />
-                {copy.trustPassport.fulfillment}
-              </span>
-            </div>
-          </div>
-        </article>
-
-        <article>
-          <p className="market-kicker">{copy.home.whyKicker}</p>
-          <ul className="mt-5 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
-            {copy.home.whyCards.map(({ title, body }, index) => {
-              const Icon = [ShieldCheck, Truck, Store][index] ?? ShieldCheck;
-              return (
-                <li key={title} className="flex gap-4 py-5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-brass)]">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <h2 className="text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
-                      {title}
-                    </h2>
-                    <p className="mt-1 text-sm leading-relaxed text-[var(--market-muted)]">{body}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </article>
-      </section>
-
-      {/*
-       * CHROME-01B FIX 4: featured products strip lifted above the fold.
-       * A marketplace that does not show products is not a marketplace, so
-       * the first paint after the hero now reveals real listings with
-       * price, seller name, and trust badges. The fallback below 3 products
-       * keeps the grid from reading as empty.
-       */}
-      {featuredProducts.length > 0 ? (
-        <section className="space-y-5">
-          <div className="flex items-end justify-between gap-4">
+    <>
+      {/* ── HOOK — the calm-commerce promise; one accent-italic focal word ── */}
+      <section className="relative isolate overflow-hidden home-section-hero">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-[-12%] top-[-16%] h-[34rem] w-[34rem] rounded-full opacity-[0.14] blur-[2px]"
+          style={{ background: "radial-gradient(circle, var(--home-accent) 0%, transparent 68%)" }}
+        />
+        <div className="home-shell relative">
+          <Eyebrow className="home-rise">{t("Henry Onyx Marketplace")}</Eyebrow>
+          <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-[1.5fr_1fr] lg:items-end">
             <div>
-              <p className="market-kicker">{copy.home.featuredKicker}</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2rem]">
-                {copy.home.featuredTitle}
-              </h2>
-            </div>
-            <Link href="/search" className="text-sm font-semibold text-[var(--market-brass)]">
-              {copy.home.browseAll}
-            </Link>
-          </div>
-          {featuredProducts.length >= 3 ? (
-            <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.slug} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-5 md:grid-cols-3">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.slug} product={product} />
-              ))}
-              <div className="flex h-full min-h-[260px] flex-col items-start justify-end rounded-[2rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.02)] p-6">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  More listings arriving
-                </p>
-                <p className="mt-2 text-base font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Selective catalog &mdash; quality over volume.
-                </p>
-                <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-                  We onboard sellers slowly so the listings you do see are
-                  vetted before they go public.
-                </p>
+              <DisplayHeading level={1} size="xl" className="home-rise home-delay-1 max-w-2xl">
+                {t("Buy from verified stores,")}{" "}
+                <span className="italic text-[color:var(--home-accent-text)]">{t("without the noise.")}</span>
+              </DisplayHeading>
+              <Lede className="mt-6 max-w-xl home-rise home-delay-2">
+                {t(
+                  "A calmer marketplace — curated sellers, honest delivery, and every order on one Henry Onyx record.",
+                )}
+              </Lede>
+              <div className="mt-9 flex flex-wrap items-center gap-3 home-rise home-delay-3">
+                <PublicCTA
+                  href="/search"
+                  variant="primary"
+                  size="lg"
+                  trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
+                >
+                  {t("Explore the catalog")}
+                </PublicCTA>
+                <PublicCTA href="/sell" variant="secondary" size="lg">
+                  {t("Sell on Henry Onyx")}
+                </PublicCTA>
               </div>
             </div>
-          )}
-        </section>
-      ) : null}
-
-      {data.campaigns[0] ? <CampaignBanner campaign={data.campaigns[0]} /> : null}
-
-      {data.products.length === 0 ? (
-        <EmptyState
-          title={copy.home.emptyTitle}
-          body={copy.home.emptyBody}
-          ctaHref="/help"
-          ctaLabel={copy.home.emptyCta}
-        />
-      ) : null}
-
-      <section className="grid gap-8 lg:grid-cols-[0.92fr,1.08fr]">
-        <div>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="market-kicker">{copy.home.categoryKicker}</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2.4rem]">
-                {copy.home.categoryTitle}
-              </h2>
+            <div className="home-rise home-delay-4">
+              <PublicProofRail
+                label={t("At a glance")}
+                items={[
+                  { value: proof(data.vendors.length), label: copy.kpiLabels.verifiedStores },
+                  { value: proof(data.products.length), label: copy.kpiLabels.activeListings },
+                  {
+                    value: reviewAverage > 0 ? reviewAverage.toFixed(1) : null,
+                    label: copy.kpiLabels.trustRating,
+                  },
+                ]}
+              />
             </div>
-            <Link href="/search" className="text-sm font-semibold text-[var(--market-brass)]">
-              {copy.home.categoryLink}
-            </Link>
           </div>
-          <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
-            {featuredCategories.map((category) => (
-              <li key={category.slug}>
-                <Link
-                  href={`/category/${category.slug}`}
-                  className="flex items-center justify-between gap-4 py-4 transition hover:bg-[rgba(255,255,255,0.02)]"
-                >
-                  <div>
-                    <h3 className="text-lg font-semibold tracking-tight text-[var(--market-paper-white)]">
-                      {category.name}
-                    </h3>
-                    <p className="mt-1 max-w-md text-sm leading-relaxed text-[var(--market-muted)]">{category.description}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
-                      {category.productCount} listings
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-[var(--market-brass)]" />
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="market-panel rounded-[2.2rem] p-6 sm:p-8">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="market-kicker">{copy.home.freshKicker}</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2.2rem]">
-                {copy.home.freshTitle}
-              </h2>
-            </div>
-            <WandSparkles className="h-5 w-5 text-[var(--market-brass)]" />
-          </div>
-          <ul className="mt-6 divide-y divide-[var(--market-line)]">
-            {newInProducts.slice(0, 3).map((product) => (
-              <li key={product.slug}>
-                <Link
-                  href={`/product/${product.slug}`}
-                  className="block py-4"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
-                        {product.categorySlug.replace(/-/g, " ")}
-                      </p>
-                      <h3 className="mt-1 truncate text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
-                        {product.title}
-                      </h3>
-                    </div>
-                    <ArrowRight className="h-4 w-4 shrink-0 text-[var(--market-brass)]" />
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-[var(--market-muted)] line-clamp-2">{product.summary}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
-      <section className="grid gap-8 xl:grid-cols-[0.82fr,1.18fr]">
-        <div className="space-y-5">
+      {/* ── THE ONE REASON — the climax: trust, visible before payment ── */}
+      <Section rhythm="hero" tone="sunken">
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_0.85fr] lg:items-center">
           <div>
-            <p className="market-kicker">{copy.home.collectionsKicker}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2.2rem]">
-              {copy.home.collectionsTitle}
-            </h2>
+            <Eyebrow>{t("Why it feels different")}</Eyebrow>
+            <DisplayHeading level={2} size="display" className="mt-4">
+              {t("Trust, visible")}{" "}
+              <span className="italic text-[color:var(--home-accent-text)]">{t("before you pay.")}</span>
+            </DisplayHeading>
+            <Lede className="mt-5 max-w-lg">
+              {t(
+                "Verification, delivery promises, and dispute history sit beside the buy button — and orders, payments, and support stay on one account.",
+              )}
+            </Lede>
           </div>
-          <div className="grid gap-5">
-            {data.collections.map((collection) => (
+          <EditorialList>
+            <EditorialRow
+              index="01"
+              title={t("Verified, not crowded")}
+              body={t("Curated stores with seller passports — quality over catalogue sprawl.")}
+            />
+            <EditorialRow
+              index="02"
+              title={t("Honest split orders")}
+              body={t("Items from different sellers stay clearly segmented through delivery.")}
+            />
+            <EditorialRow
+              index="03"
+              title={t("One record")}
+              body={t("Orders, payments, reviews, and support live in one Henry Onyx account.")}
+            />
+          </EditorialList>
+        </div>
+      </Section>
+
+      {/* ── REAL PROOF + FEATURED DISCOVERY — products as the heart ── */}
+      {hasCatalog ? (
+        <Section>
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <SectionHeader
+              level={2}
+              size="display"
+              eyebrow={t("Featured")}
+              title={t("Worth a closer look.")}
+              lede={t("Hand-picked listings from verified Henry Onyx sellers.")}
+            />
+            <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
+              {copy.home.browseAll}
+            </PublicCTA>
+          </div>
+          <PublicProofRail
+            className="mt-9"
+            items={[
+              { value: proof(data.vendors.length), label: copy.kpiLabels.verifiedStores },
+              { value: proof(data.products.length), label: copy.kpiLabels.activeListings },
+              { value: proof(data.collections.length), label: t("Collections") },
+            ]}
+          />
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {discoveryProducts.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+        </Section>
+      ) : (
+        <Section>
+          <EmptyState
+            title={copy.home.emptyTitle}
+            body={copy.home.emptyBody}
+            ctaHref="/help"
+            ctaLabel={copy.home.emptyCta}
+          />
+        </Section>
+      )}
+
+      {/* ── DISCOVER BY CATEGORY — hairline list, no card-wall ── */}
+      {featuredCategories.length > 0 ? (
+        <Section rhythm="tight">
+          <SectionHeader
+            level={2}
+            size="headline"
+            eyebrow={t("Browse")}
+            title={t("Find your shelf.")}
+          />
+          <EditorialList className="mt-9">
+            {featuredCategories.map((category) => (
+              <EditorialRow
+                key={category.slug}
+                href={`/category/${category.slug}`}
+                title={category.name}
+                body={category.description}
+                trailing={
+                  <span className="home-num hidden text-sm text-[color:var(--home-accent-text)] sm:inline">
+                    {category.productCount > 0 ? category.productCount : ""}
+                  </span>
+                }
+              />
+            ))}
+          </EditorialList>
+        </Section>
+      ) : null}
+
+      {/* ── CURATED COLLECTIONS — tasteful Card moment (true tiles) ── */}
+      {featuredCollections.length > 0 ? (
+        <Section>
+          <SectionHeader
+            level={2}
+            size="display"
+            eyebrow={t("Curated")}
+            title={t("Edits that guide, never shout.")}
+          />
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {featuredCollections.map((collection) => (
               <CollectionCard key={collection.slug} collection={collection} copy={copy} />
             ))}
           </div>
-        </div>
+        </Section>
+      ) : null}
 
-        <div className="space-y-5">
-          <div>
-            <p className="market-kicker">{copy.home.vendorsKicker}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2.2rem]">
-              {copy.home.vendorsTitle}
-            </h2>
+      {/* ── TRUSTED STORES — image cards for genuine discrete objects ── */}
+      {featuredVendors.length > 0 ? (
+        <Section rhythm="tight">
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <SectionHeader
+              level={2}
+              size="display"
+              eyebrow={t("Stores")}
+              title={t("Sellers you can read.")}
+              lede={t("Verified vendors with accountability you can see before you buy.")}
+            />
+            <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
+              {t("All stores")}
+            </PublicCTA>
           </div>
-          <div className="grid gap-5 lg:grid-cols-2">
-            {data.vendors.map((vendor) => (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {featuredVendors.map((vendor) => (
               <VendorCard key={vendor.slug} vendor={vendor} copy={copy} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {leadVendor ? <TrustPassport vendor={leadVendor} copy={copy} /> : null}
-
-      {supportVendor ? (
-        <PublicSpotlight
-          tone="contrast"
-          eyebrow={copy.home.standardsKicker}
-          title={copy.home.standardsTitle}
-          aside={
-            <div className="space-y-5">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65">
-                  {copy.home.sellerKicker}
-                </p>
-                <h3 className="mt-2 text-xl font-semibold text-white">{copy.home.sellerTitle}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/75">
-                  {sellerBodyStart}
-                  <Link href="/sell" className="text-[var(--market-brass)] underline-offset-4 hover:underline">/sell</Link>
-                  {sellerBodyEnd}
-                </p>
-              </div>
-              <ul className="space-y-2">
-                {copy.home.sellerBullets.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-medium text-white/85"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          }
-        >
-          <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-            {copy.home.standardsBullets.map((item) => (
-              <li
-                key={item}
-                className="border-l border-white/15 pl-3 text-sm leading-relaxed text-white/80"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </PublicSpotlight>
+        </Section>
       ) : null}
-    </div>
+
+      {/* ── INVITATION — one dominant primary ── */}
+      <Section>
+        <div className="flex flex-col gap-6 rounded-[var(--home-radius-lg)] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-8 sm:flex-row sm:items-center sm:justify-between sm:p-12">
+          <div className="max-w-xl">
+            <DisplayHeading level={2} size="headline">
+              {t("Start with what you need.")}
+            </DisplayHeading>
+            <Body className="mt-2">
+              {t("Search the catalog, or open a store you can trust — every order lands on one record.")}
+            </Body>
+          </div>
+          <PublicCTA
+            href="/search"
+            variant="primary"
+            size="lg"
+            trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
+          >
+            {t("Explore the catalog")}
+          </PublicCTA>
+        </div>
+      </Section>
+    </>
   );
 }
