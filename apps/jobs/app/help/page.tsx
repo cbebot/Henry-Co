@@ -138,7 +138,7 @@ export default async function HelpPage() {
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href={accountJobsUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 {t("Open account hub")}
                 <ExternalLink className="h-4 w-4" />
