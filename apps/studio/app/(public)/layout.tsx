@@ -33,6 +33,13 @@ export default async function PublicLayout({ children }: { children: React.React
       }
     : null;
 
+  const account = {
+    user: chipUser,
+    loginHref,
+    signupHref,
+    accountHref: accountUrl,
+  };
+
   const footerColumns = [
     {
       title: t("Studio"),
@@ -64,12 +71,13 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div
-      className={`${fraunces.variable} studio-public flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      className={`${fraunces.variable} studio-public home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={STUDIO_PUBLIC_THEME_STYLE}
     >
       <StudioSiteHeader
         supportEmail={catalog.platform.supportEmail}
         accountHref={accountUrl}
+        account={account}
         accountMenu={
           <StudioAccountChip
             {...HenryCoPublicAccountPresets.standard}

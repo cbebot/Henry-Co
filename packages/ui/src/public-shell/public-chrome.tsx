@@ -74,6 +74,13 @@ export type PublicChromeProps = {
    *  notifications bell, vendor link. PublicChrome stays commerce-agnostic;
    *  sites slot live-runtime controls here so a swap never drops them. */
   extras?: ReactNode;
+  /** Optional ghost CTA (e.g. "Speak to Studio" / "Contact"). */
+  auxLink?: PublicChromeNavItem;
+  /** Optional emphasis CTA in the division accent — a product action like
+   *  "Start a project". When set, the signed-out identity cluster shows Sign in
+   *  ONLY (no duplicate signup "Get started"); when absent, it shows Sign in +
+   *  Get started. */
+  primaryCta?: PublicChromeNavItem;
   /** Built-in search pill (pass an href) or a fully custom node. */
   search?: { href: string; label?: string } | ReactNode;
   /** Optional thin announcement strip above the toolbar. */
@@ -139,11 +146,13 @@ function ChromeThemeToggle({ t }: { t: (s: string) => string }) {
 function IdentityActions({
   account,
   accountMenu,
+  showSignup = true,
   t,
   layout,
 }: {
   account: PublicChromeAccount;
   accountMenu?: ReactNode;
+  showSignup?: boolean;
   t: (s: string) => string;
   layout: "bar" | "sheet";
 }) {
@@ -181,23 +190,25 @@ function IdentityActions({
       <Link
         href={account.loginHref}
         className={cn(
-          "inline-flex items-center justify-center gap-1.5 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] font-semibold text-[color:var(--home-ink)] outline-none transition hover:bg-[color:var(--home-surface-07)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45",
+          "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] font-semibold text-[color:var(--home-ink)] outline-none transition hover:bg-[color:var(--home-surface-07)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45",
           sheet ? "px-4 py-3 text-sm" : "px-3.5 py-2 text-sm",
         )}
       >
         <LogIn className="h-4 w-4" aria-hidden />
         {t(account.loginLabel || "Sign in")}
       </Link>
-      <Link
-        href={account.signupHref}
-        className={cn(
-          "inline-flex items-center justify-center gap-1.5 rounded-full bg-[color:var(--home-accent)] font-semibold text-[color:var(--home-accent-ink)] outline-none transition hover:bg-[color:var(--home-accent-strong)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)]",
-          sheet ? "px-4 py-3 text-sm" : "px-4 py-2 text-sm",
-        )}
-      >
-        <UserPlus className="h-4 w-4" aria-hidden />
-        {t(account.signupLabel || "Get started")}
-      </Link>
+      {showSignup ? (
+        <Link
+          href={account.signupHref}
+          className={cn(
+            "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-[color:var(--home-accent)] font-semibold text-[color:var(--home-accent-ink)] outline-none transition hover:bg-[color:var(--home-accent-strong)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)]",
+            sheet ? "px-4 py-3 text-sm" : "px-4 py-2 text-sm",
+          )}
+        >
+          <UserPlus className="h-4 w-4" aria-hidden />
+          {t(account.signupLabel || "Get started")}
+        </Link>
+      ) : null}
     </>
   );
 }
@@ -208,6 +219,8 @@ export function PublicChrome({
   account,
   accountMenu,
   extras,
+  auxLink,
+  primaryCta,
   search,
   prepend,
   showThemeToggle = true,
@@ -250,7 +263,7 @@ export function PublicChrome({
   const brandLockup = (
     <Link
       href={brand.href || "/"}
-      className="group/brand flex min-w-0 items-center gap-3 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45"
+      className="group/brand flex shrink-0 items-center gap-3 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45"
     >
       {brand.mark ? (
         <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-07)] text-[color:var(--home-accent-text)] transition group-hover/brand:border-[color:var(--home-line-15)]">
@@ -294,19 +307,51 @@ export function PublicChrome({
   );
 
   const searchNode = isSearchConfig(search) ? (
-    <Link
-      href={search.href}
-      className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 py-2 text-sm text-[color:var(--home-ink-65)] outline-none transition hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45 xl:inline-flex"
-    >
-      <Search className="h-4 w-4" aria-hidden />
-      <span className="truncate">{t(search.label || "Search Henry Onyx")}</span>
-      <kbd className="ml-1 rounded border border-[color:var(--home-line-12)] px-1.5 text-[10px] font-medium text-[color:var(--home-ink-50)]">
-        /
-      </kbd>
-    </Link>
+    <>
+      {/* Compact icon — desktop nav row from lg up to <2xl, where the full
+          labelled pill would crowd dense navs (e.g. studio's 7 items) and force
+          the brand to truncate. Identity stays inviolable; search stays one tap. */}
+      <Link
+        href={search.href}
+        aria-label={t(search.label || "Search Henry Onyx")}
+        title={t(search.label || "Search Henry Onyx")}
+        className="hidden h-10 w-10 items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink-65)] outline-none transition hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45 lg:inline-flex 2xl:hidden"
+      >
+        <Search className="h-4 w-4" aria-hidden />
+      </Link>
+      {/* Full labelled pill — only where there's comfortable room (2xl+). */}
+      <Link
+        href={search.href}
+        className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 py-2 text-sm text-[color:var(--home-ink-65)] outline-none transition hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45 2xl:inline-flex"
+      >
+        <Search className="h-4 w-4" aria-hidden />
+        <span className="truncate">{t(search.label || "Search Henry Onyx")}</span>
+        <kbd className="ml-1 rounded border border-[color:var(--home-line-12)] px-1.5 text-[10px] font-medium text-[color:var(--home-ink-50)]">
+          /
+        </kbd>
+      </Link>
+    </>
   ) : (
     (search as ReactNode) ?? null
   );
+
+  const auxNode = auxLink ? (
+    <Link
+      href={auxLink.href}
+      className="hidden items-center whitespace-nowrap rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 py-2 text-sm font-semibold text-[color:var(--home-ink-65)] outline-none transition hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45 2xl:inline-flex"
+    >
+      {t(auxLink.label)}
+    </Link>
+  ) : null;
+
+  const primaryCtaNode = primaryCta ? (
+    <Link
+      href={primaryCta.href}
+      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[color:var(--home-accent)] px-4 py-2 text-sm font-semibold text-[color:var(--home-accent-ink)] outline-none transition hover:bg-[color:var(--home-accent-strong)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)]"
+    >
+      {t(primaryCta.label)}
+    </Link>
+  ) : null;
 
   const toolbar = (
     <div
@@ -325,7 +370,17 @@ export function PublicChrome({
             <ChromeThemeToggle t={t} />
           </div>
         ) : null}
-        {account ? <IdentityActions account={account} accountMenu={accountMenu} t={t} layout="bar" /> : null}
+        {account ? (
+          <IdentityActions
+            account={account}
+            accountMenu={accountMenu}
+            showSignup={!primaryCta}
+            t={t}
+            layout="bar"
+          />
+        ) : null}
+        {auxNode}
+        {primaryCtaNode}
       </div>
 
       {/* Mobile cluster */}
@@ -413,9 +468,33 @@ export function PublicChrome({
           })}
         </div>
 
-        {account ? (
+        {account || auxLink || primaryCta ? (
           <div className="mt-4 flex flex-col gap-2 border-t border-[color:var(--home-line)] pt-4" onClick={closeDrawerAfterNav}>
-            <IdentityActions account={account} accountMenu={accountMenu} t={t} layout="sheet" />
+            {account ? (
+              <IdentityActions
+                account={account}
+                accountMenu={accountMenu}
+                showSignup={!primaryCta}
+                t={t}
+                layout="sheet"
+              />
+            ) : null}
+            {auxLink ? (
+              <Link
+                href={auxLink.href}
+                className="flex items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)]"
+              >
+                {t(auxLink.label)}
+              </Link>
+            ) : null}
+            {primaryCta ? (
+              <Link
+                href={primaryCta.href}
+                className="flex items-center justify-center rounded-full bg-[color:var(--home-accent)] px-4 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)]"
+              >
+                {t(primaryCta.label)}
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>
