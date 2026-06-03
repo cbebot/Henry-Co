@@ -47,4 +47,22 @@ export const MARKETPLACE_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--market-soft-olive" as string]: "var(--home-surface-04)",
   ["--market-shadow" as string]: "0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18)",
   ["--market-shadow-strong" as string]: "0 40px 120px -50px rgb(var(--home-ink-rgb) / 0.22)",
+  // dashboard-shell primitives (@henryco/dashboard-shell) read --hc-* and are
+  // dark-first; the cart reuses ActionButton (ghost = color:var(--hc-ink)) +
+  // SaveForLater on this LIGHT public page, where the un-remapped --hc-ink
+  // stayed pale → "Remove"/"Add to wishlist" were unreadable. Point the --hc-*
+  // tokens these primitives read at the theme-aware --home-* equivalents so
+  // every shared shell control on a public page flips with the page.
+  ["--hc-ink" as string]: "var(--home-ink)",
+  ["--hc-ink-soft" as string]: "var(--home-ink-70)",
+  ["--hc-ink-muted" as string]: "var(--home-ink-50)",
+  ["--hc-surface" as string]: "var(--home-surface-04)",
+  ["--hc-surface-elevated" as string]: "var(--home-sheet)",
+  ["--hc-hairline" as string]: "var(--home-line)",
+  ["--hc-accent" as string]: "var(--home-accent)",
+  ["--hc-accent-strong" as string]: "var(--home-accent-strong)",
+  ["--hc-accent-text" as string]: "var(--home-accent)",
+  ["--hc-accent-on-surface" as string]: "var(--home-accent)",
+  ["--hc-text-on-accent" as string]: "var(--home-accent-ink)",
+  ["--hc-focus-ring" as string]: "var(--home-accent)",
 };
