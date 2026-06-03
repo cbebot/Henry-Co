@@ -97,17 +97,17 @@ export default function NewsletterPreferencesClient(props: Props) {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-md border border-[color:var(--border)] p-4">
-        <label className="flex items-start gap-3 text-sm">
+      <div className="rounded-[var(--home-radius)] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-4">
+        <label className="flex items-start gap-3 text-sm text-[color:var(--home-ink-70)]">
           <input
             type="checkbox"
             checked={paused}
             onChange={(e) => setPaused(e.target.checked)}
-            className="mt-1 h-4 w-4"
+            className="mt-1 h-4 w-4 accent-[color:var(--home-accent)]"
           />
           <span>
-            <span className="font-medium">Pause all promotional sends</span>
-            <span className="mt-1 block text-xs text-[color:var(--muted-foreground)]">
+            <span className="font-medium text-[color:var(--home-ink)]">Pause all promotional sends</span>
+            <span className="mt-1 block text-xs text-[color:var(--home-ink-60)]">
               You&rsquo;ll still get transactional emails (receipts, verification, shipping), just
               not newsletters.
             </span>
@@ -118,7 +118,7 @@ export default function NewsletterPreferencesClient(props: Props) {
       <div className="space-y-6">
         {props.groups.map((group) => (
           <section key={group.division} className="space-y-3">
-            <h3 className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+            <h3 className="home-eyebrow text-[color:var(--home-ink-50)]">
               {DIVISION_LABEL[group.division]}
             </h3>
             <div className="space-y-2">
@@ -129,10 +129,10 @@ export default function NewsletterPreferencesClient(props: Props) {
                   <label
                     key={topic.key}
                     htmlFor={id}
-                    className={`flex cursor-pointer gap-3 rounded-md border p-3 transition-colors ${
+                    className={`flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors ${
                       active
-                        ? "border-[color:var(--foreground)]"
-                        : "border-[color:var(--border)]"
+                        ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)]"
+                        : "border-[color:var(--home-line-12)] hover:border-[color:var(--home-line-15)]"
                     }`}
                   >
                     <input
@@ -140,11 +140,11 @@ export default function NewsletterPreferencesClient(props: Props) {
                       type="checkbox"
                       checked={active}
                       onChange={() => toggle(topic.key)}
-                      className="mt-1 h-4 w-4"
+                      className="mt-1 h-4 w-4 accent-[color:var(--home-accent)]"
                     />
                     <span>
-                      <span className="block text-sm font-medium">{topic.label}</span>
-                      <span className="mt-1 block text-xs text-[color:var(--muted-foreground)]">
+                      <span className="block text-sm font-medium text-[color:var(--home-ink)]">{topic.label}</span>
+                      <span className="mt-1 block text-xs text-[color:var(--home-ink-60)]">
                         {topic.description}
                       </span>
                     </span>
@@ -161,7 +161,7 @@ export default function NewsletterPreferencesClient(props: Props) {
           type="button"
           onClick={() => savePreferences({ unsubscribe: false })}
           disabled={state.status === "saving"}
-          className="inline-flex items-center justify-center rounded-md bg-[color:var(--foreground)] px-4 py-2 text-sm font-medium text-[color:var(--background)] disabled:opacity-50"
+          className="home-focus inline-flex items-center justify-center rounded-full bg-[color:var(--home-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:bg-[color:var(--home-accent-strong)] disabled:opacity-50"
         >
           {state.status === "saving" ? "Saving…" : "Save preferences"}
         </button>
@@ -169,16 +169,16 @@ export default function NewsletterPreferencesClient(props: Props) {
           type="button"
           onClick={() => savePreferences({ unsubscribe: true })}
           disabled={state.status === "saving"}
-          className="inline-flex items-center justify-center rounded-md border border-[color:var(--border)] px-4 py-2 text-sm font-medium disabled:opacity-50"
+          className="home-focus inline-flex items-center justify-center rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-5 py-2.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:bg-[color:var(--home-surface-07)] disabled:opacity-50"
         >
           Unsubscribe from all
         </button>
       </div>
 
       {state.status === "saved" ? (
-        <div className="rounded-md border border-[color:var(--border)] bg-[color:var(--background)] p-4 text-sm">
-          <p className="font-medium">Preferences saved.</p>
-          <p className="mt-1 text-[color:var(--muted-foreground)]">
+        <div className="rounded-[var(--home-radius)] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-4 text-sm">
+          <p className="font-medium text-[color:var(--home-ink)]">Preferences saved.</p>
+          <p className="mt-1 text-[color:var(--home-ink-65)]">
             {state.nextStatus === "unsubscribed"
               ? "You've been unsubscribed. We're sorry to see you go."
               : `Subscribed to: ${state.topicKeys.join(", ") || "nothing"}.`}
@@ -186,7 +186,7 @@ export default function NewsletterPreferencesClient(props: Props) {
         </div>
       ) : null}
       {state.status === "error" ? (
-        <p className="text-sm text-[color:var(--destructive)]">{state.message}</p>
+        <p className="text-sm text-[color:var(--hc-status-danger-text)]">{state.message}</p>
       ) : null}
     </div>
   );

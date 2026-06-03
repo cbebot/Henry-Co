@@ -153,11 +153,14 @@ export default function PreferencesClient({
   if (!ready) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="h-8 w-48 animate-pulse rounded-lg bg-white/8" />
-        <div className="mt-4 h-4 w-96 animate-pulse rounded bg-white/6" />
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-[color:var(--home-surface-10)]" />
+        <div className="mt-4 h-4 w-96 animate-pulse rounded bg-[color:var(--home-surface-07)]" />
         <div className="mt-12 space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 animate-pulse rounded-2xl bg-white/[0.04] border border-white/8" />
+            <div
+              key={i}
+              className="h-24 animate-pulse rounded-2xl border border-[color:var(--home-line-08)] bg-[color:var(--home-surface-04)]"
+            />
           ))}
         </div>
       </div>
@@ -169,10 +172,10 @@ export default function PreferencesClient({
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8" dir={isRtl ? "rtl" : "ltr"}>
       <div className="mb-12">
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+        <h1 className="home-display-xl">
           {copy.panel.title}
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-white/60">
+        <p className="mt-3 text-base leading-relaxed text-[color:var(--home-ink-65)]">
           {lastUpdated}
         </p>
       </div>
@@ -180,10 +183,10 @@ export default function PreferencesClient({
       {/* ── Language ── */}
       <section className="mb-10">
         <div className="flex items-center gap-2.5 mb-5">
-          <Globe className="h-5 w-5 text-[color:var(--accent,#C9A227)]" />
-          <h2 className="text-lg font-semibold text-white">{copy.language.label}</h2>
+          <Globe className="h-5 w-5 text-[color:var(--home-accent-text)]" />
+          <h2 className="text-lg font-semibold text-[color:var(--home-ink)]">{copy.language.label}</h2>
         </div>
-        <p className="mb-4 text-sm text-white/55">{copy.language.hint}</p>
+        <p className="mb-4 text-sm text-[color:var(--home-ink-60)]">{copy.language.hint}</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {languageOptions.map((code) => {
             const active = code === localeChoice;
@@ -193,22 +196,22 @@ export default function PreferencesClient({
                 type="button"
                 onClick={() => setLocaleChoice(code)}
                 className={[
-                  "relative flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-all",
+                  "home-focus relative flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-all",
                   active
-                    ? "border-[color:var(--accent,#C9A227)]/60 bg-[color:var(--accent,#C9A227)]/10 ring-1 ring-[color:var(--accent,#C9A227)]/30"
-                    : "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]",
+                    ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] ring-1 ring-[color:var(--home-accent-ring)]"
+                    : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] hover:border-[color:var(--home-line-15)] hover:bg-[color:var(--home-surface-07)]",
                 ].join(" ")}
                 dir={isRtlLocale(code) ? "rtl" : "ltr"}
               >
-                <span className="text-sm font-semibold text-white">{LOCALE_LABELS[code].native}</span>
-                <span className="text-xs text-white/45">{LOCALE_LABELS[code].en}</span>
+                <span className="text-sm font-semibold text-[color:var(--home-ink)]">{LOCALE_LABELS[code].native}</span>
+                <span className="text-xs text-[color:var(--home-ink-50)]">{LOCALE_LABELS[code].en}</span>
                 {!isPublicSelectorLocale(code) ? (
-                  <span className="mt-2 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/58">
+                  <span className="mt-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[color:var(--home-ink-55)]">
                     Scaffold
                   </span>
                 ) : null}
                 {active ? (
-                  <Check className="absolute top-2.5 end-2.5 h-4 w-4 text-[color:var(--accent,#C9A227)]" />
+                  <Check className="absolute top-2.5 end-2.5 h-4 w-4 text-[color:var(--home-accent-text)]" />
                 ) : null}
               </button>
             );
@@ -219,8 +222,8 @@ export default function PreferencesClient({
       {/* ── Theme ── */}
       <section className="mb-10">
         <div className="flex items-center gap-2.5 mb-5">
-          <Palette className="h-5 w-5 text-[color:var(--accent,#C9A227)]" />
-          <h2 className="text-lg font-semibold text-white">{copy.panel.theme}</h2>
+          <Palette className="h-5 w-5 text-[color:var(--home-accent-text)]" />
+          <h2 className="text-lg font-semibold text-[color:var(--home-ink)]">{copy.panel.theme}</h2>
         </div>
         <div className="flex gap-2">
           {THEME_OPTIONS.map(({ value, label, Icon }) => {
@@ -231,10 +234,10 @@ export default function PreferencesClient({
                 type="button"
                 onClick={() => setTheme(value)}
                 className={[
-                  "flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all",
+                  "home-focus flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all",
                   active
-                    ? "border-[color:var(--accent,#C9A227)]/60 bg-[color:var(--accent,#C9A227)]/10 text-white"
-                    : "border-white/10 bg-white/[0.03] text-white/60 hover:border-white/20 hover:text-white",
+                    ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-ink)]"
+                    : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink-60)] hover:border-[color:var(--home-line-15)] hover:text-[color:var(--home-ink)]",
                 ].join(" ")}
               >
                 <Icon className="h-4 w-4" />
@@ -248,8 +251,8 @@ export default function PreferencesClient({
       {/* ── Privacy & Personalization ── */}
       <section className="mb-10">
         <div className="flex items-center gap-2.5 mb-5">
-          <ShieldCheck className="h-5 w-5 text-[color:var(--accent,#C9A227)]" />
-          <h2 className="text-lg font-semibold text-white">{copy.panel.eyebrow}</h2>
+          <ShieldCheck className="h-5 w-5 text-[color:var(--home-accent-text)]" />
+          <h2 className="text-lg font-semibold text-[color:var(--home-ink)]">{copy.panel.eyebrow}</h2>
         </div>
 
         <div className="space-y-3">
@@ -292,7 +295,7 @@ export default function PreferencesClient({
         <button
           type="button"
           onClick={() => { void save(); }}
-          className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent,#C9A227)] px-6 py-3 text-sm font-semibold text-black transition-opacity hover:opacity-90"
+          className="home-focus inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:bg-[color:var(--home-accent-strong)]"
         >
           {saved ? <Check className="h-4 w-4" /> : null}
           {saved ? copy.panel.savedConfirmation : copy.panel.save}
@@ -309,7 +312,7 @@ export default function PreferencesClient({
               updatedAt: "",
             });
           }}
-          className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
+          className="home-focus rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-5 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition hover:bg-[color:var(--home-surface-07)]"
         >
           {copy.panel.keepEssential}
         </button>
@@ -336,13 +339,13 @@ function PreferenceCard({
       className={[
         "flex items-start justify-between gap-4 rounded-2xl border p-5 transition-colors",
         disabled
-          ? "border-white/8 bg-white/[0.02] cursor-default"
-          : "border-white/10 bg-white/[0.04] cursor-pointer hover:border-white/16 hover:bg-white/[0.06]",
+          ? "border-[color:var(--home-line-08)] bg-[color:var(--home-surface-02)] cursor-default"
+          : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] cursor-pointer hover:border-[color:var(--home-line-15)] hover:bg-[color:var(--home-surface-07)]",
       ].join(" ")}
     >
       <div className="min-w-0 flex-1">
-        <div className="text-[15px] font-semibold text-white">{title}</div>
-        <div className="mt-1.5 text-sm leading-relaxed text-white/55">{description}</div>
+        <div className="text-[15px] font-semibold text-[color:var(--home-ink)]">{title}</div>
+        <div className="mt-1.5 text-sm leading-relaxed text-[color:var(--home-ink-60)]">{description}</div>
       </div>
       <div className="relative mt-0.5 flex-shrink-0">
         <input
@@ -356,14 +359,15 @@ function PreferenceCard({
           className={[
             "h-6 w-11 rounded-full border transition-colors",
             checked
-              ? "border-[color:var(--accent,#C9A227)]/40 bg-[color:var(--accent,#C9A227)]"
-              : "border-white/16 bg-white/10",
+              ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent)]"
+              : "border-[color:var(--home-line-15)] bg-[color:var(--home-surface-10)]",
             disabled ? "opacity-50" : "",
+            "peer-focus-visible:ring-2 peer-focus-visible:ring-[color:var(--home-accent-ring)] peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-[color:var(--home-canvas)]",
           ].join(" ")}
         />
         <div
           className={[
-            "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all",
+            "absolute top-0.5 h-5 w-5 rounded-full bg-[color:var(--home-sheet)] shadow-sm ring-1 ring-[color:var(--home-line-12)] transition-all",
             checked ? "start-[22px]" : "start-0.5",
           ].join(" ")}
         />

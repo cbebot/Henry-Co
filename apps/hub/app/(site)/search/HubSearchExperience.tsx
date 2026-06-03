@@ -9,10 +9,11 @@
  * curated catalog whenever the index is empty or unreachable, and is fully
  * operable from the keyboard (combobox + listbox semantics, /, arrows, Enter).
  *
- * It is themed entirely in the hub's dark-navy + brass-gold language (--site-*,
- * --accent, white-alpha ladder) so it reads as the same product as the
- * homepage, and uses framer-motion for a single reduced-motion-gated entrance
- * (never per-keystroke, which jitters).
+ * It is themed entirely in the hub's theme-aware public design language
+ * (--home-* tokens + --accent), so it follows the light/dark toggle exactly like
+ * the homepage and company pages (warm paper in light, near-black in dark). It
+ * uses framer-motion for a single reduced-motion-gated entrance (never
+ * per-keystroke, which jitters).
  */
 
 import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -103,7 +104,7 @@ const ICONS: Record<IconToken, React.ComponentType<{ className?: string }>> = {
 };
 
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#C9A227)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)]";
 
 const RECENTS_KEY = "henryco:hub:search:recent";
 const LIMIT = 24;
@@ -150,7 +151,7 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="rounded-[3px] bg-[color:var(--accent,#C9A227)]/22 px-0.5 text-white">
+      <mark className="rounded-[3px] bg-[color:var(--home-accent-soft)] px-0.5 text-[color:var(--home-ink)]">
         {text.slice(idx, idx + q.length)}
       </mark>
       {text.slice(idx + q.length)}
@@ -495,15 +496,17 @@ export function HubSearchExperience({
         };
 
   return (
-    <div className="relative isolate min-h-[calc(100vh-5rem)] text-white">
-      {/* Local atmosphere: brass radial wash + base glow + dotted grid. */}
+    <div className="relative isolate min-h-[calc(100vh-5rem)] text-[color:var(--home-ink)]">
+      {/* Local atmosphere: brass radial wash + base glow + dotted grid. The
+          accent washes read on both themes; the dotted grid is ink-alpha so it
+          appears on warm paper and near-black alike. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] bg-[radial-gradient(900px_440px_at_15%_-12%,rgba(201,162,39,0.16),transparent_60%),radial-gradient(760px_380px_at_88%_-14%,rgba(201,162,39,0.07),transparent_62%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] bg-[radial-gradient(900px_440px_at_15%_-12%,var(--home-accent-soft),transparent_60%),radial-gradient(760px_380px_at_88%_-14%,var(--home-accent-soft),transparent_62%)] opacity-70"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.5] [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.05)_1px,transparent_0)] [background-size:32px_32px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-60 [background-image:radial-gradient(circle_at_1px_1px,var(--home-line-12)_1px,transparent_0)] [background-size:32px_32px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
       />
 
       <div className="mx-auto max-w-7xl px-4 pb-28 pt-10 sm:px-6 sm:pt-14 lg:px-8">
@@ -511,24 +514,24 @@ export function HubSearchExperience({
         <header className="max-w-3xl">
           <motion.p
             {...reveal(0)}
-            className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55"
+            className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]"
           >
-            <Compass className="h-3.5 w-3.5 text-[color:var(--accent,#C9A227)]" aria-hidden />
+            <Compass className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
             Henry Onyx · Universal search
           </motion.p>
           {firstName ? (
-            <motion.p {...reveal(0.02)} className="mt-4 text-sm font-medium text-white/55">
+            <motion.p {...reveal(0.02)} className="mt-4 text-sm font-medium text-[color:var(--home-ink-55)]">
               Signed in · {firstName}
             </motion.p>
           ) : null}
           <motion.h1
             {...reveal(0.04)}
-            className="mt-3 text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3.1rem]"
+            className="mt-3 text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3.1rem]"
           >
             Search everything{" "}
-            <span className="text-[color:var(--accent,#C9A227)]">Henry Onyx</span> operates.
+            <span className="text-[color:var(--home-accent-text)]">Henry Onyx</span> operates.
           </motion.h1>
-          <motion.p {...reveal(0.06)} className="mt-5 max-w-2xl text-[15px] leading-7 text-white/68 sm:text-base">
+          <motion.p {...reveal(0.06)} className="mt-5 max-w-2xl text-[15px] leading-7 text-[color:var(--home-ink-70)] sm:text-base">
             One entry point across marketplace, property, jobs, learning, care, logistics, and studio —
             plus your account workflows and help routes. Live, ranked, and one keystroke from the exact
             destination.
@@ -551,11 +554,11 @@ export function HubSearchExperience({
           </label>
           <div
             className={cn(
-              "group relative flex items-center gap-3 rounded-2xl border border-white/12 bg-black/30 pl-4 pr-2 transition",
-              "focus-within:border-[color:var(--accent,#C9A227)]/70 focus-within:bg-black/40",
+              "group relative flex items-center gap-3 rounded-2xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] pl-4 pr-2 transition",
+              "focus-within:border-[color:var(--home-accent)] focus-within:bg-[color:var(--home-surface-07)]",
             )}
           >
-            <Search className="h-5 w-5 shrink-0 text-white/45" aria-hidden />
+            <Search className="h-5 w-5 shrink-0 text-[color:var(--home-ink-50)]" aria-hidden />
             <input
               id="hub-search-input"
               ref={inputRef}
@@ -571,10 +574,10 @@ export function HubSearchExperience({
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
-              className="h-14 min-w-0 flex-1 bg-transparent text-[1.05rem] text-white outline-none placeholder:text-white/35 sm:text-[1.15rem]"
+              className="h-14 min-w-0 flex-1 bg-transparent text-[1.05rem] text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-35)] sm:text-[1.15rem]"
             />
             {loading ? (
-              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-white/45" aria-hidden />
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[color:var(--home-ink-50)]" aria-hidden />
             ) : inputValue ? (
               <button
                 type="button"
@@ -584,32 +587,32 @@ export function HubSearchExperience({
                 }}
                 aria-label="Clear search"
                 className={cn(
-                  "grid h-8 w-8 shrink-0 place-items-center rounded-full text-white/45 transition hover:bg-white/10 hover:text-white/80",
+                  "grid h-8 w-8 shrink-0 place-items-center rounded-full text-[color:var(--home-ink-50)] transition hover:bg-[color:var(--home-surface-10)] hover:text-[color:var(--home-ink)]",
                   FOCUS_RING,
                 )}
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
             ) : (
-              <kbd className="mr-1 hidden shrink-0 items-center rounded-md border border-white/15 bg-white/[0.06] px-1.5 py-0.5 font-mono text-[11px] text-white/55 sm:inline-flex">
+              <kbd className="mr-1 hidden shrink-0 items-center rounded-md border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-07)] px-1.5 py-0.5 font-mono text-[11px] text-[color:var(--home-ink-55)] sm:inline-flex">
                 /
               </kbd>
             )}
           </div>
 
           {/* Status line — instrumentation that proves it is live */}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 text-[11px] font-medium tracking-tight text-white/45">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 text-[11px] font-medium tracking-tight text-[color:var(--home-ink-50)]">
             <span className="inline-flex items-center gap-2">
               <span
                 className={cn(
                   "inline-block h-1.5 w-1.5 rounded-full",
-                  snapshot.source === "live" ? "bg-emerald-400" : "bg-[color:var(--accent,#C9A227)]",
+                  snapshot.source === "live" ? "bg-emerald-500 dark:bg-emerald-400" : "bg-[color:var(--home-accent)]",
                 )}
                 aria-hidden
               />
               {statusLine}
             </span>
-            <span className="hidden items-center gap-1.5 font-mono text-[10.5px] text-white/40 sm:inline-flex">
+            <span className="hidden items-center gap-1.5 font-mono text-[10.5px] text-[color:var(--home-ink-35)] sm:inline-flex">
               <CornerDownLeft className="h-3 w-3" aria-hidden /> open
               <span className="mx-1 opacity-40">·</span>
               <Command className="h-3 w-3" aria-hidden /> arrows to move
@@ -620,7 +623,7 @@ export function HubSearchExperience({
         {/* ---- Scope chips + sort ---- */}
         <motion.div
           {...reveal(0.1)}
-          className="mt-7 flex flex-col gap-4 border-t border-white/10 pt-6 lg:flex-row lg:items-start lg:justify-between"
+          className="mt-7 flex flex-col gap-4 border-t border-[color:var(--home-line)] pt-6 lg:flex-row lg:items-start lg:justify-between"
         >
           <div role="tablist" aria-label="Filter results by division" className="flex flex-wrap gap-2">
             <ScopeChip
@@ -644,7 +647,7 @@ export function HubSearchExperience({
             })}
           </div>
 
-          <div className="flex shrink-0 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1 text-[11px] font-semibold">
+          <div className="flex shrink-0 items-center gap-1 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] p-1 text-[11px] font-semibold">
             {(["relevance", "recent", "urgency"] as SortMode[]).map((mode) => (
               <button
                 key={mode}
@@ -653,7 +656,9 @@ export function HubSearchExperience({
                 aria-pressed={sort === mode}
                 className={cn(
                   "rounded-full px-3 py-1.5 capitalize tracking-tight transition",
-                  sort === mode ? "bg-white/90 text-zinc-950" : "text-white/55 hover:text-white/85",
+                  sort === mode
+                    ? "bg-[color:var(--home-ink)] text-[color:var(--home-canvas)]"
+                    : "text-[color:var(--home-ink-55)] hover:text-[color:var(--home-ink)]",
                   FOCUS_RING,
                 )}
               >
@@ -668,15 +673,15 @@ export function HubSearchExperience({
           <div
             role="status"
             aria-live="polite"
-            className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-amber-300/25 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100/90"
+            className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-[color:var(--hc-status-warning-border)] bg-[color:var(--hc-status-warning-bg)] px-4 py-3 text-sm text-[color:var(--hc-status-warning-text)]"
           >
-            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-300/80" aria-hidden />
+            <AlertTriangle className="h-4 w-4 shrink-0 text-[color:var(--hc-status-warning-text)]" aria-hidden />
             <span className="flex-1">{errorNote} Showing curated routes meanwhile.</span>
             <button
               type="button"
               onClick={() => void runSearch(snapshot.query, scope)}
               className={cn(
-                "rounded-full border border-amber-300/40 px-3 py-1 text-xs font-semibold text-amber-100 transition hover:bg-amber-300/10",
+                "rounded-full border border-[color:var(--hc-status-warning-border)] px-3 py-1 text-xs font-semibold text-[color:var(--hc-status-warning-text)] transition hover:bg-[color:var(--hc-status-warning-bg)]",
                 FOCUS_RING,
               )}
             >
@@ -701,7 +706,7 @@ export function HubSearchExperience({
                     count={section.items.length}
                     accent={section.division ? divisionMeta(section.division).accent : undefined}
                   />
-                  <ul role="group" aria-label={section.label} className="-mt-px divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                  <ul role="group" aria-label={section.label} className="-mt-px divide-y divide-[color:var(--home-line-08)] border-y border-[color:var(--home-line-08)]">
                     {section.items.map((hit) => {
                       const flatIndex = indexById.get(hit.id) ?? -1;
                       return (
@@ -740,7 +745,7 @@ export function HubSearchExperience({
                 onClick={() => void loadMore()}
                 disabled={loadingMore}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-white/85 transition hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.07] disabled:cursor-wait disabled:opacity-60",
+                  "inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] px-5 py-2.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:-translate-y-0.5 hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)] disabled:cursor-wait disabled:opacity-60",
                   FOCUS_RING,
                 )}
               >
@@ -753,11 +758,11 @@ export function HubSearchExperience({
 
         {/* ---- Sign-in nudge (anon) ---- */}
         {!signedIn && signInHref ? (
-          <aside className="mt-16 border-l-2 border-[color:var(--accent,#C9A227)]/55 pl-5">
-            <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/60">
+          <aside className="mt-16 border-l-2 border-[color:var(--home-accent)] pl-5">
+            <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
               <Lock className="h-3.5 w-3.5" aria-hidden /> More routes open after sign in
             </p>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-white/68">
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-[color:var(--home-ink-70)]">
               Orders, wallet, invoices, applications, viewings and support live behind your account.
               Sign in to search them and land on the exact destination.
             </p>
@@ -766,7 +771,7 @@ export function HubSearchExperience({
                 {lockedPreview.slice(0, 5).map((hit) => (
                   <span
                     key={hit.id}
-                    className="inline-flex items-center gap-1 rounded-full border border-white/12 px-2.5 py-1 text-[11px] font-medium text-white/72"
+                    className="inline-flex items-center gap-1 rounded-full border border-[color:var(--home-line-12)] px-2.5 py-1 text-[11px] font-medium text-[color:var(--home-ink-65)]"
                   >
                     <Lock className="h-3 w-3 opacity-60" aria-hidden />
                     {hit.title}
@@ -778,7 +783,7 @@ export function HubSearchExperience({
               href={signInHref}
               onClick={() => emitSignal("auth_redirect", snapshot.query, flat.length)}
               className={cn(
-                "mt-4 inline-flex items-center gap-2 rounded-full bg-[color:var(--accent,#C9A227)] px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:brightness-105",
+                "mt-4 inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--home-accent-ink)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]",
                 FOCUS_RING,
               )}
             >
@@ -817,20 +822,20 @@ function ScopeChip({
         "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight transition",
         FOCUS_RING,
         active
-          ? "border-[color:var(--accent,#C9A227)] bg-[color:var(--accent,#C9A227)] text-zinc-950"
-          : "border-white/12 bg-white/[0.05] text-white/74 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09]",
+          ? "border-[color:var(--home-accent)] bg-[color:var(--home-accent)] text-[color:var(--home-accent-ink)]"
+          : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink-70)] hover:-translate-y-0.5 hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]",
       )}
     >
       {accent ? (
         <span
           aria-hidden
           className="h-1.5 w-1.5 rounded-full"
-          style={{ backgroundColor: active ? "rgba(9,8,7,0.7)" : accent }}
+          style={{ backgroundColor: active ? "var(--home-accent-ink)" : accent }}
         />
       ) : null}
       <span>{label}</span>
       {typeof count === "number" ? (
-        <span className={cn("font-mono text-[10.5px] tracking-tight", active ? "text-zinc-900/70" : "opacity-55")}>
+        <span className={cn("font-mono text-[10.5px] tracking-tight", active ? "opacity-70" : "opacity-55")}>
           {count}
         </span>
       ) : null}
@@ -844,11 +849,11 @@ function SectionHeader({ label, count, accent }: { label: string; count: number;
       {accent ? (
         <span aria-hidden className="h-2 w-2 shrink-0 self-center rounded-full" style={{ backgroundColor: accent }} />
       ) : null}
-      <h2 className="text-[1.18rem] font-semibold tracking-tight text-white">{label}</h2>
-      <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/45">
+      <h2 className="text-[1.18rem] font-semibold tracking-tight text-[color:var(--home-ink)]">{label}</h2>
+      <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[color:var(--home-ink-50)]">
         {count} {count === 1 ? "route" : "routes"}
       </span>
-      <span className="h-px flex-1 bg-white/10" />
+      <span className="h-px flex-1 bg-[color:var(--home-line)]" />
     </header>
   );
 }
@@ -889,14 +894,14 @@ function ResultRow({
         }}
         className={cn(
           "group grid grid-cols-[auto,1fr,auto] items-start gap-4 py-5 pl-4 pr-3 transition-colors sm:gap-6",
-          active ? "bg-white/[0.04]" : "hover:bg-white/[0.025]",
+          active ? "bg-[color:var(--home-surface-04)]" : "hover:bg-[color:var(--home-surface-02)]",
         )}
         style={active ? { boxShadow: `inset 2px 0 0 0 ${meta.accent}` } : undefined}
       >
         <span
           className={cn(
             "mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-full border transition",
-            active ? "border-white/30" : "border-white/12 group-hover:border-white/25",
+            active ? "border-[color:var(--home-line-15)]" : "border-[color:var(--home-line-12)] group-hover:border-[color:var(--home-line-15)]",
           )}
           style={{ color: active ? meta.accentText : undefined }}
         >
@@ -913,30 +918,30 @@ function ResultRow({
               {meta.label}
             </span>
             {hit.badge ? (
-              <span className="rounded-full bg-white/[0.07] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-white/70">
+              <span className="rounded-full bg-[color:var(--home-surface-07)] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-65)]">
                 {hit.badge}
               </span>
             ) : null}
             {hit.authRequirement !== "none" ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/18 px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-white/65">
+              <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--home-line-15)] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-60)]">
                 <Lock className="h-2.5 w-2.5" aria-hidden /> Sign in
               </span>
             ) : null}
           </div>
 
-          <h3 className="mt-1.5 text-[1.04rem] font-semibold leading-snug tracking-[-0.005em] text-white sm:text-[1.12rem]">
+          <h3 className="mt-1.5 text-[1.04rem] font-semibold leading-snug tracking-[-0.005em] text-[color:var(--home-ink)] sm:text-[1.12rem]">
             <HighlightedText text={hit.title} query={query} />
           </h3>
 
           {hit.description ? (
-            <p className="mt-1.5 line-clamp-2 max-w-3xl text-sm leading-relaxed text-white/64">
+            <p className="mt-1.5 line-clamp-2 max-w-3xl text-sm leading-relaxed text-[color:var(--home-ink-65)]">
               {hit.description}
             </p>
           ) : hit.subtitle ? (
-            <p className="mt-1.5 text-sm leading-relaxed text-white/64">{hit.subtitle}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--home-ink-65)]">{hit.subtitle}</p>
           ) : null}
 
-          <p className="mt-2 truncate font-mono text-[11px] tracking-tight text-white/38">
+          <p className="mt-2 truncate font-mono text-[11px] tracking-tight text-[color:var(--home-ink-35)]">
             {displayHost(hit.url)}
           </p>
         </div>
@@ -945,8 +950,8 @@ function ResultRow({
           className={cn(
             "mt-2 h-4 w-4 shrink-0 transition",
             active
-              ? "-translate-y-0.5 translate-x-0.5 text-white/85"
-              : "text-white/30 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/80",
+              ? "-translate-y-0.5 translate-x-0.5 text-[color:var(--home-ink)]"
+              : "text-[color:var(--home-ink-35)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[color:var(--home-ink)]",
           )}
           aria-hidden
         />
@@ -959,13 +964,13 @@ function EmptyState({ recents, onPick }: { recents: string[]; onPick: (q: string
   return (
     <section className="grid gap-10 lg:grid-cols-[1fr,1px,1fr] lg:gap-12">
       <div>
-        <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-          <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent,#C9A227)]" aria-hidden /> Start here
+        <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
+          <Sparkles className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden /> Start here
         </p>
-        <p className="mt-4 text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+        <p className="mt-4 text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
           Try a division, a workflow, or what you want to get done.
         </p>
-        <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
+        <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
           Every Henry Onyx route is one search away — orders, deliveries, viewings, bookings,
           certificates, wallet. Start typing, or pick a prompt.
         </p>
@@ -976,7 +981,7 @@ function EmptyState({ recents, onPick }: { recents: string[]; onPick: (q: string
               type="button"
               onClick={() => onPick(prompt)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.05] px-3 py-1.5 text-[12.5px] font-medium text-white/78 transition hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09]",
+                "inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-1.5 text-[12.5px] font-medium text-[color:var(--home-ink-70)] transition hover:-translate-y-0.5 hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]",
                 FOCUS_RING,
               )}
             >
@@ -987,52 +992,52 @@ function EmptyState({ recents, onPick }: { recents: string[]; onPick: (q: string
         </div>
       </div>
 
-      <div aria-hidden className="hidden bg-white/10 lg:block" />
+      <div aria-hidden className="hidden bg-[color:var(--home-line)] lg:block" />
 
       <div>
         {recents.length > 0 ? (
           <>
-            <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-              <Clock className="h-3.5 w-3.5 text-white/45" aria-hidden /> Recent searches
+            <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
+              <Clock className="h-3.5 w-3.5 text-[color:var(--home-ink-50)]" aria-hidden /> Recent searches
             </p>
-            <ul className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+            <ul className="mt-4 divide-y divide-[color:var(--home-line-08)] border-y border-[color:var(--home-line-08)]">
               {recents.map((q) => (
                 <li key={q}>
                   <button
                     type="button"
                     onClick={() => onPick(q)}
                     className={cn(
-                      "group flex w-full items-center justify-between gap-3 py-3 text-left text-sm text-white/80 transition hover:text-white",
+                      "group flex w-full items-center justify-between gap-3 py-3 text-left text-sm text-[color:var(--home-ink-70)] transition hover:text-[color:var(--home-ink)]",
                       FOCUS_RING,
                     )}
                   >
                     <span className="inline-flex items-center gap-3">
-                      <Clock className="h-4 w-4 text-white/35" aria-hidden />
+                      <Clock className="h-4 w-4 text-[color:var(--home-ink-35)]" aria-hidden />
                       {q}
                     </span>
-                    <ChevronRight className="h-4 w-4 text-white/30 transition group-hover:translate-x-0.5 group-hover:text-white/70" aria-hidden />
+                    <ChevronRight className="h-4 w-4 text-[color:var(--home-ink-35)] transition group-hover:translate-x-0.5 group-hover:text-[color:var(--home-ink-70)]" aria-hidden />
                   </button>
                 </li>
               ))}
             </ul>
           </>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-              <Command className="h-3.5 w-3.5 text-white/45" aria-hidden /> Keyboard
+          <div className="rounded-2xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-6">
+            <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
+              <Command className="h-3.5 w-3.5 text-[color:var(--home-ink-50)]" aria-hidden /> Keyboard
             </p>
-            <ul className="mt-4 space-y-2.5 text-sm text-white/68">
+            <ul className="mt-4 space-y-2.5 text-sm text-[color:var(--home-ink-70)]">
               <li className="flex items-center justify-between gap-4">
                 <span>Focus search</span>
-                <kbd className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-white/70">/</kbd>
+                <kbd className="rounded-md border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-07)] px-2 py-0.5 font-mono text-[11px] text-[color:var(--home-ink-65)]">/</kbd>
               </li>
               <li className="flex items-center justify-between gap-4">
                 <span>Move between results</span>
-                <kbd className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-white/70">↑ ↓</kbd>
+                <kbd className="rounded-md border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-07)] px-2 py-0.5 font-mono text-[11px] text-[color:var(--home-ink-65)]">↑ ↓</kbd>
               </li>
               <li className="flex items-center justify-between gap-4">
                 <span>Open the highlighted route</span>
-                <kbd className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-white/70">Enter</kbd>
+                <kbd className="rounded-md border border-[color:var(--home-line-15)] bg-[color:var(--home-surface-07)] px-2 py-0.5 font-mono text-[11px] text-[color:var(--home-ink-65)]">Enter</kbd>
               </li>
             </ul>
           </div>
@@ -1055,13 +1060,13 @@ function ZeroState({
   return (
     <section className="grid gap-10 lg:grid-cols-[1fr,1px,1fr] lg:gap-12">
       <div>
-        <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-          <Search className="h-3.5 w-3.5 text-[color:var(--accent,#C9A227)]" aria-hidden /> Nothing exact
+        <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
+          <Search className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden /> Nothing exact
         </p>
-        <p className="mt-4 text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
-          No results for <span className="text-[color:var(--accent,#C9A227)]">“{query}”</span>.
+        <p className="mt-4 text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
+          No results for <span className="text-[color:var(--home-accent-text)]">“{query}”</span>.
         </p>
-        <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
+        <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
           Try a single keyword — a division name like “marketplace”, an action like “track” or
           “withdraw”, or a help topic like “support”.
         </p>
@@ -1072,7 +1077,7 @@ function ZeroState({
               type="button"
               onClick={() => onPick(prompt)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.05] px-3 py-1.5 text-[12.5px] font-medium text-white/78 transition hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09]",
+                "inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-1.5 text-[12.5px] font-medium text-[color:var(--home-ink-70)] transition hover:-translate-y-0.5 hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]",
                 FOCUS_RING,
               )}
             >
@@ -1082,11 +1087,11 @@ function ZeroState({
         </div>
       </div>
 
-      <div aria-hidden className="hidden bg-white/10 lg:block" />
+      <div aria-hidden className="hidden bg-[color:var(--home-line)] lg:block" />
 
       <div>
-        <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">Or jump to a top route</p>
-        <ul className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+        <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">Or jump to a top route</p>
+        <ul className="mt-4 divide-y divide-[color:var(--home-line-08)] border-y border-[color:var(--home-line-08)]">
           {suggestions.map((hit) => {
             const meta = divisionMeta(hit.division);
             return (
@@ -1094,23 +1099,23 @@ function ZeroState({
                 <a
                   href={hit.url}
                   className={cn(
-                    "group flex items-center gap-3 py-3.5 text-sm text-white/82 transition hover:text-white",
+                    "group flex items-center gap-3 py-3.5 text-sm text-[color:var(--home-ink-70)] transition hover:text-[color:var(--home-ink)]",
                     FOCUS_RING,
                   )}
                 >
                   <span
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/12"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[color:var(--home-line-12)]"
                     style={{ color: meta.accentText }}
                   >
                     {renderIcon(hit.icon, "h-4 w-4")}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-white">{hit.title}</span>
+                    <span className="block truncate font-semibold text-[color:var(--home-ink)]">{hit.title}</span>
                     <span className="text-[11px] uppercase tracking-[0.18em]" style={{ color: meta.accentText }}>
                       {meta.label}
                     </span>
                   </span>
-                  <ArrowUpRight className="h-4 w-4 text-white/30 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/75" aria-hidden />
+                  <ArrowUpRight className="h-4 w-4 text-[color:var(--home-ink-35)] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[color:var(--home-ink)]" aria-hidden />
                 </a>
               </li>
             );
