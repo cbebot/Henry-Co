@@ -324,7 +324,7 @@ export function SellerApplicationWizard({
               key={item}
               className={`inline-flex items-center gap-3 rounded-full px-4 py-2 text-sm font-semibold ${
                 step === item
-                  ? "bg-[var(--market-noir)] text-[var(--market-paper-white)]"
+                  ? "bg-[color:var(--home-accent)] text-[color:var(--home-accent-ink)]"
                   : "bg-[var(--market-bg-elevated)] text-[var(--market-muted)]"
               }`}
             >
@@ -391,7 +391,7 @@ export function SellerApplicationWizard({
                 />
               </label>
             </div>
-            <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5 text-sm leading-7 text-[var(--market-muted)]">
+            <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-5 text-sm leading-7 text-[var(--market-muted)]">
               Store identity is what the moderation and owner review queue will see first. Keep the name, legal entity,
               and category focus precise so approval and trust-routing do not stall.
             </div>
@@ -413,7 +413,7 @@ export function SellerApplicationWizard({
               </label>
               <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] p-5">
                 <div className="flex items-center gap-3">
-                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[color:var(--home-surface-07)] text-[var(--market-brass)]">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
                   <div>
@@ -444,7 +444,7 @@ export function SellerApplicationWizard({
                 return (
                   <div
                     key={item.key}
-                    className="group rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5"
+                    className="group rounded-[1.6rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -455,7 +455,7 @@ export function SellerApplicationWizard({
                         className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
                           item.required
                             ? "bg-[rgba(255,171,151,0.12)] text-[var(--market-alert)]"
-                            : "bg-[rgba(117,209,255,0.12)] text-[var(--market-sky)]"
+                            : "bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
                         }`}
                       >
                         {item.required ? "Required" : "Recommended"}

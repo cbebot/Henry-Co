@@ -61,7 +61,7 @@ export default function MarketplaceHelpCentre({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search help — e.g. refund, missing item, payout"
-          className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-black/30 pl-11 pr-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
+          className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-[color:var(--home-surface-04)] pl-11 pr-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
           aria-label="Search the help centre"
         />
       </div>
