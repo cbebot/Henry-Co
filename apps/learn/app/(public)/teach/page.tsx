@@ -152,7 +152,7 @@ export default async function TeachPage({
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 rounded-[1.6rem] border border-[var(--learn-line)] bg-white/[0.04] p-6 sm:p-7 md:grid-cols-3">
+      <section className="mt-10 grid gap-6 rounded-[1.6rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-6 sm:p-7 md:grid-cols-3">
         <div>
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
             <BadgePercent className="h-3.5 w-3.5" aria-hidden />
@@ -540,7 +540,7 @@ export default async function TeachPage({
                     name="supportingFiles"
                     multiple
                     accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
-                    className="learn-input mt-2 w-full rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
+                    className="learn-input mt-2 w-full rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-[color:var(--home-surface-07)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
                   />
                   <p className="mt-2 text-xs leading-6 text-[var(--learn-ink-soft)]">
                     {t(

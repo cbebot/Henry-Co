@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
 @import "../../../packages/ui/src/styles/public-design.css";
+
+/* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
+   media query — without this, the toggled theme and `dark:` utilities decouple. */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 
 :root {

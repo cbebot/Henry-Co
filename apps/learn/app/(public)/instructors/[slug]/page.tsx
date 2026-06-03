@@ -79,7 +79,7 @@ export default async function InstructorPage({
               {data.instructor.expertise.map((topic) => (
                 <span
                   key={topic}
-                  className="rounded-full border border-[var(--learn-line)] bg-white/5 px-3.5 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[var(--learn-ink-soft)]"
+                  className="rounded-full border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] px-3.5 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[var(--learn-ink-soft)]"
                 >
                   {topic}
                 </span>

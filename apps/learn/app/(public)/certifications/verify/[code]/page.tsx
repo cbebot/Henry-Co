@@ -153,7 +153,7 @@ export default async function CertificateVerifyPage({
               </div>
             </div>
 
-            <div className="mt-8 rounded-[2rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
+            <div className="mt-8 rounded-[2rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.28em] text-[var(--learn-ink-soft)]">
                 {t("Henry Onyx Learn Certificate")}
               </p>
@@ -168,7 +168,7 @@ export default async function CertificateVerifyPage({
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Certificate no")}
                   </p>
@@ -176,7 +176,7 @@ export default async function CertificateVerifyPage({
                     {data.certificate.certificateNo}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Verification code")}
                   </p>
@@ -184,7 +184,7 @@ export default async function CertificateVerifyPage({
                     {data.certificate.verificationCode}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Issued")}
                   </p>
@@ -192,7 +192,7 @@ export default async function CertificateVerifyPage({
                     {formatDateLabel(locale, data.certificate.issuedAt, t("Not yet"))}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Score")}
                   </p>
@@ -219,10 +219,10 @@ export default async function CertificateVerifyPage({
               ].map((item) => (
                 <div
                   key={item}
-                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4"
                 >
                   <div className="flex items-start gap-3">
-                    <CircleCheckBig className="mt-0.5 h-5 w-5 text-emerald-200" />
+                    <CircleCheckBig className="mt-0.5 h-5 w-5 text-emerald-600 dark:text-emerald-300" />
                     <p className="text-sm leading-7 text-[var(--learn-ink-soft)]">{item}</p>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ export default async function CertificateVerifyPage({
                 t("This certificate was issued after the course completion rules and assessment requirements were satisfied.")}
             </p>
             <div className="mt-5 grid gap-3">
-              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                 <div className="flex items-center gap-3">
                   <FileCheck2 className="h-5 w-5 text-[var(--learn-copper)]" />
                   <p className="text-sm font-semibold text-[var(--learn-ink)]">{t("Completion state")}</p>
@@ -251,7 +251,7 @@ export default async function CertificateVerifyPage({
                     : t("The certificate remains linked to the underlying enrollment record.")}
                 </p>
               </div>
-              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-[var(--learn-mint-soft)]" />
                   <p className="text-sm font-semibold text-[var(--learn-ink)]">{t("Public readiness")}</p>
