@@ -30,41 +30,81 @@ export default async function HomePage() {
       primaryCta={{ label: copy.shell.browseOpenJobs, href: "/jobs" }}
       secondaryCta={{ label: copy.shell.hiring, href: "/hire" }}
     >
-      {/* Hero — centered editorial. Search line + quick filters + CTA row.
-          No inner card tiles, no right-stack of trust panels. */}
-      <section className="jobs-grid border-b border-black/5 px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="jobs-kicker">{copy.home.kicker}</p>
-          <h1 className="mt-4 jobs-display text-balance">{copy.home.title}</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--jobs-muted)] sm:mt-6 sm:text-base sm:leading-8">
+      {/* Hero — an editorial search INSTRUMENT. Capability evidence over
+          headline size: the live search field + real platform signals sit
+          above the fold, wrapped in atmosphere on the theme-aware --home-*
+          canvas with the jobs teal soul. One orchestrated staggered reveal. */}
+      <section className="relative overflow-hidden border-b border-[color:var(--home-line)]">
+        {/* Atmosphere — a theme-aware hairline grid fading upward + a soft
+            teal aurora. Decorative only. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, var(--home-line-08) 1px, transparent 1px), linear-gradient(to bottom, var(--home-line-08) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+            maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent 78%)",
+            WebkitMaskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent 78%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-[-20rem] h-[34rem] w-[54rem] -translate-x-1/2 blur-3xl"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, color-mix(in srgb, var(--home-accent) 22%, transparent), transparent 70%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-24 lg:py-28">
+          <p className="jobs-reveal jobs-kicker">{copy.home.kicker}</p>
+          <h1
+            className="jobs-reveal mt-5 jobs-display text-balance"
+            style={{ animationDelay: "0.06s" }}
+          >
+            {copy.home.title}
+          </h1>
+          <p
+            className="jobs-reveal mx-auto mt-5 max-w-2xl text-pretty text-[15px] leading-7 text-[color:var(--home-ink-70)] sm:text-base sm:leading-8"
+            style={{ animationDelay: "0.12s" }}
+          >
             {copy.home.subtitle}
           </p>
 
+          {/* Search instrument — one polished bar, teal action. */}
           <form
             action="/jobs"
             method="GET"
-            className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:mt-10 sm:flex-row sm:items-stretch"
+            className="jobs-reveal mx-auto mt-9 flex w-full max-w-2xl items-stretch gap-2 rounded-[1.5rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-sheet)] p-2 shadow-[0_36px_100px_-55px_rgb(var(--home-ink-rgb)/0.4)] sm:rounded-full"
+            style={{ animationDelay: "0.18s" }}
           >
             <label className="sr-only" htmlFor="home-q">
               {copy.home.searchButton}
             </label>
+            <span className="hidden items-center pl-3 text-[color:var(--home-ink-50)] sm:flex">
+              <Search className="h-5 w-5" aria-hidden />
+            </span>
             <input
               id="home-q"
               name="q"
-              className="jobs-input min-h-[3.25rem] flex-1 text-base"
+              className="min-w-0 flex-1 bg-transparent px-3 py-3 text-base text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-50)]"
               placeholder={copy.home.searchPlaceholder}
               autoComplete="off"
             />
             <button
               type="submit"
-              className="jobs-button-primary shrink-0 rounded-[1.15rem] px-8 py-3.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--jobs-accent)]/55 focus-visible:ring-offset-2 active:translate-y-[0.5px] sm:rounded-full"
+              className="shrink-0 rounded-[1.05rem] bg-[color:var(--home-accent)] px-6 py-3 text-sm font-semibold text-[color:var(--home-accent-ink)] outline-none transition hover:bg-[color:var(--home-accent-strong)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] sm:rounded-full"
             >
               {copy.home.searchButton}
             </button>
           </form>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm">
-            <span className="text-[var(--jobs-muted)]">{copy.home.tryLabel}</span>
+          <div
+            className="jobs-reveal mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm"
+            style={{ animationDelay: "0.24s" }}
+          >
+            <span className="text-[color:var(--home-ink-60)]">{copy.home.tryLabel}</span>
             {[
               { label: copy.browse.suggestions.remote, href: "/jobs?mode=remote" },
               { label: copy.browse.suggestions.verifiedOnly, href: "/jobs?verified=1" },
@@ -74,17 +114,39 @@ export default async function HomePage() {
               <Link
                 key={label}
                 href={href}
-                className="font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
+                className="rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3.5 py-1.5 font-semibold text-[color:var(--home-ink-70)] transition hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)]"
               >
                 {label}
               </Link>
             ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <div
+            className="jobs-reveal mt-9 flex flex-wrap justify-center gap-3"
+            style={{ animationDelay: "0.3s" }}
+          >
             <HeroLink href="/jobs" label={copy.home.browseAllJobs} />
             <HeroLink href="/hire" label={copy.home.hiringHowItWorks} subtle />
           </div>
+
+          {/* Live platform signals — capability evidence, not vanity metrics. */}
+          {home.stats.length > 0 ? (
+            <dl
+              className="jobs-reveal mx-auto mt-14 grid w-full max-w-3xl grid-cols-3 divide-x divide-[color:var(--home-line)] overflow-hidden rounded-[1.75rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)]/70 backdrop-blur"
+              style={{ animationDelay: "0.36s" }}
+            >
+              {home.stats.map((stat) => (
+                <div key={stat.label} className="px-3 py-5 text-center sm:px-6 sm:py-7">
+                  <dd className="jobs-display text-3xl leading-none text-[color:var(--home-ink)] sm:text-[2.6rem]">
+                    {stat.value}
+                  </dd>
+                  <dt className="mt-2 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[color:var(--home-ink-60)] sm:text-[11px]">
+                    {stat.label}
+                  </dt>
+                </div>
+              ))}
+            </dl>
+          ) : null}
         </div>
       </section>
 
