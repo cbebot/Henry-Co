@@ -1,21 +1,20 @@
 "use client";
 
-import { getHubUrl } from "@henryco/config";
+import { COMPANY, getDivisionConfig, getHubUrl } from "@henryco/config";
 import {
-  HenryCoSearchBreadcrumb,
   HenryCoPublicAccountPresets,
   PublicAccountChip,
-  PublicHeader,
+  PublicChrome,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { logoutEverywhere } from "@henryco/auth/client";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { LEARN_PUBLIC_THEME_STYLE } from "@/components/learn/learn-public-theme";
 
 type LearnSiteHeaderClientProps = {
-  brandName: string;
-  brandMark: React.ReactNode;
   accountChipUser:
     | {
         displayName: string;
@@ -30,11 +29,17 @@ type LearnSiteHeaderClientProps = {
   settingsHref: string;
 };
 
+const learn = getDivisionConfig("learn");
 const learnNav = getSiteNavigationConfig("learn");
 
+/**
+ * Learn public header — thin config wrapper over the shared, theme-aware
+ * PublicChrome (V3-PUBLIC-REBUILD-learn). Brand reads "LEARN / Henry Onyx";
+ * the account dropdown + sign-out are preserved via the slotted
+ * PublicAccountChip; the bar flips with the page and wears learn's viridian
+ * accent (resolved from the page's LEARN_PUBLIC_THEME_STYLE).
+ */
 export function LearnSiteHeaderClient({
-  brandName,
-  brandMark,
   accountChipUser,
   accountHref,
   loginHref,
@@ -44,68 +49,69 @@ export function LearnSiteHeaderClient({
 }: LearnSiteHeaderClientProps) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+
   return (
-    <PublicHeader
+    <PublicChrome
+      maxWidth="max-w-[92rem]"
+      accentStyle={LEARN_PUBLIC_THEME_STYLE}
       brand={{
-        name: t(brandName),
-        sub: t("HenryCo"),
-        mark: brandMark,
+        href: "/",
+        name: COMPANY.group.name,
+        eyebrow: learn.shortName,
+        mark: <HenryCoMonogram size={26} accent={learn.accent || "#3C8C7A"} />,
       }}
       items={learnNav.primaryNav}
-      primaryCta={learnNav.defaultCtas?.primary}
-      actions={
-        <HenryCoSearchBreadcrumb
-          href={getHubUrl("/search")}
-          className="hidden xl:inline-flex"
-        />
-      }
+      search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
+      account={{
+        user: accountChipUser,
+        loginHref,
+        signupHref,
+        accountHref,
+      }}
       accountMenu={
-        <PublicAccountChip
-          {...HenryCoPublicAccountPresets.standard}
-          user={accountChipUser}
-          loginHref={loginHref}
-          accountHref={accountHref}
-          preferencesHref={preferencesHref}
-          settingsHref={settingsHref}
-          signupHref={signupHref}
-          showSignOut
-          signOutApiPath="/api/auth/logout"
-          signOutRedirectHref="/"
-          onSignOut={async () => {
-            const supabase = createSupabaseBrowser();
-            await logoutEverywhere({
-              supabase,
-              redirectTo: "/",
-            });
-          }}
-          menuItems={[
-            { label: t("My courses"), href: "/learner/courses" },
-            { label: t("Browse catalog"), href: "/courses" },
-            { label: t("Teach with HenryCo"), href: "/teach" },
-          ]}
-        />
+        accountChipUser ? (
+          <PublicAccountChip
+            {...HenryCoPublicAccountPresets.standard}
+            user={accountChipUser}
+            loginHref={loginHref}
+            accountHref={accountHref}
+            preferencesHref={preferencesHref}
+            settingsHref={settingsHref}
+            signupHref={signupHref}
+            showSignOut
+            signOutApiPath="/api/auth/logout"
+            signOutRedirectHref="/"
+            buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
+            dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
+            onSignOut={async () => {
+              const supabase = createSupabaseBrowser();
+              await logoutEverywhere({
+                supabase,
+                redirectTo: "/",
+              });
+            }}
+            menuItems={[
+              { label: t("My courses"), href: "/learner/courses" },
+              { label: t("Browse catalog"), href: "/courses" },
+              { label: t("Teach with Henry Onyx"), href: "/teach" },
+            ]}
+          />
+        ) : null
       }
-      showThemeToggle
-      themeToggleClassName="h-11 w-11 shrink-0 rounded-xl border border-[var(--learn-line)] bg-[rgba(8,14,22,0.45)] text-[var(--learn-ink)] shadow-none hover:bg-[rgba(12,18,28,0.55)] dark:border-[var(--learn-line)]"
-      maxWidth="max-w-[92rem]"
-      toolbarClassName="px-5 sm:px-8 xl:px-10"
-      mobileMenuContainerClassName="px-5 sm:px-8 xl:px-10"
-      navClassName="hidden items-center gap-5 lg:flex"
-      headerClassName="z-40 border-b border-[var(--learn-line)] bg-[var(--learn-bg)] shadow-[0_1px_0_rgba(255,255,255,0.04)]"
-      getNavItemClassName={(_item, active, placement) =>
-        placement === "bar"
-          ? [
-              "text-sm font-medium text-[var(--learn-ink-soft)] transition hover:text-[var(--learn-ink)]",
-              active ? "text-[var(--learn-ink)]" : "",
-            ]
-              .filter(Boolean)
-              .join(" ")
-          : [
-              "flex rounded-[1.2rem] border border-[var(--learn-line)] bg-[rgba(6,10,16,0.55)] px-4 py-3 text-sm font-semibold text-[var(--learn-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-md transition hover:border-[var(--learn-line-strong)]",
-              active ? "border-[var(--learn-line-strong)] bg-[rgba(8,14,22,0.72)]" : "",
-            ]
-              .filter(Boolean)
-              .join(" ")
+      primaryCta={learnNav.defaultCtas?.primary}
+      prepend={
+        <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-5 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-8 xl:px-10">
+          <span className="flex items-center gap-2">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
+            {t("Structured courses, fair assessments, and certificates anyone can verify")}
+          </span>
+          <a
+            href={accountHref}
+            className="hidden font-semibold text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)] lg:inline-flex"
+          >
+            {t("Henry Onyx account")}
+          </a>
+        </div>
       }
     />
   );

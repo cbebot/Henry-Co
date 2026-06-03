@@ -38,51 +38,60 @@ export default async function HomePage() {
       <section className="learn-hero">
         <div className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 sm:py-16 xl:px-10 xl:py-20">
           <div className="learn-panel learn-mesh rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-8 xl:rounded-[2.8rem] xl:p-10">
-            <p className="learn-kicker">Henry Onyx Learn</p>
+            <p className="learn-reveal learn-kicker">Henry Onyx Learn</p>
             {viewer.user ? (
-              <p className="mt-4 text-sm font-semibold tracking-tight text-[var(--learn-ink-soft)]">
+              <p
+                className="learn-reveal mt-4 text-sm font-semibold tracking-tight text-[var(--learn-ink-soft)]"
+                style={{ animationDelay: "0.04s" }}
+              >
                 {t("Welcome back")}
                 {heroFirstName ? `, ${heroFirstName}` : ""}.
               </p>
             ) : null}
-            <h1 className={`learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-4 sm:mt-5" : "mt-5 sm:mt-6"}`}>
+            <h1
+              className={`learn-reveal learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-4 sm:mt-5" : "mt-5 sm:mt-6"}`}
+              style={{ animationDelay: "0.08s" }}
+            >
               {t("Skills that stick. Proof that travels.")}
             </h1>
-            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--learn-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
+            <p
+              className="learn-reveal mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--learn-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg"
+              style={{ animationDelay: "0.14s" }}
+            >
               {t(
-                "Pick a course, move through lessons in order, track progress in your HenryCo account, and earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.",
+                "Pick a course, move through lessons in order, track progress in your Henry Onyx account, and earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.",
               )}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
+            <div className="learn-reveal mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3" style={{ animationDelay: "0.2s" }}>
               <Link
                 href="/courses"
-                className="learn-button-primary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+                className="learn-button-primary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] sm:px-5 sm:py-3"
               >
                 {t("Browse courses")}
               </Link>
               {viewer.user ? (
                 <a
                   href={getAccountLearnUrl("active")}
-                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] sm:px-5 sm:py-3"
                 >
                   {t("Continue learning")}
                 </a>
               ) : (
                 <a
                   href={getSharedAuthUrl("signup", "/courses")}
-                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] sm:px-5 sm:py-3"
                 >
                   {t("Create free account")}
                 </a>
               )}
               <Link
                 href="/academy"
-                className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+                className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] sm:px-5 sm:py-3"
               >
                 {t("How it works")}
               </Link>
             </div>
-            <div className="mt-8 sm:mt-10">
+            <div className="learn-reveal mt-8 sm:mt-10" style={{ animationDelay: "0.26s" }}>
               <QuickMetricStrip
                 items={[
                   { label: t("Programs open now"), value: String(academy.courses.length) },
@@ -123,7 +132,7 @@ export default async function HomePage() {
           eyebrow={t("How learning runs here")}
           title={t("Structured lessons, fair assessments, real verification.")}
           body={t(
-            "Sign in once. Enrollments, progress, certificates, billing, and teaching applications all live on the same HenryCo profile — no duplicate logins, no parallel inboxes.",
+            "Sign in once. Enrollments, progress, certificates, billing, and teaching applications all live on the same Henry Onyx profile — no duplicate logins, no parallel inboxes.",
           )}
           aside={
             <ul className="space-y-5">
@@ -171,7 +180,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 xl:px-10">
         <div className="grid gap-8 xl:grid-cols-[1.05fr,0.95fr] xl:items-start">
           <LearnPanel className="learn-mesh rounded-[2.4rem] p-7 sm:p-8">
-            <p className="learn-kicker">{t("Teach with HenryCo")}</p>
+            <p className="learn-kicker">{t("Teach with Henry Onyx")}</p>
             <h2 className="learn-heading mt-4 text-[2.1rem] text-[var(--learn-ink)] sm:text-[2.6rem]">
               {t("Apply if you can teach with depth, structure, and professionalism.")}
             </h2>
@@ -201,7 +210,7 @@ export default async function HomePage() {
             <li className="flex gap-4 py-5">
               <UsersRound className="mt-1 h-5 w-5 shrink-0 text-[var(--learn-copper)]" />
               <div>
-                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Aligned with HenryCo")}</h3>
+                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Aligned with Henry Onyx")}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-[var(--learn-ink-soft)]">
                   {t("Topics that fit our ecosystem — operations, customer experience, digital skills, partner enablement — get the closest match with our learners' needs.")}
                 </p>

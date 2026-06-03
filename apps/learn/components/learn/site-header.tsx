@@ -1,11 +1,8 @@
 import { headers } from "next/headers";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getAccountUrl } from "@henryco/config";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
-import { BrandMark } from "@/components/learn/ui";
 import { LearnSiteHeaderClient } from "@/components/learn/site-header-client";
-
-const learn = getDivisionConfig("learn");
 
 export async function LearnSiteHeader() {
   const viewer = await getLearnViewer();
@@ -24,8 +21,6 @@ export async function LearnSiteHeader() {
 
   return (
     <LearnSiteHeaderClient
-      brandName={learn.name}
-      brandMark={<BrandMark />}
       accountChipUser={chipUser}
       accountHref={accountHref}
       loginHref={loginHref}

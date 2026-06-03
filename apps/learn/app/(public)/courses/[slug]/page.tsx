@@ -449,7 +449,7 @@ export default async function CourseDetailPage({
               ) : null}
             </div>
             {enrollment?.status === "awaiting_payment" ? (
-              <p className="mt-4 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-amber-200">
+              <p className="mt-4 border-l-2 border-amber-500/60 pl-4 text-sm leading-7 text-amber-700 dark:text-amber-300">
                 {t(
                   "We're confirming your payment. Your seat is held—this page will unlock fully as soon as your HenryCo account shows a completed payment.",
                 )}

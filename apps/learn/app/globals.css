@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/styles/public-design.css";
+
+/* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
+   media query — without this, the toggled theme and `dark:` utilities decouple. */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 
 :root {
@@ -411,6 +416,68 @@ summary::-webkit-details-marker {
   cursor: not-allowed;
   pointer-events: none;
   filter: grayscale(0.2);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   V3-PUBLIC-REBUILD-learn — public-surface retone onto the home tokens.
+   The token alias (LEARN_PUBLIC_THEME_STYLE) flips the learn + hc tokens to
+   theme-aware home tokens, but a few utilities baked in hardcoded light-mint
+   white-alpha values that read fine on the old dark canvas yet wash out
+   on warm paper. These scoped overrides (public subtree only — never the
+   dashboards) re-tone them to the page accent + surfaces in both themes.
+   ────────────────────────────────────────────────────────────────── */
+.home-accent-scope.learn-shell {
+  background: var(--home-canvas);
+}
+.home-accent-scope.learn-shell::before {
+  background-image:
+    linear-gradient(to right, var(--home-line-08) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--home-line-08) 1px, transparent 1px);
+}
+.home-accent-scope .learn-kicker {
+  color: var(--home-accent-text);
+}
+.home-accent-scope .learn-button-primary {
+  background: var(--home-accent);
+  color: var(--home-accent-ink);
+  box-shadow: 0 24px 60px -30px color-mix(in srgb, var(--home-accent) 55%, transparent);
+}
+.home-accent-scope .learn-button-primary:hover {
+  background: var(--home-accent-strong);
+}
+.home-accent-scope .learn-button-secondary {
+  background: var(--home-surface-04);
+  border-color: var(--home-line-12);
+  color: var(--home-ink);
+}
+.home-accent-scope .learn-button-secondary:hover {
+  background: var(--home-surface-07);
+  border-color: var(--home-accent);
+}
+.home-accent-scope .learn-input,
+.home-accent-scope .learn-select,
+.home-accent-scope .learn-textarea {
+  background: var(--home-surface-04);
+  border-color: var(--home-line-12);
+  color: var(--home-ink);
+}
+
+/* Flagship hero entrance — base state VISIBLE; animates only when motion is
+   welcome (reduced-motion + the global kill-switch leave it fully shown). */
+@media (prefers-reduced-motion: no-preference) {
+  .learn-reveal {
+    animation: learnReveal 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+@keyframes learnReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
