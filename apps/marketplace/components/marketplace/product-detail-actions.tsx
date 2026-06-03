@@ -67,7 +67,7 @@ export function ProductDetailActions({
             aria-busy={saving}
             className={`inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait ${
               wishlisted
-                ? "border border-[rgba(221,182,120,0.26)] bg-[rgba(221,182,120,0.14)] text-[var(--market-paper-white)]"
+                ? "border border-[color:var(--home-accent-ring)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
                 : "market-button-secondary"
             }`}
           >
@@ -86,7 +86,7 @@ export function ProductDetailActions({
               aria-busy={followingBusy}
               className={`inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait ${
                 following
-                  ? "border border-[rgba(117,209,255,0.26)] bg-[rgba(117,209,255,0.12)] text-[var(--market-paper-white)]"
+                  ? "border border-[color:var(--home-accent-ring)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
                   : "market-button-secondary"
               }`}
             >
@@ -104,11 +104,11 @@ export function ProductDetailActions({
           </Link>
         </div>
         <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-sm leading-7 text-[var(--market-muted)]">
-          Quick-add updates the mini-cart instantly. Saved items, follows, notifications, and future payment events stay attached to the same HenryCo account identity.
+          Quick-add updates the mini-cart instantly. Saved items, follows, notifications, and future payment events stay attached to the same Henry Onyx account identity.
         </p>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--market-line)] bg-[rgba(5,7,13,0.92)] p-3 backdrop-blur-xl lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[color:var(--home-line)] bg-[color:var(--home-glass-strong)] p-3 backdrop-blur-xl lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center gap-3">
           <button
             type="button"
@@ -116,10 +116,10 @@ export function ProductDetailActions({
             disabled={saving}
             aria-busy={saving}
             aria-label={saving ? "Updating wishlist" : wishlisted ? "Remove from wishlist" : "Save to wishlist"}
-            className={`inline-flex h-12 w-12 items-center justify-center rounded-full border text-[var(--market-paper-white)] ${
+            className={`inline-flex h-12 w-12 items-center justify-center rounded-full border ${
               wishlisted
-                ? "border-[rgba(221,182,120,0.26)] bg-[rgba(221,182,120,0.14)]"
-                : "border-[var(--market-line)] bg-[rgba(255,255,255,0.04)]"
+                ? "border-[color:var(--home-accent-ring)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
+                : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)]"
             }`}
           >
             {saving ? (
@@ -135,10 +135,10 @@ export function ProductDetailActions({
               disabled={followingBusy}
               aria-busy={followingBusy}
               aria-label={followingBusy ? "Updating store follow" : following ? "Following store" : "Follow store"}
-              className={`inline-flex h-12 w-12 items-center justify-center rounded-full border text-[var(--market-paper-white)] ${
+              className={`inline-flex h-12 w-12 items-center justify-center rounded-full border ${
                 following
-                  ? "border-[rgba(117,209,255,0.26)] bg-[rgba(117,209,255,0.12)]"
-                  : "border-[var(--market-line)] bg-[rgba(255,255,255,0.04)]"
+                  ? "border-[color:var(--home-accent-ring)] bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
+                  : "border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)]"
               }`}
             >
               {followingBusy ? (

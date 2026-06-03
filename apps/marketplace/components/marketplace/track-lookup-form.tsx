@@ -65,12 +65,12 @@ export function TrackLookupForm({ labels }: { labels: TrackLookupLabels }) {
             placeholder={labels.placeholder}
             aria-invalid={error ? "true" : undefined}
             aria-describedby={error ? "market-track-error" : undefined}
-            className="w-full rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] py-3 pl-11 pr-4 text-sm text-[var(--market-ink)] outline-none transition focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55"
+            className="w-full rounded-full border border-[var(--market-line)] bg-[color:var(--home-surface-02)] py-3 pl-11 pr-4 text-sm text-[var(--market-ink)] outline-none transition focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55"
           />
         </div>
         <button
           type="submit"
-          className="market-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+          className="market-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
         >
           {labels.submit}
           <ArrowRight className="h-4 w-4" aria-hidden />
