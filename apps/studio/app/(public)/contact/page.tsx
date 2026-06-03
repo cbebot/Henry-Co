@@ -84,10 +84,10 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="mt-14 rounded-[1.5rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] p-6 sm:p-7">
+      <section className="mt-14 rounded-[1.5rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] p-6 sm:p-7">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.08)] text-[var(--studio-signal)]">
+            <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]">
               <FolderKanban className="h-4 w-4" />
             </span>
             <div>

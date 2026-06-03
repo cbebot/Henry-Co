@@ -25,7 +25,7 @@ export function ChatMessage({
       {isAssistant ? (
         <span
           aria-hidden
-          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[rgba(151,244,243,0.4)] bg-[rgba(151,244,243,0.1)] text-[var(--studio-signal)]"
+          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]"
         >
           <Sparkles className="h-4 w-4" />
         </span>
@@ -34,8 +34,8 @@ export function ChatMessage({
         className={[
           "max-w-[80%] rounded-[1.1rem] px-4 py-3 text-[14px] leading-7",
           isAssistant
-            ? "border border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink)]"
-            : "bg-[rgba(151,244,243,0.1)] text-[var(--studio-ink)]",
+            ? "border border-[var(--studio-line)] bg-[color:var(--home-surface)] text-[var(--studio-ink)]"
+            : "bg-[color:var(--home-accent-soft)] text-[var(--studio-ink)]",
         ].join(" ")}
       >
         {content}
@@ -43,7 +43,7 @@ export function ChatMessage({
       {isAssistant ? null : (
         <span
           aria-hidden
-          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink-soft)]"
+          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-[color:var(--home-surface)] text-[var(--studio-ink-soft)]"
         >
           <User className="h-4 w-4" />
         </span>
