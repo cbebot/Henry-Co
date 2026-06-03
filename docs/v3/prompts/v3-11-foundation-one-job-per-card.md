@@ -1,27 +1,20 @@
 # V3-11 — Foundation: One Job per Card
 
-**Pass ID:** V3-11
-**Phase:** B (FOUNDATION LOCK)
-**Pillar:** P12 (Global)
-**Dependencies:** V3-04 (deep links)
-**Effort:** M (1–2 weeks)
-**Parallel-safe:** NO (depends on V3-04)
-**Owner gate:** None
-**Risk class:** None
+> **STATUS: SHIPPED — PR #167.** Closed and certified inside Foundation Lock (V3-12, #168). The card inventory was taken, every card classified A/B/C/D, decorative-only surfaces removed, and the `nextStep` module contract landed. Treat this as the elevated canonical spec and the standing regression contract — V3-94 re-runs the card audit, and V3-34 (personalized home) inherits the `nextStep` field. Residual hardening is named at the end, not reopened as scope.
+
+**Pass ID:** V3-11  ·  **Phase:** B (Foundation Lock)  ·  **Pillar:** P12 (Global)
+**Dependencies:** V3-04 (deep links)  ·  **Effort:** M  ·  **Parallel-safe:** N
+**Owner gate:** none  ·  **Risk class:** —
 
 ---
 
 ## Role
 
-You are the V3 Foundation engineer for HenryCo. You execute exactly this one pass, then stop and report.
-
-The owner's literal question, verbatim:
+You are the V3 Foundation engineer for Henry Onyx. You execute exactly this one pass, then stop and report. You answer the owner's literal question for every card, button, and summary module across all 10 web apps + the account/staff shells:
 
 > "For every card, button, and summary module, ask: Does this open the exact next step, or does it just show more text? That one question will save you months of cleanup."
 
-This pass answers that question for every card, button, and summary module across all 10 web apps + 2 mobile apps. Decorative-only surfaces get demoted or removed. Cards that look actionable but lead nowhere get fixed or removed.
-
----
+Every card resolves to one verdict: it opens the exact next step, or it earns a clear informational purpose, or it is removed. The line you must not cross: you change card *behaviour and information architecture*, never the V3 PASS 21 editorial design or PASS 25 typography; and you never delete a user's only access path to a function.
 
 ## Project
 
@@ -30,201 +23,113 @@ This pass answers that question for every card, button, and summary module acros
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
 | Working branch | `v3/11-one-job-per-card` |
-| Deploy | Vercel (10 web projects) |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
----
+## Audit summary
 
-## Audit summary (lifted from AUDIT-BASELINE.md cross-cutting)
-
-> ### Cross-cutting foundation issues
-> - **Every-card-one-job audit:** not yet done — this is the owner's literal question.
-
-This pass IS the audit + the fix.
-
----
+The every-card-one-job audit had never been done — it is the owner's literal question and the last behavioural sweep before Foundation Lock sign-off. Across the apps, surfaces shipped a mix of: cards that open the exact next step (good), cards that bounce to a generic listing instead of the specific action, information-only cards (some critical, some nice-to-have, some purely decorative), and cards that *look* actionable but do nothing. The `@henryco/ui` card primitives (`HenryCoHeroCard`, `HenryCoTactileCard`) and the `@henryco/dashboard-modules-*` exports render these surfaces but carried no machine-readable notion of "the next step this card opens." This pass inventories every card, classifies it, fixes or removes per classification, and extends the module contract with a typed `nextStep`. It runs after V3-04 so every card's "exact next step" target is validated against the deep-link inventory, and after V3-09 so mobile card touch behaviour is the standardised version.
 
 ## Mandatory scope
 
-### S1 — Inventory every "card-like" surface
-
-Build `scripts/v3/card-inventory.mjs`:
-- Walks `apps/` for components named `*Card.tsx`, `*Tile.tsx`, `*Module.tsx`, `*Panel.tsx`, `*Summary.tsx`.
-- Walks for JSX with `role="article"` or class names matching `card-*`, `tile-*`.
-- Walks for `dashboard-modules-*` component exports.
-- For each match, identify:
-  - Source file:line.
-  - Does the card have an `href` or `onClick` that performs a navigation OR a mutation?
-  - If yes: what is the "exact next step" the card opens?
-  - If no: what does the card display, and is it useful?
-
-Output `docs/v3/one-job-per-card-inventory.md`.
+### S1 — Inventory every card-like surface
+Ship `scripts/v3/card-inventory.mjs` that walks `apps/` for components named `*Card.tsx`, `*Tile.tsx`, `*Module.tsx`, `*Panel.tsx`, `*Summary.tsx`, JSX with `role="article"` or class names matching `card-*` / `tile-*`, and `dashboard-modules-*` exports. For each match record: source `file:line`; whether it has an `href`/`onClick` that navigates or mutates; if yes, the exact next step it opens; if no, what it displays and whether that is useful. Output `docs/v3/one-job-per-card-inventory.md`.
 
 ### S2 — Classify each card
-
-Per the owner's question, every card is one of:
-
-**A — Opens the exact next step.** Good. Verify the next-step target is correct + alive (cross-check V3-04 deep-link inventory + V3-06 dead-link sweep).
-
-**B — Opens a generic listing or hub page, not the exact next step.** Demote — make the card a richer summary that includes the next-step CTA, OR add a primary action on the card that opens the exact next step.
-
-**C — Shows information only; no action.** Decide:
-- **C1** — information is critical (e.g., outstanding balance, urgent KYC needed) — keep as informational but PAIR with the action it implies (e.g., "Pay now" CTA).
-- **C2** — information is nice-to-have (e.g., "Trending in marketplace this week") — keep but lower visual priority.
-- **C3** — information is decorative (e.g., "Welcome to HenryCo" greeting card on a recurring visit) — REMOVE.
-
-**D — Looks actionable but does nothing.** REMOVE or FIX.
+- **A — opens the exact next step.** Good. Verify the target is correct + alive (cross-check the V3-04 deep-link inventory and V3-06 dead-link sweep).
+- **B — opens a generic listing/hub, not the exact next step.** Promote to A: add a primary action that opens the exact next step, or rewrite as a summary panel with an explicit next-step CTA.
+- **C — information only, no action.** Decide:
+  - **C1** — critical (outstanding balance, urgent KYC) → keep, but pair with the action it implies (e.g. "Pay now").
+  - **C2** — nice-to-have ("trending this week") → keep at lower visual priority.
+  - **C3** — decorative (e.g. a recurring "Welcome to Henry Onyx" greeting on a return visit) → **remove.**
+- **D — looks actionable, does nothing.** Fix the underlying action or remove.
 
 ### S3 — Apply fixes per classification
-
-For each B card: add the missing action OR rewrite the card as a summary panel with explicit next-step CTA.
-
-For each C3 card: remove.
-
-For each D card: fix the underlying action OR remove the card.
-
-For each A card: verify the next-step target. No action needed if verified.
+Every B → A or a summary panel with explicit CTA. Every C3 → removed. Every D → fixed or removed. Every A → target verified, no further change. Record each disposition in the inventory doc.
 
 ### S4 — Buttons audit
-
-Every `<button>` and `<Button>` in shipped code:
-- Has an `onClick` or is `type="submit"` inside a form.
-- Has accessible label.
-- Performs an action that the user can verify happened (toast, navigation, mutation result).
-
-Audit + fix. Buttons that "do nothing visible" lose user trust.
+Every `<button>` / `<Button>` in shipped code has an `onClick` or is `type="submit"` inside a form, has an accessible label, and produces a user-verifiable result (toast, navigation, or visible mutation result). Buttons that do nothing visible erode trust — fix or remove.
 
 ### S5 — Summary modules audit
-
-Every "summary" component (financial summary, account summary, activity summary):
-- Pulls real data (verified in V3-08 already).
-- Has a clear "view all" or "manage" CTA that opens the relevant detail surface.
-- Avoids redundancy with adjacent modules.
+Every summary component (financial, account, activity) pulls real data (already truthed in V3-08), exposes a clear "View all" / "Manage" CTA into the relevant detail surface, and avoids redundancy with adjacent modules.
 
 ### S6 — Cross-card consistency
+Standardise per division: whole-card click target vs specific CTA, hover state, and action affordance (chevron / button). Where divisions diverge wildly, converge on the cleanest pattern. The PASS 21 editorial rebuild + PASS 25 typography are the fixed baseline this audit respects.
 
-Cards across divisions should follow consistent patterns:
-- Click target — entire card OR specific CTA (consistent per division).
-- Visual hover state — consistent.
-- Action affordance (chevron, button, etc.) — consistent.
+### S7 — Card-density review
+Per `feedback_no_giant_hero_text.md` (premium = capability evidence above the fold, not headline size): each app's home/dashboard/landing shows real capability evidence above the fold (KPIs, real items, verified counts), is neither sparse on desktop nor crowded on mobile, and respects the V3-08 hidden-when-empty pattern.
 
-If divisions have wildly different patterns, standardize on the cleanest one. The V3 PASS 21 editorial rebuild + PASS 25 typography establish the baseline; this audit ensures every card respects it.
+### S8 — Mobile card touch behaviour
+Every card on mobile: the whole card is tappable (not a tiny inner button), a visible active/press state on tap, and swipe gestures consistent where applicable — all per the standardised `@henryco/ui/mobile` behaviour from V3-09.
 
-### S7 — Card density review
+### S9 — `nextStep` module contract + telemetry
+Extend the dashboard module type with `nextStep?: { href: string; label: string }` (`packages/dashboard-shell/src/module-contract.ts`) so "the exact next step" becomes machine-readable and V3-34 can reason over it. Emit via `@henryco/observability` `emitEvent({ name, classification, outcome, payload })`:
+- `henry.ui.card.rendered` (payload `{ card_id, classification, division }`)
+- `henry.ui.card.clicked` (payload `{ card_id, target }`)
+- `henry.ui.card.demoted` (payload `{ card_id, from, to }` — track demotions/removals during this pass)
 
-Some surfaces have too many small cards; some have too few large ones. Per owner's feedback in `feedback_no_giant_hero_text.md` (premium = capability evidence above the fold, not headline size), card density should:
-- Show capability evidence above the fold (KPIs, real items, verified counts).
-- Not feel sparse on desktop OR crowded on mobile.
-- Respect the V3-08 hidden-when-empty pattern.
-
-Audit each app's home / dashboard / landing for density health.
-
-### S8 — Mobile card touch behavior
-
-Every card on mobile:
-- Entire card is tappable (not just a tiny button inside it).
-- Active state visible on tap (subtle press feedback).
-- Swipe gestures consistent where applicable.
-
-Cross-reference V3-09 mobile consistency findings.
-
-### S9 — Telemetry
-
-Events:
-- `henry.ui.card.rendered` (card_id, classification, division)
-- `henry.ui.card.clicked` (card_id, target)
-- `henry.ui.card.demoted` (during this pass — track which cards were demoted/removed)
-
-After deployment, owner-workspace tile shows "Cards by click-through rate" — low click cards may indicate poor next-step alignment.
-
----
+After deployment, an owner-workspace tile shows "Cards by click-through rate" so low-click cards surface poor next-step alignment.
 
 ## Out of scope
-
-- New card designs (preserve V3 PASS 25 typography + V3 PASS 21 editorial).
-- A/B testing card variants (V3-91).
-- Personalized card ordering (V3-34).
-
----
+- New card designs (PASS 25 typography + PASS 21 editorial preserved).
+- A/B testing card variants → V3-91.
+- Personalized card ordering → V3-34 (which consumes the `nextStep` contract shipped here).
 
 ## Dependencies
-
-- V3-04 (deep links) — every card's "exact next step" target verified against the deep-link inventory.
-
-Blocks:
-- V3-12 (foundation lock acceptance) — this is one of the final waves before sign-off.
-- V3-94 (V3 integration test) — re-runs the audit.
-
----
+V3-04 (deep links) — every card's "exact next step" target validated against the deep-link inventory. Blocks: V3-12 (Foundation Lock acceptance — this is a final wave before sign-off) and V3-94 (re-runs the audit).
 
 ## Inheritance
-
-- V3 PASS 21 editorial rebuild outputs — preserve premium hero treatment.
-- V3 PASS 25 typography refinements — preserve.
+- PASS 21 editorial rebuild + PASS 25 typography — preserve.
 - `@henryco/ui` card primitives (`HenryCoHeroCard`, `HenryCoTactileCard`) — extend.
-- `@henryco/dashboard-modules-*` — extend module contract with `nextStep` field per module.
-
----
+- `@henryco/dashboard-modules-*` — extend the module contract with `nextStep`.
+- `@henryco/observability` `emitEvent` taxonomy.
 
 ## Implementation requirements
 
 ### Files
-
 - `scripts/v3/card-inventory.mjs` (new)
-- `docs/v3/one-job-per-card-inventory.md` (new — output + classifications)
-- Per-app fixes for B/C3/D classified cards
-- `packages/dashboard-shell/src/module-contract.ts` — add `nextStep?: { href: string; label: string }` to module type
-- `apps/hub/app/owner/(command)/dashboard/card-clickthrough-tile.tsx` (new per S9)
+- `docs/v3/one-job-per-card-inventory.md` (new — inventory + classifications + dispositions)
+- Per-app fixes for B / C3 / D cards.
+- `packages/dashboard-shell/src/module-contract.ts` — add `nextStep?: { href: string; label: string }`.
+- Owner card-clickthrough tile under the hub owner workspace.
+- No migrations.
 
-### No migrations.
+### Trust / safety / compliance
+Removing a card never removes the user's only access to a function — verify every "View all" / "Manage" path reaches the page another way before deleting. Tighter UI is itself an anti-clone advantage (harder to copy, reads more premium). No behavioural change to payment cards beyond ensuring their CTA opens the correct money flow.
 
-### Telemetry events wired in `@henryco/observability`.
+### Mobile + desktop parity
+Mobile card behaviour verified per S8 against the V3-09 standard; desktop hover/click parity preserved.
 
----
+### i18n
+All card labels and `nextStep.label` strings via `@henryco/i18n` — the existing per-surface namespaces (e.g. `surface:dashboard`, `surface:account`). The C3 example greeting "Welcome to Henry Onyx" is itself a localized string resolved from copy + `@henryco/config` brand, never hardcoded. No hardcoded user-facing strings.
 
-## Trust / safety / compliance
-
-- Removing cards never removes the user's only access to a function — verify every "View all" or "Manage" link reaches the page another way.
-- ANTI-CLONE: tighter UI is harder to clone visually (and feels more premium).
-
-## Mobile + desktop parity
-
-- Cross-reference V3-09 mobile audit. Mobile card behavior verified per S8.
-
-## i18n
-
-- Card labels via `@henryco/i18n`.
-
----
+### Brand & design system
+Brand strings resolve from `@henryco/config` (`COMPANY.group.name = "Henry Onyx"`); zero hardcoded domains — card `href`s go through `henryDomain()` / `henryWebRoot()` / `getAccountUrl()`. Locked `--site-*` / `--accent` tokens + Fraunces where editorial; light + dark; mobile + desktop; CLS ≈ 0; contrast not regressed.
 
 ## Validation gates
-
-1. Standard CI.
-2. **Inventory complete** — every card classified A/B/C/D.
-3. **Smoke** — owner walks 10 representative surfaces; confirms each card has a clear next step OR a clear informational purpose.
-4. **No D cards remain** — script enforces.
+1. Standard CI: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`.
+2. Inventory complete — every card classified A/B/C/D in `one-job-per-card-inventory.md`.
+3. `card-inventory.mjs` reports **zero D cards remaining**.
+4. Owner smoke: walk 10 representative surfaces; each card has a clear next step or a clear informational purpose.
+5. Telemetry: the three `henry.ui.card.*` events observed emitting; clickthrough tile renders.
+6. `pnpm a11y:contrast` not regressed; CLS ≈ 0.
 
 ## Deployment gate
-
-- All gates pass.
-- Owner reviews 10 surface screenshots.
-- 48-hour soak.
+All gates green. Owner reviews 10 surface screenshots and confirms the next-step verdict per card. 48-hour soak.
 
 ## Final report contract
-
-`.codex-temp/v3-11-one-job-per-card/report.md` with the standard 9 sections + full inventory + classification statistics + before/after screenshots of 10+ representative surfaces.
-
----
+`.codex-temp/v3-11-one-job-per-card/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion), plus the full inventory, classification statistics (A/B/C1/C2/C3/D counts), and before/after screenshots of 10+ representative surfaces.
 
 ## Self-verification
-
-- [ ] Inventory complete.
-- [ ] Every B card upgraded to A or demoted to C with paired action.
-- [ ] Every C3 card removed.
-- [ ] Every D card fixed or removed.
-- [ ] Buttons audit complete.
-- [ ] Cross-card consistency standardized per division.
-- [ ] Mobile card behavior verified.
-- [ ] 3 new telemetry events emitting.
-- [ ] Owner card-clickthrough tile rendering.
-- [ ] Report written. Hand-off named: V3-12 (foundation lock acceptance).
+- [ ] S1: `card-inventory.mjs` shipped; `one-job-per-card-inventory.md` lists every card with `file:line`.
+- [ ] S2: every card classified A/B/C1/C2/C3/D.
+- [ ] S3: every B promoted to A or summary-with-CTA; every C3 removed; every D fixed or removed.
+- [ ] S4: buttons audit complete — every button has an accessible label and a verifiable result.
+- [ ] S5: every summary module pulls real data and exposes a "View all" / "Manage" CTA.
+- [ ] S6: cross-card consistency standardised per division.
+- [ ] S7: card density healthy above the fold on desktop and mobile.
+- [ ] S8: mobile card touch behaviour matches the V3-09 standard.
+- [ ] S9: `nextStep` added to the module contract; three `henry.ui.card.*` events emit; clickthrough tile renders.
+- [ ] Brand/domain/i18n/token hard rules satisfied; no user lost their only access path; report written and hands off to V3-12.

@@ -1,23 +1,15 @@
-# V3-07 — Foundation: Hardcoded Text Cleanup
+# V3-07 — Foundation Lock: Hardcoded Text Cleanup
 
-**Pass ID:** V3-07
-**Phase:** B (FOUNDATION LOCK)
-**Pillar:** P12 (Global)
-**Dependencies:** Phase A audit
-**Effort:** M (1–2 weeks)
-**Parallel-safe:** YES
-**Owner gate:** None
-**Risk class:** None
+> **STATUS: SHIPPED — PR #134.** This pass is merged and certified on `main`. This document is the elevated canonical spec and closure record. The `## Mandatory scope` sections describe the i18n-gap closure, the `@henryco/config` domain helper, the hardcoded-text scanner, and the strict CI gate that LANDED. Two explicit follow-ups remain and are owned by sibling passes: **V3-07c** finishes the remaining ~156 `henrycogroup.com` literal replacements, and **V3-07b** closes operator-surface i18n GAPs. Do **not** re-implement the scanner or the helper — they exist; close residual GAPs against them.
+
+**Pass ID:** V3-07  ·  **Phase:** B (Foundation Lock)  ·  **Pillar:** P12 (Global)
+**Dependencies:** —  ·  **Effort:** M  ·  **Parallel-safe:** Y
+**Owner gate:** none  ·  **Risk class:** —
 
 ---
 
 ## Role
-
-You are the V3 Foundation engineer for HenryCo. You execute exactly this one pass, then stop and report.
-
-This pass closes the **hardcoded text cleanup** sub-bar. The i18n A1 wave caught many; this pass closes the remaining gaps, retires the ~30 hardcoded `henrycogroup.com` literals, and reaches the bar where no further hardcoded user-visible text exists in app or package code.
-
----
+You are the V3 Foundation engineer for Henry Onyx. You execute exactly this one pass, then stop and report. This pass closes the hardcoded-text sub-bar of the Foundation Lock: it drives the open `docs/v3/i18n-gaps/` work units to zero, retires hardcoded `henrycogroup.com` literals behind the `@henryco/config` domain helper, sweeps remaining JSX/toast/error/email string-literals into `@henryco/i18n` surface labels, and installs a strict CI gate so no new hardcoded user-facing text can ship. The line you must not cross: this is a *string-extraction and domain-helper* pass — you never add a new locale, never fork `@henryco/i18n`, and never touch `packages/search-ui/` (owner-reserved, quality reference only).
 
 ## Project
 
@@ -26,191 +18,128 @@ This pass closes the **hardcoded text cleanup** sub-bar. The i18n A1 wave caught
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
 | Working branch | `v3/07-hardcoded-text-cleanup` |
-| Deploy | Vercel (10 web projects) |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
----
+## Audit summary
+The Phase-A baseline (`docs/v3/AUDIT-BASELINE.md` §3.7) recorded that the i18n A1 wave had extracted the bulk of hardcoded strings into surface labels, but left an open `docs/v3/i18n-gaps/` directory (`extra-label-gaps.json`, `extra-label-universe.json`, `module-gaps.json`, `summary.json`, `work-units.json`) and ~30 hardcoded `henrycogroup.com` literals in Care/Account code. Memory `project_henryco_i18n_architecture.md` is the architecture of record: custom `@henryco/i18n`, **Pattern A** typed copy keys + **Pattern B** `translateSurfaceLabel` runtime DeepL fallback, 12 locales, passes 18/18B/18C closed. Memory `feedback_dashboard_search_engine_no_touch.md` reserves `packages/search-ui/` — never modify it.
 
-## Audit summary (lifted from AUDIT-BASELINE.md §3.7 + memory)
+The gap this pass closed: a single ergonomic domain helper, a strict scanner with an allow-list, and a CI gate. The shipped artifacts are real and must be reused: `packages/config/domain.ts` exports `henryDomain(division, path)` / `henryWebRoot(path)` / `henrySubdomain(host, path)` / `henryDomainHost(division)` (thin, env-aware wrappers over `COMPANY` in `company.ts`, honouring `NEXT_PUBLIC_BASE_DOMAIN` and Expo `EXPO_PUBLIC_HENRYCO_ENV`); `scripts/v3/hardcoded-text-scan.mjs` is the scanner (exposed as `pnpm i18n:scan`); `docs/v3/i18n-gaps/exempt.json` is the allow-list consumed by the scanner; `docs/v3/i18n-gaps/hardcoded-scan-<datestamp>.json` snapshots are the baselines (latest `hardcoded-scan-2026-05-27.json`); and `pnpm i18n:check` / `i18n:check:strict` (`scripts/i18n-check.mjs`) is the wired CI gate.
 
-> ### 3.7 Hardcoded text
-> - **Solid (after V3 PASS 21):** massive i18n A1 wave extracted hardcoded strings to surface labels
-> - **Gap:** i18n-gaps/ directory contains unfinished work — extra-label-gaps.json, module-gaps.json, summary.json, work-units.json
-> - **Gap (V3-BACKLOG Q1):** hardcoded `henrycogroup.com` literals (~30 in care/account)
-
-From memory `project_henryco_i18n_architecture.md`: Custom @henryco/i18n + Pattern A typed copy + Pattern B `translateSurfaceLabel` runtime DeepL; passes 18/18B/18C closed; remaining gaps before any new "translate everything" pass.
-
-From memory `feedback_dashboard_search_engine_no_touch.md`: Owner reserves `packages/search-ui/` — quality reference only, never modify. Respect this — do NOT touch search-ui code in this pass.
-
----
+> **Brand note (post-2026-06-02 identity unification):** `packages/config/domain.ts` still carries a stale `Henry & Co.` *code comment*. Code comments are internal, not user-facing — leave the working code alone, but any prompt-, doc-, or user-facing string this pass produces uses the unified brand: **Henry Onyx** (user-facing) / **Henry Onyx Limited** (legal). When the comment is next edited for another reason, correct it to "Henry Onyx"; do not churn the file solely for the comment.
 
 ## Mandatory scope
 
-### S1 — Close `docs/v3/i18n-gaps/` work units
+### S1 — Close every open `docs/v3/i18n-gaps/` work unit (SHIPPED)
+Read the gap manifests — `extra-label-gaps.json` (labels referenced in code but undefined in any locale module), `module-gaps.json` (copy modules missing per-locale keys), `summary.json` (aggregate counts), `work-units.json` (discrete units), and `extra-label-universe.json` (the full referenced-label set). For every open unit: add the missing label to its surface module, wire any referencing code, and guarantee at minimum an `en-US` key (Pattern B runtime DeepL fills the other 11 locales). Do **not** add new locales — the platform is fixed at 12.
 
-Read the existing gap manifests:
-- `docs/v3/i18n-gaps/extra-label-gaps.json` — labels referenced in code but not defined in any locale module
-- `docs/v3/i18n-gaps/module-gaps.json` — copy modules missing per-locale keys
-- `docs/v3/i18n-gaps/summary.json` — aggregate counts
-- `docs/v3/i18n-gaps/work-units.json` — discrete work units the executor consumed
+### S2 — Retire `henrycogroup.com` literals behind the domain helper (SHIPPED here; tail in V3-07c)
+The `@henryco/config` domain helper (`packages/config/domain.ts`) is the canonical replacement surface:
+- `henryDomain('care')` → `https://care.henrycogroup.com` (env-resolved); `henryDomain('care', '/book')` appends a path.
+- `henryWebRoot()` → the bare base domain; `henryWebRoot('/terms')` appends.
+- `henrySubdomain('hq')` → non-division hosts (`hq.`, `staff.`, `files.`, `status.`).
+- `henryDomainHost('care')` → bare host for JSON-LD `url` fields.
 
-For every open work unit:
-- Add the missing label to its surface module.
-- Wire any code referencing the label.
-- Ensure all 12 locales have at minimum an en-US key (runtime DeepL fills the rest per Pattern B).
+This pass replaced the ~30 literals named in the baseline (Care/Account). The remaining ~156 literals across `apps/` + `packages/` (excl. `packages/search-ui/`) are a mechanical sweep owned by **V3-07c** (henrycogroup-domain-sweep) — it uses the same helper. The literal `henrycogroup.com` is forbidden in shipped code; V3-07c is what drives the count to zero.
 
-Do NOT introduce new locales (i18n is 12-locale per recent commit; foundation only).
+### S3 — Hardcoded-string scanner (SHIPPED)
+`scripts/v3/hardcoded-text-scan.mjs` walks `apps/` and `packages/` (excluding `node_modules`, `dist`, `.next`, and `packages/search-ui` per the owner reservation). It flags JSX text content (`<div>text</div>`), user-visible JSX attributes (`title`, `aria-label`, `placeholder`, `alt`), and toast/alert messages, classifying each:
+- **OK** — already a surface-label reference (`<T label="surface:…"/>` or `t('…')`).
+- **GAP** — hardcoded user-visible text.
+- **EXEMPT** — dev-only label (`data-testid`, `key`, internal constant), per `docs/v3/i18n-gaps/exempt.json`.
+- **AMBIGUOUS** — needs manual review.
 
-### S2 — Retire `henrycogroup.com` hardcoded literals
+Output snapshots land at `docs/v3/i18n-gaps/hardcoded-scan-<datestamp>.json`.
 
-Per V3-BACKLOG Q1: ~30 literal `henrycogroup.com` strings in care/account code.
+### S4 — Fix every GAP (SHIPPED)
+For each GAP: add the label to the appropriate `@henryco/i18n` surface module, replace the hardcoded JSX with `<T label="surface:…"/>` (or `t()`), and verify the `en-US` key resolves. The brand strings in any extracted copy resolve from `@henryco/config` (Henry Onyx), never hardcoded.
 
-Implementation:
-- New helper `@henryco/config/domain.ts` (extend if exists):
-  - `henryDomain(division: HenryDivision)` → returns `https://<division>.henrycogroup.com` per env
-  - `henryWebRoot()` → returns `https://henrycogroup.com` per env
-- Grep for `'henrycogroup.com'` and `"henrycogroup.com"` across `apps/` + `packages/`.
-- Replace each literal with `henryDomain(division)` or `henryWebRoot()` call.
-- Verify env-aware behavior: `EXPO_PUBLIC_HENRYCO_ENV=staging` should return staging domains where applicable.
+### S5 — Toast / alert message audit (SHIPPED)
+Every `toast.success(…)`, `toast.error(…)`, `alert(…)`, `<Alert>…</Alert>`: extracted to a surface label, made user-friendly (no raw API error strings leaked to users).
 
-### S3 — Scan for remaining string-literals
+### S6 — Error-boundary copy (SHIPPED)
+Every `error.tsx` and error-boundary fallback (the canonical `@henryco/observability` error surface): copy extracted to a surface label and given a concrete recovery action.
 
-Build `scripts/v3/hardcoded-text-scan.mjs`:
-- Walks `apps/` and `packages/` (excluding `node_modules`, `dist`, `.next`, `packages/search-ui` per owner's reservation).
-- Finds JSX text content (`<div>text</div>`), JSX attribute strings on user-visible props (`title`, `aria-label`, `placeholder`, `alt`), and Toast/Alert messages.
-- Classifies:
-  - **OK** — string is already a surface-label reference (`<T label="surface:..." />` or `t('...')`)
-  - **GAP** — string is hardcoded user-visible text
-  - **EXEMPT** — string is a developer label (e.g., `data-testid`, `key`, internal constants)
-  - **AMBIGUOUS** — could be either; needs manual review
+### S7 — Email + notification template copy (SHIPPED)
+`@henryco/email` templates and `@henryco/notifications` payloads: subject/body extracted, localized per recipient's preferred locale, sender name + subject branded per division from `@henryco/config` (the `brand-emails.ts` registry) — **Henry Onyx <Division>**, legal entity **Henry Onyx Limited** where a legal name is required.
 
-Output `docs/v3/i18n-gaps/hardcoded-scan-<datestamp>.json`.
+### S8 — Strict CI gate (SHIPPED)
+`pnpm i18n:check:strict` (`scripts/i18n-check.mjs --strict`) runs the scan in strict mode and fails CI when new hardcoded JSX/attribute/toast text appears. `docs/v3/i18n-gaps/exempt.json` is the justified allow-list (brand idioms, dev-only labels, vendor-mandated text); `packages/search-ui/` is hard-excluded. The strict baseline is the dated `hardcoded-scan-*.json` snapshot (refreshed when the gate legitimately moves — e.g. commit `bf9d8c58` refreshed it to 2026-05-27).
 
-### S4 — Fix all GAP entries
+### S9 — Telemetry (SHIPPED)
+- `henry.i18n.label.missing_at_runtime` — `{ labelKey, locale, fallbackUsed }` (named per `henry.<domain>.<noun>.<verb>`).
 
-For each GAP from S3:
-- Add label to the appropriate surface copy module.
-- Replace the hardcoded JSX with a `<T label="..." />` or equivalent.
-- Verify the en-US key resolves correctly.
-
-### S5 — Toast / Alert message audit
-
-Every `toast.success(...)`, `toast.error(...)`, `alert(...)`, `<Alert>...</Alert>` message:
-- Audit for hardcoded text.
-- Replace with surface label.
-- Ensure error messages are user-friendly (not raw API errors).
-
-### S6 — Error boundary copy
-
-Every `error.tsx` and error boundary fallback:
-- Audit for hardcoded copy.
-- Replace with surface label.
-- Ensure copy is helpful (provides a recovery action).
-
-### S7 — Email + notification template copy
-
-`@henryco/email` templates and `@henryco/notifications` notification payloads:
-- Audit for hardcoded subject/body.
-- Localize per recipient's preferred locale.
-- Ensure email-from name + subject use the appropriate sender per division.
-
-### S8 — CI gate
-
-Extend the existing `pnpm i18n:check` script to also run S3's scan in strict mode:
-- Fails CI if new hardcoded JSX text is introduced.
-- Allows whitelisting exceptions in `docs/v3/i18n-gaps/exempt.json`.
-
-### S9 — Telemetry
-
-Event:
-- `henry.i18n.missing_label_at_runtime` (label_key, locale, fallback_used)
-
-Owner-workspace tile: "Translation health" — daily missing-label count + DeepL fallback usage.
-
----
+Feeds the owner-workspace "Translation health" tile: daily missing-label count + DeepL fallback usage.
 
 ## Out of scope
-
-- New locale additions (12 locales preserved).
-- Locale switcher UI changes (recent commit `90cc65ea` shipped the 12-locale selector).
-- Pattern B runtime DeepL translation engine changes.
-- `packages/search-ui/` modifications (owner reservation per memory).
-
----
+- **New locales** — the platform is fixed at 12; this pass never adds one.
+- **Locale-switcher UI** — already shipped (12-locale selector, commit `90cc65ea`).
+- **Pattern B runtime DeepL engine** changes — not modified here.
+- **`packages/search-ui/`** — owner-reserved; never touched.
+- **The remaining ~156 `henrycogroup.com` literals** — **V3-07c** (mechanical sweep with the same helper).
+- **~1,305 operator-surface i18n GAPs** (staff dashboards, admin workspaces, server messages, emails, PDFs, structured data, A11y) — **V3-07b** (operator-surface-i18n, owner-gated D17).
 
 ## Dependencies
-
-- Phase A audit complete.
-
-Blocks:
-- V3-11 (one-job-per-card) — cleaner copy makes the per-card audit higher signal.
-- V3-94 (V3 integration test) — re-runs the i18n-check gate.
-
----
+- **Deps:** none (Phase B wave-1 parallel pass).
+- **Blocks:** V3-11 (one-job-per-card) — cleaner copy makes the per-card audit higher-signal. V3-94 (closure integration test) — re-runs the i18n-check gate, including the V3-07b/V3-07c hardening output.
 
 ## Inheritance
-
-- `@henryco/i18n` — extend; do not fork.
-- `@henryco/config` — extend with domain helper.
-- Existing CI i18n-check job (recent commit `738b03ec` wired pnpm i18n:check to GitHub Actions).
-- `docs/v3/i18n-gaps/` directory — close + update.
-
----
+- `@henryco/i18n` — extend (Pattern A typed copy + Pattern B runtime DeepL); never fork.
+- `@henryco/config` — the domain helper (`domain.ts`) + brand registry (`company.ts`) + email-sender registry (`brand-emails.ts`).
+- `scripts/i18n-check.mjs` (the wired CI gate, commit `738b03ec`) + `scripts/v3/hardcoded-text-scan.mjs` (the scanner) + `docs/v3/i18n-gaps/` (the gap directory + exempt list).
 
 ## Implementation requirements
 
 ### Files
+- `packages/config/domain.ts` (the domain helper — shipped).
+- `scripts/v3/hardcoded-text-scan.mjs` (the scanner — shipped).
+- `docs/v3/i18n-gaps/hardcoded-scan-<datestamp>.json` (dated snapshots — outputs).
+- `docs/v3/i18n-gaps/exempt.json` (justified allow-list — shipped).
+- Surface-copy module updates in `@henryco/i18n` per S1 + S4.
+- Per-app GAP fixes (excl. `packages/search-ui/`).
+- CI extension wiring strict mode into `i18n:check`.
+- **No migrations. No RLS changes. No env changes** (the helper is env-aware via existing `NEXT_PUBLIC_BASE_DOMAIN` / `EXPO_PUBLIC_HENRYCO_ENV`).
 
-- `scripts/v3/hardcoded-text-scan.mjs` (new)
-- `packages/config/src/domain.ts` (new helper)
-- `docs/v3/i18n-gaps/hardcoded-scan-<datestamp>.json` (new — output)
-- `docs/v3/i18n-gaps/exempt.json` (new — explicit exceptions)
-- Updates to surface copy modules in `@henryco/i18n` per S1 + S4
-- Per-app fixes for each GAP entry
-- CI extension to fail on new hardcoded text
+### Trust / safety / compliance
+- Never localize dev-only labels (`data-testid`, internal keys) — they belong in `exempt.json`.
+- Email subject lines respect the sender-identity policy and the **Henry Onyx Limited** legal entity where a legal name is required (CAC/Paystack compliance).
+- ANTI-CLONE: localized public strings are public by definition — no protection concern.
+- Payment-surface copy is style/label-only here: extracting a payment screen's button label to i18n must not alter any money state, status, or amount.
 
----
+### Mobile + desktop parity
+- The Expo super-app uses its own i18n stack; verify the same surface labels resolve there. Web mobile + desktop both verified for any layout shift introduced by longer translated strings.
 
-## Trust / safety / compliance
+### i18n
+- This entire pass **is** the i18n cleanup. Namespaces follow `surface:<area>` (e.g. `surface:payments`, `surface:dashboard`, `surface:loading`, `surface:errors`, `surface:email`). Every extracted label has an `en-US` key; Pattern B fills the other 11 locales at runtime. Labels, status text, errors, toasts, email subject/body all translated — zero hardcoded user-facing strings remain (verified by the strict gate).
 
-- Don't accidentally localize developer-only labels (data-testid, internal keys).
-- Email subject lines respect sender-identity policy.
-- ANTI-CLONE: localized strings are public anyway — no protection concern here.
-
-## Mobile + desktop parity
-
-- Mobile apps (Expo) use their own i18n stack — verify the same labels resolve.
-
-## i18n
-
-- This entire pass IS the i18n cleanup. Pattern A + Pattern B per memory.
-
----
+### Brand & design system
+- Brand strings resolve from `@henryco/config`: **Henry Onyx** (user-facing), division = "Henry Onyx <Division>", legal = **Henry Onyx Limited**. The retired "Henry & Co." (and "Henry Holdings", "HenryCo Group", etc.) must not appear in any extracted user-facing string. Code identifiers (`@henryco/*`, env prefixes) stay "HenryCo" — unchanged. Any UI touched uses locked tokens; CLS ≈ 0 even when translated strings are longer.
 
 ## Validation gates
-
-1. Standard CI + `pnpm i18n:check` extended scan.
-2. Scan output shows ZERO new GAPs.
-3. Live walk samples 10 pages per app + confirms no untranslated runtime fallbacks.
-4. Owner-workspace translation-health tile shows expected DeepL usage (not zero — Pattern B is active — but no surprises).
+1. **CI** — typecheck + lint + test + build green; `pnpm i18n:check:strict` passing.
+2. **Scan** — `pnpm i18n:scan` shows ZERO new GAPs vs the dated baseline; AMBIGUOUS entries resolved to OK/EXEMPT.
+3. **Gap closure** — every open unit in `docs/v3/i18n-gaps/` (work-units / module-gaps / extra-label-gaps) closed.
+4. **Domain literals** — the ~30 baseline `henrycogroup.com` literals retired via the helper (full-zero is V3-07c).
+5. **Live walk** — sample 10 pages per app; confirm no untranslated runtime fallbacks for `en-US` and that Pattern B fires (non-zero, no surprises) for other locales.
+6. **Translation-health tile** — owner-workspace tile shows expected DeepL usage from `henry.i18n.label.missing_at_runtime`.
 
 ## Deployment gate
-
-- All gates pass.
-- 48-hour soak.
+- All gates green; the strict CI gate active; the dated scan snapshot committed as the new baseline. Behaviour-neutral copy pass → a short soak watching the translation-health tile for unexpected missing-label spikes before declaring closed.
 
 ## Final report contract
-
-`.codex-temp/v3-07-hardcoded-text-cleanup/report.md` with the standard 9 sections + before/after scan counts + i18n-gaps closure summary.
-
----
+`.codex-temp/v3-07-hardcoded-text-cleanup/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion), plus before/after scan counts and the `i18n-gaps/` closure summary. Deferred items must name V3-07b and V3-07c explicitly.
 
 ## Self-verification
-
-- [ ] All open work units in `docs/v3/i18n-gaps/` closed.
-- [ ] ~30 hardcoded henrycogroup.com literals retired.
-- [ ] Scan returns ZERO new GAPs.
-- [ ] CI gate active.
-- [ ] Toast / alert / error / email copy audited.
-- [ ] Owner-workspace translation-health tile rendering.
-- [ ] Report written. Hand-off: foundation-lock close.
+- [ ] S1 — every open `docs/v3/i18n-gaps/` work unit closed; no new locale added.
+- [ ] S2 — the ~30 baseline `henrycogroup.com` literals retired via `@henryco/config` helpers; remaining ~156 handed to V3-07c.
+- [ ] S3 — `pnpm i18n:scan` produces a dated machine snapshot; `exempt.json` justified.
+- [ ] S4 — every GAP replaced with an `@henryco/i18n` surface label; `en-US` resolves.
+- [ ] S5 — toast/alert messages extracted and user-friendly.
+- [ ] S6 — error-boundary copy extracted with a recovery action.
+- [ ] S7 — email/notification copy localized; sender branded per division (Henry Onyx); legal name Henry Onyx Limited where required.
+- [ ] S8 — `pnpm i18n:check:strict` CI gate active and failing on new hardcoded text.
+- [ ] S9 — `henry.i18n.label.missing_at_runtime` emitting; translation-health tile rendering.
+- [ ] Brand: zero "Henry & Co." user-facing strings; code identifiers unchanged; `packages/search-ui/` untouched.
+- [ ] Report written; V3-07b + V3-07c named as the explicit residual passes. Hand-off: Foundation-Lock close (V3-12).

@@ -1,30 +1,18 @@
-# RELIABILITY-01 — Cloudinary Upload Reliability + Marketplace Payment Proof Fix
+# RELIABILITY-01 — Foundation hardening: Cloudinary Upload Reliability + Marketplace Payment-Proof Fix
 
-**Pass ID:** RELIABILITY-01
-**Phase:** Bug-fix + hardening
-**Pillar:** P12 (Global) + P2 (Marketplace ops)
-**Dependencies:** Wave B.1 closed (V3-10 observability primitives + degraded-side-effect pattern available)
-**Effort:** M (1–2 sessions)
-**Parallel-safe:** YES (no overlap with THEME-01 or DESIGN-01)
-**Owner gate:** None (bug fix); visual check on the new upload UI
-**Risk class:** None (no money/identity touched; just upload reliability)
+> **STATUS: SHIPPED — PR #141.** This prompt is the elevated canonical spec and historical record for the Cloudinary upload-reliability pass. The marketplace payment-proof bug is fixed (the `File` is now captured into a real upload state machine and POSTed to a live `/api/checkout/payment-proof` route — see `apps/marketplace/components/marketplace/checkout-experience.tsx` and `apps/marketplace/app/api/checkout/payment-proof/route.ts`), every Cloudinary touch-point was audited (`b800bdb7`), and the six `henry.uploads.cloudinary.*` / `henry.marketplace.payment_proof.*` events are registered in `packages/observability/src/events.ts`. Execute the **Residual / hardening follow-ups** section only; treat everything above it as DONE and verified.
+
+**Pass ID:** RELIABILITY-01  ·  **Phase:** B (Foundation Lock — hardening tail)  ·  **Pillar:** P12 (Global UX), P2 (Marketplace ops)
+**Dependencies:** V3-10 (#133 — observability primitives + degraded-side-effect pattern)  ·  **Effort:** M  ·  **Parallel-safe:** Y
+**Owner gate:** none (bug fix; visual check on the new upload UI)  ·  **Risk class:** — (no money/identity logic touched — proof is an artifact, not a charge)
 
 ---
 
 ## Role
+You are the V3 Reliability engineer for Henry Onyx. You execute exactly this one pass, then stop and report. You make every Cloudinary touch-point — upload, get, transform, delete, list — reliable, observable, and gracefully degrading, with the marketplace bank-transfer payment-proof upload as the headline fix. The line you do not cross: this is an upload-reliability and artifact-handling pass, not a payments pass — you persist a proof URL against the in-flight order, you never touch charge state, ledger, or money truth; that behaviour stays locked to the payment passes (V3-13 → V3-23).
 
-You are the V3 Reliability engineer. Owner directive, verbatim:
-
+The owner directive, verbatim, that motivated this pass:
 > "Marketplace payment proof is not uploading, fix it and all error of its kind. Any reference to Cloudinary must be uploading, getting etc properly. NO MORE FAILURES."
-
-**The bar:** every Cloudinary touch-point in the codebase is reliable (upload, get, delete, transform, list). Every failure path has a clear user-visible state (not a silent swallow). Every transient failure is retried with backoff. Every permanent failure surfaces a structured error the user can act on. No more "user uploads file → silently disappears".
-
-The conductor verified the **primary bug**:
-- `apps/marketplace/components/marketplace/checkout-experience.tsx:1027` has a file input whose `onChange` only captures `event.currentTarget.files?.[0]?.name` into a `proofName` STRING. The actual `File` object is never captured into a state, never sent in a FormData, never uploaded to Cloudinary. There is NO corresponding API route at `apps/marketplace/app/api/.../proof/route.ts`. The user uploads "PNG/JPG/WebP/PDF under 10 MB" expecting it to flow — but it evaporates the moment the form submits because the submit path doesn't include the file at all.
-
-This is THE bug to fix. After it's fixed, audit and harden every other Cloudinary touch-point against the same class of bug.
-
----
 
 ## Project
 
@@ -32,191 +20,78 @@ This is THE bug to fix. After it's fixed, audit and harden every other Cloudinar
 |---|---|
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
-| Working branch | `reliability/cloudinary-upload-hardening` |
-| Worktree (absolute) | `C:/Users/HP VICTUS/HenryCo/.worktree/reliability-cloudinary` |
-| Branch base | `main @ 0c33ffa2` (V3-05 merged; entire Wave B.1 on main) |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Working branch | `v3/reliability-01-cloudinary` (per pass) |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
-Use ABSOLUTE PATHS for every Read/Edit/Write/Grep/Glob call.
-For Bash, first call `cd "C:/Users/HP VICTUS/HenryCo/.worktree/reliability-cloudinary"`. CWD persists.
-For git, prefer `git -C "C:/Users/HP VICTUS/HenryCo/.worktree/reliability-cloudinary" <cmd>`.
-DO NOT touch the parent repo or any sibling worktree (THEME-01 + DESIGN-01 are running in parallel).
+## Audit summary
+There is no shared `@henryco/cloudinary` package — each app owns a `lib/cloudinary.ts` helper. The canonical reference is `apps/account/lib/cloudinary.ts` (the `uploadOwnedAsset` pattern) with `apps/account/app/api/wallet/funding/[requestId]/proof/route.ts` as the canonical consumer (`formData.get("proof")` → `uploadOwnedAsset()` → persist URL). Cloudinary touches ~25 files across `apps/account` (cloudinary lib + wallet funding proof + verify + avatar routes), `apps/hub` (owner upload), `apps/marketplace` (seller-application documents), `apps/jobs` (write + offer-letter), `apps/studio` (policies + asset-packs generate), `apps/learn` (uploads + assignment submit), `apps/property` (store), and `apps/logistics` (`PODCapture.tsx`).
 
----
+The headline bug: in `apps/marketplace/components/marketplace/checkout-experience.tsx` the bank-transfer proof `<input type="file">` only captured `event.currentTarget.files?.[0]?.name` into a `proofName` string — the actual `File` was never held in state, never put in FormData, never uploaded; and there was no API route to receive it. The user "uploaded" a PNG/JPG/WebP/PDF under 10 MB and it evaporated on submit. This pass closed that gap: the component now runs a real `proofState` upload state machine (`idle | validating | uploading | uploaded | error`), uploads the file to a new `apps/marketplace/app/api/checkout/payment-proof/route.ts` the moment it is selected, and attaches the returned `proof_url` / `proof_public_id` / `proof_name` to the order on "Place order". Card-sensitive data never enters the draft.
 
-## Reference architecture (conductor verified)
+## Mandatory scope (SHIPPED — recorded for the closure record)
+### S1 — Marketplace payment-proof fix (done, PR #141 `5eacb8e6`)
+`checkout-experience.tsx` holds the `File` in a `proofState` machine, validates client-side (≤ 10 MB, MIME ∈ {PNG, JPG, WebP, PDF}) with inline errors before submit, and POSTs to `/api/checkout/payment-proof` on selection (abortable via `proofAbortRef`). The new route: POST `multipart/form-data`; auth via `createSupabaseServer().auth.getUser()`; reads `formData.get("proof") as File | null`; calls the upload helper; persists Cloudinary URL + public ID against the in-flight order; returns `{ ok, url, public_id }` on success, `{ error }` (4xx) on validation failure, `{ error, degraded: ['cloudinary_unavailable'] }` (503) on transient Cloudinary failure per the V3-10 pattern; logs `[checkout/payment-proof]` via `@henryco/observability/logger`; emits `henry.marketplace.payment_proof.uploaded` / `…failed`. UI shows uploading → success (check + filename) → error (reason + retry).
+### S2 — Cloudinary touch-point audit + harden (done, `b800bdb7`)
+Every upload site verified for: file actually captured client-side (no name-only bugs), client + server size/MIME validation, auth before upload, retry-with-backoff on transient failure (3 tries, 250 ms / 1 s / 4 s), structured log on entry/success/failure, degraded-side-effect response on partial failure, visible loading/success/error states. Get/transform sites: fallback placeholder on missing/404 URL, no cloud_name/api_key in client code, transformations sized to render. Delete sites: idempotent re-delete, delete failure logs-and-continues without blocking the primary action, DB flag updates atomically with the delete attempt. Findings recorded in `docs/v3/cloudinary-audit-2026-05-23.md`.
+### S3 — Telemetry (done)
+Registered in `packages/observability/src/events.ts`: `henry.uploads.cloudinary.requested`, `…succeeded`, `…failed`, `…degraded`, `henry.marketplace.payment_proof.uploaded`, `henry.marketplace.payment_proof.failed`. Emitted via `@henryco/observability`; they surface in V3-10's `observability-tile.tsx` from `henry_events` automatically.
+### S4 — Runbook + fallback doc (done)
+`docs/v3/cloudinary-runbook.md` (how an operator diagnoses a "my upload failed" complaint: session → `henry_events` failed event → Vercel runtime logs → Cloudinary dashboard) and the V3-10 `docs/v3/fallback-policy.md` updated with the Cloudinary degraded-side-effect path.
 
-There is **no shared `@henryco/cloudinary` package**. Each app has its own `lib/cloudinary.ts` with `uploadOwnedAsset` (or similar) helper. The reference implementation lives at:
+## Out of scope
+- Charge/ledger/money-truth behaviour for marketplace orders — owned by V3-13 → V3-23. This pass persists an artifact URL only.
+- Shared `@henryco/cloudinary` package extraction — deferred; see follow-up 1 (a plan-doc exists at `docs/v3/cloudinary-refactor-followup.md`).
+- `apps/account/lib/cloudinary.ts` destructive rewrite — it is the canonical reference; extend/extract, never rewrite in place.
+- `packages/search-ui/` — owner-reserved, never touched.
 
-- `apps/account/lib/cloudinary.ts` (canonical pattern)
-- `apps/account/app/api/wallet/funding/[requestId]/proof/route.ts` (canonical CONSUMER pattern — `formData.get("proof")` → `uploadOwnedAsset()` → persist URL)
+## Dependencies
+Depends on V3-10 (observability logger + degraded-side-effect pattern + the observability tile). Blocks nothing structurally; it hardens the upload substrate every later artifact-bearing pass relies on (V3-18 receipts/invoices, V3-24 KYC document capture, V3-50 provider verification docs).
 
-Cloudinary-touching files across the codebase (25+ identified by conductor):
-- `apps/account/lib/cloudinary.ts` + `apps/account/app/api/wallet/funding/.../proof/route.ts` + `apps/account/app/api/verify/route.ts` + `apps/account/app/api/profile/avatar/route.ts`
-- `apps/hub/app/api/owner/upload/route.ts`
-- `apps/marketplace/app/api/seller-applications/documents/route.ts` (uses Cloudinary; verify pattern matches account)
-- `apps/jobs/lib/jobs/write.ts` + `apps/jobs/lib/jobs/offer-letter.ts`
-- `apps/studio/lib/studio/policies.ts` + `apps/studio/app/api/studio/asset-packs/generate/route.ts`
-- `apps/learn/lib/learn/uploads.ts` + `apps/learn/app/api/learn/assignments/submit/route.ts`
-- `apps/property/lib/property/store.ts`
-- `apps/logistics/components/operator/PODCapture.tsx`
-- Several Supabase migrations referencing Cloudinary public IDs
+## Inheritance
+Builds on `apps/account/lib/cloudinary.ts` (`uploadOwnedAsset` canonical pattern) + its wallet-funding-proof consumer, `@henryco/observability` (logger, `emitEvent`, the V3-10 tile + fallback policy), and `@henryco/i18n` for all user-facing copy. The `claude.ai Cloudinary` MCP tooling is available to verify uploads end-to-end during smoke.
 
-There's also `MCP claude.ai Cloudinary` tooling available to the conductor — useful for verifying uploads end-to-end.
-
----
-
-## Mandatory scope
-
-### Phase 1 — The bug fix (marketplace payment proof)
-
-**Reproduce + diagnose:**
-- Read `apps/marketplace/components/marketplace/checkout-experience.tsx` lines 1010–1029 (the file input UI)
-- Read the form-submit handler — trace where the checkout submits
-- Confirm: the `proof` `File` is never captured into state, never sent in FormData, never reaches an API route
-- Search for any existing marketplace payment proof API route. Likely DOES NOT EXIST.
-
-**Fix:**
-
-1. **State the File, not just its name.** In the checkout component, hold `[proofFile, setProofFile] = useState<File | null>(null)` AND keep `proofName` for the display label.
-2. **Wire the input.** `onChange={(e) => { const f = e.currentTarget.files?.[0] ?? null; setProofFile(f); setProofName(f?.name ?? ""); }}`
-3. **Client-side validate.** File size ≤ 10 MB, MIME in allowed set (PNG/JPG/WebP/PDF). Show inline error if violated. Don't let the user submit a 50 MB file just to get a server-side rejection.
-4. **Author the API route.** Create `apps/marketplace/app/api/checkout/payment-proof/route.ts` modelled on `apps/account/app/api/wallet/funding/[requestId]/proof/route.ts`:
-   - POST, accepts `multipart/form-data`
-   - Auth check via `createSupabaseServer().auth.getUser()`
-   - Reads `formData.get("proof") as File | null`
-   - Calls `uploadOwnedAsset()` (port the function from account if not shared — see Phase 2)
-   - Persists the Cloudinary URL + public ID against the in-flight checkout record (the cart? a pending order?) in Supabase
-   - Returns `{ ok: true, url, public_id }` on success
-   - Returns `{ error: <localized message> }` with appropriate 4xx on validation failure
-   - Returns `{ error, degraded: ['cloudinary_unavailable'] }` with 503 on transient Cloudinary failure (per V3-10 degraded pattern)
-   - Logs structured `[checkout/payment-proof]` events via `@henryco/observability/logger`
-   - Emits `henry.marketplace.payment_proof.uploaded` event on success and `henry.marketplace.payment_proof.failed` on failure
-5. **Wire the submission.** On form submit, if `method === "bank_transfer"`, POST the file to `/api/checkout/payment-proof` FIRST, get the URL back, then attach the URL to the checkout submit payload. Show a spinner + "Uploading proof…" status while the upload is in flight.
-6. **Display feedback.** Success: green check + filename. Failure: red text + reason + retry button.
-
-### Phase 2 — Shared Cloudinary client (optional but recommended)
-
-The codebase has fragmented per-app Cloudinary helpers. Consider extracting:
-- New package `@henryco/cloudinary` (or `@henryco/uploads`) with:
-  - `uploadOwnedAsset(file, ownerUserId, options)` — moved from `apps/account/lib/cloudinary.ts`
-  - `deleteOwnedAsset(publicId, ownerUserId)`
-  - `getSignedUrl(publicId, options)`
-  - `transformUrl(publicId, params)`
-- Each helper accepts an options bag with `folder`, `resourceType`, `maxBytes`, `allowedTypes`, `publicIdPrefix`, `retryPolicy`
-- Built-in retry on transient errors (5xx from Cloudinary, network timeouts) with exponential backoff (3 tries, 250ms / 1s / 4s)
-- Built-in degraded-side-effect return: `{ ok: false, error: 'cloudinary_unavailable', retriable: true }` for transient; `{ ok: false, error: '<reason>' }` for permanent (validation, auth)
-- Built-in structured logging via `@henryco/observability/logger`
-
-If extracting is too disruptive for this session, document the plan in `docs/v3/cloudinary-refactor-followup.md` and proceed with Phase 3 as-is (fix marketplace using a local helper copy or the existing account helper).
-
-### Phase 3 — Audit + harden existing Cloudinary touch-points
-
-For each Cloudinary-touching file listed in the reference architecture section, verify:
-
-**Upload sites** (every API route that calls `uploader.upload` or equivalent):
-- [ ] File is actually captured client-side (no name-only bugs)
-- [ ] Client-side validation (size + MIME) before upload
-- [ ] Server-side validation on top
-- [ ] Auth check before upload
-- [ ] Retry on transient failure (3 tries with backoff)
-- [ ] Structured log on entry / success / failure
-- [ ] Degraded-side-effect response on partial failure (per V3-10 pattern)
-- [ ] Loading + success + error states visible in UI
-
-**Get/transform sites** (every `<img src={cloudinaryUrl}>` or signed-URL generation):
-- [ ] Fallback placeholder image when Cloudinary URL is missing or 404
-- [ ] No hardcoded Cloudinary cloud_name / api_key in client code
-- [ ] Image transformations match the actual rendered size (no 4K image downscaled to 100×100)
-
-**Delete sites:**
-- [ ] Delete is idempotent (re-deleting already-deleted asset returns ok)
-- [ ] Delete failure doesn't block the primary user action — log + continue
-- [ ] Database flag updates atomically with delete attempt
-
-Output the audit at `docs/v3/cloudinary-audit-2026-05-23.md` — per-file findings, per-issue severity, recommended fix.
-
-### Phase 4 — Telemetry + observability
-
-Register events in `packages/observability/src/events.ts`:
-- `henry.uploads.cloudinary.requested` (file size, mime, target folder)
-- `henry.uploads.cloudinary.succeeded` (file size, duration_ms, public_id)
-- `henry.uploads.cloudinary.failed` (error_code, retriable, attempt_n)
-- `henry.uploads.cloudinary.degraded` (when retry exhausts and degraded path triggers)
-- `henry.marketplace.payment_proof.uploaded`
-- `henry.marketplace.payment_proof.failed`
-
-Emit from the new shared helper (or from each upload site) via `@henryco/observability/emitEvent`.
-
-Owner-workspace observability tile (V3-10's `observability-tile.tsx`) already reads from `henry_events`. New events will show up there automatically.
-
-### Phase 5 — Documentation
-
-- `docs/v3/cloudinary-runbook.md` — how an operator diagnoses a "user reports upload failed" complaint. Steps: check the user's session, check `henry_events` for failed event, check Vercel runtime logs for the route, check Cloudinary dashboard for the upload attempt.
-- Update `docs/v3/fallback-policy.md` (V3-10 doc) to include the Cloudinary degraded-side-effect path.
-
-### Phase 6 — Tests + verification
-
-If time permits:
-- Add an integration smoke for the marketplace payment proof flow: upload a 1×1 PNG via the route, verify Cloudinary URL returns 200 on GET.
-- Otherwise, document a manual smoke procedure in the report (curl commands, browser steps).
-
----
+## Implementation requirements
+### Files
+`apps/marketplace/components/marketplace/checkout-experience.tsx`; new `apps/marketplace/app/api/checkout/payment-proof/route.ts`; `packages/observability/src/events.ts`; `docs/v3/cloudinary-audit-2026-05-23.md`; `docs/v3/cloudinary-runbook.md`; `docs/v3/fallback-policy.md` (updated); `docs/v3/cloudinary-refactor-followup.md`. Per-app `lib/cloudinary.ts` helpers touched only where the audit found a real defect.
+### Trust / safety / compliance
+Auth check before every upload (`auth.getUser()`); server-side size/MIME validation on top of client validation; Cloudinary credentials server-only (never in the client bundle); retry only on transient 5xx/network (never on 4xx user errors); every catch logs + emits a `…failed`/`…degraded` event + surfaces UI feedback — zero silent swallows. File contents never stored in localStorage/sessionStorage/cookies. The proof is a payment artifact: persist its URL, never mutate charge or ledger state.
+### Mobile + desktop parity
+Web mobile is in scope: the file picker, inline validation errors, and uploading/success/error states render correctly on small viewports (PODCapture and avatar flows are mobile-first). Expo super-app upload parity is deferred to V3-87.
+### i18n
+All upload copy — picker label, "Uploading proof…", success label, validation errors (too-large, wrong-type), retry — routes through `@henryco/i18n` under `surface:marketplace` (Pattern A typed keys; e.g. `checkout.proof.uploading`, `checkout.proof.error.too_large`). Server error messages returned to the UI are localized, not raw strings.
+### Brand & design system
+The upload UI uses design-system tokens (`--accent` for success, `--state-danger` for error) — no ad-hoc hex; light + dark; CLS ≈ 0; contrast not regressed. Any brand string (division label on the checkout) reads from `@henryco/config` (Henry Onyx Marketplace), never hardcoded.
 
 ## Validation gates
-
-1. Standard CI (Lint, typecheck, test, build) on the branch — must pass.
-2. **Manual smoke (primary bug):** in marketplace checkout, select bank transfer, choose a file ≤10 MB, submit — confirm Cloudinary URL is captured server-side + persisted.
-3. **Manual smoke (validation):** select a 50 MB file — client-side error prevents submit.
-4. **Manual smoke (wrong MIME):** select a `.txt` file — client-side error rejects.
-5. **Manual smoke (failure path):** with `CLOUDINARY_API_KEY` temporarily invalid, attempt upload — verify route returns 503 with `degraded: ['cloudinary_unavailable']` and UI shows actionable error.
-6. **Audit doc** `docs/v3/cloudinary-audit-2026-05-23.md` covers every file listed in Phase 3.
-7. **Events emit** — at least the marketplace upload event is observed in `henry_events` after a successful test.
+1. CI green: Lint, typecheck, test, build.
+2. Manual smoke (primary): marketplace checkout → bank transfer → select a ≤ 10 MB file → confirm Cloudinary URL captured server-side and persisted against the in-flight order.
+3. Manual smoke (validation): a 50 MB file is blocked client-side before submit; a `.txt` file is rejected by MIME check.
+4. Manual smoke (failure path): with `CLOUDINARY_API_KEY` temporarily invalid, the route returns 503 with `degraded: ['cloudinary_unavailable']` and the UI shows an actionable error + retry.
+5. Audit doc `docs/v3/cloudinary-audit-2026-05-23.md` covers every file in S2.
+6. At least the marketplace upload event is observed in `henry_events` after a successful test.
+7. V3-07 hardcoded-text strict gate PASS (no new hardcoded copy).
 
 ## Deployment gate
-
-- All gates pass
-- DRAFT PR opened, NOT auto-merged
-- Owner reviews the new upload flow visually
+All gates green; owner reviews the new upload flow visually. Squash-merge to `main`; no force-push (`--force-with-lease` only if a rebase requires it); no auto-merge.
 
 ## Final report contract
+`.codex-temp/v3-reliability-01-cloudinary/report.md` (delivered as `.codex-temp/reliability-cloudinary-uploads/` for the original pass) with the standard 9 sections — exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion — plus the Cloudinary audit summary and the before/after for the marketplace payment-proof flow.
 
-`.codex-temp/reliability-cloudinary-uploads/report.md` — standard 9 sections + Cloudinary audit summary + before/after for the marketplace payment proof flow + telemetry events registered.
+## Residual / hardening follow-ups (the only OPEN work)
+1. **Shared `@henryco/cloudinary` (or `@henryco/uploads`) extraction.** Promote the per-app helpers into one package: `uploadOwnedAsset(file, ownerUserId, options)`, `deleteOwnedAsset`, `getSignedUrl`, `transformUrl`; options bag (`folder`, `resourceType`, `maxBytes`, `allowedTypes`, `publicIdPrefix`, `retryPolicy`); built-in 3-try backoff (250 ms / 1 s / 4 s); built-in degraded return (`{ ok:false, error:'cloudinary_unavailable', retriable:true }` transient vs `{ ok:false, error }` permanent); built-in `@henryco/observability` logging. Migrate each app off its local copy. Plan-doc: `docs/v3/cloudinary-refactor-followup.md`.
+2. **Integration smoke for the proof flow.** Add a test that uploads a 1×1 PNG via `/api/checkout/payment-proof` and asserts the returned Cloudinary URL GETs 200 — replace the manual curl procedure with a CI-runnable smoke.
+3. **Sweep audit findings to closure.** Drive every `medium`/`high` item in `cloudinary-audit-2026-05-23.md` to fixed (or to an explicitly-deferred ticket), so "NO MORE FAILURES" is provable per-file, not just for the headline bug.
 
----
-
-## Anti-patterns (HARD stops)
-
-- NO silently swallowing upload errors. Every catch logs + emits a failed event + surfaces UI feedback.
-- NO storing file contents in localStorage / sessionStorage / cookies (>4KB limit + sensitive data).
-- NO hardcoded Cloudinary credentials in client bundle. Always server-side.
-- NO bypassing the auth check on upload routes.
-- NO over-broad retry (don't retry on 4xx — those are user errors).
-- NO touching `packages/search-ui/` (owner-reserved).
-- NO touching `apps/account/lib/cloudinary.ts` destructively — it's the canonical reference. Extend or extract; don't rewrite in place.
-- NO breaking existing Cloudinary URLs (image rendering paths everywhere depend on them).
-- NO `git push --force`; use `--force-with-lease`.
-- NO PR auto-merge.
-
----
-
-## Self-verification checklist
-
-- [ ] Marketplace payment proof: File captured into state (not just name)
-- [ ] Client-side validation (size + MIME) inline-errors before submit
-- [ ] New API route `apps/marketplace/app/api/checkout/payment-proof/route.ts` with auth + upload + persist + structured response
-- [ ] Submission flow uploads proof, gets URL, attaches to checkout payload
-- [ ] UI shows uploading → success → error states
-- [ ] Cloudinary audit doc landed
-- [ ] All upload sites verified (or fixed) per Phase 3 checklist
-- [ ] 6 new telemetry events registered
-- [ ] Runbook + fallback-policy update doc landed
-- [ ] DRAFT PR opened with screenshots-needed list
-
----
-
-You're Opus 4.7. The owner directive is verbatim: "NO MORE FAILURES." Take this seriously. Every Cloudinary touchpoint should work like the user expects on the first try — and degrade gracefully + observably when it can't.
-
-Session 1 target: Phases 1, 3 (audit), and 4 (events). Phases 2 (shared client), 5 (docs), 6 (tests) can spill to session 2 with a crisp pickup note.
-
-Make every shipped phase convincing.
+## Self-verification
+- [ ] S1: proof `File` captured into `proofState` (not just name); client-side size/MIME validation inline-errors before submit; `/api/checkout/payment-proof` route does auth + upload + persist + structured response; submission attaches the returned URL; UI shows uploading → success → error.
+- [ ] S2: every upload/get/delete site audited against the checklist; `cloudinary-audit-2026-05-23.md` landed.
+- [ ] S3: six `henry.uploads.cloudinary.*` / `henry.marketplace.payment_proof.*` events registered + emitting in `henry_events`.
+- [ ] S4: runbook + fallback-policy update landed.
+- [ ] No silent swallow, no client-side credentials, no retry on 4xx, no money/ledger mutation.
+- [ ] i18n: all copy `surface:marketplace`-namespaced; division label from `@henryco/config`.
+- [ ] Tokens: success/error states use `--accent`/`--state-danger`; light + dark; CLS ≈ 0.
+- [ ] Residual follow-ups 1–3 executed and recorded in the closure report.
+- [ ] CI + V3-07 strict gate PASS; owner visual review of the upload flow done.
