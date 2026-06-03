@@ -42,7 +42,7 @@ export function LearnPanel({
   return (
     <section
       className={cn(
-        "rounded-[1.8rem] border border-[var(--learn-line)] bg-white/[0.02] p-6 sm:p-7",
+        "rounded-[1.8rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-02)] p-6 sm:p-7",
         className,
       )}
     >
@@ -133,9 +133,9 @@ export function LearnStatusBadge({
 }) {
   const toneClass =
     tone === "success"
-      ? "border-emerald-200/35 text-emerald-200"
+      ? "border-emerald-600/30 text-emerald-700 dark:border-emerald-300/30 dark:text-emerald-300"
       : tone === "warning"
-        ? "border-amber-200/30 text-amber-200"
+        ? "border-amber-600/30 text-amber-700 dark:border-amber-300/30 dark:text-amber-300"
         : tone === "signal"
           ? "border-[var(--learn-line-strong)] text-[var(--learn-mint-soft)]"
           : "border-[var(--learn-line)] text-[var(--learn-ink-soft)]";
@@ -173,7 +173,7 @@ export function CourseCard({
 
   return (
     <Link href={href} className="group block">
-      <article className="flex h-full flex-col rounded-[1.8rem] border border-[var(--learn-line)] bg-white/[0.02] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--learn-line-strong)] group-hover:bg-white/[0.04]">
+      <article className="flex h-full flex-col rounded-[1.8rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-02)] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--learn-line-strong)] group-hover:bg-[color:var(--home-surface-04)]">
         <div className="flex flex-wrap items-center gap-1.5">
           <LearnStatusBadge
             label={visibilityLabel}
@@ -253,7 +253,7 @@ export function PathCard({
 
   return (
     <Link href={href} className="group block">
-      <article className="flex h-full flex-col rounded-[1.8rem] border border-[var(--learn-line)] bg-white/[0.02] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--learn-line-strong)] group-hover:bg-white/[0.04]">
+      <article className="flex h-full flex-col rounded-[1.8rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-02)] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--learn-line-strong)] group-hover:bg-[color:var(--home-surface-04)]">
         <div className="flex items-center justify-between gap-3">
           <LearnStatusBadge
             label={visibilityLabel}
