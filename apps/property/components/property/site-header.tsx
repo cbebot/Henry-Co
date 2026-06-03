@@ -6,91 +6,61 @@ import { getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
-  HenryCoSearchBreadcrumb,
-  PublicHeader,
+  PublicChrome,
   getSiteNavigationConfig,
+  type PublicChromeAccount,
 } from "@henryco/ui/public-shell";
-import type { PublicNavItem } from "@henryco/ui/public-shell";
 import { HenryCoMonogram } from "@henryco/ui/brand";
+import { PROPERTY_PUBLIC_THEME_STYLE } from "./property-public-theme";
 
 const property = getDivisionConfig("property");
 const propertyNav = getSiteNavigationConfig("property");
 
-function joinClassNames(...values: Array<string | false | null | undefined>) {
-  return values.filter(Boolean).join(" ");
-}
-
-export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) {
+/**
+ * Property public header — a thin config wrapper over the shared, theme-aware
+ * `PublicChrome` (V3-PUBLIC-CHROME). All styling lives in PublicChrome on
+ * --home-* tokens, so the bar flips with the page theme and wears property's
+ * copper accent (resolved from the page's .home-accent-scope). No per-division
+ * className overrides — the source of the old "stubborn" light-bar desync.
+ */
+export function PropertySiteHeader({
+  account,
+  accountMenu,
+}: {
+  account: PublicChromeAccount;
+  accountMenu?: ReactNode;
+}) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const items: readonly PublicNavItem[] = propertyNav.primaryNav;
 
   return (
-    <PublicHeader
-      headerClassName="border-[var(--property-line)] bg-[color:color-mix(in_srgb,var(--property-bg)_80%,transparent)]/90 backdrop-blur-2xl"
+    <PublicChrome
       maxWidth="max-w-[92rem]"
-      toolbarClassName="px-5 sm:px-8 lg:px-10"
-      mobileMenuContainerClassName="px-5 sm:px-8 lg:px-10"
-      mobileDrawerClassName="border-[var(--property-line)]"
-      navClassName="hidden shrink-0 items-center gap-3 lg:flex"
-      prepend={
-        <div className="border-b border-[rgba(232,184,148,0.08)]">
-          <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-5 py-2 text-xs text-[var(--property-ink-soft)] sm:px-8 lg:px-10">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[var(--property-accent-strong)]" />
-              {t("Curated listings, guided viewings, and managed-property trust rails")}
-            </div>
-            <Link href="/managed" className="hidden font-semibold text-[var(--property-ink)] lg:inline-flex">
-              {t("Managed property")}
-            </Link>
-          </div>
-        </div>
-      }
-      afterBrand={
-        <div className="hidden rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-3 py-2 text-xs text-[var(--property-ink-soft)] xl:flex">
-          {t("Editorial listings for calmer decisions")}
-        </div>
-      }
+      accentStyle={PROPERTY_PUBLIC_THEME_STYLE}
       brand={{
         href: "/",
-        name: "",
-        mark: (
-          <div
-            className="property-brand-mark"
-            style={{ color: property.accent || "#B06C3E" }}
+        name: property.name,
+        eyebrow: property.shortName,
+        mark: <HenryCoMonogram size={26} accent={property.accent || "#B06C3E"} />,
+      }}
+      items={propertyNav.primaryNav}
+      search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
+      account={account}
+      accountMenu={accountMenu}
+      prepend={
+        <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-6 lg:px-8">
+          <span className="flex items-center gap-2">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
+            {t("Curated listings, guided viewings, and managed-property trust rails")}
+          </span>
+          <Link
+            href="/managed"
+            className="hidden font-semibold text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)] lg:inline-flex"
           >
-            <HenryCoMonogram size={28} accent={property.accent || "#B06C3E"} />
-          </div>
-        ),
-        text: (
-          <>
-            <div className="property-kicker">{t(property.shortName)}</div>
-            <div className="text-sm font-semibold text-[var(--property-ink)]">{t(property.name)}</div>
-          </>
-        ),
-      }}
-      items={items}
-      actions={
-        <HenryCoSearchBreadcrumb
-          href={getHubUrl("/search")}
-          className="hidden xl:inline-flex border-[var(--property-line)] bg-[color:var(--home-surface-04)] text-[var(--property-ink)] hover:bg-[color:var(--home-surface-07)]"
-        />
+            {t("Managed property")}
+          </Link>
+        </div>
       }
-      accountMenu={<div className="hidden sm:block">{accountSlot}</div>}
-      themeToggleBeforeAccount
-      themeToggleClassName="hidden h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-0 py-0 sm:inline-flex"
-      mobileSheetBeforeNav={<div className="mb-1 flex flex-col items-stretch gap-2">{accountSlot}</div>}
-      showAccountInMobileSheetFooter={false}
-      getNavItemClassName={(_item, active, placement) => {
-        if (placement === "bar") {
-          return joinClassNames(
-            "rounded-full px-4 py-2 text-sm font-medium transition",
-            active ? "property-nav-link-active" : "property-nav-link-idle"
-          );
-        }
-        return "rounded-[1.2rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-medium text-[var(--property-ink)]";
-      }}
-      menuButtonClassName="rounded-full border border-[var(--property-line)] bg-transparent shadow-none text-[var(--property-ink)] dark:bg-transparent dark:shadow-none"
     />
   );
 }
