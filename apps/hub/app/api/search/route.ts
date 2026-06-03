@@ -102,7 +102,6 @@ export async function GET(request: Request) {
       },
     );
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.warn("[hub:/api/search] degraded to empty on unexpected error", error);
     result = emptySearchResponse(query);
   }
