@@ -524,6 +524,13 @@ export function getDivisionUrl(key: DivisionKey) {
  */
 export function toBrandName(value: string | null | undefined): string {
   return String(value ?? "")
+    // Retired brand (V3-IDENTITY-01): rewrite stale CMS/DB-authored "Henry & Co."
+    // / "Henry Holdings Limited" at read-time so legacy rows render the current
+    // identity. `Co\.?(?![A-Za-z])` guards against eating "Cooperative" etc.
+    .replace(/\bHenry Holdings Limited\b/g, COMPANY.group.legalName)
+    .replace(/\bHenry Holdings\b/g, COMPANY.group.legalName)
+    .replace(/\bHenry (?:&amp;|&) Co\.?(?![A-Za-z])/g, COMPANY.group.name)
+    // Code shorthand → brand (CMS/DB values can reintroduce it).
     .replace(/\bHenryCo Group\b/g, COMPANY.group.name)
     .replace(/\bHenryCo\b/g, COMPANY.group.name);
 }

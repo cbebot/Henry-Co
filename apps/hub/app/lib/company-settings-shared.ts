@@ -1,4 +1,4 @@
-import { COMPANY } from "@henryco/config";
+import { COMPANY, toBrandName } from "@henryco/config";
 
 export type CompanySettingsRecord = {
   id: string;
@@ -53,7 +53,7 @@ export function normalizeCompanySettings(input?: CompanySettingsInput): CompanyS
 
   return {
     id: toText(source.id, "primary"),
-    company_name: toNullableText(source.company_name) ?? toNullableText(source.brand_title),
+    company_name: toBrandName(toNullableText(source.company_name) ?? toNullableText(source.brand_title)) || null,
     cloudinary_folder: toNullableText(source.cloudinary_folder) ?? "henryco",
     created_at: toNullableText(source.created_at),
     updated_at: toNullableText(source.updated_at),
@@ -66,26 +66,32 @@ export function normalizeCompanySettings(input?: CompanySettingsInput): CompanyS
     support_email: toNullableText(source.support_email),
     support_phone: toNullableText(source.support_phone),
     address: toNullableText(source.address) ?? officeAddress,
-    legal_name: toText(source.legal_name, COMPANY.group.legalName),
-    brand_title: toText(source.brand_title, COMPANY.group.name),
-    brand_subtitle: toText(source.brand_subtitle, "Corporate Platform"),
-    brand_description: toText(
-      source.brand_description,
-      "Henry Onyx brings together focused businesses under one respected company identity."
+    legal_name: toBrandName(toText(source.legal_name, COMPANY.group.legalName)),
+    brand_title: toBrandName(toText(source.brand_title, COMPANY.group.name)),
+    brand_subtitle: toBrandName(toText(source.brand_subtitle, "Corporate Platform")),
+    brand_description: toBrandName(
+      toText(
+        source.brand_description,
+        "Henry Onyx brings together focused businesses under one respected company identity."
+      )
     ),
-    footer_blurb: toText(
-      source.footer_blurb,
-      "Henry Onyx provides a clear way to understand the company and reach the right business with confidence."
+    footer_blurb: toBrandName(
+      toText(
+        source.footer_blurb,
+        "Henry Onyx provides a clear way to understand the company and reach the right business with confidence."
+      )
     ),
     base_domain: toText(source.base_domain, "henrycogroup.com"),
     office_address: officeAddress,
     brand_accent: toText(source.brand_accent, "#C9A227"),
     favicon_url: toNullableText(source.favicon_url),
     favicon_public_id: toNullableText(source.favicon_public_id),
-    default_meta_title: toText(source.default_meta_title, COMPANY.group.name),
-    default_meta_description: toText(
-      source.default_meta_description,
-      "Explore the businesses, services, and operating divisions of Henry Onyx"
+    default_meta_title: toBrandName(toText(source.default_meta_title, COMPANY.group.name)),
+    default_meta_description: toBrandName(
+      toText(
+        source.default_meta_description,
+        "Explore the businesses, services, and operating divisions of Henry Onyx"
+      )
     ),
     copyright_label: toText(source.copyright_label, COMPANY.group.legalName),
   };
