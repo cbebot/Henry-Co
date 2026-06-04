@@ -10,6 +10,7 @@ import {
   normalizePhone,
   normalizeTrustedRedirect,
   resolveRequestCookieDomain,
+  resolveRequestOrigin,
 } from "@henryco/config";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
@@ -29,7 +30,11 @@ const ALLOWED_TYPES: ReadonlySet<EmailOtpType> = new Set<EmailOtpType>([
 ]);
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams, origin: rawOrigin } = new URL(request.url);
+  const headerStore = await headers();
+  // Real public origin from proxy headers (not the internal Vercel host)
+  // so the verified session lands on account.<baseDomain> with its cookie.
+  const origin = resolveRequestOrigin((name) => headerStore.get(name), rawOrigin);
   const tokenHash = searchParams.get("token_hash");
   const rawType = searchParams.get("type");
   const next = searchParams.get("next") ?? "/";
@@ -43,7 +48,6 @@ export async function GET(request: Request) {
 
   if (tokenHash && type) {
     const cookieStore = await cookies();
-    const headerStore = await headers();
     const cookieDomain =
       resolveRequestCookieDomain((name) => headerStore.get(name)) ||
       getSharedCookieDomain(new URL(origin).hostname);

@@ -9,6 +9,7 @@ import {
   normalizePhone,
   normalizeTrustedRedirect,
   resolveRequestCookieDomain,
+  resolveRequestOrigin,
 } from "@henryco/config";
 import { emitEvent } from "@henryco/observability/events";
 import {
@@ -89,7 +90,12 @@ function redirectWithOAuthError(
 }
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams, origin: rawOrigin } = new URL(request.url);
+  const headerStore = await headers();
+  // Use the real public origin (proxy headers), not the internal Vercel
+  // deployment host, so post-auth redirects keep the .<baseDomain>
+  // session cookie intact.
+  const origin = resolveRequestOrigin((name) => headerStore.get(name), rawOrigin);
   const code = searchParams.get("code");
   const providerError = searchParams.get("error");
   const next = searchParams.get("next") ?? "/";
@@ -108,7 +114,6 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = await cookies();
-    const headerStore = await headers();
     const cookieDomain =
       resolveRequestCookieDomain((name) => headerStore.get(name)) ||
       getSharedCookieDomain(new URL(origin).hostname);
