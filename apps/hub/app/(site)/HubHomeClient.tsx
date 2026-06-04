@@ -28,7 +28,6 @@ export default function HubHomeClient({
   brandTitle,
   brandSub,
   brandAccent,
-  brandLogoUrl,
   footer,
   initialDivisions,
   initialFaqs,
@@ -42,7 +41,6 @@ export default function HubHomeClient({
   brandTitle?: string | null;
   brandSub?: string | null;
   brandAccent?: string | null;
-  brandLogoUrl?: string | null;
   /** Pre-assembled shared-footer inputs (see lib/site-footer.ts). */
   footer: HubFooterInputs;
   intro?: string | null;
@@ -77,7 +75,6 @@ export default function HubHomeClient({
       <HomeHeader
         brandTitle={brandTitleSafe}
         brandSub={brandSub ?? ""}
-        brandLogoUrl={brandLogoUrl ?? null}
         copy={copy}
         accountChip={accountChip}
       />

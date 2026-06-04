@@ -1,8 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useMemo, useState } from "react";
-import Image from "next/image";
+import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { getAccountUrl } from "@henryco/config";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
@@ -24,40 +23,8 @@ import {
 } from "../lib/company-settings-shared";
 import PaletteHost from "./PaletteHost";
 
-/**
- * Hub brand mark — the CMS logo (with a code-rendered monogram fallback when no
- * logo is set or the image 404s). Rendered tile-less because `PublicChrome`
- * already wraps `brand.mark` in its own tokenised, theme-aware tile.
- */
-function BrandMark({
-  src,
-  alt,
-  accent,
-}: {
-  src?: string | null;
-  alt: string;
-  accent: string;
-}) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const cleanSrc = typeof src === "string" && src.trim() ? src.trim() : null;
-  const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-
-  if (cleanSrc && !isFailed) {
-    return (
-      <Image
-        src={cleanSrc}
-        alt={alt}
-        width={44}
-        height={44}
-        priority
-        unoptimized
-        className="h-full w-full object-contain p-1.5"
-        onError={() => setFailedSrc(cleanSrc)}
-      />
-    );
-  }
-  return <HenryCoMonogram size={26} accent={accent} />;
-}
+// The brand mark is always the code-rendered monogram from @henryco/ui/brand —
+// never a CMS PNG. The CMS logo_url belongs in <meta> tags only.
 
 /**
  * PublicSiteShell — the hub's public chrome.
@@ -170,10 +137,10 @@ export default function PublicSiteShell({
                 // Onyx"; the company hub is just the name).
                 name: settings.brand_title || copy.brandFallback,
                 mark: (
-                  <BrandMark
-                    src={settings.logo_url}
-                    alt={settings.brand_title || copy.brandFallback}
+                  <HenryCoMonogram
+                    size={26}
                     accent={settings.brand_accent || "#C9A227"}
+                    aria-label={settings.brand_title || copy.brandFallback}
                   />
                 ),
               }}

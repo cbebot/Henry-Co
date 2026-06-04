@@ -41,7 +41,8 @@ export type PublicChromeNavItem = {
 
 export type PublicChromeBrand = {
   name: string;
-  /** Small eyebrow above the name (e.g. division short name). */
+  /** Division sub-label rendered below the brand name (e.g. "Studio", "Care").
+   *  Henry Onyx is always the primary name; the division is context beneath it. */
   eyebrow?: string;
   href?: string;
   /** Brand monogram / logo mark. Rendered in a tokenised tile. */
@@ -271,14 +272,14 @@ export function PublicChrome({
         </span>
       ) : null}
       <span className="min-w-0">
-        {brand.eyebrow ? (
-          <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.26em] text-[color:var(--home-accent-text)]">
-            {t(brand.eyebrow)}
-          </span>
-        ) : null}
         <span className="block truncate text-[15px] font-semibold tracking-tight text-[color:var(--home-ink)]">
           {t(brand.name)}
         </span>
+        {brand.eyebrow ? (
+          <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-65)]">
+            {t(brand.eyebrow)}
+          </span>
+        ) : null}
       </span>
     </Link>
   );

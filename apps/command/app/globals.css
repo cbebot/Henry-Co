@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Onyx operations console tokens — dark-first, density-first. */
+@import "../../../packages/command-surface/src/tokens.css";
+
+/* Fraunces display — loaded as a variable font subset via Google Fonts. Self-hosting
+   is ideal but in staging the Google Fonts CDN is the fast path. The cc-display
+   class applies var(--cc-font-display) which falls back gracefully to Baskerville/
+   Iowan Old Style / Times New Roman if the font hasn't loaded. */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&display=swap");
+
+:root {
+  --font-display: "Fraunces";
+}
+
+/* Reset: the whole console is dark, so baseline body matches. */
+html, body {
+  background-color: var(--cc-bg);
+  color: var(--cc-ink);
+  font-family: var(--cc-font-sans);
+  -webkit-font-smoothing: antialiased;
+}

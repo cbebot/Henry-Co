@@ -42,7 +42,6 @@ type NavTarget =
 type HomeHeaderProps = {
   brandTitle: string;
   brandSub: string;
-  brandLogoUrl: string | null;
   copy: HubHomeCopy;
   accountChip?: HomeAccountChip;
 };
@@ -66,33 +65,14 @@ export function HomeSkipLink({ label }: { label: string }) {
 function HomeWordmark({
   brandTitle,
   brandSub,
-  brandLogoUrl,
 }: {
   brandTitle: string;
   brandSub: string;
-  brandLogoUrl: string | null;
 }) {
-  // The CMS logo can live on any origin (Cloudinary, Supabase storage, …).
-  // next/image would 400 unless every host is whitelisted in next.config, which
-  // is what made the mark vanish. A plain <img> is host-agnostic; if it still
-  // fails to load we fall back to the inline brand mark so a broken-image
-  // silhouette can never render.
-  const [logoFailed, setLogoFailed] = useState(false);
-  const showLogo = Boolean(brandLogoUrl) && !logoFailed;
   return (
     <a href="#top" aria-label={brandTitle} className="flex shrink-0 items-center gap-3">
       <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface)]">
-        {showLogo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- host-agnostic CMS logo; next/image needs per-host remotePatterns
-          <img
-            src={brandLogoUrl as string}
-            alt={`${brandTitle} logo`}
-            className="h-full w-full object-contain p-1.5"
-            onError={() => setLogoFailed(true)}
-          />
-        ) : (
-          <HenryCoLogo variant="mark" label={brandTitle} className="h-full w-full p-1.5" />
-        )}
+        <HenryCoLogo variant="mark" label={brandTitle} className="h-full w-full p-1.5" />
       </span>
       <span className="leading-tight">
         <span
@@ -265,7 +245,6 @@ function MobileSheet({
 export function HomeHeader({
   brandTitle,
   brandSub,
-  brandLogoUrl,
   copy,
   accountChip,
 }: HomeHeaderProps) {
@@ -349,7 +328,7 @@ export function HomeHeader({
           scrolled ? "py-2.5" : "py-4",
         )}
       >
-        <HomeWordmark brandTitle={brandTitle} brandSub={brandSub} brandLogoUrl={brandLogoUrl} />
+        <HomeWordmark brandTitle={brandTitle} brandSub={brandSub} />
 
         <nav aria-label={copy.nav.company} className="hidden items-center gap-7 md:flex">
           {targets.map((target) => {
