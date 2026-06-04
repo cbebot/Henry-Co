@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import {
   formatSurfaceTemplate,
   translateSurfaceLabel,
-  useHenryCoLocale,
+  useOptionalHenryCoLocale,
+  DEFAULT_LOCALE,
   type AppLocale,
 } from "@henryco/i18n";
 import { ChevronRight } from "lucide-react";
@@ -132,7 +133,10 @@ export default function NotificationBell({
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const locale = useHenryCoLocale();
+  // Resilient to a missing LocaleProvider during a hydration interruption on a
+  // fresh origin (V3-DOMAIN-FIX-01 / DIAG-IOS-01) — this is always mounted in
+  // the dashboard chrome, so a throw here collapsed the whole account shell.
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const items = useMemo<BellNotification[]>(

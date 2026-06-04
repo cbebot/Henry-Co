@@ -5,8 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Search } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
-import { translateSurfaceLabel } from "@henryco/i18n";
-import { useHenryCoLocale } from "@henryco/i18n/react";
+import { translateSurfaceLabel, DEFAULT_LOCALE } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { logoutEverywhere } from "@henryco/auth/client";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
@@ -39,7 +39,10 @@ function NavLink({ item, active, t }: { item: NavItem; active: boolean; t: (text
 export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const locale = useHenryCoLocale();
+  // Resilient to a missing LocaleProvider during a hydration interruption on a
+  // fresh origin (V3-DOMAIN-FIX-01 / DIAG-IOS-01) — the throwing hook here took
+  // the whole authenticated dashboard chrome down on account.henryonyx.com.
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const sections = getNavSections();
   const [signingOut, setSigningOut] = useState(false);
