@@ -47,7 +47,7 @@ const ACCOUNT_HOME_FALLBACK = henrySubdomain("account");
 // the real surface is `/settings/notifications`. Recipients clicking the
 // footer were landing on the not-found page and could not unsubscribe.
 const PREFERENCES_PATH = "/settings/notifications";
-const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henrycogroup.com", "henryco.local"];
+const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henryonyx.com", "henryco.local"];
 
 type Bucket = { count: number; windowStartedAt: number };
 const rateBuckets = new Map<string, Bucket>();
@@ -134,7 +134,7 @@ function isSafeAbsoluteHenryCoUrl(value: string): boolean {
 
 function safeRelativeToAbsolute(value: string): string | null {
   // Permit "/path" (single leading slash, no backslash, no HTML), upgrading to
-  // absolute against account.henrycogroup.com so the email always carries a
+  // absolute against account.henryonyx.com so the email always carries a
   // clickable URL even if the source row stored a relative deep_link.
   if (!value || value.length > 1024) return null;
   if (!value.startsWith("/") || value.startsWith("//")) return null;

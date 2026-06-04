@@ -6,7 +6,7 @@ const prefix = Linking.createURL("/");
  * Expo Router linking prefixes for universal links + custom scheme.
  *
  * V3-04 (S2): the production prefixes mirror `app.json`'s
- * `associatedDomains` so a `https://<division>.henrycogroup.com/…`
+ * `associatedDomains` so a `https://<division>.henryonyx.com/…`
  * universal link is recognised by the app. Path → in-app screen
  * remapping is handled centrally in `app/+native-intent.ts`
  * (`redirectSystemPath`), so this list only needs the origins.
@@ -14,17 +14,17 @@ const prefix = Linking.createURL("/");
 export const linkingPrefixes = [
   prefix,
   "henryco://",
-  "https://staging.henrycogroup.com/app",
-  "https://account.henrycogroup.com",
-  "https://care.henrycogroup.com",
-  "https://marketplace.henrycogroup.com",
-  "https://property.henrycogroup.com",
-  "https://jobs.henrycogroup.com",
-  "https://learn.henrycogroup.com",
-  "https://logistics.henrycogroup.com",
-  "https://studio.henrycogroup.com",
-  "https://building.henrycogroup.com",
-  "https://hotel.henrycogroup.com",
+  "https://staging.henryonyx.com/app",
+  "https://account.henryonyx.com",
+  "https://care.henryonyx.com",
+  "https://marketplace.henryonyx.com",
+  "https://property.henryonyx.com",
+  "https://jobs.henryonyx.com",
+  "https://learn.henryonyx.com",
+  "https://logistics.henryonyx.com",
+  "https://studio.henryonyx.com",
+  "https://building.henryonyx.com",
+  "https://hotel.henryonyx.com",
 ];
 
 export const linkingConfig = {

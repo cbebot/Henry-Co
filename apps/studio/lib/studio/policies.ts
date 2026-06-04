@@ -53,14 +53,14 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "1. Parties and scope",
         body: [
-          `These Terms of Engagement (the "Terms") form a binding agreement between you, the client (the "Client"), and ${COMPANY_NAME}, a division of ${PARENT} ("Henry Onyx Studio", "we", "us", "our"). The Terms apply to every Studio engagement initiated through studio.henrycogroup.com — whether that engagement begins as a template reservation, an accepted proposal, or a custom brief.`,
+          `These Terms of Engagement (the "Terms") form a binding agreement between you, the client (the "Client"), and ${COMPANY_NAME}, a division of ${PARENT} ("Henry Onyx Studio", "we", "us", "our"). The Terms apply to every Studio engagement initiated through studio.henryonyx.com — whether that engagement begins as a template reservation, an accepted proposal, or a custom brief.`,
           "By reserving a template, accepting a proposal, paying a deposit, uploading proof of payment, or otherwise instructing us to begin work, the Client confirms they have authority to enter this agreement on behalf of the named business and accepts these Terms in full.",
         ],
       },
       {
         heading: "2. Project lifecycle",
         body: [
-          "Every Studio engagement runs through a defined sequence: brief or template selection, proposal acceptance, deposit, kickoff, milestone delivery, milestone approval, balance payment, and handover. Each stage is recorded in the Client's portal at studio.henrycogroup.com/client and is the canonical record of what was agreed and what has happened.",
+          "Every Studio engagement runs through a defined sequence: brief or template selection, proposal acceptance, deposit, kickoff, milestone delivery, milestone approval, balance payment, and handover. Each stage is recorded in the Client's portal at studio.henryonyx.com/client and is the canonical record of what was agreed and what has happened.",
         ],
       },
       {
@@ -167,7 +167,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "1. Who we are",
         body: [
-          `${COMPANY_NAME} (a division of ${PARENT}) is the data controller for personal data processed through studio.henrycogroup.com and the linked Client portal. Our designated privacy contact is ${PRIVACY_EMAIL}.`,
+          `${COMPANY_NAME} (a division of ${PARENT}) is the data controller for personal data processed through studio.henryonyx.com and the linked Client portal. Our designated privacy contact is ${PRIVACY_EMAIL}.`,
         ],
       },
       {

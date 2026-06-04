@@ -451,7 +451,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "1. Controller identity",
             title: "Who is responsible for this data",
             body:
-              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henrycogroup.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry Onyx divisions, and it is the entity legally answerable for how your data is handled.`,
+              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henryonyx.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry Onyx divisions, and it is the entity legally answerable for how your data is handled.`,
             layout: "default",
             items: [
               { id: "privacy-controller-name", label: "Controller", value: LEGAL.entity.name },
@@ -578,7 +578,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "10. How to exercise rights",
             title: "Submit a request",
             body:
-              `Send a written request to ${LEGAL.contacts.privacy}. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.\n\n— In plain English: Email privacy@henrycogroup.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data.`,
+              `Send a written request to ${LEGAL.contacts.privacy}. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.\n\n— In plain English: Email privacy@henryonyx.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data.`,
             layout: "default",
             items: [
               { id: "privacy-exercise-email", label: "Email", value: LEGAL.contacts.privacy },
@@ -738,7 +738,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             items: [
               { id: "terms-account-one", label: "Account model", value: "One account per person or entity, all divisions" },
               { id: "terms-account-credentials", label: "Credentials", value: "User responsibility" },
-              { id: "terms-account-security", label: "Report incidents", value: "security@henrycogroup.com" },
+              { id: "terms-account-security", label: "Report incidents", value: "security@henryonyx.com" },
             ],
           },
           {
@@ -777,7 +777,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "6. Intellectual property",
             title: "Ownership of content and brand",
             body:
-              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry Onyx owns the brand. Copyright takedowns go to legal@henrycogroup.com.`,
+              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry Onyx owns the brand. Copyright takedowns go to legal@henryonyx.com.`,
             layout: "default",
             items: [
               { id: "terms-ip-user", label: "User content", value: "User retains ownership; Henry Onyx licence for service delivery" },
@@ -975,7 +975,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "21. International notice",
             title: "Service of process across borders",
             body:
-              `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henrycogroup.com and the registered office. We send formal notices to your account contact details.`,
+              `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henryonyx.com and the registered office. We send formal notices to your account contact details.`,
             layout: "default",
             items: [
               { id: "terms-notice-email", label: "Notice to Henry Onyx (email)", value: LEGAL.contacts.legal },
@@ -1003,7 +1003,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "23. Notices",
             title: "Routine notices and announcements",
             body:
-              "Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henrycogroup.com where the user can subscribe to email or RSS updates.\n\n— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to.",
+              "Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henryonyx.com where the user can subscribe to email or RSS updates.\n\n— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to.",
             layout: "default",
             items: [
               { id: "terms-notices-product", label: "Product notices", value: "In-product banner + email" },
@@ -1015,7 +1015,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "24. Contact",
             title: "How to reach the company",
             body:
-              `For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.\n\n— In plain English: Legal questions to legal@henrycogroup.com. Privacy questions to privacy@henrycogroup.com. Service questions to your division.`,
+              `For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.\n\n— In plain English: Legal questions to legal@henryonyx.com. Privacy questions to privacy@henryonyx.com. Service questions to your division.`,
             layout: "default",
             items: [
               { id: "terms-contact-legal", label: "Legal", value: LEGAL.contacts.legal },

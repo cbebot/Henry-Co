@@ -10,7 +10,7 @@
  * the PASS 23 grep rule — every other email literal in the mobile app must
  * read from `BRAND_EMAILS` here rather than carry a separate string.
  */
-export const BRAND_EMAIL_DOMAIN = "henrycogroup.com";
+export const BRAND_EMAIL_DOMAIN = "henryonyx.com";
 
 const at = (local: string) => `${local}@${BRAND_EMAIL_DOMAIN}` as const;
 

@@ -78,7 +78,7 @@ export default async function AccountSupportPage({
     (thread) => thread.status === "resolved" || thread.status === "closed"
   );
   const supportEmail =
-    process.env.RESEND_SUPPORT_INBOX || "support@marketplace.henrycogroup.com";
+    process.env.RESEND_SUPPORT_INBOX || "support@marketplace.henryonyx.com";
 
   return (
     <WorkspaceShell

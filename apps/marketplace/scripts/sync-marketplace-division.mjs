@@ -44,7 +44,7 @@ const payload = {
   category: "Marketplace",
   status: "active",
   subdomain: division.subdomain,
-  domain: `${division.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`,
+  domain: `${division.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com"}`,
   short_description: division.description,
   description: division.description,
   primary_url: primaryUrl,

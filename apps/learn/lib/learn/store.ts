@@ -288,7 +288,7 @@ export async function syncLearnDivision() {
       category: "Education",
       status: "active",
       subdomain: learn.subdomain,
-      domain: `${learn.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`,
+      domain: `${learn.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com"}`,
       short_description: learn.description,
       description: learn.description,
       primary_url: getDivisionUrl("learn"),

@@ -577,7 +577,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Managed surfaces",
       managedSurfacesDescription:
         "Shared pages and division rows that now belong to the central owner dashboard.",
@@ -1081,7 +1081,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Surfaces gérées",
       managedSurfacesDescription:
         "Pages partagées et lignes de division qui relèvent désormais du tableau de bord propriétaire central.",
@@ -1578,7 +1578,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Superficies gestionadas",
       managedSurfacesDescription:
         "Páginas compartidas y filas de división ahora bajo el panel central del propietario.",
@@ -2074,7 +2074,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Superfícies geridas",
       managedSurfacesDescription:
         "Páginas partilhadas e linhas de divisão que agora pertencem ao painel central do proprietário.",
@@ -2571,7 +2571,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "السطوح المُدارة",
       managedSurfacesDescription:
         "الصفحات المشتركة وصفوف الأقسام التي صارت تحت إدارة لوحة المالك المركزية.",
@@ -3066,7 +3066,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Verwaltete Oberflächen",
       managedSurfacesDescription:
         "Gemeinsame Seiten und Bereichszeilen, die nun zum zentralen Eigentümer-Dashboard gehören.",
@@ -3564,7 +3564,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Superfici gestite",
       managedSurfacesDescription:
         "Pagine condivise e righe di divisione che ora appartengono alla dashboard centrale del proprietario.",
@@ -4056,7 +4056,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "受管理的界面",
       managedSurfacesDescription: "共享页面与业务部门行,现归属于中央业主仪表盘。",
       divisionRowsLabel: "业务部门品牌行",
@@ -4542,7 +4542,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "प्रबंधित सतहें",
       managedSurfacesDescription:
         "साझा पेज और डिवीज़न पंक्तियाँ जो अब केंद्रीय मालिक डैशबोर्ड के अधीन हैं।",
@@ -5039,7 +5039,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry Onyx",
       defaultCompanyName: "Henry Onyx",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Elu a na-ejikwa",
       managedSurfacesDescription:
         "Ibe nkekọrịta na ahịrị ngalaba ndị ugbu a dị n'okpuru dashboard onye nwe etiti.",

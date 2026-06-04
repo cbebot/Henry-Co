@@ -27,6 +27,7 @@ const PHONE_RE = /(?:\+\d{1,3}[\s\-]?)?(?:\d[\s\-]?){7,}/;
 const RELATED_TYPE_RE = /^[a-z0-9_]+$/;
 
 const HENRYCO_HOST_SUFFIXES: readonly string[] = [
+  "henryonyx.com",
   "henrycogroup.com",
   "henryco.local",
 ];
