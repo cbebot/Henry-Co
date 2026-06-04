@@ -1,14 +1,14 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "../../../packages/command-surface/src/tokens.css";
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&display=swap");
+@source "../../../packages/command-surface/src";
 
-:root {
-  --font-display: "Fraunces";
-}
-
-html, body {
+html {
   background-color: var(--cc-bg);
   color: var(--cc-ink);
-  font-family: var(--cc-font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--cc-bg); }
+::-webkit-scrollbar-thumb { background: var(--cc-line-strong); border-radius: 3px; }

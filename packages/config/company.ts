@@ -57,17 +57,18 @@ function normalizeHostname(value?: string | null) {
 }
 
 const BASE_DOMAIN =
-  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com") ||
-  "henrycogroup.com";
+  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com") ||
+  "henryonyx.com";
 const GROUP_SUPPORT_PHONE = "+2349133957084";
 
-// The legacy `henrycogroup.com` subdomain set (`account.`, `hq.`, `staff.`,
-// `workspace.`, division `<sub>.`) has no working production DNS today: the
-// apps moved to a new Vercel team during the 2026-05-23 migration and the
-// old DNS cutover never happened. Until V3-DOMAIN-01 wires `henry.holdings`
-// (or restores the legacy subdomain DNS), per-app URL overrides + live
-// Vercel aliases below carry SSO traffic so post-login redirects land on
-// a live origin instead of a 404/dead host.
+// V3-DOMAIN-01: base domain is now `henryonyx.com`. The per-app URL overrides
+// (`NEXT_PUBLIC_<APP>_URL`) and live Vercel alias fallbacks below remain as
+// the emergency safety net while DNS propagates and Vercel custom domains are
+// provisioned. Once all subdomains resolve (`care.henryonyx.com`, etc.) and
+// `NEXT_PUBLIC_BASE_DOMAIN=henryonyx.com` is set in every project's production
+// env, the BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP flag evaluates to `false` and
+// `resolveAppOrigin` routes through the subdomain helpers, making the Vercel
+// alias fallbacks dead code. Remove them in V3-DOMAIN-01 closure PR.
 const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = BASE_DOMAIN === "henrycogroup.com";
 
 function normalizeAppOriginEnv(value?: string | null): string | null {

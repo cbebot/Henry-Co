@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-04T04:50:32.810Z",
+  "generatedAt": "2026-06-04T19:23:36.691Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1347,
-    "entries": 1300,
+    "scannedFiles": 1349,
+    "entries": 1302,
     "counts": {
       "OK": 2,
-      "GAP": 1224,
+      "GAP": 1226,
       "EXEMPT": 31,
       "AMBIGUOUS": 43
     },
-    "durationMs": 4263
+    "durationMs": 6380
   },
   "entriesByFile": {
     "apps/account/app/(account)/layout.tsx": [
@@ -3909,6 +3909,16 @@
         "text": "Divisions active",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:label)"
+      }
+    ],
+    "apps/command/app/no-access/page.tsx": [
+      {
+        "line": 7,
+        "col": 49,
+        "kind": "attr:title",
+        "text": "Access restricted",
+        "classification": "GAP",
+        "reason": "hardcoded user-visible attribute (attr:title)"
       }
     ],
     "apps/company-hub/app/(tabs)/index.tsx": [
@@ -9861,15 +9871,7 @@
     ],
     "apps/work/app/console.tsx": [
       {
-        "line": 61,
-        "col": 64,
-        "kind": "jsx_text",
-        "text": "Session scope:",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 88,
+        "line": 71,
         "col": 7,
         "kind": "attr:label",
         "text": "Mock session",
@@ -9877,7 +9879,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 95,
+        "line": 78,
         "col": 7,
         "kind": "attr:title",
         "text": "Staff Workspace",
@@ -9885,7 +9887,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 109,
+        "line": 90,
         "col": 15,
         "kind": "attr:label",
         "text": "Visible items",
@@ -9893,12 +9895,30 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 126,
+        "line": 107,
         "col": 15,
         "kind": "attr:label",
-        "text": "In progress",
+        "text": "Divisions in scope",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:label)"
+      },
+      {
+        "line": 179,
+        "col": 68,
+        "kind": "jsx_text",
+        "text": "Scoping (staged)",
+        "classification": "GAP",
+        "reason": "hardcoded JSX text content"
+      }
+    ],
+    "apps/work/app/no-access/page.tsx": [
+      {
+        "line": 7,
+        "col": 50,
+        "kind": "attr:title",
+        "text": "Access restricted",
+        "classification": "GAP",
+        "reason": "hardcoded user-visible attribute (attr:title)"
       }
     ],
     "packages/address-selector/client/AddressForm.tsx": [

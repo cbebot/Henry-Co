@@ -26,8 +26,8 @@ export async function getCarePublicOrigin() {
   return (
     normalizeOriginCandidate(settings.public_site_url) ||
     normalizeOriginCandidate(settings.care_domain) ||
-    (baseDomain ? normalizeOriginCandidate(`care.${baseDomain}`) : null) ||
-    "https://care-bice.vercel.app"
+    normalizeOriginCandidate(`care.${baseDomain || "henryonyx.com"}`) ||
+    `https://care.henryonyx.com`
   );
 }
 

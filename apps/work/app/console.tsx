@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import {
@@ -6,7 +6,7 @@ import {
   ownerViewer,
   staffViewer,
   customerViewer,
-  canViewStaffWorkspace,
+  summarizeForOwner,
   type AttentionItem,
   type StaffDivision,
 } from "@henryco/command-contract";
@@ -16,52 +16,38 @@ import {
   MetricStat,
   NoAccess,
   SessionSwitcher,
-  PRIORITY_META,
+  DivisionBadge,
 } from "@henryco/command-surface";
 
-type SessionKey = "staff-mkt" | "staff-learn" | "staff-multi" | "owner" | "customer";
+type SessionKey = "staff-all" | "staff-mkt" | "staff-learn" | "staff-care" | "owner" | "customer";
 
 const SESSIONS: { key: SessionKey; label: string }[] = [
+  { key: "staff-all", label: "Staff (all)" },
   { key: "staff-mkt", label: "Staff: Mkt" },
   { key: "staff-learn", label: "Staff: Learn" },
-  { key: "staff-multi", label: "Staff: Multi" },
+  { key: "staff-care", label: "Staff: Care" },
   { key: "owner", label: "Owner" },
   { key: "customer", label: "Customer" },
 ];
 
+const ALL_STAFF: StaffDivision[] = [
+  "marketplace", "studio", "property", "learn", "logistics", "jobs", "care", "hub",
+];
+
 function viewerFor(session: SessionKey) {
-  if (session === "staff-mkt") return staffViewer(["marketplace" as StaffDivision]);
-  if (session === "staff-learn") return staffViewer(["learn" as StaffDivision]);
-  if (session === "staff-multi")
-    return staffViewer(["marketplace", "learn", "logistics"] as StaffDivision[]);
+  if (session === "staff-all") return staffViewer(ALL_STAFF);
+  if (session === "staff-mkt") return staffViewer(["marketplace"]);
+  if (session === "staff-learn") return staffViewer(["learn"]);
+  if (session === "staff-care") return staffViewer(["care"]);
   if (session === "owner") return ownerViewer();
   return customerViewer();
 }
 
-function sessionLabel(session: SessionKey): string {
-  if (session === "staff-mkt") return "Staff (marketplace only)";
-  if (session === "staff-learn") return "Staff (learn only)";
-  if (session === "staff-multi") return "Staff (marketplace + learn + logistics)";
-  if (session === "owner") return "Owner (super_admin — no staff access)";
-  return "Customer";
-}
-
-function ScopeBanner({ session }: { session: SessionKey }) {
-  const descriptions: Record<SessionKey, string> = {
-    "staff-mkt": "This session holds is_staff_in('marketplace'). Sees marketplace staff/both items only.",
-    "staff-learn": "This session holds is_staff_in('learn'). Sees learn staff/both items only.",
-    "staff-multi": "This session holds is_staff_in(['marketplace','learn','logistics']). Union of all three.",
-    owner:
-      "Owner access (super_admin) is NOT a staff-workspace credential — the Staff Workspace gates on hasStaffAccess, not hasOwnerAccess.",
-    customer:
-      "A customer session has neither hasStaffAccess nor hasOwnerAccess. Sees nothing.",
-  };
-  return (
-    <div className="rounded-[14px] border border-[var(--cc-line)] bg-[var(--cc-panel-2)] px-4 py-3 text-[13px] leading-relaxed text-[var(--cc-muted)]">
-      <span className="font-semibold text-[var(--cc-ink-soft)]">Session scope: </span>
-      {descriptions[session]}
-    </div>
-  );
+function sessionDescription(session: SessionKey): string {
+  if (session === "owner") return "Owner: you see all items (firehose mode).";
+  if (session === "customer") return "Customer: access denied — use the session switcher.";
+  if (session === "staff-all") return "All-division staff: operational queue across every division in your scope.";
+  return "Single-division staff: operational queue for your division only. Other divisions are invisible.";
 }
 
 export function WorkConsole({
@@ -71,14 +57,11 @@ export function WorkConsole({
   initialFeed: AttentionItem[];
   stagingHost: string;
 }) {
-  const [session, setSession] = useState<SessionKey>("staff-mkt");
+  const [session, setSession] = useState<SessionKey>("staff-all");
   const viewer = useMemo(() => viewerFor(session), [session]);
-  const hasAccess = canViewStaffWorkspace(viewer);
   const seen = useMemo(() => visibleItems(viewer, initialFeed), [viewer, initialFeed]);
-
-  const byPriority: Record<string, number> = {};
-  for (const item of seen) byPriority[item.priority] = (byPriority[item.priority] ?? 0) + 1;
-  const openCount = seen.filter((i) => !["resolved", "dismissed"].includes(i.status)).length;
+  const summary = summarizeForOwner(seen);
+  const hasAccess = viewer.hasOwnerAccess || viewer.hasStaffAccess;
 
   const switcher = (
     <SessionSwitcher
@@ -93,28 +76,26 @@ export function WorkConsole({
     <ConsoleShell
       surfaceLabel="Staff Workspace"
       title="Staff Workspace"
-      descriptor="Operational items scoped to your staff divisions — staff/both items from each division you belong to. Owner-only signals are excluded. Staged against mocks — V3-COMMAND-02."
+      descriptor={sessionDescription(session)}
       stagingHost={stagingHost}
       switcher={switcher}
     >
       {!hasAccess ? (
-        <NoAccess surfaceLabel="Staff Workspace" viewerLabel={sessionLabel(session)} />
+        <NoAccess surfaceLabel="Staff Workspace" viewerLabel="Customer" />
       ) : (
         <div className="space-y-7">
-          <ScopeBanner session={session} />
-
-          {/* Summary strip */}
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {/* KPI row */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <MetricStat
               label="Visible items"
               value={seen.length}
-              sublabel={`${openCount} open`}
+              sublabel={`${summary.open} open`}
             />
             <MetricStat
               label="Critical"
-              value={byPriority.critical ?? 0}
-              sublabel="needs action now"
-              accent={(byPriority.critical ?? 0) > 0 ? "var(--cc-critical)" : undefined}
+              value={summary.byPriority.critical}
+              sublabel="immediate action"
+              accent={summary.byPriority.critical > 0 ? "var(--cc-critical)" : undefined}
             />
             <MetricStat
               label="Escalated"
@@ -123,51 +104,91 @@ export function WorkConsole({
               accent="var(--cc-gold-text)"
             />
             <MetricStat
-              label="In progress"
-              value={seen.filter((i) => i.status === "in_progress").length}
-              sublabel="being worked"
-              accent="var(--cc-medium)"
+              label="Divisions in scope"
+              value={summary.divisions.length}
+              sublabel={viewer.hasOwnerAccess ? "owner firehose" : "your divisions"}
             />
           </div>
 
-          {/* Priority mix for this scope */}
-          <div className="flex flex-wrap gap-2.5">
-            {(["critical", "high", "medium", "low"] as const).map((p) => {
-              const meta = PRIORITY_META[p];
-              const count = byPriority[p] ?? 0;
-              return (
-                <div
-                  key={p}
-                  className="inline-flex items-center gap-2 rounded-[9px] border px-3 py-1.5"
-                  style={{ borderColor: `${meta.color}44`, background: meta.soft }}
-                >
-                  <span
-                    className="text-[13px] font-semibold tabular-nums"
-                    style={{ color: meta.color }}
-                  >
-                    {count}
-                  </span>
-                  <span className="text-[12px] text-[var(--cc-muted)]">{meta.label}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* The scoped queue */}
-          <section>
-            <div className="mb-3 flex items-baseline justify-between gap-3">
-              <h2 className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--cc-muted)]">
-                Your queue · priority order
-              </h2>
-              <span className="text-[12px] tabular-nums text-[var(--cc-faint)]">
-                {seen.length} item{seen.length !== 1 ? "s" : ""}
+          {/* Division scope indicator */}
+          {!viewer.hasOwnerAccess && viewer.staffDivisions.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2 rounded-[var(--cc-radius)] border border-[var(--cc-line)] bg-[var(--cc-panel)] px-4 py-3">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--cc-muted)] mr-1">
+                Your scope
+              </span>
+              {viewer.staffDivisions.map((d) => (
+                <DivisionBadge key={d} division={d as never} />
+              ))}
+              <span className="ml-auto text-[11px] text-[var(--cc-faint)]">
+                {seen.filter((i) => i.surface === "both" || i.surface === "staff").length} staff/both items ·{" "}
+                owner-only items invisible
               </span>
             </div>
-            <AttentionFeed
-              items={seen}
-              emptyHint="Nothing in your divisions needs attention right now."
-            />
-          </section>
+          ) : null}
+
+          <div className="grid gap-7 xl:grid-cols-[1fr_260px]">
+            {/* Feed */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="cc-display text-[18px] text-[var(--cc-ink)]">
+                  Operational queue
+                </h2>
+                <span className="text-[12px] text-[var(--cc-faint)]">
+                  {seen.length} item{seen.length !== 1 ? "s" : ""} · priority order
+                </span>
+              </div>
+              <AttentionFeed
+                items={seen}
+                emptyHint={
+                  viewer.hasOwnerAccess
+                    ? "No items in the firehose."
+                    : "No open staff items in your divisions. Switch session to see other scopes."
+                }
+              />
+            </div>
+
+            {/* Sidebar */}
+            <aside className="space-y-4">
+              {summary.divisions.length > 0 ? (
+                <div className="rounded-[var(--cc-radius)] border border-[var(--cc-line)] bg-[var(--cc-panel)] p-4">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--cc-muted)]">
+                    Active divisions
+                  </h3>
+                  <div className="mt-3 space-y-2">
+                    {summary.divisions.map((d) => (
+                      <div
+                        key={d.division}
+                        className="flex items-center justify-between text-[13px]"
+                      >
+                        <DivisionBadge division={d.division} />
+                        <span className="tabular-nums text-[var(--cc-faint)]">
+                          {d.open} open
+                          {d.critical > 0 ? (
+                            <span className="ml-1.5 text-[var(--cc-critical)]">
+                              · {d.critical} crit
+                            </span>
+                          ) : null}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="rounded-[var(--cc-radius)] border border-dashed border-[var(--cc-line)] p-4 text-[12px] leading-relaxed text-[var(--cc-faint)]">
+                <p className="font-semibold text-[var(--cc-muted)]">Scoping (staged)</p>
+                <p className="mt-1">
+                  Staff see <code className="font-mono text-[11px]">staff</code> /
+                  <code className="font-mono text-[11px]"> both</code> items only,
+                  intersected with their division memberships.
+                  Owner-only items are invisible to staff.
+                </p>
+                <p className="mt-2 font-mono text-[10px]">
+                  V3-COMMAND-03: real is_staff_in() SQL predicate.
+                </p>
+              </div>
+            </aside>
+          </div>
         </div>
       )}
     </ConsoleShell>

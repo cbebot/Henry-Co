@@ -1,5 +1,4 @@
-import type { Config } from "tailwindcss";
-
+﻿import type { Config } from "tailwindcss";
 const config: Config = {
   darkMode: "class",
   content: [
@@ -7,10 +6,7 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
     "../../packages/command-surface/src/**/*.{ts,tsx}",
   ],
-  theme: {
-    extend: {},
-  },
+  theme: { extend: {} },
   plugins: [],
 };
-
 export default config;

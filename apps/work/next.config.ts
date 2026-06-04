@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
@@ -8,9 +8,7 @@ const root = resolve(appDir, "../..");
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
   transpilePackages: ["@henryco/command-contract", "@henryco/command-surface", "@henryco/config"],
-  turbopack: {
-    root,
-  },
+  turbopack: { root },
 };
 
 export default nextConfig;
