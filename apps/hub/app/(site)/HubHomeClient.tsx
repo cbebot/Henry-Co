@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import type { PublicAccountUser } from "@henryco/ui";
+import { LaunchTransitionProvider } from "@henryco/ui/public-shell";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
 import type { DivisionRow } from "../lib/divisions";
 import type { DivisionLiveStat } from "../lib/division-stats";
@@ -65,6 +66,7 @@ export default function HubHomeClient({
   const divisions = initialDivisions ?? [];
 
   return (
+    <LaunchTransitionProvider>
     <div
       id="top"
       style={rootStyle}
@@ -104,5 +106,6 @@ export default function HubHomeClient({
         support={footer.support}
       />
     </div>
+    </LaunchTransitionProvider>
   );
 }
