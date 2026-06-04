@@ -16,7 +16,7 @@
      Anything the portal needs locally is named off the canonical token
      so there is exactly one place to retune the brand. */
   --log-pf-copper: var(--logistics-accent);
-  --log-pf-copper-strong: var(--hc-accent-pressed);
+  --log-pf-copper-strong: var(--home-accent-strong, var(--hc-accent-pressed));
   --log-pf-copper-soft: var(--logistics-accent-soft);
   --log-pf-rule: var(--logistics-line);
   --log-pf-rule-strong: var(--logistics-line-strong);
@@ -188,12 +188,25 @@
 
 .log-pf__metric-value {
   font-family: var(--hc-font-display, var(--font-source-serif), "Source Serif 4", "Source Serif Pro", Georgia, serif);
-  font-size: clamp(1.85rem, 3.2vw, 2.4rem);
-  line-height: 1;
+  /* Capped + wrapping so the tile holds BOTH a short numeral ("4") AND a longer
+     phrase value ("Customer-only events", "Recipient + time") without
+     overflowing its column. */
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  line-height: 1.05;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--log-pf-ink);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Phrase values (e.g. "Customer-only events", "7:00 AM to 8:00 PM") render at a
+   readable text size + wrap at word boundaries; short numerals keep the big serif. */
+.log-pf__metric-value--text {
+  font-size: clamp(0.82rem, 1.3vw, 1rem);
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
 .log-pf__metric-value-currency {
@@ -214,7 +227,9 @@
 }
 
 .log-pf__metric-trend-pos { color: color-mix(in srgb, var(--log-pf-copper-soft) 84%, var(--log-pf-ink)); }
-.log-pf__metric-trend-neg { color: color-mix(in srgb, #f0c79a 64%, var(--log-pf-ink)); }
+/* Negative trend: a clay tone mixed toward the theme ink so it stays legible
+   on both warm-paper (light) and near-black (dark). */
+.log-pf__metric-trend-neg { color: color-mix(in srgb, #c2693a 70%, var(--log-pf-ink)); }
 
 /* ─────────────────────────────────────────────────────────────────────
    Sections — kicker + headline + meta rail (NOT a card wall).
@@ -346,8 +361,10 @@
 }
 
 .log-pf__list-status[data-tone="active"] { color: var(--log-pf-copper-soft); }
-.log-pf__list-status[data-tone="good"] { color: color-mix(in srgb, #b2dcc1 78%, var(--log-pf-ink)); }
-.log-pf__list-status[data-tone="warn"] { color: color-mix(in srgb, #f3c98a 80%, var(--log-pf-ink)); }
+/* Good / warn tones: saturated bases mixed toward the theme ink so each holds
+   contrast (and stays in-hue) on both the light warm-paper and the dark canvas. */
+.log-pf__list-status[data-tone="good"] { color: color-mix(in srgb, #2f8f5b 66%, var(--log-pf-ink)); }
+.log-pf__list-status[data-tone="warn"] { color: color-mix(in srgb, #b87514 70%, var(--log-pf-ink)); }
 
 /* ─────────────────────────────────────────────────────────────────────
    Tracking-flavoured surfaces — used on /track for the premium polish.

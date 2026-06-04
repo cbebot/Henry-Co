@@ -291,27 +291,27 @@ export default async function LogisticsHomePage() {
           body={copy.spotlight.body}
           aside={
             <ul className="space-y-4">
-              <li className="border-l border-white/15 pl-4">
-                <p className="text-sm font-semibold text-white">
+              <li className="border-l border-[color:var(--home-line)] pl-4">
+                <p className="text-sm font-semibold text-[color:var(--home-ink)]">
                   {copy.spotlight.honestEtaTitle}
                 </p>
-                <p className="mt-1 text-sm leading-relaxed text-white/72">
+                <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
                   {copy.spotlight.honestEtaBody}
                 </p>
               </li>
-              <li className="border-l border-white/15 pl-4">
-                <p className="text-sm font-semibold text-white">
+              <li className="border-l border-[color:var(--home-line)] pl-4">
+                <p className="text-sm font-semibold text-[color:var(--home-ink)]">
                   {copy.spotlight.proofTitle}
                 </p>
-                <p className="mt-1 text-sm leading-relaxed text-white/72">
+                <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
                   {copy.spotlight.proofBody}
                 </p>
               </li>
-              <li className="border-l border-white/15 pl-4">
-                <p className="text-sm font-semibold text-white">
+              <li className="border-l border-[color:var(--home-line)] pl-4">
+                <p className="text-sm font-semibold text-[color:var(--home-ink)]">
                   {copy.spotlight.accountTitle}
                 </p>
-                <p className="mt-1 text-sm leading-relaxed text-white/72">
+                <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
                   {copy.spotlight.accountBody}
                 </p>
               </li>
@@ -350,7 +350,7 @@ export default async function LogisticsHomePage() {
             <dl className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
               {faqEntries.map((faq) => (
                 <div key={faq.q} className="py-5">
-                  <dt className="text-base font-semibold tracking-tight text-white">
+                  <dt className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {faq.q}
                   </dt>
                   <dd className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">

@@ -83,7 +83,7 @@ export default async function CoveragePage() {
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
             {copy.hero.eyebrow}
           </p>
-          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
+          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
             {copy.hero.title}
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
@@ -98,7 +98,7 @@ export default async function CoveragePage() {
             regions.map((region) => (
               <div key={region} className="space-y-5">
                 <div className="flex items-baseline justify-between gap-4">
-                  <h2 className="text-[1.4rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.6rem]">
+                  <h2 className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--home-ink)] sm:text-[1.6rem]">
                     {region}
                   </h2>
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
@@ -118,14 +118,14 @@ export default async function CoveragePage() {
                         <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
                           {zone.key}
                         </p>
-                        <h3 className="mt-2 text-base font-semibold text-white">{zone.name}</h3>
+                        <h3 className="mt-2 text-base font-semibold text-[color:var(--home-ink)]">{zone.name}</h3>
                         <p className="mt-1 text-xs text-[var(--logistics-muted)]">{zone.city}</p>
                       </div>
                       <p className="text-sm leading-7 text-[var(--logistics-muted)]">
                         {zone.summary}
                       </p>
                       <div className="text-right text-sm">
-                        <p className="font-semibold text-white">{naira.format(zone.baseFee)}</p>
+                        <p className="font-semibold text-[color:var(--home-ink)]">{naira.format(zone.baseFee)}</p>
                         <p className="mt-1 text-xs text-[var(--logistics-muted)]">
                           {copy.zones.etaSuffixTemplate
                             .replace("{min}", String(zone.etaHoursMin))
@@ -143,14 +143,14 @@ export default async function CoveragePage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/quote"
-            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3.5 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-accent-ink)] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]"
           >
             {copy.ctas.quote}
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/business"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.07]"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-[color:var(--home-surface-04)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:bg-[color:var(--home-surface-07)]"
           >
             {copy.ctas.business}
           </Link>

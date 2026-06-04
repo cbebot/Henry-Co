@@ -353,7 +353,7 @@ export default async function TrackPage({ searchParams }: Props) {
             action="/track"
           >
             <label className="grid gap-1 text-sm">
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                 {t("Tracking code")}
               </span>
               <input
@@ -361,11 +361,11 @@ export default async function TrackPage({ searchParams }: Props) {
                 defaultValue={code || ""}
                 required
                 placeholder="HCL-XXXXXX"
-                className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 uppercase text-white placeholder:normal-case placeholder:text-white/30 focus:border-[var(--logistics-accent)]/60 focus:outline-none"
+                className="rounded-2xl border border-[var(--logistics-line)] bg-[color:var(--home-surface-10)] px-4 py-3 uppercase text-[color:var(--home-ink)] placeholder:normal-case placeholder:text-[color:var(--home-ink-50)] focus:border-[var(--logistics-accent)]/60 focus:outline-none"
               />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                 {t("Sender or recipient phone")}
               </span>
               <input
@@ -374,7 +374,7 @@ export default async function TrackPage({ searchParams }: Props) {
                 defaultValue={phone || ""}
                 required
                 placeholder="+234…"
-                className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white placeholder:text-white/30 focus:border-[var(--logistics-accent)]/60 focus:outline-none"
+                className="rounded-2xl border border-[var(--logistics-line)] bg-[color:var(--home-surface-10)] px-4 py-3 text-[color:var(--home-ink)] placeholder:text-[color:var(--home-ink-50)] focus:border-[var(--logistics-accent)]/60 focus:outline-none"
               />
             </label>
             <div className="flex flex-wrap gap-3 sm:justify-end">
@@ -391,10 +391,10 @@ export default async function TrackPage({ searchParams }: Props) {
             >
               {t("Account logistics hub")}
             </Link>
-            <span className="text-white/30">·</span>
+            <span className="text-[color:var(--home-ink-50)]">·</span>
             <Link
               href="/support"
-              className="font-semibold text-white/80 underline-offset-4 hover:underline"
+              className="font-semibold text-[color:var(--home-ink-70)] underline-offset-4 hover:underline"
             >
               {t("Contact dispatch")}
             </Link>
@@ -407,7 +407,7 @@ export default async function TrackPage({ searchParams }: Props) {
               {t("No shipment found")}
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-              {t("We couldn’t find a shipment for that code and phone combination. Confirm the code on your booking confirmation and use the same phone you listed as sender or recipient. If both look correct, the dispatch desk can verify your record.")}
+              {t("No shipment matches that code and phone. Confirm the code on your booking confirmation and use the phone you listed as sender or recipient. If both are correct, dispatch will verify your record.")}
             </p>
             <div className="mt-3 flex flex-wrap gap-3 text-sm">
               <Link
@@ -416,10 +416,10 @@ export default async function TrackPage({ searchParams }: Props) {
               >
                 {t("Open a support thread")}
               </Link>
-              <span className="text-white/30">·</span>
+              <span className="text-[color:var(--home-ink-50)]">·</span>
               <Link
                 href="/book"
-                className="font-semibold text-white/80 underline-offset-4 hover:underline"
+                className="font-semibold text-[color:var(--home-ink-70)] underline-offset-4 hover:underline"
               >
                 {t("Book a new shipment")}
               </Link>
@@ -432,10 +432,10 @@ export default async function TrackPage({ searchParams }: Props) {
             <section className="border-y border-[var(--logistics-line)] py-6">
               <div className="flex flex-wrap items-start justify-between gap-6">
                 <div>
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-white/45">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[color:var(--home-ink-50)]">
                     {t("Shipment")}
                   </p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-[1.7rem]">
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--home-ink)] sm:text-[1.7rem]">
                     {detail.shipment.trackingCode}
                   </h2>
                   <p className="mt-1 text-sm text-[var(--logistics-muted)]">
@@ -445,10 +445,10 @@ export default async function TrackPage({ searchParams }: Props) {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {t("Status")}
                   </p>
-                  <p className="mt-1 text-lg font-semibold capitalize text-white">
+                  <p className="mt-1 text-lg font-semibold capitalize text-[color:var(--home-ink)]">
                     {detail.shipment.lifecycleStatus.replaceAll("_", " ")}
                   </p>
                   <p className="mt-2 text-sm text-[var(--logistics-muted)]">
@@ -472,11 +472,11 @@ export default async function TrackPage({ searchParams }: Props) {
             <section className="grid gap-10 lg:grid-cols-[1.1fr,0.9fr]">
               <div>
                 <div className="flex items-baseline gap-3">
-                  <Clock3 className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                  <h3 className="text-base font-semibold tracking-tight text-white">
+                  <Clock3 className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {t("Timeline")}
                   </h3>
-                  <span className="text-[11px] uppercase tracking-[0.2em] text-white/45">
+                  <span className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--home-ink-50)]">
                     {t("Customer-visible milestones")}
                   </span>
                 </div>
@@ -487,40 +487,40 @@ export default async function TrackPage({ searchParams }: Props) {
               <div className="space-y-8">
                 <div>
                   <div className="flex items-baseline gap-3">
-                    <ShieldCheck className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                    <h3 className="text-base font-semibold tracking-tight text-white">
+                    <ShieldCheck className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
+                    <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                       {t("Proof of delivery")}
                     </h3>
                   </div>
                   {detail.proof ? (
                     <dl className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
                       <div className="flex items-baseline gap-3 py-3">
-                        <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                        <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                           {t("Recipient")}
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                           {detail.proof.recipientName}
                         </dd>
                       </div>
                       <div className="flex items-baseline gap-3 py-3">
-                        <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                        <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                           {t("Delivered")}
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                           {new Date(detail.proof.deliveredAt).toLocaleString()}
                         </dd>
                       </div>
                       <div className="flex items-baseline gap-3 py-3">
-                        <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                        <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                           {t("Type")}
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold capitalize tracking-tight text-white">
+                        <dd className="ml-auto text-right text-sm font-semibold capitalize tracking-tight text-[color:var(--home-ink)]">
                           {detail.proof.proofType}
                         </dd>
                       </div>
                       {proofNoteLocalized ? (
                         <div className="py-3">
-                          <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                          <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                             {t("Note")}
                           </dt>
                           <dd className="mt-1 text-sm leading-7 text-[var(--logistics-muted)]">
@@ -543,7 +543,7 @@ export default async function TrackPage({ searchParams }: Props) {
                     <ul className="mt-3 space-y-3 text-sm leading-7 text-[var(--logistics-muted)]">
                       {issuesLocalized.map((issue) => (
                         <li key={issue.id}>
-                          <span className="font-semibold text-white">{issue.summary}</span> —{" "}
+                          <span className="font-semibold text-[color:var(--home-ink)]">{issue.summary}</span> —{" "}
                           {issue.details}
                         </li>
                       ))}

@@ -58,7 +58,7 @@ export default async function PricingPage() {
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
             {copy.hero.eyebrow}
           </p>
-          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
+          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
             {copy.hero.title}
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
@@ -77,7 +77,7 @@ export default async function PricingPage() {
             {zonesLocalized.map((z) => (
               <li key={z.id} className="grid gap-5 py-6 md:grid-cols-[0.4fr,1fr,0.4fr,0.4fr]">
                 <div>
-                  <h3 className="text-[1.05rem] font-semibold tracking-tight text-white">
+                  <h3 className="text-[1.05rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {z.name}
                   </h3>
                 </div>
@@ -85,18 +85,18 @@ export default async function PricingPage() {
                   {z.summary}
                 </p>
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {copy.zones.baseFromLabel}
                   </p>
-                  <p className="mt-1 text-base font-semibold tracking-tight text-white">
+                  <p className="mt-1 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {formatCurrency(z.baseFee)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {copy.zones.typicalWindowLabel}
                   </p>
-                  <p className="mt-1 text-base font-semibold tracking-tight text-white">
+                  <p className="mt-1 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {z.etaHoursMin}–{z.etaHoursMax}h
                   </p>
                 </div>
@@ -130,15 +130,15 @@ export default async function PricingPage() {
                 {cards.map((c) => (
                   <tr
                     key={c.id}
-                    className="border-b border-[var(--logistics-line)]/60 transition hover:bg-white/[0.02]"
+                    className="border-b border-[color:var(--home-line)] transition hover:bg-[color:var(--home-surface-04)]"
                   >
-                    <td className="py-4 pr-4 font-semibold capitalize text-white">
+                    <td className="py-4 pr-4 font-semibold capitalize text-[color:var(--home-ink)]">
                       {c.serviceType.replaceAll("_", " ")}
                     </td>
                     <td className="py-4 pr-4 capitalize text-[var(--logistics-muted)]">
                       {c.urgency}
                     </td>
-                    <td className="py-4 pr-4 text-white">{formatCurrency(c.baseAmount)}</td>
+                    <td className="py-4 pr-4 text-[color:var(--home-ink)]">{formatCurrency(c.baseAmount)}</td>
                     <td className="py-4 pr-4 text-[var(--logistics-muted)]">
                       {formatCurrency(c.weightFeePerKg)}
                     </td>
@@ -154,7 +154,7 @@ export default async function PricingPage() {
 
         <Link
           href="/book"
-          className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3.5 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-accent-ink)] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)]"
         >
           {copy.cta.startBooking}
           <ArrowRight className="h-4 w-4" />

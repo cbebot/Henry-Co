@@ -58,7 +58,7 @@ export default async function ServicesPage() {
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
             {copy.hero.eyebrow}
           </p>
-          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
+          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
             {copy.hero.title}
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
@@ -73,13 +73,13 @@ export default async function ServicesPage() {
                 <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
                   {copy.serviceRow.label} {String(i + 1).padStart(2, "0")} &middot; {s.badge}
                 </p>
-                <h2 className="mt-3 text-[1.4rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.6rem]">
+                <h2 className="mt-3 text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--home-ink)] sm:text-[1.6rem]">
                   {s.name}
                 </h2>
               </div>
               <div>
                 <p className="text-[15px] leading-7 text-[var(--logistics-muted)]">{s.summary}</p>
-                <p className="mt-3 text-[15px] font-semibold leading-7 text-white/90">{s.promise}</p>
+                <p className="mt-3 text-[15px] font-semibold leading-7 text-[color:var(--home-ink)]">{s.promise}</p>
                 <ul className="mt-5 grid gap-2 sm:grid-cols-3">
                   {s.highlights.map((h) => (
                     <li
@@ -99,14 +99,14 @@ export default async function ServicesPage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/book"
-            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3.5 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-accent-ink)] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:bg-[color:var(--home-accent-strong)] hover:-translate-y-0.5"
           >
             {copy.cta.book}
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/quote"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.07]"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-[color:var(--home-surface-04)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:bg-[color:var(--home-surface-07)]"
           >
             {copy.cta.quote}
           </Link>
