@@ -1,4 +1,4 @@
-﻿import type { NextConfig } from "next";
+import type { NextConfig } from "next";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 

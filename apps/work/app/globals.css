@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @import "../../../packages/command-surface/src/tokens.css";
 @source "../../../packages/command-surface/src";
 

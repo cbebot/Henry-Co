@@ -1,4 +1,4 @@
-﻿import { ConsoleShell, NoAccess } from "@henryco/command-surface";
+import { ConsoleShell, NoAccess } from "@henryco/command-surface";
 
 export const metadata = { title: "Access restricted — Henry Onyx Staff Workspace" };
 

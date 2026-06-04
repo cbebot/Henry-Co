@@ -1,4 +1,4 @@
-﻿import { henrySubdomain } from "@henryco/config";
+import { henrySubdomain } from "@henryco/config";
 import { mockAttentionFeed } from "@henryco/command-contract";
 import { WorkConsole } from "./console";
 

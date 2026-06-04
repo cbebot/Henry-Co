@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Fraunces } from "next/font/google";
 import { henrySubdomain } from "@henryco/config";
