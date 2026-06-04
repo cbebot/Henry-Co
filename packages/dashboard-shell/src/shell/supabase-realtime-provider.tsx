@@ -964,7 +964,13 @@ export function SupabaseRealtimeProvider({
     const supabase = supabaseRef.current ?? factory();
     if (!supabase) return;
     supabaseRef.current = supabase;
-    const authApi = supabase.auth?.onAuthStateChange;
+    // Bind to `supabase.auth` — supabase-js >=2.98 reads `this._debug` inside
+    // onAuthStateChange, so a DETACHED method reference (`= supabase.auth.x`)
+    // is invoked with `this === undefined` and throws
+    // "Cannot read properties of undefined (reading '_debug')", which the
+    // (account)/error.tsx boundary catches as "This page didn't load"
+    // (V3-DOMAIN-FIX-01 — surfaced on the new account.henryonyx.com build).
+    const authApi = supabase.auth?.onAuthStateChange?.bind(supabase.auth);
     if (typeof authApi !== "function") return;
 
     let unsubscribed = false;
@@ -981,7 +987,10 @@ export function SupabaseRealtimeProvider({
       //     channel-effect mount path (deps include viewer.user.id).
       //   - USER_UPDATED / PASSWORD_RECOVERY: no channel impact.
       handleSupabaseAuthEvent(event, session, {
-        setAuth: supabase.realtime?.setAuth,
+        // Bound for the same reason as onAuthStateChange above — realtime-js
+        // setAuth touches `this` in >=2.98, so a detached ref throws on
+        // TOKEN_REFRESHED.
+        setAuth: supabase.realtime?.setAuth?.bind(supabase.realtime),
         hasStaffAccess,
         userId,
         emit: emitConnectionEvent,
