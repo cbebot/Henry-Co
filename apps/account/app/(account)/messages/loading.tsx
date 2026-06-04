@@ -1,12 +1,11 @@
 import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 /**
- * V3 Wave A1 D3 — messages route-segment loader.
- *
- * PERF-01 canonical thin progress bar (memory:
- * project_henryco_perf01_loading.md). The skeleton-free approach keeps
- * perceived latency low on fast nav (320ms animation-delay).
+ * Account messages route-segment loader — the calm hairline progress rail only
+ * (variant="rail"). The account hub is flow mode: the Onyx brand moment is
+ * reserved for public/discovery surfaces; here we keep the minimal PERF-01
+ * signal so high-frequency nav never feels laggy.
  */
 export default function MessagesLoading() {
-  return <PublicRouteLoader />;
+  return <PublicRouteLoader variant="rail" />;
 }

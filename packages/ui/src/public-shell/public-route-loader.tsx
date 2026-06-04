@@ -1,32 +1,33 @@
 import type { ReactNode } from "react";
 import { cn } from "../lib/cn";
+import { HenryCoMonogram } from "../brand/HenryCoMonogram";
 
 /**
- * Public route-level loading indicator — premium, calm, near-invisible.
+ * PublicRouteLoader — THE shared public loading experience (V3-LOADER).
  *
- * Design intent (2026-05-03 owner pivot):
- *   • Premium ecosystems do NOT show a "Preparing the public Care experience"
- *     splash. Splashes read as cheap and unfocused. Real Apple / Stripe /
- *     Linear loading states are a thin progress bar at the top of the
- *     viewport — barely perceptible on fast nav, only briefly visible on
- *     slow nav.
- *   • The previous implementation rendered a 50vh min-height flex container
- *     with a dual-arc 1600ms-cycle spinner and theatrical title/subtitle
- *     copy ("Preparing your creative workspace"). This shipped across every
- *     `/loading.tsx` in the platform and made every nav feel laggy.
- *   • Replaced with a thin, brand-accent progress bar pinned to the top of
- *     the viewport. CSS `animation-delay: 320ms` keeps the bar invisible on
- *     fast navigations (the common case) and lets it appear only when the
- *     page genuinely takes time to render.
- *   • `aria-live="polite"` + `aria-busy="true"` retained for screen-reader
- *     parity. `prefers-reduced-motion: reduce` collapses the bar to a static
- *     accent line.
+ * One component, every `loading.tsx`. Invisible on fast navigation; a crafted
+ * Onyx brand moment when a load genuinely takes time. It adapts to each surface
+ * automatically: theme-aware via the global `--home-*` tokens, and
+ * division-accent-aware via `--home-accent` inherited from the page's
+ * `.home-accent-scope` (Care cobalt, Logistics copper, Studio teal, the hub
+ * gold …) — with ZERO per-division config. Pure CSS: SSR-safe,
+ * reduced-motion-aware, CLS-safe, no JS, no layout thrash. The visual styles +
+ * progressive-disclosure timings live in
+ * `packages/ui/src/styles/public-design.css` (`.ho-route-loader*`).
  *
- * The component still accepts `eyebrow`, `title`, `subtitle`, `tone`,
- * `size`, and `children` for full backwards compatibility with the dozens
- * of existing call sites under `apps/<app>/app/.../loading.tsx`. Those
- * props are now ignored at the visible layer — the loader is intentionally
- * minimal and uniform across the platform.
+ * Progressive disclosure by elapsed time:
+ *   0–280ms   nothing visible (the common case — feels instant)
+ *   280ms+    a hairline accent progress rail sweeps the viewport top
+ *   560ms+    the centered Onyx mark fades up: a breathing serif "H · Onyx"
+ *             monogram + accent aurora + polish sheen + comet rail.
+ *
+ * Evolution of the 2026-05-03 "thin bar" pivot: that pivot rightly killed the
+ * cheap 50vh spinner + "Preparing your experience" theater. This keeps that
+ * calm thin bar for the common (fast) case and adds, ONLY for genuinely slow
+ * loads, a crafted, restrained brand moment — no spinner, no copy. The legacy
+ * `eyebrow`/`title`/`subtitle`/`tone`/`size` props are accepted for
+ * backwards-compatibility with existing call sites but ignored at the visible
+ * layer — the loader is one uniform, world-class experience platform-wide.
  */
 export function PublicRouteLoader({
   eyebrow: _eyebrow,
@@ -36,6 +37,7 @@ export function PublicRouteLoader({
   spinnerClassName: _spinnerClassName,
   tone: _tone,
   size: _size,
+  variant = "brand",
   children,
 }: {
   eyebrow?: string;
@@ -45,34 +47,49 @@ export function PublicRouteLoader({
   spinnerClassName?: string;
   tone?: "default" | "onDark";
   size?: "md" | "lg" | "xl";
+  /**
+   * "brand" (default) renders the full Onyx brand moment — for public /
+   * discovery surfaces. "rail" renders ONLY the calm hairline progress bar
+   * (no brand stage) — for flow surfaces (e.g. account routes) that want the
+   * minimal PERF-01 signal without a brand splash on high-frequency nav.
+   */
+  variant?: "brand" | "rail";
   children?: ReactNode;
 }) {
   return (
     <div
-      className={cn("pointer-events-none", className)}
+      className={cn("ho-route-loader", className)}
       role="status"
       aria-live="polite"
       aria-busy="true"
     >
       <span className="sr-only">Loading</span>
-      <div
-        aria-hidden="true"
-        className="fixed inset-x-0 top-0 z-[120] h-[2px] overflow-hidden bg-transparent"
-      >
-        <span
-          className="block h-full w-1/3 bg-[color:var(--accent,#C9A227)] opacity-90 motion-reduce:animate-none"
-          style={{
-            animation: "henryco-route-progress 1100ms cubic-bezier(0.4,0,0.2,1) 320ms infinite",
-          }}
-        />
+
+      {/* 1 — the calm cross-page signal: a hairline accent rail at the top */}
+      <div aria-hidden="true" className="ho-route-loader__rail">
+        <span className="ho-route-loader__rail-fill" />
       </div>
-      <style>{`
-        @keyframes henryco-route-progress {
-          0%   { transform: translate3d(-100%, 0, 0); }
-          50%  { transform: translate3d(60%, 0, 0); }
-          100% { transform: translate3d(220%, 0, 0); }
-        }
-      `}</style>
+
+      {/* 2 — the Onyx brand moment, revealed only on genuinely slow loads
+            (brand variant only; flow surfaces opt out via variant="rail") */}
+      {variant === "rail" ? null : (
+        <div aria-hidden="true" className="ho-route-loader__stage">
+          <span className="ho-route-loader__halo" />
+          <span className="ho-route-loader__mark">
+            <HenryCoMonogram
+              size={64}
+              accent="var(--home-accent)"
+              aria-hidden
+              className="ho-route-loader__monogram"
+            />
+            <span className="ho-route-loader__sheen" />
+          </span>
+          <span className="ho-route-loader__track">
+            <span className="ho-route-loader__comet" />
+          </span>
+        </div>
+      )}
+
       {children}
     </div>
   );

@@ -413,7 +413,7 @@ export function PublicChrome({
       triggerRef={triggerRef}
       initialFocusRef={closeRef}
     >
-      <div className="home-accent-scope flex min-h-0 flex-1 flex-col" style={accentStyle}>
+      <div className="home-accent-scope flex min-h-0 flex-1 flex-col text-[color:var(--home-ink)]" style={accentStyle}>
       <header className="flex items-start justify-between gap-3 border-b border-[color:var(--home-line)] px-5 pb-4 pt-2">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[color:var(--home-accent-text)]">
