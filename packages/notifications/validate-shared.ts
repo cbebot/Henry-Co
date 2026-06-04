@@ -6,7 +6,7 @@
  * shape gates on title/body/actionLabel/payload/deepLink/relatedId/
  * requestId. Centralizing them here means a security tightening (e.g.
  * adding a new control character to the deny-list, narrowing the
- * HenryCo host suffix list) lands once and propagates to every
+ * Henry & Co. host suffix list) lands once and propagates to every
  * publish path.
  */
 
@@ -27,6 +27,7 @@ const PHONE_RE = /(?:\+\d{1,3}[\s\-]?)?(?:\d[\s\-]?){7,}/;
 const RELATED_TYPE_RE = /^[a-z0-9_]+$/;
 
 const HENRYCO_HOST_SUFFIXES: readonly string[] = [
+  "henryonyx.com",
   "henrycogroup.com",
   "henryco.local",
 ];

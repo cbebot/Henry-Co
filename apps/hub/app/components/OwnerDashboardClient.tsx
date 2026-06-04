@@ -1720,7 +1720,7 @@ function BrandSettingsPreview({ settings, copy }: { settings: SettingsRecord; co
               Accent {settings.brand_accent || "#C9A227"}
             </span>
             <span className="rounded-full border border-white/12 bg-black/20 px-3 py-1 text-[11px] text-white/76">
-              {settings.base_domain || "henrycogroup.com"}
+              {settings.base_domain || "henryonyx.com"}
             </span>
           </div>
         </div>

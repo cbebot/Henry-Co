@@ -22,7 +22,7 @@ const SUBJECT_PRESETS = [
   { value: "order", label: "An order or delivery" },
   { value: "payment", label: "A payment or refund" },
   { value: "vendor", label: "A specific store or vendor" },
-  { value: "account", label: "My HenryCo account" },
+  { value: "account", label: "My Henry & Co. account" },
   { value: "trust", label: "Trust, safety, or moderation" },
   { value: "other", label: "Something else" },
 ];
@@ -78,12 +78,12 @@ export default async function AccountSupportPage({
     (thread) => thread.status === "resolved" || thread.status === "closed"
   );
   const supportEmail =
-    process.env.RESEND_SUPPORT_INBOX || "support@marketplace.henrycogroup.com";
+    process.env.RESEND_SUPPORT_INBOX || "support@marketplace.henryonyx.com";
 
   return (
     <WorkspaceShell
       title="Support"
-      description="Open a ticket attached to your HenryCo account, order history, and dispute trail. Replies stay on the same thread so you never re-type the context."
+      description="Open a ticket attached to your Henry & Co. account, order history, and dispute trail. Replies stay on the same thread so you never re-type the context."
       {...accountWorkspaceNav("/account/support", locale)}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">

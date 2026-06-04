@@ -44,7 +44,7 @@ const payload = {
   category: "Marketplace",
   status: "active",
   subdomain: division.subdomain,
-  domain: `${division.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`,
+  domain: `${division.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com"}`,
   short_description: division.description,
   description: division.description,
   primary_url: primaryUrl,
@@ -57,13 +57,13 @@ const payload = {
   who_its_for: [
     "Premium buyers",
     "Trusted local sellers",
-    "HenryCo operations teams",
+    "Henry & Co. operations teams",
     "Support and finance operators",
   ],
   how_it_works: [
     "Browse premium products with stronger trust signals",
     "Check out with split-order clarity and payment-state visibility",
-    "Track, review, and dispute from one HenryCo account",
+    "Track, review, and dispute from one Henry & Co. account",
     "Apply to sell and publish only after moderation approval",
   ],
   trust: [
@@ -77,7 +77,7 @@ const payload = {
   is_featured: true,
   sort_order: 3,
   categories: ["Marketplace", "Commerce", "Premium Retail", "Vendor Platforms"],
-  lead_name: "HenryCo Marketplace Leadership",
+  lead_name: "Henry & Co. Marketplace Leadership",
   lead_title: "Marketplace Operations Lead",
 };
 

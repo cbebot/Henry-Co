@@ -47,7 +47,7 @@ const ACCOUNT_HOME_FALLBACK = henrySubdomain("account");
 // the real surface is `/settings/notifications`. Recipients clicking the
 // footer were landing on the not-found page and could not unsubscribe.
 const PREFERENCES_PATH = "/settings/notifications";
-const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henrycogroup.com", "henryco.local"];
+const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henryonyx.com", "henrycogroup.com", "henryco.local"];
 
 type Bucket = { count: number; windowStartedAt: number };
 const rateBuckets = new Map<string, Bucket>();
@@ -190,14 +190,14 @@ const DIVISION_TITLE: Record<string, string> = {
   studio: "Studio",
   security: "Security",
   account: "Account",
-  hub: "HenryCo",
-  staff: "HenryCo",
-  system: "HenryCo",
+  hub: "Henry & Co.",
+  staff: "Henry & Co.",
+  system: "Henry & Co.",
 };
 
 function divisionTitle(division: string | null | undefined): string {
   const key = String(division || "").trim().toLowerCase();
-  return DIVISION_TITLE[key] || "HenryCo";
+  return DIVISION_TITLE[key] || "Henry & Co.";
 }
 
 // ─── Dispatch with explicit Resend→Brevo fallback ──────────────────────────
@@ -474,11 +474,11 @@ function buildIndividualEmail(args: {
     purpose,
     subject,
     title: args.title,
-    intro: args.body || "You have a new HenryCo notification waiting in your inbox.",
+    intro: args.body || "You have a new Henry & Co. notification waiting in your inbox.",
     actionLabel: "View notification",
     actionHref: args.ctaUrl,
     footnote:
-      "This is a HenryCo transactional message. Manage notification email preferences any time at " +
+      "This is a Henry & Co. transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
   } as const;
   return {
@@ -491,10 +491,10 @@ function buildIndividualEmail(args: {
 function buildDigestEmail(args: {
   pendingCount: number;
 }): { subject: string; html: string; text: string } {
-  const subject = `[HenryCo] You have ${args.pendingCount} pending notifications`;
+  const subject = `[Henry & Co.] You have ${args.pendingCount} pending notifications`;
   const layout = {
     purpose: "auth" as EmailPurpose,
-    eyebrow: "HenryCo",
+    eyebrow: "Henry & Co.",
     subject,
     title: `${args.pendingCount} updates are waiting in your inbox`,
     intro:
@@ -503,7 +503,7 @@ function buildDigestEmail(args: {
     actionLabel: "Open my inbox",
     actionHref: `${ACCOUNT_HOME_FALLBACK}/notifications`,
     footnote:
-      "This is a HenryCo transactional message. Manage notification email preferences any time at " +
+      "This is a Henry & Co. transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
   } as const;
   return {
@@ -528,7 +528,7 @@ async function sendIndividual(
   const purpose = purposeForDivision(row.division);
   const sender = resolveSenderIdentity(purpose);
   const ctaUrl = resolveSafeCtaUrl(row.action_url);
-  const titleText = (row.title || "").slice(0, 200) || "You have a new HenryCo notification";
+  const titleText = (row.title || "").slice(0, 200) || "You have a new Henry & Co. notification";
   const bodyText = (row.body || "").slice(0, 800);
   const rendered = buildIndividualEmail({
     division: row.division,

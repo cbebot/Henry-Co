@@ -16,62 +16,32 @@
   "rewrites": [
     {
       "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "hq.henrycogroup.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "hq.henryonyx.com" }],
       "destination": "/owner"
     },
     {
       "source": "/:path((?!(?:owner|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "hq.henrycogroup.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "hq.henryonyx.com" }],
       "destination": "/owner/:path*"
     },
     {
       "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "workspace.henrycogroup.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "workspace.henryonyx.com" }],
       "destination": "/workspace"
     },
     {
       "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "staff.henrycogroup.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "staff.henryonyx.com" }],
       "destination": "/workspace"
     },
     {
       "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "workspace.henrycogroup.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "workspace.henryonyx.com" }],
       "destination": "/workspace/:path*"
     },
     {
       "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "staff.henrycogroup.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "staff.henryonyx.com" }],
       "destination": "/workspace/:path*"
     }
   ]

@@ -288,7 +288,7 @@ export async function syncLearnDivision() {
       category: "Education",
       status: "active",
       subdomain: learn.subdomain,
-      domain: `${learn.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`,
+      domain: `${learn.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com"}`,
       short_description: learn.description,
       description: learn.description,
       primary_url: getDivisionUrl("learn"),
@@ -300,7 +300,7 @@ export async function syncLearnDivision() {
       ],
       who_its_for: [
         "Public learners",
-        "HenryCo internal teams",
+        "Henry & Co. internal teams",
         "Partners and vendors",
         "Business operators and service teams"
       ],
@@ -321,7 +321,7 @@ export async function syncLearnDivision() {
       is_featured: true,
       sort_order: 6,
       categories: ["Education", "Academy", "Internal Training", "Certification"],
-      lead_name: "HenryCo Academy Operations",
+      lead_name: "Henry & Co. Academy Operations",
       lead_title: "Academy Director",
     } as never,
     { onConflict: "slug" }

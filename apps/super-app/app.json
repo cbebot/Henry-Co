@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "HenryCo",
+    "name": "Henry & Co.",
     "slug": "henryco-super-app",
     "version": "1.0.1",
     "orientation": "portrait",
@@ -17,7 +17,7 @@
       "supportsTablet": true,
       "buildNumber": "2",
       "bundleIdentifier": "com.henryco.superapp.staging",
-      "associatedDomains": ["applinks:staging.henrycogroup.com"]
+      "associatedDomains": ["applinks:staging.henryonyx.com"]
     },
     "android": {
       "versionCode": 2,
@@ -33,7 +33,7 @@
           "data": [
             {
               "scheme": "https",
-              "host": "staging.henrycogroup.com",
+              "host": "staging.henryonyx.com",
               "pathPrefix": "/app"
             }
           ],

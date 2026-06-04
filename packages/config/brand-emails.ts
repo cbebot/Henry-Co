@@ -1,11 +1,11 @@
 /**
  * BRAND_EMAILS — single, typed source of truth for every email address shown
- * to a HenryCo customer on any surface (public pages, dashboards, footers,
+ * to a Henry & Co. customer on any surface (public pages, dashboards, footers,
  * email templates, transactional notifications, PDFs, legal docs, error
  * pages). PASS 23 introduced this file; visible email literals living
  * outside it are a regression and the validation grep enforces the rule.
  *
- * Division split is by local-part on `henrycogroup.com` (no per-division
+ * Division split is by local-part on `henryonyx.com` (no per-division
  * subdomain). The companion document is `/docs/brand/email-map.md`.
  *
  * `COMPANY.divisions[*].supportEmail` in `company.ts` reads from this map,
@@ -13,7 +13,7 @@
  * continue to work without churn.
  */
 
-export const BRAND_EMAIL_DOMAIN = "henrycogroup.com";
+export const BRAND_EMAIL_DOMAIN = "henryonyx.com";
 
 const at = (local: string) => `${local}@${BRAND_EMAIL_DOMAIN}` as const;
 

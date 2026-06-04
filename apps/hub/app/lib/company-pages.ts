@@ -359,12 +359,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               {
                 id: "about-not-tenancy",
                 title: "Property: agent, not party to tenancy",
-                body: "HenryCo Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by HenryCo Property in a managed-property capacity.",
+                body: "Henry & Co. Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by Henry & Co. Property in a managed-property capacity.",
               },
               {
                 id: "about-not-employer",
                 title: "Jobs: platform, not employer",
-                body: "HenryCo Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; HenryCo is not party to the employment relationship.",
+                body: "Henry & Co. Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; Henry & Co. is not party to the employment relationship.",
               },
               {
                 id: "about-not-instant",
@@ -451,7 +451,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "1. Controller identity",
             title: "Who is responsible for this data",
             body:
-              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henrycogroup.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry & Co. divisions, and it is the entity legally answerable for how your data is handled.`,
+              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henryonyx.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry & Co. divisions, and it is the entity legally answerable for how your data is handled.`,
             layout: "default",
             items: [
               { id: "privacy-controller-name", label: "Controller", value: LEGAL.entity.name },
@@ -578,7 +578,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "10. How to exercise rights",
             title: "Submit a request",
             body:
-              `Send a written request to ${LEGAL.contacts.privacy}. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.\n\n— In plain English: Email privacy@henrycogroup.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data.`,
+              `Send a written request to ${LEGAL.contacts.privacy}. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.\n\n— In plain English: Email privacy@henryonyx.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data.`,
             layout: "default",
             items: [
               { id: "privacy-exercise-email", label: "Email", value: LEGAL.contacts.privacy },
@@ -738,7 +738,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             items: [
               { id: "terms-account-one", label: "Account model", value: "One account per person or entity, all divisions" },
               { id: "terms-account-credentials", label: "Credentials", value: "User responsibility" },
-              { id: "terms-account-security", label: "Report incidents", value: "security@henrycogroup.com" },
+              { id: "terms-account-security", label: "Report incidents", value: "security@henryonyx.com" },
             ],
           },
           {
@@ -777,11 +777,11 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "6. Intellectual property",
             title: "Ownership of content and brand",
             body:
-              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry & Co. owns the brand. Copyright takedowns go to legal@henrycogroup.com.`,
+              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry & Co. owns the brand. Copyright takedowns go to legal@henryonyx.com.`,
             layout: "default",
             items: [
-              { id: "terms-ip-user", label: "User content", value: "User retains ownership; HenryCo licence for service delivery" },
-              { id: "terms-ip-brand", label: "Brand IP", value: "Retained by HenryCo" },
+              { id: "terms-ip-user", label: "User content", value: "User retains ownership; Henry & Co. licence for service delivery" },
+              { id: "terms-ip-brand", label: "Brand IP", value: "Retained by Henry & Co." },
               { id: "terms-ip-takedown", label: "Takedown route", value: LEGAL.contacts.legal },
               { id: "terms-ip-statute", label: "Statute", value: "Copyright Act 2022 (Nigeria) §43" },
             ],
@@ -807,7 +807,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "8. Trust signals",
             title: "What trust badges mean and do not mean",
             body:
-              "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by HenryCo of any specific outcome.\n\n— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise.",
+              "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by Henry & Co. of any specific outcome.\n\n— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise.",
             layout: "default",
             items: [
               { id: "terms-trust-1", label: "What badges signal", value: "Verifiable inputs (KYC, history, dispute record)" },
@@ -832,7 +832,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "10. Limitation of liability",
             title: "What the platform is liable for",
             body:
-              "Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant HenryCo division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.\n\n— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months.",
+              "Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant Henry & Co. division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.\n\n— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months.",
             layout: "default",
             items: [
               { id: "terms-liability-floor", label: "Non-derogable floor", value: "FCCPA 2018 §128 consumer rights" },
@@ -975,11 +975,11 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "21. International notice",
             title: "Service of process across borders",
             body:
-              `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henrycogroup.com and the registered office. We send formal notices to your account contact details.`,
+              `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henryonyx.com and the registered office. We send formal notices to your account contact details.`,
             layout: "default",
             items: [
-              { id: "terms-notice-email", label: "Notice to HenryCo (email)", value: LEGAL.contacts.legal },
-              { id: "terms-notice-courier", label: "Notice to HenryCo (courier)", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state} (registered office)` },
+              { id: "terms-notice-email", label: "Notice to Henry & Co. (email)", value: LEGAL.contacts.legal },
+              { id: "terms-notice-courier", label: "Notice to Henry & Co. (courier)", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state} (registered office)` },
               { id: "terms-notice-user", label: "Notice to user", value: "Account email and phone" },
               { id: "terms-notice-hague", label: "Cross-border supplement", value: "Hague Service Convention where applicable" },
             ],
@@ -989,12 +989,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "22. Miscellaneous",
             title: "Severability, entire agreement, assignment, force majeure",
             body:
-              "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; HenryCo may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS).\n\n— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract.",
+              "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; Henry & Co. may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS).\n\n— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract.",
             layout: "default",
             items: [
               { id: "terms-misc-sever", label: "Severability", value: "Unenforceable clause excised; rest continues" },
               { id: "terms-misc-entire", label: "Entire agreement", value: "These terms + Privacy + division terms + signed addenda" },
-              { id: "terms-misc-assign", label: "Assignment", value: "User: with consent; HenryCo: to successor on merger or acquisition" },
+              { id: "terms-misc-assign", label: "Assignment", value: "User: with consent; Henry & Co.: to successor on merger or acquisition" },
               { id: "terms-misc-fm", label: "Force majeure", value: "Performance excused for events beyond reasonable control" },
             ],
           },
@@ -1003,7 +1003,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "23. Notices",
             title: "Routine notices and announcements",
             body:
-              "Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henrycogroup.com where the user can subscribe to email or RSS updates.\n\n— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to.",
+              "Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henryonyx.com where the user can subscribe to email or RSS updates.\n\n— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to.",
             layout: "default",
             items: [
               { id: "terms-notices-product", label: "Product notices", value: "In-product banner + email" },
@@ -1015,7 +1015,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "24. Contact",
             title: "How to reach the company",
             body:
-              `For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.\n\n— In plain English: Legal questions to legal@henrycogroup.com. Privacy questions to privacy@henrycogroup.com. Service questions to your division.`,
+              `For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.\n\n— In plain English: Legal questions to legal@henryonyx.com. Privacy questions to privacy@henryonyx.com. Service questions to your division.`,
             layout: "default",
             items: [
               { id: "terms-contact-legal", label: "Legal", value: LEGAL.contacts.legal },

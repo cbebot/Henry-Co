@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React, { createContext, useContext, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import { getAccountUrl } from "@henryco/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -44,13 +53,11 @@ type DivisionExtras = {
   who_its_for?: string[] | null;
   how_it_works?: string[] | null;
   trust?: string[] | null;
-  lead?:
-    | {
-        name?: string | null;
-        title?: string | null;
-        avatar_url?: string | null;
-      }
-    | null;
+  lead?: {
+    name?: string | null;
+    title?: string | null;
+    avatar_url?: string | null;
+  } | null;
   links?:
     | {
         label: string;
@@ -73,6 +80,9 @@ type HubChrome = {
 
 const HubChromeContext = createContext<HubChrome | null>(null);
 
+const HOMEPAGE_FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]";
+
 function useHubChrome(): HubChrome {
   const ctx = useContext(HubChromeContext);
   if (!ctx) {
@@ -82,7 +92,8 @@ function useHubChrome(): HubChrome {
 }
 
 function normalizeText(value: unknown, fallback = ""): string {
-  const text = typeof value === "string" ? value.trim() : String(value ?? "").trim();
+  const text =
+    typeof value === "string" ? value.trim() : String(value ?? "").trim();
   return text || fallback;
 }
 
@@ -113,12 +124,15 @@ function domainFromUrl(primaryUrl?: string | null, subdomain?: string | null) {
   const cleanSubdomain = normalizeText(subdomain).toLowerCase();
   if (!cleanSubdomain) return null;
 
-  if (typeof window !== "undefined" && window.location.hostname.includes("localhost")) {
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname.includes("localhost")
+  ) {
     return `${cleanSubdomain}.localhost:3000`;
   }
 
   const baseDomain = normalizeText(
-    process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"
+    process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com",
   )
     .replace(/^https?:\/\//i, "")
     .replace(/\/+$/, "");
@@ -132,7 +146,10 @@ function safeOpen(url?: string | null) {
   window.open(cleanUrl, "_blank", "noopener,noreferrer");
 }
 
-function getStatusLabel(status: DivisionRow["status"], labels: HubHomeCopy["status"]) {
+function getStatusLabel(
+  status: DivisionRow["status"],
+  labels: HubHomeCopy["status"],
+) {
   if (status === "coming_soon") return labels.comingSoon;
   if (status === "paused") return labels.paused;
   return labels.active;
@@ -150,7 +167,10 @@ function getStatusTone(status: DivisionRow["status"]) {
   return "border-emerald-500/25 bg-emerald-500/12 text-emerald-200";
 }
 
-function formatUpdatedAtLong(value: string | undefined | null, fmt: Intl.DateTimeFormat) {
+function formatUpdatedAtLong(
+  value: string | undefined | null,
+  fmt: Intl.DateTimeFormat,
+) {
   if (!value) return "—";
 
   const date = new Date(value);
@@ -160,8 +180,10 @@ function formatUpdatedAtLong(value: string | undefined | null, fmt: Intl.DateTim
 }
 
 function toFaqItems(
-  records: Array<{ question?: string | null; answer?: string | null } | FaqItem> | undefined,
-  fallback: FaqItem[]
+  records:
+    | Array<{ question?: string | null; answer?: string | null } | FaqItem>
+    | undefined,
+  fallback: FaqItem[],
 ): FaqItem[] {
   if (!Array.isArray(records) || !records.length) {
     return fallback;
@@ -187,7 +209,7 @@ function toFaqItems(
 }
 
 /**
- * BrandMark — renders the canonical HenryCo monogram SVG.
+ * BrandMark — renders the canonical Henry & Co. monogram SVG.
  *
  * No image is loaded. `src` is intentionally ignored to enforce one source of
  * truth across the platform; surfaces that previously fed a Supabase
@@ -210,7 +232,7 @@ function BrandMark({
     <div
       className={cn(
         "grid place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/[0.06]",
-        wrapperClassName
+        wrapperClassName,
       )}
     >
       <HenryCoLogo
@@ -225,7 +247,7 @@ function BrandMark({
 }
 
 /**
- * DivisionMark — division thumbnail using the canonical HenryCo SVG, colored
+ * DivisionMark — division thumbnail using the canonical Henry & Co. SVG, colored
  * by the division accent. No image asset is loaded; division identity is
  * conveyed through accent + label, not through a separate logo upload.
  */
@@ -246,7 +268,7 @@ function DivisionMark({
     <div
       className={cn(
         "grid place-items-center overflow-hidden rounded-2xl border border-white/12 bg-black/25",
-        wrapperClassName
+        wrapperClassName,
       )}
     >
       <HenryCoLogo
@@ -307,7 +329,7 @@ export default function HubHomeClient({
         month: "short",
         day: "numeric",
       }),
-    [locale]
+    [locale],
   );
 
   const formatLong = useMemo(
@@ -320,12 +342,12 @@ export default function HubHomeClient({
         hour: "numeric",
         minute: "2-digit",
       }),
-    [locale]
+    [locale],
   );
 
   const chrome = useMemo(
     () => ({ copy, locale, formatShort, formatLong }),
-    [copy, locale, formatShort, formatLong]
+    [copy, locale, formatShort, formatLong],
   );
 
   const brandTitleSafe = normalizeText(brandTitle, "Henry & Co.");
@@ -336,15 +358,16 @@ export default function HubHomeClient({
 
   const initialDivisionsSafe = useMemo(
     () => (Array.isArray(initialDivisions) ? initialDivisions : []),
-    [initialDivisions]
+    [initialDivisions],
   );
 
   const initialFaqItems = useMemo(
     () => toFaqItems(initialFaqs, copy.faqFallback),
-    [initialFaqs, copy.faqFallback]
+    [initialFaqs, copy.faqFallback],
   );
 
-  const [divisions, setDivisions] = useState<DivisionRow[]>(initialDivisionsSafe);
+  const [divisions, setDivisions] =
+    useState<DivisionRow[]>(initialDivisionsSafe);
   const [faqItems, setFaqItems] = useState<FaqItem[]>(initialFaqItems);
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
@@ -354,6 +377,8 @@ export default function HubHomeClient({
   const [selected, setSelected] = useState<DivisionRow | null>(null);
 
   const searchRef = useRef<HTMLInputElement | null>(null);
+  const directorySearchId = useId();
+  const categorySelectId = useId();
 
   useEffect(() => {
     setDivisions(initialDivisionsSafe);
@@ -404,7 +429,7 @@ export default function HubHomeClient({
 
   const categoryHighlights = useMemo(
     () => categories.filter((item) => item !== "all").slice(0, 8),
-    [categories]
+    [categories],
   );
 
   const filtered = useMemo(() => {
@@ -413,10 +438,12 @@ export default function HubHomeClient({
     return [...divisions]
       .filter((division) => (featuredOnly ? division.is_featured : true))
       .filter((division) =>
-        statusFilter === "all" ? true : division.status === statusFilter
+        statusFilter === "all" ? true : division.status === statusFilter,
       )
       .filter((division) =>
-        category === "all" ? true : (division.categories ?? []).includes(category)
+        category === "all"
+          ? true
+          : (division.categories ?? []).includes(category),
       )
       .filter((division) => {
         if (!q) return true;
@@ -443,13 +470,17 @@ export default function HubHomeClient({
 
         return hay.includes(q);
       })
-      .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999));
+      .sort(
+        (a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999),
+      );
   }, [divisions, deferredQuery, category, featuredOnly, statusFilter]);
 
   const featured = useMemo(() => {
     const explicit = [...divisions]
       .filter((division) => division.is_featured)
-      .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999));
+      .sort(
+        (a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999),
+      );
 
     if (explicit.length) return explicit.slice(0, 3);
 
@@ -462,11 +493,13 @@ export default function HubHomeClient({
   const stats = useMemo(
     () => ({
       total: divisions.length,
-      active: divisions.filter((division) => division.status === "active").length,
-      soon: divisions.filter((division) => division.status === "coming_soon").length,
+      active: divisions.filter((division) => division.status === "active")
+        .length,
+      soon: divisions.filter((division) => division.status === "coming_soon")
+        .length,
       sectors: categories.filter((item) => item !== "all").length,
     }),
-    [divisions, categories]
+    [divisions, categories],
   );
 
   const activeFilterCount = useMemo(() => {
@@ -487,7 +520,7 @@ export default function HubHomeClient({
       { label: copy.nav.about, href: "/about" },
       { label: copy.nav.contact, href: "/contact" },
     ],
-    [copy.nav]
+    [copy.nav],
   );
 
   const nextPages = useMemo(
@@ -497,7 +530,7 @@ export default function HubHomeClient({
       { label: copy.companyPages.privacy, href: "/privacy" },
       { label: copy.companyPages.terms, href: "/terms" },
     ],
-    [copy.companyPages]
+    [copy.companyPages],
   );
 
   const clearAllFilters = () => {
@@ -516,599 +549,699 @@ export default function HubHomeClient({
       [...divisions]
         .filter((division) => division.status === "active")
         .sort(
-          (a, b) =>
-            Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999)
+          (a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999),
         )
         .slice(0, 6),
-    [divisions]
+    [divisions],
   );
 
   const liveStats = divisionStats ?? {};
 
   return (
     <HubChromeContext.Provider value={chrome}>
-    <div
-      className="relative min-h-screen overflow-x-hidden bg-[#050816] text-white"
-      style={{ "--accent": brandAccentSafe } as React.CSSProperties}
-    >
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        {/* Restrained, architectural backdrop: single accent wash from the top
+      <div
+        className="relative min-h-screen overflow-x-hidden bg-[#050816] text-white"
+        style={{ "--accent": brandAccentSafe } as React.CSSProperties}
+      >
+        <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          {/* Restrained, architectural backdrop: single accent wash from the top
             corner + a soft horizon glow at the base. Multi-color rainbow has
             been retired for a calmer, premium feel. */}
-        <div className="absolute inset-0 bg-[radial-gradient(1100px_580px_at_15%_-5%,rgba(201,162,39,0.18),transparent_60%),radial-gradient(820px_460px_at_50%_108%,rgba(255,255,255,0.05),transparent_60%)]" />
-        <div className="absolute inset-0 hidden opacity-30 md:block">
-          <HubParticles />
-        </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.04)_1px,transparent_0)] [background-size:32px_32px] opacity-50" />
-      </div>
-
-      <TopBar
-        brandTitle={brandTitleSafe}
-        brandSub={brandSubSafe}
-        brandAccent={brandAccentSafe}
-        brandLogoUrl={brandLogoUrlSafe}
-        links={companyLinks}
-        accountChip={accountChip}
-      />
-
-      <main>
-        <section id="top" className="relative overflow-hidden">
-          <div className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pt-16">
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white/82"
-            >
-              {brandLogoUrlSafe ? (
-                <BrandMark
-                  src={brandLogoUrlSafe}
-                  alt={`${brandTitleSafe} logo`}
-                  accent={brandAccentSafe}
-                  wrapperClassName="h-5 w-5 rounded-full border-white/10 bg-transparent"
-                  imageClassName="object-contain p-0.5"
-                  iconClassName="h-3.5 w-3.5"
-                />
-              ) : (
-                <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-              )}
-              {/*
-               * Mobile shows the calm "Corporate platform" prefix only
-               * — the "press / to search" suffix is a desktop-keyboard
-               * hint that has no meaning on a phone (no `/` key, no
-               * shortcut surface). On sm+ the keyboard hint appears
-               * inline as before.
-               */}
-              <span>{copy.hero.badgeBefore.replace(/\s+·\s+press\s*$/, "")}</span>
-              <span className="hidden sm:inline-flex sm:items-center sm:gap-1">
-                <span aria-hidden>·</span>
-                <span>{copy.hero.pressHint}</span>
-                <b>/</b>
-                {copy.hero.badgeAfter}
-              </span>
-            </motion.div>
-
-            {heroWelcome ? (
-              <motion.p
-                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.02 }}
-                className="mt-4 text-sm font-medium tracking-wide text-white/52"
-              >
-                {heroWelcome}
-              </motion.p>
-            ) : null}
-
-            {/*
-             * Hero headline demoted to subtext (CHROME-01B FIX 1):
-             * the divisions grid below is the primary above-fold visual,
-             * the tagline is supporting copy. Bounded clamp ~1.5–2.1rem.
-             */}
-            <motion.p
-              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.04 }}
-              style={{
-                fontSize: "clamp(1.5rem, 1.8vw + 0.8rem, 2.1rem)",
-                lineHeight: 1.18,
-                letterSpacing: "-0.012em",
-              }}
-              className="mt-5 max-w-3xl text-balance font-semibold text-white"
-            >
-              {copy.hero.titleBefore}
-              <span className="text-[color:var(--accent)]">{brandTitleSafe}</span>
-              {copy.hero.titleAfter}
-            </motion.p>
-
-            <motion.p
-              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.06 }}
-              className="mt-4 max-w-2xl text-pretty text-sm leading-7 text-white/72 sm:text-base"
-            >
-              {introText}
-            </motion.p>
-
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.08 }}
-              className="mt-5 flex flex-col gap-3 sm:flex-row"
-            >
-              <a
-                href="#divisions"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-              >
-                {copy.hero.ctaExplore}
-                <ArrowRight className="h-4 w-4" />
-              </a>
-
-              <a
-                href="#featured"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-5 py-3 text-sm text-white/88 transition hover:bg-white/10"
-              >
-                {copy.hero.ctaFeatured}
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </motion.div>
-
-            {/* DIVISIONS GRID — primary above-fold visual (CHROME-01B FIX 1). */}
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.12 }}
-              className="mt-10"
-            >
-              {heroDivisions.length ? (
-                <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {heroDivisions.map((division) => (
-                    <HeroDivisionTile
-                      key={division.id}
-                      division={division}
-                      stat={liveStats[division.key.toLowerCase()] ?? null}
-                      onOpen={() => setSelected(division)}
-                    />
-                  ))}
-                </ul>
-              ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68">
-                  {copy.directory.empty}
-                </div>
-              )}
-            </motion.div>
-
-            {/*
-             * Stat rail: 3 customer-meaningful facts. We deliberately do
-             * NOT show "Last update" — a timestamp that ages poorly
-             * (stale = neglect signal, fresh = backend admin signal,
-             * neither helps a customer). Three calm stats breathe
-             * better on both mobile (single row of three) and desktop.
-             */}
-            <motion.dl
-              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.16 }}
-              className="mt-10 grid grid-cols-3 gap-x-4 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
-            >
-              <StatCard
-                icon={<Building2 className="h-4 w-4" />}
-                label={copy.stats.divisions}
-                value={`${stats.total}`}
-              />
-              <StatCard
-                icon={<Zap className="h-4 w-4" />}
-                label={copy.stats.activeNow}
-                value={`${stats.active}`}
-              />
-              <StatCard
-                icon={<Globe2 className="h-4 w-4" />}
-                label={copy.stats.sectors}
-                value={`${stats.sectors}`}
-              />
-            </motion.dl>
-
-            {hasServerError ? (
-              <p className="mt-6 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
-                {copy.standardCard.serverError}
-              </p>
-            ) : null}
+          <div className="absolute inset-0 bg-[radial-gradient(1100px_580px_at_15%_-5%,rgba(201,162,39,0.18),transparent_60%),radial-gradient(820px_460px_at_50%_108%,rgba(255,255,255,0.05),transparent_60%)]" />
+          <div className="absolute inset-0 hidden opacity-30 md:block">
+            <HubParticles />
           </div>
-        </section>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.04)_1px,transparent_0)] [background-size:32px_32px] opacity-50" />
+        </div>
 
-        {featured.length ? (
-          <section id="featured" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                  <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                  {copy.featuredSection.eyebrow}
-                </p>
+        <TopBar
+          brandTitle={brandTitleSafe}
+          brandSub={brandSubSafe}
+          brandAccent={brandAccentSafe}
+          brandLogoUrl={brandLogoUrlSafe}
+          links={companyLinks}
+          accountChip={accountChip}
+        />
 
-                <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
-                  {copy.featuredSection.title}
-                </h2>
-
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
-                  {copy.featuredSection.body}
-                </p>
-              </div>
-
-              <a
-                href="#divisions"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+        <main>
+          <section id="top" className="relative overflow-hidden">
+            <div className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pt-16">
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white/82"
               >
-                {copy.featuredSection.viewDirectory}
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </div>
+                {brandLogoUrlSafe ? (
+                  <BrandMark
+                    src={brandLogoUrlSafe}
+                    alt={`${brandTitleSafe} logo`}
+                    accent={brandAccentSafe}
+                    wrapperClassName="h-5 w-5 rounded-full border-white/10 bg-transparent"
+                    imageClassName="object-contain p-0.5"
+                    iconClassName="h-3.5 w-3.5"
+                  />
+                ) : (
+                  <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
+                )}
+                {/*
+                 * Mobile shows the calm "Corporate platform" prefix only
+                 * — the "press / to search" suffix is a desktop-keyboard
+                 * hint that has no meaning on a phone (no `/` key, no
+                 * shortcut surface). On sm+ the keyboard hint appears
+                 * inline as before.
+                 */}
+                <span>
+                  {copy.hero.badgeBefore.replace(/\s+·\s+press\s*$/, "")}
+                </span>
+                <span className="hidden sm:inline-flex sm:items-center sm:gap-1">
+                  <span aria-hidden>·</span>
+                  <span>{copy.hero.pressHint}</span>
+                  <b>/</b>
+                  {copy.hero.badgeAfter}
+                </span>
+              </motion.div>
 
-            <div className="mt-8 grid gap-5 xl:grid-cols-3">
-              {featured.map((division) => (
-                <FeaturedDivisionCard key={division.id} division={division} />
-              ))}
+              {heroWelcome ? (
+                <motion.p
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.02 }}
+                  className="mt-4 text-sm font-medium tracking-wide text-white/52"
+                >
+                  {heroWelcome}
+                </motion.p>
+              ) : null}
+
+              <motion.h1
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.04 }}
+                className="mt-5 max-w-4xl text-balance text-[2.25rem] font-semibold leading-[1.02] tracking-normal text-white sm:text-[3.5rem] lg:text-[4.75rem]"
+              >
+                {copy.hero.titleBefore}
+                <span className="text-[color:var(--accent)]">
+                  {brandTitleSafe}
+                </span>
+                {copy.hero.titleAfter}
+              </motion.h1>
+
+              <motion.p
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.06 }}
+                className="mt-4 max-w-2xl text-pretty text-sm leading-7 text-white/72 sm:text-base"
+              >
+                {introText}
+              </motion.p>
+
+              <motion.ul
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.075 }}
+                className="mt-4 flex flex-wrap gap-2"
+              >
+                {copy.hero.proofPoints.map((point) => (
+                  <li
+                    key={point}
+                    className="rounded-full border border-white/12 bg-white/[0.055] px-3 py-1.5 text-xs font-medium text-white/78"
+                  >
+                    {point}
+                  </li>
+                ))}
+              </motion.ul>
+
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.08 }}
+                className="mt-5 flex flex-col gap-3 sm:flex-row"
+              >
+                <a
+                  href="#divisions"
+                  className={cn(
+                    "inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:opacity-90",
+                    HOMEPAGE_FOCUS_RING,
+                  )}
+                >
+                  {copy.hero.ctaExplore}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+
+                <a
+                  href="#featured"
+                  className={cn(
+                    "inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-5 py-3 text-sm text-white/88 transition hover:-translate-y-0.5 hover:bg-white/10",
+                    HOMEPAGE_FOCUS_RING,
+                  )}
+                >
+                  {copy.hero.ctaFeatured}
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </motion.div>
+
+              {/* DIVISIONS GRID — primary above-fold visual (CHROME-01B FIX 1). */}
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.12 }}
+                className="mt-10"
+              >
+                {heroDivisions.length ? (
+                  <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {heroDivisions.map((division) => (
+                      <HeroDivisionTile
+                        key={division.id}
+                        division={division}
+                        stat={liveStats[division.key.toLowerCase()] ?? null}
+                        onOpen={() => setSelected(division)}
+                      />
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68">
+                    {copy.directory.empty}
+                  </div>
+                )}
+              </motion.div>
+
+              {/*
+               * Stat rail: 3 customer-meaningful facts. We deliberately do
+               * NOT show "Last update" — a timestamp that ages poorly
+               * (stale = neglect signal, fresh = backend admin signal,
+               * neither helps a customer). Three calm stats breathe
+               * better on both mobile (single row of three) and desktop.
+               */}
+              <motion.dl
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.16 }}
+                className="mt-10 grid grid-cols-3 gap-x-4 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
+              >
+                <StatCard
+                  icon={<Building2 className="h-4 w-4" />}
+                  label={copy.stats.divisions}
+                  value={`${stats.total}`}
+                />
+                <StatCard
+                  icon={<Zap className="h-4 w-4" />}
+                  label={copy.stats.activeNow}
+                  value={`${stats.active}`}
+                />
+                <StatCard
+                  icon={<Globe2 className="h-4 w-4" />}
+                  label={copy.stats.sectors}
+                  value={`${stats.sectors}`}
+                />
+              </motion.dl>
+
+              {hasServerError ? (
+                <p className="mt-6 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
+                  {copy.standardCard.serverError}
+                </p>
+              ) : null}
             </div>
           </section>
-        ) : null}
 
-        <section id="divisions" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="lg:sticky lg:top-24 lg:self-start">
-              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                <Search className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                {copy.directory.eyebrow}
-              </p>
+          {featured.length ? (
+            <section
+              id="featured"
+              className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8"
+            >
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                    <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                    {copy.featuredSection.eyebrow}
+                  </p>
 
-              <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
-                {copy.directory.title}
-              </h2>
+                  <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                    {copy.featuredSection.title}
+                  </h2>
 
-              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
-                {copy.directory.body}
-              </p>
-
-              <div className="mt-7 space-y-5">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
-                  <input
-                    ref={searchRef}
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={copy.directory.searchPlaceholder}
-                    className="h-14 w-full rounded-2xl border border-white/12 bg-black/30 pl-11 pr-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-[color:var(--accent)]"
-                  />
-                  {query ? (
-                    <button
-                      onClick={() => setQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/65 hover:bg-white/10 hover:text-white"
-                      aria-label={copy.directory.clearSearchAria}
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  ) : null}
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
+                    {copy.featuredSection.body}
+                  </p>
                 </div>
-                {query !== deferredQuery ? (
-                  <div className="text-xs text-white/55">{copy.directory.searchingState}</div>
-                ) : null}
 
-                <Link
-                  href="/search"
-                  className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
+                <a
+                  href="#divisions"
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]",
+                    HOMEPAGE_FOCUS_RING,
+                  )}
                 >
-                  {copy.directory.searchHelpLink}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                  {copy.featuredSection.viewDirectory}
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
 
-                {categoryHighlights.length ? (
-                  <div>
-                    <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-white/45">
-                      {copy.directory.popularSectors}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {categoryHighlights.map((item) => (
-                        <button
-                          key={item}
-                          onClick={() => setCategory(item)}
-                          className={cn(
-                            "rounded-full border px-3 py-1.5 text-xs transition",
-                            category === item
-                              ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-black"
-                              : "border-white/12 bg-white/[0.06] text-white/74 hover:bg-white/10"
-                          )}
-                        >
-                          {item}
-                        </button>
-                      ))}
-                    </div>
+              <div className="mt-8 grid gap-5 xl:grid-cols-3">
+                {featured.map((division) => (
+                  <FeaturedDivisionCard key={division.id} division={division} />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <section
+            id="divisions"
+            className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8"
+          >
+            <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="lg:sticky lg:top-24 lg:self-start">
+                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                  <Search className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {copy.directory.eyebrow}
+                </p>
+
+                <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  {copy.directory.title}
+                </h2>
+
+                <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
+                  {copy.directory.body}
+                </p>
+
+                <div className="mt-7 space-y-5">
+                  <div className="relative">
+                    <label htmlFor={directorySearchId} className="sr-only">
+                      {copy.directory.searchPlaceholder}
+                    </label>
+                    <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
+                    <input
+                      id={directorySearchId}
+                      ref={searchRef}
+                      type="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={copy.directory.searchPlaceholder}
+                      autoComplete="off"
+                      className={cn(
+                        "h-14 w-full rounded-2xl border border-white/12 bg-black/30 pl-11 pr-12 text-sm text-white outline-none placeholder:text-white/36 transition focus:border-[color:var(--accent)]",
+                        HOMEPAGE_FOCUS_RING,
+                      )}
+                    />
+                    {query ? (
+                      <button
+                        type="button"
+                        onClick={() => setQuery("")}
+                        className={cn(
+                          "absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/65 transition hover:bg-white/10 hover:text-white",
+                          HOMEPAGE_FOCUS_RING,
+                        )}
+                        aria-label={copy.directory.clearSearchAria}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : null}
                   </div>
-                ) : null}
+                  {query !== deferredQuery ? (
+                    <div className="text-xs text-white/55">
+                      {copy.directory.searchingState}
+                    </div>
+                  ) : null}
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <button
-                    onClick={() => setFeaturedOnly((value) => !value)}
+                  <Link
+                    href="/search"
                     className={cn(
-                      "inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm transition",
-                      featuredOnly
-                        ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-black"
-                        : "border-white/12 bg-white/[0.06] text-white/78 hover:bg-white/10"
+                      "inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:-translate-y-0.5 hover:bg-white/10",
+                      HOMEPAGE_FOCUS_RING,
                     )}
                   >
-                    <BadgeCheck className="h-4 w-4" />
-                    {featuredOnly ? copy.directory.featuredOn : copy.directory.featuredOff}
-                  </button>
+                    {copy.directory.searchHelpLink}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
 
-                  <div className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3 py-3 text-sm text-white/78">
-                    <Filter className="h-4 w-4 text-[color:var(--accent)]" />
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-transparent outline-none"
-                    >
-                      {categories.map((item) => (
-                        <option
-                          key={item}
-                          value={item}
-                          className="bg-[#0B1020] text-white"
-                        >
-                          {item === "all" ? copy.directory.allCategories : item}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+                  {categoryHighlights.length ? (
+                    <div>
+                      <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-white/45">
+                        {copy.directory.popularSectors}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {categoryHighlights.map((item) => (
+                          <button
+                            key={item}
+                            type="button"
+                            onClick={() => setCategory(item)}
+                            className={cn(
+                              "rounded-full border px-3 py-1.5 text-xs transition",
+                              category === item
+                                ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-black"
+                                : "border-white/12 bg-white/[0.06] text-white/74 hover:bg-white/10",
+                              HOMEPAGE_FOCUS_RING,
+                            )}
+                          >
+                            {item}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
 
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { value: "all", label: copy.directory.filterAll },
-                    { value: "active", label: copy.directory.filterActive },
-                    { value: "coming_soon", label: copy.directory.filterSoon },
-                    { value: "paused", label: copy.directory.filterPaused },
-                  ].map((item) => (
+                  <div className="grid gap-3 sm:grid-cols-2">
                     <button
-                      key={item.value}
-                      onClick={() => setStatusFilter(item.value as StatusFilter)}
+                      type="button"
+                      onClick={() => setFeaturedOnly((value) => !value)}
                       className={cn(
-                        "rounded-full border px-3.5 py-1.5 text-xs font-medium transition",
-                        statusFilter === item.value
+                        "inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm transition",
+                        featuredOnly
                           ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-black"
-                          : "border-white/12 bg-white/[0.06] text-white/75 hover:bg-white/10"
+                          : "border-white/12 bg-white/[0.06] text-white/78 hover:bg-white/10",
+                        HOMEPAGE_FOCUS_RING,
                       )}
                     >
-                      {item.label}
+                      <BadgeCheck className="h-4 w-4" />
+                      {featuredOnly
+                        ? copy.directory.featuredOn
+                        : copy.directory.featuredOff}
                     </button>
-                  ))}
-                </div>
-              </div>
 
-              <div className="mt-7 grid grid-cols-3 gap-x-6 gap-y-5 border-y border-white/10 py-5">
-                <DirectoryMiniStat label={copy.directory.showing} value={String(filtered.length)} />
-                <DirectoryMiniStat label={copy.directory.total} value={String(divisions.length)} />
-                <DirectoryMiniStat label={copy.directory.featured} value={String(featured.length)} />
-              </div>
-
-              <div className="mt-7">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                    {copy.directory.overviewEyebrow}
-                  </p>
-                  {activeFilterCount ? (
-                    <button
-                      onClick={clearAllFilters}
-                      className="text-[11px] font-semibold text-white/70 underline-offset-4 transition hover:text-white hover:underline"
-                    >
-                      {copy.directory.clearAll}
-                    </button>
-                  ) : (
-                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-emerald-300/85">
-                      {copy.directory.ready}
-                    </span>
-                  )}
-                </div>
-
-                <dl className="mt-3 divide-y divide-white/10 border-y border-white/10 text-sm">
-                  <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
-                    <dt>{copy.directory.activeRefinements}</dt>
-                    <dd className="font-semibold text-white">{activeFilterCount}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="mt-7">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {copy.directory.companyPagesEyebrow}
-                </p>
-                <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
-                  {nextPages.map((page) => (
-                    <li key={page.href}>
-                      <a
-                        href={page.href}
-                        className="group flex items-center justify-between gap-3 py-3 text-sm font-medium text-white/82 transition hover:text-white"
+                    <div className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3 py-3 text-sm text-white/78">
+                      <label htmlFor={categorySelectId} className="sr-only">
+                        {copy.directory.allCategories}
+                      </label>
+                      <Filter className="h-4 w-4 text-[color:var(--accent)]" />
+                      <select
+                        id={categorySelectId}
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className={cn(
+                          "w-full rounded-lg bg-transparent outline-none transition",
+                          HOMEPAGE_FOCUS_RING,
+                        )}
                       >
-                        <span>{page.label}</span>
-                        <ChevronRight className="h-4 w-4 text-white/45 transition group-hover:translate-x-0.5 group-hover:text-white" />
-                      </a>
+                        {categories.map((item) => (
+                          <option
+                            key={item}
+                            value={item}
+                            className="bg-[#0B1020] text-white"
+                          >
+                            {item === "all"
+                              ? copy.directory.allCategories
+                              : item}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: "all", label: copy.directory.filterAll },
+                      { value: "active", label: copy.directory.filterActive },
+                      {
+                        value: "coming_soon",
+                        label: copy.directory.filterSoon,
+                      },
+                      { value: "paused", label: copy.directory.filterPaused },
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() =>
+                          setStatusFilter(item.value as StatusFilter)
+                        }
+                        className={cn(
+                          "rounded-full border px-3.5 py-1.5 text-xs font-medium transition",
+                          statusFilter === item.value
+                            ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-black"
+                            : "border-white/12 bg-white/[0.06] text-white/75 hover:bg-white/10",
+                          HOMEPAGE_FOCUS_RING,
+                        )}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-7 grid grid-cols-3 gap-x-6 gap-y-5 border-y border-white/10 py-5">
+                  <DirectoryMiniStat
+                    label={copy.directory.showing}
+                    value={String(filtered.length)}
+                  />
+                  <DirectoryMiniStat
+                    label={copy.directory.total}
+                    value={String(divisions.length)}
+                  />
+                  <DirectoryMiniStat
+                    label={copy.directory.featured}
+                    value={String(featured.length)}
+                  />
+                </div>
+
+                <div className="mt-7">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                      {copy.directory.overviewEyebrow}
+                    </p>
+                    {activeFilterCount ? (
+                      <button
+                        type="button"
+                        onClick={clearAllFilters}
+                        className={cn(
+                          "rounded-md text-[11px] font-semibold text-white/70 underline-offset-4 transition hover:text-white hover:underline",
+                          HOMEPAGE_FOCUS_RING,
+                        )}
+                      >
+                        {copy.directory.clearAll}
+                      </button>
+                    ) : (
+                      <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-emerald-300/85">
+                        {copy.directory.ready}
+                      </span>
+                    )}
+                  </div>
+
+                  <dl className="mt-3 divide-y divide-white/10 border-y border-white/10 text-sm">
+                    <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
+                      <dt>{copy.directory.activeRefinements}</dt>
+                      <dd className="font-semibold text-white">
+                        {activeFilterCount}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div className="mt-7">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                    {copy.directory.companyPagesEyebrow}
+                  </p>
+                  <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
+                    {nextPages.map((page) => (
+                      <li key={page.href}>
+                        <a
+                          href={page.href}
+                          className={cn(
+                            "group flex items-center justify-between gap-3 rounded-lg py-3 text-sm font-medium text-white/82 transition hover:text-white",
+                            HOMEPAGE_FOCUS_RING,
+                          )}
+                        >
+                          <span>{page.label}</span>
+                          <ChevronRight
+                            className="h-4 w-4 text-white/45 transition group-hover:translate-x-0.5 group-hover:text-white"
+                            aria-hidden="true"
+                          />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                {filtered.length ? (
+                  filtered.map((division) => (
+                    <DivisionCard
+                      key={division.id}
+                      d={division}
+                      onOpen={() => setSelected(division)}
+                    />
+                  ))
+                ) : (
+                  <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68 sm:col-span-2">
+                    {copy.directory.empty}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="ecosystem"
+            className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8"
+          >
+            <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+              <div>
+                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {copy.ecosystem.eyebrow}
+                </p>
+
+                <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  {copy.ecosystem.title}
+                </h2>
+
+                <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
+                  {copy.ecosystem.body}
+                </p>
+
+                <ul className="mt-7 divide-y divide-white/10 border-y border-white/10">
+                  {copy.ecosystem.bullets.map((item) => (
+                    <li
+                      key={item}
+                      className="flex gap-3 py-3 text-sm leading-7 text-white/75"
+                    >
+                      <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
+                      <span>{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              {filtered.length ? (
-                filtered.map((division) => (
-                  <DivisionCard
-                    key={division.id}
-                    d={division}
-                    onOpen={() => setSelected(division)}
-                  />
-                ))
-              ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68 sm:col-span-2">
-                  {copy.directory.empty}
+              <div>
+                <BigFeature
+                  icon={<Building2 className="h-5 w-5" />}
+                  title={copy.ecosystem.big[0]}
+                  text={copy.ecosystem.bigText[0]}
+                />
+                <BigFeature
+                  icon={<Landmark className="h-5 w-5" />}
+                  title={copy.ecosystem.big[1]}
+                  text={copy.ecosystem.bigText[1]}
+                />
+                <BigFeature
+                  icon={<Zap className="h-5 w-5" />}
+                  title={copy.ecosystem.big[2]}
+                  text={copy.ecosystem.bigText[2]}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
+            <div className="grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+              <div>
+                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                  <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {copy.access.eyebrow}
+                </p>
+
+                <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  {copy.access.title}
+                </h2>
+
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
+                  {copy.access.body}
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a
+                    href="/about"
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:opacity-90",
+                      HOMEPAGE_FOCUS_RING,
+                    )}
+                  >
+                    {copy.access.ctaPages}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </a>
+
+                  <a
+                    href="#divisions"
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-5 py-3 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]",
+                      HOMEPAGE_FOCUS_RING,
+                    )}
+                  >
+                    {copy.access.ctaDirectory}
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  </a>
                 </div>
-              )}
+              </div>
+
+              <dl className="divide-y divide-white/10 border-y border-white/10">
+                <div className="flex items-baseline gap-3 py-3">
+                  <Layers3 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                    {copy.access.cards[0]}
+                  </dt>
+                  <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                    {copy.access.cardValues[0]}
+                  </dd>
+                </div>
+                <div className="flex items-baseline gap-3 py-3">
+                  <TrendingUp className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                    {copy.access.cards[1]}
+                  </dt>
+                  <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                    {copy.access.cardValues[1]}
+                  </dd>
+                </div>
+                <div className="flex items-baseline gap-3 py-3">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                    {copy.access.cards[2]}
+                  </dt>
+                  <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                    {copy.access.cardValues[2]}
+                  </dd>
+                </div>
+              </dl>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section id="ecosystem" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-            <div>
-              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                {copy.ecosystem.eyebrow}
-              </p>
+          <section
+            id="faq"
+            className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8"
+          >
+            <div className="grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
+              <div>
+                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                  <Globe2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {copy.faq.eyebrow}
+                </p>
 
-              <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
-                {copy.ecosystem.title}
-              </h2>
+                <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  {copy.faq.title}
+                </h2>
 
-              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
-                {copy.ecosystem.body}
-              </p>
+                <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
+                  {copy.faq.subtitle}
+                </p>
+              </div>
 
-              <ul className="mt-7 divide-y divide-white/10 border-y border-white/10">
-                {copy.ecosystem.bullets.map((item) => (
-                  <li key={item} className="flex gap-3 py-3 text-sm leading-7 text-white/75">
-                    <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                    <span>{item}</span>
-                  </li>
+              <div className="border-t border-white/10">
+                {faqItems.map((item) => (
+                  <Faq key={item.q} q={item.q} a={item.a} />
                 ))}
-              </ul>
-            </div>
-
-            <div>
-              <BigFeature
-                icon={<Building2 className="h-5 w-5" />}
-                title={copy.ecosystem.big[0]}
-                text={copy.ecosystem.bigText[0]}
-              />
-              <BigFeature
-                icon={<Landmark className="h-5 w-5" />}
-                title={copy.ecosystem.big[1]}
-                text={copy.ecosystem.bigText[1]}
-              />
-              <BigFeature
-                icon={<Zap className="h-5 w-5" />}
-                title={copy.ecosystem.big[2]}
-                text={copy.ecosystem.bigText[2]}
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
-          <div className="grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-            <div>
-              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                {copy.access.eyebrow}
-              </p>
-
-              <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
-                {copy.access.title}
-              </h2>
-
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
-                {copy.access.body}
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href="/about"
-                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:opacity-90"
-                >
-                  {copy.access.ctaPages}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-
-                <a
-                  href="#divisions"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-5 py-3 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
-                >
-                  {copy.access.ctaDirectory}
-                  <ChevronRight className="h-4 w-4" />
-                </a>
               </div>
             </div>
+          </section>
+        </main>
 
-            <dl className="divide-y divide-white/10 border-y border-white/10">
-              <div className="flex items-baseline gap-3 py-3">
-                <Layers3 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {copy.access.cards[0]}
-                </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  {copy.access.cardValues[0]}
-                </dd>
-              </div>
-              <div className="flex items-baseline gap-3 py-3">
-                <TrendingUp className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {copy.access.cards[1]}
-                </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  {copy.access.cardValues[1]}
-                </dd>
-              </div>
-              <div className="flex items-baseline gap-3 py-3">
-                <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {copy.access.cards[2]}
-                </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  {copy.access.cardValues[2]}
-                </dd>
-              </div>
-            </dl>
-          </div>
-        </section>
+        <PageFooter
+          brandTitle={brandTitleSafe}
+          brandSub={brandSubSafe}
+          brandAccent={brandAccentSafe}
+          brandLogoUrl={brandLogoUrlSafe}
+          footerText={footerText}
+          companyLinks={companyLinks}
+          nextPages={nextPages}
+        />
 
-        <section id="faq" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
-            <div>
-              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                <Globe2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                {copy.faq.eyebrow}
-              </p>
-
-              <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
-                {copy.faq.title}
-              </h2>
-
-              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
-                {copy.faq.subtitle}
-              </p>
-            </div>
-
-            <div className="border-t border-white/10">
-              {faqItems.map((item) => (
-                <Faq key={item.q} q={item.q} a={item.a} />
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <PageFooter
-        brandTitle={brandTitleSafe}
-        brandSub={brandSubSafe}
-        brandAccent={brandAccentSafe}
-        brandLogoUrl={brandLogoUrlSafe}
-        footerText={footerText}
-        companyLinks={companyLinks}
-        nextPages={nextPages}
-      />
-
-      <AnimatePresence>
-        {selected ? (
-          <DetailsModal
-            division={selected}
-            onClose={() => setSelected(null)}
-            reduceMotion={Boolean(reduceMotion)}
-          />
-        ) : null}
-      </AnimatePresence>
-    </div>
+        <AnimatePresence>
+          {selected ? (
+            <DetailsModal
+              division={selected}
+              onClose={() => setSelected(null)}
+              reduceMotion={Boolean(reduceMotion)}
+            />
+          ) : null}
+        </AnimatePresence>
+      </div>
     </HubChromeContext.Provider>
   );
 }
@@ -1138,7 +1271,13 @@ function TopBar({
     <>
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050816]/93 backdrop-blur-0 md:backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <a href="#top" className="flex items-center gap-3">
+          <a
+            href="#top"
+            className={cn(
+              "flex items-center gap-3 rounded-2xl",
+              HOMEPAGE_FOCUS_RING,
+            )}
+          >
             <BrandMark
               src={brandLogoUrl}
               alt={`${brandTitle} logo`}
@@ -1160,7 +1299,14 @@ function TopBar({
 
           <nav className="hidden items-center gap-6 text-sm text-white/68 lg:flex">
             {links.slice(0, 4).map((link) => (
-              <a key={link.href} href={link.href} className="transition hover:text-white">
+              <a
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "rounded-lg transition hover:text-white",
+                  HOMEPAGE_FOCUS_RING,
+                )}
+              >
                 {link.label}
               </a>
             ))}
@@ -1187,16 +1333,22 @@ function TopBar({
             <div className="hidden items-center gap-3 sm:flex">
               <Link
                 href="/search"
-                className="rounded-xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/88 transition hover:bg-white/10"
+                className={cn(
+                  "rounded-xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/88 transition hover:bg-white/10",
+                  HOMEPAGE_FOCUS_RING,
+                )}
               >
                 {copy.topBar.search}
               </Link>
               <a
                 href="#divisions"
-                className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90",
+                  HOMEPAGE_FOCUS_RING,
+                )}
               >
                 {copy.topBar.explore}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -1209,7 +1361,10 @@ function TopBar({
             <a
               key={link.href}
               href={link.href}
-              className="whitespace-nowrap rounded-full border border-white/12 bg-white/[0.06] px-3 py-1.5 text-xs text-white/78 transition hover:bg-white/10"
+              className={cn(
+                "whitespace-nowrap rounded-full border border-white/12 bg-white/[0.06] px-3 py-1.5 text-xs text-white/78 transition hover:bg-white/10",
+                HOMEPAGE_FOCUS_RING,
+              )}
             >
               {link.label}
             </a>
@@ -1265,7 +1420,9 @@ function PageFooter({
             </div>
           </div>
 
-          <p className="max-w-md text-sm leading-7 text-white/62">{footerText}</p>
+          <p className="max-w-md text-sm leading-7 text-white/62">
+            {footerText}
+          </p>
         </div>
 
         <FooterColumn title={copy.footer.colHub} links={companyLinks} />
@@ -1275,28 +1432,43 @@ function PageFooter({
       <div className="border-t border-white/10 px-4 py-5 text-xs text-white/45 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>© {new Date().getFullYear()} {brandTitle}. {copy.footer.copyrightAllRightsReserved}</span>
+            <span>
+              © {new Date().getFullYear()} {brandTitle}.{" "}
+              {copy.footer.copyrightAllRightsReserved}
+            </span>
             <a
               href="/privacy"
-              className="text-white/55 transition hover:text-white"
+              className={cn(
+                "rounded-md text-white/55 transition hover:text-white",
+                HOMEPAGE_FOCUS_RING,
+              )}
             >
               {copy.footer.linkPrivacy}
             </a>
             <a
               href="/terms"
-              className="text-white/55 transition hover:text-white"
+              className={cn(
+                "rounded-md text-white/55 transition hover:text-white",
+                HOMEPAGE_FOCUS_RING,
+              )}
             >
               {copy.footer.linkTerms}
             </a>
             <a
               href="/preferences"
-              className="text-white/55 transition hover:text-white"
+              className={cn(
+                "rounded-md text-white/55 transition hover:text-white",
+                HOMEPAGE_FOCUS_RING,
+              )}
             >
               {copy.footer.linkPreferences}
             </a>
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
-            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300/85" />
+            <span
+              aria-hidden
+              className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300/85"
+            />
             {copy.footer.designedBy}
           </span>
         </div>
@@ -1322,7 +1494,10 @@ function FooterColumn({
           <a
             key={`${item.label}-${item.href}`}
             href={item.href}
-            className="text-sm text-white/68 transition hover:text-white"
+            className={cn(
+              "rounded-md text-sm text-white/68 transition hover:text-white",
+              HOMEPAGE_FOCUS_RING,
+            )}
           >
             {item.label}
           </a>
@@ -1354,13 +1529,7 @@ function StatCard({
   );
 }
 
-function DirectoryMiniStat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function DirectoryMiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
@@ -1388,7 +1557,9 @@ function BigFeature({
         {icon}
       </span>
       <div>
-        <h3 className="text-base font-semibold tracking-tight text-white">{title}</h3>
+        <h3 className="text-base font-semibold tracking-tight text-white">
+          {title}
+        </h3>
         <p className="mt-1.5 text-sm leading-7 text-white/68">{text}</p>
       </div>
     </div>
@@ -1413,9 +1584,7 @@ function HeroDivisionTile({
   // overflow on mobile cards.
   const liveMetric = stat?.metric ?? null;
   const purpose =
-    division.tagline ||
-    division.description ||
-    copy.cards.divisionFallbackTile;
+    division.tagline || division.description || copy.cards.divisionFallbackTile;
 
   const handleVisit = (event: React.MouseEvent) => {
     if (division.primary_url) {
@@ -1456,10 +1625,13 @@ function HeroDivisionTile({
         <a
           href={division.primary_url ?? "#divisions"}
           onClick={handleVisit}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-white transition hover:text-[color:var(--tileAccent)]"
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-lg text-sm font-semibold text-white transition hover:text-[color:var(--tileAccent)]",
+            HOMEPAGE_FOCUS_RING,
+          )}
         >
           {cta}
-          <ArrowRight className="h-3.5 w-3.5" />
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </a>
         {liveMetric ? (
           <span className="truncate rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-medium text-white/72 sm:max-w-[55%]">
@@ -1491,6 +1663,9 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
             width={720}
             height={360}
             unoptimized
+            loading="lazy"
+            decoding="async"
+            sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.78)] via-[rgba(5,8,22,0.16)] to-transparent" />
@@ -1560,6 +1735,7 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
             </p>
           </div>
           <button
+            type="button"
             onClick={() => safeOpen(division.primary_url)}
             disabled={!division.primary_url}
             className={cn(
@@ -1567,10 +1743,11 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
               division.primary_url
                 ? "bg-[color:var(--cardAccent)] text-black hover:-translate-y-0.5 hover:opacity-95"
                 : "cursor-not-allowed border border-white/10 text-white/35",
+              HOMEPAGE_FOCUS_RING,
             )}
           >
             {copy.cards.openDivision}
-            <ExternalLink className="h-3.5 w-3.5" />
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -1578,13 +1755,7 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
   );
 }
 
-function DivisionCard({
-  d,
-  onOpen,
-}: {
-  d: DivisionRow;
-  onOpen: () => void;
-}) {
+function DivisionCard({ d, onOpen }: { d: DivisionRow; onOpen: () => void }) {
   const { copy } = useHubChrome();
   const host = domainFromUrl(d.primary_url, d.subdomain);
   const extra = getExtras(d);
@@ -1604,6 +1775,9 @@ function DivisionCard({
             width={640}
             height={320}
             unoptimized
+            loading="lazy"
+            decoding="async"
+            sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.72)] via-[rgba(5,8,22,0.14)] to-transparent" />
@@ -1692,7 +1866,9 @@ function DivisionCard({
               <dd className="ml-auto truncate text-right text-sm font-semibold tracking-tight text-white">
                 {extra.lead.name}
                 {extra.lead.title ? (
-                  <span className="ml-1 font-normal text-white/55">· {extra.lead.title}</span>
+                  <span className="ml-1 font-normal text-white/55">
+                    · {extra.lead.title}
+                  </span>
                 ) : null}
               </dd>
             </div>
@@ -1701,13 +1877,18 @@ function DivisionCard({
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
           <button
+            type="button"
             onClick={onOpen}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-transparent px-4 py-2 text-sm font-semibold text-white/85 transition hover:border-white/30 hover:bg-white/[0.04]"
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-transparent px-4 py-2 text-sm font-semibold text-white/85 transition hover:border-white/30 hover:bg-white/[0.04]",
+              HOMEPAGE_FOCUS_RING,
+            )}
           >
             {copy.cards.details}
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
           <button
+            type="button"
             onClick={() => safeOpen(d.primary_url)}
             disabled={!d.primary_url}
             className={cn(
@@ -1715,11 +1896,12 @@ function DivisionCard({
               d.primary_url
                 ? "text-black hover:-translate-y-0.5 hover:opacity-95"
                 : "cursor-not-allowed border border-white/10 text-white/35",
+              HOMEPAGE_FOCUS_RING,
             )}
             style={d.primary_url ? { background: accent } : undefined}
           >
             {copy.cards.open}
-            <ExternalLink className="h-3.5 w-3.5" />
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -1741,7 +1923,9 @@ function DetailsModal({
   const extra = getExtras(division);
   const links = Array.isArray(extra.links) ? extra.links : [];
   const whoItsFor = Array.isArray(extra.who_its_for) ? extra.who_its_for : [];
-  const howItWorks = Array.isArray(extra.how_it_works) ? extra.how_it_works : [];
+  const howItWorks = Array.isArray(extra.how_it_works)
+    ? extra.how_it_works
+    : [];
   const trustItems = Array.isArray(extra.trust) ? extra.trust : [];
   const accent = getAccent(division.accent);
   const titleId = useId();
@@ -1755,7 +1939,8 @@ function DetailsModal({
 
     const previousOverflow = document.body.style.overflow;
     const previousPaddingRight = document.body.style.paddingRight;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -1775,7 +1960,7 @@ function DetailsModal({
       const root = panelRef.current;
       if (!root) return;
       const focusables = root.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
       );
       if (focusables.length === 0) return;
       const first = focusables[0];
@@ -1817,9 +2002,13 @@ function DetailsModal({
       <motion.div
         ref={panelRef}
         className="flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[28px] border border-white/10 bg-[#0B1020] text-white shadow-[0_40px_140px_rgba(0,0,0,0.45)] sm:max-h-[88dvh] sm:max-w-4xl sm:rounded-[34px]"
-        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }}
+        initial={
+          reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }
+        }
         animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }}
+        exit={
+          reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }
+        }
       >
         {/* Sticky header — close button always visible */}
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/10 bg-[#0B1020]/95 px-4 py-3 backdrop-blur-sm sm:px-6">
@@ -1840,10 +2029,13 @@ function DetailsModal({
             ref={closeButtonRef}
             onClick={onClose}
             type="button"
-            className="rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+            className={cn(
+              "rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 transition hover:bg-white/10",
+              HOMEPAGE_FOCUS_RING,
+            )}
             aria-label={copy.modal.closeAria}
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -1852,153 +2044,183 @@ function DetailsModal({
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
           style={{ WebkitOverflowScrolling: "touch" as const }}
         >
-        {extra.cover_url ? (
-          <div className="h-44 overflow-hidden border-b border-white/10 sm:h-52">
-            <Image
-              src={extra.cover_url}
-              alt=""
-              width={900}
-              height={460}
-              unoptimized
-              className="h-full w-full object-cover"
-            />
-          </div>
-        ) : null}
+          {extra.cover_url ? (
+            <div className="h-44 overflow-hidden border-b border-white/10 sm:h-52">
+              <Image
+                src={extra.cover_url}
+                alt=""
+                width={900}
+                height={460}
+                unoptimized
+                loading="lazy"
+                decoding="async"
+                sizes="(min-width: 640px) 56rem, 100vw"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          ) : null}
 
-        <div
-          className="relative p-6 sm:p-8"
-          style={{
-            background: `radial-gradient(900px 320px at 18% 0%, ${accent}35, transparent 60%), radial-gradient(800px 220px at 82% 12%, rgba(255,255,255,0.12), transparent 60%)`,
-          }}
-        >
-          <div className="flex items-start gap-4">
-            <DivisionMark
-              src={extra.logo_url}
-              alt={`${division.name} logo`}
-              accent={accent}
-              wrapperClassName="h-14 w-14 border-0"
-              imageClassName="rounded-2xl object-contain p-2"
-            />
+          <div
+            className="relative p-6 sm:p-8"
+            style={{
+              background: `radial-gradient(900px 320px at 18% 0%, ${accent}35, transparent 60%), radial-gradient(800px 220px at 82% 12%, rgba(255,255,255,0.12), transparent 60%)`,
+            }}
+          >
+            <div className="flex items-start gap-4">
+              <DivisionMark
+                src={extra.logo_url}
+                alt={`${division.name} logo`}
+                accent={accent}
+                wrapperClassName="h-14 w-14 border-0"
+                imageClassName="rounded-2xl object-contain p-2"
+              />
 
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="text-2xl font-semibold tracking-tight">{division.name}</div>
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
-                    getStatusTone(division.status)
-                  )}
-                >
-                  <Zap className="h-3.5 w-3.5" />
-                  {getStatusLabel(division.status, copy.status)}
-                </span>
-              </div>
-
-              <div className="mt-2 text-sm text-white/66">
-                {division.tagline ?? host ?? division.key}
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {(division.categories ?? []).map((item) => (
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="text-2xl font-semibold tracking-tight">
+                    {division.name}
+                  </div>
                   <span
-                    key={item}
-                    className="rounded-full border border-white/12 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/75"
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
+                      getStatusTone(division.status),
+                    )}
                   >
-                    {item}
+                    <Zap className="h-3.5 w-3.5" />
+                    {getStatusLabel(division.status, copy.status)}
                   </span>
-                ))}
+                </div>
+
+                <div className="mt-2 text-sm text-white/66">
+                  {division.tagline ?? host ?? division.key}
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {(division.categories ?? []).map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-white/12 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/75"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid gap-6 p-6 sm:p-8">
-          {division.description ? (
-            <p className="text-sm leading-7 text-white/72">{division.description}</p>
-          ) : null}
+          <div className="grid gap-6 p-6 sm:p-8">
+            {division.description ? (
+              <p className="text-sm leading-7 text-white/72">
+                {division.description}
+              </p>
+            ) : null}
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <MiniKPI label={copy.modal.kpiStatus} value={getStatusLabel(division.status, copy.status)} />
-            <MiniKPI label={copy.modal.kpiSubdomain} value={host ?? "—"} />
-            <MiniKPI
-              label={copy.modal.kpiFeatured}
-              value={division.is_featured ? copy.modal.kpiYes : copy.modal.kpiNo}
-            />
-            <MiniKPI
-              label={copy.modal.kpiUpdated}
-              value={formatUpdatedAtLong(division.updated_at, formatLong)}
-            />
-          </div>
-
-          {(whoItsFor.length || howItWorks.length || trustItems.length) && (
-            <div className="grid gap-4 lg:grid-cols-3">
-              {whoItsFor.length ? (
-                <InsightList title={copy.modal.who} items={whoItsFor.slice(0, 6)} />
-              ) : null}
-
-              {howItWorks.length ? (
-                <InsightList title={copy.modal.how} items={howItWorks.slice(0, 6)} />
-              ) : null}
-
-              {trustItems.length ? (
-                <InsightList title={copy.modal.trust} items={trustItems.slice(0, 6)} />
-              ) : null}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <MiniKPI
+                label={copy.modal.kpiStatus}
+                value={getStatusLabel(division.status, copy.status)}
+              />
+              <MiniKPI label={copy.modal.kpiSubdomain} value={host ?? "—"} />
+              <MiniKPI
+                label={copy.modal.kpiFeatured}
+                value={
+                  division.is_featured ? copy.modal.kpiYes : copy.modal.kpiNo
+                }
+              />
+              <MiniKPI
+                label={copy.modal.kpiUpdated}
+                value={formatUpdatedAtLong(division.updated_at, formatLong)}
+              />
             </div>
-          )}
 
-          {division.highlights?.length ? (
-            <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {copy.modal.highlights}
-              </p>
-              <ul className="mt-3 flex flex-wrap gap-1.5">
-                {division.highlights.slice(0, 10).map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/74"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+            {(whoItsFor.length || howItWorks.length || trustItems.length) && (
+              <div className="grid gap-4 lg:grid-cols-3">
+                {whoItsFor.length ? (
+                  <InsightList
+                    title={copy.modal.who}
+                    items={whoItsFor.slice(0, 6)}
+                  />
+                ) : null}
 
-          {extra.lead?.name ? (
-            <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {copy.modal.leadEyebrow}
-              </p>
-              <p className="mt-3 text-[1.05rem] font-semibold tracking-tight text-white">
-                {extra.lead.name}
-              </p>
-              <p className="mt-1 text-sm text-white/68">
-                {extra.lead.title ?? copy.modal.leadFallbackTitle}
-              </p>
-            </div>
-          ) : null}
+                {howItWorks.length ? (
+                  <InsightList
+                    title={copy.modal.how}
+                    items={howItWorks.slice(0, 6)}
+                  />
+                ) : null}
 
-          {links.length ? (
-            <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {copy.modal.links}
-              </p>
-              <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
-                {links.slice(0, 8).map((link, index) => (
-                  <li key={`${link.url}-${index}`}>
-                    <button
-                      onClick={() => safeOpen(link.url)}
-                      className="group flex w-full items-center justify-between gap-3 py-3 text-left transition hover:bg-white/[0.02]"
+                {trustItems.length ? (
+                  <InsightList
+                    title={copy.modal.trust}
+                    items={trustItems.slice(0, 6)}
+                  />
+                ) : null}
+              </div>
+            )}
+
+            {division.highlights?.length ? (
+              <div>
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                  {copy.modal.highlights}
+                </p>
+                <ul className="mt-3 flex flex-wrap gap-1.5">
+                  {division.highlights.slice(0, 10).map((item) => (
+                    <li
+                      key={item}
+                      className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/74"
                     >
-                      <span className="text-sm font-semibold text-white">{link.label}</span>
-                      <ExternalLink className="h-3.5 w-3.5 text-white/45 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {extra.lead?.name ? (
+              <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                  {copy.modal.leadEyebrow}
+                </p>
+                <p className="mt-3 text-[1.05rem] font-semibold tracking-tight text-white">
+                  {extra.lead.name}
+                </p>
+                <p className="mt-1 text-sm text-white/68">
+                  {extra.lead.title ?? copy.modal.leadFallbackTitle}
+                </p>
+              </div>
+            ) : null}
+
+            {links.length ? (
+              <div>
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                  {copy.modal.links}
+                </p>
+                <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
+                  {links.slice(0, 8).map((link, index) => (
+                    <li key={`${link.url}-${index}`}>
+                      <button
+                        type="button"
+                        onClick={() => safeOpen(link.url)}
+                        className={cn(
+                          "group flex w-full items-center justify-between gap-3 rounded-lg py-3 text-left transition hover:bg-white/[0.02]",
+                          HOMEPAGE_FOCUS_RING,
+                        )}
+                      >
+                        <span className="text-sm font-semibold text-white">
+                          {link.label}
+                        </span>
+                        <ExternalLink
+                          className="h-3.5 w-3.5 text-white/45 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
         </div>
 
         {/* Sticky bottom CTA — never hidden by iOS home indicator */}
@@ -2014,11 +2236,14 @@ function DetailsModal({
               <button
                 onClick={() => safeOpen(division.primary_url)}
                 type="button"
-                className="inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90",
+                  HOMEPAGE_FOCUS_RING,
+                )}
                 style={{ background: accent }}
               >
                 {copy.modal.enterDivision}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -2028,13 +2253,7 @@ function DetailsModal({
   );
 }
 
-function InsightList({
-  title,
-  items,
-}: {
-  title: string;
-  items: string[];
-}) {
+function InsightList({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
@@ -2042,7 +2261,10 @@ function InsightList({
       </p>
       <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
         {items.map((item) => (
-          <li key={item} className="py-2.5 text-sm leading-relaxed text-white/75">
+          <li
+            key={item}
+            className="py-2.5 text-sm leading-relaxed text-white/75"
+          >
             {item}
           </li>
         ))}
@@ -2057,7 +2279,9 @@ function MiniKPI({ label, value }: { label: string; value: string }) {
       <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
         {label}
       </div>
-      <div className="text-sm font-semibold tracking-tight text-white">{value}</div>
+      <div className="text-sm font-semibold tracking-tight text-white">
+        {value}
+      </div>
     </div>
   );
 }

@@ -487,13 +487,13 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
   metadata: {
     title: "Owner command center · Henry & Co.",
     description:
-      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.",
+      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one Henry & Co. HQ surface.",
   },
   hero: {
     eyebrow: "Central Owner Command Center",
     titleTemplate: "{company} company brain",
     description:
-      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.",
+      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one Henry & Co. HQ surface.",
     inviteStaff: "Invite staff",
     updateBrand: "Update brand settings",
   },
@@ -540,7 +540,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
   },
   divisionsPanel: {
     title: "Division control center",
-    description: "One health map for every live or future HenryCo division.",
+    description: "One health map for every live or future Henry & Co. division.",
     viewAll: "View all divisions",
     healthLabelTemplate: "{label} health · {alerts} alerts · {open} open items",
     revenueLabel: "Revenue",
@@ -577,7 +577,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Managed surfaces",
       managedSurfacesDescription:
         "Shared pages and division rows that now belong to the central owner dashboard.",
@@ -662,7 +662,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     subdomains: {
       metadataTitle: "Division branding · Henry & Co.",
       metadataDescription:
-        "Subdomains, logos, and identity rows for every HenryCo division, edited centrally from the owner command center.",
+        "Subdomains, logos, and identity rows for every Henry & Co. division, edited centrally from the owner command center.",
       eyebrow: "Division Branding",
       title: "Subdomains, logos, and identity rows",
       description: "Each division row can now be updated centrally from the owner command center.",
@@ -777,7 +777,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     healthOk:
       "Internal comms storage, memberships, attachments, and presence checks are healthy.",
     healthDegraded:
-      "Provisioning is incomplete. Apply HenryCo Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.",
+      "Provisioning is incomplete. Apply Henry & Co. Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.",
     newRoomTitlePlaceholder: "New room title",
     roomTypeGroupOption: "Group room",
     roomTypeBroadcastOption: "Broadcast room",
@@ -791,7 +791,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     searchChannelsPlaceholder: "Search channels…",
     searchChannelsAriaLabel: "Search channels",
     noChannelsMatch:
-      "No channels match your search. If storage is not provisioned yet, apply HenryCo Hub Supabase migrations and wait for the schema cache to refresh.",
+      "No channels match your search. If storage is not provisioned yet, apply Henry & Co. Hub Supabase migrations and wait for the schema cache to refresh.",
     threadFallbackTitle: "Internal chat",
     threadDescription:
       "Owner-protected HQ surface. Use direct chat for 1:1 conversations and governed rooms for owner-wide updates. Messages use Supabase row-level security, private storage, and realtime delivery with safe fallback to REST.",
@@ -826,7 +826,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     pageOwnerAssistant: "Owner assistant",
     pagePanelTitle: "Live thread",
     pagePanelDescription:
-      "Post updates, decisions, and handoffs. If provisioning looks degraded, apply the HenryCo Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes.",
+      "Post updates, decisions, and handoffs. If provisioning looks degraded, apply the Henry & Co. Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes.",
   },
   ownerDashboardClient: {
     loadingDashboard: "Loading dashboard...",
@@ -993,13 +993,13 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centre de commande propriétaire · Henry & Co.",
     description:
-      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface HenryCo HQ.",
+      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "Centre de commande propriétaire central",
     titleTemplate: "Cerveau d’entreprise de {company}",
     description:
-      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface HenryCo HQ.",
+      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface Henry & Co. HQ.",
     inviteStaff: "Inviter du personnel",
     updateBrand: "Mettre à jour la marque",
   },
@@ -1044,7 +1044,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centre de contrôle des divisions",
-    description: "Une carte de santé pour chaque division HenryCo, actuelle ou future.",
+    description: "Une carte de santé pour chaque division Henry & Co., actuelle ou future.",
     viewAll: "Voir toutes les divisions",
     healthLabelTemplate: "Santé {label} · {alerts} alertes · {open} dossiers ouverts",
     revenueLabel: "Revenu",
@@ -1081,7 +1081,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Surfaces gérées",
       managedSurfacesDescription:
         "Pages partagées et lignes de division qui relèvent désormais du tableau de bord propriétaire central.",
@@ -1167,7 +1167,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Marque des divisions · Henry & Co.",
       metadataDescription:
-        "Sous-domaines, logos et fiches d’identité pour chaque division HenryCo, modifiables depuis le centre de commande propriétaire.",
+        "Sous-domaines, logos et fiches d’identité pour chaque division Henry & Co., modifiables depuis le centre de commande propriétaire.",
       eyebrow: "Marque des divisions",
       title: "Sous-domaines, logos et fiches d’identité",
       description:
@@ -1283,7 +1283,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Le stockage, les membres, les pièces jointes et les vérifications de présence des communications internes sont sains.",
     healthDegraded:
-      "Le provisionnement est incomplet. Appliquez les migrations HenryCo Hub jusqu'au 20260408120000 et confirmez que la sonde de santé passe avant de vous fier à cet ensemble de salles.",
+      "Le provisionnement est incomplet. Appliquez les migrations Henry & Co. Hub jusqu'au 20260408120000 et confirmez que la sonde de santé passe avant de vous fier à cet ensemble de salles.",
     newRoomTitlePlaceholder: "Titre de la nouvelle salle",
     roomTypeGroupOption: "Salle de groupe",
     roomTypeBroadcastOption: "Salle de diffusion",
@@ -1297,7 +1297,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Rechercher des canaux…",
     searchChannelsAriaLabel: "Rechercher des canaux",
     noChannelsMatch:
-      "Aucun canal ne correspond à votre recherche. Si le stockage n'est pas encore provisionné, appliquez les migrations Supabase HenryCo Hub et attendez que le cache de schéma se rafraîchisse.",
+      "Aucun canal ne correspond à votre recherche. Si le stockage n'est pas encore provisionné, appliquez les migrations Supabase Henry & Co. Hub et attendez que le cache de schéma se rafraîchisse.",
     threadFallbackTitle: "Chat interne",
     threadDescription:
       "Surface QG protégée par le propriétaire. Utilisez le chat direct pour les conversations 1:1 et les salles gouvernées pour les mises à jour à l'échelle du propriétaire.",
@@ -1490,13 +1490,13 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centro de mando del propietario · Henry & Co.",
     description:
-      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie HenryCo HQ.",
+      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "Centro de mando central del propietario",
     titleTemplate: "Cerebro corporativo de {company}",
     description:
-      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie HenryCo HQ.",
+      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie Henry & Co. HQ.",
     inviteStaff: "Invitar al personal",
     updateBrand: "Actualizar la marca",
   },
@@ -1541,7 +1541,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centro de control de divisiones",
-    description: "Un mapa de salud para cada división HenryCo, actual o futura.",
+    description: "Un mapa de salud para cada división Henry & Co., actual o futura.",
     viewAll: "Ver todas las divisiones",
     healthLabelTemplate: "Salud {label} · {alerts} alertas · {open} pendientes",
     revenueLabel: "Ingresos",
@@ -1578,7 +1578,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Superficies gestionadas",
       managedSurfacesDescription:
         "Páginas compartidas y filas de división ahora bajo el panel central del propietario.",
@@ -1663,7 +1663,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Marca por división · Henry & Co.",
       metadataDescription:
-        "Subdominios, logos y filas de identidad de cada división HenryCo, editables desde el centro de mando del propietario.",
+        "Subdominios, logos y filas de identidad de cada división Henry & Co., editables desde el centro de mando del propietario.",
       eyebrow: "Marca por división",
       title: "Subdominios, logos y filas de identidad",
       description:
@@ -1779,7 +1779,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "El almacenamiento, los miembros, los archivos adjuntos y las verificaciones de presencia de las comunicaciones internas están saludables.",
     healthDegraded:
-      "El aprovisionamiento está incompleto. Aplica las migraciones de HenryCo Hub hasta 20260408120000 y confirma que la sonda de salud pasa antes de confiar en este conjunto de salas.",
+      "El aprovisionamiento está incompleto. Aplica las migraciones de Henry & Co. Hub hasta 20260408120000 y confirma que la sonda de salud pasa antes de confiar en este conjunto de salas.",
     newRoomTitlePlaceholder: "Título de la nueva sala",
     roomTypeGroupOption: "Sala de grupo",
     roomTypeBroadcastOption: "Sala de difusión",
@@ -1793,7 +1793,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Buscar canales…",
     searchChannelsAriaLabel: "Buscar canales",
     noChannelsMatch:
-      "Ningún canal coincide con tu búsqueda. Si el almacenamiento aún no está aprovisionado, aplica las migraciones de Supabase de HenryCo Hub y espera a que se actualice la caché del esquema.",
+      "Ningún canal coincide con tu búsqueda. Si el almacenamiento aún no está aprovisionado, aplica las migraciones de Supabase de Henry & Co. Hub y espera a que se actualice la caché del esquema.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
       "Superficie HQ protegida por el propietario. Usa el chat directo para conversaciones 1:1 y salas gobernadas para actualizaciones del propietario.",
@@ -1986,13 +1986,13 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centro de comando do proprietário · Henry & Co.",
     description:
-      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície HenryCo HQ.",
+      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "Centro de comando central do proprietário",
     titleTemplate: "Cérebro empresarial de {company}",
     description:
-      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície HenryCo HQ.",
+      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície Henry & Co. HQ.",
     inviteStaff: "Convidar pessoal",
     updateBrand: "Actualizar marca",
   },
@@ -2037,7 +2037,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centro de controlo de divisões",
-    description: "Um mapa de saúde para cada divisão HenryCo, actual ou futura.",
+    description: "Um mapa de saúde para cada divisão Henry & Co., actual ou futura.",
     viewAll: "Ver todas as divisões",
     healthLabelTemplate: "Saúde {label} · {alerts} alertas · {open} pendentes",
     revenueLabel: "Receita",
@@ -2074,7 +2074,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Superfícies geridas",
       managedSurfacesDescription:
         "Páginas partilhadas e linhas de divisão que agora pertencem ao painel central do proprietário.",
@@ -2160,7 +2160,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Marca de divisão · Henry & Co.",
       metadataDescription:
-        "Subdomínios, logótipos e linhas de identidade de cada divisão HenryCo, editáveis no centro de comando do proprietário.",
+        "Subdomínios, logótipos e linhas de identidade de cada divisão Henry & Co., editáveis no centro de comando do proprietário.",
       eyebrow: "Marca de divisão",
       title: "Subdomínios, logótipos e linhas de identidade",
       description:
@@ -2276,7 +2276,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "O armazenamento, membros, anexos e verificações de presença das comunicações internas estão saudáveis.",
     healthDegraded:
-      "O aprovisionamento está incompleto. Aplique as migrações do HenryCo Hub até 20260408120000 e confirme que a sonda de saúde passa antes de confiar neste conjunto de salas.",
+      "O aprovisionamento está incompleto. Aplique as migrações do Henry & Co. Hub até 20260408120000 e confirme que a sonda de saúde passa antes de confiar neste conjunto de salas.",
     newRoomTitlePlaceholder: "Título da nova sala",
     roomTypeGroupOption: "Sala de grupo",
     roomTypeBroadcastOption: "Sala de transmissão",
@@ -2290,7 +2290,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Pesquisar canais…",
     searchChannelsAriaLabel: "Pesquisar canais",
     noChannelsMatch:
-      "Nenhum canal corresponde à sua pesquisa. Se o armazenamento ainda não estiver aprovisionado, aplique as migrações do Supabase do HenryCo Hub e aguarde a actualização da cache.",
+      "Nenhum canal corresponde à sua pesquisa. Se o armazenamento ainda não estiver aprovisionado, aplique as migrações do Supabase do Henry & Co. Hub e aguarde a actualização da cache.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
       "Superfície HQ protegida pelo proprietário. Use o chat directo para conversas 1:1 e salas governadas para actualizações do proprietário.",
@@ -2483,13 +2483,13 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "مركز قيادة المالك · Henry & Co.",
     description:
-      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من HenryCo HQ.",
+      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "مركز قيادة المالك المركزي",
     titleTemplate: "العقل المؤسسي لشركة {company}",
     description:
-      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من HenryCo HQ.",
+      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من Henry & Co. HQ.",
     inviteStaff: "دعوة موظفين",
     updateBrand: "تحديث إعدادات العلامة",
   },
@@ -2534,7 +2534,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "مركز التحكم بالأقسام",
-    description: "خريطة صحية لكل قسم من أقسام HenryCo حاليًا ومستقبلًا.",
+    description: "خريطة صحية لكل قسم من أقسام Henry & Co. حاليًا ومستقبلًا.",
     viewAll: "عرض كل الأقسام",
     healthLabelTemplate: "صحة {label} · {alerts} تنبيهات · {open} عناصر مفتوحة",
     revenueLabel: "الإيرادات",
@@ -2571,7 +2571,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "السطوح المُدارة",
       managedSurfacesDescription:
         "الصفحات المشتركة وصفوف الأقسام التي صارت تحت إدارة لوحة المالك المركزية.",
@@ -2656,7 +2656,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "علامات الأقسام · Henry & Co.",
       metadataDescription:
-        "النطاقات الفرعية والشعارات وصفوف الهوية لكل أقسام HenryCo، قابلة للتحرير مركزيًا من مركز قيادة المالك.",
+        "النطاقات الفرعية والشعارات وصفوف الهوية لكل أقسام Henry & Co.، قابلة للتحرير مركزيًا من مركز قيادة المالك.",
       eyebrow: "علامة القسم",
       title: "النطاقات الفرعية والشعارات وصفوف الهوية",
       description: "يمكن الآن تحديث كل صف قسم مركزيًا من مركز قيادة المالك.",
@@ -2771,7 +2771,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "التخزين والعضويات والمرفقات وعمليات فحص الحضور في الاتصالات الداخلية جميعها سليمة.",
     healthDegraded:
-      "التوفير غير مكتمل. طبّق ترحيلات HenryCo Hub حتى 20260408120000 وأكّد اجتياز مجس السلامة قبل الاعتماد على هذه المجموعة من الغرف.",
+      "التوفير غير مكتمل. طبّق ترحيلات Henry & Co. Hub حتى 20260408120000 وأكّد اجتياز مجس السلامة قبل الاعتماد على هذه المجموعة من الغرف.",
     newRoomTitlePlaceholder: "عنوان الغرفة الجديدة",
     roomTypeGroupOption: "غرفة مجموعة",
     roomTypeBroadcastOption: "غرفة بث",
@@ -2785,7 +2785,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "البحث في القنوات…",
     searchChannelsAriaLabel: "البحث في القنوات",
     noChannelsMatch:
-      "لا توجد قنوات تطابق بحثك. إذا لم يكن التخزين مُوفَّراً بعد، طبّق ترحيلات Supabase لـ HenryCo Hub وانتظر تحديث ذاكرة التخزين المؤقت.",
+      "لا توجد قنوات تطابق بحثك. إذا لم يكن التخزين مُوفَّراً بعد، طبّق ترحيلات Supabase لـ Henry & Co. Hub وانتظر تحديث ذاكرة التخزين المؤقت.",
     threadFallbackTitle: "الدردشة الداخلية",
     threadDescription:
       "سطح HQ محمي من قِبَل المالك. استخدم الدردشة المباشرة للمحادثات الفردية والغرف المحكومة للتحديثات العامة.",
@@ -2978,13 +2978,13 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Eigentümer-Kommandozentrale · Henry & Co.",
     description:
-      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen HenryCo-HQ-Oberfläche.",
+      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen Henry & Co.-HQ-Oberfläche.",
   },
   hero: {
     eyebrow: "Zentrale Eigentümer-Kommandozentrale",
     titleTemplate: "Unternehmensgehirn von {company}",
     description:
-      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen HenryCo-HQ-Oberfläche.",
+      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen Henry & Co.-HQ-Oberfläche.",
     inviteStaff: "Mitarbeitende einladen",
     updateBrand: "Markeneinstellungen aktualisieren",
   },
@@ -3029,7 +3029,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Geschäftsbereichs-Kontrollzentrum",
-    description: "Eine Gesundheitskarte für jeden aktuellen oder künftigen HenryCo-Bereich.",
+    description: "Eine Gesundheitskarte für jeden aktuellen oder künftigen Henry & Co.-Bereich.",
     viewAll: "Alle Bereiche anzeigen",
     healthLabelTemplate: "{label}-Zustand · {alerts} Warnungen · {open} offene Punkte",
     revenueLabel: "Umsatz",
@@ -3066,7 +3066,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Verwaltete Oberflächen",
       managedSurfacesDescription:
         "Gemeinsame Seiten und Bereichszeilen, die nun zum zentralen Eigentümer-Dashboard gehören.",
@@ -3153,7 +3153,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Bereichsbranding · Henry & Co.",
       metadataDescription:
-        "Subdomains, Logos und Identitätszeilen jedes HenryCo-Bereichs, zentral aus dem Eigentümer-Command-Center editierbar.",
+        "Subdomains, Logos und Identitätszeilen jedes Henry & Co.-Bereichs, zentral aus dem Eigentümer-Command-Center editierbar.",
       eyebrow: "Bereichsbranding",
       title: "Subdomains, Logos und Identitätszeilen",
       description:
@@ -3269,7 +3269,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Speicher, Mitgliedschaften, Anhänge und Präsenzprüfungen der internen Kommunikation sind gesund.",
     healthDegraded:
-      "Die Bereitstellung ist unvollständig. Wenden Sie HenryCo Hub-Migrationen bis 20260408120000 an und bestätigen Sie, dass die Gesundheitsprüfung besteht.",
+      "Die Bereitstellung ist unvollständig. Wenden Sie Henry & Co. Hub-Migrationen bis 20260408120000 an und bestätigen Sie, dass die Gesundheitsprüfung besteht.",
     newRoomTitlePlaceholder: "Neuer Raumtitel",
     roomTypeGroupOption: "Gruppenraum",
     roomTypeBroadcastOption: "Broadcastraum",
@@ -3283,7 +3283,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Kanäle suchen…",
     searchChannelsAriaLabel: "Kanäle suchen",
     noChannelsMatch:
-      "Keine Kanäle entsprechen Ihrer Suche. Wenn der Speicher noch nicht bereitgestellt ist, wenden Sie Supabase-Migrationen von HenryCo Hub an.",
+      "Keine Kanäle entsprechen Ihrer Suche. Wenn der Speicher noch nicht bereitgestellt ist, wenden Sie Supabase-Migrationen von Henry & Co. Hub an.",
     threadFallbackTitle: "Interner Chat",
     threadDescription:
       "Eigentümer-geschützte HQ-Oberfläche. Verwenden Sie den Direktchat für 1:1-Gespräche und verwaltete Räume für eigentümerweite Updates.",
@@ -3476,13 +3476,13 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centro di comando del proprietario · Henry & Co.",
     description:
-      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie HenryCo HQ.",
+      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "Centro di comando centrale del proprietario",
     titleTemplate: "Cervello aziendale di {company}",
     description:
-      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie HenryCo HQ.",
+      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie Henry & Co. HQ.",
     inviteStaff: "Invita personale",
     updateBrand: "Aggiorna impostazioni brand",
   },
@@ -3527,7 +3527,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centro di controllo delle divisioni",
-    description: "Una mappa di salute per ogni divisione HenryCo, attuale o futura.",
+    description: "Una mappa di salute per ogni divisione Henry & Co., attuale o futura.",
     viewAll: "Vedi tutte le divisioni",
     healthLabelTemplate: "Salute {label} · {alerts} avvisi · {open} in sospeso",
     revenueLabel: "Ricavi",
@@ -3564,7 +3564,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Superfici gestite",
       managedSurfacesDescription:
         "Pagine condivise e righe di divisione che ora appartengono alla dashboard centrale del proprietario.",
@@ -3649,7 +3649,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Branding di divisione · Henry & Co.",
       metadataDescription:
-        "Sottodomini, loghi e righe identitarie di ogni divisione HenryCo, modificabili centralmente dal centro di comando del proprietario.",
+        "Sottodomini, loghi e righe identitarie di ogni divisione Henry & Co., modificabili centralmente dal centro di comando del proprietario.",
       eyebrow: "Branding di divisione",
       title: "Sottodomini, loghi e righe identitarie",
       description:
@@ -3765,7 +3765,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Archiviazione, iscrizioni, allegati e verifiche di presenza delle comunicazioni interne sono integri.",
     healthDegraded:
-      "Il provisioning è incompleto. Applica le migrazioni HenryCo Hub fino a 20260408120000 e conferma che la sonda di salute supera il test.",
+      "Il provisioning è incompleto. Applica le migrazioni Henry & Co. Hub fino a 20260408120000 e conferma che la sonda di salute supera il test.",
     newRoomTitlePlaceholder: "Titolo nuova stanza",
     roomTypeGroupOption: "Stanza di gruppo",
     roomTypeBroadcastOption: "Stanza broadcast",
@@ -3779,7 +3779,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Cerca canali…",
     searchChannelsAriaLabel: "Cerca canali",
     noChannelsMatch:
-      "Nessun canale corrisponde alla tua ricerca. Se l'archiviazione non è ancora stata predisposta, applica le migrazioni Supabase di HenryCo Hub.",
+      "Nessun canale corrisponde alla tua ricerca. Se l'archiviazione non è ancora stata predisposta, applica le migrazioni Supabase di Henry & Co. Hub.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
       "Superficie HQ protetta dal proprietario. Usa la chat diretta per conversazioni 1:1 e stanze governate per aggiornamenti estesi.",
@@ -3971,12 +3971,12 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
 const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "业主指挥中心 · Henry & Co.",
-    description: "在一个 HenryCo HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
+    description: "在一个 Henry & Co. HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
   },
   hero: {
     eyebrow: "中央业主指挥中心",
     titleTemplate: "{company} 公司大脑",
-    description: "在一个 HenryCo HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
+    description: "在一个 Henry & Co. HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
     inviteStaff: "邀请员工",
     updateBrand: "更新品牌设置",
   },
@@ -4021,7 +4021,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "业务部门控制中心",
-    description: "为每个当前或未来的 HenryCo 业务部门提供一张健康地图。",
+    description: "为每个当前或未来的 Henry & Co. 业务部门提供一张健康地图。",
     viewAll: "查看所有业务部门",
     healthLabelTemplate: "{label} 健康 · {alerts} 个告警 · {open} 个待处理",
     revenueLabel: "收入",
@@ -4056,7 +4056,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "受管理的界面",
       managedSurfacesDescription: "共享页面与业务部门行,现归属于中央业主仪表盘。",
       divisionRowsLabel: "业务部门品牌行",
@@ -4134,7 +4134,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     },
     subdomains: {
       metadataTitle: "业务部门品牌 · Henry & Co.",
-      metadataDescription: "每个 HenryCo 业务部门的子域、Logo 与身份行,可在业主指挥中心集中编辑。",
+      metadataDescription: "每个 Henry & Co. 业务部门的子域、Logo 与身份行,可在业主指挥中心集中编辑。",
       eyebrow: "业务部门品牌",
       title: "子域、Logo 与身份行",
       description: "每条业务部门行现在均可在业主指挥中心集中更新。",
@@ -4247,7 +4247,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "内部通讯的存储、成员、附件和状态检查均正常。",
     healthDegraded:
-      "配置不完整。请应用 HenryCo Hub 迁移至 20260408120000，并确认健康检查通过后再使用此房间组。",
+      "配置不完整。请应用 Henry & Co. Hub 迁移至 20260408120000，并确认健康检查通过后再使用此房间组。",
     newRoomTitlePlaceholder: "新房间标题",
     roomTypeGroupOption: "群组房间",
     roomTypeBroadcastOption: "广播房间",
@@ -4261,7 +4261,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "搜索频道…",
     searchChannelsAriaLabel: "搜索频道",
     noChannelsMatch:
-      "没有频道符合搜索条件。如存储尚未配置，请应用 HenryCo Hub Supabase 迁移并等待模式缓存刷新。",
+      "没有频道符合搜索条件。如存储尚未配置，请应用 Henry & Co. Hub Supabase 迁移并等待模式缓存刷新。",
     threadFallbackTitle: "内部聊天",
     threadDescription:
       "业主保护的总部界面。1:1 对话请使用私信，业主范围的更新请使用受管房间。",
@@ -4454,13 +4454,13 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "मालिक कमांड सेंटर · Henry & Co.",
     description:
-      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही HenryCo HQ सतह पर।",
+      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही Henry & Co. HQ सतह पर।",
   },
   hero: {
     eyebrow: "केंद्रीय मालिक कमांड सेंटर",
     titleTemplate: "{company} कंपनी का दिमाग",
     description:
-      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही HenryCo HQ सतह पर।",
+      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही Henry & Co. HQ सतह पर।",
     inviteStaff: "स्टाफ़ आमंत्रित करें",
     updateBrand: "ब्रांड सेटिंग्स अपडेट करें",
   },
@@ -4505,7 +4505,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "डिवीज़न नियंत्रण केंद्र",
-    description: "हर वर्तमान या भविष्य के HenryCo डिवीज़न के लिए एक स्वास्थ्य मानचित्र।",
+    description: "हर वर्तमान या भविष्य के Henry & Co. डिवीज़न के लिए एक स्वास्थ्य मानचित्र।",
     viewAll: "सभी डिवीज़न देखें",
     healthLabelTemplate: "{label} स्वास्थ्य · {alerts} अलर्ट · {open} खुले कार्य",
     revenueLabel: "राजस्व",
@@ -4542,7 +4542,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "प्रबंधित सतहें",
       managedSurfacesDescription:
         "साझा पेज और डिवीज़न पंक्तियाँ जो अब केंद्रीय मालिक डैशबोर्ड के अधीन हैं।",
@@ -4628,7 +4628,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "डिवीज़न ब्रांडिंग · Henry & Co.",
       metadataDescription:
-        "प्रत्येक HenryCo डिवीज़न के सबडोमेन, लोगो और पहचान पंक्तियाँ — मालिक कमांड सेंटर से केंद्रीय रूप से संपादन योग्य।",
+        "प्रत्येक Henry & Co. डिवीज़न के सबडोमेन, लोगो और पहचान पंक्तियाँ — मालिक कमांड सेंटर से केंद्रीय रूप से संपादन योग्य।",
       eyebrow: "डिवीज़न ब्रांडिंग",
       title: "सबडोमेन, लोगो और पहचान पंक्तियाँ",
       description:
@@ -4744,7 +4744,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "आंतरिक संचार का संग्रहण, सदस्यता, अनुलग्नक और उपस्थिति जाँच सभी स्वस्थ हैं।",
     healthDegraded:
-      "प्रावधान अधूरा है। HenryCo Hub माइग्रेशन 20260408120000 तक लागू करें।",
+      "प्रावधान अधूरा है। Henry & Co. Hub माइग्रेशन 20260408120000 तक लागू करें।",
     newRoomTitlePlaceholder: "नए कक्ष का शीर्षक",
     roomTypeGroupOption: "समूह कक्ष",
     roomTypeBroadcastOption: "प्रसारण कक्ष",
@@ -4951,13 +4951,13 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Ebe nchịkwa onye nwe · Henry & Co.",
     description:
-      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu HenryCo HQ.",
+      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "Ebe nchịkwa etiti onye nwe",
     titleTemplate: "Ụbụrụ ụlọ ọrụ {company}",
     description:
-      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu HenryCo HQ.",
+      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu Henry & Co. HQ.",
     inviteStaff: "Kpọọ ndị ọrụ",
     updateBrand: "Melite ntọala akara",
   },
@@ -5002,7 +5002,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Ebe nchịkwa ngalaba",
-    description: "Otu map ahụike maka ngalaba HenryCo ọ bụla, ugbu a ma ọ bụ n'ọdịnihu.",
+    description: "Otu map ahụike maka ngalaba Henry & Co. ọ bụla, ugbu a ma ọ bụ n'ọdịnihu.",
     viewAll: "Lelee ngalaba niile",
     healthLabelTemplate: "Ahụike {label} · {alerts} mkpọsa · {open} ihe emeghe",
     revenueLabel: "Ego batara",
@@ -5039,7 +5039,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
       emptyValue: "—",
       defaultBrandTitle: "Henry & Co.",
       defaultCompanyName: "Henry & Co.",
-      defaultBaseDomain: "henrycogroup.com",
+      defaultBaseDomain: "henryonyx.com",
       managedSurfacesTitle: "Elu a na-ejikwa",
       managedSurfacesDescription:
         "Ibe nkekọrịta na ahịrị ngalaba ndị ugbu a dị n'okpuru dashboard onye nwe etiti.",
@@ -5125,7 +5125,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Akara ngalaba · Henry & Co.",
       metadataDescription:
-        "Subdomain, akara ngosi, na ahịrị njirimara maka ngalaba HenryCo ọ bụla, enwere ike idezi n'etiti site na ebe nchịkwa onye nwe.",
+        "Subdomain, akara ngosi, na ahịrị njirimara maka ngalaba Henry & Co. ọ bụla, enwere ike idezi n'etiti site na ebe nchịkwa onye nwe.",
       eyebrow: "Akara ngalaba",
       title: "Subdomain, akara ngosi, na ahịrị njirimara",
       description:
@@ -5244,13 +5244,13 @@ const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Ibùdó àṣẹ onílé · Henry & Co.",
     description:
-      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ HenryCo HQ kan ṣoṣo.",
+      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ Henry & Co. HQ kan ṣoṣo.",
   },
   hero: {
     eyebrow: "Ibùdó àṣẹ àárín onílé",
     titleTemplate: "Ọpọlọ ilé-iṣẹ́ {company}",
     description:
-      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ HenryCo HQ kan ṣoṣo.",
+      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ Henry & Co. HQ kan ṣoṣo.",
     inviteStaff: "Pe òṣìṣẹ́",
     updateBrand: "Tún ètò àmì-ẹ̀rí ṣe",
   },
@@ -5295,7 +5295,7 @@ const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Ibùdó ìṣàkóso ìpín",
-    description: "Aworan ìlera kan fún gbogbo ìpín HenryCo, lọ́wọ́lọ́wọ́ tàbí ọjọ́ ọ̀la.",
+    description: "Aworan ìlera kan fún gbogbo ìpín Henry & Co., lọ́wọ́lọ́wọ́ tàbí ọjọ́ ọ̀la.",
     viewAll: "Wo gbogbo ìpín",
     healthLabelTemplate: "Ìlera {label} · {alerts} ìkìlọ̀ · {open} àwọn iṣẹ́ tó ṣí sílẹ̀",
     revenueLabel: "Owó",
@@ -5396,13 +5396,13 @@ const HUB_OWNER_COPY_HA: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Cibiyar umarni ta mai kamfani · Henry & Co.",
     description:
-      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na HenryCo HQ.",
+      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na Henry & Co. HQ.",
   },
   hero: {
     eyebrow: "Cibiyar umarni ta tsakiya ta mai kamfani",
     titleTemplate: "Kwakwalwar kamfanin {company}",
     description:
-      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na HenryCo HQ.",
+      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na Henry & Co. HQ.",
     inviteStaff: "Gayyaci ma’aikata",
     updateBrand: "Sabunta saitin alama",
   },
@@ -5447,7 +5447,7 @@ const HUB_OWNER_COPY_HA: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Cibiyar sarrafa sashe",
-    description: "Taswirar lafiya guda ga kowane sashe na HenryCo, na yanzu ko na gaba.",
+    description: "Taswirar lafiya guda ga kowane sashe na Henry & Co., na yanzu ko na gaba.",
     viewAll: "Duba dukkan sashe",
     healthLabelTemplate: "Lafiyar {label} · {alerts} faɗakarwa · {open} buɗaɗɗun abubuwa",
     revenueLabel: "Kuɗi",

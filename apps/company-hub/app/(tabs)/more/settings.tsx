@@ -94,7 +94,7 @@ export default function SettingsScreen() {
         </Text>
         <Text className="mt-2 text-sm leading-5" style={{ color: palette.muted }}>
           The official corporate directory for Henry &amp; Co. divisions and
-          services—aligned with henrycogroup.com.
+          services—aligned with henryonyx.com.
         </Text>
       </View>
 

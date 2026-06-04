@@ -21,7 +21,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
   hub: {
     key: "hub",
     parentBrand: "HENRY & CO.",
-    division: "Group",
+    division: "Ecosystem",
     description:
       "The operating hub for every Henry & Co. business. Explore divisions, choose services, and enter each standalone website.",
     domainLabel: "henryco.com",
@@ -41,7 +41,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
     division: "Fabric Care",
     description:
       "Premium garment care, home cleaning, office cleaning, and pickup delivery with clear booking, dependable timing, and polished follow-through.",
-    domainLabel: "care.henrycogroup.com",
+    domainLabel: "care.henryonyx.com",
     accent: "#6B7CFF",
     robotsIndex: false,
     marketingNav: [
@@ -75,7 +75,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
     division: "Marketplace",
     description:
       "Premium multi-vendor commerce for trusted sellers, cleaner buyer journeys, and sharper operator control.",
-    domainLabel: "marketplace.henrycogroup.com",
+    domainLabel: "marketplace.henryonyx.com",
     accent: "#B2863B",
     robotsIndex: false,
     marketingNav: [
@@ -92,7 +92,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
     division: "Logistics",
     description:
       "Premium pickup, dispatch, same-day delivery, scheduled routing, and fleet operations with trustworthy tracking and tighter dispatch control.",
-    domainLabel: "logistics.henrycogroup.com",
+    domainLabel: "logistics.henryonyx.com",
     accent: "#D06F32",
     robotsIndex: false,
     marketingNav: [

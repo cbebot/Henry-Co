@@ -69,7 +69,7 @@ export function toStringArray(value: unknown) {
 }
 
 export function normalizeBaseDomain(value?: string | null) {
-  return String(value || "henrycogroup.com")
+  return String(value || "henryonyx.com")
     .trim()
     .replace(/^https?:\/\//i, "")
     .replace(/\/+$/, "");

@@ -11,7 +11,7 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().min(1).default("dhueyqvid"),
   CLOUDINARY_BASE_PATH: z.string().min(1).default("henryco"),
   SENTRY_DSN: z.string().optional().or(z.literal("")),
-  WEB_ORIGIN: z.string().url().default("https://www.henrycogroup.com"),
+  WEB_ORIGIN: z.string().url().default("https://www.henryonyx.com"),
 });
 
 export type AppEnv = z.infer<typeof envSchema>;
@@ -35,7 +35,7 @@ export function getEnv(): AppEnv {
     CLOUDINARY_CLOUD_NAME: candidate.CLOUDINARY_CLOUD_NAME ?? "dhueyqvid",
     CLOUDINARY_BASE_PATH: candidate.CLOUDINARY_BASE_PATH ?? "henryco",
     SENTRY_DSN: candidate.SENTRY_DSN ?? "",
-    WEB_ORIGIN: candidate.WEB_ORIGIN ?? "https://www.henrycogroup.com",
+    WEB_ORIGIN: candidate.WEB_ORIGIN ?? "https://www.henryonyx.com",
   });
 
   if (!parsed.success) {

@@ -75,7 +75,7 @@ export function normalizeCompanySettings(input?: CompanySettingsInput): CompanyS
       source.footer_blurb,
       "Henry & Co. provides a clear way to understand the group and reach the right business with confidence."
     ),
-    base_domain: toText(source.base_domain, "henrycogroup.com"),
+    base_domain: toText(source.base_domain, "henryonyx.com"),
     office_address: officeAddress,
     brand_accent: toText(source.brand_accent, "#C9A227"),
     favicon_url: toNullableText(source.favicon_url),

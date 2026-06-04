@@ -6,14 +6,14 @@
  * Accepts:
  *   - same-origin relative paths starting with a single '/' (not '//'),
  *     no backslash, no HTML-significant characters
- *   - absolute https/http URLs whose hostname matches a HenryCo TLD suffix,
+ *   - absolute https/http URLs whose hostname matches a Henry & Co. TLD suffix,
  *     with no userinfo
  *
  * Rejects everything else: javascript:, data:, mailto:, //evil.com,
  * https://evil.com, paths containing <, >, ", or backslashes.
  */
 
-const HENRYCO_HOST_SUFFIXES = ["henrycogroup.com", "henryco.local"] as const;
+const HENRYCO_HOST_SUFFIXES = ["henryonyx.com", "henrycogroup.com", "henryco.local"] as const;
 const MAX_LEN = 1024;
 
 export function isSafeNotificationDeepLink(

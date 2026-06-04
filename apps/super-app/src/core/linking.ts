@@ -3,7 +3,7 @@ import * as Linking from "expo-linking";
 const prefix = Linking.createURL("/");
 
 /** Expo Router linking prefixes for universal links + custom scheme (staging). */
-export const linkingPrefixes = [prefix, "henryco://", "https://staging.henrycogroup.com/app"];
+export const linkingPrefixes = [prefix, "henryco://", "https://staging.henryonyx.com/app"];
 
 export const linkingConfig = {
   prefixes: linkingPrefixes,
