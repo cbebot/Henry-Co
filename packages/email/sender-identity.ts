@@ -3,7 +3,7 @@ import { BRAND_EMAILS } from "@henryco/config";
 import type { EmailPurpose, ResolvedSender } from "./types";
 
 const NOREPLY_FALLBACK_EMAIL = BRAND_EMAILS.noreply;
-const NOREPLY_FALLBACK_NAME = "HenryCo";
+const NOREPLY_FALLBACK_NAME = "Henry Onyx";
 
 function readEnv(name: string): string | null {
   const value = process.env[name];
@@ -40,12 +40,12 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
   auth: {
     emailVars: ["HENRYCO_ACCOUNTS_EMAIL"],
     nameVars: ["HENRYCO_ACCOUNTS_FROM_NAME"],
-    defaultName: "HenryCo Accounts",
+    defaultName: "Henry Onyx Accounts",
   },
   support: {
     emailVars: ["HENRYCO_SUPPORT_EMAIL", "RESEND_SUPPORT_FROM_EMAIL"],
     nameVars: ["HENRYCO_SUPPORT_FROM_NAME", "RESEND_SUPPORT_FROM_NAME"],
-    defaultName: "HenryCo Support",
+    defaultName: "Henry Onyx Support",
   },
   care: {
     emailVars: ["HENRYCO_CARE_EMAIL"],
@@ -85,17 +85,17 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
   newsletter: {
     emailVars: ["HENRYCO_NEWSLETTER_EMAIL"],
     nameVars: ["HENRYCO_NEWSLETTER_FROM_NAME"],
-    defaultName: "HenryCo Editorial",
+    defaultName: "Henry Onyx Editorial",
   },
   security: {
     emailVars: ["HENRYCO_SECURITY_EMAIL"],
     nameVars: ["HENRYCO_SECURITY_FROM_NAME"],
-    defaultName: "HenryCo Security",
+    defaultName: "Henry Onyx Security",
   },
   generic: {
     emailVars: ["HENRYCO_GENERIC_EMAIL"],
     nameVars: ["HENRYCO_GENERIC_FROM_NAME"],
-    defaultName: "HenryCo",
+    defaultName: "Henry Onyx",
   },
 };
 
@@ -108,7 +108,7 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
  *      using the purpose's branded name (e.g., "Henry Onyx Studio") so the
  *      message is still labelled correctly even if individual aliases
  *      are not yet DNS/Brevo-verified.
- *   3. Hard fallback to BRAND_EMAILS.noreply / "HenryCo".
+ *   3. Hard fallback to BRAND_EMAILS.noreply / "Henry Onyx".
  *
  * Critical invariant: nothing here ever falls back to the Care identity.
  * The Care sender is reachable only when `purpose === "care"`.

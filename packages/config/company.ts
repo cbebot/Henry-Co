@@ -61,14 +61,15 @@ const BASE_DOMAIN =
   "henryonyx.com";
 const GROUP_SUPPORT_PHONE = "+2349133957084";
 
-// The legacy `henryonyx.com` subdomain set (`account.`, `hq.`, `staff.`,
-// `workspace.`, division `<sub>.`) has no working production DNS today: the
-// apps moved to a new Vercel team during the 2026-05-23 migration and the
-// old DNS cutover never happened. Until V3-DOMAIN-01 wires `henry.holdings`
-// (or restores the legacy subdomain DNS), per-app URL overrides + live
-// Vercel aliases below carry SSO traffic so post-login redirects land on
-// a live origin instead of a 404/dead host.
-const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = BASE_DOMAIN === "henryonyx.com";
+// V3-DOMAIN-FIX-01 (2026-06-04): the henryonyx.com subdomains (`account.`,
+// `hq.`, `staff.`, `workspace.`, division `<sub>.`) are now LIVE — custom
+// domains attached on the henry-co-studio Vercel team and DNS cut over in
+// Cloudflare (verified HTTP 200). Per-app URLs therefore resolve to the real
+// canonical subdomains (e.g. https://account.henryonyx.com), NOT the internal
+// *.vercel.app aliases below — those remain only as a last-resort net should a
+// FUTURE base-domain flip ever point at an unwired host. Keeping this flag
+// false is what makes post-login redirects land on account.henryonyx.com.
+const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = false;
 
 function normalizeAppOriginEnv(value?: string | null): string | null {
   const trimmed = String(value || "").trim();
