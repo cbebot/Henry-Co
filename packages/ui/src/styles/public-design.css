@@ -395,3 +395,232 @@
     transform: translateY(-2px);
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   THE ONYX ROUTE LOADER  (V3-LOADER · the one shared public loading experience)
+
+   Invisible on fast navigation; a crafted Onyx brand moment when a load
+   genuinely takes time. It "fits them all" automatically — theme-aware via the
+   global --home-* tokens, and division-accent-aware via --home-accent inherited
+   from the page's .home-accent-scope (so Care loads cobalt, Logistics copper,
+   Studio teal, the hub gold … with zero per-division config). Pure CSS:
+   SSR-safe, reduced-motion-aware, CLS-safe, no JS, no layout thrash.
+
+   Progressive disclosure by elapsed time:
+     0–280ms   nothing rendered visibly (the common case — feels instant)
+     280ms+    a hairline accent progress rail sweeps across the viewport top
+     560ms+    the centered Onyx mark fades up: a breathing serif "H · Onyx"
+               monogram, an accent aurora, a polish sheen, and a comet rail.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.ho-route-loader {
+  display: contents;
+}
+
+/* 1 — the calm cross-page signal: a hairline accent rail at the top */
+.ho-route-loader__rail {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 120;
+  height: 2.5px;
+  overflow: hidden;
+  background: transparent;
+  opacity: 0;
+}
+.ho-route-loader__rail-fill {
+  display: block;
+  height: 100%;
+  width: 38%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--home-accent),
+    color-mix(in srgb, var(--home-accent) 50%, transparent)
+  );
+  box-shadow: 0 0 18px -2px color-mix(in srgb, var(--home-accent) 65%, transparent);
+  transform: translate3d(-110%, 0, 0);
+}
+
+/* 2 — the centered Onyx brand moment */
+.ho-route-loader__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: min(60vh, 540px);
+  padding: 2.5rem 1.25rem;
+  opacity: 0;
+  isolation: isolate;
+}
+.ho-route-loader__halo {
+  position: absolute;
+  z-index: -1;
+  width: clamp(200px, 33vw, 330px);
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--home-accent) 30%, transparent) 0%,
+    color-mix(in srgb, var(--home-accent) 12%, transparent) 38%,
+    transparent 64%
+  );
+  filter: blur(10px);
+}
+.ho-route-loader__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  color: var(--home-ink); /* the serif H reads as theme ink */
+  overflow: hidden;
+  border-radius: 18px;
+}
+.ho-route-loader__monogram {
+  width: clamp(66px, 10vw, 82px);
+  height: auto;
+  filter: drop-shadow(0 12px 30px color-mix(in srgb, var(--home-accent) 30%, transparent));
+}
+/* the onyx polish sweep — a soft accent glint travelling diagonally across the mark */
+.ho-route-loader__sheen {
+  position: absolute;
+  inset: -30% -40%;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    color-mix(in srgb, var(--home-accent) 42%, transparent) 50%,
+    transparent 58%
+  );
+  opacity: 0;
+  transform: translateX(-120%);
+}
+
+/* 3 — the comet rail: a refined indeterminate progress, never a spinner */
+.ho-route-loader__track {
+  position: relative;
+  margin-top: 1.7rem;
+  width: clamp(120px, 22vw, 168px);
+  height: 2px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--home-line);
+}
+.ho-route-loader__comet {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 42%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--home-accent),
+    color-mix(in srgb, var(--home-accent) 28%, transparent)
+  );
+  transform: translateX(-110%);
+}
+
+/* Motion — only when the visitor welcomes it. Disclosure timings live here so
+   that, with reduced motion, the loader is simply a calm static brand mark. */
+@media (prefers-reduced-motion: no-preference) {
+  .ho-route-loader__rail {
+    animation: ho-loader-rail-show 1ms linear 280ms forwards;
+  }
+  .ho-route-loader__rail-fill {
+    animation: ho-loader-rail 1150ms cubic-bezier(0.45, 0, 0.2, 1) 280ms infinite;
+  }
+  .ho-route-loader__stage {
+    animation: ho-loader-stage-in 620ms var(--home-ease) 560ms both;
+  }
+  .ho-route-loader__halo,
+  .ho-route-loader__monogram {
+    animation: ho-loader-breathe 3.4s ease-in-out infinite;
+  }
+  .ho-route-loader__sheen {
+    animation: ho-loader-sheen 2.8s ease-in-out 1.2s infinite;
+  }
+  .ho-route-loader__comet {
+    animation: ho-loader-comet 1.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+}
+
+/* Reduced motion / no-JS: a calm, fully-visible static brand mark + accent rail. */
+@media (prefers-reduced-motion: reduce) {
+  .ho-route-loader__rail {
+    opacity: 1;
+  }
+  .ho-route-loader__rail-fill {
+    transform: none;
+    width: 30%;
+  }
+  .ho-route-loader__stage {
+    opacity: 1;
+  }
+  .ho-route-loader__comet {
+    transform: none;
+    width: 38%;
+  }
+}
+
+@keyframes ho-loader-rail-show {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ho-loader-rail {
+  0% {
+    transform: translate3d(-110%, 0, 0);
+  }
+  55% {
+    transform: translate3d(150%, 0, 0);
+  }
+  100% {
+    transform: translate3d(320%, 0, 0);
+  }
+}
+@keyframes ho-loader-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ho-loader-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+@keyframes ho-loader-sheen {
+  0% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  16% {
+    opacity: 0.85;
+  }
+  44% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+@keyframes ho-loader-comet {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(285%);
+  }
+}

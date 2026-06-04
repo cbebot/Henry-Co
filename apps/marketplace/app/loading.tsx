@@ -1,17 +1,7 @@
-import { PublicHomeSkeleton } from "@henryco/ui/public-shell";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
-/**
- * V3-05 (S2) — Marketplace root route fallback.
- *
- * Stripped of theater copy: previously
- *   eyebrow="Henry Onyx Marketplace"
- *   title="Loading marketplace"
- *   subtitle="Preparing products, stores, and your personalized experience."
- * — those strings were already ignored at the visible layer post PERF-01;
- * keeping them in source was just dead theater. Replaced with the
- * content-shaped `PublicHomeSkeleton` so the page renders the right
- * shape before SSR streams in.
- */
-export default function MarketplaceLoading() {
-  return <PublicHomeSkeleton variant="home" />;
+// The shared Onyx route loader (V3-LOADER) — one world-class, brand-aware,
+// theme-aware loading experience across every public surface.
+export default function Loading() {
+  return <PublicRouteLoader />;
 }
