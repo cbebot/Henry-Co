@@ -198,7 +198,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "4. How we store it",
         body: [
-          "Personal data is stored in Supabase (Postgres) hosted in a region appropriate to the workload, with row-level security enforcing that you only ever see your own records. File uploads (brand assets, payment proof, deliverables) are stored in Cloudinary under restricted access. Backups are encrypted at rest.",
+          "Personal data is held in an encrypted, access-controlled managed database, with row-level security enforcing that you only ever see your own records. File uploads (brand assets, payment proof, deliverables) are kept in restricted-access encrypted storage. Backups are encrypted at rest.",
           "We use industry-standard encryption in transit (TLS 1.2+) for every page and API call.",
         ],
       },
@@ -208,10 +208,10 @@ export const studioPolicyIndex: PolicyDocument[] = [
           "We share data only with subprocessors that are contractually bound to process it on our instructions:",
         ],
         bullets: [
-          "Supabase — managed Postgres, authentication, realtime.",
+          "Supabase — database, authentication, and storage.",
           "Cloudinary — encrypted media storage.",
-          "Vercel — application hosting and edge delivery.",
-          "Postmark / Resend — transactional email delivery.",
+          "Vercel — application hosting.",
+          "Resend — transactional email delivery.",
           "WhatsApp Cloud API — for engagement updates if you opt in.",
           "Anthropic / OpenAI — never used for personal data; only used for non-personal copy assistance with strict prompt boundaries.",
         ],
@@ -423,7 +423,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "2. Authorisation",
         body: [
-          "Database access is controlled by row-level security (RLS) policies inside Supabase. A client can only see and act on records that match their user identity or verified email. Studio staff have access scoped by role membership: client_success, project_manager, developer_designer, finance, sales_consultation, or studio_owner.",
+          "Database access is controlled by row-level security (RLS) policies. A client can only see and act on records that match their user identity or verified email. Studio staff have access scoped by role membership: client_success, project_manager, developer_designer, finance, sales_consultation, or studio_owner.",
         ],
       },
       {
@@ -435,7 +435,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "4. File storage",
         body: [
-          "Brand assets, payment proof, and deliverables are stored on Cloudinary under restricted access. Direct URLs are signed and short-lived where possible. We do not embed sensitive media in public folders.",
+          "Brand assets, payment proof, and deliverables are stored under restricted access. Direct URLs are signed and short-lived where possible. We do not embed sensitive media in public folders.",
         ],
       },
       {
@@ -447,7 +447,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "6. Backups and recovery",
         body: [
-          "We rely on Supabase's daily encrypted backups. Recovery point objective is 24 hours; recovery time objective for core records is 4 hours.",
+          "We run daily encrypted backups. Recovery point objective is 24 hours; recovery time objective for core records is 4 hours.",
         ],
       },
       {

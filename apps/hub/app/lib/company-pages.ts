@@ -250,7 +250,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "Identity",
             title: `${COMPANY.group.name} is a Nigerian operating group`,
             body:
-              `Registered in Nigeria as ${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}). Headquartered in ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}. Founded in ${LEGAL.entity.yearFounded} by ${LEGAL.entity.founder}. We operate seven divisions on one platform, one auth surface, one audit log, one settlement currency at checkout \u2014 Nigeria first, with cross-border commerce supported through multi-currency display and named processor regions.`,
+              `Registered in Nigeria as ${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}). Headquartered in ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}. Founded in ${LEGAL.entity.yearFounded} by ${LEGAL.entity.founder}. We operate seven divisions on one platform, one auth surface, one audit log, one settlement currency at checkout \u2014 Nigeria first, with cross-border commerce supported through multi-currency display and trusted, region-appropriate payment infrastructure.`,
             layout: "default",
             items: [
               { id: "about-identity-trading", label: "Trading name", value: LEGAL.entity.tradingName },
@@ -293,13 +293,13 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               },
               {
                 id: "about-standard-audit",
-                title: "Every mutation written to audit_log",
-                body: "Owner, staff, and operator actions across the platform write to a structured audit_log retained for 7 years. Sentry breadcrumbs and structured logger entries accompany every server action.",
+                title: "Every mutation written to the audit trail",
+                body: "Owner, staff, and operator actions across the platform write to a structured, tamper-evident audit trail retained for 7 years. Error-tracing breadcrumbs and structured logging accompany every server action.",
               },
               {
                 id: "about-standard-support",
                 title: "Support response target: 24h",
-                body: "First-response target for non-emergency support is 24 hours during operating days. Time-critical disputes (delivery failure, refund window) route through Freshdesk with explicit priority queues.",
+                body: "First-response target for non-emergency support is 24 hours during operating days. Time-critical disputes (delivery failure, refund window) route through a dedicated support desk with explicit priority queues.",
               },
               {
                 id: "about-standard-currency",
@@ -308,13 +308,13 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               },
               {
                 id: "about-standard-trust",
-                title: "FingerprintJS + trust_flags for fraud",
-                body: "Device-risk signals from FingerprintJS combine with platform trust_flags to suppress abusive sign-ups and flag suspicious order patterns. Trust signals reduce but do not eliminate risk.",
+                title: "Device-risk signals for fraud",
+                body: "Device-risk signals combine with platform trust flags to suppress abusive sign-ups and flag suspicious order patterns. Trust signals reduce but do not eliminate risk.",
               },
               {
                 id: "about-standard-i18n",
-                title: "11 supported locales via @henryco/i18n",
-                body: "Customer-facing surfaces flow through @henryco/i18n with DeepL-primed translation cache. English is the canonical version in case of conflict.",
+                title: "11 supported locales",
+                body: "Customer-facing surfaces flow through a unified localization layer with a primed translation cache. English is the canonical version in case of conflict.",
               },
             ],
           },
@@ -354,7 +354,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               {
                 id: "about-not-payments",
                 title: "We are not a bank",
-                body: "We process payments through Stripe and route payouts to verified bank accounts. We do not hold deposits, issue credit, or run regulated financial products.",
+                body: "We process payments through a PCI-compliant payment processor and route payouts to verified bank accounts. We do not hold deposits, issue credit, or run regulated financial products.",
               },
               {
                 id: "about-not-tenancy",
@@ -619,12 +619,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "13. Breach notification",
             title: "What happens if a breach occurs",
             body:
-              "A personal-data breach with a risk to the rights and freedoms of data subjects is reported to the Nigeria Data Protection Commission within 72 hours of becoming aware, under the Nigeria Data Protection Act 2023. Affected data subjects are notified without undue delay where the breach is likely to result in high risk. The structured logger plus the audit_log retained for 7 years allow forensic reconstruction.\n\n— In plain English: If something goes wrong, we tell the regulator within 72 hours and tell affected users without delay.",
+              "A personal-data breach with a risk to the rights and freedoms of data subjects is reported to the Nigeria Data Protection Commission within 72 hours of becoming aware, under the Nigeria Data Protection Act 2023. Affected data subjects are notified without undue delay where the breach is likely to result in high risk. Structured logging plus a tamper-evident audit trail retained for 7 years allow forensic reconstruction.\n\n— In plain English: If something goes wrong, we tell the regulator within 72 hours and tell affected users without delay.",
             layout: "default",
             items: [
               { id: "privacy-breach-regulator", label: "Regulator notification", value: "Within 72 hours of becoming aware" },
               { id: "privacy-breach-user", label: "Affected-user notification", value: "Without undue delay where high risk" },
-              { id: "privacy-breach-forensic", label: "Forensic support", value: "audit_log 7y + structured logger + Sentry breadcrumbs" },
+              { id: "privacy-breach-forensic", label: "Forensic support", value: "7-year audit trail + structured logging + error-tracing breadcrumbs" },
             ],
           },
           {

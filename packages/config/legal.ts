@@ -124,7 +124,7 @@ export const NDPA_LAWFUL_BASES = [
     key: "legitimate-interests",
     label: "Legitimate interests pursued by HenryCo or a third party",
     statute: "NDPA 2023 §25(1)(f)",
-    examples: "Trust scoring, FingerprintJS device-risk signals, abuse prevention, service security — each balanced against the data subject's rights.",
+    examples: "Trust scoring, device-risk signals, abuse prevention, service security — each balanced against the data subject's rights.",
   },
 ] as const;
 
@@ -159,7 +159,7 @@ export const DATA_CATEGORIES = [
   {
     key: "financial",
     label: "Financial",
-    items: "Bank account, payment-method token (processed by Stripe; HenryCo does not store full PAN), payout history, wallet balance, invoices",
+    items: "Bank account, payment-method token (processed by our PCI-compliant payment processor; HenryCo does not store full card numbers), payout history, wallet balance, invoices",
     purpose: "Order settlement, vendor payout, refund processing, tax reporting.",
     basis: "Contract (§25(1)(b)); legal obligation for tax records (§25(1)(c)).",
   },
@@ -187,7 +187,7 @@ export const DATA_CATEGORIES = [
   {
     key: "device",
     label: "Device and technical",
-    items: "IP address, browser, OS, device identifier, FingerprintJS visitor ID, locale",
+    items: "IP address, browser, OS, device identifier, device-risk visitor ID, locale",
     purpose: "Session security, abuse prevention, trust scoring.",
     basis: "Legitimate interests (§25(1)(f)).",
   },
@@ -211,25 +211,33 @@ export const DATA_CATEGORIES = [
  * Sub-processors who receive personal data on HenryCo's behalf. The list is
  * named in /privacy so the rubric-banned "third-party service providers"
  * never appears in published copy. Editorial review owns updates here.
+ *
+ * SECURITY STANDARD (V3-PUBLIC-HARDENING-01): name + functional purpose +
+ * country/continent-level region ONLY. Never re-add architecture detail —
+ * no data-centre zones (us-east, Frankfurt), no infra topology (serverless,
+ * edge, CDN, realtime, self-hosted), no security-posture brags (PCI DSS
+ * Level 1). Coarse region is kept for cross-border transfer transparency;
+ * the reconnaissance detail is not. Vendor names live ONLY here, never on
+ * marketing surfaces. See docs/v3/public-voice-and-security.md.
  */
 export const SUB_PROCESSORS = [
-  { name: "Supabase", purpose: "Database, authentication, file storage, realtime", region: "EU (Frankfurt) and US (us-east) regions per project" },
-  { name: "Vercel", purpose: "Application hosting and serverless functions", region: "Global edge with EU and US primary regions" },
-  { name: "Cloudinary", purpose: "Image transformation and content delivery", region: "Global CDN" },
-  { name: "Stripe", purpose: "Card and bank payment processing", region: "United States (PCI DSS Level 1)" },
+  { name: "Supabase", purpose: "Database, authentication, and file storage", region: "European Union and United States" },
+  { name: "Vercel", purpose: "Application hosting", region: "European Union and United States" },
+  { name: "Cloudinary", purpose: "Image storage and delivery", region: "Global" },
+  { name: "Stripe", purpose: "Card and bank payment processing", region: "United States" },
   { name: "Resend", purpose: "Transactional email delivery", region: "United States" },
-  { name: "Brevo", purpose: "Editorial and newsletter email delivery", region: "European Union (France)" },
-  { name: "Sentry", purpose: "Application error monitoring", region: "United States (with EU data residency option enabled)" },
+  { name: "Brevo", purpose: "Editorial and newsletter email delivery", region: "European Union" },
+  { name: "Sentry", purpose: "Application error monitoring", region: "United States" },
   { name: "OneSignal", purpose: "Push notification delivery", region: "United States" },
-  { name: "Daily.co", purpose: "Video and voice calls for studio + jobs interviews", region: "United States" },
+  { name: "Daily.co", purpose: "Video and voice calls for studio and jobs interviews", region: "United States" },
   { name: "SignWell", purpose: "Electronic signature for contracts and proposals", region: "United States" },
   { name: "FingerprintJS", purpose: "Device-risk and abuse signals", region: "United States and European Union" },
-  { name: "DeepL", purpose: "Translation cache priming for @henryco/i18n", region: "European Union (Germany)" },
-  { name: "Twilio", purpose: "SMS fallback for time-critical notifications", region: "United States" },
+  { name: "DeepL", purpose: "Translation services", region: "European Union" },
+  { name: "Twilio", purpose: "SMS notifications", region: "United States" },
   { name: "Mapbox", purpose: "Mapping and routing for logistics and property", region: "United States" },
-  { name: "Typesense", purpose: "Cross-division search index", region: "European Union or self-hosted" },
+  { name: "Typesense", purpose: "Search index", region: "European Union" },
   { name: "Meta WhatsApp Business", purpose: "WhatsApp messaging for support and order updates", region: "Global" },
-  { name: "Google Places + Calendar", purpose: "Address autocomplete; booking calendar sync", region: "United States with EU regional endpoints" },
+  { name: "Google Places + Calendar", purpose: "Address autocomplete and booking calendar sync", region: "United States and European Union" },
   { name: "Freshdesk and inbound email", purpose: "Support-ticket intake and routing", region: "United States and India" },
 ] as const;
 
