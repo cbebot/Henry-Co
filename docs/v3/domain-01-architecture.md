@@ -64,22 +64,24 @@ Once `NEXT_PUBLIC_BASE_DOMAIN=henryonyx.com`, `getCarePublicOrigin()` resolves t
 
 ## 2. Division → subdomain map (what DNS records to create)
 
-| Division | Subdomain | Custom domain | Vercel project |
+Vercel team: **`henry-co-studio`** (`team_0PUdVTapDfmw8tpwht4TvRUG`). Project slugs confirmed from the live PR check suite:
+
+| Division | Subdomain | Custom domain | Vercel project slug |
 |---|---|---|---|
-| hub | — | `henryonyx.com` + `www.henryonyx.com` | `hub-mu-wheat` |
-| account | `account` | `account.henryonyx.com` | `henryco-account-tau` |
-| care | `care` | `care.henryonyx.com` | (care project) |
-| marketplace | `marketplace` | `marketplace.henryonyx.com` | (marketplace project) |
-| property | `property` | `property.henryonyx.com` | (property project) |
-| logistics | `logistics` | `logistics.henryonyx.com` | (logistics project) |
-| studio | `studio` | `studio.henryonyx.com` | (studio project) |
-| jobs | `jobs` | `jobs.henryonyx.com` | (jobs project) |
-| learn | `learn` | `learn.henryonyx.com` | (learn project) |
-| building | `building` | `building.henryonyx.com` | (property project; sub-path or share) |
-| hotel | `hotel` | `hotel.henryonyx.com` | (property project; sub-path or share) |
-| staff | `staff` | `staff.henryonyx.com` | `staff-kappa-livid` |
-| command (V3-COMMAND-02 staged) | `command` | `command.henryonyx.com` | (command project — after deploy) |
-| work (V3-COMMAND-02 staged) | `work` | `work.henryonyx.com` | (work project — after deploy) |
+| hub | — | `henryonyx.com` + `www.henryonyx.com` | `hub` |
+| account | `account` | `account.henryonyx.com` | `henryco-account` |
+| care | `care` | `care.henryonyx.com` | `care` |
+| marketplace | `marketplace` | `marketplace.henryonyx.com` | `marketplace` |
+| property | `property` | `property.henryonyx.com` | `property` |
+| logistics | `logistics` | `logistics.henryonyx.com` | `logistics` |
+| studio | `studio` | `studio.henryonyx.com` | `studio` |
+| jobs | `jobs` | `jobs.henryonyx.com` | `jobs` |
+| learn | `learn` | `learn.henryonyx.com` | `learn` |
+| building | `building` | `building.henryonyx.com` | `property` (shared / sub-path) |
+| hotel | `hotel` | `hotel.henryonyx.com` | `property` (shared / sub-path) |
+| staff | `staff` | `staff.henryonyx.com` | `staff` |
+| command (V3-COMMAND-02 staged) | `command` | `command.henryonyx.com` | (create after first deploy of `apps/command`) |
+| work (V3-COMMAND-02 staged) | `work` | `work.henryonyx.com` | (create after first deploy of `apps/work`) |
 
 ---
 
@@ -135,24 +137,20 @@ For each Vercel project, run `vercel domains add <domain> --scope <team-slug>` o
 # Install Vercel CLI once: npm i -g vercel
 # Set token from C:\Users\HP VICTUS\.henryco-deploy-secrets.env
 
-# Hub project (from hub-mu-wheat Vercel slug)
-vercel domains add henryonyx.com --project hub-mu-wheat
-vercel domains add www.henryonyx.com --project hub-mu-wheat
-
-# Account project
-vercel domains add account.henryonyx.com --project henryco-account-tau
-
-# Staff project
-vercel domains add staff.henryonyx.com --project staff-kappa-livid
-
-# Division projects (use the Vercel project slug from each app's .vercel/project.json or dashboard)
-vercel domains add care.henryonyx.com --project <care-project-slug>
-vercel domains add marketplace.henryonyx.com --project <marketplace-project-slug>
-vercel domains add property.henryonyx.com --project <property-project-slug>
-vercel domains add logistics.henryonyx.com --project <logistics-project-slug>
-vercel domains add studio.henryonyx.com --project <studio-project-slug>
-vercel domains add jobs.henryonyx.com --project <jobs-project-slug>
-vercel domains add learn.henryonyx.com --project <learn-project-slug>
+# All under team henry-co-studio (--scope henry-co-studio)
+vercel domains add henryonyx.com --project hub --scope henry-co-studio
+vercel domains add www.henryonyx.com --project hub --scope henry-co-studio
+vercel domains add account.henryonyx.com --project henryco-account --scope henry-co-studio
+vercel domains add staff.henryonyx.com --project staff --scope henry-co-studio
+vercel domains add care.henryonyx.com --project care --scope henry-co-studio
+vercel domains add marketplace.henryonyx.com --project marketplace --scope henry-co-studio
+vercel domains add property.henryonyx.com --project property --scope henry-co-studio
+vercel domains add logistics.henryonyx.com --project logistics --scope henry-co-studio
+vercel domains add studio.henryonyx.com --project studio --scope henry-co-studio
+vercel domains add jobs.henryonyx.com --project jobs --scope henry-co-studio
+vercel domains add learn.henryonyx.com --project learn --scope henry-co-studio
+vercel domains add building.henryonyx.com --project property --scope henry-co-studio
+vercel domains add hotel.henryonyx.com --project property --scope henry-co-studio
 ```
 
 ### Set NEXT_PUBLIC_BASE_DOMAIN in each project
