@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "../../../packages/command-surface/src/tokens.css";
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&display=swap");
+
+:root {
+  --font-display: "Fraunces";
+}
+
+html, body {
+  background-color: var(--cc-bg);
+  color: var(--cc-ink);
+  font-family: var(--cc-font-sans);
+  -webkit-font-smoothing: antialiased;
+}

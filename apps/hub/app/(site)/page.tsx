@@ -302,7 +302,6 @@ export default async function HomePage() {
       brandTitle={brandTitleI18n || "Henry Onyx"}
       brandSub={brandSubtitleI18n || "Corporate Platform"}
       brandAccent={settings.brand_accent ?? "#C9A227"}
-      brandLogoUrl={settings.logo_url ?? null}
       footer={footer}
       intro={brandDescriptionI18n}
       initialDivisions={localizedDivisions}

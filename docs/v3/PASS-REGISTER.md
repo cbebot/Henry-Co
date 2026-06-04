@@ -306,6 +306,22 @@ Cross-reference DECISIONS-REQUIRED.md.
 
 ---
 
+## V3-COMMAND track — Owner Command Center
+
+A **named track**, distinct from the numbered `V3-NN` global plan and the older `V3 PASS NN` design-rebuild cycle (same convention rationale as the hardening suffixes). It builds the owner's company-wide operations brain on the same **mock-first, de-risked discipline** as the payment rail (V3-13): prove the architecture against mocks before any live wiring. Blueprint: `docs/v3/command-center-architecture.md`.
+
+| ID | Slug | Deps | Eff | Risk | Status | One-line |
+|---|---|---|---|---|---|---|
+| V3-COMMAND-01 | command-center-architecture | — | S | — | DONE | Audit (10 divisions + owner/staff surfaces + predicates) + three-surface architecture + publish-to-command contract blueprint (`docs/v3/command-center-architecture.md`) |
+| V3-COMMAND-02 | command-foundation-staged | V3-COMMAND-01 | M | I | STAGED | `@henryco/command-contract` (typed `AttentionItem` + state machine + access gating + mock feed, `node:test`-gated) + Owner Command Center (`apps/command`) + Staff Workspace (`apps/work`) on Vercel free domains, against mocks. ZERO live data. |
+| V3-COMMAND-03 | command-live-wiring | V3-COMMAND-02, V3-22 | L | M/I | BLOCKED | Supabase-backed `command_attention_items` store + SQL transition trigger + per-division publishers (replace the `apps/hub` pull model) + real `UnifiedViewer`/SQL predicates + flip to `henrySubdomain('command'|'work')` real hosts. |
+
+**Hard lines preserved by V3-COMMAND-02:** the real owner surface (`apps/hub/app/owner/(command)`) and staff surface (`apps/staff`) are left running **untouched** — live extraction is V3-COMMAND-03. No payment surface, design token, or public site is touched. Zero hardcoded domains (`henryDomain()` / `henrySubdomain()` only). Zero code-identifier changes (`@henryco/*` unchanged).
+
+**V3-COMMAND-03 gate:** the finance spine (V3-22) — so money-at-stake totals are authoritative — plus the real `henryonyx.com` subdomains.
+
+---
+
 ## Passes touching Money / Identity / Compliance
 
 (M=money I=identity C=compliance — high-stakes; require extra rigor + legal review where applicable)
