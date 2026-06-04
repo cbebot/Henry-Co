@@ -122,7 +122,7 @@ export default async function TeachPage({
       step: "03",
       label: t("Decision"),
       body: t(
-        "We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—we aim to respond clearly.",
+        "We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—you always get a clear, written response.",
       ),
     },
     {

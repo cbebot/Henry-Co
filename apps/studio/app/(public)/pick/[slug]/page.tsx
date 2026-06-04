@@ -214,7 +214,7 @@ export default async function StudioTemplateDetailPage({
               </div>
             </dl>
             <p className="mt-4 text-[12.5px] leading-relaxed text-[var(--studio-ink-soft)]">
-              Bank transfer or card via Paystack / Flutterwave. Branded receipt issued the
+              Bank transfer or card. Branded receipt issued the
               moment finance confirms.
             </p>
           </div>

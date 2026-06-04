@@ -50,7 +50,7 @@ const sections: { id: string; question: string; answer: string }[] = [
     id: "whatsapp",
     question: "Why might WhatsApp updates not arrive?",
     answer:
-      "Messaging platforms sometimes block business messages without an approved template or an open support window. Email and in-app notifications stay on, and we log delivery issues so support can help.",
+      "Messaging apps sometimes hold or delay business messages outside an active conversation window. Email and in-app notifications stay on, and we log delivery issues so support can help.",
   },
 ];
 

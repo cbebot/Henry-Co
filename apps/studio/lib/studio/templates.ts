@@ -49,7 +49,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Mobile-first layout with safe-area polish",
       "WCAG 2.1 AA contrast and focus pass",
     ],
-    stack: ["Next.js", "Headless CMS", "Tailwind tokens", "Cloudflare or Vercel"],
+    stack: ["Next.js", "Headless CMS", "Tailwind tokens", "Enterprise-grade hosting"],
     outcomes: [
       "Stronger first-impression credibility",
       "Higher-quality inbound leads",
@@ -89,7 +89,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Premium type & motion polish",
       "Performance budget (LCP < 2.5s on mobile)",
     ],
-    stack: ["Next.js", "Tailwind tokens", "ConvertKit or Mailchimp ready", "Stripe-ready forms"],
+    stack: ["Next.js", "Tailwind tokens", "Email-marketing ready", "Payment-ready forms"],
     outcomes: [
       "Higher landing-page conversion",
       "Cleaner attribution to ad spend",
@@ -125,13 +125,13 @@ export const studioTemplates: StudioTemplate[] = [
     ],
     features: [
       "Product variants and inventory rules",
-      "Paystack or Flutterwave checkout",
+      "Card & transfer checkout",
       "Saved-items + wishlist",
       "Order email receipts (branded)",
       "Editorial CMS for collections",
       "Pickup vs delivery toggle",
     ],
-    stack: ["Next.js", "Sanity CMS", "Paystack/Flutterwave", "Inventory webhooks"],
+    stack: ["Next.js", "Headless CMS", "Card & transfer payments", "Inventory webhooks"],
     outcomes: [
       "Higher AOV from clearer merchandising",
       "Lower abandoned-cart rate",
@@ -172,7 +172,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Audit log for admin actions",
       "Notifications across channels",
     ],
-    stack: ["Next.js", "Supabase (RLS)", "Paystack split", "Resend"],
+    stack: ["Next.js", "Secure database", "Split payments", "Transactional email"],
     outcomes: [
       "A marketplace launchable in weeks not quarters",
       "Operational visibility from day one",
@@ -213,7 +213,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Staff role accounts",
       "Reports for repeat clients",
     ],
-    stack: ["Next.js", "Supabase", "Resend", "WhatsApp Business"],
+    stack: ["Next.js", "Secure database", "Transactional email", "WhatsApp reminders"],
     outcomes: [
       "No more missed appointments",
       "Lower no-show rate from deposits",
@@ -252,9 +252,9 @@ export const studioTemplates: StudioTemplate[] = [
       "Mortgage / rent calculator",
       "Agent enquiry routing",
       "Saved searches with email alerts",
-      "Map integration (Google or Mapbox)",
+      "Map integration",
     ],
-    stack: ["Next.js", "Supabase", "Mapbox", "Resend"],
+    stack: ["Next.js", "Secure database", "Maps & location", "Transactional email"],
     outcomes: [
       "Better lead qualification",
       "More confident buyer enquiries",
@@ -295,7 +295,7 @@ export const studioTemplates: StudioTemplate[] = [
       "RSS / Substack ready",
       "Mobile-first reading rhythm",
     ],
-    stack: ["Next.js", "Tailwind", "Sanity CMS", "Vercel"],
+    stack: ["Next.js", "Tailwind", "Headless CMS", "Enterprise-grade hosting"],
     outcomes: [
       "Higher quality enquiries",
       "Stronger personal positioning",
@@ -336,7 +336,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Role-aware moderation",
       "Accessibility-first reading",
     ],
-    stack: ["Next.js", "Supabase auth", "Resend", "Sanity CMS"],
+    stack: ["Next.js", "Secure authentication", "Transactional email", "Headless CMS"],
     outcomes: [
       "Less admin overhead per term",
       "Faster, calmer parent communication",
@@ -355,7 +355,7 @@ export const studioTemplates: StudioTemplate[] = [
     audience: "Coaches, schools, and course creators ready to monetise teaching",
     tagline: "Lessons, member sign-in, progress, and a payment path that doesn't break.",
     summary:
-      "A learning surface with course pages, member auth, lesson playback, progress tracking, and Paystack-ready paid enrolment.",
+      "A learning surface with course pages, member auth, lesson playback, progress tracking, and a ready paid-enrolment flow.",
     price: 3450000,
     packageId: "pkg-client-portal",
     depositRate: 0.4,
@@ -372,12 +372,12 @@ export const studioTemplates: StudioTemplate[] = [
     features: [
       "Member accounts + roles",
       "Lesson progress tracking",
-      "Paid enrolment via Paystack",
+      "Card & transfer paid enrolment",
       "Quiz or check-in module",
       "Cohort calendar + replays",
       "Email reminders + drip",
     ],
-    stack: ["Next.js", "Supabase", "Mux/Bunny video", "Paystack"],
+    stack: ["Next.js", "Secure database", "Video streaming", "Card & transfer payments"],
     outcomes: [
       "Recurring revenue from cohorts",
       "Cleaner student experience",
@@ -412,13 +412,13 @@ export const studioTemplates: StudioTemplate[] = [
     ],
     features: [
       "Sermon audio and video archive",
-      "Recurring giving via Paystack",
+      "Recurring giving",
       "Event RSVPs",
       "Volunteer signup forms",
       "Multi-campus structure",
       "Newsletter capture",
     ],
-    stack: ["Next.js", "Sanity CMS", "Paystack subscriptions", "Mailchimp"],
+    stack: ["Next.js", "Headless CMS", "Recurring payments", "Email marketing"],
     outcomes: [
       "Higher engagement on stories and sermons",
       "More predictable giving",
@@ -459,7 +459,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Audit log on every write",
       "Notifications + email digest",
     ],
-    stack: ["Next.js", "Supabase (RLS)", "Resend", "Charts"],
+    stack: ["Next.js", "Secure database", "Transactional email", "Charts"],
     outcomes: [
       "Operational visibility across teams",
       "Less manual coordination by chat",
@@ -500,7 +500,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Branded receipts (PDF)",
       "Real-time notifications",
     ],
-    stack: ["Next.js", "Supabase (RLS)", "Resend", "Cloudinary"],
+    stack: ["Next.js", "Secure database", "Transactional email", "Encrypted media storage"],
     outcomes: [
       "Less back-and-forth in email",
       "A delivery record clients trust",
@@ -541,7 +541,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Release pipeline (TestFlight, internal track)",
       "Analytics + crash reporting",
     ],
-    stack: ["React Native", "Expo", "Supabase", "OneSignal"],
+    stack: ["React Native", "Expo", "Secure database", "Push notifications"],
     outcomes: [
       "A real launchable mobile app",
       "Higher retention from push",
@@ -582,7 +582,7 @@ export const studioTemplates: StudioTemplate[] = [
       "Press wall module",
       "Performance-tuned images",
     ],
-    stack: ["Next.js", "Sanity CMS", "Tailwind tokens", "Vercel"],
+    stack: ["Next.js", "Headless CMS", "Tailwind tokens", "Enterprise-grade hosting"],
     outcomes: [
       "Higher-fit inbound briefs",
       "Cleaner positioning narrative",
