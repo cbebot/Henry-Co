@@ -187,7 +187,9 @@ export function normalizeDivision(
     tagline: typeof row.tagline === "string" ? toBrandName(row.tagline) : highlights[0] || null,
     description,
     accent: row.accent || inferAccent(slug, row.name),
-    primary_url: row.primary_url || buildPrimaryUrl(slug),
+    primary_url: (row.primary_url && !row.primary_url.includes("henrycogroup.com"))
+      ? row.primary_url
+      : buildPrimaryUrl(slug),
     subdomain: row.subdomain || slug || null,
     logo_url: row.logo_url ?? null,
     cover_url: row.cover_url ?? null,

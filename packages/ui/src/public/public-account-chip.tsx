@@ -75,11 +75,11 @@ function dropdownShellClass(tone: DropdownTone) {
 function identityBlockClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "border-b border-zinc-800 bg-[#10131c]";
+      return "relative border-b border-zinc-800 bg-[#10131c] overflow-hidden";
     case "solidLight":
-      return "border-b border-zinc-200 bg-zinc-50";
+      return "relative border-b border-zinc-200 bg-zinc-50 overflow-hidden";
     default:
-      return "border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#10131c]";
+      return "relative border-b border-zinc-200 bg-zinc-50 overflow-hidden dark:border-zinc-800 dark:bg-[#10131c]";
   }
 }
 
@@ -504,9 +504,9 @@ export function PublicAccountChip({
             // viewport's right edge, with `top` measured from the
             // trigger's actual bottom-Y. On sm+, revert to the chip-
             // anchored absolute position.
-            "z-[60] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
-            "fixed right-3 w-[min(320px,calc(100vw-1.5rem))]",
-            "sm:absolute sm:right-0 sm:top-auto sm:mt-2.5 sm:w-[min(320px,calc(100vw-1rem))]",
+            "z-[60] origin-top-right animate-[hc-dropdown-in_200ms_cubic-bezier(0.16,1,0.3,1)] overflow-hidden rounded-2xl border",
+            "fixed right-3 w-[min(340px,calc(100vw-1.5rem))]",
+            "sm:absolute sm:right-0 sm:top-auto sm:mt-2 sm:w-[min(340px,calc(100vw-1rem))]",
             dropdownShellClass(resolvedTone),
             dropdownClassName
           )}
@@ -516,21 +516,34 @@ export function PublicAccountChip({
               : undefined
           }
         >
-          <div className={cn("px-4 py-4", identityBlockClass(resolvedTone))}>
-            <div className="flex items-start gap-3.5">
+          <div className={cn("px-5 py-5", identityBlockClass(resolvedTone))}>
+            {/* Subtle gold aurora behind avatar — brand warmth without noise */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  resolvedTone === "solidLight"
+                    ? "radial-gradient(65% 90% at -5% 50%, rgba(201,162,39,0.10) 0%, transparent 70%)"
+                    : "radial-gradient(65% 90% at -5% 50%, rgba(201,162,39,0.18) 0%, transparent 70%)",
+              }}
+            />
+            <div className="relative flex items-center gap-4">
               <AvatarFallback
                 src={user.avatarUrl}
                 displayName={initialsSource}
-                size="md"
+                size="lg"
                 className={cn(
-                  resolvedTone === "solidDark" &&
-                    "ring-2 ring-zinc-700 from-amber-500 to-teal-600"
+                  "ring-2",
+                  resolvedTone === "solidDark"
+                    ? "ring-zinc-700/80 from-amber-500 to-teal-600"
+                    : "ring-zinc-200 dark:ring-zinc-700/80 from-amber-500 to-teal-600"
                 )}
               />
-              <div className="min-w-0 flex-1 pt-0.5">
+              <div className="min-w-0 flex-1">
                 <p
                   className={cn(
-                    "truncate text-[15px] font-semibold leading-snug tracking-[-0.015em]",
+                    "truncate text-[16px] font-semibold leading-snug tracking-[-0.02em]",
                     identityPrimaryClass(resolvedTone)
                   )}
                 >
@@ -625,9 +638,12 @@ export function PublicAccountChip({
                   tabIndex={0}
                   disabled={signingOut}
                   className={cn(
-                    "mx-1.5 flex w-[calc(100%-0.75rem)] min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 outline-none transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-wait disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-500/12 dark:focus-visible:bg-red-500/12 dark:focus-visible:ring-red-400/35",
+                    "mx-2 flex w-[calc(100%-1rem)] min-h-[42px] items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold outline-none transition-all duration-150",
+                    "text-red-600 hover:bg-red-500/8 hover:text-red-700 focus-visible:bg-red-500/8 focus-visible:ring-2 focus-visible:ring-red-500/35",
+                    "dark:text-red-400 dark:hover:bg-red-500/14 dark:hover:text-red-300 dark:focus-visible:bg-red-500/14 dark:focus-visible:ring-red-400/30",
+                    "disabled:cursor-wait disabled:opacity-50",
                     resolvedTone === "solidDark" &&
-                      "text-red-400 hover:bg-red-500/12 focus-visible:bg-red-500/12"
+                      "text-red-400 hover:bg-red-500/14 hover:text-red-300 focus-visible:bg-red-500/14"
                   )}
                   onClick={() => {
                     close();
@@ -640,7 +656,7 @@ export function PublicAccountChip({
                     spinnerLabel={surfaceCopy.publicAccount.signOut}
                   >
                     <>
-                      <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+                      <LogOut className="h-4 w-4 shrink-0 opacity-75" aria-hidden />
                       {surfaceCopy.publicAccount.signOut}
                     </>
                   </ButtonPendingContent>

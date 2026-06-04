@@ -3,6 +3,7 @@
 import { motion, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { HubHomeCopy } from "@henryco/i18n";
+import { useCrossDivisionNavigation } from "@henryco/ui/public-shell";
 import type { DivisionRow } from "../../lib/divisions";
 import type { DivisionLiveStat } from "../../lib/division-stats";
 import { useHomeMotion } from "./home-motion";
@@ -30,7 +31,14 @@ type HomeIndexRowProps = {
  */
 export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) {
   const m = useHomeMotion();
+  const { navigate } = useCrossDivisionNavigation();
   const accent = division.accent || "#C9A227";
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!href || href === "#engines") return;
+    e.preventDefault();
+    navigate({ url: href, name: division.name, tagline: division.tagline, accent });
+  };
   const category = division.categories?.[0] ?? null;
   const proof = stat?.metric ?? stat?.cta ?? null;
   const isLive = Boolean(stat?.metric);
@@ -59,6 +67,7 @@ export function HomeIndexRow({ division, stat, href, copy }: HomeIndexRowProps) 
     <motion.li variants={m.reveal} className="list-none transition-opacity duration-300">
       <motion.a
         href={href}
+        onClick={handleClick}
         aria-label={ariaLabel}
         initial="rest"
         whileHover="active"

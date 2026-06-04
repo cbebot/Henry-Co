@@ -24,6 +24,11 @@ export type {
 export { AccountDropdown } from "./account-dropdown";
 
 export { PublicRouteLoader } from "./public-route-loader";
+export {
+  CrossDivisionProvider,
+  useCrossDivisionNavigation,
+} from "./cross-division-transition";
+export type { CrossDivisionTarget } from "./cross-division-transition";
 export { PublicPageSkeleton } from "./public-page-skeleton";
 export { PublicHomeSkeleton } from "./public-home-skeleton";
 export { PublicShellLayout } from "./public-shell-layout";
