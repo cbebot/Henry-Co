@@ -20,7 +20,7 @@ export default async function InstructorCoursesPage() {
       kicker={t("Course authoring")}
       title={t("Create courses and assemble lesson sequences.")}
       description={t(
-        "Define the course metadata, then add modules + lessons. Lessons can be video (Cloudinary), reading (markdown), quiz (assessment), or assignment (file or free-text submission).",
+        "Define the course metadata, then add modules + lessons. Lessons can be video, reading (markdown), quiz (assessment), or assignment (file or free-text submission).",
       )}
       nav={instructorNav("/instructor/courses", t)}
     >
@@ -155,7 +155,7 @@ export default async function InstructorCoursesPage() {
         kicker={t("Add lesson")}
         title={t("Lesson editor")}
         body={t(
-          "Pick a course, then add a module or extend an existing one with a new lesson. Lesson body uses markdown; video lessons reference a Cloudinary URL.",
+          "Pick a course, then add a module or extend an existing one with a new lesson. Lesson body uses markdown; video lessons reference a hosted video URL.",
         )}
       />
       <LearnPanel className="mt-6 rounded-[1.6rem]">
