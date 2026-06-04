@@ -57,18 +57,18 @@ function normalizeHostname(value?: string | null) {
 }
 
 const BASE_DOMAIN =
-  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com") ||
-  "henrycogroup.com";
+  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com") ||
+  "henryonyx.com";
 const GROUP_SUPPORT_PHONE = "+2349133957084";
 
-// The legacy `henrycogroup.com` subdomain set (`account.`, `hq.`, `staff.`,
+// The legacy `henryonyx.com` subdomain set (`account.`, `hq.`, `staff.`,
 // `workspace.`, division `<sub>.`) has no working production DNS today: the
 // apps moved to a new Vercel team during the 2026-05-23 migration and the
 // old DNS cutover never happened. Until V3-DOMAIN-01 wires `henry.holdings`
 // (or restores the legacy subdomain DNS), per-app URL overrides + live
 // Vercel aliases below carry SSO traffic so post-login redirects land on
 // a live origin instead of a 404/dead host.
-const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = BASE_DOMAIN === "henrycogroup.com";
+const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = BASE_DOMAIN === "henryonyx.com";
 
 function normalizeAppOriginEnv(value?: string | null): string | null {
   const trimmed = String(value || "").trim();
@@ -102,7 +102,7 @@ const WORKSPACE_URL_OVERRIDE = normalizeAppOriginEnv(
 // Resolution precedence per app:
 //   1. `NEXT_PUBLIC_<APP>_URL` env override (explicit Vercel project config)
 //   2. `https://<sub>.<NEXT_PUBLIC_BASE_DOMAIN>` (when base domain has been
-//      explicitly changed away from the dead `henrycogroup.com` default —
+//      explicitly changed away from the dead `henryonyx.com` default —
 //      the V3-DOMAIN-01 single-flip path: set `NEXT_PUBLIC_BASE_DOMAIN`
 //      to `henry.holdings` and the helpers automatically produce
 //      `https://account.henry.holdings`)
@@ -215,7 +215,7 @@ export const COMPANY = {
       supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — the brand
       // logo links to `/`. Order optimises for the top customer intents on
-      // care.henrycogroup.com: browse → understand cost → book/track → trust
+      // care.henryonyx.com: browse → understand cost → book/track → trust
       // (reviews) → about/contact. Both `book` and `track` also render as
       // CTAs in the header (`siteNavCare.defaultCtas`), but staying in the
       // nav row keeps them reachable from drawer mode and the desktop tab
@@ -511,7 +511,7 @@ export function getDivisionUrl(key: DivisionKey) {
  * dynamic / CMS-authored text before it reaches the UI.
  *
  * "HenryCo" is the internal shorthand only (package names, identifiers, the
- * `henrycogroup.com` domain) and must NEVER surface in user-facing copy — the
+ * `henryonyx.com` domain) and must NEVER surface in user-facing copy — the
  * brand is always `COMPANY.group.name`. Static strings are fixed at rest, but
  * CMS/DB-authored values (division names, taglines) can reintroduce the
  * shorthand, so the read path runs them through this guard. The brand name is
@@ -519,7 +519,7 @@ export function getDivisionUrl(key: DivisionKey) {
  *
  * Surgical by construction: `\bHenryCo\b` matches only the standalone word, so
  * identifiers (`HenryCoLogo` — no word boundary) and the lowercase domain
- * (`henrycogroup.com`) are left untouched. "HenryCo Group" collapses to the
+ * (`henryonyx.com`) are left untouched. "HenryCo Group" collapses to the
  * brand (not "Henry Onyx Group"), matching the V3 identity-rename migration.
  */
 export function toBrandName(value: string | null | undefined): string {

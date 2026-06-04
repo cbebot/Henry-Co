@@ -14,7 +14,7 @@ export default function ContactScreen() {
   };
 
   const openWeb = () => {
-    void Linking.openURL("https://www.henrycogroup.com");
+    void Linking.openURL("https://www.henryonyx.com");
   };
 
   return (
@@ -71,7 +71,7 @@ export default function ContactScreen() {
             borderColor: palette.line,
             backgroundColor: palette.surface,
           }}
-          accessibilityLabel="Open henrycogroup.com"
+          accessibilityLabel="Open henryonyx.com"
           accessibilityRole="button"
         >
           <View className="flex-row items-center gap-3">
@@ -90,7 +90,7 @@ export default function ContactScreen() {
                 className="mt-1 text-lg font-semibold"
                 style={{ color: palette.textPrimary }}
               >
-                henrycogroup.com
+                henryonyx.com
               </Text>
             </View>
           </View>

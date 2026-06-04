@@ -3875,7 +3875,7 @@ const EN: AccountCopy = {
       brand: "Henry Onyx Logistics",
       title: "Every parcel, one room.",
       body: "Pickups, drop-offs, ETAs and proofs of delivery — all mirrored from the logistics network into your account. Book once on",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "New delivery",
     },
     metrics: {
@@ -6088,7 +6088,7 @@ const FR: DeepPartial<AccountCopy> = {
       brand: "HenryCo Logistique",
       title: "Chaque colis, une seule pièce.",
       body: "Enlèvements, dépôts, ETA et preuves de livraison — tout est reflété depuis le réseau logistique dans votre compte. Réservez une fois sur",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "Nouvelle livraison",
     },
     metrics: {
@@ -8227,7 +8227,7 @@ const DE: DeepPartial<AccountCopy> = {
       "brand": "HenryCo Logistik",
       "title": "Jedes Paket, ein Raum.",
       "body": "Abholungen, Zustellungen, ETAs und Liefernachweise — alles aus dem Logistiknetz in Ihr Konto gespiegelt. Buchen Sie einmal auf",
-      "bodyDomain": " logistics.henrycogroup.com",
+      "bodyDomain": " logistics.henryonyx.com",
       "ctaNewDelivery": "Neue Lieferung"
     },
     "metrics": {
@@ -10464,7 +10464,7 @@ const IT: DeepPartial<AccountCopy> = {
       brand: "HenryCo Logistica",
       title: "Ogni pacco, un'unica stanza.",
       body: "Ritiri, consegne, ETA e prove di consegna — tutto riflesso dalla rete logistica nel tuo account. Prenota una volta su",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "Nuova consegna",
     },
     metrics: {
@@ -12608,7 +12608,7 @@ const IG: DeepPartial<AccountCopy> = {
       brand: "HenryCo Mbufe",
       title: "Akpa ọ bụla, otu ụlọ.",
       body: "Nbubata, nnyefe, ETA na ihe akaebe nnyefe — niile ka egosi site na netwọkụ mbufe n’ime akaụntụ gị. Debe otu ugboro na",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "Nnyefe ọhụrụ",
     },
     metrics: {
@@ -14893,7 +14893,7 @@ const YO: DeepPartial<AccountCopy> = {
       brand: "HenryCo Èro̩ ọkọ̀",
       title: "Gbogbo ìpamọ́, yàrá kan ṣoṣo.",
       body: "Gbígbé, ìfijíṣẹ́, ETA àti ẹ̀rí ìfijíṣẹ́ — gbogbo wọn ń farahàn láti orí nẹ́tíwọ́ọ̀kì èro̩ ọkọ̀ sínú àkántì rẹ. Búkù lẹ́ẹ̀kan ní",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "Ìfijíṣẹ́ tuntun",
     },
     metrics: {
@@ -17036,7 +17036,7 @@ const HA: DeepPartial<AccountCopy> = {
       brand: "HenryCo Sufuri",
       title: "Kowane kunshi, daki ɗaya.",
       body: "Karbar kaya, isarwa, ETA da hujjojin isarwa — duka ana nuna su daga tashar sufuri zuwa cikin asusunka. Yi rajista sau ɗaya a",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "Sabuwar isarwa",
     },
     metrics: {
@@ -19163,7 +19163,7 @@ const ZH: DeepPartial<AccountCopy> = {
       brand: "HenryCo 物流",
       title: "每一个包裹,一个工作间。",
       body: "取件、送达、ETA 与签收凭证——全部从物流网络镜像同步到您的账户。只需一次在",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "新建配送",
     },
     metrics: {
@@ -21298,7 +21298,7 @@ const HI: DeepPartial<AccountCopy> = {
       brand: "HenryCo लॉजिस्टिक्स",
       title: "हर पार्सल, एक कमरा।",
       body: "पिकअप, ड्रॉप-ऑफ, ETA और डिलीवरी प्रमाण — सब लॉजिस्टिक्स नेटवर्क से आपके खाते में दर्पण-समान। एक बार बुक करें",
-      bodyDomain: " logistics.henrycogroup.com",
+      bodyDomain: " logistics.henryonyx.com",
       ctaNewDelivery: "नई डिलीवरी",
     },
     metrics: {

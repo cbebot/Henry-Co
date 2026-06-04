@@ -13,7 +13,7 @@
  * https://evil.com, paths containing <, >, ", or backslashes.
  */
 
-const HENRYCO_HOST_SUFFIXES = ["henrycogroup.com", "henryco.local"] as const;
+const HENRYCO_HOST_SUFFIXES = ["henryonyx.com", "henrycogroup.com", "henryco.local"] as const;
 const MAX_LEN = 1024;
 
 export function isSafeNotificationDeepLink(

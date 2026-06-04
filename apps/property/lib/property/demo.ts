@@ -78,7 +78,7 @@ export const propertyAgents: PropertyAgent[] = [
     label: "Relationship Manager, Prime Homes",
     phone: "+2349133957084",
     whatsapp: "+2349133957084",
-    email: "property@henrycogroup.com",
+    email: "property@henryonyx.com",
     photoUrl:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
     territories: ["ikoyi-lagos", "victoria-island-lagos"],
@@ -92,7 +92,7 @@ export const propertyAgents: PropertyAgent[] = [
     label: "Listings Manager, Residential Sales",
     phone: "+2349133957084",
     whatsapp: null,
-    email: "property@henrycogroup.com",
+    email: "property@henryonyx.com",
     photoUrl:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80",
     territories: ["lekki-phase-1-lagos", "victoria-island-lagos"],
@@ -106,7 +106,7 @@ export const propertyAgents: PropertyAgent[] = [
     label: "Managed Property Operations",
     phone: "+2349133957084",
     whatsapp: "+2349133957084",
-    email: "property@henrycogroup.com",
+    email: "property@henryonyx.com",
     photoUrl:
       "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=80",
     territories: ["ikoyi-lagos", "lekki-phase-1-lagos"],

@@ -152,7 +152,7 @@ export default function TermsScreen() {
         <Section title="9. Contact">
           <Body>
             For questions regarding these Terms, please contact us at
-            {` ${BRAND_EMAILS.hello} `}or visit henrycogroup.com.
+            {` ${BRAND_EMAILS.hello} `}or visit henryonyx.com.
           </Body>
         </Section>
       </View>

@@ -1933,7 +1933,7 @@ export const ACCOUNT_COPY_ES = {
       "brand": "HenryCo Logística",
       "title": "Cada paquete, una sola sala.",
       "body": "Recogidas, entregas, ETA y pruebas de entrega: todo reflejado desde la red logística en tu cuenta. Reserva una vez en",
-      "bodyDomain": " logistics.henrycogroup.com",
+      "bodyDomain": " logistics.henryonyx.com",
       "ctaNewDelivery": "Nueva entrega"
     },
     "metrics": {
@@ -4031,7 +4031,7 @@ export const ACCOUNT_COPY_PT = {
       "brand": "HenryCo Logística",
       "title": "Cada encomenda, uma sala.",
       "body": "Recolhas, entregas, ETA e provas de entrega — tudo espelhado da rede logística para a sua conta. Reserve uma vez em",
-      "bodyDomain": " logistics.henrycogroup.com",
+      "bodyDomain": " logistics.henryonyx.com",
       "ctaNewDelivery": "Nova entrega"
     },
     "metrics": {
@@ -6129,7 +6129,7 @@ export const ACCOUNT_COPY_AR = {
       "brand": "HenryCo اللوجستية",
       "title": "كل طرد، غرفة واحدة.",
       "body": "عمليات الاستلام والتسليم وأوقات الوصول المتوقعة وإثباتات التسليم — كلها منعكسة من شبكة الخدمات اللوجستية إلى حسابك. احجز مرة واحدة على",
-      "bodyDomain": " logistics.henrycogroup.com",
+      "bodyDomain": " logistics.henryonyx.com",
       "ctaNewDelivery": "تسليم جديد"
     },
     "metrics": {

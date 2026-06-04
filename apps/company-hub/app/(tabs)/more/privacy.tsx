@@ -148,7 +148,7 @@ export default function PrivacyScreen() {
         <Section title="8. Contact Us">
           <Body>
             If you have questions about this Privacy Policy, please contact us
-            at {`${BRAND_EMAILS.privacy} `}or visit henrycogroup.com.
+            at {`${BRAND_EMAILS.privacy} `}or visit henryonyx.com.
           </Body>
         </Section>
       </View>
