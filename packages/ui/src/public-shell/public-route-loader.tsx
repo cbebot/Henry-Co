@@ -37,6 +37,7 @@ export function PublicRouteLoader({
   spinnerClassName: _spinnerClassName,
   tone: _tone,
   size: _size,
+  variant = "brand",
   children,
 }: {
   eyebrow?: string;
@@ -46,6 +47,13 @@ export function PublicRouteLoader({
   spinnerClassName?: string;
   tone?: "default" | "onDark";
   size?: "md" | "lg" | "xl";
+  /**
+   * "brand" (default) renders the full Onyx brand moment — for public /
+   * discovery surfaces. "rail" renders ONLY the calm hairline progress bar
+   * (no brand stage) — for flow surfaces (e.g. account routes) that want the
+   * minimal PERF-01 signal without a brand splash on high-frequency nav.
+   */
+  variant?: "brand" | "rail";
   children?: ReactNode;
 }) {
   return (
@@ -62,22 +70,25 @@ export function PublicRouteLoader({
         <span className="ho-route-loader__rail-fill" />
       </div>
 
-      {/* 2 — the Onyx brand moment, revealed only on genuinely slow loads */}
-      <div aria-hidden="true" className="ho-route-loader__stage">
-        <span className="ho-route-loader__halo" />
-        <span className="ho-route-loader__mark">
-          <HenryCoMonogram
-            size={64}
-            accent="var(--home-accent)"
-            aria-hidden
-            className="ho-route-loader__monogram"
-          />
-          <span className="ho-route-loader__sheen" />
-        </span>
-        <span className="ho-route-loader__track">
-          <span className="ho-route-loader__comet" />
-        </span>
-      </div>
+      {/* 2 — the Onyx brand moment, revealed only on genuinely slow loads
+            (brand variant only; flow surfaces opt out via variant="rail") */}
+      {variant === "rail" ? null : (
+        <div aria-hidden="true" className="ho-route-loader__stage">
+          <span className="ho-route-loader__halo" />
+          <span className="ho-route-loader__mark">
+            <HenryCoMonogram
+              size={64}
+              accent="var(--home-accent)"
+              aria-hidden
+              className="ho-route-loader__monogram"
+            />
+            <span className="ho-route-loader__sheen" />
+          </span>
+          <span className="ho-route-loader__track">
+            <span className="ho-route-loader__comet" />
+          </span>
+        </div>
+      )}
 
       {children}
     </div>
