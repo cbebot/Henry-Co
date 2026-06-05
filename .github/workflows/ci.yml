@@ -54,3 +54,39 @@ jobs:
 
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
+
+  payments-grant-invariant:
+    # FL1 backstop (V3-15-FIX-01): assert the money RPCs are NOT executable by
+    # anon/authenticated on a freshly-migrated DB. RED if a money writer ever
+    # becomes self-callable again (self-confirm-without-paying). See
+    # docs/v3/v3-15-fl2-payments-schema-isolation-hardening.md.
+    name: Payments money-RPC grant invariant
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reproduce Supabase roles + default privileges (makes the test meaningful)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/_bootstrap_supabase_env.sql
+
+      - name: Apply payment_intents migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260529120000_payment_intents.sql
+
+      - name: Assert money-RPC grant invariant (anon/authenticated=false; writers service_role=true)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payments_grant_invariant.sql
