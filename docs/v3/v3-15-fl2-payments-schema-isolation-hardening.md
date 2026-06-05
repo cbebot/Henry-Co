@@ -145,4 +145,14 @@ registered here.
 - **PR #220** ready; required check `Lint, typecheck, test, build` is the only gate (squash-merge per the V3 hub pipeline). Vercel preview "fails" are the known auto-canceled noise.
 - Migration stays **committed-not-applied**; applies at FL2 activation with the fix baked in.
 - Three disposable test projects were paused (free, $0/mo); delete from the Supabase dashboard when convenient: `fl1-paystack-testproof`, `fl1-fix-verify`, `fl1-fix01-beforeafter`.
+- **Webhook reachability (fixed in this PR):** the account auth proxy
+  (`apps/account/proxy.ts`) was 307-redirecting `POST /api/payments/webhooks/paystack`
+  to `/login` (it was not in the public allowlist). Paystack does not follow
+  redirects, so every webhook would have been lost. Now allowlisted (HMAC-signature
+  authenticated, no session — mirrors `/api/webhooks/account`).
+- **To actually run the live Paystack TEST legs**, the target deployment needs ALL of:
+  the middleware fix above, `PAYSTACK_SECRET_KEY=sk_test_…`, the `payment_intents`
+  migration applied to its DB, and `NEXT_PUBLIC_ACCOUNT_URL=<that origin>` (drives the
+  per-transaction `callback_url`). Dashboard URLs: webhook
+  `https://<origin>/api/payments/webhooks/paystack`, callback `https://<origin>/payments/callback`.
 - **Before FL2:** (a) land this schema-isolation hardening, (b) run the live Paystack legs (gates 1/2/3 + real-key HMAC) once `sk_test_`/`pk_test_` are available, (c) build the deferred `/payments/callback` page + checkout entry UI.

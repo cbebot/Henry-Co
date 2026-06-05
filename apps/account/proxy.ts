@@ -88,6 +88,11 @@ function isPublicRoute(pathname: string): boolean {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/cron/") ||
     pathname.startsWith("/api/webhooks/account") ||
+    // V3-15-FIX-01: provider payment webhooks (e.g. /api/payments/webhooks/paystack)
+    // are server-to-server, HMAC-signature-authenticated, and carry NO session.
+    // The auth proxy must NOT 307 them to /login (Paystack does not follow
+    // redirects → every webhook would be lost). Mirrors /api/webhooks/account.
+    pathname.startsWith("/api/payments/webhooks/") ||
     pathname === "/api/health" ||
     // V3-04 (S2): Universal-Link / App-Link manifests MUST be reachable
     // unauthenticated with no redirect (per Apple/Google spec). The AASA
