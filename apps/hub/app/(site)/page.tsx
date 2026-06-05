@@ -82,6 +82,22 @@ async function getHomeFaqs(): Promise<PublicFaqRecord[]> {
   }
 }
 
+/**
+ * HOTFIX (DB-saturation): bound every public homepage read so a slow/saturated
+ * database can never hang the SSR stream. Resolves to the supplied fallback if
+ * the read rejects OR exceeds `ms`, so the page always paints. The cached
+ * division directory still serves its 60s snapshot when warm; this only caps
+ * the cold-cache + live (settings/faqs/stats) reads.
+ */
+function withTimeout<T, F>(p: Promise<T>, ms: number, fallback: F): Promise<T | F> {
+  return Promise.race([
+    p.catch(() => fallback),
+    new Promise<F>((resolve) => {
+      setTimeout(() => resolve(fallback), ms);
+    }),
+  ]);
+}
+
 export default async function HomePage() {
   let hasServerError = false;
 
@@ -93,9 +109,9 @@ export default async function HomePage() {
 
   try {
     const [settingsResult, divisionsResult, faqsResult] = await Promise.all([
-      getCompanySettings().catch(() => null),
-      getPublishedDivisions().catch(() => ({ divisions: [], hasServerError: true })),
-      getHomeFaqs().catch(() => []),
+      withTimeout(getCompanySettings(), 2500, null),
+      withTimeout(getPublishedDivisions(), 3000, { divisions: [], hasServerError: true }),
+      withTimeout(getHomeFaqs(), 2500, [] as PublicFaqRecord[]),
     ]);
 
     settings = normalizeCompanySettings(settingsResult);
@@ -118,7 +134,7 @@ export default async function HomePage() {
         .filter((d) => d.status === "active")
         .map((d) => String(d.key || "").toLowerCase())
         .filter(Boolean);
-      divisionStats = await getDivisionLiveStats(activeKeys).catch(() => ({}));
+      divisionStats = await withTimeout(getDivisionLiveStats(activeKeys), 2500, {});
     }
   } catch {
     hasServerError = true;

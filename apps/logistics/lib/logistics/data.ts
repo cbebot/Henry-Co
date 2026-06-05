@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import {
   DEFAULT_LOGISTICS_SETTINGS,
@@ -424,7 +425,7 @@ export async function getLogisticsSnapshot() {
   };
 }
 
-export async function getPublicLogisticsSnapshot() {
+async function computePublicLogisticsSnapshot() {
   try {
     const snapshot = await getLogisticsSnapshot();
     const shipmentCount = snapshot.shipments.length;
@@ -462,6 +463,18 @@ export async function getPublicLogisticsSnapshot() {
     };
   }
 }
+
+// Public, non-personalized homepage/catalog read, cached 60s and shared across
+// serverless instances so anonymous renders never hang on a saturated DB. Reads
+// ONLY service-role catalog data via createAdminSupabase — no cookies/session/
+// viewer. Per-user reads (the account chip) are resolved SEPARATELY in the layout
+// via getLogisticsPublicChipUser and stay live. Writes bust it via
+// revalidateTag("logistics-home").
+export const getPublicLogisticsSnapshot = unstable_cache(
+  computePublicLogisticsSnapshot,
+  ["logistics-home-data"],
+  { revalidate: 60, tags: ["logistics-home"] },
+);
 
 export async function getShipmentByTrackingLookup(input: {
   trackingCode?: string | null;
