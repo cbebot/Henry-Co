@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import {
   getDefaultCareBookingCatalog,
@@ -117,7 +118,7 @@ export function groupPricing(items: CarePricingRow[]): CarePricingGroup[] {
     .sort((a, b) => a.category.localeCompare(b.category));
 }
 
-export async function getCarePricing(): Promise<CarePricingRow[]> {
+async function computeCarePricing(): Promise<CarePricingRow[]> {
   try {
     const supabase = getSupabase();
     const { data } = await supabase
@@ -133,7 +134,16 @@ export async function getCarePricing(): Promise<CarePricingRow[]> {
   }
 }
 
-export async function getApprovedReviews(limit = 12): Promise<CareReviewRow[]> {
+// Public, non-personalized garment pricing — cached 60s and shared across
+// serverless instances so a saturated DB can never hang the public render
+// path. No session/cookie/viewer read happens inside; owner edits bust it via
+// revalidateTag("care-home").
+export const getCarePricing = unstable_cache(computeCarePricing, ["care-home-pricing"], {
+  revalidate: 60,
+  tags: ["care-home"],
+});
+
+async function computeApprovedReviews(limit = 12): Promise<CareReviewRow[]> {
   try {
     const supabase = getSupabase();
     const { data } = await supabase
@@ -159,7 +169,16 @@ export async function getApprovedReviews(limit = 12): Promise<CareReviewRow[]> {
   }
 }
 
-export async function getCareSettings(): Promise<CareSettingsRecord> {
+// Public, non-personalized approved reviews — cached 60s, shared across
+// instances. The `limit` arg participates in the cache key automatically.
+// No session/cookie/viewer read inside; owner edits bust it via
+// revalidateTag("care-home").
+export const getApprovedReviews = unstable_cache(computeApprovedReviews, ["care-home-reviews"], {
+  revalidate: 60,
+  tags: ["care-home"],
+});
+
+async function computeCareSettings(): Promise<CareSettingsRecord> {
   try {
     const supabase = getSupabase();
     const { data } = await supabase.from("care_settings").select("*").limit(1).maybeSingle();
@@ -168,6 +187,14 @@ export async function getCareSettings(): Promise<CareSettingsRecord> {
     return normalizeCareSettings(null);
   }
 }
+
+// Public, non-personalized service settings (hours, support contacts, hero
+// copy) — cached 60s, shared across instances. No session/cookie/viewer read
+// inside; owner edits bust it via revalidateTag("care-home").
+export const getCareSettings = unstable_cache(computeCareSettings, ["care-home-settings"], {
+  revalidate: 60,
+  tags: ["care-home"],
+});
 
 function normalizeCategoryRow(row: Record<string, unknown>, fallback?: CareServiceCategory) {
   return {
@@ -315,7 +342,7 @@ async function readCatalogTable(table: string) {
   }
 }
 
-export async function getCareBookingCatalog(): Promise<CareBookingCatalog> {
+async function computeCareBookingCatalog(): Promise<CareBookingCatalog> {
   const fallback = getDefaultCareBookingCatalog();
 
   const [categoryRows, typeRows, packageRows, zoneRows, addonRows, ruleRows] = await Promise.all([
@@ -358,3 +385,13 @@ export async function getCareBookingCatalog(): Promise<CareBookingCatalog> {
         : fallback.priceRules,
   };
 }
+
+// Public, non-personalized booking catalog (categories, types, packages,
+// zones, add-ons, price rules) — cached 60s, shared across instances. No
+// session/cookie/viewer read inside; owner edits bust it via
+// revalidateTag("care-home").
+export const getCareBookingCatalog = unstable_cache(
+  computeCareBookingCatalog,
+  ["care-home-catalog"],
+  { revalidate: 60, tags: ["care-home"] }
+);

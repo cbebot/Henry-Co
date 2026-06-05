@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import { toBrandName } from "@henryco/config";
 import { fetchNoStore } from "./no-store-fetch";
@@ -220,7 +221,7 @@ export function normalizeDivision(
   };
 }
 
-export async function getPublishedDivisions() {
+async function computePublishedDivisions() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -309,3 +310,18 @@ export async function getPublishedDivisions() {
     hasServerError: false,
   };
 }
+
+/**
+ * HOTFIX (DB-saturation): the published-division directory is the primary
+ * PUBLIC, non-personalized read behind the hub homepage (and /about). It reads
+ * ONLY the anon Supabase client (company_divisions + company_people) — no
+ * cookies(), headers(), auth, or session — so it is safe to share across all
+ * users. Cache the result in Next's data cache (60s) so anonymous renders are
+ * served from cache and never hang on a slow/saturated DB, mirroring the proven
+ * property/learn fix. Owner edits bust it via revalidateTag("hub-home").
+ */
+export const getPublishedDivisions = unstable_cache(
+  computePublishedDivisions,
+  ["hub-home-data"],
+  { revalidate: 60, tags: ["hub-home"] }
+);

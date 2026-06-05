@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { hasAdminSupabaseEnv } from "@/lib/supabase";
 import {
   getStudioCaseStudyBySlug as getSeedCaseStudyBySlug,
@@ -289,7 +290,7 @@ async function ensureCatalogSeeded() {
   }
 }
 
-export async function getStudioCatalog(
+async function computeStudioCatalog(
   options: GetStudioCatalogOptions = {}
 ): Promise<StudioCatalog> {
   const defaults = {
@@ -354,6 +355,22 @@ export async function getStudioCatalog(
     requestConfig: normalizeStudioRequestConfig(settingMap.get(REQUEST_CONFIG_KEY)),
   };
 }
+
+/**
+ * Public, non-personalized Studio catalog (services, packages, teams, case
+ * studies, settings), cached in Next's data cache for 60s and shared across
+ * serverless instances. Re-running it on every cold public request fans out to
+ * several Supabase reads (plus a one-time seed), so under DB saturation the home
+ * could hang on first paint. This read is free of cookies/headers/session/viewer
+ * (the signed-in account chip is resolved separately via getStudioViewer in the
+ * public layout), so a short cross-instance revalidate is safe. Owner CMS writes
+ * bust it via revalidateTag("studio-home").
+ */
+export const getStudioCatalog = unstable_cache(
+  computeStudioCatalog,
+  ["studio-home-data"],
+  { revalidate: 60, tags: ["studio-home"] }
+);
 
 export async function getStudioServiceBySlug(slug: string) {
   const catalog = await getStudioCatalog();

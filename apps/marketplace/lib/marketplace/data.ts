@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { unstable_cache } from "next/cache";
 import { BRAND_EMAILS } from "@henryco/config";
 import { getOptionalEnv } from "@/lib/env";
 import {
@@ -501,10 +502,27 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
   }
 }
 
-export async function getMarketplaceHomeData(): Promise<Snapshot> {
+async function computeMarketplaceHomeData(): Promise<Snapshot> {
   const { snapshot } = await loadDatabaseSnapshot();
   return snapshot ?? getFallbackSnapshot();
 }
+
+/**
+ * Public marketplace catalog data, cached in Next's data cache for 60s and
+ * shared across serverless instances. loadDatabaseSnapshot() fans out ~10
+ * Supabase reads per cold request, so during a DB-saturation event every
+ * anonymous home render hung on the live database. This data is public and
+ * non-personalized (it reads ONLY approved/published catalog rows via the
+ * service-role admin client — no cookies, headers, session, or viewer), so a
+ * short cross-instance revalidate is safe. The signed-in rail (cart, wishlist,
+ * notifications) is resolved separately in getMarketplaceShellState and stays
+ * live; writes can bust this via revalidateTag("marketplace-home").
+ */
+export const getMarketplaceHomeData = unstable_cache(
+  computeMarketplaceHomeData,
+  ["marketplace-home-data"],
+  { revalidate: 60, tags: ["marketplace-home"] }
+);
 
 export async function getMarketplaceReadiness() {
   const { snapshot, issue } = await loadDatabaseSnapshot();

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import {
   resolveLocalizedDynamicField,
@@ -1518,7 +1519,7 @@ export async function searchJobs(
   });
 }
 
-export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
+async function computeJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
   const t = makeT(locale);
   const [jobs, employers] = await Promise.all([
     getJobPosts({ locale }),
@@ -1562,6 +1563,19 @@ export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData>
     ],
   };
 }
+
+// Public, non-personalized jobs homepage/catalog read, cached 60s and shared
+// across serverless instances so anonymous renders never hang on a saturated
+// DB. Reads ONLY service-role catalog data via createAdminSupabase (job posts +
+// employer profiles) — no cookies/headers/session/viewer. The public locale is
+// resolved SEPARATELY in the page via getJobsPublicLocale and passed in as a
+// plain argument (unstable_cache keys per-locale on it). Writes bust it via
+// revalidateTag("jobs-home").
+export const getJobsHomeData = unstable_cache(
+  computeJobsHomeData,
+  ["jobs-home-data"],
+  { revalidate: 60, tags: ["jobs-home"] },
+);
 
 export async function getCandidateApplications(userId: string) {
   const admin = createAdminSupabase();
