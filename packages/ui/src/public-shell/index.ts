@@ -24,6 +24,8 @@ export type {
 export { AccountDropdown } from "./account-dropdown";
 
 export { PublicRouteLoader } from "./public-route-loader";
+export { LaunchInterceptor } from "./launch-interceptor";
+export type { LaunchDivision } from "./launch-interceptor";
 export {
   LaunchTransitionProvider,
   useLaunchTransition,

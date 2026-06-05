@@ -338,8 +338,13 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
 
     propertySnapshotCache = {
       value,
-      // Avoid serving stale listing state across worker processes after mutations.
-      expiresAt: Date.now(),
+      // Cache the catalog snapshot in-process for 60s. Reading it means a
+      // fan-out of per-file Supabase Storage downloads across ~18 folders, so
+      // re-running it on every request made cold public loads take ~15s. Every
+      // mutation calls invalidatePropertySnapshotCache(), so writes are still
+      // reflected immediately within this worker; the short TTL only bounds
+      // cross-worker staleness for read-only public traffic.
+      expiresAt: Date.now() + 60_000,
     };
 
     return value;

@@ -30,6 +30,7 @@ import {
   type PublicDivisionLink,
 } from "@henryco/config";
 import { cn } from "../cn";
+import { LaunchInterceptor } from "../public-shell/launch-interceptor";
 
 export type SiteFooterLink = {
   label: string;
@@ -170,6 +171,18 @@ export function PublicSiteFooter({
         className,
       )}
     >
+      {/* Branded division→division launch transition. Mounted once here on the
+          footer — which is present on every public surface — so ANY link to a
+          different division subdomain triggers the "switching divisions"
+          overlay, via a single document-level interceptor (no per-link wiring). */}
+      <LaunchInterceptor
+        divisions={divisions.map((division) => ({
+          name: division.name,
+          url: division.url,
+          accent: division.accent,
+        }))}
+      />
+
       {/* A whisper of the accent across the top seam — the only flourish. */}
       <div
         aria-hidden

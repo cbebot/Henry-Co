@@ -133,7 +133,7 @@ const EN: JobsPublicCopy = {
     kicker: "Henry Onyx Jobs",
     title: "Verified hiring. No noise.",
     subtitle:
-      "Plain language, clear next steps, and employers checked where it matters &mdash; so fewer fake listings for candidates, fewer dead-end applications for teams.",
+      "Plain language, clear next steps, and employers checked where it matters — so fewer fake listings for candidates, fewer dead-end applications for teams.",
     searchPlaceholder: "Role, skill, or company",
     searchButton: "Search jobs",
     tryLabel: "Try:",
