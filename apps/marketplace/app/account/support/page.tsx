@@ -11,9 +11,9 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<string, string> = {
-  open: "text-emerald-300",
-  pending: "text-amber-300",
-  awaiting_buyer: "text-amber-300",
+  open: "text-[color:var(--acct-green-ink)]",
+  pending: "text-[color:var(--acct-orange-ink)]",
+  awaiting_buyer: "text-[color:var(--acct-orange-ink)]",
   resolved: "text-[var(--market-muted)]",
   closed: "text-[var(--market-muted)]",
 };
@@ -99,8 +99,8 @@ export default async function AccountSupportPage({
               "
               role="status"
             >
-              <p className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-emerald-300">
-                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              <p className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[color:var(--acct-green-ink)]">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--acct-green-ink)]" />
                 Thread opened
               </p>
               <h2 className="mt-3 text-balance text-[1.2rem] font-semibold leading-[1.22] tracking-[-0.012em] text-[var(--market-ink)] sm:text-[1.35rem]">
@@ -117,7 +117,7 @@ export default async function AccountSupportPage({
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <p className="market-kicker">Open a ticket</p>
               {vendorRecord ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--market-line)] bg-black/15 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)]">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)]">
                   <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
                   Store · {vendorRecord.name}
                 </span>
@@ -232,7 +232,7 @@ export default async function AccountSupportPage({
                     market-button-primary inline-flex items-center gap-2
                     rounded-full px-5 py-3 text-sm font-semibold transition outline-none
                     focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55
-                    focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]
+                    focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]
                     active:translate-y-[0.5px]
                   "
                 >
@@ -363,7 +363,7 @@ function ThreadList({
 
 function EmptyThreadHint({ title, body }: { title: string; body: string }) {
   return (
-    <div className="mt-3 rounded-[1.2rem] border border-[var(--market-line)] bg-black/15 px-5 py-4">
+    <div className="mt-3 rounded-[1.2rem] border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] px-5 py-4">
       <p className="text-[13px] font-semibold tracking-[-0.005em] text-[var(--market-ink)]">
         {title}
       </p>

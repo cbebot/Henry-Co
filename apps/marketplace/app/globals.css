@@ -44,6 +44,13 @@
   --market-noir: #050608;
   --market-shadow: 0 28px 90px rgba(0, 0, 0, 0.4);
   --market-shadow-strong: 0 54px 180px rgba(0, 0, 0, 0.55);
+  /* nav chrome fills — dark base (the noir register). The light register
+     overrides these under .market-workspace-light so the shared
+     WorkspaceShell chrome is theme-aware instead of hardcoded. */
+  --market-fill-faint: rgba(255, 255, 255, 0.035);
+  --market-fill-soft: rgba(255, 255, 255, 0.05);
+  --market-nav-active: linear-gradient(135deg, rgba(246, 240, 222, 0.14), rgba(117, 209, 255, 0.10));
+  --market-nav-fill: rgba(255, 255, 255, 0.04);
 
   /* PASS 20 — canonical --hc-* mapping (marketplace).
      Marketplace runs a deep noir stage with brass + olive editorial
@@ -313,3 +320,215 @@ textarea {
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
 html, body { overflow-x: clip; max-width: 100vw; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
+
+/* ────────────────────────────────────────────────────────────────────
+ * V3-INNER-L — the authenticated customer/seller workspace LIGHT register.
+ *
+ * The :root above defines the public NOIR stage (--market-* dark, --hc-*
+ * mapped onto it). That is correct for the public storefront. The
+ * authenticated buyer/seller dashboards, however, belong to Register L —
+ * the shared light-primary Henry Onyx dashboard system that apps/account
+ * is the reference for. This scope re-grounds the workspace on that
+ * register so the marketplace dashboard reads as a true sibling of the
+ * account dashboard (the "one uniform Henry Onyx dashboard system" goal):
+ *
+ *   1. Mount the canonical --acct-* token family (light values mirroring
+ *      apps/account :root) so @henryco/dashboard-shell/surfaces.css renders
+ *      identically to the account dashboard.
+ *   2. Re-point the --market-* + --hc-* tokens onto those light values, so
+ *      existing token-driven markup (.market-paper, text-[var(--market-*)])
+ *      flips to light with zero per-element rewrites.
+ *   3. Re-tone the .market-* utility classes to light surfaces (the same
+ *      technique .home-accent-scope already uses on the public subtree).
+ *   4. Dark is the FLIP, not the default: the .dark parity block below
+ *      mirrors apps/account .dark so an OS/device dark preference re-tones
+ *      cleanly. No surface is "forced-dark" anymore.
+ *
+ * Applied via app/account/layout.tsx → <div class="market-workspace-light">.
+ * Out-of-scope routes (e.g. /vendor, still on the noir register this pass)
+ * are untouched: every token below is overridden only under the class.
+ * ──────────────────────────────────────────────────────────────────── */
+.market-workspace-light {
+  /* ── Register-L canonical tokens (light) — mirrors apps/account :root ── */
+  --acct-bg: #FAFAF8;
+  --acct-bg-soft: #FFFFFF;
+  --acct-bg-elevated: #FFFFFF;
+  --acct-surface: #F5F3EF;
+  --acct-line: #E8E4DD;
+  --acct-ink: #1A1814;
+  --acct-muted: #6B6560;
+  --acct-gold: #C9A227;
+  --acct-gold-strong: #A88718;
+  --acct-gold-text: #8A6F00;
+  --acct-gold-soft: #F7F0D8;
+  --acct-green: #10B981;
+  --acct-green-soft: #D1FAE5;
+  --acct-red: #EF4444;
+  --acct-red-soft: #FEE2E2;
+  --acct-blue: #3B82F6;
+  --acct-blue-soft: #DBEAFE;
+  --acct-orange: #F59E0B;
+  --acct-orange-soft: #FEF3C7;
+  /* accessible status INK — dark shades that clear WCAG AA on the matching
+     -soft tint for small pill text (light mode). Dark mode below swaps to
+     the lighter on-dark shades. */
+  --acct-green-ink: #047857;
+  --acct-blue-ink: #1D4ED8;
+  --acct-orange-ink: #B45309;
+  --acct-red-ink: #B91C1C;
+  --acct-radius: 1.25rem;
+  --acct-radius-lg: 1.75rem;
+  --acct-radius-sm: 0.75rem;
+  --acct-font-display: var(--font-marketplace-display), "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+
+  /* ── canonical --hc-* mapping (light); every entry that references an
+        --acct-* var re-resolves automatically under .dark below ── */
+  --hc-bg: var(--acct-bg);
+  --hc-bg-soft: var(--acct-bg-soft);
+  --hc-surface: var(--acct-bg-soft);
+  --hc-surface-strong: var(--acct-bg-elevated);
+  --hc-surface-elevated: var(--acct-bg-elevated);
+  --hc-paper: var(--acct-surface);
+  --hc-ink: var(--acct-ink);
+  --hc-ink-soft: rgba(26, 24, 20, 0.72);
+  --hc-ink-muted: var(--acct-muted);
+  --hc-line: var(--acct-line);
+  --hc-line-strong: rgba(26, 24, 20, 0.16);
+  --hc-hairline: var(--acct-line);
+  --hc-accent: var(--acct-gold);
+  --hc-accent-strong: var(--acct-gold-strong);
+  --hc-accent-pressed: var(--acct-gold-text);
+  --hc-accent-soft: var(--acct-gold-soft);
+  --hc-accent-text: var(--acct-gold-text);
+  --hc-accent-on-surface: var(--acct-gold-text);
+  --hc-ink-on-accent: #1A1814;
+  --hc-focus-ring: var(--acct-gold);
+
+  /* ── re-point the marketplace noir tokens onto the light register so the
+        existing .market-* / text-[var(--market-*)] markup flips for free ── */
+  --market-bg: var(--acct-bg);
+  --market-bg-elevated: var(--acct-bg-elevated);
+  --market-bg-soft: var(--acct-bg-soft);
+  --market-paper: var(--acct-bg-soft);
+  --market-paper-white: var(--acct-ink);    /* primary text → dark ink */
+  --market-ink: var(--acct-ink);
+  --market-muted: var(--acct-muted);
+  --market-line: var(--acct-line);
+  --market-line-strong: rgba(26, 24, 20, 0.14);
+  --market-brass: var(--acct-gold-text);     /* brass-as-text stays AA on light */
+  --market-brass-soft: var(--acct-gold-soft);
+  --market-noir: var(--hc-ink-on-accent);    /* text on an accent fill → always dark */
+  --market-aurora: var(--acct-green);
+  /* success/alert are used as TEXT across the account client components
+     (addresses, reviews, seller wizard) — map to the AA -ink variants so
+     they clear contrast on the light tints in both themes. */
+  --market-success: var(--acct-green-ink);
+  --market-alert: var(--acct-red-ink);
+  --market-claret: var(--acct-red-ink);
+  --market-shadow: 0 1px 3px rgba(26, 24, 20, 0.06), 0 12px 32px -18px rgba(26, 24, 20, 0.18);
+  --market-shadow-strong: 0 24px 60px -28px rgba(26, 24, 20, 0.22);
+
+  /* workspace fills (replace ad-hoc rgba(255,255,255,…) lifts in markup) */
+  --market-fill-faint: rgba(26, 24, 20, 0.035);
+  --market-fill-soft: rgba(26, 24, 20, 0.05);
+
+  /* nav chrome fills (shared WorkspaceShell + mobile nav; dark base / light here) */
+  --market-nav-active: var(--acct-gold-soft);
+  --market-nav-fill: rgba(26, 24, 20, 0.04);
+
+  /* canvas: sit above the public dark body + ::before grid, paint light */
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-height: 100vh;
+  background: var(--acct-bg);
+  color: var(--acct-ink);
+}
+
+/* Dark is the flip: mirror apps/account .dark. Only raw values need
+   overriding — var()-referencing tokens re-resolve through --acct-*. */
+.dark .market-workspace-light {
+  --acct-bg: #0B0F14;
+  --acct-bg-soft: #141920;
+  --acct-bg-elevated: #1A2028;
+  --acct-surface: #1E252E;
+  --acct-line: #2A3140;
+  --acct-ink: #F0EDE8;
+  --acct-muted: #8E8A84;
+  --acct-gold: #D4AF37;
+  --acct-gold-strong: #E5C870;
+  --acct-gold-text: #E5C870;
+  --acct-gold-soft: rgba(212, 175, 55, 0.16);
+  --acct-green: #34D399;
+  --acct-green-soft: rgba(52, 211, 153, 0.12);
+  --acct-red: #F87171;
+  --acct-red-soft: rgba(248, 113, 113, 0.12);
+  --acct-blue: #60A5FA;
+  --acct-blue-soft: rgba(96, 165, 250, 0.12);
+  --acct-orange: #FBBF24;
+  --acct-orange-soft: rgba(251, 191, 36, 0.12);
+  /* status ink → the lighter on-dark shades for AA against the dark -soft tints */
+  --acct-green-ink: #34D399;
+  --acct-blue-ink: #60A5FA;
+  --acct-orange-ink: #FBBF24;
+  --acct-red-ink: #F87171;
+
+  --hc-ink-soft: rgba(240, 237, 232, 0.78);
+  --hc-line-strong: rgba(255, 255, 255, 0.20);
+
+  --market-line-strong: rgba(255, 255, 255, 0.16);
+  --market-fill-faint: rgba(255, 255, 255, 0.04);
+  --market-fill-soft: rgba(255, 255, 255, 0.06);
+  --market-nav-active: linear-gradient(135deg, rgba(246, 240, 222, 0.14), rgba(117, 209, 255, 0.10));
+  --market-nav-fill: rgba(255, 255, 255, 0.04);
+  --market-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
+  --market-shadow-strong: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+}
+
+/* Re-tone the noir .market-* utilities to light surfaces inside the scope.
+   Higher specificity (0,0,2,0) beats the base :root rules (0,0,1,0). */
+.market-workspace-light .market-panel,
+.market-workspace-light .market-paper {
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft);
+  box-shadow: var(--market-shadow);
+  backdrop-filter: none;
+}
+.market-workspace-light .market-soft {
+  border: 1px solid var(--acct-line);
+  background: var(--acct-surface);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.market-workspace-light .market-button-primary {
+  background: var(--acct-gold);
+  color: var(--hc-ink-on-accent);
+  box-shadow: 0 1px 2px rgba(26, 24, 20, 0.10);
+}
+.market-workspace-light .market-button-secondary {
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft);
+  color: var(--acct-ink);
+  backdrop-filter: none;
+}
+.market-workspace-light .market-input,
+.market-workspace-light .market-select,
+.market-workspace-light .market-textarea {
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft);
+  color: var(--acct-ink);
+}
+.market-workspace-light .market-input::placeholder,
+.market-workspace-light .market-textarea::placeholder {
+  color: var(--acct-muted);
+}
+.market-workspace-light .market-input:focus,
+.market-workspace-light .market-select:focus,
+.market-workspace-light .market-textarea:focus {
+  border-color: color-mix(in srgb, var(--acct-gold) 52%, transparent);
+  background: var(--acct-bg-soft);
+  box-shadow: 0 0 0 4px var(--acct-gold-soft);
+}
+.market-workspace-light .market-kicker {
+  color: var(--acct-gold-text);
+}

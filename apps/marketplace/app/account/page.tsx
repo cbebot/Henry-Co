@@ -1,18 +1,16 @@
 import Link from "next/link";
 import { DivisionImage } from "@henryco/dashboard-shell/components";
+import { MetricStrip } from "@henryco/dashboard-shell/surfaces";
 import {
   ArrowRight,
   ArrowUpRight,
   Clock3,
   Heart,
-  Package,
-  PackageCheck,
   PackageOpen,
   Search,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
-  Store,
 } from "lucide-react";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
@@ -65,19 +63,22 @@ function formatRelative(iso: string) {
   return `${Math.round(months / 12)}y ago`;
 }
 
+/* Register-L status palette — theme-aware semantic tokens (defined in the
+   .market-workspace-light scope). The -ink text clears WCAG AA against the
+   matching -soft tint in both light and dark. */
 const ORDER_STATUS_STYLES: Record<string, string> = {
-  placed: "border-amber-500/35 bg-amber-500/12 text-amber-200",
-  awaiting_payment: "border-amber-500/35 bg-amber-500/12 text-amber-200",
-  paid_held: "border-amber-500/35 bg-amber-500/12 text-amber-200",
-  payment_verified: "border-sky-500/35 bg-sky-500/12 text-sky-200",
-  fulfillment_in_progress: "border-sky-500/35 bg-sky-500/12 text-sky-200",
-  processing: "border-sky-500/35 bg-sky-500/12 text-sky-200",
-  partially_shipped: "border-sky-500/35 bg-sky-500/12 text-sky-200",
-  shipped: "border-emerald-500/35 bg-emerald-500/12 text-emerald-200",
-  delivered: "border-emerald-500/45 bg-emerald-500/15 text-emerald-100",
-  delivered_pending_confirmation: "border-emerald-500/35 bg-emerald-500/10 text-emerald-200",
-  refunded: "border-rose-500/35 bg-rose-500/12 text-rose-200",
-  cancelled: "border-zinc-500/35 bg-zinc-500/15 text-zinc-300",
+  placed: "border-[color:var(--acct-orange)]/35 bg-[color:var(--acct-orange-soft)] text-[color:var(--acct-orange-ink)]",
+  awaiting_payment: "border-[color:var(--acct-orange)]/35 bg-[color:var(--acct-orange-soft)] text-[color:var(--acct-orange-ink)]",
+  paid_held: "border-[color:var(--acct-orange)]/35 bg-[color:var(--acct-orange-soft)] text-[color:var(--acct-orange-ink)]",
+  payment_verified: "border-[color:var(--acct-blue)]/35 bg-[color:var(--acct-blue-soft)] text-[color:var(--acct-blue-ink)]",
+  fulfillment_in_progress: "border-[color:var(--acct-blue)]/35 bg-[color:var(--acct-blue-soft)] text-[color:var(--acct-blue-ink)]",
+  processing: "border-[color:var(--acct-blue)]/35 bg-[color:var(--acct-blue-soft)] text-[color:var(--acct-blue-ink)]",
+  partially_shipped: "border-[color:var(--acct-blue)]/35 bg-[color:var(--acct-blue-soft)] text-[color:var(--acct-blue-ink)]",
+  shipped: "border-[color:var(--acct-green)]/35 bg-[color:var(--acct-green-soft)] text-[color:var(--acct-green-ink)]",
+  delivered: "border-[color:var(--acct-green)]/45 bg-[color:var(--acct-green-soft)] text-[color:var(--acct-green-ink)]",
+  delivered_pending_confirmation: "border-[color:var(--acct-green)]/35 bg-[color:var(--acct-green-soft)] text-[color:var(--acct-green-ink)]",
+  refunded: "border-[color:var(--acct-red)]/35 bg-[color:var(--acct-red-soft)] text-[color:var(--acct-red-ink)]",
+  cancelled: "border-[var(--market-line)] bg-[color:var(--market-fill-faint)] text-[color:var(--market-muted)]",
 };
 
 const ACTIVE_ORDER_STATUSES: ReadonlyArray<MarketplaceOrder["status"]> = [
@@ -130,14 +131,14 @@ export default async function AccountOverviewPage() {
         <div className="flex flex-wrap gap-2.5">
           <Link
             href="/track"
-            className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+            className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)] active:translate-y-[0.5px]"
           >
             <Search className="h-4 w-4" />
             Track an order
           </Link>
           <Link
             href="/search"
-            className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+            className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)] active:translate-y-[0.5px]"
           >
             Continue shopping
             <ArrowRight className="h-4 w-4" />
@@ -145,48 +146,18 @@ export default async function AccountOverviewPage() {
         </div>
       }
     >
-      {/* KPI rail — four operating signals from the buyer's account. */}
-      <section
-        aria-label="Account snapshot"
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-      >
-        <KpiCard
-          icon={Package}
-          label="Active orders"
-          value={String(activeOrders.length)}
-          hint={
-            activeOrders.length > 0
-              ? `${activeOrders.length} order${activeOrders.length === 1 ? "" : "s"} still in motion.`
-              : "No orders in motion right now."
-          }
-        />
-        <KpiCard
-          icon={PackageCheck}
-          label="In transit"
-          value={String(inTransit)}
-          hint={
-            inTransit > 0
-              ? "Tracked through dispatch and delivery."
-              : "Once an order ships, it lands here."
-          }
-        />
-        <KpiCard
-          icon={Heart}
-          label="Saved items"
-          value={String(savedCount)}
-          hint={savedCount > 0 ? "Pieces you've kept an eye on." : "Heart anything to start a wishlist."}
-        />
-        <KpiCard
-          icon={Store}
-          label="Following"
-          value={String(followingCount)}
-          hint={
-            followingCount > 0
-              ? `${followingCount} store${followingCount === 1 ? "" : "s"} you follow for drops.`
-              : "Follow stores to catch new drops first."
-          }
-        />
-      </section>
+      {/* KPI rail — the shared dashboard-shell MetricStrip primitive: real
+          numbers, clickable into the deeper surface (matches the account
+          Smart Home grammar). Theme-aware via the --acct-* register. */}
+      <MetricStrip
+        ariaLabel="Account snapshot"
+        cells={[
+          { label: "Active orders", value: activeOrders.length, href: "/account/orders" },
+          { label: "In transit", value: inTransit, href: "/account/orders" },
+          { label: "Saved items", value: savedCount, href: "/account/wishlist" },
+          { label: "Following", value: followingCount, href: "/account/following" },
+        ]}
+      />
 
       {/* Quick actions — explicit next steps that recur for buyers. */}
       <section
@@ -272,7 +243,7 @@ export default async function AccountOverviewPage() {
                     <span
                       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] ${
                         ORDER_STATUS_STYLES[order.status] ||
-                        "border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-paper-white)]"
+                        "border-[var(--market-line)] bg-[color:var(--market-fill-soft)] text-[var(--market-paper-white)]"
                       }`}
                     >
                       <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
@@ -280,7 +251,7 @@ export default async function AccountOverviewPage() {
                     </span>
                     <Link
                       href={`/account/orders/${order.orderNo}`}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-[var(--market-line)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)] transition outline-none hover:bg-[rgba(255,255,255,0.04)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[var(--market-line)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)] transition outline-none hover:bg-[color:var(--market-fill-faint)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]"
                     >
                       View
                       <ArrowUpRight className="h-3 w-3" />
@@ -298,7 +269,7 @@ export default async function AccountOverviewPage() {
             </p>
             <Link
               href="/search"
-              className="market-button-primary mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+              className="market-button-primary mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)] active:translate-y-[0.5px]"
             >
               Browse marketplace
               <ArrowRight className="h-4 w-4" />
@@ -398,7 +369,7 @@ export default async function AccountOverviewPage() {
             >
               View all
               {unreadNotifications > 0 ? (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[color:var(--acct-gold)] px-1.5 text-[10px] font-semibold text-[color:var(--hc-ink-on-accent)]">
                   {unreadNotifications}
                 </span>
               ) : null}
@@ -422,31 +393,6 @@ export default async function AccountOverviewPage() {
   );
 }
 
-function KpiCard({
-  icon: Icon,
-  label,
-  value,
-  hint,
-}: {
-  icon: typeof Package;
-  label: string;
-  value: string;
-  hint: string;
-}) {
-  return (
-    <article className="market-paper rounded-[1.6rem] p-5">
-      <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--market-muted)]">
-        <Icon className="h-3.5 w-3.5 text-[var(--market-brass)]" />
-        {label}
-      </div>
-      <p className="mt-3 text-[1.85rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2.1rem]">
-        {value}
-      </p>
-      <p className="mt-2 text-sm leading-relaxed text-[var(--market-muted)]">{hint}</p>
-    </article>
-  );
-}
-
 function QuickActionCard({
   href,
   icon: Icon,
@@ -463,7 +409,7 @@ function QuickActionCard({
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col justify-between rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5 transition outline-none hover:border-[var(--market-brass)]/40 hover:bg-[rgba(255,255,255,0.05)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+      className="group flex h-full flex-col justify-between rounded-[1.6rem] border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] p-5 transition outline-none hover:border-[var(--market-brass)]/40 hover:bg-[color:var(--market-fill-soft)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)] active:translate-y-[0.5px]"
     >
       <div>
         <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
@@ -488,9 +434,9 @@ function SavedItemTile({ product }: { product: MarketplaceProduct }) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group block overflow-hidden rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] transition outline-none hover:border-[var(--market-brass)]/45 focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]"
+      className="group block overflow-hidden rounded-[1.4rem] border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] transition outline-none hover:border-[var(--market-brass)]/45 focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]"
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-[rgba(0,0,0,0.2)]">
+      <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--market-fill-faint)]">
         {imageSrc ? (
           <DivisionImage
             src={imageSrc}
@@ -529,9 +475,9 @@ function FollowedStoreRow({ vendor }: { vendor: MarketplaceVendor }) {
   return (
     <Link
       href={`/store/${vendor.slug}`}
-      className="group flex items-center gap-4 transition outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]"
+      className="group flex items-center gap-4 transition outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]"
     >
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-xs font-semibold tracking-tight text-[var(--market-paper-white)]">
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--market-line)] bg-[color:var(--market-fill-soft)] text-xs font-semibold tracking-tight text-[var(--market-paper-white)]">
         {initials}
       </div>
       <div className="min-w-0 flex-1">
@@ -544,7 +490,7 @@ function FollowedStoreRow({ vendor }: { vendor: MarketplaceVendor }) {
         </p>
       </div>
       {vendor.trustScore ? (
-        <span className="inline-flex items-center gap-1 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)]">
+        <span className="inline-flex items-center gap-1 rounded-full border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)]">
           <ShieldCheck className="h-3 w-3 text-[var(--market-brass)]" />
           {vendor.trustScore}%
         </span>

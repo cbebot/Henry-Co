@@ -131,7 +131,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
           {title}
         </h1>
         <p className="mt-2 text-[13px] leading-6 text-[var(--market-muted)]">{description}</p>
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3.5 py-3">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] px-3.5 py-3">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
               Current section
@@ -147,7 +147,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
             aria-haspopup="dialog"
             aria-expanded={open}
             aria-controls={drawerId}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-2.5 text-[12px] font-semibold text-[#0b1018] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f17]"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-2.5 text-[12px] font-semibold text-[color:var(--market-bg)] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--market-bg)]"
           >
             <Menu className="h-3.5 w-3.5" />
             Open workspace menu
@@ -242,9 +242,14 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
                             "flex items-center justify-between gap-2 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]",
                             "min-h-[48px]",
                             item.active
-                              ? "bg-[linear-gradient(135deg,rgba(246,240,222,0.14),rgba(117,209,255,0.10))] text-[var(--market-paper-white)] ring-1 ring-inset ring-[rgba(196,171,130,0.18)]"
-                              : "text-[var(--market-muted)] active:bg-[rgba(255,255,255,0.04)] active:text-[var(--market-paper-white)] focus-visible:bg-[rgba(255,255,255,0.04)]",
+                              ? "text-[color:var(--market-paper-white)] ring-1 ring-inset ring-[color:var(--market-line-strong)]"
+                              : "text-[color:var(--market-muted)] active:bg-[color:var(--market-fill-faint)] active:text-[color:var(--market-paper-white)] focus-visible:bg-[color:var(--market-fill-faint)]",
                           )}
+                          style={
+                            item.active
+                              ? { background: "var(--market-nav-active)" }
+                              : undefined
+                          }
                         >
                           <span className="truncate">{item.label}</span>
                           <ChevronRight
