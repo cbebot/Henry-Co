@@ -1,4 +1,5 @@
-import { Key, LogOut } from "lucide-react";
+import { Key, LogOut, Laptop } from "lucide-react";
+import { cookies } from "next/headers";
 
 import {
   formatAccountTemplate,
@@ -40,6 +41,13 @@ import { TrustGuide } from "@/components/security/TrustGuide";
 import { computeHeroState, statusBlurb, statusEyebrow, statusHeadline } from "@/components/security/helpers";
 import ChangePasswordForm from "@/components/security/ChangePasswordForm";
 import GlobalSignOutCard from "@/components/security/GlobalSignOutCard";
+import EnableSecurityAlerts from "@/components/security/EnableSecurityAlerts";
+import SignInReviewPanel from "@/components/security/SignInReviewPanel";
+import RecognisedDevices, {
+  type RecognisedDeviceItem,
+} from "@/components/security/RecognisedDevices";
+import { HC_DEVICE_COOKIE, verifyDeviceCookie } from "@/lib/security/device-cookie";
+import { listKnownDevices, loadReviewEvent } from "@/lib/security/known-devices";
 
 export const dynamic = "force-dynamic";
 
@@ -55,14 +63,24 @@ function riskWord(locale: AppLocale, fallback: string): string {
  * shared <HeroCard variant="paired" progress={trustScore} /> and swaps
  * SignalsStrip for <MetricStrip />.
  */
-export default async function SecurityPage() {
+export default async function SecurityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ review?: string }>;
+}) {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const copy = getAccountCopy(locale);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const [logs, trust, profile] = await Promise.all([
+  const params = await searchParams;
+  const reviewId = typeof params.review === "string" ? params.review : null;
+  const cookieStore = await cookies();
+  const currentDeviceId = verifyDeviceCookie(cookieStore.get(HC_DEVICE_COOKIE)?.value);
+  const [logs, trust, profile, knownDevices, reviewEvent] = await Promise.all([
     getSecurityLog(user.id, 12),
     getAccountTrustProfile(user.id),
     getProfile(user.id),
+    listKnownDevices(user.id),
+    reviewId ? loadReviewEvent(user.id, reviewId) : Promise.resolve(null),
   ]);
   const region = resolveAccountRegionalContext({
     country: profile?.country as string | null | undefined,
@@ -71,6 +89,28 @@ export default async function SecurityPage() {
     language: profile?.language as string | null | undefined,
   });
   const events = logs.map((log) => buildSecurityEventView(log as Record<string, unknown>));
+  const deviceItems: RecognisedDeviceItem[] = knownDevices.map((d) => ({
+    deviceId: d.deviceId,
+    label: d.label,
+    locationLabel: d.firstCountry ?? null,
+    lastSeenLabel: d.lastSeenAt
+      ? formatDateTime(d.lastSeenAt, { locale: region.locale, timezone: region.timezone })
+      : null,
+    trusted: d.trusted,
+    current: currentDeviceId !== null && d.deviceId === currentDeviceId,
+  }));
+  const reviewNode = reviewEvent ? (
+    <SignInReviewPanel
+      eventId={reviewEvent.eventId}
+      deviceLabel={reviewEvent.deviceLabel}
+      locationLabel={reviewEvent.locationSummary}
+      whenLabel={
+        reviewEvent.whenIso
+          ? formatDateTime(reviewEvent.whenIso, { locale: region.locale, timezone: region.timezone })
+          : null
+      }
+    />
+  ) : null;
   const localizedReasons = getLocalizedTrustReasons(copy, trust);
   const localizedRequirements = getLocalizedTrustRequirements(copy, trust);
   const blockedActions = getLocalizedBlockedActions(copy, trust);
@@ -206,6 +246,9 @@ export default async function SecurityPage() {
     );
   }
 
+  // A pending sign-in review takes priority over trust-progress nudges.
+  if (reviewNode) nextStep = reviewNode;
+
   const regionalLine = `${region.countryName} · ${region.locale} · ${region.timezone}`;
 
   return (
@@ -298,6 +341,23 @@ export default async function SecurityPage() {
                 icon={LogOut}
               >
                 <GlobalSignOutCard />
+              </ActionZone>
+            </div>
+          ),
+        },
+        {
+          id: "acct-sec-devices",
+          title: t("Recognised devices"),
+          meta: t("Browsers and apps you've signed in from. Remove any you don't recognise."),
+          content: (
+            <div className="acct-sec__devices flex flex-col gap-4">
+              <EnableSecurityAlerts />
+              <ActionZone
+                kicker={t("Your devices")}
+                title={t("Recognised devices")}
+                icon={Laptop}
+              >
+                <RecognisedDevices devices={deviceItems} />
               </ActionZone>
             </div>
           ),

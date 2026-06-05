@@ -12,6 +12,8 @@ const envSchema = z.object({
   CLOUDINARY_BASE_PATH: z.string().min(1).default("henryco"),
   SENTRY_DSN: z.string().optional().or(z.literal("")),
   WEB_ORIGIN: z.string().url().default("https://www.henryonyx.com"),
+  /** The account web app — hosts the authenticated push-registration endpoint. */
+  ACCOUNT_ORIGIN: z.string().url().default("https://account.henryonyx.com"),
 });
 
 export type AppEnv = z.infer<typeof envSchema>;
@@ -26,6 +28,7 @@ export function getEnv(): AppEnv {
     CLOUDINARY_BASE_PATH: process.env.EXPO_PUBLIC_CLOUDINARY_BASE_PATH,
     SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN,
     WEB_ORIGIN: process.env.EXPO_PUBLIC_WEB_ORIGIN,
+    ACCOUNT_ORIGIN: process.env.EXPO_PUBLIC_ACCOUNT_ORIGIN,
   };
 
   const parsed = envSchema.safeParse({
@@ -36,6 +39,7 @@ export function getEnv(): AppEnv {
     CLOUDINARY_BASE_PATH: candidate.CLOUDINARY_BASE_PATH ?? "henryco",
     SENTRY_DSN: candidate.SENTRY_DSN ?? "",
     WEB_ORIGIN: candidate.WEB_ORIGIN ?? "https://www.henryonyx.com",
+    ACCOUNT_ORIGIN: candidate.ACCOUNT_ORIGIN ?? "https://account.henryonyx.com",
   });
 
   if (!parsed.success) {
