@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, getPublicDivisions } from "@henryco/config";
+import { LaunchInterceptor } from "@henryco/ui/public-shell";
 import { PROPERTY_PUBLIC_THEME_STYLE } from "@/components/property/property-public-theme";
 import { PropertyAccountChip } from "@/components/property/PropertyAccountChip";
 import { PropertySiteFooter } from "@/components/property/site-footer";
@@ -55,6 +56,16 @@ export default async function PublicLayout({ children }: { children: React.React
       className="property-page property-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
       style={PROPERTY_PUBLIC_THEME_STYLE}
     >
+      {/* Property uses a bespoke header/footer (not the shared PublicSiteFooter),
+          so mount the division→division launch transition here too, so switching
+          to another division from property plays the same branded overlay. */}
+      <LaunchInterceptor
+        divisions={getPublicDivisions().map((division) => ({
+          name: division.name,
+          url: division.url,
+          accent: division.accent,
+        }))}
+      />
       <PropertySiteHeader account={account} accountMenu={accountMenu} />
       {children}
       <PropertySiteFooter />
