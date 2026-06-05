@@ -79,6 +79,20 @@ Full FL1 + FIX-01 evidence (gitignored): `.codex-temp/v3-15-paystack/{fl1-report
 
 ---
 
+## 3b. CI backstop (regression guard — unbypassable until payments_private lands)
+A dedicated CI job **`Payments money-RPC grant invariant`** (`.github/workflows/ci.yml`)
+spins a fresh `postgres:17`, reproduces Supabase's roles + default privileges
+(`apps/hub/supabase/tests/_bootstrap_supabase_env.sql` — the load-bearing
+`alter default privileges … grant execute … to anon, authenticated` that makes the
+test meaningful), applies the `payment_intents` migration, then runs
+`apps/hub/supabase/tests/payments_grant_invariant.sql`, which asserts for each money
+function: `anon`/`authenticated` EXECUTE = `false`, and (writers) `service_role`
+EXECUTE = `true`. Any violation `RAISE`s → psql (`ON_ERROR_STOP=1`) exits non-zero →
+**CI RED**. Red-green verified on a real DB: fixed migration → 0 violations (pass);
+re-grant a writer to `authenticated` → `1 violation` (fail). **Maintenance:** a new
+money function in `public` must be added to `all_fns` in the assertion, or it isn't
+covered — which is itself a reason to land the schema isolation below.
+
 ## 4. Remaining hardening — REGISTERED, MUST land before FL2
 
 ### Why (defense BY CONSTRUCTION, not by remembering)
