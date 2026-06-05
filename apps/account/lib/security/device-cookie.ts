@@ -6,11 +6,13 @@
  * shared. We mint a random device id on first sign-in, store it in an
  * httpOnly cookie, and match it against the user's recognised devices.
  *
- * The value is HMAC-signed with the app's existing cookie secret so it cannot
- * be forged or swapped, mirroring the house pattern in
- * `@henryco/auth/server/oauth-error-cookie`. Pure crypto — NO `server-only`,
- * NO `next/headers` — so the signing is unit-tested in isolation; the route
- * does the actual cookie jar read/write with the helpers below.
+ * The value is HMAC-signed so it cannot be forged or swapped, mirroring the
+ * house pattern in `@henryco/auth/server/oauth-error-cookie`. It uses its OWN
+ * dedicated secret (`DEVICE_COOKIE_SECRET`) so device memory never piggybacks
+ * on the JWT-named cookie secret; it falls back to `SUPABASE_JWT_SECRET` (used
+ * by the other signed cookies + the unit tests) when the dedicated one is unset.
+ * Pure crypto — NO `server-only`, NO `next/headers` — so the signing is
+ * unit-tested in isolation; the route does the cookie jar read/write below.
  */
 
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
@@ -21,7 +23,7 @@ export const HC_DEVICE_COOKIE = "hc_device";
 export const HC_DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 400;
 
 function loadSecret(): string | null {
-  const secret = process.env.SUPABASE_JWT_SECRET;
+  const secret = process.env.DEVICE_COOKIE_SECRET || process.env.SUPABASE_JWT_SECRET;
   return typeof secret === "string" && secret.length >= 16 ? secret : null;
 }
 
