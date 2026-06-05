@@ -364,10 +364,12 @@ export async function getLogisticsSnapshot() {
   ] = await Promise.all([
     getLogisticsZones(),
     getLogisticsRateCards(),
+    // logistics_addresses has no created_at column; rows are grouped by
+    // shipment_id/kind downstream, so no ordering is applied here (ordering by
+    // created_at 500s — the column does not exist).
     safeSelect<Record<string, unknown>>(
       "logistics_addresses",
       "id, shipment_id, kind, label, contact_name, phone, email, line1, line2, city, region, country, landmark, instructions, latitude, longitude",
-      "created_at"
     ),
     safeSelect<Record<string, unknown>>(
       "logistics_shipments",
