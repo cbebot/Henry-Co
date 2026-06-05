@@ -234,7 +234,7 @@ function buildPlaceholderVendor(scopeId?: string | null): MarketplaceVendor {
   };
 }
 
-async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issue: string | null }> {
+async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issue: string | null }> {
   try {
     const admin = createAdminSupabase();
     const [categoriesRes, brandsRes, vendorsRes, productsRes, mediaRes, collectionsRes, collectionItemsRes, campaignsRes, reviewsRes, variantsRes] =
@@ -501,6 +501,20 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
     };
   }
 }
+
+/**
+ * HOTFIX (DB-saturation): cache the heavy 10-table catalog snapshot at the
+ * SOURCE so BOTH the page (getMarketplaceHomeData) and the root-layout shell
+ * (getMarketplaceReadiness → getMarketplaceShellState) serve from one 60s
+ * cache. Without this, the uncached readiness read in the layout still hung the
+ * marketplace shell on a saturated DB (the 0-bytes outage). Public,
+ * service-role admin client — no cookies/headers/session/viewer.
+ */
+const loadDatabaseSnapshot = unstable_cache(
+  computeDatabaseSnapshot,
+  ["marketplace-snapshot"],
+  { revalidate: 60, tags: ["marketplace-home"] },
+);
 
 async function computeMarketplaceHomeData(): Promise<Snapshot> {
   const { snapshot } = await loadDatabaseSnapshot();
