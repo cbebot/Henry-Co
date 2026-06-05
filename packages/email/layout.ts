@@ -8,14 +8,15 @@
  * lockup, and a per-division accent that tunes every send to the surface
  * the recipient will land on.
  *
- * Rendering strategy (why it survives every inbox):
- *   - Inline styles carry the DARK ("onyx") baseline, so Gmail (which
- *     ignores <style>/media queries) and every other client get the
- *     bulletproof dark surface with no inversion surprises.
- *   - A <style> block adds a refined LIGHT ("alabaster") variant via
- *     `@media (prefers-color-scheme: light)`, applied through `.ox-*`
- *     classes, for clients that honour it (Apple Mail, iOS Mail). Dark
- *     stays the signature; light is the graceful adaptation.
+ * Rendering strategy (why it FOLLOWS the device + survives every inbox):
+ *   - Inline styles carry the LIGHT ("alabaster") baseline. This is
+ *     deliberate: Gmail (which ignores media queries) DARKENS a light email
+ *     on a dark device, but force-inverts a dark-first email to light — that
+ *     inversion is the "email shows light on a dark phone" bug. A light
+ *     baseline is the only thing that reliably tracks the device theme.
+ *   - A <style> block adds the refined DARK ("onyx") variant via
+ *     `@media (prefers-color-scheme: dark)`, applied through `.ox-*`
+ *     classes, for clients that honour it (Apple Mail, iOS Mail).
  *   - Buttons get a VML round-rect fallback so Outlook/MSO render the
  *     pill CTA, not a square block.
  *   - Every themeable node carries BOTH an inline color and a class, so
@@ -53,24 +54,29 @@ const BODY_FONT_STACK =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 /**
- * Onyx (dark, signature) token set — the inline baseline every client
- * receives. Light overrides live in the `<style>` block keyed to `.ox-*`.
+ * Alabaster (light) token set — the inline baseline every client receives.
+ * LIGHT is the default on purpose: Gmail's dark-mode engine reliably DARKENS a
+ * light email on a dark device but inverts a dark-first one to light. The
+ * onyx-dark variant lives in the `@media (prefers-color-scheme: dark)` block
+ * keyed to `.ox-*`. The H·Onyx tile stays dark in BOTH themes, so `markText`
+ * keeps the "H" near-white either way.
  */
 export const HENRYCO_EMAIL_TOKENS = {
-  outerBg: "#05070B",
-  cardBg: "#0C111A",
-  cardEdge: "#161D28",
-  cardBorder: "rgba(255,255,255,0.07)",
-  heroText: "#F6F8FB",
-  bodyText: "#C6CFDB",
-  mutedText: "#8C97A6",
+  outerBg: "#F1EDE4",
+  cardBg: "#FFFFFF",
+  cardEdge: "#ECE7DC",
+  cardBorder: "rgba(10,16,24,0.10)",
+  heroText: "#0C111A",
+  bodyText: "#3A434F",
+  mutedText: "#6B7480",
+  markText: "#F6F8FB",
   accent: "#C9A227",
-  accentSoft: "rgba(201,162,39,0.14)",
+  accentSoft: "rgba(201,162,39,0.12)",
   ctaBg: "#C9A227",
   ctaText: "#0B1018",
-  ctaBorder: "rgba(201,162,39,0.55)",
-  divider: "rgba(255,255,255,0.08)",
-  footerText: "#7A8593",
+  ctaBorder: "rgba(201,162,39,0.45)",
+  divider: "rgba(10,16,24,0.10)",
+  footerText: "#76808C",
   headingFont: HEADING_FONT_STACK,
   bodyFont: BODY_FONT_STACK,
 } as const;
@@ -189,7 +195,7 @@ function renderBrandMark(): string {
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 22px 0;">
       <tr>
         <td class="ox-tile" width="44" height="44" align="center" valign="middle" style="width:44px; height:44px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:12px; text-align:center; vertical-align:middle; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);">
-          <span style="display:inline-block; font-family:${t.headingFont}; font-size:25px; line-height:44px; font-weight:600; color:${t.heroText}; letter-spacing:0;">H</span>
+          <span style="display:inline-block; font-family:${t.headingFont}; font-size:25px; line-height:44px; font-weight:600; color:${t.markText}; letter-spacing:0;">H</span>
         </td>
         <td style="padding:0 0 0 14px; vertical-align:middle;">
           <div class="ox-hero" style="margin:0; padding:0; font-family:${t.headingFont}; font-size:22px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
@@ -238,7 +244,7 @@ function renderHighlight(
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
       <tr>
         <td class="ox-soft" style="padding:16px 18px; background-color:${palette.accentSoft}; border:1px solid ${palette.accentBorder}; border-radius:14px;">
-          ${label ? `<div class="ox-accent" style="font-family:${t.bodyFont}; font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; color:${palette.accent}; font-weight:700;">${escapeHtml(label)}</div>` : ""}
+          ${label ? `<div class="ox-accent" style="font-family:${t.bodyFont}; font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; color:${palette.accentInk}; font-weight:700;">${escapeHtml(label)}</div>` : ""}
           ${value ? `<div class="ox-hero" style="margin-top:7px; font-family:${t.headingFont}; font-size:19px; line-height:1.35; color:${t.heroText}; font-weight:600;">${escapeHtml(value)}</div>` : ""}
         </td>
       </tr>
@@ -275,7 +281,7 @@ function renderCta(
         </td>
       </tr>
     </table>
-    <p class="ox-muted" style="margin:16px 0 0 0; font-family:${t.bodyFont}; font-size:12px; line-height:1.6; color:${t.mutedText};">If the button doesn&rsquo;t work, copy this link into your browser:<br/><a class="ox-accent" href="${safeHref}" style="color:${palette.accent}; word-break:break-all;">${safeHref}</a></p>`;
+    <p class="ox-muted" style="margin:16px 0 0 0; font-family:${t.bodyFont}; font-size:12px; line-height:1.6; color:${t.mutedText};">If the button doesn&rsquo;t work, copy this link into your browser:<br/><a class="ox-accent" href="${safeHref}" style="color:${palette.accentInk}; word-break:break-all;">${safeHref}</a></p>`;
 }
 
 function renderSecureNote(note: string | null | undefined): string {
@@ -312,7 +318,7 @@ export function renderHenryCoEmailHeader(
           <table role="presentation" cellpadding="0" cellspacing="0">
             <tr>
               <td class="ox-tile" width="38" height="38" align="center" valign="middle" style="width:38px; height:38px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:10px; text-align:center; vertical-align:middle;">
-                <span style="display:inline-block; font-family:${t.headingFont}; font-size:21px; line-height:38px; font-weight:600; color:${t.heroText};">H</span>
+                <span style="display:inline-block; font-family:${t.headingFont}; font-size:21px; line-height:38px; font-weight:600; color:${t.markText};">H</span>
               </td>
               <td style="padding:0 0 0 12px; vertical-align:middle;">
                 <div class="ox-hero" style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
@@ -344,7 +350,7 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
   const palette = paletteFor(opts.purpose || "generic");
   const eyebrow = opts.purpose ? PURPOSE_KICKER[opts.purpose] : PURPOSE_KICKER.generic;
   const resolvedSupport = opts.supportEmail || BRAND_EMAILS.support;
-  const supportLink = `<a class="ox-accent" href="mailto:${escapeHtml(resolvedSupport)}" style="color:${palette.accent}; text-decoration:none;">${escapeHtml(resolvedSupport)}</a>`;
+  const supportLink = `<a class="ox-accent" href="mailto:${escapeHtml(resolvedSupport)}" style="color:${palette.accentInk}; text-decoration:none;">${escapeHtml(resolvedSupport)}</a>`;
   const unsubscribeBlock = opts.unsubscribeUrl
     ? ` &middot; <a class="ox-foot" href="${escapeHtml(opts.unsubscribeUrl)}" style="color:${t.footerText}; text-decoration:underline;">Unsubscribe</a>`
     : "";
@@ -361,7 +367,7 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
       <tr>
         <td style="padding:26px 32px 30px 32px;">
           <div class="ox-hair" style="height:1px; background-color:${t.divider}; line-height:1px; font-size:0;">&nbsp;</div>
-          <div class="ox-accent" style="margin-top:22px; font-family:${t.bodyFont}; font-size:10.5px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accent};">${escapeHtml(eyebrow)}</div>
+          <div class="ox-accent" style="margin-top:22px; font-family:${t.bodyFont}; font-size:10.5px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accentInk};">${escapeHtml(eyebrow)}</div>
           <p class="ox-foot" style="margin:9px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
             ${escapeHtml(reason)}
           </p>
@@ -379,8 +385,8 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
     </table>`;
 }
 
-/** The `<style>` block: web font, responsive tweaks, and the light variant. */
-function headStyle(): string {
+/** The `<style>` block: web font, responsive tweaks, and the dark variant. */
+function headStyle(palette: ResolvedPalette): string {
   return `
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
@@ -388,31 +394,31 @@ function headStyle(): string {
       body { margin:0 !important; padding:0 !important; width:100% !important; color-scheme: light dark; }
       a { text-decoration:none; }
       img { -ms-interpolation-mode:bicubic; }
-      .ox-card-glow { background:radial-gradient(120% 90% at 50% -10%, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%); }
+      .ox-card-glow { background:radial-gradient(120% 90% at 50% -10%, rgba(15,23,32,0.04) 0%, rgba(15,23,32,0) 60%); }
       @media only screen and (max-width:620px) {
         .ox-pad { padding:30px 22px 24px 22px !important; }
         .ox-foot-pad { padding:22px 22px 26px 22px !important; }
         .ox-title { font-size:25px !important; }
       }
-      @media (prefers-color-scheme: light) {
-        .ox-bg { background-color:#F1EDE4 !important; }
-        .ox-card { background-color:#FFFFFF !important; border-color:rgba(10,16,24,0.10) !important; }
-        .ox-card-glow { background:radial-gradient(120% 90% at 50% -10%, rgba(11,16,24,0.035) 0%, rgba(11,16,24,0) 60%) !important; }
-        .ox-tile { background-color:#0C111A !important; border-color:rgba(0,0,0,0.10) !important; }
-        .ox-hero { color:#0C111A !important; }
-        .ox-body { color:#3A434F !important; }
-        .ox-muted { color:#6B7480 !important; }
-        .ox-foot, .ox-foot a { color:#76808C !important; }
-        .ox-hair { background-color:rgba(10,16,24,0.10) !important; border-color:rgba(10,16,24,0.10) !important; }
-        .ox-accent { color:var(--ox-ink) !important; }
+      @media (prefers-color-scheme: dark) {
+        .ox-bg { background-color:#05070B !important; }
+        .ox-card { background-color:#0C111A !important; border-color:rgba(255,255,255,0.07) !important; }
+        .ox-card-glow { background:radial-gradient(120% 90% at 50% -10%, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%) !important; }
+        .ox-tile { background-color:#10161F !important; border-color:rgba(255,255,255,0.10) !important; }
+        .ox-hero { color:#F6F8FB !important; }
+        .ox-body { color:#C6CFDB !important; }
+        .ox-muted { color:#8C97A6 !important; }
+        .ox-foot, .ox-foot a { color:#7A8593 !important; }
+        .ox-hair { background-color:rgba(255,255,255,0.08) !important; border-color:rgba(255,255,255,0.08) !important; }
+        .ox-accent { color:${palette.accent} !important; }
       }
     </style>`;
 }
 
 /**
- * Render a Henry Onyx transactional email. Onyx-dark baseline (inline) +
- * alabaster-light variant (prefers-color-scheme). Bulletproof across Gmail
- * (web + mobile), Apple Mail, and Outlook (graceful MSO degradation).
+ * Render a Henry Onyx transactional email. Alabaster-light baseline (inline) +
+ * onyx-dark variant (prefers-color-scheme: dark) so it FOLLOWS the device.
+ * Bulletproof across Gmail (web + mobile), Apple Mail, and Outlook.
  */
 export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
   const t = HENRYCO_EMAIL_TOKENS;
@@ -453,9 +459,9 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     <meta name="supported-color-schemes" content="light dark" />
     <title>${escapeHtml(layout.subject)}</title>
     <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
-    ${headStyle()}
+    ${headStyle(palette)}
   </head>
-  <body class="ox-bg" style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:${t.bodyFont}; color-scheme:light dark; --ox-ink:${palette.accentInk};">
+  <body class="ox-bg" style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:${t.bodyFont}; color-scheme:light dark;">
     <span style="display:none; visibility:hidden; opacity:0; max-height:0; max-width:0; overflow:hidden; mso-hide:all;">${escapeHtml(layout.intro)}</span>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="ox-bg" style="background-color:${t.outerBg}; padding:36px 12px;">
       <tr>
@@ -465,7 +471,7 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
               <td class="ox-card-glow ox-pad" style="padding:40px 36px 30px 36px;">
                 ${brandMark}
                 <div style="height:2px; width:42px; background-color:${palette.accent}; border-radius:999px; line-height:2px; font-size:0;">&nbsp;</div>
-                <div class="ox-accent" style="margin-top:20px; font-family:${t.bodyFont}; font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accent};">${escapeHtml(eyebrow)}</div>
+                <div class="ox-accent" style="margin-top:20px; font-family:${t.bodyFont}; font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accentInk};">${escapeHtml(eyebrow)}</div>
                 <h1 class="ox-hero ox-title" style="margin:13px 0 0 0; font-family:${t.headingFont}; font-size:29px; line-height:1.22; font-weight:600; color:${t.heroText}; letter-spacing:-0.014em;">${escapeHtml(layout.title)}</h1>
                 <p class="ox-hero" style="margin:16px 0 0 0; font-family:${t.bodyFont}; font-size:15.5px; line-height:1.78; color:${t.heroText};">${escapeHtml(layout.intro)}</p>
                 ${highlight}
