@@ -106,7 +106,7 @@ begin
   new.updated_at = now();
   return new;
 end $$;
-revoke all on function public.payments_set_updated_at() from public;
+revoke all on function public.payments_set_updated_at() from public, anon, authenticated;
 
 drop trigger if exists payment_intents_set_updated_at on public.payment_intents;
 create trigger payment_intents_set_updated_at
@@ -131,7 +131,7 @@ begin
   raise exception 'illegal payment_intent transition: % -> %', old.status, new.status
     using errcode = 'check_violation';
 end $$;
-revoke all on function public.enforce_payment_intent_transition() from public;
+revoke all on function public.enforce_payment_intent_transition() from public, anon, authenticated;
 
 drop trigger if exists payment_intents_enforce_transition on public.payment_intents;
 create trigger payment_intents_enforce_transition
@@ -180,7 +180,12 @@ begin
 
   return jsonb_build_object('advanced', v_affected > 0);
 end $$;
-revoke all on function public.advance_payment_intent(uuid, text, text) from public;
+-- FL1 (2026-06-05): `from public` alone is INSUFFICIENT on Supabase — project
+-- bootstrap `alter default privileges … grant execute on functions to anon,
+-- authenticated` adds DIRECT grants that survive a public-only revoke, leaving this
+-- SECURITY DEFINER money-writer callable by any signed-in user via /rest/v1/rpc/.
+-- Revoke the direct grants too (service_role re-granted on the next line).
+revoke all on function public.advance_payment_intent(uuid, text, text) from public, anon, authenticated;
 grant execute on function public.advance_payment_intent(uuid, text, text) to service_role;
 
 -- ============ A3 webhook apply RPC (dedup-insert FIRST, effect SECOND, one txn) ============
@@ -213,7 +218,9 @@ begin
 
   return jsonb_build_object('applied', true);
 end $$;
-revoke all on function public.apply_payment_webhook(text, text, uuid, text) from public;
+-- FL1: revoke the DIRECT anon/authenticated grants too (see advance_payment_intent
+-- above) — else a signed-in user could call this and forge a 'succeeded' with no money moved.
+revoke all on function public.apply_payment_webhook(text, text, uuid, text) from public, anon, authenticated;
 grant execute on function public.apply_payment_webhook(text, text, uuid, text) to service_role;
 
 -- ============ RLS ============
