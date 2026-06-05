@@ -20,7 +20,7 @@ export function getResendSender(input: SendTransactionalEmailInput): ResolvedSen
   const envName = angle ? angle[1].replace(/^["']|["']$/g, "").trim() : "";
 
   const email = input.from?.trim() || envEmail || BRAND_EMAILS.noreply;
-  const name = input.fromName?.trim() || envName || "HenryCo";
+  const name = input.fromName?.trim() || envName || "Henry Onyx";
   return { email, name };
 }
 

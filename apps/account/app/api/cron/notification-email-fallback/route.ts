@@ -190,14 +190,14 @@ const DIVISION_TITLE: Record<string, string> = {
   studio: "Studio",
   security: "Security",
   account: "Account",
-  hub: "HenryCo",
-  staff: "HenryCo",
-  system: "HenryCo",
+  hub: "Henry Onyx",
+  staff: "Henry Onyx",
+  system: "Henry Onyx",
 };
 
 function divisionTitle(division: string | null | undefined): string {
   const key = String(division || "").trim().toLowerCase();
-  return DIVISION_TITLE[key] || "HenryCo";
+  return DIVISION_TITLE[key] || "Henry Onyx";
 }
 
 // ─── Dispatch with explicit Resend→Brevo fallback ──────────────────────────
@@ -474,7 +474,7 @@ function buildIndividualEmail(args: {
     purpose,
     subject,
     title: args.title,
-    intro: args.body || "You have a new HenryCo notification waiting in your inbox.",
+    intro: args.body || "You have a new Henry Onyx notification waiting in your inbox.",
     actionLabel: "View notification",
     actionHref: args.ctaUrl,
     // V3-04 (S6): attribute the landing to the notification-fallback
@@ -482,7 +482,7 @@ function buildIndividualEmail(args: {
     // notification opens. The renderer appends utm_source=henryco_email.
     campaign: `notification_fallback_${args.division || "general"}`,
     footnote:
-      "This is a HenryCo transactional message. Manage notification email preferences any time at " +
+      "This is a Henry Onyx transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
   } as const;
   return {
@@ -495,10 +495,10 @@ function buildIndividualEmail(args: {
 function buildDigestEmail(args: {
   pendingCount: number;
 }): { subject: string; html: string; text: string } {
-  const subject = `[HenryCo] You have ${args.pendingCount} pending notifications`;
+  const subject = `[Henry Onyx] You have ${args.pendingCount} pending notifications`;
   const layout = {
     purpose: "auth" as EmailPurpose,
-    eyebrow: "HenryCo",
+    eyebrow: "Henry Onyx",
     subject,
     title: `${args.pendingCount} updates are waiting in your inbox`,
     intro:
@@ -509,7 +509,7 @@ function buildDigestEmail(args: {
     // V3-04 (S6): attribute digest-driven inbox opens.
     campaign: "notification_fallback_digest",
     footnote:
-      "This is a HenryCo transactional message. Manage notification email preferences any time at " +
+      "This is a Henry Onyx transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
   } as const;
   return {
@@ -534,7 +534,7 @@ async function sendIndividual(
   const purpose = purposeForDivision(row.division);
   const sender = resolveSenderIdentity(purpose);
   const ctaUrl = resolveSafeCtaUrl(row.action_url);
-  const titleText = (row.title || "").slice(0, 200) || "You have a new HenryCo notification";
+  const titleText = (row.title || "").slice(0, 200) || "You have a new Henry Onyx notification";
   const bodyText = (row.body || "").slice(0, 800);
   const rendered = buildIndividualEmail({
     division: row.division,
