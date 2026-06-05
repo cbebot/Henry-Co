@@ -3,6 +3,8 @@
 **Owner-facing / team record.** Origin: V3-15-FL1 test-mode proof (2026-06-05).
 Severity: **critical (money-truth bypass)** — confirmed exploitable, now **closed**.
 
+> **§4 schema isolation status: ✅ EXECUTED — PR #224** (`feat/v3-15-s3-payments-private`). Acceptance proven on a real Postgres 17.6: REST 404 for every role; direct-pg money path green; A2/dedup/idempotency unregressed. Migration committed-not-applied; lands at FL2. Requires server-only `PAYMENTS_DATABASE_URL` (+ `PAYMENTS_DB_SSL_CA` for verified TLS).
+
 ---
 
 ## TL;DR (what was done)

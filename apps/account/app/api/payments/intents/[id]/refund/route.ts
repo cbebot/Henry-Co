@@ -4,6 +4,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { createPaymentRouter } from "@henryco/payment-router";
 import { resolveProviderFromSucceededAttempt } from "@/lib/payments/server";
+import { callPaymentRpc } from "@/lib/payments/db";
 
 export const runtime = "nodejs";
 
@@ -47,9 +48,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // UPDATE). Exactly one concurrent caller sees advanced=true; the loser 409s.
   // This claims the refund BEFORE calling the provider, so two requests can't
   // both issue a refund.
-  const advance = await admin.rpc("advance_payment_intent", {
-    p_intent_id: id, p_from: "succeeded", p_to: "refund_processing",
-  });
+  const advance = await callPaymentRpc<{ advanced?: boolean }>("advance_payment_intent", [
+    id, "succeeded", "refund_processing",
+  ]);
   if (advance.error) return NextResponse.json({ error: "Refund could not start" }, { status: 500 });
   if ((advance.data as { advanced?: boolean } | null)?.advanced !== true) {
     return NextResponse.json({ error: "Refund already in progress" }, { status: 409 });
@@ -65,9 +66,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Synchronous provider rejection — no refund.processed webhook will arrive,
     // so revert the optimistic claim (refund_processing → succeeded). The money
     // never left; the intent returns to a refundable state.
-    await admin.rpc("advance_payment_intent", {
-      p_intent_id: id, p_from: "refund_processing", p_to: "succeeded",
-    });
+    await callPaymentRpc("advance_payment_intent", [id, "refund_processing", "succeeded"]);
     return NextResponse.json({ error: "Refund failed" }, { status: 502 });
   }
 

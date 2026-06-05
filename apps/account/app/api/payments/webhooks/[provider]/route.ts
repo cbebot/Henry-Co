@@ -3,6 +3,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createPaymentRouter } from "@henryco/payment-router";
 import type { PaymentProviderKey } from "@henryco/payment-router/types";
 import { emitPaymentEvent, intentEventForStatus } from "@/lib/payments/telemetry";
+import { callPaymentRpc } from "@/lib/payments/db";
 
 export const runtime = "nodejs";
 
@@ -60,12 +61,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   // A3/D3: the ONLY money-confirming status writer — dedup-insert first, then the
   // A2-guarded transition, atomically. A duplicate delivery is an idempotent ack.
-  const applied = await admin.rpc("apply_payment_webhook", {
-    p_provider: provider,
-    p_provider_event_id: verified.value.providerEventId,
-    p_intent_id: intentRow.id,
-    p_new_status: verified.value.impliedStatus,
-  });
+  // payments_private (V3-15-S3): money writer reached via the pooled direct-pg path,
+  // NOT PostgREST (the function is not in an exposed schema).
+  const applied = await callPaymentRpc<{ applied?: boolean }>("apply_payment_webhook", [
+    provider,
+    verified.value.providerEventId,
+    intentRow.id,
+    verified.value.impliedStatus,
+  ]);
   if (applied.error) {
     return NextResponse.json({ error: "Apply failed" }, { status: 500 });
   }
