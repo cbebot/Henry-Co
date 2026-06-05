@@ -93,6 +93,11 @@ function isPublicRoute(pathname: string): boolean {
     // The auth proxy must NOT 307 them to /login (Paystack does not follow
     // redirects → every webhook would be lost). Mirrors /api/webhooks/account.
     pathname.startsWith("/api/payments/webhooks/") ||
+    // Push registration self-authenticates (session cookie OR a native
+    // `Bearer` access token), so the proxy must not 307 it to /login — the
+    // native app carries no session cookie and the route handler is the auth
+    // authority (returns 401 when neither credential is valid).
+    pathname.startsWith("/api/push/subscribe") ||
     pathname === "/api/health" ||
     // V3-04 (S2): Universal-Link / App-Link manifests MUST be reachable
     // unauthenticated with no redirect (per Apple/Google spec). The AASA
