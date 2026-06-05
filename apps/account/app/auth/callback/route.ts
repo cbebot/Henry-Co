@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies, headers } from "next/headers";
 import {
@@ -26,6 +26,14 @@ import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
 import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { recordReferralConversion } from "@/lib/referral-data";
 import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
+import {
+  HC_DEVICE_COOKIE,
+  HC_DEVICE_COOKIE_MAX_AGE,
+  generateDeviceId,
+  signDeviceId,
+  verifyDeviceCookie,
+} from "@/lib/security/device-cookie";
+import { recordSignInAndMaybeAlert } from "@/lib/security/sign-in-alert";
 
 const REFERRAL_COOKIE_NAME = "hc_ref";
 
@@ -208,6 +216,41 @@ export async function GET(request: Request) {
             email: user.email || null,
           },
         });
+
+        // V3-AUTH-SEC — recognise the device + alert on a new device/location.
+        // The device id lives in a signed httpOnly cookie; detection + the
+        // (email/in-app/push) fan-out run AFTER the response so they never add
+        // latency to the redirect.
+        let deviceId = verifyDeviceCookie(cookieStore.get(HC_DEVICE_COOKIE)?.value);
+        if (!deviceId) {
+          deviceId = generateDeviceId();
+          try {
+            cookieStore.set(HC_DEVICE_COOKIE, signDeviceId(deviceId), {
+              path: "/",
+              domain: cookieDomain,
+              httpOnly: true,
+              sameSite: "lax",
+              secure: process.env.NODE_ENV === "production",
+              maxAge: HC_DEVICE_COOKIE_MAX_AGE,
+            });
+          } catch {
+            // Signing needs SUPABASE_JWT_SECRET; without it we skip device memory.
+          }
+        }
+        const signInDeviceId = deviceId;
+        after(() =>
+          recordSignInAndMaybeAlert({
+            userId: user.id,
+            email: user.email ?? null,
+            deviceId: signInDeviceId,
+            userAgent: context.userAgent,
+            country: context.country,
+            locationSummary: context.locationSummary,
+            ipAddress: context.ipAddress,
+            origin,
+            justConfirmed,
+          }),
+        );
 
         // Referral conversion — only fires if a referral code was captured
         // in the hc_ref cookie (or ?ref= query param) at signup time. Idempotent
