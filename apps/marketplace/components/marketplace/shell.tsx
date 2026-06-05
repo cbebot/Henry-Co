@@ -520,9 +520,14 @@ export async function WorkspaceShell({
               className={cn(
                 "flex items-center justify-between rounded-[1.25rem] px-4 py-3 text-sm font-semibold transition",
                 item.active
-                  ? "bg-[linear-gradient(135deg,rgba(246,240,222,0.14),rgba(117,209,255,0.1))] text-[var(--market-paper-white)]"
-                  : "bg-[rgba(255,255,255,0.04)] text-[var(--market-muted)] hover:text-[var(--market-paper-white)]"
+                  ? "text-[color:var(--market-paper-white)]"
+                  : "text-[color:var(--market-muted)] hover:text-[color:var(--market-paper-white)]"
               )}
+              style={{
+                background: item.active
+                  ? "var(--market-nav-active)"
+                  : "var(--market-nav-fill)",
+              }}
             >
               <span>{item.label}</span>
               <ChevronRight className="h-4 w-4" />

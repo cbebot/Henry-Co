@@ -232,7 +232,7 @@ apps/work/      Staff Workspace       (deploys to work-*.vercel.app;    real hos
 
 Both apps are deliberately **lean**: no Supabase, no Sentry, no server auth — only `@henryco/command-contract`, `@henryco/command-surface`, `@henryco/config`, and the locked design tokens (`packages/ui` token import chain + Fraunces). Because they hold no secrets and read no live data, they deploy clean on Vercel free domains with no env (sidestepping the preview-env gap that affects the live apps).
 
-Design: the **locked Henry Onyx family** (`--acct-*` ops tokens, Fraunces display, copper/gold accent) but a **dense, action-oriented operations console** — not a marketing page. Information density first: tight rows, priority colour-coding, division accents, money-at-stake totals, keyboard-forward.
+Design: the **locked Henry Onyx family** rendered through the **`--cc-*` "Onyx operations console" tokens** (`packages/command-surface/src/tokens.css` — warm-graphite canvas, `color-scheme: dark`, gold/copper accent, Fraunces display) but a **dense, action-oriented operations console** — not a marketing page. Information density first: tight rows, priority colour-coding, division accents, money-at-stake totals, keyboard-forward. *(Token-namespace note: the shipped ops console uses **`--cc-*`**, which is deliberately distinct from the customer dashboard's `--acct-*` / `--hc-*` register. Earlier drafts of this paragraph said "`--acct-*` ops tokens"; that was prose drift — the code that the same pass shipped defines `--cc-*`. The two registers are mapped end-to-end in `docs/v3/inner-surfaces-map.md` §2. The existing pre-extraction hub/owner surface in §6 genuinely remains on dark `--acct-*` until it is ported to `--cc-*` with the V3-COMMAND-03 move.)*
 
 ---
 

@@ -37,7 +37,7 @@ export default async function AccountFollowingPage({
       {...accountWorkspaceNav("/account/following", locale)}
     >
       {toast ? (
-        <div className="rounded-[1.25rem] border border-[rgba(76,201,160,0.35)] bg-[rgba(76,201,160,0.12)] px-4 py-3 text-sm font-medium text-[var(--market-success,#4CC9A0)]">
+        <div className="rounded-[1.25rem] border border-[rgba(76,201,160,0.35)] bg-[rgba(76,201,160,0.12)] px-4 py-3 text-sm font-medium text-[color:var(--acct-green-ink)]">
           {toast}
         </div>
       ) : null}
@@ -53,7 +53,7 @@ export default async function AccountFollowingPage({
                 <input type="hidden" name="return_to" value="/account/following" />
                 <button
                   type="submit"
-                  className="w-full rounded-full border border-[rgba(232,88,88,0.35)] bg-[rgba(232,88,88,0.08)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-alert,#F87171)] hover:bg-[rgba(232,88,88,0.16)]"
+                  className="w-full rounded-full border border-[rgba(232,88,88,0.35)] bg-[rgba(232,88,88,0.08)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--acct-red-ink)] hover:bg-[rgba(232,88,88,0.16)]"
                 >
                   Unfollow store
                 </button>
