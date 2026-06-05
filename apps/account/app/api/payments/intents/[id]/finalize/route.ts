@@ -4,6 +4,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createPaymentRouter } from "@henryco/payment-router";
 import { resolveProviderFromSucceededAttempt } from "@/lib/payments/server";
 import { emitPaymentEvent, intentEventForStatus } from "@/lib/payments/telemetry";
+import { callPaymentRpc } from "@/lib/payments/db";
 
 export const runtime = "nodejs";
 
@@ -31,7 +32,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
 
   // Best-effort visible advance pending → processing (D3: via the guarded RPC,
   // never a raw UPDATE). Not gated — the provider verify below is the truth.
-  await admin.rpc("advance_payment_intent", { p_intent_id: id, p_from: "pending", p_to: "processing" });
+  await callPaymentRpc("advance_payment_intent", [id, "pending", "processing"]);
 
   const adapter = createPaymentRouter().getAdapter(owner.provider);
   const verified = await adapter?.finalize?.({ providerReference: owner.providerReference });
@@ -45,12 +46,12 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
   const terminal = verified.value.impliedStatus;
   // D3: the ONLY status writer for money-confirming edges. Deduped by the shared
   // reference key, so whichever of finalize / webhook lands first wins exactly once.
-  const applied = await admin.rpc("apply_payment_webhook", {
-    p_provider: owner.provider,
-    p_provider_event_id: verified.value.providerEventId,
-    p_intent_id: id,
-    p_new_status: terminal,
-  });
+  const applied = await callPaymentRpc<{ applied?: boolean }>("apply_payment_webhook", [
+    owner.provider,
+    verified.value.providerEventId,
+    id,
+    terminal,
+  ]);
   if (applied.error) return NextResponse.json({ error: "Apply failed" }, { status: 500 });
   if ((applied.data as { applied?: boolean } | null)?.applied === true) {
     emitPaymentEvent(intentEventForStatus(terminal), { actorId: user.id, payload: { provider: owner.provider } });
