@@ -27,13 +27,18 @@
  * Henry Onyx.
  */
 
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 
 import type { EmailPurpose } from "./types";
 
-/** Brand display name (rendered) and registered legal entity (fine print). */
-const BRAND_NAME = "Henry Onyx";
-const LEGAL_ENTITY = "Henry Onyx Limited";
+/**
+ * Brand display name (rendered) and registered legal entity (fine print) —
+ * sourced from the single source of truth in @henryco/config so the email can
+ * never drift from the rest of the company again (the previous hardcoded
+ * "Henry Holdings Limited" drift is exactly what this prevents).
+ */
+const BRAND_NAME = COMPANY.group.name;
+const LEGAL_ENTITY = COMPANY.group.legalName;
 const COMPANY_LOCALE_LINE = "Lagos, Nigeria";
 
 /**
@@ -109,7 +114,7 @@ const PURPOSE_PALETTE: Record<
   studio: { accent: "#52CBD0", accentSoft: "rgba(82,203,208,0.16)", accentBorder: "rgba(82,203,208,0.34)", accentInk: "#1F7375", ctaText: "#03161B" },
   marketplace: { accent: "#E5933F", accentSoft: "rgba(229,147,63,0.16)", accentBorder: "rgba(229,147,63,0.34)", accentInk: "#7E5E1F", ctaText: "#1A0D04" },
   jobs: { accent: "#1EAAB2", accentSoft: "rgba(30,170,178,0.16)", accentBorder: "rgba(30,170,178,0.34)", accentInk: "#0A5C63", ctaText: "#04161A" },
-  learn: { accent: "#A99CFF", accentSoft: "rgba(169,156,255,0.16)", accentBorder: "rgba(169,156,255,0.34)", accentInk: "#2E6E5F", ctaText: "#0A0716" },
+  learn: { accent: "#46B58C", accentSoft: "rgba(70,181,140,0.16)", accentBorder: "rgba(70,181,140,0.34)", accentInk: "#2E6E5F", ctaText: "#06140F" },
   property: { accent: "#C07A47", accentSoft: "rgba(192,122,71,0.16)", accentBorder: "rgba(192,122,71,0.34)", accentInk: "#7A4924", ctaText: "#170C05" },
   logistics: { accent: "#E0833F", accentSoft: "rgba(224,131,63,0.16)", accentBorder: "rgba(224,131,63,0.34)", accentInk: "#9D4F1F", ctaText: "#180C05" },
   security: { accent: "#EC6A5E", accentSoft: "rgba(236,106,94,0.16)", accentBorder: "rgba(236,106,94,0.34)", accentInk: "#B23A30", ctaText: "#1B0605" },

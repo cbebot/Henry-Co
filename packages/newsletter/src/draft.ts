@@ -26,8 +26,8 @@ function sentenceCase(input: string): string {
 }
 
 function friendlyDivisionTitle(division: NewsletterDivision): string {
-  if (division === "hub") return "HenryCo";
-  return `HenryCo ${division.charAt(0).toUpperCase()}${division.slice(1)}`;
+  if (division === "hub") return "Henry Onyx";
+  return `Henry Onyx ${division.charAt(0).toUpperCase()}${division.slice(1)}`;
 }
 
 export function buildDraftSkeleton(input: DraftSkeletonInput): NewsletterCampaignContent {
