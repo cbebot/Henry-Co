@@ -10,9 +10,10 @@
  *
  * This module is split so the URL shaping (`withShareAttribution`,
  * `parseShareAttribution`) is client-safe (pure string work), while the
- * HMAC (`hashSharerId`, `verifySharerHash`) is server-only — `node:crypto`
- * is imported lazily there so this module can be bundled into a client
- * component without dragging Node crypto into the browser bundle.
+ * HMAC (`hashSharerId`, `verifySharerHash`) is server-only — it uses the
+ * runtime-global Web Crypto API (`crypto.subtle`) behind an `assertServer()`
+ * guard, so the salt is never read in the browser and the module bundles
+ * cleanly into the client, Node, and Edge runtimes alike.
  *
  * Security (per S5 + trust/safety): the token is a one-way fingerprint.
  * It is NOT a bearer credential — a tampered `from=` simply fails to match
@@ -83,8 +84,16 @@ export function isShareHashShape(value: string): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Server-only HMAC. `node:crypto` is imported lazily so this file stays
-// client-bundlable (the ShareButton imports `withShareAttribution`).
+// Server-only HMAC. Built on the runtime-global Web Crypto API
+// (`crypto.subtle`) rather than the Node crypto built-in, so this module is
+// bundlable into EVERY runtime the deeplinks barrel reaches: the client (the
+// ShareButton imports `withShareAttribution`), the Node server, AND the
+// Edge runtime. The barrel is pulled into the `.well-known/*` edge routes,
+// where a static Node-crypto import fails the Turbopack edge build even when
+// imported lazily — Web Crypto sidesteps that entirely. The `assertServer()`
+// guard still keeps the salt-reading paths off the browser. The digest is
+// byte-identical to the prior `.digest("base64url")` output, so share links
+// minted before this change keep verifying.
 // ─────────────────────────────────────────────────────────────────────
 
 function assertServer(): void {
@@ -93,6 +102,58 @@ function assertServer(): void {
       "@henryco/seo/deeplinks hashSharerId/verifySharerHash are server-only",
     );
   }
+}
+
+/**
+ * RFC 4648 §5 base64url WITHOUT padding — matches the prior
+ * `.digest("base64url")` output so the fingerprint is stable across the
+ * Web Crypto migration.
+ */
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+/** HMAC-SHA256(secret, message) → base64url, via the global Web Crypto API. */
+async function hmacSha256Base64Url(
+  secret: string,
+  message: string,
+): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(message),
+  );
+  return bytesToBase64Url(new Uint8Array(signature));
+}
+
+/**
+ * Constant-time comparison of two equal-length ASCII strings (the share
+ * fingerprints are version-prefixed base64url, so byte === char-code).
+ * Returns false on a length mismatch, mirroring the prior
+ * `timingSafeEqual` guard.
+ */
+function timingSafeEqualStrings(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
 }
 
 /**
@@ -116,10 +177,9 @@ export async function hashSharerId(
   const cleanId = String(userId || "").trim();
   if (!cleanId) return null;
 
-  const { createHmac } = await import("node:crypto");
-  const digest = createHmac("sha256", resolvedSecret)
-    .update(`${SHARE_HASH_VERSION}:${cleanId}`)
-    .digest("base64url")
+  const digest = (
+    await hmacSha256Base64Url(resolvedSecret, `${SHARE_HASH_VERSION}:${cleanId}`)
+  )
     // Keep it short + URL-clean; 24 chars of base64url ≈ 144 bits, ample
     // collision resistance for attribution while keeping URLs tidy.
     .slice(0, 24);
@@ -141,9 +201,5 @@ export async function verifySharerHash(
   if (!isShareHashShape(candidateHash)) return false;
   const expected = await hashSharerId(userId, secret);
   if (!expected) return false;
-  const { timingSafeEqual } = await import("node:crypto");
-  const a = Buffer.from(expected);
-  const b = Buffer.from(candidateHash);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+  return timingSafeEqualStrings(expected, candidateHash);
 }
