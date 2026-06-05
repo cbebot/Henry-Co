@@ -27,7 +27,7 @@ function readFallback(): EmailProviderId | null {
 
 /**
  * Provider routing rules (V2-PNH-03B channel separation):
- *  - purpose === "auth" prefers Resend (DKIM-authenticated henrycogroup.com),
+ *  - purpose === "auth" prefers Resend (DKIM-authenticated henryonyx.com),
  *    then Brevo as fallback. Auth and marketing must never share rails —
  *    the Brevo limit-exhaustion that broke production signup proved why.
  *  - purpose === "support" prefers Resend, then Brevo.

@@ -27,13 +27,18 @@
  * Henry Onyx.
  */
 
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 
 import type { EmailPurpose } from "./types";
 
-/** Brand display name (rendered) and registered legal entity (fine print). */
-const BRAND_NAME = "Henry Onyx";
-const LEGAL_ENTITY = "Henry Holdings Limited";
+/**
+ * Brand display name (rendered) and registered legal entity (fine print) —
+ * sourced from the single source of truth in @henryco/config so the email can
+ * never drift from the rest of the company again (the previous hardcoded
+ * "Henry Holdings Limited" drift is exactly what this prevents).
+ */
+const BRAND_NAME = COMPANY.group.name;
+const LEGAL_ENTITY = COMPANY.group.legalName;
 const COMPANY_LOCALE_LINE = "Lagos, Nigeria";
 
 /**
@@ -108,8 +113,8 @@ const PURPOSE_PALETTE: Record<
   care: { accent: "#7B8BFF", accentSoft: "rgba(123,139,255,0.16)", accentBorder: "rgba(123,139,255,0.34)", accentInk: "#4F5BD0", ctaText: "#06080F" },
   studio: { accent: "#52CBD0", accentSoft: "rgba(82,203,208,0.16)", accentBorder: "rgba(82,203,208,0.34)", accentInk: "#1F7375", ctaText: "#03161B" },
   marketplace: { accent: "#E5933F", accentSoft: "rgba(229,147,63,0.16)", accentBorder: "rgba(229,147,63,0.34)", accentInk: "#7E5E1F", ctaText: "#1A0D04" },
-  jobs: { accent: "#6E7DDB", accentSoft: "rgba(110,125,219,0.16)", accentBorder: "rgba(110,125,219,0.34)", accentInk: "#0E7C86", ctaText: "#070912" },
-  learn: { accent: "#A99CFF", accentSoft: "rgba(169,156,255,0.16)", accentBorder: "rgba(169,156,255,0.34)", accentInk: "#2E6E5F", ctaText: "#0A0716" },
+  jobs: { accent: "#1EAAB2", accentSoft: "rgba(30,170,178,0.16)", accentBorder: "rgba(30,170,178,0.34)", accentInk: "#0A5C63", ctaText: "#04161A" },
+  learn: { accent: "#46B58C", accentSoft: "rgba(70,181,140,0.16)", accentBorder: "rgba(70,181,140,0.34)", accentInk: "#2E6E5F", ctaText: "#06140F" },
   property: { accent: "#C07A47", accentSoft: "rgba(192,122,71,0.16)", accentBorder: "rgba(192,122,71,0.34)", accentInk: "#7A4924", ctaText: "#170C05" },
   logistics: { accent: "#E0833F", accentSoft: "rgba(224,131,63,0.16)", accentBorder: "rgba(224,131,63,0.34)", accentInk: "#9D4F1F", ctaText: "#180C05" },
   security: { accent: "#EC6A5E", accentSoft: "rgba(236,106,94,0.16)", accentBorder: "rgba(236,106,94,0.34)", accentInk: "#B23A30", ctaText: "#1B0605" },
@@ -169,38 +174,22 @@ function paletteFor(purpose: EmailPurpose): ResolvedPalette {
 }
 
 /**
- * The H·Onyx mark — a serif "H" with subtle bracket serifs, drawn inline
- * as an SVG data-URI so no client can strip it via remote-image blocking.
- * The stems render near-white on the onyx tile; a short accent tick at the
- * top-left and bottom-right takes the division accent. Mirrors the in-app
- * `HenryCoMonogram` geometry (viewBox 0 0 54 64).
- */
-function monogramDataUri(accent: string, size: number): string {
-  const a = encodeURIComponent(accent);
-  const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 64' width='${size}' height='${size}' aria-hidden='true'>` +
-    `<g fill='%23F6F8FB'>` +
-    `<path d='M9 7 H17 V57 H9 Z'/><path d='M6.5 7 H19.5 V9 H6.5 Z'/><path d='M6.5 55 H19.5 V57 H6.5 Z'/>` +
-    `<path d='M37 7 H45 V57 H37 Z'/><path d='M34.5 7 H47.5 V9 H34.5 Z'/><path d='M34.5 55 H47.5 V57 H34.5 Z'/>` +
-    `<path d='M9 28 H45 V34 H9 Z'/></g>` +
-    `<rect x='6.5' y='7' width='13' height='2.4' fill='${a}'/>` +
-    `<rect x='34.5' y='54.6' width='13' height='2.4' fill='${a}'/>` +
-    `</svg>`;
-  return `data:image/svg+xml;utf8,${svg}`;
-}
-
-/**
  * Brand lockup: H·Onyx monogram tile + "Henry Onyx" set in the serif
  * display face. Rendered as native text (not an image) so the wordmark is
  * always legible regardless of image blocking. Used at the top of the card.
  */
-function renderBrandMark(palette: ResolvedPalette): string {
+function renderBrandMark(): string {
   const t = HENRYCO_EMAIL_TOKENS;
+  // The H·Onyx mark is rendered as native HTML/CSS text — a serif "H" on the
+  // onyx tile — NOT an image. Gmail and Outlook never render inline SVG or
+  // `data:` URI images, so an image-based mark shows broken; pure text always
+  // renders. The tile stays onyx in both light/dark variants (`.ox-tile`),
+  // so the near-white "H" keeps its contrast either way.
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 22px 0;">
       <tr>
-        <td class="ox-tile" style="width:44px; height:44px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:12px; text-align:center; vertical-align:middle; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);">
-          <img src="${monogramDataUri(palette.accent, 25)}" alt="${escapeHtml(BRAND_NAME)}" width="25" height="25" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
+        <td class="ox-tile" width="44" height="44" align="center" valign="middle" style="width:44px; height:44px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:12px; text-align:center; vertical-align:middle; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);">
+          <span style="display:inline-block; font-family:${t.headingFont}; font-size:25px; line-height:44px; font-weight:600; color:${t.heroText}; letter-spacing:0;">H</span>
         </td>
         <td style="padding:0 0 0 14px; vertical-align:middle;">
           <div class="ox-hero" style="margin:0; padding:0; font-family:${t.headingFont}; font-size:22px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
@@ -292,13 +281,13 @@ function renderCta(
 function renderSecureNote(note: string | null | undefined): string {
   if (!note) return "";
   const t = HENRYCO_EMAIL_TOKENS;
-  const lock = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='13' height='13'><path fill='none' stroke='#8C97A6' stroke-width='1.8' d='M7 10V7a5 5 0 0 1 10 0v3'/><rect x='4.5' y='10' width='15' height='10' rx='2.4' fill='none' stroke='#8C97A6' stroke-width='1.8'/></svg>`,
-  )}`;
+  // Text-only — no icon image. (Gmail/Outlook strip inline-SVG `data:` URIs,
+  // which rendered the old lock glyph as a broken image.) A leading accent
+  // dot drawn with a bordered cell gives a premium marker that always renders.
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:18px;">
       <tr>
-        <td style="vertical-align:middle; padding-right:7px;"><img src="${lock}" width="13" height="13" alt="" style="display:block; border:0;" /></td>
+        <td style="vertical-align:middle; padding-right:8px;"><div style="width:5px; height:5px; border-radius:999px; background-color:${t.mutedText}; line-height:5px; font-size:0;">&nbsp;</div></td>
         <td class="ox-muted" style="vertical-align:middle; font-family:${t.bodyFont}; font-size:11.5px; letter-spacing:0.02em; color:${t.mutedText};">${escapeHtml(note)}</td>
       </tr>
     </table>`;
@@ -322,14 +311,15 @@ export function renderHenryCoEmailHeader(
         <td align="left" style="padding:18px 28px;">
           <table role="presentation" cellpadding="0" cellspacing="0">
             <tr>
-              <td class="ox-tile" style="width:38px; height:38px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:10px; text-align:center; vertical-align:middle;">
-                <img src="${monogramDataUri(palette.accent, 22)}" alt="${escapeHtml(BRAND_NAME)}" width="22" height="22" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
+              <td class="ox-tile" width="38" height="38" align="center" valign="middle" style="width:38px; height:38px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:10px; text-align:center; vertical-align:middle;">
+                <span style="display:inline-block; font-family:${t.headingFont}; font-size:21px; line-height:38px; font-weight:600; color:${t.heroText};">H</span>
               </td>
               <td style="padding:0 0 0 12px; vertical-align:middle;">
                 <div class="ox-hero" style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
               </td>
             </tr>
           </table>
+          <div style="height:2px; width:34px; margin-top:12px; background-color:${palette.accent}; border-radius:999px; line-height:2px; font-size:0;">&nbsp;</div>
         </td>
       </tr>
     </table>`;
@@ -394,7 +384,8 @@ function headStyle(): string {
   return `
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
-      body { margin:0 !important; padding:0 !important; width:100% !important; }
+      :root { color-scheme: light dark; }
+      body { margin:0 !important; padding:0 !important; width:100% !important; color-scheme: light dark; }
       a { text-decoration:none; }
       img { -ms-interpolation-mode:bicubic; }
       .ox-card-glow { background:radial-gradient(120% 90% at 50% -10%, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%); }
@@ -427,7 +418,7 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
   const t = HENRYCO_EMAIL_TOKENS;
   const palette = paletteFor(layout.purpose);
   const eyebrow = layout.eyebrow || PURPOSE_KICKER[layout.purpose];
-  const brandMark = renderBrandMark(palette);
+  const brandMark = renderBrandMark();
   const sections = renderSections(layout.sections || []);
   const bullets = renderBullets(layout.bullets || []);
   const highlight = renderHighlight(layout.highlightLabel, layout.highlightValue, palette);
@@ -458,13 +449,13 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="color-scheme" content="dark light" />
-    <meta name="supported-color-schemes" content="dark light" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
     <title>${escapeHtml(layout.subject)}</title>
     <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
     ${headStyle()}
   </head>
-  <body class="ox-bg" style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:${t.bodyFont}; --ox-ink:${palette.accentInk};">
+  <body class="ox-bg" style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:${t.bodyFont}; color-scheme:light dark; --ox-ink:${palette.accentInk};">
     <span style="display:none; visibility:hidden; opacity:0; max-height:0; max-width:0; overflow:hidden; mso-hide:all;">${escapeHtml(layout.intro)}</span>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="ox-bg" style="background-color:${t.outerBg}; padding:36px 12px;">
       <tr>

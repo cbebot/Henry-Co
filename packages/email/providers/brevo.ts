@@ -15,7 +15,7 @@ export function getBrevoApiKey(): string | null {
 
 export function getBrevoSender(input: SendTransactionalEmailInput): ResolvedSender {
   const fallbackEmail = process.env.BREVO_SENDER_EMAIL?.trim() || BRAND_EMAILS.noreply;
-  const fallbackName = process.env.BREVO_SENDER_NAME?.trim() || "HenryCo";
+  const fallbackName = process.env.BREVO_SENDER_NAME?.trim() || "Henry Onyx";
   return {
     email: input.from?.trim() || fallbackEmail,
     name: input.fromName?.trim() || fallbackName,
