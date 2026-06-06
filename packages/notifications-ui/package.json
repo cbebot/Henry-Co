@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./chime": "./src/chime.ts",
     "./icons": "./src/icons.tsx",
     "./motion": "./src/motion.ts",
     "./severity-style": "./src/severity-style.ts",
