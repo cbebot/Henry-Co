@@ -1,4 +1,5 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { toBrandName } from "@henryco/config";
 import {
   HeroCard,
   DivisionLanding,
@@ -31,7 +32,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Settings · HenryCo",
+  title: toBrandName("Settings · HenryCo"),
   description:
     "Identity, channels and per-division reach — every change syncs instantly across Care, Marketplace, Studio, Jobs, Learn, Property and Logistics.",
 };
@@ -119,9 +120,9 @@ export default async function SettingsPage() {
                 ? "calm"
                 : "active"
           }
-          eyebrow={t("HenryCo · identity & preferences")}
-          headline={t(headline)}
-          blurb={t(blurb)}
+          eyebrow={t(toBrandName("HenryCo · identity & preferences"))}
+          headline={t(toBrandName(headline))}
+          blurb={t(toBrandName(blurb))}
           ariaLabel={t("Identity & preferences overview")}
           ariaTilesLabel={t("Identity capability snapshot")}
           tiles={tiles}
@@ -150,7 +151,7 @@ export default async function SettingsPage() {
           meta: t("Identity"),
           content: (
             <div className="acct-settings__card">
-              <p className="acct-settings__card-kicker">{t("Who you are on HenryCo")}</p>
+              <p className="acct-settings__card-kicker">{t(toBrandName("Who you are on HenryCo"))}</p>
               <ProfileForm profile={profile} email={user.email} effectiveLocale={locale} />
             </div>
           ),
@@ -161,7 +162,7 @@ export default async function SettingsPage() {
           meta: t("Signal · channels"),
           content: (
             <div className="acct-settings__card">
-              <p className="acct-settings__card-kicker">{t("How HenryCo reaches you")}</p>
+              <p className="acct-settings__card-kicker">{t(toBrandName("How HenryCo reaches you"))}</p>
               <div className="space-y-4">
                 <NotificationSignalSettingsCard />
                 <PreferencesForm preferences={preferences} />

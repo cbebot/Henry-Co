@@ -6,6 +6,7 @@ import { Building2, Clock3, ExternalLink, HeartOff, MapPin, MessageCircleMore, S
 import { useRouter } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toBrandName } from "@henryco/config";
 import type { SavedPropertyCard } from "@/lib/property-module";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -170,7 +171,7 @@ export default function SavedPropertiesBoard({
                   </span>
                   {property.managedByHenryCo ? (
                     <span className="rounded-full bg-[var(--acct-green-soft)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-green)]">
-                      {t("Managed by HenryCo")}
+                      {t(toBrandName("Managed by HenryCo"))}
                     </span>
                   ) : null}
                 </div>

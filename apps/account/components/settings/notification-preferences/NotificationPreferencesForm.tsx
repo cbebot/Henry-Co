@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toBrandName } from "@henryco/config";
 
 // V2-NOT-01-C: Notifications preferences form.
 //
@@ -81,7 +82,7 @@ const DIVISIONS: ReadonlyArray<DivisionConfig> = [
   { key: "security", label: "Security", description: "Account and device security alerts", icon: ShieldCheck },
   { key: "staff", label: "Staff", description: "Operator-channel updates if you have access", icon: Users },
   { key: "studio", label: "Studio", description: "Proposals, project rooms, and payment steps", icon: Palette },
-  { key: "system", label: "System", description: "HenryCo-internal alerts and platform notices", icon: Bell },
+  { key: "system", label: "System", description: toBrandName("HenryCo internal alerts and platform notices"), icon: Bell },
 ];
 
 type EventTypeOption = {
@@ -705,7 +706,7 @@ export default function NotificationPreferencesForm({
         />
         <Toggle
           label={t("Push notifications")}
-          description={t("Device push alerts when the HenryCo app is available.")}
+          description={t(toBrandName("Device push alerts when the HenryCo app is available."))}
           checked={prefs.push_enabled}
           onChange={(v) => updateBoolean("push_enabled", v)}
           isPending={pendingFields.has("push_enabled")}

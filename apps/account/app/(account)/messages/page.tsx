@@ -2,6 +2,7 @@ import { buildUnifiedViewer } from "@henryco/auth/server";
 import { getInboxAggregate, type InboxDivision } from "@henryco/data";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { getAccountCopy, formatAccountTemplate } from "@henryco/i18n/server";
+import { toBrandName } from "@henryco/config";
 import {
   HeroCard,
   EmptyStateCard,
@@ -30,7 +31,7 @@ export const dynamic = "force-dynamic";
 // `metadata` export). Localised title/description are surfaced through
 // the page UI; the metadata object remains the EN default for SEO.
 export const metadata = {
-  title: "Messages · HenryCo",
+  title: toBrandName("Messages · HenryCo"),
   description:
     "One inbox across support, marketplace, jobs, studio, care, property, logistics and learn.",
 };

@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { toBrandName } from "@henryco/config";
 import { requireAccountUser } from "@/lib/auth";
 import { getCanonicalUserAddresses } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -21,8 +22,9 @@ export default async function SettingsAddressesPage() {
         }
       : {
           title: "Addresses",
-          description:
+          description: toBrandName(
             "One address per type (home, office, shop, warehouse, alternative). Verified against your KYC and reused across every HenryCo division.",
+          ),
         };
 
   return (

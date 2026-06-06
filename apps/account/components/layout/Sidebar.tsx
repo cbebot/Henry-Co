@@ -8,6 +8,7 @@ import { HenryCoActivityIndicator } from "@henryco/ui";
 import { translateSurfaceLabel, DEFAULT_LOCALE } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { logoutEverywhere } from "@henryco/auth/client";
+import { toBrandName } from "@henryco/config";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
 import NotificationBell from "@/components/notifications/NotificationBell";
@@ -78,8 +79,8 @@ export default function Sidebar({ user }: SidebarProps) {
         <Link
           href="/search"
           className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
-          aria-label={t("Search account and HenryCo routes")}
-          title={t("Search account and HenryCo routes")}
+          aria-label={t(toBrandName("Search account and HenryCo routes"))}
+          title={t(toBrandName("Search account and HenryCo routes"))}
         >
           <Search size={17} />
         </Link>

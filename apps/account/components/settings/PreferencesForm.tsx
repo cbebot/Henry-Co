@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toBrandName } from "@henryco/config";
 import { ButtonPendingContent } from "@henryco/ui";
 import { useNotificationPreferences } from "@henryco/dashboard-shell";
 import { signalAudio } from "@/lib/notification-signal/audio";
@@ -232,7 +233,7 @@ export default function PreferencesForm({ preferences }: Props) {
           />
           <Toggle
             label={t("Push notifications")}
-            description={t("Device push alerts — active on mobile when the HenryCo app is available")}
+            description={t(toBrandName("Device push alerts — active on mobile when the HenryCo app is available"))}
             checked={prefs.push_enabled}
             onChange={(value) => updateBoolean("push_enabled", value)}
           />
