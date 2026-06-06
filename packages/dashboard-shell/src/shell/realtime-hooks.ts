@@ -186,6 +186,8 @@ export function useNotificationPreferences(): {
 export function useSignalRenderState(signal: RealtimeSignal): {
   /** Render dimmer (quiet hours active OR email already dispatched). */
   dim: boolean;
+  /** Quiet hours active right now — used to silence the chime (not just dim). */
+  inQuiet: boolean;
   /** Suppress from bell badge (muted division). */
   badgeSuppressed: boolean;
   /** Suppress from toast viewport (muted event type or master toast off). */
@@ -199,6 +201,7 @@ export function useSignalRenderState(signal: RealtimeSignal): {
     const emailFallback = !!signal.email_dispatched_at;
     return {
       dim: inQuiet || emailFallback,
+      inQuiet,
       badgeSuppressed: muteByDivision,
       toastSuppressed:
         muteByEventType ||
