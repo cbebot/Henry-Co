@@ -20,13 +20,13 @@ export default async function NewVendorProductPage() {
       <section className="market-panel rounded-[1.75rem] p-5">
         <p className="market-kicker">Seller economics in this flow</p>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm text-[var(--market-paper-white)]">
+          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm text-[var(--market-paper-white)]">
             Plan: {vendorData.trustProfile.plan.name}
           </div>
-          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm text-[var(--market-paper-white)]">
+          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm text-[var(--market-paper-white)]">
             Commission: {Math.round(vendorData.trustProfile.plan.commissionRate * 100)}%
           </div>
-          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm text-[var(--market-paper-white)]">
+          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm text-[var(--market-paper-white)]">
             Featured request fee: NGN {vendorData.trustProfile.plan.featuredSlotFee.toLocaleString()}
           </div>
         </div>
