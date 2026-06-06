@@ -23,6 +23,7 @@ import {
   getWithdrawalRequests,
 } from "@/lib/account-data";
 import { resolveAccountRegionalContext } from "@/lib/regional-context";
+import { reconcileWalletTopupsForUser } from "@/lib/wallet-topup-port";
 import { getVerificationState } from "@/lib/verification";
 import {
   isPendingWithdrawalStatus,
@@ -65,6 +66,16 @@ export default async function WalletPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const accountCopy = getAccountCopy(locale);
   const copy = accountCopy.wallet;
+
+  // V3-15-JOB-B: project any confirmed card/bank/USSD top-up onto the wallet
+  // before reading balance — idempotent, so a buyer returning from hosted
+  // checkout sees their credit immediately (and it never double-credits).
+  try {
+    await reconcileWalletTopupsForUser(user.id);
+  } catch {
+    /* self-healing: a transient failure retries on the next wallet load */
+  }
+
   const [
     { wallet, pending_kobo, requests },
     withdrawalRequests,

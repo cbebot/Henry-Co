@@ -92,7 +92,7 @@ export default function FundingRequestForm() {
             <div>
               <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("Bank transfer")}</p>
               <p className="mt-1 text-xs leading-5 text-[var(--acct-muted)]">
-                {t("Create a funding request, complete the transfer, then upload proof so the HenryCo team can confirm it.")}
+                {t("Create a funding request, complete the transfer, then upload proof so the Henry Onyx team can confirm it.")}
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function FundingRequestForm() {
         <div className="rounded-[1.5rem] bg-[var(--acct-surface)] p-4">
           <p className="acct-kicker">{t("Funding flow")}</p>
           <ol className="mt-3 space-y-3 text-sm leading-6 text-[var(--acct-muted)]">
-            <li>{t("1. Create the request so HenryCo generates the correct reference.")}</li>
+            <li>{t("1. Create the request so Henry Onyx generates the correct reference.")}</li>
             <li>{t("2. Transfer the exact amount using the bank details on the next page.")}</li>
             <li>{t("3. Upload proof right away so the payment can be confirmed and the balance can become available.")}</li>
           </ol>
@@ -181,7 +181,7 @@ export default function FundingRequestForm() {
           </ButtonPendingContent>
         </button>
         <p className="text-xs leading-6 text-[var(--acct-muted)]">
-          {t("Wallet balance updates after the HenryCo team confirms the transfer.")}
+          {t("Wallet balance updates after the Henry Onyx team confirms the transfer.")}
         </p>
       </div>
     </form>

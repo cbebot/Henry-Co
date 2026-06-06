@@ -1,0 +1,394 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+
+import {
+  decideTopupReconcile,
+  reconcileWalletTopups,
+  RAIL_TOPUP_METHODS,
+  TOPUP_FUNDING_STATUS,
+  TOPUP_LEDGER_REFERENCE_TYPE,
+  type TopupRequest,
+  type IntentRow,
+  type WalletTopupReconcilePort,
+} from "./wallet-topup";
+
+/* -------------------------------------------------------------------------- */
+/*  decideTopupReconcile — the pure money decision                            */
+/* -------------------------------------------------------------------------- */
+
+function req(over: Partial<TopupRequest> = {}): TopupRequest {
+  return {
+    id: "fr-1",
+    amountKobo: 500000,
+    currency: "NGN",
+    paymentReference: "key-1",
+    status: TOPUP_FUNDING_STATUS.pending,
+    railTopup: true,
+    ...over,
+  };
+}
+
+function intent(over: Partial<IntentRow> = {}): IntentRow {
+  return { id: "pi-1", status: "succeeded", amountMinor: 500000, currency: "NGN", ...over };
+}
+
+test("decide: succeeded intent with matching amount/currency → credit", () => {
+  assert.deepEqual(decideTopupReconcile(req(), intent()), { action: "credit" });
+});
+
+test("decide: non-rail funding request → skip not_rail (never auto-credit a manual transfer)", () => {
+  assert.deepEqual(decideTopupReconcile(req({ railTopup: false }), intent()), {
+    action: "skip",
+    reason: "not_rail",
+  });
+});
+
+test("decide: no linked intent → skip no_intent", () => {
+  assert.deepEqual(decideTopupReconcile(req(), null), { action: "skip", reason: "no_intent" });
+});
+
+test("decide: intent still pending/processing → skip intent_not_succeeded", () => {
+  assert.deepEqual(decideTopupReconcile(req(), intent({ status: "pending" })), {
+    action: "skip",
+    reason: "intent_not_succeeded",
+  });
+  assert.deepEqual(decideTopupReconcile(req(), intent({ status: "processing" })), {
+    action: "skip",
+    reason: "intent_not_succeeded",
+  });
+});
+
+test("decide: intent failed → skip intent_not_succeeded (never credit a failed charge)", () => {
+  assert.deepEqual(decideTopupReconcile(req(), intent({ status: "failed" })), {
+    action: "skip",
+    reason: "intent_not_succeeded",
+  });
+});
+
+test("decide: amount mismatch → flag, never credit", () => {
+  assert.deepEqual(decideTopupReconcile(req({ amountKobo: 400000 }), intent({ amountMinor: 500000 })), {
+    action: "flag",
+    reason: "amount_mismatch",
+  });
+});
+
+test("decide: currency mismatch → flag, never credit", () => {
+  assert.deepEqual(decideTopupReconcile(req({ currency: "USD" }), intent({ currency: "NGN" })), {
+    action: "flag",
+    reason: "currency_mismatch",
+  });
+});
+
+test("rail methods are exactly card, bank_transfer, ussd", () => {
+  assert.deepEqual([...RAIL_TOPUP_METHODS], ["card", "bank_transfer", "ussd"]);
+});
+
+/* -------------------------------------------------------------------------- */
+/*  In-memory port — models the DB so we can prove orchestration + idempotency */
+/* -------------------------------------------------------------------------- */
+
+type StoreReq = {
+  id: string;
+  userId: string;
+  amountKobo: number;
+  currency: string;
+  paymentReference: string;
+  status: string;
+  railTopup: boolean;
+};
+
+class FakeStore implements WalletTopupReconcilePort {
+  requests = new Map<string, StoreReq>();
+  intents = new Map<string, IntentRow>(); // key: `${userId}:${paymentReference}`
+  balanceKobo = 0;
+  ledger = new Set<string>(); // requestIds with a credit ledger row
+  ledgerRows: Array<{ requestId: string; amountKobo: number; balanceAfterKobo: number; intentId: string }> = [];
+  credited: Array<{ requestId: string; intentId: string; balanceAfterKobo: number }> = [];
+
+  // test knobs
+  forceClaimLose = new Set<string>(); // simulate losing the CAS race
+  failBalanceCasOnce = false;
+
+  seedReq(r: StoreReq) {
+    this.requests.set(r.id, r);
+  }
+  seedIntent(userId: string, i: IntentRow, paymentReference: string) {
+    this.intents.set(`${userId}:${paymentReference}`, i);
+  }
+
+  async listClaimable(userId: string): Promise<TopupRequest[]> {
+    return [...this.requests.values()]
+      .filter(
+        (r) =>
+          r.userId === userId &&
+          r.railTopup &&
+          (r.status === TOPUP_FUNDING_STATUS.pending || r.status === TOPUP_FUNDING_STATUS.crediting),
+      )
+      .map((r) => ({
+        id: r.id,
+        amountKobo: r.amountKobo,
+        currency: r.currency,
+        paymentReference: r.paymentReference,
+        status: r.status,
+        railTopup: r.railTopup,
+      }));
+  }
+
+  async findIntentByReference(userId: string, paymentReference: string): Promise<IntentRow | null> {
+    return this.intents.get(`${userId}:${paymentReference}`) ?? null;
+  }
+
+  async claim(requestId: string): Promise<boolean> {
+    if (this.forceClaimLose.has(requestId)) return false;
+    const r = this.requests.get(requestId);
+    if (!r || r.status !== TOPUP_FUNDING_STATUS.pending) return false; // CAS
+    r.status = TOPUP_FUNDING_STATUS.crediting;
+    return true;
+  }
+
+  async revertClaim(requestId: string): Promise<void> {
+    const r = this.requests.get(requestId);
+    if (r && r.status === TOPUP_FUNDING_STATUS.crediting) r.status = TOPUP_FUNDING_STATUS.pending;
+  }
+
+  async ledgerExists(requestId: string): Promise<boolean> {
+    return this.ledger.has(requestId);
+  }
+
+  async readBalanceKobo(): Promise<number> {
+    return this.balanceKobo;
+  }
+
+  async casCredit(_userId: string, expectedKobo: number, nextKobo: number): Promise<boolean> {
+    if (this.failBalanceCasOnce) {
+      this.failBalanceCasOnce = false;
+      return false; // simulate concurrent balance change
+    }
+    if (this.balanceKobo !== expectedKobo) return false;
+    this.balanceKobo = nextKobo;
+    return true;
+  }
+
+  async insertCreditLedger(input: {
+    userId: string;
+    requestId: string;
+    amountKobo: number;
+    balanceAfterKobo: number;
+    intentId: string;
+  }): Promise<void> {
+    this.ledger.add(input.requestId);
+    this.ledgerRows.push({
+      requestId: input.requestId,
+      amountKobo: input.amountKobo,
+      balanceAfterKobo: input.balanceAfterKobo,
+      intentId: input.intentId,
+    });
+  }
+
+  async finalizeVerified(requestId: string): Promise<void> {
+    const r = this.requests.get(requestId);
+    if (r) r.status = TOPUP_FUNDING_STATUS.verified;
+  }
+
+  async onCredited(input: { request: TopupRequest; intentId: string; balanceAfterKobo: number }): Promise<void> {
+    this.credited.push({
+      requestId: input.request.id,
+      intentId: input.intentId,
+      balanceAfterKobo: input.balanceAfterKobo,
+    });
+  }
+}
+
+const U = "user-1";
+function seedHappyPath(store: FakeStore, opts: { amountKobo?: number; startBalance?: number } = {}) {
+  const amountKobo = opts.amountKobo ?? 500000;
+  store.balanceKobo = opts.startBalance ?? 0;
+  store.seedReq({
+    id: "fr-1",
+    userId: U,
+    amountKobo,
+    currency: "NGN",
+    paymentReference: "key-1",
+    status: TOPUP_FUNDING_STATUS.pending,
+    railTopup: true,
+  });
+  store.seedIntent(U, { id: "pi-1", status: "succeeded", amountMinor: amountKobo, currency: "NGN" }, "key-1");
+}
+
+/* -------------------------------------------------------------------------- */
+/*  reconcileWalletTopups — orchestration + the money invariants              */
+/* -------------------------------------------------------------------------- */
+
+test("reconcile: succeeded top-up credits the wallet exactly once and verifies the request", async () => {
+  const store = new FakeStore();
+  seedHappyPath(store, { startBalance: 100000 });
+
+  const out = await reconcileWalletTopups(U, store);
+
+  assert.equal(out.credited.length, 1);
+  assert.equal(store.balanceKobo, 600000); // 100000 + 500000
+  assert.equal(store.ledgerRows.length, 1);
+  assert.equal(store.ledgerRows[0]?.balanceAfterKobo, 600000);
+  assert.equal(store.requests.get("fr-1")?.status, TOPUP_FUNDING_STATUS.verified);
+  assert.equal(TOPUP_LEDGER_REFERENCE_TYPE, "wallet_topup");
+});
+
+test("reconcile: running twice credits ONLY once (idempotent — the core money invariant)", async () => {
+  const store = new FakeStore();
+  seedHappyPath(store, { startBalance: 0 });
+
+  await reconcileWalletTopups(U, store);
+  const out2 = await reconcileWalletTopups(U, store);
+
+  assert.equal(out2.credited.length, 0);
+  assert.equal(store.balanceKobo, 500000); // not 1,000,000
+  assert.equal(store.ledgerRows.length, 1);
+});
+
+test("reconcile: intent not yet succeeded → no credit, request stays pending (self-heals later)", async () => {
+  const store = new FakeStore();
+  store.balanceKobo = 0;
+  store.seedReq({
+    id: "fr-1",
+    userId: U,
+    amountKobo: 500000,
+    currency: "NGN",
+    paymentReference: "key-1",
+    status: TOPUP_FUNDING_STATUS.pending,
+    railTopup: true,
+  });
+  store.seedIntent(U, { id: "pi-1", status: "processing", amountMinor: 500000, currency: "NGN" }, "key-1");
+
+  const out = await reconcileWalletTopups(U, store);
+
+  assert.equal(out.credited.length, 0);
+  assert.equal(store.balanceKobo, 0);
+  assert.equal(store.requests.get("fr-1")?.status, TOPUP_FUNDING_STATUS.pending);
+
+  // later the webhook confirms → succeeded → a subsequent reconcile credits
+  store.intents.set(`${U}:key-1`, { id: "pi-1", status: "succeeded", amountMinor: 500000, currency: "NGN" });
+  const out2 = await reconcileWalletTopups(U, store);
+  assert.equal(out2.credited.length, 1);
+  assert.equal(store.balanceKobo, 500000);
+});
+
+test("reconcile: manual bank-transfer-proof request (not rail) is never auto-credited", async () => {
+  const store = new FakeStore();
+  store.balanceKobo = 0;
+  store.seedReq({
+    id: "fr-manual",
+    userId: U,
+    amountKobo: 500000,
+    currency: "NGN",
+    paymentReference: "HCW-MANUAL",
+    status: TOPUP_FUNDING_STATUS.pending,
+    railTopup: false, // manual proof flow
+  });
+  // even if somehow a succeeded intent shared the reference, it must not credit
+  store.seedIntent(U, { id: "pi-x", status: "succeeded", amountMinor: 500000, currency: "NGN" }, "HCW-MANUAL");
+
+  const out = await reconcileWalletTopups(U, store);
+
+  assert.equal(out.credited.length, 0);
+  assert.equal(store.balanceKobo, 0);
+  assert.equal(store.requests.get("fr-manual")?.status, TOPUP_FUNDING_STATUS.pending);
+});
+
+test("reconcile: lost claim race → this worker credits nothing (single-winner)", async () => {
+  const store = new FakeStore();
+  seedHappyPath(store, { startBalance: 0 });
+  store.forceClaimLose.add("fr-1"); // another worker won the claim
+
+  const out = await reconcileWalletTopups(U, store);
+
+  assert.equal(out.credited.length, 0);
+  assert.equal(store.balanceKobo, 0);
+  assert.equal(store.ledgerRows.length, 0);
+});
+
+test("reconcile: balance CAS conflict → reverts claim, no partial credit, retries clean next pass", async () => {
+  const store = new FakeStore();
+  seedHappyPath(store, { startBalance: 0 });
+  store.failBalanceCasOnce = true; // first credit attempt loses to a concurrent balance write
+
+  const out = await reconcileWalletTopups(U, store, { maxBalanceCasRetries: 1 });
+
+  assert.equal(out.credited.length, 0);
+  assert.equal(store.balanceKobo, 0);
+  assert.equal(store.ledgerRows.length, 0);
+  // claim was reverted so the request is claimable again
+  assert.equal(store.requests.get("fr-1")?.status, TOPUP_FUNDING_STATUS.pending);
+
+  const out2 = await reconcileWalletTopups(U, store);
+  assert.equal(out2.credited.length, 1);
+  assert.equal(store.balanceKobo, 500000);
+});
+
+test("reconcile recovery: crash left request 'processing_credit' WITH ledger → finalize only, no re-credit", async () => {
+  const store = new FakeStore();
+  store.balanceKobo = 500000; // money already credited before the crash
+  store.seedReq({
+    id: "fr-1",
+    userId: U,
+    amountKobo: 500000,
+    currency: "NGN",
+    paymentReference: "key-1",
+    status: TOPUP_FUNDING_STATUS.crediting, // stuck mid-credit
+    railTopup: true,
+  });
+  store.ledger.add("fr-1"); // ledger row already written
+  store.seedIntent(U, { id: "pi-1", status: "succeeded", amountMinor: 500000, currency: "NGN" }, "key-1");
+
+  const out = await reconcileWalletTopups(U, store);
+
+  assert.equal(out.credited.length, 0); // no NEW credit
+  assert.equal(store.balanceKobo, 500000); // unchanged — not double credited
+  assert.equal(store.requests.get("fr-1")?.status, TOPUP_FUNDING_STATUS.verified);
+});
+
+test("reconcile recovery: crash left request 'processing_credit' WITHOUT ledger → revert to pending, credit on next pass exactly once", async () => {
+  const store = new FakeStore();
+  store.balanceKobo = 0; // money was NOT credited before the crash
+  store.seedReq({
+    id: "fr-1",
+    userId: U,
+    amountKobo: 500000,
+    currency: "NGN",
+    paymentReference: "key-1",
+    status: TOPUP_FUNDING_STATUS.crediting,
+    railTopup: true,
+  });
+  store.seedIntent(U, { id: "pi-1", status: "succeeded", amountMinor: 500000, currency: "NGN" }, "key-1");
+
+  const out = await reconcileWalletTopups(U, store);
+  assert.equal(out.credited.length, 0); // recovery pass only reverts
+  assert.equal(store.requests.get("fr-1")?.status, TOPUP_FUNDING_STATUS.pending);
+
+  const out2 = await reconcileWalletTopups(U, store);
+  assert.equal(out2.credited.length, 1);
+  assert.equal(store.balanceKobo, 500000); // credited exactly once
+});
+
+test("reconcile: amount mismatch is flagged and never credited", async () => {
+  const store = new FakeStore();
+  store.balanceKobo = 0;
+  store.seedReq({
+    id: "fr-1",
+    userId: U,
+    amountKobo: 500000,
+    currency: "NGN",
+    paymentReference: "key-1",
+    status: TOPUP_FUNDING_STATUS.pending,
+    railTopup: true,
+  });
+  // intent confirms a DIFFERENT amount than the funding request claims
+  store.seedIntent(U, { id: "pi-1", status: "succeeded", amountMinor: 400000, currency: "NGN" }, "key-1");
+
+  const out = await reconcileWalletTopups(U, store);
+
+  assert.equal(out.credited.length, 0);
+  assert.equal(out.flagged.length, 1);
+  assert.equal(out.flagged[0]?.reason, "amount_mismatch");
+  assert.equal(store.balanceKobo, 0);
+  assert.equal(store.requests.get("fr-1")?.status, TOPUP_FUNDING_STATUS.pending);
+});
