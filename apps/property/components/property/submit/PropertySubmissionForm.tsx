@@ -282,7 +282,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               {blueprint.reviewHeadline}
             </p>
           </div>
-          <div className="rounded-full border border-[rgba(152,179,154,0.35)] bg-[rgba(152,179,154,0.10)] px-4 py-2 text-xs font-semibold tracking-wide text-[var(--property-sage-soft)]">
+          <div className="rounded-full border border-[color:color-mix(in_srgb,var(--property-sage)_35%,transparent)] bg-[color:color-mix(in_srgb,var(--property-sage)_12%,transparent)] px-4 py-2 text-xs font-semibold tracking-wide text-[var(--property-sage-soft)]">
             {blueprint.requiresInspection ? t("Inspection-sensitive") : t("Editorial review path")}
           </div>
         </div>
@@ -675,19 +675,19 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="flex flex-wrap gap-4 text-sm text-[var(--property-ink-soft)]">
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="furnished" value="1" />
+          <input type="checkbox" name="furnished" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
           {t("Furnished")}
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="pet_friendly" value="1" />
+          <input type="checkbox" name="pet_friendly" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
           {t("Pet friendly")}
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="shortlet_ready" value="1" />
+          <input type="checkbox" name="shortlet_ready" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
           {t("Short-let ready")}
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="managed_by_henryco" value="1" />
+          <input type="checkbox" name="managed_by_henryco" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
           {t("Request Henry Onyx management")}
         </label>
       </div>
@@ -696,8 +696,8 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         <div
           className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
             message.type === "success"
-              ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
-              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[#c0492a]"
+              ? "border-[color:color-mix(in_srgb,var(--property-sage)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--property-sage)_12%,transparent)] text-[var(--property-sage-soft)]"
+              : "border-[color:color-mix(in_srgb,var(--property-danger)_36%,transparent)] bg-[color:color-mix(in_srgb,var(--property-danger)_10%,transparent)] text-[var(--property-danger)]"
           }`}
         >
           {message.text}
@@ -707,67 +707,6 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       {submissionFeedback ? (
         <div className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                {t("Live policy result")}
-              </div>
-              <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
-                {submissionFeedback.guidanceHeadline}
-              </div>
-              <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                {submissionFeedback.policySummary}
-              </p>
-            </div>
-            <div className="rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
-              {submissionFeedback.policyStatus.replaceAll("_", " ")}
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {submissionFeedback.guidanceBullets.map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link
-              href={getSharedAccountPropertyUrl("listings")}
-              className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-            >
-              {t("Open property account")}
-            </Link>
-            {submissionFeedback.verificationStatus !== "verified" ? (
-              <Link
-                href={getAccountUrl("/verification")}
-                className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-              >
-                {t("Open account verification")}
-              </Link>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-
-      {message ? (
-        <div
-          className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
-            message.type === "success"
-              ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
-              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[#c0492a]"
-          }`}
-        >
-          {message.text}
-        </div>
-      ) : null}
-
-      {submissionFeedback ? (
-        <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
                 {t("Live policy result")}

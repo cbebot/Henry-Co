@@ -502,7 +502,7 @@ export default async function PropertyHomePage() {
                   {localizedAreas.map((area) => (
                     <tr
                       key={area.id}
-                      className="group/area transition hover:bg-[rgba(232,184,148,0.05)]"
+                      className="group/area transition hover:bg-[color:color-mix(in_srgb,var(--home-accent)_6%,transparent)]"
                     >
                       <td className="px-4 py-4 align-top sm:px-6">
                         <Link
@@ -708,7 +708,7 @@ export default async function PropertyHomePage() {
                   ) : (
                     // Empty image state — initials block in agent's
                     // territory tone. Looks intentional, not broken.
-                    <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-[rgba(232,184,148,0.18)] to-[rgba(152,179,154,0.18)]">
+                    <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-[color:color-mix(in_srgb,var(--home-accent)_18%,transparent)] to-[color:color-mix(in_srgb,var(--property-sage)_18%,transparent)]">
                       <span className="text-[2.4rem] font-semibold tracking-[-0.04em] text-[var(--property-ink-soft)]">
                         {agent.name
                           .split(/\s+/)
@@ -754,7 +754,7 @@ export default async function PropertyHomePage() {
 
       {/* CLOSING CTA ─────────────────────────────────────────────────── */}
       <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="rounded-[1.6rem] border border-[var(--property-line-strong)] bg-gradient-to-br from-[rgba(232,184,148,0.08)] via-transparent to-[rgba(152,179,154,0.08)] p-7 sm:p-10">
+        <div className="rounded-[1.6rem] border border-[var(--property-line-strong)] bg-gradient-to-br from-[color:color-mix(in_srgb,var(--home-accent)_8%,transparent)] via-transparent to-[color:color-mix(in_srgb,var(--property-sage)_8%,transparent)] p-7 sm:p-10">
           <div className="grid gap-6 sm:grid-cols-[1.4fr_1fr] sm:items-center sm:gap-10">
             <div>
               <p className="property-kicker">{copy.home.closingCta.eyebrow}</p>

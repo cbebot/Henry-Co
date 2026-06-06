@@ -201,7 +201,7 @@ export default async function PropertySearchPage({
               href={buildViewHref(params, "list")}
               className={`rounded-full px-3 py-1.5 transition ${
                 view === "list"
-                  ? "bg-[var(--property-accent-strong)] text-white"
+                  ? "bg-[var(--home-accent)] text-[var(--home-accent-ink)]"
                   : "text-[var(--property-ink-soft)] hover:text-[var(--property-ink)]"
               }`}
             >
@@ -213,7 +213,7 @@ export default async function PropertySearchPage({
               href={buildViewHref(params, "map")}
               className={`rounded-full px-3 py-1.5 transition ${
                 view === "map"
-                  ? "bg-[var(--property-accent-strong)] text-white"
+                  ? "bg-[var(--home-accent)] text-[var(--home-accent-ink)]"
                   : "text-[var(--property-ink-soft)] hover:text-[var(--property-ink)]"
               }`}
             >
