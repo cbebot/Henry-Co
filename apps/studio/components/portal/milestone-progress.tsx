@@ -26,7 +26,7 @@ export function MilestoneProgress({
           return (
             <li key={milestone.id} className="portal-progress-step items-start">
               <span className="portal-progress-dot" data-state={state} />
-              <div className="min-w-0 flex-1 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+              <div className="min-w-0 flex-1 rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <span className="text-[14px] font-semibold text-[var(--studio-ink)]">
                     {milestone.title}
@@ -63,7 +63,7 @@ export function MilestoneProgress({
         return (
           <li
             key={milestone.id}
-            className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-3.5 py-3"
+            className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-3.5 py-3"
             aria-current={state === "current" ? "step" : undefined}
           >
             <div className="flex items-start gap-2.5">

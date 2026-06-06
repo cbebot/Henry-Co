@@ -153,7 +153,7 @@ function ProjectsGroup({
             <Link
               key={project.id}
               href={`/client/projects/${project.id}`}
-              className="portal-card group flex flex-col gap-3 px-5 py-4 transition hover:border-[rgba(151,244,243,0.4)]"
+              className="portal-card group flex flex-col gap-3 px-5 py-4 transition hover:border-[var(--studio-accent-ring)]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">

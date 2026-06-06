@@ -77,7 +77,7 @@ export default async function ClientPaymentsPage() {
           Outstanding invoices
         </h2>
         {outstanding.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-5 py-4 text-[13px] text-[var(--studio-ink-soft)]">
+          <p className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-5 py-4 text-[13px] text-[var(--studio-ink-soft)]">
             You&apos;re all caught up. Nothing to pay right now.
           </p>
         ) : (
@@ -158,7 +158,7 @@ export default async function ClientPaymentsPage() {
                       {payment.verifiedAt ? ` · Verified ${shortDate(payment.verifiedAt)}` : ""}
                     </div>
                     {payment.status === "rejected" && payment.rejectionReason ? (
-                      <div className="mt-2 rounded-xl border border-[rgba(255,143,143,0.4)] bg-[rgba(255,143,143,0.08)] px-3 py-2 text-[12px] text-[#ffb8b8]">
+                      <div className="mt-2 rounded-xl border border-[var(--studio-red-line)] bg-[var(--studio-red-soft)] px-3 py-2 text-[12px] text-[var(--studio-red-ink)]">
                         Rejected: {payment.rejectionReason}
                       </div>
                     ) : null}
@@ -195,12 +195,12 @@ function Stat({
 }) {
   const valueClass =
     accent === "success"
-      ? "text-[#bdf2cf]"
+      ? "text-[var(--studio-green-ink)]"
       : accent === "warn"
-      ? "text-[#f3d28a]"
+      ? "text-[var(--studio-amber-ink)]"
       : "text-[var(--studio-ink)]";
   return (
-    <div className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+    <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3">
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
         {label}
       </div>

@@ -335,7 +335,7 @@ function OverviewTab({
               )}
           </p>
           {detail.project.nextAction ? (
-            <div className="mt-4 rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.04)] px-4 py-3 text-[13px] text-[var(--studio-ink)]">
+            <div className="mt-4 rounded-2xl border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] px-4 py-3 text-[13px] text-[var(--studio-ink)]">
               <span className="font-semibold text-[var(--studio-signal)]">{t("Next")}: </span>
               {detail.project.nextAction}
             </div>
@@ -377,7 +377,7 @@ function OverviewTab({
           <div className="mt-3 flex flex-col gap-2 text-[13px]">
             <Link
               href={`/client/projects/${detail.project.id}?tab=files`}
-              className="inline-flex items-center justify-between gap-2 rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-3 py-2 font-semibold text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.4)]"
+              className="inline-flex items-center justify-between gap-2 rounded-xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-3 py-2 font-semibold text-[var(--studio-ink)] hover:border-[var(--studio-accent-ring)]"
             >
               <span className="inline-flex items-center gap-2">
                 <FileText className="h-3.5 w-3.5" />
@@ -387,7 +387,7 @@ function OverviewTab({
             </Link>
             <Link
               href={`/client/projects/${detail.project.id}?tab=messages`}
-              className="inline-flex items-center justify-between gap-2 rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-3 py-2 font-semibold text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.4)]"
+              className="inline-flex items-center justify-between gap-2 rounded-xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-3 py-2 font-semibold text-[var(--studio-ink)] hover:border-[var(--studio-accent-ring)]"
             >
               <span className="inline-flex items-center gap-2">
                 <MessageSquare className="h-3.5 w-3.5" />
@@ -397,7 +397,7 @@ function OverviewTab({
             </Link>
             <Link
               href={`/client/projects/${detail.project.id}?tab=payments`}
-              className="inline-flex items-center justify-between gap-2 rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-3 py-2 font-semibold text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.4)]"
+              className="inline-flex items-center justify-between gap-2 rounded-xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-3 py-2 font-semibold text-[var(--studio-ink)] hover:border-[var(--studio-accent-ring)]"
             >
               <span className="inline-flex items-center gap-2">
                 <CreditCard className="h-3.5 w-3.5" />
@@ -611,12 +611,12 @@ function SummaryStat({
 }) {
   const valueClass =
     accent === "success"
-      ? "text-[#bdf2cf]"
+      ? "text-[var(--studio-green-ink)]"
       : accent === "warn"
-      ? "text-[#f3d28a]"
+      ? "text-[var(--studio-amber-ink)]"
       : "text-[var(--studio-ink)]";
   return (
-    <div className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+    <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3">
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
         {label}
       </div>

@@ -63,7 +63,7 @@ export function FileCard({
     <>
       <article className="portal-card p-4 sm:p-5">
         <div className="flex items-start gap-3">
-          <div className="grid h-12 w-12 flex-shrink-0 place-items-center overflow-hidden rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)]">
+          <div className="grid h-12 w-12 flex-shrink-0 place-items-center overflow-hidden rounded-xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)]">
             {deliverable.fileType === "image" && deliverable.thumbnailUrl ? (
               <Image
                 src={deliverable.thumbnailUrl}
@@ -149,7 +149,7 @@ export function FileCard({
             </button>
           ) : null}
           {approved ? (
-            <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#8de8b3]">
+            <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-green-ink)]">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Approved
             </span>
@@ -157,7 +157,7 @@ export function FileCard({
         </div>
 
         {error ? (
-          <p className="mt-2 text-[12px] text-[#ffb8b8]">{error}</p>
+          <p className="mt-2 text-[12px] text-[var(--studio-red-ink)]">{error}</p>
         ) : null}
       </article>
 
@@ -174,7 +174,7 @@ export function FileCard({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="self-end rounded-full border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.06)] p-1.5 text-[var(--studio-ink)]"
+              className="self-end rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-fill-soft)] p-1.5 text-[var(--studio-ink)]"
               aria-label="Close preview"
             >
               <X className="h-4 w-4" />

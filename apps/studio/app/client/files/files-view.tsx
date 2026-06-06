@@ -146,7 +146,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] px-2.5 py-1.5 text-[12.5px] font-semibold text-[var(--studio-ink)] outline-none focus:border-[rgba(151,244,243,0.5)]"
+        className="rounded-xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-2.5 py-1.5 text-[12.5px] font-semibold text-[var(--studio-ink)] outline-none focus:border-[var(--studio-accent-ring)]"
       >
         {children}
       </select>

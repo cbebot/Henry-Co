@@ -23,14 +23,14 @@ const updateIcons: Record<string, LucideIcon> = {
 };
 
 const updateAccents: Record<string, string> = {
-  milestone_complete: "text-[#8de8b3]",
-  file_shared: "text-[#bcd6ff]",
+  milestone_complete: "text-[var(--studio-green-ink)]",
+  file_shared: "text-[var(--studio-blue-ink)]",
   message_sent: "text-[var(--studio-signal)]",
-  payment_received: "text-[#f3d28a]",
-  payment_verified: "text-[#8de8b3]",
+  payment_received: "text-[var(--studio-amber-ink)]",
+  payment_verified: "text-[var(--studio-green-ink)]",
   status_changed: "text-[var(--studio-ink-soft)]",
-  revision_requested: "text-[#f3d28a]",
-  approval_given: "text-[#8de8b3]",
+  revision_requested: "text-[var(--studio-amber-ink)]",
+  approval_given: "text-[var(--studio-green-ink)]",
   note: "text-[var(--studio-signal)]",
 };
 
@@ -57,7 +57,7 @@ export function ActivityFeed({
             >
               <Icon className="h-3.5 w-3.5" />
             </span>
-            <div className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+            <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3">
               <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                 <span className="text-[14px] font-semibold text-[var(--studio-ink)]">
                   {update.title}

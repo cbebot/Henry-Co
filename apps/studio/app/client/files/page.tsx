@@ -108,7 +108,7 @@ export default async function ClientFilesPage() {
                     key={file.id}
                     className="portal-card flex items-start gap-3 px-4 py-3.5"
                   >
-                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.06)] text-[var(--studio-signal)]">
+                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]">
                       <Icon className="h-4 w-4" />
                     </span>
                     <div className="min-w-0 flex-1">

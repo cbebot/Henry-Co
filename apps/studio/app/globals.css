@@ -246,6 +246,24 @@
   --studio-shadow: 0 42px 120px rgba(0, 0, 0, 0.36);
   --studio-shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.22);
 
+  /* V3-INNER-L-STUDIO — dual-valued token DEFAULTS (the dark/noir baseline).
+     .studio-workspace-light overrides these to the AA light register; the
+     .dark scope reverts. Defined at :root so the central status helper +
+     any unscoped studio surface resolve to the original dark appearance. */
+  --studio-accent: #97f4f3;
+  --studio-accent-strong: #63d2d5;
+  --studio-accent-text: #97f4f3;
+  --studio-accent-ink: #03161B;
+  --studio-accent-soft: rgba(151, 244, 243, 0.16);
+  --studio-accent-ring: rgba(151, 244, 243, 0.34);
+  --studio-fill-faint: rgba(255, 255, 255, 0.03);
+  --studio-fill-soft: rgba(255, 255, 255, 0.05);
+  --studio-green-ink: #8de8b3;  --studio-green-soft: rgba(141, 232, 179, 0.12);  --studio-green-line: rgba(141, 232, 179, 0.45);
+  --studio-red-ink: #ffb8b8;    --studio-red-soft: rgba(255, 143, 143, 0.12);    --studio-red-line: rgba(255, 143, 143, 0.45);
+  --studio-amber-ink: #f3d28a;  --studio-amber-soft: rgba(244, 196, 108, 0.12);  --studio-amber-line: rgba(244, 196, 108, 0.45);
+  --studio-blue-ink: #bcd6ff;   --studio-blue-soft: rgba(120, 180, 255, 0.12);   --studio-blue-line: rgba(120, 180, 255, 0.45);
+  --studio-copper-ink: #f0c89a; --studio-copper-soft: rgba(217, 168, 109, 0.12); --studio-copper-line: rgba(217, 168, 109, 0.45);
+
   /* PASS 20 — canonical --hc-* mapping (studio).
      Cool deep-teal stage with mint signal; HenryCo gold lights up
      dashboard-shell badges so the family stays coherent. */
@@ -1638,4 +1656,384 @@ html, body { overflow-x: clip; max-width: 100vw; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   V3-INNER-L-STUDIO — the .studio-workspace-light scope (Register L).
+
+   The studio :root above is the forced-dark studio stage. The
+   authenticated CLIENT dashboards belong to Register L — the shared,
+   light-primary Henry Onyx dashboard system (apps/account is the
+   reference). This scope re-grounds the studio workspace on that register,
+   theme-aware, so /client reads as a sibling of the account dashboard.
+   Dark is the device-preference flip, not the default — the forced-dark
+   client-portal defect is gone here.
+
+   §9 accent resolution: the gate-verified CONFIGURED studio accent is the
+   teal #4AC1C5 / #1F7375 (packages/config/company.ts, owner-approved in
+   V3-PUBLIC-REBUILD-studio / PR #183). It supersedes BOTH the ad-hoc mint
+   --studio-signal (#97f4f3) AND the gold --hc-accent (#D4AF37): the unified
+   dashboard carries studio's own division accent on a neutral light canvas.
+
+   Mirrors the shipped marketplace .market-workspace-light (#225/#233):
+   dual-valued tokens (noir at :root, dark-on-light in-scope), a .dark
+   parity block, and a higher-specificity override layer that re-tones the
+   bespoke .studio-* / .portal-* utilities whose BASE rules bake in dark
+   cyan (the same technique .studio-public uses on the public subtree).
+   Applied via app/client/layout.tsx → <div class="studio-workspace-light">.
+   ════════════════════════════════════════════════════════════════════ */
+.studio-workspace-light {
+  /* Register-L canonical neutral surfaces (light) — mirrors apps/account */
+  --acct-bg: #FAFAF8;
+  --acct-bg-soft: #FFFFFF;
+  --acct-surface: #F5F3EF;
+  --acct-line: #E8E4DD;
+  --acct-ink: #1A1814;
+  --acct-muted: #6B6560;
+
+  /* studio CONFIGURED teal accent (the §9 resolution) */
+  --studio-accent: #4AC1C5;          /* fills / borders / rings / dots */
+  --studio-accent-strong: #1F7375;
+  --studio-accent-text: #1F7375;     /* AA accent-as-text on light */
+  --studio-accent-ink: #03161B;      /* text on an accent fill */
+  --studio-accent-soft: rgba(74, 193, 197, 0.12);
+  --studio-accent-ring: rgba(74, 193, 197, 0.34);
+
+  /* dual-valued neutral lifts (replace ad-hoc rgba(255,255,255,…) /
+     bg-black/N lifts in markup; white at :root, dark-on-light here) */
+  --studio-fill-faint: rgba(10, 26, 33, 0.035);
+  --studio-fill-soft: rgba(10, 26, 33, 0.05);
+
+  /* AA status families (light): ink (text/dot) · soft (pill bg) · line */
+  --studio-green-ink: #047857;  --studio-green-soft: #D1FAE5;  --studio-green-line: rgba(4, 120, 87, 0.28);
+  --studio-red-ink: #B91C1C;    --studio-red-soft: #FEE2E2;    --studio-red-line: rgba(185, 28, 28, 0.28);
+  --studio-amber-ink: #B45309;  --studio-amber-soft: #FEF3C7;  --studio-amber-line: rgba(180, 83, 9, 0.28);
+  --studio-blue-ink: #1D4ED8;   --studio-blue-soft: #DBEAFE;   --studio-blue-line: rgba(29, 78, 216, 0.28);
+  --studio-copper-ink: #845A24; --studio-copper-soft: rgba(217, 168, 109, 0.16); --studio-copper-line: rgba(154, 106, 46, 0.30);
+
+  /* re-point the studio noir tokens onto the light register */
+  --studio-ink: var(--acct-ink);
+  --studio-ink-soft: rgba(10, 26, 33, 0.66);
+  --studio-bg: var(--acct-bg);
+  --studio-bg-soft: var(--acct-bg-soft);
+  --studio-surface: var(--acct-bg-soft);
+  --studio-surface-strong: var(--acct-bg-soft);
+  --studio-line: var(--acct-line);
+  --studio-line-strong: rgba(10, 26, 33, 0.14);
+  --studio-signal: var(--studio-accent-text);  /* mint-as-text → AA teal */
+  --studio-mint: var(--studio-accent);
+  --studio-mint-soft: var(--studio-accent-soft);
+  --studio-copper: var(--studio-copper-ink);
+  --studio-shadow: 0 1px 3px rgba(10, 26, 33, 0.06), 0 12px 32px -18px rgba(10, 26, 33, 0.16);
+  --studio-shadow-soft: 0 1px 3px rgba(10, 26, 33, 0.05), 0 8px 24px -16px rgba(10, 26, 33, 0.12);
+
+  /* canonical --hc-* mapping (light + teal accent) */
+  --hc-bg: var(--acct-bg);
+  --hc-bg-soft: var(--acct-bg-soft);
+  --hc-surface: var(--acct-bg-soft);
+  --hc-surface-strong: var(--acct-bg-soft);
+  --hc-surface-elevated: var(--acct-bg-soft);
+  --hc-paper: var(--acct-surface);
+  --hc-ink: var(--acct-ink);
+  --hc-ink-soft: rgba(10, 26, 33, 0.72);
+  --hc-ink-muted: var(--acct-muted);
+  --hc-line: var(--acct-line);
+  --hc-line-strong: rgba(10, 26, 33, 0.16);
+  --hc-hairline: var(--acct-line);
+  --hc-accent: var(--studio-accent);
+  --hc-accent-strong: var(--studio-accent-strong);
+  --hc-accent-pressed: var(--studio-accent-text);
+  --hc-accent-soft: var(--studio-accent-soft);
+  --hc-accent-text: var(--studio-accent-text);
+  --hc-accent-on-surface: var(--studio-accent-text);
+  --hc-ink-on-accent: var(--studio-accent-ink);
+  --hc-focus-ring: var(--studio-accent);
+
+  /* workspace-shell engine tokens (--ws-*) → light + teal */
+  --ws-bg: var(--acct-bg);
+  --ws-bg-soft: var(--studio-fill-faint);
+  --ws-bg-elev: var(--acct-bg-soft);
+  --ws-ink: var(--acct-ink);
+  --ws-ink-soft: var(--studio-ink-soft);
+  --ws-ink-mute: var(--acct-muted);
+  --ws-line: var(--acct-line);
+  --ws-line-strong: var(--studio-line-strong);
+  --ws-accent: var(--studio-accent);
+  --ws-accent-soft: var(--studio-accent-soft);
+  --ws-signal: var(--studio-accent);
+
+  /* canvas: sit above the public dark body mesh, paint light */
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-height: 100vh;
+  background: var(--acct-bg);
+  color: var(--acct-ink);
+}
+
+/* Dark is the flip: mirror apps/account .dark. Only raw values need
+   overriding — var()-referencing tokens re-resolve through the above. */
+.dark .studio-workspace-light {
+  --acct-bg: #0B0F14;
+  --acct-bg-soft: #141920;
+  --acct-surface: #1E252E;
+  --acct-line: #2A3140;
+  --acct-ink: #F0EDE8;
+  --acct-muted: #8E8A84;
+
+  --studio-accent: #4AC1C5;
+  --studio-accent-strong: #63D2D5;
+  --studio-accent-text: #63D2D5;     /* lift teal for AA on the dark canvas */
+  --studio-accent-ink: #03161B;
+  --studio-accent-soft: rgba(99, 210, 213, 0.14);
+  --studio-accent-ring: rgba(99, 210, 213, 0.34);
+
+  --studio-fill-faint: rgba(255, 255, 255, 0.03);
+  --studio-fill-soft: rgba(255, 255, 255, 0.05);
+
+  /* status → on-dark tints (the original portal tints, AA on dark soft) */
+  --studio-green-ink: #8de8b3;  --studio-green-soft: rgba(141, 232, 179, 0.12);  --studio-green-line: rgba(141, 232, 179, 0.32);
+  --studio-red-ink: #ffb8b8;    --studio-red-soft: rgba(255, 143, 143, 0.12);    --studio-red-line: rgba(255, 143, 143, 0.32);
+  --studio-amber-ink: #f3d28a;  --studio-amber-soft: rgba(244, 196, 108, 0.12);  --studio-amber-line: rgba(244, 196, 108, 0.32);
+  --studio-blue-ink: #bcd6ff;   --studio-blue-soft: rgba(120, 180, 255, 0.12);   --studio-blue-line: rgba(120, 180, 255, 0.32);
+  --studio-copper-ink: #f0c89a; --studio-copper-soft: rgba(217, 168, 109, 0.12); --studio-copper-line: rgba(217, 168, 109, 0.32);
+
+  --studio-ink-soft: rgba(240, 237, 232, 0.74);
+  --studio-line-strong: rgba(255, 255, 255, 0.16);
+  --hc-ink-soft: rgba(240, 237, 232, 0.78);
+  --hc-line-strong: rgba(255, 255, 255, 0.18);
+  --studio-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
+  --studio-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+/* ── Override layer: re-tone the .studio-* / .portal-* utilities whose BASE
+      rules bake in hardcoded dark cyan. Higher specificity (0,0,2,0) beats
+      the base (0,0,1,0). Mirrors the .studio-public technique. ── */
+
+/* @henryco/workspace-shell chrome reads --ws-* from [data-workspace-division].
+   The PACKAGE declares dark defaults there (incl. the --ws-good/-warn/-danger/
+   -info tones as hardcoded tints) and the studio app block only re-points a
+   few — so without this the sidebar/header/badge tones stay dark on the light
+   canvas. This authoritative rule (0,0,2,0 beats both) maps every chrome token
+   to the light register; the var() indirection auto-reverts under the dark
+   scope. The shared package is NOT modified. */
+.studio-workspace-light [data-workspace-division] {
+  --ws-bg: var(--acct-bg);
+  --ws-bg-soft: var(--studio-fill-faint);
+  --ws-bg-elev: var(--acct-bg-soft);
+  --ws-ink: var(--acct-ink);
+  --ws-ink-soft: var(--studio-ink-soft);
+  --ws-ink-mute: var(--acct-muted);
+  --ws-line: var(--acct-line);
+  --ws-line-strong: var(--studio-line-strong);
+  --ws-accent: var(--studio-accent);
+  --ws-accent-soft: var(--studio-accent-soft);
+  --ws-signal: var(--studio-accent-text);
+  --ws-good: var(--studio-green-ink);
+  --ws-good-soft: var(--studio-green-soft);
+  --ws-warn: var(--studio-amber-ink);
+  --ws-warn-soft: var(--studio-amber-soft);
+  --ws-danger: var(--studio-red-ink);
+  --ws-danger-soft: var(--studio-red-soft);
+  --ws-info: var(--studio-blue-ink);
+}
+
+/* Neutralize the dark mesh/grid/glow pseudo-surfaces on the light canvas. */
+.studio-workspace-light .studio-shell::before {
+  background-image:
+    linear-gradient(to right, var(--studio-fill-faint) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--studio-fill-faint) 1px, transparent 1px);
+  opacity: 0.5;
+}
+.studio-workspace-light .studio-shell::after,
+.studio-workspace-light .studio-hero::before,
+.studio-workspace-light .studio-mesh::after,
+.studio-workspace-light .studio-receipt::after {
+  background: radial-gradient(circle, var(--studio-accent-soft) 0%, transparent 70%);
+}
+.studio-workspace-light .studio-mesh::before {
+  background:
+    linear-gradient(120deg, transparent 0%, var(--studio-accent-soft) 22%, transparent 46%);
+  opacity: 0.5;
+}
+
+/* Buttons — teal accent fill + dark ink, no dark cyan glow. */
+.studio-workspace-light .studio-button-primary,
+.studio-workspace-light .portal-button-primary {
+  background: var(--studio-accent);
+  color: var(--studio-accent-ink);
+  box-shadow: 0 1px 2px rgba(10, 26, 33, 0.10);
+}
+.studio-workspace-light .studio-button-primary:hover,
+.studio-workspace-light .portal-button-primary:hover {
+  background: var(--studio-accent-strong);
+  box-shadow: 0 18px 44px -24px var(--studio-accent-ring);
+}
+.studio-workspace-light .studio-button-secondary,
+.studio-workspace-light .portal-button-secondary {
+  border-color: var(--studio-line-strong);
+  background: var(--acct-bg-soft);
+  color: var(--studio-ink);
+}
+.studio-workspace-light .studio-button-secondary:hover,
+.studio-workspace-light .portal-button-secondary:hover {
+  border-color: var(--studio-accent);
+  background: var(--studio-fill-faint);
+}
+.studio-workspace-light .portal-button-ghost:hover {
+  color: var(--studio-ink);
+  background: var(--studio-fill-faint);
+}
+.studio-workspace-light .portal-button:focus-visible,
+.studio-workspace-light .portal-button-primary:focus-visible {
+  box-shadow: 0 0 0 2px var(--studio-accent-ring), 0 0 0 4px var(--acct-bg-soft);
+}
+
+/* Brand mark — light tinted tile, no dark copper/cyan gradient. */
+.studio-workspace-light .studio-brand-mark {
+  border-color: var(--studio-line-strong);
+  background:
+    linear-gradient(145deg, var(--studio-accent-soft), transparent),
+    var(--acct-bg-soft);
+  color: var(--studio-ink);
+}
+
+/* Inputs — warm light fields, teal focus ring. */
+.studio-workspace-light .studio-input,
+.studio-workspace-light .studio-select,
+.studio-workspace-light .studio-textarea,
+.studio-workspace-light .portal-input,
+.studio-workspace-light .portal-textarea {
+  border-color: var(--studio-line);
+  background: var(--acct-bg-soft);
+  color: var(--studio-ink);
+}
+.studio-workspace-light .studio-input:focus,
+.studio-workspace-light .studio-select:focus,
+.studio-workspace-light .studio-textarea:focus,
+.studio-workspace-light .portal-input:focus,
+.studio-workspace-light .portal-textarea:focus {
+  border-color: var(--studio-accent);
+  box-shadow: 0 0 0 3px var(--studio-accent-ring);
+  background: var(--acct-bg-soft);
+}
+
+/* Panels / muted panels — clean light sheet, no dark blur-glass. */
+.studio-workspace-light .studio-panel {
+  border-color: var(--studio-line);
+  background: var(--acct-bg-soft);
+  box-shadow: var(--studio-shadow);
+  backdrop-filter: none;
+}
+.studio-workspace-light .studio-muted-panel {
+  border-color: var(--studio-line);
+  background: var(--acct-surface);
+}
+
+/* Cards (portal) — light surfaces, teal accent hover. */
+.studio-workspace-light .portal-card {
+  background: var(--acct-bg-soft);
+}
+.studio-workspace-light .portal-card:hover {
+  background: var(--studio-fill-faint);
+}
+.studio-workspace-light .portal-card-elev {
+  background: var(--acct-bg-soft);
+  box-shadow: var(--studio-shadow);
+}
+.studio-workspace-light .studio-card-tactile:hover,
+.studio-workspace-light .studio-card-tactile:focus-visible {
+  border-color: var(--studio-accent);
+  box-shadow: var(--studio-shadow), 0 24px 60px -34px var(--studio-accent-ring);
+}
+.studio-workspace-light .studio-card-tactile:focus-visible {
+  box-shadow: 0 0 0 2px var(--studio-accent-ring), 0 0 0 4px var(--acct-bg-soft), 0 24px 60px -34px var(--studio-accent-ring);
+}
+.studio-workspace-light .studio-card-tactile::after {
+  background: linear-gradient(135deg, transparent 30%, var(--studio-accent-soft) 100%);
+}
+.studio-workspace-light .studio-row-tactile:hover,
+.studio-workspace-light .studio-row-tactile:focus-visible {
+  background: var(--studio-accent-soft);
+}
+.studio-workspace-light .studio-row-tactile:focus-visible {
+  box-shadow: 0 0 0 2px var(--studio-accent-ring);
+}
+
+/* Attention cards — light base + status-token tones. */
+.studio-workspace-light .portal-attention-card {
+  background: var(--acct-bg-soft);
+}
+.studio-workspace-light .portal-attention-card:hover {
+  border-color: var(--studio-accent);
+  background: var(--studio-fill-faint);
+}
+.studio-workspace-light .portal-attention-card[data-tone="warn"] {
+  border-color: var(--studio-amber-line);
+  background: var(--studio-amber-soft);
+}
+.studio-workspace-light .portal-attention-card[data-tone="danger"] {
+  border-color: var(--studio-red-line);
+  background: var(--studio-red-soft);
+}
+
+/* Progress rail dots — teal, on the light canvas. */
+.studio-workspace-light .portal-progress-dot {
+  background: var(--acct-bg-soft);
+}
+.studio-workspace-light .portal-progress-dot[data-state="complete"] {
+  border-color: var(--studio-accent);
+  background: radial-gradient(circle, var(--studio-accent) 40%, transparent 41%), var(--acct-bg-soft);
+}
+.studio-workspace-light .portal-progress-dot[data-state="current"] {
+  border-color: var(--studio-accent);
+  background: var(--studio-accent);
+  box-shadow: 0 0 0 4px var(--studio-accent-ring);
+}
+
+/* Tabs / bubbles / bottom-nav active — teal, not dark cyan gradient. */
+.studio-workspace-light .portal-tab-button:hover {
+  background: var(--studio-fill-faint);
+}
+.studio-workspace-light .portal-tab-button[data-active="true"],
+.studio-workspace-light .portal-tab-button[aria-selected="true"] {
+  border-color: var(--studio-accent);
+  background: var(--studio-accent-soft);
+  color: var(--studio-ink);
+}
+.studio-workspace-light .portal-message-bubble {
+  background: var(--acct-bg-soft);
+}
+.studio-workspace-light .portal-message-bubble[data-own="true"] {
+  border-color: var(--studio-accent);
+  background: var(--studio-accent-soft);
+}
+.studio-workspace-light .portal-bottom-nav {
+  background: color-mix(in srgb, var(--acct-bg-soft) 92%, transparent);
+}
+.studio-workspace-light .portal-bottom-nav-item[data-active="true"] {
+  color: var(--studio-ink);
+  background: var(--studio-accent-soft);
+}
+
+/* Skeletons / dropzone / metal rule. */
+.studio-workspace-light .portal-skeleton {
+  background: var(--studio-fill-soft);
+}
+.studio-workspace-light .portal-dropzone {
+  background: var(--studio-fill-faint);
+}
+.studio-workspace-light .portal-dropzone:hover,
+.studio-workspace-light .portal-dropzone[data-drag-over="true"] {
+  border-color: var(--studio-accent);
+  background: var(--studio-accent-soft);
+}
+.studio-workspace-light .studio-metal-rule {
+  background-image: linear-gradient(90deg, transparent 0%, var(--studio-accent-soft) 20%, var(--studio-accent) 50%, var(--studio-accent-soft) 80%, transparent 100%);
+}
+
+/* ::selection — teal wash, not dark cyan. */
+.studio-workspace-light ::selection {
+  background: var(--studio-accent-soft);
+  color: var(--studio-ink);
 }

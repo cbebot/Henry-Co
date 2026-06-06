@@ -77,14 +77,14 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
     toast.tone === "message" ? MessageSquare : toast.tone === "success" ? CheckCircle2 : Info;
   const accent =
     toast.tone === "success"
-      ? "text-[#8de8b3]"
+      ? "text-[var(--studio-green-ink)]"
       : toast.tone === "message"
       ? "text-[var(--studio-signal)]"
-      : "text-[#bcd6ff]";
+      : "text-[var(--studio-blue-ink)]";
 
   return (
     <div className="portal-toast">
-      <div className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] ${accent}`}>
+      <div className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-fill-faint)] ${accent}`}>
         <Icon className="h-4 w-4" />
       </div>
       <div className="flex-1 min-w-0">
@@ -107,7 +107,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       <button
         type="button"
         onClick={onDismiss}
-        className="rounded-full p-1 text-[var(--studio-ink-soft)] transition hover:bg-[rgba(255,255,255,0.05)] hover:text-[var(--studio-ink)]"
+        className="rounded-full p-1 text-[var(--studio-ink-soft)] transition hover:bg-[var(--studio-fill-soft)] hover:text-[var(--studio-ink)]"
         aria-label="Dismiss notification"
       >
         <X className="h-3.5 w-3.5" />

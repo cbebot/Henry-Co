@@ -92,7 +92,7 @@ export default async function ClientPaymentByIdPage({
 
       {isPaid ? (
         <div className="portal-card-elev p-6 text-center">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-[rgba(141,232,179,0.45)] bg-[rgba(141,232,179,0.12)] text-[#8de8b3]">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-[var(--studio-green-line)] bg-[var(--studio-green-soft)] text-[var(--studio-green-ink)]">
             <Sparkles className="h-6 w-6" />
           </div>
           <h2 className="mt-5 text-xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">

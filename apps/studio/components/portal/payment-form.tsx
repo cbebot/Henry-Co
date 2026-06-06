@@ -128,7 +128,7 @@ export function PaymentForm({
   if (state.kind === "success") {
     return (
       <div className="portal-card-elev p-6 sm:p-8 text-center">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-[rgba(141,232,179,0.45)] bg-[rgba(141,232,179,0.12)] text-[#8de8b3]">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-[var(--studio-green-line)] bg-[var(--studio-green-soft)] text-[var(--studio-green-ink)]">
           <Sparkles className="h-6 w-6" />
         </div>
         <h2 className="mt-5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">
@@ -142,8 +142,8 @@ export function PaymentForm({
           is on file. You will see this invoice flip to verified inside your client portal as soon
           as finance confirms — usually within one business day.
         </p>
-        <div className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-[12px] font-semibold text-[var(--studio-ink-soft)]">
-          <CheckCircle2 className="h-3.5 w-3.5 text-[#8de8b3]" />
+        <div className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-fill-faint)] px-4 py-2 text-[12px] font-semibold text-[var(--studio-ink-soft)]">
+          <CheckCircle2 className="h-3.5 w-3.5 text-[var(--studio-green-ink)]" />
           Encrypted in transit · stored securely
         </div>
       </div>
@@ -153,7 +153,7 @@ export function PaymentForm({
   return (
     <form onSubmit={handleSubmit} className="portal-card-elev space-y-5 p-5 sm:p-7">
       <div className="flex items-start gap-3">
-        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.06)] text-[var(--studio-signal)]">
+        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]">
           <CreditCard className="h-5 w-5" />
         </div>
         <div>
@@ -169,7 +169,7 @@ export function PaymentForm({
 
       <div>
         <label htmlFor="payment-reference" className="block text-[13px] font-semibold text-[var(--studio-ink)]">
-          Bank reference number<span className="ml-1 text-[#ff8f8f]">*</span>
+          Bank reference number<span className="ml-1 text-[var(--studio-red-ink)]">*</span>
         </label>
         <input
           id="payment-reference"
@@ -193,12 +193,12 @@ export function PaymentForm({
 
       <div>
         <label className="block text-[13px] font-semibold text-[var(--studio-ink)]">
-          Proof of payment<span className="ml-1 text-[#ff8f8f]">*</span>
+          Proof of payment<span className="ml-1 text-[var(--studio-red-ink)]">*</span>
         </label>
 
         {file ? (
-          <div className="mt-2 flex items-start gap-3 rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] p-3 sm:p-4">
-            <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] text-[var(--studio-ink)]">
+          <div className="mt-2 flex items-start gap-3 rounded-2xl border border-[var(--studio-line-strong)] bg-[var(--studio-fill-faint)] p-3 sm:p-4">
+            <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] text-[var(--studio-ink)]">
               <FileText className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -243,7 +243,7 @@ export function PaymentForm({
               if (next) validateAndSetFile(next);
             }}
           >
-            <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.06)] text-[var(--studio-signal)]">
+            <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]">
               <UploadCloud className="h-5 w-5" />
             </div>
             <div>
@@ -285,7 +285,7 @@ export function PaymentForm({
       </div>
 
       {state.kind === "error" ? (
-        <div className="flex items-start gap-2 rounded-2xl border border-[rgba(255,143,143,0.4)] bg-[rgba(255,143,143,0.08)] px-4 py-3 text-[13px] text-[#ffb8b8]">
+        <div className="flex items-start gap-2 rounded-2xl border border-[var(--studio-red-line)] bg-[var(--studio-red-soft)] px-4 py-3 text-[13px] text-[var(--studio-red-ink)]">
           <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{state.message}</span>
         </div>
