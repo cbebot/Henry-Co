@@ -12,7 +12,7 @@ export function ProjectTeamUpdateComposer({
   redirectPath: string;
 }) {
   return (
-    <details className="group mt-8 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/12 open:border-[rgba(151,244,243,0.2)]">
+    <details className="group mt-8 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] open:border-[var(--studio-accent-soft)]">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
         <div>
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">

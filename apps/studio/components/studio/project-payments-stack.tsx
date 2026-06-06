@@ -51,9 +51,9 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
 
   if (payment.status === "paid") {
     return (
-      <div className="mt-4 rounded-[1.15rem] border border-[rgba(141,232,179,0.32)] bg-[rgba(141,232,179,0.08)] px-4 py-3">
+      <div className="mt-4 rounded-[1.15rem] border border-[var(--studio-green-line)] bg-[var(--studio-green-soft)] px-4 py-3">
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#8de8b3]" aria-hidden />
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-green-ink)]" aria-hidden />
           <div className="min-w-0">
             <div className="text-sm font-semibold text-[var(--studio-ink)]">
               {proofOnFile ? "Payment proof verified" : "Payment verified"}
@@ -71,7 +71,7 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
 
   if (proofOnFile) {
     return (
-      <div className="mt-4 rounded-[1.15rem] border border-[rgba(151,244,243,0.28)] bg-[rgba(151,244,243,0.07)] px-4 py-3">
+      <div className="mt-4 rounded-[1.15rem] border border-[var(--studio-accent-ring)] bg-[var(--studio-accent-soft)] px-4 py-3">
         <div className="flex items-start gap-3">
           <FileCheck2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-signal)]" aria-hidden />
           <div className="min-w-0">
@@ -88,9 +88,9 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
   }
 
   return (
-    <div className="mt-4 rounded-[1.15rem] border border-[rgba(255,197,128,0.28)] bg-[rgba(255,197,128,0.07)] px-4 py-3">
+    <div className="mt-4 rounded-[1.15rem] border border-[var(--studio-amber-line)] bg-[var(--studio-amber-soft)] px-4 py-3">
       <div className="flex items-start gap-3">
-        <UploadCloud className="mt-0.5 h-4 w-4 shrink-0 text-[#f0c89a]" aria-hidden />
+        <UploadCloud className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-amber-ink)]" aria-hidden />
         <div className="min-w-0">
           <div className="text-sm font-semibold text-[var(--studio-ink)]">No payment proof uploaded yet</div>
           <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
@@ -123,7 +123,7 @@ export function ProjectPaymentsStack({
       id={isPriority && sectionId ? sectionId : undefined}
       className={`scroll-mt-28 rounded-[1.75rem] border p-6 ${
         isPriority
-          ? "border-[rgba(151,244,243,0.35)] bg-[linear-gradient(180deg,rgba(12,48,58,0.55),rgba(6,18,26,0.92))] shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+          ? "border-[var(--studio-accent-ring)] bg-[linear-gradient(180deg,var(--studio-accent-soft),var(--studio-bg-soft))] shadow-[var(--studio-shadow)]"
           : "studio-panel border-[var(--studio-line)]"
       }`}
     >
@@ -139,7 +139,7 @@ export function ProjectPaymentsStack({
               : "A clear breakdown of your project investment — every payment maps directly to your proposal and milestones."}
           </p>
           {isPriority ? (
-            <div className="mt-4 rounded-[1.25rem] border border-[rgba(151,244,243,0.28)] bg-black/25 px-4 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
+            <div className="mt-4 rounded-[1.25rem] border border-[var(--studio-accent-ring)] bg-[var(--studio-fill-soft)] px-4 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
               <span className="font-semibold text-[var(--studio-ink)]">What happens next: </span>
               Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your Henry Onyx account Studio hub while finance confirms privately.
             </div>
@@ -153,7 +153,7 @@ export function ProjectPaymentsStack({
       <div
         className={`mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 ${
           isPriority
-            ? "rounded-[1.5rem] border border-[var(--studio-line)] bg-black/15 p-4"
+            ? "rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-4"
             : ""
         }`}
       >
@@ -163,7 +163,7 @@ export function ProjectPaymentsStack({
           ["Processing", formatCurrency(paymentOverview.processing, proposalCurrency)],
           ["Outstanding", formatCurrency(paymentOverview.outstanding, proposalCurrency)],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 px-3 py-3 sm:px-4 sm:py-4">
+          <div key={label} className="rounded-[1.2rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-3 py-3 sm:px-4 sm:py-4">
             <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">{label}</div>
             <div className="mt-1.5 truncate text-[15px] font-semibold tabular-nums text-[var(--studio-ink)] sm:text-lg">{value}</div>
           </div>
@@ -178,7 +178,7 @@ export function ProjectPaymentsStack({
        * This is the "long card good for nothing" we trimmed. */}
       {pricingBreakdown.length > 0 ? (
         <details
-          className="group/breakdown mt-5 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3"
+          className="group/breakdown mt-5 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-3"
           open={isFinance || isStaff}
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)] outline-none [&::-webkit-details-marker]:hidden">
@@ -231,14 +231,14 @@ export function ProjectPaymentsStack({
           const paymentHref = paymentWorkspaceHref(payment.id, access);
           const shouldShowUpload = payment.status !== "paid" && !proofOnFile;
           return (
-            <div key={payment.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+            <div key={payment.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold text-[var(--studio-ink)]">{payment.label}</div>
                   <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">
                     {formatCurrency(payment.amount, payment.currency)} · {friendlyPaymentStatus(payment.status)}
                   </div>
-                  <div className="mt-3 rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2">
+                  <div className="mt-3 rounded-[1rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-3 py-2">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--studio-signal)]">
                       {phase.phase}
                     </div>
@@ -276,11 +276,11 @@ export function ProjectPaymentsStack({
                       ].map((step) => (
                         <li
                           key={step.num}
-                          className="flex items-start gap-3 rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2.5"
+                          className="flex items-start gap-3 rounded-[1rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-3 py-2.5"
                         >
                           <span
                             aria-hidden
-                            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] text-[11px] font-semibold text-[var(--studio-signal)]"
+                            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--studio-accent-ring)] bg-[var(--studio-accent-soft)] text-[11px] font-semibold text-[var(--studio-signal)]"
                           >
                             {step.num}
                           </span>
@@ -311,7 +311,7 @@ export function ProjectPaymentsStack({
                   </div>
 
                   {shouldShowUpload ? (
-                    <details className="group/proof mt-3 rounded-[1.15rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3">
+                    <details className="group/proof mt-3 rounded-[1.15rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-3">
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)] outline-none [&::-webkit-details-marker]:hidden">
                         <span>Upload proof here instead</span>
                         <span className="text-[var(--studio-ink-soft)] transition group-open/proof:rotate-180">▾</span>
@@ -340,7 +340,7 @@ export function ProjectPaymentsStack({
       </div>
 
       {!isStaff && unpaidPaymentsNeedHelp(payments) ? (
-        <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+        <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
           <div className="text-sm font-semibold text-[var(--studio-ink)]">Need help with your payment?</div>
           <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
             Our finance team can confirm account details, discuss timing, or walk you through the process.

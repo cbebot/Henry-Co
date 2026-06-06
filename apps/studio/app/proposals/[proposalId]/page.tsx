@@ -209,7 +209,7 @@ export default async function ProposalDetailPage({
               ))}
             </div>
 
-            <div className="mt-8 rounded-[1.75rem] border border-[var(--studio-line)] bg-black/10 p-5">
+            <div className="mt-8 rounded-[1.75rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
               <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                 <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" />
                 <div className="text-sm font-semibold">Commercial confidence note</div>
@@ -222,7 +222,7 @@ export default async function ProposalDetailPage({
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-[2rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.92),rgba(6,16,23,0.98))] p-6">
+            <div className="rounded-[2rem] border border-[var(--studio-accent-ring)] bg-[linear-gradient(180deg,var(--studio-accent-soft),var(--studio-bg-soft))] p-6">
               <div className="flex items-center gap-3 text-[var(--studio-signal)]">
                 <CircleDollarSign className="h-5 w-5" />
                 <div className="text-xs uppercase tracking-[0.18em]">Total investment</div>
@@ -237,7 +237,7 @@ export default async function ProposalDetailPage({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Deposit checkpoint
                 </div>
@@ -248,7 +248,7 @@ export default async function ProposalDetailPage({
                   Activates the project room, payment verification, onboarding, and the first milestone.
                 </p>
               </div>
-              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Proposal validity
                 </div>
@@ -279,7 +279,7 @@ export default async function ProposalDetailPage({
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="flex flex-col gap-2 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                     {label}
@@ -292,7 +292,7 @@ export default async function ProposalDetailPage({
             </div>
 
             {brief ? (
-              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Goals and scope
                 </div>
@@ -304,7 +304,7 @@ export default async function ProposalDetailPage({
             ) : null}
 
             {domainRecap ? (
-              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   {domainRecap.title}
                 </div>
@@ -313,7 +313,7 @@ export default async function ProposalDetailPage({
             ) : null}
 
             {customRequest ? (
-              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                   <Layers3 className="h-4 w-4 text-[var(--studio-signal)]" />
                   <div className="text-sm font-semibold">Custom request profile</div>
@@ -379,7 +379,7 @@ export default async function ProposalDetailPage({
               ))}
             </div>
 
-            <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+            <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
               <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                 <Sparkles className="h-4 w-4 text-[var(--studio-signal)]" />
                 <div className="text-sm font-semibold">What happens after approval</div>
@@ -427,7 +427,7 @@ export default async function ProposalDetailPage({
               {pricingBreakdown.map((line) => (
                 <div
                   key={`${line.label}-${line.amount}`}
-                  className="flex flex-col gap-3 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
+                  className="flex flex-col gap-3 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div>
                     <div className="text-base font-semibold text-[var(--studio-ink)]">{line.label}</div>
@@ -444,7 +444,7 @@ export default async function ProposalDetailPage({
               ))}
             </div>
 
-            <div className="mt-5 flex flex-col gap-3 rounded-[1.5rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.72),rgba(6,16,23,0.96))] p-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mt-5 flex flex-col gap-3 rounded-[1.5rem] border border-[var(--studio-accent-ring)] bg-[linear-gradient(180deg,var(--studio-accent-soft),var(--studio-bg-soft))] p-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Commercial total
@@ -476,7 +476,7 @@ export default async function ProposalDetailPage({
                       <div className="mt-2 h-full min-h-10 w-px bg-[var(--studio-line)]" />
                     ) : null}
                   </div>
-                  <div className="flex-1 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 p-5">
+                  <div className="flex-1 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="text-base font-semibold text-[var(--studio-ink)]">
                         {milestone.name}
@@ -509,7 +509,7 @@ export default async function ProposalDetailPage({
               {proposal.comparisonNotes.map((note) => (
                 <div
                   key={note}
-                  className="rounded-[1.3rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]"
+                  className="rounded-[1.3rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]"
                 >
                   {note}
                 </div>

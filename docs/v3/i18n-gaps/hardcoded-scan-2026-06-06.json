@@ -1,10 +1,10 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-06T22:09:49.543Z",
+  "generatedAt": "2026-06-06T23:20:37.837Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1366,
+    "scannedFiles": 1367,
     "entries": 1292,
     "counts": {
       "OK": 2,
@@ -12,7 +12,7 @@
       "EXEMPT": 35,
       "AMBIGUOUS": 45
     },
-    "durationMs": 6072
+    "durationMs": 3604
   },
   "entriesByFile": {
     "apps/account/app/(account)/layout.tsx": [
@@ -8532,7 +8532,7 @@
       },
       {
         "line": 116,
-        "col": 49,
+        "col": 73,
         "kind": "jsx_text",
         "text": "No active milestone yet.",
         "classification": "GAP",
@@ -8572,7 +8572,7 @@
       },
       {
         "line": 232,
-        "col": 49,
+        "col": 73,
         "kind": "jsx_text",
         "text": "Timeline will appear here as milestones are added.",
         "classification": "GAP",
@@ -8795,7 +8795,7 @@
     ],
     "apps/studio/components/messaging/system-message.tsx": [
       {
-        "line": 44,
+        "line": 41,
         "col": 98,
         "kind": "jsx_text",
         "text": ") && (meta as Record",

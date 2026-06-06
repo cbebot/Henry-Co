@@ -23,24 +23,21 @@ export function SystemMessage({ message }: Props) {
       role="note"
       aria-label={headline}
     >
-      <span className="h-px flex-1 bg-[#d4b14e]/15" aria-hidden />
+      <span className="h-px flex-1 bg-[var(--studio-thread-accent-soft)]" aria-hidden />
       <span
-        className="inline-flex items-center gap-2 rounded-full border border-[#d4b14e]/25 bg-[#d4b14e]/[0.08] px-3 py-1.5 text-[12px] italic leading-tight text-[#d4b14e]"
-        style={{
-          textShadow: "0 1px 0 rgba(0,0,0,0.25)",
-        }}
+        className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-thread-accent-line)] bg-[var(--studio-thread-accent-soft)] px-3 py-1.5 text-[12px] italic leading-tight text-[var(--studio-thread-accent-text)]"
       >
         {renderTypeIcon(message.messageType)}
         <span className="font-medium not-italic tracking-[0.005em]">{headline}</span>
-        <span className="text-[#d4b14e]/55 not-italic">·</span>
+        <span className="text-[var(--studio-thread-accent-text)] not-italic">·</span>
         <time
-          className="text-[#d4b14e]/65 not-italic tabular-nums"
+          className="text-[var(--studio-thread-accent-text)] not-italic tabular-nums"
           dateTime={message.createdAt}
         >
           {subtle}
         </time>
       </span>
-      <span className="h-px flex-1 bg-[#d4b14e]/15" aria-hidden />
+      <span className="h-px flex-1 bg-[var(--studio-thread-accent-soft)]" aria-hidden />
       {Boolean(message.body) && message.metadata && "showBody" in (meta as Record<string, unknown>) && (meta as Record<string, unknown>).showBody === true ? (
         <p className="sr-only">{message.body}</p>
       ) : null}

@@ -30,11 +30,11 @@ export function ReactionDisplay({
         const isApplied = reaction.appliedByViewer;
         const baseToneCls = ownTone
           ? isApplied
-            ? "border-white/40 bg-white/15 text-[#F5F4EE]"
-            : "border-white/15 bg-white/5 text-[#F5F4EE]/85 hover:bg-white/10"
+            ? "border-[var(--studio-thread-accent-line)] bg-[var(--studio-thread-accent-soft)] text-[var(--studio-thread-ink)]"
+            : "border-[var(--studio-thread-line-soft)] bg-[var(--studio-thread-hover)] text-[var(--studio-thread-ink-soft)] hover:bg-[var(--studio-thread-hover)]"
           : isApplied
-            ? "border-[#d4b14e]/55 bg-[#d4b14e]/15 text-[#F5F4EE]"
-            : "border-white/[0.06] bg-white/[0.03] text-white/70 hover:bg-white/[0.06]";
+            ? "border-[var(--studio-thread-accent-line)] bg-[var(--studio-thread-accent-soft)] text-[var(--studio-thread-ink)]"
+            : "border-[var(--studio-thread-line)] bg-[var(--studio-thread-hover)] text-[var(--studio-thread-ink-soft)] hover:bg-[var(--studio-thread-hover)]";
         const isBusy = busy === reaction.emoji;
         return (
           <button
@@ -131,7 +131,7 @@ export function ReactionPicker({
       ref={containerRef}
       role="menu"
       aria-label="React with"
-      className={`absolute -top-12 z-30 flex items-center gap-1 rounded-full border border-white/[0.06] bg-[#0A0E1A]/95 px-1.5 py-1.5 shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] backdrop-blur-sm motion-safe:animate-[studio-msg-fade-in_140ms_ease-out] ${
+      className={`absolute -top-12 z-30 flex items-center gap-1 rounded-full border border-[var(--studio-thread-line)] bg-[var(--studio-thread-card)]/95 px-1.5 py-1.5 shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] backdrop-blur-sm motion-safe:animate-[studio-msg-fade-in_140ms_ease-out] ${
         alignRight ? "right-0" : "left-0"
       }`}
     >
@@ -142,15 +142,15 @@ export function ReactionPicker({
           role="menuitem"
           onClick={() => onPick(reaction.emoji)}
           onMouseEnter={() => setFocusIdx(idx)}
-          className={`group relative flex h-8 w-8 items-center justify-center rounded-full transition-all hover:scale-110 hover:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4b14e] ${
-            focusIdx === idx ? "bg-white/[0.06]" : ""
+          className={`group relative flex h-8 w-8 items-center justify-center rounded-full transition-all hover:scale-110 hover:bg-[var(--studio-thread-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-thread-accent)] ${
+            focusIdx === idx ? "bg-[var(--studio-thread-hover)]" : ""
           }`}
           aria-label={reaction.hint}
         >
           <span aria-hidden className="text-[18px] leading-none">
             {reaction.emoji}
           </span>
-          <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#0F1524] px-2 py-0.5 text-[10px] font-medium text-white/85 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-[var(--studio-thread-inset)] px-2 py-0.5 text-[10px] font-medium text-[var(--studio-thread-ink-soft)] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
             {reaction.label}
           </span>
         </button>

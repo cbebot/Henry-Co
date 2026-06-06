@@ -180,10 +180,10 @@ export function NotificationToast({
           key={notification.id}
           href={notification.href}
           onClick={() => dismiss(notification.id)}
-          className="group pointer-events-auto flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-[#0A0E1A]/95 px-3.5 py-3 shadow-[0_24px_64px_-18px_rgba(0,0,0,0.6)] backdrop-blur-md motion-safe:animate-[studio-msg-toast-in_220ms_ease-out]"
+          className="group pointer-events-auto flex items-start gap-3 rounded-2xl border border-[var(--studio-thread-line)] bg-[var(--studio-thread-card)]/95 px-3.5 py-3 shadow-[0_24px_64px_-18px_rgba(0,0,0,0.6)] backdrop-blur-md motion-safe:animate-[studio-msg-toast-in_220ms_ease-out]"
         >
           <span
-            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#d4b14e]/30 to-[#d4b14e]/10 text-[12px] font-semibold text-[#d4b14e]"
+            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--studio-thread-accent-soft)] to-transparent text-[12px] font-semibold text-[var(--studio-thread-accent-text)]"
             aria-hidden
           >
             {(notification.senderName || "S")
@@ -195,17 +195,17 @@ export function NotificationToast({
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
-              <span className="truncate text-[12px] font-semibold text-[#F5F4EE]">
+              <span className="truncate text-[12px] font-semibold text-[var(--studio-thread-ink)]">
                 {notification.senderName}
               </span>
-              <span className="shrink-0 text-[10px] uppercase tracking-[0.08em] text-[#d4b14e]/85">
+              <span className="shrink-0 text-[10px] uppercase tracking-[0.08em] text-[var(--studio-thread-accent-text)]">
                 New
               </span>
             </div>
-            <div className="mt-0.5 truncate text-[10px] text-white/45">
+            <div className="mt-0.5 truncate text-[10px] text-[var(--studio-thread-ink-muted)]">
               {notification.projectTitle}
             </div>
-            <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-white/80">
+            <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-[var(--studio-thread-ink-soft)]">
               {notification.body}
             </p>
           </div>
@@ -216,7 +216,7 @@ export function NotificationToast({
               event.stopPropagation();
               dismiss(notification.id);
             }}
-            className="shrink-0 rounded-full p-1 text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
+            className="shrink-0 rounded-full p-1 text-[var(--studio-thread-ink-muted)] transition-colors hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink-soft)]"
             aria-label="Dismiss notification"
           >
             <X className="h-3.5 w-3.5" aria-hidden />

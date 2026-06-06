@@ -15,27 +15,27 @@ type ComposerPreviewProps = {
 export function ReplyComposerPreview({ preview, onCancel }: ComposerPreviewProps) {
   return (
     <div
-      className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-[#0A0E1A] px-3 py-2"
+      className="flex items-start gap-3 rounded-xl border border-[var(--studio-thread-line)] bg-[var(--studio-thread-card)] px-3 py-2"
       data-reply-preview="composer"
     >
       <span
-        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#d4b14e]/15 text-[#d4b14e]"
+        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--studio-thread-accent-soft)] text-[var(--studio-thread-accent-text)]"
         aria-hidden
       >
         <CornerUpLeft className="h-3.5 w-3.5" />
       </span>
-      <div className="min-w-0 flex-1 border-l-2 border-[#d4b14e] pl-3">
-        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#d4b14e]">
+      <div className="min-w-0 flex-1 border-l-2 border-[var(--studio-thread-accent)] pl-3">
+        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--studio-thread-accent-text)]">
           Replying to {preview.senderName}
         </div>
-        <p className="mt-0.5 truncate text-[12px] text-white/70">
+        <p className="mt-0.5 truncate text-[12px] text-[var(--studio-thread-ink-soft)]">
           {preview.bodyExcerpt || "(no content)"}
         </p>
       </div>
       <button
         type="button"
         onClick={onCancel}
-        className="shrink-0 rounded-full p-1 text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
+        className="shrink-0 rounded-full p-1 text-[var(--studio-thread-ink-muted)] transition-colors hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink-soft)]"
         aria-label="Cancel reply"
       >
         <X className="h-4 w-4" aria-hidden />
@@ -59,7 +59,7 @@ export function ReplyBubblePreview({
   ownTone,
   onJump,
 }: BubblePreviewProps) {
-  const tone = ownTone ? "border-white/30 text-[#F5F4EE]/85" : "border-[#d4b14e] text-white/75";
+  const tone = ownTone ? "border-[var(--studio-thread-line)] text-[var(--studio-thread-ink-soft)]" : "border-[var(--studio-thread-accent)] text-[var(--studio-thread-ink-soft)]";
   return (
     <button
       type="button"
@@ -69,7 +69,7 @@ export function ReplyBubblePreview({
     >
       <div
         className={`text-[11px] font-medium uppercase tracking-[0.10em] ${
-          ownTone ? "text-[#F5F4EE]/85" : "text-[#d4b14e]"
+          ownTone ? "text-[var(--studio-thread-ink-soft)]" : "text-[var(--studio-thread-accent-text)]"
         }`}
       >
         {preview.senderName}

@@ -18,7 +18,7 @@ export function ProjectProgressTimeline({ updates }: { updates: StudioProjectUpd
                 <time className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
                   {formatWorkspaceDate(update.createdAt)}
                 </time>
-                <span className="rounded-full border border-[rgba(151,244,243,0.25)] bg-[rgba(151,244,243,0.08)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--studio-signal)]">
+                <span className="rounded-full border border-[var(--studio-accent-ring)] bg-[var(--studio-accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--studio-signal)]">
                   {friendlyUpdateKind(update.kind)}
                 </span>
               </div>
@@ -30,7 +30,7 @@ export function ProjectProgressTimeline({ updates }: { updates: StudioProjectUpd
           ))}
         </ol>
       ) : (
-        <div className="rounded-[1.5rem] border border-dashed border-[var(--studio-line)] bg-black/5 px-6 py-12 text-center">
+        <div className="rounded-[1.5rem] border border-dashed border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-6 py-12 text-center">
           <p className="text-sm font-medium text-[var(--studio-ink)]">No updates yet</p>
           <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
             Your project timeline will appear here once work begins. Each update includes a clear headline, timestamp, and context so you always know what moved.

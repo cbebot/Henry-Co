@@ -864,7 +864,7 @@ html.dark .studio-listbox-dropdown {
   position: absolute;
   inset: -4px;
   border-radius: 18px;
-  background: rgba(212, 177, 78, 0.18);
+  background: var(--studio-thread-accent-soft);
   z-index: -1;
   animation: studio-msg-flash-fade 1600ms ease-out forwards;
   pointer-events: none;
@@ -879,19 +879,18 @@ html.dark .studio-listbox-dropdown {
    studio messaging input area. The composer ships its own light/dark
    shells; the studio surface overrides to its dark, bordered tone. */
 .studio-msg-composer .henryco-composer-shell {
-  background: #0F1524;
-  border-color: rgba(255, 255, 255, 0.06);
-  color: #F5F4EE;
-  box-shadow: 0 18px 48px -32px rgba(0, 0, 0, 0.6),
-              0 1px 0 rgba(255, 255, 255, 0.02) inset;
+  background: var(--studio-thread-inset);
+  border-color: var(--studio-thread-line);
+  color: var(--studio-thread-ink);
+  box-shadow: var(--studio-shadow-soft);
 }
 
 .studio-msg-composer .henryco-composer-shell textarea,
 .studio-msg-composer .henryco-composer-shell textarea::placeholder {
-  color: #F5F4EE;
+  color: var(--studio-thread-ink);
 }
 .studio-msg-composer .henryco-composer-shell textarea::placeholder {
-  color: rgba(245, 244, 238, 0.45);
+  color: var(--studio-thread-ink-muted);
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -2039,4 +2038,71 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .studio-workspace-light ::selection {
   background: var(--studio-accent-soft);
   color: var(--studio-ink);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   V3-INNER-L-STUDIO-TAIL — the realtime messages centre on Register L.
+
+   The customer messages centre (components/messaging/*) is CUSTOMER-ONLY:
+   its three importers all live under app/client/*, and the staff /support
+   surface runs on the separate @henryco/messaging-thread package. #234
+   carved it out of the light scope as a follow-on; this resolves it — a
+   light account with one permanently-dark room is the inconsistency we
+   kill. These dual-valued --studio-thread-* tokens carry the chat's deep
+   near-black canvas under .dark and an AA light register under light. The
+   bespoke gold #d4b14e accent (which fails AA on a light canvas) is
+   superseded by the configured studio teal, extending the #234 §9
+   resolution (teal supersedes the ad-hoc mint AND gold). The accent tokens
+   late-bind through the dual-valued --studio-accent*, so one :root
+   definition themes correctly in both registers.
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  /* dark-stage defaults — the historical chat look (also the .dark value) */
+  --studio-thread-canvas: #050816;
+  --studio-thread-rail: #070B14;
+  --studio-thread-card: #0A0E1A;
+  --studio-thread-inset: #0F1524;
+  --studio-thread-ink: #F5F4EE;
+  --studio-thread-ink-soft: rgba(245, 244, 238, 0.74);
+  --studio-thread-ink-muted: rgba(245, 244, 238, 0.54);
+  --studio-thread-ink-faint: rgba(245, 244, 238, 0.40);
+  --studio-thread-line: rgba(255, 255, 255, 0.06);
+  --studio-thread-line-soft: rgba(255, 255, 255, 0.04);
+  --studio-thread-hover: rgba(255, 255, 255, 0.06);
+  /* teal accent — late-binds through the dual-valued --studio-accent* */
+  --studio-thread-accent: var(--studio-accent);
+  --studio-thread-accent-text: var(--studio-accent-text);
+  --studio-thread-accent-soft: var(--studio-accent-soft);
+  --studio-thread-accent-line: var(--studio-accent-ring);
+  --studio-thread-success: var(--studio-green-ink);
+}
+
+/* Light register — AA-tuned warm neutrals (mirrors the dashboard --acct-*). */
+.studio-workspace-light {
+  --studio-thread-canvas: var(--acct-bg);       /* #FAFAF8 */
+  --studio-thread-rail: var(--acct-bg-soft);    /* #FFFFFF */
+  --studio-thread-card: var(--acct-bg-soft);    /* #FFFFFF */
+  --studio-thread-inset: var(--acct-surface);   /* #F5F3EF */
+  --studio-thread-ink: var(--acct-ink);         /* #1A1814 */
+  --studio-thread-ink-soft: rgba(26, 24, 20, 0.84);
+  --studio-thread-ink-muted: rgba(26, 24, 20, 0.68);
+  --studio-thread-ink-faint: rgba(26, 24, 20, 0.62);
+  --studio-thread-line: var(--acct-line);       /* #E8E4DD */
+  --studio-thread-line-soft: rgba(26, 24, 20, 0.07);
+  --studio-thread-hover: rgba(26, 24, 20, 0.04);
+}
+
+/* Dark is the device-preference flip back to the near-black chat. */
+.dark .studio-workspace-light {
+  --studio-thread-canvas: #050816;
+  --studio-thread-rail: #070B14;
+  --studio-thread-card: #0A0E1A;
+  --studio-thread-inset: #0F1524;
+  --studio-thread-ink: #F5F4EE;
+  --studio-thread-ink-soft: rgba(245, 244, 238, 0.74);
+  --studio-thread-ink-muted: rgba(245, 244, 238, 0.54);
+  --studio-thread-ink-faint: rgba(245, 244, 238, 0.40);
+  --studio-thread-line: rgba(255, 255, 255, 0.06);
+  --studio-thread-line-soft: rgba(255, 255, 255, 0.04);
+  --studio-thread-hover: rgba(255, 255, 255, 0.06);
 }
