@@ -464,6 +464,10 @@ export function SupabaseRealtimeProvider({
           .then(async (r): Promise<Bucket> => {
             if (!r.ok) return { audience: "customer", items: [], ok: false };
             const p = (await r.json()) as HydrationPayload;
+            // A degraded hydration (read timeout/error → empty + 207) is
+            // untrusted: mergeSignals keeps the last-known signals instead of
+            // wiping the bell. Never let a transient read clear the inbox.
+            if (p?.degraded) return { audience: "customer", items: [], ok: false };
             const items = (p?.items ?? [])
               .map((it) => projectHydrationItem(it, "customer"))
               .filter((x): x is RealtimeSignal => x !== null);
@@ -477,6 +481,8 @@ export function SupabaseRealtimeProvider({
             .then(async (r): Promise<Bucket> => {
               if (!r.ok) return { audience: "staff", items: [], ok: false };
               const p = (await r.json()) as HydrationPayload;
+              // Degraded hydration → untrusted (see customer branch above).
+              if (p?.degraded) return { audience: "staff", items: [], ok: false };
               const items = (p?.items ?? [])
                 .map((it) => projectHydrationItem(it, "staff"))
                 .filter((x): x is RealtimeSignal => x !== null);

@@ -122,6 +122,13 @@ export type HenryEventName =
   | "henry.notification.delivered"
   | "henry.notification.read"
   | "henry.notification.failed"
+  // notification read-path resilience — emitted by /api/notifications/recent
+  // when the hydrate read times out or errors. The route returns a degraded
+  // empty payload + HTTP 207 instead of a 500/504 so the account shell renders
+  // an empty bell and navigation is never blocked (Directive 8). Distinct from
+  // `henry.notification.failed` (delivery-state) so this read-resilience signal
+  // stays out of the delivery-failure metric.
+  | "henry.notification.recent.degraded"
   | "henry.message.delivered"
   | "henry.message.read"
   | "henry.message.failed"
