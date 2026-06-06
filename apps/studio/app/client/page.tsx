@@ -146,7 +146,7 @@ export default async function ClientHomePage() {
               <Link
                 key={project.id}
                 href={`/client/projects/${project.id}`}
-                className="portal-card group flex items-start justify-between gap-3 px-4 py-3.5 transition hover:border-[rgba(151,244,243,0.4)]"
+                className="portal-card group flex items-start justify-between gap-3 px-4 py-3.5 transition hover:border-[var(--studio-accent-ring)]"
               >
                 <div className="min-w-0">
                   <div className="truncate text-[13.5px] font-semibold text-[var(--studio-ink)]">

@@ -94,9 +94,9 @@ export default async function ClientNotificationsPage() {
                   <li key={`invoice-${item.invoice.id}-${idx}`}>
                     <Link
                       href={`/client/payment/${item.invoice.id}`}
-                      className="portal-card group flex items-start gap-3 px-4 py-3.5 transition hover:border-[rgba(151,244,243,0.4)]"
+                      className="portal-card group flex items-start gap-3 px-4 py-3.5 transition hover:border-[var(--studio-accent-ring)]"
                     >
-                      <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[rgba(255,184,184,0.08)] text-[#ffb8b8]">
+                      <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[var(--studio-red-soft)] text-[var(--studio-red-ink)]">
                         <CreditCard className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -125,9 +125,9 @@ export default async function ClientNotificationsPage() {
                   <li key={`deliverable-${item.deliverable.id}-${idx}`}>
                     <Link
                       href={`/client/projects/${item.deliverable.projectId}?tab=files`}
-                      className="portal-card group flex items-start gap-3 px-4 py-3.5 transition hover:border-[rgba(151,244,243,0.4)]"
+                      className="portal-card group flex items-start gap-3 px-4 py-3.5 transition hover:border-[var(--studio-accent-ring)]"
                     >
-                      <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[rgba(189,242,207,0.08)] text-[#bdf2cf]">
+                      <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[var(--studio-green-soft)] text-[var(--studio-green-ink)]">
                         <FileText className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -154,9 +154,9 @@ export default async function ClientNotificationsPage() {
                 <li key={`message-${item.message.id}-${idx}`}>
                   <Link
                     href={`/client/projects/${item.message.projectId}/messages`}
-                    className="portal-card group flex items-start gap-3 px-4 py-3.5 transition hover:border-[rgba(151,244,243,0.4)]"
+                    className="portal-card group flex items-start gap-3 px-4 py-3.5 transition hover:border-[var(--studio-accent-ring)]"
                   >
-                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.08)] text-[var(--studio-signal)]">
+                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]">
                       <MessageSquare className="h-4 w-4" />
                     </span>
                     <div className="min-w-0 flex-1">

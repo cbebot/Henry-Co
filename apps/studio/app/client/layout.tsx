@@ -50,6 +50,12 @@ export default async function StudioClientLayout({
   const subscriptions = await resolveViewerProjectSubscriptions();
   const pathname = await currentPathname();
 
+  // The realtime messages centre (components/messaging/*) keeps the studio
+  // dark thread theme for now — its Register-L flip is a separate focused
+  // pass. Only the dashboard surfaces mount the light scope, so the two
+  // never mix mid-render.
+  const isMessagingSurface = pathname.includes("/messages");
+
   const snapshot = await getClientPortalSnapshot(viewer);
   const attentionCount = buildAttentionItems(snapshot).length;
   const unreadCount = unreadMessageCount(snapshot);
@@ -72,22 +78,31 @@ export default async function StudioClientLayout({
 
   return (
     <StudioRealtimeBridge viewer={viewer}>
-      <WorkspaceShell
-        division="studio"
-        brand={STUDIO_BRAND}
-        viewer={shellViewer}
-        navigation={portalNavItems}
-        mobileNavigation={portalMobileNavItems}
-        badges={badges}
-        attentionCount={attentionCount}
-        notificationsHref="/client/notifications"
-        profileHref="/client/profile"
-        accountSettingsUrl={accountUrl}
-        takeoverPrefixes={FULL_TAKEOVER_PREFIXES}
-        pathname={pathname}
-      >
-        {children}
-      </WorkspaceShell>
+      {/* V3-INNER-L-STUDIO — the client portal runs on Register L: the shared
+          light-primary, theme-aware Henry Onyx dashboard system. The
+          .studio-workspace-light scope (app/globals.css) re-grounds the studio
+          tokens on the light register + the configured teal accent and re-tones
+          the shared WorkspaceShell + the studio/portal utilities. Dark is the
+          device-preference flip, not the default — the forced-dark client-portal
+          defect is gone here. */}
+      <div className={isMessagingSurface ? undefined : "studio-workspace-light"}>
+        <WorkspaceShell
+          division="studio"
+          brand={STUDIO_BRAND}
+          viewer={shellViewer}
+          navigation={portalNavItems}
+          mobileNavigation={portalMobileNavItems}
+          badges={badges}
+          attentionCount={attentionCount}
+          notificationsHref="/client/notifications"
+          profileHref="/client/profile"
+          accountSettingsUrl={accountUrl}
+          takeoverPrefixes={FULL_TAKEOVER_PREFIXES}
+          pathname={pathname}
+        >
+          {children}
+        </WorkspaceShell>
+      </div>
 
       {/* Cross-division customer-notifications toast — fires when a row
        * lands in customer_notifications for this viewer (orders, system

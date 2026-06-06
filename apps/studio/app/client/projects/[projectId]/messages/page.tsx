@@ -68,7 +68,7 @@ export default async function ProjectMessagesPage({
   return (
     <main
       id="henryco-main"
-      className="flex h-[100svh] min-h-0 w-full flex-col bg-[#050816]"
+      className="flex h-[100svh] min-h-0 w-full flex-col bg-[var(--studio-bg)]"
     >
       <ProjectThread initial={initial} />
     </main>

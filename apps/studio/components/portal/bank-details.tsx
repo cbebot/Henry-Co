@@ -21,7 +21,7 @@ export function BankDetails({
   return (
     <div className="portal-card-elev p-5 sm:p-7">
       <div className="flex items-start gap-3">
-        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[rgba(217,168,109,0.1)] text-[#f0c89a]">
+        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-copper-soft)] text-[var(--studio-copper-ink)]">
           <ShieldCheck className="h-5 w-5" />
         </div>
         <div>
@@ -34,7 +34,7 @@ export function BankDetails({
         </div>
       </div>
 
-      <div className="mt-5 divide-y divide-[var(--studio-line)] rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)]">
+      <div className="mt-5 divide-y divide-[var(--studio-line)] rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)]">
         {rows.map(({ icon: Icon, label, value, copy }) => (
           <div
             key={label}
@@ -56,7 +56,7 @@ export function BankDetails({
         ))}
       </div>
 
-      <div className="mt-4 rounded-2xl border border-dashed border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-4 py-3 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+      <div className="mt-4 rounded-2xl border border-dashed border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
         Use your invoice number as the transfer reference. After the transfer, attach your proof
         below — finance verifies within one business day.
       </div>

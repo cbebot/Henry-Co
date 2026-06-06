@@ -37,8 +37,8 @@ export function StudioWorkspaceShell({
               className={joinClassNames(
                 "flex items-center justify-between rounded-[1.4rem] px-4 py-3 text-sm font-semibold transition",
                 item.active
-                  ? "bg-[linear-gradient(135deg,#113743,#1d6973)] text-white"
-                  : "border border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink)]"
+                  ? "bg-[var(--studio-accent-soft)] text-[var(--studio-accent-text)]"
+                  : "border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] text-[var(--studio-ink)]"
               )}
             >
               <span>{item.label}</span>
