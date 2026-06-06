@@ -45,7 +45,7 @@ export async function ProjectWorkspaceHeader() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={accountUrl}
-            className="hidden rounded-full border border-[var(--studio-line)] px-4 py-2.5 text-sm font-medium text-[var(--studio-ink-soft)] transition hover:border-[rgba(151,244,243,0.28)] hover:text-[var(--studio-ink)] sm:inline-flex"
+            className="hidden rounded-full border border-[var(--studio-line)] px-4 py-2.5 text-sm font-medium text-[var(--studio-ink-soft)] transition hover:border-[var(--studio-accent)] hover:text-[var(--studio-ink)] sm:inline-flex"
           >
             My account
           </Link>
@@ -57,8 +57,8 @@ export async function ProjectWorkspaceHeader() {
             preferencesHref={getAccountUrl("/settings")}
             settingsHref={getAccountUrl("/security")}
             showSignOut
-            buttonClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.35)] hover:bg-[color-mix(in_srgb,var(--studio-bg-soft)_92%,#000)]"
-            dropdownClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] shadow-[0_24px_64px_rgba(0,0,0,0.45)]"
+            buttonClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] text-[var(--studio-ink)] hover:border-[var(--studio-accent)] hover:bg-[color-mix(in_srgb,var(--studio-bg-soft)_92%,var(--studio-ink))]"
+            dropdownClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] shadow-[var(--studio-shadow)]"
             menuItems={[
               { label: "View in my account", href: `${accountUrl}?ref=studio-project` },
               { label: "Start another project", href: "/request" },
@@ -68,7 +68,7 @@ export async function ProjectWorkspaceHeader() {
         </div>
       </div>
       {catalog.platform.supportEmail ? (
-        <div className="border-t border-[var(--studio-line)]/60 bg-black/10 px-5 py-2 text-center text-[11px] text-[var(--studio-ink-soft)] sm:px-8 lg:px-10">
+        <div className="border-t border-[var(--studio-line)]/60 bg-[var(--studio-fill-faint)] px-5 py-2 text-center text-[11px] text-[var(--studio-ink-soft)] sm:px-8 lg:px-10">
           Questions on payment or scope?{" "}
           <a className="font-medium text-[var(--studio-signal)]" href={`mailto:${catalog.platform.supportEmail}`}>
             {catalog.platform.supportEmail}

@@ -13,11 +13,11 @@ export function DateSeparator({ iso }: Props) {
       role="separator"
       aria-label={formatDateSeparator(iso)}
     >
-      <span className="h-px flex-1 bg-white/[0.06]" aria-hidden />
-      <span className="rounded-full border border-white/[0.06] bg-[#0A0E1A] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-white/45">
+      <span className="h-px flex-1 bg-[var(--studio-thread-hover)]" aria-hidden />
+      <span className="rounded-full border border-[var(--studio-thread-line)] bg-[var(--studio-thread-card)] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--studio-thread-ink-muted)]">
         {formatDateSeparator(iso)}
       </span>
-      <span className="h-px flex-1 bg-white/[0.06]" aria-hidden />
+      <span className="h-px flex-1 bg-[var(--studio-thread-hover)]" aria-hidden />
     </div>
   );
 }

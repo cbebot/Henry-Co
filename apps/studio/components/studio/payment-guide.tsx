@@ -55,7 +55,7 @@ export function StudioPaymentGuide({
     <section className="space-y-5">
       <HenryCoHeroCard
         tone="contrast"
-        accentVar="var(--studio-signal, #97f4f3)"
+        accentVar="var(--studio-signal, #1F7375)"
         eyebrow={statusLabel}
         title={title}
         body={instructions}
@@ -80,7 +80,7 @@ export function StudioPaymentGuide({
       />
 
       {/* Bank details — divided list, no nested cards. */}
-      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
+      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5 sm:p-6">
         <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
           <ShieldCheck className="h-3.5 w-3.5" />
           Verified company payee
@@ -117,7 +117,7 @@ export function StudioPaymentGuide({
 
       {/* Step-by-step — single divided list with numbered prefixes, no
           nested cards, no oversized chrome. */}
-      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
+      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5 sm:p-6">
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
           What happens, step by step
         </div>
@@ -144,7 +144,7 @@ export function StudioPaymentGuide({
 
       {/* Support — quiet two-line list with hairline rule. */}
       {supportEmail || (supportWhatsApp && whatsappHref) ? (
-        <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
+        <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5 sm:p-6">
           <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
             Need help before or after payment
           </div>
@@ -153,7 +153,7 @@ export function StudioPaymentGuide({
               <li>
                 <a
                   href={`mailto:${supportEmail}`}
-                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
+                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--studio-bg-soft)] [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
                 >
                   <span className="flex items-center gap-3">
                     <Mail className="h-4 w-4 text-[var(--studio-signal)]" />
@@ -171,7 +171,7 @@ export function StudioPaymentGuide({
                   href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
+                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--studio-bg-soft)] [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
                 >
                   <span className="flex items-center gap-3">
                     <Smartphone className="h-4 w-4 text-[var(--studio-signal)]" />

@@ -57,8 +57,8 @@ export function ProjectStatusRail({ unpaidPayments, payments, projectStatus }: P
               key={step.title}
               className={`rounded-[1.35rem] border px-4 py-3 ${
                 step.emphasis
-                  ? "border-[rgba(151,244,243,0.38)] bg-[rgba(151,244,243,0.08)]"
-                  : "border-[var(--studio-line)] bg-black/10"
+                  ? "border-[var(--studio-accent-ring)] bg-[var(--studio-accent-soft)]"
+                  : "border-[var(--studio-line)] bg-[var(--studio-fill-soft)]"
               }`}
             >
               <div className="flex items-start gap-3">

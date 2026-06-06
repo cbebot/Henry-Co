@@ -22,7 +22,7 @@ export function ProjectCollapsiblePanel({
     <details
       open={open}
       onToggle={(e) => setOpen(e.currentTarget.open)}
-      className="group rounded-[1.85rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface)_88%,transparent)] open:border-[rgba(151,244,243,0.22)]"
+      className="group rounded-[1.85rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface)_88%,transparent)] open:border-[var(--studio-accent-soft)]"
     >
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-6 pr-5 [&::-webkit-details-marker]:hidden">
         <div className="min-w-0 text-left">

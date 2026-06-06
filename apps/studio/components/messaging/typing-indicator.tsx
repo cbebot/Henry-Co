@@ -23,11 +23,11 @@ export function TypingIndicator({ typists }: Props) {
       aria-live="polite"
       aria-label={`${label} typing`}
     >
-      <span className="text-[11px] font-medium tracking-[0.005em] text-white/55">
+      <span className="text-[11px] font-medium tracking-[0.005em] text-[var(--studio-thread-ink-muted)]">
         {label}
       </span>
       <span
-        className="inline-flex items-center gap-[3px] rounded-full border border-white/[0.06] bg-[#0F1524] px-2.5 py-1.5"
+        className="inline-flex items-center gap-[3px] rounded-full border border-[var(--studio-thread-line)] bg-[var(--studio-thread-inset)] px-2.5 py-1.5"
         aria-hidden
       >
         <Dot delay="0ms" />
@@ -41,7 +41,7 @@ export function TypingIndicator({ typists }: Props) {
 function Dot({ delay }: { delay: string }) {
   return (
     <span
-      className="block h-1.5 w-1.5 rounded-full bg-white/55 motion-safe:animate-[studio-msg-typing-dot_1200ms_ease-in-out_infinite]"
+      className="block h-1.5 w-1.5 rounded-full bg-[var(--studio-thread-ink-muted)] motion-safe:animate-[studio-msg-typing-dot_1200ms_ease-in-out_infinite]"
       style={{ animationDelay: delay }}
     />
   );

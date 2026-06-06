@@ -95,8 +95,8 @@ export function MessageBubble({
 
   const bubbleAlignment = isOwn ? "ml-auto" : "mr-auto";
   const bubbleColour = isOwn
-    ? "bg-[#d4b14e]/15 border-[#d4b14e]/30 text-[#F5F4EE]"
-    : "bg-[#0F1524] border-white/[0.06] text-[#F5F4EE]";
+    ? "bg-[var(--studio-thread-accent-soft)] border-[var(--studio-thread-accent-line)] text-[var(--studio-thread-ink)]"
+    : "bg-[var(--studio-thread-inset)] border-[var(--studio-thread-line)] text-[var(--studio-thread-ink)]";
   const radiusCls = isOwn
     ? "rounded-[16px] rounded-br-[4px]"
     : "rounded-[16px] rounded-bl-[4px]";
@@ -134,10 +134,10 @@ export function MessageBubble({
       >
         {/* Sender name above first-in-sequence team bubble. */}
         {!isOwn && isFirstInSequence ? (
-          <div className="mb-1 ml-1 text-[12px] font-medium tracking-[0.005em] text-[#d4b14e]">
+          <div className="mb-1 ml-1 text-[12px] font-medium tracking-[0.005em] text-[var(--studio-thread-accent-text)]">
             {message.senderName}
             {message.senderRole === "team" ? (
-              <span className="ml-2 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.10em] text-white/35">
+              <span className="ml-2 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.10em] text-[var(--studio-thread-ink-faint)]">
                 Studio
               </span>
             ) : null}
@@ -178,7 +178,7 @@ export function MessageBubble({
           {message.body ? (
             <p
               className={`whitespace-pre-wrap break-words text-[14px] leading-[1.45] ${
-                isOwn ? "text-[#F5F4EE]" : "text-[#F5F4EE]"
+                isOwn ? "text-[var(--studio-thread-ink)]" : "text-[var(--studio-thread-ink)]"
               }`}
             >
               {message.body}
@@ -188,7 +188,7 @@ export function MessageBubble({
           {message.editedAt ? (
             <span
               className={`mt-1 inline-block text-[10px] italic ${
-                isOwn ? "text-[#F5F4EE]/55" : "text-white/45"
+                isOwn ? "text-[var(--studio-thread-ink-muted)]" : "text-[var(--studio-thread-ink-muted)]"
               }`}
               title={`Edited ${formatMessageTimestamp(message.editedAt)}`}
             >
@@ -199,7 +199,7 @@ export function MessageBubble({
           {/* Hover-reveal action rail */}
           {hovered || pickerOpen ? (
             <div
-              className={`absolute -top-3 z-20 inline-flex items-center gap-0.5 rounded-full border border-white/[0.06] bg-[#0A0E1A]/95 px-1 py-0.5 shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)] backdrop-blur-sm ${
+              className={`absolute -top-3 z-20 inline-flex items-center gap-0.5 rounded-full border border-[var(--studio-thread-line)] bg-[var(--studio-thread-card)]/95 px-1 py-0.5 shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)] backdrop-blur-sm ${
                 isOwn ? "right-2" : "left-2"
               }`}
             >
@@ -261,7 +261,7 @@ export function MessageBubble({
         {/* Timestamp + status */}
         {isLastInSequence ? (
           <div
-            className={`mt-1 flex items-center gap-1.5 text-[11px] tabular-nums text-white/40 ${
+            className={`mt-1 flex items-center gap-1.5 text-[11px] tabular-nums text-[var(--studio-thread-ink-faint)] ${
               isOwn ? "self-end" : "self-start"
             }`}
           >
@@ -308,12 +308,12 @@ function DeletedBubble({
       }`}
     >
       <div
-        className={`max-w-[60%] rounded-[14px] border border-white/[0.04] bg-white/[0.02] px-3 py-1.5 text-[12px] italic text-white/40 ${
+        className={`max-w-[60%] rounded-[14px] border border-[var(--studio-thread-line-soft)] bg-[var(--studio-thread-hover)] px-3 py-1.5 text-[12px] italic text-[var(--studio-thread-ink-faint)] ${
           alignRight ? "rounded-br-[4px]" : "rounded-bl-[4px]"
         }`}
       >
         This message was removed
-        <time className="ml-2 not-italic text-white/30" dateTime={createdAt}>
+        <time className="ml-2 not-italic text-[var(--studio-thread-ink-faint)]" dateTime={createdAt}>
           {formatMessageTimestamp(createdAt)}
         </time>
       </div>
@@ -339,8 +339,8 @@ function Avatar({
     <span
       className={`flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-semibold tracking-[0.02em] ${
         isTeam
-          ? "bg-gradient-to-br from-[#d4b14e]/30 to-[#d4b14e]/10 text-[#d4b14e]"
-          : "bg-white/[0.06] text-white/70"
+          ? "bg-gradient-to-br from-[var(--studio-thread-accent-soft)] to-transparent text-[var(--studio-thread-accent-text)]"
+          : "bg-[var(--studio-thread-hover)] text-[var(--studio-thread-ink-soft)]"
       }`}
       aria-hidden
     >
@@ -365,7 +365,7 @@ function ActionButton({
       ? "text-red-300 hover:bg-red-500/10"
       : intent === "warn"
         ? "text-amber-300 hover:bg-amber-500/10"
-        : "text-white/65 hover:bg-white/[0.06] hover:text-white";
+        : "text-[var(--studio-thread-ink-soft)] hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink)]";
   return (
     <button
       type="button"
@@ -381,12 +381,12 @@ function ActionButton({
 
 function SeenIndicator({ seen }: { seen: boolean }) {
   if (!seen) {
-    return <Check className="h-3 w-3 text-white/35" aria-label="Sent" />;
+    return <Check className="h-3 w-3 text-[var(--studio-thread-ink-faint)]" aria-label="Sent" />;
   }
   return (
-    <span className="inline-flex items-center gap-0.5 text-[#d4b14e]">
+    <span className="inline-flex items-center gap-0.5 text-[var(--studio-thread-accent-text)]">
       <CheckCheck className="h-3.5 w-3.5" aria-hidden />
-      <span className="font-medium tracking-[0.005em] text-white/55">Seen</span>
+      <span className="font-medium tracking-[0.005em] text-[var(--studio-thread-ink-muted)]">Seen</span>
     </span>
   );
 }
