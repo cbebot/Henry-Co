@@ -48,6 +48,19 @@ export function formatPaymentReceiptDate(value: string | null | undefined) {
   });
 }
 
+/**
+ * A stable, human-readable transaction reference. Prefers an explicit reference
+ * (order no / invoice no) the caller already has; otherwise derives a short,
+ * uppercase ref from the payment id so the surface never shows a bare UUID.
+ */
+export function formatPaymentReference(id: string, reference?: string | null) {
+  const explicit = (reference ?? "").trim();
+  if (explicit) return explicit;
+  const compact = String(id ?? "").replace(/[^0-9a-zA-Z]/g, "");
+  const tail = compact.slice(-8).toUpperCase();
+  return tail ? `HX-${tail}` : String(id ?? "");
+}
+
 export function buildPaymentRedirectPath(
   basePath: string,
   query?: Record<string, string | null | undefined>,

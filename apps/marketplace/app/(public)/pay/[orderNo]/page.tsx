@@ -98,6 +98,7 @@ export default async function MarketplacePaymentWorkspace({
       proofName: proof?.proofName ?? null,
       proofUrl: proof?.proofUrl ?? null,
       updatedAt: proof?.verifiedAt ?? proof?.submittedAt ?? order.placedAt,
+      reference: order.orderNo,
     }),
     record: {
       title: paymentLabel,

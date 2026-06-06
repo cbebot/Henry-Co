@@ -111,7 +111,7 @@ export function PaymentGuide({
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
                 <span className={cn("min-w-0 flex-1 truncate font-mono text-sm font-semibold sm:flex-initial sm:text-right", inkClass)}>
-                  {item.value || "Awaiting finance configuration"}
+                  {item.value || "—"}
                 </span>
                 {item.value ? <PaymentCopyButton value={item.value} label={item.copyLabel} /> : null}
               </dd>

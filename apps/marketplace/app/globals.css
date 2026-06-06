@@ -9,6 +9,10 @@
    (toggle dark on a light-OS device → bg-white renders solid white, etc.). */
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
+/* Compile the shared @henryco/payment-surface classes (the --payment-* colors,
+   borders + precise sizes) — without this its arbitrary classes never emit CSS
+   and the payment surface renders washed-out ("doesn't look real"). */
+@source "../../../packages/payment-surface/src";
 
 :root {
   --font-marketplace-sans:

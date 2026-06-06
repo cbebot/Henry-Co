@@ -6,6 +6,9 @@
    media query — without this, the toggled theme and `dark:` utilities decouple. */
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
+/* Compile the shared @henryco/payment-surface classes so /pay renders fully
+   styled (its --payment-* arbitrary classes otherwise never emit CSS). */
+@source "../../../packages/payment-surface/src";
 
 :root {
   --font-jakarta:

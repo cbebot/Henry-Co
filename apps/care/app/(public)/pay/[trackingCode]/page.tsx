@@ -78,6 +78,7 @@ export default async function CarePaymentWorkspace({
       proofName: snapshot.latestSubmission?.attachments?.[0]?.fileName ?? null,
       proofUrl: snapshot.latestSubmission?.attachments?.[0]?.url ?? null,
       updatedAt: snapshot.lastReviewedAt ?? snapshot.lastSubmittedAt,
+      reference: snapshot.requestNo ?? code,
     }),
     record: {
       title: snapshot.customerName || "Care booking",
