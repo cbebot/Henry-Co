@@ -146,6 +146,32 @@
   --hc-accent-text: #8A6F00;
   --hc-accent-on-surface: #8A6F00;
   --hc-focus-ring: #C9A227;
+
+  /* V3-INNER-L-JOBS — bridge the shared @henryco/dashboard-shell --acct-*
+     primitives (HeroCard / NextStepRow / …) onto jobs' light tokens, so jobs
+     can ADOPT the shared dashboard grammar instead of hand-rolled hero chrome.
+     Jobs is already light Register-L; the accent is its configured teal
+     (#0e7c86 fills, --jobs-forest for AA accent text). Every var(--jobs-*)
+     reference auto-flips in .dark below — no separate dark block needed. */
+  --acct-bg: var(--jobs-bg);
+  --acct-bg-soft: var(--jobs-paper);
+  --acct-bg-elevated: var(--jobs-paper);
+  --acct-surface: var(--jobs-surface);
+  --acct-ink: var(--jobs-ink);
+  --acct-muted: var(--jobs-muted);
+  --acct-line: var(--jobs-line);
+  --acct-gold: var(--jobs-accent);
+  --acct-gold-soft: var(--jobs-accent-soft);
+  --acct-gold-strong: var(--jobs-forest);
+  --acct-gold-text: var(--jobs-forest);
+  --acct-green: var(--jobs-success);   --acct-green-soft: var(--jobs-success-soft);
+  --acct-red: var(--jobs-danger);      --acct-red-soft: var(--jobs-danger-soft);
+  --acct-orange: var(--jobs-warning);  --acct-orange-soft: var(--jobs-warning-soft);
+  --acct-blue: #2563EB;                --acct-blue-soft: rgba(37, 99, 235, 0.12);
+  --acct-font-display: var(--font-jobs-display);
+  --acct-radius: 1.25rem;
+  --acct-radius-lg: 1.75rem;
+  --acct-radius-sm: 0.75rem;
 }
 
 .dark {
@@ -170,6 +196,43 @@
   --jobs-warning-soft: rgba(237, 210, 138, 0.14);
   --jobs-shadow: 0 32px 120px rgba(0, 0, 0, 0.35);
   --jobs-shadow-strong: 0 48px 160px rgba(0, 0, 0, 0.45);
+}
+
+/* V3-INNER-L-JOBS — WCAG-AA corrections for the shared @henryco/dashboard-shell
+   HeroCard under jobs' mid-tone teal accent.
+
+   surfaces.css renders an INVERTED hero (dark card on the light dashboard / a
+   light card in dark mode) and tunes the primary-CTA text + focus ring for
+   account's LIGHT gold, where `color: var(--acct-ink)` reads on the fill in
+   both modes. Jobs' accent is teal (#0e7c86 light / #49b6bf dark) whose
+   lightness INVERTS between modes, so those gold-tuned defaults fail AA on the
+   accent fill (CTA 3.4:1 light / 2.2:1 dark; focus ring 1.8:1 / 1.6:1; eyebrow
+   3.6:1 dark). These overrides pin AA-verified on-accent text, a darkened
+   eyebrow tint, and a high-contrast focus ring per mode. Scoped under
+   `.acct-hero` (specificity beats the shared single-class rules regardless of
+   import order) and live ONLY in jobs globals — the shared package is never
+   touched, so account + other divisions keep their gold tuning. All ratios
+   proven in .codex-temp/v3-inner/wcag-jobs-hero.mjs (every pairing ≥ AA). */
+.acct-hero .acct-hero__cta--primary {
+  color: #ffffff;                                                  /* on #0e7c86 → 4.95:1 */
+}
+.acct-hero .acct-hero__cta--primary:hover {
+  background: color-mix(in srgb, var(--jobs-accent) 88%, #000);    /* darken → white stays 6.05:1 */
+}
+.dark .acct-hero .acct-hero__cta--primary {
+  color: var(--jobs-bg);                                           /* deep ink on #49b6bf → 7.83:1 */
+}
+.dark .acct-hero .acct-hero__cta--primary:hover {
+  background: color-mix(in srgb, var(--jobs-accent) 88%, #fff);    /* lighten → ink stays 8.73:1 */
+}
+.dark .acct-hero .acct-hero__eyebrow {
+  color: #18585d;                                                  /* darkened teal on light chip → 5.62:1 */
+}
+.acct-hero .acct-hero__cta:focus-visible {
+  outline-color: #ffffff;                                          /* vs dark card 16.6:1 / fill 4.95:1 */
+}
+.dark .acct-hero .acct-hero__cta:focus-visible {
+  outline-color: var(--jobs-bg);                                   /* vs light card 17.1:1 / fill 7.83:1 */
 }
 
 * {

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Bell, Bookmark, CheckCircle2, CircleAlert, FileCheck2, Sparkles } from "lucide-react";
-import { getJobsCopy } from "@henryco/i18n";
+import "@henryco/dashboard-shell/surfaces.css";
+import { HeroCard, type HeroCardTile } from "@henryco/dashboard-shell";
+import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { EmptyState } from "@/components/feedback";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { getJobsPublicLocale } from "@/lib/locale-server";
-import { SectionCard, StatTile, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
+import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +51,42 @@ export default async function CandidateOverviewPage() {
   const interviewLaneCount = data.applicationJourneys.filter((journey) =>
     ["shortlisted", "interview", "offer"].includes(journey.application.stage)
   ).length;
+
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const readiness = data.profile?.trustScore ?? 0;
+  const recruiterSignals = data.recruiterFeed.length;
+  const savedRoles = data.savedJobs.length;
+  const hasActivity = activeApplications.length > 0 || recruiterSignals > 0;
+
+  // Q1 — "what's happening with my search": four live counts above the fold.
+  // Readiness is intentionally NOT a tile here — it carries the progress strip
+  // below, so the tiles stay focused on momentum (applied / in review / saved /
+  // who's looking at me) rather than repeating the score.
+  const heroTiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: copy.tileActiveAppsLabel,
+      value: activeApplications.length,
+      foot: activeApplications.length > 0 ? copy.tileActiveAppsDetailActive : copy.tileActiveAppsDetailEmpty,
+      tone: activeApplications.length > 0 ? "active" : "default",
+    },
+    {
+      label: copy.tileInProgressLabel,
+      value: interviewLaneCount,
+      foot: interviewLaneCount > 0 ? copy.tileInProgressDetailActive : copy.tileInProgressDetailEmpty,
+      tone: interviewLaneCount > 0 ? "accent" : "default",
+    },
+    {
+      label: copy.tileSavedRolesLabel,
+      value: savedRoles,
+      foot: savedRoles > 0 ? copy.tileSavedRolesDetailActive : copy.tileSavedRolesDetailEmpty,
+    },
+    {
+      label: t("Recruiter signals"),
+      value: recruiterSignals,
+      foot: recruiterSignals > 0 ? t("Employers engaging with you") : t("None yet — keep applying"),
+      tone: recruiterSignals > 0 ? "active" : "default",
+    },
+  ];
 
   return (
     <WorkspaceShell
@@ -100,38 +138,25 @@ export default async function CandidateOverviewPage() {
       }
     >
       <div className="space-y-4">
-        <SectionCard
-          title={copy.overviewTitle}
-          body={copy.overviewBody}
-          actions={
-            <Link href="/candidate/profile" className="text-sm font-semibold text-[var(--jobs-accent)]">
-              {copy.overviewImproveProfile}
-            </Link>
+        <HeroCard
+          variant="solo"
+          tone={hasActivity ? "active" : "empty"}
+          eyebrow={t("Your job search")}
+          headline={
+            hasActivity
+              ? t("Your applications are in motion.")
+              : t("Your next role starts with a strong profile.")
           }
-        >
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <StatTile
-              label={copy.tileProfileReadinessLabel}
-              value={`${data.profile?.trustScore ?? 0}%`}
-              detail={data.profile?.readinessLabel || copy.tileProfileReadinessFallback}
-            />
-            <StatTile
-              label={copy.tileActiveAppsLabel}
-              value={activeApplications.length}
-              detail={activeApplications.length > 0 ? copy.tileActiveAppsDetailActive : copy.tileActiveAppsDetailEmpty}
-            />
-            <StatTile
-              label={copy.tileInProgressLabel}
-              value={interviewLaneCount}
-              detail={interviewLaneCount > 0 ? copy.tileInProgressDetailActive : copy.tileInProgressDetailEmpty}
-            />
-            <StatTile
-              label={copy.tileSavedRolesLabel}
-              value={data.savedJobs.length}
-              detail={data.savedJobs.length > 0 ? copy.tileSavedRolesDetailActive : copy.tileSavedRolesDetailEmpty}
-            />
-          </div>
-        </SectionCard>
+          blurb={t("Track every role you’ve applied to, see who’s reviewing you, and keep your profile ready for the next opportunity.")}
+          ariaLabel={t("Candidate overview")}
+          ctaPrimary={{ label: copy.overviewImproveProfile, href: "/candidate/profile" }}
+          ctaSecondary={{ label: t("Track applications"), href: "/candidate/applications" }}
+          tiles={heroTiles}
+          progress={{
+            percent: readiness,
+            label: `${copy.tileProfileReadinessLabel} · ${readiness}%`,
+          }}
+        />
 
         <SectionCard
           title={copy.profileStrengthTitle}
