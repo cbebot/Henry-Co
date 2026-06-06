@@ -236,7 +236,14 @@ async function syncOrderLifecycle(admin: ReturnType<typeof createAdminSupabase>,
 }
 
 function redirectTo(request: Request, target: string) {
-  return NextResponse.redirect(new URL(target, request.url));
+  // 303 See Other = POST-Redirect-GET. NextResponse.redirect() defaults to 307
+  // (method-PRESERVING), so after a native <form method="POST"> submission the
+  // browser RE-POSTs to `target`. Every target here is a page navigation (e.g.
+  // /track/[orderNo], /cart, /checkout?error=…) — and a POST to a GET-only RSC
+  // page makes Next throw "Failed to find Server Action" → a 500 on the
+  // destination (e.g. the post-checkout /track page). 303 tells the browser to
+  // switch to GET, the correct, universal status for these flows.
+  return NextResponse.redirect(new URL(target, request.url), 303);
 }
 
 function redirectToSharedAccountLogin(request: Request, nextPath: string) {
