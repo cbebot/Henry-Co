@@ -313,7 +313,13 @@ async function hasStudioTable(table: string) {
 
   try {
     const admin = createAdminSupabase();
-    const { error } = await admin.from(table).select("id").limit(1);
+    // Probe table existence WITHOUT naming a specific column. Most studio
+    // tables are keyed by `id`, but some (e.g. studio_settings) are keyed
+    // by `key` and have no `id` — a `.select("id")` probe throws
+    // "column ... does not exist" and logs a spurious ERROR on every cold
+    // start. A head request selects no row body and fails only when the
+    // table itself is missing, which is exactly what this check wants.
+    const { error } = await admin.from(table).select("*", { head: true }).limit(1);
     const exists = !error || !cleanText(error.message).includes("Could not find the table");
     tablePresenceCache.set(table, exists);
     return exists;

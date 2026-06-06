@@ -98,16 +98,20 @@ export async function GET(request: Request) {
     );
   }
 
-  // 3) kyc_incomplete_after_signup — accounts older than 3 days where the user's
-  //    KYC profile has no verified address. Heuristic: customer_profiles row
-  //    exists with kyc_completed_at = null.
+  // 3) kyc_incomplete_after_signup — accounts older than 3 days that have
+  //    not completed identity verification. KYC completion is tracked by
+  //    `customer_profiles.verification_status` (set to 'verified' by staff
+  //    review — see apps/account/lib/verification.ts); there is no
+  //    `kyc_completed_at` column. "Incomplete" = any status other than
+  //    'verified' (none / pending / rejected). verification_status is
+  //    NOT NULL (defaults to 'none'), so the `neq` predicate is exact.
   try {
     const cutoff = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
     const { data: profiles } = await admin
       .from("customer_profiles")
-      .select("id, created_at, kyc_completed_at")
+      .select("id, created_at, verification_status")
       .lt("created_at", cutoff)
-      .is("kyc_completed_at", null)
+      .neq("verification_status", "verified")
       .limit(500);
 
     for (const row of (profiles ?? []) as Array<{ id: string }>) {

@@ -15,6 +15,8 @@
     "test:workspace": "pnpm --filter @henryco/super-app run test:ci",
     "ci:validate": "pnpm run lint:all && pnpm run typecheck:all && pnpm run test:workspace && pnpm run build:all",
     "data-governance:sanity": "node scripts/data-governance-sanity.mjs",
+    "schema-drift:check": "node scripts/ci/schema-drift-check.mjs",
+    "schema-drift:baseline": "node scripts/ci/schema-drift-check.mjs --write-baseline",
     "i18n:check": "node scripts/i18n-check.mjs",
     "i18n:check:strict": "node scripts/i18n-check.mjs --strict",
     "i18n:scan": "node scripts/v3/hardcoded-text-scan.mjs",
