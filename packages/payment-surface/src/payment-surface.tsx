@@ -4,9 +4,11 @@ import {
   ArrowRight,
   CalendarClock,
   CreditCard,
+  Lock,
   Receipt,
   Shield,
 } from "lucide-react";
+import { COMPANY } from "@henryco/config";
 import { cn } from "@henryco/ui/cn";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { PaymentGuide } from "./payment-guide";
@@ -16,6 +18,7 @@ import { PaymentReceipt } from "./payment-receipt";
 import {
   formatPaymentAmount,
   formatPaymentDueDate,
+  formatPaymentReference,
   friendlyPaymentStatus,
 } from "./format";
 import type { PaymentSurfaceContext } from "./types";
@@ -61,6 +64,7 @@ export interface PaymentSurfaceProps {
 
 export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
   const { payment, record, platform, upload, copy, theme, cardCta } = ctx;
+  const reference = formatPaymentReference(payment.id, payment.reference);
   const statusLabel = friendlyPaymentStatus(payment.status, payment.statusLabel ?? null);
   const dueLabel = formatPaymentDueDate(payment.dueDate);
   const bodyByStatus = { ...DEFAULT_BODY, ...(copy?.bodyByStatus ?? {}) } as Record<string, string>;
@@ -160,6 +164,30 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
             </div>
           }
         />
+      </div>
+
+      {/* Trust anchor — persistent across states: who you're paying, that it is
+          secured, and the transaction reference. Makes the surface read as a
+          real, tracked, secure payment rather than a generic form. */}
+      <div
+        className={cn(
+          "mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-2xl border px-4 py-3 text-[12px]",
+          "border-[color:var(--payment-line,rgba(255,255,255,0.18))]",
+          "text-[color:var(--payment-soft,rgba(255,255,255,0.65))]",
+        )}
+      >
+        <span className="inline-flex items-center gap-1.5 font-semibold text-[color:var(--payment-ink,white)]">
+          <Lock className="h-3.5 w-3.5 text-[color:var(--payment-accent,#97f4f3)]" aria-hidden />
+          Secured payment
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="opacity-70">to</span>
+          <span className="font-semibold text-[color:var(--payment-ink,white)]">{COMPANY.group.legalName}</span>
+        </span>
+        <span className="ml-auto inline-flex items-center gap-1.5 tabular-nums">
+          <span className="opacity-70">Ref</span>
+          <span className="font-semibold text-[color:var(--payment-ink,white)]">{reference}</span>
+        </span>
       </div>
 
       {showCardCta && cardCta ? (

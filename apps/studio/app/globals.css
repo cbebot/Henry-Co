@@ -12,6 +12,9 @@
 @source "../../../packages/ui/src";
 @source "../../../packages/workspace-shell/src";
 @source "../../../packages/messaging-thread/src";
+/* Compile the shared @henryco/payment-surface classes so /pay renders fully
+   styled (its --payment-* arbitrary classes otherwise never emit CSS). */
+@source "../../../packages/payment-surface/src";
 
 /* ──────────────────────────────────────────────────────────────────
    Workspace-shell token mapping for the studio division.

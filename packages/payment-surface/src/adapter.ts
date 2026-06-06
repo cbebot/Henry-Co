@@ -59,6 +59,7 @@ export function buildPaymentRecordView(input: {
   proofUrl?: string | null;
   updatedAt?: string | null;
   rank?: { index: number; total: number } | null;
+  reference?: string | null;
 }): PaymentRecordView {
   return {
     id: input.id,
@@ -72,6 +73,7 @@ export function buildPaymentRecordView(input: {
     proofUrl: input.proofUrl ?? null,
     updatedAt: input.updatedAt ?? null,
     rank: input.rank ?? null,
+    reference: input.reference ?? null,
   };
 }
 

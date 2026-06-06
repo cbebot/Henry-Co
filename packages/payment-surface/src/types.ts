@@ -28,6 +28,10 @@ export interface PaymentRecordView {
   updatedAt?: string | null;
   /** Optional "1 of 3" rank for projects with milestone-tied payments. */
   rank?: { index: number; total: number } | null;
+  /** Human-readable transaction reference (order no, invoice no). When absent,
+   *  a stable short reference is derived from `id` so the surface always reads
+   *  as a tracked transaction, never a bare UUID. */
+  reference?: string | null;
 }
 
 export interface PaymentSurfaceLink {
