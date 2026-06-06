@@ -343,7 +343,7 @@ export default async function LearnerCoursePage({
 
               <div className="mt-6 space-y-5">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                       {t("Assessment state")}
                     </p>
@@ -354,7 +354,7 @@ export default async function LearnerCoursePage({
                       {quizLockedReason || t("Lessons are complete. Submit the assessment to unlock final completion and certification.")}
                     </p>
                   </div>
-                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                       {t("Attempt history")}
                     </p>
@@ -363,7 +363,7 @@ export default async function LearnerCoursePage({
                         attempts.slice(0, 3).map((attempt) => (
                           <div
                             key={attempt.id}
-                            className="rounded-[1.2rem] border border-[var(--learn-line)] bg-black/10 p-3"
+                            className="rounded-[1.2rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-3"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <p className="text-sm font-semibold text-[var(--learn-ink)]">{attempt.score}%</p>
@@ -409,7 +409,7 @@ export default async function LearnerCoursePage({
                     {questionsLocalized.map((question, index) => (
                       <div
                         key={question.id}
-                        className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-5"
+                        className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5"
                       >
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                           {t("Question")} {index + 1}
@@ -455,7 +455,7 @@ export default async function LearnerCoursePage({
                 )}
 
                 {reviewQuestions.length > 0 ? (
-                  <div className="rounded-[1.6rem] border border-[var(--learn-line)] bg-black/10 p-5">
+                  <div className="rounded-[1.6rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5">
                     <div className="flex items-center gap-3 text-[var(--learn-copper)]">
                       <Layers3 className="h-5 w-5" />
                       <p className="text-sm font-semibold">{t("Review before your next attempt")}</p>
@@ -464,7 +464,7 @@ export default async function LearnerCoursePage({
                       {reviewQuestions.map((question) => (
                         <div
                           key={question.id}
-                          className="rounded-[1.2rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                          className="rounded-[1.2rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4"
                         >
                           <p className="text-sm font-semibold text-[var(--learn-ink)]">{question.prompt}</p>
                           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
@@ -491,7 +491,7 @@ export default async function LearnerCoursePage({
               {requirementItems.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4"
                 >
                   <div className="flex items-start gap-3">
                     {item.done ? (
@@ -542,7 +542,7 @@ export default async function LearnerCoursePage({
 
       {certificate ? (
         <LearnPanel className="learn-print-sheet rounded-[2.1rem] p-0">
-          <div className="rounded-[2.1rem] border border-[var(--learn-line)] bg-[linear-gradient(160deg,rgba(227,188,126,0.16),rgba(95,197,171,0.1))] p-8 sm:p-10">
+          <div className="rounded-[2.1rem] border border-[var(--learn-line)] bg-[var(--learn-accent-soft)] p-8 sm:p-10">
             <div className="learn-print-hidden flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
@@ -560,7 +560,7 @@ export default async function LearnerCoursePage({
               />
             </div>
 
-            <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
+            <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.26em] text-[var(--learn-ink-soft)]">
                 {t("Henry Onyx Learn Certificate")}
               </p>
@@ -574,19 +574,19 @@ export default async function LearnerCoursePage({
                 {courseTitle || course.title}
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
+                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Certificate no")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.certificateNo}</p>
                 </div>
-                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
+                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Verification code")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.verificationCode}</p>
                 </div>
-                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
+                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Issued")}
                   </p>

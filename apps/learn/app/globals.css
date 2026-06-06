@@ -58,6 +58,22 @@
   --hc-ink-on-accent: #061311;
   --hc-focus-ring: #D4AF37;
   --learn-shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.22);
+
+  /* V3-INNER-L-LEARN — dual-valued token DEFAULTS (the dark baseline). The
+     .learn-workspace-light scope overrides these to the AA light register; the
+     .dark scope reverts. Defined here so unscoped surfaces keep the dark look. */
+  --learn-accent: #5fc5ab;
+  --learn-accent-strong: #7fd6bf;
+  --learn-accent-text: #d8f4eb;
+  --learn-accent-ink: #04150f;
+  --learn-accent-soft: rgba(95, 197, 171, 0.16);
+  --learn-accent-ring: rgba(95, 197, 171, 0.34);
+  --learn-fill-faint: rgba(255, 255, 255, 0.03);
+  --learn-fill-soft: rgba(255, 255, 255, 0.05);
+  --learn-green-ink: #8de8b3;  --learn-green-soft: rgba(141, 232, 179, 0.12);  --learn-green-line: rgba(141, 232, 179, 0.45);
+  --learn-red-ink: #ffb8b8;    --learn-red-soft: rgba(255, 143, 143, 0.12);    --learn-red-line: rgba(255, 143, 143, 0.45);
+  --learn-amber-ink: #f3d28a;  --learn-amber-soft: rgba(244, 196, 108, 0.12);  --learn-amber-line: rgba(244, 196, 108, 0.45);
+  --learn-blue-ink: #bcd6ff;   --learn-blue-soft: rgba(120, 180, 255, 0.12);   --learn-blue-line: rgba(120, 180, 255, 0.45);
 }
 
 .light {
@@ -483,3 +499,214 @@ summary::-webkit-details-marker {
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
 html, body { overflow-x: clip; max-width: 100vw; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
+
+/* ════════════════════════════════════════════════════════════════════
+   V3-INNER-L-LEARN — the .learn-workspace-light scope (Register L).
+
+   The learn :root above is the forced-dark forest stage. The instructor
+   console + course room belong to Register L — the shared, light-primary
+   Henry Onyx dashboard system (apps/account is the reference). This scope
+   re-grounds the learn workspace on that register, theme-aware, so /instructor
+   and the course room read as a sibling of the account dashboard. Dark is the
+   device-preference flip, not the default — the forced-dark defect is gone.
+
+   Accent: learn's gate-verified CONFIGURED accent, the teal-green #3C8C7A
+   (packages/config/company.ts) — it supersedes the ad-hoc mint --learn-mint
+   (#5fc5ab) and the gold --hc-accent (#D4AF37). Serif display preserved
+   (--font-learn-display). Mirrors the shipped marketplace/studio scopes
+   (#225/#233/#234): dual-valued tokens + a .dark parity block + a higher-
+   specificity override layer that re-tones the bespoke .learn-* utilities
+   whose base rules bake in hardcoded dark mint. Applied via a route-group
+   layout → <div class="learn-workspace-light">.
+   ════════════════════════════════════════════════════════════════════ */
+.learn-workspace-light {
+  /* Register-L canonical neutral surfaces (light) — mirrors apps/account */
+  --acct-bg: #FAFAF8;
+  --acct-bg-soft: #FFFFFF;
+  --acct-surface: #F5F3EF;
+  --acct-line: #E8E4DD;
+  --acct-ink: #1A1814;
+  --acct-muted: #6B6560;
+
+  /* learn CONFIGURED teal-green accent (the §9 resolution) */
+  --learn-accent: #3C8C7A;           /* fills / borders / rings / dots */
+  --learn-accent-strong: #2E6E5F;
+  --learn-accent-text: #235C4E;      /* AA accent-as-text on light */
+  --learn-accent-ink: #04150F;       /* text on an accent fill */
+  --learn-accent-soft: rgba(60, 140, 122, 0.12);
+  --learn-accent-ring: rgba(60, 140, 122, 0.34);
+
+  /* dual-valued neutral lifts (replace ad-hoc rgba(255,255,255,…) lifts) */
+  --learn-fill-faint: rgba(13, 35, 29, 0.035);
+  --learn-fill-soft: rgba(13, 35, 29, 0.05);
+
+  /* AA status families (light): ink (text/dot) · soft (pill bg) · line */
+  --learn-green-ink: #047857;  --learn-green-soft: #D1FAE5;  --learn-green-line: rgba(4, 120, 87, 0.28);
+  --learn-red-ink: #B91C1C;    --learn-red-soft: #FEE2E2;    --learn-red-line: rgba(185, 28, 28, 0.28);
+  --learn-amber-ink: #B45309;  --learn-amber-soft: #FEF3C7;  --learn-amber-line: rgba(180, 83, 9, 0.28);
+  --learn-blue-ink: #1D4ED8;   --learn-blue-soft: #DBEAFE;   --learn-blue-line: rgba(29, 78, 216, 0.28);
+
+  /* re-point the learn forest tokens onto the light register */
+  --learn-ink: var(--acct-ink);
+  --learn-ink-soft: rgba(13, 35, 29, 0.66);
+  --learn-bg: var(--acct-bg);
+  --learn-bg-soft: var(--acct-bg-soft);
+  --learn-surface: var(--acct-bg-soft);
+  --learn-surface-strong: var(--acct-bg-soft);
+  --learn-line: var(--acct-line);
+  --learn-line-strong: rgba(13, 35, 29, 0.14);
+  --learn-mint: var(--learn-accent);
+  --learn-mint-soft: var(--learn-accent-text);  /* kicker uses mint-soft → AA text */
+  --learn-copper: var(--learn-accent-text);
+  --learn-shadow: 0 1px 3px rgba(13, 35, 29, 0.06), 0 12px 32px -18px rgba(13, 35, 29, 0.16);
+  --learn-shadow-soft: 0 1px 3px rgba(13, 35, 29, 0.05), 0 8px 24px -16px rgba(13, 35, 29, 0.12);
+
+  /* canonical --hc-* mapping (light + learn accent) */
+  --hc-bg: var(--acct-bg);
+  --hc-bg-soft: var(--acct-bg-soft);
+  --hc-surface: var(--acct-bg-soft);
+  --hc-surface-strong: var(--acct-bg-soft);
+  --hc-surface-elevated: var(--acct-bg-soft);
+  --hc-paper: var(--acct-surface);
+  --hc-ink: var(--acct-ink);
+  --hc-ink-soft: rgba(13, 35, 29, 0.72);
+  --hc-ink-muted: var(--acct-muted);
+  --hc-line: var(--acct-line);
+  --hc-line-strong: rgba(13, 35, 29, 0.16);
+  --hc-hairline: var(--acct-line);
+  --hc-accent: var(--learn-accent);
+  --hc-accent-strong: var(--learn-accent-strong);
+  --hc-accent-pressed: var(--learn-accent-text);
+  --hc-accent-soft: var(--learn-accent-soft);
+  --hc-accent-text: var(--learn-accent-text);
+  --hc-accent-on-surface: var(--learn-accent-text);
+  --hc-ink-on-accent: var(--learn-accent-ink);
+  --hc-focus-ring: var(--learn-accent);
+
+  /* canvas: sit above the public dark body mesh, paint light */
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-height: 100vh;
+  background: var(--acct-bg);
+  color: var(--acct-ink);
+}
+
+/* Dark is the flip: mirror apps/account .dark. Only raw values need
+   overriding — var()-referencing tokens re-resolve through the above. */
+.dark .learn-workspace-light {
+  --acct-bg: #0B0F14;
+  --acct-bg-soft: #141920;
+  --acct-surface: #1E252E;
+  --acct-line: #2A3140;
+  --acct-ink: #F0EDE8;
+  --acct-muted: #8E8A84;
+
+  --learn-accent: #3C8C7A;
+  --learn-accent-strong: #5FC5AB;
+  --learn-accent-text: #7FD6BF;      /* lift the teal-green for AA on the dark canvas */
+  --learn-accent-ink: #04150F;
+  --learn-accent-soft: rgba(95, 197, 171, 0.16);
+  --learn-accent-ring: rgba(95, 197, 171, 0.34);
+
+  --learn-fill-faint: rgba(255, 255, 255, 0.03);
+  --learn-fill-soft: rgba(255, 255, 255, 0.05);
+
+  --learn-green-ink: #8de8b3;  --learn-green-soft: rgba(141, 232, 179, 0.12);  --learn-green-line: rgba(141, 232, 179, 0.32);
+  --learn-red-ink: #ffb8b8;    --learn-red-soft: rgba(255, 143, 143, 0.12);    --learn-red-line: rgba(255, 143, 143, 0.32);
+  --learn-amber-ink: #f3d28a;  --learn-amber-soft: rgba(244, 196, 108, 0.12);  --learn-amber-line: rgba(244, 196, 108, 0.32);
+  --learn-blue-ink: #bcd6ff;   --learn-blue-soft: rgba(120, 180, 255, 0.12);   --learn-blue-line: rgba(120, 180, 255, 0.32);
+
+  --learn-ink-soft: rgba(240, 237, 232, 0.74);
+  --learn-line-strong: rgba(255, 255, 255, 0.16);
+  --hc-ink-soft: rgba(240, 237, 232, 0.78);
+  --hc-line-strong: rgba(255, 255, 255, 0.18);
+  --learn-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
+  --learn-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+/* ── Override layer: re-tone the .learn-* utilities whose BASE rules bake in
+      hardcoded dark mint. Higher specificity (0,0,2,0) beats base (0,0,1,0). ── */
+
+/* Neutralize the dark grid/glow pseudo-surfaces on the light canvas. */
+.learn-workspace-light .learn-shell::before {
+  background-image:
+    linear-gradient(to right, var(--learn-fill-faint) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--learn-fill-faint) 1px, transparent 1px);
+  opacity: 0.5;
+}
+.learn-workspace-light .learn-mesh::before {
+  background:
+    linear-gradient(120deg, transparent 0%, var(--learn-accent-soft) 24%, transparent 48%);
+  opacity: 0.5;
+}
+.learn-workspace-light .learn-hero::before {
+  background: radial-gradient(circle, var(--learn-accent-soft) 0%, transparent 72%);
+}
+
+/* Panels — clean light sheet, no dark blur-glass. */
+.learn-workspace-light .learn-panel {
+  border-color: var(--learn-line);
+  background: var(--acct-bg-soft);
+  box-shadow: var(--learn-shadow);
+  backdrop-filter: none;
+}
+
+/* Buttons — teal-green accent fill + dark ink, no dark mint glow. */
+.learn-workspace-light .learn-button-primary {
+  background: var(--learn-accent);
+  color: var(--learn-accent-ink);
+  box-shadow: 0 1px 2px rgba(13, 35, 29, 0.10);
+}
+.learn-workspace-light .learn-button-primary:hover {
+  background: var(--learn-accent-strong);
+  box-shadow: 0 18px 44px -24px var(--learn-accent-ring);
+}
+.learn-workspace-light .learn-button-secondary {
+  border-color: var(--learn-line-strong);
+  background: var(--acct-bg-soft);
+  color: var(--learn-ink);
+}
+.learn-workspace-light .learn-button-secondary:hover {
+  border-color: var(--learn-accent);
+  background: var(--learn-fill-faint);
+}
+
+/* Inputs — warm light fields, teal-green focus ring. */
+.learn-workspace-light .learn-input,
+.learn-workspace-light .learn-select,
+.learn-workspace-light .learn-textarea {
+  border-color: var(--learn-line);
+  background: var(--acct-bg-soft);
+  color: var(--learn-ink);
+}
+.learn-workspace-light .learn-input:focus,
+.learn-workspace-light .learn-select:focus,
+.learn-workspace-light .learn-textarea:focus {
+  border-color: var(--learn-accent);
+  box-shadow: 0 0 0 3px var(--learn-accent-ring);
+  background: var(--acct-bg-soft);
+}
+
+/* Brand mark — light tinted tile, no dark copper/mint gradient. */
+.learn-workspace-light .learn-brand-mark {
+  border-color: var(--learn-line-strong);
+  background:
+    linear-gradient(145deg, var(--learn-accent-soft), transparent),
+    var(--acct-bg-soft);
+  color: var(--learn-ink);
+}
+
+/* Skeleton — light shimmer, not a white-on-dark lift. */
+.learn-workspace-light .learn-skeleton {
+  background: var(--learn-fill-soft);
+}
+.learn-workspace-light .learn-skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(13, 35, 29, 0.06), transparent);
+}
+
+/* ::selection — teal-green wash, not dark mint. */
+.learn-workspace-light ::selection {
+  background: var(--learn-accent-soft);
+  color: var(--learn-ink);
+}

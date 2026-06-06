@@ -238,7 +238,7 @@ export default async function InstructorCoursesPage() {
           return (
             <li
               key={course.id}
-              className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-5"
+              className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5"
             >
               <p className="text-sm font-semibold text-[var(--learn-ink)]">{course.title}</p>
               <p className="mt-1 text-xs text-[var(--learn-ink-soft)]">
