@@ -2,11 +2,13 @@ import { RouteLiveRefresh } from "@henryco/ui";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingContext } from "@/lib/account-data";
+import { reconcileWalletTopupsForUser } from "@/lib/wallet-topup-port";
 import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 import "@/components/wallet/styles.css";
 import FundingRequestForm from "@/components/wallet/FundingRequestForm";
+import WalletTopUpClient from "@/components/wallet/WalletTopUpClient";
 import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
 import { BackNav } from "@/components/wallet/BackNav";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
@@ -19,10 +21,12 @@ import {
 export const dynamic = "force-dynamic";
 
 /**
- * Wallet · Funding requests — detail flow.
+ * Wallet · Add money — top-up surface.
  *
- * ACCOUNT-PREMIUM-01 (session 2, Phase 2F). Compact hero per the detail-page
- * pattern; inherits wallet parent grammar via the same `acct-wal` styles.
+ * V3-15-JOB-B: card/bank/USSD (the proven hosted-redirect rail) is the DEFAULT
+ * primary method; bank-transfer-with-proof remains as a fallback. The reconciler
+ * runs on load so a buyer returning from hosted checkout sees the confirmed
+ * top-up credited and the request marked verified (idempotent — never double).
  */
 export default async function WalletFundingPage() {
   const locale = await getAccountAppLocale();
@@ -30,6 +34,14 @@ export default async function WalletFundingPage() {
   const accountCopy = getAccountCopy(locale);
   const copy = accountCopy.wallet;
   const user = await requireAccountUser();
+
+  // Project any confirmed top-up onto the wallet before reading state.
+  try {
+    await reconcileWalletTopupsForUser(user.id);
+  } catch {
+    /* reconcile is self-healing; a transient failure retries on the next load */
+  }
+
   const data = await getWalletFundingContext(user.id);
 
   return (
@@ -41,20 +53,24 @@ export default async function WalletFundingPage() {
           <HeroCard
             variant="compact"
             tone="active"
-            eyebrow={t("Wallet · funding")}
-            headline={t("Add money to your HenryCo wallet")}
+            eyebrow={t("Wallet · add money")}
+            headline={t("Add money to your Henry Onyx wallet")}
             blurb={t(
-              "Send a bank transfer using the rail below, then upload proof. Finance confirms the amount and your balance moves into available funds.",
+              "Top up instantly with card, bank transfer or USSD — your balance updates the moment payment is confirmed. Prefer a manual transfer? Use bank transfer with proof below.",
             )}
           />
         }
         sections={[
           {
+            id: "wal-fund-instant",
+            title: t("Pay instantly"),
+            meta: t("Card, bank transfer or USSD — confirmed automatically."),
+            content: <WalletTopUpClient />,
+          },
+          {
             id: "wal-fund-rail",
-            title: t("Transfer to HenryCo"),
-            meta: t(
-              "Send your bank transfer to these details, then upload proof.",
-            ),
+            title: t("Bank transfer with proof"),
+            meta: t("Prefer to transfer manually? Send to these details, then upload proof."),
             content: (
               <div className="acct-wal__columns">
                 <AccountDetailsCard
@@ -76,7 +92,7 @@ export default async function WalletFundingPage() {
                   kicker={t("Funding · empty")}
                   title={t("No funding requests yet")}
                   body={t(
-                    "Start a funding request above. Once finance confirms the bank reference, your balance moves into available funds.",
+                    "Start a top-up above. Card, bank transfer and USSD confirm automatically; a manual transfer moves into available funds once finance confirms the reference.",
                   )}
                 />
               ) : (
