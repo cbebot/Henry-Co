@@ -21,6 +21,7 @@ import {
 } from "@henryco/address-selector";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toBrandName } from "@henryco/config";
 
 const PLACES_AUTOCOMPLETE = "/api/addresses/places/autocomplete";
 const PLACES_DETAILS = "/api/addresses/places/details";
@@ -110,7 +111,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
         <div className="acct-card p-6 text-center">
           <MapPin className="mx-auto mb-3 text-[var(--acct-muted)]" size={28} />
           <p className="text-sm text-[var(--acct-muted)]">
-            {t("You haven't added any addresses yet. Add your first one to enable faster checkout across HenryCo.")}
+            {t(toBrandName("You haven't added any addresses yet. Add your first one to enable faster checkout across HenryCo."))}
           </p>
         </div>
       )}

@@ -3,11 +3,9 @@ import "server-only";
 import { countActiveSavedItems } from "@henryco/cart-saved-items/server";
 import { getEligibleModules } from "@henryco/dashboard-shell";
 import type { SignalFeedCursor, SignalFeedItem } from "@henryco/data";
-import { getAccountCopy } from "@henryco/i18n/server";
 import { logger } from "@henryco/observability";
 import { getCachedSignalFeed } from "@/lib/smart-home/signal-feed-cache";
 import type { UnifiedViewer } from "@henryco/auth";
-import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   collectAndPersistLifecycleSnapshot,
 } from "@/lib/lifecycle/collector";
@@ -25,7 +23,7 @@ import { RankedMetricStrip } from "./RankedMetricStrip";
 import { EmptyStateCtaTracker } from "./EmptyStateCtaTracker";
 import { SignalFeed } from "./SignalFeed";
 import { SmartHomeEmpty } from "./SmartHomeEmpty";
-import { SmartHomeHeader } from "./SmartHomeHeader";
+import { RealtimeStatusOrb } from "./RealtimeStatusOrb";
 import { SmartHomeHero } from "./SmartHomeHero";
 
 const smartHomeLogger = logger.child({ namespace: "smart-home" });
@@ -34,13 +32,14 @@ const smartHomeLogger = logger.child({ namespace: "smart-home" });
  * SmartHome — the WorkspaceSlot's default landing.
  *
  * Composes (in render order):
- *   1. SmartHomeHeader       — content-first lead (no patronizing copy)
- *   2. AttentionPanel        — security/urgent signals + lifecycle inline
- *   3. NextBestActions       — server-deterministic ranker, up to 3 CTAs
- *   4. RankedMetricStrip     — top-bucket sm/md widgets across modules
- *   5. SignalFeed            — N=50 cursor-paginated, 30s cached, email-dim
- *   6. ModuleWidgetGrid      — remaining widgets packed by size + weight
- *   7. SmartHomeEmpty        — typographic empty state if all of the above are dry
+ *   1. SmartHomeHero         — editorial hero band (greeting + stat + tiles)
+ *   2. live-status row       — realtime-health orb under the hero
+ *   3. AttentionPanel        — security/urgent signals + lifecycle inline
+ *   4. NextBestActions       — server-deterministic ranker, up to 3 CTAs
+ *   5. RankedMetricStrip     — top-bucket sm/md widgets across modules
+ *   6. SignalFeed            — N=50 cursor-paginated, 30s cached, email-dim
+ *   7. ModuleWidgetGrid      — remaining widgets packed by size + weight
+ *   8. SmartHomeEmpty        — typographic empty state if all of the above are dry
  *
  * Anti-patterns closed:
  *   #4  decorative tiles  — every block renders real data; if absent, fallthrough.
@@ -67,14 +66,12 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
   // collector persists its snapshot, the home-widget walk is fault-
   // tolerant per module. The saved-items count is a head-only `select
   // exact` — no rows transferred.
-  const [signalFeed, lifecycle, widgets, savedItemsCount, locale] = await Promise.all([
+  const [signalFeed, lifecycle, widgets, savedItemsCount] = await Promise.all([
     getCachedSignalFeed(viewer, cursor ? { cursor, limit: 50 } : { limit: 50 }),
     collectAndPersistLifecycleSnapshot(viewer.user.id).catch(() => null),
     collectHomeWidgets(modules, viewer),
     countActiveSavedItems(createAdminSupabase(), viewer.user.id).catch(() => 0),
-    getAccountAppLocale(),
   ]);
-  const copy = getAccountCopy(locale).overview;
 
   const attentionSignals = signalFeed.items.filter(
     (s) => s.priority === "security" || s.priority === "urgent",
@@ -158,14 +155,9 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
           lastActivityIso={null}
           savedItemsCount={0}
         />
-        <SmartHomeHeader
-          firstName={firstName}
-          unreadCount={0}
-          attentionCount={0}
-          lastActivityIso={null}
-          savedItemsCount={0}
-          fallbackBody={copy.smartHomeEmptyFallback}
-        />
+        <div className="hc-smart-home-live-row">
+          <RealtimeStatusOrb />
+        </div>
         <EmptyStateCtaTracker moduleId="smart-home">
           <SmartHomeEmpty
             firstName={firstName}
@@ -181,9 +173,10 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       {/* ACCOUNT-PREMIUM-01: the editorial hero band sits above the
           existing SmartHome composition. It answers "what's happening
-          with my stuff?" (eyebrow + headline + tiles) while the row
-          below keeps the realtime-status orb + saved-items rail near
-          the live data they describe. */}
+          with my stuff?" (eyebrow + headline + greeting/stat + tiles).
+          The thin row below carries only the realtime-status orb, near
+          the live data it describes — the old SmartHomeHeader that
+          re-rendered the same greeting/stat here has been retired. */}
       <SmartHomeHero
         firstName={firstName}
         unreadCount={unreadCount}
@@ -191,13 +184,9 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
         lastActivityIso={lastActivityIso}
         savedItemsCount={savedItemsCount}
       />
-      <SmartHomeHeader
-        firstName={firstName}
-        unreadCount={unreadCount}
-        attentionCount={attentionCount}
-        lastActivityIso={lastActivityIso}
-        savedItemsCount={savedItemsCount}
-      />
+      <div className="hc-smart-home-live-row">
+        <RealtimeStatusOrb />
+      </div>
 
       <AttentionPanel attentionSignals={attentionSignals} lifecycle={lifecycle} />
 

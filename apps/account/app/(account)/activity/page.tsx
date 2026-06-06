@@ -3,6 +3,7 @@ import {
   getAccountCopy,
   type AccountCopy,
 } from "@henryco/i18n/server";
+import { toBrandName } from "@henryco/config";
 import {
   HeroCard,
   EmptyStateCard,
@@ -77,7 +78,7 @@ export default async function ActivityPage() {
     {
       label: t("Today"),
       value: todayCount,
-      foot: t("Across HenryCo"),
+      foot: t(toBrandName("Across HenryCo")),
       tone: todayCount > 0 ? "active" : "default",
     },
     {

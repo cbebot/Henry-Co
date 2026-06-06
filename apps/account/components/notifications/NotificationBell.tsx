@@ -18,6 +18,7 @@ import {
   useUnreadCount,
   type RealtimeSignal,
 } from "@henryco/dashboard-shell";
+import { toBrandName } from "@henryco/config";
 import { timeAgoLocalized } from "@/lib/format";
 import { HenryCoBell, MarkReadIcon, ArchiveIcon, DeleteIcon, EmptyStateGlyph } from "./icons/HenryCoIcons";
 import { SwipeableNotificationCard } from "./SwipeableNotificationCard";
@@ -53,7 +54,7 @@ function withFallbackSource(signal: RealtimeSignal): BellNotification {
     ...signal,
     source: {
       key: signal.division ?? "system",
-      label: signal.division ?? "HenryCo",
+      label: signal.division ?? toBrandName("HenryCo"),
       accent: "#111827",
       logoUrl: null,
     },

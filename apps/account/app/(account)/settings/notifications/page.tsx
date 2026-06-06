@@ -1,4 +1,5 @@
 import { BellRing } from "lucide-react";
+import { toBrandName } from "@henryco/config";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import PageHeader from "@/components/layout/PageHeader";
@@ -22,7 +23,9 @@ export default async function NotificationsSettingsPage() {
     <div className="space-y-6 acct-fade-in">
       <PageHeader
         title="Notifications"
-        description="Choose how HenryCo reaches you. Mute the noise, keep the signal — preferences sync instantly across every division."
+        description={toBrandName(
+          "Choose how HenryCo reaches you. Mute the noise, keep the signal — preferences sync instantly across every division.",
+        )}
         icon={BellRing}
       />
 

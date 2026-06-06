@@ -103,24 +103,24 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
               <PriorityChip
                 count={securityCount}
                 label="security"
-                background="rgba(185, 28, 28, 0.10)"
-                color="#B91C1C"
+                background="var(--hc-status-danger-bg)"
+                color="var(--hc-status-danger-text)"
               />
             ) : null}
             {urgentCount > 0 ? (
               <PriorityChip
                 count={urgentCount}
                 label="urgent"
-                background="rgba(217, 119, 6, 0.12)"
-                color="#B45309"
+                background="var(--hc-status-warning-bg)"
+                color="var(--hc-status-warning-text)"
               />
             ) : null}
             {lifecycleBlocking > 0 ? (
               <PriorityChip
                 count={lifecycleBlocking}
                 label="blocking"
-                background="rgba(124, 58, 237, 0.12)"
-                color="#6D28D9"
+                background="color-mix(in srgb, var(--acct-purple) 14%, transparent)"
+                color="color-mix(in srgb, var(--acct-purple) 72%, var(--acct-ink))"
               />
             ) : null}
           </div>

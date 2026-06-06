@@ -7,6 +7,7 @@ import {
   translateSurfaceLabel,
   type AppLocale,
 } from "@henryco/i18n/server";
+import { toBrandName } from "@henryco/config";
 import { RouteLiveRefresh } from "@henryco/ui";
 import {
   HeroCard,
@@ -153,8 +154,8 @@ export default async function SecurityPage({
       value: trust.signals.accountAgeDays,
       foot:
         trust.signals.accountAgeDays === 1
-          ? t("day on HenryCo")
-          : t("days on HenryCo"),
+          ? t(toBrandName("day on HenryCo"))
+          : t(toBrandName("days on HenryCo")),
     },
   ];
 
@@ -260,7 +261,7 @@ export default async function SecurityPage({
           tone={heroTone}
           eyebrow={t(statusEyebrow(state))}
           headline={t(statusHeadline(state))}
-          blurb={t(statusBlurb(state))}
+          blurb={t(toBrandName(statusBlurb(state)))}
           ariaLabel={copy.security.heroAriaLabel}
           tiles={tiles}
           side={{
