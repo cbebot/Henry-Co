@@ -99,23 +99,24 @@ export default async function StudioClientLayout({
         >
           {children}
         </WorkspaceShell>
+
+        {/* The studio project-message toast lives INSIDE the scope so its
+         * --studio-thread-* tokens resolve theme-correctly (it is position:fixed,
+         * so nesting doesn't move it). Covers project-direct postgres_changes
+         * (messages + updates) the cross-division spine doesn't see yet. */}
+        {subscriptions.viewerId ? (
+          <NotificationToast
+            viewerId={subscriptions.viewerId}
+            projectSubscriptions={subscriptions.projects}
+            hrefTemplate="/client/projects/{projectId}/messages"
+          />
+        ) : null}
       </div>
 
       {/* Cross-division customer-notifications toast — fires when a row
        * lands in customer_notifications for this viewer (orders, system
-       * updates, invoice emails, etc). The studio-specific
-       * NotificationToast below stays for now and covers project-direct
-       * postgres_changes (project messages + updates), which the
-       * cross-division spine doesn't see yet. */}
+       * updates, invoice emails, etc). Has its own theming; stays outside. */}
       <NotificationsToastViewport audience="customer" />
-
-      {subscriptions.viewerId ? (
-        <NotificationToast
-          viewerId={subscriptions.viewerId}
-          projectSubscriptions={subscriptions.projects}
-          hrefTemplate="/client/projects/{projectId}/messages"
-        />
-      ) : null}
     </StudioRealtimeBridge>
   );
 }
