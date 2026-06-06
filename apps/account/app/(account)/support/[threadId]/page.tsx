@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { toBrandName } from "@henryco/config";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { ThreadAppearanceProvider, type ThreadParticipant } from "@henryco/messaging-thread";
 import { HeroCard } from "@henryco/dashboard-shell/surfaces";
@@ -128,7 +129,7 @@ export default async function SupportThreadPage({ params }: Props) {
     viewerName: user.fullName || user.email || "You",
     divisionLabel: divisionLabelText,
     messages,
-    teamLabel: t("HenryCo"),
+    teamLabel: t(toBrandName("HenryCo")),
     customerLabel: t("You"),
     teamRoleLabel: t("Support"),
   });

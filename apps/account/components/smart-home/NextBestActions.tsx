@@ -148,8 +148,8 @@ export function NextBestActions({ actions }: NextBestActionsProps) {
                     textTransform: "uppercase",
                     backgroundColor:
                       action.confidence === "high"
-                        ? "rgba(201, 162, 39, 0.12)"
-                        : "rgba(107, 114, 128, 0.10)",
+                        ? "var(--hc-accent-soft)"
+                        : "color-mix(in srgb, var(--acct-muted) 12%, transparent)",
                     color:
                       action.confidence === "high"
                         ? "var(--hc-accent-text, #8C6B0F)"

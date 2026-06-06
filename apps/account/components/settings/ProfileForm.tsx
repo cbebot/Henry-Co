@@ -17,6 +17,7 @@ import {
   type AppLocale,
 } from "@henryco/i18n";
 import Link from "next/link";
+import { toBrandName } from "@henryco/config";
 import { Camera, LifeBuoy, Lock } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
@@ -163,16 +164,16 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
       : selectedAvailability === "limited"
         ? [
             t("Services may vary by region."),
-            t("Some HenryCo divisions are not yet available in this country."),
+            t(toBrandName("Some HenryCo divisions are not yet available in this country.")),
           ]
         : selectedAvailability === "coming_soon"
           ? [
-              t("Some HenryCo divisions are not yet available in this country."),
+              t(toBrandName("Some HenryCo divisions are not yet available in this country.")),
               t("Language preference does not guarantee local service availability."),
             ]
           : [
               t("Language preference does not guarantee local service availability."),
-              t("Some HenryCo divisions are not yet available in this country."),
+              t(toBrandName("Some HenryCo divisions are not yet available in this country.")),
             ];
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

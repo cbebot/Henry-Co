@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
-import { henryDomainHost } from "@henryco/config";
+import { henryDomainHost, toBrandName } from "@henryco/config";
 
 export const runtime = "edge";
-export const alt = "HenryCo Account";
+export const alt = toBrandName("HenryCo Account");
 export const size = { width: 1200, height: 630 } as const;
 export const contentType = "image/png";
 
@@ -89,7 +89,7 @@ export default async function OG() {
               letterSpacing: -2,
             }}
           >
-            HenryCo Account
+            {toBrandName("HenryCo Account")}
           </span>
           <span
             style={{
@@ -100,7 +100,9 @@ export default async function OG() {
               fontWeight: 400,
             }}
           >
-            One identity, one secure session, every HenryCo service in one place.
+            {toBrandName(
+              "One identity, one secure session, every HenryCo service in one place.",
+            )}
           </span>
         </div>
         <div

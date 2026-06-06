@@ -10,7 +10,7 @@ import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
-import { henrySubdomain } from "@henryco/config";
+import { henrySubdomain, toBrandName } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
@@ -46,7 +46,9 @@ function resolveTimeOfDayBucket(timezone: string): string {
 export const metadata: Metadata = {
   title: "My Account — Henry Onyx",
   description:
-    "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
+    toBrandName(
+      "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
+    ),
   robots: { index: false, follow: false },
   metadataBase: new URL(
     process.env.NODE_ENV === "production"
@@ -56,7 +58,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "My Account — Henry Onyx",
     description:
+      toBrandName(
       "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
+    ),
     siteName: "Henry Onyx Account",
     type: "website",
   },

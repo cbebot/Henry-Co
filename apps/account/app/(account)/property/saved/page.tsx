@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
-import { getDivisionUrl } from "@henryco/config";
+import { getDivisionUrl, toBrandName } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
@@ -51,7 +51,7 @@ export default async function SavedPropertiesPage() {
           </p>
         </div>
         <div className="acct-card p-5">
-          <p className="acct-kicker">{t("HenryCo managed")}</p>
+          <p className="acct-kicker">{t(toBrandName("HenryCo managed"))}</p>
           <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{managedCount}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
             {t("Listings with clearer operational support and more accountable follow-through.")}

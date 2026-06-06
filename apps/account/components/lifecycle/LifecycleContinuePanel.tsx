@@ -7,6 +7,7 @@ import {
   type LifecycleSnapshot,
   type LifecycleSnapshotEntry,
 } from "@henryco/lifecycle";
+import { toBrandName } from "@henryco/config";
 
 type Props = {
   snapshot: LifecycleSnapshot;
@@ -73,7 +74,7 @@ export default function LifecycleContinuePanel({ snapshot }: Props) {
             Pick up where you left off
           </h2>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Live view of your open threads across HenryCo divisions, ranked by priority.
+            Live view of your open threads across {toBrandName("HenryCo")} divisions, ranked by priority.
           </p>
         </div>
       </div>

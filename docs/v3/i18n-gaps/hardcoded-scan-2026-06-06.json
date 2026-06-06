@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-06T22:57:32.082Z",
+  "generatedAt": "2026-06-06T23:20:37.837Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1368,
-    "entries": 1296,
+    "scannedFiles": 1367,
+    "entries": 1292,
     "counts": {
       "OK": 2,
-      "GAP": 1214,
+      "GAP": 1210,
       "EXEMPT": 35,
       "AMBIGUOUS": 45
     },
-    "durationMs": 3549
+    "durationMs": 3604
   },
   "entriesByFile": {
     "apps/account/app/(account)/layout.tsx": [
@@ -27,15 +27,7 @@
     ],
     "apps/account/app/(account)/search/page.tsx": [
       {
-        "line": 22,
-        "col": 7,
-        "kind": "attr:title",
-        "text": "Search your HenryCo workflows.",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 24,
+        "line": 27,
         "col": 7,
         "kind": "attr:placeholder",
         "text": "Search account: notifications, wallet, invoices, support, jobs applications...",
@@ -45,7 +37,7 @@
     ],
     "apps/account/app/(account)/security/page.tsx": [
       {
-        "line": 91,
+        "line": 92,
         "col": 34,
         "kind": "jsx_text",
         "text": "buildSecurityEventView(log as Record",
@@ -571,32 +563,6 @@
         "col": 11,
         "kind": "attr:aria-label",
         "text": "Signal feed pagination",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:aria-label)"
-      }
-    ],
-    "apps/account/components/smart-home/SmartHomeHeader.tsx": [
-      {
-        "line": 109,
-        "col": 12,
-        "kind": "jsx_text",
-        "text": "saved · resume",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 127,
-        "col": 12,
-        "kind": "attr:label",
-        "text": "Smart home is live; data refreshes every 30 seconds",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:label)"
-      },
-      {
-        "line": 127,
-        "col": 7,
-        "kind": "attr:aria-label",
-        "text": "Smart home is live; data refreshes every 30 seconds",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       }
