@@ -126,7 +126,7 @@ export default async function InstructorPage() {
               return (
                 <article
                   key={course.id}
-                  className="grid gap-3 rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-5 sm:grid-cols-[1.4fr,1fr] sm:items-center"
+                  className="grid gap-3 rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5 sm:grid-cols-[1.4fr,1fr] sm:items-center"
                 >
                   <div>
                     <p className="text-sm font-semibold text-[var(--learn-ink)]">
