@@ -68,11 +68,11 @@ export default async function PaymentCallbackPage({
   // RLS (payment_intents_select_own) scopes this to the buyer's own intent.
   const { data, error } = await supabase
     .from("payment_intents")
-    .select("id, amount_minor, currency, status")
+    .select("id, amount_minor, currency, status, metadata")
     .eq("id", reference)
     .maybeSingle();
   const intent = (data ?? null) as
-    | { id: string; amount_minor: number; currency: string; status: string }
+    | { id: string; amount_minor: number; currency: string; status: string; metadata: { return_to?: string } | null }
     | null;
 
   if (error || !intent) {
@@ -88,6 +88,13 @@ export default async function PaymentCallbackPage({
     );
   }
 
+  // Bring the buyer back to exactly where they started (their order/project),
+  // re-validated against trusted Henry Onyx targets (defense in depth — the
+  // value was already validated at initiation). "/" means no real origin.
+  const rawReturn = intent.metadata?.return_to ?? null;
+  const normalizedReturn = rawReturn ? normalizeTrustedRedirect(rawReturn) : "/";
+  const returnTo = normalizedReturn !== "/" ? normalizedReturn : null;
+
   return (
     <Shell>
       <PaymentCallbackClient
@@ -96,6 +103,7 @@ export default async function PaymentCallbackPage({
         amountMinor={intent.amount_minor}
         currency={intent.currency}
         locale={locale}
+        returnTo={returnTo}
       />
     </Shell>
   );

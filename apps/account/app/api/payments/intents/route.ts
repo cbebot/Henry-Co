@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, normalizeTrustedRedirect } from "@henryco/config";
 import { createPaymentRouter, buildRouterAuditInput } from "@henryco/payment-router";
 import {
   validateAmountMinor,
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as {
     amountMinor?: number; currency?: string; country?: string;
     method?: PaymentMethod; idempotencyKey?: string; division?: string;
+    returnTo?: string;
   } | null;
   if (!body?.idempotencyKey || !body.country || !body.method) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -40,6 +41,12 @@ export async function POST(request: NextRequest) {
   if (!amount.ok) return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
   const currency = normalizeCurrency(body.currency ?? "");
   if (!currency.ok) return NextResponse.json({ error: "Unsupported currency" }, { status: 400 }); // A4: never fall back to NGN
+
+  // Capture the buyer's origin so the callback returns them to exactly where they
+  // started (their order/project), not a generic account home. Validated to a
+  // trusted Henry Onyx target (no open redirect); "/" means "no real origin".
+  const normalizedReturn = normalizeTrustedRedirect(body.returnTo);
+  const returnTo = normalizedReturn === "/" ? null : normalizedReturn;
 
   const admin = createAdminSupabase();
 
@@ -50,6 +57,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id, amount_minor: amount.value, currency: currency.value,
       country: body.country, method: body.method, idempotency_key: body.idempotencyKey,
       division: body.division ?? null,
+      metadata: returnTo ? { return_to: returnTo } : {},
     } as never)
     .select("id, status")
     .single();

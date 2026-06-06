@@ -29,12 +29,15 @@ export function PaymentCallbackClient({
   amountMinor,
   currency,
   locale,
+  returnTo,
 }: {
   intentId: string;
   initialStatus: string;
   amountMinor: number;
   currency: string;
   locale: AppLocale;
+  /** Validated trusted origin the buyer came from (their order/project); null → account home. */
+  returnTo?: string | null;
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const initialSettled = settledFrom(initialStatus);
@@ -86,12 +89,15 @@ export function PaymentCallbackClient({
     amount = `${currency} ${Math.round(amountMinor / 100).toLocaleString()}`;
   }
 
+  // The owner rule: every redirect brings the user back. After settlement we
+  // return the buyer to exactly where they started (their order/project) when a
+  // validated origin was carried through; otherwise their account home.
   const continueLink = (
     <Link
-      href="/"
+      href={returnTo || "/"}
       className="acct-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
     >
-      {t("Continue to my account")}
+      {returnTo ? t("Continue") : t("Continue to my account")}
       <ArrowRight size={14} />
     </Link>
   );
