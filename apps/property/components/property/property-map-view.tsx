@@ -99,10 +99,10 @@ export function PropertyMapView({
 
         <div className="pointer-events-none absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/15 bg-black/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
           <MapPin className="h-3 w-3" aria-hidden />
-          {liveMap ? "Map view · Mapbox" : "Map view"}
+          {t("Map view")}
         </div>
         <div className="pointer-events-none absolute right-4 top-4 rounded-full border border-white/15 bg-black/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
-          {clusters.length} area{clusters.length === 1 ? "" : "s"}
+          {clusters.length} {clusters.length === 1 ? t("area") : t("areas")}
         </div>
       </div>
 
@@ -165,6 +165,8 @@ function MapFallback({
   onSelect: (slug: string | null) => void;
   tone?: "fallback" | "map";
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <div
       className={`absolute inset-0 ${
@@ -209,7 +211,9 @@ function MapFallback({
               isSelected ? "z-10 scale-110" : ""
             }`}
             style={{ left: `${x}%`, top: `${y}%` }}
-            aria-label={`${cluster.area.name} · ${cluster.listings.length} listings`}
+            aria-label={`${cluster.area.name} · ${cluster.listings.length} ${
+              cluster.listings.length === 1 ? t("listing") : t("listings")
+            }`}
             aria-pressed={isSelected}
           >
             <span
@@ -296,8 +300,8 @@ function SelectedAreaSheet({
                   {listing.title}
                 </span>
                 <span className="mt-0.5 block text-[12px] text-[var(--property-ink-soft)]">
-                  {listing.bedrooms ? `${listing.bedrooms} bed · ` : ""}
-                  {listing.sizeSqm ? `${listing.sizeSqm} sqm · ` : ""}
+                  {listing.bedrooms ? `${listing.bedrooms} ${t("bed")} · ` : ""}
+                  {listing.sizeSqm ? `${listing.sizeSqm} ${t("sqm")} · ` : ""}
                   {listing.kind}
                 </span>
               </div>
@@ -314,7 +318,7 @@ function SelectedAreaSheet({
           href={`/search?area=${encodeURIComponent(cluster.area.slug)}`}
           className="property-button-secondary inline-flex rounded-full px-5 py-3 text-[13px] font-semibold"
         >
-          Browse all in {cluster.area.name}
+          {t("Browse all in")} {cluster.area.name}
         </Link>
       </div>
     </div>
