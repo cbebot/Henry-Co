@@ -266,8 +266,8 @@ export function PropertyAreaCard({
 }) {
   const areaCopy = copy?.areaCard;
   return (
-    <article className="group overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40">
-      <div className="relative bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.22),transparent_42%),linear-gradient(135deg,rgba(191,122,71,0.18),rgba(18,13,10,0.04))] px-6 py-9">
+    <article className="group overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40">
+      <div className="relative bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.22),transparent_42%),linear-gradient(135deg,rgba(191,122,71,0.18),transparent)] px-6 py-9">
         <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[var(--property-accent-strong)]">
           {area.city}
         </p>
@@ -454,7 +454,7 @@ export function PropertyDifferentiatorCard({
   const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6">
+    <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-6">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[1.35rem]">
           {item.name}

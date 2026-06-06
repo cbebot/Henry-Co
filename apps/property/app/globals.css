@@ -77,20 +77,29 @@
   --hc-shadow-soft: var(--property-shadow-soft);
 }
 
-.light {
-  --property-bg: #f3ede7;
-  --property-bg-soft: #ebe1d8;
-  --property-surface: rgba(255, 250, 246, 0.92);
-  --property-surface-strong: rgba(255, 251, 248, 0.98);
-  --property-paper: rgba(242, 233, 225, 0.86);
-  --property-ink: #1f1713;
-  --property-ink-soft: rgba(31, 23, 19, 0.72);
-  --property-ink-muted: rgba(31, 23, 19, 0.56);
-  --property-line: rgba(69, 48, 38, 0.08);
-  --property-line-strong: rgba(69, 48, 38, 0.14);
-  --property-shadow: 0 32px 100px rgba(39, 27, 18, 0.1);
-  --property-shadow-soft: 0 16px 44px rgba(39, 27, 18, 0.08);
-}
+/* V3-INNER-L-PROPERTY — the two-register polarity model (read before editing).
+ *
+ * Property shares this stylesheet across BOTH registers:
+ *   • CUSTOMER (Register L) — the (public) subtree (marketing + /submit) is
+ *     light-primary + theme-aware via the locked --home-* system: app/(public)/
+ *     layout.tsx mounts `.home-accent-scope` and PROPERTY_PUBLIC_THEME_STYLE
+ *     inline-aliases every --property-* / --hc-* onto var(--home-*) (light at
+ *     :root, dark under .dark). The customer half therefore NEVER reads the raw
+ *     --property-* values above — it reads the aliased --home-* ones.
+ *   • STAFF / ops (Track D — agent · admin · moderation · operations · support)
+ *     reads the dark :root --property-* directly via PropertyWorkspaceShell and
+ *     is intentionally DARK on-system (it extracts to apps/work with
+ *     V3-COMMAND-03). It uses ZERO `dark:` utilities, so the raw token values
+ *     are its only colour source.
+ *
+ * So there is deliberately NO light variant of the raw --property-* tokens. A
+ * former `.light { --property-* }` block here was a POLARITY LEAK: next-themes
+ * applies `.light` to <html> app-wide, so on a light device it flipped the
+ * Track-D ops console into a broken half-light state (tokens flipped, baked
+ * literals did not). Removing it pins Track D dark in every device theme; the
+ * customer half is unaffected (it reads --home-* via the inline alias). The
+ * customer surfaces ARE light-primary Register-L — that polarity lives in the
+ * --home-* system, not here. Do NOT re-introduce a `.light` block. */
 
 * {
   box-sizing: border-box;
@@ -211,7 +220,13 @@ textarea {
   color: var(--property-accent-strong);
 }
 
-.property-button-primary {
+/* `.property-button` (bare, no -primary/-secondary modifier) had no rule, so the
+   buttons that use it in the Track-D ops consoles rendered unstyled. Alias the
+   bare class to the primary treatment so it is a real, AA-correct button (dark
+   ink on a light-copper fill — high contrast on the dark console). Style-only;
+   the Track-D markup is untouched. */
+.property-button-primary,
+.property-button {
   background: linear-gradient(135deg, #fde8da 0%, #e9bb95 42%, #bb7542 100%);
   color: #1c120d;
   box-shadow: 0 24px 66px rgba(191, 122, 71, 0.24);
@@ -221,12 +236,14 @@ textarea {
     opacity 180ms ease;
 }
 
-.property-button-primary:hover {
+.property-button-primary:hover,
+.property-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 28px 76px rgba(191, 122, 71, 0.28);
 }
 
 .property-button-primary:disabled,
+.property-button:disabled,
 .property-button-secondary:disabled {
   transform: none;
   box-shadow: none;
@@ -378,6 +395,7 @@ textarea {
 /* CTA polish — focus rings + tactile active + honest disabled state. */
 
 .property-button-primary:focus-visible,
+.property-button:focus-visible,
 .property-button-secondary:focus-visible {
   outline: 2px solid var(--property-accent);
   outline-offset: 3px;
@@ -385,6 +403,7 @@ textarea {
 }
 
 .property-button-primary:active,
+.property-button:active,
 .property-button-secondary:active {
   transform: translateY(0);
   transition-duration: 80ms;
@@ -392,6 +411,8 @@ textarea {
 
 .property-button-primary:disabled,
 .property-button-primary[aria-disabled="true"],
+.property-button:disabled,
+.property-button[aria-disabled="true"],
 .property-button-secondary:disabled,
 .property-button-secondary[aria-disabled="true"] {
   opacity: 0.5;
@@ -433,12 +454,14 @@ html, body { overflow-x: clip; max-width: 100vw; }
   background: var(--home-surface-04);
   border-color: var(--home-line);
 }
-.home-accent-scope .property-button-primary {
+.home-accent-scope .property-button-primary,
+.home-accent-scope .property-button {
   background: var(--home-accent);
   color: var(--home-accent-ink);
   box-shadow: 0 18px 40px -24px rgb(var(--home-ink-rgb) / 0.25);
 }
-.home-accent-scope .property-button-primary:hover {
+.home-accent-scope .property-button-primary:hover,
+.home-accent-scope .property-button:hover {
   background: var(--home-accent-strong);
   box-shadow: 0 22px 48px -24px rgb(var(--home-ink-rgb) / 0.3);
 }
@@ -525,10 +548,24 @@ html, body { overflow-x: clip; max-width: 100vw; }
    illegible on warm paper. Make it theme-aware here (a single inline var can't
    flip): a deep sage on light, a bright sage on near-black — AA either way. */
 .home-accent-scope {
-  --property-sage: #1f7a48;
-  --property-sage-soft: #1f7a48;
+  /* Sage darkened from #1f7a48 → #156b3e so sage status text clears WCAG-AA
+     (≥4.5:1) on the warm-paper canvas and on its own 12% tint (#1f7a48 landed at
+     4.2:1). The bright dark-mode sage (#8fd6ad below) already passes. */
+  --property-sage: #156b3e;
+  --property-sage-soft: #156b3e;
+  /* Danger ink for form error states — theme-aware like sage above (a single
+     frozen hex can't stay AA on both warm paper and near-black). Deep red on
+     light; bright coral on dark. Used for the submission error banner. */
+  --property-danger: #b42318;
+  /* Property's copper accent (--home-accent = #B06C3E) is darker than the gold
+     the SHARED --home-accent-ink (#1a1814) was tuned for, so dark-ink-on-accent
+     landed at 4.27:1 — under AA. Darken the on-accent ink for property's public
+     subtree only (never the shared token) so every accent fill — the view-toggle,
+     map pins, and the shared .property-button-primary CTA — clears AA at 4.76:1. */
+  --home-accent-ink: #0d0a06;
 }
 .dark .home-accent-scope {
   --property-sage: #8fd6ad;
   --property-sage-soft: #8fd6ad;
+  --property-danger: #ff9b8d;
 }

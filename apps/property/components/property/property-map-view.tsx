@@ -215,8 +215,8 @@ function MapFallback({
             <span
               className={`inline-flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-semibold tabular-nums shadow-lg shadow-black/30 ${
                 isSelected
-                  ? "border-white bg-[var(--property-accent-strong)] text-white"
-                  : "border-white/20 bg-[rgba(176,108,62,0.85)] text-white hover:border-white/60"
+                  ? "border-white bg-[var(--home-accent)] text-[var(--home-accent-ink)]"
+                  : "border-white/20 bg-[color:color-mix(in_srgb,var(--home-accent)_88%,transparent)] text-[var(--home-accent-ink)] hover:border-white/60"
               }`}
             >
               {cluster.listings.length}

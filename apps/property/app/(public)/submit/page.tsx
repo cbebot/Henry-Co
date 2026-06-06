@@ -72,8 +72,8 @@ export default async function SubmitListingPage({
         <div
           className="
             mt-8 overflow-hidden rounded-[1.4rem]
-            border border-[rgba(152,179,154,0.36)]
-            bg-gradient-to-br from-[rgba(152,179,154,0.10)] via-transparent to-[color:var(--home-accent-soft)]
+            border border-[color:color-mix(in_srgb,var(--property-sage)_36%,transparent)]
+            bg-gradient-to-br from-[color:color-mix(in_srgb,var(--property-sage)_12%,transparent)] via-transparent to-[color:var(--home-accent-soft)]
           "
         >
           <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-start sm:justify-between sm:gap-10 sm:p-8">
@@ -123,7 +123,7 @@ export default async function SubmitListingPage({
               </div>
             </dl>
           </div>
-          <div className="border-t border-[rgba(152,179,154,0.22)] bg-[rgba(152,179,154,0.04)] px-6 py-4 sm:px-8">
+          <div className="border-t border-[color:color-mix(in_srgb,var(--property-sage)_22%,transparent)] bg-[color:color-mix(in_srgb,var(--property-sage)_6%,transparent)] px-6 py-4 sm:px-8">
             <p className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-[var(--property-ink-soft)]">
               <span>{t("Need to amend the submission?")}</span>
               <Link
@@ -155,7 +155,7 @@ export default async function SubmitListingPage({
           </p>
           <Link
             href={getAccountUrl("/verification")}
-            className="mt-3 inline-flex items-center gap-2 rounded-full bg-[var(--property-ink)] px-4 py-2 text-xs font-semibold text-white"
+            className="property-button-primary mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold"
           >
             {t("Open account verification")}
             <ArrowRight className="h-3 w-3" />
