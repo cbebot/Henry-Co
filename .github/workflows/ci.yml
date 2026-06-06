@@ -46,6 +46,15 @@ jobs:
       - name: Typecheck (all apps)
         run: pnpm run typecheck:all
 
+      # DRIFT-SWEEP-02: fail CI when code references a Supabase column that does
+      # not exist in the committed schema (database.types.ts ∪ migration DDL).
+      # This is the 4th incident of "code ships a query for a column prod lacks"
+      # (profiles.user_id, customer_profiles.kyc_completed_at, henry_events.outcome,
+      # studio_settings.id) — TypeScript can't catch string-built queries on
+      # loosely-typed admin clients. Baseline-gated: fails only on NEW drift.
+      - name: Schema-drift guard (code ↔ schema column references)
+        run: pnpm run schema-drift:check
+
       - name: i18n hardcoded-text gate (V3-07 S8 — strict)
         run: pnpm run i18n:check:strict
 
