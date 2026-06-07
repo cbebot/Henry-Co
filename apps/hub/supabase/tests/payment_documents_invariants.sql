@@ -147,6 +147,37 @@ begin
   end;
 end $$;
 
+-- ── (c-refund) a REFUND posting cannot mint a receipt (money that LEFT the platform) ──
+-- A refund entry (source='payment_intent_refund') debits payments_clearing by the same
+-- GROSS, so its debit total equals the charge's — a bare sum-check would accept it. We
+-- pass the refund posting with a total that MATCHES its debit sum, so reconciliation
+-- alone would pass; only the charge-source tie (source='payment_intent' AND
+-- source_event_id=intent) rejects it. (The same tie also rejects a FOREIGN charge
+-- posting whose source_event_id is a different intent.)
+do $$
+declare v_refund uuid; v_debit bigint; v jsonb;
+begin
+  -- intent C already has its charge settlement; post its refund entry (DR clearing / CR cash).
+  perform payments_private.post_charge_settlement('aaaaaaaa-0000-0000-0000-000000000003', 'refunded');
+  select id into v_refund from public.journal_entries
+    where source = 'payment_intent_refund' and source_event_id = 'aaaaaaaa-0000-0000-0000-000000000003';
+  if v_refund is null then raise exception 'PROOF c-refund SETUP FAILED: no refund entry posted'; end if;
+  select coalesce(sum(debit_minor), 0) into v_debit from public.journal_lines where entry_id = v_refund;
+
+  begin
+    v := payments_private.record_customer_receipt(
+      '11111111-1111-1111-1111-111111111111', 'studio',
+      'aaaaaaaa-0000-0000-0000-000000000003', v_refund,
+      'card', 'PSREF_REFUND', v_debit, 0, 0, v_debit, 'NGN', '[]'::jsonb, now(), null);
+    raise exception 'PROOF c-refund FAILED: a receipt was minted for a REFUND posting (%)', v;
+  exception when check_violation then
+    raise notice 'PROOF c-refund OK: refund posting rejected — receipts only for charge settlements';
+  end;
+  if exists (select 1 from public.customer_receipts where posting_id = v_refund) then
+    raise exception 'PROOF c-refund FAILED: a refund receipt was persisted';
+  end if;
+end $$;
+
 -- ── (d) invoice idempotency on (source_kind, source_ref) ────────────────────────
 do $$
 declare v1 jsonb; v2 jsonb; n int;
