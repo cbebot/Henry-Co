@@ -36,7 +36,12 @@ function getPool(): Pool {
   return pool;
 }
 
-export type PaymentRpc = "apply_payment_webhook" | "advance_payment_intent";
+export type PaymentRpc =
+  | "apply_payment_webhook"
+  | "advance_payment_intent"
+  // V3-17 — the atomic wallet-top-up credit (balance + wallet log + double-entry
+  // journal in one transaction). Also in payments_private; same pooled-pg path.
+  | "credit_wallet_topup";
 
 /**
  * Invoke a `payments_private` money RPC over the pooled direct-pg connection.

@@ -2,6 +2,7 @@ import "server-only";
 
 import { publishNotification } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+import { callPaymentRpc } from "@/lib/payments/db";
 import {
   reconcileWalletTopups,
   TOPUP_FUNDING_STATUS,
@@ -41,7 +42,6 @@ function formatNgnMajor(amountKobo: number): string {
  */
 export class SupabaseWalletTopupPort implements WalletTopupReconcilePort {
   private readonly admin: AdminClient;
-  private walletId: string | null = null;
 
   constructor(admin: AdminClient = createAdminSupabase()) {
     this.admin = admin;
@@ -122,74 +122,41 @@ export class SupabaseWalletTopupPort implements WalletTopupReconcilePort {
     return Boolean(res.data && (res.data as { id?: string }).id);
   }
 
-  private async ensureWallet(userId: string): Promise<{ id: string; balanceKobo: number }> {
-    const existing = await this.admin
-      .from("customer_wallets")
-      .select("id, balance_kobo")
-      .eq("user_id", userId)
-      .maybeSingle();
-    let row = existing.data as { id: string; balance_kobo: number } | null;
-    if (!row) {
-      const inserted = await this.admin
-        .from("customer_wallets")
-        .insert({ user_id: userId } as never)
-        .select("id, balance_kobo")
-        .single();
-      if (inserted.error) {
-        const retry = await this.admin
-          .from("customer_wallets")
-          .select("id, balance_kobo")
-          .eq("user_id", userId)
-          .maybeSingle();
-        row = retry.data as { id: string; balance_kobo: number } | null;
-      } else {
-        row = inserted.data as { id: string; balance_kobo: number };
-      }
-    }
-    if (!row) throw new Error("wallet_unavailable");
-    this.walletId = String(row.id);
-    return { id: String(row.id), balanceKobo: Number(row.balance_kobo) || 0 };
-  }
-
-  async readBalanceKobo(userId: string): Promise<number> {
-    const wallet = await this.ensureWallet(userId);
-    return wallet.balanceKobo;
-  }
-
-  async casCredit(userId: string, expectedKobo: number, nextKobo: number): Promise<boolean> {
-    const res = await this.admin
-      .from("customer_wallets")
-      .update({ balance_kobo: nextKobo, updated_at: new Date().toISOString() } as never)
-      .eq("user_id", userId)
-      .eq("balance_kobo", expectedKobo) // CAS: lost-update protection
-      .select("id")
-      .maybeSingle();
-    return Boolean(res.data && (res.data as { id?: string }).id);
-  }
-
-  async insertCreditLedger(input: {
+  /**
+   * The money edge: atomically credit the balance, write the wallet-transactions
+   * log, AND post the balanced double-entry journal in ONE transaction via the
+   * guarded `payments_private.credit_wallet_topup` RPC (reached over the pooled
+   * direct-pg path — the function is not in a PostgREST-exposed schema). Idempotent
+   * by the funding request: a replay returns `credited:false` with the current
+   * balance and moves no money. A DB error throws so the reconciler releases the
+   * claim and retries cleanly (no partial state — the credit is all-or-nothing).
+   */
+  async applyTopupCredit(input: {
     userId: string;
     requestId: string;
-    amountKobo: number;
-    balanceAfterKobo: number;
     intentId: string;
-  }): Promise<void> {
-    const walletId = this.walletId ?? (await this.ensureWallet(input.userId)).id;
-    await this.admin.from("customer_wallet_transactions").insert({
-      wallet_id: walletId,
-      user_id: input.userId,
-      type: "credit",
-      amount_kobo: input.amountKobo,
-      balance_after_kobo: input.balanceAfterKobo,
-      description: `Wallet top-up — ${formatNgnMajor(input.amountKobo)}`,
-      status: "completed",
-      reference_type: TOPUP_LEDGER_REFERENCE_TYPE,
-      reference_id: input.requestId,
-      metadata: {
-        source: "wallet_topup_rail",
-        payment_intent_id: input.intentId,
-      },
-    } as never);
+    amountKobo: number;
+    currency: string;
+  }): Promise<{ credited: boolean; balanceAfterKobo: number }> {
+    const { data, error } = await callPaymentRpc<{
+      credited?: boolean;
+      balance_after_kobo?: number;
+      reason?: string;
+    }>("credit_wallet_topup", [
+      input.userId,
+      input.requestId,
+      input.intentId,
+      String(input.amountKobo), // bound as $n; PG casts text → bigint for the single matching fn
+      input.currency,
+    ]);
+    if (error) {
+      throw new Error(error.message || "wallet credit failed");
+    }
+    const result = data as { credited?: boolean; balance_after_kobo?: number } | null;
+    return {
+      credited: result?.credited === true,
+      balanceAfterKobo: Number(result?.balance_after_kobo ?? 0),
+    };
   }
 
   async finalizeVerified(requestId: string, intentId: string | null): Promise<void> {
