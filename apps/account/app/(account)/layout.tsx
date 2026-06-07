@@ -18,7 +18,7 @@ import {
 } from "@henryco/auth/server";
 import type { DashboardOption } from "@henryco/auth";
 import AccountLayoutInner from "./AccountLayoutInner";
-import AccountRouteLoading from "@/components/layout/AccountRouteLoading";
+import AccountRouteLoader from "@/components/layout/AccountRouteLoader";
 import IdentityBarPaletteBridge from "@/components/search/IdentityBarPaletteBridge";
 import AccountPaletteHost from "@/components/search/PaletteHost";
 import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
@@ -105,10 +105,7 @@ export default async function AccountLayout({ children, rail, drawer }: LayoutPr
   return (
     <Suspense
       fallback={
-        <AccountRouteLoading
-          title="Opening your account"
-          description="Confirming your session and loading navigation."
-        />
+        <AccountRouteLoader />
       }
     >
       <ShellChromeRoot rail={rail} drawer={drawer}>

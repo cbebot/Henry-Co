@@ -2,6 +2,7 @@
  * @henryco/dashboard-shell/shell — chrome barrel.
  */
 export { IdentityBar, type IdentityBarProps } from "./identity-bar";
+export { LinkActivity } from "./link-activity";
 export { WorkspaceRail, type WorkspaceRailProps } from "./workspace-rail";
 export {
   StaffShell,

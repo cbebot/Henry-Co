@@ -1106,6 +1106,353 @@ html, body { overflow-x: clip; max-width: 100vw; }
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   AccountRouteLoader — the dedicated, honest account loading moment.
+   Component: components/layout/AccountRouteLoader.tsx
+
+   Honest by construction: rendered only while a real Suspense / route
+   navigation is pending; no timer, no fake percentage, no copy. The
+   calm gold rail shows at once; the breathing H·Onyx mark fades up only
+   after ~420ms so fast loads flash nothing but the hairline (feels
+   instant) and only a genuinely slow load earns the brand moment.
+   Theme-aware via --acct-* (cream→onyx). Reduced-motion → static.
+   ────────────────────────────────────────────────────────────────── */
+.acct-route-loader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: min(68vh, 600px);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* (1) immediate calm signal — an indeterminate gold hairline rail */
+.acct-route-loader__rail {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--acct-gold) 12%, transparent);
+}
+.acct-route-loader__rail-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 36%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--acct-gold) 50%,
+    color-mix(in srgb, var(--acct-gold) 35%, transparent) 100%
+  );
+  animation: acctLoaderRail 1150ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes acctLoaderRail {
+  0%   { transform: translateX(-115%); }
+  100% { transform: translateX(380%); }
+}
+
+/* (2) the brand stage — fades up only after the rail has shown a beat */
+.acct-route-loader__stage {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 9rem;
+  height: 9rem;
+  opacity: 0;
+  animation: acctLoaderStageIn 620ms cubic-bezier(0.2, 0.8, 0.2, 1) 420ms both;
+}
+@keyframes acctLoaderStageIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.acct-route-loader__aurora {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 46%,
+    color-mix(in srgb, var(--acct-gold) 28%, transparent) 0%,
+    transparent 62%
+  );
+  filter: blur(4px);
+  animation: acctLoaderAurora 2800ms ease-in-out infinite;
+}
+@keyframes acctLoaderAurora {
+  0%, 100% { opacity: 0.5; transform: scale(0.95); }
+  50%      { opacity: 0.92; transform: scale(1.05); }
+}
+
+.acct-route-loader__mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 16px;
+  overflow: hidden;
+  /* The monogram draws in currentColor → ink (dark on cream, light on
+     onyx); its accent rule takes --acct-gold. */
+  color: var(--acct-ink);
+  animation: acctLoaderBreathe 2600ms ease-in-out infinite;
+}
+@keyframes acctLoaderBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50%      { transform: scale(1.05); opacity: 1; }
+}
+.acct-route-loader__monogram { display: block; }
+
+/* a single gold glint sweeping diagonally across the mark */
+.acct-route-loader__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 36%,
+    color-mix(in srgb, var(--acct-gold) 38%, transparent) 50%,
+    transparent 64%
+  );
+  transform: translateX(-130%);
+  animation: acctLoaderSheen 2600ms ease-in-out 900ms infinite;
+}
+@keyframes acctLoaderSheen {
+  0%        { transform: translateX(-130%); }
+  55%, 100% { transform: translateX(130%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-route-loader__rail-fill { animation: none; left: 0; width: 100%; opacity: 0.5; }
+  .acct-route-loader__stage { animation: none; opacity: 1; transform: none; }
+  .acct-route-loader__aurora,
+  .acct-route-loader__mark { animation: none; }
+  .acct-route-loader__sheen { display: none; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Lifecycle "Continue where you left off" — editorial resume surface.
+   Component: components/lifecycle/LifecycleContinuePanel.tsx
+   Theme-aware (--acct-*, cream→onyx), AA, reduced-motion-aware. Each
+   cohort sets --lc / --lc-soft / --lc-ink; chip + rail + CTA read from
+   them so one row template serves all three tones. --lc-ink mixes the
+   tone toward --acct-ink, so it darkens on cream and lightens on onyx —
+   AA in both themes.
+   ────────────────────────────────────────────────────────────────── */
+.acct-lifecycle {
+  border-radius: var(--acct-radius-lg);
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  box-shadow: var(--acct-shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.acct-lifecycle__head { display: flex; flex-direction: column; gap: 4px; }
+.acct-lifecycle__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text);
+  margin: 0;
+}
+.acct-lifecycle__kicker::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--acct-gold);
+}
+.acct-lifecycle__title {
+  font-family: var(--acct-font-display);
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--acct-ink);
+  margin: 2px 0 0;
+}
+.acct-lifecycle__sub {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--acct-muted);
+  margin: 0;
+  max-width: 60ch;
+}
+
+.acct-lifecycle__cohorts { display: flex; flex-direction: column; gap: 22px; }
+.acct-lifecycle__cohort { display: flex; flex-direction: column; gap: 12px; }
+.acct-lifecycle__cohort[data-tone="attention"] {
+  --lc: var(--acct-red);
+  --lc-soft: var(--acct-red-soft);
+  --lc-ink: color-mix(in srgb, var(--acct-red) 66%, var(--acct-ink));
+}
+.acct-lifecycle__cohort[data-tone="inflight"] {
+  --lc: var(--acct-blue);
+  --lc-soft: var(--acct-blue-soft);
+  --lc-ink: color-mix(in srgb, var(--acct-blue) 66%, var(--acct-ink));
+}
+.acct-lifecycle__cohort[data-tone="reengage"] {
+  --lc: var(--acct-gold);
+  --lc-soft: var(--acct-gold-soft);
+  --lc-ink: color-mix(in srgb, var(--acct-gold-text) 82%, var(--acct-ink));
+}
+
+.acct-lifecycle__cohort-head { display: flex; align-items: center; gap: 10px; }
+.acct-lifecycle__cohort-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lc-soft);
+  color: var(--lc-ink);
+  flex-shrink: 0;
+}
+.acct-lifecycle__cohort-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+}
+.acct-lifecycle__cohort-count {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--lc-ink);
+  background: var(--lc-soft);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.acct-lifecycle__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 720px) {
+  .acct-lifecycle__rows { grid-template-columns: 1fr; }
+}
+
+.acct-lifecycle__row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 14px 14px 14px 18px;
+  border-radius: 14px;
+  background: var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: border-color 160ms ease-out, transform 140ms ease-out, box-shadow 160ms ease-out;
+}
+.acct-lifecycle__row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--lc);
+}
+a.acct-lifecycle__row:hover {
+  border-color: color-mix(in srgb, var(--lc) 42%, var(--acct-line));
+  transform: translateY(-1px);
+  box-shadow: var(--acct-shadow-lg);
+}
+a.acct-lifecycle__row:active { transform: translateY(0) scale(0.995); }
+a.acct-lifecycle__row:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+.acct-lifecycle__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.acct-lifecycle__chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.acct-lifecycle__chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--lc-soft);
+  color: var(--lc-ink);
+}
+.acct-lifecycle__stage {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+}
+.acct-lifecycle__action {
+  font-family: var(--acct-font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  color: var(--acct-ink);
+  margin: 2px 0 0;
+}
+.acct-lifecycle__status {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--acct-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.acct-lifecycle__meta {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-muted) 88%, transparent);
+  margin-top: 2px;
+}
+.acct-lifecycle__cta {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lc-ink);
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lc) 12%, transparent);
+  transition: background-color 160ms ease-out, gap 160ms ease-out;
+  white-space: nowrap;
+}
+a.acct-lifecycle__row:hover .acct-lifecycle__cta {
+  background: color-mix(in srgb, var(--lc) 22%, transparent);
+  gap: 7px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-lifecycle__row,
+  a.acct-lifecycle__row:hover,
+  a.acct-lifecycle__row:active { transform: none; transition: border-color 160ms ease-out; }
+  .acct-lifecycle__cta { transition: background-color 160ms ease-out; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
    PASS 24 — support thread room
    --------------------------------------------------------------------
    Bridges the workspace-shell --ws-* token vocabulary used by

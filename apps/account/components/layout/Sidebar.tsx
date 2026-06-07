@@ -125,8 +125,9 @@ export default function Sidebar({ user }: SidebarProps) {
             type="button"
             disabled={signingOut}
             onClick={() => void handleSignOut()}
-            className="rounded-lg p-1.5 text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] disabled:cursor-wait disabled:opacity-60"
             title={t("Sign out")}
+            aria-label={t("Sign out")}
             aria-busy={signingOut}
           >
             {signingOut ? (
