@@ -69,6 +69,38 @@ export function suppressSentinelPop(windowMs = 1200): void {
   suppressPopUntilMs = nowMs() + windowMs;
 }
 
+/**
+ * Capture-phase click handler for modal surfaces (BottomSheet / Drawer).
+ * If the click lands on an INTERNAL SPA-nav anchor (`href="/..."`), it
+ * calls `suppressSentinelPop()` so the surface's `useAndroidBackClose`
+ * cleanup skips its `history.back()` — which would otherwise cancel the
+ * in-flight App Router navigation (the "tap a link inside the sheet, it
+ * closes but never navigates" bug). One handler fixes every link in any
+ * sheet/drawer at once. Buttons, external links (`http(s)://`,
+ * protocol-relative `//`) and hash links are untouched. Attach as
+ * `onClickCapture` so the flag is set before the link's own handler runs.
+ *
+ * Returns `true` when it matched an internal nav link (and suppressed) so
+ * the caller can also dismiss the surface on the next tick — the link's
+ * `router.push` registers first, then the close, so the sheet feels
+ * instant without cancelling the navigation.
+ */
+export function suppressSentinelPopForNavLink(event: {
+  target: EventTarget | null;
+}): boolean {
+  const target = event.target as HTMLElement | null;
+  const anchor =
+    target && typeof target.closest === "function"
+      ? target.closest("a[href]")
+      : null;
+  const href = anchor?.getAttribute("href") ?? "";
+  if (href.startsWith("/") && !href.startsWith("//")) {
+    suppressSentinelPop();
+    return true;
+  }
+  return false;
+}
+
 export function useAndroidBackClose(
   isOpen: boolean,
   onClose: () => void,

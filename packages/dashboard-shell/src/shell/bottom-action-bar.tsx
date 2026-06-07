@@ -124,14 +124,15 @@ export function BottomActionBar({
   const activeAnchor: AnchorKey = computeActive(pathname, openSheet);
 
   // Close any open sheet/drawer once a navigation actually COMMITS (the
-  // pathname changes). Closing on the link's own onClick instead would
-  // call setOpenSheet(null) → the Drawer/BottomSheet (and the <Link>
-  // inside it) unmount in the SAME React commit, which cancels the
-  // in-flight App Router navigation: the "tap Settings / Help / a module
-  // just closes the sheet but never navigates" bug. Letting the route
-  // change drive the close means the link navigates cleanly first, then
-  // the sheet dismisses when the destination is ready. A no-op on the
-  // current page (no pathname change) — acceptable.
+  // pathname changes). This is the CLOSE mechanism for in-sheet nav links
+  // (they carry no onClick-close, so the route change dismisses the sheet
+  // once the destination is ready). The companion fix that lets the link
+  // actually navigate lives in the Drawer/BottomSheet primitives: their
+  // `onClickCapture={suppressSentinelPopForNavLink}` tells
+  // `useAndroidBackClose`'s cleanup to skip its `history.back()`, so
+  // closing the sheet can't cancel the in-flight App Router navigation
+  // (the "tap Settings / Help / a module just closes the sheet but never
+  // navigates" bug). A no-op on the current page (no pathname change).
   useEffect(() => {
     setOpenSheet(null);
   }, [pathname]);
