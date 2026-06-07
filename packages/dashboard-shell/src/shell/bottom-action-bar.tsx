@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -25,6 +25,7 @@ import { BottomSheet } from "../components/bottom-sheet";
 import { Badge } from "../components/badge";
 import { EmptyState } from "../components/empty-state";
 import { useRealtimeOptional } from "./supabase-realtime-provider";
+import { LinkActivity } from "./link-activity";
 
 /**
  * BottomActionBar — the canonical mobile chrome.
@@ -121,6 +122,19 @@ export function BottomActionBar({
 
   // Determine the active anchor from the current pathname.
   const activeAnchor: AnchorKey = computeActive(pathname, openSheet);
+
+  // Close any open sheet/drawer once a navigation actually COMMITS (the
+  // pathname changes). Closing on the link's own onClick instead would
+  // call setOpenSheet(null) → the Drawer/BottomSheet (and the <Link>
+  // inside it) unmount in the SAME React commit, which cancels the
+  // in-flight App Router navigation: the "tap Settings / Help / a module
+  // just closes the sheet but never navigates" bug. Letting the route
+  // change drive the close means the link navigates cleanly first, then
+  // the sheet dismisses when the destination is ready. A no-op on the
+  // current page (no pathname change) — acceptable.
+  useEffect(() => {
+    setOpenSheet(null);
+  }, [pathname]);
 
   return (
     <>
@@ -220,7 +234,6 @@ export function BottomActionBar({
         <ModulesList
           modules={modules}
           activeHref={pathname}
-          onPick={() => setOpenSheet(null)}
           t={t}
         />
       </Drawer>
@@ -411,11 +424,10 @@ function AnchorButton({
 type ModulesListProps = {
   modules: ReadonlyArray<ModuleNavEntry>;
   activeHref: string;
-  onPick: () => void;
   t: (key: string) => string;
 };
 
-function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
+function ModulesList({ modules, activeHref, t }: ModulesListProps) {
   if (modules.length === 0) {
     return (
       <EmptyState
@@ -442,7 +454,6 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
           <li key={module.slug}>
             <Link
               href={module.href}
-              onClick={onPick}
               aria-current={isActive ? "page" : undefined}
               style={{
                 position: "relative",
@@ -517,6 +528,7 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
                   </span>
                 ) : null}
               </span>
+              <LinkActivity />
               <ChevronRight
                 size={16}
                 aria-hidden
@@ -746,9 +758,15 @@ function MoreLink({ href, icon, label, onPick, external }: MoreLinkProps) {
       </a>
     );
   }
+  // Internal navigation: do NOT close on click. Closing here unmounts
+  // this <Link> (the sheet returns null when openSheet flips), cancelling
+  // the App Router navigation. The BottomActionBar's pathname effect
+  // closes the sheet once the route commits. (The external `<a>` above
+  // opens a new tab — no route change — so it keeps onClick={onPick}.)
   return (
-    <Link href={href} onClick={onPick} style={sharedStyle}>
+    <Link href={href} style={sharedStyle}>
       {inner}
+      <LinkActivity />
     </Link>
   );
 }

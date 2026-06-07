@@ -8,44 +8,29 @@ import {
   type LifecycleSnapshotEntry,
 } from "@henryco/lifecycle";
 import { toBrandName } from "@henryco/config";
+import { LinkActivity } from "@henryco/dashboard-shell";
 
 type Props = {
   snapshot: LifecycleSnapshot;
 };
 
+type CohortKey = "attention" | "inflight" | "reengage";
+
 type CohortBlock = {
+  key: CohortKey;
   title: string;
   entries: LifecycleSnapshotEntry[];
   icon: typeof Clock;
-  tone: string;
-  toneSoft: string;
 };
 
 function cohortBlocks(snapshot: LifecycleSnapshot): CohortBlock[] {
   const grouped = groupSnapshotForUi(snapshot);
-  return [
-    {
-      title: "Needs attention",
-      entries: grouped.blocking,
-      icon: AlertOctagon,
-      tone: "var(--acct-red)",
-      toneSoft: "var(--acct-red-soft)",
-    },
-    {
-      title: "Continue where you left off",
-      entries: grouped.inFlight,
-      icon: Clock,
-      tone: "var(--acct-blue)",
-      toneSoft: "var(--acct-blue-soft, rgba(58, 130, 255, 0.12))",
-    },
-    {
-      title: "Worth a second look",
-      entries: grouped.reengage,
-      icon: Sparkles,
-      tone: "var(--acct-gold)",
-      toneSoft: "var(--acct-gold-soft)",
-    },
-  ].filter((block) => block.entries.length > 0);
+  const all: CohortBlock[] = [
+    { key: "attention", title: "Needs attention", entries: grouped.blocking, icon: AlertOctagon },
+    { key: "inflight", title: "Continue where you left off", entries: grouped.inFlight, icon: Clock },
+    { key: "reengage", title: "Worth a second look", entries: grouped.reengage, icon: Sparkles },
+  ];
+  return all.filter((block) => block.entries.length > 0);
 }
 
 function formatLastActive(value: string | null): string | null {
@@ -61,106 +46,104 @@ function formatLastActive(value: string | null): string | null {
   return `${days}d ago`;
 }
 
+/**
+ * LifecycleContinuePanel — the "pick up where you left off" surface.
+ *
+ * Editorial resume board on the account `--acct-*` token system (styles
+ * in globals.css `.acct-lifecycle*`): three priority cohorts, each a set
+ * of resume rows with a tone-accent rail, pillar + stage chips, the
+ * next-action as the serif lead, the live status, last-active, and a
+ * Resume affordance that lifts on hover + presses on tap. Real data only
+ * — no invented progress. Theme-aware (cream→onyx), AA, reduced-motion.
+ */
 export default function LifecycleContinuePanel({ snapshot }: Props) {
   const blocks = cohortBlocks(snapshot);
   if (blocks.length === 0) return null;
 
   return (
-    <section className="acct-card p-5">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <p className="acct-kicker">Lifecycle</p>
-          <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-            Pick up where you left off
-          </h2>
-          <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Live view of your open threads across {toBrandName("HenryCo")} divisions, ranked by priority.
-          </p>
-        </div>
-      </div>
+    <section className="acct-lifecycle" aria-label="Continue where you left off">
+      <header className="acct-lifecycle__head">
+        <p className="acct-lifecycle__kicker">Lifecycle</p>
+        <h2 className="acct-lifecycle__title">Pick up where you left off</h2>
+        <p className="acct-lifecycle__sub">
+          Your open journeys across {toBrandName("HenryCo")} divisions, ranked by what needs you first.
+        </p>
+      </header>
 
-      <div className="space-y-6">
+      <div className="acct-lifecycle__cohorts">
         {blocks.map((block) => {
-          const entries = block.entries.slice(0, 4);
+          const Icon = block.icon;
           return (
-            <div key={block.title}>
-              <div className="mb-2 flex items-center gap-2">
-                <span
-                  className="flex h-7 w-7 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: block.toneSoft, color: block.tone }}
-                >
-                  <block.icon size={14} />
+            <div key={block.key} className="acct-lifecycle__cohort" data-tone={block.key}>
+              <div className="acct-lifecycle__cohort-head">
+                <span className="acct-lifecycle__cohort-icon">
+                  <Icon size={15} aria-hidden />
                 </span>
-                <span className="text-sm font-semibold text-[var(--acct-ink)]">{block.title}</span>
-                <span className="text-xs text-[var(--acct-muted)]">
-                  ({block.entries.length})
-                </span>
+                <span className="acct-lifecycle__cohort-label">{block.title}</span>
+                <span className="acct-lifecycle__cohort-count">{block.entries.length}</span>
               </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                {entries.map((entry) => {
-                  const href = entry.nextActionUrl || "#";
+
+              <ul className="acct-lifecycle__rows">
+                {block.entries.slice(0, 4).map((entry) => {
+                  const href = entry.nextActionUrl || null;
+                  const isExternal = href?.startsWith("http") ?? false;
                   const lastActive = formatLastActive(entry.lastActiveAt);
-                  const isExternal = href.startsWith("http");
-                  const Content = (
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className="rounded-full px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em]"
-                            style={{ backgroundColor: block.toneSoft, color: block.tone }}
-                          >
+                  const key = `${entry.pillar}-${entry.stage}`;
+                  const inner = (
+                    <>
+                      <span className="acct-lifecycle__body">
+                        <span className="acct-lifecycle__chips">
+                          <span className="acct-lifecycle__chip">
                             {LIFECYCLE_PILLAR_LABEL[entry.pillar]}
                           </span>
-                          <span className="text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
+                          <span className="acct-lifecycle__stage">
                             {LIFECYCLE_STAGE_LABEL[entry.stage]}
                           </span>
-                        </div>
-                        <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">
+                        </span>
+                        <span className="acct-lifecycle__action">
                           {entry.nextActionLabel || entry.status}
-                        </p>
-                        <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-2">
-                          {entry.status}
-                        </p>
+                        </span>
+                        <span className="acct-lifecycle__status">{entry.status}</span>
                         {lastActive ? (
-                          <p className="mt-1 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                            Last active {lastActive}
-                          </p>
+                          <span className="acct-lifecycle__meta">Last active {lastActive}</span>
                         ) : null}
-                      </div>
-                      <ArrowUpRight size={16} className="shrink-0 text-[var(--acct-muted)]" />
-                    </div>
+                      </span>
+                      {href ? (
+                        <span className="acct-lifecycle__cta">
+                          Resume <ArrowUpRight size={14} aria-hidden />
+                        </span>
+                      ) : null}
+                    </>
                   );
-                  if (!entry.nextActionUrl) {
+
+                  if (!href) {
                     return (
-                      <div
-                        key={`${entry.pillar}-${entry.stage}`}
-                        className="block rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-3"
-                      >
-                        {Content}
-                      </div>
+                      <li key={key}>
+                        <div className="acct-lifecycle__row">{inner}</div>
+                      </li>
                     );
                   }
-                  return isExternal ? (
-                    <a
-                      key={`${entry.pillar}-${entry.stage}`}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-3 transition hover:border-[var(--acct-gold)]/35"
-                    >
-                      {Content}
-                    </a>
-                  ) : (
-                    <Link
-                      key={`${entry.pillar}-${entry.stage}`}
-                      href={href}
-                      className="block rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-3 transition hover:border-[var(--acct-gold)]/35"
-                    >
-                      {Content}
-                    </Link>
+                  return (
+                    <li key={key}>
+                      {isExternal ? (
+                        <a
+                          className="acct-lifecycle__row"
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {inner}
+                        </a>
+                      ) : (
+                        <Link className="acct-lifecycle__row" href={href}>
+                          {inner}
+                          <LinkActivity />
+                        </Link>
+                      )}
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
           );
         })}

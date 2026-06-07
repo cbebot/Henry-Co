@@ -560,11 +560,14 @@ a.acct-metric-strip__cell:focus-visible {
 }
 
 .acct-metric-strip__cell[data-tone="success"] .acct-metric-strip__value {
-  color: var(--acct-green, #1f8b4c);
+  /* Mix the status hue toward --acct-ink so the large metric value clears
+     WCAG-AA in BOTH themes: darkens on the cream surface, lightens on the
+     onyx surface. Raw --acct-green (#10B981) was ~2.1:1 on white. */
+  color: color-mix(in srgb, var(--acct-green) 72%, var(--acct-ink));
 }
 
 .acct-metric-strip__cell[data-tone="danger"] .acct-metric-strip__value {
-  color: var(--acct-red, #b91c1c);
+  color: color-mix(in srgb, var(--acct-red) 74%, var(--acct-ink));
 }
 
 /* ────────────────────────────────────────────────────────────────────
@@ -829,4 +832,25 @@ a.acct-timeline__row:focus-visible {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--acct-muted);
+}
+
+/* ────────────────────────────────────────────────────────────────────
+ * Press feedback — instant, honest tactile acknowledgment.
+ *
+ * Every interactive surface answers a tap immediately with a subtle
+ * inward press (it overrides the hover lift while the pointer is down).
+ * Declared LAST so :active wins the cascade over the :hover rules above
+ * for the same specificity. Reduced-motion strips the transform.
+ * ──────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  a.acct-metric-strip__cell:active,
+  a.acct-next-step:active,
+  a.acct-timeline__row:active {
+    transform: scale(0.985);
+  }
+  .acct-hero__cta:active,
+  .acct-next-step__cta:active,
+  .acct-empty-card__cta:active {
+    transform: scale(0.96);
+  }
 }

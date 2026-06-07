@@ -322,7 +322,7 @@ export default function NotificationBell({
             align === "left" ? "left-0" : "right-0"
           }`}
         >
-          <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,rgba(201,162,39,0.10),rgba(255,255,255,0.92))] px-4 py-4">
+          <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--acct-gold)_14%,var(--acct-bg-soft)),var(--acct-bg-soft))] px-4 py-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="acct-kicker">{t("Notifications")}</p>
