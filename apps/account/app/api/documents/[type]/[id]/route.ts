@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { BRAND_EMAILS, COMPANY } from "@henryco/config";
+import { buildDocumentIssuer } from "@henryco/config";
 import {
   InvoiceDocument,
   KycSummaryDocument,
@@ -8,10 +8,12 @@ import {
   SupportThreadExportDocument,
   TransactionHistoryDocument,
   type InvoiceLineItem,
+  type ReceiptLineItem,
   type SupportMessage,
   type TransactionHistoryFilters,
   type TransactionRow,
 } from "@henryco/branded-documents";
+import { getPaymentDocumentCopy } from "@henryco/i18n";
 
 import { requireAccountUser } from "@/lib/auth";
 import {
@@ -23,6 +25,8 @@ import {
 } from "@/lib/account-data";
 import { getVerificationState, getDocumentTypeLabel } from "@/lib/verification";
 import { streamPdfResponse } from "@/lib/branded-documents";
+import { buildInvoiceProps } from "@/lib/payment-documents";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -112,13 +116,16 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
           }))
         : [];
 
-      const element = InvoiceDocument({
+      const locale = await getAccountAppLocale();
+      const labels = getPaymentDocumentCopy(locale);
+      const props = buildInvoiceProps({
         invoice: {
           id: asString(invoice.id),
           invoiceNo: asString(invoice.invoice_no) || asString(invoice.id).slice(0, 8),
-          description: asString(invoice.description) || "HenryCo invoice",
+          // Localized neutral default — never the "HenryCo" code shorthand.
+          description: asString(invoice.description) || labels.defaultInvoiceDescription,
           division: asString(invoice.division) || null,
-          status: asString(invoice.status) || "pending",
+          status: asString(invoice.status) || "issued",
           issuedAt: asString(invoice.created_at) || new Date().toISOString(),
           dueAt: asString(invoice.due_date) || null,
           paidAt: asString(invoice.paid_at) || null,
@@ -131,32 +138,33 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
           currency: asString(invoice.currency) || "NGN",
           lineItems,
         },
-        customer: {
+        // Issuer is sourced at-source from @henryco/config (Henry Onyx Limited +
+        // RC + registered office) — no hardcoded brand/address literals here.
+        buyer: {
           name: user.fullName || user.email || "Customer",
           email: user.email,
           address: null,
         },
-        issuer: {
-          name: COMPANY.group.legalName,
-          addressLines: ["Plot 14B, Admiralty Way", "Lekki Phase 1, Lagos"],
-          rcNumber: null,
-          vatNumber: null,
-          contactEmail: BRAND_EMAILS.billing,
-          contactPhone: null,
-        },
+        locale,
       });
 
-      return streamPdfResponse({ element, type: "Invoice", id: asString(invoice.invoice_no) || id, download: wantsDownload });
+      return streamPdfResponse({ element: InvoiceDocument(props), type: "Invoice", id: asString(invoice.invoice_no) || id, download: wantsDownload });
     }
 
     case "receipt": {
-      // For phase 1 we synthesise a receipt from a paid invoice. Future
-      // work can split this onto a dedicated receipts table.
+      // Transitional retrieval: synthesise a receipt from a paid invoice with the
+      // correct config-sourced issuer + localized labels. The fully ledger-tied
+      // receipt (referencing the payment_intent + posted journal entry, persisted
+      // with HO- numbering) is produced by lib/payment-documents.ts and activates
+      // with the V3-18 schema at FL2.
       const invoice = (await getInvoiceById(user.id, id)) as Record<string, unknown> | null;
       if (!invoice) {
         return NextResponse.json({ error: "Receipt not found" }, { status: 404 });
       }
-      const lineItems = Array.isArray(invoice.line_items)
+      const locale = await getAccountAppLocale();
+      const labels = getPaymentDocumentCopy(locale);
+      const division = asString(invoice.division) || null;
+      const items: ReceiptLineItem[] = Array.isArray(invoice.line_items)
         ? (invoice.line_items as Array<Record<string, unknown>>).map((row, idx) => ({
             id: asString(row.id) || `line-${idx}`,
             title: asString(row.name) || asString(row.description) || `Line ${idx + 1}`,
@@ -169,7 +177,7 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
         receipt: {
           id: asString(invoice.id),
           receiptNo: `R-${asString(invoice.invoice_no) || asString(invoice.id).slice(0, 8)}`,
-          division: asString(invoice.division) || "hub",
+          division: division ?? "hub",
           paidAt: asString(invoice.paid_at) || asString(invoice.created_at) || new Date().toISOString(),
           paymentMethod: asString(invoice.payment_method) || "card",
           paymentReference: asString(invoice.payment_reference) || null,
@@ -180,11 +188,13 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
           currency: asString(invoice.currency) || "NGN",
           notes: null,
         },
+        issuer: buildDocumentIssuer(division),
         customer: {
           name: user.fullName || user.email || "Customer",
           email: user.email,
         },
-        items: lineItems,
+        items,
+        labels,
       });
       return streamPdfResponse({ element, type: "Receipt", id, download: wantsDownload });
     }

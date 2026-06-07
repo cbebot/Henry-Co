@@ -117,6 +117,9 @@ importers:
       '@henryco/payment-router':
         specifier: workspace:^
         version: link:../../packages/payment-router
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../../packages/pricing
       '@henryco/push':
         specifier: workspace:^
         version: link:../../packages/push

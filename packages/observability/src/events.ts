@@ -254,7 +254,14 @@ export type HenryEventName =
   | "henry.payment.webhook.verified"
   | "henry.payment.webhook.rejected"
   | "henry.payment.no_suitable_provider"
-  | "henry.payment.illegal_transition";
+  | "henry.payment.illegal_transition"
+  // payment documents (V3-18): receipt/invoice generation + retrieval. Like the
+  // payment events above, NO client-facing payload names the chosen processor
+  // (ANTI-CLONE Principle 9) — the document is from Henry Onyx, never the gateway.
+  | "henry.invoice.generated"
+  | "henry.invoice.downloaded"
+  | "henry.receipt.generated"
+  | "henry.receipt.downloaded";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

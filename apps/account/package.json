@@ -38,6 +38,7 @@
     "@henryco/notifications": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
     "@henryco/payment-router": "workspace:^",
+    "@henryco/pricing": "workspace:^",
     "@henryco/push": "workspace:^",
     "@henryco/search-core": "workspace:^",
     "@henryco/search-ui": "workspace:^",

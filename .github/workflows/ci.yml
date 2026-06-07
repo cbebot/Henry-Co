@@ -114,3 +114,13 @@ jobs:
 
       - name: Assert ledger money-RPC grant invariant (payments_private end state)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ledger_grant_invariant.sql
+
+      # V3-18: persisted, ledger-tied receipts & invoices. Apply the document
+      # migration on the same fresh DB and prove its invariants (HO- numbering,
+      # idempotent generation, the receipt-total↔ledger reconciliation tie, RLS,
+      # and the document-writer grant invariant).
+      - name: Apply payment-documents migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260607130000_v3_18_payment_documents.sql
+
+      - name: Prove payment-document invariants (number · idempotent · ledger-reconcile · RLS · grants)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payment_documents_invariants.sql

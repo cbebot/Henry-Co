@@ -3,6 +3,13 @@ export * from "./tokens";
 export { buildDocumentFilename, contentDispositionHeader, attachmentDispositionHeader, type DocumentType } from "./filename";
 export { renderDocumentToStream, renderDocumentToBuffer } from "./render";
 export { buildVerificationQr } from "./qr";
+export {
+  type PaymentDocumentLabels,
+  type DocumentIssuerDetails,
+  resolvePaymentMethodLabel,
+  resolveStatusLabel,
+  interpolateLegalLine,
+} from "./payment-document-labels";
 
 export { TransactionHistoryDocument, type TransactionHistoryProps, type TransactionHistoryFilters, type TransactionRow } from "./templates/transaction-history";
 export { InvoiceDocument, type InvoiceProps, type InvoiceLineItem } from "./templates/invoice";
