@@ -29,6 +29,17 @@ export {
   useUnreadCount,
 } from "./realtime-hooks";
 export {
+  shellToast,
+  emitShellToast,
+  subscribeShellToast,
+  resolveShellToast,
+  TONE_DEFAULT_DURATION_MS,
+  type ShellToast,
+  type ShellToastInput,
+  type ShellToastTone,
+  type ShellToastApi,
+} from "./toast-bus";
+export {
   isWithinQuietHours,
   isMutedDivision,
   isMutedEventType,

@@ -40,6 +40,12 @@ import {
   reduceToastBaseline,
   type ToastBaselineState,
 } from "./toast-selection";
+import {
+  subscribeShellToast,
+  type ShellToast,
+  type ShellToastTone,
+} from "../../shell/toast-bus";
+import { useToastSwipe } from "./use-toast-swipe";
 
 /**
  * NotificationsToastViewport — shell-wide live toast strip.
@@ -126,6 +132,26 @@ type ActiveToast = {
   leaving: boolean;
 };
 
+/** An imperative toast (from `shellToast.*`) currently on screen. */
+type ImperativeActive = {
+  toast: ShellToast;
+  receivedAt: number;
+  dismissMs: number | null;
+  leaving: boolean;
+};
+
+/**
+ * Map an imperative tone onto the shared 5-tier severity vocabulary so
+ * imperative toasts reuse the EXACT colours + icons + dwell of the realtime
+ * signal toasts (visual consistency is the whole point — one toast language).
+ */
+const TONE_SEVERITY: Record<ShellToastTone, string> = {
+  success: "success",
+  warning: "warning",
+  info: "info",
+  error: "urgent",
+};
+
 export function NotificationsToastViewport({
   audience = "customer",
   tokens = ACCOUNT_NOTIFICATION_TOKENS,
@@ -145,6 +171,11 @@ export function NotificationsToastViewport({
   const [active, setActive] = useState<ActiveToast[]>([]);
   const baselineRef = useRef<ToastBaselineState>(initialToastBaselineState());
   const exitTimers = useRef<Map<string, number>>(new Map());
+  // Imperative toasts (shellToast.*) — a parallel queue so action feedback
+  // (success / error / micro-interactions) shares this viewport without
+  // entangling the realtime-signal path.
+  const [busActive, setBusActive] = useState<ImperativeActive[]>([]);
+  const impExitTimers = useRef<Map<string, number>>(new Map());
 
   // Unlock the AudioContext on the first page gesture (Chrome/Safari autoplay
   // policy) so the very first real chime can sound. Once is enough.
@@ -232,10 +263,83 @@ export function NotificationsToastViewport({
     [remove],
   );
 
-  const ordered = useMemo(
-    () => [...active].sort((a, b) => b.receivedAt - a.receivedAt),
-    [active],
+  // ── Imperative toasts (shellToast.*) ─────────────────────────────────
+  const removeImp = useCallback((id: string) => {
+    setBusActive((current) => current.filter((t) => t.toast.id !== id));
+    const timer = impExitTimers.current.get(id);
+    if (timer) {
+      window.clearTimeout(timer);
+      impExitTimers.current.delete(id);
+    }
+  }, []);
+
+  const requestDismissImp = useCallback(
+    (id: string) => {
+      if (impExitTimers.current.has(id)) return;
+      setBusActive((current) =>
+        current.map((t) => (t.toast.id === id ? { ...t, leaving: true } : t)),
+      );
+      const timer = window.setTimeout(() => removeImp(id), EXIT_MS);
+      impExitTimers.current.set(id, timer);
+    },
+    [removeImp],
   );
+
+  // Subscribe to the imperative toast bus once. New emits append (capped);
+  // re-emitting the same id replaces its content in place.
+  useEffect(() => {
+    return subscribeShellToast((toast) => {
+      setBusActive((current) => {
+        const existing = current.findIndex((t) => t.toast.id === toast.id);
+        if (existing !== -1) {
+          const next = current.slice();
+          next[existing] = {
+            toast,
+            receivedAt: Date.now(),
+            dismissMs: toast.durationMs,
+            leaving: false,
+          };
+          return next;
+        }
+        return [
+          ...current,
+          { toast, receivedAt: Date.now(), dismissMs: toast.durationMs, leaving: false },
+        ].slice(-MAX_QUEUE);
+      });
+    });
+  }, []);
+
+  // Clear imperative exit timers on unmount.
+  useEffect(() => {
+    const timers = impExitTimers.current;
+    return () => {
+      for (const id of timers.values()) window.clearTimeout(id);
+      timers.clear();
+    };
+  }, []);
+
+  // Merge realtime-signal toasts + imperative toasts into one ordered, capped
+  // strip so the corner shows a calm maximum of VISIBLE_LIMIT total.
+  const ordered = useMemo(() => {
+    const merged: Array<
+      | { kind: "signal"; key: string; receivedAt: number; item: ActiveToast }
+      | { kind: "imperative"; key: string; receivedAt: number; item: ImperativeActive }
+    > = [
+      ...active.map((a) => ({
+        kind: "signal" as const,
+        key: `sig:${a.signal.id}`,
+        receivedAt: a.receivedAt,
+        item: a,
+      })),
+      ...busActive.map((b) => ({
+        kind: "imperative" as const,
+        key: `imp:${b.toast.id}`,
+        receivedAt: b.receivedAt,
+        item: b,
+      })),
+    ];
+    return merged.sort((a, b) => b.receivedAt - a.receivedAt);
+  }, [active, busActive]);
   const visible = ordered.slice(0, VISIBLE_LIMIT);
 
   if (visible.length === 0) return null;
@@ -260,16 +364,27 @@ export function NotificationsToastViewport({
           paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 0.5rem, 0.5rem)",
         }}
       >
-        {visible.map((toast, index) => (
-          <ToastCard
-            key={toast.signal.id}
-            toast={toast}
-            index={index}
-            resolver={resolver}
-            onDismiss={() => requestDismiss(toast.signal.id)}
-            t={tt}
-          />
-        ))}
+        {visible.map((entry, index) =>
+          entry.kind === "signal" ? (
+            <ToastCard
+              key={entry.key}
+              toast={entry.item}
+              index={index}
+              resolver={resolver}
+              onDismiss={() => requestDismiss(entry.item.signal.id)}
+              t={tt}
+            />
+          ) : (
+            <ImperativeToastCard
+              key={entry.key}
+              toast={entry.item}
+              index={index}
+              resolver={resolver}
+              onDismiss={() => requestDismissImp(entry.item.toast.id)}
+              t={tt}
+            />
+          ),
+        )}
       </div>
     </>
   );
@@ -288,6 +403,7 @@ function ToastCard({ toast, index, resolver, onDismiss, t }: ToastCardProps) {
   const { markReadLocally, preferences } = useRealtime();
   // Pointer/keyboard dwell: pauses the progress clock AND lifts the card.
   const [paused, setPaused] = useState(false);
+  const swipe = useToastSwipe(onDismiss, !toast.leaving);
   const sev = resolver.resolveSeverity(toast.signal.priority, toast.signal.category);
   const isUrgent = sev.severity === "urgent" || sev.severity === "security";
 
@@ -344,6 +460,7 @@ function ToastCard({ toast, index, resolver, onDismiss, t }: ToastCardProps) {
       onMouseLeave={resume}
       onFocus={pause}
       onBlur={resume}
+      {...swipe.handlers}
       style={{
         position: "relative",
         overflow: "hidden",
@@ -363,6 +480,7 @@ function ToastCard({ toast, index, resolver, onDismiss, t }: ToastCardProps) {
         transition:
           "box-shadow 180ms cubic-bezier(0.22,1,0.36,1), transform 180ms cubic-bezier(0.22,1,0.36,1)",
         animationDelay: toast.leaving ? "0ms" : `${index * 40}ms`,
+        ...swipe.style,
       }}
     >
       <div
@@ -443,6 +561,175 @@ function ToastCard({ toast, index, resolver, onDismiss, t }: ToastCardProps) {
             </p>
           ) : null}
         </a>
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label={t("Dismiss notification")}
+          style={{
+            width: "1.6rem",
+            height: "1.6rem",
+            borderRadius: RADIUS.pill,
+            border: "none",
+            background: paused ? `var(${CSS_VARS.surfaceSunken})` : "transparent",
+            color: `var(${CSS_VARS.inkSoft})`,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            transition: "background 160ms linear",
+            ...focusVisibleStyle(),
+          }}
+        >
+          <X size={14} aria-hidden />
+        </button>
+      </div>
+      {toast.dismissMs !== null && !toast.leaving ? (
+        <span
+          aria-hidden
+          className="hc-toast-progress"
+          onAnimationEnd={onDismiss}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: "2px",
+            backgroundColor: `var(${sev.colorVar})`,
+            opacity: 0.5,
+            animationDuration: `${toast.dismissMs}ms`,
+            animationPlayState: paused ? "paused" : "running",
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+type ImperativeToastCardProps = {
+  toast: ImperativeActive;
+  index: number;
+  resolver: SeverityResolver;
+  onDismiss: () => void;
+  t: (key: string) => string;
+};
+
+/**
+ * Imperative action toast (success / error / info / warning). Reuses the
+ * severity resolver (via TONE_SEVERITY) so it wears the SAME colour + icon as
+ * the realtime-signal toasts, plus the shared swipe-to-dismiss. No realtime
+ * concerns (mark-read, quiet-hours dim, email label) — just clear feedback.
+ */
+function ImperativeToastCard({ toast, index, resolver, onDismiss, t }: ImperativeToastCardProps) {
+  const [paused, setPaused] = useState(false);
+  const swipe = useToastSwipe(onDismiss, !toast.leaving);
+  const { tone, title, body, href } = toast.toast;
+  const sev = resolver.resolveSeverity(TONE_SEVERITY[tone]);
+  const isUrgent = tone === "error";
+  const safeDest = href && isSafeNotificationDeepLink(href) ? href : null;
+
+  const pause = () => setPaused(true);
+  const resume = (e: FocusEvent | MouseEvent) => {
+    if (
+      "relatedTarget" in e &&
+      e.currentTarget instanceof Node &&
+      e.relatedTarget instanceof Node &&
+      e.currentTarget.contains(e.relatedTarget)
+    ) {
+      return;
+    }
+    setPaused(false);
+  };
+
+  const body0 = (
+    <>
+      <p
+        style={{
+          ...typeStyle("bodyStrong"),
+          margin: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {title}
+      </p>
+      {body ? (
+        <p
+          style={{
+            ...typeStyle("small"),
+            margin: "0.25rem 0 0",
+            color: `var(${CSS_VARS.inkSoft})`,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {body}
+        </p>
+      ) : null}
+    </>
+  );
+
+  return (
+    <div
+      className={`hc-toast ${toast.leaving ? "hc-toast-out" : "hc-toast-in"}`}
+      role={isUrgent ? "alert" : "status"}
+      aria-live={isUrgent ? "assertive" : "polite"}
+      aria-atomic="false"
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onFocus={pause}
+      onBlur={resume}
+      {...swipe.handlers}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        pointerEvents: "auto",
+        width: "min(92vw, 26rem)",
+        display: "flex",
+        flexDirection: "column",
+        padding: "0.75rem 0.85rem",
+        borderRadius: RADIUS.lg,
+        border: `1px solid var(${CSS_VARS.hairline})`,
+        borderLeft: `3px solid var(${sev.colorVar})`,
+        backgroundColor: `var(${CSS_VARS.surfaceElevated})`,
+        boxShadow: paused
+          ? "0 24px 56px rgba(17,24,39,0.24)"
+          : "0 18px 44px rgba(17,24,39,0.18)",
+        transform: paused && !toast.leaving ? "translateY(-1px)" : "translateY(0)",
+        transition:
+          "box-shadow 180ms cubic-bezier(0.22,1,0.36,1), transform 180ms cubic-bezier(0.22,1,0.36,1)",
+        animationDelay: toast.leaving ? "0ms" : `${index * 40}ms`,
+        ...swipe.style,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "0.65rem" }}>
+        <span
+          aria-hidden
+          style={{ color: `var(${sev.colorVar})`, display: "inline-flex", paddingTop: "0.15rem" }}
+        >
+          <sev.Icon size={16} />
+        </span>
+        {safeDest ? (
+          <a
+            href={safeDest}
+            onClick={onDismiss}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              color: `var(${CSS_VARS.ink})`,
+              textDecoration: "none",
+              ...focusVisibleStyle(),
+            }}
+            aria-label={`${t("Open")}: ${title}`}
+          >
+            {body0}
+          </a>
+        ) : (
+          <div style={{ flex: 1, minWidth: 0, color: `var(${CSS_VARS.ink})` }}>{body0}</div>
+        )}
         <button
           type="button"
           onClick={onDismiss}

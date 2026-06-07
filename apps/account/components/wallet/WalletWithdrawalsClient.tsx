@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatMoney, formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
+import { shellToast } from "@henryco/dashboard-shell";
 
 type PayoutMethod = {
   id: string;
@@ -51,6 +52,15 @@ export default function WalletWithdrawalsClient({
   const [pendingHold, setPendingHold] = useState(pendingHoldKobo);
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+  // Mirror every result to a toast so it's seen even when the inline banner is
+  // scrolled off — the toast is the prominent, can't-miss feedback (errors stay
+  // until dismissed); the banner remains as in-context confirmation by the form.
+  const notify = (type: "ok" | "err", text: string) => {
+    setMessage({ type, text });
+    if (type === "ok") shellToast.success(text);
+    else shellToast.error(text);
+  };
 
   const [bankName, setBankName] = useState("");
   const [accountName, setAccountName] = useState("");
@@ -144,9 +154,9 @@ export default function WalletWithdrawalsClient({
       setAccountName("");
       setAccountNumber("");
       await refresh();
-      setMessage({ type: "ok", text: t("Payout account saved.") });
+      notify("ok", t("Payout account saved."));
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? localizeWalletError(err.message) : t("Could not save account.") });
+      notify("err", err instanceof Error ? localizeWalletError(err.message) : t("Could not save account."));
     } finally {
       setBusy(null);
     }
@@ -172,9 +182,9 @@ export default function WalletWithdrawalsClient({
       setConfirmPin("");
       setCurrentPin("");
       setHasPin(true);
-      setMessage({ type: "ok", text: t("Withdrawal PIN updated.") });
+      notify("ok", t("Withdrawal PIN updated."));
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? localizeWalletError(err.message) : t("Could not update PIN.") });
+      notify("err", err instanceof Error ? localizeWalletError(err.message) : t("Could not update PIN."));
     } finally {
       setBusy(null);
     }
@@ -186,7 +196,7 @@ export default function WalletWithdrawalsClient({
     setMessage(null);
     const naira = Number(amount);
     if (!Number.isFinite(naira) || naira < 100) {
-      setMessage({ type: "err", text: t("Enter at least NGN 100.") });
+      notify("err", t("Enter at least NGN 100."));
       setBusy(null);
       return;
     }
@@ -215,10 +225,10 @@ export default function WalletWithdrawalsClient({
       ]);
       setAvailableKobo((prev) => Math.max(0, prev - Math.round(naira * 100)));
       setPendingHold((prev) => prev + Math.round(naira * 100));
-      setMessage({ type: "ok", text: t("Withdrawal submitted for review.") });
+      notify("ok", t("Withdrawal submitted for review."));
       router.refresh();
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? localizeWalletError(err.message) : t("Could not submit.") });
+      notify("err", err instanceof Error ? localizeWalletError(err.message) : t("Could not submit."));
     } finally {
       setBusy(null);
     }
