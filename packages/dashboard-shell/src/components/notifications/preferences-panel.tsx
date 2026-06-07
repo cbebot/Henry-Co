@@ -43,14 +43,23 @@ export function PreferencesPanel({
 }: PreferencesPanelProps) {
   const tt = (key: string) => (typeof t === "function" ? t(key) : key);
   const { preferences, apply } = useNotificationPreferences();
-  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Saves are optimistic and NON-BLOCKING. The control reflects the change
+  // immediately, the PATCH runs in the background with a timeout, and a
+  // failure rolls the value back. We deliberately never globally disable the
+  // panel while a save is in flight: the previous single `pending` flag froze
+  // EVERY toggle until the next save settled, so one slow/never-settling
+  // request left the whole panel locked until the drawer was reopened.
   const persist = useCallback(
-    async (patch: Partial<RealtimePreferences>) => {
-      setPending(true);
+    async (
+      patch: Partial<RealtimePreferences>,
+      rollback: Partial<RealtimePreferences>,
+    ) => {
       setError(null);
       apply(patch);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
       try {
         const body: Record<string, unknown> = {};
         for (const [k, v] of Object.entries(patch)) {
@@ -62,14 +71,17 @@ export function PreferencesPanel({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
           credentials: "same-origin",
+          signal: controller.signal,
         });
         if (!res.ok) {
+          apply(rollback);
           setError(tt("Could not save preference."));
         }
       } catch {
+        apply(rollback);
         setError(tt("Could not save preference."));
       } finally {
-        setPending(false);
+        clearTimeout(timer);
       }
     },
     [apply, endpoint, tt],
@@ -77,10 +89,14 @@ export function PreferencesPanel({
 
   const toggleDivision = useCallback(
     (key: string) => {
-      const current = new Set(preferences.muted_divisions.map((d) => d.toLowerCase()));
-      if (current.has(key.toLowerCase())) current.delete(key.toLowerCase());
-      else current.add(key.toLowerCase());
-      void persist({ muted_divisions: Array.from(current) });
+      const previous = preferences.muted_divisions;
+      const next = new Set(previous.map((d) => d.toLowerCase()));
+      if (next.has(key.toLowerCase())) next.delete(key.toLowerCase());
+      else next.add(key.toLowerCase());
+      void persist(
+        { muted_divisions: Array.from(next) },
+        { muted_divisions: Array.from(previous) },
+      );
     },
     [preferences.muted_divisions, persist],
   );
@@ -127,27 +143,43 @@ export function PreferencesPanel({
         label={tt("In-app toasts")}
         description={tt("Show new activity as a transient toast.")}
         checked={preferences.in_app_toast_enabled}
-        onChange={(v) => persist({ in_app_toast_enabled: v })}
-        disabled={pending}
+        onChange={(v) =>
+          persist(
+            { in_app_toast_enabled: v },
+            { in_app_toast_enabled: preferences.in_app_toast_enabled },
+          )
+        }
       />
       <Toggle
         label={tt("High-priority only")}
         description={tt("Quiet everything except urgent and security signals.")}
         checked={preferences.high_priority_only}
-        onChange={(v) => persist({ high_priority_only: v })}
-        disabled={pending}
+        onChange={(v) =>
+          persist(
+            { high_priority_only: v },
+            { high_priority_only: preferences.high_priority_only },
+          )
+        }
       />
       <Toggle
         label={tt("Sound")}
         checked={preferences.notification_sound_enabled}
-        onChange={(v) => persist({ notification_sound_enabled: v })}
-        disabled={pending}
+        onChange={(v) =>
+          persist(
+            { notification_sound_enabled: v },
+            { notification_sound_enabled: preferences.notification_sound_enabled },
+          )
+        }
       />
       <Toggle
         label={tt("Vibration (mobile)")}
         checked={preferences.notification_vibration_enabled}
-        onChange={(v) => persist({ notification_vibration_enabled: v })}
-        disabled={pending}
+        onChange={(v) =>
+          persist(
+            { notification_vibration_enabled: v },
+            { notification_vibration_enabled: preferences.notification_vibration_enabled },
+          )
+        }
       />
       <Toggle
         label={tt("Email fallback")}
@@ -155,8 +187,12 @@ export function PreferencesPanel({
           "If you miss an in-app signal, we email you after a delay you choose.",
         )}
         checked={preferences.email_fallback_enabled}
-        onChange={(v) => persist({ email_fallback_enabled: v })}
-        disabled={pending}
+        onChange={(v) =>
+          persist(
+            { email_fallback_enabled: v },
+            { email_fallback_enabled: preferences.email_fallback_enabled },
+          )
+        }
       />
 
       <div>
@@ -177,7 +213,6 @@ export function PreferencesPanel({
               role="switch"
               aria-checked={!isMuted(d.key)}
               onClick={() => toggleDivision(d.key)}
-              disabled={pending}
               style={{
                 padding: "0.35rem 0.85rem",
                 fontSize: "0.7rem",

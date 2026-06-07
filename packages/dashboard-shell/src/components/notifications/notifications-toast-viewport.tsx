@@ -35,6 +35,11 @@ import { CSS_VARS } from "../../tokens/color";
 import { RADIUS } from "../../tokens/spacing";
 import { typeStyle } from "../../tokens/type";
 import { focusVisibleStyle } from "../../tokens/focus";
+import {
+  initialToastBaselineState,
+  reduceToastBaseline,
+  type ToastBaselineState,
+} from "./toast-selection";
 
 /**
  * NotificationsToastViewport — shell-wide live toast strip.
@@ -128,15 +133,17 @@ export function NotificationsToastViewport({
 }: NotificationsToastViewportProps) {
   const tt = (key: string) => (typeof t === "function" ? t(key) : key);
   const resolver = useMemo(() => createSeverityResolver(tokens), [tokens]);
-  const { signals } = useNotificationSignal({
+  const { signals, loading } = useNotificationSignal({
     audience,
     visibleOnly: true,
     unreadOnly: true,
-    limit: 8,
+    // No tight limit on purpose: the "already seen" baseline must cover the
+    // FULL retained unread backlog. With a small window, an older unread row
+    // sliding into view later (after a newer one is read) would be mistaken
+    // for a fresh arrival and toast spuriously.
   });
   const [active, setActive] = useState<ActiveToast[]>([]);
-  const seenRef = useRef<Set<string>>(new Set());
-  const hasMountedRef = useRef(false);
+  const baselineRef = useRef<ToastBaselineState>(initialToastBaselineState());
   const exitTimers = useRef<Map<string, number>>(new Map());
 
   // Unlock the AudioContext on the first page gesture (Chrome/Safari autoplay
@@ -159,35 +166,37 @@ export function NotificationsToastViewport({
     return cleanup;
   }, []);
 
-  // Mark the initial backlog as already-seen so it doesn't toast on mount.
+  // Decide which signals are genuine post-baseline arrivals to toast. The
+  // pre-existing unread backlog is captured the moment the first hydration
+  // SETTLES (`loading` true→false) — never at first render, when `signals` is
+  // still the provider's empty pre-fetch state. That timing bug re-toasted the
+  // whole backlog on every (re)mount; see `reduceToastBaseline`.
   useEffect(() => {
-    if (!hasMountedRef.current) {
-      for (const s of signals) seenRef.current.add(s.id);
-      hasMountedRef.current = true;
-      return;
-    }
+    const ids = signals.map((s) => s.id);
+    const { state, toast } = reduceToastBaseline(baselineRef.current, {
+      loading,
+      signalIds: ids,
+    });
+    baselineRef.current = state;
+    if (toast.length === 0) return;
     setActive((current) => {
-      const additions: ActiveToast[] = [];
-      for (const s of signals) {
-        if (seenRef.current.has(s.id)) continue;
-        seenRef.current.add(s.id);
-        const sev = resolver.resolveSeverity(s.priority, s.category);
-        additions.push({
-          signal: s,
+      const byId = new Map(signals.map((s) => [s.id, s] as const));
+      const merged = [...current];
+      for (const id of toast) {
+        if (merged.some((m) => m.signal.id === id)) continue;
+        const signal = byId.get(id);
+        if (!signal) continue;
+        const sev = resolver.resolveSeverity(signal.priority, signal.category);
+        merged.push({
+          signal,
           receivedAt: Date.now(),
           dismissMs: resolver.autoDismissMs(sev.severity),
           leaving: false,
         });
       }
-      if (additions.length === 0) return current;
-      const merged = [...current];
-      for (const a of additions) {
-        if (merged.some((m) => m.signal.id === a.signal.id)) continue;
-        merged.push(a);
-      }
       return merged.slice(-MAX_QUEUE);
     });
-  }, [signals, resolver]);
+  }, [signals, loading, resolver]);
 
   // Clear any pending exit timers on unmount.
   useEffect(() => {
