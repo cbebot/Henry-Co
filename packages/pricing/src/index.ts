@@ -18,6 +18,15 @@ export {
   type SettlementAvailabilityStatus,
 } from './currency-model';
 
+// V3-VAT-01 — VAT math (output VAT on sales, inclusive-split for processor fees).
+export {
+  splitVatInclusive,
+  computeOutputVat,
+  applyOutputVat,
+  type VatTreatment,
+  type VatRatePolicy,
+} from './vat';
+
 export type PricingBreakdownLine = {
   code:
     | "items_subtotal"

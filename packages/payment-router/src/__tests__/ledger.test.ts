@@ -52,7 +52,8 @@ describe("ledger chart of accounts", () => {
       "platform_revenue",
       "refunds",
       "processor_fees",
-      "vat_payable",
+      "vat_output_payable",
+      "fee_vat_recoverable",
     ]) {
       assert.ok(code in LEDGER_ACCOUNTS, `missing account ${code}`);
     }
@@ -69,7 +70,7 @@ describe("assertBalanced — the core money invariant", () => {
       assertBalanced([
         dr("cash_settlement", 5000),
         cr("platform_revenue", 4500),
-        cr("vat_payable", 500),
+        cr("vat_output_payable", 500),
       ]),
     );
   });

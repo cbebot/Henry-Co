@@ -38,7 +38,11 @@ export const LEDGER_ACCOUNTS = {
   platform_revenue: { type: "revenue", normalBalance: "credit", label: "Platform revenue" },
   processor_fees: { type: "expense", normalBalance: "debit", label: "Payment processor fees" },
   refunds: { type: "expense", normalBalance: "debit", label: "Refunds issued" },
-  vat_payable: { type: "liability", normalBalance: "credit", label: "VAT payable (placeholder)" },
+  // V3-VAT-01 — the two VATs, modelled explicitly (replaces the V3-17 vat_payable
+  // placeholder). Output VAT we collect on sales is a liability owed to FIRS; input
+  // VAT on the processor fee the owner absorbs is a recoverable asset.
+  vat_output_payable: { type: "liability", normalBalance: "credit", label: "VAT output payable (collected on sales, owed to FIRS)" },
+  fee_vat_recoverable: { type: "asset", normalBalance: "debit", label: "Input VAT recoverable (on processor fees)" },
 } as const satisfies Record<string, LedgerAccount>;
 
 export type LedgerAccountCode = keyof typeof LEDGER_ACCOUNTS;
@@ -164,4 +168,108 @@ export function buildWalletTopupLines(amountKobo: number): JournalLine[] {
 export function buildRefundLines(amountKobo: number): JournalLine[] {
   requirePositiveKobo(amountKobo);
   return [debit("payments_clearing", amountKobo), credit("cash_settlement", amountKobo)];
+}
+
+// ---------------------------------------------------------------------------
+// V3-VAT-01 — VAT-aware postings.
+//
+// These are pure line ASSEMBLY mirrors of the DB RPCs (post_charge_settlement /
+// post_sale_revenue). The fee + fee-VAT are pre-resolved by the caller (the DB is
+// the authority for the statutory split; @henryco/pricing's splitVatInclusive proves
+// the math). No rate lives here, so payment-router stays rate-free + dependency-light.
+// ---------------------------------------------------------------------------
+
+function requireWholeKoboNamed(value: number, label: string): void {
+  if (!isWholeKobo(value)) {
+    throw new LedgerImbalanceError(`${label} must be a whole non-negative kobo value, got ${value}`, "invalid_amount");
+  }
+}
+
+/**
+ * Charge settled, fee absorbed by the owner (V3-VAT-01). Splits the DEBIT side so the
+ * real money trail is on the books while the credit (and therefore the debit TOTAL)
+ * stays the gross — so the V3-18 receipt tie (`receipt.total === settlement debit
+ * total === gross`) and the wallet reconciliation are untouched:
+ *
+ *   DR cash_settlement      net  (= gross − fee)        the real amount that settles
+ *   DR processor_fees       fee − feeVat                the fee expense (ex-VAT)
+ *   DR fee_vat_recoverable  feeVat                      input VAT we can reclaim
+ *   CR payments_clearing    gross                       the obligation the customer paid
+ *
+ * `feeMinor` is the REAL total fee the provider deducted (never assumed). When it is
+ * 0/unknown we post the plain gross-to-cash entry rather than fabricate a fee.
+ */
+export function buildChargeSettlementLinesWithFee(input: {
+  grossMinor: number;
+  /** Real total processor fee deducted (VAT-inclusive), from the provider payload. */
+  feeMinor: number;
+  /** VAT portion within the fee (provider-reported or statutory split). */
+  feeVatMinor: number;
+}): JournalLine[] {
+  const { grossMinor, feeMinor, feeVatMinor } = input;
+  requirePositiveKobo(grossMinor);
+  requireWholeKoboNamed(feeMinor, "feeMinor");
+  requireWholeKoboNamed(feeVatMinor, "feeVatMinor");
+
+  // Fee unknown / not reported by the provider — never invent one.
+  if (feeMinor === 0) return buildChargeSettlementLines(grossMinor);
+
+  if (feeMinor >= grossMinor) {
+    throw new LedgerImbalanceError(`processor fee (${feeMinor}) must be less than gross (${grossMinor})`, "invalid_amount");
+  }
+  if (feeVatMinor > feeMinor) {
+    throw new LedgerImbalanceError(`fee VAT (${feeVatMinor}) cannot exceed the fee (${feeMinor})`, "invalid_amount");
+  }
+
+  const feeExVatMinor = feeMinor - feeVatMinor;
+  const cashNetMinor = grossMinor - feeMinor;
+  const lines: JournalLine[] = [debit("cash_settlement", cashNetMinor)];
+  if (feeExVatMinor > 0) lines.push(debit("processor_fees", feeExVatMinor));
+  if (feeVatMinor > 0) lines.push(debit("fee_vat_recoverable", feeVatMinor));
+  lines.push(credit("payments_clearing", grossMinor));
+  return lines;
+}
+
+/**
+ * VATable sale revenue recognition (V3-VAT-01 Phase 2b). Allocates clearing to
+ * revenue, splitting out the output VAT we collected on the platform's behalf:
+ *
+ *   DR payments_clearing  gross
+ *   CR platform_revenue   gross − outputVat   (revenue, ex-VAT)
+ *   CR vat_output_payable outputVat           (liability owed to FIRS)
+ *
+ * A non-VATable sale (outputVat 0) is the plain DR clearing / CR revenue pair.
+ */
+export function buildSaleRevenueLines(input: { grossMinor: number; outputVatMinor: number }): JournalLine[] {
+  const { grossMinor, outputVatMinor } = input;
+  requirePositiveKobo(grossMinor);
+  requireWholeKoboNamed(outputVatMinor, "outputVatMinor");
+  if (outputVatMinor >= grossMinor) {
+    throw new LedgerImbalanceError(`output VAT (${outputVatMinor}) must be less than gross (${grossMinor})`, "invalid_amount");
+  }
+  const revenueMinor = grossMinor - outputVatMinor;
+  const lines: JournalLine[] = [debit("payments_clearing", grossMinor), credit("platform_revenue", revenueMinor)];
+  if (outputVatMinor > 0) lines.push(credit("vat_output_payable", outputVatMinor));
+  return lines;
+}
+
+/**
+ * The exact reverse of {@link buildSaleRevenueLines} — the refund-ready hook for
+ * V3-19. A sale refund reverses the revenue recognition, which CLEANLY reverses the
+ * output VAT too (DR vat_output_payable), so the FIRS liability is reduced by the
+ * refunded VAT. Not wired here (V3-19 owns the refund flow); provided + proven so the
+ * reversal is structurally guaranteed when it lands.
+ */
+export function buildSaleRevenueReversalLines(input: { grossMinor: number; outputVatMinor: number }): JournalLine[] {
+  const { grossMinor, outputVatMinor } = input;
+  requirePositiveKobo(grossMinor);
+  requireWholeKoboNamed(outputVatMinor, "outputVatMinor");
+  if (outputVatMinor >= grossMinor) {
+    throw new LedgerImbalanceError(`output VAT (${outputVatMinor}) must be less than gross (${grossMinor})`, "invalid_amount");
+  }
+  const revenueMinor = grossMinor - outputVatMinor;
+  const lines: JournalLine[] = [debit("platform_revenue", revenueMinor)];
+  if (outputVatMinor > 0) lines.push(debit("vat_output_payable", outputVatMinor));
+  lines.push(credit("payments_clearing", grossMinor));
+  return lines;
 }

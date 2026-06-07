@@ -4,6 +4,7 @@ export * from "./domain";
 export * from "./identity";
 export * from "./integrations";
 export * from "./legal";
+export * from "./tax";
 export * from "./issuer";
 export * from "./support";
 export * from "./urls";
