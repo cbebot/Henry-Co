@@ -62,7 +62,12 @@ import { focusVisibleStyle } from "../../tokens/focus";
  * re-toasted on refresh.
  */
 
-const VISIBLE_LIMIT = 3;
+// At most TWO toasts are ever on screen at once — a calm cap, not a
+// stack. Newer arrivals beyond the cap wait in the queue (MAX_QUEUE) and
+// promote into view automatically as the visible ones dismiss, so nothing
+// is lost and the corner never floods. (Was 3 → owner-flagged as too many
+// popping out at once.)
+const VISIBLE_LIMIT = 2;
 const MAX_QUEUE = 6;
 /** Exit animation window before the row is removed from state. */
 const EXIT_MS = 240;

@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import {
   emitModalBackdropTap,
   useAndroidBackClose,
+  suppressSentinelPopForNavLink,
 } from "@henryco/ui/mobile";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
@@ -132,6 +133,7 @@ export function Drawer({
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
+        onClickCapture={suppressSentinelPopForNavLink}
         onClick={(e) => e.stopPropagation()}
         className="hc-modal-body"
         style={{
