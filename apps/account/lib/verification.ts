@@ -47,45 +47,61 @@ export function getDocumentTypeLabel(type: string) {
 export async function getVerificationState(userId: string): Promise<VerificationState> {
   const adminClient = admin();
 
-  const [profileRes, submissionsRes] = await Promise.all([
-    adminClient
-      .from("customer_profiles")
-      .select("verification_status, verification_submitted_at, verification_reviewed_at, verification_note")
-      .eq("id", userId)
-      .maybeSingle(),
-    adminClient
-      .from("customer_verification_submissions")
-      .select("id, document_type, status, submitted_at, reviewed_at, reviewer_note")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false }),
-  ]);
+  try {
+    const [profileRes, submissionsRes] = await Promise.all([
+      adminClient
+        .from("customer_profiles")
+        .select("verification_status, verification_submitted_at, verification_reviewed_at, verification_note")
+        .eq("id", userId)
+        .maybeSingle(),
+      adminClient
+        .from("customer_verification_submissions")
+        .select("id, document_type, status, submitted_at, reviewed_at, reviewer_note")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+    ]);
 
-  const profile = (profileRes.data || {}) as Record<string, unknown>;
-  const submissions = ((submissionsRes.data || []) as Array<Record<string, unknown>>).map((row: Record<string, unknown>) => ({
-    id: String(row.id),
-    documentType: String(row.document_type || ""),
-    status: String(row.status || "pending"),
-    submittedAt: String(row.submitted_at || ""),
-    reviewedAt: row.reviewed_at ? String(row.reviewed_at) : null,
-    reviewerNote: row.reviewer_note ? String(row.reviewer_note) : null,
-  }));
+    const profile = (profileRes.data || {}) as Record<string, unknown>;
+    const submissions = ((submissionsRes.data || []) as Array<Record<string, unknown>>).map((row: Record<string, unknown>) => ({
+      id: String(row.id),
+      documentType: String(row.document_type || ""),
+      status: String(row.status || "pending"),
+      submittedAt: String(row.submitted_at || ""),
+      reviewedAt: row.reviewed_at ? String(row.reviewed_at) : null,
+      reviewerNote: row.reviewer_note ? String(row.reviewer_note) : null,
+    }));
 
-  return {
-    status: normalizeVerificationStatus(profile.verification_status),
-    submissions,
-    submittedAt: profile.verification_submitted_at
-      ? String(profile.verification_submitted_at)
-      : null,
-    reviewedAt: profile.verification_reviewed_at
-      ? String(profile.verification_reviewed_at)
-      : null,
-    reviewerNote: profile.verification_note
-      ? String(profile.verification_note)
-      : null,
-    pendingSubmissionCount: submissions.filter((item) => item.status === "pending").length,
-    approvedSubmissionCount: submissions.filter((item) => item.status === "approved").length,
-    rejectedSubmissionCount: submissions.filter((item) => item.status === "rejected").length,
-  };
+    return {
+      status: normalizeVerificationStatus(profile.verification_status),
+      submissions,
+      submittedAt: profile.verification_submitted_at
+        ? String(profile.verification_submitted_at)
+        : null,
+      reviewedAt: profile.verification_reviewed_at
+        ? String(profile.verification_reviewed_at)
+        : null,
+      reviewerNote: profile.verification_note
+        ? String(profile.verification_note)
+        : null,
+      pendingSubmissionCount: submissions.filter((item) => item.status === "pending").length,
+      approvedSubmissionCount: submissions.filter((item) => item.status === "approved").length,
+      rejectedSubmissionCount: submissions.filter((item) => item.status === "rejected").length,
+    };
+  } catch {
+    // DASH-RESILIENCE: a rejected read (e.g. a Supabase connection drop under
+    // load) must never crash a page that awaits verification — degrade to an
+    // empty, not-verified state so the page still renders.
+    return {
+      status: normalizeVerificationStatus(undefined),
+      submissions: [],
+      submittedAt: null,
+      reviewedAt: null,
+      reviewerNote: null,
+      pendingSubmissionCount: 0,
+      approvedSubmissionCount: 0,
+      rejectedSubmissionCount: 0,
+    };
+  }
 }
 
 /**

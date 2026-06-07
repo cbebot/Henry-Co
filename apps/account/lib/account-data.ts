@@ -506,13 +506,21 @@ export async function getCartRecoveryState(userId: string) {
 }
 
 export async function getProfile(userId: string) {
-  const { data } = await admin()
-    .from("customer_profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
+  try {
+    const { data } = await admin()
+      .from("customer_profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
 
-  return data;
+    return data;
+  } catch {
+    // DASH-RESILIENCE: the profile is awaited by many dashboard pages. A
+    // rejected read (e.g. a Supabase connection drop under load) must degrade
+    // to null — callers already handle a missing profile — not crash the page
+    // into the V3-10 error boundary.
+    return null;
+  }
 }
 
 export async function getSupportThreads(userId: string) {
