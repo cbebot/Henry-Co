@@ -76,23 +76,34 @@ export default async function WalletPage() {
     /* self-healing: a transient failure retries on the next wallet load */
   }
 
-  const [
-    { wallet, pending_kobo, requests },
-    withdrawalRequests,
-    profile,
-    rawTransactions,
-    payoutMethods,
-    pinConfigured,
-    verification,
-  ] = await Promise.all([
-    getWalletFundingContext(user.id),
-    getWithdrawalRequests(user.id),
-    getProfile(user.id),
-    getWalletTransactions(user.id, 50),
-    getPayoutMethods(user.id),
-    getWithdrawalPinConfigured(user.id),
+  // DASH-RESILIENCE: barrier each wallet read independently. A single rejected
+  // Supabase read (e.g. a connection drop under load) must degrade that one
+  // section, never collapse the whole page into the V3-10 "Reference: …" error
+  // boundary. getVerificationState is reject-safe at source; the rest are
+  // barriered here with safe fallbacks. Mirrors the shell layout's allSettled.
+  const [verification, settled] = await Promise.all([
     getVerificationState(user.id),
+    Promise.allSettled([
+      getWalletFundingContext(user.id),
+      getWithdrawalRequests(user.id),
+      getProfile(user.id),
+      getWalletTransactions(user.id, 50),
+      getPayoutMethods(user.id),
+      getWithdrawalPinConfigured(user.id),
+    ]),
   ]);
+  const [fundingR, withdrawalR, profileR, transactionsR, payoutR, pinR] = settled;
+
+  const funding = fundingR.status === "fulfilled" ? fundingR.value : null;
+  const wallet =
+    funding?.wallet ?? { id: null, balance_kobo: 0, currency: "NGN", is_active: true };
+  const pending_kobo = funding?.pending_kobo ?? 0;
+  const requests = funding?.requests ?? [];
+  const withdrawalRequests = withdrawalR.status === "fulfilled" ? withdrawalR.value : [];
+  const profile = profileR.status === "fulfilled" ? profileR.value : null;
+  const rawTransactions = transactionsR.status === "fulfilled" ? transactionsR.value : [];
+  const payoutMethods = payoutR.status === "fulfilled" ? payoutR.value : [];
+  const pinConfigured = pinR.status === "fulfilled" ? pinR.value : false;
 
   const region = resolveAccountRegionalContext({
     country: profile?.country as string | null | undefined,
