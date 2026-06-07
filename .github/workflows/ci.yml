@@ -99,3 +99,18 @@ jobs:
 
       - name: Assert money-RPC grant invariant (anon/authenticated=false; writers service_role=true)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payments_grant_invariant.sql
+
+      # V3-17: continue to the post-isolation END STATE — move the writers into the
+      # non-exposed payments_private schema, add the double-entry ledger, and assert
+      # the grant invariant covers the ledger functions too (anon/authenticated zero reach).
+      - name: Apply payments_private isolation migration
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260605123000_payments_private_isolation.sql
+
+      - name: Apply double-entry ledger migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260607120000_double_entry_ledger.sql
+
+      - name: Prove ledger invariants (balance · immutable · idempotent · reconcile)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ledger_invariants.sql
+
+      - name: Assert ledger money-RPC grant invariant (payments_private end state)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ledger_grant_invariant.sql

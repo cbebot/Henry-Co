@@ -111,20 +111,25 @@ export interface WalletTopupReconcilePort {
   claim(requestId: string): Promise<boolean>;
   /** CAS `processing_credit` → `pending_verification` (release a claim that could not credit). */
   revertClaim(requestId: string): Promise<void>;
-  /** Does a credit ledger row already exist for this request? (idempotency guard) */
+  /** Does a credit (wallet_transactions) row already exist for this request? (idempotency guard) */
   ledgerExists(requestId: string): Promise<boolean>;
-  /** Current wallet balance in kobo (creating the wallet if needed). */
-  readBalanceKobo(userId: string): Promise<number>;
-  /** CAS the balance from `expectedKobo` to `nextKobo`. Returns true iff applied. */
-  casCredit(userId: string, expectedKobo: number, nextKobo: number): Promise<boolean>;
-  /** Insert the credit ledger row. */
-  insertCreditLedger(input: {
+  /**
+   * Atomically credit the wallet balance, write the wallet-transactions log row,
+   * AND post the balanced double-entry journal — all in ONE database transaction,
+   * idempotent by the funding request (V3-17: backed by
+   * `payments_private.credit_wallet_topup`). Returns the new balance and whether
+   * THIS call performed the credit (`false` = it was already credited). Because
+   * the balance move and the ledger row are one transaction, the wallet balance
+   * reconciles to the ledger by construction and there is no crash window in which
+   * the balance moves without its ledger record.
+   */
+  applyTopupCredit(input: {
     userId: string;
     requestId: string;
-    amountKobo: number;
-    balanceAfterKobo: number;
     intentId: string;
-  }): Promise<void>;
+    amountKobo: number;
+    currency: string;
+  }): Promise<{ credited: boolean; balanceAfterKobo: number }>;
   /** Mark the request `verified` (credited) and record the linked intent id. */
   finalizeVerified(requestId: string, intentId: string | null): Promise<void>;
   /** Optional side effects on a fresh credit (activity feed + notification). Never blocks correctness. */
@@ -145,17 +150,17 @@ export interface ReconcileOutcome {
 export async function reconcileWalletTopups(
   userId: string,
   port: WalletTopupReconcilePort,
-  opts: { maxBalanceCasRetries?: number } = {},
 ): Promise<ReconcileOutcome> {
-  const maxRetries = Math.max(1, opts.maxBalanceCasRetries ?? 3);
   const outcome: ReconcileOutcome = { credited: [], flagged: [], skipped: 0 };
 
   const claimable = await port.listClaimable(userId);
   for (const request of claimable) {
     const intent = await port.findIntentByReference(userId, request.paymentReference);
 
-    // Recovery: a prior winner claimed this row but did not finish. Never
-    // re-credits — only finalizes (ledger present) or reverts (ledger absent).
+    // Recovery: a prior winner claimed this row but did not finish. Because the
+    // credit is atomic (balance + ledger together) it can never have moved the
+    // balance without its ledger row — so finalize when the ledger row is present,
+    // otherwise release the claim for a clean retry. Never re-credits.
     if (request.status === TOPUP_FUNDING_STATUS.crediting) {
       if (await port.ledgerExists(request.id)) {
         await port.finalizeVerified(request.id, intent?.id ?? null);
@@ -182,48 +187,43 @@ export async function reconcileWalletTopups(
     const won = await port.claim(request.id);
     if (!won) continue;
 
-    // Defensive: if a credit ledger row somehow already exists, finalize without re-crediting.
+    // Defensive: if a credit row somehow already exists, finalize without re-crediting.
     if (await port.ledgerExists(request.id)) {
       await port.finalizeVerified(request.id, confirmedIntent.id);
       continue;
     }
 
-    let credited = false;
-    let balanceAfterKobo = 0;
-    for (let attempt = 0; attempt < maxRetries; attempt += 1) {
-      const balance = await port.readBalanceKobo(userId);
-      const next = balance + request.amountKobo;
-      if (await port.casCredit(userId, balance, next)) {
-        credited = true;
-        balanceAfterKobo = next;
-        break;
-      }
-    }
-
-    if (!credited) {
-      // Could not move the balance (concurrent writer) — release the claim so a
-      // later pass retries cleanly as a fresh single winner. No partial credit.
+    // The money edge: balance + wallet log + double-entry journal in ONE atomic,
+    // idempotent transaction. A failure leaves NO partial state — release the claim
+    // so a later pass retries cleanly as a fresh single winner.
+    let result: { credited: boolean; balanceAfterKobo: number };
+    try {
+      result = await port.applyTopupCredit({
+        userId,
+        requestId: request.id,
+        intentId: confirmedIntent.id,
+        amountKobo: request.amountKobo,
+        currency: request.currency,
+      });
+    } catch {
       await port.revertClaim(request.id);
       continue;
     }
 
-    await port.insertCreditLedger({
-      userId,
-      requestId: request.id,
-      amountKobo: request.amountKobo,
-      balanceAfterKobo,
-      intentId: confirmedIntent.id,
-    });
     await port.finalizeVerified(request.id, confirmedIntent.id);
-    if (port.onCredited) {
-      await port.onCredited({ request, intentId: confirmedIntent.id, balanceAfterKobo });
+
+    // Only a FRESH credit (not an idempotent no-op) fires side effects + is reported.
+    if (result.credited) {
+      if (port.onCredited) {
+        await port.onCredited({ request, intentId: confirmedIntent.id, balanceAfterKobo: result.balanceAfterKobo });
+      }
+      outcome.credited.push({
+        requestId: request.id,
+        intentId: confirmedIntent.id,
+        amountKobo: request.amountKobo,
+        balanceAfterKobo: result.balanceAfterKobo,
+      });
     }
-    outcome.credited.push({
-      requestId: request.id,
-      intentId: confirmedIntent.id,
-      amountKobo: request.amountKobo,
-      balanceAfterKobo,
-    });
   }
 
   return outcome;

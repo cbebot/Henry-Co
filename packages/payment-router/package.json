@@ -8,6 +8,7 @@
     "./types": "./src/types.ts",
     "./errors": "./src/errors.ts",
     "./state-machine": "./src/state-machine.ts",
+    "./ledger": "./src/ledger.ts",
     "./audit": "./src/audit.ts",
     "./testing": "./src/testing/in-memory-payment-store.ts"
   },
