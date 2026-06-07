@@ -46,6 +46,15 @@ jobs:
       - name: Typecheck (all apps)
         run: pnpm run typecheck:all
 
+      # V3-18: render real receipt/invoice PDFs and assert the LEGAL/PRESENTATION layer
+      # the SQL invariants don't cover — issuer = "Henry Onyx Limited" + RC + TIN +
+      # registered office (config-sourced, no literals), the VAT line present iff the
+      # breakdown carries it, static labels localized across locales, and NO processor /
+      # retired-brand string in any rendered byte. A regression in buildDocumentIssuer,
+      # the i18n copy, or the @react-pdf templates now fails CI instead of shipping green.
+      - name: Prove receipt/invoice render (issuer · VAT · locales · no-processor)
+        run: pnpm --filter @henryco/account run prove:receipts
+
       # DRIFT-SWEEP-02: fail CI when code references a Supabase column that does
       # not exist in the committed schema (database.types.ts ∪ migration DDL).
       # This is the 4th incident of "code ships a query for a column prod lacks"
