@@ -181,11 +181,22 @@ begin
     return jsonb_build_object('created', false, 'reason', 'duplicate', 'id', v_existing_id, 'receipt_no', v_existing_no);
   end if;
 
-  -- Money-truth tie: the posting must exist, and the receipt total MUST equal the
-  -- posted ledger entry's debit total (the gross the ledger recorded).
-  if not exists (select 1 from public.journal_entries where id = p_posting_id) then
-    raise exception 'record_customer_receipt: ledger posting % not found', p_posting_id using errcode = 'check_violation';
+  -- Money-truth tie: the posting MUST be the CHARGE-SETTLEMENT entry for THIS intent
+  -- (source='payment_intent', source_event_id=intent) — never a REFUND entry
+  -- (source='payment_intent_refund', whose debit total ALSO equals the gross, so a
+  -- bare sum-check would mint a "receipt" for money that LEFT the platform) and never
+  -- another payment's posting. This binds posting → intent → charge, so a receipt can
+  -- only evidence money the ledger recorded as RECEIVED for this exact payment.
+  if not exists (
+    select 1 from public.journal_entries
+     where id = p_posting_id
+       and source = 'payment_intent'
+       and source_event_id = p_payment_intent_id::text
+  ) then
+    raise exception 'record_customer_receipt: posting % is not the charge settlement for intent % (refund or foreign posting)',
+      p_posting_id, p_payment_intent_id using errcode = 'check_violation';
   end if;
+  -- Reconcile: the receipt total MUST equal the posted entry's debit total (the gross).
   select coalesce(sum(debit_minor), 0) into v_ledger_debit
     from public.journal_lines where entry_id = p_posting_id;
   if v_ledger_debit <> p_total_minor then

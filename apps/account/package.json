@@ -12,6 +12,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test lib/security/*.test.ts lib/*.test.ts",
+    "prove:receipts": "tsx scripts/_run-receipt-proof.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
