@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-07T00:23:58.607Z",
+  "generatedAt": "2026-06-07T04:59:05.907Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
     "scannedFiles": 1369,
-    "entries": 1294,
+    "entries": 1291,
     "counts": {
       "OK": 2,
-      "GAP": 1212,
+      "GAP": 1209,
       "EXEMPT": 35,
       "AMBIGUOUS": 45
     },
-    "durationMs": 3691
+    "durationMs": 7351
   },
   "entriesByFile": {
     "apps/account/app/(account)/search/page.tsx": [
@@ -9915,32 +9915,12 @@
         "reason": "hardcoded JSX text content"
       }
     ],
-    "packages/branded-documents/src/components/DocumentFooter.tsx": [
-      {
-        "line": 52,
-        "col": 35,
-        "kind": "jsx_text",
-        "text": "HENRY ONYX",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      }
-    ],
     "packages/branded-documents/src/components/SignatureBlock.tsx": [
       {
         "line": 67,
         "col": 37,
         "kind": "jsx_text",
         "text": "Authorised signatory",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      }
-    ],
-    "packages/branded-documents/src/templates/invoice.tsx": [
-      {
-        "line": 155,
-        "col": 43,
-        "kind": "jsx_text",
-        "text": "Bill to",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }
@@ -10055,16 +10035,6 @@
         "col": 41,
         "kind": "jsx_text",
         "text": "Net payable to owner",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      }
-    ],
-    "packages/branded-documents/src/templates/receipt.tsx": [
-      {
-        "line": 98,
-        "col": 41,
-        "kind": "jsx_text",
-        "text": "Total paid",
         "classification": "GAP",
         "reason": "hardcoded JSX text content"
       }

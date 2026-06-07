@@ -279,17 +279,24 @@ export const LEGAL = {
   entity: {
     name: COMPANY.group.legalName,
     tradingName: COMPANY.group.name,
-    rcNumber: "[OWNER-TO-CONFIRM: CAC RC number]",
+    // All entity facts below are taken from the official CAC records for HENRY
+    // ONYX LIMITED (Certificate of Incorporation + Status Report, dated
+    // 2026-06-05; owner-supplied 2026-06-07, V3-18). Incorporated under CAMA 2020
+    // as a private company limited by shares.
+    rcNumber: "9594234",
     registeredOffice: {
-      street: "[OWNER-TO-CONFIRM]",
-      city: "[OWNER-TO-CONFIRM]",
-      state: "[OWNER-TO-CONFIRM]",
+      // CAC Status Report registered address: "001, AIRPORT ROAD, EMENE, ENUGU
+      // STATE, NIGERIA" (Post Code: NIL). The document template adds the "RC "
+      // prefix etc.; these stay the bare registry values.
+      street: "001 Airport Road",
+      city: "Emene",
+      state: "Enugu State",
       country: "Nigeria",
-      postalCode: "[OWNER-TO-CONFIRM]",
+      postalCode: "",
     },
-    yearFounded: "[OWNER-TO-CONFIRM]",
+    yearFounded: "2026",
     founder: "Henry Chukwuemeka",
-    tin: "[OWNER-TO-CONFIRM: FIRS TIN]",
+    tin: "2621481857689",
     ndpcRegistration: "[OWNER-TO-CONFIRM: NDPC registration reference]",
     dpo: "[OWNER-TO-CONFIRM: DPO name + email + phone, or 'External DPO consulted on material changes']",
   } satisfies LegalEntity,

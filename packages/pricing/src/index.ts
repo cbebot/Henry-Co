@@ -28,6 +28,12 @@ export type PricingBreakdownLine = {
     | "discount"
     | "hold_reserve"
     | "payout_fee"
+    // V3-18: the VAT/tax SEAM. No engine computes it yet (V3-21 owns that) and the
+    // rate is NEVER hardcoded — a breakdown only carries a `tax` line once a tax
+    // engine populates one. Receipts/invoices render a VAT line iff such a line is
+    // present (see extractTaxFromBreakdown). `meta.rate` (e.g. 0.075) is optional
+    // and informational only.
+    | "tax"
     | "other";
   label: string;
   amount: Money;
@@ -61,6 +67,40 @@ function roundInt(value: unknown) {
 
 function sumAmounts(lines: PricingBreakdownLine[]) {
   return lines.reduce((sum, line) => sum + roundInt(line.amount.amount), 0);
+}
+
+export type BreakdownTax = {
+  /** Total VAT/tax in minor units (kobo), summed across every `tax` line. */
+  taxMinor: number;
+  /** ISO 4217 currency of the breakdown the tax was extracted from. */
+  currency: string;
+  /** Optional fractional rate carried on a `tax` line's meta (e.g. 0.075), else null. */
+  rate: number | null;
+};
+
+/**
+ * Extract the VAT/tax represented in a pricing breakdown, or `null` when there is
+ * none. This is the ONLY way a receipt/invoice learns its VAT — the rate is never
+ * hardcoded. Returns `null` (→ no VAT line) when the breakdown carries no `tax`
+ * line or the tax sums to ≤ 0, satisfying the V3-18 rule
+ * "no VAT in the breakdown → no VAT line". Amounts stay whole minor units.
+ */
+export function extractTaxFromBreakdown(
+  breakdown: PricingBreakdown | null | undefined,
+): BreakdownTax | null {
+  if (!breakdown || !Array.isArray(breakdown.lines)) return null;
+  const taxLines = breakdown.lines.filter((line) => line.code === "tax");
+  if (taxLines.length === 0) return null;
+  const taxMinor = taxLines.reduce((sum, line) => sum + roundInt(line.amount.amount), 0);
+  if (taxMinor <= 0) return null;
+  const rateMeta = taxLines
+    .map((line) => line.meta?.rate)
+    .find((rate): rate is number => typeof rate === "number" && Number.isFinite(rate));
+  return {
+    taxMinor,
+    currency: breakdown.currency,
+    rate: typeof rateMeta === "number" ? rateMeta : null,
+  };
 }
 
 export type MarketplacePricingRuleSet = {

@@ -49,7 +49,7 @@ export function DocumentFooter({ legal = `${COMPANY.group.legalName} — every b
     <View style={styles.wrap} fixed>
       <View style={styles.left}>
         <BrandedMonogram size={14} />
-        <Text style={styles.brand}>HENRY ONYX</Text>
+        <Text style={styles.brand}>{COMPANY.group.name.toUpperCase()}</Text>
         <Text style={styles.legal}>· {legal}</Text>
       </View>
       <Text

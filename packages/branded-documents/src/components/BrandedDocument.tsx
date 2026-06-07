@@ -61,8 +61,8 @@ export function BrandedDocument({
       author={metadata.author ?? COMPANY.group.legalName}
       subject={metadata.subject ?? metadata.title}
       keywords={(metadata.keywords ?? []).join(", ")}
-      creator={metadata.creator ?? "HenryCo Branded Documents"}
-      producer={metadata.producer ?? "HenryCo Branded Documents"}
+      creator={metadata.creator ?? `${COMPANY.group.name} Documents`}
+      producer={metadata.producer ?? `${COMPANY.group.name} Documents`}
       language={metadata.language ?? "en-NG"}
       pdfVersion="1.7"
     >
