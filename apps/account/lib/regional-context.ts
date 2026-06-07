@@ -41,8 +41,8 @@ export function resolveAccountRegionalContext(input: {
     timezone,
     settlementNote:
       currencyCode === "NGN"
-        ? "Wallet settlement currently runs in NGN."
-        : `Display defaults can follow ${currencyCode}, but wallet settlement currently remains NGN-only while local settlement rails are not yet live.`,
+        ? "Wallet settlement is in NGN."
+        : `Display defaults can follow ${currencyCode}. Wallet settlement is in NGN.`,
   };
 }
 
