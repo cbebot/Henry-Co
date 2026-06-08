@@ -184,6 +184,26 @@ begin
   raise notice 'PROOF e OK: refund posts the reversing entry (V3-19 owns full fee/VAT refund)';
 end $$;
 
+-- ============ (f) the V3-18 receipt RECONCILES to the FEE-SPLIT settlement (tie holds) ============
+-- The whole point of splitting the DEBIT (not the credit): the charge-settlement entry's
+-- debit TOTAL is still the gross, so record_customer_receipt (which rejects a total that
+-- doesn't equal the posting's debit total) still mints a receipt. The processor fee is
+-- internal — the customer's receipt shows the gross they paid.
+do $$
+declare v_posting uuid; v jsonb;
+begin
+  select id into v_posting from public.journal_entries
+   where source = 'payment_intent' and source_event_id = '11111111-1111-1111-1111-111111111111';
+  v := payments_private.record_customer_receipt(
+    '000000aa-0000-0000-0000-0000000000aa', 'marketplace',
+    '11111111-1111-1111-1111-111111111111', v_posting,
+    'card', 'TXNREF_A', 40333, 0, 0, 40333, 'NGN', '[]'::jsonb, now(), null);
+  if (v->>'created')::boolean is not true then
+    raise exception 'PROOF f FAILED: receipt did NOT reconcile to the fee-split settlement (%)', v;
+  end if;
+  raise notice 'PROOF f OK: V3-18 receipt reconciles to the FEE-SPLIT settlement (debit total = gross tie intact)';
+end $$;
+
 -- ============ (c3) idempotency: a replayed settlement posts no second entry ============
 do $$
 declare v jsonb;
@@ -207,4 +227,4 @@ begin
     r->>'total_debit_minor', r->>'total_credit_minor';
 end $$;
 
-select 'VAT INVARIANTS (a)fee-split (b)output-VAT (c)reconciliation (d)balance (e)refund-ready === ALL PROVEN' as result;
+select 'VAT INVARIANTS (a)fee-split (b)output-VAT (c)reconciliation (d)balance (e)refund-ready (f)receipt-tie === ALL PROVEN' as result;
