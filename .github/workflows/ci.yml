@@ -133,3 +133,17 @@ jobs:
 
       - name: Prove payment-document invariants (number · idempotent · ledger-reconcile · RLS · grants)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payment_documents_invariants.sql
+
+      # V3-VAT-01: make VAT strong — output VAT on sales + input/fee VAT on the absorbed
+      # processor fee. Apply the VAT migration on the same fresh DB, then prove the
+      # settlement fee-split (debit total still = gross), output-VAT recognition, the
+      # exact net-VAT reconciliation, refund-readiness — and that the money-RPC grant
+      # lockdown still holds for the new/changed (fee-aware) signatures.
+      - name: Apply V3-VAT-01 settlement+VAT migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260607140000_v3_vat_01_settlement_vat.sql
+
+      - name: Prove VAT invariants (fee-split · output VAT · reconciliation · balance · refund-ready)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/vat_invariants.sql
+
+      - name: Assert VAT money-RPC grant invariant (fee-aware end state)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/vat_grant_invariant.sql

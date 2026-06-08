@@ -34,9 +34,9 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: Parameters
 }) as typeof fetch;
 
 import { ReceiptDocument, InvoiceDocument } from "@henryco/branded-documents";
-import { buildDocumentIssuer } from "@henryco/config";
+import { buildDocumentIssuer, TAX } from "@henryco/config";
 import { getPaymentDocumentCopy } from "@henryco/i18n";
-import type { PricingBreakdown } from "@henryco/pricing";
+import { applyOutputVat, type PricingBreakdown } from "@henryco/pricing";
 // apps/account is CommonJS, so this .ts module loads via CJS default interop under tsx.
 import paymentDocuments from "../lib/payment-documents.ts";
 const {
@@ -236,6 +236,47 @@ console.log("\n[8] Invoice renders with the fixed issuer (no literals)");
   assertNoForbidden("invoice-en.pdf bytes", buffer.toString("latin1"));
   writeFileSync(join(OUT, "invoice-en.pdf"), buffer);
   console.log(`    → wrote invoice-en.pdf (${buffer.length} bytes)`);
+}
+
+console.log("\n[9] V3-VAT-01: pricing applyOutputVat (config-driven) → receipt renders the VAT, total = gross");
+{
+  // A platform service priced ex-VAT; output VAT is computed by pricing from the config
+  // rate (TAX.vat), NOT hand-written. The receipt then renders whatever the breakdown
+  // carries — closing the loop pricing → breakdown.tax → receipt.
+  const base: PricingBreakdown = {
+    currency: "NGN",
+    lines: [{ code: "service_fee", label: "Listing service", amount: { currency: "NGN", amount: 40000 } }],
+    totals: {
+      customerTotal: { currency: "NGN", amount: 40000 },
+      vendorGross: { currency: "NGN", amount: 0 },
+      platformNet: { currency: "NGN", amount: 40000 },
+      vendorNet: { currency: "NGN", amount: 0 },
+    },
+    meta: { division: "property", ruleBookKey: "proof", ruleVersion: "2026-06-07", computedAt: "2026-06-07T00:00:00.000Z" },
+  };
+  const withVat = applyOutputVat(base, { treatment: "standard" }, TAX.vat);
+  const gross = withVat.totals.customerTotal.amount; // 40000 + 7.5% = 43000
+  const taxLine = withVat.lines.find((l) => l.code === "tax");
+  check("applyOutputVat used the CONFIG rate (0.075)", taxLine?.meta?.rate === TAX.vat.standardRate, String(taxLine?.meta?.rate));
+  check("applyOutputVat stamped the CONFIG version", taxLine?.meta?.version === TAX.vat.rateVersion, String(taxLine?.meta?.version));
+  check("output VAT = 7.5% of 40000 = 3000", taxLine?.amount.amount === 3000, String(taxLine?.amount.amount));
+  check("gross = base + VAT = 43000", gross === 43000, String(gross));
+
+  // The receipt total IS the ledger debit total (= gross). The V3-VAT-01 settlement
+  // SPLITS the debit (cash_net + processor_fees + fee_vat_recoverable) but the debit
+  // TOTAL stays the gross — so the receipt tie still holds with a fee absorbed.
+  const props = buildReceiptProps({
+    payment: {
+      intentId: INTENT_ID, amountMinor: gross, currency: "NGN",
+      ledgerEntryId: LEDGER_ENTRY_ID, ledgerDebitMinor: gross,
+      division: "property", paymentMethod: "card", paymentReference: "TXNREF_VAT",
+      paidAt: "2026-06-07T12:00:00.000Z", receiptNo: "HO-RCT-2026-000009",
+    },
+    breakdown: withVat, buyer, locale: "en",
+  });
+  check("receipt VAT renders the config-computed output VAT (3000)", props.receipt.taxKobo === 3000, String(props.receipt.taxKobo));
+  check("receipt total = gross (43000)", props.receipt.totalKobo === 43000, String(props.receipt.totalKobo));
+  check("subtotal + fees + tax === total (reconciles)", props.receipt.subtotalKobo + (props.receipt.feesKobo ?? 0) + props.receipt.taxKobo === props.receipt.totalKobo);
 }
 
 console.log(`\n${failures === 0 ? "✅ ALL PROOFS PASSED" : `❌ ${failures} CHECK(S) FAILED`}\n`);
