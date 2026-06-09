@@ -46,11 +46,16 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
   const terminal = verified.value.impliedStatus;
   // D3: the ONLY status writer for money-confirming edges. Deduped by the shared
   // reference key, so whichever of finalize / webhook lands first wins exactly once.
+  // V3-VAT-01: the verify call is the RELIABLE fee source — Paystack returns the real
+  // `data.fees` here. Thread it (+ any provider-reported fee VAT) so the settlement
+  // posts the fee split (processor fee expense + recoverable input VAT) against the net.
   const applied = await callPaymentRpc<{ applied?: boolean }>("apply_payment_webhook", [
     owner.provider,
     verified.value.providerEventId,
     id,
     terminal,
+    verified.value.feeMinor != null ? String(verified.value.feeMinor) : null,
+    verified.value.feeVatMinor != null ? String(verified.value.feeVatMinor) : null,
   ]);
   if (applied.error) return NextResponse.json({ error: "Apply failed" }, { status: 500 });
   if ((applied.data as { applied?: boolean } | null)?.applied === true) {

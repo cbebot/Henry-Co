@@ -58,6 +58,21 @@ export interface VerifiedWebhook {
   providerReference: string;
   /** The terminal status this event implies, or null for informational events. */
   impliedStatus: "succeeded" | "failed" | "refunded" | null;
+  /**
+   * V3-VAT-01 — the REAL total processor fee deducted at settlement (kobo,
+   * VAT-inclusive), when the provider reports it. Often absent on the async
+   * charge.success webhook (Paystack frequently sends `fees: null` there) — the
+   * authoritative source is {@link FinalizeResult.feeMinor} from the verify call.
+   * Never assumed: undefined means "not reported", and the settlement degrades to
+   * gross-to-cash rather than fabricate a fee.
+   */
+  feeMinor?: number;
+  /**
+   * The VAT portion within {@link feeMinor}, when the provider breaks it out
+   * (e.g. a `fees_breakdown` VAT line). Usually undefined — the ledger then derives
+   * it by statutory decomposition of the VAT-inclusive fee.
+   */
+  feeVatMinor?: number;
 }
 
 /**
@@ -78,6 +93,15 @@ export interface FinalizeResult {
   impliedStatus: "succeeded" | "failed" | "refunded" | null;
   amountMinor: number;
   currency: ISO4217;
+  /**
+   * V3-VAT-01 — the REAL total processor fee (kobo, VAT-inclusive) read straight from
+   * the provider's verify payload (Paystack `data.fees`). This is the RELIABLE fee
+   * source (the verify call carries it even when the webhook does not). Undefined when
+   * the provider does not report it; never assumed.
+   */
+  feeMinor?: number;
+  /** The VAT portion within {@link feeMinor} when the provider breaks it out; else undefined. */
+  feeVatMinor?: number;
 }
 
 /** Provider balance read for reconciliation (D1/G4). */

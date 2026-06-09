@@ -174,7 +174,14 @@ export class PaystackProvider implements PaymentProviderAdapter {
   async finalize(params: FinalizeParams): Promise<Result<FinalizeResult, ProviderError>> {
     const res = await this.call("GET", `/transaction/verify/${encodeURIComponent(params.providerReference)}`);
     if (!res.ok) return res;
-    const data = (res.value.data ?? {}) as { status?: string; reference?: string; amount?: number; currency?: string };
+    const data = (res.value.data ?? {}) as {
+      status?: string;
+      reference?: string;
+      amount?: number;
+      currency?: string;
+      fees?: unknown;
+      fees_breakdown?: unknown;
+    };
     return {
       ok: true,
       value: {
@@ -184,6 +191,12 @@ export class PaystackProvider implements PaymentProviderAdapter {
         impliedStatus: mapChargeStatus(data.status),
         amountMinor: typeof data.amount === "number" ? data.amount : 0,
         currency: data.currency ?? "",
+        // V3-VAT-01: the verify call is the RELIABLE fee source. `data.fees` is the
+        // real, VAT-inclusive total Paystack deducted (kobo). Read it verbatim; never
+        // assume a rate. `fees_breakdown` is usually null → feeVat stays undefined and
+        // the ledger derives it by statutory decomposition.
+        feeMinor: readProviderFeeMinor(data.fees),
+        feeVatMinor: readFeeVatFromBreakdown(data.fees_breakdown),
       },
     };
   }
@@ -267,9 +280,51 @@ export class PaystackProvider implements PaymentProviderAdapter {
 
     return {
       ok: true,
-      value: { providerEventId, eventType: event, providerReference, impliedStatus },
+      value: {
+        providerEventId,
+        eventType: event,
+        providerReference,
+        impliedStatus,
+        // V3-VAT-01: capture the fee if the webhook carries it (charge.success
+        // sometimes does, often sends `fees: null` — then it stays undefined and the
+        // reliable value comes from the finalize/verify path). Refund payloads have no
+        // `fees`, so this is naturally undefined for them.
+        feeMinor: readProviderFeeMinor(data.fees),
+        feeVatMinor: readFeeVatFromBreakdown(data.fees_breakdown),
+      },
     };
   }
+}
+
+/**
+ * Read a provider-reported fee as whole non-negative kobo, or undefined when it is
+ * absent/null/malformed. Deliberately strict: a non-integer or negative value is
+ * treated as "not reported" rather than posted as a real fee.
+ */
+function readProviderFeeMinor(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : undefined;
+}
+
+/**
+ * Extract a provider-reported VAT-on-fee line from a `fees_breakdown` array, when one
+ * exists (forward-compat: Paystack usually sends `null`). Sums any entry whose `type`
+ * mentions VAT. Returns undefined when none is present so the ledger falls back to the
+ * statutory decomposition of the VAT-inclusive fee.
+ */
+function readFeeVatFromBreakdown(breakdown: unknown): number | undefined {
+  if (!Array.isArray(breakdown)) return undefined;
+  let vat = 0;
+  let found = false;
+  for (const entry of breakdown) {
+    if (entry && typeof entry === "object" && /vat/i.test(String((entry as { type?: unknown }).type ?? ""))) {
+      const amount = (entry as { amount?: unknown }).amount;
+      if (typeof amount === "number" && Number.isInteger(amount) && amount >= 0) {
+        vat += amount;
+        found = true;
+      }
+    }
+  }
+  return found ? vat : undefined;
 }
 
 /** Constant-time compare to avoid leaking signature bytes via timing. */

@@ -63,11 +63,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // A2-guarded transition, atomically. A duplicate delivery is an idempotent ack.
   // payments_private (V3-15-S3): money writer reached via the pooled direct-pg path,
   // NOT PostgREST (the function is not in an exposed schema).
+  // V3-VAT-01: thread the REAL processor fee (+ any provider-reported fee VAT) so the
+  // settlement posts the fee split. Often null on the async webhook (Paystack omits
+  // `fees` here) — the finalize/verify path is the reliable source; null → the ledger
+  // degrades to gross-to-cash rather than fabricate a fee.
   const applied = await callPaymentRpc<{ applied?: boolean }>("apply_payment_webhook", [
     provider,
     verified.value.providerEventId,
     intentRow.id,
     verified.value.impliedStatus,
+    verified.value.feeMinor != null ? String(verified.value.feeMinor) : null,
+    verified.value.feeVatMinor != null ? String(verified.value.feeVatMinor) : null,
   ]);
   if (applied.error) {
     return NextResponse.json({ error: "Apply failed" }, { status: 500 });

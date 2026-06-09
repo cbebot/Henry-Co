@@ -300,3 +300,64 @@ describe("PaystackProvider.getBalance (G4 reconciliation)", () => {
     assert.ok(!r.ok && r.error.retryable);
   });
 });
+
+describe("PaystackProvider — REAL processor fee capture (V3-VAT-01)", () => {
+  it("finalize reads the real total fee from data.fees (kobo verbatim, never assumed)", async () => {
+    // Real Paystack /transaction/verify shape: amount 40333, fees 10283.
+    const { fetchImpl } = fakeFetch(() => ({
+      status: 200,
+      body: { status: true, data: { status: "success", reference: "T-1", amount: 40333, fees: 10283, currency: "NGN" } },
+    }));
+    const r = await new PaystackProvider({ secretKey: SECRET, fetchImpl }).finalize!({ providerReference: "T-1" });
+    assert.ok(r.ok);
+    if (r.ok) assert.equal(r.value.feeMinor, 10283);
+  });
+
+  it("finalize leaves feeMinor undefined when the provider reports no fee (null) — no fabrication", async () => {
+    const { fetchImpl } = fakeFetch(() => ({
+      status: 200,
+      body: { status: true, data: { status: "success", reference: "T-2", amount: 10000, fees: null, currency: "NGN" } },
+    }));
+    const r = await new PaystackProvider({ secretKey: SECRET, fetchImpl }).finalize!({ providerReference: "T-2" });
+    assert.ok(r.ok);
+    if (r.ok) assert.equal(r.value.feeMinor, undefined);
+  });
+
+  it("finalize ignores a non-integer/negative fee (treats as unreported)", async () => {
+    const { fetchImpl } = fakeFetch(() => ({
+      status: 200,
+      body: { status: true, data: { status: "success", reference: "T-2b", amount: 10000, fees: -5, currency: "NGN" } },
+    }));
+    const r = await new PaystackProvider({ secretKey: SECRET, fetchImpl }).finalize!({ providerReference: "T-2b" });
+    assert.ok(r.ok);
+    if (r.ok) assert.equal(r.value.feeMinor, undefined);
+  });
+
+  it("verifyWebhook reads data.fees on charge.success when present", async () => {
+    const rawBody = JSON.stringify({ event: "charge.success", data: { reference: "T-3", status: "success", amount: 25000, fees: 375, currency: "NGN" } });
+    const r = await new PaystackProvider({ secretKey: SECRET }).verifyWebhook({ rawBody, signature: sign512(rawBody), secret: SECRET });
+    assert.ok(r.ok);
+    if (r.ok) assert.equal(r.value.feeMinor, 375);
+  });
+
+  it("verifyWebhook leaves feeMinor undefined when the webhook omits fees (the common case)", async () => {
+    const rawBody = JSON.stringify({ event: "charge.success", data: { reference: "T-4", status: "success", amount: 25000, fees: null } });
+    const r = await new PaystackProvider({ secretKey: SECRET }).verifyWebhook({ rawBody, signature: sign512(rawBody), secret: SECRET });
+    assert.ok(r.ok);
+    if (r.ok) assert.equal(r.value.feeMinor, undefined);
+  });
+
+  it("captures a provider-reported VAT line from fees_breakdown when present (forward-compat seam)", async () => {
+    const { fetchImpl } = fakeFetch(() => ({
+      status: 200,
+      body: { status: true, data: { status: "success", reference: "T-5", amount: 40333, fees: 10283, currency: "NGN",
+        fees_breakdown: [ { amount: 9566, type: "paystack" }, { amount: 717, type: "vat" } ] } },
+    }));
+    const r = await new PaystackProvider({ secretKey: SECRET, fetchImpl }).finalize!({ providerReference: "T-5" });
+    assert.ok(r.ok);
+    if (r.ok) {
+      assert.equal(r.value.feeMinor, 10283);
+      assert.equal(r.value.feeVatMinor, 717);
+    }
+  });
+});
