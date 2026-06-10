@@ -161,6 +161,34 @@
   --hc-weight-bold: 700;
   --hc-weight-black: 800;
 
+  /* ── READING-01 — editorial reading foundation ──
+     Calm, premium long-form reading is a function of RHYTHM, not
+     weight. Three levers: a capped MEASURE (line length), generous
+     LEADING, and a predictable paragraph GAP. These power `.hc-prose`
+     and the `.hc-measure*` utilities below. All are mode-independent
+     (no .dark override needed) and unitless/em/ch so they scale with
+     whatever face the type-identity pass later wires in. */
+  --hc-measure: 66ch;              /* ~72 chars/line — the editorial sweet spot */
+  --hc-measure-narrow: 54ch;       /* asides, form help, captions */
+  --hc-measure-wide: 76ch;         /* looser marketing columns */
+  --hc-leading-prose: 1.7;         /* long-form body leading */
+  --hc-leading-snug: 1.5;          /* headings within prose */
+  --hc-text-reading: 1.0625rem;    /* 17px — calm premium reading size */
+  --hc-text-reading-lg: 1.1875rem; /* 19px — marketing / editorial long-form */
+  --hc-prose-gap: 1.1em;           /* paragraph-to-paragraph air (scales with size) */
+
+  /* ── Shared font seam ──
+     ONE editorial serif for display, ONE calm sans for body, as the
+     platform default — the answer to today's five-different-faces
+     fragmentation. Declared here so every surface references a single
+     name; the actual web fonts are loaded per-app via next/font and
+     exposed as --font-display / --font-body (wired in the type-identity
+     pass). Until then these resolve to premium system stacks, so no
+     surface ever renders unstyled, and `.hc-prose` inherits the host's
+     body font rather than forcing one (zero letterform shift on adopt). */
+  --hc-font-body: var(--font-body, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+  --hc-font-display: var(--font-display, "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif);
+
   /* Radii — explicit so component code does not invent */
   --hc-radius-sm: 0.5rem;
   --hc-radius-md: 0.875rem;
@@ -212,7 +240,7 @@
   --hc-ink-soft: rgba(24, 24, 27, 0.72);
   --hc-ink-muted: rgba(24, 24, 27, 0.62);
   /* PASS 19 — gold fill is luminous; white text on it falls below AA-LG.
-     The HenryCo brand pair is dark ink on gold (8.6:1) — premium and
+     The Henry & Co. brand pair is dark ink on gold (8.6:1) — premium and
      legible. Apps that ship a darker accent (e.g. red CTA) may locally
      override this back to #ffffff. */
   --hc-ink-on-accent: #1A1814;
@@ -220,7 +248,7 @@
   --hc-line-strong: rgba(24, 24, 27, 0.14);
   --hc-hairline: rgba(24, 24, 27, 0.08);   /* shell alias of --hc-line */
 
-  /* PASS 19 — Premium HenryCo gold.
+  /* PASS 19 — Premium Henry & Co. gold.
      Brand gold #C9A227 anchors every accent surface in light mode.
      For text *on light surfaces* (where the fill is unfilled and the
      text itself reads gold), use --hc-accent-text — the brand gold
@@ -229,7 +257,7 @@
      The dark-mode gold (#D4AF37) is the classic metallic gold tone —
      warmer, more confident than the light-mode brand gold against a
      dark surface, and 8.4:1 on the canonical dark background. */
-  --hc-accent: #C9A227;               /* HenryCo brand gold — fills, buttons */
+  --hc-accent: #C9A227;               /* Henry & Co. brand gold — fills, buttons */
   --hc-accent-strong: #A88718;        /* hover / pressed depth */
   --hc-accent-pressed: #8A6F00;       /* pressed — same hue, deeper */
   --hc-accent-soft: rgba(201, 162, 39, 0.10);
@@ -505,17 +533,19 @@
 }
 
 /* Body — primary reading copy (important paragraphs) */
+/* READING-01: leading nudged 1.6 → 1.65 for a calmer reading cadence. */
 .hc-body-lg {
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
   font-weight: var(--hc-weight-regular);
   color: var(--hc-text-primary);
 }
 
 /* Body default — standard body text */
+/* READING-01: leading nudged 1.55 → 1.6 for a calmer reading cadence. */
 .hc-body {
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   font-weight: var(--hc-weight-regular);
   color: var(--hc-text-secondary);
 }
@@ -567,6 +597,79 @@
   text-transform: uppercase;
   font-weight: var(--hc-weight-bold);
   color: var(--hc-accent-text);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  READING-01 — Editorial reading utilities                   */
+/*                                                             */
+/*  Calm, spacious long-form reading. The lever is RHYTHM, not */
+/*  the typeface: body letterforms are unchanged. Apply        */
+/*  `.hc-prose` to a container whose children are flowing block */
+/*  elements (p, h2/h3/h4, ul, ol, blockquote). Paragraph      */
+/*  spacing falls out of the `* + *` rule, so no per-paragraph  */
+/*  classes are needed.                                        */
+/*                                                             */
+/*  `.hc-prose` deliberately does NOT set `font-family` — it    */
+/*  inherits the host surface's body font (system sans on hub,  */
+/*  Manrope on marketplace, …), so adopting it is a pure        */
+/*  rhythm change with zero letterform shift.                   */
+/* ─────────────────────────────────────────────────────────── */
+
+/* Long-form reading container — about/legal/editorial copy. */
+.hc-prose {
+  max-width: var(--hc-measure);
+  font-size: var(--hc-text-reading);
+  line-height: var(--hc-leading-prose);
+  color: var(--hc-text-primary);
+  text-wrap: pretty; /* balanced rag where supported; ignored otherwise */
+}
+
+/* Automatic vertical rhythm between flowing blocks (the "owl"). */
+.hc-prose > * + * {
+  margin-top: var(--hc-prose-gap);
+}
+
+/* Headings inside prose breathe above, hug the text below. */
+.hc-prose :is(h2, h3, h4) {
+  line-height: var(--hc-leading-snug);
+  margin-top: 1.6em;
+}
+.hc-prose :is(h2, h3, h4) + * {
+  margin-top: 0.5em;
+}
+
+/* Lists keep the reading rhythm without feeling loose. */
+.hc-prose :is(ul, ol) {
+  padding-left: 1.25em;
+}
+.hc-prose li + li {
+  margin-top: 0.4em;
+}
+
+/* Inline links read as the AA-safe gold text, calmly underlined. */
+.hc-prose a {
+  color: var(--hc-accent-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+/* Marketing / editorial long-form — one calm step larger. */
+.hc-prose-lg {
+  font-size: var(--hc-text-reading-lg);
+  line-height: var(--hc-leading-prose);
+}
+
+/* Standalone measure caps for non-prose reading blocks
+   (hero sub-copy, card descriptions, section intros). */
+.hc-measure {
+  max-width: var(--hc-measure);
+}
+.hc-measure-narrow {
+  max-width: var(--hc-measure-narrow);
+}
+.hc-measure-wide {
+  max-width: var(--hc-measure-wide);
 }
 
 /* ─────────────────────────────────────────────────────────── */
