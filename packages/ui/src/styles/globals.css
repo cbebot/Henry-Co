@@ -620,7 +620,10 @@
   max-width: var(--hc-measure);
   font-size: var(--hc-text-reading);
   line-height: var(--hc-leading-prose);
-  color: var(--hc-text-primary);
+  /* Ink is INHERITED, never forced. `.hc-prose` owns rhythm; the host
+     surface owns colour. This keeps it safe to drop on ANY background —
+     token-driven light/dark OR a hardcoded editorial panel — without a
+     forced token resolving to the wrong mode and producing invisible text. */
   text-wrap: pretty; /* balanced rag where supported; ignored otherwise */
 }
 
@@ -646,12 +649,18 @@
   margin-top: 0.4em;
 }
 
-/* Inline links read as the AA-safe gold text, calmly underlined. */
+/* Links INHERIT ink — the same background-safety rule as the container. A
+   theme-flipping token colour (e.g. --hc-accent-text) resolves to the LIGHT
+   value on a hardcoded-dark panel that lacks a .dark ancestor and fails AA
+   (#8A6F00 ≈ 4.1:1 on #0a0807), so links are distinguished by a calm underline
+   + slightly heavier weight, never a forced colour. */
 .hc-prose a {
-  color: var(--hc-accent-text);
+  color: inherit;
+  font-weight: var(--hc-weight-medium);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
 }
 
 /* Marketing / editorial long-form — one calm step larger. */
@@ -670,6 +679,19 @@
 }
 .hc-measure-wide {
   max-width: var(--hc-measure-wide);
+}
+
+/* Font-family seam utilities — put the shared editorial display serif on a
+   hero/section heading, or the calm body sans on a region, WITHOUT restating
+   size/weight/colour. They read the --hc-font-* seam, so the moment an app
+   wires --font-display / --font-body via next/font, every element wearing
+   these classes inherits the real faces (and falls back to premium system
+   stacks until then). */
+.hc-font-display {
+  font-family: var(--hc-font-display);
+}
+.hc-font-body {
+  font-family: var(--hc-font-body);
 }
 
 /* ─────────────────────────────────────────────────────────── */
