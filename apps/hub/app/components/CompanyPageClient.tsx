@@ -194,7 +194,7 @@ export default function CompanyPageClient({
                 overflowWrap: "break-word",
                 hyphens: "auto",
               }}
-              className="mt-5 max-w-3xl text-balance font-semibold text-white"
+              className="hc-font-display mt-5 max-w-3xl text-balance font-semibold text-white"
             >
               {page.title}
             </motion.h1>
@@ -365,7 +365,7 @@ export default function CompanyPageClient({
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
               {copy.footerEyebrow}
             </p>
-            <h2 className="mt-4 max-w-2xl text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.95rem]">
+            <h2 className="hc-font-display mt-4 max-w-2xl text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.95rem]">
               {copy.footerTitle}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">

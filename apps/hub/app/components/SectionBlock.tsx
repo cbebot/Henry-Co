@@ -33,7 +33,7 @@ export default function SectionBlock({
           ) : null}
 
           {section.title ? (
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            <h2 className="hc-font-display mt-4 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {section.title}
             </h2>
           ) : null}

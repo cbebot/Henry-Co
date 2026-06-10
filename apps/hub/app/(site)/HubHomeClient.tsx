@@ -637,7 +637,7 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 12 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 0.04 }}
-                className="mt-5 max-w-4xl text-balance text-[2.25rem] font-semibold leading-[1.02] tracking-normal text-white sm:text-[3.5rem] lg:text-[4.75rem]"
+                className="hc-font-display mt-5 max-w-4xl text-balance text-[2.25rem] font-semibold leading-[1.02] tracking-normal text-white sm:text-[3.5rem] lg:text-[4.75rem]"
               >
                 {copy.hero.titleBefore}
                 <span className="text-[color:var(--accent)]">
@@ -775,7 +775,7 @@ export default function HubHomeClient({
                     {copy.featuredSection.eyebrow}
                   </p>
 
-                  <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  <h2 className="hc-font-display mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                     {copy.featuredSection.title}
                   </h2>
 
@@ -815,7 +815,7 @@ export default function HubHomeClient({
                   {copy.directory.eyebrow}
                 </p>
 
-                <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                <h2 className="hc-font-display mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                   {copy.directory.title}
                 </h2>
 
@@ -1079,7 +1079,7 @@ export default function HubHomeClient({
                   {copy.ecosystem.eyebrow}
                 </p>
 
-                <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                <h2 className="hc-font-display mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                   {copy.ecosystem.title}
                 </h2>
 
@@ -1128,7 +1128,7 @@ export default function HubHomeClient({
                   {copy.access.eyebrow}
                 </p>
 
-                <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                <h2 className="hc-font-display mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                   {copy.access.title}
                 </h2>
 
@@ -1204,7 +1204,7 @@ export default function HubHomeClient({
                   {copy.faq.eyebrow}
                 </p>
 
-                <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                <h2 className="hc-font-display mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                   {copy.faq.title}
                 </h2>
 
