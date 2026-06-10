@@ -53,7 +53,7 @@ export function HomeFaq({ copy, faqs }: HomeFaqProps) {
           >
             {copy.faq.title}
           </h2>
-          <p className="mt-4 max-w-prose text-base leading-relaxed text-[color:var(--home-ink-55)]">
+          <p className="hc-font-reading text-pretty mt-4 max-w-prose text-[1.0625rem] leading-[1.6] text-[color:var(--home-ink-70)]">
             {copy.faq.subtitle}
           </p>
         </motion.header>
@@ -71,7 +71,7 @@ export function HomeFaq({ copy, faqs }: HomeFaqProps) {
                     className="h-5 w-5 shrink-0 text-[color:var(--home-ink-35)] transition-transform duration-300 group-open:rotate-180 group-open:text-[color:var(--accent)]"
                   />
                 </summary>
-                <div className="max-w-prose pb-7 text-sm leading-relaxed text-[color:var(--home-ink-60)] sm:text-base">
+                <div className="hc-font-reading text-pretty max-w-prose pb-7 text-[color:var(--home-ink-70)] text-sm leading-relaxed sm:text-base">
                   {item.a}
                 </div>
               </details>

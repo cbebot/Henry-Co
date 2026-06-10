@@ -92,7 +92,7 @@ export function HomeStandard({
 
         <motion.p
           variants={m.reveal}
-          className="mt-6 max-w-2xl text-base leading-relaxed text-[color:var(--home-ink-65)] sm:text-lg"
+          className="hc-font-reading text-pretty mt-6 max-w-2xl text-[1.0625rem] leading-[1.6] text-[color:var(--home-ink-75)] sm:text-[1.1875rem]"
         >
           {copy.standard.sub}
         </motion.p>

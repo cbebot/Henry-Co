@@ -702,6 +702,13 @@
 .hc-font-body {
   font-family: var(--hc-font-body);
 }
+/* Reading-serif FACE only (no measure/size) — for editorial reading prose that
+   already carries its own tuned size/measure/leading and just needs the serif.
+   Optical sizing keeps Fraunces calm at body size. */
+.hc-font-reading {
+  font-family: var(--hc-font-reading);
+  font-optical-sizing: auto;
+}
 
 /* ─────────────────────────────────────────────────────────── */
 /*  PASS 19 — Surface utility classes                          */

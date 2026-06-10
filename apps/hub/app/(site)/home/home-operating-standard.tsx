@@ -42,7 +42,7 @@ export function HomeOperatingStandard({ copy }: HomeOperatingStandardProps) {
             >
               {os.lead}
             </h2>
-            <p className="mt-6 max-w-prose text-base leading-relaxed text-[color:var(--home-ink-65)]">
+            <p className="hc-font-reading text-pretty mt-6 max-w-prose text-[1.0625rem] leading-[1.6] text-[color:var(--home-ink-80)] sm:text-[1.1875rem]">
               {os.body}
             </p>
           </motion.div>
@@ -68,7 +68,7 @@ export function HomeOperatingStandard({ copy }: HomeOperatingStandardProps) {
                   >
                     {principle.title}
                   </dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-[color:var(--home-ink-65)] sm:text-base">
+                  <dd className="hc-font-reading text-pretty mt-2 text-[color:var(--home-ink-70)] text-sm leading-relaxed sm:text-base">
                     {principle.body}
                   </dd>
                 </div>
