@@ -54,7 +54,10 @@ export default function SectionBlock({
               <h2 className="home-headline mt-3 text-balance">{section.title}</h2>
             ) : null}
             {section.body ? (
-              <p className="mt-3 text-[15px] leading-8 text-[color:var(--home-ink-70)]">
+              // READING-01: long-form section prose reads in the editorial serif
+              // (.hc-prose → Fraunces, 18px / 1.6 / capped measure) — the
+              // reference reading feel. Register rows below stay system sans.
+              <p className="hc-prose mt-3 text-[color:var(--home-ink-70)]">
                 {section.body}
               </p>
             ) : null}
