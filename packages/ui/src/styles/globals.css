@@ -171,10 +171,10 @@
   --hc-measure: 66ch;              /* ~72 chars/line — the editorial sweet spot */
   --hc-measure-narrow: 54ch;       /* asides, form help, captions */
   --hc-measure-wide: 76ch;         /* looser marketing columns */
-  --hc-leading-prose: 1.7;         /* long-form body leading */
+  --hc-leading-prose: 1.6;         /* long-form serif reading leading */
   --hc-leading-snug: 1.5;          /* headings within prose */
-  --hc-text-reading: 1.0625rem;    /* 17px — calm premium reading size */
-  --hc-text-reading-lg: 1.1875rem; /* 19px — marketing / editorial long-form */
+  --hc-text-reading: 1.125rem;     /* 18px — calm editorial serif reading size */
+  --hc-text-reading-lg: 1.25rem;   /* 20px — feature editorial long-form */
   --hc-prose-gap: 1.1em;           /* paragraph-to-paragraph air (scales with size) */
 
   /* ── Shared font seam ──
@@ -188,6 +188,11 @@
      body font rather than forcing one (zero letterform shift on adopt). */
   --hc-font-body: var(--font-body, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
   --hc-font-display: var(--font-display, "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif);
+  /* Long-form READING face — a SERIF, for editorial calm (the reference look).
+     Defaults to the display serif so it works before a dedicated reading font is
+     wired (Fraunces' optical-size axis renders calm at body sizes). Set
+     --font-reading per-app to swap in a text serif without touching .hc-prose. */
+  --hc-font-reading: var(--font-reading, var(--hc-font-display));
 
   /* Radii — explicit so component code does not invent */
   --hc-radius-sm: 0.5rem;
@@ -615,15 +620,19 @@
 /*  rhythm change with zero letterform shift.                   */
 /* ─────────────────────────────────────────────────────────── */
 
-/* Long-form reading container — about/legal/editorial copy. */
+/* Long-form reading container — about/legal/editorial copy. Sets the editorial
+   SERIF reading face + rhythm; INK is still inherited (never forced), so it
+   stays safe to drop on any background. */
 .hc-prose {
   max-width: var(--hc-measure);
+  font-family: var(--hc-font-reading);
+  font-optical-sizing: auto; /* Fraunces opsz: calm at body size, characterful at display */
   font-size: var(--hc-text-reading);
   line-height: var(--hc-leading-prose);
-  /* Ink is INHERITED, never forced. `.hc-prose` owns rhythm; the host
-     surface owns colour. This keeps it safe to drop on ANY background —
-     token-driven light/dark OR a hardcoded editorial panel — without a
-     forced token resolving to the wrong mode and producing invisible text. */
+  /* Colour is INHERITED, never forced. `.hc-prose` owns the reading face +
+     rhythm; the host surface owns ink. Inheriting colour keeps it safe on ANY
+     background — token-driven light/dark OR a hardcoded editorial panel —
+     without a forced token resolving to the wrong mode (invisible text). */
   text-wrap: pretty; /* balanced rag where supported; ignored otherwise */
 }
 

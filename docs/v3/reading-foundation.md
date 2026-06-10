@@ -5,9 +5,11 @@
 > Adversarially audited (5 readers) before the type-identity commit; findings
 > folded in or logged below.
 > **Owner-approved direction (2026-06-10):** *calm shared baseline + curated
-> division display faces*, and *sans letterforms with fixed rhythm* (no serif
-> body). This doc is the durable standard; the canonical implementation is the
-> `READING-01` blocks in `packages/ui/src/styles/globals.css`.
+> display faces*. **Manrope** for UI/app body; **Fraunces** for display heads;
+> **a serif for long-form reading** (`.hc-prose`) — matching the editorial
+> reference the owner shared (Tiempos-style serif body, generous rhythm). This
+> doc is the durable standard; the canonical implementation is the `READING-01`
+> blocks in `packages/ui/src/styles/globals.css`.
 
 ## The problem this solves
 
@@ -31,16 +33,18 @@ a capped **measure**, generous **leading**, predictable paragraph **gap**.
 | `--hc-measure` | `66ch` | reading-column cap (~72 chars/line — the editorial sweet spot) |
 | `--hc-measure-narrow` | `54ch` | asides, form help, captions |
 | `--hc-measure-wide` | `76ch` | looser marketing columns |
-| `--hc-leading-prose` | `1.7` | long-form body leading |
+| `--hc-leading-prose` | `1.6` | long-form serif reading leading |
 | `--hc-leading-snug` | `1.5` | headings inside prose |
-| `--hc-text-reading` | `1.0625rem` (17px) | calm reading size |
-| `--hc-text-reading-lg` | `1.1875rem` (19px) | marketing/editorial long-form |
+| `--hc-text-reading` | `1.125rem` (18px) | calm editorial serif reading size |
+| `--hc-text-reading-lg` | `1.25rem` (20px) | feature editorial long-form |
 | `--hc-prose-gap` | `1.1em` | paragraph-to-paragraph air (scales with size) |
-| `--hc-font-body` | `var(--font-body, <system sans>)` | shared body face seam |
+| `--hc-font-body` | `var(--font-body, <system sans>)` | shared body (UI/app) face seam |
 | `--hc-font-display` | `var(--font-display, "Fraunces", <system serif>)` | shared display face seam |
+| `--hc-font-reading` | `var(--font-reading, var(--hc-font-display))` | long-form reading serif (defaults to the display serif; uses Fraunces' opsz axis) |
 
 **Utilities:**
-- `.hc-prose` — long-form reading container. Sets measure + 17px + 1.7 leading +
+- `.hc-prose` — long-form reading container. Sets the **serif reading face**
+  (`--hc-font-reading`, optical-sized) + measure + 18px + 1.6 leading +
   `text-wrap: pretty`, and gives **automatic** paragraph rhythm via
   `> * + * { margin-top: var(--hc-prose-gap) }` (the "lobotomized owl" — no
   per-paragraph classes). Also tunes inside-prose headings, lists, and links.
@@ -53,14 +57,15 @@ a capped **measure**, generous **leading**, predictable paragraph **gap**.
 
 ## Two load-bearing design rules (do not regress)
 
-1. **`.hc-prose` owns rhythm, not colour or font-family.** It deliberately does
-   **not** set `color` or `font-family` — both are **inherited**. This is what
-   makes it safe to drop on *any* surface: token-driven light/dark **or** a
-   hardcoded editorial panel (e.g. the company pages' warm-ink `#0a0807`
-   surface). A utility that forced `color: var(--hc-text-primary)` would resolve
-   to the wrong mode on a non-`.dark` hardcoded surface and produce **invisible
-   text** — the exact bug class this codebase keeps hitting. The host surface
-   owns colour; `.hc-prose` owns space. **Links inside prose inherit ink too**
+1. **`.hc-prose` owns the reading face + rhythm, never colour.** It sets the
+   serif reading face (`--hc-font-reading`) + measure + leading, but deliberately
+   does **not** set `color` — ink is **inherited**. This is what makes it safe to
+   drop on *any* surface: token-driven light/dark **or** a hardcoded editorial
+   panel (e.g. the company pages' warm-ink `#0a0807` surface). A utility that
+   forced `color: var(--hc-text-primary)` would resolve to the wrong mode on a
+   non-`.dark` hardcoded surface and produce **invisible text** — the exact bug
+   class this codebase keeps hitting. The host surface owns colour; `.hc-prose`
+   owns the reading face + space. **Links inside prose inherit ink too**
    (underline + weight, never a theme-flipping token) for the same reason — a
    gold `--hc-accent-text` link fails AA (~4.1:1) on a hardcoded-dark panel.
 2. **The `ch` measure self-corrects.** Because measure is in `ch` (the rendered
