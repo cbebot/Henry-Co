@@ -32,6 +32,15 @@ export {
 
 type JsonRecord = Record<string, unknown>;
 
+/** A `customer_activity` row written by an auto-seed (e.g. the Henry Onyx
+ *  careers catalog carries `metadata.seeded = true`). Seeded rows are curated
+ *  content, not real customer/staff events, so owner analytics, division
+ *  snapshots, and recent-activity feeds must exclude them. */
+function isSeededActivityRow(row: JsonRecord): boolean {
+  const meta = row.metadata;
+  return typeof meta === "object" && meta !== null && (meta as { seeded?: unknown }).seeded === true;
+}
+
 type Filter =
   | { column: string; operator?: "eq" | "neq" | "gt" | "gte" | "lt" | "lte"; value: unknown }
   | { column: string; operator: "in"; value: unknown[] };
@@ -449,7 +458,7 @@ const getOwnerBaseDataset = cache(async () => {
     ownerProfiles,
     staffAuditLogs,
     supportThreads,
-    customerActivity,
+    customerActivity: customerActivity.filter((row) => !isSeededActivityRow(row)),
     customerNotifications,
     customerInvoices,
     walletFundingRequests,
@@ -1153,7 +1162,7 @@ export async function getOwnerOverviewData() {
     companyTitle,
     companyName: toText(dataset.companySettings?.company_name) || companyTitle,
     dataHealthNote:
-      "Workforce profiles, audit history, and sign-in activity are synchronized from your live HenryCo account records. If a metric looks stale, refresh after the person completes their latest sign-in.",
+      "Workforce profiles, audit history, and sign-in activity are synchronized from your live Henry & Co. account records. If a metric looks stale, refresh after the person completes their latest sign-in.",
     metrics: {
       divisionsLive: divisions.filter((division) => division.status !== "building").length,
       totalRevenueNaira,
@@ -1279,7 +1288,9 @@ export async function getAnalyticsCenterData() {
     safeSelect("customer_activity", "*", { orderBy: "created_at", ascending: false, limit: 800 }),
   ]);
 
-  const sourceRows = activityRows.length ? activityRows : dataset.customerActivity;
+  const sourceRows = (activityRows.length ? activityRows : dataset.customerActivity).filter(
+    (row) => !isSeededActivityRow(row),
+  );
   const normalizedRows = sourceRows
     .map(readActivityAnalytics)
     .filter((row): row is NonNullable<ReturnType<typeof readActivityAnalytics>> => Boolean(row));
@@ -1574,7 +1585,7 @@ export async function getWorkforceCenterData() {
       managers: workforce.filter((member) => member.isManager).length,
     },
     dataHealthNote:
-      "Role and permission updates are saved to each member’s HenryCo account profile and recorded in the workforce audit log for traceability.",
+      "Role and permission updates are saved to each member’s Henry & Co. account profile and recorded in the workforce audit log for traceability.",
   };
 }
 
