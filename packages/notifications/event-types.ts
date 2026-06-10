@@ -34,7 +34,11 @@ export type EventTypeId =
   | "support.thread.created"
   | "wallet.transaction.update"
   | "kyc.review.update"
-  | "system.notification.relay";
+  | "system.notification.relay"
+  // V3-37 abandoned-journey recovery reminder (day-1 in-app nudge). Adding this
+  // REQUIRES a widen of customer_notifications_category_check (publisher writes
+  // category = eventType) — see the paired migration.
+  | "account.recovery.reminder";
 
 export type EventTypeSpec = {
   defaultSeverity: Severity;
@@ -129,6 +133,14 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeSpec> = {
     defaultSeverity: "warning",
     deepLinkTemplate: "/account/settings/security",
     allowedPayloadKeys: [],
+  },
+  // V3-37: gentle "continue where you left off" nudge. Deep link defaults to the
+  // recovery surface; the publisher passes the task's exact continue_url. Payload
+  // carries the task_type + remaining count for copy selection.
+  "account.recovery.reminder": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/continue",
+    allowedPayloadKeys: ["task_type", "count"],
   },
 } as const;
 

@@ -31,6 +31,13 @@ export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";
+export {
+  getRecoveryCopy,
+  RECOVERY_COPY_EN,
+  type RecoveryCopy,
+  type RecoveryTaskTypeKey,
+  type RecoveryTaskTypeCopy,
+} from "./recovery-copy";
 export { getMarketplaceCopy, type MarketplaceCopy } from "./marketplace-copy";
 export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
