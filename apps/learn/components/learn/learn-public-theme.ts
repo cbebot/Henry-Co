@@ -62,6 +62,13 @@ export const LEARN_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--learn-accent" as string]: "var(--home-accent)",
   ["--home-font-display" as string]: SERIF_STACK,
   ["--font-learn-display" as string]: SERIF_STACK,
+  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
+  // inner var() freezes there), so the canonical seam must be re-declared on
+  // THIS element — where the font .variable classes resolve — for .hc-prose /
+  // .hc-font-display / .hc-font-reading to render the loaded faces.
+  ["--hc-font-display" as string]: "var(--home-font-display)",
+  ["--hc-font-body" as string]: "var(--home-font-sans)",
+  ["--hc-font-reading" as string]: "var(--home-font-display)",
 
   // Alias the legacy --learn-* soul onto theme-aware --home-* equivalents so
   // every .learn-* class re-tones with the page instead of staying dark.
