@@ -1,6 +1,9 @@
 # READING-01 — Editorial reading foundation
 
-> **Status:** Slice A shipped on `v3/typography-reading-foundation`.
+> **Status:** Slice A (reading foundation) + Slice B (hub type identity)
+> shipped on `v3/typography-reading-foundation` (6 commits; not yet a PR).
+> Adversarially audited (5 readers) before the type-identity commit; findings
+> folded in or logged below.
 > **Owner-approved direction (2026-06-10):** *calm shared baseline + curated
 > division display faces*, and *sans letterforms with fixed rhythm* (no serif
 > body). This doc is the durable standard; the canonical implementation is the
@@ -57,36 +60,80 @@ a capped **measure**, generous **leading**, predictable paragraph **gap**.
    surface). A utility that forced `color: var(--hc-text-primary)` would resolve
    to the wrong mode on a non-`.dark` hardcoded surface and produce **invisible
    text** — the exact bug class this codebase keeps hitting. The host surface
-   owns colour; `.hc-prose` owns space.
+   owns colour; `.hc-prose` owns space. **Links inside prose inherit ink too**
+   (underline + weight, never a theme-flipping token) for the same reason — a
+   gold `--hc-accent-text` link fails AA (~4.1:1) on a hardcoded-dark panel.
 2. **The `ch` measure self-corrects.** Because measure is in `ch` (the rendered
    font's "0" advance), `66ch` stays ~72 characters/line whatever face the
    type-identity pass later wires into `--hc-font-body`.
 
+## What Slice B adds (hub type identity)
+
+The font seam pays off: two edits in the clean `apps/hub/app/layout.tsx` give the
+**whole hub** an editorial identity.
+- **Fraunces** (editorial serif) + **Manrope** (calm humanist body) load as
+  **variable** fonts via `next/font` (no `weight` array — keeps Fraunces's
+  optical-size axis; one file per family; matches marketplace/jobs/logistics),
+  exposed as `--font-display` / `--font-body`. The seam (`--hc-font-*`) is
+  declared on `:root` and `next/font` sets `--font-*` on `<html>` (= `:root`,
+  same element), so the tokens resolve to the loaded faces platform-wide.
+- `<body>` carries `.hc-font-body`, so every hub surface adopts Manrope body.
+- `.hc-font-display` lands on **display moments only**: the hub hero h1 + 5
+  section heads, and the company-page hero h1 + section heads + footer h2. Dense
+  card/UI headings stay sans (the serif-for-display / sans-for-UI rule).
+
 ## Adopted so far
 
-- `apps/hub/app/components/SectionBlock.tsx` — the single renderer for
-  `/about`, `/privacy`, `/terms` long-form bodies + legal clauses. Section
-  intro + legal item bodies now use `.hc-prose`.
+- `apps/hub/app/components/SectionBlock.tsx` — long-form bodies + legal clauses
+  use `.hc-prose`; section heads use `.hc-font-display`.
+- `apps/hub/app/components/CompanyPageClient.tsx` — page hero + footer titles use
+  `.hc-font-display`. (`/about`, `/privacy`, `/terms`, `/contact`.)
+- `apps/hub/app/(site)/HubHomeClient.tsx` — hero + section heads use
+  `.hc-font-display`.
+- `apps/hub/app/layout.tsx` — the Fraunces/Manrope seam wiring.
 
 ## Verification
 
-- The foundation was rendered against the **real** `globals.css` in headless
-  Chromium, light + dark, before/after: `.codex-temp/reading-foundation/`
-  (`harness.html` + `shoot.cjs` → `reading-foundation-before-after.png`). The
-  dark panel confirms rule 1 (no invisible text).
-- Slice A is CSS + className-string changes only — no TypeScript surface. Full
-  build is gated in CI on PR (the shared working tree currently carries
-  unrelated concurrent WIP, so a local `build:all` is a noisy signal).
+- Rendered against the **real** `globals.css` + the **real** faces (Fraunces +
+  Manrope) in headless Chromium, light + dark, before/after:
+  `.codex-temp/reading-foundation/` (`harness.html`/`shoot.cjs` →
+  `reading-foundation-before-after.png`; `flagship.html`/`shoot-flagship.cjs` →
+  `flagship-before-after.png`). Dark panels confirm rule 1 (no invisible text).
+- **Adversarial audit (5 readers)** before the Slice B commit confirmed: next/font
+  wiring build-safe, seam resolves, `.hc-font-body` beats the hub `body{}` rule,
+  no nested `<html>/<body>`, `.hc-mono` tabular data unaffected, no AA/sizing
+  regression in `.hc-prose` bodies. It drove four fixes (variable fonts, link
+  ink-inherit, prose color-inherit committed, section-head consistency).
+- Changes are CSS + className + a next/font wiring (a pattern already proven in
+  marketplace/jobs/logistics). Full build is gated in CI on PR (the shared tree
+  carries unrelated concurrent WIP, so a local `build:all` is a noisy signal).
+
+## Known follow-ups (audited, non-blocking)
+
+- **Owner sign-off:** the body change converges owner/workspace/account hub chrome
+  from system-ui to Manrope (one calm body face platform-wide) — a real visual
+  change to authenticated surfaces. Defensible (similar humanist metrics, token-
+  sized layouts), but per the per-surface-approval rule it wants an owner
+  screenshot before merge.
+- **Workspace double-load:** `apps/hub/app/workspace/layout.tsx` instantiates its
+  own Manrope (`--workspace-font-sans`); now redundant with the root `--font-body`.
+  Drop the local instance and inherit the seam (keep its mono). Payload cleanup.
+- **Dead rule:** the hub `body { font-family: var(--acct-font-sans) }` font-family
+  line is now inert (the `.hc-font-body` class wins). Left untouched because
+  `apps/hub/app/globals.css` is mid-edit in a concurrent session; tidy later.
+- **Brand debt (pre-existing):** `layout.tsx` `generateMetadata` title still ships
+  the retired `"Henry & Co."`. The documented normalizer (`toBrandName`) does **not
+  exist in code** (docs-only); `COMPANY.group.name` literally stores `"Henry & Co."`.
+  Belongs to the brand sweep, not this typography branch — do not guess-fix.
 
 ## Roadmap (not yet done)
 
-- **Slice B — type identity:** wire `--font-body` / `--font-display` per app via
-  `next/font`, converging the five faces onto the shared seam (curated display
-  exceptions kept). Per-division screenshot approval.
-- **Slice C — language/tone:** calm the high-intensity *marketing* copy inside
-  the existing `packages/i18n` typed-copy modules (hub-home hero/CTAs, division
+- **Slice B rollout:** wire the same seam in the other division apps' `next/font`,
+  converging the five faces (curated display exceptions kept). Per-division
+  screenshot approval.
+- **Slice C — language/tone:** calm the high-intensity *marketing* copy inside the
+  existing `packages/i18n` typed-copy modules (hub-home hero/CTAs, division
   landings). Leave already-calm functional microcopy (`state-copy.ts`) alone.
-  Respect the strict i18n gate (refresh the dated baseline; DeepL covers 8/12
-  locales).
+  Respect the strict i18n gate (refresh the dated baseline; DeepL covers 8/12).
 - **Rollout:** adopt `.hc-prose` / `.hc-measure` on the remaining reading-dense
   surfaces, audited in both themes per the full-surface-audit rule.
