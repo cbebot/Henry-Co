@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { headers } from "next/headers";
 import { LocaleProvider } from "@henryco/i18n/react";
 import {
@@ -40,6 +40,29 @@ const fraunces = Fraunces({
     "Times New Roman",
     "Times",
     "serif",
+  ],
+  adjustFontFallback: true,
+});
+
+/**
+ * Manrope — the calm humanist body grotesque paired with Fraunces. Self-hosted +
+ * subset (latin) via next/font with display:swap + adjustFontFallback (size-adjusted
+ * system fallback → CLS ~ 0 on slow networks). Loaded ONLY on public routes, exposed
+ * as --font-manrope, which --home-font-sans consumes on the public subtree — so body
+ * copy reads as a crafted sans while Fraunces carries the editorial display + reading.
+ */
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "sans-serif",
   ],
   adjustFontFallback: true,
 });
@@ -206,9 +229,12 @@ export default async function SiteLayout({
     // also alias the homepage's existing display-font var to the system one, so the
     // certified homepage adopts Fraunces with no component churn (refine, not redo).
     <div
-      className={fraunces.variable}
+      className={`${fraunces.variable} ${manrope.variable}`}
       style={
         {
+          // Public body copy reads in the loaded Manrope (declared HERE so
+          // var(--font-manrope) resolves on the same element next/font set it).
+          fontFamily: "var(--home-font-sans)",
           ["--home-font-display" as string]:
             'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif',
           ["--acct-font-display" as string]: "var(--home-font-display)",
@@ -218,6 +244,12 @@ export default async function SiteLayout({
           // --font-reading) because the token resolves at :root and would
           // otherwise freeze to the system-serif fallback.
           ["--hc-font-reading" as string]: "var(--home-font-display)",
+          // READING-01 (premium sans): pair Fraunces with the loaded Manrope for
+          // public body/UI copy — a crafted sans where the serif isn't carrying
+          // the reading. --acct-font-sans aliases it so the body rule adopts it.
+          ["--home-font-sans" as string]:
+            'var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          ["--acct-font-sans" as string]: "var(--home-font-sans)",
         } as CSSProperties
       }
     >
