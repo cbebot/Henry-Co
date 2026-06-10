@@ -607,17 +607,16 @@
 /* ─────────────────────────────────────────────────────────── */
 /*  READING-01 — Editorial reading utilities                   */
 /*                                                             */
-/*  Calm, spacious long-form reading. The lever is RHYTHM, not */
-/*  the typeface: body letterforms are unchanged. Apply        */
-/*  `.hc-prose` to a container whose children are flowing block */
-/*  elements (p, h2/h3/h4, ul, ol, blockquote). Paragraph      */
-/*  spacing falls out of the `* + *` rule, so no per-paragraph  */
-/*  classes are needed.                                        */
+/*  Calm, spacious long-form reading. `.hc-prose` sets the     */
+/*  editorial SERIF reading face (--hc-font-reading → the      */
+/*  loaded Fraunces where an app bridges the seam) plus        */
+/*  measure, size, leading, and automatic paragraph rhythm     */
+/*  (the `* + *` owl — no per-paragraph classes). Apply it to  */
+/*  a container whose children are flowing block elements      */
+/*  (p, h2/h3/h4, ul, ol, blockquote).                         */
 /*                                                             */
-/*  `.hc-prose` deliberately does NOT set `font-family` — it    */
-/*  inherits the host surface's body font (system sans on hub,  */
-/*  Manrope on marketplace, …), so adopting it is a pure        */
-/*  rhythm change with zero letterform shift.                   */
+/*  COLOUR is still inherited, never forced — the host         */
+/*  surface owns ink (see the rule inside `.hc-prose`).        */
 /* ─────────────────────────────────────────────────────────── */
 
 /* Long-form reading container — about/legal/editorial copy. Sets the editorial
