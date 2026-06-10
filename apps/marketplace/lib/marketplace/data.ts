@@ -13,6 +13,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import {
   demoHomeData,
 } from "@/lib/marketplace/demo";
+import { ensureMarketplaceBootstrap } from "@/lib/marketplace/seed";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import type {
   MarketplaceAddress,
@@ -106,7 +107,7 @@ function buildKpis(input: Pick<MarketplaceHomeData, "vendors" | "products" | "re
     {
       label: "Verified stores",
       value: String(input.vendors.length),
-      hint: "Curated sellers and HenryCo-owned inventory with clearer accountability.",
+      hint: "Curated sellers and Henry Onyx-owned inventory with clearer accountability.",
     },
     {
       label: "Active listings",
@@ -517,6 +518,10 @@ const loadDatabaseSnapshot = unstable_cache(
 );
 
 async function computeMarketplaceHomeData(): Promise<Snapshot> {
+  // Populate the company's curated catalog on first read (idempotent,
+  // version-gated, service-role-guarded). No-ops once seeded; runs before the
+  // cached snapshot load so the first snapshot reflects the seeded catalog.
+  await ensureMarketplaceBootstrap();
   const { snapshot } = await loadDatabaseSnapshot();
   return snapshot ?? getFallbackSnapshot();
 }
@@ -539,6 +544,7 @@ export const getMarketplaceHomeData = unstable_cache(
 );
 
 export async function getMarketplaceReadiness() {
+  await ensureMarketplaceBootstrap();
   const { snapshot, issue } = await loadDatabaseSnapshot();
   return {
     schemaReady: Boolean(snapshot),
@@ -1078,7 +1084,7 @@ export function toMarketplaceOrderFeed(orders: MarketplaceOrder[]): MarketplaceO
     const stalled = ["placed", "awaiting_payment", "paid_held", "processing", "awaiting_auto_release"].includes(order.status);
     const headline =
       order.status === "payout_released"
-        ? `${order.orderNo} has completed HenryCo payout settlement`
+        ? `${order.orderNo} has completed payout settlement`
         : order.status === "payout_frozen"
           ? `${order.orderNo} is under trust and payout review`
           : order.paymentStatus === "verified"

@@ -1,3 +1,15 @@
+/**
+ * Henry Onyx Marketplace — DEV / LOCAL demo seed.
+ *
+ * Seeds a fuller demo dataset (catalog + transactional fixtures: orders,
+ * payments, disputes, support, notifications) for local development and
+ * dashboard testing. Run explicitly via the package script; it is NOT the
+ * production catalog source.
+ *
+ * The CANONICAL production catalog is the idempotent auto-seed in
+ * `lib/marketplace/seed.ts` (+ `seed-catalog.ts`), which the storefront
+ * bootstraps on first read. Keep store/brand details consistent with it.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
@@ -7,11 +19,11 @@ const rootDir = path.resolve(process.cwd(), "..", "..");
 const seedNow = new Date("2026-04-02T12:00:00.000Z");
 const division = getDivisionConfig("marketplace");
 const identities = {
-  buyer: "marketplace-buyer@henrycogroup.com",
-  vendor: "marketplace-vendor@henrycogroup.com",
-  applicant: "marketplace-applicant@henrycogroup.com",
-  admin: "marketplace-admin@henrycogroup.com",
-  owner: "marketplace-owner@henrycogroup.com",
+  buyer: "marketplace-buyer@henryonyx.com",
+  vendor: "marketplace-vendor@henryonyx.com",
+  applicant: "marketplace-applicant@henryonyx.com",
+  admin: "marketplace-admin@henryonyx.com",
+  owner: "marketplace-owner@henryonyx.com",
 };
 
 function loadEnvFile(filepath) {
@@ -148,7 +160,7 @@ const categories = [
 ];
 
 const brands = [
-  { slug: "henryco-verified", name: "HenryCo Verified", description: "Company-verified inventory and premium marketplace programs.", accent: division.accent },
+  { slug: "henryco-verified", name: "Henry Onyx Verified", description: "Company-verified inventory and premium marketplace programs.", accent: division.accent },
   { slug: "atelier-lagos", name: "Atelier Lagos", description: "Design-forward living essentials with a quiet luxury point of view.", accent: "#6E8552" },
   { slug: "lattice-labs", name: "Lattice Labs", description: "Tools, seating, and focused work accessories for modern operators.", accent: "#2F4D5F" },
   { slug: "botanica-seven", name: "Botanica Seven", description: "Performance skincare and wellness products with stronger ingredient discipline.", accent: "#7A4B35" },
@@ -156,12 +168,12 @@ const brands = [
 
 const vendors = [
   {
-    slug: "henryco-verified", name: "HenryCo Verified",
-    description: "Company-curated and HenryCo-verified inventory with stronger fulfillment commitments.",
+    slug: "henryco-verified", name: "Henry Onyx Verified",
+    description: "Company-curated and Henry Onyx-verified inventory with stronger fulfillment commitments.",
     owner_type: "company", status: "approved", verification_level: "henryco", trust_score: 98, response_sla_hours: 2,
     fulfillment_rate: 97, dispute_rate: 0.8, review_score: 4.9, followers_count: 1842, accent: division.accent,
     hero_image_url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=80",
-    badges: ["HenryCo verified", "Priority support", "Fast fulfillment"], support_email: division.supportEmail, support_phone: division.supportPhone,
+    badges: ["Henry Onyx verified", "Priority support", "Fast fulfillment"], support_email: division.supportEmail, support_phone: division.supportPhone,
   },
   {
     slug: "luminous-atelier", name: "Luminous Atelier",
@@ -219,7 +231,7 @@ const productDefs = [
     summary: "Warm brass task lighting with a study-grade silhouette and quieter detail lines.",
     description: "Designed for premium workspaces, the Oro desk lamp pairs a weighted brass stem with a softly diffused cone shade and a low-profile switch.",
     inventory_owner_type: "company", base_price: 185000, compare_at_price: 220000, total_stock: 13, sku: "HCO-ORO-LAMP", rating: 4.9, review_count: 28,
-    featured: true, approval_status: "approved", status: "active", trust_badges: ["HenryCo verified", "Serial-checked", "Fast dispatch"],
+    featured: true, approval_status: "approved", status: "active", trust_badges: ["Henry Onyx verified", "Serial-checked", "Fast dispatch"],
     filter_data: { delivery: "48 hours", verifiedSeller: true, companyOwned: true, codEligible: true },
     specifications: { Finish: "Brushed brass", Voltage: "220V", Warranty: "12 months", Height: "48 cm" },
     delivery_note: "Dispatches within 48 hours from Lagos.", lead_time: "2 to 3 business days", cod_eligible: true,
@@ -376,7 +388,7 @@ await mustWrite("vendor-applications", supabase.from("marketplace_vendor_applica
     id: "f0c0f200-6401-4bf8-a301-000000000001", normalized_email: identities.vendor, store_name: "Luminous Atelier", proposed_store_slug: "luminous-atelier",
     legal_name: "Luminous Atelier Limited", contact_phone: "+2349133000000", category_focus: "Workspace and premium interior products",
     story: "We source quieter workspace and home products with cleaner photography, calmer materials, and dependable delivery handling.",
-    status: "approved", progress_step: "review", documents_json: { businessRegistration: "https://files.henrycogroup.com/marketplace/demo/business-registration.pdf" },
+    status: "approved", progress_step: "review", documents_json: { businessRegistration: "https://files.henryonyx.com/marketplace/demo/business-registration.pdf" },
     draft_payload: { storeName: "Luminous Atelier", legalName: "Luminous Atelier Limited" }, agreement_accepted_at: isoDaysAgo(14), review_note: "Approved after KYC verification and delivery SLA confirmation.",
     submitted_at: isoDaysAgo(14), reviewed_at: isoDaysAgo(12), onboarding_completed_at: isoDaysAgo(10),
   },
@@ -384,7 +396,7 @@ await mustWrite("vendor-applications", supabase.from("marketplace_vendor_applica
     id: "f0c0f200-6401-4bf8-a301-000000000002", normalized_email: identities.applicant, store_name: "Aurelian Goods", proposed_store_slug: "aurelian-goods",
     legal_name: "Aurelian Goods Nigeria", contact_phone: "+2349133111199", category_focus: "Premium wellness and home accessories",
     story: "We want to launch a cleaner, giftable home and wellness store with premium packaging and faster support response.",
-    status: "submitted", progress_step: "review", documents_json: { businessRegistration: "https://files.henrycogroup.com/marketplace/demo/aurelian-registration.pdf" },
+    status: "submitted", progress_step: "review", documents_json: { businessRegistration: "https://files.henryonyx.com/marketplace/demo/aurelian-registration.pdf" },
     draft_payload: { storeName: "Aurelian Goods", legalName: "Aurelian Goods Nigeria" }, agreement_accepted_at: isoDaysAgo(1), review_note: null, submitted_at: isoHoursAgo(7), reviewed_at: null,
   },
 ]));
@@ -424,7 +436,7 @@ await Promise.all([
 ]);
 
 const orders = [
-  { id: "f0c0f200-6401-4bf8-a501-000000000001", order_no: "MKT-ORD-240402-001", normalized_email: identities.buyer, status: "shipped", payment_status: "verified", payment_method: "bank_transfer", currency: "NGN", subtotal: 465000, shipping_total: 18000, discount_total: 20000, grand_total: 463000, buyer_name: "Marketplace Buyer", buyer_email: identities.buyer, buyer_phone: "+2349133957084", shipping_city: "Lagos", shipping_region: "Lagos", timeline: ["Order placed", "Payment verified by finance", "Split fulfillment prepared", "HenryCo stocked item is in transit", "Vendor shipment packed for handoff"], placed_at: isoHoursAgo(28) },
+  { id: "f0c0f200-6401-4bf8-a501-000000000001", order_no: "MKT-ORD-240402-001", normalized_email: identities.buyer, status: "shipped", payment_status: "verified", payment_method: "bank_transfer", currency: "NGN", subtotal: 465000, shipping_total: 18000, discount_total: 20000, grand_total: 463000, buyer_name: "Marketplace Buyer", buyer_email: identities.buyer, buyer_phone: "+2349133957084", shipping_city: "Lagos", shipping_region: "Lagos", timeline: ["Order placed", "Payment verified by finance", "Split fulfillment prepared", "Henry Onyx stocked item is in transit", "Vendor shipment packed for handoff"], placed_at: isoHoursAgo(28) },
   { id: "f0c0f200-6401-4bf8-a501-000000000002", order_no: "MKT-ORD-240402-002", normalized_email: identities.buyer, status: "awaiting_payment", payment_status: "pending", payment_method: "bank_transfer", currency: "NGN", subtotal: 228000, shipping_total: 18000, discount_total: 0, grand_total: 246000, buyer_name: "Marketplace Buyer", buyer_email: identities.buyer, buyer_phone: "+2349133957084", shipping_city: "Abuja", shipping_region: "FCT", timeline: ["Order placed", "Awaiting transfer verification"], placed_at: isoHoursAgo(9) },
 ];
 await mustWrite("orders", supabase.from("marketplace_orders").insert(orders));
