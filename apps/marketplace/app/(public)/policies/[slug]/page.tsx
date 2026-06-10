@@ -96,7 +96,10 @@ export default async function MarketplacePolicyPage({
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {policy.title}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
+            {/* READING-02: hero summary reads in the editorial serif face
+                (size/leading stay tuned for the hero; --market-muted already
+                maps to the ink-70 equivalent on the public theme). */}
+            <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
               {policy.summary}
             </p>
             <div className="mt-7 flex flex-wrap gap-3 text-sm">
@@ -157,7 +160,10 @@ export default async function MarketplacePolicyPage({
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <p className="max-w-3xl text-sm leading-8 text-[var(--market-ink)]">{bullet}</p>
+              {/* READING-02: legal clause bodies = long-form reading → .hc-prose
+                  (serif 18px / 1.6 / 66ch measure — the hub SectionBlock
+                  precedent). Ink stays host-owned. */}
+              <p className="hc-prose text-[var(--market-ink)]">{bullet}</p>
             </li>
           ))}
         </ol>

@@ -82,7 +82,9 @@ export default function MarketplaceHelpCentre({
                   <p className="mt-2 text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
                     {item.question}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
+                  {/* READING-02: FAQ answers read in the serif face (hub
+                      home-faq precedent); ink stays host-owned. */}
+                  <p className="hc-font-reading text-pretty mt-2 max-w-prose text-sm leading-7 text-[var(--market-muted)]">
                     {item.answer}
                   </p>
                 </li>
@@ -154,7 +156,9 @@ export default function MarketplaceHelpCentre({
                         />
                       </button>
                       {isOpen ? (
-                        <p className="pb-5 pr-8 text-sm leading-7 text-[var(--market-muted)]">
+                        // READING-02: serif reading face + capped measure
+                        // (hub home-faq precedent).
+                        <p className="hc-font-reading text-pretty max-w-prose pb-5 pr-8 text-sm leading-7 text-[var(--market-muted)]">
                           {item.answer}
                         </p>
                       ) : null}
