@@ -23,7 +23,8 @@ export default function StudioPoliciesPage() {
         <h1 className="mt-4 text-balance text-[2.1rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.6rem] md:text-[3rem]">
           Real agreements. In writing. Before any money moves.
         </h1>
-        <p className="mt-5 text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
+        {/* READING-02: hero body in the editorial serif reading face + capped measure. */}
+        <p className="hc-font-reading mt-5 max-w-prose text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
           These are the agreements every Henry Onyx Studio engagement runs against. They are not
           stock templates. They are written against how the platform actually operates — bank
           transfer in naira, milestone discipline in the portal, NDPA-aligned data handling, and

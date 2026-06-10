@@ -36,7 +36,9 @@ export default async function StudioAboutPage() {
           <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
             A software studio built around clarity, delivery, and trust.
           </h1>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
+          {/* READING-02: hero body in the editorial serif reading face
+              (--studio-ink-soft already maps to the ink-70 equivalent). */}
+          <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
             Henry Onyx Studio designs and builds websites, commerce experiences, internal tools, and custom platforms for teams that need serious execution without a chaotic build process.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -88,7 +90,8 @@ export default async function StudioAboutPage() {
           <h2 className="mt-4 max-w-xl text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.85rem]">
             The studio workspace is part of the service, not an afterthought.
           </h2>
-          <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
+          {/* READING-02: section intro in the serif reading face + capped measure. */}
+          <p className="hc-font-reading text-pretty mt-4 max-w-prose text-sm leading-7 text-[var(--studio-ink-soft)]">
             Clients can follow project status, exchange messages, review files, and pay invoices from one controlled workspace.
           </p>
         </div>
