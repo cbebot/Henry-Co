@@ -12,7 +12,7 @@ import {
   getLogisticsSharedSignupUrl,
 } from "@/lib/logistics-public-links";
 import { getLogisticsPublicChipUser } from "@/lib/logistics-public-viewer";
-import { fraunces, LOGISTICS_PUBLIC_THEME_STYLE } from "@/lib/logistics-public-theme";
+import { fraunces, manrope, LOGISTICS_PUBLIC_THEME_STYLE } from "@/lib/logistics-public-theme";
 
 const logistics = getDivisionConfig("logistics");
 
@@ -57,7 +57,7 @@ export default async function LogisticsPublicLayout({ children }: { children: Re
 
   return (
     <div
-      className={`${fraunces.variable} logistics-public home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      className={`${fraunces.variable} ${manrope.variable} logistics-public home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={LOGISTICS_PUBLIC_THEME_STYLE as CSSProperties}
     >
       <LogisticsSiteHeader

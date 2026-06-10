@@ -2,7 +2,7 @@ import { getDivisionConfig } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
 import { LearnSiteHeader } from "@/components/learn/site-header";
-import { fraunces, LEARN_PUBLIC_THEME_STYLE } from "@/components/learn/learn-public-theme";
+import { fraunces, manrope, LEARN_PUBLIC_THEME_STYLE } from "@/components/learn/learn-public-theme";
 import { getAccountLearnUrl } from "@/lib/learn/links";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 
@@ -17,7 +17,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div
-      className={`${fraunces.variable} learn-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      className={`${fraunces.variable} ${manrope.variable} learn-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={LEARN_PUBLIC_THEME_STYLE}
     >
       <LearnSiteHeader />

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 
 /**
@@ -31,6 +31,27 @@ export const fraunces = Fraunces({
   adjustFontFallback: true,
 });
 
+/**
+ * Manrope is the shared public BODY sans (matches the hub + the other divisions).
+ * UI/body copy reads Manrope via --home-font-sans; Fraunces keeps the editorial
+ * display heads + the .hc-prose reading face. next/font dedupes the file.
+ */
+export const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope-public",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "sans-serif",
+  ],
+  adjustFontFallback: true,
+});
+
 const logistics = getDivisionConfig("logistics");
 
 const SERIF_STACK =
@@ -38,6 +59,9 @@ const SERIF_STACK =
 
 export const LOGISTICS_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
+  // Manrope is the public body sans (matches the hub); Fraunces stays display only.
+  ["--home-font-sans" as string]:
+    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   // Copper soul — read from company.ts per §9. --accent-text is AA on warm paper;
   // --accent-text-dark lifts the copper so it stays AA on the near-black canvas.
   ["--accent" as string]: logistics.accent || "#D06F32",

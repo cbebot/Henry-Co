@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 
 /**
  * Public-surface theme wiring for Henry Onyx Fabric Care (V3-PUBLIC-REBUILD-care).
@@ -30,11 +30,27 @@ export const fraunces = Fraunces({
   adjustFontFallback: true,
 });
 
+/**
+ * Manrope is the public BODY sans (matches the hub + the editorial reference):
+ * UI/body copy reads Manrope while Fraunces keeps the display heads + the
+ * `.hc-prose` reading face. next/font dedupes the file across the app.
+ */
+export const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope-public",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+  adjustFontFallback: true,
+});
+
 const SERIF_STACK =
   'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
 export const CARE_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
+  // Manrope is the public body sans (display heads stay Fraunces via --home-font-display).
+  ["--home-font-sans" as string]:
+    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   // Cobalt soul. --accent-text is AA on warm paper; the dark variant lifts the
   // cobalt so it stays AA on the near-black canvas.
   ["--accent" as string]: "#6B7CFF",

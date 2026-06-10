@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { getAccountUrl, getPublicDivisions } from "@henryco/config";
 import { LaunchInterceptor } from "@henryco/ui/public-shell";
-import { PROPERTY_PUBLIC_THEME_STYLE } from "@/components/property/property-public-theme";
+import { manrope, PROPERTY_PUBLIC_THEME_STYLE } from "@/components/property/property-public-theme";
 import { PropertyAccountChip } from "@/components/property/PropertyAccountChip";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
@@ -53,7 +53,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div
-      className="property-page property-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
+      className={`${manrope.variable} property-page property-shell home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={PROPERTY_PUBLIC_THEME_STYLE}
     >
       {/* Property uses a bespoke header/footer (not the shared PublicSiteFooter),

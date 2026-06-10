@@ -9,7 +9,7 @@ import { PublicSiteFooter } from "@henryco/ui/public-design";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { PublicChrome, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import { JobsAccountChip } from "@/components/JobsAccountChip";
-import { fraunces, JOBS_PUBLIC_THEME_STYLE } from "@/components/jobs-public-theme";
+import { fraunces, manrope, JOBS_PUBLIC_THEME_STYLE } from "@/components/jobs-public-theme";
 import {
   getSharedAccountJobsUrl,
   getSharedAccountLoginUrl,
@@ -67,7 +67,7 @@ export async function PublicShell({
 
   return (
     <div
-      className={`${fraunces.variable} jobs-shell home-accent-scope flex min-h-screen flex-col text-[color:var(--home-ink)]`}
+      className={`${fraunces.variable} ${manrope.variable} jobs-shell home-accent-scope flex min-h-screen flex-col text-[color:var(--home-ink)]`}
       style={JOBS_PUBLIC_THEME_STYLE}
     >
       <PublicChrome

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 
 /**
@@ -32,6 +32,22 @@ export const fraunces = Fraunces({
   adjustFontFallback: true,
 });
 
+export const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope-public",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "sans-serif",
+  ],
+  adjustFontFallback: true,
+});
+
 const jobs = getDivisionConfig("jobs");
 
 const SERIF_STACK =
@@ -39,6 +55,11 @@ const SERIF_STACK =
 
 export const JOBS_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
+  // Manrope is the shared public BODY sans (next/font dedupes the file across
+  // importers); point --home-font-sans at it so all UI/body copy reads Manrope
+  // while Fraunces keeps the display heads + the .hc-prose reading face.
+  ["--home-font-sans" as string]:
+    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   // Teal soul. --accent-text is AA on the warm-paper light canvas; the
   // dark variant lifts the teal so it stays AA on the near-black canvas.
   ["--accent" as string]: jobs.accent, // #0E7C86
