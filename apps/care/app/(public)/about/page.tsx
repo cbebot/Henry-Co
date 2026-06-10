@@ -140,7 +140,9 @@ export default async function AboutPage() {
               <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
                 {heroTitle}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-65)] sm:text-lg">
+              {/* READING-02: hero body in the editorial serif reading face;
+                  ink lifted 65 → 70 (serif reads lighter than sans). */}
+              <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)] sm:text-lg">
                 {heroBody}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
