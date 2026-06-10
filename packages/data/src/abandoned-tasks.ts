@@ -101,76 +101,132 @@ export type CaptureAbandonedTaskInput = {
   claimPhone?: string | null;
 };
 
+type ExistingForProgress = {
+  id: string;
+  last_progress_at: string;
+  status: string;
+};
+
 /**
- * Idempotently capture (or refresh) an abandoned task. Re-progress re-opens the
- * task to `pending` and resets the reminder counters. Returns the row id, or
+ * Apply a capture to an EXISTING row. The reminder clock is reset ONLY when the
+ * snapshot carries genuinely newer progress than what's stored — re-deriving the
+ * same journey on every dashboard render must never rewind the cadence. A
+ * dismissed/recovered task is never auto-resurrected; only pending/expired
+ * re-open on new progress.
+ */
+async function applyCaptureToExisting(
+  admin: TypedSupabaseClient,
+  existing: ExistingForProgress,
+  patch: {
+    progressAt: string;
+    state: AbandonedTaskState;
+    continueUrl: string;
+    division: string | null;
+    taskType?: AbandonedTaskType;
+    taskRef?: string;
+    claimEmail?: string | null;
+    claimPhone?: string | null;
+  },
+): Promise<{ id: string } | null> {
+  const base: Record<string, unknown> = {
+    continue_url: patch.continueUrl,
+    state: patch.state,
+    division: patch.division,
+  };
+  if (patch.taskType) base.task_type = patch.taskType;
+  if (patch.taskRef) base.task_ref = patch.taskRef;
+  if (patch.claimEmail !== undefined) base.claim_email = patch.claimEmail;
+  if (patch.claimPhone !== undefined) base.claim_phone = patch.claimPhone;
+
+  const isNewProgress =
+    new Date(patch.progressAt).getTime() > new Date(existing.last_progress_at).getTime();
+  if (isNewProgress) {
+    base.last_progress_at = patch.progressAt;
+    if (existing.status === "pending" || existing.status === "expired") {
+      base.status = "pending";
+      base.reminder_count = 0;
+      base.last_reminder_at = null;
+    }
+  }
+
+  const { error } = await admin.from("abandoned_tasks").update(base).eq("id", existing.id);
+  if (error) return null;
+  return { id: existing.id };
+}
+
+/**
+ * Idempotently capture (or refresh) an abandoned task. Returns the row id, or
  * null on failure (capture must never throw into the host flow).
  *
- *   - identified (userId set): upsert on (user_id, task_type, task_ref).
- *   - anonymous (claimToken set): dedupe by claim_token.
+ *   - identified (userId set): keyed on (user_id, task_type, task_ref).
+ *   - anonymous (claimToken set): keyed on claim_token.
+ *
+ * Genuinely newer progress re-opens an expired task + resets reminders; an
+ * idempotent re-derive only refreshes the deep-link/state and leaves the
+ * cadence untouched (see applyCaptureToExisting).
  */
 export async function captureAbandonedTask(
   input: CaptureAbandonedTaskInput,
 ): Promise<{ id: string } | null> {
   const admin = createDataAdminClient();
   const state = stripSecretsFromState(input.state ?? {});
-  const last_progress_at = input.lastProgressAt ?? nowIso();
+  const progressAt = input.lastProgressAt ?? nowIso();
 
   try {
     if (input.userId) {
+      const { data: existing } = await admin
+        .from("abandoned_tasks")
+        .select("id, last_progress_at, status")
+        .eq("user_id", input.userId)
+        .eq("task_type", input.taskType)
+        .eq("task_ref", input.taskRef)
+        .maybeSingle();
+      if (existing) {
+        return applyCaptureToExisting(admin, existing as ExistingForProgress, {
+          progressAt,
+          state,
+          continueUrl: input.continueUrl,
+          division: input.division ?? null,
+        });
+      }
       const { data, error } = await admin
         .from("abandoned_tasks")
-        .upsert(
-          {
-            user_id: input.userId,
-            task_type: input.taskType,
-            task_ref: input.taskRef,
-            division: input.division ?? null,
-            continue_url: input.continueUrl,
-            state,
-            last_progress_at,
-            status: "pending",
-            reminder_count: 0,
-            last_reminder_at: null,
-          },
-          { onConflict: "user_id,task_type,task_ref" },
-        )
+        .insert({
+          user_id: input.userId,
+          task_type: input.taskType,
+          task_ref: input.taskRef,
+          division: input.division ?? null,
+          continue_url: input.continueUrl,
+          state,
+          last_progress_at: progressAt,
+          status: "pending",
+        })
         .select("id")
         .single();
       if (error || !data) return null;
       return { id: data.id };
     }
 
-    // Anonymous: dedupe on the claim token (partial-unique). Manual
-    // find-then-write so we don't depend on PostgREST partial-index upsert.
+    // Anonymous: dedupe on the claim token (partial-unique).
     const token = input.claimToken;
     if (!token) return null;
 
-    const existing = await admin
+    const { data: existing } = await admin
       .from("abandoned_tasks")
-      .select("id")
+      .select("id, last_progress_at, status")
       .eq("claim_token", token)
       .maybeSingle();
-
-    if (existing.data) {
-      const { error } = await admin
-        .from("abandoned_tasks")
-        .update({
-          task_type: input.taskType,
-          task_ref: input.taskRef,
-          division: input.division ?? null,
-          continue_url: input.continueUrl,
-          state,
-          last_progress_at,
-          status: "pending",
-          reminder_count: 0,
-          last_reminder_at: null,
-          claim_email: input.claimEmail ?? null,
-          claim_phone: input.claimPhone ?? null,
-        })
-        .eq("id", existing.data.id);
-      if (error) return null;
-      return { id: existing.data.id };
+    if (existing) {
+      return applyCaptureToExisting(admin, existing as ExistingForProgress, {
+        progressAt,
+        state,
+        continueUrl: input.continueUrl,
+        division: input.division ?? null,
+        taskType: input.taskType,
+        taskRef: input.taskRef,
+        claimEmail: input.claimEmail ?? null,
+        claimPhone: input.claimPhone ?? null,
+      });
     }
 
     const { data, error } = await admin
@@ -182,7 +238,7 @@ export async function captureAbandonedTask(
         division: input.division ?? null,
         continue_url: input.continueUrl,
         state,
-        last_progress_at,
+        last_progress_at: progressAt,
         status: "pending",
         claim_token: token,
         claim_email: input.claimEmail ?? null,

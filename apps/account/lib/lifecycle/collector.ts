@@ -19,6 +19,7 @@ import {
 } from "@henryco/lifecycle";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getAccountTrustProfile, type AccountTrustProfile } from "@/lib/trust";
+import { scheduleRecoveryTasksFromSnapshot } from "@/lib/recovery/persist";
 
 const admin = () => createAdminSupabase();
 
@@ -1104,6 +1105,9 @@ export async function persistLifecycleSnapshot(snapshot: LifecycleSnapshot): Pro
 export async function collectAndPersistLifecycleSnapshot(userId: string): Promise<LifecycleSnapshot> {
   const snapshot = await collectLifecycleSnapshot(userId);
   await persistLifecycleSnapshot(snapshot);
+  // V3-37: promote server-recorded resumable journeys into abandoned_tasks so
+  // the recovery cadence can nudge them. Deferred (after) — no TTFB impact.
+  scheduleRecoveryTasksFromSnapshot(snapshot);
   return snapshot;
 }
 
