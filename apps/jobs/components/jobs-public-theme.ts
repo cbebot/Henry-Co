@@ -66,6 +66,13 @@ export const JOBS_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--accent-text" as string]: "#0B6B74",
   ["--accent-text-dark" as string]: "#5CC9D0",
   ["--home-font-display" as string]: SERIF_STACK,
+  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
+  // inner var() freezes there), so the canonical seam must be re-declared on
+  // THIS element — where the next/font .variable classes live — for .hc-prose /
+  // .hc-font-display / .hc-font-reading to render the loaded faces.
+  ["--hc-font-display" as string]: "var(--home-font-display)",
+  ["--hc-font-body" as string]: "var(--home-font-sans)",
+  ["--hc-font-reading" as string]: "var(--home-font-display)",
   ["--font-jobs-display" as string]: SERIF_STACK,
   // Alias the legacy --jobs-* tokens onto theme-aware --home-* equivalents so
   // every jobs-* class (.jobs-panel, .jobs-input, .jobs-kicker, .jobs-table…)

@@ -110,7 +110,8 @@ export default async function ServicesPage() {
             <h1 className="mt-3 max-w-3xl text-balance text-[1.7rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2rem] md:text-[2.3rem]">
               {copy.hero.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-pretty text-sm leading-[1.65] text-[color:var(--home-ink-70)] sm:text-base">
+            {/* READING-02: hero body in the editorial serif reading face. */}
+            <p className="hc-font-reading mt-3 max-w-2xl text-pretty text-sm leading-[1.65] text-[color:var(--home-ink-70)] sm:text-base">
               {copy.hero.body}
             </p>
           </div>

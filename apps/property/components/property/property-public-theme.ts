@@ -47,6 +47,13 @@ export const PROPERTY_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--accent-text-dark" as string]: "#E8B894",
   ["--home-font-display" as string]: SERIF_STACK,
   ["--font-property-display" as string]: SERIF_STACK,
+  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
+  // inner var() freezes there), so the canonical seam must be re-declared on
+  // THIS element — where the font .variable classes resolve — for .hc-prose /
+  // .hc-font-display / .hc-font-reading to render the loaded faces.
+  ["--hc-font-display" as string]: "var(--home-font-display)",
+  ["--hc-font-body" as string]: "var(--home-font-sans)",
+  ["--hc-font-reading" as string]: "var(--home-font-display)",
   // legacy --property-* -> --home-* (theme-aware, scoped to the public subtree)
   ["--property-bg" as string]: "var(--home-canvas)",
   ["--property-bg-soft" as string]: "var(--home-canvas-deep)",

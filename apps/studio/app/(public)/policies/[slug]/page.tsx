@@ -67,7 +67,10 @@ export default async function StudioPolicyPage({
           <h1 className="mt-4 text-balance text-[2rem] font-semibold leading-[1.05] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.4rem] md:text-[2.8rem]">
             {policy.title}
           </h1>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)]">
+          {/* READING-02: hero intent reads in the editorial serif face
+              (size/leading stay tuned for the hero; --studio-ink-soft already
+              maps to the ink-70 equivalent on the public theme). */}
+          <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)]">
             {policy.intent}
           </p>
 
@@ -132,16 +135,19 @@ function Clause({ clause }: { clause: PolicyClause }) {
       <h2 className="text-[1.05rem] font-semibold tracking-[-0.005em] text-[var(--studio-ink)] sm:text-[1.15rem]">
         {clause.heading}
       </h2>
-      <div className="mt-3 space-y-3 text-[14.5px] leading-[1.75] text-[var(--studio-ink-soft)]">
+      {/* READING-02: legal clause bodies = long-form reading → .hc-prose
+          (serif 18px / 1.6 / 66ch measure + paragraph/list rhythm — the hub
+          SectionBlock precedent). Ink stays host-owned. */}
+      <div className="hc-prose mt-3 text-[var(--studio-ink-soft)]">
         {clause.body.map((paragraph, index) => (
           <p key={index}>{paragraph}</p>
         ))}
         {clause.bullets && clause.bullets.length > 0 ? (
-          <ul className="mt-2 list-disc space-y-1.5 pl-5">
+          // READING-02: keep list-disc (preflight strips markers); indent +
+          // li rhythm come from .hc-prose.
+          <ul className="list-disc">
             {clause.bullets.map((bullet, index) => (
-              <li key={index} className="leading-[1.7]">
-                {bullet}
-              </li>
+              <li key={index}>{bullet}</li>
             ))}
           </ul>
         ) : null}

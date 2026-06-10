@@ -33,7 +33,8 @@ export default async function TrustPage() {
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
           Confidence at every stage. In writing, in the workspace, in the bank.
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
+        {/* READING-02: hero body in the editorial serif reading face. */}
+        <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
           Scope clarity, milestone visibility, secure file handling, payment checkpoints, and
           accountable communication &mdash; structured so you always know what is happening and
           what comes next.

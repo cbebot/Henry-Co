@@ -71,7 +71,13 @@ export const LOGISTICS_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--font-logistics-display" as string]: SERIF_STACK,
   // The portal `.log-pf` module renders its serif via --hc-font-display; re-point
   // it at Fraunces so the home + track editorial headings adopt the shared face.
-  ["--hc-font-display" as string]: SERIF_STACK,
+  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
+  // inner var() freezes there), so the canonical seam must be re-declared on
+  // THIS element — where the next/font .variable classes live — for .hc-prose /
+  // .hc-font-display / .hc-font-reading to render the loaded faces.
+  ["--hc-font-display" as string]: "var(--home-font-display)",
+  ["--hc-font-body" as string]: "var(--home-font-sans)",
+  ["--hc-font-reading" as string]: "var(--home-font-display)",
 
   // Alias the dark-first --logistics-* soul onto theme-aware --home-* so every
   // --logistics-*-styled control re-tones with the page instead of staying bronze.

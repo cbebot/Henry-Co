@@ -27,7 +27,8 @@ export default async function CareersPage() {
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
                 {t("Join the team building HenryCo.")}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
+              {/* READING-02: hero body in the editorial serif reading face. */}
+              <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
                 {t("Internal openings go through the same clear, structured hiring process as every role on the platform. Apply with your HenryCo account and track progress in your candidate hub.")}
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3 text-sm">

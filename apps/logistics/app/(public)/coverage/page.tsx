@@ -86,7 +86,9 @@ export default async function CoveragePage() {
           <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
             {copy.hero.title}
           </h1>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
+          {/* READING-02: hero body in the editorial serif reading face
+              (--logistics-muted already aliases --home-ink-70). */}
+          <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
             {heroBody}
           </p>
         </header>

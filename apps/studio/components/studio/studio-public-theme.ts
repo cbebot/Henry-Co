@@ -60,6 +60,13 @@ export const STUDIO_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--accent-text-dark" as string]: "#63D2D5",
   ["--home-font-display" as string]: SERIF_STACK,
   ["--font-studio-display" as string]: SERIF_STACK,
+  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
+  // inner var() freezes there), so the canonical seam must be re-declared on
+  // THIS element — where the font .variable classes resolve — for .hc-prose /
+  // .hc-font-display / .hc-font-reading to render the loaded faces.
+  ["--hc-font-display" as string]: "var(--home-font-display)",
+  ["--hc-font-body" as string]: "var(--home-font-sans)",
+  ["--hc-font-reading" as string]: "var(--home-font-display)",
   ["--studio-ink" as string]: "var(--home-ink)",
   ["--studio-ink-soft" as string]: "var(--home-ink-70)",
   ["--studio-bg" as string]: "var(--home-canvas)",

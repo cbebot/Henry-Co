@@ -58,6 +58,13 @@ export const CARE_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--accent-text-dark" as string]: "#AAB4FF",
   ["--home-font-display" as string]: SERIF_STACK,
   ["--font-display" as string]: SERIF_STACK,
+  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
+  // inner var() freezes there), so the canonical seam must be re-declared on
+  // THIS element — where the font .variable classes resolve — for .hc-prose /
+  // .hc-font-display / .hc-font-reading to render the loaded faces.
+  ["--hc-font-display" as string]: "var(--home-font-display)",
+  ["--hc-font-body" as string]: "var(--home-font-sans)",
+  ["--hc-font-reading" as string]: "var(--home-font-display)",
 
   // Alias the legacy --care-* soul onto theme-aware --home-* equivalents so
   // every .care-* class (.care-panel/.care-card/.care-muted/.care-page…)

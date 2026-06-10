@@ -57,7 +57,9 @@ export function PropertySectionIntro({
         <div className="max-w-3xl">
           <p className="property-kicker">{kicker}</p>
           <h1 className="property-heading mt-4 text-balance">{title}</h1>
-          <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
+          {/* READING-02: hero sub-copy in the editorial serif reading face
+              (--property-ink-soft already aliases the ink-70 equivalent). */}
+          <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
             {description}
           </p>
         </div>

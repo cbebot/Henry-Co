@@ -76,7 +76,9 @@ export default async function PropertyFaqPage() {
                       <span className="hidden group-open:inline">{t("Close")}</span>
                     </span>
                   </summary>
-                  <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--property-ink-soft)]">
+                  {/* READING-02: FAQ answers read in the serif face (hub
+                      home-faq precedent); ink stays host-owned. */}
+                  <p className="hc-font-reading text-pretty mt-4 max-w-3xl text-sm leading-7 text-[var(--property-ink-soft)]">
                     {faq.answer}
                   </p>
                 </details>
@@ -95,7 +97,8 @@ export default async function PropertyFaqPage() {
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
               {t("Reach out — we'll route it to the right desk.")}
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--property-ink-soft)]">
+            {/* READING-02: section intro in the serif reading face. */}
+            <p className="hc-font-reading text-pretty mt-3 max-w-xl text-sm leading-7 text-[var(--property-ink-soft)]">
               {t(
                 "Listing submissions, viewings, managed property requests, and inspection follow-up each have their own thread so the right person sees it first.",
               )}

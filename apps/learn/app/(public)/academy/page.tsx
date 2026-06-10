@@ -64,7 +64,9 @@ export default async function AcademyPage() {
             <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {t("From interested to finished, in plain steps.")}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
+            {/* READING-02: hero body in the editorial serif reading face
+                (--learn-ink-soft already maps to the ink-70 equivalent). */}
+            <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
               {t(
                 "Choose a program, sign in, learn in order, and (where the course includes it) pass a short assessment to unlock your certificate. Assigned training from managers appears in the same place.",
               )}
@@ -139,7 +141,8 @@ export default async function AcademyPage() {
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
             {t("Keep learning and admin in the right place.")}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
+          {/* READING-02: section intro in the serif reading face. */}
+          <p className="hc-font-reading text-pretty mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t(
               "The course room on Henry Onyx Learn is where you read lessons, submit quizzes, and download certificates. Your HenryCo account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
             )}
@@ -160,7 +163,8 @@ export default async function AcademyPage() {
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
             {t("We take instructor applications seriously.")}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
+          {/* READING-02: section intro in the serif reading face. */}
+          <p className="hc-font-reading text-pretty mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t(
               "Share your background and a concrete course proposal. Our team reviews every submission; we may request changes or decline politely. Commercial terms, including any revenue share, are discussed only after approval.",
             )}
