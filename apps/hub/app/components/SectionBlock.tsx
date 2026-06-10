@@ -39,7 +39,7 @@ export default function SectionBlock({
           ) : null}
 
           {section.body ? (
-            <p className="mt-3 text-sm leading-8 text-white/66 sm:text-base">
+            <p className="hc-prose mt-3 text-white/66">
               {section.body}
             </p>
           ) : null}
@@ -125,11 +125,11 @@ function LegalItem({ item }: { item: CompanyPageItem }) {
       <div className="text-base font-semibold text-white">{heading}</div>
 
       {item.body ? (
-        <p className="mt-3 text-sm leading-8 text-white/66">{item.body}</p>
+        <p className="hc-prose mt-3 text-white/66">{item.body}</p>
       ) : null}
 
       {item.value ? (
-        <p className="mt-3 text-sm leading-8 text-white/66">{item.value}</p>
+        <p className="hc-prose mt-3 text-white/66">{item.value}</p>
       ) : null}
     </article>
   );
