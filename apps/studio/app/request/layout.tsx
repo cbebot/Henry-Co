@@ -1,4 +1,4 @@
-import { fraunces, STUDIO_PUBLIC_THEME_STYLE } from "@/components/studio/studio-public-theme";
+import { fraunces, manrope, STUDIO_PUBLIC_THEME_STYLE } from "@/components/studio/studio-public-theme";
 
 /**
  * Themed shell for the focused brief flow (/request, /request/build,
@@ -15,7 +15,7 @@ import { fraunces, STUDIO_PUBLIC_THEME_STYLE } from "@/components/studio/studio-
 export default function RequestLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`${fraunces.variable} studio-public min-h-screen bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      className={`${fraunces.variable} ${manrope.variable} studio-public min-h-screen bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={STUDIO_PUBLIC_THEME_STYLE}
     >
       {children}

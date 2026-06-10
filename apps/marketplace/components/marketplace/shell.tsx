@@ -20,7 +20,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
-import { MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
+import { manrope, MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { MarketplaceToastStack } from "@/components/marketplace/toast-stack";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -65,7 +65,7 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
   ];
   return (
     <div
-      className="market-page home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
+      className={`${manrope.variable} market-page home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={MARKETPLACE_PUBLIC_THEME_STYLE}
     >
       <PublicHeader signedIn={false} />

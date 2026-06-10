@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 
 /**
@@ -23,6 +24,18 @@ const marketplace = getDivisionConfig("marketplace");
 const SERIF_STACK =
   'var(--font-marketplace-display), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
+// READING-01 (premium sans): pair the editorial Fraunces display with the
+// crafted Manrope sans for public body/UI copy — exactly as the hub does — so
+// the reading isn't carried by the serif. next/font dedupes the file; the
+// variable resolves on the wrapper that also carries `manrope.variable`.
+export const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope-public",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+  adjustFontFallback: true,
+});
+
 export const MARKETPLACE_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
   ["--accent" as string]: marketplace.accent,
@@ -30,6 +43,10 @@ export const MARKETPLACE_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--accent-text-dark" as string]: "#E3C088",
   ["--home-font-display" as string]: SERIF_STACK,
   ["--font-marketplace-display" as string]: SERIF_STACK,
+  // Public body/UI copy reads the loaded Manrope (declared on the same wrapper
+  // that carries `manrope.variable`, so var(--font-manrope-public) resolves).
+  ["--home-font-sans" as string]:
+    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   // legacy --market-* -> --home-* (theme-aware, scoped to public)
   ["--market-ink" as string]: "var(--home-ink)",
   ["--market-paper-white" as string]: "var(--home-ink)",

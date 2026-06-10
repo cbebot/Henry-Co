@@ -1,4 +1,4 @@
-import { fraunces, STUDIO_PUBLIC_THEME_STYLE } from "./studio-public-theme";
+import { fraunces, manrope, STUDIO_PUBLIC_THEME_STYLE } from "./studio-public-theme";
 
 /**
  * V3-STUDIO-LOADING-POLISH — the light, on-brand loading state for the
@@ -49,7 +49,7 @@ export function StudioPublicLoading({
 
   return (
     <div
-      className={`${fraunces.variable} studio-public min-h-screen bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      className={`${fraunces.variable} ${manrope.variable} studio-public min-h-screen bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
       style={STUDIO_PUBLIC_THEME_STYLE}
     >
       <main

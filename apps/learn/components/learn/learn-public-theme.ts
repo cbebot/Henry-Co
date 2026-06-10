@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 
 /**
@@ -33,6 +33,14 @@ export const fraunces = Fraunces({
   adjustFontFallback: true,
 });
 
+export const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope-public",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+  adjustFontFallback: true,
+});
+
 const learn = getDivisionConfig("learn");
 
 const SERIF_STACK =
@@ -40,6 +48,8 @@ const SERIF_STACK =
 
 export const LEARN_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
+  ["--home-font-sans" as string]:
+    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   // Viridian-green soul. --accent-text is AA on warm paper; the dark variant
   // lifts to mint so it stays AA on the near-black canvas.
   ["--accent" as string]: learn.accent, // #3C8C7A

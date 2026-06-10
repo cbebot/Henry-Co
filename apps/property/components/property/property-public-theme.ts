@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 
 /**
@@ -27,8 +28,20 @@ const property = getDivisionConfig("property");
 const SERIF_STACK =
   'var(--font-property-display), "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
+// Manrope is the shared public BODY sans (paired with the editorial serif display,
+// matching the hub). next/font dedupes the file across divisions.
+export const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope-public",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+  adjustFontFallback: true,
+});
+
 export const PROPERTY_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
+  ["--home-font-sans" as string]:
+    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   ["--accent" as string]: property.accent,
   ["--accent-text" as string]: property.accentText,
   ["--accent-text-dark" as string]: "#E8B894",
