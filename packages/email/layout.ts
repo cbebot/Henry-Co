@@ -43,15 +43,18 @@ const LEGAL_ENTITY = COMPANY.group.legalName;
 const COMPANY_LOCALE_LINE = "Lagos, Nigeria";
 
 /**
- * Editorial serif display (Fraunces — the website display face) with a
- * deep fallback chain so clients that cannot fetch web fonts still land
- * on a premium serif. System sans for body, resolving cleanly across
- * every major mail client without a web-font fetch.
+ * Editorial serif display (Fraunces — the website display face) with a deep
+ * fallback chain so clients that cannot fetch web fonts still land on a premium
+ * serif. Body LEADS with Manrope (the website body sans, fetched via the
+ * <style> @import) so web-font-capable clients (Apple/iOS Mail) match the site's
+ * Fraunces+Manrope pairing exactly, then falls back to the same system-sans
+ * stack everywhere else — no regression for Gmail/Outlook, which strip the
+ * web font and use the inline fallback.
  */
 const HEADING_FONT_STACK =
   "'Fraunces', 'Fraunces 72', 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif";
 const BODY_FONT_STACK =
-  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+  "'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 /**
  * Alabaster (light) token set — the inline baseline every client receives.
@@ -389,7 +392,7 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
 function headStyle(palette: ResolvedPalette): string {
   return `
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap');
       :root { color-scheme: light dark; }
       body { margin:0 !important; padding:0 !important; width:100% !important; color-scheme: light dark; }
       a { text-decoration:none; }
