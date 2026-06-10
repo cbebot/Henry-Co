@@ -10,7 +10,9 @@
     "./dashboard-summary": "./src/dashboard-summary.ts",
     "./signal-feed": "./src/signal-feed.ts",
     "./cross-division-activity": "./src/cross-division-activity.ts",
-    "./support-summary": "./src/support-summary.ts"
+    "./support-summary": "./src/support-summary.ts",
+    "./abandoned-tasks": "./src/abandoned-tasks.ts",
+    "./abandoned-tasks-core": "./src/abandoned-tasks-core.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
