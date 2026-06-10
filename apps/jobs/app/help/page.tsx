@@ -76,7 +76,9 @@ export default async function HelpPage() {
           <h1 className="mt-4 jobs-display max-w-3xl text-balance">
             {t("Straight answers about Jobs.")}
           </h1>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
+          {/* READING-02: hero body in the editorial serif reading face
+              (--jobs-muted already aliases to the ink-70 equivalent). */}
+          <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
             {t("Candidates and employers use the same platform with different workspaces. If something here does not match what you see on screen, contact")}{" "}
             <a
               className="font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
@@ -115,7 +117,9 @@ export default async function HelpPage() {
                   <h2 className="text-base font-semibold tracking-tight text-[var(--jobs-ink)]">
                     {t(item.question)}
                   </h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--jobs-muted)]">
+                  {/* READING-02: FAQ answers read in the serif face (hub
+                      home-faq precedent); ink stays host-owned. */}
+                  <p className="hc-font-reading text-pretty mt-2 max-w-3xl text-sm leading-7 text-[var(--jobs-muted)]">
                     {t(item.answer)}
                   </p>
                 </div>
@@ -131,7 +135,8 @@ export default async function HelpPage() {
               <h2 className="mt-3 jobs-heading max-w-xl text-balance">
                 {t("Jobs activity lives alongside the rest of your account.")}
               </h2>
-              <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--jobs-muted)]">
+              {/* READING-02: section intro in the serif reading face. */}
+              <p className="hc-font-reading text-pretty mt-3 max-w-xl text-sm leading-7 text-[var(--jobs-muted)]">
                 {t("Wallet, documents, and other services may live under the same HenryCo account. The hub gives you the full picture without bouncing between sites.")}
               </p>
             </div>
