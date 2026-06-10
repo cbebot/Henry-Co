@@ -72,30 +72,25 @@ a capped **measure**, generous **leading**, predictable paragraph **gap**.
    font's "0" advance), `66ch` stays ~72 characters/line whatever face the
    type-identity pass later wires into `--hc-font-body`.
 
-## What Slice B adds (hub type identity)
+## Hub adoption (what ships, on top of main)
 
-The font seam pays off: two edits in the clean `apps/hub/app/layout.tsx` give the
-**whole hub** an editorial identity.
-- **Fraunces** (editorial serif) + **Manrope** (calm humanist body) load as
-  **variable** fonts via `next/font` (no `weight` array — keeps Fraunces's
-  optical-size axis; one file per family; matches marketplace/jobs/logistics),
-  exposed as `--font-display` / `--font-body`. The seam (`--hc-font-*`) is
-  declared on `:root` and `next/font` sets `--font-*` on `<html>` (= `:root`,
-  same element), so the tokens resolve to the loaded faces platform-wide.
-- `<body>` carries `.hc-font-body`, so every hub surface adopts Manrope body.
-- `.hc-font-display` lands on **display moments only**: the hub hero h1 + 5
-  section heads, and the company-page hero h1 + section heads + footer h2. Dense
-  card/UI headings stay sans (the serif-for-display / sans-for-UI rule).
+`origin/main`'s hub already has the editorial identity from V3-PUBLIC-DESIGN-01:
+**Fraunces** display (`--home-font-display`, on `.home-headline`/`.home-display*`)
+on a light `--home-*` token system; **system-sans** body. The reference's missing
+quality is a **serif reading body**. So the adoption is deliberately small:
+- `apps/hub/app/(site)/layout.tsx` — point the reading serif at the already-loaded
+  Fraunces by overriding **`--hc-font-reading: var(--home-font-display)`** on the
+  public-site element (override the resolved token itself, not the inner
+  `--font-reading`, which `:root` would freeze to the system-serif fallback). No
+  new font load.
+- `apps/hub/app/components/SectionBlock.tsx` — the long-form **section body** prose
+  becomes `.hc-prose` (Fraunces, 18px / 1.6 / 66ch measure). Section heads were
+  already Fraunces; dense register rows stay system-sans (their deliberate design).
 
-## Adopted so far
-
-- `apps/hub/app/components/SectionBlock.tsx` — long-form bodies + legal clauses
-  use `.hc-prose`; section heads use `.hc-font-display`.
-- `apps/hub/app/components/CompanyPageClient.tsx` — page hero + footer titles use
-  `.hc-font-display`. (`/about`, `/privacy`, `/terms`, `/contact`.)
-- `apps/hub/app/(site)/HubHomeClient.tsx` — hero + section heads use
-  `.hc-font-display`.
-- `apps/hub/app/layout.tsx` — the Fraunces/Manrope seam wiring.
+> Earlier dark-base work (Manrope body + `.hc-font-display` on hub heads) was
+> **superseded** — main already carries the display identity, so re-wiring it would
+> be redundant. The durable, reusable value is the shared foundation below + the
+> serif-reading seam.
 
 ## Verification
 
@@ -104,32 +99,22 @@ The font seam pays off: two edits in the clean `apps/hub/app/layout.tsx` give th
   `.codex-temp/reading-foundation/` (`harness.html`/`shoot.cjs` →
   `reading-foundation-before-after.png`; `flagship.html`/`shoot-flagship.cjs` →
   `flagship-before-after.png`). Dark panels confirm rule 1 (no invisible text).
-- **Adversarial audit (5 readers)** before the Slice B commit confirmed: next/font
-  wiring build-safe, seam resolves, `.hc-font-body` beats the hub `body{}` rule,
-  no nested `<html>/<body>`, `.hc-mono` tabular data unaffected, no AA/sizing
-  regression in `.hc-prose` bodies. It drove four fixes (variable fonts, link
-  ink-inherit, prose color-inherit committed, section-head consistency).
-- Changes are CSS + className + a next/font wiring (a pattern already proven in
-  marketplace/jobs/logistics). Full build is gated in CI on PR (the shared tree
-  carries unrelated concurrent WIP, so a local `build:all` is a noisy signal).
+- **Adversarial audit (5 readers)** during development hardened the foundation:
+  it drove `.hc-prose` colour-inherit (no invisible text on hardcoded-dark) and
+  link ink-inherit (a gold `--hc-accent-text` link fails AA ~4.1:1 on a dark
+  panel). Both are in the shipped CSS.
+- This branch is rebased clean onto `origin/main` (the earlier dark-base hub
+  adoption was superseded — main already carries the display identity). Changes
+  are additive CSS + 2 className/style edits. The required `Lint, typecheck,
+  test, build` runs on the PR — the authoritative gate.
 
-## Known follow-ups (audited, non-blocking)
+## Known follow-ups (non-blocking)
 
-- **Owner sign-off:** the body change converges owner/workspace/account hub chrome
-  from system-ui to Manrope (one calm body face platform-wide) — a real visual
-  change to authenticated surfaces. Defensible (similar humanist metrics, token-
-  sized layouts), but per the per-surface-approval rule it wants an owner
-  screenshot before merge.
-- **Workspace double-load:** `apps/hub/app/workspace/layout.tsx` instantiates its
-  own Manrope (`--workspace-font-sans`); now redundant with the root `--font-body`.
-  Drop the local instance and inherit the seam (keep its mono). Payload cleanup.
-- **Dead rule:** the hub `body { font-family: var(--acct-font-sans) }` font-family
-  line is now inert (the `.hc-font-body` class wins). Left untouched because
-  `apps/hub/app/globals.css` is mid-edit in a concurrent session; tidy later.
-- **Brand debt (pre-existing):** `layout.tsx` `generateMetadata` title still ships
-  the retired `"Henry & Co."`. The documented normalizer (`toBrandName`) does **not
-  exist in code** (docs-only); `COMPANY.group.name` literally stores `"Henry & Co."`.
-  Belongs to the brand sweep, not this typography branch — do not guess-fix.
+- **Roll the serif reading** to the other reading-dense surfaces (division
+  about/legal pages) via `.hc-prose` + the `--hc-font-reading` wiring, audited in
+  both themes per the full-surface-audit rule.
+- **Optional:** the company-page hero lede (`.home-lede`) stays sans — main's
+  deliberate choice; revisit if an all-serif reading column is wanted.
 
 ## Roadmap (not yet done)
 

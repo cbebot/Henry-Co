@@ -212,6 +212,12 @@ export default async function SiteLayout({
           ["--home-font-display" as string]:
             'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif',
           ["--acct-font-display" as string]: "var(--home-font-display)",
+          // READING-01: point the long-form reading serif (.hc-prose) at the
+          // already-loaded Fraunces, so editorial body copy reads like the
+          // reference. We override --hc-font-reading itself (not the inner
+          // --font-reading) because the token resolves at :root and would
+          // otherwise freeze to the system-serif fallback.
+          ["--hc-font-reading" as string]: "var(--home-font-display)",
         } as CSSProperties
       }
     >
