@@ -1,9 +1,14 @@
 import { RouteLiveRefresh } from "@henryco/ui";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { SignalFeedCursor } from "@henryco/data";
+import { createDataAdminClient } from "@henryco/data";
+import { listUserAbandonedTasks } from "@henryco/data/abandoned-tasks";
+import { getRecoveryCopy } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { SmartHome } from "@/components/smart-home/SmartHome";
 import { DashboardRefreshTracker } from "@/components/smart-home/DashboardRefreshTracker";
+import { RecoveryNudge } from "@/components/recovery/RecoveryNudge";
 
 // Side-effect: register modules. Without this import the registry is
 // empty and the Smart Home composition has no widgets to walk.
@@ -46,10 +51,28 @@ export default async function OverviewPage({
     avatarUrl: user.avatarUrl,
   });
 
+  // V3-37: first-login resume nudge — count pending recovery tasks (indexed,
+  // capped) and let the client surface ONE paced toast pointing at /continue.
+  const [locale, pendingRecovery] = await Promise.all([
+    getAccountAppLocale(),
+    listUserAbandonedTasks(createDataAdminClient(), user.id, {
+      statuses: ["pending"],
+      limit: 6,
+    }),
+  ]);
+  const recoveryNudge = getRecoveryCopy(locale).nudge;
+
   return (
     <div className="acct-fade-in">
       <RouteLiveRefresh />
       <DashboardRefreshTracker moduleId="smart-home" />
+      <RecoveryNudge
+        count={pendingRecovery.length}
+        href="/continue"
+        titleOne={recoveryNudge.titleOne}
+        titleMany={recoveryNudge.titleMany}
+        body={recoveryNudge.body}
+      />
       <SmartHome viewer={viewer} cursor={cursor} prevHref={prevHref} />
     </div>
   );

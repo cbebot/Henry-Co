@@ -18,6 +18,7 @@ export * from "./logistics-staff-owner-copy";
 export * from "./consent-copy";
 export * from "./auth-copy";
 export * from "./auth-session-copy";
+export * from "./recovery-copy";
 export * from "./state-copy";
 export * from "./error-fallback-copy";
 export * from "./marketplace-copy";

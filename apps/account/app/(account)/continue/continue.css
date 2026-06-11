@@ -1,0 +1,193 @@
+/* V3-37 — /continue recovery surface. Token-only (--acct-*), so the cream→onyx
+   dark flip + AA come for free from the account palette. No hardcoded hex. */
+
+.acct-continue {
+  display: block;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 2.5rem) 4rem;
+}
+
+.acct-continue__head {
+  margin-bottom: 1.5rem;
+}
+
+.acct-continue__kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text, var(--acct-gold));
+}
+
+.acct-continue__title {
+  margin: 0;
+  font-family: var(--acct-font-display, inherit);
+  font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+  line-height: 1.1;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.acct-continue__sub {
+  margin: 0.5rem 0 0;
+  max-width: 42rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--acct-muted);
+}
+
+.acct-continue__count {
+  margin: 0.85rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.acct-continue__empty {
+  margin-top: 1rem;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  border: 1px dashed var(--acct-line);
+  border-radius: var(--acct-radius-lg, 16px);
+  background: var(--acct-bg-soft);
+  color: var(--acct-muted);
+  font-size: 0.95rem;
+}
+
+.acct-continue__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.acct-continue__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.05rem;
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg, 16px);
+  background: var(--acct-surface);
+  box-shadow: var(--acct-shadow, 0 1px 2px rgba(0, 0, 0, 0.04));
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.acct-continue__card:hover {
+  border-color: var(--acct-gold);
+  box-shadow: var(--acct-shadow-lg, 0 8px 28px rgba(0, 0, 0, 0.1));
+}
+
+.acct-continue__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.acct-continue__chip {
+  align-self: flex-start;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text, var(--acct-gold));
+  background: var(--acct-gold-soft, transparent);
+  border: 1px solid var(--acct-line);
+}
+
+.acct-continue__card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--acct-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acct-continue__meta {
+  font-size: 0.78rem;
+  color: var(--acct-muted);
+}
+
+.acct-continue__card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.acct-continue__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--acct-muted);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.acct-continue__dismiss:hover {
+  background: var(--acct-bg-soft);
+  color: var(--acct-ink);
+}
+
+.acct-continue__dismiss:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+.acct-continue__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--acct-gold-text, #1b140a);
+  background: var(--acct-gold);
+  transition: filter 150ms ease, transform 150ms ease;
+}
+
+.acct-continue__cta:hover {
+  filter: brightness(1.05);
+}
+
+.acct-continue__cta:active {
+  transform: translateY(1px);
+}
+
+.acct-continue__cta:focus-visible {
+  outline: 2px solid var(--acct-ink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 540px) {
+  .acct-continue__card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .acct-continue__card-actions {
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-continue__card,
+  .acct-continue__cta,
+  .acct-continue__dismiss {
+    transition: none;
+  }
+}

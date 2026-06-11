@@ -67,3 +67,27 @@ export {
   type CalendarKind,
   type CalendarRange,
 } from "./calendar-aggregate";
+
+export {
+  captureAbandonedTask,
+  listPendingAbandonedTasks,
+  bumpAbandonedTaskReminder,
+  expireStaleAbandonedTasks,
+  claimAbandonedTasksForUser,
+  listUserAbandonedTasks,
+  dismissAbandonedTask,
+  markAbandonedTaskRecovered,
+  markAbandonedTasksRecoveredByRefs,
+  stripSecretsFromState,
+  stateHasForbiddenKey,
+  isAbandonedTaskType,
+  isAbandonedTaskStatus,
+  ABANDONED_TASK_TYPES,
+  ABANDONED_TASK_STATUSES,
+  type AbandonedTask,
+  type AbandonedTaskState,
+  type AbandonedTaskStatus,
+  type AbandonedTaskType,
+  type CaptureAbandonedTaskInput,
+  type ClaimAbandonedTasksInput,
+} from "./abandoned-tasks";

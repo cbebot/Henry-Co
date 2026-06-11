@@ -23,6 +23,7 @@ import {
 import { emitDeepLinkReturnedAfterAuth } from "@henryco/auth/server/deep-link-middleware";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
+import { scheduleAbandonedTaskClaim } from "@/lib/recovery/claim";
 import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { recordReferralConversion } from "@/lib/referral-data";
 import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
@@ -204,6 +205,23 @@ export async function GET(request: Request) {
           fullName,
           phone,
         });
+        // V3-37: claim any abandoned journeys captured while the visitor was
+        // anonymous — match by claim token (cookie / ?claim=) + contact.
+        const recoveryClaimToken =
+          searchParams.get("claim") || cookieStore.get("hc_claim")?.value || null;
+        scheduleAbandonedTaskClaim({
+          userId: user.id,
+          email: normalizeEmail(user.email),
+          phone,
+          claimToken: recoveryClaimToken,
+        });
+        if (recoveryClaimToken) {
+          try {
+            cookieStore.set("hc_claim", "", { domain: cookieDomain, path: "/", maxAge: 0 });
+          } catch {
+            // read-only cookie context — ignore.
+          }
+        }
         const context = await detectSecurityRequestContext();
         await logSecurityEvent({
           userId: user.id,

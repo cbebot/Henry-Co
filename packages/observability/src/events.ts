@@ -31,6 +31,11 @@ export type HenryEventName =
   | "henry.account.notification.read"
   | "henry.account.notification.unread"
   | "henry.account.notification.archived"
+  // V3-37 abandoned-journey recovery
+  | "henry.task.abandoned"
+  | "henry.task.recovery_sent"
+  | "henry.task.recovered"
+  | "henry.task.expired"
   | "henry.trust.verification.submitted"
   | "henry.trust.verification.resolved"
   // wallet

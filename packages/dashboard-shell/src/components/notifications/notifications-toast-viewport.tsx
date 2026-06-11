@@ -46,6 +46,7 @@ import {
   type ShellToastTone,
 } from "../../shell/toast-bus";
 import { useToastSwipe } from "./use-toast-swipe";
+import { planToastRelease } from "./toast-drip";
 
 /**
  * NotificationsToastViewport — shell-wide live toast strip.
@@ -82,6 +83,13 @@ const VISIBLE_LIMIT = 2;
 const MAX_QUEUE = 6;
 /** Exit animation window before the row is removed from state. */
 const EXIT_MS = 240;
+/**
+ * Minimum gap between successive toast appearances. With the cap of two, this
+ * reveals them ONE AT A TIME — a backlog or a burst trickles in calmly instead
+ * of two popping out at once (V3-37 toast regulation). The first toast after a
+ * lull still appears instantly; only subsequent ones wait out the gap.
+ */
+const DRIP_GAP_MS = 650;
 
 const STYLE_ID = "hc-toast-viewport-style";
 
@@ -113,6 +121,57 @@ const TOAST_CSS = `
   .hc-toast-out { animation: hcToastFadeOut ${EXIT_MS}ms linear both; }
 }
 `;
+
+/**
+ * Drip-release controller — keeps at most `limit` toasts visible but reveals
+ * them one at a time, paced by `gapMs` (see planToastRelease). Dismissing a
+ * visible toast frees its slot; the next is still paced, never instant. Injected
+ * `Date.now()` only — the decision itself is the pure, tested planToastRelease.
+ */
+function useDripReleasedToasts<T extends { key: string; receivedAt: number }>(
+  candidates: T[],
+  limit: number,
+  gapMs: number,
+): T[] {
+  const [releasedKeys, setReleasedKeys] = useState<string[]>([]);
+  const [tick, setTick] = useState(0);
+  const lastReleaseAtRef = useRef(0);
+
+  // Only re-evaluate when the actual candidate keys change — not on every
+  // parent render (the merged toast arrays are fresh objects each render).
+  const candidateSig = candidates.map((c) => c.key).join("|");
+
+  useEffect(() => {
+    const plan = planToastRelease({
+      candidateKeys: candidateSig ? candidateSig.split("|") : [],
+      releasedKeys,
+      lastReleaseAt: lastReleaseAtRef.current,
+      now: Date.now(),
+      limit,
+      gapMs,
+    });
+    if (plan.action === "prune") {
+      setReleasedKeys(plan.releasedKeys);
+      return;
+    }
+    if (plan.action === "release") {
+      lastReleaseAtRef.current = Date.now();
+      setReleasedKeys((prev) => [...prev, plan.key]);
+      return;
+    }
+    if (plan.action === "wait") {
+      const timer = setTimeout(() => setTick((x) => x + 1), plan.waitMs);
+      return () => clearTimeout(timer);
+    }
+    // idle — nothing to release
+  }, [candidateSig, releasedKeys, limit, gapMs, tick]);
+
+  const byKey = new Map(candidates.map((c) => [c.key, c]));
+  return releasedKeys
+    .map((k) => byKey.get(k))
+    .filter((entry): entry is T => Boolean(entry))
+    .sort((a, b) => b.receivedAt - a.receivedAt);
+}
 
 export type NotificationsToastViewportProps = {
   /** Customer or staff. Defaults to customer. */
@@ -340,7 +399,8 @@ export function NotificationsToastViewport({
     ];
     return merged.sort((a, b) => b.receivedAt - a.receivedAt);
   }, [active, busActive]);
-  const visible = ordered.slice(0, VISIBLE_LIMIT);
+  // Paced reveal: at most VISIBLE_LIMIT, one at a time, DRIP_GAP_MS apart.
+  const visible = useDripReleasedToasts(ordered, VISIBLE_LIMIT, DRIP_GAP_MS);
 
   if (visible.length === 0) return null;
 
