@@ -17,7 +17,7 @@ export const propertyMetrics: PropertyMetric[] = [
   {
     label: "Response SLA",
     value: "< 12h",
-    hint: "Premium inquiries route to Henry & Co. ops, not a passive inbox.",
+    hint: "Premium inquiries route to Henry Onyx ops, not a passive inbox.",
   },
   {
     label: "Managed Portfolio",
@@ -122,7 +122,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Harbour Crest Penthouse",
     summary: "A five-bed duplex penthouse with private terrace, marina-facing lounge, and concierge-led arrival sequence.",
     description:
-      "Designed for executives who want space, privacy, and cleaner operations. Henry & Co. Property manages the viewing rail, owner communication, and final handover support for this listing.",
+      "Designed for executives who want space, privacy, and cleaner operations. Henry Onyx Property manages the viewing rail, owner communication, and final handover support for this listing.",
     kind: "rent",
     serviceType: "rent",
     intent: "managed_property",
@@ -154,7 +154,7 @@ export const propertyListings: PropertyListing[] = [
     ],
     floorPlanUrl: null,
     amenities: ["Private terrace", "Lift access", "Staff quarters", "Smart security", "Generator"],
-    trustBadges: ["Managed by Henry & Co.", "Owner verified", "Premium viewing protocol"],
+    trustBadges: ["Managed by Henry Onyx", "Owner verified", "Premium viewing protocol"],
     headlineMetrics: ["5 beds", "540 sqm", "Concierge arrival"],
     verificationNotes: ["Title documents reviewed", "Service-charge clarity provided"],
     riskScore: 38,
@@ -181,7 +181,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Eden Quay Serviced Residence",
     summary: "A serviced three-bed residence set up for corporate leases, relocation stays, and clean weekly operations.",
     description:
-      "Built for founders, relocation teams, and operators who need a polished residence without management noise. Henry & Co. screens inquiries, runs viewing scheduling, and supports occupancy readiness.",
+      "Built for founders, relocation teams, and operators who need a polished residence without management noise. Henry Onyx screens inquiries, runs viewing scheduling, and supports occupancy readiness.",
     kind: "shortlet",
     serviceType: "shortlet",
     intent: "managed_property",
@@ -212,7 +212,7 @@ export const propertyListings: PropertyListing[] = [
     ],
     floorPlanUrl: null,
     amenities: ["Daily housekeeping", "Fiber internet", "Generator", "Gym access", "Airport assist"],
-    trustBadges: ["Managed by Henry & Co.", "Short-let ready", "Response under 30 mins"],
+    trustBadges: ["Managed by Henry Onyx", "Short-let ready", "Response under 30 mins"],
     headlineMetrics: ["3 beds", "Serviced", "Corporate-ready"],
     verificationNotes: ["Inventory checklist structured", "Guest operations SOP available"],
     riskScore: 54,
@@ -239,7 +239,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Cove Garden Townhouse",
     summary: "A four-bed family townhouse with rooftop lounge, quiet street access, and strong move-in readiness.",
     description:
-      "This listing is set up for families who want less stress in the decision process. Henry & Co. Property keeps the shortlist, follow-up, and viewing coordination structured from first inquiry to keys.",
+      "This listing is set up for families who want less stress in the decision process. Henry Onyx Property keeps the shortlist, follow-up, and viewing coordination structured from first inquiry to keys.",
     kind: "rent",
     serviceType: "rent",
     intent: "owner_listed",
@@ -297,7 +297,7 @@ export const propertyListings: PropertyListing[] = [
     title: "Ledger House Commercial Suite",
     summary: "A premium floor plate for advisory firms, founder offices, and polished client-facing teams.",
     description:
-      "Henry & Co. Property moderates commercial listing quality more tightly than generic boards, so floor plans, service-charge context, and fit-out notes are not buried under weak copy.",
+      "Henry Onyx Property moderates commercial listing quality more tightly than generic boards, so floor plans, service-charge context, and fit-out notes are not buried under weak copy.",
     kind: "commercial",
     serviceType: "commercial",
     intent: "agent_listed",
@@ -356,7 +356,7 @@ export const propertyListings: PropertyListing[] = [
     summary:
       "A three-bed pied-à-terre in the Bourdillon corridor — generous light, neutral fit-out, and a quiet residential lobby.",
     description:
-      "An apartment for executives who want Bourdillon proximity without compound overhead. Henry & Co. coordinates the viewing, screens for serious intent, and handles the move-in handover.",
+      "An apartment for executives who want Bourdillon proximity without compound overhead. Henry Onyx coordinates the viewing, screens for serious intent, and handles the move-in handover.",
     kind: "rent",
     serviceType: "rent",
     intent: "managed_property",
@@ -388,7 +388,7 @@ export const propertyListings: PropertyListing[] = [
     ],
     floorPlanUrl: null,
     amenities: ["Gym access", "24/7 security", "Backup power", "Lift access", "Concierge"],
-    trustBadges: ["Managed by Henry & Co.", "Owner verified", "Move-in coordination"],
+    trustBadges: ["Managed by Henry Onyx", "Owner verified", "Move-in coordination"],
     headlineMetrics: ["3 beds", "220 sqm", "Bourdillon"],
     verificationNotes: ["Title documents reviewed", "Service-charge schedule provided"],
     riskScore: 35,
@@ -416,7 +416,7 @@ export const propertyListings: PropertyListing[] = [
     summary:
       "An 18th-floor two-bed with hour-by-hour Lagos lagoon light. Move-in ready, building-managed amenities, no surprises.",
     description:
-      "A working apartment in a serviced VI tower — quiet floor, building staff, and a tight package of amenities. Henry & Co. runs the viewing rail and handles the contract review on your side.",
+      "A working apartment in a serviced VI tower — quiet floor, building staff, and a tight package of amenities. Henry Onyx runs the viewing rail and handles the contract review on your side.",
     kind: "rent",
     serviceType: "rent",
     intent: "owner_listed",
@@ -475,7 +475,7 @@ export const propertyListings: PropertyListing[] = [
     summary:
       "A detached family villa on a quiet street off Freedom Way — green compound, BQ, and a calm school-run radius.",
     description:
-      "Built for families that want space, security, and a manageable school-run radius. Henry & Co. manages the inquiry triage and viewing prep so the visit reflects the home, not the noise.",
+      "Built for families that want space, security, and a manageable school-run radius. Henry Onyx manages the inquiry triage and viewing prep so the visit reflects the home, not the noise.",
     kind: "sale",
     serviceType: "sale",
     intent: "owner_listed",
@@ -535,7 +535,7 @@ export const propertyListings: PropertyListing[] = [
     summary:
       "A bright two-bed in a low-density mid-rise, with rooftop access and a structured shortlist if you're comparing.",
     description:
-      "Designed for young professionals and small families. Henry & Co. can shortlist this against two or three other Lekki options if you want a structured comparison instead of a hot-shortlist sprint.",
+      "Designed for young professionals and small families. Henry Onyx can shortlist this against two or three other Lekki options if you want a structured comparison instead of a hot-shortlist sprint.",
     kind: "rent",
     serviceType: "rent",
     intent: "agent_listed",
@@ -599,7 +599,7 @@ export const propertyManagedRecords: PropertyManagedRecord[] = [
     locationLabel: "Ikoyi, Lagos",
     portfolioValue: 1900000000,
     serviceLines: ["Occupancy oversight", "Owner reporting", "Maintenance vendor coordination"],
-    narrative: "Henry & Co. runs inspections, tenant comms, and owner reporting with a cleaner operating cadence.",
+    narrative: "Henry Onyx runs inspections, tenant comms, and owner reporting with a cleaner operating cadence.",
     assignedManagerId: "agent-zainab",
     updatedAt: now,
   },
@@ -647,7 +647,7 @@ export const propertyServices: PropertyService[] = [
   {
     id: "service-managed",
     title: "Managed Property Trust Services",
-    summary: "Henry & Co. can operate the property after it is listed, occupied, and handed over.",
+    summary: "Henry Onyx can operate the property after it is listed, occupied, and handed over.",
     bullets: ["Owner reporting", "Maintenance coordination", "Rent follow-up", "Viewing and inspection standards"],
   },
   {
@@ -659,7 +659,7 @@ export const propertyServices: PropertyService[] = [
   {
     id: "service-tenant",
     title: "Inquiry and Viewing Operations",
-    summary: "Henry & Co. can handle response sequencing, screening, and viewing scheduling with calmer rigor.",
+    summary: "Henry Onyx can handle response sequencing, screening, and viewing scheduling with calmer rigor.",
     bullets: ["Lead triage", "Scheduling coordination", "Reminder automation", "No-show reduction"],
   },
 ];
@@ -667,13 +667,13 @@ export const propertyServices: PropertyService[] = [
 export const propertyFaqs: PropertyFaq[] = [
   {
     id: "faq-1",
-    question: "What makes a Henry & Co.-managed property different?",
+    question: "What makes a Henry Onyx-managed property different?",
     answer: "Managed properties carry stronger readiness checks, operator follow-through, viewing coordination, and owner reporting than standard pass-through listings.",
   },
   {
     id: "faq-2",
     question: "Can I submit a property before my media is perfect?",
-    answer: "Yes. Henry & Co. can accept a submission with baseline media, then request improved assets before public approval if the listing needs a stronger premium presentation.",
+    answer: "Yes. Henry Onyx can accept a submission with baseline media, then request improved assets before public approval if the listing needs a stronger premium presentation.",
   },
   {
     id: "faq-3",
@@ -687,7 +687,7 @@ export const propertyFaqs: PropertyFaq[] = [
   },
   {
     id: "faq-5",
-    question: "Can Henry & Co. manage a property after occupancy?",
+    question: "Can Henry Onyx manage a property after occupancy?",
     answer: "Yes. Managed-property services can include owner reporting, maintenance vendor coordination, rent follow-up, inspections, and occupancy support.",
   },
 ];
@@ -723,7 +723,7 @@ export const propertyDifferentiators: PropertyDifferentiator[] = [
   {
     id: "diff-4",
     name: "Editorial listing moderation",
-    description: "Weak copy and weak media do not go live untouched; Henry & Co. improves the listing surface before release.",
+    description: "Weak copy and weak media do not go live untouched; Henry Onyx improves the listing surface before release.",
     pros: ["Better premium feel", "Higher conversion quality"],
     cons: ["Slower than instant posting"],
     difficulty: "high",
@@ -732,7 +732,7 @@ export const propertyDifferentiators: PropertyDifferentiator[] = [
   {
     id: "diff-5",
     name: "Unified account property memory",
-    description: "Saved listings, viewings, documents, and notifications are mirrored for future Henry & Co. account unification.",
+    description: "Saved listings, viewings, documents, and notifications are mirrored for future Henry Onyx account unification.",
     pros: ["Cross-division continuity", "Better CRM backbone"],
     cons: ["Needs data discipline"],
     difficulty: "high",
