@@ -40,6 +40,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_tasks: {
+        Row: {
+          archive_reason: string | null
+          archived_at: string | null
+          claim_email: string | null
+          claim_phone: string | null
+          claim_token: string | null
+          continue_url: string
+          created_at: string
+          division: string | null
+          id: string
+          last_progress_at: string
+          last_reminder_at: string | null
+          legal_hold_reason: string | null
+          reminder_count: number
+          retention_hold_until: string | null
+          state: Json
+          status: string
+          task_ref: string
+          task_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          archive_reason?: string | null
+          archived_at?: string | null
+          claim_email?: string | null
+          claim_phone?: string | null
+          claim_token?: string | null
+          continue_url: string
+          created_at?: string
+          division?: string | null
+          id?: string
+          last_progress_at?: string
+          last_reminder_at?: string | null
+          legal_hold_reason?: string | null
+          reminder_count?: number
+          retention_hold_until?: string | null
+          state?: Json
+          status?: string
+          task_ref: string
+          task_type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          archive_reason?: string | null
+          archived_at?: string | null
+          claim_email?: string | null
+          claim_phone?: string | null
+          claim_token?: string | null
+          continue_url?: string
+          created_at?: string
+          division?: string | null
+          id?: string
+          last_progress_at?: string
+          last_reminder_at?: string | null
+          legal_hold_reason?: string | null
+          reminder_count?: number
+          retention_hold_until?: string | null
+          state?: Json
+          status?: string
+          task_ref?: string
+          task_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       account_idempotency_keys: {
         Row: {
           created_at: string
