@@ -43,7 +43,10 @@
 --   20260607120000_double_entry_ledger.sql
 --   20260607130000_v3_18_payment_documents.sql
 --   20260607140000_v3_vat_01_settlement_vat.sql
---   20260611120000_v3_19_refunds.sql                       (THIS — depends on all above)
+--   20260611120000_fl2_wallet_rail_completion.sql          (SCHEMA-TRUTH-01, when it lands)
+--   20260611130000_v3_19_refunds.sql                       (THIS — depends on all above)
+-- The authoritative FL2 list is docs/v3/fl2-apply-manifest.md (SCHEMA-TRUTH-01) —
+-- add THIS file to it when both passes are on main.
 -- Do NOT apply to prod here. Proven on a fresh Postgres 17 in CI
 -- (payments-grant-invariant job → refunds_invariants.sql + refunds_grant_invariant.sql).
 
@@ -112,10 +115,30 @@ declare
   v_intent_status text;
   v_cumulative bigint;
 begin
-  -- Serialize all refund writes for this intent (and pin the captured amount).
-  select amount_minor, status into v_captured, v_intent_status
-    from public.payment_intents where id = new.intent_id for update;
-  if v_captured is null then
+  -- Only a row that COUNTS toward the cap (processing|succeeded) needs the guard;
+  -- a transition to `failed` (a release) bumps nothing and takes no intent lock,
+  -- which keeps the failed-path lock topology identical to the original.
+  if new.status not in ('processing', 'succeeded') then
+    return new;
+  end if;
+
+  -- SERIALIZE all cap-relevant refund writes for this intent via a WRITE-WRITE
+  -- conflict on the intent row — NOT a `select … for update`. This is the fix for
+  -- the adversarial finding: a refund INSERT only *locks* the intent (it never
+  -- modifies it), so under REPEATABLE READ two concurrent direct INSERTs each take
+  -- the FOR UPDATE lock without tripping a serialization error, and each reads the
+  -- cumulative on its own pre-commit snapshot → both pass → over-refund. A real
+  -- `update … set updated_at = now()` makes the second writer LOSE: 40001 under
+  -- RR/SERIALIZABLE, or re-read the committed cumulative under READ COMMITTED. This
+  -- is exactly why the RPC path (which updates the intent's status) was already
+  -- safe; the trigger now carries the same guarantee for raw INSERTs too. The
+  -- updated_at bump fires payments_set_updated_at (idempotent) and
+  -- enforce_payment_intent_transition (new.status = old.status → no-op).
+  update public.payment_intents
+     set updated_at = now()
+   where id = new.intent_id
+   returning amount_minor, status into v_captured, v_intent_status;
+  if not found then
     raise exception 'payment_refunds: intent % not found', new.intent_id using errcode = 'check_violation';
   end if;
   -- A refund can only exist against money that was actually captured. The intent is
@@ -125,14 +148,12 @@ begin
     raise exception 'payment_refunds: intent % has never captured (status %)', new.intent_id, v_intent_status
       using errcode = 'check_violation';
   end if;
-  if new.status in ('processing', 'succeeded') then
-    select coalesce(sum(amount_minor), 0) into v_cumulative
-      from public.payment_refunds
-     where intent_id = new.intent_id and status in ('processing', 'succeeded') and id <> new.id;
-    if v_cumulative + new.amount_minor > v_captured then
-      raise exception 'payment_refunds: cumulative refunds % + % would exceed captured % (intent %)',
-        v_cumulative, new.amount_minor, v_captured, new.intent_id using errcode = 'check_violation';
-    end if;
+  select coalesce(sum(amount_minor), 0) into v_cumulative
+    from public.payment_refunds
+   where intent_id = new.intent_id and status in ('processing', 'succeeded') and id <> new.id;
+  if v_cumulative + new.amount_minor > v_captured then
+    raise exception 'payment_refunds: cumulative refunds % + % would exceed captured % (intent %)',
+      v_cumulative, new.amount_minor, v_captured, new.intent_id using errcode = 'check_violation';
   end if;
   return new;
 end $$;
@@ -142,6 +163,29 @@ drop trigger if exists payment_refunds_enforce_cap on public.payment_refunds;
 create trigger payment_refunds_enforce_cap
   before insert or update on public.payment_refunds
   for each row execute function payments_private.enforce_refund_cap();
+
+-- ============ The cap's DENOMINATOR is immutable (defense in depth) ============
+-- The over-refund cap pins to payment_intents.amount_minor. The app never mutates
+-- it (only provider_reference + status change after creation), but nothing in the
+-- V3-15 migration FROZE it — so a buggy/ops UPDATE that inflates amount_minor would
+-- silently raise the cap base. Freeze the money-defining columns once set, mirroring
+-- the V3-17 ledger's append-only immutability. provider_reference + status stay
+-- mutable (the guarded RPCs move them); only the captured amount/currency are locked.
+create or replace function payments_private.freeze_intent_money_columns()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if new.amount_minor <> old.amount_minor or new.currency <> old.currency then
+    raise exception 'payment_intents: amount_minor/currency are immutable once set (the refund cap pins to them)'
+      using errcode = 'check_violation';
+  end if;
+  return new;
+end $$;
+revoke all on function payments_private.freeze_intent_money_columns() from public, anon, authenticated;
+
+drop trigger if exists payment_intents_freeze_money on public.payment_intents;
+create trigger payment_intents_freeze_money
+  before update on public.payment_intents
+  for each row execute function payments_private.freeze_intent_money_columns();
 
 -- ============ wallet guards (tables exist in prod; guarded for the minimal CI DB) ============
 -- The wallet projection can never go negative — the refund hold's CAS respects this,

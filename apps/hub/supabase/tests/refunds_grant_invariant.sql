@@ -1,6 +1,6 @@
 -- V3-19 BACKSTOP — money-RPC grant invariant for the REFUNDS end state.
 --
--- Run AFTER the full chain incl. 20260611120000_v3_19_refunds.sql (which adds the
+-- Run AFTER the full chain incl. 20260611130000_v3_19_refunds.sql (which adds the
 -- refund money writers + the credit-note document writer and recreates the two
 -- settlement functions with the refunded-edge guard). This is the V3-19 end-state
 -- counterpart of vat_grant_invariant.sql (which still validates the V3-VAT-01

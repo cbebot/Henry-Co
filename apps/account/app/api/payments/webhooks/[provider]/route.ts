@@ -112,6 +112,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ received: true }, { status: 200 });
   }
 
+  // Charge events from here on (the refund branch returned above) — re-guard so
+  // the narrowing is explicit: refundEvent was falsy, so impliedStatus is set.
+  const impliedStatus = verified.value.impliedStatus;
+  if (!impliedStatus) {
+    return NextResponse.json({ received: true }, { status: 200 });
+  }
+
   // A3/D3: the ONLY money-confirming status writer — dedup-insert first, then the
   // A2-guarded transition, atomically. A duplicate delivery is an idempotent ack.
   // payments_private (V3-15-S3): money writer reached via the pooled direct-pg path,
@@ -124,7 +131,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     provider,
     verified.value.providerEventId,
     intentRow.id,
-    verified.value.impliedStatus,
+    impliedStatus,
     verified.value.feeMinor != null ? String(verified.value.feeMinor) : null,
     verified.value.feeVatMinor != null ? String(verified.value.feeVatMinor) : null,
   ]);
@@ -134,7 +141,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // Money truth emitted exactly once — only the delivery that actually applied
   // (not a deduped redelivery) fires intent.succeeded/failed/refunded.
   if ((applied.data as { applied?: boolean } | null)?.applied === true) {
-    emitPaymentEvent(intentEventForStatus(verified.value.impliedStatus), { payload: { provider } });
+    emitPaymentEvent(intentEventForStatus(impliedStatus), { payload: { provider } });
   }
   return NextResponse.json({ received: true }, { status: 200 });
 }

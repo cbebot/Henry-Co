@@ -158,7 +158,7 @@ jobs:
       # DB and prove all of it, then assert the grant lockdown covers the new
       # refund/credit-note writers.
       - name: Apply V3-19 refunds migration (fresh)
-        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260611120000_v3_19_refunds.sql
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260611130000_v3_19_refunds.sql
 
       - name: Prove refund invariants (full · partial-VAT · over-refund · dedup · failed-revert · credit-note · wallet)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_invariants.sql
