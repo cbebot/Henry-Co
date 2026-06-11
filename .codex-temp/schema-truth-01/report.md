@@ -198,3 +198,37 @@ object evidence is reliable.
 | Shrunk baseline | `scripts/ci/schema-drift-baseline.json` (33 → 21) |
 | Drift-debt tickets | `docs/v3/PASS-REGISTER.md` appendix (SD-1…SD-9) |
 | Evidence (history, columns, ACL, classification) | `.codex-temp/schema-truth-01/` |
+
+---
+
+## 9. Post-rebase reconciliation + ship-day events (same day)
+
+- **Main moved during the pass** (V3-37 #265, TONE-01 #264, division content #263)
+  → rebased. The only conflict was `database.types.ts` itself: main had
+  HAND-ADDED an `abandoned_tasks` Tables entry for V3-37's committed-NOT-applied
+  migration. Resolution: regenerated truth + that entry re-spliced and
+  documented as a HAND-CARRIED EXCEPTION in the file header (it belongs to
+  V3-37's own FL gate, not FL2 — addendum §6 of the manifest). It is
+  load-bearing twice: the merged V3-37 module types against it, and the drift
+  guard's DDL parser cannot see multi-line column definitions
+  (`task_type`/`status` declare their CHECK on the following line), so the
+  types side of the union keeps those references green (guard-upgrade noted).
+- **GitHub dropped every webhook-driven workflow run for the repo** from
+  ~07:45Z (PR opened/synchronize/reopened all produced zero runs while
+  githubstatus reported operational and repo Actions were enabled). Unblocked
+  by adding `workflow_dispatch` to ci.yml (a permanent manual re-run lever) —
+  dispatch-by-API works, and its check runs bind to the same head sha the PR
+  requires. Required checks ("Lint, typecheck, test, build" + "Payments
+  money-RPC grant invariant") both ran green via dispatch on the pre-rebase
+  head; final dispatch on the merged head recorded below.
+- **Self-inflicted + corrected:** two PowerShell splices used `[IO.File]`
+  with a RELATIVE path, which resolves against the process CWD — the SHARED
+  main worktree, not the pass worktree. The stray edits to the main worktree's
+  `database.types.ts` were verified to be entirely mine (+139/−1, both blocks
+  `abandoned_tasks`) and reverted (`git checkout` of that one file); the
+  worktree's other parallel-session state was untouched. Lesson recorded:
+  absolute paths for any .NET IO in this harness.
+- Post-rebase full sweep: `pnpm install` (V3-37 added a new
+  `@henryco/lifecycle → @henryco/data` workspace dep; stale symlinks broke
+  module resolution until refreshed), then `typecheck:all` + `schema-drift:check`
+  + `tone:check` (the new TONE-01 gate) all **green**.
