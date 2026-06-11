@@ -285,3 +285,20 @@ drift-triage (PASS-REGISTER tickets).
    invisible on a fresh-DB proof.
 5. **After any prod apply, regenerate the types and re-baseline the drift
    guard** so the declared schema stays true.
+
+---
+
+## 6. Post-rebase addendum (2026-06-11, same day)
+
+The rebase onto main brought two new committed-NOT-applied files from V3-37
+(merged PR #265, its own FL gate — deliberately NOT part of the FL2 list):
+
+| migration | status | note |
+|---|---|---|
+| `apps/hub/…/20260610120000_v3_37_abandoned_tasks.sql` | committed-not-applied (V3-37 FL gate) | its `abandoned_tasks` types entry is HAND-CARRIED in database.types.ts (see the file header) because the table is in neither prod-actual nor the FL2 set; re-splice after every regeneration until it lands |
+| `apps/hub/…/20260610121000_v3_37_recovery_notification_category.sql` | committed-not-applied (V3-37 FL gate) | widens the customer_notifications category CHECK for the recovery events (the PR #241 constraint-drift rule) |
+
+Guard note discovered while reconciling: the drift guard's migration-DDL parser
+does not see MULTI-LINE column definitions (e.g. `task_type text not null` with
+its `check (…)` on the next line) — the types side of the union is what keeps
+such references green. Folded into the SD-ticket list as a guard-upgrade item.
