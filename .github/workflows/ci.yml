@@ -67,6 +67,9 @@ jobs:
       - name: i18n hardcoded-text gate (V3-07 S8 — strict)
         run: pnpm run i18n:check:strict
 
+      - name: Company-voice tone gate (TONE-01 — voice.ts is law)
+        run: pnpm run tone:check
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 

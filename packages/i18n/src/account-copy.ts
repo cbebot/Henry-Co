@@ -2163,7 +2163,7 @@ const EN: AccountCopy = {
     noUrgentTasks:
       "No urgent account tasks right now. You are in a healthy operating state.",
     viewTaskQueue: "View full task queue",
-    smartRecommendations: "Smart Recommendations",
+    smartRecommendations: "Recommendations",
     smartRecommendationsEmpty:
       "Keep using HenryCo services and recommendations will adapt to your activity.",
     smartHomeEmptyFallback:
@@ -4364,7 +4364,7 @@ const FR: DeepPartial<AccountCopy> = {
     noUrgentTasks:
       "Aucune tâche urgente pour le moment. Votre compte est dans un état sain.",
     viewTaskQueue: "Voir la file complète",
-    smartRecommendations: "Recommandations intelligentes",
+    smartRecommendations: "Recommandations",
     smartRecommendationsEmpty:
       "Continuez à utiliser les services HenryCo et les recommandations s’adapteront à votre activité.",
     smartHomeEmptyFallback:
@@ -6570,7 +6570,7 @@ const DE: DeepPartial<AccountCopy> = {
     "actionCenterDescription": "Beginnen Sie zunächst mit dem Blockieren von Elementen und erledigen Sie dann Schritte mit hoher Priorität, um die volle Funktionsfähigkeit Ihres Kontos aufrechtzuerhalten.",
     "noUrgentTasks": "Im Moment gibt es keine dringenden Kontoaufgaben. Sie befinden sich in einem gesunden Betriebszustand.",
     "viewTaskQueue": "Vollständige Aufgabenwarteschlange anzeigen",
-    "smartRecommendations": "Intelligente Empfehlungen",
+    "smartRecommendations": "Empfehlungen",
     "smartRecommendationsEmpty": "Nutzen Sie weiterhin die Dienste von HenryCo und die Empfehlungen passen sich Ihrer Aktivität an.",
     "smartHomeEmptyFallback": "Willkommen — beginnen Sie mit einem kleinen ersten Schritt. Ihre Live-Signale erscheinen hier, sobald Aktivität eingeht.",
     "recommendationReason": "Empfohlen aus Ihrer Kontoaktivität und Ihrem Vertrauensstatus ({confidence} Vertrauen)",
@@ -8709,7 +8709,7 @@ const IT: DeepPartial<AccountCopy> = {
     "actionCenterDescription": "Inizia innanzitutto bloccando gli elementi, quindi completa i passaggi ad alta priorità per mantenere il tuo account pienamente operativo.",
     "noUrgentTasks": "Nessuna attività urgente sull'account in questo momento. Ti trovi in ​​uno stato operativo sano.",
     "viewTaskQueue": "Visualizza la coda completa delle attività",
-    "smartRecommendations": "Raccomandazioni intelligenti",
+    "smartRecommendations": "Raccomandazioni",
     "smartRecommendationsEmpty": "Continua a utilizzare i servizi HenryCo e i consigli si adatteranno alla tua attività.",
     "smartHomeEmptyFallback": "Benvenuto — inizia con un piccolo primo passo. I tuoi segnali dal vivo appariranno qui non appena ci sarà attività.",
     "recommendationReason": "Suggerito dall'attività del tuo account e dallo stato di attendibilità ({confidence} confidenza)",
@@ -10850,7 +10850,7 @@ const IG: DeepPartial<AccountCopy> = {
     actionCenterDescription: "Bido na ihe ndị na-egbochi nke mbụ, wee hichapụ nzọụkwụ ndị dị isi ike iji jigide akaụntụ gị na-arụ ọrụ nke ọma.",
     noUrgentTasks: "Ọ dịghị ọrụ akaụntụ ndị na-achọ ngwa ngwa ugbu a. Ị nọ n'ọnọdụ arụ ọrụ dị mma.",
     viewTaskQueue: "Lelee ahịrị ọrụ zuru oke",
-    smartRecommendations: "Ndụmọdụ nzụlite",
+    smartRecommendations: "Ndụmọdụ",
     smartRecommendationsEmpty: "Nọgide na-eji ọrụ HenryCo ma ndụmọdụ ga-atọ dị na arụmọrụ gị.",
     smartHomeEmptyFallback:
       "Nnọọ — bido site na obere nzọụkwụ mbụ. Ihe ịrịba ama ndụ gị ga-apụta ebe a ozugbo arụmọrụ rutere.",
@@ -12993,7 +12993,7 @@ const YO: DeepPartial<AccountCopy> = {
     actionCenterDescription: "Bẹrẹ pẹlu awọn ohun ti o dina ni akọkọ, lẹhinna pa awọn igbesẹ pataki mọ lati jẹ ki akọọlẹ rẹ ṣiṣẹ ni kikun.",
     noUrgentTasks: "Ko si awọn iṣẹ akọọlẹ ti o yara ni bayi. O wa ni ipo iṣẹ ti o ni ilera.",
     viewTaskQueue: "Wo ila-duro iṣẹ ni kikun",
-    smartRecommendations: "Awọn iṣeduro ọlọgbọn",
+    smartRecommendations: "Awọn iṣeduro",
     smartRecommendationsEmpty: "Tẹsiwaju lilo awọn iṣẹ HenryCo ati awọn iṣeduro yoo ṣe deede si iṣẹ rẹ.",
     smartHomeEmptyFallback:
       "Káàbọ̀ — bẹ̀rẹ̀ pẹ̀lú ìgbésẹ̀ kékeré àkọ́kọ́. Àwọn àmì ìfìhàn rẹ̀ tààrà yóò farahàn níbí gan-an tí iṣẹ́ kankan bá wáyé.",
@@ -15136,7 +15136,7 @@ const HA: DeepPartial<AccountCopy> = {
     actionCenterDescription: "Fara da toshe abubuwa da farko, sannan share matakai masu muhimmanci don kiyaye asusunka yana aiki gaba ɗaya.",
     noUrgentTasks: "Babu ayyukan asusun masu gaggawa yanzu. Kuna cikin ƙoshin lafiya na aiki.",
     viewTaskQueue: "Duba layin jiran aikin cikakke",
-    smartRecommendations: "Shawarwari masu wayo",
+    smartRecommendations: "Shawarwari",
     smartRecommendationsEmpty: "Ci gaba da amfani da sabis na HenryCo kuma shawarwari za su daidaita da ayyukanku.",
     smartHomeEmptyFallback:
       "Barka da zuwa — fara da ƙaramin mataki na farko. Sigina kai tsaye naka za su bayyana a nan da zarar wani aiki ya zo.",
@@ -17279,7 +17279,7 @@ const ZH: DeepPartial<AccountCopy> = {
     actionCenterDescription: "先从阻塞项目开始，然后清除高优先级步骤，以保持账户完全正常运行。",
     noUrgentTasks: "目前没有紧急账户任务。您处于健康运营状态。",
     viewTaskQueue: "查看完整任务队列",
-    smartRecommendations: "智能推荐",
+    smartRecommendations: "推荐",
     smartRecommendationsEmpty: "继续使用 HenryCo 服务，推荐将根据您的活动进行调整。",
     smartHomeEmptyFallback: "欢迎 — 从一个小小的第一步开始。一旦有动态，您的实时信号就会显示在这里。",
     recommendationReason: "根据您的账户活动和信任状态建议（{confidence} 置信度）",
@@ -19400,7 +19400,7 @@ const HI: DeepPartial<AccountCopy> = {
     actionCenterDescription: "पहले ब्लॉकिंग आइटम से शुरू करें, फिर उच्च-प्राथमिकता वाले चरणों को साफ करें ताकि आपका खाता पूरी तरह से चालू रहे।",
     noUrgentTasks: "अभी कोई अत्यावश्यक खाता कार्य नहीं है। आप एक स्वस्थ परिचालन स्थिति में हैं।",
     viewTaskQueue: "पूर्ण कार्य कतार देखें",
-    smartRecommendations: "स्मार्ट अनुशंसाएं",
+    smartRecommendations: "अनुशंसाएं",
     smartRecommendationsEmpty: "HenryCo सेवाओं का उपयोग करते रहें और अनुशंसाएं आपकी गतिविधि के अनुसार अनुकूलित होंगी।",
     smartHomeEmptyFallback:
       "स्वागत है — एक छोटे पहले कदम से शुरुआत करें। गतिविधि आते ही आपके लाइव संकेत यहाँ दिखाई देंगे।",

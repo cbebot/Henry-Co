@@ -18,6 +18,15 @@ export type VoiceGuardResult = {
   blocks: VoiceGuardWarning[];
 };
 
+/**
+ * THE canonical Henry Onyx tone-rule store (TONE-01). Two enforcement arms
+ * read these rules — add or change rules HERE, never in a parallel list:
+ *   1. runVoiceGuard (below) — newsletter authoring/runtime.
+ *   2. scripts/v3/tone-gate.mjs — the CI company-voice gate, which PARSES
+ *      this array's `ruleKey`/`kind`/`pattern` literals from source. Keep
+ *      patterns as plain double-quoted string literals so the parser holds.
+ * Standard: docs/v3/public-voice-and-security.md (Part B) + CLAUDE.md.
+ */
 const DEFAULT_BANNED_PHRASES: Array<Omit<NewsletterBrandVoiceRule, "id" | "createdAt">> = [
   {
     ruleKey: "no_buy_now_pressure",
@@ -77,6 +86,19 @@ const DEFAULT_BANNED_PHRASES: Array<Omit<NewsletterBrandVoiceRule, "id" | "creat
     reason: "Generic corporate/AI filler; rewrite with specific, human language.",
     severity: "warning",
     appliesToClasses: ["company_wide", "division_digest", "announcement"],
+    active: true,
+  },
+  {
+    // TONE-01: the platform calm-voice standard (owner-ratified instead-of/prefer
+    // table). Hype-marketing phrasing reads as startup energy, not Henry Onyx.
+    ruleKey: "no_hype_marketing_phrasing",
+    kind: "tone_rule",
+    pattern:
+      "\\b(start your journey|take control now|supercharge|game[- ]chang(?:ing|er)|unlock (?:powerful|premium) features?|10x your|next[- ]level)\\b",
+    reason:
+      'Hype-marketing phrasing; prefer calm, specific language ("Get started", "Manage your workspace", "Access additional capabilities").',
+    severity: "warning",
+    appliesToClasses: ["company_wide", "division_digest", "announcement", "lifecycle_journey"],
     active: true,
   },
   {
