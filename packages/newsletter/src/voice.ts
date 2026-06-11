@@ -80,6 +80,19 @@ const DEFAULT_BANNED_PHRASES: Array<Omit<NewsletterBrandVoiceRule, "id" | "creat
     active: true,
   },
   {
+    // TONE-01: the platform calm-voice standard (owner-ratified instead-of/prefer
+    // table). Hype-marketing phrasing reads as startup energy, not Henry Onyx.
+    ruleKey: "no_hype_marketing_phrasing",
+    kind: "tone_rule",
+    pattern:
+      "\\b(start your journey|take control now|supercharge|game[- ]chang(?:ing|er)|unlock (?:powerful|premium) features?|10x your|next[- ]level)\\b",
+    reason:
+      'Hype-marketing phrasing; prefer calm, specific language ("Get started", "Manage your workspace", "Access additional capabilities").',
+    severity: "warning",
+    appliesToClasses: ["company_wide", "division_digest", "announcement", "lifecycle_journey"],
+    active: true,
+  },
+  {
     ruleKey: "required_unsubscribe_footer",
     kind: "required_disclosure",
     pattern: "(unsubscribe|manage preferences|email preferences)",
