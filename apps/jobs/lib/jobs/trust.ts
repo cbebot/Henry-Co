@@ -318,7 +318,8 @@ export async function getEmployerTrustProfile(
       // Platform moderation cases linked to this employer
       admin
         .from("platform_moderation_queue")
-        .select("id, status, action_taken, entity_id, entity_type")
+        // prod column is review_action (no action_taken)
+        .select("id, status, review_action, entity_id, entity_type")
         .or(`entity_id.eq.${employerSlug},entity_type.eq.user_profile`)
         .order("created_at", { ascending: false })
         .limit(50),
@@ -371,7 +372,7 @@ export async function getEmployerTrustProfile(
   // Moderation incidents: warn / reject / block actions against this employer
   const moderationCases = (moderationRes.data ?? []) as Array<Record<string, unknown>>;
   const moderationIncidents = moderationCases.filter((c) => {
-    const action = asText(c.action_taken).toLowerCase();
+    const action = asText(c.review_action).toLowerCase();
     return action === "reject" || action === "block" || action === "warn";
   }).length;
 

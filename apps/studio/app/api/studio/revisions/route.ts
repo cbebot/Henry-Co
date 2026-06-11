@@ -54,7 +54,7 @@ type StaffReviewBody = {
 type ProjectRow = {
   id: string;
   client_user_id: string | null;
-  name: string;
+  title: string;
 };
 
 type RevisionRow = {
@@ -83,7 +83,8 @@ async function handleClientRequest(
 
   const { data: project, error: projectErr } = await admin
     .from("studio_projects")
-    .select("id, client_user_id, name")
+    // prod column is title (studio_projects has no name)
+    .select("id, client_user_id, title")
     .eq("id", projectId)
     .maybeSingle<ProjectRow>();
 

@@ -49,7 +49,7 @@ type GenerateBody = {
 
 type ProjectRow = {
   id: string;
-  name: string;
+  title: string;
   client_user_id: string | null;
 };
 
@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
 
   const { data: project, error: projectErr } = await admin
     .from("studio_projects")
-    .select("id, name, client_user_id")
+    // prod column is title (studio_projects has no name)
+    .select("id, title, client_user_id")
     .eq("id", projectId)
     .maybeSingle<ProjectRow>();
 
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
   // call resolves.
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const packName = String(body.name || `${project.name} — asset pack`).slice(0, 200);
+  const packName = String(body.name || `${project.title} — asset pack`).slice(0, 200);
 
   const { data: packRow, error: packInsertErr } = await admin
     .from("studio_asset_packs")

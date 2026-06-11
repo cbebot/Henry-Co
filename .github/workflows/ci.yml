@@ -8,6 +8,11 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  # Manual re-run lever: GitHub occasionally drops webhook-driven events for a
+  # while (observed 2026-06-11: pull_request opened/synchronize/reopened all
+  # produced no runs). Dispatching against the PR branch reports check runs on
+  # the same head sha, so the PR's required check still lights up.
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}

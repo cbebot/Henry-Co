@@ -61,7 +61,7 @@ function mapApplication(row: Record<string, unknown>): Application {
   return {
     id: asString(row.id),
     pipelineId: asString(row.pipeline_id),
-    candidateUserId: asString(row.candidate_user_id),
+    candidateUserId: asString(row.candidate_id ?? row.candidate_user_id),
     candidateName: asString(row.candidate_name),
     candidateEmail: row.candidate_email ? asString(row.candidate_email) : null,
     candidateAvatarUrl: row.candidate_avatar_url
@@ -71,7 +71,7 @@ function mapApplication(row: Record<string, unknown>): Application {
     stage: asString(row.stage, "applied"),
     status: asString(row.status, "active") as Application["status"],
     coverNote: asString(row.cover_note),
-    createdAt: asString(row.created_at),
+    createdAt: asString(row.applied_at ?? row.created_at),
     updatedAt: row.updated_at ? asString(row.updated_at) : null,
   };
 }
@@ -83,7 +83,11 @@ function mapConversation(row: Record<string, unknown>): Conversation {
     subject: asString(row.subject),
     status: asString(row.status, "open") as Conversation["status"],
     unreadCount: asNumber(row.unread_count),
-    lastMessageAt: row.last_message_at ? asString(row.last_message_at) : null,
+    lastMessageAt: row.last_message_at
+      ? asString(row.last_message_at)
+      : row.updated_at
+        ? asString(row.updated_at)
+        : null,
     createdAt: asString(row.created_at),
   };
 }
@@ -170,7 +174,8 @@ export async function getApplications(
     .from("jobs_applications")
     .select("*")
     .eq("pipeline_id", pipelineId)
-    .order("created_at", { ascending: false });
+    // prod column is applied_at (no created_at on jobs_applications)
+    .order("applied_at", { ascending: false });
 
   if (error) {
     console.error("[hiring] getApplications error:", error.message);
@@ -246,11 +251,14 @@ export async function getCandidateConversations(
 ): Promise<Conversation[]> {
   const admin = createAdminSupabase();
 
-  // First get applications by this candidate
+  // First get applications by this candidate. The prod column is candidate_id
+  // and it carries the auth user id (see /api/hiring/messages: "viewer.user.id
+  // === jobs_conversations.candidate_id, which equals jobs_applications.
+  // candidate_id by construction").
   const { data: apps } = await admin
     .from("jobs_applications")
     .select("id")
-    .eq("candidate_user_id", candidateUserId);
+    .eq("candidate_id", candidateUserId);
 
   if (!apps || apps.length === 0) return [];
 
@@ -262,7 +270,8 @@ export async function getCandidateConversations(
     .from("jobs_conversations")
     .select("*")
     .in("application_id", applicationIds)
-    .order("last_message_at", { ascending: false });
+    // jobs_conversations has no last_message_at; updated_at is the activity proxy
+    .order("updated_at", { ascending: false });
 
   if (error) {
     console.error("[hiring] getCandidateConversations error:", error.message);
@@ -448,7 +457,7 @@ export async function getCandidateInterviews(
   const { data: apps } = await admin
     .from("jobs_applications")
     .select("id")
-    .eq("candidate_user_id", candidateUserId);
+    .eq("candidate_id", candidateUserId);
 
   if (!apps || apps.length === 0) return [];
 
