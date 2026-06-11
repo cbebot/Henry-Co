@@ -443,27 +443,35 @@ export async function listUserAbandonedTasks(
   return ((data ?? []) as AbandonedTaskRow[]).map(mapRow);
 }
 
-/** Dismiss a task (no more nudges). RLS ensures the caller owns it. */
+/**
+ * Dismiss a task (no more nudges). Scoped by userId so it is safe with either an
+ * RLS-scoped client OR the service-role admin client — a user can only ever
+ * dismiss their own row.
+ */
 export async function dismissAbandonedTask(
   client: TypedSupabaseClient,
   id: string,
+  userId: string,
 ): Promise<boolean> {
   const { error } = await client
     .from("abandoned_tasks")
     .update({ status: "dismissed" })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", userId);
   return !error;
 }
 
-/** Mark a task recovered (the user returned and completed it). */
+/** Mark a task recovered (the user returned and completed it). Scoped by userId. */
 export async function markAbandonedTaskRecovered(
   client: TypedSupabaseClient,
   id: string,
+  userId: string,
 ): Promise<boolean> {
   const { error } = await client
     .from("abandoned_tasks")
     .update({ status: "recovered" })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", userId);
   return !error;
 }
 
