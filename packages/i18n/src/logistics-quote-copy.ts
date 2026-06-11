@@ -94,7 +94,7 @@ const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
     stepLabel: "Step",
     items: {
       returned: {
-        title: "Quote returned instantly",
+        title: "Quote returned in one step",
         body: "Indicative total and promise window appear in line — no follow-up email needed to see the price.",
       },
       reference: {
@@ -158,7 +158,7 @@ const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Étape",
     items: {
       returned: {
-        title: "Devis renvoyé instantanément",
+        title: "Devis renvoyé en une seule étape",
         body: "Le total indicatif et la fenêtre de promesse s’affichent en ligne — pas besoin d’un e-mail de suivi pour voir le prix.",
       },
       reference: {
@@ -222,7 +222,7 @@ const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Paso",
     items: {
       returned: {
-        title: "Presupuesto devuelto al instante",
+        title: "Presupuesto devuelto en un solo paso",
         body: "El total indicativo y la ventana de promesa aparecen en línea — no hace falta un correo de seguimiento para ver el precio.",
       },
       reference: {
@@ -286,7 +286,7 @@ const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Passo",
     items: {
       returned: {
-        title: "Orçamento devolvido instantaneamente",
+        title: "Orçamento devolvido num único passo",
         body: "Total indicativo e janela de promessa aparecem em linha — não é preciso e-mail de seguimento para ver o preço.",
       },
       reference: {
@@ -350,7 +350,7 @@ const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "الخطوة",
     items: {
       returned: {
-        title: "إعادة العرض فوراً",
+        title: "إعادة العرض في خطوة واحدة",
         body: "يظهر الإجمالي الإرشادي ونافذة الوعد في السطر مباشرة — دون الحاجة إلى رسالة متابعة لرؤية السعر.",
       },
       reference: {
@@ -414,7 +414,7 @@ const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Schritt",
     items: {
       returned: {
-        title: "Angebot sofort zurückgegeben",
+        title: "Angebot in einem Schritt zurückgegeben",
         body: "Indikativer Gesamtbetrag und Versprechensfenster erscheinen direkt in der Zeile — keine Folge-E-Mail nötig, um den Preis zu sehen.",
       },
       reference: {
@@ -478,7 +478,7 @@ const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Passo",
     items: {
       returned: {
-        title: "Preventivo restituito all’istante",
+        title: "Preventivo restituito in un solo passaggio",
         body: "Il totale indicativo e la finestra di promessa appaiono in linea — non serve un’e-mail di follow-up per vedere il prezzo.",
       },
       reference: {
@@ -542,7 +542,7 @@ const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "步骤",
     items: {
       returned: {
-        title: "即时返回报价",
+        title: "一步即可获取报价",
         body: "指示性总额与承诺时间窗口直接在页面中显示 — 无需后续邮件即可看到价格。",
       },
       reference: {
@@ -606,7 +606,7 @@ const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "चरण",
     items: {
       returned: {
-        title: "तुरंत कोटेशन लौटाया गया",
+        title: "एक ही चरण में कोटेशन प्राप्त करें",
         body: "संकेतात्मक कुल और वादा खिड़की पंक्ति में ही दिखाई देती है — कीमत देखने के लिए अनुवर्ती ई-मेल की ज़रूरत नहीं।",
       },
       reference: {
@@ -670,7 +670,7 @@ const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Nzọụkwụ",
     items: {
       returned: {
-        title: "E nyeghachiri ọnụego ozugbo",
+        title: "E nyeghachiri ọnụego n'otu nzọụkwụ",
         body: "Mkpokọta ngosi na windo nkwa na-apụta n’ahịrị ozugbo — ọ dịghị mkpa ozi e-mail soro ya iji hụ ọnụego.",
       },
       reference: {
@@ -734,7 +734,7 @@ const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Ìṣísẹ̀",
     items: {
       returned: {
-        title: "A dá ìpèsè padà lẹ́sẹ̀kẹsẹ̀",
+        title: "A dá ìpèsè padà ní ìgbésẹ̀ kan",
         body: "Àpapọ̀ tí ń tọ́ka àti akoko ìlérí yóò hàn lẹ́sẹ̀kẹsẹ̀ — kò sí ìmélì àtẹ̀le tí ń béèrè kí o tó rí iye náà.",
       },
       reference: {
@@ -798,7 +798,7 @@ const LOGISTICS_QUOTE_COPY_HA: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Mataki",
     items: {
       returned: {
-        title: "An mayar da farashi nan da nan",
+        title: "An mayar da farashi a mataki ɗaya",
         body: "Jimilla ta ja-gora da tagar alkawari za su bayyana a layi kai tsaye — babu buƙatar imel ɗin bibiya don ganin farashin.",
       },
       reference: {

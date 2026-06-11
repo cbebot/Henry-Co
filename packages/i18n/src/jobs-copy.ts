@@ -693,7 +693,7 @@ const EN: JobsCopy = {
   },
   candidateProfile: {
     pageTitle: "Candidate Profile",
-    pageSubtitle: "Keep your profile complete so employers can see the best version of you.",
+    pageSubtitle: "Keep your profile complete so employers see an accurate, current picture of you.",
     rightRailTrustTitle: "Profile trust",
     rightRailVerificationKicker: "Verification",
     rightRailDefaultReadiness:
@@ -5701,7 +5701,7 @@ const DE: DeepPartial<JobsCopy> = {
   candidateProfile: {
     pageTitle: "Bewerberprofil",
     pageSubtitle:
-      "Halten Sie Ihr Profil vollständig, damit Arbeitgeber die beste Version von Ihnen sehen.",
+      "Halten Sie Ihr Profil vollständig, damit Arbeitgeber ein genaues, aktuelles Bild von Ihnen sehen.",
     rightRailTrustTitle: "Profilvertrauen",
     rightRailVerificationKicker: "Verifizierung",
     rightRailDefaultReadiness:

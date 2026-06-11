@@ -103,7 +103,7 @@ const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
     escalationsTitle: "Escalations with audit-friendly history",
     escalationsBody:
       "Issues become structured records: who reported, what changed, when dispatch acted. Finance and operations read from the same trail.",
-    premiumTitle: "Premium experience under operational stress",
+    premiumTitle: "Quality that holds under operational stress",
     premiumBody:
       "Difficult lanes, partial deliveries, and rerouting still surface clean milestones to the recipient — quality holds even when routing gets noisy.",
   },
@@ -118,7 +118,7 @@ const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
       "Inside your HenryCo account, the logistics workspace stores receipts, milestone history, and notification routing for finance/ops.",
     step03Title: "Run the volume",
     step03Body:
-      "Repeat bookings reuse saved profiles. Tracking codes are issued instantly; proof-of-delivery records attach to the right invoice.",
+      "Repeat bookings reuse saved profiles. Tracking codes are issued on booking; proof-of-delivery records attach to the right invoice.",
     step04Title: "Reconcile cleanly",
     step04Body:
       "Each shipment carries to one statement with the lane, service tier, and any handling line items — no “misc” surprises.",
@@ -179,7 +179,7 @@ const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Escalades avec un historique exploitable",
     escalationsBody:
       "Les incidents deviennent des dossiers structurés : qui a signalé, ce qui a changé, quand l’expédition a agi. Finance et exploitation lisent la même piste.",
-    premiumTitle: "Expérience premium sous tension opérationnelle",
+    premiumTitle: "Une qualité qui tient sous la tension opérationnelle",
     premiumBody:
       "Lignes difficiles, livraisons partielles, réacheminements — le destinataire voit toujours des jalons clairs. La qualité tient même quand le routage devient bruyant.",
   },
@@ -194,7 +194,7 @@ const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
       "Dans votre compte HenryCo, l’espace logistique conserve reçus, historique des jalons et acheminement des notifications pour la finance et l’exploitation.",
     step03Title: "Faites tourner le volume",
     step03Body:
-      "Les réservations récurrentes réutilisent les profils enregistrés. Les codes de suivi sont émis immédiatement ; la preuve de livraison s’attache à la bonne facture.",
+      "Les réservations récurrentes réutilisent les profils enregistrés. Les codes de suivi sont émis dès la réservation ; la preuve de livraison s’attache à la bonne facture.",
     step04Title: "Réconciliez proprement",
     step04Body:
       "Chaque expédition se reporte sur un seul relevé avec la ligne, le niveau de service et les éventuelles lignes de manutention — pas de surprises « divers ».",
@@ -255,7 +255,7 @@ const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Escalaciones con historial auditable",
     escalationsBody:
       "Las incidencias se vuelven registros estructurados: quién avisó, qué cambió, cuándo actuó el despacho. Finanzas y operaciones leen el mismo rastro.",
-    premiumTitle: "Experiencia premium bajo presión operativa",
+    premiumTitle: "Calidad que se mantiene bajo presión operativa",
     premiumBody:
       "Rutas difíciles, entregas parciales y reencaminamientos siguen mostrando hitos claros al destinatario — la calidad se mantiene aunque el routing se complique.",
   },
@@ -270,7 +270,7 @@ const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
       "Dentro de su cuenta HenryCo, el espacio de logística guarda recibos, historial de hitos y enrutamiento de notificaciones para finanzas y operaciones.",
     step03Title: "Ponga en marcha el volumen",
     step03Body:
-      "Las reservas recurrentes reutilizan los perfiles guardados. Los códigos de seguimiento se emiten al instante; la prueba de entrega se adjunta a la factura correcta.",
+      "Las reservas recurrentes reutilizan los perfiles guardados. Los códigos de seguimiento se emiten al reservar; la prueba de entrega se adjunta a la factura correcta.",
     step04Title: "Reconcilie con limpieza",
     step04Body:
       "Cada envío se vuelca en un único extracto con la ruta, el nivel de servicio y las partidas de manejo — sin sorpresas «varios».",
@@ -331,7 +331,7 @@ const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Escalonamentos com histórico auditável",
     escalationsBody:
       "Os incidentes tornam-se registos estruturados: quem reportou, o que mudou, quando o despacho agiu. Finanças e operações leem o mesmo rasto.",
-    premiumTitle: "Experiência premium sob pressão operacional",
+    premiumTitle: "Qualidade que se mantém sob pressão operacional",
     premiumBody:
       "Rotas difíceis, entregas parciais e reencaminhamento continuam a apresentar marcos limpos ao destinatário — a qualidade aguenta mesmo quando o roteamento fica ruidoso.",
   },
@@ -346,7 +346,7 @@ const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
       "Dentro da sua conta HenryCo, o espaço de logística guarda recibos, histórico de marcos e encaminhamento de notificações para finanças e operações.",
     step03Title: "Faça correr o volume",
     step03Body:
-      "As reservas recorrentes reutilizam perfis guardados. Os códigos de rastreamento são emitidos de imediato; o comprovativo de entrega anexa-se à fatura certa.",
+      "As reservas recorrentes reutilizam perfis guardados. Os códigos de rastreamento são emitidos na reserva; o comprovativo de entrega anexa-se à fatura certa.",
     step04Title: "Concilie de forma limpa",
     step04Body:
       "Cada envio cai num único extrato com a rota, o nível de serviço e quaisquer linhas de manuseio — sem surpresas «diversos».",
@@ -407,7 +407,7 @@ const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "تصعيدات بسجل قابل للتدقيق",
     escalationsBody:
       "تتحول المشكلات إلى سجلات منظمة: مَن أبلغ، وما الذي تغيّر، ومتى تحرّك الإرسال. تقرأ المالية والعمليات المسار نفسه.",
-    premiumTitle: "تجربة متميّزة تحت ضغط التشغيل",
+    premiumTitle: "جودة تصمد تحت ضغط التشغيل",
     premiumBody:
       "الخطوط الصعبة والتسليمات الجزئية وإعادة التوجيه تبقى تُظهر للمستلِم مراحل واضحة — الجودة تصمد حتى عندما يصبح التوجيه مزعجًا.",
   },
@@ -422,7 +422,7 @@ const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
       "داخل حسابك في HenryCo، تحفظ مساحة الخدمات اللوجستية الفواتير وسجل المراحل وتوجيه الإشعارات للمالية والعمليات.",
     step03Title: "شغّل الحجم",
     step03Body:
-      "تعيد الحجوزات المتكررة استخدام الملفات المحفوظة. تُصدَر رموز التتبع على الفور، ويُرفَق إثبات التسليم بالفاتورة الصحيحة.",
+      "تعيد الحجوزات المتكررة استخدام الملفات المحفوظة. تُصدَر رموز التتبع عند الحجز، ويُرفَق إثبات التسليم بالفاتورة الصحيحة.",
     step04Title: "نظّم الحسابات بنظافة",
     step04Body:
       "تنتقل كل شحنة إلى كشف واحد مع الخط ومستوى الخدمة وأي بنود مناولة — دون مفاجآت «متفرقات».",
@@ -482,7 +482,7 @@ const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Eskalationen mit prüfbarer Historie",
     escalationsBody:
       "Vorfälle werden zu strukturierten Datensätzen: wer gemeldet hat, was sich geändert hat, wann die Disposition reagiert hat. Finanzen und Betrieb lesen aus derselben Spur.",
-    premiumTitle: "Premium-Erlebnis unter operativem Druck",
+    premiumTitle: "Qualität, die unter operativem Druck standhält",
     premiumBody:
       "Schwierige Routen, Teil-Zustellungen und Umroutungen zeigen dem Empfänger weiterhin saubere Meilensteine — Qualität hält, selbst wenn das Routing unruhig wird.",
   },
@@ -497,7 +497,7 @@ const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
       "In Ihrem HenryCo-Konto speichert der Logistik-Arbeitsbereich Belege, Meilensteinhistorie und Benachrichtigungsrouting für Finanzen und Betrieb.",
     step03Title: "Lassen Sie das Volumen laufen",
     step03Body:
-      "Wiederkehrende Buchungen nutzen gespeicherte Profile erneut. Tracking-Codes werden sofort vergeben; Zustellnachweise hängen sich an die richtige Rechnung.",
+      "Wiederkehrende Buchungen nutzen gespeicherte Profile erneut. Tracking-Codes werden bei der Buchung vergeben; Zustellnachweise hängen sich an die richtige Rechnung.",
     step04Title: "Sauber abrechnen",
     step04Body:
       "Jede Sendung läuft in eine einzige Abrechnung mit Route, Service-Stufe und etwaigen Handling-Posten — keine «Sonstiges»-Überraschungen.",
@@ -558,7 +558,7 @@ const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Escalation con uno storico verificabile",
     escalationsBody:
       "Gli incidenti diventano record strutturati: chi ha segnalato, cosa è cambiato, quando il dispatch è intervenuto. Finanza e operations leggono dallo stesso percorso.",
-    premiumTitle: "Esperienza premium sotto stress operativo",
+    premiumTitle: "Qualità che regge sotto stress operativo",
     premiumBody:
       "Tratte difficili, consegne parziali e ricalcolo del routing continuano a mostrare al destinatario tappe pulite — la qualità tiene anche quando il routing si fa rumoroso.",
   },
@@ -573,7 +573,7 @@ const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
       "Dentro il tuo account HenryCo, lo spazio logistica conserva ricevute, storico delle tappe e instradamento delle notifiche per finanza e operations.",
     step03Title: "Fai girare il volume",
     step03Body:
-      "Le prenotazioni ricorrenti riutilizzano i profili salvati. I codici di tracciamento vengono emessi all’istante; la prova di consegna si aggancia alla fattura giusta.",
+      "Le prenotazioni ricorrenti riutilizzano i profili salvati. I codici di tracciamento vengono emessi alla prenotazione; la prova di consegna si aggancia alla fattura giusta.",
     step04Title: "Riconcilia in modo pulito",
     step04Body:
       "Ogni spedizione confluisce in un solo estratto conto con tratta, livello di servizio ed eventuali voci di manipolazione — niente sorprese «varie».",
@@ -633,7 +633,7 @@ const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "可审计的升级处理记录",
     escalationsBody:
       "问题转化为结构化记录:谁上报、变更了什么、调度何时介入。财务与运营读到同一条线索。",
-    premiumTitle: "高压运行下仍是高端体验",
+    premiumTitle: "高压运行下质量依然稳定",
     premiumBody:
       "难送线路、部分送达与改线仍然向收件方呈现清晰的里程碑——即便路径变得嘈杂,质量也撑得住。",
   },
@@ -648,7 +648,7 @@ const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
       "在你的 HenryCo 账户里,物流工作区保存凭证、里程碑历史以及面向财务与运营的通知路由。",
     step03Title: "把量跑起来",
     step03Body:
-      "重复下单会复用已保存的档案。追踪码即时发放;送达凭证挂到正确的发票上。",
+      "重复下单会复用已保存的档案。追踪码在下单时发放;送达凭证挂到正确的发票上。",
     step04Title: "对账清爽",
     step04Body:
       "每一票都汇入同一份对账单,包含线路、服务等级与任何处理明细——没有“杂项”惊喜。",
@@ -703,7 +703,7 @@ const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "ऑडिट-अनुकूल इतिहास के साथ एस्केलेशन",
     escalationsBody:
       "मुद्दे संरचित रिकॉर्ड बनते हैं: किसने रिपोर्ट किया, क्या बदला, डिस्पैच ने कब कार्रवाई की। वित्त और संचालन एक ही पथ से पढ़ते हैं।",
-    premiumTitle: "परिचालन दबाव में प्रीमियम अनुभव",
+    premiumTitle: "परिचालन दबाव में भी बरकरार गुणवत्ता",
     premiumBody:
       "कठिन रूट, आंशिक डिलीवरी और पुनर्मार्गण के बावजूद पाने वाले को स्पष्ट माइलस्टोन दिखते हैं — रूटिंग में शोर हो तो भी गुणवत्ता टिकती है।",
   },
@@ -718,7 +718,7 @@ const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
       "आपके HenryCo खाते में, लॉजिस्टिक्स वर्कस्पेस वित्त/संचालन के लिए रसीदें, माइलस्टोन इतिहास और सूचना रूटिंग रखता है।",
     step03Title: "वॉल्यूम चलाएँ",
     step03Body:
-      "दोहराई जाने वाली बुकिंग सहेजी गई प्रोफ़ाइलों का पुनः उपयोग करती हैं। ट्रैकिंग कोड तुरंत जारी होते हैं; डिलीवरी प्रमाण सही इनवॉइस से जुड़ता है।",
+      "दोहराई जाने वाली बुकिंग सहेजी गई प्रोफ़ाइलों का पुनः उपयोग करती हैं। ट्रैकिंग कोड बुकिंग पर जारी होते हैं; डिलीवरी प्रमाण सही इनवॉइस से जुड़ता है।",
     step04Title: "साफ-सुथरा मिलान करें",
     step04Body:
       "हर शिपमेंट एक ही स्टेटमेंट में जाती है — रूट, सेवा स्तर और कोई हैंडलिंग लाइन — कोई «विविध» का चौंकाने वाला आइटम नहीं।",
@@ -779,7 +779,7 @@ const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Mmaja nwere akụkọ ezi nyocha",
     escalationsBody:
       "Nsogbu na-aghọ ihe ndekọ ahaziri ahazi: onye kọrọ, ihe gbanwere, mgbe nzipu rụrụ ọrụ. Akụnụba na ọrụ na-agụ otu okporo ụzọ.",
-    premiumTitle: "Ahụmihe kacha mma n’okpuru nrụgide ọrụ",
+    premiumTitle: "Ogo na-eguzosi ike n’okpuru nrụgide ọrụ",
     premiumBody:
       "Ụzọ siri ike, nbufe akụkụ, na ngbanwe ụzọ ka na-egosipụta nzọụkwụ doro anya nye onye na-anata — àgwà na-akwụsi ike ọbụlagodi mgbe ụzọ ahụ na-eme mkpọtụ.",
   },
@@ -794,7 +794,7 @@ const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
       "N’ime akaụntụ HenryCo gị, oghere logistics na-echekwa akwụkwọ ego, akụkọ nzọụkwụ na nzipu ọkwa maka akụnụba/ọrụ.",
     step03Title: "Mee ka mpịakọta ahụ rụọ ọrụ",
     step03Body:
-      "Ndebe ndị na-emegharị na-ejigharị profaịlụ echekwara. A na-enye koodu nyocha ozugbo; ihe àmà nnyefe na-ejikọta na akwụkwọ ego ziri ezi.",
+      "Ndebe ndị na-emegharị na-ejigharị profaịlụ echekwara. A na-enye koodu nyocha n’oge ndebe; ihe àmà nnyefe na-ejikọta na akwụkwọ ego ziri ezi.",
     step04Title: "Mezuo akụnụba gị nke ọma",
     step04Body:
       "Mbufe ọ bụla na-aba n’otu nkọwa nke nwere ụzọ, ọkwa ọrụ, na ahịrị nkwado ọ bụla — enweghị mberede «dị iche iche».",
@@ -855,7 +855,7 @@ const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Ìgbéga ọ̀rọ̀ pẹ̀lú ìtàn tó lè ṣe àyẹ̀wò",
     escalationsBody:
       "Ìṣòro di àkọsílẹ̀ tó dára: ta ló ròyìn, kí ló yí padà, ìgbà tí dìsípátì ṣe iṣẹ́. Ìnáwó àti iṣẹ́ ka láti inú ọ̀nà kan náà.",
-    premiumTitle: "Ìrírí ọlọ́là lábẹ́ ìṣe iṣẹ́",
+    premiumTitle: "Dídára tí ó dúró ṣinṣin lábẹ́ ìṣe iṣẹ́",
     premiumBody:
       "Àwọn ọ̀nà líle, ìfijiṣẹ́ apá kan, àti ìpadàdé tún máa fi àwọn ìpele tó kọ́ hàn fún olùgbà — ìpele iṣẹ́ ṣì wà nínú tẹ̀ tó tilẹ̀ jẹ́ pé ọ̀nà ti ń lọ́pọ̀ọ̀rọ̀.",
   },
@@ -870,7 +870,7 @@ const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
       "Nínú akáǹtì HenryCo rẹ, àyè logistics máa tọ́jú àwọn ìwé-ẹ̀rí, ìtàn ìpele àti ìpín ìfìránṣẹ́ fún ìnáwó àti iṣẹ́.",
     step03Title: "Mú àpapọ̀ ṣiṣẹ́",
     step03Body:
-      "Àwọn ìfọwọ́sí àtúnṣe máa lo profaílì tó tọ́jú. A máa tu kóòdù àtẹ̀lé jáde lójú ẹsẹ̀; ẹ̀rí ìfijiṣẹ́ máa fẹsùn mọ́ ìwé-ìṣèlú yẹ̀.",
+      "Àwọn ìfọwọ́sí àtúnṣe máa lo profaílì tó tọ́jú. A máa tu kóòdù àtẹ̀lé jáde nígbà ìfọwọ́sí; ẹ̀rí ìfijiṣẹ́ máa fẹsùn mọ́ ìwé-ìṣèlú yẹ̀.",
     step04Title: "Mú ìbámu wá ní mímọ́",
     step04Body:
       "Ìránṣẹ́ kọ̀ọ̀kan máa lọ sí ìpèpé kan ṣoṣo pẹ̀lú ọ̀nà, ìpele iṣẹ́ àti gbogbo ìlà ìṣàkóso — kò sí ìyàlẹ́nu «mìíràn».",
@@ -931,7 +931,7 @@ const LOGISTICS_BUSINESS_COPY_HA: DeepPartial<LogisticsBusinessCopy> = {
     escalationsTitle: "Ƙarawa tare da tarihi mai sauƙin nazari",
     escalationsBody:
       "Matsalolin sun zama bayanai masu tsari: wanda ya bayar da rahoto, abin da ya canza, lokacin da sashen aikawa ya yi aiki. Kuɗi da ayyuka suna karantawa daga hanya ɗaya.",
-    premiumTitle: "Ƙwarewa mai kyau a ƙarƙashin matsi na aiki",
+    premiumTitle: "Inganci da ke tsayawa a ƙarƙashin matsi na aiki",
     premiumBody:
       "Hanyoyi masu wuya, isar da kaya na sashe, da sake jagoranci har yanzu suna nuna wa mai karɓa matakai masu tsabta — ingantaccen sabis yana riƙe ko da yake hanyoyin sun yi hayaniya.",
   },
@@ -946,7 +946,7 @@ const LOGISTICS_BUSINESS_COPY_HA: DeepPartial<LogisticsBusinessCopy> = {
       "Cikin akwatin HenryCo naka, sararin logistics yana ajiye rasit, tarihin matakai da jagorancin sanarwa ga kuɗi/ayyuka.",
     step03Title: "Tafiyar da yawan",
     step03Body:
-      "Rijistar maimaitaccen tana sake amfani da fayilolin da aka ajiye. Ana ba da lambar bibiya nan take; tabbacin isar da kaya yana ɗauke da takardar kuɗi mai kyau.",
+      "Rijistar maimaitaccen tana sake amfani da fayilolin da aka ajiye. Ana ba da lambar bibiya a lokacin rijista; tabbacin isar da kaya yana ɗauke da takardar kuɗi mai kyau.",
     step04Title: "Sasanta a tsabta",
     step04Body:
       "Kowace jigila tana shiga cikin sanarwa ɗaya tare da hanya, matakin sabis, da kowane layukan kulawa — ba a sami abubuwan mamaki «daban-daban» ba.",

@@ -384,7 +384,7 @@ const EN: CareCopy = {
       reviews: { label: "Reviews", pendingTemplate: "{count} pending approval" },
     },
     alertsPanel: {
-      eyebrow: "Smart alerts",
+      eyebrow: "Alerts",
       title: "Finance and operations anomaly watch",
       subtitle: "This is where the owner catches unusual pressure before it becomes damage.",
       empty: "No major anomalies are visible right now.",
@@ -468,7 +468,7 @@ const EN: CareCopy = {
       title: "What the owner should track next",
       subtitle: "The company becomes more productive when insight is turned into action.",
       expenseFlags: {
-        title: "Smart expense red flags",
+        title: "Expense red flags",
         topTemplate: "Top recent expense category is {category} at {amount}.",
         emptyText: "No major category pressure is visible yet.",
       },
