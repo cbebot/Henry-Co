@@ -5,6 +5,8 @@ import type {
   InitiatePaymentResult,
   RefundParams,
   RefundResult,
+  ListRefundsParams,
+  ProviderRefundSummary,
   VerifyWebhookParams,
   VerifiedWebhook,
   FinalizeParams,
@@ -65,6 +67,12 @@ export class MockProvider implements PaymentProviderAdapter {
     return { ok: true, value: { refundReference: `mockrf_${params.providerReference}` } };
   }
 
+  /** V3-19 — the mock holds no refund state; an empty list means "create fresh". */
+  async listRefunds(_params: ListRefundsParams): Promise<Result<ProviderRefundSummary[], ProviderError>> {
+    if (this.failureMode === "fatal") return this.err("mock_list_refunds_fatal", false);
+    return { ok: true, value: [] };
+  }
+
   /**
    * Stateless confirm (D1). `providerEventId` is the reference itself so a
    * finalize and a later charge webhook for the same reference dedup against
@@ -101,7 +109,14 @@ export class MockProvider implements PaymentProviderAdapter {
     if (!constantTimeEqual(params.signature, expected)) {
       return this.err("mock_bad_signature", false);
     }
-    let parsed: { id?: string; type?: string; reference?: string; status?: string };
+    let parsed: {
+      id?: string;
+      type?: string;
+      reference?: string;
+      status?: string;
+      amount?: number;
+      refund_reference?: string;
+    };
     try {
       parsed = JSON.parse(params.rawBody);
     } catch {
@@ -112,9 +127,29 @@ export class MockProvider implements PaymentProviderAdapter {
         ? "succeeded"
         : parsed.status === "failed"
           ? "failed"
-          : parsed.status === "refunded"
-            ? "refunded"
-            : null;
+          : null;
+    // V3-19: refund outcomes normalise to `refundEvent` (mirrors the live adapter) —
+    // the DB decides the intent's terminal status from cumulative refund truth.
+    const refundEvent: VerifiedWebhook["refundEvent"] =
+      parsed.status === "refunded" || parsed.status === "refund_processed"
+        ? {
+            outcome: "processed",
+            amountMinor:
+              typeof parsed.amount === "number" && Number.isInteger(parsed.amount) && parsed.amount > 0
+                ? parsed.amount
+                : null,
+            refundReference: parsed.refund_reference ?? null,
+          }
+        : parsed.status === "refund_failed"
+          ? {
+              outcome: "failed",
+              amountMinor:
+                typeof parsed.amount === "number" && Number.isInteger(parsed.amount) && parsed.amount > 0
+                  ? parsed.amount
+                  : null,
+              refundReference: parsed.refund_reference ?? null,
+            }
+          : undefined;
     return {
       ok: true,
       value: {
@@ -122,6 +157,7 @@ export class MockProvider implements PaymentProviderAdapter {
         eventType: parsed.type ?? "unknown",
         providerReference: parsed.reference ?? "",
         impliedStatus,
+        refundEvent,
       },
     };
   }

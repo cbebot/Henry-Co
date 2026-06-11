@@ -100,6 +100,17 @@ export type PaymentDocumentCopy = {
 
   // Default invoice subtitle when none is provided
   defaultInvoiceDescription: string;
+
+  // Credit note (V3-19) — the legal face of a confirmed refund. Money figures
+  // stay raw; the {issuer}/{email} placeholders interpolate from config.
+  creditNoteType: string;
+  totalCredited: string;
+  metaRefunded: string;
+  refundOf: string; // label preceding the original receipt number
+  creditNoteItemsSection: string;
+  creditNoteItemsEmpty: string;
+  creditNoteLegal1: string;
+  creditNoteLegal2: string;
 };
 
 const EN: PaymentDocumentCopy = {
@@ -173,6 +184,17 @@ const EN: PaymentDocumentCopy = {
     "Payment is recognised once settlement is confirmed; the status above reflects the latest reconciliation.",
 
   defaultInvoiceDescription: "Payment summary",
+
+  creditNoteType: "Credit note",
+  totalCredited: "Amount credited",
+  metaRefunded: "Refunded",
+  refundOf: "Refund of receipt",
+  creditNoteItemsSection: "What was refunded",
+  creditNoteItemsEmpty: "No items recorded.",
+  creditNoteLegal1:
+    "This credit note evidences a refund issued by {issuer} against the receipt referenced above. Any tax shown reverses the tax on the refunded portion.",
+  creditNoteLegal2:
+    "Questions about this credit note? Contact {email} within 7 days for the quickest resolution.",
 };
 
 const FR: Partial<PaymentDocumentCopy> = {
@@ -234,6 +256,17 @@ const FR: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "Le paiement est reconnu une fois le règlement confirmé ; le statut ci-dessus reflète le dernier rapprochement.",
   defaultInvoiceDescription: "Récapitulatif de paiement",
+
+  creditNoteType: "Avoir",
+  totalCredited: "Montant crédité",
+  metaRefunded: "Remboursé le",
+  refundOf: "Remboursement du reçu",
+  creditNoteItemsSection: "Ce qui a été remboursé",
+  creditNoteItemsEmpty: "Aucun article enregistré.",
+  creditNoteLegal1:
+    "Cet avoir atteste d'un remboursement émis par {issuer} au titre du reçu référencé ci-dessus. Toute taxe indiquée annule la taxe sur la part remboursée.",
+  creditNoteLegal2:
+    "Une question sur cet avoir ? Contactez {email} sous 7 jours pour une résolution rapide.",
 };
 
 const ES: Partial<PaymentDocumentCopy> = {
@@ -295,6 +328,17 @@ const ES: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "El pago se reconoce una vez confirmada la liquidación; el estado anterior refleja la última conciliación.",
   defaultInvoiceDescription: "Resumen de pago",
+
+  creditNoteType: "Nota de crédito",
+  totalCredited: "Importe abonado",
+  metaRefunded: "Reembolsado",
+  refundOf: "Reembolso del recibo",
+  creditNoteItemsSection: "Lo reembolsado",
+  creditNoteItemsEmpty: "No hay artículos registrados.",
+  creditNoteLegal1:
+    "Esta nota de crédito acredita un reembolso emitido por {issuer} sobre el recibo arriba referenciado. Cualquier impuesto mostrado revierte el impuesto de la parte reembolsada.",
+  creditNoteLegal2:
+    "¿Preguntas sobre esta nota de crédito? Escriba a {email} en un plazo de 7 días para una resolución rápida.",
 };
 
 const PT: Partial<PaymentDocumentCopy> = {
@@ -356,6 +400,17 @@ const PT: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "O pagamento é reconhecido após a confirmação da liquidação; o estado acima reflete a conciliação mais recente.",
   defaultInvoiceDescription: "Resumo de pagamento",
+
+  creditNoteType: "Nota de crédito",
+  totalCredited: "Valor creditado",
+  metaRefunded: "Reembolsado",
+  refundOf: "Reembolso do recibo",
+  creditNoteItemsSection: "O que foi reembolsado",
+  creditNoteItemsEmpty: "Nenhum item registado.",
+  creditNoteLegal1:
+    "Esta nota de crédito comprova um reembolso emitido por {issuer} relativo ao recibo acima referenciado. Qualquer imposto apresentado reverte o imposto da parte reembolsada.",
+  creditNoteLegal2:
+    "Dúvidas sobre esta nota de crédito? Contacte {email} no prazo de 7 dias para uma resolução rápida.",
 };
 
 const DE: Partial<PaymentDocumentCopy> = {
@@ -417,6 +472,17 @@ const DE: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "Die Zahlung gilt als anerkannt, sobald die Abrechnung bestätigt ist; der obige Status spiegelt den letzten Abgleich wider.",
   defaultInvoiceDescription: "Zahlungsübersicht",
+
+  creditNoteType: "Gutschrift",
+  totalCredited: "Gutgeschriebener Betrag",
+  metaRefunded: "Erstattet",
+  refundOf: "Erstattung zur Quittung",
+  creditNoteItemsSection: "Was erstattet wurde",
+  creditNoteItemsEmpty: "Keine Positionen erfasst.",
+  creditNoteLegal1:
+    "Diese Gutschrift belegt eine von {issuer} ausgestellte Erstattung zur oben genannten Quittung. Ausgewiesene Steuern kehren die Steuer auf den erstatteten Anteil um.",
+  creditNoteLegal2:
+    "Fragen zu dieser Gutschrift? Kontaktieren Sie {email} innerhalb von 7 Tagen für eine schnelle Klärung.",
 };
 
 const IT: Partial<PaymentDocumentCopy> = {
@@ -478,6 +544,17 @@ const IT: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "Il pagamento è riconosciuto una volta confermata la liquidazione; lo stato sopra riflette l'ultima riconciliazione.",
   defaultInvoiceDescription: "Riepilogo del pagamento",
+
+  creditNoteType: "Nota di credito",
+  totalCredited: "Importo accreditato",
+  metaRefunded: "Rimborsato",
+  refundOf: "Rimborso della ricevuta",
+  creditNoteItemsSection: "Cosa è stato rimborsato",
+  creditNoteItemsEmpty: "Nessuna voce registrata.",
+  creditNoteLegal1:
+    "Questa nota di credito attesta un rimborso emesso da {issuer} a fronte della ricevuta sopra indicata. Le imposte indicate stornano l'imposta sulla parte rimborsata.",
+  creditNoteLegal2:
+    "Domande su questa nota di credito? Contatta {email} entro 7 giorni per una rapida risoluzione.",
 };
 
 const AR: Partial<PaymentDocumentCopy> = {
@@ -539,6 +616,17 @@ const AR: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "يُعترف بالدفع بمجرد تأكيد التسوية؛ تعكس الحالة أعلاه أحدث تسوية حسابية.",
   defaultInvoiceDescription: "ملخص الدفع",
+
+  creditNoteType: "إشعار دائن",
+  totalCredited: "المبلغ المعاد",
+  metaRefunded: "تم الاسترداد",
+  refundOf: "استرداد للإيصال",
+  creditNoteItemsSection: "ما تم استرداده",
+  creditNoteItemsEmpty: "لا توجد عناصر مسجلة.",
+  creditNoteLegal1:
+    "يثبت إشعار الدائن هذا استردادًا صادرًا عن {issuer} مقابل الإيصال المشار إليه أعلاه. وأي ضريبة مبيّنة تعكس الضريبة على الجزء المستردّ.",
+  creditNoteLegal2:
+    "لديك سؤال حول إشعار الدائن هذا؟ تواصل مع {email} خلال 7 أيام لحل أسرع.",
 };
 
 const ZH: Partial<PaymentDocumentCopy> = {
@@ -598,6 +686,17 @@ const ZH: Partial<PaymentDocumentCopy> = {
     "本发票由 {issuer} 在统一开票下开具。原始业务部门仍是交付、争议和退款条款的依据。",
   invoiceLegal2: "付款在结算确认后确认；上述状态反映最新对账结果。",
   defaultInvoiceDescription: "付款摘要",
+
+  creditNoteType: "贷记单",
+  totalCredited: "退款金额",
+  metaRefunded: "已退款",
+  refundOf: "对应收据的退款",
+  creditNoteItemsSection: "退款明细",
+  creditNoteItemsEmpty: "暂无记录项目。",
+  creditNoteLegal1:
+    "本贷记单证明 {issuer} 已就上述收据签发退款。所示税额为退款部分相应税额的冲销。",
+  creditNoteLegal2:
+    "对本贷记单有疑问？请在 7 天内联系 {email} 以便尽快处理。",
 };
 
 const HI: Partial<PaymentDocumentCopy> = {
@@ -659,6 +758,17 @@ const HI: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "निपटान की पुष्टि होते ही भुगतान मान्य होता है; ऊपर की स्थिति नवीनतम मिलान दर्शाती है।",
   defaultInvoiceDescription: "भुगतान सारांश",
+
+  creditNoteType: "क्रेडिट नोट",
+  totalCredited: "वापस की गई राशि",
+  metaRefunded: "धनवापसी की गई",
+  refundOf: "रसीद की धनवापसी",
+  creditNoteItemsSection: "क्या वापस किया गया",
+  creditNoteItemsEmpty: "कोई आइटम दर्ज नहीं।",
+  creditNoteLegal1:
+    "यह क्रेडिट नोट {issuer} द्वारा ऊपर संदर्भित रसीद के विरुद्ध जारी धनवापसी का प्रमाण है। दर्शाया गया कोई भी कर वापस किए गए हिस्से के कर का प्रतिवर्तन है।",
+  creditNoteLegal2:
+    "इस क्रेडिट नोट के बारे में प्रश्न? शीघ्र समाधान के लिए 7 दिनों के भीतर {email} से संपर्क करें।",
 };
 
 const IG: Partial<PaymentDocumentCopy> = {
@@ -720,6 +830,17 @@ const IG: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "A na-anabata ịkwụ ụgwọ ozugbo akwadoro nkwụ ụgwọ; ọnọdụ dị n'elu na-egosi nhazi ọhụrụ.",
   defaultInvoiceDescription: "Nchịkọta ịkwụ ụgwọ",
+
+  creditNoteType: "Akwụkwọ nkwụghachi ego",
+  totalCredited: "Ego enyeghachiri",
+  metaRefunded: "Enyeghachiri",
+  refundOf: "Nkwụghachi nke akwụkwọ nnata",
+  creditNoteItemsSection: "Ihe enyeghachiri",
+  creditNoteItemsEmpty: "Ọ dịghị ihe edekọrọ.",
+  creditNoteLegal1:
+    "Akwụkwọ a na-egosi nkwụghachi ego {issuer} nyere maka akwụkwọ nnata e depụtara n'elu. Ụtụ ọ bụla e gosiri na-eweghachi ụtụ nke akụkụ enyeghachiri.",
+  creditNoteLegal2:
+    "Ị nwere ajụjụ gbasara akwụkwọ a? Kpọtụrụ {email} n'ime ụbọchị 7 maka ngwọta ọsọ ọsọ.",
 };
 
 const YO: Partial<PaymentDocumentCopy> = {
@@ -781,6 +902,17 @@ const YO: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "A gba ìsanwó nígbà tí a bá ti jẹ́rìí ìsanwó; ipò tó wà lókè ń ṣàfihàn ìfìwéwé tuntun.",
   defaultInvoiceDescription: "Àkótán ìsanwó",
+
+  creditNoteType: "Ìwé krẹ́dítì",
+  totalCredited: "Owó tí a dá padà",
+  metaRefunded: "A dá padà",
+  refundOf: "Ìdápadà fún ìwé ẹ̀rí",
+  creditNoteItemsSection: "Ohun tí a dá padà",
+  creditNoteItemsEmpty: "Kò sí ohun tí a kọ sílẹ̀.",
+  creditNoteLegal1:
+    "Ìwé krẹ́dítì yìí jẹ́ ẹ̀rí ìdápadà owó tí {issuer} ṣe fún ìwé ẹ̀rí tí a tọ́ka sí lókè. Owó orí èyíkéyìí tí ó hàn yí owó orí apá tí a dá padà padà.",
+  creditNoteLegal2:
+    "Ìbéèrè nípa ìwé krẹ́dítì yìí? Kàn sí {email} láàrin ọjọ́ 7 fún ìdáhùn kíákíá.",
 };
 
 const HA: Partial<PaymentDocumentCopy> = {
@@ -842,6 +974,17 @@ const HA: Partial<PaymentDocumentCopy> = {
   invoiceLegal2:
     "Ana karɓar biya da zarar an tabbatar da sasantawa; matsayin da ke sama yana nuna sabuwar daidaitawa.",
   defaultInvoiceDescription: "Taƙaitaccen biya",
+
+  creditNoteType: "Takardar maido da kuɗi",
+  totalCredited: "Kuɗin da aka maido",
+  metaRefunded: "An maido",
+  refundOf: "Maido kan rasit",
+  creditNoteItemsSection: "Abin da aka maido",
+  creditNoteItemsEmpty: "Babu abin da aka rubuta.",
+  creditNoteLegal1:
+    "Wannan takarda tana tabbatar da maido da kuɗi da {issuer} ya bayar kan rasit ɗin da ke sama. Duk harajin da aka nuna yana juya harajin ɓangaren da aka maido.",
+  creditNoteLegal2:
+    "Tambaya game da wannan takarda? Tuntuɓi {email} cikin kwanaki 7 don warware ta da sauri.",
 };
 
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<PaymentDocumentCopy>>> = {

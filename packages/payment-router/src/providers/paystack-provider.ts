@@ -5,6 +5,8 @@ import type {
   InitiatePaymentResult,
   RefundParams,
   RefundResult,
+  ListRefundsParams,
+  ProviderRefundSummary,
   VerifyWebhookParams,
   VerifiedWebhook,
   FinalizeParams,
@@ -225,14 +227,15 @@ export class PaystackProvider implements PaymentProviderAdapter {
    * change the digest. Fail-closed: any missing/mismatched signature is an
    * error the route turns into a 401. Never throws for an untrusted payload.
    *
-   * Event → implied status:
-   *   charge.success  → succeeded   (dedup key = transaction reference; matches finalize, G2)
-   *   charge.failed   → failed
-   *   refund.processed→ refunded    (money confirmed moved — Q3)
-   *   refund.failed   → succeeded   (revert: money never left)
-   *   everything else → null        (informational; the route just acks)
+   * Event → normalisation:
+   *   charge.success   → impliedStatus succeeded (dedup key = transaction reference; matches finalize, G2)
+   *   charge.failed    → impliedStatus failed
+   *   refund.processed → refundEvent {outcome: processed}  (money confirmed moved — Q3)
+   *   refund.failed    → refundEvent {outcome: failed}     (revert: money never left)
+   *   everything else  → null impliedStatus (informational; the route just acks)
    * Refund events resolve the intent by the ORIGINAL charge reference
-   * (`data.transaction_reference`) and dedup in a distinct `refund:` namespace.
+   * (`data.transaction_reference`); their effect is applied by apply_refund_webhook,
+   * which dedups against the RESOLVED refund row (the payload has no refund id).
    */
   async verifyWebhook(
     params: VerifyWebhookParams,
@@ -256,6 +259,7 @@ export class PaystackProvider implements PaymentProviderAdapter {
     let impliedStatus: VerifiedWebhook["impliedStatus"] = null;
     let providerReference = chargeRef || txnRef;
     let providerEventId = chargeRef || txnRef;
+    let refundEvent: VerifiedWebhook["refundEvent"];
 
     switch (event) {
       case "charge.success":
@@ -264,18 +268,36 @@ export class PaystackProvider implements PaymentProviderAdapter {
       case "charge.failed":
         impliedStatus = "failed";
         break;
+      // V3-19: refund OUTCOME events normalise to `refundEvent` — NOT to an
+      // impliedStatus. The payload carries no refund id (only the original
+      // transaction reference + a STRING amount), and whether a confirmed refund
+      // means `refunded` or back-to-`succeeded` depends on cumulative partials
+      // only the DB knows — so the route hands these to apply_refund_webhook,
+      // which resolves the intent's single in-flight refund row and decides.
       case "refund.processed":
-        impliedStatus = "refunded";
         providerReference = txnRef;
         providerEventId = `refund:${txnRef}`;
+        refundEvent = {
+          outcome: "processed",
+          amountMinor: readWebhookAmountMinor(data.amount),
+          refundReference: typeof data.refund_reference === "string" && data.refund_reference !== ""
+            ? data.refund_reference
+            : null,
+        };
         break;
       case "refund.failed":
-        impliedStatus = "succeeded"; // revert refund_processing → succeeded
         providerReference = txnRef;
         providerEventId = `refund:${txnRef}`;
+        refundEvent = {
+          outcome: "failed",
+          amountMinor: readWebhookAmountMinor(data.amount),
+          refundReference: typeof data.refund_reference === "string" && data.refund_reference !== ""
+            ? data.refund_reference
+            : null,
+        };
         break;
       default:
-        impliedStatus = null; // informational (charge.pending, refund.pending, …)
+        impliedStatus = null; // informational (charge.pending, refund.pending/processing/needs-attention, …)
     }
 
     return {
@@ -288,11 +310,38 @@ export class PaystackProvider implements PaymentProviderAdapter {
         // V3-VAT-01: capture the fee if the webhook carries it (charge.success
         // sometimes does, often sends `fees: null` — then it stays undefined and the
         // reliable value comes from the finalize/verify path). Refund payloads have no
-        // `fees`, so this is naturally undefined for them.
+        // `fees` (the provider reports NO fee return on refunds — never assumed), so
+        // this is naturally undefined for them.
         feeMinor: readProviderFeeMinor(data.fees),
         feeVatMinor: readFeeVatFromBreakdown(data.fees_breakdown),
+        refundEvent,
       },
     };
+  }
+
+  /**
+   * V3-19 — list this transaction's refunds at the provider (GET /refund). Used
+   * for ADOPT-DON'T-REDRIVE: after a crash between recording a refund attempt and
+   * the create call, the route adopts a queued refund instead of creating a
+   * second one (create-refund is not idempotent — a blind retry double-refunds).
+   */
+  async listRefunds(params: ListRefundsParams): Promise<Result<ProviderRefundSummary[], ProviderError>> {
+    const res = await this.call(
+      "GET",
+      `/refund?transaction=${encodeURIComponent(params.providerReference)}`,
+    );
+    if (!res.ok) return res;
+    const rows = Array.isArray(res.value.data) ? (res.value.data as Array<Record<string, unknown>>) : [];
+    const refunds: ProviderRefundSummary[] = [];
+    for (const row of rows) {
+      if (row.id === undefined || row.id === null) continue;
+      refunds.push({
+        refundReference: String(row.id),
+        amountMinor: readWebhookAmountMinor(row.amount),
+        status: typeof row.status === "string" ? row.status : "",
+      });
+    }
+    return { ok: true, value: refunds };
   }
 }
 
@@ -303,6 +352,23 @@ export class PaystackProvider implements PaymentProviderAdapter {
  */
 function readProviderFeeMinor(value: unknown): number | undefined {
   return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : undefined;
+}
+
+/**
+ * V3-19 — read a refund payload amount as whole positive kobo, or null. Paystack's
+ * refund webhooks send `amount` as a STRING ("10000"); the list endpoint sends a
+ * number. Strict: anything non-integral/non-positive is "not reported" (null) —
+ * the DB then matches by the in-flight refund row alone, never a guessed amount.
+ */
+function readWebhookAmountMinor(value: unknown): number | null {
+  if (typeof value === "number") {
+    return Number.isInteger(value) && value > 0 ? value : null;
+  }
+  if (typeof value === "string" && /^[0-9]+$/.test(value.trim())) {
+    const parsed = Number(value.trim());
+    return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
+  }
+  return null;
 }
 
 /**

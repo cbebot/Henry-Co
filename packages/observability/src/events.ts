@@ -260,13 +260,24 @@ export type HenryEventName =
   | "henry.payment.webhook.rejected"
   | "henry.payment.no_suitable_provider"
   | "henry.payment.illegal_transition"
+  // refunds (V3-19): `initiated` is the staff action; `processed`/`failed` fire
+  // exactly once per provider outcome (apply_refund_webhook's dedup gate);
+  // `orphaned` flags a provider refund event with NO internal record (e.g. a
+  // dashboard-side refund) — finance follows up, the books never guess.
+  | "henry.payment.refund.initiated"
+  | "henry.payment.refund.processed"
+  | "henry.payment.refund.failed"
+  | "henry.payment.refund.orphaned"
   // payment documents (V3-18): receipt/invoice generation + retrieval. Like the
   // payment events above, NO client-facing payload names the chosen processor
   // (ANTI-CLONE Principle 9) — the document is from Henry Onyx, never the gateway.
   | "henry.invoice.generated"
   | "henry.invoice.downloaded"
   | "henry.receipt.generated"
-  | "henry.receipt.downloaded";
+  | "henry.receipt.downloaded"
+  // credit notes (V3-19): the legal face of a confirmed refund (HO-CRN-),
+  // issuer Henry Onyx Limited, processor never named.
+  | "henry.credit_note.generated";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

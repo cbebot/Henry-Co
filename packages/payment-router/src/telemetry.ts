@@ -31,6 +31,10 @@ const PAYMENT_EVENT_OUTCOME: Record<PaymentEventName, EventOutcome> = {
   "henry.payment.intent.succeeded": "paid",
   "henry.payment.intent.failed": "failed",
   "henry.payment.intent.refunded": "completed",
+  "henry.payment.refund.initiated": "requested",
+  "henry.payment.refund.processed": "completed",
+  "henry.payment.refund.failed": "failed",
+  "henry.payment.refund.orphaned": "blocked",
   "henry.payment.webhook.received": "requested",
   "henry.payment.webhook.verified": "verified",
   "henry.payment.webhook.rejected": "rejected",
@@ -48,6 +52,12 @@ const PAYMENT_EVENT_CLASSIFICATION: Record<PaymentEventName, EventClassification
   "henry.payment.intent.succeeded": "system_state",
   "henry.payment.intent.failed": "system_state",
   "henry.payment.intent.refunded": "system_state",
+  // V3-19: `initiated` is the one staff-driven moment; the outcomes are the
+  // provider/state machine acting on their own.
+  "henry.payment.refund.initiated": "user_action",
+  "henry.payment.refund.processed": "system_state",
+  "henry.payment.refund.failed": "system_state",
+  "henry.payment.refund.orphaned": "system_state",
   "henry.payment.webhook.received": "system_state",
   "henry.payment.webhook.verified": "system_state",
   "henry.payment.webhook.rejected": "system_state",

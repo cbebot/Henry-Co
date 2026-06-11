@@ -15,6 +15,10 @@
  *   5. A total that does not reconcile to the ledger debit is REJECTED.
  *   6. No processor is named anywhere; no retired "Henry & Co." / hardcoded address.
  *   7. PDFs render in en + fr + ig and are valid (%PDF…).
+ *   8. V3-19: the credit note (HO-CRN-) ties to the refund row + the posted refund-
+ *      settlement entry, its VAT line is the POSTED reversal, mismatches are
+ *      REJECTED, and it renders in ≥2 locales with the same brand/no-processor
+ *      guarantees — referencing the original receipt.
  */
 
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
@@ -33,7 +37,7 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: Parameters
   return realFetch(input, init);
 }) as typeof fetch;
 
-import { ReceiptDocument, InvoiceDocument } from "@henryco/branded-documents";
+import { ReceiptDocument, InvoiceDocument, CreditNoteDocument } from "@henryco/branded-documents";
 import { buildDocumentIssuer, TAX } from "@henryco/config";
 import { getPaymentDocumentCopy } from "@henryco/i18n";
 import { applyOutputVat, type PricingBreakdown } from "@henryco/pricing";
@@ -42,7 +46,9 @@ import paymentDocuments from "../lib/payment-documents.ts";
 const {
   buildReceiptProps,
   buildInvoiceProps,
+  buildCreditNoteProps,
   generateReceiptPdf,
+  generateCreditNotePdf,
   splitDocumentMoney,
   renderPaymentDocumentBuffer,
   PaymentDocumentError,
@@ -277,6 +283,88 @@ console.log("\n[9] V3-VAT-01: pricing applyOutputVat (config-driven) → receipt
   check("receipt VAT renders the config-computed output VAT (3000)", props.receipt.taxKobo === 3000, String(props.receipt.taxKobo));
   check("receipt total = gross (43000)", props.receipt.totalKobo === 43000, String(props.receipt.totalKobo));
   check("subtotal + fees + tax === total (reconciles)", props.receipt.subtotalKobo + (props.receipt.feesKobo ?? 0) + props.receipt.taxKobo === props.receipt.totalKobo);
+}
+
+// ── V3-19: credit note (the legal face of a provider-confirmed refund) ──
+const REFUND_ID = "cccccccc-2222-2222-2222-222222222222";
+const REFUND_LEDGER_ENTRY_ID = "dddddddd-3333-3333-3333-333333333333";
+
+// A 40% partial refund of the [9] sale: 17200 of 43000, with the POSTED
+// proportional VAT reversal round(3000·17200/43000) = 1200.
+const confirmedRefund = {
+  refundId: REFUND_ID,
+  intentId: INTENT_ID,
+  amountMinor: 17200,
+  currency: "NGN",
+  ledgerEntryId: REFUND_LEDGER_ENTRY_ID,
+  ledgerDebitMinor: 17200,
+  vatReversedMinor: 1200,
+  receiptNo: "HO-RCT-2026-000009",
+  division: "property" as string | null,
+  paymentMethod: "card",
+  paymentReference: "TXNREF_VAT",
+  refundedAt: "2026-06-11T09:00:00.000Z",
+  creditNoteNo: "HO-CRN-2026-000001",
+};
+
+console.log("\n[10] V3-19: credit note ties to the refund + posted reversal; mismatches REJECTED");
+{
+  const props = buildCreditNoteProps({ refund: confirmedRefund, buyer, locale: "en" });
+  check("credit note references the refund row", props.creditNote.refundId === REFUND_ID);
+  check("credit note references the refund-settlement entry", props.creditNote.ledgerEntryId === REFUND_LEDGER_ENTRY_ID);
+  check("credit note references the ORIGINAL receipt", props.creditNote.receiptNo === "HO-RCT-2026-000009");
+  check("total === refund amount === posting debit (17200)", props.creditNote.totalKobo === 17200);
+  check("VAT line === the POSTED reversal (1200)", props.creditNote.taxKobo === 1200, String(props.creditNote.taxKobo));
+  check("subtotal + tax === total (reconciles)", props.creditNote.subtotalKobo + props.creditNote.taxKobo === props.creditNote.totalKobo);
+  check("issuer === 'Henry Onyx Limited'", props.issuer.name === "Henry Onyx Limited");
+  assertNoForbidden("credit-note props", JSON.stringify(props));
+
+  let threwLedger = false;
+  try {
+    buildCreditNoteProps({ refund: { ...confirmedRefund, ledgerDebitMinor: 17199 }, buyer, locale: "en" });
+  } catch (e) {
+    threwLedger = e instanceof PaymentDocumentError && e.reason === "ledger_mismatch";
+  }
+  check("posting-debit mismatch throws PaymentDocumentError(ledger_mismatch)", threwLedger);
+
+  let threwVat = false;
+  try {
+    buildCreditNoteProps({ refund: { ...confirmedRefund, vatReversedMinor: 17201 }, buyer, locale: "en" });
+  } catch (e) {
+    threwVat = e instanceof PaymentDocumentError && e.reason === "invalid_amount";
+  }
+  check("VAT beyond the refund amount throws PaymentDocumentError(invalid_amount)", threwVat);
+}
+
+console.log("\n[11] V3-19: credit-note PDFs render in en + fr (≥2 locales), brand-clean");
+async function renderCreditNote(locale: "en" | "fr", file: string) {
+  const props = buildCreditNoteProps({ refund: confirmedRefund, buyer, locale });
+  const buffer = await renderPaymentDocumentBuffer(CreditNoteDocument(props));
+  const head = buffer.subarray(0, 5).toString("latin1");
+  check(`credit-note-${locale}.pdf is a valid PDF (%PDF)`, head === "%PDF-", head);
+  check(`credit-note-${locale}.pdf is non-trivial (> 3KB)`, buffer.length > 3000, `${buffer.length} bytes`);
+  assertNoForbidden(`credit-note-${locale}.pdf bytes`, buffer.toString("latin1"));
+  writeFileSync(join(OUT, file), buffer);
+  console.log(`    → wrote ${file} (${buffer.length} bytes)`);
+}
+await renderCreditNote("en", "credit-note-en.pdf");
+await renderCreditNote("fr", "credit-note-fr.pdf");
+{
+  const en = getPaymentDocumentCopy("en");
+  const fr = getPaymentDocumentCopy("fr");
+  check("en creditNoteType 'Credit note'", en.creditNoteType === "Credit note");
+  check("fr creditNoteType 'Avoir' (differs)", fr.creditNoteType === "Avoir" && fr.creditNoteType !== en.creditNoteType);
+}
+
+console.log("\n[12] V3-19: generateCreditNotePdf end-to-end (emits telemetry, returns buffer)");
+{
+  const { buffer, props } = await generateCreditNotePdf({
+    refund: confirmedRefund, buyer, locale: "en", actorId: "proof",
+  });
+  check("credit note renders end-to-end", buffer.subarray(0, 5).toString("latin1") === "%PDF-");
+  check("credit note number HO-CRN-2026-000001", props.creditNote.creditNoteNo === "HO-CRN-2026-000001");
+  writeFileSync(join(OUT, "credit-note-e2e-en.pdf"), buffer);
+  console.log(`    → wrote credit-note-e2e-en.pdf (${buffer.length} bytes)`);
 }
 
 console.log(`\n${failures === 0 ? "✅ ALL PROOFS PASSED" : `❌ ${failures} CHECK(S) FAILED`}\n`);

@@ -273,3 +273,76 @@ export function buildSaleRevenueReversalLines(input: { grossMinor: number; outpu
   lines.push(credit("payments_clearing", grossMinor));
   return lines;
 }
+
+// ---------------------------------------------------------------------------
+// V3-19 — partial-refund reversal math (MIRROR of apply_refund_webhook).
+// ---------------------------------------------------------------------------
+
+/**
+ * The PROPORTIONAL VAT/revenue split for a (possibly partial) refund's
+ * sale-revenue reversal — the executable spec `payments_private.
+ * apply_refund_webhook` transcribes. Clamp-based:
+ *
+ *   vat = clamp( round(originalVat · refund / gross),
+ *                lower: refund − remainingRevenue,   // revenue can't over-reverse
+ *                upper: min(remainingVat, refund) )  // VAT can't over-reverse
+ *   revenue = refund − vat
+ *
+ * Under these clamps every leg stays >= 0, cumulative reversals can never
+ * exceed what was posted, and the FINAL partial reverses the exact remainders
+ * (vat = remainingVat, revenue = remainingRevenue) with NO special case —
+ * per-partial rounding can never drift the books. A refund the remainders
+ * cannot cover means a mis-posted sale: fail loudly, never half-reverse.
+ */
+export function computeProportionalVatReversal(input: {
+  refundMinor: number;
+  grossMinor: number;
+  originalVatMinor: number;
+  remainingVatMinor: number;
+  remainingRevenueMinor: number;
+}): { vatMinor: number; revenueMinor: number } {
+  const { refundMinor, grossMinor, originalVatMinor, remainingVatMinor, remainingRevenueMinor } = input;
+  requirePositiveKobo(refundMinor);
+  requirePositiveKobo(grossMinor);
+  requireWholeKoboNamed(originalVatMinor, "originalVatMinor");
+  requireWholeKoboNamed(remainingVatMinor, "remainingVatMinor");
+  requireWholeKoboNamed(remainingRevenueMinor, "remainingRevenueMinor");
+  if (remainingVatMinor + remainingRevenueMinor < refundMinor) {
+    throw new LedgerImbalanceError(
+      `sale remainder (rev ${remainingRevenueMinor} + vat ${remainingVatMinor}) does not cover refund ${refundMinor}`,
+      "invalid_amount",
+    );
+  }
+  const proportional = Math.round((originalVatMinor * refundMinor) / grossMinor);
+  const vatMinor = Math.min(
+    Math.max(proportional, refundMinor - remainingRevenueMinor, 0),
+    remainingVatMinor,
+    refundMinor,
+  );
+  return { vatMinor, revenueMinor: refundMinor - vatMinor };
+}
+
+/**
+ * The reversal legs for a (possibly partial) refund: DR platform_revenue +
+ * DR vat_output_payable / CR payments_clearing — legs built CONDITIONALLY
+ * because under adversarial rounding a final partial can be ALL VAT
+ * (revenue 0) or all revenue (VAT 0); a zero line is never emitted. Mirrors
+ * the line construction inside `apply_refund_webhook`.
+ */
+export function buildPartialSaleRevenueReversalLines(input: {
+  refundMinor: number;
+  vatMinor: number;
+}): JournalLine[] {
+  const { refundMinor, vatMinor } = input;
+  requirePositiveKobo(refundMinor);
+  requireWholeKoboNamed(vatMinor, "vatMinor");
+  if (vatMinor > refundMinor) {
+    throw new LedgerImbalanceError(`VAT reversal (${vatMinor}) must be <= refund (${refundMinor})`, "invalid_amount");
+  }
+  const revenueMinor = refundMinor - vatMinor;
+  const lines: JournalLine[] = [];
+  if (revenueMinor > 0) lines.push(debit("platform_revenue", revenueMinor));
+  if (vatMinor > 0) lines.push(debit("vat_output_payable", vatMinor));
+  lines.push(credit("payments_clearing", refundMinor));
+  return lines;
+}

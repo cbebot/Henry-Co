@@ -46,6 +46,20 @@ export interface RefundResult {
   refundReference: string;
 }
 
+/** V3-19 — list a transaction's refunds at the provider (adopt-don't-redrive). */
+export interface ListRefundsParams {
+  providerReference: string;
+}
+
+export interface ProviderRefundSummary {
+  /** The provider's refund id (matches {@link RefundResult.refundReference}). */
+  refundReference: string;
+  /** Refunded amount in minor units, when the provider reports it. */
+  amountMinor: number | null;
+  /** Provider-side refund status, verbatim (e.g. pending/processing/processed/failed). */
+  status: string;
+}
+
 export interface VerifyWebhookParams {
   rawBody: string;
   signature: string | null;
@@ -73,6 +87,25 @@ export interface VerifiedWebhook {
    * it by statutory decomposition of the VAT-inclusive fee.
    */
   feeVatMinor?: number;
+  /**
+   * V3-19 — set for provider refund OUTCOME events (refund.processed /
+   * refund.failed). Refund money truth flows through `apply_refund_webhook`
+   * (which resolves the intent's single in-flight refund row), NOT through
+   * {@link impliedStatus}: the provider's refund webhooks carry no refund id, and
+   * a PARTIAL refund's terminal intent status (succeeded vs refunded) depends on
+   * cumulative amounts only the DB knows. When set, impliedStatus is null.
+   */
+  refundEvent?: {
+    outcome: "processed" | "failed";
+    /**
+     * Refunded amount in minor units when the payload reports it (Paystack sends
+     * a STRING here — parsed strictly; malformed → null, the DB then matches by
+     * the in-flight row alone).
+     */
+    amountMinor: number | null;
+    /** The provider's settlement-side refund reference, when present. */
+    refundReference: string | null;
+  };
 }
 
 /**
@@ -144,4 +177,14 @@ export interface PaymentProviderAdapter {
   getBalance?(
     params: BalanceParams,
   ): Promise<Result<BalanceResult, ProviderError>>;
+  /**
+   * V3-19 — list a transaction's refunds at the provider. The refund route uses
+   * this to ADOPT an already-queued refund after a crash between recording the
+   * attempt and the provider call (the provider's create-refund is NOT
+   * idempotent, so blindly re-creating could double-refund real money).
+   * Optional: without it, a stuck attempt requires provider-dashboard review.
+   */
+  listRefunds?(
+    params: ListRefundsParams,
+  ): Promise<Result<ProviderRefundSummary[], ProviderError>>;
 }

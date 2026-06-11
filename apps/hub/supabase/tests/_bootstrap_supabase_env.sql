@@ -34,6 +34,42 @@ create or replace function auth.uid() returns uuid language sql stable as $$ sel
 -- payment_intents policies resolve.
 create or replace function public.is_platform_staff() returns boolean language sql stable as $$ select false $$;
 
+-- V3-19: minimal wallet surface (these tables exist in prod; the ledger + refund
+-- migrations reference them conditionally). Creating them here makes the guarded
+-- wallet DDL (top-up/refund partial-unique indexes + the never-negative CHECK)
+-- ACTIVE in CI, so the wallet-refund invariants are provable on the fresh DB —
+-- column names mirror prod exactly (the Job B port reads/writes these columns).
+create table if not exists public.customer_wallets (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null unique,
+  balance_kobo bigint not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create table if not exists public.customer_wallet_transactions (
+  id uuid primary key default gen_random_uuid(),
+  wallet_id uuid,
+  user_id uuid,
+  type text,
+  amount_kobo bigint,
+  balance_after_kobo bigint,
+  description text,
+  status text,
+  reference_type text,
+  reference_id text,
+  metadata jsonb,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.customer_wallet_funding_requests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  amount_kobo bigint,
+  currency text,
+  payment_reference text unique,
+  status text,
+  created_at timestamptz not null default now()
+);
+
 -- THE load-bearing line: reproduce Supabase's default privileges so that every
 -- function the migration then creates is auto-granted EXECUTE to these roles
 -- DIRECTLY (not via PUBLIC). This is exactly the condition the revoke must defeat.

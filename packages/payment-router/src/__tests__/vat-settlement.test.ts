@@ -7,6 +7,8 @@ import {
   buildChargeSettlementLinesWithFee,
   buildSaleRevenueLines,
   buildSaleRevenueReversalLines,
+  computeProportionalVatReversal,
+  buildPartialSaleRevenueReversalLines,
   type JournalLine,
 } from "../ledger";
 
@@ -112,5 +114,88 @@ describe("buildSaleRevenueReversalLines — refund-ready hook (V3-19): reverses 
       assert.equal(r.debitMinor, f.creditMinor);
       assert.equal(r.creditMinor, f.debitMinor);
     }
+  });
+});
+
+describe("computeProportionalVatReversal — V3-19 partial-refund math (mirror of apply_refund_webhook)", () => {
+  it("40% partial of 1075 (VAT 75) reverses VAT 30 + revenue 400", () => {
+    const r = computeProportionalVatReversal({
+      refundMinor: 430, grossMinor: 1075, originalVatMinor: 75,
+      remainingVatMinor: 75, remainingRevenueMinor: 1000,
+    });
+    assert.deepEqual(r, { vatMinor: 30, revenueMinor: 400 });
+  });
+
+  it("the FINAL partial reverses the EXACT remainders (no rounding drift)", () => {
+    const r = computeProportionalVatReversal({
+      refundMinor: 645, grossMinor: 1075, originalVatMinor: 75,
+      remainingVatMinor: 45, remainingRevenueMinor: 600,
+    });
+    assert.deepEqual(r, { vatMinor: 45, revenueMinor: 600 });
+  });
+
+  it("adversarial rounding: a final partial can be ALL VAT (revenue exhausted first) — still exact", () => {
+    // gross 100 = VAT 60 + revenue 40. Partial 99: prop = 59.4 → 59, floor
+    // 99−40 = 59 → vat 59, rev 40 (revenue now exhausted). Final 1: ALL VAT.
+    const p1 = computeProportionalVatReversal({
+      refundMinor: 99, grossMinor: 100, originalVatMinor: 60,
+      remainingVatMinor: 60, remainingRevenueMinor: 40,
+    });
+    assert.deepEqual(p1, { vatMinor: 59, revenueMinor: 40 });
+    const p2 = computeProportionalVatReversal({
+      refundMinor: 1, grossMinor: 100, originalVatMinor: 60,
+      remainingVatMinor: 1, remainingRevenueMinor: 0,
+    });
+    assert.deepEqual(p2, { vatMinor: 1, revenueMinor: 0 });
+  });
+
+  it("non-VATable sale: every partial is pure revenue", () => {
+    const r = computeProportionalVatReversal({
+      refundMinor: 500, grossMinor: 1000, originalVatMinor: 0,
+      remainingVatMinor: 0, remainingRevenueMinor: 1000,
+    });
+    assert.deepEqual(r, { vatMinor: 0, revenueMinor: 500 });
+  });
+
+  it("a refund the sale remainders cannot cover FAILS LOUDLY (mis-posted sale, never half-reverse)", () => {
+    assert.throws(
+      () => computeProportionalVatReversal({
+        refundMinor: 100, grossMinor: 100, originalVatMinor: 60,
+        remainingVatMinor: 10, remainingRevenueMinor: 10,
+      }),
+      LedgerImbalanceError,
+    );
+  });
+});
+
+describe("buildPartialSaleRevenueReversalLines — V3-19 conditional legs (a zero line is never emitted)", () => {
+  it("normal partial: DR revenue + DR vat / CR clearing, balanced", () => {
+    const lines = buildPartialSaleRevenueReversalLines({ refundMinor: 430, vatMinor: 30 });
+    assert.doesNotThrow(() => assertBalanced(lines));
+    const acct = byAccount(lines);
+    assert.equal(acct.platform_revenue.debitMinor, 400);
+    assert.equal(acct.vat_output_payable.debitMinor, 30);
+    assert.equal(acct.payments_clearing.creditMinor, 430);
+  });
+
+  it("ALL-VAT partial: NO zero revenue line (2 lines, still balanced)", () => {
+    const lines = buildPartialSaleRevenueReversalLines({ refundMinor: 1, vatMinor: 1 });
+    assert.doesNotThrow(() => assertBalanced(lines));
+    assert.deepEqual(lines, [
+      { accountCode: "vat_output_payable", debitMinor: 1, creditMinor: 0 },
+      { accountCode: "payments_clearing", debitMinor: 0, creditMinor: 1 },
+    ]);
+  });
+
+  it("all-revenue partial (no VAT): NO zero VAT line", () => {
+    const lines = buildPartialSaleRevenueReversalLines({ refundMinor: 500, vatMinor: 0 });
+    assert.deepEqual(lines, [
+      { accountCode: "platform_revenue", debitMinor: 500, creditMinor: 0 },
+      { accountCode: "payments_clearing", debitMinor: 0, creditMinor: 500 },
+    ]);
+  });
+
+  it("rejects VAT above the refund amount", () => {
+    assert.throws(() => buildPartialSaleRevenueReversalLines({ refundMinor: 100, vatMinor: 101 }), LedgerImbalanceError);
   });
 });

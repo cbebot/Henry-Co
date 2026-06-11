@@ -43,7 +43,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     payload: { provider, eventType: verified.value.eventType },
   });
 
-  if (!verified.value.impliedStatus) {
+  if (!verified.value.impliedStatus && !verified.value.refundEvent) {
     return NextResponse.json({ received: true }, { status: 200 }); // informational event
   }
 
@@ -59,6 +59,66 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ received: true }, { status: 200 }); // unknown reference — ack, do not leak
   }
 
+  // V3-19: refund OUTCOME events flow through apply_refund_webhook — it resolves
+  // the intent's single in-flight refund row, dedups against the ROW (the payload
+  // carries no refund id), posts the reversing entries in the same transaction,
+  // and decides the intent's terminal status from cumulative refund truth.
+  if (verified.value.refundEvent) {
+    const refundEvent = verified.value.refundEvent;
+    const applied = await callPaymentRpc<{
+      applied?: boolean;
+      reason?: string;
+      refund_id?: string;
+      intent_status?: string;
+    }>("apply_refund_webhook", [
+      provider,
+      intentRow.id,
+      refundEvent.outcome,
+      refundEvent.amountMinor != null ? String(refundEvent.amountMinor) : null,
+      refundEvent.refundReference,
+    ]);
+    if (applied.error) {
+      // 500 → the provider redelivers; the RPC is idempotent so a retry is safe.
+      return NextResponse.json({ error: "Apply failed" }, { status: 500 });
+    }
+    const result = applied.data;
+    if (result?.applied === true) {
+      // Money truth emitted exactly once — only the delivery that applied.
+      emitPaymentEvent(
+        refundEvent.outcome === "processed" ? "henry.payment.refund.processed" : "henry.payment.refund.failed",
+        { payload: { provider, intentStatus: result.intent_status } },
+      );
+      if (result.intent_status === "refunded") {
+        emitPaymentEvent("henry.payment.intent.refunded", { payload: { provider } });
+      }
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+    if (result?.reason === "no_refund_in_flight") {
+      // A provider refund we have no record of (e.g. initiated on the provider's
+      // dashboard). Retrying cannot help — ack, but flag LOUDLY for finance:
+      // money moved at the provider and the books must be reconciled by a human.
+      emitPaymentEvent("henry.payment.refund.orphaned", { payload: { provider, intentId: intentRow.id } });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+    if (result?.reason === "amount_mismatch") {
+      // Should be impossible (we refund exactly what we asked). Never guess —
+      // 500 keeps the provider retrying while a human investigates the flag.
+      emitPaymentEvent("henry.payment.refund.orphaned", {
+        payload: { provider, intentId: intentRow.id, reason: "amount_mismatch" },
+      });
+      return NextResponse.json({ error: "Refund amount mismatch" }, { status: 500 });
+    }
+    // duplicate (idempotent redelivery) and other no-op reasons: plain ack.
+    return NextResponse.json({ received: true }, { status: 200 });
+  }
+
+  // Charge events from here on (the refund branch returned above) — re-guard so
+  // the narrowing is explicit: refundEvent was falsy, so impliedStatus is set.
+  const impliedStatus = verified.value.impliedStatus;
+  if (!impliedStatus) {
+    return NextResponse.json({ received: true }, { status: 200 });
+  }
+
   // A3/D3: the ONLY money-confirming status writer — dedup-insert first, then the
   // A2-guarded transition, atomically. A duplicate delivery is an idempotent ack.
   // payments_private (V3-15-S3): money writer reached via the pooled direct-pg path,
@@ -71,7 +131,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     provider,
     verified.value.providerEventId,
     intentRow.id,
-    verified.value.impliedStatus,
+    impliedStatus,
     verified.value.feeMinor != null ? String(verified.value.feeMinor) : null,
     verified.value.feeVatMinor != null ? String(verified.value.feeVatMinor) : null,
   ]);
@@ -81,7 +141,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // Money truth emitted exactly once — only the delivery that actually applied
   // (not a deduped redelivery) fires intent.succeeded/failed/refunded.
   if ((applied.data as { applied?: boolean } | null)?.applied === true) {
-    emitPaymentEvent(intentEventForStatus(verified.value.impliedStatus), { payload: { provider } });
+    emitPaymentEvent(intentEventForStatus(impliedStatus), { payload: { provider } });
   }
   return NextResponse.json({ received: true }, { status: 200 });
 }

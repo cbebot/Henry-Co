@@ -41,7 +41,15 @@ export type PaymentRpc =
   | "advance_payment_intent"
   // V3-17 — the atomic wallet-top-up credit (balance + wallet log + double-entry
   // journal in one transaction). Also in payments_private; same pooled-pg path.
-  | "credit_wallet_topup";
+  | "credit_wallet_topup"
+  // V3-19 — the refund lifecycle writers (claim+record+wallet-hold, provider-id
+  // adoption, synchronous-reject revert, the provider-confirmed apply, and the
+  // credit-note document writer). All payments_private; same pooled-pg path.
+  | "initiate_payment_refund"
+  | "set_refund_provider_reference"
+  | "fail_payment_refund"
+  | "apply_refund_webhook"
+  | "record_customer_credit_note";
 
 /**
  * Invoke a `payments_private` money RPC over the pooled direct-pg connection.
