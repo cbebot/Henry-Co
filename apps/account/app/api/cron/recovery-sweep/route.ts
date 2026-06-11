@@ -115,10 +115,9 @@ export async function GET(request: Request) {
       // EMAIL + PUSH: dispatch intents only (real multi-channel send → V3-45/48).
       if (plan.channels.includes("email")) {
         summary.email_intents += 1;
-        // eslint-disable-next-line no-empty
-        if (emailEnabled) {
-          // TODO(V3-48): branded recovery email via @henryco/email, localized.
-        }
+        // TODO(V3-48): when emailEnabled, send the branded localized recovery
+        // email via @henryco/email. Until then this is a dispatch intent only.
+        void emailEnabled;
       }
       if (plan.channels.includes("push")) {
         summary.push_intents += 1;
