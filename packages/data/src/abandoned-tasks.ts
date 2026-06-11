@@ -475,6 +475,27 @@ export async function markAbandonedTaskRecovered(
   return !error;
 }
 
+/**
+ * Mark pending tasks recovered by their stable refs — used when the underlying
+ * journey has completed (e.g. the lifecycle entry reached a terminal stage), so
+ * the cadence stops nudging finished work. Service-role.
+ */
+export async function markAbandonedTasksRecoveredByRefs(
+  userId: string,
+  taskRefs: string[],
+): Promise<number> {
+  if (taskRefs.length === 0) return 0;
+  const admin = createDataAdminClient();
+  const { data } = await admin
+    .from("abandoned_tasks")
+    .update({ status: "recovered" })
+    .eq("user_id", userId)
+    .eq("status", "pending")
+    .in("task_ref", taskRefs)
+    .select("id");
+  return (data ?? []).length;
+}
+
 function uniq<T>(items: T[]): T[] {
   return Array.from(new Set(items));
 }

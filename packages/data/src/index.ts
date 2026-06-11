@@ -77,6 +77,7 @@ export {
   listUserAbandonedTasks,
   dismissAbandonedTask,
   markAbandonedTaskRecovered,
+  markAbandonedTasksRecoveredByRefs,
   stripSecretsFromState,
   stateHasForbiddenKey,
   isAbandonedTaskType,

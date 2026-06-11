@@ -83,3 +83,21 @@ export function deriveRecoveryTasksFromSnapshot(
 
   return out;
 }
+
+const TERMINAL_STAGES: ReadonlySet<string> = new Set(["completed", "retained"]);
+
+/**
+ * Task refs whose journeys have COMPLETED (terminal lifecycle stage). Used to
+ * flip any lingering pending recovery task to `recovered` so the cadence stops
+ * nudging finished work. Only precise (referenceId-bearing) refs are returned.
+ */
+export function deriveRecoveredTaskRefs(snapshot: LifecycleSnapshot): string[] {
+  const refs: string[] = [];
+  for (const entry of snapshot.entries) {
+    if (!PILLAR_TASK_TYPE[entry.pillar]) continue;
+    if (!TERMINAL_STAGES.has(entry.stage)) continue;
+    if (!entry.referenceId) continue;
+    refs.push(`${entry.referenceType ?? entry.pillar}:${entry.referenceId}`);
+  }
+  return refs;
+}
