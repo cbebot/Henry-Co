@@ -84,7 +84,7 @@ describe("PaystackProvider.verifyWebhook (G1 — HMAC-SHA512, fail-closed)", () 
     if (r.ok) assert.equal(r.value.impliedStatus, "failed");
   });
 
-  it("maps refund.processed → refunded; resolves intent by transaction_reference; dedups in a refund: namespace", async () => {
+  it("maps refund.processed → refundEvent (V3-19); resolves intent by transaction_reference; STRING amount parsed", async () => {
     const rawBody = JSON.stringify({
       event: "refund.processed",
       data: { status: "processed", transaction_reference: "T-ref-1", refund_reference: "RFND-1", amount: "10000", currency: "NGN" },
@@ -92,13 +92,19 @@ describe("PaystackProvider.verifyWebhook (G1 — HMAC-SHA512, fail-closed)", () 
     const r = await p.verifyWebhook({ rawBody, signature: sign512(rawBody), secret: SECRET });
     assert.equal(r.ok, true);
     if (r.ok) {
-      assert.equal(r.value.impliedStatus, "refunded");
+      // V3-19: never an impliedStatus — a PARTIAL refund's terminal intent status
+      // depends on cumulative amounts only apply_refund_webhook knows.
+      assert.equal(r.value.impliedStatus, null);
+      assert.deepEqual(r.value.refundEvent, {
+        outcome: "processed",
+        amountMinor: 10000, // Paystack sends "10000" (a string) — parsed strictly
+        refundReference: "RFND-1",
+      });
       assert.equal(r.value.providerReference, "T-ref-1", "intent resolved by the ORIGINAL charge reference");
-      assert.equal(r.value.providerEventId, "refund:T-ref-1", "distinct dedup namespace, never collides with the charge key");
     }
   });
 
-  it("maps refund.failed → succeeded (revert; money never left)", async () => {
+  it("maps refund.failed → refundEvent {outcome: failed} (revert; money never left)", async () => {
     const rawBody = JSON.stringify({
       event: "refund.failed",
       data: { status: "failed", transaction_reference: "T-ref-1", refund_reference: "RFND-1" },
@@ -106,8 +112,23 @@ describe("PaystackProvider.verifyWebhook (G1 — HMAC-SHA512, fail-closed)", () 
     const r = await p.verifyWebhook({ rawBody, signature: sign512(rawBody), secret: SECRET });
     assert.equal(r.ok, true);
     if (r.ok) {
-      assert.equal(r.value.impliedStatus, "succeeded");
-      assert.equal(r.value.providerEventId, "refund:T-ref-1");
+      assert.equal(r.value.impliedStatus, null);
+      assert.equal(r.value.refundEvent?.outcome, "failed");
+      assert.equal(r.value.refundEvent?.amountMinor, null, "absent amount is null, never guessed");
+      assert.equal(r.value.providerReference, "T-ref-1");
+    }
+  });
+
+  it("treats a malformed refund amount as not-reported (null), never a guessed number", async () => {
+    const rawBody = JSON.stringify({
+      event: "refund.processed",
+      data: { status: "processed", transaction_reference: "T-ref-1", refund_reference: null, amount: "10.50" },
+    });
+    const r = await p.verifyWebhook({ rawBody, signature: sign512(rawBody), secret: SECRET });
+    assert.equal(r.ok, true);
+    if (r.ok) {
+      assert.equal(r.value.refundEvent?.amountMinor, null);
+      assert.equal(r.value.refundEvent?.refundReference, null);
     }
   });
 
@@ -264,6 +285,41 @@ describe("PaystackProvider.refund (refund/create — async, money-truth via webh
     const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
     const r = await p.refund({ providerReference: "nope", amountMinor: 10000 });
     assert.ok(!r.ok && !r.error.retryable);
+  });
+});
+
+describe("PaystackProvider.listRefunds (V3-19 — adopt-don't-redrive)", () => {
+  it("lists a transaction's refunds with id/amount/status normalised", async () => {
+    const { fetchImpl, calls } = fakeFetch(() => ({
+      status: 200,
+      body: {
+        status: true,
+        data: [
+          { id: 3018284, amount: 10000, status: "pending", transaction: 1004723697 },
+          { id: 3018299, amount: "4300", status: "processed", transaction: 1004723697 },
+          { amount: 1, status: "ignored-no-id" },
+        ],
+      },
+    }));
+    const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
+    const r = await p.listRefunds({ providerReference: "intent-uuid-1" });
+
+    assert.equal(calls[0].url, "https://api.paystack.co/refund?transaction=intent-uuid-1");
+    assert.equal(calls[0].init.method, "GET");
+    assert.equal(r.ok, true);
+    if (r.ok) {
+      assert.deepEqual(r.value, [
+        { refundReference: "3018284", amountMinor: 10000, status: "pending" },
+        { refundReference: "3018299", amountMinor: 4300, status: "processed" },
+      ]);
+    }
+  });
+
+  it("propagates provider failure (the route then REFUSES to create blind)", async () => {
+    const { fetchImpl } = fakeFetch(() => ({ status: 503, body: { status: false } }));
+    const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
+    const r = await p.listRefunds({ providerReference: "intent-uuid-1" });
+    assert.ok(!r.ok);
   });
 });
 

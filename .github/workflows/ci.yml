@@ -150,3 +150,18 @@ jobs:
 
       - name: Assert VAT money-RPC grant invariant (fee-aware end state)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/vat_grant_invariant.sql
+
+      # V3-19: the full refund lifecycle — provider-confirmed only, over-refund
+      # impossible by construction (DB trigger), proportional output-VAT reversal,
+      # unfakeable credit-note binding, wallet hold/release with never-negative +
+      # reconciliation invariants. Apply the refunds migration on the same fresh
+      # DB and prove all of it, then assert the grant lockdown covers the new
+      # refund/credit-note writers.
+      - name: Apply V3-19 refunds migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260611120000_v3_19_refunds.sql
+
+      - name: Prove refund invariants (full · partial-VAT · over-refund · dedup · failed-revert · credit-note · wallet)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_invariants.sql
+
+      - name: Assert refunds money-RPC grant invariant (V3-19 end state)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_grant_invariant.sql

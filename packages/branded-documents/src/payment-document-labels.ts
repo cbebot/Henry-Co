@@ -93,6 +93,16 @@ export type PaymentDocumentLabels = {
 
   // Default invoice subtitle when none is provided
   defaultInvoiceDescription: string;
+
+  // Credit note (V3-19) — the legal face of a confirmed refund.
+  creditNoteType: string;
+  totalCredited: string;
+  metaRefunded: string;
+  refundOf: string;
+  creditNoteItemsSection: string;
+  creditNoteItemsEmpty: string;
+  creditNoteLegal1: string;
+  creditNoteLegal2: string;
 };
 
 /** Legal issuer block (mirrors `DocumentIssuer` from `@henryco/config`). */
