@@ -9,6 +9,7 @@ import {
 } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
+import { ensureJobsBootstrap } from "@/lib/jobs/seed";
 import { DEFAULT_PIPELINE, JOBS_STAGE_ORDER, getJobsDifferentiators } from "@/lib/jobs/content";
 import { deriveJobTrustHighlights } from "@/lib/jobs/trust";
 
@@ -1264,6 +1265,7 @@ export async function getEmployerProfiles(options?: {
   includeUnpublished?: boolean;
   locale?: AppLocale;
 }) {
+  await ensureJobsBootstrap();
   const admin = createAdminSupabase();
   const [companiesRes, profileRowsRes, verificationRowsRes, jobsRes] = await Promise.all([
     admin.from("companies").select("*").order("sort_order", { ascending: true }).order("name"),
@@ -1382,6 +1384,7 @@ export async function getJobPosts(options?: {
   internalOnly?: boolean;
   locale?: AppLocale;
 }) {
+  await ensureJobsBootstrap();
   const admin = createAdminSupabase();
   const [rowsRes, applicationsRes, employers] = await Promise.all([
     admin
@@ -1430,10 +1433,22 @@ export async function getJobPosts(options?: {
     )
     .filter(({ job }) => (options?.internalOnly ? job.internal : true));
 
+  // Collapse duplicate postings for the same slug — rows arrive newest-first
+  // (created_at desc), so the first occurrence wins. This guards against a
+  // legacy random-id row co-existing with the deterministic seeded row (the
+  // postings read is the one path with no natural-key collapse, unlike
+  // `latestRowsByReference` on the employer side).
+  const seenSlugs = new Set<string>();
+  const deduped = built.filter(({ job }) => {
+    if (seenSlugs.has(job.slug)) return false;
+    seenSlugs.add(job.slug);
+    return true;
+  });
+
   // Wave 2 i18n — list scope keeps it cheap: title + summary only.
   // `getJobPostBySlug` upgrades to detail scope below.
   const localized = await Promise.all(
-    built.map(({ job, metadata }) => localizeJobPost(job, metadata, options?.locale, "list")),
+    deduped.map(({ job, metadata }) => localizeJobPost(job, metadata, options?.locale, "list")),
   );
 
   return localized.sort((a, b) => {
@@ -1548,7 +1563,7 @@ async function computeJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
       {
         label: t("Open roles"),
         value: String(jobs.length),
-        detail: t("Live roles published into the HenryCo hiring operating system."),
+        detail: t("Live roles published into the Henry Onyx hiring operating system."),
       },
       {
         label: t("Verified employers"),
@@ -1558,7 +1573,7 @@ async function computeJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
       {
         label: t("Internal tracks"),
         value: String(jobs.filter((job) => job.internal).length),
-        detail: t("HenryCo internal openings running inside the same platform."),
+        detail: t("Henry Onyx internal openings running inside the same platform."),
       },
     ],
   };

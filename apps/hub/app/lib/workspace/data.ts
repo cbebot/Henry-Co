@@ -1280,7 +1280,7 @@ function buildActivityModule(input: {
     readiness === "live" ? "structured" : readiness === "partial" ? "shared-signals" : "planned";
   const sourceSummary =
     sourceMode === "structured"
-      ? "This division is backed by dedicated live records in the shared HenryCo schema."
+      ? "This division is backed by dedicated live records in the shared Henry & Co. schema."
       : sourceMode === "shared-signals"
         ? "This division is currently running from shared activity, support, and notification signals because dedicated operational tables are not fully live yet."
         : "This division shell is registered, but it still needs live dedicated data structures before it can operate at full depth.";
@@ -1588,7 +1588,7 @@ export async function getWorkspaceSnapshot(
   const [
     notifications,
     threads,
-    activities,
+    activitiesRaw,
     audits,
     careBookings,
     marketplaceApplications,
@@ -1664,6 +1664,11 @@ export async function getWorkspaceSnapshot(
     safeCount(admin, "learn_courses"),
     safeCount(admin, "property_listings"),
   ]);
+
+  // Exclude system-seeded catalog rows (e.g. the Henry Onyx careers seed,
+  // tagged metadata.seeded). They are content, not human/staff actions, and
+  // must not surface as workspace tasks, signals, or trends.
+  const activities = activitiesRaw.filter((row) => row.metadata?.seeded !== true);
 
   const modules = viewer.divisions.map((membership) => {
     const divisionNotifications = notifications.filter(

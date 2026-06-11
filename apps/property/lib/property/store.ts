@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
-import { normalizeEmail, normalizePhone } from "@/lib/env";
+import { normalizeEmail, normalizePhone, getOptionalEnv } from "@/lib/env";
 import { slugify } from "@/lib/utils";
 import { demoPropertySnapshot } from "@/lib/property/demo";
 import type {
@@ -242,7 +242,79 @@ async function uploadToCloudinary(
   return payload.secure_url;
 }
 
+// ─── Curated-catalog auto-seed ───────────────────────────────────────────
+/**
+ * Populate the property runtime bucket with the curated company catalog
+ * (areas, agents, listings, managed records, campaigns, services, FAQs,
+ * differentiators) on first read. Without this the bucket is empty in
+ * production and the public site shows no listings.
+ *
+ * Mirrors the marketplace/learn bootstrap: idempotent (writeJsonRecord
+ * upserts by id), version-gated (a `meta/bootstrap.json` marker), service-
+ * role-guarded (no-ops without the key so a misconfigured deploy still
+ * renders empty rather than 500-ing), memoized single-flight. Content only —
+ * no inquiries/viewings/applications are seeded. Additive/refresh-only: a
+ * version bump re-writes the curated records but never auto-retires
+ * agent-managed listings.
+ */
+export const PROPERTY_SEED_VERSION = "2026-06-10-henry-onyx-property-v1";
+const PROPERTY_SEED_META_FOLDER = "meta";
+const PROPERTY_SEED_MARKER_ID = "bootstrap";
+
+let propertyBootstrapVerified = false;
+let propertyBootstrapPromise: Promise<void> | null = null;
+
+function hasPropertyServiceRole() {
+  return Boolean(getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY"));
+}
+
+async function readPropertySeedVersion(): Promise<string | null> {
+  const records = await listJsonCollection<{ id?: string; version?: string }>(
+    PROPERTY_SEED_META_FOLDER
+  );
+  const marker =
+    records.find((record) => cleanText(record?.id) === PROPERTY_SEED_MARKER_ID) ?? records[0] ?? null;
+  return marker ? cleanText(marker.version) || null : null;
+}
+
+/**
+ * Ensure the curated catalog exists before the runtime snapshot is read.
+ * Cheap and safe to call on every read: short-circuits once the current
+ * version is confirmed, memoizes the in-flight seed, and swallows failures
+ * (logged) so the property site never 500s on a seeding hiccup.
+ */
+export async function ensurePropertyBootstrap(): Promise<void> {
+  if (propertyBootstrapVerified) return;
+  if (!hasPropertyServiceRole()) return;
+
+  const version = await readPropertySeedVersion();
+  if (version === PROPERTY_SEED_VERSION) {
+    propertyBootstrapVerified = true;
+    return;
+  }
+
+  if (!propertyBootstrapPromise) {
+    propertyBootstrapPromise = (async () => {
+      try {
+        await seedPropertyRuntimeSnapshot(demoPropertySnapshot);
+        await writeJsonRecord(PROPERTY_SEED_META_FOLDER, PROPERTY_SEED_MARKER_ID, {
+          id: PROPERTY_SEED_MARKER_ID,
+          version: PROPERTY_SEED_VERSION,
+          seededAt: new Date().toISOString(),
+        });
+        propertyBootstrapVerified = true;
+      } catch (err) {
+        console.error("[henryco/property] catalog bootstrap failed:", err);
+      } finally {
+        propertyBootstrapPromise = null;
+      }
+    })();
+  }
+  await propertyBootstrapPromise;
+}
+
 export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
+  await ensurePropertyBootstrap();
   const now = Date.now();
   if (propertySnapshotCache && propertySnapshotCache.expiresAt > now) {
     return propertySnapshotCache.value;

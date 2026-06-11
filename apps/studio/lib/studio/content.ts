@@ -168,6 +168,28 @@ export const studioPackages: StudioPackage[] = [
     bestFor: "Companies repositioning into a more premium category before a launch or growth phase.",
     includes: ["Brand system", "Typography and color system", "UI style direction", "Guideline deck"],
   },
+  {
+    id: "pkg-ux-sprint",
+    serviceId: "service-ui",
+    name: "Product UX Sprint",
+    summary: "A focused sprint that turns a fuzzy product into clear flows, architecture, and a production-ready design system before engineering scales.",
+    price: 1350000,
+    depositRate: 0.5,
+    timelineWeeks: 3,
+    bestFor: "Software teams that need product clarity and a real design system before or during a build.",
+    includes: ["UX audit and review", "Information architecture", "Core flow and screen design", "Production-ready design system"],
+  },
+  {
+    id: "pkg-mobile-mvp",
+    serviceId: "service-mobile",
+    name: "Mobile Product MVP",
+    summary: "A polished first version of a customer, field, or operations app — shipped to both stores with a managed backend and analytics from day one.",
+    price: 4500000,
+    depositRate: 0.4,
+    timelineWeeks: 10,
+    bestFor: "Businesses launching a first serious mobile product without over-building before validation.",
+    includes: ["Core app flows", "iOS and Android build", "Managed backend and APIs", "Push notifications and analytics"],
+  },
 ];
 
 export const studioTeams: StudioTeamProfile[] = [
