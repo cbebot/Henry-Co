@@ -142,3 +142,45 @@ otherwise firm promise. Audit found it, replaced the hedge with a guarantee.
 The sub-processor section of the privacy policy is the **only** place a vendor is named —
 and even there, the region reads "European Union and United States", never
 "EU (Frankfurt) and US (us-east)".
+
+---
+
+## Part B2 — Calm, not loud: the enforced tone floor (TONE-01)
+
+Commanding is not the same as loud. The voice states with authority — it never
+borrows startup energy, manufactured urgency, or marketing superlatives.
+Henry Onyx is strong enough that it does not need to shout. *Henry Onyx Limited
+is a space to think.*
+
+| Instead of | Prefer |
+|---|---|
+| "Start your journey" | "Get started" |
+| "Unlock powerful features" | "Access additional capabilities" |
+| "Take control now" | "Manage your workspace" |
+| "Revolutionize your workflow" | "Improve your workflow" |
+| "Smart X" (feature labels) | "X" — let the behaviour prove the adjective |
+| "instantly" (speed hype) | the precise moment: "on booking", "in one step" |
+
+### The lock
+
+This floor is **machine-enforced**, not aspirational:
+
+- **Rule store (single source):** `packages/newsletter/src/voice.ts`
+  (`DEFAULT_BANNED_PHRASES`). Add or change tone rules there — never a second
+  list anywhere else.
+- **CI gate:** `pnpm tone:check` (`scripts/v3/tone-gate.mjs`) parses the rule
+  store and scans every copy-bearing source (typed i18n modules, email, shared
+  UI, all apps) in the required CI job. **Any match fails the build.**
+- Context-only rules (newsletter subject caps, unsubscribe footer) and the
+  commerce exception ("Buy now" as a literal product action) are excluded from
+  the code gate and documented in the gate script.
+
+### Standing instruction to every agent and pass
+
+**All written output — copy, microcopy, headings, CTAs, notifications, emails,
+documents — uses the company voice.** Calm authority; plain, specific language;
+no exclamation outside functional feedback; no urgency that the product's
+reality does not create. If a phrase needs the gate's permission, it is already
+the wrong phrase. Functional mechanics stay precise ("Lessons unlock in
+sequence" is a fact, not hype). When in doubt, the table above and Part B's
+principles decide.

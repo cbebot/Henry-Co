@@ -18,6 +18,15 @@ export type VoiceGuardResult = {
   blocks: VoiceGuardWarning[];
 };
 
+/**
+ * THE canonical Henry Onyx tone-rule store (TONE-01). Two enforcement arms
+ * read these rules — add or change rules HERE, never in a parallel list:
+ *   1. runVoiceGuard (below) — newsletter authoring/runtime.
+ *   2. scripts/v3/tone-gate.mjs — the CI company-voice gate, which PARSES
+ *      this array's `ruleKey`/`kind`/`pattern` literals from source. Keep
+ *      patterns as plain double-quoted string literals so the parser holds.
+ * Standard: docs/v3/public-voice-and-security.md (Part B) + CLAUDE.md.
+ */
 const DEFAULT_BANNED_PHRASES: Array<Omit<NewsletterBrandVoiceRule, "id" | "createdAt">> = [
   {
     ruleKey: "no_buy_now_pressure",
