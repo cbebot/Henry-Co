@@ -18,9 +18,16 @@ do $$ begin
 end $$;
 grant usage on schema public to anon, authenticated, service_role;
 
--- Minimal `auth` surface the payment_intents migration references.
+-- Minimal `auth` surface the payment_intents migration references. `email` is
+-- carried because the invariant fixtures insert it (on a prod-shaped DB the
+-- real signup trigger mirrors it into customer_profiles.email NOT NULL).
 create schema if not exists auth;
-create table if not exists auth.users (id uuid primary key);
+create table if not exists auth.users (
+  id uuid primary key,
+  email text,
+  raw_user_meta_data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
 create or replace function auth.uid() returns uuid language sql stable as $$ select null::uuid $$;
 
 -- Finance-RLS dependency from an earlier migration (not under test) — stub so the

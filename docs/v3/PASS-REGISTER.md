@@ -348,3 +348,31 @@ V3-07b and V3-07c do NOT touch money, identity, or compliance — they are surfa
 - [x] Naming convention deliberately distinct from "V3 PASS 21" cycle
 - [x] Phase B placement preserves "finish the base before chasing brilliance"
 - [x] Hardening posture explicit: Pattern B DeepL fallback handles user-facing translation today; V3-07b/c deliver Pattern A typed-copy completeness and operator-surface coverage
+
+---
+
+## Appendix — SCHEMA-TRUTH-01 drift-debt tickets (2026-06-11)
+
+SCHEMA-TRUTH-01 regenerated `packages/data/src/database.types.ts` from PROD-ACTUAL
++ the FL2 set (see `docs/v3/fl2-apply-manifest.md`) and burned the schema-drift
+baseline 33 → 21. The 21 residual entries (`scripts/ci/schema-drift-baseline.json`)
+are NOT fixable by a read-side rename — each needs either its unapplied feature
+family or a design decision. Burn-down tickets:
+
+| Ticket | Baseline entries | What it needs |
+|---|---|---|
+| SD-1 profiles.email | learn templates/people/shared-account, logistics + studio shared-account (5×) | `profiles` has no email (it lives on `customer_profiles`); rewire the shared-account readers to the right table — behavioral, verify each consumer |
+| SD-2 security risk_level | jobs posting-eligibility, staff intelligence-data (2×) | `customer_security_log` has no risk_level; define the risk signal (column at a future migration, or derive from metadata/event_type) |
+| SD-3 studio wave | milestones.completed_at, automation reminder_sent_at, proposals.signed_pdf_url, revisions.requested_by_user_id (4×) | the 2026-05-14 studio feature wave (manifest §4) — ship the wave with a prod-shape rehearsal, or park the routes |
+| SD-4 jobs wave | salary period/status, interview_rooms.status, offer_letters.status (4×) | the 2026-05-15 jobs feature wave (manifest §4) |
+| SD-5 rooms wave | rooms_sessions.kind/.status (2×) | the rooms family (manifest §4); also unblocks the realtime backfill thirds |
+| SD-6 staff review queue | review_due_at ×3 + property rental_price_kobo (4×) | the staff review-queue concept never landed in prod; staff dashboard modules read it — design decision |
+| SD-7 hq nonce scope | (not in baseline — manifest §3) | the unapplied index swap in 20260407193000 (global → per author+thread client_nonce); messaging dedupe correctness |
+| SD-8 workspace reads | (not in baseline — guard blind spot) | hub internal-comms access + owner DM/members routes read absent workspace_* tables today; live-risk triage (ship workspace platform or guard the reads) |
+| SD-9 wave routes live-risk | (not in baseline) | division API routes per manifest §4 read absent tables and 500-if-hit (care pod/track/recurring/claims, logistics quote/book/dispatch/pod/fleet pages, jobs verifications, studio asset-packs/proposals-sign); per-family: ship wave or add read-resilience |
+
+Guard upgrade candidate: the drift guard cannot flag a TABLE that exists in
+migration files but not in prod (it trusts the types ∪ migration-DDL union).
+With `supabase/prod-actual/schema.sql` now committed as the declared baseline,
+a table-existence check against prod-actual + the FL2 manifest set would close
+SD-8/SD-9-class blind spots in CI.

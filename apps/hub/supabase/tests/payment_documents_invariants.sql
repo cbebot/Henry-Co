@@ -7,11 +7,14 @@
 --   (b) receipt generation is IDEMPOTENT on posting_id (replay → no new receipt);
 --   (c) a receipt whose total does NOT reconcile to the posted ledger entry's debit
 --       total is REJECTED (the money-truth tie); a not-found posting is REJECTED;
---   (d) invoice generation is IDEMPOTENT on (source_kind, source_ref);
---   (e) RLS is enabled on both document tables;
+--   (e) RLS is enabled on the receipts table;
 --   (f) GRANT invariant: anon/authenticated cannot EXECUTE the document RPCs and
 --       cannot INSERT a document directly; service_role can EXECUTE the writers.
 -- Any violation RAISEs → psql (ON_ERROR_STOP=1) exits non-zero → CI goes RED.
+--
+-- (d) invoice idempotency was REMOVED with the invoice half of the migration
+-- (SCHEMA-TRUTH-01): prod already carries a LIVE legacy customer_invoices table,
+-- so the minor-shaped table + its caller-less writer no longer ship at FL2.
 
 \set ON_ERROR_STOP on
 
@@ -19,8 +22,10 @@
 do $$
 declare v jsonb;
 begin
-  insert into auth.users (id) values
-    ('11111111-1111-1111-1111-111111111111')
+  -- email is required: on a prod-shaped DB the real signup trigger
+  -- (handle_new_customer) mirrors it into customer_profiles.email (NOT NULL).
+  insert into auth.users (id, email) values
+    ('11111111-1111-1111-1111-111111111111', 'v318-invariants@fixtures.henryco.test')
     on conflict do nothing;
 
   -- Intent A: ₦500.00, will carry a VAT split on its receipt.
@@ -178,38 +183,13 @@ begin
   end if;
 end $$;
 
--- ── (d) invoice idempotency on (source_kind, source_ref) ────────────────────────
-do $$
-declare v1 jsonb; v2 jsonb; n int;
-begin
-  v1 := payments_private.record_customer_invoice(
-    '11111111-1111-1111-1111-111111111111', 'marketplace', 'order_capture', 'order-777',
-    'aaaaaaaa-0000-0000-0000-000000000001', 'issued', 50000, 0, 0, 50000, 'NGN', '[]'::jsonb, null, now());
-  v2 := payments_private.record_customer_invoice(
-    '11111111-1111-1111-1111-111111111111', 'marketplace', 'order_capture', 'order-777',
-    'aaaaaaaa-0000-0000-0000-000000000001', 'issued', 50000, 0, 0, 50000, 'NGN', '[]'::jsonb, null, now());
-  if (v1->>'created')::boolean is not true then raise exception 'PROOF d FAILED: first invoice not created (%)', v1; end if;
-  if (v2->>'created')::boolean is not false or v2->>'reason' <> 'duplicate' then
-    raise exception 'PROOF d FAILED: invoice replay was not a no-op (%)', v2;
-  end if;
-  if (v1->>'invoice_no') !~ '^HO-INV-\d{4}-000001$' then
-    raise exception 'PROOF d FAILED: invoice_no % is not HO-INV-<year>-000001', v1->>'invoice_no';
-  end if;
-  select count(*) into n from public.customer_invoices where source_kind = 'order_capture' and source_ref = 'order-777';
-  if n <> 1 then raise exception 'PROOF d FAILED: % invoices for the replayed source (expected 1)', n; end if;
-  raise notice 'PROOF d OK: invoice generation idempotent on (source_kind, source_ref)';
-end $$;
-
--- ── (e) RLS enabled on both document tables ─────────────────────────────────────
+-- ── (e) RLS enabled on the receipts document table ──────────────────────────────
 do $$
 begin
   if not (select relrowsecurity from pg_class where oid = 'public.customer_receipts'::regclass) then
     raise exception 'PROOF e FAILED: RLS not enabled on customer_receipts';
   end if;
-  if not (select relrowsecurity from pg_class where oid = 'public.customer_invoices'::regclass) then
-    raise exception 'PROOF e FAILED: RLS not enabled on customer_invoices';
-  end if;
-  raise notice 'PROOF e OK: RLS enabled on customer_receipts + customer_invoices';
+  raise notice 'PROOF e OK: RLS enabled on customer_receipts';
 end $$;
 
 -- ── (f) GRANT invariant: document writers unreachable by anon/authenticated ──────
@@ -217,8 +197,7 @@ do $$
 declare
   fns text[] := array[
     'payments_private.allocate_document_number(text, int)',
-    'payments_private.record_customer_receipt(uuid, text, uuid, uuid, text, text, bigint, bigint, bigint, bigint, text, jsonb, timestamptz, text)',
-    'payments_private.record_customer_invoice(uuid, text, text, text, uuid, text, bigint, bigint, bigint, bigint, text, jsonb, text, timestamptz)'
+    'payments_private.record_customer_receipt(uuid, text, uuid, uuid, text, text, bigint, bigint, bigint, bigint, text, jsonb, timestamptz, text)'
   ];
   fn text;
   violations int := 0;
@@ -235,16 +214,11 @@ begin
     end if;
   end loop;
 
-  -- No role may INSERT a legal document directly (writes flow only through the RPCs).
+  -- No role may INSERT a legal document directly (writes flow only through the RPC).
   if has_table_privilege('anon', 'public.customer_receipts', 'INSERT')
      or has_table_privilege('authenticated', 'public.customer_receipts', 'INSERT')
      or has_table_privilege('service_role', 'public.customer_receipts', 'INSERT') then
     raise warning 'VIOLATION: a role can INSERT customer_receipts directly'; violations := violations + 1;
-  end if;
-  if has_table_privilege('anon', 'public.customer_invoices', 'INSERT')
-     or has_table_privilege('authenticated', 'public.customer_invoices', 'INSERT')
-     or has_table_privilege('service_role', 'public.customer_invoices', 'INSERT') then
-    raise warning 'VIOLATION: a role can INSERT customer_invoices directly'; violations := violations + 1;
   end if;
 
   if violations > 0 then
@@ -253,4 +227,4 @@ begin
   raise notice 'PROOF f OK: document RPCs anon/authenticated-unreachable; direct INSERT denied; service_role can write';
 end $$;
 
-select 'PAYMENT-DOCUMENT INVARIANTS (a)number (b)idempotent (c)ledger-reconcile (d)invoice-idempotent (e)RLS (f)grants === ALL PROVEN' as result;
+select 'PAYMENT-DOCUMENT INVARIANTS (a)number (b)idempotent (c)ledger-reconcile (e)RLS (f)grants === ALL PROVEN' as result;

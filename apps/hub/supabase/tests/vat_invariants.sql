@@ -20,7 +20,9 @@
 \set ON_ERROR_STOP on
 
 -- A user + a set of intents to settle (post_charge_settlement reads amount + currency).
-insert into auth.users (id) values ('000000aa-0000-0000-0000-0000000000aa') on conflict do nothing;
+-- email is required: on a prod-shaped DB the real signup trigger mirrors it into
+-- customer_profiles.email (NOT NULL).
+insert into auth.users (id, email) values ('000000aa-0000-0000-0000-0000000000aa', 'vat01-invariants@fixtures.henryco.test') on conflict do nothing;
 insert into public.payment_intents (id, user_id, amount_minor, currency, country, method, status, idempotency_key) values
   ('11111111-1111-1111-1111-111111111111', '000000aa-0000-0000-0000-0000000000aa', 40333, 'NGN', 'NG', 'card', 'pending', 'vat-idem-1'),
   ('22222222-2222-2222-2222-222222222222', '000000aa-0000-0000-0000-0000000000aa', 40333, 'NGN', 'NG', 'card', 'pending', 'vat-idem-2'),

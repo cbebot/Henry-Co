@@ -59,18 +59,21 @@ export async function loadOwnerReconcileTrace(
       };
     }
     case "overview.recognized-revenue": {
-      // Source: care_bookings + marketplace_orders (paid) + shared invoices.
+      // Source: care_bookings + marketplace_orders (paid) + customer invoices.
+      // Columns are the prod-actual ones: marketplace_orders.grand_total,
+      // care_bookings.amount_paid, customer_invoices.total_kobo (there is no
+      // *_naira column family and no bare `invoices` table).
       const { data: marketplacePaid, error: marketplaceErr } = await admin
         .from("marketplace_orders")
-        .select("total_naira", { count: "exact", head: false })
+        .select("grand_total", { count: "exact", head: false })
         .eq("status", "paid");
       void marketplacePaid;
       const sql =
-        "SELECT SUM(total_naira) FROM marketplace_orders WHERE status = 'paid' " +
+        "SELECT SUM(grand_total) FROM marketplace_orders WHERE status = 'paid' " +
         "UNION ALL " +
-        "SELECT SUM(price_naira) FROM care_bookings WHERE payment_status = 'paid' " +
+        "SELECT SUM(amount_paid) FROM care_bookings WHERE payment_status = 'paid' " +
         "UNION ALL " +
-        "SELECT SUM(amount_naira) FROM invoices WHERE status = 'paid';";
+        "SELECT SUM(total_kobo) FROM customer_invoices WHERE status = 'paid';";
       return {
         id: traceId,
         label: "Recognized revenue",

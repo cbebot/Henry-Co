@@ -98,7 +98,8 @@ async function getLastReadAt(userId: string, role: StaffRole) {
     .from("care_security_logs")
     .select("created_at, details")
     .eq("event_type", "notification_center_read")
-    .eq("actor_user_id", userId)
+    // prod column is user_id (no actor_user_id)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(30);
 
@@ -122,7 +123,7 @@ async function getReadNotificationItemIds(userId: string, role: StaffRole) {
     .from("care_security_logs")
     .select("details")
     .eq("event_type", "notification_item_read")
-    .eq("actor_user_id", userId)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(160);
 

@@ -17,7 +17,22 @@
 --   20260607120000_double_entry_ledger.sql
 --   20260607130000_v3_18_payment_documents.sql            (THIS — depends on all above)
 -- Do NOT apply to prod here. Proven on a fresh Postgres 17 in CI
--- (payments-grant-invariant job → payment_documents_invariants.sql).
+-- (payments-grant-invariant job → payment_documents_invariants.sql) AND on the
+-- prod-actual shadow rehearsal (scripts/db/build-shadow-db.mjs).
+--
+-- SCHEMA-TRUTH-01 (2026-06-11) — PROD-ACTUAL RECONCILIATION: production already
+-- carries a LIVE legacy `customer_invoices` table (kobo-shaped: subtotal_kobo/
+-- tax_kobo/total_kobo; rows written as recently as yesterday by the account
+-- billing surface, and the invoice PDF route reads exactly that shape). The
+-- original V3-18 draft created a NEW minor-shaped table under the SAME name —
+-- `create table if not exists` would silently no-op on prod and the constraint
+-- blocks then referenced columns the live table does not have, so the FL2 apply
+-- failed on the shadow ('column "source_kind" named in key does not exist').
+-- The invoice half also had ZERO application callers (record_customer_invoice
+-- was exercised only by the invariant suite). Resolution: this migration ships
+-- the RECEIPTS system only (counters + customer_receipts + their writers);
+-- ledger-tied invoice ISSUANCE returns as its own pass once the legacy invoices
+-- table is reconciled (see docs/v3/fl2-apply-manifest.md).
 
 -- payments_private already exists after the isolation/ledger migrations; create
 -- idempotently so this migration is also self-standing on a fresh DB.
@@ -35,52 +50,6 @@ create table if not exists public.document_number_counters (
   updated_at timestamptz not null default now()
 );
 
--- ============ customer_invoices ============
-create table if not exists public.customer_invoices (
-  id                 uuid primary key default gen_random_uuid(),
-  user_id            uuid not null references auth.users(id) on delete cascade,
-  invoice_no         text not null unique,                       -- HO-INV-2026-000123
-  division           text not null,
-  source_kind        text not null,                              -- 'order_capture','subscription',...
-  source_ref         text not null,                              -- intent/order id
-  payment_intent_id  uuid references public.payment_intents(id) on delete set null,
-  posting_id         uuid references public.journal_entries(id) on delete set null,
-  status             text not null default 'issued',
-  subtotal_minor     bigint not null,
-  tax_minor          bigint not null default 0,
-  discount_minor     bigint not null default 0,
-  total_minor        bigint not null,
-  currency           text not null,
-  line_items         jsonb not null default '[]'::jsonb,
-  storage_path       text,
-  issued_at          timestamptz not null default timezone('utc', now()),
-  paid_at            timestamptz,
-  created_at         timestamptz not null default timezone('utc', now())
-);
-do $$ begin
-  if not exists (select 1 from pg_constraint where conname = 'customer_invoices_source_unique') then
-    alter table public.customer_invoices add constraint customer_invoices_source_unique unique (source_kind, source_ref); -- idempotent generation
-  end if;
-  if not exists (select 1 from pg_constraint where conname = 'customer_invoices_status_valid') then
-    alter table public.customer_invoices add constraint customer_invoices_status_valid
-      check (status in ('issued','paid','void'));
-  end if;
-  if not exists (select 1 from pg_constraint where conname = 'customer_invoices_amounts_nonneg') then
-    alter table public.customer_invoices add constraint customer_invoices_amounts_nonneg
-      check (subtotal_minor >= 0 and tax_minor >= 0 and discount_minor >= 0 and total_minor >= 0);
-  end if;
-  -- Presentation reconciles to the total BY CONSTRUCTION: subtotal + tax − discount = total.
-  if not exists (select 1 from pg_constraint where conname = 'customer_invoices_total_reconciles') then
-    alter table public.customer_invoices add constraint customer_invoices_total_reconciles
-      check (total_minor = subtotal_minor + tax_minor - discount_minor);
-  end if;
-  if not exists (select 1 from pg_constraint where conname = 'customer_invoices_currency_base') then
-    alter table public.customer_invoices add constraint customer_invoices_currency_base check (currency = 'NGN');
-  end if;
-end $$;
-create index if not exists customer_invoices_user_id_idx on public.customer_invoices (user_id);
-create index if not exists customer_invoices_intent_idx on public.customer_invoices (payment_intent_id);
-
 -- ============ customer_receipts ============
 -- A receipt is proof of a CONFIRMED payment, so its tie to the ledger is mandatory:
 -- posting_id (NOT NULL, unique) is the journal entry that recorded the money, and
@@ -89,7 +58,7 @@ create table if not exists public.customer_receipts (
   id                 uuid primary key default gen_random_uuid(),
   user_id            uuid not null references auth.users(id) on delete cascade,
   receipt_no         text not null unique,                       -- HO-RCT-2026-000123
-  invoice_id         uuid references public.customer_invoices(id) on delete set null,
+  invoice_id         uuid,                                       -- → legacy customer_invoices (conditional FK below)
   division           text not null,
   payment_method     text not null,
   payment_reference  text,                                       -- gateway transaction ref (processor UNNAMED)
@@ -120,6 +89,15 @@ do $$ begin
   end if;
   if not exists (select 1 from pg_constraint where conname = 'customer_receipts_currency_base') then
     alter table public.customer_receipts add constraint customer_receipts_currency_base check (currency = 'NGN');
+  end if;
+  -- invoice_id links a receipt to the LIVE legacy invoices table (part of
+  -- prod-actual, NOT created here). Bind the FK only where that table exists —
+  -- it is absent on the minimal CI grant-invariant DB.
+  if to_regclass('public.customer_invoices') is not null
+     and not exists (select 1 from pg_constraint where conname = 'customer_receipts_invoice_id_fkey') then
+    alter table public.customer_receipts
+      add constraint customer_receipts_invoice_id_fkey
+      foreign key (invoice_id) references public.customer_invoices(id) on delete set null;
   end if;
 end $$;
 create index if not exists customer_receipts_user_id_idx on public.customer_receipts (user_id);
@@ -228,79 +206,15 @@ end $$;
 revoke all on function payments_private.record_customer_receipt(uuid, text, uuid, uuid, text, text, bigint, bigint, bigint, bigint, text, jsonb, timestamptz, text) from public, anon, authenticated;
 grant execute on function payments_private.record_customer_receipt(uuid, text, uuid, uuid, text, text, bigint, bigint, bigint, bigint, text, jsonb, timestamptz, text) to service_role;
 
--- ============ C: RECORD INVOICE (guarded, idempotent) ============
--- The ONLY sanctioned writer for customer_invoices. Idempotent on (source_kind,
--- source_ref). An invoice can be issued before settlement, so it has no mandatory
--- ledger tie (posting_id is set when paid). The total-reconciles CHECK on the table
--- guarantees subtotal + tax − discount = total.
-create or replace function payments_private.record_customer_invoice(
-  p_user_id uuid,
-  p_division text,
-  p_source_kind text,
-  p_source_ref text,
-  p_payment_intent_id uuid,
-  p_status text,
-  p_subtotal_minor bigint,
-  p_tax_minor bigint,
-  p_discount_minor bigint,
-  p_total_minor bigint,
-  p_currency text,
-  p_line_items jsonb,
-  p_storage_path text,
-  p_issued_at timestamptz
-) returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
-declare
-  v_existing_id uuid;
-  v_existing_no text;
-  v_year int := extract(year from coalesce(p_issued_at, now()))::int;
-  v_no text;
-  v_id uuid;
-begin
-  if upper(coalesce(p_currency, '')) <> 'NGN' then
-    raise exception 'record_customer_invoice: currency must be NGN, got %', p_currency using errcode = 'check_violation';
-  end if;
-
-  select id, invoice_no into v_existing_id, v_existing_no
-    from public.customer_invoices where source_kind = p_source_kind and source_ref = p_source_ref;
-  if v_existing_id is not null then
-    return jsonb_build_object('created', false, 'reason', 'duplicate', 'id', v_existing_id, 'invoice_no', v_existing_no);
-  end if;
-
-  v_no := payments_private.allocate_document_number('INV', v_year);
-  insert into public.customer_invoices (
-    user_id, invoice_no, division, source_kind, source_ref, payment_intent_id, status,
-    subtotal_minor, tax_minor, discount_minor, total_minor, currency, line_items, storage_path, issued_at
-  ) values (
-    p_user_id, v_no, p_division, p_source_kind, p_source_ref, p_payment_intent_id, coalesce(p_status, 'issued'),
-    p_subtotal_minor, coalesce(p_tax_minor, 0), coalesce(p_discount_minor, 0), p_total_minor, 'NGN',
-    coalesce(p_line_items, '[]'::jsonb), p_storage_path, coalesce(p_issued_at, timezone('utc', now()))
-  )
-  on conflict (source_kind, source_ref) do nothing
-  returning id into v_id;
-
-  if v_id is null then
-    select id, invoice_no into v_id, v_no from public.customer_invoices
-      where source_kind = p_source_kind and source_ref = p_source_ref;
-    return jsonb_build_object('created', false, 'reason', 'duplicate', 'id', v_id, 'invoice_no', v_no);
-  end if;
-
-  return jsonb_build_object('created', true, 'id', v_id, 'invoice_no', v_no);
-end $$;
-revoke all on function payments_private.record_customer_invoice(uuid, text, text, text, uuid, text, bigint, bigint, bigint, bigint, text, jsonb, text, timestamptz) from public, anon, authenticated;
-grant execute on function payments_private.record_customer_invoice(uuid, text, text, text, uuid, text, bigint, bigint, bigint, bigint, text, jsonb, text, timestamptz) to service_role;
+-- ============ C: (removed) RECORD INVOICE ============
+-- The original draft's `record_customer_invoice` writer and its minor-shaped
+-- customer_invoices table were removed by SCHEMA-TRUTH-01: the table name is
+-- already taken in prod by the LIVE legacy invoices table and the writer had no
+-- application callers. Ledger-tied invoice issuance returns as its own pass.
 
 -- ============ RLS — owner reads own; finance staff read all; NO client write ============
-alter table public.customer_invoices enable row level security;
 alter table public.customer_receipts enable row level security;
 alter table public.document_number_counters enable row level security;
-
-drop policy if exists customer_invoices_select_own on public.customer_invoices;
-create policy customer_invoices_select_own on public.customer_invoices
-  for select to authenticated using (user_id = (select auth.uid()));
-
-drop policy if exists customer_invoices_select_finance on public.customer_invoices;
-create policy customer_invoices_select_finance on public.customer_invoices
-  for select to authenticated using (public.is_platform_staff());
 
 drop policy if exists customer_receipts_select_own on public.customer_receipts;
 create policy customer_receipts_select_own on public.customer_receipts
@@ -315,9 +229,10 @@ create policy customer_receipts_select_finance on public.customer_receipts
 
 -- Defense in depth (mirrors the V3-17 ledger): strip Supabase's default blanket
 -- table-level DML grants so writes flow ONLY through the SECURITY DEFINER record
--- RPCs (which insert as the table owner, unaffected by these grants). A receipt or
--- invoice is a legal artifact — no role may INSERT one directly. SELECT stays intact
+-- RPC (which inserts as the table owner, unaffected by these grants). A receipt
+-- is a legal artifact — no role may INSERT one directly. SELECT stays intact
 -- (RLS gates anon/authenticated to owner/finance; service_role reads for V3-22).
-revoke insert, update, delete, truncate on public.customer_invoices        from anon, authenticated, service_role;
+-- The LIVE legacy customer_invoices table keeps its existing prod grants — this
+-- migration deliberately does not touch it.
 revoke insert, update, delete, truncate on public.customer_receipts        from anon, authenticated, service_role;
 revoke insert, update, delete, truncate, select on public.document_number_counters from anon, authenticated, service_role;

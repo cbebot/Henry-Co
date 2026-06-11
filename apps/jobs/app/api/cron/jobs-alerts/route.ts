@@ -77,16 +77,16 @@ async function runInterviewReminders(admin: AdminClient) {
     }
     if (!window) continue;
 
-    // Resolve candidate user for routing.
+    // Resolve candidate user for routing (prod column: candidate_id = auth user id).
     const { data: app } = await admin
       .from("jobs_applications")
-      .select("candidate_user_id, candidate_name")
+      .select("candidate_id, candidate_name")
       .eq("id", item.application_id)
       .maybeSingle();
     if (!app) continue;
 
     const candidateUserId = String(
-      (app as Record<string, unknown>).candidate_user_id || "",
+      (app as Record<string, unknown>).candidate_id || "",
     );
     if (!candidateUserId) continue;
 
@@ -165,13 +165,13 @@ async function runOfferLetterExpiryReminders(admin: AdminClient) {
 
     const { data: app } = await admin
       .from("jobs_applications")
-      .select("candidate_user_id")
+      .select("candidate_id")
       .eq("id", item.application_id)
       .maybeSingle();
     if (!app) continue;
 
     const candidateUserId = String(
-      (app as Record<string, unknown>).candidate_user_id || "",
+      (app as Record<string, unknown>).candidate_id || "",
     );
     if (!candidateUserId) continue;
 

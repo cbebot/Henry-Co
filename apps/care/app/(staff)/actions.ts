@@ -27,11 +27,11 @@ export async function markRoleNotificationsReadAction(formData: FormData) {
   const unreadCount = Number(cleanText(formData.get("unread_count")) || 0);
   const supabase = createAdminSupabase();
 
+  // care_security_logs carries user_id/role only (no actor_* columns in prod —
+  // including them made this insert silently fail, so read-state never stuck).
   await supabase.from("care_security_logs").insert({
     event_type: "notification_center_read",
     route: sourceRoute,
-    actor_user_id: auth.profile.id,
-    actor_role: auth.profile.role,
     user_id: auth.profile.id,
     role: auth.profile.role,
     email: auth.user.email ?? null,
@@ -68,8 +68,6 @@ export async function markRoleNotificationItemReadAction(formData: FormData) {
   await supabase.from("care_security_logs").insert({
     event_type: "notification_item_read",
     route: sourceRoute,
-    actor_user_id: auth.profile.id,
-    actor_role: auth.profile.role,
     user_id: auth.profile.id,
     role: auth.profile.role,
     email: auth.user.email ?? null,
