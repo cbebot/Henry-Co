@@ -16,13 +16,13 @@ unreliable — every verdict below is grounded in **object evidence** (does prod
 actually hold the tables/columns/functions/policies the file creates?), checked
 against the introspected snapshot.
 
-**Counts:** backlog = 48 · not-applied = 1 · partially-applied = 5 · applied = 74 · superseded = 1 · partially-superseded = 1 · FL2 = 6 · applied (data-only) = 2 (of 138 files incl. the new completion file).
+**Counts:** backlog = 48 · not-applied = 1 · partially-applied = 5 · applied = 74 · superseded = 1 · partially-superseded = 1 · FL2 = 7 · applied (data-only) = 2 (of 139 files incl. the wallet-completion file + the V3-19 refunds migration, PR #267).
 
 ---
 
 ## 1. THE FL2 APPLY LIST (execute in this exact order)
 
-FL2 applies these six migrations to production, in order, as `postgres`
+FL2 applies these seven migrations to production, in order, as `postgres`
 (dashboard SQL editor or `supabase migration up`), recording a history row per
 file. Each row notes the CI invariant suite that must pass at that position —
 **suite position is part of the contract** (the payments grant invariant asserts
@@ -36,10 +36,16 @@ on the public RPCs *before* the isolation migration relocates them).
 | 4 | `apps/hub/supabase/migrations/20260607130000_v3_18_payment_documents.sql` | `apps/hub/supabase/tests/payment_documents_invariants.sql` |
 | 5 | `apps/hub/supabase/migrations/20260607140000_v3_vat_01_settlement_vat.sql` | `apps/hub/supabase/tests/vat_invariants.sql + vat_grant_invariant.sql` |
 | 6 | `apps/hub/supabase/migrations/20260611120000_fl2_wallet_rail_completion.sql` | — |
+| 7 | `apps/hub/supabase/migrations/20260611130000_v3_19_refunds.sql` | `apps/hub/supabase/tests/refunds_invariants.sql + refunds_grant_invariant.sql` |
 
-**Rehearsal proof:** the full set applies cleanly on the prod-actual shadow,
-**twice** (idempotency, second pass with money fixture data present), with all
-six suites green at their CI positions. Re-run anytime:
+**Rehearsal proof:** files 1–6 apply cleanly on the prod-actual shadow, **twice**
+(idempotency, second pass with money fixture data present), with all six suites
+green at their CI positions. File 7 (V3-19 refunds, PR #267) post-dates that
+rehearsal: it is proven green at its CI position on a fresh PG17 chain
+(`refunds_invariants.sql` + `refunds_grant_invariant.sql`, in the
+payments-grant-invariant job, applied right after the others) and depends on the
+wallet tables that file 6 supplies — fold it into the next shadow rehearsal before
+the FL2 apply. Re-run anytime:
 
 ```
 node scripts/db/build-shadow-db.mjs all --prod-types <prod types> --prod-columns <csv> --prod-acl <csv>
