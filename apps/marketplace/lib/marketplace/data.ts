@@ -865,11 +865,15 @@ export async function getBuyerDashboardData() {
         latestApplicationQuery,
         applyIdentityScope(admin.from("marketplace_wishlists").select("product_id"), viewer, "user_id"),
         applyIdentityScope(admin.from("marketplace_vendor_follows").select("vendor_id"), viewer, "user_id"),
-        applyIdentityScope(
-          admin.from("marketplace_reviews").select("*").order("created_at", { ascending: false }),
-          viewer,
-          "user_id"
-        ),
+        // Fix-the-read (schema drift): marketplace_reviews has no
+        // normalized_email column in the live store, and review_submit
+        // writes user_id only — scope by user_id so this read cannot
+        // fail the whole buyer dashboard.
+        admin
+          .from("marketplace_reviews")
+          .select("*")
+          .eq("user_id", viewer.user.id)
+          .order("created_at", { ascending: false }),
         applyIdentityScope(
           admin.from("marketplace_support_threads").select("*").order("updated_at", { ascending: false }),
           viewer,

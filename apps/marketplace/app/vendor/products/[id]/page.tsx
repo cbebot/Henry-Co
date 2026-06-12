@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -13,6 +15,7 @@ export default async function VendorProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products");
   const { id } = await params;
   const [data, snapshot] = await Promise.all([getVendorWorkspaceData(), getMarketplaceHomeData()]);
@@ -26,10 +29,34 @@ export default async function VendorProductDetailPage({
       nav={vendorNav("/vendor/products", locale)}
     >
       <div className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
-        <form action="/api/marketplace" method="POST" className="market-paper space-y-5 rounded-[1.9rem] p-6">
-          <input type="hidden" name="intent" value="vendor_product_upsert" />
-          <input type="hidden" name="return_to" value={`/vendor/products/${product.id}`} />
-          <input type="hidden" name="slug" value={product.slug} />
+        <MarketplaceActionForm
+          intent="vendor_product_upsert"
+          hidden={{ return_to: `/vendor/products/${product.id}`, slug: product.slug }}
+          successTitle={t("Product updated.")}
+          errorTitle={t("Product could not be updated.")}
+          className="market-paper space-y-5 rounded-[1.9rem] p-6"
+          submitButtons={[
+            {
+              name: "submission_mode",
+              value: "draft",
+              label: t("Save draft"),
+              pendingLabel: t("Saving draft"),
+              className: "market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
+              successTitle: t("Draft saved."),
+              successBody: t("The listing stays private until you submit it for moderation."),
+            },
+            {
+              name: "submission_mode",
+              value: "submit",
+              label: t("Submit update"),
+              pendingLabel: t("Submitting update"),
+              className: "market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
+              successTitle: t("Update submitted."),
+              successBody: t("The revised listing enters moderation review."),
+              chime: true,
+            },
+          ]}
+        >
           <div className="grid gap-4 sm:grid-cols-2">
             <input name="title" defaultValue={product.title} className="market-input rounded-2xl px-4 py-3" placeholder="Product title" required />
             <input name="sku" defaultValue={product.sku} className="market-input rounded-2xl px-4 py-3" placeholder="SKU" required />
@@ -71,15 +98,7 @@ export default async function VendorProductDetailPage({
             <input type="checkbox" name="cod_eligible" defaultChecked={product.codEligible} />
             <span className="text-sm text-[var(--market-ink)]">Eligible for cash on delivery</span>
           </label>
-          <div className="flex flex-wrap gap-3">
-            <button name="submission_mode" value="draft" className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
-              Save draft
-            </button>
-            <button name="submission_mode" value="submit" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-              Submit update
-            </button>
-          </div>
-        </form>
+        </MarketplaceActionForm>
 
         <aside className="space-y-4">
           <article className="market-paper rounded-[1.9rem] p-6">

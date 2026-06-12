@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { CalendarPlus } from "lucide-react";
-import type { JobsCopy } from "@henryco/i18n";
+import { translateSurfaceLabel, type JobsCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toast } from "@henryco/ui/feedback";
 
 export function InterviewScheduler({
   applicationId,
@@ -41,6 +44,9 @@ export function InterviewScheduler({
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,7 +81,18 @@ export function InterviewScheduler({
           return;
         }
         setOpen(false);
-        window.location.reload();
+        setTitle("");
+        setDate("");
+        setTime("");
+        setNotes("");
+        // V3-ACTIONS-01: acknowledge in place and soft-refresh the interview
+        // list — a document reload would discard the message composer draft
+        // and the recruiter's scroll position.
+        toast.success(t("Interview scheduled."), {
+          body: t("The candidate is notified and the interview joins this application's timeline."),
+          chime: true,
+        });
+        router.refresh();
       } catch {
         setError(copy.networkError);
       }

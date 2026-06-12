@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   CalendarRange,
-  FileCheck2,
   Heart,
   ShieldCheck,
 } from "lucide-react";
@@ -14,7 +13,9 @@ import {
   ComparablePricingRail,
   selectComparableListings,
 } from "@/components/property/comparable-pricing";
-import { PropertyPendingButton } from "@/components/property/form-status";
+import { PropertyInquiryForm } from "@/components/property/actions/PropertyInquiryForm";
+import { PropertyViewingForm } from "@/components/property/actions/PropertyViewingForm";
+import { SavePropertyButton } from "@/components/property/actions/SavePropertyButton";
 import {
   PropertyAgentCard,
   PropertyListingCard,
@@ -437,18 +438,11 @@ export default async function PropertyDetailPage({
 
             <div className="mt-6">
               {viewer.user ? (
-                <form action="/api/property" method="POST">
-                  <input type="hidden" name="intent" value="wishlist_toggle" />
-                  <input type="hidden" name="listing_id" value={data.listing.id} />
-                  <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-                  <PropertyPendingButton
-                    idleLabel={isSaved ? t("Remove from saved") : t("Save property")}
-                    pendingLabel={isSaved ? t("Updating saved state") : t("Saving property")}
-                    variant="secondary"
-                    idleIcon={<Heart className="h-4 w-4" />}
-                    className="px-5"
-                  />
-                </form>
+                <SavePropertyButton
+                  listingId={data.listing.id}
+                  slug={data.listing.slug}
+                  isSaved={isSaved}
+                />
               ) : (
                 <Link
                   href={getSharedAccountLoginUrl({
@@ -540,68 +534,14 @@ export default async function PropertyDetailPage({
               {t("Ask about this property")}
             </h2>
             {viewer.user ? (
-              <form action="/api/property" method="POST" className="mt-6 space-y-4">
-                <input type="hidden" name="intent" value="inquiry_submit" />
-                <input type="hidden" name="listing_id" value={data.listing.id} />
-                <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    {t("Name")}
-                  </span>
-                  <input
-                    name="name"
-                    required
-                    defaultValue={viewer.user.fullName || ""}
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    {t("Email")}
-                  </span>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    defaultValue={viewer.user.email || ""}
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    {t("Phone")}
-                  </span>
-                  <input
-                    name="phone"
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                    placeholder="+234..."
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    {t("Message")}
-                  </span>
-                  <textarea
-                    name="message"
-                    required
-                    rows={4}
-                    className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder={t("What would you like Henry Onyx Property to clarify for you?")}
-                  />
-                </label>
-
-                <p className="text-xs leading-6 text-[var(--property-ink-muted)]">
-                  {t(
-                    "Henry Onyx uses your account so replies, clarifications, and the next trust checks stay in one place.",
-                  )}
-                </p>
-
-                <PropertyPendingButton
-                  idleLabel={t("Submit inquiry")}
-                  pendingLabel={t("Submitting inquiry")}
-                />
-              </form>
+              <PropertyInquiryForm
+                listingId={data.listing.id}
+                slug={data.listing.slug}
+                defaults={{
+                  fullName: viewer.user.fullName || "",
+                  email: viewer.user.email || "",
+                }}
+              />
             ) : (
               <div className="mt-6">
                 <PropertyPublicAuthGate
@@ -623,99 +563,14 @@ export default async function PropertyDetailPage({
               {t("Request a viewing")}
             </h2>
             {viewer.user ? (
-              <form action="/api/property" method="POST" className="mt-6 space-y-4">
-                <input type="hidden" name="intent" value="viewing_request" />
-                <input type="hidden" name="listing_id" value={data.listing.id} />
-                <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    {t("Attendee name")}
-                  </span>
-                  <input
-                    name="attendee_name"
-                    required
-                    defaultValue={viewer.user.fullName || ""}
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      {t("Email")}
-                    </span>
-                    <input
-                      name="attendee_email"
-                      type="email"
-                      required
-                      defaultValue={viewer.user.email || ""}
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      {t("Phone")}
-                    </span>
-                    <input
-                      name="attendee_phone"
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      {t("Preferred time")}
-                    </span>
-                    <input
-                      name="preferred_date"
-                      type="datetime-local"
-                      required
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      {t("Backup time")}
-                    </span>
-                    <input
-                      name="backup_date"
-                      type="datetime-local"
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                </div>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    {t("Notes")}
-                  </span>
-                  <textarea
-                    name="notes"
-                    rows={3}
-                    className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder={t("Access, household schedule, or questions for the viewing team.")}
-                  />
-                </label>
-
-                <div className="border-l-2 border-[var(--property-accent-strong)]/55 pl-4 py-2">
-                  <div className="flex items-center gap-2">
-                    <FileCheck2 className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
-                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink)]">
-                      {t("What to expect")}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs leading-6 text-[var(--property-ink-muted)]">
-                    {t(
-                      "Henry Onyx may confirm access, location, or listing readiness before the appointment is fixed. If you want to move forward after the viewing, extra documents can still be requested depending on the property and next step.",
-                    )}
-                  </p>
-                </div>
-
-                <PropertyPendingButton
-                  idleLabel={t("Request viewing")}
-                  pendingLabel={t("Requesting viewing")}
-                />
-              </form>
+              <PropertyViewingForm
+                listingId={data.listing.id}
+                slug={data.listing.slug}
+                defaults={{
+                  fullName: viewer.user.fullName || "",
+                  email: viewer.user.email || "",
+                }}
+              />
             ) : (
               <div className="mt-6">
                 <PropertyPublicAuthGate

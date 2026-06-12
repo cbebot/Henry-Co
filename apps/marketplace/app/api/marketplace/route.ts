@@ -257,6 +257,51 @@ function wantsJson(request: Request, formData: FormData) {
   );
 }
 
+/**
+ * V3-ACTIONS-01 — dual-mode responders for customer/vendor intents: async
+ * submissions (fetch + Accept: application/json) get JSON so the page can
+ * acknowledge in place; native posts keep the legacy 303 redirect.
+ */
+function respondSuccess(
+  json: boolean,
+  request: Request,
+  redirectTarget: string,
+  payload: Record<string, unknown>
+) {
+  if (json) return NextResponse.json({ ok: true, ...payload });
+  return redirectTo(request, redirectTarget);
+}
+
+function respondError(
+  json: boolean,
+  request: Request,
+  redirectTarget: string,
+  input: { message: string; code: string; status?: number }
+) {
+  if (json) {
+    return NextResponse.json(
+      { ok: false, error: input.message, code: input.code },
+      { status: input.status ?? 400 }
+    );
+  }
+  return redirectTo(request, redirectTarget);
+}
+
+function respondAuthRequired(json: boolean, request: Request, nextPath: string) {
+  if (json) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Sign in to continue.",
+        code: "auth_required",
+        loginUrl: buildSharedAccountLoginUrl(nextPath, new URL(request.url).origin),
+      },
+      { status: 401 }
+    );
+  }
+  return redirectToSharedAccountLogin(request, nextPath);
+}
+
 function mapAddressRow(row: Record<string, unknown>) {
   return {
     id: String(row.id),
@@ -929,12 +974,17 @@ export async function POST(request: Request) {
       }
 
       case "wishlist_toggle": {
-        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/wishlist");
+        if (!viewer.user) return respondAuthRequired(json, request, "/account/wishlist");
 
         const productSlug = text(formData, "product_slug");
         const product = snapshot.products.find((item) => item.slug === productSlug);
         if (!product) {
-          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-product`);
+          return respondError(
+            json,
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-product`,
+            { message: "This product is no longer available.", code: "missing-product", status: 404 }
+          );
         }
 
         const { data: existing } = await admin
@@ -965,19 +1015,26 @@ export async function POST(request: Request) {
 
         revalidatePath("/account/wishlist");
         revalidatePath(`/product/${product.slug}`);
-        return redirectTo(
+        return respondSuccess(
+          json,
           request,
-          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "removed=1" : "saved=1"}`
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "removed=1" : "saved=1"}`,
+          { saved: !existing?.id, productSlug: product.slug }
         );
       }
 
       case "vendor_follow_toggle": {
-        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/following");
+        if (!viewer.user) return respondAuthRequired(json, request, "/account/following");
 
         const vendorSlug = text(formData, "vendor_slug");
         const vendor = snapshot.vendors.find((item) => item.slug === vendorSlug);
         if (!vendor) {
-          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`);
+          return respondError(
+            json,
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`,
+            { message: "This store is no longer available.", code: "missing-vendor", status: 404 }
+          );
         }
 
         const { data: existing } = await admin
@@ -1016,9 +1073,11 @@ export async function POST(request: Request) {
 
         revalidatePath("/account/following");
         revalidatePath(`/store/${vendor.slug}`);
-        return redirectTo(
+        return respondSuccess(
+          json,
           request,
-          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "unfollowed=1" : "followed=1"}`
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "unfollowed=1" : "followed=1"}`,
+          { following: !existing?.id, vendorSlug: vendor.slug }
         );
       }
 
@@ -1383,12 +1442,17 @@ export async function POST(request: Request) {
           },
         });
 
-        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}thread=1`);
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}thread=1`,
+          { threadId: thread?.id ? String(thread.id) : null }
+        );
       }
 
       case "vendor_product_upsert": {
         if (!viewer.user || !viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
-          return redirectToSharedAccountLogin(request, "/vendor/products/new");
+          return respondAuthRequired(json, request, "/vendor/products/new");
         }
 
         const vendorScopeId =
@@ -1447,7 +1511,15 @@ export async function POST(request: Request) {
             queue: "listing_blocked",
             note: assessment.moderationReasons.join(" | "),
           });
-          return redirectTo(request, `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(assessment.moderationReasons.join(", "))}`);
+          return respondError(
+            json,
+            request,
+            `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(assessment.moderationReasons.join(", "))}`,
+            {
+              message: `This listing cannot be published yet: ${assessment.moderationReasons.join(", ")}`,
+              code: "listing-blocked",
+            }
+          );
         }
 
         const payload = {
@@ -1549,7 +1621,12 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/products");
         revalidatePath("/search");
-        return redirectTo(request, `/vendor/products?${decision === "submit" ? "submitted=1" : "saved=1"}`);
+        return respondSuccess(
+          json,
+          request,
+          `/vendor/products?${decision === "submit" ? "submitted=1" : "saved=1"}`,
+          { decision, productId: product?.id ? String(product.id) : null }
+        );
       }
 
       case "admin_vendor_application_decision": {
@@ -2166,7 +2243,11 @@ export async function POST(request: Request) {
 
       case "vendor_order_update": {
         if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin", "operations"])) {
-          return redirectTo(request, "/account");
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
         }
 
         const orderGroupId = text(formData, "order_group_id");
@@ -2179,14 +2260,24 @@ export async function POST(request: Request) {
           .select("*")
           .eq("id", orderGroupId)
           .maybeSingle();
-        if (!group) return redirectTo(request, "/vendor/orders?error=missing-group");
+        if (!group) {
+          return respondError(json, request, "/vendor/orders?error=missing-group", {
+            message: "This order group could not be found.",
+            code: "missing-group",
+            status: 404,
+          });
+        }
 
         const vendorScopeId = viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId;
         const isVendorOnly =
           viewerHasRole(viewer, ["vendor"]) &&
           !viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "operations"]);
         if (isVendorOnly && vendorScopeId !== String(group.vendor_id || "")) {
-          return redirectTo(request, "/vendor/orders?error=forbidden");
+          return respondError(json, request, "/vendor/orders?error=forbidden", {
+            message: "This order belongs to another store.",
+            code: "forbidden",
+            status: 403,
+          });
         }
 
         const vendor = snapshot.vendors.find((item) => item.id === String(group.vendor_id || "")) ?? null;
@@ -2316,21 +2407,30 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/orders");
         revalidatePath(`/track/${group.order_no}`);
-        return redirectTo(request, "/vendor/orders?updated=1");
+        return respondSuccess(json, request, "/vendor/orders?updated=1", {
+          orderNo: group.order_no,
+          fulfillmentStatus,
+        });
       }
 
       case "vendor_store_update": {
         if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
-          return redirectTo(request, "/account");
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
         }
 
         const vendorId =
           viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
           snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id;
         if (!vendorId) {
-          return redirectTo(
+          return respondError(
+            json,
             request,
-            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`,
+            { message: "Your store record could not be found.", code: "missing-vendor", status: 404 }
           );
         }
 
@@ -2348,7 +2448,12 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/store");
         revalidatePath("/vendor/settings");
-        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`);
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`,
+          { vendorId: String(vendorId) }
+        );
       }
 
       case "payout_decision": {
@@ -2441,7 +2546,12 @@ export async function POST(request: Request) {
       }
     }
 
-    return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=unknown-intent`);
+    return respondError(
+      json,
+      request,
+      `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=unknown-intent`,
+      { message: "This action is not recognised.", code: "unknown-intent" }
+    );
   } catch (error) {
     await logMarketplaceAction({
       eventType: "marketplace_mutation_failed",
@@ -2452,6 +2562,15 @@ export async function POST(request: Request) {
         error: error instanceof Error ? error.message : "Unknown error",
       },
     });
-    return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=mutation-failed`);
+    return respondError(
+      json,
+      request,
+      `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=mutation-failed`,
+      {
+        message: error instanceof Error ? error.message : "The action could not be completed.",
+        code: "mutation-failed",
+        status: 500,
+      }
+    );
   }
 }

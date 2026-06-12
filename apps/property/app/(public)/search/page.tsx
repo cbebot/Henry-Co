@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Bell, BellOff } from "lucide-react";
+import { BellOff } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { henryDomain } from "@henryco/config";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
 import { PropertyMapView } from "@/components/property/property-map-view";
-import { PropertyPendingButton } from "@/components/property/form-status";
+import { SaveSearchButton } from "@/components/property/actions/SaveSearchButton";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot, searchProperties } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
@@ -145,23 +145,16 @@ export default async function PropertySearchPage({
             )}
           </p>
           {viewer.user ? (
-            <form action="/api/property" method="POST" className="flex flex-wrap items-center gap-3">
-              <input type="hidden" name="intent" value="saved_search_create" />
-              <input type="hidden" name="return_to" value={`/search?${new URLSearchParams(Object.entries(params).filter(([, v]) => Boolean(v)) as Array<[string, string]>).toString()}`} />
-              <input type="hidden" name="q" value={params.q || ""} />
-              <input type="hidden" name="kind" value={params.kind || ""} />
-              <input type="hidden" name="area" value={params.area || ""} />
-              <input type="hidden" name="managed" value={params.managed || ""} />
-              <input type="hidden" name="furnished" value={params.furnished || ""} />
-              <input type="hidden" name="alert_cadence" value="daily" />
-              <PropertyPendingButton
-                idleLabel={t("Save this search")}
-                pendingLabel={t("Saving search")}
-                variant="secondary"
-                idleIcon={<Bell className="h-4 w-4" />}
-                className="px-4 py-2 text-[12.5px]"
-              />
-            </form>
+            <SaveSearchButton
+              criteria={{
+                q: params.q,
+                kind: params.kind,
+                area: params.area,
+                managed: params.managed,
+                furnished: params.furnished,
+              }}
+              returnTo={`/search?${new URLSearchParams(Object.entries(params).filter(([, v]) => Boolean(v)) as Array<[string, string]>).toString()}`}
+            />
           ) : (
             <Link
               href={getSharedAccountLoginUrl({

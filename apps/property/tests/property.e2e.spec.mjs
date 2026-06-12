@@ -458,7 +458,7 @@ test("owner save flow, ops updates, and privileged workspaces render for the map
   ).toBeVisible();
 
   await page.getByRole("button", { name: /Save property/i }).click();
-  await expect(page.getByText(/Property saved to your HenryCo account history/i)).toBeVisible();
+  await expect(page.locator(".hc-fb-toast-title").filter({ hasText: /Property saved to your account/i }).first()).toBeVisible();
 
   const savedRecord = await waitForValue(
     "saved property record",

@@ -24,6 +24,7 @@ import { getProjectWorkspace } from "@/lib/studio/data";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { buildPaymentOverview, buildProposalPricingBreakdown } from "@/lib/studio/pricing";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
+import { StudioSupportRequestForm } from "@/components/studio/support/StudioSupportRequestForm";
 
 function truncateFileLabel(label: string, max = 36) {
   if (label.length <= max) return label;
@@ -700,22 +701,11 @@ export default async function ProjectDetailPage({
                 </form>
               ) : null}
               {unpaidPayments.length > 0 && !isStaff && viewer.user ? (
-                <form action="/api/support/create" method="post" className="mt-6 space-y-3">
-                  <input type="hidden" name="redirectTo" value={redirectPath} />
-                  <input type="hidden" name="subject" value={`Support request for ${project.title}`} />
-                  <input type="hidden" name="category" value="project" />
-                  <input type="hidden" name="priority" value="normal" />
-                  <input type="hidden" name="referenceType" value="studio_project" />
-                  <input type="hidden" name="referenceId" value={project.id} />
-                  <textarea
-                    name="body"
-                    required
-                    rows={3}
-                    className="studio-textarea min-h-24 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder={t("Describe your question or concern — we'll respond in your account.")}
-                  />
-                  <StudioSubmitButton label={t("Open support thread")} pendingLabel={t("Opening…")} />
-                </form>
+                <StudioSupportRequestForm
+                  projectId={project.id}
+                  projectTitle={project.title}
+                  redirectPath={redirectPath}
+                />
               ) : unpaidPayments.length > 0 && !isStaff ? (
                 <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                   <div className="text-sm font-semibold text-[var(--studio-ink)]">{t("Need help with your payment?")}</div>
