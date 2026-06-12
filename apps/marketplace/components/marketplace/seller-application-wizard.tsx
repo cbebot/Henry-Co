@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileCheck2, ShieldCheck, UploadCloud } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
@@ -140,6 +141,7 @@ export function SellerApplicationWizard({
   initialPlan = null,
 }: SellerApplicationWizardProps) {
   const { pushToast } = useMarketplaceRuntime();
+  const router = useRouter();
   const initialDraft = initialApplication?.draftPayload ?? {};
   const draftPlan =
     typeof (initialDraft as Record<string, unknown>).plan === "string"
@@ -247,7 +249,9 @@ export function SellerApplicationWizard({
       pushToast("Seller application submitted", "success", "Review has started.", {
         chime: true,
       });
-      window.location.href = "/account/seller-application?submitted=1";
+      // Soft navigation — the toast (and its chime) survive into the
+      // confirmation view instead of being destroyed by a document load.
+      router.push("/account/seller-application?submitted=1");
       return;
     }
 

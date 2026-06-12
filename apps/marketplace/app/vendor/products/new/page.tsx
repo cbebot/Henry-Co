@@ -1,3 +1,5 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -8,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NewVendorProductPage() {
   const locale = await getMarketplacePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products/new");
   const [data, vendorData] = await Promise.all([getMarketplaceHomeData(), getVendorWorkspaceData()]);
 
@@ -31,9 +34,35 @@ export default async function NewVendorProductPage() {
           </div>
         </div>
       </section>
-      <form action="/api/marketplace" method="POST" className="market-paper space-y-5 rounded-[1.75rem] p-6">
-        <input type="hidden" name="intent" value="vendor_product_upsert" />
-        <input type="hidden" name="return_to" value="/vendor/products" />
+      <MarketplaceActionForm
+        intent="vendor_product_upsert"
+        hidden={{ return_to: "/vendor/products" }}
+        successTitle={t("Product saved.")}
+        errorTitle={t("Product could not be saved.")}
+        resetOnSuccess
+        className="market-paper space-y-5 rounded-[1.75rem] p-6"
+        submitButtons={[
+          {
+            name: "submission_mode",
+            value: "draft",
+            label: t("Save draft"),
+            pendingLabel: t("Saving draft"),
+            className: "market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
+            successTitle: t("Draft saved."),
+            successBody: t("The listing stays private until you submit it for moderation."),
+          },
+          {
+            name: "submission_mode",
+            value: "submit",
+            label: t("Submit for moderation"),
+            pendingLabel: t("Submitting for moderation"),
+            className: "market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
+            successTitle: t("Submitted for moderation."),
+            successBody: t("The listing enters review with pricing governance and trust scoring applied."),
+            chime: true,
+          },
+        ]}
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <input name="title" className="market-input rounded-2xl px-4 py-3" placeholder="Product title" required />
           <input name="slug" className="market-input rounded-2xl px-4 py-3" placeholder="product-slug" />
@@ -72,15 +101,7 @@ export default async function NewVendorProductPage() {
           <input type="checkbox" name="feature_requested" />
           <span className="text-sm text-[var(--market-ink)]">Request featured placement review (extra fee applies if approved)</span>
         </label>
-        <div className="flex flex-wrap gap-3">
-          <button name="submission_mode" value="draft" className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
-            Save draft
-          </button>
-          <button name="submission_mode" value="submit" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-            Submit for moderation
-          </button>
-        </div>
-      </form>
+      </MarketplaceActionForm>
     </WorkspaceShell>
   );
 }

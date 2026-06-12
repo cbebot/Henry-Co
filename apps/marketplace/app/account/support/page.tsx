@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, MessageSquare, ShieldCheck } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData, getMarketplaceHomeData } from "@/lib/marketplace/data";
@@ -22,7 +24,7 @@ const SUBJECT_PRESETS = [
   { value: "order", label: "An order or delivery" },
   { value: "payment", label: "A payment or refund" },
   { value: "vendor", label: "A specific store or vendor" },
-  { value: "account", label: "My HenryCo account" },
+  { value: "account", label: "My Henry Onyx account" },
   { value: "trust", label: "Trust, safety, or moderation" },
   { value: "other", label: "Something else" },
 ];
@@ -52,6 +54,7 @@ export default async function AccountSupportPage({
   searchParams?: Promise<{ vendor?: string; thread?: string }>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const params = (await searchParams) ?? {};
   const vendorSlug =
     typeof params.vendor === "string" ? params.vendor.trim().toLowerCase() : "";
@@ -83,7 +86,7 @@ export default async function AccountSupportPage({
   return (
     <WorkspaceShell
       title="Support"
-      description="Open a ticket attached to your HenryCo account, order history, and dispute trail. Replies stay on the same thread so you never re-type the context."
+      description="Open a ticket attached to your Henry Onyx account, order history, and dispute trail. Replies stay on the same thread so you never re-type the context."
       {...accountWorkspaceNav("/account/support", locale)}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
@@ -131,16 +134,44 @@ export default async function AccountSupportPage({
               vendor only if it is relevant — the team can search the rest.
             </p>
 
-            <form
-              action="/api/marketplace"
-              method="POST"
+            <MarketplaceActionForm
+              intent="support_thread_create"
+              hidden={{
+                return_to: returnPath,
+                ...(vendorRecord ? { vendor_slug: vendorRecord.slug } : {}),
+              }}
+              submitLabel={
+                <span className="inline-flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  {t("Open the ticket")}
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              }
+              pendingLabel={t("Opening the ticket")}
+              successTitle={t("Ticket opened.")}
+              successBody={t("The support team will reply by email and on this thread.")}
+              errorTitle={t("The ticket could not be opened.")}
+              chime
+              resetOnSuccess
               className="mt-6 space-y-5"
+              buttonClassName="
+                market-button-primary inline-flex items-center gap-2
+                rounded-full px-5 py-3 text-sm font-semibold transition outline-none
+                focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55
+                focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]
+                active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80
+              "
+              buttonRowClassName="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-[var(--market-line)] pt-5"
+              afterButton={
+                <Link
+                  href="/help"
+                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--market-muted)] underline-offset-4 transition hover:text-[var(--market-ink)] hover:underline"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Back to the help centre
+                </Link>
+              }
             >
-              <input type="hidden" name="intent" value="support_thread_create" />
-              <input type="hidden" name="return_to" value={returnPath} />
-              {vendorRecord ? (
-                <input type="hidden" name="vendor_slug" value={vendorRecord.slug} />
-              ) : null}
 
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="space-y-1.5">
@@ -225,30 +256,7 @@ export default async function AccountSupportPage({
                 />
               </label>
 
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-[var(--market-line)] pt-5">
-                <button
-                  type="submit"
-                  className="
-                    market-button-primary inline-flex items-center gap-2
-                    rounded-full px-5 py-3 text-sm font-semibold transition outline-none
-                    focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55
-                    focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]
-                    active:translate-y-[0.5px]
-                  "
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  Open the ticket
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-                <Link
-                  href="/help"
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--market-muted)] underline-offset-4 transition hover:text-[var(--market-ink)] hover:underline"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  Back to the help centre
-                </Link>
-              </div>
-            </form>
+            </MarketplaceActionForm>
           </div>
 
           {/* Trust + privacy footnote — quiet hairline panel */}

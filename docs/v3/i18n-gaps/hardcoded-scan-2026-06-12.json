@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-12T12:07:14.211Z",
+  "generatedAt": "2026-06-12T22:55:15.818Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1375,
+    "scannedFiles": 1382,
     "entries": 1291,
     "counts": {
       "OK": 2,
-      "GAP": 1209,
+      "GAP": 1199,
       "EXEMPT": 35,
-      "AMBIGUOUS": 45
+      "AMBIGUOUS": 55
     },
-    "durationMs": 3807
+    "durationMs": 3871
   },
   "entriesByFile": {
     "apps/account/app/(account)/search/page.tsx": [
@@ -3459,6 +3459,16 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
     ],
+    "apps/care/components/care/ResubscribeButton.tsx": [
+      {
+        "line": 38,
+        "col": 52,
+        "kind": "jsx_text",
+        "text": "null)) as Record",
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
+      }
+    ],
     "apps/care/components/owner/WhatsAppHealthConsole.tsx": [
       {
         "line": 487,
@@ -5523,7 +5533,7 @@
     ],
     "apps/marketplace/app/account/following/page.tsx": [
       {
-        "line": 66,
+        "line": 67,
         "col": 11,
         "kind": "attr:title",
         "text": "No followed stores yet.",
@@ -5737,15 +5747,15 @@
     ],
     "apps/marketplace/app/account/support/page.tsx": [
       {
-        "line": 118,
+        "line": 121,
         "col": 43,
         "kind": "jsx_text",
         "text": "Open a ticket",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 199,
+        "line": 230,
         "col": 19,
         "kind": "attr:placeholder",
         "text": "One short line — like the email subject you'd write us",
@@ -5753,7 +5763,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 212,
+        "line": 243,
         "col": 19,
         "kind": "attr:placeholder",
         "text": "Order numbers, dates, and what you'd like us to do help us solve it faster. Don't worry about formatting.",
@@ -5761,7 +5771,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 279,
+        "line": 287,
         "col": 17,
         "kind": "attr:title",
         "text": "No open threads",
@@ -5769,7 +5779,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 297,
+        "line": 305,
         "col": 15,
         "kind": "attr:title",
         "text": "No tickets yet — that is the goal.",
@@ -5779,7 +5789,7 @@
     ],
     "apps/marketplace/app/account/wishlist/page.tsx": [
       {
-        "line": 66,
+        "line": 67,
         "col": 11,
         "kind": "attr:title",
         "text": "Wishlist is empty.",
@@ -5949,7 +5959,7 @@
     ],
     "apps/marketplace/app/vendor/orders/page.tsx": [
       {
-        "line": 44,
+        "line": 54,
         "col": 99,
         "kind": "attr:placeholder",
         "text": "Tracking code",
@@ -5995,7 +6005,7 @@
     ],
     "apps/marketplace/app/vendor/products/new/page.tsx": [
       {
-        "line": 16,
+        "line": 19,
         "col": 7,
         "kind": "attr:title",
         "text": "New product",
@@ -6003,15 +6013,15 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 21,
+        "line": 24,
         "col": 37,
         "kind": "jsx_text",
         "text": "Seller economics in this flow",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 38,
+        "line": 67,
         "col": 78,
         "kind": "attr:placeholder",
         "text": "Product title",
@@ -6019,7 +6029,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 40,
+        "line": 69,
         "col": 94,
         "kind": "attr:placeholder",
         "text": "Short conversion summary",
@@ -6027,7 +6037,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 41,
+        "line": 70,
         "col": 118,
         "kind": "attr:placeholder",
         "text": "Longer product story and detail.",
@@ -6035,15 +6045,15 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 50,
+        "line": 79,
         "col": 29,
         "kind": "jsx_text",
         "text": "No brand",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 57,
+        "line": 86,
         "col": 97,
         "kind": "attr:placeholder",
         "text": "Base price",
@@ -6051,7 +6061,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 58,
+        "line": 87,
         "col": 103,
         "kind": "attr:placeholder",
         "text": "Compare-at price",
@@ -6059,7 +6069,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 63,
+        "line": 92,
         "col": 86,
         "kind": "attr:placeholder",
         "text": "Delivery note",
@@ -6067,7 +6077,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 64,
+        "line": 93,
         "col": 82,
         "kind": "attr:placeholder",
         "text": "Lead time",
@@ -6075,7 +6085,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 65,
+        "line": 94,
         "col": 96,
         "kind": "attr:placeholder",
         "text": "Primary image URL",
@@ -6083,20 +6093,20 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 69,
+        "line": 98,
         "col": 61,
         "kind": "jsx_text",
         "text": "Eligible for cash on delivery",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 73,
+        "line": 102,
         "col": 61,
         "kind": "jsx_text",
         "text": "Request featured placement review (extra fee applies if approved)",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
     ],
     "apps/marketplace/app/vendor/products/page.tsx": [
@@ -6111,7 +6121,7 @@
     ],
     "apps/marketplace/app/vendor/products/[id]/page.tsx": [
       {
-        "line": 34,
+        "line": 61,
         "col": 109,
         "kind": "attr:placeholder",
         "text": "Product title",
@@ -6119,7 +6129,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 36,
+        "line": 63,
         "col": 127,
         "kind": "attr:placeholder",
         "text": "Short conversion summary",
@@ -6127,7 +6137,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 37,
+        "line": 64,
         "col": 155,
         "kind": "attr:placeholder",
         "text": "Long-form story and detail.",
@@ -6135,15 +6145,15 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 46,
+        "line": 73,
         "col": 31,
         "kind": "jsx_text",
         "text": "No brand",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 53,
+        "line": 80,
         "col": 132,
         "kind": "attr:placeholder",
         "text": "Base price",
@@ -6151,7 +6161,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 54,
+        "line": 81,
         "col": 156,
         "kind": "attr:placeholder",
         "text": "Compare-at price",
@@ -6159,7 +6169,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 56,
+        "line": 83,
         "col": 116,
         "kind": "attr:placeholder",
         "text": "Lead time",
@@ -6167,7 +6177,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 61,
+        "line": 88,
         "col": 15,
         "kind": "attr:placeholder",
         "text": "Delivery note",
@@ -6175,7 +6185,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 67,
+        "line": 94,
         "col": 15,
         "kind": "attr:placeholder",
         "text": "Primary image URL",
@@ -6183,25 +6193,25 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 72,
+        "line": 99,
         "col": 63,
         "kind": "jsx_text",
         "text": "Eligible for cash on delivery",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 86,
+        "line": 105,
         "col": 41,
         "kind": "jsx_text",
         "text": "Moderation readiness",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       }
     ],
     "apps/marketplace/app/vendor/settings/page.tsx": [
       {
-        "line": 24,
+        "line": 34,
         "col": 126,
         "kind": "attr:placeholder",
         "text": "Support email",
@@ -6209,7 +6219,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 25,
+        "line": 35,
         "col": 126,
         "kind": "attr:placeholder",
         "text": "Support phone",
@@ -6217,7 +6227,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 26,
+        "line": 36,
         "col": 149,
         "kind": "attr:placeholder",
         "text": "Response SLA hours",
@@ -6225,25 +6235,17 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 27,
+        "line": 37,
         "col": 113,
         "kind": "attr:placeholder",
         "text": "Accent hex",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
-      },
-      {
-        "line": 29,
-        "col": 100,
-        "kind": "jsx_text",
-        "text": "Save seller settings",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
       }
     ],
     "apps/marketplace/app/vendor/store/page.tsx": [
       {
-        "line": 16,
+        "line": 19,
         "col": 7,
         "kind": "attr:title",
         "text": "Store profile",
@@ -6251,7 +6253,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 25,
+        "line": 35,
         "col": 109,
         "kind": "attr:placeholder",
         "text": "Store name",
@@ -6259,7 +6261,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 26,
+        "line": 36,
         "col": 126,
         "kind": "attr:placeholder",
         "text": "Support phone",
@@ -6267,7 +6269,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 27,
+        "line": 37,
         "col": 140,
         "kind": "attr:placeholder",
         "text": "Support email",
@@ -6275,20 +6277,12 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 28,
+        "line": 38,
         "col": 157,
         "kind": "attr:placeholder",
         "text": "Store story and trust promise",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
-      },
-      {
-        "line": 30,
-        "col": 100,
-        "kind": "jsx_text",
-        "text": "Update store profile",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
       }
     ],
     "apps/marketplace/components/marketplace/account-addresses-client.tsx": [
@@ -6691,7 +6685,7 @@
     ],
     "apps/marketplace/components/marketplace/seller-application-wizard.tsx": [
       {
-        "line": 358,
+        "line": 362,
         "col": 81,
         "kind": "jsx_text",
         "text": "Store name",
@@ -6699,7 +6693,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 366,
+        "line": 370,
         "col": 81,
         "kind": "jsx_text",
         "text": "Store slug",
@@ -6707,7 +6701,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 374,
+        "line": 378,
         "col": 81,
         "kind": "jsx_text",
         "text": "Legal business name",
@@ -6715,7 +6709,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 382,
+        "line": 386,
         "col": 81,
         "kind": "jsx_text",
         "text": "Operating phone",
@@ -6723,7 +6717,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 390,
+        "line": 394,
         "col": 81,
         "kind": "jsx_text",
         "text": "Category focus",
@@ -6731,7 +6725,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 395,
+        "line": 399,
         "col": 19,
         "kind": "attr:placeholder",
         "text": "Premium home, founder office, elevated style...",
@@ -6739,7 +6733,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 410,
+        "line": 414,
         "col": 81,
         "kind": "jsx_text",
         "text": "Store story and trust angle",
@@ -6747,7 +6741,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 416,
+        "line": 420,
         "col": 19,
         "kind": "attr:placeholder",
         "text": "Explain what you sell, why buyers should trust the store, and the service standard you can maintain.",
@@ -6755,7 +6749,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 425,
+        "line": 429,
         "col": 90,
         "kind": "jsx_text",
         "text": "Verification posture",
@@ -6763,7 +6757,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 426,
+        "line": 430,
         "col": 98,
         "kind": "jsx_text",
         "text": "Live trust gating",
@@ -6771,7 +6765,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 430,
+        "line": 434,
         "col": 21,
         "kind": "jsx_text",
         "text": "Founder identity and payout proof are mandatory before submission can enter the serious review lane.",
@@ -6779,7 +6773,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 431,
+        "line": 435,
         "col": 21,
         "kind": "jsx_text",
         "text": "Business registration is recommended for faster approval and fewer clarification requests.",
@@ -6787,7 +6781,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 432,
+        "line": 436,
         "col": 21,
         "kind": "jsx_text",
         "text": "Uploaded evidence is recorded into HenryCo documents and linked to the seller moderation workflow.",
@@ -6795,7 +6789,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 496,
+        "line": 500,
         "col": 68,
         "kind": "jsx_text",
         "text": "No file uploaded yet",
@@ -6803,7 +6797,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 512,
+        "line": 516,
         "col": 65,
         "kind": "attr:label",
         "text": "Uploading seller document",
@@ -7199,8 +7193,8 @@
     ],
     "apps/property/app/(public)/search/page.tsx": [
       {
-        "line": 150,
-        "col": 130,
+        "line": 156,
+        "col": 95,
         "kind": "jsx_text",
         "text": "Boolean(v)) as Array",
         "classification": "AMBIGUOUS",
@@ -9389,9 +9383,19 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       }
     ],
+    "apps/studio/components/studio/support/StudioSupportRequestForm.tsx": [
+      {
+        "line": 45,
+        "col": 52,
+        "kind": "jsx_text",
+        "text": "null)) as Record",
+        "classification": "AMBIGUOUS",
+        "reason": "literal in i18n-wired file — likely missed during the wrap pass"
+      }
+    ],
     "apps/studio/components/studio/support/StudioSupportThreadHeader.tsx": [
       {
-        "line": 113,
+        "line": 114,
         "col": 12,
         "kind": "attr:label",
         "text": "Support thread header",
@@ -9399,7 +9403,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 113,
+        "line": 114,
         "col": 7,
         "kind": "attr:aria-label",
         "text": "Support thread header",
@@ -9407,7 +9411,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 362,
+        "line": 364,
         "col": 14,
         "kind": "attr:label",
         "text": "Thread actions",
@@ -9415,7 +9419,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 362,
+        "line": 364,
         "col": 9,
         "kind": "attr:aria-label",
         "text": "Thread actions",
@@ -9423,7 +9427,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 363,
+        "line": 365,
         "col": 9,
         "kind": "attr:title",
         "text": "Thread actions",
@@ -9431,7 +9435,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 373,
+        "line": 375,
         "col": 16,
         "kind": "attr:label",
         "text": "Thread actions",
@@ -9439,7 +9443,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 373,
+        "line": 375,
         "col": 11,
         "kind": "attr:aria-label",
         "text": "Thread actions",
@@ -9447,7 +9451,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 380,
+        "line": 382,
         "col": 39,
         "kind": "attr:label",
         "text": "Transfer destination",
@@ -9455,7 +9459,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 380,
+        "line": 382,
         "col": 34,
         "kind": "attr:aria-label",
         "text": "Transfer destination",
@@ -9463,7 +9467,7 @@
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
       },
       {
-        "line": 412,
+        "line": 414,
         "col": 19,
         "kind": "attr:label",
         "text": "Re-open thread",
@@ -9471,7 +9475,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 421,
+        "line": 423,
         "col": 19,
         "kind": "attr:label",
         "text": "Mark resolved",
@@ -9479,7 +9483,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 430,
+        "line": 432,
         "col": 19,
         "kind": "attr:label",
         "text": "Transfer division",
@@ -9487,7 +9491,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 454,
+        "line": 456,
         "col": 17,
         "kind": "attr:label",
         "text": "Flag for review",
@@ -9495,7 +9499,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 481,
+        "line": 483,
         "col": 17,
         "kind": "attr:label",
         "text": "Download (use the action above)",

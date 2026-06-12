@@ -1,3 +1,5 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -9,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function VendorOrdersPage() {
   const locale = await getMarketplacePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/orders");
   const data = await getVendorWorkspaceData();
 
@@ -29,10 +32,17 @@ export default async function VendorOrdersPage() {
             <p className="mt-2 text-sm font-medium text-[var(--market-brass)]">
               Net vendor settlement: {formatCurrency(order.netVendorAmount)}
             </p>
-            <form action="/api/marketplace" method="POST" className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,1fr,auto]">
-              <input type="hidden" name="intent" value="vendor_order_update" />
-              <input type="hidden" name="order_group_id" value={order.id} />
-              <input type="hidden" name="return_to" value="/vendor/orders" />
+            <MarketplaceActionForm
+              intent="vendor_order_update"
+              hidden={{ order_group_id: order.id, return_to: "/vendor/orders" }}
+              submitLabel={t("Update")}
+              pendingLabel={t("Updating order")}
+              successTitle={t("Order updated.")}
+              successBody={t("The buyer sees the new fulfilment state on their tracking page.")}
+              errorTitle={t("Order could not be updated.")}
+              className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,1fr,auto]"
+              buttonClassName="market-button-primary rounded-full px-4 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80"
+            >
               <select name="fulfillment_status" className="market-select rounded-2xl px-4 py-3" defaultValue={order.fulfillmentStatus}>
                 {["confirmed", "packed", "shipped", "delivered", "delayed"].map((status) => (
                   <option key={status} value={status}>
@@ -42,8 +52,7 @@ export default async function VendorOrdersPage() {
               </select>
               <input name="shipment_carrier" className="market-input rounded-2xl px-4 py-3" placeholder="Carrier" />
               <input name="shipment_tracking_code" className="market-input rounded-2xl px-4 py-3" placeholder="Tracking code" />
-              <button className="market-button-primary rounded-full px-4 py-3 text-sm font-semibold">Update</button>
-            </form>
+            </MarketplaceActionForm>
           </article>
         ))}
       </div>

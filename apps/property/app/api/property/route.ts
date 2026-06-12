@@ -157,6 +157,31 @@ function redirectToAccountSignIn(request: Request, returnPath: string) {
   return NextResponse.redirect(loginUrl, { status: 303 });
 }
 
+/**
+ * V3-ACTIONS-01 — auth gate honouring the dual-mode contract: async
+ * submissions get 401 + loginUrl JSON (the client surfaces the reauth flow
+ * itself, with any typed draft already preserved client-side); native posts
+ * keep the legacy 303 redirect to shared sign-in.
+ */
+function respondAuthRequired(request: Request, returnPath: string) {
+  if (wantsJson(request)) {
+    const origin = new URL(request.url).origin;
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Sign in to continue.",
+        code: "auth_required",
+        loginUrl: getSharedAccountLoginUrl({
+          nextPath: returnPath.startsWith("/") ? returnPath : `/${returnPath}`,
+          propertyOrigin: origin,
+        }).toString(),
+      },
+      { status: 401 }
+    );
+  }
+  return redirectToAccountSignIn(request, returnPath);
+}
+
 function withQuery(target: string, key: string, value: string) {
   const separator = target.includes("?") ? "&" : "?";
   return `${target}${separator}${key}=${encodeURIComponent(value)}`;
@@ -555,12 +580,18 @@ export async function POST(request: Request) {
     switch (intent) {
       case "wishlist_toggle": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
-        if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "This listing is no longer available.",
+            code: "missing-listing",
+            status: 404,
+          });
+        }
 
         const exists = snapshot.savedListings.some(
           (item) => item.userId === viewer.user?.id && item.listingId === listingId
@@ -584,21 +615,36 @@ export async function POST(request: Request) {
         });
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, exists ? "removed" : "saved", "1"));
+        return respondSuccess(
+          request,
+          withQuery(returnTo, exists ? "removed" : "saved", "1"),
+          { saved: !exists, listingId: listing.id }
+        );
       }
 
       case "inquiry_submit": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
-        if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "This listing is no longer available.",
+            code: "missing-listing",
+            status: 404,
+          });
+        }
 
         const name = text(formData, "name") || viewer.user?.fullName || "Property prospect";
         const email = normalizeEmail(text(formData, "email") || viewer.user?.email);
-        if (!email) return redirectTo(request, withQuery(returnTo, "error", "missing-email"));
+        if (!email) {
+          return respondError(request, returnTo, {
+            message: "An email address is required so replies can reach you.",
+            code: "missing-email",
+          });
+        }
 
         const phone = text(formData, "phone");
         const message = text(formData, "message");
@@ -693,28 +739,47 @@ export async function POST(request: Request) {
         }
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, "inquiry", "sent"));
+        return respondSuccess(request, withQuery(returnTo, "inquiry", "sent"), {
+          inquiryId,
+          listingId: listing.id,
+        });
       }
 
       case "viewing_request": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
-        if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "This listing is no longer available.",
+            code: "missing-listing",
+            status: 404,
+          });
+        }
 
         const attendeeName =
           text(formData, "attendee_name") || viewer.user?.fullName || "Property visitor";
         const attendeeEmail = normalizeEmail(
           text(formData, "attendee_email") || viewer.user?.email
         );
-        if (!attendeeEmail) return redirectTo(request, withQuery(returnTo, "error", "missing-email"));
+        if (!attendeeEmail) {
+          return respondError(request, returnTo, {
+            message: "An email address is required so the confirmation can reach you.",
+            code: "missing-email",
+          });
+        }
 
         const attendeePhone = text(formData, "attendee_phone");
         const preferredDate = localToIso(text(formData, "preferred_date"));
-        if (!preferredDate) return redirectTo(request, withQuery(returnTo, "error", "missing-date"));
+        if (!preferredDate) {
+          return respondError(request, returnTo, {
+            message: "A preferred time is required before the viewing can be scheduled.",
+            code: "missing-date",
+          });
+        }
 
         const backupDate = localToIso(text(formData, "backup_date"));
         const notes = text(formData, "notes");
@@ -808,7 +873,10 @@ export async function POST(request: Request) {
         });
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, "viewing", "requested"));
+        return respondSuccess(request, withQuery(returnTo, "viewing", "requested"), {
+          viewingId,
+          listingId: listing.id,
+        });
       }
 
       case "listing_submit": {
@@ -1801,7 +1869,7 @@ export async function POST(request: Request) {
       /* V3 PASS 21 — saved-search intents. */
       case "saved_search_create": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
         const minBedsRaw = numberValue(formData, "min_beds");
         const maxBedsRaw = numberValue(formData, "max_beds");
@@ -1832,7 +1900,9 @@ export async function POST(request: Request) {
           alertCadence: cadence,
         });
 
-        return redirectTo(request, withQuery(returnTo, "saved_search", "created"));
+        return respondSuccess(request, withQuery(returnTo, "saved_search", "created"), {
+          savedSearch: "created",
+        });
       }
 
       case "saved_search_delete": {

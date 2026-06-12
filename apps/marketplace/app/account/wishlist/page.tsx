@@ -1,3 +1,5 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { EmptyState, ProductCard, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
@@ -21,6 +23,7 @@ export default async function AccountWishlistPage({
   searchParams: Promise<SearchParams>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceUser("/account/wishlist");
   const [data, params] = await Promise.all([getBuyerDashboardData(), searchParams]);
 
@@ -47,17 +50,15 @@ export default async function AccountWishlistPage({
           {data.wishlist.map((product) => (
             <div key={product.slug} className="flex flex-col gap-3">
               <ProductCard product={product} />
-              <form action="/api/marketplace" method="POST">
-                <input type="hidden" name="intent" value="wishlist_toggle" />
-                <input type="hidden" name="product_slug" value={product.slug} />
-                <input type="hidden" name="return_to" value="/account/wishlist" />
-                <button
-                  type="submit"
-                  className="w-full rounded-full border border-[rgba(232,88,88,0.35)] bg-[rgba(232,88,88,0.08)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--acct-red-ink)] hover:bg-[rgba(232,88,88,0.16)]"
-                >
-                  Remove from wishlist
-                </button>
-              </form>
+              <MarketplaceActionForm
+                intent="wishlist_toggle"
+                hidden={{ product_slug: product.slug, return_to: "/account/wishlist" }}
+                submitLabel={t("Remove from wishlist")}
+                pendingLabel={t("Removing from wishlist")}
+                successTitle={t("Removed from wishlist.")}
+                errorTitle={t("Wishlist could not be updated.")}
+                buttonClassName="w-full rounded-full border border-[rgba(232,88,88,0.35)] bg-[rgba(232,88,88,0.08)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--acct-red-ink)] hover:bg-[rgba(232,88,88,0.16)] disabled:cursor-wait disabled:opacity-80"
+              />
             </div>
           ))}
         </div>

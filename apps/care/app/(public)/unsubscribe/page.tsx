@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MailCheck, MailX, RotateCcw } from "lucide-react";
+import { ResubscribeButton } from "@/components/care/ResubscribeButton";
 
 export const metadata: Metadata = {
   title: "Messaging Preferences | Henry Onyx Fabric Care",
@@ -118,12 +119,7 @@ export default async function UnsubscribePage({
             Contact support
           </Link>
           {isSuccess && !isResubscribe && token ? (
-            <Link
-              href={`/api/care/preferences/unsubscribe?mode=resubscribe&token=${encodeURIComponent(token)}`}
-              className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[color:var(--home-accent-text)] underline-offset-4 hover:underline"
-            >
-              Undo and keep reminders on
-            </Link>
+            <ResubscribeButton token={token} />
           ) : null}
         </div>
       </section>
