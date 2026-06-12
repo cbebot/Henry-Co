@@ -190,3 +190,24 @@ jobs:
 
       - name: Assert audit-writer grant invariant (v1 service-role-only; v2 staff-scoped; anon dead on both)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/audit_grant_invariant.sql
+
+      # SEC-HARDEN-02: close the world-writable role-membership privilege
+      # escalation. The five *_role_memberships tables + their staff-gate functions
+      # + the "Service role full access"(true) world-writable policies live on prod
+      # out-of-band (division feature migrations + dashboard edits), not in any FL2
+      # migration — so reproduce the exact pre-fix surface (tables, the standing
+      # anon/authenticated write grant, the world-writable policy, the
+      # authenticated staff-write policies) with the membership fixture, apply the
+      # lockdown migration, and assert the end-state: NO request role holds a
+      # membership write (grant + policy), service_role keeps the admin path, a
+      # SELECT self-read survives, and an authenticated INSERT is rejected. The
+      # company_pages drop in the migration self-skips here (no company_pages table
+      # on the vanilla chain — proven on the prod-actual surface instead).
+      - name: Seed role-membership surface (reproduce the prod self-escalation hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/membership_min.sql
+
+      - name: Apply SEC-HARDEN-02 role-membership lockdown migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260612140000_sec_harden_02_role_membership_lockdown.sql
+
+      - name: Assert role-membership write-lockdown invariant (writes service-role-only; authenticated INSERT rejected)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/membership_grant_invariant.sql
