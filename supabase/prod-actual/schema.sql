@@ -7768,7 +7768,6 @@ create policy homepages_owner_write on public.company_homepages as permissive fo
 create policy homepages_public_read on public.company_homepages as permissive for select to public using (true);
 create policy company_page_drafts_owner_all on public.company_page_drafts as permissive for all to authenticated using (is_owner()) with check (is_owner());
 create policy company_page_revisions_owner_all on public.company_page_revisions as permissive for all to authenticated using (is_owner()) with check (is_owner());
-create policy "Authenticated users can manage company pages" on public.company_pages as permissive for all to authenticated using (true) with check (true);
 create policy "Public can read published company pages" on public.company_pages as permissive for select to public using ((is_published = true));
 create policy company_pages_owner_all on public.company_pages as permissive for all to authenticated using ((EXISTS ( SELECT 1
    FROM owner_profiles op
@@ -7927,8 +7926,7 @@ create policy "learn public quizzes" on public.learn_quizzes as permissive for s
 create policy "learn staff all quizzes" on public.learn_quizzes as permissive for all to public using (learn_is_staff()) with check (learn_is_staff());
 create policy "learn public reviews" on public.learn_reviews as permissive for select to public using (((status = 'published'::text) OR learn_is_staff()));
 create policy "learn staff all reviews" on public.learn_reviews as permissive for all to public using (learn_is_staff()) with check (learn_is_staff());
-create policy "Service role full access" on public.learn_role_memberships as permissive for all to public using (true) with check (true);
-create policy "learn staff all role memberships" on public.learn_role_memberships as permissive for all to public using (learn_is_staff()) with check (learn_is_staff());
+create policy "learn own role memberships" on public.learn_role_memberships as permissive for select to public using (((user_id = ( SELECT auth.uid() AS uid)) OR ((normalized_email IS NOT NULL) AND (normalized_email = learn_auth_email()))));
 create policy "learn own saved" on public.learn_saved_courses as permissive for select to public using (learn_matches_identity(user_id, normalized_email));
 create policy "learn staff all saved" on public.learn_saved_courses as permissive for all to public using (learn_is_staff()) with check (learn_is_staff());
 create policy "learn settings staff read" on public.learn_settings as permissive for select to public using (learn_is_staff());
@@ -7941,7 +7939,7 @@ create policy "Service role full access" on public.logistics_issues as permissiv
 create policy "Service role full access" on public.logistics_notifications as permissive for all to public using (true) with check (true);
 create policy "Service role full access" on public.logistics_proof_of_delivery as permissive for all to public using (true) with check (true);
 create policy "Service role full access" on public.logistics_rate_cards as permissive for all to public using (true) with check (true);
-create policy "Service role full access" on public.logistics_role_memberships as permissive for all to public using (true) with check (true);
+create policy "logistics own role memberships" on public.logistics_role_memberships as permissive for select to public using ((user_id = ( SELECT auth.uid() AS uid)));
 create policy "Service role full access" on public.logistics_settings as permissive for all to public using (true) with check (true);
 create policy "Service role full access" on public.logistics_shipments as permissive for all to public using (true) with check (true);
 create policy "Service role full access" on public.logistics_zones as permissive for all to public using (true) with check (true);
@@ -8109,8 +8107,7 @@ create policy "staff can manage listings" on public.property_listings as permiss
 create policy "staff can manage managed records" on public.property_managed_records as permissive for all to public using (is_property_staff()) with check (is_property_staff());
 create policy "staff can insert notifications" on public.property_notifications as permissive for insert to public with check (is_property_staff());
 create policy "staff can read notifications" on public.property_notifications as permissive for select to public using (is_property_staff());
-create policy "Service role full access" on public.property_role_memberships as permissive for all to public using (true) with check (true);
-create policy "staff can manage role memberships" on public.property_role_memberships as permissive for all to public using (is_property_staff()) with check (is_property_staff());
+create policy "property own role memberships" on public.property_role_memberships as permissive for select to public using ((user_id = ( SELECT auth.uid() AS uid)));
 create policy "users can manage own saved listings" on public.property_saved_listings as permissive for all to public using (((( SELECT auth.uid() AS uid) = user_id) OR is_property_staff())) with check (((( SELECT auth.uid() AS uid) = user_id) OR is_property_staff()));
 create policy "users can read own saved listings" on public.property_saved_listings as permissive for select to public using (((( SELECT auth.uid() AS uid) = user_id) OR is_property_staff()));
 create policy "staff can manage settings" on public.property_settings as permissive for all to public using (is_property_staff()) with check (is_property_staff());
@@ -8251,7 +8248,6 @@ create policy "Service role full access" on public.studio_revisions as permissiv
 create policy studio_member_revisions on public.studio_revisions as permissive for select to public using ((studio_is_staff() OR (EXISTS ( SELECT 1
    FROM studio_projects project
   WHERE ((project.id = studio_revisions.project_id) AND ((project.client_user_id = ( SELECT auth.uid() AS uid)) OR ((project.normalized_email IS NOT NULL) AND (project.normalized_email = studio_auth_email()))))))));
-create policy "Service role full access" on public.studio_role_memberships as permissive for all to public using (true) with check (true);
 create policy studio_member_roles on public.studio_role_memberships as permissive for select to public using (((user_id = ( SELECT auth.uid() AS uid)) OR ((normalized_email IS NOT NULL) AND (normalized_email = studio_auth_email()))));
 create policy studio_public_services on public.studio_services as permissive for select to public using ((is_published = true));
 create policy studio_staff_settings on public.studio_settings as permissive for select to public using (studio_is_staff());
@@ -8720,8 +8716,8 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.learn_reviews to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.learn_reviews to service_role;
 revoke all on table public.learn_role_memberships from public, anon, authenticated, service_role;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.learn_role_memberships to anon;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.learn_role_memberships to authenticated;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.learn_role_memberships to anon;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.learn_role_memberships to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.learn_role_memberships to service_role;
 revoke all on table public.learn_saved_courses from public, anon, authenticated, service_role;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.learn_saved_courses to anon;
@@ -8768,8 +8764,8 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.logistics_rate_cards to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.logistics_rate_cards to service_role;
 revoke all on table public.logistics_role_memberships from public, anon, authenticated, service_role;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.logistics_role_memberships to anon;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.logistics_role_memberships to authenticated;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.logistics_role_memberships to anon;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.logistics_role_memberships to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.logistics_role_memberships to service_role;
 revoke all on table public.logistics_settings from public, anon, authenticated, service_role;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.logistics_settings to anon;
@@ -8924,8 +8920,8 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.marketplace_reviews to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.marketplace_reviews to service_role;
 revoke all on table public.marketplace_role_memberships from public, anon, authenticated, service_role;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.marketplace_role_memberships to anon;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.marketplace_role_memberships to authenticated;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.marketplace_role_memberships to anon;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.marketplace_role_memberships to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.marketplace_role_memberships to service_role;
 revoke all on table public.marketplace_settings from public, anon, authenticated, service_role;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.marketplace_settings to anon;
@@ -9060,8 +9056,8 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.property_notifications to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.property_notifications to service_role;
 revoke all on table public.property_role_memberships from public, anon, authenticated, service_role;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.property_role_memberships to anon;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.property_role_memberships to authenticated;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.property_role_memberships to anon;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.property_role_memberships to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.property_role_memberships to service_role;
 revoke all on table public.property_saved_listings from public, anon, authenticated, service_role;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.property_saved_listings to anon;
@@ -9232,8 +9228,8 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.studio_revisions to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.studio_revisions to service_role;
 revoke all on table public.studio_role_memberships from public, anon, authenticated, service_role;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.studio_role_memberships to anon;
-grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.studio_role_memberships to authenticated;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.studio_role_memberships to anon;
+grant MAINTAIN, REFERENCES, SELECT, TRIGGER on table public.studio_role_memberships to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.studio_role_memberships to service_role;
 revoke all on table public.studio_services from public, anon, authenticated, service_role;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.studio_services to anon;

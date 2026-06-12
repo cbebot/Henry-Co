@@ -31,9 +31,13 @@
 
 -- Users + intents. (INSERT does not fire the UPDATE-transition trigger, so seeding
 -- terminal statuses directly is fine — exactly how the earlier proof files seed.)
-insert into auth.users (id) values
-  ('000000bb-0000-0000-0000-0000000000bb'),
-  ('000000cc-0000-0000-0000-0000000000cc')
+-- The fixture users carry an email: on the PROD-SHAPE surface the auth.users INSERT
+-- fires handle_new_customer() → customer_profiles.email is NOT NULL, so an email-less
+-- seed would violate the constraint (FL2-REHEARSE-01, 2026-06-12 — same fix the
+-- payment-documents/VAT suites already carry; harmless on the bare-PG CI stub).
+insert into auth.users (id, email) values
+  ('000000bb-0000-0000-0000-0000000000bb', 'v319-invariants-bb@fixtures.henryco.test'),
+  ('000000cc-0000-0000-0000-0000000000cc', 'v319-invariants-cc@fixtures.henryco.test')
 on conflict do nothing;
 
 insert into public.payment_intents (id, user_id, amount_minor, currency, country, method, status, idempotency_key) values

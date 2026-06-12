@@ -6,6 +6,13 @@ production (`supabase/prod-actual/schema.sql`, captured by
 classification of every committed migration file + a full dress rehearsal on the
 prod-actual shadow (`scripts/db/build-shadow-db.mjs`).
 
+**Re-certified:** FL2-REHEARSE-01 (2026-06-12) — the full **eight-file** apply set
+was folded into one shadow rehearsal on a **freshly re-introspected** prod-actual
+shadow (now including the out-of-band-applied SEC-HARDEN-02 state), applied **twice**
+with money fixtures, every invariant suite green at its CI position on both the
+prod-shape shadow and the bare-PG CI chain. See **§7**. The post-dates-rehearsal
+flags on files 7 and 8 are now **cleared**.
+
 **Why this document exists:** prod's migration history (75 rows in
 `supabase_migrations.schema_migrations`) does **not** map 1:1 to the 137
 committed migration files. Early files were applied under consolidated dashboard
@@ -47,28 +54,28 @@ Enable. Purely additive (rejects newly-set compromised passwords; existing users
 unaffected until next change). Clears the `auth_leaked_password_protection` advisor
 finding. There is no `config.toml` key for this hosted/Pro-plan setting (SEC-HARDEN-01).
 
-**Rehearsal proof:** files 1–6 apply cleanly on the prod-actual shadow, **twice**
-(idempotency, second pass with money fixture data present), with all six suites
-green at their CI positions. File 7 (V3-19 refunds, PR #267) post-dates that
-rehearsal: it is proven green at its CI position on a fresh PG17 chain
-(`refunds_invariants.sql` + `refunds_grant_invariant.sql`, in the
-payments-grant-invariant job, applied right after the others) and depends on the
-wallet tables that file 6 supplies — fold it into the next shadow rehearsal before
-the FL2 apply. File 8 (SEC-HARDEN-01) is pure ACL + one storage-policy drop (no
+**Rehearsal proof (all eight files, FL2-REHEARSE-01, 2026-06-12):** every file 1–8
+applies cleanly on the prod-actual shadow, **twice** (idempotency, second pass with
+money fixture data present — succeeded intents, a refund chain, wallet holds), with
+all nine invariant suites green at their CI positions. The shadow was rebuilt from a
+**re-introspected prod-actual snapshot captured the same day** (62 read-only
+Management-API calls; the only drift since SCHEMA-TRUTH-01 is SEC-HARDEN-02's
+membership lockdown, now baked into the prod layer) and re-proved **byte-identical to
+prod on all three fidelity gates** (types · columns · 945-probe effective ACLs).
+Files 7 and 8 — previously proven only on fresh/throwaway PG17 chains, never folded
+into the prod-shape shadow — are now certified on it; the fold-in surfaced and fixed
+one defect in the **refunds_invariants** fixture (an email-less `auth.users` seed that
+the real `handle_new_customer()` trigger rejects on prod shape — the migration was
+untouched; see §7). File 8 (SEC-HARDEN-01) is pure ACL + one storage-policy drop (no
 table/column/function-body DDL): it locks down the two SECURITY DEFINER audit
 writers (`add_audit_log` → service-role-only; `add_audit_log_v2` → anon dead,
 authenticated-staff path retained), closes the same forge hole on the direct
 `audit_logs` table path (drops the always-true `"insert audit logs (auth)"` policy +
 revokes anon/authenticated write grants — every real writer is service-role), and
-drops the broad `company_assets_public_read` listing policy. Proven on a native-PG17
-throwaway DB that reproduces the prod grant
-condition — the exploit is open before / dead after, the splinter lints 0025/0028/0029
-clear for the three targets while the by-design `is_staff_in_any` reachability remains,
-and the full CI grant chain (money invariants + the new audit invariant) is green
-(`scripts/v3/prove-sec-harden-01.ps1`, `scripts/v3/ci-grant-chain-local.ps1`). Its
-two writers + `is_staff_in_any` exist on prod out-of-band, so on the FL2 apply the
-REVOKE/GRANT statements act on live objects; the bucket DROP acts on the live
-`company-assets` policy. Re-run anytime:
+drops the broad `company_assets_public_read` listing policy. On the prod-shape shadow
+its two writers + `is_staff_in_any` + the `company-assets` policy already exist (from
+prod-actual), so the REVOKE/GRANT/DROP act on real objects — exactly as the FL2 apply
+will on live prod. Re-run anytime:
 
 ```
 node scripts/db/build-shadow-db.mjs all --prod-types <prod types> --prod-columns <csv> --prod-acl <csv>
@@ -331,3 +338,69 @@ Guard note discovered while reconciling: the drift guard's migration-DDL parser
 does not see MULTI-LINE column definitions (e.g. `task_type text not null` with
 its `check (…)` on the next line) — the types side of the union is what keeps
 such references green. Folded into the SD-ticket list as a guard-upgrade item.
+
+---
+
+## 7. FL2-REHEARSE-01 certification (2026-06-12)
+
+The full **eight-file** apply set (§1) was rehearsed as one fold-in on a shadow
+rebuilt from a **same-day** prod-actual capture. This closes the gap the SCHEMA-TRUTH-01
+rehearsal left open: it certified files 1–6 together, while files 7 (V3-19 refunds,
+PR #267) and 8 (SEC-HARDEN-01, PR #269) were proven only on separate fresh/throwaway
+PG17 chains.
+
+**Ground truth.** PR #270 (SEC-HARDEN-02 role-membership lockdown + the
+`membership_grant_invariant` CI suite) is **MERGED** to `main` (merge commit
+`2fe78399`, 2026-06-12T13:31Z) and was already applied to prod out-of-band. Prod
+(`rzkbgwuznmdxnnhmjazy`, "HENRY ONYX") is `ACTIVE_HEALTHY`, PG 17.6.
+
+**Shadow provenance (read-only; zero prod DDL).** `introspect-prod-schema.mjs`
+re-captured prod via the Supabase Management API — 62 read-only calls; 233 tables /
+6 views / 128 triggers / 407 policies. The diff vs the SCHEMA-TRUTH-01 snapshot is
+**exactly SEC-HARDEN-02 and nothing else** (the 5 `*_role_memberships` world-writable
+`"Service role full access" using(true)` policies + the learn/property staff-write
+policies + the `company_pages` broad-write policy dropped; anon/authenticated DML on
+the 5 membership tables tightened to read-only; service_role unchanged) — i.e. **no
+unrecorded out-of-band drift** since #266. The shadow (native PostgreSQL 17.10 on
+:55432 + `shadow-bootstrap.sql`) re-proved **byte-identical to prod on all three
+fidelity gates: types · columns · 945-probe effective ACLs**.
+
+**Apply rehearsal.** With the harness `FL2_SET` extended to the 8-file fold-in (a
+build-orchestration change only — no migration content was edited), `apply-fl2` ran
+the dress rehearsal: pass 1 applied each migration then its invariant suite at the
+CI position; pass 2 re-applied all eight (idempotency) with money fixtures present.
+**All eight migrations × two passes + all nine invariant suites green**
+(`payments_grant`, `ledger_invariants`, `ledger_grant`, `payment_documents`,
+`vat_invariants`, `vat_grant`, `refunds_invariants`, `refunds_grant`, `audit_grant`).
+The membership invariant also runs green directly against the prod-shape shadow's
+real (SEC-HARDEN-02-locked) membership tables. Post-apply ledger reconciliation:
+`ledger_reconciliation()` `balanced=true, delta_minor=0` (debit=credit=450,674) and
+`wallet_ledger_reconciliation()` `reconciled=true, delta_kobo=0`.
+
+**Finding (fixed; migration untouched).** Folding file 7 onto the prod-shape shadow
+surfaced a defect in its **test fixture** — `refunds_invariants.sql` seeded
+`auth.users` with no `email`, which the real `handle_new_customer()` trigger rejects
+(`customer_profiles.email` NOT NULL). It false-greened on the bare-PG CI chain (no
+signup trigger there). Fixed by giving the two fixture users `@fixtures.henryco.test`
+emails — the exact pattern SCHEMA-TRUTH-01 already applied to the VAT and
+payment-documents suites; harmless on bare-PG, required on prod shape. The
+`v3_19_refunds.sql` **migration itself applied cleanly on both passes and is
+unchanged** (this is Standing Rule #4's "trigger-chain NOT NULL" defect class,
+invisible on a fresh-DB proof).
+
+**Bare-PG CI chain.** The exact `.github/workflows/ci.yml` `payments-grant-invariant`
+job (21-step interleave: `_bootstrap_supabase_env.sql` → the migrations + their
+suites + the `audit_fns_min`/`membership_min` stubs + SEC-HARDEN-01/02 +
+`membership_grant_invariant`) ran **all 21 steps green** on a fresh DB.
+`schema-drift:check`: green (baseline 21, no new drift).
+
+**Exact apply order for FL2 day** = the §1 table, executed in order as `postgres`,
+one history row per file: (1) payment_intents → (2) payments_private_isolation →
+(3) double_entry_ledger → (4) v3_18_payment_documents → (5) v3_vat_01_settlement_vat
+→ (6) fl2_wallet_rail_completion → (7) v3_19_refunds → (8)
+sec_harden_01_audit_grants_and_bucket; then the leaked-password config toggle.
+SEC-HARDEN-02 is **not** in this list — it is already live on prod (PR #270). After
+the apply, regenerate the types and re-baseline the drift guard (Standing Rule #5).
+
+Evidence: `.codex-temp/fl2-rehearse-01/` (re-introspected snapshot + 945-probe ACL +
+columns + prod types + the prod-drift diff + this run's logs).

@@ -83,6 +83,31 @@ const FL2_SET = [
     file: "apps/hub/supabase/migrations/20260611120000_fl2_wallet_rail_completion.sql",
     suites: [],
   },
+  {
+    // File 7 — V3-19 refunds & credit notes (PR #267). FOLDED INTO THE SHADOW
+    // REHEARSAL by FL2-REHEARSE-01 (2026-06-12): it post-dated the SCHEMA-TRUTH-01
+    // six-file rehearsal. Provider-confirmed refunds with proportional VAT
+    // reversal + unfakeable credit-note binding; depends on the ledger (file 3),
+    // payment documents (file 4), VAT split (file 5) and the wallet tables
+    // (file 6), all of which precede it here.
+    file: "apps/hub/supabase/migrations/20260611130000_v3_19_refunds.sql",
+    suites: [
+      "apps/hub/supabase/tests/refunds_invariants.sql",
+      "apps/hub/supabase/tests/refunds_grant_invariant.sql",
+    ],
+  },
+  {
+    // File 8 — SEC-HARDEN-01 audit-grant + bucket lockdown (PR #269). FOLDED IN
+    // by FL2-REHEARSE-01 (2026-06-12). Pure ACL + one storage-policy drop. On the
+    // PROD-SHAPE shadow the two SECURITY DEFINER audit writers (add_audit_log,
+    // add_audit_log_v2), is_staff_in_any, and the company-assets storage policy
+    // already exist (captured in prod-actual), so the REVOKE/GRANT/DROP act on
+    // real objects — no audit_fns_min CI stub is needed on this layer (that stub
+    // only exists for the bare-PG CI chain, which lacks the out-of-band prod
+    // objects).
+    file: "apps/hub/supabase/migrations/20260612120000_sec_harden_01_audit_grants_and_bucket.sql",
+    suites: ["apps/hub/supabase/tests/audit_grant_invariant.sql"],
+  },
 ];
 
 function arg(name, fallback) {
