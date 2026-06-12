@@ -1,4 +1,5 @@
 import "@henryco/dashboard-shell/surfaces.css";
+import { FeedbackToastViewport } from "@henryco/ui/feedback";
 
 /**
  * V3-INNER-L — the seller (vendor) console runs on Register L: the shared,
@@ -20,5 +21,12 @@ export default function VendorWorkspaceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="market-workspace-light">{children}</div>;
+  return (
+    <div className="market-workspace-light">
+      {children}
+      {/* V3-FEEDBACK-01: scoped viewport outranks the root mount so toasts
+          resolve light-register tokens inside this scope (see /account). */}
+      <FeedbackToastViewport priority={5} />
+    </div>
+  );
 }

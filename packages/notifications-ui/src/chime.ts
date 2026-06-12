@@ -20,7 +20,7 @@
  *     path must never spam the console or break notification delivery.
  */
 
-export type ChimeVariant = "default" | "high";
+export type ChimeVariant = "default" | "high" | "action-success" | "action-error";
 
 type Voice = { freq: number; at: number; dur: number; gain: number };
 
@@ -42,6 +42,26 @@ const VOICINGS: Record<ChimeVariant, { peak: number; voices: Voice[] }> = {
       { freq: 1318.5, at: 0.12, dur: 0.3, gain: 0.95 },
       { freq: 1760.0, at: 0.26, dur: 0.34, gain: 0.8 },
     ],
+  },
+  // The Onyx action motif (V3-FEEDBACK-01) — "done, and done well".
+  // Ascending perfect fifth (A5 → E6): same root and same instrument as the
+  // notification fourth so it is unmistakably the same product, but a wider,
+  // more affirming interval for something the USER just completed. Quieter
+  // than an arrival (an action chime confirms, it never announces) and the
+  // whole gesture resolves inside 400ms.
+  "action-success": {
+    peak: 0.035,
+    voices: [
+      { freq: 880.0, at: 0.0, dur: 0.2, gain: 1.0 },
+      { freq: 1318.5, at: 0.1, dur: 0.26, gain: 0.9 },
+    ],
+  },
+  // A single low D4 — neutral, grounded, never a buzzer. The same warm voice
+  // an octave-cluster lower simply says "that didn't go through"; the toast
+  // carries the explanation, the sound only sets the register.
+  "action-error": {
+    peak: 0.035,
+    voices: [{ freq: 293.66, at: 0.0, dur: 0.3, gain: 1.0 }],
   },
 };
 

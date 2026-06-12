@@ -21,7 +21,6 @@ import { ProductCardClient } from "@/components/marketplace/product-card-client"
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
 import { manrope, MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
-import { MarketplaceToastStack } from "@/components/marketplace/toast-stack";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { cn } from "@/lib/utils";
@@ -85,7 +84,6 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
         support={{ email: BRAND_EMAILS.marketplace, phone: "+234 913 395 7084" }}
       />
       <MarketplaceCartDrawer />
-      <MarketplaceToastStack />
     </div>
   );
 }
@@ -552,7 +550,6 @@ export async function WorkspaceShell({
         </section>
         {children}
       </main>
-      <MarketplaceToastStack />
     </div>
   );
 }

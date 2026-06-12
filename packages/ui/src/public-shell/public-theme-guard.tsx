@@ -1,6 +1,6 @@
 import { HenryCoThemeBlocking } from "../theme/HenryCoThemeBlocking";
 import { ThemeProvider } from "../theme/ThemeProvider";
-import { PublicToastProvider } from "./public-toast";
+import { FeedbackToastViewport } from "../feedback";
 
 /**
  * Unified theme guard for all public HenryCo pages.
@@ -9,9 +9,11 @@ import { PublicToastProvider } from "./public-toast";
  *  1. `HenryCoThemeBlocking` — blocking script that prevents a light/dark flash
  *     before hydration.
  *  2. `ThemeProvider` — next-themes bridge for the HenryCo public theme.
- *  3. `PublicToastProvider` — shared, safe-area-aware toast surface that shared
- *     primitives (forms, CTAs, copy helpers) can emit on. Division-specific
- *     toasters keep operating independently — this is an additive shared layer.
+ *  3. `FeedbackToastViewport` — the Henry Onyx action-feedback toast surface
+ *     (V3-FEEDBACK-01): any client component or action-result branch calls
+ *     `toast.success(...)` from `@henryco/ui/feedback` and this viewport
+ *     renders it in the shared toast language (replaces the retired
+ *     PublicToastProvider — no provider needed, the bus is module-level).
  *
  * Place once in the root layout `<body>`.
  *
@@ -23,19 +25,16 @@ export function PublicThemeGuard({
   includeToasts = true,
 }: {
   children: React.ReactNode;
-  /** Mount the shared HenryCo public toast surface. Default `true`. */
+  /** Mount the shared HenryCo feedback toast surface. Default `true`. */
   includeToasts?: boolean;
 }) {
-  const body = includeToasts ? (
-    <PublicToastProvider>{children}</PublicToastProvider>
-  ) : (
-    children
-  );
-
   return (
     <>
       <HenryCoThemeBlocking />
-      <ThemeProvider>{body}</ThemeProvider>
+      <ThemeProvider>
+        {children}
+        {includeToasts ? <FeedbackToastViewport /> : null}
+      </ThemeProvider>
     </>
   );
 }

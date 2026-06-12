@@ -26,6 +26,19 @@ import {
   PASS_18_EXTRA_YO,
   PASS_18_EXTRA_ZH,
 } from "./surface-extra-labels-pass-18";
+import {
+  FEEDBACK_EXTRA_AR,
+  FEEDBACK_EXTRA_DE,
+  FEEDBACK_EXTRA_ES,
+  FEEDBACK_EXTRA_FR,
+  FEEDBACK_EXTRA_HA,
+  FEEDBACK_EXTRA_HI,
+  FEEDBACK_EXTRA_IG,
+  FEEDBACK_EXTRA_IT,
+  FEEDBACK_EXTRA_PT,
+  FEEDBACK_EXTRA_YO,
+  FEEDBACK_EXTRA_ZH,
+} from "./surface-extra-labels-feedback";
 
 export type SurfaceCopy = {
   labels: Record<string, string>;
@@ -322,6 +335,7 @@ const FR: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_FR,
     ...PASS_18_EXTRA_FR,
+    ...FEEDBACK_EXTRA_FR,
     About: "À propos",
     Account: "Compte",
     Applications: "Candidatures",
@@ -505,6 +519,7 @@ const ES: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_ES,
     ...PASS_18_EXTRA_ES,
+    ...FEEDBACK_EXTRA_ES,
     About: "Acerca de",
     Account: "Cuenta",
     Applications: "Solicitudes",
@@ -688,6 +703,7 @@ const PT: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_PT,
     ...PASS_18_EXTRA_PT,
+    ...FEEDBACK_EXTRA_PT,
     About: "Sobre",
     Account: "Conta",
     Applications: "Candidaturas",
@@ -871,6 +887,7 @@ const AR: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_AR,
     ...PASS_18_EXTRA_AR,
+    ...FEEDBACK_EXTRA_AR,
     About: "حول",
     Account: "الحساب",
     Applications: "الطلبات",
@@ -1053,6 +1070,7 @@ const DE: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_DE,
     ...PASS_18_EXTRA_DE,
+    ...FEEDBACK_EXTRA_DE,
     About: "Über uns",
     Account: "Konto",
     Applications: "Bewerbungen",
@@ -1239,6 +1257,7 @@ const ZH: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_ZH,
     ...PASS_18_EXTRA_ZH,
+    ...FEEDBACK_EXTRA_ZH,
     About: "关于",
     Account: "账户",
     Applications: "申请",
@@ -1408,6 +1427,7 @@ const HI: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_HI,
     ...PASS_18_EXTRA_HI,
+    ...FEEDBACK_EXTRA_HI,
     About: "परिचय",
     Account: "खाता",
     Applications: "आवेदन",
@@ -1582,6 +1602,7 @@ const IG: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_IG,
     ...PASS_18_EXTRA_IG,
+    ...FEEDBACK_EXTRA_IG,
     About: "Banyere",
     Account: "Akauntu",
     Applications: "Ngwa",
@@ -1756,6 +1777,7 @@ const YO: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_YO,
     ...PASS_18_EXTRA_YO,
+    ...FEEDBACK_EXTRA_YO,
     About: "Nípa",
     Account: "Akọọlẹ",
     Applications: "Àwọn ìbéèrè",
@@ -1930,6 +1952,7 @@ const HA: Partial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_HA,
     ...PASS_18_EXTRA_HA,
+    ...FEEDBACK_EXTRA_HA,
     About: "Game da mu",
     Account: "Asusu",
     Applications: "Aikace-aikace",
@@ -2104,6 +2127,7 @@ const IT: Partial<SurfaceCopy> = {
   "labels": {
     ...EXTRA_SURFACE_LABELS_IT,
     ...PASS_18_EXTRA_IT,
+    ...FEEDBACK_EXTRA_IT,
     "About": "Chi siamo",
     "Account": "Account",
     "Applications": "Candidature",

@@ -2,7 +2,11 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
-import { BellRing, Check, Moon, Volume2, Vibrate, Zap } from "lucide-react";
+import { AudioLines, BellRing, Check, Moon, Volume2, Vibrate, Zap } from "lucide-react";
+import {
+  setInterfaceSoundsEnabled,
+  useInterfaceSoundsEnabled,
+} from "@henryco/ui/feedback";
 import { signalAudio } from "@/lib/notification-signal/audio";
 import {
   getSignalPreferencesServerSnapshot,
@@ -91,6 +95,9 @@ export default function NotificationSignalSettingsCard() {
     falseSnapshot,
   );
   const [audioStatus, setAudioStatus] = useState<"idle" | "playing" | "blocked">("idle");
+  // V3-FEEDBACK-01 — the Onyx action chime ("Interface sounds"), a separate
+  // device preference from the notification-arrival chime above. Default ON.
+  const interfaceSounds = useInterfaceSoundsEnabled();
 
   const update = <K extends keyof NotificationSignalPreferences>(
     key: K,
@@ -185,6 +192,25 @@ export default function NotificationSignalSettingsCard() {
             </div>
           ) : null}
         </div>
+
+        <Toggle
+          icon={AudioLines}
+          label={t("Interface sounds")}
+          description={t("A short confirmation chime when you complete an action, like saving an item or topping up your wallet.")}
+          checked={interfaceSounds}
+          onChange={(v) => {
+            setInterfaceSoundsEnabled(v);
+            if (v) {
+              // The flip itself is a gesture — unlock and let the user hear
+              // exactly what they just turned on.
+              void signalAudio.unlock().then(() => {
+                signalAudio.playChime("action-success");
+              });
+            }
+          }}
+          disabled={!audioSupported}
+          disabledHint={!audioSupported ? t("Sound is not supported on this browser.") : undefined}
+        />
 
         <div className="space-y-1">
           <Toggle

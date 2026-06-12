@@ -16,9 +16,13 @@
     "./mobile": "./src/mobile/index.ts",
     "./loading": "./src/loading/index.ts",
     "./states": "./src/states/index.ts",
+    "./feedback": "./src/feedback/index.ts",
     "./identity": "./src/public/account-identity.ts",
     "./brand": "./src/brand/index.ts",
     "./share": "./src/share/index.ts"
+  },
+  "scripts": {
+    "test": "tsx --test src/__tests__/feedback.test.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",
@@ -31,6 +35,7 @@
     "@henryco/config": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/notifications-ui": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/seo": "workspace:^",
     "class-variance-authority": "^0.7.1",

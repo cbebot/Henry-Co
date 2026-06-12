@@ -242,7 +242,11 @@ export function SellerApplicationWizard({
 
     if (response.ok) {
       setSubmitState("submitted");
-      pushToast("Seller application submitted", "success", "HenryCo review has started.");
+      // A major completion — the Onyx chime acknowledges it. (Body brand-fixed
+      // from the retired "HenryCo" surface name while consolidating.)
+      pushToast("Seller application submitted", "success", "Review has started.", {
+        chime: true,
+      });
       window.location.href = "/account/seller-application?submitted=1";
       return;
     }
@@ -250,7 +254,8 @@ export function SellerApplicationWizard({
     const payload = (await response.json().catch(() => null)) as { error?: string } | null;
     const message = payload?.error || "Application submission failed.";
     setError(message);
-    pushToast("Submission blocked", "error", message);
+    // A meaningful attempted completion failing — the single low error tone.
+    pushToast("Submission blocked", "error", message, { chime: true });
     setSubmitState("idle");
   }
 

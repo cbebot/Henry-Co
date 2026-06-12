@@ -9,7 +9,8 @@ import {
 } from "@henryco/i18n/server";
 import { getCourseBySlug } from "@/lib/learn/data";
 import { getLearnViewer } from "@/lib/learn/auth";
-import { enrollInCourseAction, toggleSavedCourseAction } from "@/lib/learn/actions";
+import { enrollInCourseAction } from "@/lib/learn/actions";
+import { SaveCourseForm } from "@/components/learn/save-course-form";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
@@ -435,17 +436,7 @@ export default async function CourseDetailPage({
                 <ActionLink href={signInHref} label={t("Sign in to enroll")} variant="secondary" />
               ) : null}
               {viewer.user ? (
-                <form action={toggleSavedCourseAction}>
-                  <input type="hidden" name="courseId" value={course.id} />
-                  <PendingSubmitButton
-                    variant="secondary"
-                    pendingLabel={
-                      saved ? t("Updating saved list...") : t("Saving course...")
-                    }
-                  >
-                    {saved ? t("Saved") : t("Save course")}
-                  </PendingSubmitButton>
-                </form>
+                <SaveCourseForm courseId={course.id} saved={saved} />
               ) : null}
             </div>
             {enrollment?.status === "awaiting_payment" ? (

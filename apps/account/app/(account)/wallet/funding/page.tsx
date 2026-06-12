@@ -9,6 +9,7 @@ import { getAccountAppLocale } from "@/lib/locale-server";
 import "@/components/wallet/styles.css";
 import FundingRequestForm from "@/components/wallet/FundingRequestForm";
 import WalletTopUpClient from "@/components/wallet/WalletTopUpClient";
+import WalletCreditedToast from "@/components/wallet/WalletCreditedToast";
 import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
 import { BackNav } from "@/components/wallet/BackNav";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
@@ -36,8 +37,12 @@ export default async function WalletFundingPage() {
   const user = await requireAccountUser();
 
   // Project any confirmed top-up onto the wallet before reading state.
+  // V3-FEEDBACK-01: when THIS load credited (provider-confirmed, idempotent),
+  // acknowledge it through the unified toast + chime.
+  let creditedKobo = 0;
   try {
-    await reconcileWalletTopupsForUser(user.id);
+    const credited = await reconcileWalletTopupsForUser(user.id);
+    creditedKobo = credited.creditedCount > 0 ? credited.creditedKobo : 0;
   } catch {
     /* reconcile is self-healing; a transient failure retries on the next load */
   }
@@ -47,6 +52,9 @@ export default async function WalletFundingPage() {
   return (
     <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
+      {creditedKobo > 0 ? (
+        <WalletCreditedToast creditedKobo={creditedKobo} nonce={crypto.randomUUID()} />
+      ) : null}
       <BackNav href="/wallet" label={t("Back to wallet")} />
       <DivisionLanding
         hero={

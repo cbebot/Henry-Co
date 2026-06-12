@@ -99,13 +99,14 @@ export {
   HenryCoTactileCard,
   type HenryCoHeroCardProps,
 } from "./public-shell/henryco-hero-card";
+// V3-FEEDBACK-01: the dormant PublicToastProvider is retired — the shared
+// action-feedback system lives at @henryco/ui/feedback.
 export {
-  PublicToastProvider,
-  usePublicToast,
-  makePublicToastApi,
-  type PublicToastInput,
-  type PublicToastTone,
-} from "./public-shell/public-toast";
+  FeedbackToastViewport,
+  toast,
+  type FeedbackToastInput,
+  type FeedbackToastTone,
+} from "./feedback";
 export { PublicEyebrow, PublicDivider, PublicBrandMark, PublicTrustStrip } from "./public-shell/public-micro";
 export {
   PublicThemeProvider,

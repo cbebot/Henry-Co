@@ -7,6 +7,7 @@ import "./globals.css";
 import "@henryco/dashboard-shell/surfaces.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { FeedbackToastViewport } from "@henryco/ui/feedback";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
@@ -93,7 +94,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ThemeProvider>
           <ScrollToTopOnNavigation />
           <ThirdPartyRuntimeProviders>
-            <LocaleProvider locale={locale}>{children}</LocaleProvider>
+            <LocaleProvider locale={locale}>
+              {children}
+              {/* V3-FEEDBACK-01 — app-wide action-feedback toasts. Inside the
+                  (account) shell the dashboard's merged viewport claims the
+                  bus (renderer election) and this one stands down, so thin
+                  route groups like /payments/callback and /auth get feedback
+                  without ever double-rendering a toast. */}
+              <FeedbackToastViewport />
+            </LocaleProvider>
           </ThirdPartyRuntimeProviders>
           <SupportAssist division="account" />
           <ConsentNotice preferencesHref="/settings#privacy-controls" locale={locale} />
