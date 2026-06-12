@@ -16,13 +16,13 @@ unreliable — every verdict below is grounded in **object evidence** (does prod
 actually hold the tables/columns/functions/policies the file creates?), checked
 against the introspected snapshot.
 
-**Counts:** backlog = 48 · not-applied = 1 · partially-applied = 5 · applied = 74 · superseded = 1 · partially-superseded = 1 · FL2 = 7 · applied (data-only) = 2 (of 139 files incl. the wallet-completion file + the V3-19 refunds migration, PR #267).
+**Counts:** backlog = 48 · not-applied = 1 · partially-applied = 5 · applied = 74 · superseded = 1 · partially-superseded = 1 · FL2 = 8 · applied (data-only) = 2 (of 140 files incl. the wallet-completion file, the V3-19 refunds migration (PR #267), and the SEC-HARDEN-01 audit-grant/bucket lockdown).
 
 ---
 
 ## 1. THE FL2 APPLY LIST (execute in this exact order)
 
-FL2 applies these seven migrations to production, in order, as `postgres`
+FL2 applies these eight migrations to production, in order, as `postgres`
 (dashboard SQL editor or `supabase migration up`), recording a history row per
 file. Each row notes the CI invariant suite that must pass at that position —
 **suite position is part of the contract** (the payments grant invariant asserts
@@ -37,6 +37,15 @@ on the public RPCs *before* the isolation migration relocates them).
 | 5 | `apps/hub/supabase/migrations/20260607140000_v3_vat_01_settlement_vat.sql` | `apps/hub/supabase/tests/vat_invariants.sql + vat_grant_invariant.sql` |
 | 6 | `apps/hub/supabase/migrations/20260611120000_fl2_wallet_rail_completion.sql` | — |
 | 7 | `apps/hub/supabase/migrations/20260611130000_v3_19_refunds.sql` | `apps/hub/supabase/tests/refunds_invariants.sql + refunds_grant_invariant.sql` |
+| 8 | `apps/hub/supabase/migrations/20260612120000_sec_harden_01_audit_grants_and_bucket.sql` | `apps/hub/supabase/tests/audit_grant_invariant.sql` |
+
+**FL2 cutover config toggle (not a migration — do at the same cutover):** enable
+Supabase Auth leaked-password protection (HaveIBeenPwned). Management API:
+`PATCH /v1/projects/rzkbgwuznmdxnnhmjazy/config/auth` body `{"password_hibp_enabled": true}`,
+or Dashboard → Authentication → Attack Protection → "Leaked password protection" →
+Enable. Purely additive (rejects newly-set compromised passwords; existing users
+unaffected until next change). Clears the `auth_leaked_password_protection` advisor
+finding. There is no `config.toml` key for this hosted/Pro-plan setting (SEC-HARDEN-01).
 
 **Rehearsal proof:** files 1–6 apply cleanly on the prod-actual shadow, **twice**
 (idempotency, second pass with money fixture data present), with all six suites
@@ -45,7 +54,21 @@ rehearsal: it is proven green at its CI position on a fresh PG17 chain
 (`refunds_invariants.sql` + `refunds_grant_invariant.sql`, in the
 payments-grant-invariant job, applied right after the others) and depends on the
 wallet tables that file 6 supplies — fold it into the next shadow rehearsal before
-the FL2 apply. Re-run anytime:
+the FL2 apply. File 8 (SEC-HARDEN-01) is pure ACL + one storage-policy drop (no
+table/column/function-body DDL): it locks down the two SECURITY DEFINER audit
+writers (`add_audit_log` → service-role-only; `add_audit_log_v2` → anon dead,
+authenticated-staff path retained), closes the same forge hole on the direct
+`audit_logs` table path (drops the always-true `"insert audit logs (auth)"` policy +
+revokes anon/authenticated write grants — every real writer is service-role), and
+drops the broad `company_assets_public_read` listing policy. Proven on a native-PG17
+throwaway DB that reproduces the prod grant
+condition — the exploit is open before / dead after, the splinter lints 0025/0028/0029
+clear for the three targets while the by-design `is_staff_in_any` reachability remains,
+and the full CI grant chain (money invariants + the new audit invariant) is green
+(`scripts/v3/prove-sec-harden-01.ps1`, `scripts/v3/ci-grant-chain-local.ps1`). Its
+two writers + `is_staff_in_any` exist on prod out-of-band, so on the FL2 apply the
+REVOKE/GRANT statements act on live objects; the bucket DROP acts on the live
+`company-assets` policy. Re-run anytime:
 
 ```
 node scripts/db/build-shadow-db.mjs all --prod-types <prod types> --prod-columns <csv> --prod-acl <csv>

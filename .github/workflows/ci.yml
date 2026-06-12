@@ -170,3 +170,23 @@ jobs:
 
       - name: Assert refunds money-RPC grant invariant (V3-19 end state)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_grant_invariant.sql
+
+      # SEC-HARDEN-01: lock down the SECURITY DEFINER audit writers (same revoke
+      # discipline as the money RPCs). The two writers + is_staff_in_any live on
+      # prod out-of-band (not created by any FL2 migration), so create faithful
+      # stubs with the real signatures AFTER the Supabase-like default privileges
+      # are in effect — each stub is then auto-granted EXECUTE to anon +
+      # authenticated DIRECTLY, reproducing the exact production hole. Apply the
+      # lockdown migration and assert the end-state: add_audit_log is
+      # service-role-only (anon + authenticated dead — the unguarded forge hole);
+      # add_audit_log_v2 keeps the guarded authenticated-staff path but anon is
+      # dead. The bucket drop in the migration self-skips here (no Storage schema
+      # on the vanilla chain — proven on the prod-actual surface instead).
+      - name: Seed audit-writer stubs (reproduce the prod grant hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/audit_fns_min.sql
+
+      - name: Apply SEC-HARDEN-01 audit-grant lockdown migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260612120000_sec_harden_01_audit_grants_and_bucket.sql
+
+      - name: Assert audit-writer grant invariant (v1 service-role-only; v2 staff-scoped; anon dead on both)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/audit_grant_invariant.sql
