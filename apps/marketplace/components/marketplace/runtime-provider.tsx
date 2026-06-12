@@ -9,6 +9,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { toast } from "@henryco/ui/feedback";
 import type {
   MarketplaceOrderFeedItem,
   MarketplaceRealtimePayload,
@@ -23,13 +26,6 @@ import {
 import { getBrowserSupabaseOptional } from "@/lib/supabase/browser";
 
 export type ToastTone = "success" | "error" | "info";
-
-type ToastItem = {
-  id: string;
-  title: string;
-  body?: string;
-  tone: ToastTone;
-};
 
 type AddToCartInput = {
   productSlug: string;
@@ -52,11 +48,14 @@ type MarketplaceRuntimeContextValue = {
   pendingWishlistSlugs: string[];
   pendingFollowSlugs: string[];
   pendingCartSlugs: string[];
-  toasts: ToastItem[];
   openCart: () => void;
   closeCart: () => void;
-  dismissToast: (id: string) => void;
-  pushToast: (title: string, tone: ToastTone, body?: string) => void;
+  pushToast: (
+    title: string,
+    tone: ToastTone,
+    body?: string,
+    opts?: { chime?: boolean },
+  ) => void;
   refreshShell: (silent?: boolean) => Promise<void>;
   addToCart: (input: AddToCartInput, quantity?: number) => Promise<boolean>;
   updateCartQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -70,15 +69,6 @@ type MarketplaceRuntimeContextValue = {
 };
 
 const MarketplaceRuntimeContext = createContext<MarketplaceRuntimeContextValue | null>(null);
-
-function makeToast(title: string, tone: ToastTone, body?: string): ToastItem {
-  return {
-    id: crypto.randomUUID(),
-    title,
-    body,
-    tone,
-  };
-}
 
 function mergeOptimisticCartItem(
   items: MarketplaceShellCartItem[],
@@ -149,19 +139,31 @@ export function MarketplaceRuntimeProvider({
   const [pendingFollowSlugs, setPendingFollowSlugs] = useState<string[]>([]);
   const [pendingCartSlugs, setPendingCartSlugs] = useState<string[]>([]);
   const [pendingSavedItemIds, setPendingSavedItemIds] = useState<string[]>([]);
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const locale = useOptionalHenryCoLocale() ?? "en";
   const broadcastRef = useRef<BroadcastChannel | null>(null);
   const refreshShellRef = useRef<(silent?: boolean) => Promise<void>>(async () => undefined);
   const postAuthResumeRef = useRef(false);
   /** Synchronous guard so double-clicks cannot enqueue overlapping POST /api/cart calls. */
   const cartRequestSlugsRef = useRef<Set<string>>(new Set());
 
-  function pushToast(title: string, tone: ToastTone, body?: string) {
-    const toast = makeToast(title, tone, body);
-    setToasts((current) => [...current, toast].slice(-4));
-    window.setTimeout(() => {
-      setToasts((current) => current.filter((item) => item.id !== toast.id));
-    }, 3200);
+  // V3-FEEDBACK-01: marketplace feedback goes through the company-wide
+  // action-feedback bus (@henryco/ui/feedback) — the FeedbackToastViewport in
+  // the root layout renders it in the shared toast language. The title is
+  // localized here so every existing call site gets Pattern-B i18n for free;
+  // bodies are passed through (some are dynamic — product titles, file
+  // names). `chime` is opt-in per call site, reserved for genuine saves.
+  function pushToast(
+    title: string,
+    tone: ToastTone,
+    body?: string,
+    opts?: { chime?: boolean },
+  ) {
+    toast.show({
+      title: translateSurfaceLabel(locale, title),
+      body: body ?? null,
+      tone,
+      chime: opts?.chime === true,
+    });
   }
 
   async function refreshShell(silent = false) {
@@ -319,7 +321,12 @@ export function MarketplaceRuntimeProvider({
           if (response.ok) {
             const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
             startTransition(() => setShell(payload.shell));
-            pushToast(payload.active ? "Saved to wishlist" : "Removed from wishlist", "success");
+            pushToast(
+              payload.active ? "Saved to wishlist" : "Removed from wishlist",
+              "success",
+              undefined,
+              { chime: payload.active },
+            );
             emitCrossTabRefresh("wishlist", intent.productSlug);
           } else if (response.status === 401) {
             stashMarketplacePostAuthIntent({ action: "wishlist", productSlug: intent.productSlug });
@@ -525,7 +532,12 @@ export function MarketplaceRuntimeProvider({
       }
       const payload = (await response.json()) as { shell: MarketplaceShellState };
       setShell(payload.shell);
-      pushToast("Saved for later", "success", "Find it under Saved items in your account.");
+      pushToast(
+        "Saved for later",
+        "success",
+        translateSurfaceLabel(locale, "Find it under Saved items in your account."),
+        { chime: true },
+      );
       emitCrossTabRefresh("saved_items", itemId);
       return true;
     } catch {
@@ -572,7 +584,13 @@ export function MarketplaceRuntimeProvider({
       if (!response.ok) throw new Error("Wishlist toggle failed.");
       const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
       setShell(payload.shell);
-      pushToast(payload.active ? "Saved to wishlist" : "Removed from wishlist", "success");
+      // Chime only on the SAVE (the genuine completion) — never on removal.
+      pushToast(
+        payload.active ? "Saved to wishlist" : "Removed from wishlist",
+        "success",
+        undefined,
+        { chime: payload.active },
+      );
       emitCrossTabRefresh("wishlist", productSlug);
     } catch {
       setShell(previous);
@@ -627,10 +645,6 @@ export function MarketplaceRuntimeProvider({
     }
   }
 
-  function dismissToast(id: string) {
-    setToasts((current) => current.filter((item) => item.id !== id));
-  }
-
   return (
     <MarketplaceRuntimeContext.Provider
       value={{
@@ -640,10 +654,8 @@ export function MarketplaceRuntimeProvider({
         pendingWishlistSlugs,
         pendingFollowSlugs,
         pendingCartSlugs,
-        toasts,
         openCart: () => setCartOpen(true),
         closeCart: () => setCartOpen(false),
-        dismissToast,
         pushToast,
         refreshShell,
         addToCart,

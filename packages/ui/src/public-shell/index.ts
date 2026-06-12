@@ -97,12 +97,17 @@ export { HenryCoHeroCard, HenryCoTactileCard } from "./henryco-hero-card";
 export type { HenryCoHeroCardProps } from "./henryco-hero-card";
 export { PublicProofRail } from "./public-proof-rail";
 export type { PublicProofRailProps, PublicProofItem } from "./public-proof-rail";
+// V3-FEEDBACK-01: the dormant PublicToastProvider is retired — the shared
+// action-feedback system lives at @henryco/ui/feedback (`toast.*` + the
+// FeedbackToastViewport that PublicThemeGuard mounts).
 export {
-  PublicToastProvider,
-  usePublicToast,
-  makePublicToastApi,
-} from "./public-toast";
-export type { PublicToastInput, PublicToastTone } from "./public-toast";
+  FeedbackToastViewport,
+  toast,
+  useInterfaceSoundsEnabled,
+  setInterfaceSoundsEnabled,
+  type FeedbackToastInput,
+  type FeedbackToastTone,
+} from "../feedback";
 export { PublicEyebrow, PublicDivider, PublicBrandMark, PublicTrustStrip } from "./public-micro";
 export { HenryCoBrandedSpinner } from "../loading/HenryCoBrandedSpinner";
 

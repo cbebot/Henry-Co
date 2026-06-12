@@ -32,6 +32,7 @@ import {
 
 import "@/components/wallet/styles.css";
 import { ActivityFeed } from "@/components/wallet/ActivityFeed";
+import WalletCreditedToast from "@/components/wallet/WalletCreditedToast";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
 import { QuickActions } from "@/components/wallet/QuickActions";
 import { SpendStrip } from "@/components/wallet/SpendStrip";
@@ -70,8 +71,12 @@ export default async function WalletPage() {
   // V3-15-JOB-B: project any confirmed card/bank/USSD top-up onto the wallet
   // before reading balance — idempotent, so a buyer returning from hosted
   // checkout sees their credit immediately (and it never double-credits).
+  // V3-FEEDBACK-01: when THIS load credited (provider-confirmed, idempotent —
+  // a replay reports zero), acknowledge it through the unified toast + chime.
+  let creditedKobo = 0;
   try {
-    await reconcileWalletTopupsForUser(user.id);
+    const credited = await reconcileWalletTopupsForUser(user.id);
+    creditedKobo = credited.creditedCount > 0 ? credited.creditedKobo : 0;
   } catch {
     /* self-healing: a transient failure retries on the next wallet load */
   }
@@ -369,7 +374,14 @@ export default async function WalletPage() {
         <MetricStrip cells={metricCells} ariaLabel={copy.sections.pendingTitle} />
       }
       sections={sections}
-      footer={<RouteLiveRefresh />}
+      footer={
+        <>
+          <RouteLiveRefresh />
+          {creditedKobo > 0 ? (
+            <WalletCreditedToast creditedKobo={creditedKobo} nonce={crypto.randomUUID()} />
+          ) : null}
+        </>
+      }
     />
   );
 }

@@ -1,4 +1,5 @@
 import "@henryco/dashboard-shell/surfaces.css";
+import { FeedbackToastViewport } from "@henryco/ui/feedback";
 
 /**
  * V3-INNER-L — the buyer account area runs on Register L: the shared,
@@ -11,11 +12,22 @@ import "@henryco/dashboard-shell/surfaces.css";
  * .market-* utilities to light surfaces — so this subtree reads as a sibling
  * of the account dashboard. Dark is the device-preference flip, not the
  * default: the forced-dark customer-storefront defect is gone here.
+ *
+ * V3-FEEDBACK-01: a scoped FeedbackToastViewport outranks the root mount
+ * (renderer election, priority 5 > 0) so toasts fired in this light register
+ * resolve their --hc-* tokens INSIDE the scope — the known
+ * fixed-toast-outside-scope trap (a dark glass card floating over a light
+ * workspace) can't happen.
  */
 export default function AccountWorkspaceLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="market-workspace-light">{children}</div>;
+  return (
+    <div className="market-workspace-light">
+      {children}
+      <FeedbackToastViewport priority={5} />
+    </div>
+  );
 }
