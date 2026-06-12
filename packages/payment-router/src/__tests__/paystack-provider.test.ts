@@ -289,23 +289,45 @@ describe("PaystackProvider.refund (refund/create — async, money-truth via webh
 });
 
 describe("PaystackProvider.listRefunds (V3-19 — adopt-don't-redrive)", () => {
-  it("lists a transaction's refunds with id/amount/status normalised", async () => {
-    const { fetchImpl, calls } = fakeFetch(() => ({
-      status: 200,
-      body: {
-        status: true,
-        data: [
-          { id: 3018284, amount: 10000, status: "pending", transaction: 1004723697 },
-          { id: 3018299, amount: "4300", status: "processed", transaction: 1004723697 },
-          { amount: 1, status: "ignored-no-id" },
-        ],
-      },
-    }));
-    const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
-    const r = await p.listRefunds({ providerReference: "intent-uuid-1" });
+  // Paystack's `GET /refund?transaction=` filters ONLY by the numeric transaction
+  // id (proven on a live sk_test account); our providerReference is the REFERENCE,
+  // so the adapter must resolve ref→id via /transaction/verify first. These mocks
+  // model that real two-call shape AND Paystack's id-only filter.
+  const TXN_ID = 1004723697;
+  const REFERENCE = "intent-uuid-1";
+  function refundListFetch() {
+    return fakeFetch((call) => {
+      if (call.url.includes("/transaction/verify/")) {
+        return { status: 200, body: { status: true, data: { id: TXN_ID, reference: REFERENCE } } };
+      }
+      // REAL Paystack behaviour: the list matches ONLY the numeric id. Filtering by
+      // a reference yields an empty 200 — the silent gap a live run surfaced.
+      if (call.url === `https://api.paystack.co/refund?transaction=${TXN_ID}`) {
+        return {
+          status: 200,
+          body: {
+            status: true,
+            data: [
+              { id: 3018284, amount: 10000, status: "pending", transaction: TXN_ID },
+              { id: 3018299, amount: "4300", status: "processed", transaction: TXN_ID },
+              { amount: 1, status: "ignored-no-id" },
+            ],
+          },
+        };
+      }
+      return { status: 200, body: { status: true, data: [] } }; // any other transaction= → empty
+    });
+  }
 
-    assert.equal(calls[0].url, "https://api.paystack.co/refund?transaction=intent-uuid-1");
+  it("resolves the reference to the numeric transaction id, then lists by THAT id", async () => {
+    const { fetchImpl, calls } = refundListFetch();
+    const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
+    const r = await p.listRefunds({ providerReference: REFERENCE });
+
+    // Two calls: verify (ref→id), then list by the numeric id — never the reference.
+    assert.equal(calls[0].url, `https://api.paystack.co/transaction/verify/${REFERENCE}`);
     assert.equal(calls[0].init.method, "GET");
+    assert.equal(calls[1].url, `https://api.paystack.co/refund?transaction=${TXN_ID}`);
     assert.equal(r.ok, true);
     if (r.ok) {
       assert.deepEqual(r.value, [
@@ -315,10 +337,32 @@ describe("PaystackProvider.listRefunds (V3-19 — adopt-don't-redrive)", () => {
     }
   });
 
+  it("REGRESSION: never queries by the reference (Paystack returns empty → would double-refund)", async () => {
+    const { fetchImpl, calls } = refundListFetch();
+    const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
+    const r = await p.listRefunds({ providerReference: REFERENCE });
+    // If the adapter ever listed /refund?transaction=<reference>, the modelled
+    // id-only filter returns [], the route sees no in-flight refund, and a
+    // crash-retry creates a SECOND provider refund. Assert it discovered them.
+    assert.ok(!calls.some((c) => c.url.includes(`refund?transaction=${REFERENCE}`)));
+    assert.ok(r.ok && r.value.length === 2, "must discover the queued refund, not an empty list");
+  });
+
+  it("fails fatally if the transaction id can't be resolved (no blind list)", async () => {
+    const { fetchImpl } = fakeFetch((call) =>
+      call.url.includes("/transaction/verify/")
+        ? { status: 200, body: { status: true, data: { reference: REFERENCE } } } // no id
+        : { status: 200, body: { status: true, data: [] } },
+    );
+    const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
+    const r = await p.listRefunds({ providerReference: REFERENCE });
+    assert.ok(!r.ok && !r.error.retryable);
+  });
+
   it("propagates provider failure (the route then REFUSES to create blind)", async () => {
     const { fetchImpl } = fakeFetch(() => ({ status: 503, body: { status: false } }));
     const p = new PaystackProvider({ secretKey: SECRET, fetchImpl });
-    const r = await p.listRefunds({ providerReference: "intent-uuid-1" });
+    const r = await p.listRefunds({ providerReference: REFERENCE });
     assert.ok(!r.ok);
   });
 });

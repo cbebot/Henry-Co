@@ -320,15 +320,38 @@ export class PaystackProvider implements PaymentProviderAdapter {
   }
 
   /**
-   * V3-19 — list this transaction's refunds at the provider (GET /refund). Used
-   * for ADOPT-DON'T-REDRIVE: after a crash between recording a refund attempt and
-   * the create call, the route adopts a queued refund instead of creating a
-   * second one (create-refund is not idempotent — a blind retry double-refunds).
+   * V3-19 — list this transaction's refunds at the provider. Used for
+   * ADOPT-DON'T-REDRIVE: after a crash between creating a provider refund and
+   * recording its reference in our DB, the route adopts a queued refund instead
+   * of creating a second one (create-refund is not idempotent — a blind retry
+   * double-refunds).
+   *
+   * Paystack identity quirk (proven on a live sk_test account, 2026-06-12):
+   * `POST /refund` accepts the transaction REFERENCE or its numeric id, but
+   * `GET /refund?transaction=` filters ONLY by the numeric id — handed a
+   * reference it returns an empty 200 (not an error). Our `providerReference` is
+   * the charge REFERENCE (set at initiate; never rewritten to the id), so we MUST
+   * resolve it to the numeric transaction id first. Listing by the reference would
+   * silently find nothing → the route would create a SECOND refund (double payout).
+   * `refund()` deliberately keeps using the reference (it works on create, and the
+   * hot path should not pay for an extra verify).
    */
   async listRefunds(params: ListRefundsParams): Promise<Result<ProviderRefundSummary[], ProviderError>> {
+    // Resolve reference → numeric transaction id (the same verify call finalize uses).
+    const verified = await this.call(
+      "GET",
+      `/transaction/verify/${encodeURIComponent(params.providerReference)}`,
+    );
+    if (!verified.ok) return verified;
+    const txn = (verified.value.data ?? {}) as { id?: number | string };
+    if (txn.id === undefined || txn.id === null) {
+      // No id means we cannot list reliably — fail fatally rather than query by the
+      // reference (which returns an empty list and would license a blind re-refund).
+      return this.err("paystack_unresolved_transaction_id", false);
+    }
     const res = await this.call(
       "GET",
-      `/refund?transaction=${encodeURIComponent(params.providerReference)}`,
+      `/refund?transaction=${encodeURIComponent(String(txn.id))}`,
     );
     if (!res.ok) return res;
     const rows = Array.isArray(res.value.data) ? (res.value.data as Array<Record<string, unknown>>) : [];
