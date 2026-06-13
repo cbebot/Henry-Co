@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { buildSharedAccountLoginUrl, buildSharedAccountSignupUrl } from "@/lib/marketplace/shared-account";
 import { cn } from "@/lib/utils";
@@ -267,7 +268,7 @@ export function PublicHeaderClient() {
                 Henry Onyx Marketplace
               </p>
               <p className="truncate text-sm text-[color:var(--home-ink-65)]">
-                {surfaceCopy.marketplaceHeader.brandSubtitle}
+                {translateSurfaceLabel(locale, "Refined commerce with one connected Henry Onyx account")}
               </p>
             </div>
           </Link>
@@ -487,10 +488,20 @@ export function PublicHeaderClient() {
         triggerRef={triggerRef}
         initialFocusRef={closeRef}
       >
+        {/* BottomSheet portals at <body>, OUTSIDE the page's
+         * .market-page/.home-accent-scope wrapper — so the drawer inherited
+         * body's fixed noir ink (--market-ink) and the gold :root accent
+         * fallback: invisible writeups in the light theme. Re-establish the
+         * scope + theme-aware ink + division accent here, exactly like
+         * PublicChrome's drawer does. */}
+        <div
+          className="home-accent-scope flex min-h-0 flex-1 flex-col text-[color:var(--home-ink)]"
+          style={MARKETPLACE_PUBLIC_THEME_STYLE}
+        >
         <header className="flex items-start justify-between gap-3 border-b border-[color:var(--home-line)] px-5 pb-4 pt-2">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
-              {surfaceCopy.marketplaceHeader.brandSubtitle}
+              {translateSurfaceLabel(locale, "Refined commerce with one connected Henry Onyx account")}
             </p>
             <p
               id={drawerTitleId}
@@ -630,6 +641,7 @@ export function PublicHeaderClient() {
               </>
             )}
           </nav>
+        </div>
         </div>
       </BottomSheet>
     </header>
