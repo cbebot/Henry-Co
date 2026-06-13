@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
 import type { OwnerReconcileTrace } from "@henryco/dashboard-shell/owner-register";
+import { loadFinanceLedgerTrace } from "@/lib/finance-ledger";
 
 /**
  * Track B / DASH-8 G8 + V15 — reconcile-trace resolver.
@@ -32,6 +33,13 @@ import type { OwnerReconcileTrace } from "@henryco/dashboard-shell/owner-registe
 export async function loadOwnerReconcileTrace(
   traceId: string,
 ): Promise<OwnerReconcileTrace | null> {
+  // V3-22 — finance/ledger traces read the money spine over the dedicated
+  // read-only direct-pg path (payments_private is not PostgREST-exposed), so they
+  // are resolved before the admin (PostgREST) client is even constructed.
+  if (traceId.startsWith("finance.")) {
+    return loadFinanceLedgerTrace(traceId);
+  }
+
   const admin = createAdminSupabase();
   const executedAt = new Date().toISOString();
 
