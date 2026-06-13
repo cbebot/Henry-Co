@@ -5,16 +5,12 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import Logo from "@/components/brand/Logo";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { resolvePaymentCallbackReference } from "@/lib/payment-callback-reference";
 import { CallbackCard } from "./CallbackCard";
 import { PaymentCallbackClient } from "./PaymentCallbackClient";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Payment — Henry Onyx" };
-
-// Paystack returns the buyer with ?reference=<id>&trxref=<id>; the reference IS the
-// payment_intents.id (UUID) the route sent on initialize. Validate the shape before
-// querying so a malformed value can't hit the DB cast.
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function Shell({ children }: { children: ReactNode }) {
   return (
@@ -32,10 +28,20 @@ function Shell({ children }: { children: ReactNode }) {
 export default async function PaymentCallbackPage({
   searchParams,
 }: {
-  searchParams: Promise<{ reference?: string; trxref?: string }>;
+  // Paystack returns ?reference=&trxref=; Flutterwave returns ?tx_ref=&status=&
+  // transaction_id= (V3-16). The resolver maps either onto our intent UUID.
+  searchParams: Promise<{
+    reference?: string;
+    trxref?: string;
+    tx_ref?: string;
+    transaction_id?: string;
+    status?: string;
+  }>;
 }) {
   const params = await searchParams;
-  const reference = (params.reference ?? params.trxref ?? "").trim();
+  // Provider-agnostic: the value IS our payment_intents.id, shape-validated before
+  // any DB cast. null → missing/invalid (handled below as the error card).
+  const reference = resolvePaymentCallbackReference(params);
 
   const supabase = await createSupabaseServer();
   const {
@@ -52,7 +58,7 @@ export default async function PaymentCallbackPage({
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  if (!reference || !UUID_RE.test(reference)) {
+  if (!reference) {
     return (
       <Shell>
         <CallbackCard
