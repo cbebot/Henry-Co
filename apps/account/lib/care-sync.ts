@@ -396,40 +396,64 @@ async function updateBookingContactProjection(
     .eq("id", booking.id);
 }
 
+type ExistingCareActivityRow = {
+  id: string | null;
+  reference_id: string | null;
+  title: string | null;
+  description: string | null;
+  status: string | null;
+  action_url: string | null;
+  metadata: Record<string, unknown> | null;
+};
+
+type ExistingCareNotificationRow = {
+  id: string | null;
+  reference_id: string | null;
+  title: string | null;
+  body: string | null;
+  priority: string | null;
+  action_url: string | null;
+};
+
 async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBookingRow[]) {
   const admin = createAdminSupabase();
+  // STAB-01: pull the comparable columns (not just id) so the UPDATE branches
+  // below can skip writes when nothing actually changed. syncCareArtifacts is
+  // scheduled by BOTH getAccountUser (gated) and listLinkedCareBookingsForUser
+  // (per dashboard render), so without change-detection every RouteLiveRefresh
+  // tick re-PATCHed these same rows — the repeated-same-id PATCH storm seen in
+  // prod logs. The id maps now point at the full row for the diff.
   const { data: existingActivities } = await admin
     .from("customer_activity")
-    .select("id, reference_id")
+    .select("id, reference_id, title, description, status, action_url, metadata")
     .eq("user_id", identity.userId)
     .eq("division", "care")
     .eq("reference_type", "care_booking")
     .limit(200);
   const { data: existingNotifications } = await admin
     .from("customer_notifications")
-    .select("id, reference_id")
+    .select("id, reference_id, title, body, priority, action_url")
     .eq("user_id", identity.userId)
     .eq("division", "care")
     .eq("reference_type", "care_booking")
     .limit(200);
 
-  const activityIds = new Map(
-    (existingActivities ?? []).map((row) => [
-      cleanText((row as { reference_id?: string | null }).reference_id) || "",
-      cleanText((row as { id?: string | null }).id) || "",
-    ])
-  );
-  const notificationIds = new Map(
-    (existingNotifications ?? []).map((row) => [
-      cleanText((row as { reference_id?: string | null }).reference_id) || "",
-      cleanText((row as { id?: string | null }).id) || "",
-    ])
-  );
+  const activityByBooking = new Map<string, ExistingCareActivityRow>();
+  for (const row of (existingActivities ?? []) as ExistingCareActivityRow[]) {
+    const key = cleanText(row.reference_id);
+    if (key) activityByBooking.set(key, row);
+  }
+  const notificationByBooking = new Map<string, ExistingCareNotificationRow>();
+  for (const row of (existingNotifications ?? []) as ExistingCareNotificationRow[]) {
+    const key = cleanText(row.reference_id);
+    if (key) notificationByBooking.set(key, row);
+  }
 
   for (const booking of bookings) {
     const actionUrl = getCareBookingHref(booking.id);
-    const activityId = activityIds.get(booking.id);
-    const notificationId = notificationIds.get(booking.id);
+    const existingActivity = activityByBooking.get(booking.id);
+    const existingNotification = notificationByBooking.get(booking.id);
+    const balanceDue = sanitizeAmount(booking.balance_due);
     const activityPayload = {
       title: buildActivityTitle(booking),
       description: buildActivityDescription(booking),
@@ -437,7 +461,7 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
       action_url: actionUrl,
       metadata: {
         tracking_code: booking.tracking_code,
-        balance_due: sanitizeAmount(booking.balance_due),
+        balance_due: balanceDue,
         synced_via: "care_identity_reconciliation",
       },
     };
@@ -445,7 +469,7 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
       title: "Care booking available in your account",
       body: buildNotificationBody(booking),
       category: "general",
-      priority: sanitizeAmount(booking.balance_due) > 0 ? "high" : "normal",
+      priority: balanceDue > 0 ? "high" : "normal",
       action_url: actionUrl,
       action_label: "Open booking",
       division: "care",
@@ -453,11 +477,24 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
       reference_id: booking.id,
     };
 
-    if (activityId) {
-      await admin
-        .from("customer_activity")
-        .update(activityPayload as never)
-        .eq("id", activityId);
+    if (existingActivity?.id) {
+      // STAB-01: only rewrite when a surfaced field changed. The metadata diff
+      // compares the meaningful keys (synced_via is constant) so an unchanged
+      // booking is a true no-op instead of a redundant PATCH every refresh.
+      const existingMeta = (existingActivity.metadata ?? {}) as Record<string, unknown>;
+      const activityChanged =
+        (existingActivity.title ?? null) !== activityPayload.title ||
+        (existingActivity.description ?? null) !== activityPayload.description ||
+        (existingActivity.status ?? null) !== activityPayload.status ||
+        (existingActivity.action_url ?? null) !== activityPayload.action_url ||
+        cleanText(existingMeta.tracking_code) !== cleanText(booking.tracking_code) ||
+        sanitizeAmount(existingMeta.balance_due) !== balanceDue;
+      if (activityChanged) {
+        await admin
+          .from("customer_activity")
+          .update(activityPayload as never)
+          .eq("id", existingActivity.id);
+      }
     } else {
       await admin.from("customer_activity").insert({
         user_id: identity.userId,
@@ -469,15 +506,24 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
       } as never);
     }
 
-    if (notificationId) {
+    if (existingNotification?.id) {
       // UPDATE path: the booking already has an inbox row that we are
       // refreshing in place (status changed, balance changed, etc.).
       // This is a sync-refresh, not a publish event, so it stays a
       // direct admin update — the publisher shim is for new publishes.
-      await admin
-        .from("customer_notifications")
-        .update(notificationPayload as never)
-        .eq("id", notificationId);
+      // STAB-01: gated on an actual change so a steady-state booking does not
+      // get re-PATCHed on every dashboard refresh.
+      const notificationChanged =
+        (existingNotification.title ?? null) !== notificationPayload.title ||
+        (existingNotification.body ?? null) !== (notificationPayload.body || null) ||
+        (existingNotification.priority ?? null) !== notificationPayload.priority ||
+        (existingNotification.action_url ?? null) !== notificationPayload.action_url;
+      if (notificationChanged) {
+        await admin
+          .from("customer_notifications")
+          .update(notificationPayload as never)
+          .eq("id", existingNotification.id);
+      }
     } else {
       // INSERT path: this is the first time this booking is appearing in
       // the user's inbox. Route through the publisher shim for
