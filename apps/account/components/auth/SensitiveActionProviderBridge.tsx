@@ -39,33 +39,36 @@ export function SensitiveActionProviderBridge({
         email?: string;
         password?: string;
       }): Promise<ReauthOutcome> => {
-        const supabase = createSupabaseBrowser();
         if (params.method === "password") {
-          const targetEmail = params.email || email;
-          if (!targetEmail || !params.password) {
+          // V3-02-FIX: reauth MUST be verified server-side so the guard's
+          // `hc_last_reauth` marker gets written. A client-only signInWithPassword
+          // refreshed the session but never set that cookie, so every sensitive
+          // action re-challenged forever ("confirm your identity" loop).
+          if (!params.password) return { ok: false, reason: "unknown" };
+          let res: Response;
+          try {
+            res = await fetch("/api/auth/reauth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ method: "password", password: params.password }),
+            });
+          } catch {
             return { ok: false, reason: "unknown" };
           }
-          const { error } = await supabase.auth.signInWithPassword({
-            email: targetEmail,
-            password: params.password,
-          });
-          if (error) {
-            const msg = error.message?.toLowerCase() ?? "";
-            const incorrect = msg.includes("invalid") || msg.includes("credential");
-            const rateLimited = msg.includes("rate") || msg.includes("too many");
-            return {
-              ok: false,
-              reason: incorrect
-                ? "incorrect"
-                : rateLimited
-                  ? "rate_limited"
-                  : "unknown",
-            };
-          }
-          return { ok: true };
+          const data = (await res.json().catch(() => ({}))) as {
+            ok?: boolean;
+            reason?: string;
+          };
+          if (data.ok) return { ok: true };
+          const reason =
+            data.reason === "incorrect" || data.reason === "rate_limited"
+              ? data.reason
+              : "unknown";
+          return { ok: false, reason };
         }
 
         // magic-link path
+        const supabase = createSupabaseBrowser();
         const targetEmail = params.email || email;
         if (!targetEmail) return { ok: false, reason: "unknown" };
         const { error } = await supabase.auth.signInWithOtp({
