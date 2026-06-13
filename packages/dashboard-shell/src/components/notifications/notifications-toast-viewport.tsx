@@ -36,10 +36,10 @@ import { RADIUS } from "../../tokens/spacing";
 import { typeStyle } from "../../tokens/type";
 import { focusVisibleStyle } from "../../tokens/focus";
 import {
-  initialToastBaselineState,
   reduceToastBaseline,
   type ToastBaselineState,
 } from "./toast-selection";
+import { loadPersistedBaseline, persistBaseline } from "./toast-baseline-store";
 import {
   subscribeShellToast,
   type ShellToast,
@@ -220,7 +220,10 @@ export function NotificationsToastViewport({
     // for a fresh arrival and toast spuriously.
   });
   const [active, setActive] = useState<ActiveToast[]>([]);
-  const baselineRef = useRef<ToastBaselineState>(initialToastBaselineState());
+  // V3-DASH-TOAST-02: null until the first effect seeds it from the
+  // session-persisted baseline (so a router.refresh() remount restores
+  // "already seen" rather than re-capturing an empty set).
+  const baselineRef = useRef<ToastBaselineState | null>(null);
   const exitTimers = useRef<Map<string, number>>(new Map());
   // Imperative toasts (shellToast.*) — a parallel queue so action feedback
   // (success / error / micro-interactions) shares this viewport without
@@ -264,11 +267,16 @@ export function NotificationsToastViewport({
   // whole backlog on every (re)mount; see `reduceToastBaseline`.
   useEffect(() => {
     const ids = signals.map((s) => s.id);
-    const { state, toast } = reduceToastBaseline(baselineRef.current, {
+    // Seed from the session-persisted baseline on the first run; thereafter use
+    // the live ref. Persisting after each reduce is what makes the dedup survive
+    // a router.refresh() remount (the "re-delivers on each click" defect).
+    const prevBaseline = baselineRef.current ?? loadPersistedBaseline(audience);
+    const { state, toast } = reduceToastBaseline(prevBaseline, {
       loading,
       signalIds: ids,
     });
     baselineRef.current = state;
+    persistBaseline(audience, state);
     if (toast.length === 0) return;
     setActive((current) => {
       const byId = new Map(signals.map((s) => [s.id, s] as const));
@@ -287,7 +295,7 @@ export function NotificationsToastViewport({
       }
       return merged.slice(-MAX_QUEUE);
     });
-  }, [signals, loading, resolver]);
+  }, [signals, loading, resolver, audience]);
 
   // Clear any pending exit timers on unmount.
   useEffect(() => {
