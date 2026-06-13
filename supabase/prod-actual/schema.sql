@@ -855,31 +855,43 @@ CREATE OR REPLACE FUNCTION public.handle_new_customer()
  SET search_path TO 'public'
 AS $function$
 begin
+  -- STAB-01 (migration 20260613133434): idempotent so a re-touched auth.users row
+  -- can't flood logs / churn connection slots. Keyed inserts → ON CONFLICT DO
+  -- NOTHING; the keyless welcome rows → NOT EXISTS on the account-created marker.
   insert into public.customer_profiles (id, email, full_name)
-  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', ''));
+  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', ''))
+  on conflict (id) do nothing;
 
   insert into public.customer_wallets (user_id)
-  values (new.id);
+  values (new.id)
+  on conflict (user_id) do nothing;
 
   insert into public.customer_preferences (user_id)
-  values (new.id);
+  values (new.id)
+  on conflict (user_id) do nothing;
 
   insert into public.customer_notifications (user_id, title, body, category, action_url)
-  values (
+  select
     new.id,
     'Your HenryCo account is ready',
     'The account is set up. Explore the services and manage everything from one dashboard.',
     'account',
     '/'
+  where not exists (
+    select 1 from public.customer_activity
+    where user_id = new.id and activity_type = 'account_created'
   );
 
   insert into public.customer_activity (user_id, division, activity_type, title, description)
-  values (
+  select
     new.id,
     'account',
     'account_created',
     'Account created',
     'The unified HenryCo account has been set up.'
+  where not exists (
+    select 1 from public.customer_activity
+    where user_id = new.id and activity_type = 'account_created'
   );
 
   return new;
