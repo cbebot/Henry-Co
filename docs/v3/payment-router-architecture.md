@@ -159,7 +159,13 @@ The webhook route needs **no edit** to activate: it resolves the adapter generic
 **[V3-15] `createPaymentRouter(options?)` seam.** The factory now takes an options object `{ hooks?, callbackUrl? }`:
 - `PAYSTACK_SECRET_KEY` set → register the live `PaystackProvider`, built with the **injected** `callbackUrl` (G7 — the app passes `getAccountUrl("/payments/callback")`; the package reads **no** `PAYSTACK_CALLBACK_URL` env, which would be a phantom/uninventoried var).
 - `MOCK_PAYMENT=1` → `MockProvider` backfills every real key **not already served by a live adapter**. Because live adapters register first and record their key in `served`, the mock can never shadow live Paystack — so `MOCK_PAYMENT=1` is safe to leave on alongside a real key (the mock just fills `stripe`/`flutterwave`/`mock`).
+- **[V3-16]** `FLW_SECRET_KEY` set → register the live `FlutterwaveProvider`, built with the same injected `callbackUrl`. Registered **before** the mock (alongside Paystack), so the mock can never shadow it. G3: test vs live is purely the key (`FLWSECK_TEST-…` / `FLWSECK-…`). The instant it registers, the NG/GH Paystack↔Flutterwave failover and `mobile_money` routing (Flutterwave is the only `mobile_money` provider) light up — no routing/schema/route change. `WEBHOOK_SECRET_ENV[flutterwave]` already points at `FLW_SECRET_HASH`.
 - neither → **no providers registered**; every route resolves to A5 manual-fallback — the safe dormant default.
+
+**[V3-16] FlutterwaveProvider — two provider-specific footguns it encodes** (`providers/flutterwave-provider.ts`, proven on a real TEST charge id 10292954):
+- **Amounts are MAJOR units** (unlike Paystack's minor). `initiate`/`refund` send `amountMinor ÷ 10^exponent` as a string via integer math (NGN ×100, XOF ×1, USD ×100 — never a blanket ×100); `finalize`/verify convert the major amount back to minor. A4 rejects an unsupported currency before any conversion.
+- **Webhooks are notification-only.** `verif-hash` is a **static secret-hash compare** (constant-time), NOT an HMAC of the body — so a valid hash proves only "from Flutterwave". Every money-bearing webhook is **re-verified server-side** against the API, and the payload's amount+currency must match the verify (the documented Flutterwave footgun) or it is **fatal**. `providerEventId == tx_ref` (shared with `finalize`, G2). `app_fee` is **VAT-exclusive** (opposite Paystack): `feeMinor = gross − settled − merchant_fee`, `feeVat = feeMinor − app_fee`.
+- **No `listRefunds`** (deliberate): Flutterwave has no trustworthy per-transaction refund-list filter, so the V3-19 adopt-don't-redrive path 503s the crash window rather than risk a second real-money refund (the Paystack #272 class).
 
 ---
 

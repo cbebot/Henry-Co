@@ -24,7 +24,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // G1: HMAC is over the RAW bytes — read as text BEFORE any parse. A
   // re-serialized body would change the digest.
   const rawBody = await request.text();
-  const signature = request.headers.get("x-paystack-signature") ?? request.headers.get("x-signature");
+  // Each live provider sends its signature in its OWN header: Paystack
+  // `x-paystack-signature` (HMAC-SHA512), Flutterwave `verif-hash` (V3-16 — a static
+  // secret-hash the adapter compares constant-time). `x-signature` is the mock rail.
+  // The per-provider adapter owns verification; missing/mismatched → fail-closed 401.
+  const signature =
+    request.headers.get("x-paystack-signature") ??
+    request.headers.get("verif-hash") ??
+    request.headers.get("x-signature");
 
   emitPaymentEvent("henry.payment.webhook.received", { payload: { provider } });
 

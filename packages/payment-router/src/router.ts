@@ -13,6 +13,7 @@ import { providerPreferenceForCountry } from "./routing/country-defaults";
 import { providerSupportsMethod } from "./routing/capability-matrix";
 import { MockProvider } from "./providers/mock-provider";
 import { PaystackProvider } from "./providers/paystack-provider";
+import { FlutterwaveProvider } from "./providers/flutterwave-provider";
 
 export interface SelectProviderQuery {
   country: ISO3166Alpha2;
@@ -169,6 +170,10 @@ export interface CreatePaymentRouterOptions {
  *  - `PAYSTACK_SECRET_KEY` set → register the live {@link PaystackProvider}
  *    under `paystack` (V3-15 activation). G3: the same code is test or live
  *    purely by which secret (`sk_test_…`/`sk_live_…`) is supplied.
+ *  - `FLW_SECRET_KEY` set → register the live {@link FlutterwaveProvider} under
+ *    `flutterwave` (V3-16 activation). G3: test vs live is purely the key
+ *    (`FLWSECK_TEST-…`/`FLWSECK-…`). Lights up the NG/GH Paystack↔Flutterwave
+ *    failover and `mobile_money` the moment it registers.
  *  - `MOCK_PAYMENT=1` → register the MockProvider under every real provider key
  *    NOT already served by a live adapter, so country/capability routing behaves
  *    as in production across the still-dormant rails (the V3-13 mock rail).
@@ -189,6 +194,14 @@ export function createPaymentRouter(options?: CreatePaymentRouterOptions): Payme
       new PaystackProvider({ secretKey: paystackSecret, callbackUrl: options?.callbackUrl }),
     );
     served.add("paystack");
+  }
+
+  const flutterwaveSecret = process.env.FLW_SECRET_KEY;
+  if (flutterwaveSecret) {
+    providers.push(
+      new FlutterwaveProvider({ secretKey: flutterwaveSecret, callbackUrl: options?.callbackUrl }),
+    );
+    served.add("flutterwave");
   }
 
   if (process.env.MOCK_PAYMENT === "1") {
