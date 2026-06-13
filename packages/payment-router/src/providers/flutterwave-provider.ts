@@ -309,18 +309,24 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
     const txRef = typeof data.tx_ref === "string" ? data.tx_ref : "";
     if (!txRef) return this.err("flutterwave_webhook_no_tx_ref", false);
 
+    // The amount+currency match against the verify is MANDATORY, not best-effort:
+    // verif-hash is a STATIC shared secret, so a leaked/replayed hash on a body that
+    // simply OMITS amount/currency must not slip past the footgun guard. Require both
+    // and fail fast — before any API call — when an unmatchable money event arrives.
+    if (typeof data.amount !== "number" || typeof data.currency !== "string") {
+      return this.err("flutterwave_webhook_unmatchable", false);
+    }
+
     const v = await this.readVerifiedCharge(txRef);
     if (!v.ok) return v;
 
-    // Footgun guard: the notification's amount + currency must match the verify.
-    if (typeof data.currency === "string" && data.currency !== v.value.currency) {
+    // Footgun guard: the notification's amount + currency MUST match the verify.
+    if (data.currency !== v.value.currency) {
       return this.err("flutterwave_webhook_currency_mismatch", false);
     }
-    if (typeof data.amount === "number") {
-      const payloadMinor = majorToMinor(data.amount, minorUnitExponent(v.value.currency));
-      if (payloadMinor !== v.value.amountMinor) {
-        return this.err("flutterwave_webhook_amount_mismatch", false);
-      }
+    const payloadMinor = majorToMinor(data.amount, minorUnitExponent(v.value.currency));
+    if (payloadMinor !== v.value.amountMinor) {
+      return this.err("flutterwave_webhook_amount_mismatch", false);
     }
 
     return {
@@ -352,24 +358,31 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
       const txId = data.tx_id ?? data.transaction_id;
       if (txId != null) {
         const res = await this.call("GET", `/transactions/${encodeURIComponent(String(txId))}/verify`);
-        if (res.ok) {
-          const vd = (res.value.data ?? {}) as FlwTxnData;
-          if (typeof vd.tx_ref === "string") txRef = vd.tx_ref;
-          if (typeof vd.currency === "string") currency = vd.currency;
-        }
+        // A FAILED resolve must surface (retryable) — emitting an unbindable refund
+        // event would make the route ACK and Flutterwave never redeliver, silently
+        // DROPPING a real refund confirmation (the inverse of the #272 double-refund).
+        if (!res.ok) return res;
+        const vd = (res.value.data ?? {}) as FlwTxnData;
+        if (typeof vd.tx_ref === "string") txRef = vd.tx_ref;
+        if (typeof vd.currency === "string") currency = vd.currency;
       }
     }
 
     const outcome = refundOutcome(typeof data.status === "string" ? data.status : "");
-    const ref = txRef ?? "";
     if (outcome === null) {
       // Unknown refund status (e.g. initiated/processing) — informational only;
       // refund outcomes are never guessed.
       return {
         ok: true,
-        value: { providerEventId: `refund:${ref}`, eventType: event, providerReference: ref, impliedStatus: null },
+        value: { providerEventId: `refund:${txRef ?? ""}`, eventType: event, providerReference: txRef ?? "", impliedStatus: null },
       };
     }
+    if (!txRef) {
+      // A TERMINAL refund outcome we cannot bind to a transaction reference must fail
+      // loudly (redeliver / manual review), never emit an unbindable event the route acks.
+      return this.err("flutterwave_refund_unresolved_reference", false);
+    }
+    const ref = txRef;
 
     let amountMinor: number | null = null;
     const refundedMajor = data.amount_refunded ?? data.amount;
@@ -405,8 +418,11 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
     if (txn.id === undefined || txn.id === null) {
       return this.err("flutterwave_unresolved_transaction_id", false);
     }
-    const currency = normalizeCurrency(String(txn.currency ?? "NGN"));
-    const exp = currency.ok ? minorUnitExponent(currency.value) : 2;
+    // NEVER guess an exponent on the disbursement path — an unsupported currency here
+    // would mis-scale a real-money refund (a zero-decimal currency at 1/100th).
+    const currency = normalizeCurrency(String(txn.currency ?? ""));
+    if (!currency.ok) return this.err("flutterwave_unsupported_currency", false);
+    const exp = minorUnitExponent(currency.value);
     const body: Record<string, unknown> = { amount: minorToMajorString(params.amountMinor, exp) };
     if (params.reason) body.comments = params.reason;
 
@@ -437,7 +453,8 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
       return this.err("flutterwave_currency_not_in_balance", false);
     }
     const currency = normalizeCurrency(params.currency);
-    const exp = currency.ok ? minorUnitExponent(currency.value) : 2;
+    if (!currency.ok) return this.err("flutterwave_unsupported_currency", false);
+    const exp = minorUnitExponent(currency.value);
     return {
       ok: true,
       value: {

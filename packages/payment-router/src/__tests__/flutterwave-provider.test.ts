@@ -335,6 +335,17 @@ describe("FlutterwaveProvider.verifyWebhook (verif-hash + MANDATORY server re-ve
     assert.ok(!r.ok && !r.error.retryable);
   });
 
+  it("FATALLY rejects a money-bearing charge event that OMITS amount/currency (the match is MANDATORY, not best-effort) — no re-verify call", async () => {
+    // The verif-hash is a STATIC shared secret, so a leaked/replayed hash + a body
+    // that simply omits amount+currency must NOT slip past the match guard.
+    const { fetchImpl, calls } = verifyOkFetch();
+    const p = new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
+    const rawBody = JSON.stringify({ event: "charge.completed", data: { id: 10292954, tx_ref: "intent-uuid-1", status: "successful" } });
+    const r = await p.verifyWebhook({ rawBody, signature: SECRET_HASH, secret: SECRET_HASH });
+    assert.ok(!r.ok && !r.error.retryable, "a charge event with no amount/currency to match against the verify must be fatal");
+    assert.equal(calls.length, 0, "fail fast — no API call for an unmatchable charge event");
+  });
+
   it("derives failed from the verify even when the webhook claimed success (verify is the money truth)", async () => {
     const { fetchImpl } = verifyOkFetch({ status: "failed" });
     const p = new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
@@ -402,6 +413,30 @@ describe("FlutterwaveProvider.verifyWebhook (verif-hash + MANDATORY server re-ve
       assert.equal(r.value.providerReference, "intent-uuid-1", "tx_ref resolved from the transaction id");
       assert.equal(r.value.refundEvent?.amountMinor, 50_000, "currency resolved from the verify enables exact conversion");
     }
+  });
+
+  it("returns a RETRYABLE error (never an ack) when tx_ref is absent AND the id-resolve fails — the refund confirmation must redeliver, not drop", async () => {
+    // refund.completed without tx_ref → resolve via tx_id; if that call fails, emitting
+    // an unbindable refundEvent (empty reference) would make the route ACK and Flutterwave
+    // never redeliver → a silently-dropped refund confirmation (the inverse of #272).
+    const { fetchImpl, calls } = fakeFetch(() => ({ status: 503, body: {} }));
+    const p = new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
+    const rawBody = JSON.stringify({
+      event: "refund.completed",
+      data: { id: 88421, tx_id: 10292954, amount_refunded: 500, status: "completed" },
+    });
+    const r = await p.verifyWebhook({ rawBody, signature: SECRET_HASH, secret: SECRET_HASH });
+    assert.ok(!r.ok && r.error.retryable, "a failed resolve must surface as retryable so the webhook is not acked");
+    assert.equal(calls.length, 1);
+  });
+
+  it("FATALLY rejects a terminal refund outcome whose tx_ref is wholly unresolvable (no tx_ref, no tx_id) — never emit an unbindable event the route would silently ack", async () => {
+    const { fetchImpl, calls } = verifyOkFetch();
+    const p = new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
+    const rawBody = JSON.stringify({ event: "refund.completed", data: { id: 88421, amount_refunded: 500, status: "completed" } });
+    const r = await p.verifyWebhook({ rawBody, signature: SECRET_HASH, secret: SECRET_HASH });
+    assert.ok(!r.ok && !r.error.retryable, "a terminal refund with no resolvable reference must fail loudly, not ack");
+    assert.equal(calls.length, 0);
   });
 
   it("reports a null refund amount when the currency is unknowable — never a guessed conversion", async () => {
@@ -492,6 +527,17 @@ describe("FlutterwaveProvider.refund (POST /transactions/{id}/refund — queued;
     const p = new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
     const r = await p.refund({ providerReference: "intent-uuid-1", amountMinor: 20_000 });
     assert.ok(!r.ok && r.error.retryable);
+  });
+
+  it("fails FATALLY when the resolved transaction currency is unsupported — never guess an exponent on the disbursement path", async () => {
+    const { fetchImpl } = fakeFetch((call) =>
+      call.url.includes("verify_by_reference")
+        ? { status: 200, body: { status: "success", data: { id: 10292954, currency: "ZWL" } } }
+        : { status: 200, body: { status: "success", data: { id: 88421 } } },
+    );
+    const p = new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
+    const r = await p.refund({ providerReference: "intent-uuid-1", amountMinor: 20_000 });
+    assert.ok(!r.ok && !r.error.retryable, "an unsupported currency on the money-moving path must be fatal, never a x100 guess");
   });
 });
 
