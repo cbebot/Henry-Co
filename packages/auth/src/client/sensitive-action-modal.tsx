@@ -358,13 +358,33 @@ function SensitiveActionModalUI({
     [state.kind, submit, email, copy],
   );
 
+  // Theme-aware via the host app's `--acct-*` CSS variables (which rebind under
+  // `.dark`), each with a light fallback so the modal is still legible in an app
+  // that doesn't define them. Replaces the old hardcoded `bg-white`/`text-neutral-*`
+  // that rendered an un-themed white panel (invisible/jarring on a dark surface).
+  const t = {
+    surface: "var(--acct-surface, #ffffff)",
+    ink: "var(--acct-ink, #171717)",
+    muted: "var(--acct-muted, #525252)",
+    line: "var(--acct-line, #e5e5e5)",
+    bg: "var(--acct-bg, #ffffff)",
+    bgSoft: "var(--acct-bg-soft, #f5f5f5)",
+    gold: "var(--acct-gold-text, #b45309)",
+    red: "var(--acct-red, #dc2626)",
+    greenSoft: "var(--acct-green-soft, #ecfdf5)",
+    green: "var(--acct-green, #047857)",
+  } as const;
+  const primaryBtn =
+    "inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60";
+  const primaryStyle = { background: t.ink, color: t.surface } as const;
+
   return (
+    // The backdrop intentionally does NOT close on tap: this is a money/sensitive
+    // reauth, and an accidental backdrop tap (easy on a mobile bottom-sheet) was
+    // dismissing it mid-flow ("cancels itself"). Dismissal is explicit (Cancel/ESC).
     <div
       role="presentation"
-      className="fixed inset-0 z-[1100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose(false);
-      }}
+      className="fixed inset-0 z-[1100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-4"
     >
       <div
         ref={dialogRef}
@@ -372,41 +392,45 @@ function SensitiveActionModalUI({
         aria-modal="true"
         aria-labelledby="hc-sensitive-action-title"
         aria-describedby="hc-sensitive-action-desc"
-        className="w-full max-w-[440px] rounded-t-2xl bg-white p-6 shadow-2xl sm:rounded-2xl"
+        // max-h + scroll + safe-area padding so the Confirm button stays reachable
+        // when the mobile keyboard opens over the bottom sheet ("no continue button").
+        className="flex max-h-[92dvh] w-full max-w-[440px] flex-col overflow-y-auto overscroll-contain rounded-t-2xl p-6 shadow-2xl sm:rounded-2xl"
+        style={{
+          background: t.surface,
+          color: t.ink,
+          border: `1px solid ${t.line}`,
+          paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))",
+        }}
       >
         <header className="mb-4">
           <p
             data-intent={intent}
-            className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-amber-600"
+            className="text-[10.5px] font-semibold uppercase tracking-[0.32em]"
+            style={{ color: t.gold }}
           >
             {intent.replaceAll(".", " ").replaceAll("_", " ")}
           </p>
-          <h2
-            id="hc-sensitive-action-title"
-            className="mt-1 text-lg font-semibold text-neutral-900"
-          >
+          <h2 id="hc-sensitive-action-title" className="mt-1 text-lg font-semibold" style={{ color: t.ink }}>
             {copy.title}
           </h2>
-          <p
-            id="hc-sensitive-action-desc"
-            className="mt-1 text-sm leading-relaxed text-neutral-600"
-          >
+          <p id="hc-sensitive-action-desc" className="mt-1 text-sm leading-relaxed" style={{ color: t.muted }}>
             {copy.description}
           </p>
         </header>
 
         {method === "password" ? (
           <form onSubmit={handlePassword} className="space-y-3">
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-medium" style={{ color: t.ink }}>
               {copy.emailLabel}
               <input
                 type="email"
                 value={email ?? ""}
                 readOnly
-                className="mt-1 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700"
+                className="mt-1 w-full rounded-lg px-3 py-2 text-sm"
+                style={{ background: t.bgSoft, border: `1px solid ${t.line}`, color: t.muted }}
               />
             </label>
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-medium" style={{ color: t.ink }}>
               {copy.passwordLabel}
               <input
                 ref={passwordRef}
@@ -415,11 +439,12 @@ function SensitiveActionModalUI({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none focus:ring-2"
+                style={{ background: t.bg, border: `1px solid ${t.line}`, color: t.ink }}
               />
             </label>
             {state.kind === "error" ? (
-              <p role="alert" className="text-sm text-red-600">
+              <p role="alert" className="text-sm" style={{ color: t.red }}>
                 {state.message}
               </p>
             ) : null}
@@ -427,7 +452,8 @@ function SensitiveActionModalUI({
               <button
                 type="submit"
                 disabled={state.kind === "submitting" || password.length === 0}
-                className="inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className={primaryBtn}
+                style={primaryStyle}
               >
                 {state.kind === "submitting" ? "…" : copy.passwordSubmit}
               </button>
@@ -437,7 +463,8 @@ function SensitiveActionModalUI({
                   setMethod("magic-link");
                   setState({ kind: "idle" });
                 }}
-                className="text-xs font-medium text-amber-700 underline-offset-2 hover:underline"
+                className="text-xs font-medium underline-offset-2 hover:underline"
+                style={{ color: t.gold }}
               >
                 {copy.switchToMagicLink}
               </button>
@@ -445,16 +472,16 @@ function SensitiveActionModalUI({
           </form>
         ) : (
           <form onSubmit={handleMagicLink} className="space-y-3">
-            <p className="text-sm leading-relaxed text-neutral-600">
-              {copy.emailLabel}: <span className="font-medium text-neutral-900">{email}</span>
+            <p className="text-sm leading-relaxed" style={{ color: t.muted }}>
+              {copy.emailLabel}: <span className="font-medium" style={{ color: t.ink }}>{email}</span>
             </p>
             {state.kind === "magic_sent" ? (
-              <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              <p role="status" className="rounded-lg px-3 py-2 text-sm" style={{ background: t.greenSoft, color: t.green }}>
                 {copy.magicLinkSent}
               </p>
             ) : null}
             {state.kind === "error" ? (
-              <p role="alert" className="text-sm text-red-600">
+              <p role="alert" className="text-sm" style={{ color: t.red }}>
                 {state.message}
               </p>
             ) : null}
@@ -463,7 +490,8 @@ function SensitiveActionModalUI({
                 <button
                   type="submit"
                   disabled={state.kind === "submitting" || !email}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  className={primaryBtn}
+                  style={primaryStyle}
                 >
                   {state.kind === "submitting" ? "…" : copy.magicLinkSubmit}
                 </button>
@@ -474,7 +502,8 @@ function SensitiveActionModalUI({
                   setMethod("password");
                   setState({ kind: "idle" });
                 }}
-                className="text-xs font-medium text-amber-700 underline-offset-2 hover:underline"
+                className="text-xs font-medium underline-offset-2 hover:underline"
+                style={{ color: t.gold }}
               >
                 {copy.switchToPassword}
               </button>
@@ -486,7 +515,8 @@ function SensitiveActionModalUI({
           <button
             type="button"
             onClick={() => onClose(false)}
-            className="text-xs text-neutral-500 hover:text-neutral-700"
+            className="text-xs hover:underline"
+            style={{ color: t.muted }}
           >
             {copy.cancel}
           </button>
