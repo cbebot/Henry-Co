@@ -18,6 +18,7 @@ import {
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
+import { PROPERTY_PLACEHOLDER_IMAGE, resolvePropertyMediaUrl } from "@/lib/property/media";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -143,7 +144,7 @@ export function PropertyListingCard({
       <Link href={target} className="block">
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
-            src={listing.heroImage}
+            src={resolvePropertyMediaUrl(listing.heroImage) || PROPERTY_PLACEHOLDER_IMAGE}
             alt={listing.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"

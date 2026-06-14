@@ -9,7 +9,7 @@ const root = resolve(appDir, "../..");
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
   allowedDevOrigins: ["127.0.0.1", "localhost"],
-  transpilePackages: ["@henryco/brand", "@henryco/config", "@henryco/ui"],
+  transpilePackages: ["@henryco/brand", "@henryco/config", "@henryco/media", "@henryco/ui"],
   images: {
     remotePatterns: [
       {
@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+      },
+      {
+        // Public listing media served by @henryco/media from the Supabase public
+        // bucket (restricted to the public object path). Private media is never
+        // fetched by next/image — it is signed-URL only.
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
       },
     ],
   },

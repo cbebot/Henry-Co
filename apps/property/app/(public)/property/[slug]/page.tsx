@@ -26,6 +26,7 @@ import {
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { PropertyVerificationBadge } from "@/components/property/verification-badge";
 import { getPropertyDashboardData, getPropertyBySlug } from "@/lib/property/data";
+import { resolvePropertyMediaUrl } from "@/lib/property/media";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import {
@@ -213,11 +214,13 @@ export default async function PropertyDetailPage({
   const viewingFlow = getViewingFlow(listingTitle || data.listing.title, locale);
 
   const canonicalUrl = `${propertyOrigin.replace(/\/$/, "")}${returnPath}`;
+  const heroImage = resolvePropertyMediaUrl(data.listing.heroImage);
+  const galleryUrls = data.listing.gallery
+    .map(resolvePropertyMediaUrl)
+    .filter((src): src is string => Boolean(src));
   const galleryImages = Array.from(
     new Set(
-      [data.listing.heroImage, ...data.listing.gallery].filter(
-        (src): src is string => Boolean(src),
-      ),
+      [heroImage, ...galleryUrls].filter((src): src is string => Boolean(src)),
     ),
   );
   const listingJsonLd = buildRealEstateListingLd({
@@ -294,8 +297,8 @@ export default async function PropertyDetailPage({
           {/* Gallery — clickable lightbox viewer with prev/next + thumb strip */}
           <PropertyImageGallery
             title={listingTitle || data.listing.title}
-            hero={data.listing.heroImage}
-            gallery={data.listing.gallery}
+            hero={heroImage}
+            gallery={galleryUrls}
           />
 
           <PropertyQuickFacts listing={data.listing} />
