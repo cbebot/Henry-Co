@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@henryco/brand",
     "@henryco/config",
+    "@henryco/media",
     "@henryco/notifications-ui",
     "@henryco/ui",
   ],
