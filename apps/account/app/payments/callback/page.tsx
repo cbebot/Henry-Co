@@ -78,7 +78,7 @@ export default async function PaymentCallbackPage({
     .eq("id", reference)
     .maybeSingle();
   const intent = (data ?? null) as
-    | { id: string; amount_minor: number; currency: string; status: string; metadata: { return_to?: string } | null }
+    | { id: string; amount_minor: number; currency: string; status: string; metadata: { return_to?: string; rail_topup?: boolean } | null }
     | null;
 
   if (error || !intent) {
@@ -110,6 +110,7 @@ export default async function PaymentCallbackPage({
         currency={intent.currency}
         locale={locale}
         returnTo={returnTo}
+        isWalletTopup={intent.metadata?.rail_topup === true}
       />
     </Shell>
   );
