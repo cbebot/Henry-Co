@@ -19,6 +19,7 @@
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/media": "workspace:^",
     "@henryco/messaging-thread": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/payment-surface": "workspace:^",

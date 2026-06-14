@@ -11,10 +11,19 @@ import { NextResponse } from "next/server";
 import { createId, upsertLearnRecord } from "@/lib/learn/store";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
-import { uploadAssignmentSubmissionFile } from "@/lib/learn/uploads";
+import { uploadAssignmentSubmissionMedia } from "@/lib/learn/media";
 
 export const runtime = "nodejs";
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+/** Path-safe segment for the assignment media storage prefix. */
+function sanitizeAssignmentSegment(value: string) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+}
 
 export async function POST(request: Request) {
   const viewer = await getLearnViewer();
@@ -42,14 +51,18 @@ export async function POST(request: Request) {
         return NextResponse.json({ ok: false, error: "file_too_large" }, { status: 413 });
       }
       try {
-        const uploaded = await uploadAssignmentSubmissionFile(file, {
-          folderSuffix: `assignments/${assignmentId}`,
-          publicIdPrefix: "assignment",
-        });
-        fileUrl = uploaded.secureUrl;
-        fileLabel = uploaded.name;
-        fileSize = uploaded.size;
-        fileMimeType = uploaded.mimeType;
+        // SENSITIVE coursework now rides the @henryco/media private bucket:
+        // this returns a backend-neutral `media://private/...` reference (NOT a
+        // public CDN URL) persisted in the same file_url column. The read sites
+        // sign it server-side before it ever reaches a client.
+        const ref = await uploadAssignmentSubmissionMedia(
+          file,
+          `assignments/${sanitizeAssignmentSegment(assignmentId) || "assignment"}`,
+        );
+        fileUrl = ref;
+        fileLabel = file.name;
+        fileSize = file.size || null;
+        fileMimeType = file.type || null;
       } catch (error) {
         return NextResponse.json(
           { ok: false, error: "upload_failed", detail: String(error) },

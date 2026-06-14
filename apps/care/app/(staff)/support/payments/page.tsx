@@ -16,6 +16,7 @@ import {
   getPaymentReviewQueue,
   type PaymentReviewQueueItem,
 } from "@/lib/payments/verification";
+import { signCareMediaUrl } from "@/lib/care-media-store";
 import { logProtectedPageAccess } from "@/lib/security/logger";
 
 export const dynamic = "force-dynamic";

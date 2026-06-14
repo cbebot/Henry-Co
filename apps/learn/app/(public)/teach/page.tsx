@@ -3,6 +3,7 @@ import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getTeacherApplicationForViewer } from "@/lib/learn/data";
+import { signLearnMediaUrl } from "@/lib/learn/media";
 import { getSharedAuthUrl } from "@/lib/learn/links";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { getLearnSetting } from "@/lib/learn/store";
@@ -37,6 +38,19 @@ export default async function TeachPage({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await getLearnViewer();
   const application = viewer.user ? await getTeacherApplicationForViewer(viewer) : null;
+  // Sensitive proof docs are stored as private media refs; resolve each to a
+  // short-lived signed URL server-side before rendering (never expose a raw
+  // ref/private path to the client). Legacy absolute URLs pass through.
+  const supportingFileUrls = new Map<string, string>(
+    application
+      ? await Promise.all(
+          application.supportingFiles.map(
+            async (file) =>
+              [file.publicId, await signLearnMediaUrl(file.url)] as const,
+          ),
+        )
+      : [],
+  );
   const canEdit =
     !application ||
     application.status === "changes_requested" ||
@@ -315,21 +329,25 @@ export default async function TeachPage({
                     {t("Supporting files")}
                   </p>
                   <ul className="mt-3 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
-                    {application.supportingFiles.map((file) => (
-                      <li key={file.publicId}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between gap-3 py-3 text-sm text-[var(--learn-ink)] transition hover:text-[var(--learn-mint-soft)]"
-                        >
-                          <span>{file.name}</span>
-                          <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                            {t("Open")}
-                          </span>
-                        </a>
-                      </li>
-                    ))}
+                    {application.supportingFiles.map((file) => {
+                      const signedUrl = supportingFileUrls.get(file.publicId) || "";
+                      if (!signedUrl) return null;
+                      return (
+                        <li key={file.publicId}>
+                          <a
+                            href={signedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between gap-3 py-3 text-sm text-[var(--learn-ink)] transition hover:text-[var(--learn-mint-soft)]"
+                          >
+                            <span>{file.name}</span>
+                            <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
+                              {t("Open")}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ) : null}

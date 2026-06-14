@@ -2,6 +2,7 @@ import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { reviewTeacherApplicationAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
+import { signLearnMediaUrl } from "@/lib/learn/media";
 import { ownerNav } from "@/lib/learn/navigation";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
@@ -22,6 +23,19 @@ export default async function OwnerInstructorsPage({
   );
   const activeApplications = applications.filter((item) =>
     ["submitted", "under_review", "changes_requested"].includes(item.status)
+  );
+  // Supporting files are sensitive private media refs; resolve each to a
+  // short-lived signed URL server-side (keyed by the per-file unique id) before
+  // the staff review surface renders them. Legacy absolute URLs pass through.
+  const supportingFileUrls = new Map<string, string>(
+    await Promise.all(
+      applications
+        .flatMap((application) => application.supportingFiles)
+        .map(
+          async (file) =>
+            [file.publicId, await signLearnMediaUrl(file.url)] as const,
+        ),
+    ),
   );
 
   return (
@@ -143,18 +157,22 @@ export default async function OwnerInstructorsPage({
                         {t("Supporting files")}
                       </p>
                       <div className="mt-3 space-y-2">
-                        {application.supportingFiles.map((file) => (
-                          <a
-                            key={file.publicId}
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-between rounded-[1.2rem] border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink)]"
-                          >
-                            <span>{file.name}</span>
-                            <span className="text-[var(--learn-ink-soft)]">{t("Open")}</span>
-                          </a>
-                        ))}
+                        {application.supportingFiles.map((file) => {
+                          const signedUrl = supportingFileUrls.get(file.publicId) || "";
+                          if (!signedUrl) return null;
+                          return (
+                            <a
+                              key={file.publicId}
+                              href={signedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-between rounded-[1.2rem] border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink)]"
+                            >
+                              <span>{file.name}</span>
+                              <span className="text-[var(--learn-ink-soft)]">{t("Open")}</span>
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
                   ) : null}

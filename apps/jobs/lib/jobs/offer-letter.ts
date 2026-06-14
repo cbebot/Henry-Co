@@ -17,12 +17,18 @@ import { createAdminSupabase } from "@/lib/supabase";
  * SignWell API reference (high level):
  *   POST https://www.signwell.com/api/v1/documents/ — create envelope
  *   GET  https://www.signwell.com/api/v1/documents/{id} — read state
- *   The signed PDF download URL is on the document after signing; we
- *   pull it on countersign and re-upload to Cloudinary for HenryCo
- *   custody (J7 — signed PDF stored in Cloudinary).
+ *   The signed PDF download URL is on the document after signing; on
+ *   countersign it is pulled and taken into HenryCo custody (J7 —
+ *   signed PDF stored in private storage).
  *
- * Cloudinary upload happens in apps/jobs/lib/cloudinary.ts (already
- * present).
+ * NOTE (media custody): this signed-PDF custody pipeline is DORMANT —
+ * `attachSignedPdfUrl` has no runtime caller and `signed_pdf_url` is
+ * never populated today. When it IS wired, the signed offer letter is a
+ * sensitive legal document and MUST be stored in the RLS-private
+ * `jobs-documents` bucket via `uploadJobsCandidateDocument`-style upload
+ * in `apps/jobs/lib/jobs/media.ts` (persist the returned `media://`
+ * reference and resolve it through `signJobsMediaUrl` on read) — NOT a
+ * public CDN. Do not persist a publicly dereferenceable URL here.
  */
 
 export type OfferLetterTerms = {
@@ -262,7 +268,11 @@ export async function acknowledgeOfferLetterTyped(
 }
 
 /**
- * Update the persisted signed-PDF URL after Cloudinary upload (J7).
+ * Update the persisted signed-PDF reference after the signed offer letter is
+ * taken into HenryCo custody (J7). DORMANT (no runtime caller). When wired,
+ * `pdfUrl` MUST be a `media://private/jobs-documents/<key>` reference produced
+ * by the private media store (apps/jobs/lib/jobs/media.ts) and resolved via
+ * `signJobsMediaUrl` on read — never a public CDN URL.
  */
 export async function attachSignedPdfUrl(
   offerLetterId: string,
