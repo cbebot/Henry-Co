@@ -140,12 +140,51 @@ end $$;
 -- awareness (.codex-temp/sec-harden-03/report.md); the user-bound instructor row is
 -- the SEC-HARDEN-02 flagged row and is intentionally left untouched.
 do $$
+declare
+  has_updated_at_trigger boolean;
 begin
-  if to_regclass('public.learn_role_memberships') is not null then
-    update public.learn_role_memberships
-      set normalized_email = 'academy@henryonyx.com'
-      where id = '00000000-0000-4000-8000-000000001601'
-        and normalized_email = 'academy@henrycogroup.com';
+  if to_regclass('public.learn_role_memberships') is null then
+    return;
+  end if;
+  -- Idempotent: act only while the stale row exists (no-op once reconciled).
+  if not exists (
+    select 1 from public.learn_role_memberships
+    where id = '00000000-0000-4000-8000-000000001601'
+      and normalized_email = 'academy@henrycogroup.com'
+  ) then
+    return;
+  end if;
+  -- ⚠️ PRE-EXISTING PROD BUG worked around here (reported for the learn team): the
+  -- BEFORE UPDATE trigger learn_role_memberships_updated_at runs learn_set_updated_at(),
+  -- which assigns NEW.updated_at — but public.learn_role_memberships has NO updated_at
+  -- column, so EVERY update to this table currently raises
+  -- `record "new" has no field "updated_at"` (re-seeding learn memberships is broken
+  -- too). Root-cause fix is the learn team's call (add the column, or scope the trigger
+  -- off this table) and is out of scope for this RLS pass. Suspend just that trigger for
+  -- this single brand-reconciliation update, then restore it. Both ALTERs are
+  -- transactional (a rollback restores the trigger); guarded by trigger existence so it
+  -- is a plain update where the trigger is absent (the CI fixture chain). postgres is
+  -- not a Supabase superuser, so session_replication_role is unavailable — DISABLE
+  -- TRIGGER (table-owner privilege) is the portable mechanism.
+  select exists (
+    select 1 from pg_trigger t
+    join pg_class c on c.oid = t.tgrelid
+    join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname = 'public' and c.relname = 'learn_role_memberships'
+      and t.tgname = 'learn_role_memberships_updated_at'
+  ) into has_updated_at_trigger;
+
+  if has_updated_at_trigger then
+    execute 'alter table public.learn_role_memberships disable trigger learn_role_memberships_updated_at';
+  end if;
+
+  update public.learn_role_memberships
+    set normalized_email = 'academy@henryonyx.com'
+    where id = '00000000-0000-4000-8000-000000001601'
+      and normalized_email = 'academy@henrycogroup.com';
+
+  if has_updated_at_trigger then
+    execute 'alter table public.learn_role_memberships enable trigger learn_role_memberships_updated_at';
   end if;
 end $$;
 
