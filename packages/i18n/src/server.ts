@@ -43,6 +43,7 @@ export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
 export { getCarePricingCopy, type CarePricingCopy } from "./care-pricing-copy";
 export { getCareServicesCopy, type CareServicesCopy } from "./care-services-copy";
+export { getServicesCopy, type ServicesCopy } from "./services-copy";
 export { getCareAboutCopy, type CareAboutCopy } from "./care-about-copy";
 export { getCareContactCopy, type CareContactCopy } from "./care-contact-copy";
 export { getLearnTrustCopy, type LearnTrustCopy } from "./learn-trust-copy";

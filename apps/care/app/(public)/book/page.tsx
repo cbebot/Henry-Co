@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { getServicesCopy, resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import {
   ArrowRight,
   CalendarCheck2,
@@ -15,7 +15,9 @@ import {
 
 import BookingSuccessNotice from "@/components/care/BookingSuccessNotice";
 import BookPickupForm from "@/components/care/BookPickupForm";
-import { getCareBookingCatalog, getCarePricing, getCareSettings } from "@/lib/care-data";
+import { getCareBookingCatalog, getCarePricing, getCareSettings, getServicesCatalog } from "@/lib/care-data";
+import { findServiceBySlugAnyVertical } from "@/lib/services-catalog";
+import { emitServiceBookingStarted } from "@/lib/services-telemetry";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -82,21 +84,47 @@ export default async function BookPage({
     error?: string;
     success?: string;
     tracking?: string;
+    service?: string;
   }>;
 }) {
   const params = (await searchParams) ?? {};
   const ok = String(params.ok || params.success || "").trim();
   const error = String(params.error || "").trim();
   const tracking = String(params.tracking || "").trim();
+  const serviceSlug = String(params.service || "").trim();
 
-  const [pricingItems, catalog, settings, bookingIdentity] = await Promise.all([
+  const [pricingItems, catalog, settings, bookingIdentity, servicesCatalog] = await Promise.all([
     getCarePricing(),
     getCareBookingCatalog(),
     getCareSettings(),
     getBookingIdentity(),
+    getServicesCatalog(),
   ]);
   const locale = await getCarePublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // V3-49 — a catalogue handoff (/book?service=<slug>): surface a calm context
+  // note and record the booking-started event. No booking logic is added here —
+  // slot/provider preselection is V3-51's engine; this only carries the intent.
+  const handoffService = serviceSlug
+    ? findServiceBySlugAnyVertical(servicesCatalog, serviceSlug)
+    : null;
+  if (handoffService) {
+    emitServiceBookingStarted({
+      verticalSlug: handoffService.vertical_slug,
+      serviceSlug: handoffService.slug,
+    });
+  }
+  const servicesCopy = getServicesCopy(locale);
+  const handoffServiceName = handoffService
+    ? await resolveLocalizedDynamicField({
+        record: handoffService as unknown as Record<string, unknown>,
+        field: "name",
+        locale,
+        fallback: handoffService.name,
+        machineTranslate: locale !== "en",
+      })
+    : null;
 
   const captureItems = [
     {
@@ -292,6 +320,17 @@ export default async function BookPage({
                 "Choose the service, add the right details, review the current estimate, and send one clear request."
               )}
             </p>
+
+            {handoffServiceName ? (
+              <div className="mt-5 rounded-2xl border border-[color:var(--accent)]/30 bg-[color:var(--home-surface-04)] px-4 py-3">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
+                  {servicesCopy.book.continuingFrom}
+                </p>
+                <p className="mt-1 text-sm leading-6 text-[color:var(--home-ink-70)]">
+                  {servicesCopy.book.continuingService.replace("{service}", handoffServiceName)}
+                </p>
+              </div>
+            ) : null}
 
             <div className="mt-6 grid gap-4">
               {ok ? <MessageCard kind="success" text={ok} /> : null}

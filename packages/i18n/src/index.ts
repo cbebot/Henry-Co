@@ -26,6 +26,7 @@ export * from "./jobs-copy";
 export * from "./care-copy";
 export * from "./care-pricing-copy";
 export * from "./care-services-copy";
+export * from "./services-copy";
 export * from "./care-about-copy";
 export * from "./care-contact-copy";
 export * from "./learn-trust-copy";

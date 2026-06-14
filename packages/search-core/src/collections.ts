@@ -153,6 +153,17 @@ export const COLLECTIONS: CollectionDefinition[] = [
     division: "care",
     default_visibility: ["public"],
   }),
+  // V3-49 — the vertical-agnostic services catalog (catalog_services). Mirrors
+  // hc_marketplace_products' shape with a `vertical` facet for the 11 lines.
+  defineCollection({
+    name: "hc_services",
+    division: "care",
+    default_visibility: ["public"],
+    extraFields: [
+      { name: "vertical", type: "string", facet: true, optional: true },
+      { name: "provider_supplied", type: "bool", facet: true, optional: true },
+    ],
+  }),
   defineCollection({
     name: "hc_logistics_shipments",
     division: "logistics",

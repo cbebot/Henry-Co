@@ -1,89 +1,94 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, Building2, Home, Package2, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BadgeCheck,
+  Briefcase,
+  Building2,
+  Home,
+  ListChecks,
+  PartyPopper,
+  Shirt,
+  Sparkles,
+  Truck,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+import { WashingMachine } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getCareServicesCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getServicesCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getCarePublicLocale } from "@/lib/locale-server";
-import { getCareBookingCatalog } from "@/lib/care-data";
+import { getServicesCatalog } from "@/lib/care-data";
+import { groupServicesByVertical } from "@/lib/services-catalog";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import { emitServicesCatalogViewed } from "@/lib/services-telemetry";
 
 export const revalidate = 60;
 
 const care = getDivisionConfig("care");
 
+const VERTICAL_ICONS: Record<string, LucideIcon> = {
+  Shirt,
+  WashingMachine,
+  Home,
+  Building2,
+  Sparkles,
+  Wrench,
+  ListChecks,
+  Truck,
+  PartyPopper,
+  Briefcase,
+  BadgeCheck,
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getCarePublicLocale();
-  const copy = getCareServicesCopy(locale);
+  const copy = getServicesCopy(locale);
   return {
-    title: copy.metadata.titleTemplate.replace("{division}", care.name),
-    description: copy.metadata.description,
+    title: copy.directory.titleTemplate.replace("{division}", care.name),
+    description: copy.directory.description,
+    alternates: { canonical: "/services" },
   };
 }
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
+function serviceCountLabel(count: number, copy: ReturnType<typeof getServicesCopy>) {
+  return count === 1
+    ? copy.directory.serviceCountOne
+    : copy.directory.serviceCountOther.replace("{count}", String(count));
 }
 
 export default async function ServicesPage() {
   const locale = await getCarePublicLocale();
-  const copy = getCareServicesCopy(locale);
-  const catalog = await getCareBookingCatalog();
-  const homePackages = catalog.packages.filter((item) => item.category_key === "home");
-  const officePackages = catalog.packages.filter((item) => item.category_key === "office");
+  const copy = getServicesCopy(locale);
+  const catalog = await getServicesCatalog();
+  const groups = groupServicesByVertical(catalog);
 
-  // PASS — localize Supabase-driven package names rendered in lists.
-  // Long-form `summary` text is TODO'd because list views localize titles only.
-  const homePackagesLocalized = await Promise.all(
-    homePackages.map(async (item) => ({
-      ...item,
+  // Localize Supabase-driven vertical names/summaries (Pattern B runtime fallback).
+  const localizedGroups = await Promise.all(
+    groups.map(async (group) => ({
+      slug: group.vertical.slug,
+      icon: group.vertical.icon,
+      count: group.services.length,
       name: await resolveLocalizedDynamicField({
-        record: item as unknown as Record<string, unknown>,
+        record: group.vertical as unknown as Record<string, unknown>,
         field: "name",
         locale,
-        fallback: item.name,
+        fallback: group.vertical.name,
         machineTranslate: locale !== "en",
       }),
-      // TODO(list-row): localize package `summary` in detail surfaces.
-    })),
-  );
-  const officePackagesLocalized = await Promise.all(
-    officePackages.map(async (item) => ({
-      ...item,
-      name: await resolveLocalizedDynamicField({
-        record: item as unknown as Record<string, unknown>,
-        field: "name",
+      summary: await resolveLocalizedDynamicField({
+        record: group.vertical as unknown as Record<string, unknown>,
+        field: "summary",
         locale,
-        fallback: item.name,
+        fallback: group.vertical.summary,
         machineTranslate: locale !== "en",
       }),
-      // TODO(list-row): localize package `summary` in detail surfaces.
     })),
   );
 
-  const lanes = [
-    {
-      icon: Package2,
-      title: copy.threeLanes.garmentCare.title,
-      body: copy.threeLanes.garmentCare.body,
-    },
-    {
-      icon: Home,
-      title: copy.threeLanes.homeCleaning.title,
-      body: copy.threeLanes.homeCleaning.body,
-    },
-    {
-      icon: Building2,
-      title: copy.threeLanes.officeCleaning.title,
-      body: copy.threeLanes.officeCleaning.body,
-    },
-  ];
-
-  const flowSteps = [
-    { title: copy.flow.scope.title, body: copy.flow.scope.body },
-    { title: copy.flow.execution.title, body: copy.flow.execution.body },
-    { title: copy.flow.completion.title, body: copy.flow.completion.body },
-  ];
+  emitServicesCatalogViewed({ surface: "care_directory", verticalCount: localizedGroups.length });
 
   return (
     <main
@@ -97,166 +102,84 @@ export default async function ServicesPage() {
         } as CSSProperties
       }
     >
-      {/* Editorial hero — compressed so the three-lane service grid below
-       * is visible above the fold. CHROME-01A audit caught the previous
-       * variant taking the full first viewport, hiding the lanes. */}
+      {/* Editorial hero — compressed so the directory is visible above the fold. */}
       <section className="mx-auto max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="rounded-[2.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] px-6 py-6 sm:px-8 sm:py-7 lg:px-10 lg:py-8">
           <div className="max-w-3xl">
             <div className="care-chip inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-70)]">
               <Sparkles className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-              {copy.hero.eyebrow}
+              {copy.directory.eyebrow}
             </div>
             <h1 className="mt-3 max-w-3xl text-balance text-[1.7rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2rem] md:text-[2.3rem]">
-              {copy.hero.title}
+              {copy.directory.title}
             </h1>
-            {/* READING-02: hero body in the editorial serif reading face. */}
             <p className="hc-font-reading mt-3 max-w-2xl text-pretty text-sm leading-[1.65] text-[color:var(--home-ink-70)] sm:text-base">
-              {copy.hero.body}
+              {copy.directory.body}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Three lanes — editorial 3-col with hairline dividers, no panels */}
-      <section className="mx-auto mt-10 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+      {/* Vertical directory — a full-width typographic index, not a card stack. */}
+      <section className="mx-auto mt-12 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="flex items-baseline gap-4">
-          <p className="care-kicker">{copy.threeLanes.eyebrow}</p>
+          <p className="care-kicker">{copy.directory.linesEyebrow}</p>
           <span className="h-px flex-1 bg-[color:var(--home-line)]" />
         </div>
-        <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[color:var(--home-line)]">
-          {lanes.map((item, i) => {
-            const Icon = item.icon;
+        <ul className="mt-8 border-t border-[color:var(--home-line)] [&:hover>li:not(:hover)]:opacity-60 [&:focus-within>li:not(:focus-within)]:opacity-60">
+          {localizedGroups.map((group) => {
+            const Icon = VERTICAL_ICONS[group.icon] ?? Sparkles;
             return (
-              <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
-                <h3 className="mt-4 text-[1.25rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-[color:var(--home-ink-70)]">
-                  {item.body}
-                </p>
+              <li key={group.slug} className="transition-opacity duration-300">
+                <Link
+                  href={`/services/${group.slug}`}
+                  className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-5 border-b border-[color:var(--home-line)] py-7 transition-colors hover:bg-[color:var(--home-surface-04)]"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <h2 className="text-[1.25rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
+                      {group.name}
+                    </h2>
+                    <p className="mt-1 max-w-2xl truncate text-sm leading-7 text-[color:var(--home-ink-70)]">
+                      {group.summary}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="hidden text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)] sm:inline">
+                      {serviceCountLabel(group.count, copy)}
+                    </span>
+                    <ArrowUpRight className="h-5 w-5 text-[color:var(--home-ink-50)] transition-colors group-hover:text-[color:var(--home-accent-text)]" />
+                  </div>
+                </Link>
               </li>
             );
           })}
         </ul>
       </section>
 
-      {/* Package collections — 2 column editorial split */}
-      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-12 xl:grid-cols-2">
-          <PackageCollection
-            collectionEyebrow={copy.packages.collectionEyebrow}
-            title={copy.packages.homeHeading}
-            staffUnit={copy.packages.staffUnit}
-            variant="home"
-            items={homePackagesLocalized}
-          />
-          <PackageCollection
-            collectionEyebrow={copy.packages.collectionEyebrow}
-            title={copy.packages.officeHeading}
-            staffUnit={copy.packages.staffUnit}
-            variant="office"
-            items={officePackagesLocalized}
-          />
-        </div>
-      </section>
-
-      {/* Three steps — horizontal numbered timeline */}
-      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="flex items-baseline gap-4">
-          <p className="care-kicker">{copy.flow.eyebrow}</p>
-          <span className="h-px flex-1 bg-[color:var(--home-line)]" />
-        </div>
-        <ol className="mt-8 grid gap-8 md:grid-cols-3">
-          {flowSteps.map((step, i) => (
-            <li
-              key={step.title}
-              className={`border-t border-[color:var(--home-line)] pt-6 ${
-                i > 0 ? "md:border-l md:border-t-0 md:pl-6 md:pt-0" : ""
-              }`}
-            >
-              <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
-                {copy.flow.stepLabel} {String(i + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-3 text-[1.05rem] font-semibold leading-snug tracking-tight text-[color:var(--home-ink)]">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">{step.body}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* Closing band — theme-aware raised surface (flips light/dark) */}
+      {/* Closing band — theme-aware raised surface (flips light/dark). */}
       <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="rounded-[2.5rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] px-8 py-10 sm:px-10 lg:flex lg:items-center lg:justify-between">
           <div className="max-w-2xl">
-            <p className="care-kicker">{copy.closing.eyebrow}</p>
-            <h2 className="mt-4 care-section-title text-[color:var(--home-ink)]">{copy.closing.title}</h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">{copy.closing.body}</p>
+            <p className="care-kicker">{copy.directory.closingEyebrow}</p>
+            <h2 className="mt-4 care-section-title text-[color:var(--home-ink)]">
+              {copy.directory.closingTitle}
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
+              {copy.directory.closingBody}
+            </p>
           </div>
           <Link
-            href="/pricing"
+            href="/book"
             className="care-button-primary mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold lg:mt-0"
           >
-            {copy.closing.cta}
+            {copy.directory.closingCta}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
     </main>
-  );
-}
-
-function PackageCollection({
-  collectionEyebrow,
-  title,
-  staffUnit,
-  variant,
-  items,
-}: {
-  collectionEyebrow: string;
-  title: string;
-  staffUnit: string;
-  variant: "home" | "office";
-  items: Array<{
-    id: string;
-    name: string;
-    summary: string;
-    base_price: number;
-    staff_count: number;
-    default_frequency: string;
-  }>;
-}) {
-  return (
-    <div>
-      <p className="care-kicker">{collectionEyebrow}</p>
-      <h2 className="mt-3 care-section-title text-[color:var(--home-ink)]">{title}</h2>
-      <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
-        {items.map((item) => (
-          <li key={item.id} className="grid items-baseline gap-5 py-5 sm:grid-cols-[1fr,auto]">
-            <div className="min-w-0">
-              <h3 className="text-[1.1rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
-                {item.name}
-              </h3>
-              <p className="mt-1.5 max-w-2xl text-sm leading-7 text-[color:var(--home-ink-70)]">
-                {item.summary}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-[1.45rem] font-semibold leading-tight tracking-tight text-[color:var(--home-accent-text)]">
-                {formatMoney(item.base_price)}
-              </p>
-              <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)]">
-                {variant === "office"
-                  ? `${item.staff_count} ${staffUnit}`
-                  : item.default_frequency.replaceAll("_", " ")}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }

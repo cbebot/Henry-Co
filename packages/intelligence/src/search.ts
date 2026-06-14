@@ -61,6 +61,7 @@ export type CrossDivisionSearchType =
   | "studio_service"
   | "studio_project"
   | "studio_help"
+  | "care_service"
   | "account_workflow"
   | "staff_queue"
   | "staff_item";

@@ -100,6 +100,12 @@ export function scoreIndexedHit(input: {
   const promo = doc.ranking_signals?.promotion;
   if (promo) score += promo * 0.2;
 
+  // V3-49 — popularity layer. Lets catalog entities (e.g. hc_services, where
+  // featured/most-booked services carry a popularity signal) surface higher.
+  // Applies to any document that sets the signal; 0..1 → up to +0.2.
+  const popularity = doc.ranking_signals?.popularity;
+  if (popularity) score += popularity * 0.2;
+
   return score;
 }
 

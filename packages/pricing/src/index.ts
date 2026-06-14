@@ -27,6 +27,15 @@ export {
   type VatRatePolicy,
 } from './vat';
 
+// V3-49 — services-catalog pricing model (display hint validator, not a quote engine).
+export {
+  normalizeServicePricingModel,
+  describeServicePrice,
+  type ServicePricingKind,
+  type ServicePricingModel,
+  type ServicePriceDescription,
+} from './service-catalog';
+
 export type PricingBreakdownLine = {
   code:
     | "items_subtotal"
