@@ -201,7 +201,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -310,7 +310,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -647,6 +647,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -672,6 +675,9 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.19.15
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.15.6
       '@types/react':
         specifier: ^19.0.10
         version: 19.2.14
@@ -684,9 +690,6 @@ importers:
       eslint-config-next:
         specifier: 16.1.6
         version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
-      pg:
-        specifier: ^8.20.0
-        version: 8.20.0
       tailwindcss:
         specifier: ^4
         version: 4.2.1

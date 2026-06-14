@@ -321,6 +321,17 @@ body {
   box-shadow: var(--acct-shadow);
 }
 
+/* MetricCard chrome (the component wraps its content in .owner-metric). This was
+   only defined in the account app, so hub owner MetricCards rendered chrome-less;
+   defining it here gives every owner metric tile the same card surface. */
+.owner-metric {
+  padding: 1.25rem 1.5rem;
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+  box-shadow: var(--acct-shadow);
+}
+
 .acct-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
@@ -433,7 +444,8 @@ body {
   color-scheme: dark;
 }
 
-.owner-command-root .acct-card {
+.owner-command-root .acct-card,
+.owner-command-root .owner-metric {
   box-shadow: var(--acct-shadow);
   border-color: var(--acct-line);
   background: linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, var(--acct-bg-elevated) 40%);
