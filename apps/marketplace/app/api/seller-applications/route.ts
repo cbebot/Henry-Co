@@ -56,6 +56,10 @@ function normalizeDocuments(
     if (!value || typeof value !== "object" || Array.isArray(value)) return accumulator;
     const document = value as Partial<MarketplaceSellerDocumentRecord>;
     if (!document.fileUrl || !document.name) return accumulator;
+    // Persist ONLY the canonical `fileUrl` (a private `media://` ref). The
+    // client's display-only `previewUrl` (a short-lived signed URL) is
+    // deliberately dropped here — never write the expiring signed URL back into
+    // documents_json / draft_payload. (V3-MEDIA-SWEEP-01)
     accumulator[key] = {
       kind:
         document.kind === "businessRegistration" ||

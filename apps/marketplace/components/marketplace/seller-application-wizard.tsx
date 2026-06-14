@@ -89,6 +89,7 @@ function normalizeDocuments(
             : "other",
         name: value.split("/").pop() || `${key}.pdf`,
         fileUrl: value,
+        previewUrl: null,
         mimeType: null,
         size: null,
         publicId: null,
@@ -113,6 +114,9 @@ function normalizeDocuments(
             : "other",
       name: document.name,
       fileUrl: document.fileUrl,
+      // Display-only signed URL provided by the server; preserved so the
+      // "Review file" preview link works after hydration.
+      previewUrl: document.previewUrl ?? null,
       mimeType: document.mimeType || null,
       size: typeof document.size === "number" ? document.size : null,
       publicId: document.publicId || null,
@@ -483,15 +487,17 @@ export function SellerApplicationWizard({
                             {document.status.replace(/_/g, " ")}
                             {sizeLabel ? ` · ${sizeLabel}` : ""}
                           </p>
-                          <a
-                            href={document.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
-                          >
-                            <FileCheck2 className="h-4 w-4" />
-                            Review file
-                          </a>
+                          {document.previewUrl ? (
+                            <a
+                              href={document.previewUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
+                            >
+                              <FileCheck2 className="h-4 w-4" />
+                              Review file
+                            </a>
+                          ) : null}
                         </div>
                       ) : (
                         <div className="space-y-2">

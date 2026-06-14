@@ -1,20 +1,50 @@
 import { NextResponse } from "next/server";
+import { buildMediaRef, isMediaRef } from "@henryco/media";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
-import { uploadOwnedAsset } from "@/lib/cloudinary";
+import { ACCOUNT_DOCUMENT_BUCKET, uploadAccountDocument } from "@/lib/account/media";
 import { mirrorCareSupportCustomerReply } from "@/lib/support-sync";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
 import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
 
-const ALLOWED_ATTACHMENT_TYPES = new Set([
+const ALLOWED_ATTACHMENT_TYPES = [
   "image/jpeg",
   "image/jpg",
   "image/png",
   "image/webp",
   "application/pdf",
   "text/plain",
-]);
+];
+
+/**
+ * Canonicalise a submitted attachment value to a backend-neutral
+ * `media://private/...` reference (V3-MEDIA-SWEEP-01).
+ *
+ * The composer's pre-uploaded path submits the short-lived SIGNED preview URL
+ * that /api/support/upload handed back for in-composer rendering. We must NEVER
+ * persist that transient URL — its token expires and it would leak a direct
+ * object link. A signed account-bucket URL has the shape
+ * `…/storage/v1/object/sign/account-documents/<key>?token=…`, so we recover the
+ * exact `media://private/account-documents/<key>` ref from its path. An already
+ * `media://` ref passes through; anything else is left untouched (legacy
+ * absolute URLs from older rows stay backward-compatible).
+ */
+function canonicalizeAttachmentRef(value: string): string {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed || isMediaRef(trimmed)) return trimmed;
+  try {
+    const url = new URL(trimmed);
+    const marker = `/storage/v1/object/sign/${ACCOUNT_DOCUMENT_BUCKET}/`;
+    const idx = url.pathname.indexOf(marker);
+    if (idx === -1) return trimmed;
+    const key = decodeURIComponent(url.pathname.slice(idx + marker.length));
+    if (!key) return trimmed;
+    return buildMediaRef({ visibility: "private", bucket: ACCOUNT_DOCUMENT_BUCKET, key });
+  } catch {
+    return trimmed;
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -90,33 +120,34 @@ export async function POST(request: Request) {
     if (!thread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
 
     const uploadedAttachments: Array<Record<string, unknown>> = [];
-    // Pre-uploaded path (MessageThread engine): trust the attachment
-    // metadata since it came from /api/support/upload, which auth-gated
-    // the uploader and ran the same allowed-type / max-bytes checks.
+    // Pre-uploaded path (MessageThread engine): the file already went through
+    // /api/support/upload, which auth-gated the uploader, ran the allowed-type /
+    // max-bytes checks, and wrote it to the RLS-PRIVATE bucket. It submits the
+    // short-lived SIGNED preview URL; we canonicalise that back to the durable
+    // `media://private/...` ref so a transient token never lands in the column
+    // (V3-MEDIA-SWEEP-01).
     for (const attachment of preUploadedAttachments.slice(0, 4)) {
       uploadedAttachments.push({
         name: attachment.name,
-        url: attachment.url,
+        url: canonicalizeAttachmentRef(attachment.url),
         public_id: null,
         mime_type: attachment.type,
         size: attachment.size,
       });
     }
-    // Multipart path (legacy + create-thread flow): still upload inline.
+    // Multipart path (legacy + create-thread flow): upload inline to the
+    // RLS-PRIVATE document bucket and persist the returned `media://` ref.
     for (const attachment of attachments.slice(0, 4 - uploadedAttachments.length)) {
-      const upload = await uploadOwnedAsset(attachment, user.id, {
-        folder: "support-attachments",
-        resourceType: "auto",
+      const ref = await uploadAccountDocument(`support/${user.id}`, attachment, {
         maxBytes: 10 * 1024 * 1024,
         allowedTypes: ALLOWED_ATTACHMENT_TYPES,
         invalidTypeMessage: "Upload JPG, PNG, WebP, PDF, or TXT attachments only.",
-        publicIdPrefix: "support-attachment",
       });
 
       uploadedAttachments.push({
         name: attachment.name,
-        url: upload.secureUrl,
-        public_id: upload.publicId,
+        url: ref,
+        public_id: null,
         mime_type: attachment.type || "application/octet-stream",
         size: attachment.size,
       });
