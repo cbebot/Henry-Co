@@ -1,5 +1,6 @@
 import "server-only";
 import { Pool } from "pg";
+import { SUPABASE_POOLER_CA } from "./supabase-pooler-ca";
 
 /**
  * Pooled direct-Postgres access to the money RPCs (V3-15-S3).
@@ -8,9 +9,10 @@ import { Pool } from "pg";
  * supabase-js / PostgREST cannot reach them by construction. The routes call them
  * here over the Supabase transaction pooler (server-only `PAYMENTS_DATABASE_URL`).
  *
- * TLS: secure by default (`rejectUnauthorized: true`). The Supabase pooler presents
- * a self-signed chain, so set `PAYMENTS_DB_SSL_CA` to the project CA (public, from
- * Settings → Database → SSL) for verified TLS in production. `PAYMENTS_DB_SSL_INSECURE=true`
+ * TLS: VERIFIED by default. The Supabase pooler presents a self-signed chain
+ * (Supabase Root 2021 CA, not in Node's default trust store), so we verify against
+ * that root, bundled in ./supabase-pooler-ca. `PAYMENTS_DB_SSL_CA` overrides the
+ * bundled root (e.g. after a Supabase CA rotation); `PAYMENTS_DB_SSL_INSECURE=true`
  * is an explicit, deliberate escape hatch (encrypt-only) — never the silent default.
  */
 let pool: Pool | null = null;
@@ -19,7 +21,9 @@ function sslConfig(): { ca?: string; rejectUnauthorized: boolean } {
   const ca = process.env.PAYMENTS_DB_SSL_CA;
   if (ca) return { ca, rejectUnauthorized: true };
   if (process.env.PAYMENTS_DB_SSL_INSECURE === "true") return { rejectUnauthorized: false };
-  return { rejectUnauthorized: true };
+  // Verified-by-default: the Supabase pooler's chain roots at the bundled Supabase
+  // Root 2021 CA, which isn't in Node's default trust store.
+  return { ca: SUPABASE_POOLER_CA, rejectUnauthorized: true };
 }
 
 function getPool(): Pool {
