@@ -232,3 +232,27 @@ jobs:
 
       - name: Assert world-writable data-table lockdown invariant (writes service-role-only; class-drift guarded; authenticated INSERT rejected)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_03_grant_invariant.sql
+
+      # SEC-HARDEN-04: close the SEC-HARDEN-03 deferral remainder + fix the learn
+      # trigger. Part A (profiles anon-insert hole + the broken
+      # learn_role_memberships updated_at trigger) is non-money and applies on a normal
+      # owner go. Part B (studio_payments) is MONEY-INPUT — its amount sizes a real
+      # customer_wallets debit — so its PROD apply is owner-money-gated; CI still proves
+      # the lock is correct and reversible-safe. Seed the remaining pre-fix surface,
+      # apply part A and assert (profiles closed, learn UPDATE succeeds, allowlist now
+      # {studio_payments, audit_logs}), then apply part B and assert (studio_payments
+      # writes service-role-only, scoped SELECT kept, final allowlist {audit_logs}).
+      - name: Seed SEC-HARDEN-04 pre-fix surface (profiles anon hole; broken learn trigger; studio_payments scoped policies)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_04_min.sql
+
+      - name: Apply SEC-HARDEN-04A migration — profiles anon-insert + learn trigger (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260614160000_sec_harden_04_profiles_anon_and_learn_trigger.sql
+
+      - name: Assert SEC-HARDEN-04A invariant (profiles anon-insert closed; learn UPDATE succeeds; allowlist {studio_payments, audit_logs})
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_04_grant_invariant.sql
+
+      - name: Apply SEC-HARDEN-04B migration — studio_payments money-safe lockdown (fresh; owner-money-gated for prod)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260614161000_sec_harden_04_studio_payments_money_safe_lockdown.sql
+
+      - name: Assert SEC-HARDEN-04B studio_payments invariant (writes service-role-only; scoped SELECT kept; final allowlist {audit_logs})
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_04b_studio_payments_invariant.sql
