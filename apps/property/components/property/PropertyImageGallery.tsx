@@ -73,6 +73,17 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
     setOpen(true);
   }
 
+  // Honest empty state — never render a broken <Image src="">.
+  if (all.length === 0) {
+    return (
+      <div className="property-paper flex aspect-[16/10] w-full items-center justify-center rounded-[2.2rem] text-center">
+        <p className="px-6 text-sm font-medium text-[var(--property-ink-soft)]">
+          {t("Photos for this listing are being prepared.")}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Inline gallery surface (the page-level layout). Click anywhere

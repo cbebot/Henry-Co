@@ -1,9 +1,16 @@
 import "server-only";
 
+import { createSupabaseMediaStore, type MediaStore } from "@henryco/media/server";
+
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, normalizePhone, getOptionalEnv } from "@/lib/env";
 import { slugify } from "@/lib/utils";
 import { demoPropertySnapshot } from "@/lib/property/demo";
+import {
+  PROPERTY_DOCUMENT_RULE,
+  PROPERTY_IMAGE_RULE,
+  PROPERTY_PLACEHOLDER_IMAGE,
+} from "@/lib/property/media";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -29,8 +36,6 @@ import type {
 export const PROPERTY_RUNTIME_BUCKET = "property-runtime";
 export const PROPERTY_MEDIA_BUCKET = "property-media";
 export const PROPERTY_DOCUMENT_BUCKET = "property-documents";
-const PROPERTY_PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1600&q=80";
 
 let bucketsEnsured = false;
 let propertySnapshotCache:
@@ -168,78 +173,41 @@ async function removeJsonRecord(folder: string, id: string) {
   invalidatePropertySnapshotCache();
 }
 
-export async function uploadPropertyMedia(listingId: string, file: File) {
-  return uploadToCloudinary(file, {
-    folderSuffix: `media/${slugify(listingId) || "listing"}`,
-    publicIdPrefix: "property-media",
-    resourcePath: cloudinaryResourceForFile(file),
+/**
+ * Listing media + documents flow through @henryco/media (Supabase-first, a
+ * swappable seam). Each upload rides the property service-role client (the
+ * correct factory path under the RLS/grant lockdown) and returns a
+ * backend-neutral `media://` reference persisted in place of a raw URL:
+ *  - PHOTOS  -> the PUBLIC `property-media` bucket (rendered on browse/detail)
+ *  - DOCUMENTS -> the RLS-PRIVATE `property-documents` bucket (signed-URL only,
+ *    never a public CDN)
+ */
+function getPropertyMediaStore(): MediaStore {
+  // Fresh service-role client per call (repo convention: admin clients are not
+  // module-cached), injected so the media layer never reads credentials itself.
+  return createSupabaseMediaStore({ client: createAdminSupabase() });
+}
+
+export async function uploadPropertyMedia(listingId: string, file: File): Promise<string> {
+  await ensurePropertyBuckets();
+  return getPropertyMediaStore().upload({
+    file,
+    visibility: "public",
+    bucket: PROPERTY_MEDIA_BUCKET,
+    pathPrefix: `listings/${slugify(listingId) || "listing"}`,
+    rule: PROPERTY_IMAGE_RULE,
   });
 }
 
-export async function uploadPropertyDocument(entityId: string, file: File) {
-  return uploadToCloudinary(file, {
-    folderSuffix: `documents/${slugify(entityId) || "document"}`,
-    publicIdPrefix: "property-doc",
-    resourcePath: cloudinaryResourceForFile(file),
+export async function uploadPropertyDocument(entityId: string, file: File): Promise<string> {
+  await ensurePropertyBuckets();
+  return getPropertyMediaStore().upload({
+    file,
+    visibility: "private",
+    bucket: PROPERTY_DOCUMENT_BUCKET,
+    pathPrefix: `documents/${slugify(entityId) || "document"}`,
+    rule: PROPERTY_DOCUMENT_RULE,
   });
-}
-
-function cloudinaryResourceForFile(file: File): "image/upload" | "raw/upload" {
-  return String(file.type || "").toLowerCase().startsWith("image/")
-    ? "image/upload"
-    : "raw/upload";
-}
-
-async function uploadToCloudinary(
-  file: File,
-  options: {
-    folderSuffix: string;
-    publicIdPrefix: string;
-    resourcePath: "image/upload" | "raw/upload";
-  }
-): Promise<string> {
-  if (!(file instanceof File) || file.size <= 0) {
-    throw new Error("No file provided.");
-  }
-
-  const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
-  const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
-  const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
-  const baseFolder = String(process.env.CLOUDINARY_FOLDER || "henryco/property").trim();
-
-  if (!cloudName || !apiKey || !apiSecret) {
-    throw new Error("Cloudinary is not configured for this environment.");
-  }
-
-  const folder = [baseFolder, options.folderSuffix].filter(Boolean).join("/");
-  const publicId = `${options.publicIdPrefix}-${Date.now()}-${slugify(file.name || "asset").slice(0, 24)}`;
-  const timestamp = Math.floor(Date.now() / 1000);
-  const signaturePayload = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
-  const { createHash } = await import("crypto");
-  const signature = createHash("sha1").update(signaturePayload).digest("hex");
-
-  const form = new FormData();
-  form.set("file", file, file.name);
-  form.set("api_key", apiKey);
-  form.set("timestamp", String(timestamp));
-  form.set("signature", signature);
-  form.set("folder", folder);
-  form.set("public_id", publicId);
-
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/${options.resourcePath}`,
-    { method: "POST", body: form }
-  );
-
-  const payload = (await response.json().catch(() => null)) as
-    | { secure_url?: string; error?: { message?: string } }
-    | null;
-
-  if (!response.ok || !payload?.secure_url) {
-    throw new Error(payload?.error?.message || "Property upload failed. Please try again.");
-  }
-
-  return payload.secure_url;
 }
 
 // ─── Curated-catalog auto-seed ───────────────────────────────────────────
