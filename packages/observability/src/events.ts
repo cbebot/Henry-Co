@@ -70,6 +70,10 @@ export type HenryEventName =
   | "henry.marketplace.profile_drawer.item_selected"
   // care
   | "henry.care.booking.updated"
+  // V3-49 services catalog (vertical/service slug + division only; no PII)
+  | "henry.services.catalog.viewed"
+  | "henry.services.service.viewed"
+  | "henry.services.booking.started"
   // jobs
   | "henry.jobs.profile.updated"
   | "henry.jobs.role.saved"

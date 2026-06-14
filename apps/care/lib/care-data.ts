@@ -16,6 +16,14 @@ import {
   normalizeCareSettings,
   type CareSettingsRecord,
 } from "./care-settings-shared";
+import {
+  getDefaultServicesCatalog,
+  type CatalogService,
+  type ServiceStatus,
+  type ServiceVertical,
+  type ServicesCatalog,
+} from "./services-catalog";
+import { normalizeServicePricingModel } from "@henryco/pricing";
 import { CARE_ACCENT } from "./care-theme";
 import { applyReviewMedia } from "./care-runtime-overrides";
 import { getOptionalEnv } from "./env";
@@ -393,5 +401,108 @@ async function computeCareBookingCatalog(): Promise<CareBookingCatalog> {
 export const getCareBookingCatalog = unstable_cache(
   computeCareBookingCatalog,
   ["care-home-catalog"],
+  { revalidate: 60, tags: ["care-home"] }
+);
+
+// ---------------------------------------------------------------------------
+// V3-49 — services catalog (service_verticals + catalog_services). Reads the
+// generalised catalog the way getCareBookingCatalog reads the booking catalog:
+// active rows only, falling back to the in-code curated default when the tables
+// are absent/empty (they are not yet applied to prod), so the public surfaces
+// always render the real 11-vertical catalog. Reads use the service-role client
+// (RLS-exempt) like the rest of care-data.
+// ---------------------------------------------------------------------------
+
+function asServiceStatus(value: unknown): ServiceStatus {
+  const status = asText(value, "active");
+  return status === "draft" || status === "retired" ? status : "active";
+}
+
+function normalizeVerticalRow(row: Record<string, unknown>): ServiceVertical {
+  return {
+    id: asText(row.id),
+    slug: asText(row.slug),
+    name: asText(row.name),
+    summary: asText(row.summary),
+    icon: asText(row.icon),
+    division: asText(row.division, "care"),
+    display_order: asNumber(row.display_order, 0),
+    status: asServiceStatus(row.status),
+  };
+}
+
+function normalizeServiceRow(
+  row: Record<string, unknown>,
+  slugByVerticalId: Map<string, string>,
+): CatalogService {
+  return {
+    id: asText(row.id),
+    vertical_slug: slugByVerticalId.get(asText(row.vertical_id)) ?? "",
+    slug: asText(row.slug),
+    name: asText(row.name),
+    summary: asText(row.summary),
+    description: asText(row.description),
+    pricing_model: normalizeServicePricingModel(row.pricing_model),
+    base_price_minor: row.base_price_minor == null ? null : asNumber(row.base_price_minor),
+    currency: asText(row.currency, "NGN"),
+    duration_minutes: row.duration_minutes == null ? null : asNumber(row.duration_minutes),
+    provider_supplied: asBool(row.provider_supplied),
+    source_table: asNullableText(row.source_table),
+    status: asServiceStatus(row.status),
+  };
+}
+
+async function readActiveCatalogTable(table: string, orderBy: string) {
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from(table)
+      .select("*")
+      .eq("status", "active")
+      .order(orderBy, { ascending: true });
+
+    if (error) {
+      return null;
+    }
+
+    return (data ?? []) as Record<string, unknown>[];
+  } catch {
+    return null;
+  }
+}
+
+async function computeServicesCatalog(): Promise<ServicesCatalog> {
+  const fallback = getDefaultServicesCatalog();
+
+  const [verticalRows, serviceRows] = await Promise.all([
+    readActiveCatalogTable("service_verticals", "display_order"),
+    readActiveCatalogTable("catalog_services", "name"),
+  ]);
+
+  // Table absent (not yet applied to prod) or empty → curated in-code default.
+  if (!verticalRows || verticalRows.length === 0) {
+    return fallback;
+  }
+
+  const verticals = verticalRows
+    .map(normalizeVerticalRow)
+    .filter((vertical) => vertical.slug)
+    .sort((a, b) => a.display_order - b.display_order);
+
+  const slugByVerticalId = new Map(verticals.map((vertical) => [vertical.id, vertical.slug]));
+
+  const services = (serviceRows ?? [])
+    .map((row) => normalizeServiceRow(row, slugByVerticalId))
+    .filter((service) => service.slug && service.vertical_slug);
+
+  return { verticals, services };
+}
+
+// Public, non-personalized services catalog (11 verticals + their services) —
+// cached 60s, shared across instances. Owner edits bust it via
+// revalidateTag("care-home").
+export const getServicesCatalog = unstable_cache(
+  computeServicesCatalog,
+  ["care-services-catalog"],
   { revalidate: 60, tags: ["care-home"] }
 );

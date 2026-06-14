@@ -43,6 +43,7 @@ export const searchTypeSchema = z.enum([
   "studio_service",
   "studio_project",
   "studio_help",
+  "care_service",
   "account_workflow",
   "staff_queue",
   "staff_item",
@@ -95,6 +96,11 @@ export const searchDocumentSchema = z.object({
   icon: z.string().max(64).optional(),
   owner_user_id: z.string().uuid().optional(),
   staff_scope: z.string().max(64).optional(),
+  // V3-49 — collection-specific facets preserved through the outbox drain
+  // (hc_services). Optional, so documents from other collections that omit
+  // them validate unchanged.
+  vertical: z.string().max(64).optional(),
+  provider_supplied: z.boolean().optional(),
 });
 
 export const searchInputSchema = z.object({
