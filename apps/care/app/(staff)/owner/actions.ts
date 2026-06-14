@@ -2206,7 +2206,9 @@ export async function createExpenseAction(formData: FormData) {
       amount,
       payment_method,
       receipt_url,
-      receipt_public_id: uploadedReceipt?.publicId || null,
+      // No Cloudinary public_id under @henryco/media — the media:// ref in
+      // receipt_url encodes the storage key. (V3-MEDIA-SWEEP-01)
+      receipt_public_id: null,
       auto_approved: autoApproved,
       error: error?.message || null,
     },
