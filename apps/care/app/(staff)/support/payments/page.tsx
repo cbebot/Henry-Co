@@ -98,6 +98,19 @@ export default async function SupportPaymentsPage({
   const selectedPayment =
     filtered.find((item) => item.requestId === selectedPaymentId) ?? filtered[0] ?? null;
 
+  // Payment-proof receipts now persist a `media://private/...` ref (RLS-private
+  // care-documents bucket). Sign each attachment server-side so the reviewer
+  // sees the actual receipt — a raw private ref would render a broken image and
+  // a dead link. Legacy absolute (Cloudinary) URLs pass through unchanged.
+  const signedAttachments = selectedPayment?.latestSubmission
+    ? await Promise.all(
+        selectedPayment.latestSubmission.attachments.map(async (attachment) => ({
+          ...attachment,
+          url: await signCareMediaUrl(attachment.url),
+        })),
+      )
+    : [];
+
   const submittedCount = actionableQueue.filter(
     (item) => item.verificationStatus === "receipt_submitted"
   ).length;
@@ -384,9 +397,9 @@ export default async function SupportPaymentsPage({
                       </div>
                     ) : null}
 
-                    {selectedPayment.latestSubmission.attachments.length > 0 ? (
+                    {signedAttachments.length > 0 ? (
                       <div className="mt-4 grid gap-3 md:grid-cols-2">
-                        {selectedPayment.latestSubmission.attachments.map((attachment, index) => (
+                        {signedAttachments.map((attachment, index) => (
                           <div
                             key={`${attachment.fileName || attachment.url || index}`}
                             className="overflow-hidden rounded-[1.3rem] border border-black/10 bg-white/80 p-3 dark:border-white/10 dark:bg-white/[0.05]"
