@@ -70,6 +70,11 @@ export async function callPaymentRpc<T = unknown>(
     return { data: (res.rows[0]?.result ?? null) as T, error: null };
   } catch (e) {
     const err = e as { message?: string; code?: string };
+    // Observability: money-RPC connection/exec failures were silently swallowed,
+    // which masked the real cause of unconfirmed payments. Log the pg error (code +
+    // message — no connection string / no secrets) so confirmation failures are
+    // visible in the runtime logs.
+    console.error(`[payments] callPaymentRpc ${fn} failed`, { code: err.code, message: err.message });
     return { data: null, error: { message: err.message ?? "payment rpc failed", code: err.code } };
   }
 }
