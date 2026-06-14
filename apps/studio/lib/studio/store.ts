@@ -222,7 +222,9 @@ export async function uploadStudioFile(
     return {
       id: createId(),
       projectId: entityId,
-      leadId: kind === "reference" ? entityId : null,
+      // `reference` is handled + returned earlier (private @henryco/media path),
+      // so here `kind` is narrowed to "proof" | "deliverable" — never a lead file.
+      leadId: null,
       briefId: null,
       createdAt: new Date().toISOString(),
       kind,
