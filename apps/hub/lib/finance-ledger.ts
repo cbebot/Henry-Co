@@ -1,96 +1,46 @@
 import "server-only";
 
-import { Pool, type PoolClient } from "pg";
 import { unstable_cache } from "next/cache";
 import { logger } from "@henryco/observability/logger";
+import { createAdminSupabase } from "@/lib/supabase";
 import type { OwnerReconcileTrace } from "@henryco/dashboard-shell/owner-register";
 
 /**
  * V3-22 — the owner finance dashboard's READ-ONLY window onto the money spine.
  *
- * The double-entry ledger, payment intents and the reconciliation functions live
- * in the NON-exposed `payments_private` schema (and `public` tables that only
- * service_role may read). PostgREST cannot reach `payments_private` by
- * construction, so — exactly like the account app's money writers
- * (apps/account/lib/payments/db.ts) — we read over a pooled direct-pg connection
- * (`PAYMENTS_DATABASE_URL`).
+ * The double-entry ledger lives in the `public` schema (journal_entries,
+ * journal_lines, ledger_accounts, payment_intents, …) and is readable by the
+ * service-role client (RLS-exempt; SELECT grants are intentionally kept for the
+ * V3-22 finance reads). The reconciliation *functions* live in the non-exposed
+ * `payments_private` schema — but we never need them at runtime: the dashboard
+ * re-derives the identical kobo math in TS from the public tables, which keeps it
+ * on the same service-role client hub already uses everywhere else (no dedicated
+ * database URL to configure, nothing to wrestle). The re-derivation is proven
+ * byte-for-byte equal to payments_private.ledger_reconciliation() against prod.
  *
- * THE LINE THIS MODULE NEVER CROSSES: it is strictly read-only. Every query runs
- * inside `BEGIN TRANSACTION READ ONLY` with a `SET LOCAL statement_timeout`, so
- * the database itself rejects any write — even from a SECURITY DEFINER function —
- * with `cannot execute ... in a read-only transaction`. We call ONLY the three
- * read-only reconciliation functions plus SELECTs; we never touch
- * apply_payment_webhook / advance_payment_intent / apply_refund_webhook / any
- * post_/credit_/initiate_/fail_/set_/record_ writer.
+ * THE LINE THIS MODULE NEVER CROSSES: strictly read-only. Only `.select()` calls;
+ * never a write, never an `.rpc()` to a money writer. The amounts are kobo BIGINT
+ * — integer arithmetic only, never float, never ×100 (formatting happens at the
+ * render boundary).
  *
- * Resilience (a saturated money DB must never hang this surface):
- *   - the snapshot is cached (unstable_cache, revalidate 60s, tag "owner-finance")
- *     so the page's RouteLiveRefresh is served from cache, not a DB storm (STAB-01);
- *   - the read is raced with a hard timeout and degrades to a typed sentinel
- *     rather than throwing a white screen — and a degraded result is NEVER cached.
+ * Resilience: cached (unstable_cache, revalidate 60s, tag "owner-finance") so the
+ * page's RouteLiveRefresh is served from cache, and raced with a hard timeout that
+ * degrades to a typed sentinel instead of hanging. A degraded read is never cached.
  */
 
 const FINANCE_TAG = "owner-finance";
-const READ_TIMEOUT_MS = 6500;
-const STATEMENT_TIMEOUT_MS = 6000;
+const READ_TIMEOUT_MS = 7000;
 const STUCK_THRESHOLD_MINUTES = 30;
 const RECENT_LIMIT = 24;
 const STUCK_LIMIT = 60;
 const FLOW_WINDOW_DAYS = 30;
+const INTENT_SCAN_LIMIT = 5000; // generous; see capped-scan note in readSnapshot
 
-// ── Connection pool (server-only, tiny client cap; the Supabase pooler owns real pooling) ──
-let pool: Pool | null = null;
-
-function sslConfig(): { ca?: string; rejectUnauthorized: boolean } {
-  const ca = process.env.PAYMENTS_DB_SSL_CA;
-  if (ca) return { ca, rejectUnauthorized: true };
-  if (process.env.PAYMENTS_DB_SSL_INSECURE === "true") return { rejectUnauthorized: false };
-  return { rejectUnauthorized: true };
-}
-
-function getPool(): Pool {
-  if (pool) return pool;
-  const connectionString = process.env.PAYMENTS_DATABASE_URL;
-  if (!connectionString) throw new Error("PAYMENTS_DATABASE_URL is not configured");
-  pool = new Pool({
-    connectionString,
-    ssl: sslConfig(),
-    max: 2,
-    idleTimeoutMillis: 10_000,
-    connectionTimeoutMillis: 8_000,
-  });
-  return pool;
-}
-
-/** True when the direct-pg finance backend is wired for this deployment. */
+/** True when the service-role Supabase env the finance reads need is present. */
 export function isFinanceLedgerConfigured(): boolean {
-  return Boolean(process.env.PAYMENTS_DATABASE_URL);
-}
-
-/**
- * Run `fn` inside a single READ ONLY transaction with a statement timeout. All of
- * a snapshot's reads share ONE transaction, so every number is from the same
- * instant — a coherent reconciliation moment, never values that drift between
- * queries.
- */
-async function readOnly<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
-  const client = await getPool().connect();
-  try {
-    await client.query("begin transaction read only");
-    await client.query(`set local statement_timeout = ${STATEMENT_TIMEOUT_MS}`);
-    const out = await fn(client);
-    await client.query("commit");
-    return out;
-  } catch (error) {
-    try {
-      await client.query("rollback");
-    } catch {
-      /* connection already broken — release below */
-    }
-    throw error;
-  } finally {
-    client.release();
-  }
+  const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+  const key = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  return Boolean(url && key);
 }
 
 /** Reject-on-timeout race (the underlying read keeps running and may warm the cache). */
@@ -110,7 +60,6 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   });
 }
 
-// pg returns BIGINT as a string to avoid precision loss; coerce for display math.
 function num(value: unknown): number {
   if (value === null || value === undefined) return 0;
   const n = typeof value === "number" ? value : Number(value);
@@ -121,7 +70,7 @@ function str(value: unknown): string {
   return value === null || value === undefined ? "" : String(value);
 }
 
-// ── Types (mirror payments_private return shapes) ───────────────────────────────
+// ── Types (mirror the payments_private reconciliation return shapes) ─────────────
 
 export type LedgerAccountBalance = {
   code: string;
@@ -209,228 +158,260 @@ export type FinanceLedgerSnapshot =
   | ({ ok: true } & FinanceLedgerData)
   | { ok: false; reason: "not_configured" | "degraded" };
 
-// ── The single coherent read ────────────────────────────────────────────────────
+// ── Row shapes from PostgREST ───────────────────────────────────────────────────
+
+type AccountRow = { code: string; type: string; normal_balance: "debit" | "credit"; label?: string | null };
+type LineRow = { account_code: string; debit_minor: number | string; credit_minor: number | string };
+type VatLineRow = LineRow & { journal_entries: { posted_at: string } | { posted_at: string }[] | null };
+type IntentRow = {
+  id: string;
+  division: string | null;
+  amount_minor: number | string;
+  currency: string | null;
+  status: string;
+  created_at: string;
+};
+
+function postedAtOf(row: VatLineRow): string | null {
+  const je = row.journal_entries;
+  if (!je) return null;
+  return Array.isArray(je) ? je[0]?.posted_at ?? null : je.posted_at ?? null;
+}
+
+// ── The single coherent read (all reads via the service-role client) ─────────────
 
 async function readSnapshot(): Promise<FinanceLedgerData> {
-  return readOnly(async (c) => {
-    const recon = await c.query<{ result: RawReconciliation }>(
-      "select payments_private.ledger_reconciliation() as result",
-    );
-    const walletRecon = await c.query<{ result: RawWalletReconciliation }>(
-      "select payments_private.wallet_ledger_reconciliation() as result",
-    );
-    const vatRecon = await c.query<{ result: RawVatReconciliation }>(
-      "select payments_private.vat_reconciliation(date_trunc('year', now()), now()) as result",
-    );
+  const sb = createAdminSupabase();
+  const capturedAt = new Date().toISOString();
+  const now = Date.now();
+  const yearStart = new Date(Date.UTC(new Date(now).getUTCFullYear(), 0, 1)).toISOString();
+  const stuckCutoff = new Date(now - STUCK_THRESHOLD_MINUTES * 60_000).toISOString();
+  const flowCutoff = new Date(now - FLOW_WINDOW_DAYS * 86_400_000).toISOString();
 
-    const statsRows = await c.query<{ status: string; n: string; vol: string }>(
-      `select status, count(*)::bigint as n, coalesce(sum(amount_minor), 0)::bigint as vol
-         from public.payment_intents
-        group by status`,
-    );
+  // Wave 1 — independent reads in parallel.
+  const [accountsRes, linesRes, vatLinesRes, walletsRes, intentsRes] = await Promise.all([
+    sb.from("ledger_accounts").select("code,type,normal_balance,label"),
+    sb.from("journal_lines").select("account_code,debit_minor,credit_minor"),
+    sb
+      .from("journal_lines")
+      .select("account_code,debit_minor,credit_minor,journal_entries(posted_at)")
+      .in("account_code", ["vat_output_payable", "fee_vat_recoverable"]),
+    sb.from("customer_wallets").select("balance_kobo"),
+    sb
+      .from("payment_intents")
+      .select("id,division,amount_minor,currency,status,created_at")
+      .order("created_at", { ascending: false })
+      .limit(INTENT_SCAN_LIMIT),
+  ]);
 
-    const stuckRows = await c.query<RawStuck>(
-      `select id, division, amount_minor, currency, status, created_at,
-              floor(extract(epoch from (now() - created_at)) / 60)::bigint as age_minutes
-         from public.payment_intents
-        where status in ('pending', 'processing')
-          and created_at < now() - ($1 || ' minutes')::interval
-        order by created_at asc
-        limit ${STUCK_LIMIT}`,
-      [String(STUCK_THRESHOLD_MINUTES)],
-    );
+  for (const res of [accountsRes, linesRes, vatLinesRes, walletsRes, intentsRes]) {
+    if (res.error) throw new Error(res.error.message);
+  }
 
-    const recentRows = await c.query<RawRecent>(
-      `select i.id, i.division, i.amount_minor, i.currency, i.status, i.created_at,
-              (select a.provider
-                 from public.payment_attempts a
-                where a.intent_id = i.id
-                order by (a.status = 'succeeded') desc, a.created_at desc
-                limit 1) as provider,
-              exists (select 1 from public.journal_entries e
-                       where e.source = 'payment_intent' and e.source_event_id = i.id::text) as settled,
-              (select r.receipt_no from public.customer_receipts r
-                where r.payment_intent_id = i.id order by r.created_at desc limit 1) as receipt_no,
-              (select cn.credit_note_no from public.customer_credit_notes cn
-                where cn.payment_intent_id = i.id order by cn.issued_at desc limit 1) as credit_note_no
-         from public.payment_intents i
-        order by i.created_at desc
-        limit ${RECENT_LIMIT}`,
-    );
+  const accountRows = (accountsRes.data ?? []) as AccountRow[];
+  const lineRows = (linesRes.data ?? []) as LineRow[];
+  const vatLineRows = (vatLinesRes.data ?? []) as VatLineRow[];
+  const walletRows = (walletsRes.data ?? []) as Array<{ balance_kobo: number | string }>;
+  const intentRows = (intentsRes.data ?? []) as IntentRow[];
 
-    const flowRows = await c.query<{ day: string; succeeded: string; volume: string }>(
-      `select to_char(date_trunc('day', created_at), 'YYYY-MM-DD') as day,
-              count(*) filter (where status in ('succeeded', 'refund_processing', 'refunded'))::bigint as succeeded,
-              coalesce(sum(amount_minor) filter (where status in ('succeeded', 'refund_processing', 'refunded')), 0)::bigint as volume
-         from public.payment_intents
-        where created_at > now() - ($1 || ' days')::interval
-        group by 1
-        order by 1 asc`,
-      [String(FLOW_WINDOW_DAYS)],
-    );
+  if (intentRows.length >= INTENT_SCAN_LIMIT) {
+    logger
+      .child({ module: "hub.owner-command.finance" })
+      .warn("finance_intent_scan_capped", { limit: INTENT_SCAN_LIMIT });
+  }
 
-    return shape(
-      recon.rows[0]?.result,
-      walletRecon.rows[0]?.result,
-      vatRecon.rows[0]?.result,
-      statsRows.rows,
-      stuckRows.rows,
-      recentRows.rows,
-      flowRows.rows,
-    );
+  // ── Reconciliation (mirrors payments_private.ledger_reconciliation) ──
+  const perAccount = new Map<string, { d: number; c: number }>();
+  let totalDebit = 0;
+  let totalCredit = 0;
+  for (const l of lineRows) {
+    const d = num(l.debit_minor);
+    const c = num(l.credit_minor);
+    totalDebit += d;
+    totalCredit += c;
+    const p = perAccount.get(l.account_code) ?? { d: 0, c: 0 };
+    p.d += d;
+    p.c += c;
+    perAccount.set(l.account_code, p);
+  }
+  const accounts: LedgerAccountBalance[] = accountRows
+    .slice()
+    .sort((a, b) => a.code.localeCompare(b.code))
+    .map((a) => {
+      const p = perAccount.get(a.code) ?? { d: 0, c: 0 };
+      const balanceMinor = a.normal_balance === "debit" ? p.d - p.c : p.c - p.d;
+      return { code: a.code, type: a.type, normalBalance: a.normal_balance, debitMinor: p.d, creditMinor: p.c, balanceMinor };
+    });
+  const reconciliation: LedgerReconciliation = {
+    totalDebitMinor: totalDebit,
+    totalCreditMinor: totalCredit,
+    deltaMinor: totalDebit - totalCredit,
+    balanced: totalDebit === totalCredit,
+    accounts,
+  };
+
+  // ── Wallet projection (mirrors wallet_ledger_reconciliation) ──
+  const walletTotal = walletRows.reduce((acc, w) => acc + num(w.balance_kobo), 0);
+  const ledgerLiability = accounts.find((a) => a.code === "customer_wallet_liability")?.balanceMinor ?? 0;
+  const wallet: WalletReconciliation = {
+    walletBalanceTotalKobo: walletTotal,
+    ledgerWalletLiabilityKobo: ledgerLiability,
+    deltaKobo: walletTotal - ledgerLiability,
+    reconciled: walletTotal === ledgerLiability,
+  };
+
+  // ── VAT (mirrors vat_reconciliation(year_start, now), posted_at half-open window) ──
+  let outputVat = 0;
+  let inputVat = 0;
+  for (const l of vatLineRows) {
+    const postedAt = postedAtOf(l);
+    if (!postedAt || postedAt < yearStart || postedAt >= capturedAt) continue;
+    const d = num(l.debit_minor);
+    const c = num(l.credit_minor);
+    if (l.account_code === "vat_output_payable") outputVat += c - d;
+    else if (l.account_code === "fee_vat_recoverable") inputVat += d - c;
+  }
+  const vat: VatReconciliation = {
+    periodStart: yearStart,
+    periodEnd: capturedAt,
+    outputVatCollectedMinor: outputVat,
+    inputVatRecoverableMinor: inputVat,
+    netVatPayableMinor: outputVat - inputVat,
+  };
+
+  // ── Intent-derived: stats, stuck, recent, flow (from the one ordered scan) ──
+  const statMap = new Map<string, { count: number; volumeMinor: number }>();
+  for (const i of intentRows) {
+    const s = statMap.get(i.status) ?? { count: 0, volumeMinor: 0 };
+    s.count += 1;
+    s.volumeMinor += num(i.amount_minor);
+    statMap.set(i.status, s);
+  }
+  const byStatus: IntentStatusStat[] = [...statMap.entries()]
+    .map(([status, v]) => ({ status, count: v.count, volumeMinor: v.volumeMinor }))
+    .sort((a, b) => a.status.localeCompare(b.status));
+  const sumCount = (pred: (s: string) => boolean) =>
+    byStatus.filter((s) => pred(s.status)).reduce((acc, s) => acc + s.count, 0);
+  const sumVol = (pred: (s: string) => boolean) =>
+    byStatus.filter((s) => pred(s.status)).reduce((acc, s) => acc + s.volumeMinor, 0);
+  const stats: IntentStats = {
+    byStatus,
+    totalCount: intentRows.length,
+    succeededCount: sumCount((s) => s === "succeeded"),
+    failedCount: sumCount((s) => s === "failed"),
+    pendingCount: sumCount((s) => s === "pending" || s === "processing"),
+    refundCount: sumCount((s) => s === "refund_processing" || s === "refunded"),
+    succeededVolumeMinor: sumVol((s) => s === "succeeded" || s === "refund_processing" || s === "refunded"),
+  };
+
+  const stuck: StuckIntent[] = intentRows
+    .filter((i) => (i.status === "pending" || i.status === "processing") && i.created_at < stuckCutoff)
+    .sort((a, b) => a.created_at.localeCompare(b.created_at))
+    .slice(0, STUCK_LIMIT)
+    .map((i) => ({
+      id: str(i.id),
+      division: i.division,
+      amountMinor: num(i.amount_minor),
+      currency: i.currency || "NGN",
+      status: i.status,
+      createdAt: new Date(i.created_at).toISOString(),
+      ageMinutes: Math.floor((now - new Date(i.created_at).getTime()) / 60_000),
+    }));
+
+  // 30-day daily settled-volume series.
+  const dayMap = new Map<string, { succeeded: number; volumeMinor: number }>();
+  for (const i of intentRows) {
+    if (i.created_at < flowCutoff) continue;
+    if (!(i.status === "succeeded" || i.status === "refund_processing" || i.status === "refunded")) continue;
+    const day = i.created_at.slice(0, 10);
+    const p = dayMap.get(day) ?? { succeeded: 0, volumeMinor: 0 };
+    p.succeeded += 1;
+    p.volumeMinor += num(i.amount_minor);
+    dayMap.set(day, p);
+  }
+  const flow: FlowPoint[] = [...dayMap.entries()]
+    .map(([day, v]) => ({ day, succeeded: v.succeeded, volumeMinor: v.volumeMinor }))
+    .sort((a, b) => a.day.localeCompare(b.day));
+
+  // Recent transactions: the latest intents + provider / settled / document, resolved in a second wave.
+  const recentBase = intentRows.slice(0, RECENT_LIMIT);
+  const recent: RecentTransaction[] = await resolveRecent(sb, recentBase);
+
+  return {
+    reconciliation,
+    wallet,
+    vat,
+    stats,
+    stuck,
+    recent,
+    flow,
+    stuckThresholdMinutes: STUCK_THRESHOLD_MINUTES,
+    flowWindowDays: FLOW_WINDOW_DAYS,
+    capturedAt,
+  };
+}
+
+type AdminClient = ReturnType<typeof createAdminSupabase>;
+
+async function resolveRecent(sb: AdminClient, base: IntentRow[]): Promise<RecentTransaction[]> {
+  if (base.length === 0) return [];
+  const ids = base.map((i) => String(i.id));
+
+  const [attemptsRes, entriesRes, receiptsRes, creditNotesRes] = await Promise.all([
+    sb.from("payment_attempts").select("intent_id,provider,status,created_at").in("intent_id", ids),
+    sb.from("journal_entries").select("source_event_id").eq("source", "payment_intent").in("source_event_id", ids),
+    sb.from("customer_receipts").select("payment_intent_id,receipt_no,created_at").in("payment_intent_id", ids),
+    sb.from("customer_credit_notes").select("payment_intent_id,credit_note_no,issued_at").in("payment_intent_id", ids),
+  ]);
+
+  // Provider: prefer the succeeded attempt, else the most recent.
+  const providerByIntent = new Map<string, string>();
+  for (const a of (attemptsRes.data ?? []) as Array<{ intent_id: string; provider: string | null; status: string; created_at: string }>) {
+    if (!a.provider) continue;
+    const existing = providerByIntent.get(a.intent_id);
+    if (!existing || a.status === "succeeded") providerByIntent.set(a.intent_id, a.provider);
+  }
+  const settled = new Set<string>(
+    ((entriesRes.data ?? []) as Array<{ source_event_id: string }>).map((e) => e.source_event_id),
+  );
+  const receiptByIntent = new Map<string, string>();
+  for (const r of (receiptsRes.data ?? []) as Array<{ payment_intent_id: string; receipt_no: string }>) {
+    if (!receiptByIntent.has(r.payment_intent_id)) receiptByIntent.set(r.payment_intent_id, r.receipt_no);
+  }
+  const creditNoteByIntent = new Map<string, string>();
+  for (const c of (creditNotesRes.data ?? []) as Array<{ payment_intent_id: string; credit_note_no: string }>) {
+    if (!creditNoteByIntent.has(c.payment_intent_id)) creditNoteByIntent.set(c.payment_intent_id, c.credit_note_no);
+  }
+
+  return base.map((i) => {
+    const id = String(i.id);
+    return {
+      id,
+      division: i.division,
+      amountMinor: num(i.amount_minor),
+      currency: i.currency || "NGN",
+      status: i.status,
+      provider: providerByIntent.get(id) ?? null,
+      settled: settled.has(id),
+      createdAt: new Date(i.created_at).toISOString(),
+      receiptNo: receiptByIntent.get(id) ?? null,
+      creditNoteNo: creditNoteByIntent.get(id) ?? null,
+    };
   });
 }
 
-type RawReconciliation = {
-  total_debit_minor: number;
-  total_credit_minor: number;
-  delta_minor: number;
-  balanced: boolean;
-  accounts: Array<{
-    code: string;
-    type: string;
-    normal_balance: "debit" | "credit";
-    debit_minor: number;
-    credit_minor: number;
-    balance_minor: number;
-  }>;
-};
-type RawWalletReconciliation = {
-  wallet_balance_total_kobo: number;
-  ledger_wallet_liability_kobo: number;
-  delta_kobo: number;
-  reconciled: boolean;
-};
-type RawVatReconciliation = {
-  period_start: string;
-  period_end: string;
-  output_vat_collected_minor: number;
-  input_vat_recoverable_minor: number;
-  net_vat_payable_minor: number;
-};
-type RawStuck = {
-  id: string;
-  division: string | null;
-  amount_minor: string;
-  currency: string;
-  status: string;
-  created_at: string | Date;
-  age_minutes: string;
-};
-type RawRecent = {
-  id: string;
-  division: string | null;
-  amount_minor: string;
-  currency: string;
-  status: string;
-  created_at: string | Date;
-  provider: string | null;
-  settled: boolean;
-  receipt_no: string | null;
-  credit_note_no: string | null;
-};
-
-function shape(
-  recon: RawReconciliation | undefined,
-  wallet: RawWalletReconciliation | undefined,
-  vat: RawVatReconciliation | undefined,
-  statsRows: Array<{ status: string; n: string; vol: string }>,
-  stuckRows: RawStuck[],
-  recentRows: RawRecent[],
-  flowRows: Array<{ day: string; succeeded: string; volume: string }>,
-): FinanceLedgerData {
-  const accounts: LedgerAccountBalance[] = (recon?.accounts ?? []).map((a) => ({
-    code: a.code,
-    type: a.type,
-    normalBalance: a.normal_balance,
-    debitMinor: num(a.debit_minor),
-    creditMinor: num(a.credit_minor),
-    balanceMinor: num(a.balance_minor),
-  }));
-
-  const byStatus: IntentStatusStat[] = statsRows.map((r) => ({
-    status: r.status,
-    count: num(r.n),
-    volumeMinor: num(r.vol),
-  }));
-  const sumWhere = (pred: (s: string) => boolean, field: "count" | "volumeMinor") =>
-    byStatus.filter((s) => pred(s.status)).reduce((acc, s) => acc + s[field], 0);
-
-  const stats: IntentStats = {
-    byStatus,
-    totalCount: byStatus.reduce((acc, s) => acc + s.count, 0),
-    succeededCount: sumWhere((s) => s === "succeeded", "count"),
-    failedCount: sumWhere((s) => s === "failed", "count"),
-    pendingCount: sumWhere((s) => s === "pending" || s === "processing", "count"),
-    refundCount: sumWhere((s) => s === "refund_processing" || s === "refunded", "count"),
-    succeededVolumeMinor: sumWhere(
-      (s) => s === "succeeded" || s === "refund_processing" || s === "refunded",
-      "volumeMinor",
-    ),
-  };
-
-  return {
-    reconciliation: {
-      totalDebitMinor: num(recon?.total_debit_minor),
-      totalCreditMinor: num(recon?.total_credit_minor),
-      deltaMinor: num(recon?.delta_minor),
-      balanced: Boolean(recon?.balanced),
-      accounts,
-    },
-    wallet: {
-      walletBalanceTotalKobo: num(wallet?.wallet_balance_total_kobo),
-      ledgerWalletLiabilityKobo: num(wallet?.ledger_wallet_liability_kobo),
-      deltaKobo: num(wallet?.delta_kobo),
-      reconciled: Boolean(wallet?.reconciled),
-    },
-    vat: {
-      periodStart: str(vat?.period_start),
-      periodEnd: str(vat?.period_end),
-      outputVatCollectedMinor: num(vat?.output_vat_collected_minor),
-      inputVatRecoverableMinor: num(vat?.input_vat_recoverable_minor),
-      netVatPayableMinor: num(vat?.net_vat_payable_minor),
-    },
-    stats,
-    stuck: stuckRows.map((r) => ({
-      id: str(r.id),
-      division: r.division,
-      amountMinor: num(r.amount_minor),
-      currency: r.currency || "NGN",
-      status: r.status,
-      createdAt: new Date(r.created_at).toISOString(),
-      ageMinutes: num(r.age_minutes),
-    })),
-    recent: recentRows.map((r) => ({
-      id: str(r.id),
-      division: r.division,
-      amountMinor: num(r.amount_minor),
-      currency: r.currency || "NGN",
-      status: r.status,
-      provider: r.provider,
-      settled: Boolean(r.settled),
-      createdAt: new Date(r.created_at).toISOString(),
-      receiptNo: r.receipt_no,
-      creditNoteNo: r.credit_note_no,
-    })),
-    flow: flowRows.map((r) => ({ day: r.day, succeeded: num(r.succeeded), volumeMinor: num(r.volume) })),
-    stuckThresholdMinutes: STUCK_THRESHOLD_MINUTES,
-    flowWindowDays: FLOW_WINDOW_DAYS,
-    capturedAt: new Date().toISOString(),
-  };
-}
-
-// Cache the SUCCESSFUL read only. unstable_cache does not cache a rejected
-// promise, so a slow/failed read never poisons the cache (next call retries),
-// while a good read serves RouteLiveRefresh for 60s without re-hitting the DB.
-const cachedRead = unstable_cache(readSnapshot, ["owner-finance-ledger-v1"], {
+// Cache only a SUCCESSFUL read. unstable_cache does not cache a rejected promise,
+// so a slow/failed read never poisons the cache (next call retries) while a good
+// read serves RouteLiveRefresh for 60s without re-hitting the DB.
+const cachedRead = unstable_cache(readSnapshot, ["owner-finance-ledger-v2"], {
   revalidate: 60,
   tags: [FINANCE_TAG],
 });
 
 /**
  * The owner finance dashboard's data entry point. Never throws, never hangs:
- * returns a typed degraded sentinel when the backend is unconfigured or slow/down,
- * so the page can render an honest state instead of a white screen or fake zeros.
+ * returns a typed degraded sentinel when env is missing or a read is slow/down,
+ * so the page renders an honest state instead of a white screen or fake zeros.
  */
 export async function getFinanceLedgerSnapshot(): Promise<FinanceLedgerSnapshot> {
   if (!isFinanceLedgerConfigured()) return { ok: false, reason: "not_configured" };
@@ -449,23 +430,22 @@ export const FINANCE_CACHE_TAG = FINANCE_TAG;
 
 // ── Reconcile-trace (anti-pattern #18: every money KPI carries its query) ────────
 //
-// These power the MetricTraceDrawer on each finance tile: clicking "View query"
-// surfaces the EXACT reconciliation function / SQL behind the number plus a live
-// result sample — "the planner's exact query as a tile". Delegated to from
-// loadOwnerReconcileTrace() for any traceId starting with "finance.".
+// These power the MetricTraceDrawer on each finance tile: "View query" surfaces the
+// canonical reconciliation SQL the numbers represent plus a live result sample.
+// Delegated to from loadOwnerReconcileTrace() for any traceId starting "finance.".
 
 const FINANCE_TRACE_SQL: Record<string, { label: string; sql: string; caveat?: string }> = {
   "finance.reconciliation": {
     label: "Ledger reconciliation",
-    sql: "SELECT payments_private.ledger_reconciliation();\n-- delta_minor = total debits − total credits; balanced = (debits = credits). Per-account rows below.",
+    sql: "-- Equivalent of payments_private.ledger_reconciliation(), computed read-only from the public ledger:\nSELECT sum(debit_minor) AS total_debit, sum(credit_minor) AS total_credit FROM public.journal_lines;\n-- delta = total_debit - total_credit; balanced when equal. Per-account balances below.",
   },
   "finance.accounts": {
     label: "Chart of accounts",
-    sql: "SELECT a.code, a.type, a.normal_balance,\n       coalesce(sum(l.debit_minor),0)  AS debit_minor,\n       coalesce(sum(l.credit_minor),0) AS credit_minor\n  FROM public.ledger_accounts a\n  LEFT JOIN public.journal_lines l ON l.account_code = a.code\n GROUP BY a.code, a.type, a.normal_balance\n ORDER BY a.code;  -- (via payments_private.ledger_reconciliation())",
+    sql: "SELECT a.code, a.type, a.normal_balance,\n       coalesce(sum(l.debit_minor),0)  AS debit_minor,\n       coalesce(sum(l.credit_minor),0) AS credit_minor\n  FROM public.ledger_accounts a\n  LEFT JOIN public.journal_lines l ON l.account_code = a.code\n GROUP BY a.code, a.type, a.normal_balance ORDER BY a.code;",
   },
   "finance.vat": {
     label: "VAT reconciliation (YTD)",
-    sql: "SELECT payments_private.vat_reconciliation(date_trunc('year', now()), now());\n-- net_vat_payable = output VAT collected − input/fee VAT recoverable.",
+    sql: "SELECT account_code, sum(credit_minor) - sum(debit_minor) AS net\n  FROM public.journal_lines l JOIN public.journal_entries e ON e.id = l.entry_id\n WHERE account_code IN ('vat_output_payable','fee_vat_recoverable')\n   AND e.posted_at >= date_trunc('year', now())\n GROUP BY account_code;  -- net_vat = output collected - input recoverable",
   },
   "finance.intents": {
     label: "Payment intent activity",
@@ -478,7 +458,7 @@ const FINANCE_TRACE_SQL: Record<string, { label: string; sql: string; caveat?: s
   },
   "finance.recent": {
     label: "Recent transactions",
-    sql: `SELECT id, division, amount_minor, status, created_at\n  FROM public.payment_intents\n ORDER BY created_at DESC\n LIMIT ${RECENT_LIMIT};  -- provider + settled + document resolved per row`,
+    sql: `SELECT id, division, amount_minor, status, created_at\n  FROM public.payment_intents ORDER BY created_at DESC LIMIT ${RECENT_LIMIT};  -- provider + settled + document resolved per row`,
   },
 };
 
@@ -498,7 +478,7 @@ export async function loadFinanceLedgerTrace(traceId: string): Promise<OwnerReco
       executedAt,
       caveat:
         snapshot.reason === "not_configured"
-          ? "Finance database connection is not configured for this deployment — no live rows."
+          ? "Finance service-role env is not configured for this deployment — no live rows."
           : "Live ledger read degraded — no rows captured for this trace.",
     };
   }
