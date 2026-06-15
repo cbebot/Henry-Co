@@ -18,6 +18,16 @@ export {
   type SettlementAvailabilityStatus,
 } from './currency-model';
 
+// Live FX access (Open Exchange Rates, 30-min cache). SERVER-ONLY — these read
+// server env (`OPENRATE_APP_ID`) and `fetch` rates; never import the resulting
+// symbols into a client bundle. They have no import-time side effects, so the
+// barrel stays client-safe for the currency-model exports above (tree-shaken out
+// of any client importer that doesn't call them).
+export {
+  getExchangeRateSnapshot,
+  convertMinorUnits,
+} from './exchange-rate';
+
 // V3-VAT-01 — VAT math (output VAT on sales, inclusive-split for processor fees).
 export {
   splitVatInclusive,

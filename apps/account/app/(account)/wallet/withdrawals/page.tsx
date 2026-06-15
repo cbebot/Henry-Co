@@ -12,23 +12,20 @@ import {
 } from "@/lib/account-data";
 import { getVerificationState } from "@/lib/verification";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import {
-  HeroCard,
-  DivisionLanding,
-} from "@henryco/dashboard-shell/surfaces";
 
 import "@/components/wallet/styles.css";
 import WalletWithdrawalsClient from "@/components/wallet/WalletWithdrawalsClient";
-import { BackNav } from "@/components/wallet/BackNav";
+import { WalletPageHeader } from "@/components/wallet/WalletPageHeader";
 import { formatKoboMajor } from "@/components/wallet/helpers";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Wallet · Withdrawals — detail flow.
+ * Wallet · Withdrawals — detail flow (Onyx Ledger).
  *
- * ACCOUNT-PREMIUM-01 (session 2, Phase 2F). Compact HeroCard with back link
- * + the available balance as the headline value.
+ * The available balance is the header figure; pending withdrawals stay held
+ * off it. Withdrawals are provider-confirmed truth — finance reviews each
+ * payout before it settles, so we promise review, not a fixed SLA.
  */
 export default async function WalletWithdrawalsPage() {
   const locale = await getAccountAppLocale();
@@ -51,56 +48,51 @@ export default async function WalletWithdrawalsPage() {
   return (
     <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
-      <BackNav href="/wallet" label={t("Back to wallet")} />
-      <DivisionLanding
-        hero={
-          <HeroCard
-            variant="compact"
-            tone={pendingHoldKobo > 0 ? "active" : "calm"}
-            eyebrow={t("Wallet · withdrawals")}
-            headline={`₦${formatKoboMajor(availableBalanceKobo)}`}
-            blurb={t(
-              "Available balance funds the next withdrawal. Pending withdrawals stay held until finance approves the payout.",
-            )}
-          />
+
+      <WalletPageHeader
+        backHref="/wallet"
+        backLabel={t("Back to wallet")}
+        eyebrow={t("Wallet · Withdrawals")}
+        title={t("Withdraw funds")}
+        blurb={t(
+          "Your available balance funds the next withdrawal. Pending withdrawals stay held until finance approves the payout.",
+        )}
+        figure={{
+          label: t("Available balance"),
+          value: `₦${formatKoboMajor(availableBalanceKobo)}`,
+        }}
+        chip={
+          pendingHoldKobo > 0
+            ? { label: `₦${formatKoboMajor(pendingHoldKobo)} ${t("held")}`, tone: "active" }
+            : undefined
         }
-        sections={[
-          {
-            id: "wal-withdrawals",
-            title: t("Withdraw to bank"),
-            meta: hasMethod
-              ? t("Select a payout method and confirm with your PIN.")
-              : t("Add a verified bank account to receive withdrawals."),
-            content: (
-              <>
-                <WalletWithdrawalsClient
-                  initialMethods={methods as never}
-                  initialRequests={requests as never}
-                  pinConfigured={pinConfigured}
-                  availableBalanceKobo={availableBalanceKobo}
-                  pendingHoldKobo={pendingHoldKobo}
-                  verificationGate={{
-                    status: verification.status,
-                    headline: t(verificationGate.headline),
-                    detail: t(verificationGate.detail),
-                  }}
-                />
-                <p
-                  style={{
-                    margin: "8px 0 0",
-                    fontSize: 12,
-                    color: "var(--acct-muted)",
-                    textAlign: "right",
-                  }}
-                  aria-live="polite"
-                >
-                  ₦{formatKoboMajor(availableBalanceKobo)} {t("available · withdrawals approved within 24h")}
-                </p>
-              </>
-            ),
-          },
-        ]}
       />
+
+      <section className="acct-wal__section">
+        <div className="acct-wal__section-head">
+          <h2 className="acct-wal__section-title acct-display">{t("Withdraw to bank")}</h2>
+          <span className="acct-wal__section-meta">
+            {hasMethod
+              ? t("Select a payout method and confirm with your PIN.")
+              : t("Add a verified bank account to receive withdrawals.")}
+          </span>
+        </div>
+        <WalletWithdrawalsClient
+          initialMethods={methods as never}
+          initialRequests={requests as never}
+          pinConfigured={pinConfigured}
+          availableBalanceKobo={availableBalanceKobo}
+          pendingHoldKobo={pendingHoldKobo}
+          verificationGate={{
+            status: verification.status,
+            headline: t(verificationGate.headline),
+            detail: t(verificationGate.detail),
+          }}
+        />
+        <p className="acct-wal__section-foot" aria-live="polite">
+          ₦{formatKoboMajor(availableBalanceKobo)} {t("available · each payout is reviewed by finance before it settles")}
+        </p>
+      </section>
     </div>
   );
 }
