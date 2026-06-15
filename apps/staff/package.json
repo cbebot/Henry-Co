@@ -18,6 +18,7 @@
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",
+    "@henryco/media": "workspace:^",
     "@henryco/newsletter": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",

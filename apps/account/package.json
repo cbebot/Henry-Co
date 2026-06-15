@@ -35,6 +35,7 @@
     "@henryco/observability": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",
+    "@henryco/media": "workspace:^",
     "@henryco/messaging-thread": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",

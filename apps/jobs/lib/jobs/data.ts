@@ -8,6 +8,7 @@ import {
   type AppLocale,
 } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { signJobsMediaUrl } from "@/lib/jobs/media";
 import { normalizeEmail } from "@/lib/env";
 import { ensureJobsBootstrap } from "@/lib/jobs/seed";
 import { DEFAULT_PIPELINE, JOBS_STAGE_ORDER, getJobsDifferentiators } from "@/lib/jobs/content";
@@ -1010,20 +1011,14 @@ function buildApplication(row: Record<string, unknown>): JobApplication {
 
 async function buildDocument(
   row: Record<string, unknown>,
-  admin = createAdminSupabase()
 ): Promise<CandidateDocument> {
   const item = asObject(row);
   const metadata = asObject(item.metadata);
-  let fileUrl = asString(item.file_url);
-  const storageBucket = asNullableString(metadata.storageBucket);
-  const storagePath = asNullableString(metadata.storagePath || metadata.publicId);
-
-  if (storageBucket && storagePath) {
-    const signed = await admin.storage.from(storageBucket).createSignedUrl(storagePath, 60 * 60);
-    if (!signed.error && signed.data?.signedUrl) {
-      fileUrl = signed.data.signedUrl;
-    }
-  }
+  // `file_url` holds either a `media://private/jobs-documents/<key>` reference
+  // (current) or a legacy absolute Cloudinary URL. Resolve to a short-lived
+  // signed delivery URL before it reaches the client — a raw `media://` ref
+  // can't be dereferenced by the browser.
+  const fileUrl = await signJobsMediaUrl(asString(item.file_url));
 
   return {
     id: asString(item.id),
@@ -1192,7 +1187,7 @@ export async function getCandidateProfileByUserId(
   const profileRow = asObject(profileRes.data);
   const profile = asObject(profileRow.metadata);
   const documents = await Promise.all(
-    (docsRes.data ?? []).map((row) => buildDocument(row as Record<string, unknown>, admin))
+    (docsRes.data ?? []).map((row) => buildDocument(row as Record<string, unknown>))
   );
 
   if (!baseRes.data && !profileRes.data) {
@@ -1258,7 +1253,7 @@ export async function getCandidateDocuments(userId: string) {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  return Promise.all((data ?? []).map((row) => buildDocument(row as Record<string, unknown>, admin)));
+  return Promise.all((data ?? []).map((row) => buildDocument(row as Record<string, unknown>)));
 }
 
 export async function getEmployerProfiles(options?: {

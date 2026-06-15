@@ -14,6 +14,7 @@ import {
   demoHomeData,
 } from "@/lib/marketplace/demo";
 import { ensureMarketplaceBootstrap } from "@/lib/marketplace/seed";
+import { signMarketplaceMediaUrl } from "@/lib/marketplace/media";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import type {
   MarketplaceAddress,
@@ -185,6 +186,52 @@ function normalizeSellerDocuments(input: unknown): Record<string, MarketplaceSel
     },
     {}
   );
+}
+
+/**
+ * Sign every seller document for client display without losing the canonical
+ * persisted reference.
+ *
+ * Seller KYC / business-registration / payout-proof files now live in an
+ * RLS-PRIVATE bucket as `media://private/...` refs (V3-MEDIA-SWEEP-01). A
+ * private ref is NOT renderable in a browser (resolveMediaUrl throws on it), so
+ * we attach a short-lived SIGNED `previewUrl` for the wizard's "Review file"
+ * link while leaving `fileUrl` as the raw ref — that is the value the wizard
+ * round-trips back on draft save, so we must never overwrite it with the
+ * (expiring) signed URL. Legacy absolute URLs sign as a pass-through.
+ */
+async function signSellerDocuments(
+  documents: Record<string, MarketplaceSellerDocumentRecord>
+): Promise<Record<string, MarketplaceSellerDocumentRecord>> {
+  const entries = await Promise.all(
+    Object.entries(documents).map(async ([key, document]) => {
+      const previewUrl = document.fileUrl ? await signMarketplaceMediaUrl(document.fileUrl) : "";
+      return [key, { ...document, previewUrl: previewUrl || null }] as const;
+    })
+  );
+  return Object.fromEntries(entries);
+}
+
+/**
+ * Re-sign the `documents` carried inside a stored `draft_payload`.
+ *
+ * The wizard hydrates from `draftPayload.documents` with priority over
+ * `application.documents`, so the draft copy of each `fileUrl` (a private
+ * `media://` ref) must also be signed for display — otherwise the preview link
+ * resolves an un-renderable private ref. The canonical ref is preserved in
+ * `fileUrl`; only `previewUrl` is added.
+ */
+async function signDraftPayloadDocuments(
+  draftPayload: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const rawDocuments = draftPayload.documents;
+  if (!rawDocuments || typeof rawDocuments !== "object" || Array.isArray(rawDocuments)) {
+    return draftPayload;
+  }
+  return {
+    ...draftPayload,
+    documents: await signSellerDocuments(normalizeSellerDocuments(rawDocuments)),
+  };
 }
 
 function filterValue(value: string) {
@@ -1030,6 +1077,19 @@ export async function getBuyerDashboardData() {
     const wishlistIds = new Set((wishlistRes.data ?? []).map((row: Record<string, unknown>) => String(row.product_id)));
     const followIds = new Set((followsRes.data ?? []).map((row: Record<string, unknown>) => String(row.vendor_id)));
 
+    // Sign sensitive seller documents for client display. Both the canonical
+    // `documents_json` and the wizard-priority `draft_payload.documents` carry
+    // private `media://` refs that the browser cannot render directly, so we
+    // attach a short-lived signed `previewUrl` to each while preserving the ref
+    // in `fileUrl` (the value the wizard round-trips on save). (V3-MEDIA-SWEEP-01)
+    const signedApplicationDocuments = applicationRes.data
+      ? await signSellerDocuments(normalizeSellerDocuments(applicationRes.data.documents_json))
+      : {};
+    const signedDraftPayload =
+      applicationRes.data?.draft_payload && typeof applicationRes.data.draft_payload === "object"
+        ? await signDraftPayloadDocuments(applicationRes.data.draft_payload as Record<string, unknown>)
+        : {};
+
     return {
       viewer,
       addresses,
@@ -1054,11 +1114,8 @@ export async function getBuyerDashboardData() {
             progressStep: String(applicationRes.data.progress_step || "start"),
             submittedAt: String(applicationRes.data.submitted_at || new Date().toISOString()),
             reviewNote: applicationRes.data.review_note ? String(applicationRes.data.review_note) : null,
-            documents: normalizeSellerDocuments(applicationRes.data.documents_json),
-            draftPayload:
-              applicationRes.data.draft_payload && typeof applicationRes.data.draft_payload === "object"
-                ? (applicationRes.data.draft_payload as Record<string, unknown>)
-                : {},
+            documents: signedApplicationDocuments,
+            draftPayload: signedDraftPayload,
             agreementAcceptedAt: applicationRes.data.agreement_accepted_at
               ? String(applicationRes.data.agreement_accepted_at)
               : null,

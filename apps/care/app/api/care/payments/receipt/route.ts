@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { uploadCareReceiptAsset } from "@/lib/cloudinary";
+import { uploadCarePaymentReceipt } from "@/lib/care-media-store";
 import { submitPaymentProof } from "@/lib/payments/verification";
 
 export const runtime = "nodejs";
@@ -59,14 +59,16 @@ export async function POST(request: Request) {
       | null = null;
 
     if (receipt instanceof File && receipt.size > 0) {
-      const uploaded = await uploadCareReceiptAsset(receipt, {
-        folderSuffix: "payment-receipts",
-        publicIdPrefix: trackingCode,
-      });
+      // SENSITIVE: the bank-transfer receipt now lands in the RLS-private
+      // care-documents bucket as a `media://private/...` reference (signed at
+      // read time) instead of a publicly dereferenceable CDN URL. The
+      // attachment record shape and every monetary field below are unchanged —
+      // only the stored `url` is now a media reference rather than a public URL.
+      const ref = await uploadCarePaymentReceipt(receipt, trackingCode);
 
       uploadedAttachment = {
-        url: uploaded.secureUrl,
-        publicId: uploaded.publicId,
+        url: ref,
+        publicId: null,
         fileName: receipt.name || null,
         mimeType: receipt.type || null,
         sizeBytes: receipt.size || null,

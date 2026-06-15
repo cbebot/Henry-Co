@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
+import { signStaffMediaUrl } from "@/lib/staff/media";
 
 function toText(value: unknown) {
   return String(value ?? "").trim();
@@ -68,11 +69,17 @@ export async function getKycQueue(): Promise<KycQueueSummary> {
     ? await admin.from("customer_documents").select("id, file_url").in("id", docIds)
     : { data: [] as Array<Record<string, unknown>> };
 
+  // Resolve each stored document reference to a URL safe to hand to the client.
+  // A `media://private/...` ref (new private-bucket storage) is signed to a
+  // short-lived URL server-side; legacy absolute URLs pass through unchanged.
+  // This closes the public-CDN exposure without touching review/decision logic.
   const docMap = new Map(
-    (docs || []).map((d: Record<string, unknown>) => [
-      toText(d.id),
-      toText(d.file_url),
-    ])
+    await Promise.all(
+      (docs || []).map(async (d: Record<string, unknown>): Promise<[string, string]> => [
+        toText(d.id),
+        await signStaffMediaUrl(toText(d.file_url)),
+      ])
+    )
   );
 
   const approvedToday = reviewedToday.filter((r) => toText(r.status) === "approved").length;

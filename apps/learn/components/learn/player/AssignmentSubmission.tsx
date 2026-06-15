@@ -19,10 +19,20 @@ export type AssignmentSubmissionProps = {
   action: (formData: FormData) => any;
   assignmentId: string;
   courseId?: string | null;
-  /** Existing submission (if any) for read-back. */
+  /**
+   * Existing submission (if any) for read-back.
+   *
+   * NOTE: `fileUrl` is rendered directly as an `<a href>` on the client, so the
+   * SERVER caller that builds this prop MUST first resolve the stored value to a
+   * delivery URL via `signLearnMediaUrl` (from `@/lib/learn/media`). Assignment
+   * files now persist as PRIVATE `media://` refs in `file_url`; a raw ref handed
+   * to the client would be a broken/unauthorized link. Legacy absolute URLs are
+   * passed through unchanged by that same signer.
+   */
   existing?: {
     submissionText: string;
     fileLabel: string | null;
+    /** A signed/absolute delivery URL (already resolved server-side), never a raw `media://` ref. */
     fileUrl: string | null;
     status: string;
     submittedAt: string;

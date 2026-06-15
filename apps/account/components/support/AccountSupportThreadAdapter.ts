@@ -110,12 +110,21 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
       });
       const data = (await response.json().catch(() => ({}))) as {
         ok?: boolean;
+        ref?: string;
         url?: string;
         name?: string;
         type?: string;
         size?: number;
         reason?: string;
       };
+      // /api/support/upload writes to the RLS-PRIVATE document bucket and
+      // returns BOTH the durable `media://private/...` ref AND a short-lived
+      // SIGNED previewUrl. The thread engine carries a single `url` through to
+      // both the in-composer preview render AND the submitted reply payload, so
+      // we hand it the SIGNED previewUrl (a private ref can't render in the
+      // browser). The reply route then canonicalises that signed URL back to
+      // the ref before persisting, so the column never stores a transient URL.
+      // (V3-MEDIA-SWEEP-01)
       if (!response.ok || !data.ok || !data.url) {
         return { ok: false, reason: data.reason || "Upload failed." };
       }

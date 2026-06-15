@@ -8,7 +8,23 @@ const root = resolve(appDir, "../..");
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
-  transpilePackages: ["@henryco/config", "@henryco/ui"],
+  transpilePackages: ["@henryco/config", "@henryco/media", "@henryco/ui"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        // Studio media served by @henryco/media from the Supabase public
+        // object path. Private studio files (studio-documents) are never
+        // fetched by next/image — they are signed-URL only.
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
   turbopack: {
     root,
   },

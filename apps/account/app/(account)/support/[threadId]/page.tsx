@@ -13,6 +13,7 @@ import {
   markNotificationsReadByReference,
   markSupportThreadRead,
 } from "@/lib/account-data";
+import { signAccountMediaUrl } from "@/lib/account/media";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import "@/components/support/editorial.css";
 import SupportThreadHeader from "@/components/support/SupportThreadHeader";
@@ -113,9 +114,17 @@ export default async function SupportThreadPage({ params }: Props) {
     markNotificationsReadByActionUrl(user.id, `/support/${threadId}`),
     markSupportThreadRead(user.id, threadId),
   ]);
-  const messages = (await getSupportMessages(threadId)) as Array<
+  const rawMessages = (await getSupportMessages(threadId)) as Array<
     Record<string, unknown>
   >;
+  // Sign attachment refs server-side before they reach the client thread
+  // engine. Attachments are persisted as `media://private/...` refs (RLS-
+  // private bucket); the engine renders `attachment.url` directly as an
+  // <img src>/<a href>, which a private ref cannot satisfy. We swap each ref
+  // for a short-lived SIGNED URL here (legacy absolute URLs pass through; an
+  // unsignable value collapses to "" and is dropped by the renderer).
+  // (V3-MEDIA-SWEEP-01)
+  const messages = await signSupportMessageAttachments(rawMessages);
   const status = String(thread.status || "open");
   const subject = String(thread.subject || t("Support conversation"));
   const category = String(thread.category || "general");
@@ -181,6 +190,36 @@ export default async function SupportThreadPage({ params }: Props) {
         />
       </ThreadAppearanceProvider>
     </div>
+  );
+}
+
+/**
+ * Resolve every persisted attachment ref on a set of support_messages rows to
+ * a client-renderable URL. Runs server-side (signing needs the privileged
+ * client) and returns NEW row objects so the original cached read is untouched.
+ * Each `attachments[].url` is replaced by its signed/resolved URL; entries that
+ * cannot be resolved (expired/missing) get an empty url and are filtered so the
+ * client never renders a broken/throwing asset. (V3-MEDIA-SWEEP-01)
+ */
+async function signSupportMessageAttachments(
+  messages: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+  return Promise.all(
+    messages.map(async (row) => {
+      const attachments = row.attachments;
+      if (!Array.isArray(attachments) || attachments.length === 0) return row;
+      const signed = await Promise.all(
+        (attachments as Array<Record<string, unknown>>).map(async (attachment) => {
+          const url = typeof attachment.url === "string" ? attachment.url : "";
+          if (!url) return attachment;
+          return { ...attachment, url: await signAccountMediaUrl(url) };
+        }),
+      );
+      const renderable = signed.filter(
+        (attachment) => typeof attachment.url === "string" && attachment.url.length > 0,
+      );
+      return { ...row, attachments: renderable };
+    }),
   );
 }
 

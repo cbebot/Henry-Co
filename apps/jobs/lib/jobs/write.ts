@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { getDivisionUrl } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, slugify } from "@/lib/env";
-import { uploadJobsDocument } from "@/lib/cloudinary";
+import { uploadJobsCandidateDocument } from "@/lib/jobs/media";
 import { DEFAULT_PIPELINE } from "@/lib/jobs/content";
 import {
   getApplicationById,
@@ -482,10 +482,15 @@ export async function uploadCandidateAsset(input: {
   kind: string;
   file: File;
 }) {
-  const bucket = String(process.env.JOBS_DOCUMENTS_BUCKET || "jobs-documents").trim() || "jobs-documents";
-  const uploaded = await uploadJobsDocument(input.file, {
-    folderSuffix: `${input.actor.userId}/${input.kind}`,
-    publicIdPrefix: `${input.kind}-${input.actor.userId}`,
+  // Candidate documents (resume / portfolio / certification) are NDPA personal
+  // data: upload to the RLS-private bucket via @henryco/media and persist the
+  // backend-neutral `media://private/jobs-documents/<key>` reference in the same
+  // `file_url` column. Read sites resolve it to a short-lived signed URL via
+  // signJobsMediaUrl (data.ts:buildDocument + the documents API route).
+  const mediaRef = await uploadJobsCandidateDocument({
+    userId: input.actor.userId,
+    kind: input.kind,
+    file: input.file,
   });
 
   const { data, error } = await createAdminSupabase()
@@ -496,16 +501,13 @@ export async function uploadCandidateAsset(input: {
       name: input.file.name,
       type: "document",
       division: JOBS_DIVISION,
-      file_url: uploaded.secureUrl,
+      file_url: mediaRef,
       file_size: input.file.size,
       mime_type: input.file.type,
       reference_type: "jobs_candidate_profile",
       reference_id: input.actor.userId,
       metadata: {
         documentKind: input.kind,
-        publicId: uploaded.publicId,
-        storageBucket: bucket,
-        storagePath: uploaded.publicId,
       },
     } as never)
     .select("*")
@@ -523,7 +525,7 @@ export async function uploadCandidateAsset(input: {
     newValues: {
       kind: input.kind,
       name: input.file.name,
-      fileUrl: uploaded.secureUrl,
+      fileRef: mediaRef,
     },
   });
 

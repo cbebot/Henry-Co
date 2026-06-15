@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getJobsViewer } from "@/lib/auth";
 import { uploadCandidateAsset } from "@/lib/jobs/write";
+import { signJobsMediaUrl } from "@/lib/jobs/media";
 import type { CandidateDocument } from "@/lib/jobs/types";
 
 const VALID_KINDS = new Set(["resume", "portfolio", "certification"]);
@@ -12,17 +13,23 @@ function asObject(value: unknown) {
     : {};
 }
 
-function normalizeCandidateDocument(
+async function normalizeCandidateDocument(
   row: Record<string, unknown>,
   fallbackKind: string
-): CandidateDocument {
+): Promise<CandidateDocument> {
   const metadata = asObject(row.metadata);
+
+  // `file_url` is a `media://private/jobs-documents/<key>` reference (or a legacy
+  // absolute URL). Resolve to a short-lived signed delivery URL before returning
+  // it to the client — the just-uploaded document is rendered immediately as
+  // `<a href={document.fileUrl}>`, and a raw `media://` ref is not dereferenceable.
+  const fileUrl = await signJobsMediaUrl(String(row.file_url || ""));
 
   return {
     id: String(row.id || ""),
     name: String(row.name || "Candidate document"),
     kind: String(metadata.documentKind || fallbackKind || "document"),
-    fileUrl: String(row.file_url || ""),
+    fileUrl,
     mimeType: typeof row.mime_type === "string" ? row.mime_type : null,
     fileSize: typeof row.file_size === "number" ? row.file_size : null,
     createdAt:
@@ -66,7 +73,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       message: `${file.name} uploaded successfully.`,
-      document: normalizeCandidateDocument(documentRow || {}, kind),
+      document: await normalizeCandidateDocument(documentRow || {}, kind),
     });
   } catch (error) {
     return NextResponse.json(

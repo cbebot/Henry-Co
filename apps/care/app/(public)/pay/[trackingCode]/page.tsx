@@ -13,6 +13,7 @@ import type {
 } from "@henryco/payment-surface";
 
 import { getPaymentVerificationSnapshotForTrackingCode } from "@/lib/payments/verification";
+import { signCareMediaUrl } from "@/lib/care-media-store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -66,6 +67,12 @@ export default async function CarePaymentWorkspace({
   const trackHref = `/track?code=${encodeURIComponent(code)}`;
   const accountHref = "/track";
 
+  // The receipt attachment is now a `media://private/...` reference (legacy
+  // rows are absolute URLs); sign it server-side before it reaches the client.
+  const proofUrl = await signCareMediaUrl(
+    snapshot.latestSubmission?.attachments?.[0]?.url ?? "",
+  );
+
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
       id: snapshot.requestId ?? code,
@@ -76,7 +83,7 @@ export default async function CarePaymentWorkspace({
       statusLabel: snapshot.verificationLabel,
       dueDate: null,
       proofName: snapshot.latestSubmission?.attachments?.[0]?.fileName ?? null,
-      proofUrl: snapshot.latestSubmission?.attachments?.[0]?.url ?? null,
+      proofUrl: proofUrl || null,
       updatedAt: snapshot.lastReviewedAt ?? snapshot.lastSubmittedAt,
       reference: snapshot.requestNo ?? code,
     }),

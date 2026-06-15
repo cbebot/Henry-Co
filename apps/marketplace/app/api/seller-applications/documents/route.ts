@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { normalizeEmail } from "@/lib/env";
-import { uploadOwnedAsset } from "@/lib/cloudinary";
+import {
+  MARKETPLACE_DOCUMENT_RULE,
+  signMarketplaceMediaUrl,
+  uploadMarketplaceDocument,
+} from "@/lib/marketplace/media";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { MarketplaceSellerDocumentRecord } from "@/lib/marketplace/types";
@@ -37,13 +41,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "A seller document file is required." }, { status: 400 });
     }
 
-    const upload = await uploadOwnedAsset(file, user.id, {
-      folder: "seller-documents",
-      resourceType: "auto",
-      maxBytes: 10 * 1024 * 1024,
-      allowedTypes: ALLOWED_TYPES,
+    // Upload to the RLS-PRIVATE marketplace document bucket (signed-URL only —
+    // never a public CDN). Returns a backend-neutral `media://private/...`
+    // reference that is persisted in place of a raw URL (V3-MEDIA-SWEEP-01).
+    const mediaRef = await uploadMarketplaceDocument(`seller-${kind}/${user.id}`, file, {
+      ...MARKETPLACE_DOCUMENT_RULE,
+      allowedTypes: [...ALLOWED_TYPES],
       invalidTypeMessage: "Upload a JPG, PNG, WebP, or PDF file.",
-      publicIdPrefix: `seller-${kind}`,
     });
 
     const admin = createAdminSupabase();
@@ -65,26 +69,31 @@ export async function POST(request: Request) {
             ? "payment_proof"
             : "document",
       name: file.name,
-      file_url: upload.secureUrl,
+      file_url: mediaRef,
       file_size: file.size,
       mime_type: file.type || "application/octet-stream",
       reference_type: "marketplace_vendor_application",
       reference_id: application?.id ? String(application.id) : null,
       metadata: {
-        public_id: upload.publicId,
         kind,
         normalized_email: normalizeEmail(user.email),
-        ...(upload.ocrWarning ? { ocr_flag: upload.ocrWarning } : {}),
       },
     } as never);
+
+    // The client preview cannot render a private `media://` ref directly
+    // (resolveMediaUrl throws on private). Hand back BOTH: the canonical REF in
+    // `fileUrl` (the wizard round-trips this on draft save / submit) and a
+    // short-lived SIGNED `previewUrl` for the "Review file" preview link.
+    const previewUrl = await signMarketplaceMediaUrl(mediaRef);
 
     const document: MarketplaceSellerDocumentRecord = {
       kind: kind as MarketplaceSellerDocumentRecord["kind"],
       name: file.name,
-      fileUrl: upload.secureUrl,
+      fileUrl: mediaRef,
+      previewUrl: previewUrl || null,
       mimeType: file.type || null,
       size: file.size,
-      publicId: upload.publicId,
+      publicId: null,
       uploadedAt: new Date().toISOString(),
       status: "uploaded",
     };
@@ -99,7 +108,7 @@ export async function POST(request: Request) {
         payload: {
           kind,
           name: file.name,
-          file_url: upload.secureUrl,
+          file_url: mediaRef,
         },
       } as never);
     } catch {

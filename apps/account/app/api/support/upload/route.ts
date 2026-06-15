@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { uploadOwnedAsset } from "@/lib/cloudinary";
+import { signAccountMediaUrl, uploadAccountDocument } from "@/lib/account/media";
 
-const ALLOWED_ATTACHMENT_TYPES = new Set([
+const ALLOWED_ATTACHMENT_TYPES = [
   "image/jpeg",
   "image/jpg",
   "image/png",
   "image/webp",
   "application/pdf",
   "text/plain",
-]);
+];
 
 const MAX_BYTES = 10 * 1024 * 1024;
 
@@ -32,18 +32,25 @@ export async function POST(request: Request) {
       );
     }
 
-    const upload = await uploadOwnedAsset(file, user.id, {
-      folder: "support-attachments",
-      resourceType: "auto",
+    // Upload to the RLS-PRIVATE document bucket (signed-URL only — never a
+    // public CDN). Returns a backend-neutral `media://private/...` reference;
+    // the client persists this REF, and displays the short-lived signed
+    // previewUrl below for the in-composer preview (V3-MEDIA-SWEEP-01).
+    const ref = await uploadAccountDocument(`support/${user.id}`, file, {
       maxBytes: MAX_BYTES,
       allowedTypes: ALLOWED_ATTACHMENT_TYPES,
       invalidTypeMessage: "Upload JPG, PNG, WebP, PDF, or TXT attachments only.",
-      publicIdPrefix: "support-attachment",
     });
+
+    // A private `media://` ref is not renderable in a browser (resolveMediaUrl
+    // throws on private refs), so we also hand back a short-lived signed URL
+    // for the immediate composer preview. The persisted value is `ref`.
+    const previewUrl = await signAccountMediaUrl(ref);
 
     return NextResponse.json({
       ok: true,
-      url: upload.secureUrl,
+      ref,
+      url: previewUrl,
       name: file.name,
       type: file.type || "application/octet-stream",
       size: file.size,

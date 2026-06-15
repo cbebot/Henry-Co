@@ -12,7 +12,7 @@ import {
   upsertCustomerInvoice,
 } from "@/lib/learn/shared-account";
 import { createId, deleteLearnRecord, nowIso, upsertLearnRecord } from "@/lib/learn/store";
-import { uploadTeacherApplicationFile } from "@/lib/learn/uploads";
+import { uploadTeacherApplicationMedia } from "@/lib/learn/media";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   LearnCourse,
@@ -47,6 +47,15 @@ type Identity = {
 
 function cleanText(value?: unknown) {
   return String(value ?? "").trim();
+}
+
+/** Path-safe segment for a media storage prefix (mirrors the old folder sanitizer). */
+function sanitizeMediaSegment(value?: string | null) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
 }
 
 function withSnakeCaseKeys(row: Record<string, unknown>) {
@@ -1075,18 +1084,22 @@ export async function submitTeacherApplication(input: {
   }
 
   const uploadedFiles = [...(existing?.supportingFiles || [])];
-  for (const [index, file] of input.supportingFiles.slice(0, 4).entries()) {
+  const supportingFilesPrefix = `applications/${
+    sanitizeMediaSegment(identity.userId || identity.normalizedEmail) || "teacher"
+  }`;
+  for (const file of input.supportingFiles.slice(0, 4)) {
     if (!(file instanceof File) || file.size <= 0) continue;
-    const uploaded = await uploadTeacherApplicationFile(file, {
-      folderSuffix: identity.userId || identity.normalizedEmail || "teacher",
-      publicIdPrefix: `teach-${index + 1}`,
-    });
+    // SENSITIVE proof docs now ride the @henryco/media private bucket: this
+    // returns a backend-neutral `media://private/...` reference (NOT a public
+    // CDN URL) persisted in the same supporting_files[].url field. The ref is
+    // also used as the stable, unique React key in place of the old public_id.
+    const ref = await uploadTeacherApplicationMedia(file, supportingFilesPrefix);
     uploadedFiles.push({
-      name: uploaded.name,
-      url: uploaded.secureUrl,
-      publicId: uploaded.publicId,
-      mimeType: uploaded.mimeType,
-      size: uploaded.size,
+      name: file.name,
+      url: ref,
+      publicId: ref,
+      mimeType: file.type || null,
+      size: file.size || null,
     });
   }
 

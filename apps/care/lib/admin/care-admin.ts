@@ -7,6 +7,7 @@ import {
   applyReviewMedia,
 } from "@/lib/care-runtime-overrides";
 import { getOptionalEnv } from "@/lib/env";
+import { signCareMediaUrl } from "@/lib/care-media-store";
 
 export type AdminBookingRow = {
   id: string;
@@ -496,6 +497,17 @@ export async function getExpenses(opts?: {
     if (q) {
       rows = rows.filter((row) => matchesQuery(row, q));
     }
+
+    // Sign sensitive expense-receipt refs at the read boundary: a
+    // media://private/... ref → short-lived signed URL; legacy absolute
+    // (Cloudinary) URLs pass through unchanged. Single point covers every
+    // expense read surface (owner/finance/manager/support/rider). (V3-MEDIA-SWEEP-01)
+    rows = await Promise.all(
+      rows.map(async (row) => ({
+        ...row,
+        receipt_url: (await signCareMediaUrl(row.receipt_url)) || null,
+      })),
+    );
 
     return rows;
   } catch {

@@ -8,7 +8,16 @@ const root = resolve(appDir, "../..");
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
-  transpilePackages: ["@henryco/config", "@henryco/ui"],
+  transpilePackages: ["@henryco/config", "@henryco/media", "@henryco/ui"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
   turbopack: {
     root,
   },

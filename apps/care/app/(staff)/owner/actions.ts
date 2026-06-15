@@ -35,7 +35,7 @@ import {
   isReviewEligibleStatus,
   toStoredBookingStatus,
 } from "@/lib/care-tracking";
-import { uploadCareImage } from "@/lib/cloudinary";
+import { uploadCareExpenseReceipt } from "@/lib/care-media-store";
 
 const ALLOWED_STAFF_ROLES = ["owner", "manager", "rider", "support", "staff"] as const;
 
@@ -2102,26 +2102,24 @@ export async function createExpenseAction(formData: FormData) {
     finish(route, "error", "Expense category, description, and amount are required.");
   }
 
-  let uploadedReceipt:
-    | {
-        secureUrl: string;
-        publicId: string;
-      }
-    | null = null;
+  let uploadedReceiptRef: string | null = null;
 
   if (receiptFile instanceof File && receiptFile.size > 0) {
     try {
-      uploadedReceipt = await uploadCareImage(receiptFile, {
-        folderSuffix: "expenses",
-        publicIdPrefix: `${category || "expense"}-${booking_lookup || auth.profile.id}`,
-      });
+      // SENSITIVE staff/owner expense receipt → RLS-private care-documents
+      // bucket (signed on read). Persists a media://private/... ref, never a
+      // publicly-dereferenceable CDN URL. (V3-MEDIA-SWEEP-01)
+      uploadedReceiptRef = await uploadCareExpenseReceipt(
+        receiptFile,
+        `${category || "expense"}-${booking_lookup || auth.profile.id}`,
+      );
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Image upload failed.";
+      const message = error instanceof Error ? error.message : "Receipt upload failed.";
       finish(route, "error", message);
     }
   }
 
-  const receipt_url = uploadedReceipt?.secureUrl || manualReceiptUrl;
+  const receipt_url = uploadedReceiptRef || manualReceiptUrl;
   const autoApproved = auth.profile.role === "owner";
 
   const basePayload = {
@@ -2208,7 +2206,9 @@ export async function createExpenseAction(formData: FormData) {
       amount,
       payment_method,
       receipt_url,
-      receipt_public_id: uploadedReceipt?.publicId || null,
+      // No Cloudinary public_id under @henryco/media — the media:// ref in
+      // receipt_url encodes the storage key. (V3-MEDIA-SWEEP-01)
+      receipt_public_id: null,
       auto_approved: autoApproved,
       error: error?.message || null,
     },

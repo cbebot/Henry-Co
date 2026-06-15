@@ -4,6 +4,12 @@ import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
 import { formatCurrency, getOptionalEnv, normalizeEmail, normalizePhone } from "@/lib/env";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import {
+  STUDIO_DOCUMENT_BUCKET,
+  STUDIO_REFERENCE_RULE,
+  signStudioMediaUrl,
+  uploadStudioDocument,
+} from "@/lib/studio/media";
+import {
   appendCustomerActivity,
   appendCustomerDocument,
   appendCustomerNotification,
@@ -140,6 +146,36 @@ export async function uploadStudioFile(
     return null;
   }
 
+  // Brief reference files are SENSITIVE intake (client-supplied docs/screens)
+  // and must NOT live on a public CDN. They now ride the RLS-private
+  // studio-documents bucket via @henryco/media and persist a backend-neutral
+  // `media://private/...` reference (signed on read). The proof + deliverable
+  // kinds are intentionally left on the existing path below — proof is the
+  // FROZEN money flow, and the deliverable flow is handled separately.
+  if (kind === "reference") {
+    try {
+      const ref = await uploadStudioDocument(entityId, file, {
+        folder: "reference",
+        rule: STUDIO_REFERENCE_RULE,
+      });
+      return {
+        id: createId(),
+        projectId: entityId,
+        leadId: entityId,
+        briefId: null,
+        createdAt: new Date().toISOString(),
+        kind,
+        label: cleanText(file.name),
+        path: ref,
+        bucket: STUDIO_DOCUMENT_BUCKET,
+        size: file.size,
+        mimeType: file.type || null,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
   const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
   const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
@@ -186,7 +222,9 @@ export async function uploadStudioFile(
     return {
       id: createId(),
       projectId: entityId,
-      leadId: kind === "reference" ? entityId : null,
+      // `reference` is handled + returned earlier (private @henryco/media path),
+      // so here `kind` is narrowed to "proof" | "deliverable" — never a lead file.
+      leadId: null,
       briefId: null,
       createdAt: new Date().toISOString(),
       kind,
@@ -1595,7 +1633,18 @@ export async function getStudioSnapshot(): Promise<StudioSnapshot> {
     selectRows<Record<string, unknown>>("support_messages", "*", "created_at"),
   ]);
 
-  const files = fileRows.map(mapFile);
+  // Reference files now persist a `media://private/...` ref (RLS-private
+  // studio-documents bucket). Sign them server-side so every read surface
+  // (the file vault, the delivery asset list, brief.referenceFiles) receives
+  // a usable signed URL — never the raw private ref. Legacy Cloudinary rows
+  // and the proof/deliverable kinds pass through unchanged.
+  const files = await Promise.all(
+    fileRows.map(mapFile).map(async (file) =>
+      file.kind === "reference"
+        ? { ...file, path: await signStudioMediaUrl(file.path) }
+        : file,
+    ),
+  );
   const briefs = briefRows.map(mapBrief).map((brief) => ({
     ...brief,
     referenceFiles: files
