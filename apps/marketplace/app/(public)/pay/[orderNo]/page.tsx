@@ -17,6 +17,8 @@ import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getOrderByNumber } from "@/lib/marketplace/data";
 import { getMarketplacePaymentRail } from "@/lib/marketplace/payment";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
+import { reconcileMarketplaceOrder } from "@/lib/checkout/sale-reconcile-port";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -58,6 +60,14 @@ export default async function MarketplacePaymentWorkspace({
   params: Promise<{ orderNo: string }>;
 }) {
   const { orderNo } = await params;
+
+  // Reconcile-on-read: complete any confirmed card payment for this order before we
+  // render its status (the webhook recorded money truth; this allocates revenue +
+  // marks the order paid, idempotently). Gated to the card rail; a no-op otherwise.
+  if (isMarketplaceCardCheckoutReady()) {
+    await reconcileMarketplaceOrder(orderNo).catch(() => null);
+  }
+
   const [order, viewer, rail, locale] = await Promise.all([
     getOrderByNumber(orderNo),
     getMarketplaceViewer(),
@@ -78,12 +88,15 @@ export default async function MarketplacePaymentWorkspace({
   const paymentLabel = `Order ${order.orderNo}`;
   const trackHref = `/track/${order.orderNo}`;
 
-  // V3-13 provider-router seam. Gated on MOCK_PAYMENT so production — where the
-  // flag is never set — ships no card CTA and therefore no dead link to the
-  // not-yet-built card route. The live card page + provider arrive in
-  // V3-14/15/16; this is the reference wire the other five pay surfaces copy.
+  // V3-DIVISION-CHECKOUT-01 — the live card rail. Gated on MARKETPLACE_CARD_CHECKOUT
+  // (test-mode flag) so production, where it is unset, stays bank-transfer-only and
+  // ships no card CTA. Shown only while the order is genuinely awaiting payment; the
+  // /card route starts the charge on the proven rail. Per-division LIVE activation is
+  // a separate owner-gated step. This is the reference wire care/studio copy next.
   const cardCta =
-    process.env.MOCK_PAYMENT === "1"
+    isMarketplaceCardCheckoutReady() &&
+    order.status === "awaiting_payment" &&
+    order.paymentStatus !== "verified"
       ? { label: translateSurfaceLabel(locale, "Pay with card"), href: `/pay/${order.orderNo}/card` }
       : null;
 

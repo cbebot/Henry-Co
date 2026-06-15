@@ -2,6 +2,7 @@ export * from "./types";
 export * from "./errors";
 export * from "./state-machine";
 export * from "./ledger";
+export * from "./division-sale";
 export * from "./router";
 export * from "./audit";
 export * from "./telemetry";

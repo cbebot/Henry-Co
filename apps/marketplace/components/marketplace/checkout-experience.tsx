@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Copy,
+  CreditCard,
   Loader2,
   Lock,
   RefreshCw,
@@ -76,7 +77,7 @@ function buildSteps(t: (s: string) => string): Array<{ id: CheckoutStep; label: 
   ];
 }
 
-type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod";
+type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod" | "card";
 
 /**
  * RELIABILITY-01 — payment-proof upload state machine.
@@ -109,13 +110,30 @@ export type ProofStatus =
         | "network";
     };
 
-function buildPaymentMethods(t: (s: string) => string): Array<{
+function buildPaymentMethods(
+  t: (s: string) => string,
+  cardEnabled = false,
+): Array<{
   id: PaymentMethodId;
   label: string;
   description: string;
   icon: typeof Wallet;
 }> {
   return [
+    // V3-DIVISION-CHECKOUT-01 — the instant card rail leads when it is enabled
+    // (test-mode flag). Confirmed the moment payment clears; no proof to upload.
+    ...(cardEnabled
+      ? [
+          {
+            id: "card" as const,
+            label: t("Card"),
+            description: t(
+              "Pay securely by card. Your order is confirmed the moment payment clears — nothing to upload.",
+            ),
+            icon: CreditCard,
+          },
+        ]
+      : []),
     {
       id: "wallet_balance",
       label: t("HenryCo balance"),
@@ -192,6 +210,7 @@ export function CheckoutExperience({
   paymentReference,
   walletTopUpHref,
   buyer,
+  cardEnabled = false,
 }: {
   cart: CartShape;
   cartToken: string | null;
@@ -201,6 +220,8 @@ export function CheckoutExperience({
   paymentReference: string;
   walletTopUpHref: string;
   buyer: { fullName: string | null; email: string | null };
+  /** V3-DIVISION-CHECKOUT-01 test-mode flag — offers the instant card method. */
+  cardEnabled?: boolean;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -694,6 +715,7 @@ export function CheckoutExperience({
             <PaymentStep
               method={paymentMethod}
               onSelect={setPaymentMethod}
+              cardEnabled={cardEnabled}
               cart={cart}
               shipping={shipping}
               total={total}
@@ -791,6 +813,8 @@ export function CheckoutExperience({
                 ? t("On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches.")
                 : paymentMethod === "bank_transfer"
                 ? t("On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does.")
+                : paymentMethod === "card"
+                ? t("On confirm, you continue to a secure page to complete card payment. Your order is confirmed automatically the moment payment clears.")
                 : t("On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives.")}
             </p>
           ) : null}
@@ -1083,6 +1107,7 @@ function DeliveryStep({
 function PaymentStep({
   method,
   onSelect,
+  cardEnabled,
   cart,
   total,
   currency,
@@ -1101,6 +1126,7 @@ function PaymentStep({
 }: {
   method: PaymentMethodId;
   onSelect: (id: PaymentMethodId) => void;
+  cardEnabled: boolean;
   cart: CartShape;
   shipping: number;
   total: number;
@@ -1167,7 +1193,7 @@ function PaymentStep({
       </p>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-3">
-        {buildPaymentMethods(t).map((option) => {
+        {buildPaymentMethods(t, cardEnabled).map((option) => {
           const Icon = option.icon;
           const active = method === option.id;
           const disabled =
@@ -1185,6 +1211,8 @@ function PaymentStep({
               ? paymentRail.ready
                 ? `${paymentRail.bankName} ${t("ready")}`
                 : t("Payment rail unavailable")
+              : option.id === "card"
+              ? t("Secured payment · instant confirmation")
               : t("Seller acceptance still applies");
           return (
             <label
