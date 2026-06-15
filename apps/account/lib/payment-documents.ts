@@ -114,6 +114,20 @@ export type DocumentMoneySplit = {
   totalMinor: number;
   /** Fractional VAT rate carried by the breakdown, if any (informational). */
   taxRate: number | null;
+  /**
+   * `true` when the breakdown's VAT is INCLUSIVE (V3-VAT-CLASSIFICATION-01:
+   * carved out of the total, base = total − tax). `false` for the legacy
+   * add-on-top model (base = total − fees − tax). NRS e-invoicing needs the
+   * VAT-exclusive base computed correctly for BOTH regimes.
+   */
+  taxInclusive: boolean;
+  /**
+   * The supply's VAT treatment (`standard` / `zero_rated` / `exempt` /
+   * `out_of_scope`), or null when the breakdown does not classify it. A non-
+   * `standard` treatment drives a classification NOTE on the document instead of
+   * a VAT amount.
+   */
+  taxTreatment: string | null;
 };
 
 function feesFromBreakdown(breakdown: PricingBreakdown): number {
@@ -127,6 +141,17 @@ function feesFromBreakdown(breakdown: PricingBreakdown): number {
  * ONLY from the breakdown; fees are the breakdown's explicit fee lines; subtotal is
  * the residual so the three always reconcile to the gross. Throws if the residual
  * would be negative (a breakdown inconsistent with the ledger gross is a money bug).
+ *
+ * NRS e-invoicing (effective Jan 2026) requires the VAT-EXCLUSIVE base, so the base
+ * must be derived correctly for BOTH VAT regimes:
+ *   - INCLUSIVE (V3-VAT-CLASSIFICATION-01, `meta.inclusive === true`): the VAT sits
+ *     WITHIN the total, so base = total − tax. Fees are already inside the total too,
+ *     so they are NOT subtracted a second time (subtracting them would understate the
+ *     base and break `base + tax === total`).
+ *   - ADD-ON-TOP (legacy `applyOutputVat`): VAT was added on top of the ex-VAT base,
+ *     so base = total − fees − tax (the original split).
+ * Either way the structured triad reconciles: base (+ fees on the add-on path) + tax
+ * === total.
  */
 export function splitDocumentMoney(
   totalMinor: number,
@@ -137,6 +162,31 @@ export function splitDocumentMoney(
   }
   const tax = extractTaxFromBreakdown(breakdown);
   const taxMinor = tax?.taxMinor ?? 0;
+  const inclusive = tax?.inclusive ?? false;
+
+  if (inclusive) {
+    // Inclusive VAT: the tax is already part of the total. The base is simply the
+    // VAT-exclusive remainder of the WHOLE value; fees (when present) live inside
+    // that remainder and must NOT be carved out again, or base + tax !== total.
+    const subtotalMinor = totalMinor - taxMinor;
+    if (subtotalMinor < 0) {
+      throw new PaymentDocumentError(
+        `inclusive tax (${taxMinor}) exceeds the ledger gross (${totalMinor})`,
+        "negative_subtotal",
+      );
+    }
+    return {
+      subtotalMinor,
+      feesMinor: 0,
+      taxMinor,
+      totalMinor,
+      taxRate: tax?.rate ?? null,
+      taxInclusive: true,
+      taxTreatment: tax?.treatment ?? null,
+    };
+  }
+
+  // Add-on-top VAT (or no VAT): subtotal is the residual after fees AND tax.
   const feesMinor = breakdown ? feesFromBreakdown(breakdown) : 0;
   const subtotalMinor = totalMinor - feesMinor - taxMinor;
   if (subtotalMinor < 0) {
@@ -145,7 +195,15 @@ export function splitDocumentMoney(
       "negative_subtotal",
     );
   }
-  return { subtotalMinor, feesMinor, taxMinor, totalMinor, taxRate: tax?.rate ?? null };
+  return {
+    subtotalMinor,
+    feesMinor,
+    taxMinor,
+    totalMinor,
+    taxRate: tax?.rate ?? null,
+    taxInclusive: false,
+    taxTreatment: tax?.treatment ?? null,
+  };
 }
 
 /** Map a pricing breakdown's non-tax lines to receipt line items (tax is summarised separately). */
@@ -171,6 +229,15 @@ export function buildReceiptProps(input: {
   /** Single-line description when there is no breakdown (defaults to the division label). */
   description?: string | null;
   issuer?: DocumentIssuer;
+  /**
+   * NRS classification override for the non-standard / no-tax-line case: when an
+   * exempt / zero-rated / out-of-scope supply produces a breakdown with NO `tax`
+   * line, the caller (which already resolved the classification) passes the
+   * treatment here so the document can still print a classification NOTE instead of
+   * silently dropping the VAT row. Ignored when the breakdown's own `tax` line
+   * already carries a treatment.
+   */
+  taxTreatment?: string | null;
 }): ReceiptProps {
   const { payment, breakdown, buyer, locale } = input;
 
@@ -214,6 +281,10 @@ export function buildReceiptProps(input: {
       feesKobo: split.feesMinor,
       taxKobo: split.taxMinor,
       totalKobo: split.totalMinor,
+      // NRS e-invoicing: carry the rate + treatment so the VAT line prints
+      // "VAT (7.5%)" and a non-standard supply renders a classification note.
+      taxRate: split.taxRate,
+      taxTreatment: split.taxTreatment ?? input.taxTreatment ?? null,
       currency: "NGN",
       notes: null,
       paymentIntentId: payment.intentId,
@@ -255,6 +326,10 @@ export function buildInvoiceProps(input: {
     lineItems: InvoiceLineItem[];
     paymentIntentId?: string | null;
     ledgerEntryId?: string | null;
+    /** NRS e-invoicing: fractional VAT rate so the line prints "VAT (7.5%)". */
+    taxRate?: number | null;
+    /** NRS e-invoicing: supply treatment driving a classification note when non-standard. */
+    taxTreatment?: string | null;
   };
   buyer: DocumentBuyer;
   locale: AppLocale;

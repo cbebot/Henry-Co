@@ -21,7 +21,7 @@
  * specs, prices, delivery, COD) is concrete.
  */
 
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, type VatTreatment } from "@henryco/config";
 
 const marketplace = getDivisionConfig("marketplace");
 
@@ -198,6 +198,22 @@ export type SeedProduct = {
   leadTime: string;
   codEligible: boolean;
   gallery: string[];
+  /**
+   * OPTIONAL per-product VAT treatment (owner's per-item switch). When set, the
+   * VAT engine reads it as `itemTreatment` — the HIGHEST-precedence rung of
+   * `resolveVatClassification` (from `@henryco/config`), overriding the seeded-test
+   * default and the per-category map. Leave UNDEFINED for the normal case: the
+   * resolver then falls back to the `categorySlug` taxonomy map (food/books/pharma/
+   * baby overrides are pre-registered there) and finally the marketplace standard-
+   * rated default. Do NOT blanket-set this to "exempt": the current curated rows are
+   * the owner's pre-launch test catalog and already resolve EXEMPT via the resolver's
+   * `isSeededTestItem` path (the catalog-level `marketplace_settings.bootstrap_version`
+   * / `launch_state:"seeded"` marker answers "is this an owner test item"). Set a value
+   * here ONLY where a row's treatment is unambiguous (e.g. real food/books/pharma/baby
+   * inventory once published); none of the current office/home/power/tech rows qualify.
+   * TYPE/data only — this field is NOT wired into any checkout/collection route here.
+   */
+  taxTreatment?: VatTreatment;
 };
 
 const verified = ["Henry Onyx verified", "Quality-checked"];

@@ -34,6 +34,7 @@ const STUCK_THRESHOLD_MINUTES = 30;
 const RECENT_LIMIT = 24;
 const STUCK_LIMIT = 60;
 const FLOW_WINDOW_DAYS = 30;
+const VAT_MONTHS_WINDOW = 12; // recent calendar months shown in the monthly net-VAT table
 const INTENT_SCAN_LIMIT = 5000; // generous; see capped-scan note in readSnapshot
 
 /** True when the service-role Supabase env the finance reads need is present. */
@@ -104,6 +105,21 @@ export type VatReconciliation = {
   netVatPayableMinor: number;
 };
 
+/**
+ * A single calendar month's VAT figures — the row the owner files on. Mirrors
+ * payments_private.vat_reconciliation(p_from, p_to) for the half-open window
+ * [monthStart, nextMonthStart): output = vat_output_payable credit−debit,
+ * input = fee_vat_recoverable debit−credit, net = output − input. All kobo.
+ */
+export type MonthlyVatRow = {
+  month: string; // "YYYY-MM" (UTC bucket key, also the filing label)
+  periodStart: string; // ISO half-open window start (inclusive)
+  periodEnd: string; // ISO half-open window end (exclusive)
+  outputVatCollectedMinor: number;
+  inputVatRecoverableMinor: number;
+  netVatPayableMinor: number;
+};
+
 export type IntentStatusStat = { status: string; count: number; volumeMinor: number };
 
 export type IntentStats = {
@@ -145,6 +161,7 @@ export type FinanceLedgerData = {
   reconciliation: LedgerReconciliation;
   wallet: WalletReconciliation;
   vat: VatReconciliation;
+  monthlyVat: MonthlyVatRow[];
   stats: IntentStats;
   stuck: StuckIntent[];
   recent: RecentTransaction[];
@@ -279,6 +296,42 @@ async function readSnapshot(): Promise<FinanceLedgerData> {
     netVatPayableMinor: outputVat - inputVat,
   };
 
+  // ── Monthly net-VAT (per-calendar-month vat_reconciliation, read-only) ──
+  // Same kobo math as the YTD block, bucketed into UTC calendar months so the
+  // owner can file a single month in one read: net = output(credit−debit) for
+  // vat_output_payable − input(debit−credit) for fee_vat_recoverable. Each month
+  // is a half-open posted_at window [monthStart, nextMonthStart). Reuses the
+  // already-fetched vatLineRows — no extra DB read.
+  const monthlyAgg = new Map<string, { output: number; input: number }>();
+  for (const l of vatLineRows) {
+    const postedAt = postedAtOf(l);
+    if (!postedAt || postedAt >= capturedAt) continue;
+    const monthKey = postedAt.slice(0, 7); // "YYYY-MM" (ISO timestamps are UTC)
+    if (!/^\d{4}-\d{2}$/.test(monthKey)) continue;
+    const m = monthlyAgg.get(monthKey) ?? { output: 0, input: 0 };
+    const d = num(l.debit_minor);
+    const c = num(l.credit_minor);
+    if (l.account_code === "vat_output_payable") m.output += c - d;
+    else if (l.account_code === "fee_vat_recoverable") m.input += d - c;
+    monthlyAgg.set(monthKey, m);
+  }
+  const monthlyVat: MonthlyVatRow[] = [...monthlyAgg.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0])) // newest month first
+    .slice(0, VAT_MONTHS_WINDOW)
+    .map(([month, agg]) => {
+      const [y, mo] = month.split("-").map(Number);
+      const periodStart = new Date(Date.UTC(y, mo - 1, 1)).toISOString();
+      const periodEnd = new Date(Date.UTC(y, mo, 1)).toISOString();
+      return {
+        month,
+        periodStart,
+        periodEnd,
+        outputVatCollectedMinor: agg.output,
+        inputVatRecoverableMinor: agg.input,
+        netVatPayableMinor: agg.output - agg.input,
+      };
+    });
+
   // ── Intent-derived: stats, stuck, recent, flow (from the one ordered scan) ──
   const statMap = new Map<string, { count: number; volumeMinor: number }>();
   for (const i of intentRows) {
@@ -341,6 +394,7 @@ async function readSnapshot(): Promise<FinanceLedgerData> {
     reconciliation,
     wallet,
     vat,
+    monthlyVat,
     stats,
     stuck,
     recent,
@@ -447,6 +501,11 @@ const FINANCE_TRACE_SQL: Record<string, { label: string; sql: string; caveat?: s
     label: "VAT reconciliation (YTD)",
     sql: "SELECT account_code, sum(credit_minor) - sum(debit_minor) AS net\n  FROM public.journal_lines l JOIN public.journal_entries e ON e.id = l.entry_id\n WHERE account_code IN ('vat_output_payable','fee_vat_recoverable')\n   AND e.posted_at >= date_trunc('year', now())\n GROUP BY account_code;  -- net_vat = output collected - input recoverable",
   },
+  "finance.vat_monthly": {
+    label: "Monthly net-VAT (filing)",
+    sql: "-- Per-calendar-month equivalent of payments_private.vat_reconciliation(month_start, next_month_start):\nSELECT date_trunc('month', e.posted_at) AS month,\n       sum(CASE WHEN l.account_code = 'vat_output_payable'  THEN l.credit_minor - l.debit_minor ELSE 0 END) AS output_vat_collected_minor,\n       sum(CASE WHEN l.account_code = 'fee_vat_recoverable' THEN l.debit_minor  - l.credit_minor ELSE 0 END) AS input_vat_recoverable_minor\n  FROM public.journal_lines l JOIN public.journal_entries e ON e.id = l.entry_id\n WHERE l.account_code IN ('vat_output_payable','fee_vat_recoverable')\n GROUP BY 1 ORDER BY 1 DESC;  -- net_vat_payable = output - input, per month",
+    caveat: "Half-open posted_at window per month; net_vat_payable = output − input. File the chosen month's row.",
+  },
   "finance.intents": {
     label: "Payment intent activity",
     sql: "SELECT status, count(*) AS count, coalesce(sum(amount_minor),0) AS volume_minor\n  FROM public.payment_intents GROUP BY status;",
@@ -501,6 +560,14 @@ export async function loadFinanceLedgerTrace(traceId: string): Promise<OwnerReco
         { input_vat_recoverable_minor: snapshot.vat.inputVatRecoverableMinor },
         { net_vat_payable_minor: snapshot.vat.netVatPayableMinor },
       ];
+      break;
+    case "finance.vat_monthly":
+      rows = snapshot.monthlyVat.map((m) => ({
+        month: m.month,
+        output_vat_collected_minor: m.outputVatCollectedMinor,
+        input_vat_recoverable_minor: m.inputVatRecoverableMinor,
+        net_vat_payable_minor: m.netVatPayableMinor,
+      }));
       break;
     case "finance.intents":
       rows = snapshot.stats.byStatus.map((s) => ({ status: s.status, count: s.count, volume_minor: s.volumeMinor }));

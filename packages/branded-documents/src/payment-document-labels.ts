@@ -62,6 +62,18 @@ export type PaymentDocumentLabels = {
   discount: string;
   fees: string;
   vat: string;
+  /**
+   * NRS e-invoicing: the rated-VAT label template. `{rate}` is interpolated with the
+   * formatted percent (e.g. "7.5%") read from the breakdown — NEVER hardcoded — so the
+   * line reads "VAT (7.5%)". A historical document shows the rate that actually applied.
+   */
+  vatRated: string;
+  /** NRS classification notes for non-standard supplies (no VAT amount is shown). */
+  vatExempt: string;
+  vatZeroRated: string;
+  vatOutOfScope: string;
+  /** Heading for the VAT-treatment note row on a non-standard supply. */
+  vatTreatment: string;
   total: string;
   paymentStatus: string;
   paymentMethod: string;
@@ -181,4 +193,54 @@ export function interpolateLegalLine(
   return String(template ?? "")
     .replace(/\{issuer\}/g, values.issuer)
     .replace(/\{email\}/g, values.email);
+}
+
+/**
+ * Format a FRACTIONAL VAT rate (e.g. 0.075) as a display percent (e.g. "7.5%"),
+ * NEVER hardcoded — the value is read from the breakdown's `tax` line meta. Trailing
+ * zeros are dropped (7.5%, not 7.50%); a whole-number rate shows no decimals (10%).
+ * Returns null when no usable rate was carried, so the caller can fall back to the
+ * bare "VAT" label rather than print an empty parenthesis.
+ */
+export function formatVatRatePercent(rate: number | null | undefined): string | null {
+  if (typeof rate !== "number" || !Number.isFinite(rate) || rate < 0) return null;
+  const pct = rate * 100;
+  // Up to 2 dp, trimmed — keeps 7.5 → "7.5", 7 → "7", 7.25 → "7.25".
+  const rounded = Math.round(pct * 100) / 100;
+  const text = Number.isInteger(rounded) ? String(rounded) : String(rounded).replace(/0+$/, "").replace(/\.$/, "");
+  return `${text}%`;
+}
+
+/**
+ * Resolve the VAT line LABEL for a standard-rated (VATable) supply, embedding the
+ * rate when one is known: "VAT (7.5%)" via the `vatRated` template, else the bare
+ * `vat` label. The rate is data-driven (never the literal 7.5).
+ */
+export function resolveVatLineLabel(
+  rate: number | null | undefined,
+  labels: PaymentDocumentLabels,
+): string {
+  const pct = formatVatRatePercent(rate);
+  if (!pct) return labels.vat;
+  return String(labels.vatRated ?? "VAT ({rate})").replace(/\{rate\}/g, pct);
+}
+
+/**
+ * Resolve the short NRS CLASSIFICATION note for a non-standard VAT treatment. Returns
+ * null for `standard` (which shows a VAT amount, not a note) or an unknown treatment.
+ */
+export function resolveVatTreatmentNote(
+  treatment: string | null | undefined,
+  labels: PaymentDocumentLabels,
+): string | null {
+  switch (String(treatment ?? "").trim().toLowerCase()) {
+    case "exempt":
+      return labels.vatExempt;
+    case "zero_rated":
+      return labels.vatZeroRated;
+    case "out_of_scope":
+      return labels.vatOutOfScope;
+    default:
+      return null;
+  }
 }

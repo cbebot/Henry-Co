@@ -171,6 +171,18 @@ export async function seedMarketplaceBaseline(): Promise<void> {
   const brandId = brandIds.get(houseBrand.slug) ?? null;
 
   // 3) Products (keyed on slug).
+  //
+  // NOTE (V3-VAT-CLASSIFICATION-01): `SeedProduct.taxTreatment` is an OPTIONAL
+  // per-item VAT switch on the catalog DATA only — it is deliberately NOT mapped
+  // to a persisted column here, so this seed writes no new column and the existing
+  // bootstrap_version need not bump. The VAT engine reads `taxTreatment` directly
+  // from the catalog (as `resolveVatClassification`'s highest-precedence
+  // `itemTreatment`); these curated rows are the owner's pre-launch TEST catalog
+  // and resolve EXEMPT via the resolver's `isSeededTestItem` path. The "is this an
+  // owner test item?" marker already lives at the catalog level (step 8:
+  // `launch_state:"seeded"` + `bootstrap_version`) plus `inventory_owner_type:
+  // "company"` per row — no per-row seeded flag is added. Persist a real
+  // `tax_treatment` column only when checkout collection activates at go-live.
   await upsert(
     admin,
     "marketplace_products",

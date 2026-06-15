@@ -29,10 +29,16 @@ export {
 } from './exchange-rate';
 
 // V3-VAT-01 — VAT math (output VAT on sales, inclusive-split for processor fees).
+// V3-VAT-CLASSIFICATION-01 — inclusive output VAT (carved out of the full value).
 export {
   splitVatInclusive,
   computeOutputVat,
   applyOutputVat,
+  carveInclusiveVat,
+  applyInclusiveVat,
+  applyInclusiveVatByLine,
+  buildSaleVatRecognition,
+  buildSaleVatRecognitionByLine,
   type VatTreatment,
   type VatRatePolicy,
 } from './vat';
@@ -104,6 +110,19 @@ export type BreakdownTax = {
   currency: string;
   /** Optional fractional rate carried on a `tax` line's meta (e.g. 0.075), else null. */
   rate: number | null;
+  /**
+   * V3-VAT-CLASSIFICATION-01: `true` when the `tax` line's `meta.inclusive` flags
+   * the VAT as carved-out-of-the-total (base = total − tax). `false`/absent → the
+   * legacy add-on-top model (base = total − fees − tax). Drives the receipt/invoice
+   * base computation so the structured triad reconciles for BOTH regimes.
+   */
+  inclusive: boolean;
+  /**
+   * The supply's VAT treatment as stamped on the `tax` line's `meta.treatment`
+   * (`standard` / `zero_rated` / `exempt` / `out_of_scope`), else null. A non-
+   * `standard` treatment renders a classification NOTE in place of a VAT amount.
+   */
+  treatment: string | null;
 };
 
 /**
@@ -124,10 +143,18 @@ export function extractTaxFromBreakdown(
   const rateMeta = taxLines
     .map((line) => line.meta?.rate)
     .find((rate): rate is number => typeof rate === "number" && Number.isFinite(rate));
+  // A breakdown is "inclusive" if ANY of its tax lines carries meta.inclusive===true
+  // (the V3-VAT-CLASSIFICATION-01 lines do; the legacy add-on-top lines do not).
+  const inclusive = taxLines.some((line) => line.meta?.inclusive === true);
+  const treatmentMeta = taxLines
+    .map((line) => line.meta?.treatment)
+    .find((t): t is string => typeof t === "string" && t.length > 0);
   return {
     taxMinor,
     currency: breakdown.currency,
     rate: typeof rateMeta === "number" ? rateMeta : null,
+    inclusive,
+    treatment: typeof treatmentMeta === "string" ? treatmentMeta : null,
   };
 }
 

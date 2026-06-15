@@ -1,4 +1,4 @@
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, type VatTreatment } from "@henryco/config";
 import { upsertLearnRecord, type LearnUpsertMeta, syncLearnDivision } from "@/lib/learn/store";
 
 export const LEARN_BOOTSTRAP_VERSION = "2026-06-10-academy-v4-expansion";
@@ -305,7 +305,31 @@ const plans: Array<Record<string, unknown>> = [
     updated_at: updatedAt,
   },
 ];
-const courseBlueprints: Array<Record<string, unknown>> = [
+/**
+ * OPTIONAL per-course VAT treatment (owner's per-course switch).
+ *
+ * A course blueprint MAY carry `taxTreatment?: VatTreatment` ("standard" |
+ * "zero_rated" | "exempt" | "out_of_scope"). When present, the VAT engine reads
+ * it as `itemTreatment` — the HIGHEST-precedence rung of `resolveVatClassification`
+ * (from `@henryco/config`) — overriding the seeded-test default and the learn
+ * division default (which is currently `standard`, PENDING tax review). Leave it
+ * UNDEFINED for the normal case; the resolver then applies the learn default.
+ *
+ * Do NOT blanket-set this on every row: the seeded academy catalog is the owner's
+ * pre-launch TEST catalog and already resolves EXEMPT via the resolver's
+ * `isSeededTestItem` path. The "is this an owner test item?" marker already exists
+ * at the catalog level (`learn_settings.bootstrap_version` — see `settings` below)
+ * and per-row via the stable seed UUIDs, so no per-row seeded flag is added.
+ *
+ * TYPE/data only: `seedLearnBaseline` builds the `learn_courses` upsert row by
+ * enumerating fields explicitly and does NOT include `taxTreatment`, so adding it
+ * to a blueprint persists NO new column — hence LEARN_BOOTSTRAP_VERSION need not
+ * bump. Persist a real `tax_treatment` column only when checkout collection
+ * activates at the gated go-live.
+ */
+type CourseBlueprint = Record<string, unknown> & { taxTreatment?: VatTreatment };
+
+const courseBlueprints: Array<CourseBlueprint> = [
   {
     id: seedId(301),
     slug: "marketplace-seller-launch",
