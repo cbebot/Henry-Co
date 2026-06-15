@@ -750,6 +750,65 @@ export type AccountCopy = {
       awaitingProof: string;
       ariaLabelTemplate: string;
     };
+    vault: {
+      eyebrow: string;
+      liveLabel: string;
+      availableLabel: string;
+      balanceAriaTemplate: string;
+      syncedLabel: string;
+      syncedAria: string;
+      onHoldLabel: string;
+      totalLabel: string;
+      heldLabel: string;
+      arrivingTemplate: string;
+      approxTemplate: string;
+      approxNote: string;
+      approxStaleNote: string;
+      settlementNgn: string;
+      ctaFund: string;
+      ctaWithdraw: string;
+    };
+    alert: {
+      proofTitle: string;
+      proofDescTemplate: string;
+      proofCta: string;
+      identityTitle: string;
+      identityDescTemplate: string;
+      identityCta: string;
+    };
+    trend: {
+      title: string;
+      subtitle: string;
+      emptyLabel: string;
+      currentLabel: string;
+      ariaLabel: string;
+    };
+    cashflow: {
+      title: string;
+      periodLabel: string;
+      moneyInLabel: string;
+      moneyOutLabel: string;
+      netLabel: string;
+      emptyLabel: string;
+      ariaLabel: string;
+    };
+    statement: {
+      title: string;
+      metaTemplate: string;
+      filterAll: string;
+      filterIn: string;
+      filterOut: string;
+      today: string;
+      yesterday: string;
+      runningLabel: string;
+      emptyFiltered: string;
+      ariaLabel: string;
+    };
+    frozen: {
+      title: string;
+      body: string;
+      reasonTemplate: string;
+    };
     statusLabels: {
       pending: string;
       awaiting_proof: string;
@@ -2800,10 +2859,10 @@ const EN: AccountCopy = {
   wallet: {
     hero: {
       ariaLabel: "Wallet balance",
-      eyebrow: "HenryCo wallet · live",
+      eyebrow: "Wallet · live",
       availableLabel: "Available balance",
       balanceAriaTemplate: "Available balance {amount} {currency}",
-      settlementFallback: "Settled into your local currency at the day's HenryCo rate.",
+      settlementFallback: "Your wallet is held and settled in NGN.",
       ctas: { fund: "Fund wallet", withdraw: "Withdraw" },
       tiles: {
         verifiedLabel: "Verified balance",
@@ -2893,6 +2952,65 @@ const EN: AccountCopy = {
       proofUploaded: "Proof uploaded",
       awaitingProof: "Awaiting proof",
       ariaLabelTemplate: "Funding request {reference} for ₦{amount}",
+    },
+    vault: {
+      eyebrow: "Wallet",
+      liveLabel: "Live",
+      availableLabel: "Available balance",
+      balanceAriaTemplate: "Available balance {amount} {currency}",
+      syncedLabel: "Synced",
+      syncedAria: "Your balance is up to date",
+      onHoldLabel: "On hold",
+      totalLabel: "Total balance",
+      heldLabel: "Held for withdrawal",
+      arrivingTemplate: "{amount} arriving",
+      approxTemplate: "≈ {amount}",
+      approxNote: "Indicative rate · settles in NGN",
+      approxStaleNote: "Indicative rate",
+      settlementNgn: "Wallet settlement is in NGN.",
+      ctaFund: "Add money",
+      ctaWithdraw: "Withdraw",
+    },
+    alert: {
+      proofTitle: "Proof needed",
+      proofDescTemplate: "{reference} is waiting for your transfer proof.",
+      proofCta: "Add proof",
+      identityTitle: "Verify your identity",
+      identityDescTemplate: "{label}. Verify once to unlock withdrawals.",
+      identityCta: "Continue",
+    },
+    trend: {
+      title: "Balance trend",
+      subtitle: "Running balance across your recent activity",
+      emptyLabel: "Your balance trend appears once you have a little history.",
+      currentLabel: "Now",
+      ariaLabel: "Running wallet balance over time",
+    },
+    cashflow: {
+      title: "Cashflow",
+      periodLabel: "Last 30 days",
+      moneyInLabel: "Money in",
+      moneyOutLabel: "Money out",
+      netLabel: "Net",
+      emptyLabel: "No movement in the last 30 days.",
+      ariaLabel: "Money in versus money out over the last 30 days",
+    },
+    statement: {
+      title: "Statement",
+      metaTemplate: "{count} entries",
+      filterAll: "All",
+      filterIn: "Money in",
+      filterOut: "Money out",
+      today: "Today",
+      yesterday: "Yesterday",
+      runningLabel: "Balance",
+      emptyFiltered: "Nothing to show for this filter.",
+      ariaLabel: "Wallet statement",
+    },
+    frozen: {
+      title: "Wallet on hold",
+      body: "This wallet is temporarily on hold. Our team is reviewing it, and your balance is safe.",
+      reasonTemplate: "Reason: {reason}",
     },
     statusLabels: {
       pending: "Awaiting review",

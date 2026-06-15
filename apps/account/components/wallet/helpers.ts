@@ -135,7 +135,144 @@ export type WalletTransaction = {
   created_at: string;
   status: string;
   reference_type: string | null;
+  /**
+   * Running wallet balance (kobo) immediately AFTER this transaction posted.
+   * Authoritative column on customer_wallet_transactions — it powers the
+   * balance-trend line. Optional because legacy/projected rows may omit it.
+   */
+  balance_after_kobo?: number | null;
 };
+
+// ── Balance trend (running balance over time) ────────────────────────
+// The "Onyx Ledger" trend line reads the authoritative balance_after_kobo
+// the ledger already records per transaction — no client-side balance math,
+// no synthesis. Money stays provider-confirmed truth; we only chart it.
+
+export type BalancePoint = { atIso: string; balanceKobo: number };
+
+/**
+ * Oldest→newest series of post-transaction balances for the trend line.
+ * Input is newest-first (the page's order). Only rows that carry a finite
+ * `balance_after_kobo` contribute a point — we never invent a balance.
+ * Capped to the most recent `maxPoints` so the SVG stays light.
+ */
+export function runningBalanceSeries(
+  transactions: ReadonlyArray<WalletTransaction>,
+  maxPoints = 48,
+): BalancePoint[] {
+  const points: BalancePoint[] = [];
+  for (const tx of transactions) {
+    const balance = Number(tx.balance_after_kobo);
+    if (!Number.isFinite(balance)) continue;
+    if (!tx.created_at) continue;
+    points.push({ atIso: tx.created_at, balanceKobo: balance });
+  }
+  points.reverse(); // newest-first → oldest-first
+  if (points.length > maxPoints) return points.slice(points.length - maxPoints);
+  return points;
+}
+
+// ── Cashflow (money in AND money out) ────────────────────────────────
+// The legacy SpendStrip only counted debits; a real wallet shows both
+// directions. Credits = money in (top-ups, refunds, bonus, cashback),
+// debits = money out. Uses txSign so the inflow set stays single-sourced.
+
+export type Cashflow = {
+  inKobo: number;
+  outKobo: number;
+  netKobo: number;
+  inCount: number;
+  outCount: number;
+};
+
+/** Sum credits vs debits over the last `days` (default 30). */
+export function cashflowWindow(
+  transactions: ReadonlyArray<WalletTransaction>,
+  days = 30,
+): Cashflow {
+  const now = Date.now();
+  const windowMs = days * 24 * 3600_000;
+  let inKobo = 0;
+  let outKobo = 0;
+  let inCount = 0;
+  let outCount = 0;
+  for (const tx of transactions) {
+    const ms = Date.parse(tx.created_at);
+    if (!Number.isFinite(ms) || now - ms > windowMs || now - ms < 0) continue;
+    const sign = txSign(tx.type);
+    if (sign === "credit") {
+      inKobo += tx.amount_kobo;
+      inCount += 1;
+    } else if (sign === "debit") {
+      outKobo += tx.amount_kobo;
+      outCount += 1;
+    }
+  }
+  return { inKobo, outKobo, netKobo: inKobo - outKobo, inCount, outCount };
+}
+
+// ── Statement grouping (date-bucketed ledger) ────────────────────────
+
+export type StatementDayKind = "today" | "yesterday" | "older";
+
+export type StatementDayGroup = {
+  key: string; // YYYY-MM-DD (local)
+  dayKind: StatementDayKind;
+  /** Locale-formatted date for "older" groups (e.g. "12 March 2026"). */
+  dateLabel: string;
+  transactions: WalletTransaction[];
+};
+
+function localDayKey(d: Date): string {
+  return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d
+    .getDate()
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+/**
+ * Group transactions (newest-first) into calendar-day buckets, preserving
+ * order. The component supplies the localized "Today"/"Yesterday" copy and
+ * uses `dateLabel` for older groups, so no day label is hardcoded in copy.
+ */
+export function groupTransactionsByDay(
+  transactions: ReadonlyArray<WalletTransaction>,
+): StatementDayGroup[] {
+  const today = new Date();
+  const todayKey = localDayKey(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const yesterdayKey = localDayKey(yesterday);
+
+  const order: string[] = [];
+  const buckets = new Map<string, StatementDayGroup>();
+
+  for (const tx of transactions) {
+    const ms = Date.parse(tx.created_at);
+    const d = Number.isFinite(ms) ? new Date(ms) : today;
+    const key = localDayKey(d);
+    let group = buckets.get(key);
+    if (!group) {
+      const dayKind: StatementDayKind =
+        key === todayKey ? "today" : key === yesterdayKey ? "yesterday" : "older";
+      group = {
+        key,
+        dayKind,
+        dateLabel: d.toLocaleDateString(undefined, {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        transactions: [],
+      };
+      buckets.set(key, group);
+      order.push(key);
+    }
+    group.transactions.push(tx);
+  }
+
+  return order.map((key) => buckets.get(key)!);
+}
 
 export type DivisionSpendSlice = {
   key: string;

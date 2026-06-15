@@ -11,34 +11,25 @@ import FundingRequestForm from "@/components/wallet/FundingRequestForm";
 import WalletTopUpClient from "@/components/wallet/WalletTopUpClient";
 import WalletCreditedToast from "@/components/wallet/WalletCreditedToast";
 import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
-import { BackNav } from "@/components/wallet/BackNav";
+import { WalletPageHeader } from "@/components/wallet/WalletPageHeader";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
-import {
-  HeroCard,
-  EmptyStateCard,
-  DivisionLanding,
-} from "@henryco/dashboard-shell/surfaces";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Wallet · Add money — top-up surface.
+ * Wallet · Add money — top-up surface (Onyx Ledger).
  *
- * V3-15-JOB-B: card/bank/USSD (the proven hosted-redirect rail) is the DEFAULT
- * primary method; bank-transfer-with-proof remains as a fallback. The reconciler
- * runs on load so a buyer returning from hosted checkout sees the confirmed
- * top-up credited and the request marked verified (idempotent — never double).
+ * Card/bank/USSD (the proven hosted-redirect rail) is the DEFAULT primary
+ * method; bank transfer with proof remains as a fallback. The reconciler runs
+ * on load so a buyer returning from hosted checkout sees the confirmed top-up
+ * credited and the request marked verified (idempotent — never double-credits).
  */
 export default async function WalletFundingPage() {
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const accountCopy = getAccountCopy(locale);
-  const copy = accountCopy.wallet;
+  const copy = getAccountCopy(locale).wallet;
   const user = await requireAccountUser();
 
-  // Project any confirmed top-up onto the wallet before reading state.
-  // V3-FEEDBACK-01: when THIS load credited (provider-confirmed, idempotent),
-  // acknowledge it through the unified toast + chime.
   let creditedKobo = 0;
   try {
     const credited = await reconcileWalletTopupsForUser(user.id);
@@ -55,69 +46,72 @@ export default async function WalletFundingPage() {
       {creditedKobo > 0 ? (
         <WalletCreditedToast creditedKobo={creditedKobo} nonce={crypto.randomUUID()} />
       ) : null}
-      <BackNav href="/wallet" label={t("Back to wallet")} />
-      <DivisionLanding
-        hero={
-          <HeroCard
-            variant="compact"
-            tone="active"
-            eyebrow={t("Wallet · add money")}
-            headline={t("Add money to your Henry Onyx wallet")}
-            blurb={t(
-              "Top up instantly with card, bank transfer or USSD — your balance updates the moment payment is confirmed. Prefer a manual transfer? Use bank transfer with proof below.",
-            )}
-          />
-        }
-        sections={[
-          {
-            id: "wal-fund-instant",
-            title: t("Pay instantly"),
-            meta: t("Card, bank transfer or USSD — confirmed automatically."),
-            content: <WalletTopUpClient />,
-          },
-          {
-            id: "wal-fund-rail",
-            title: t("Bank transfer with proof"),
-            meta: t("Prefer to transfer manually? Send to these details, then upload proof."),
-            content: (
-              <div className="acct-wal__columns">
-                <AccountDetailsCard
-                  rail={data.rail}
-                  copyLabel={t("Copy")}
-                  copiedLabel={t("Copied")}
-                />
-                <FundingRequestForm />
-              </div>
-            ),
-          },
-          {
-            id: "wal-fund-list",
-            title: t("Funding requests"),
-            meta: t("{count} total").replace("{count}", String(data.requests.length)),
-            content:
-              data.requests.length === 0 ? (
-                <EmptyStateCard
-                  kicker={t("Funding · empty")}
-                  title={t("No funding requests yet")}
-                  body={t(
-                    "Start a top-up above. Card, bank transfer and USSD confirm automatically; a manual transfer moves into available funds once finance confirms the reference.",
-                  )}
-                />
-              ) : (
-                <div className="acct-wal__funding-list">
-                  {data.requests.map((request) => (
-                    <FundingRequestRow
-                      key={request.id}
-                      request={request}
-                      copy={copy.funding}
-                      statusLabels={copy.statusLabels}
-                    />
-                  ))}
-                </div>
-              ),
-          },
-        ]}
+
+      <WalletPageHeader
+        backHref="/wallet"
+        backLabel={t("Back to wallet")}
+        eyebrow={t("Wallet · Add money")}
+        title={t("Add money")}
+        blurb={t(
+          "Top up with card, bank transfer or USSD — your balance updates as soon as the payment is confirmed. Prefer a manual transfer? Use bank transfer with proof below.",
+        )}
       />
+
+      <section className="acct-wal__section">
+        <div className="acct-wal__section-head">
+          <h2 className="acct-wal__section-title acct-display">{t("Pay by card, transfer or USSD")}</h2>
+          <span className="acct-wal__section-meta">{t("Confirmed automatically.")}</span>
+        </div>
+        <WalletTopUpClient />
+      </section>
+
+      <section className="acct-wal__section">
+        <div className="acct-wal__section-head">
+          <h2 className="acct-wal__section-title acct-display">{t("Bank transfer with proof")}</h2>
+          <span className="acct-wal__section-meta">
+            {t("Send to these details, then upload your proof.")}
+          </span>
+        </div>
+        <div className="acct-wal__columns">
+          <AccountDetailsCard rail={data.rail} copyLabel={t("Copy")} copiedLabel={t("Copied")} />
+          <FundingRequestForm />
+        </div>
+      </section>
+
+      <section className="acct-wal__section">
+        <div className="acct-wal__section-head">
+          <h2 className="acct-wal__section-title acct-display">{t("Funding requests")}</h2>
+          <span className="acct-wal__section-meta">
+            {t("{count} total").replace("{count}", String(data.requests.length))}
+          </span>
+        </div>
+        {data.requests.length === 0 ? (
+          <div className="acct-wal__empty">
+            <span className="acct-wal__empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </span>
+            <h3 className="acct-wal__empty-title acct-display">{t("No funding requests yet")}</h3>
+            <p className="acct-wal__empty-body">
+              {t(
+                "Start a top-up above. Card, bank transfer and USSD confirm automatically; a manual transfer moves into available funds once finance confirms the reference.",
+              )}
+            </p>
+          </div>
+        ) : (
+          <div className="acct-wal__funding-list">
+            {data.requests.map((request) => (
+              <FundingRequestRow
+                key={request.id}
+                request={request}
+                copy={copy.funding}
+                statusLabels={copy.statusLabels}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
