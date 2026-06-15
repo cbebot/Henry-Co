@@ -116,8 +116,11 @@ Both views are derived from the same edges (Phase A audit edges to Phase B; Phas
 | V3-92 | V3-90 | — |
 | V3-93 | V3-24, V3-90 | — |
 | V3-94 | V3-13..V3-93 | — |
-| V3-95 | V3-94 | — |
-| V3-96 | V3-95 | — |
+| V3-95 | V3-94 | **D18 (W1 multi-currency close-blocker)** |
+| V3-96 | V3-95 | **D18 (W1 multi-currency close-blocker)** |
+
+> ### ⚠️ Closure is gated on W1 — international multi-currency
+> **V3-95 (launch-readiness) and V3-96 (showcase) CANNOT close until W1 (international multi-currency) is done** — the owner's hard rule: customers worldwide see prices, pay, and get paid in their own currency. Launch NGN-first, but do not declare V3 "finished" without it. W1 spans passes V3-14, V3-16, V3-21, V3-69, V3-84, V3-85 **plus** the non-code banking/regulatory buildout (`L19`/`L20` — forex accounts, cross-border licensing, per-market tax registration; longest lead time — start early). This edge is NOT a numbered-pass dependency, so it does not appear as a row above; it is a **close-blocker gate** recorded via `D18`. Full record: `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W1.
 
 ---
 
@@ -277,6 +280,12 @@ If owner answers all 11 hard-gated decisions today, the following passes become 
 - **D11 answered (YES):** V3-13 unblocked → Phase C cascade
 - **D12 answered:** ANTI-CLONE.md application becomes prescriptive
 
+**Plus three closure / deferred-workstream gates (NOT Phase-B-start) — recorded in `DEFERRED-STRATEGIC-WORKSTREAMS.md`:**
+
+- **D18 answered:** ratifies W1 international multi-currency → **gates V3-95 + V3-96 CLOSE** (V3 cannot close without it; start `L19`/`L20` banking/licensing early — long lead).
+- **D19 answered:** authorizes W2 Flutterwave payouts (sequenced after division checkout is live; advances V3-69).
+- **D20 answered:** authorizes W3 owner's personal AI portal (Phase D+; reuses V3-26).
+
 ---
 
 ## Self-verification
@@ -285,5 +294,6 @@ If owner answers all 11 hard-gated decisions today, the following passes become 
 - [x] All 96 passes appear in Section B
 - [x] No cycles (DAG)
 - [x] Owner decisions cross-referenced
+- [x] Closure gate D18 (W1 multi-currency close-blocker) recorded on V3-95/V3-96 + the deferred-workstream gates D18–D20 mapped (see DEFERRED-STRATEGIC-WORKSTREAMS.md)
 - [x] High-leverage passes ranked by unblock count
 - [x] Risk-class flagged per pass

@@ -332,10 +332,70 @@ V3-07b is the prompt that operationalizes that bar. Two sub-decisions need ratif
 
 ---
 
+## D18 — International multi-currency (the close-blocker)
+
+**Question:** International multi-currency — customers worldwide see prices, pay, and get paid in their own currency — is the owner's stated requirement for what "finished" means. Confirm it as a **mandatory pre-close requirement** (V3 cannot close without it), commit to the non-code banking/regulatory buildout it needs, and set its timing.
+
+**Context (recorded verbatim in intent):** *"Launch NGN-first, but the project is NOT complete and must NOT be closed without this."* This spans (a) a global processor (Stripe — the deferred one), (b) a real multi-currency pricing engine (NOT FX approximations), (c) multi-currency settlement + international payouts, (d) multi-jurisdiction tax (EU VAT/OSS, US sales tax, etc.), AND (e) a non-code banking/regulatory buildout (forex accounts, cross-border licensing, per-market tax registration — owner/legal/banking, not a coding task). Full detail in `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W1.
+
+**Options:**
+- **Option A (recommended):** YES — ratify W1 as a hard close-blocker gating `V3-95` (launch-readiness) and `V3-96` (showcase). Launch Nigeria-first in NGN; begin the banking/regulatory track (L19/L20) **early** because of its long lead time; schedule the engineering after NG-core launch is proven and likely after the intelligence phase (Phase D).
+- **Option B:** Treat multi-currency as a V4 program (formally move it out of V3 scope and allow V3 to close NGN-only). **Not recommended** — contradicts the owner's stated bar for "finished."
+- **Option C:** Partial — commit to a small market set (e.g. NGN + GBP + USD per D10 Option C) as the V3 close bar; full 12-market depth is V4.
+
+**Recommendation rationale:** The owner stated this as a hard rule. Option A honors it while preserving the disciplined NGN-first launch. The long-lead banking/regulatory work (L19/L20) is the real risk — it must start well before engineering or it blocks closure. Whichever market envelope is chosen flows from `D10`.
+
+**Blocks:** W1 (international multi-currency) → therefore blocks `V3-95`, `V3-96` close. Reads on `D1` (Stripe), `D10` (markets), `D5` (tax escalation).
+
+**Owner answer:** PENDING — owner to ratify before W1 is scheduled and before `V3-95`/`V3-96` close; begin the `L19`/`L20` banking/licensing track early (long lead time).
+
+---
+
+## D19 — Flutterwave payouts (money LEAVING)
+
+**Question:** Authorize the money-out rail (provider/seller payouts via Flutterwave Transfers/Payouts), and set its timing. The **same secret key** already in the estate authorizes payouts — no new credential. This is the highest-stakes money operation (money leaving is irrecoverable on error).
+
+**Context:** Needs money-grade rigor: balanced double-entry ledger posting, a guarded idempotent transfer RPC (no double-spend), webhook-confirmed transfer lifecycle (queued→processing→success/failed), balance + authorization checks, and reconciliation. Detail in `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W2. Advances `V3-69 partner-payouts`.
+
+**Options:**
+- **Option A (recommended):** Authorize, but **sequence after** division checkout is live and real provider/seller revenue exists to distribute; require explicit owner money sign-off at activation (same bar as the inbound money spine).
+- **Option B:** Defer entirely to Phase H `V3-69` with no near-term Flutterwave-specific rail.
+- **Option C:** Build the rail now in TEST-mode ahead of revenue, soak it, leave it flag-off until revenue exists.
+
+**Recommendation rationale:** There is nothing to pay out until revenue exists, so Option A's sequencing is honest. The credential and ledger primitives already exist, so the build is tractable when scheduled. Money-out demands the same never-trust-an-unconfirmed-state rigor proven on the inbound path.
+
+**Blocks:** W2 (Flutterwave payouts). Advances `V3-69`.
+
+**Owner answer:** PENDING — owner to authorize before W2 is built; sequence after division checkout is live and real provider/seller revenue exists, with explicit money sign-off at activation.
+
+---
+
+## D20 — Owner's personal AI portal (Phase D+)
+
+**Question:** Authorize a private, owner-only AI command portal (most-capable Claude model) that advises the owner, assists with company work, drafts content, and helps manage the company's social presence — and ratify its **human-in-the-loop social** posture.
+
+**Context:** Distinct from the customer-facing "HenryCo Intelligence" surfaces (`V3-28`..`V3-33`) and from automated `V3-46` owner reports — this is an interactive, owner-private, higher-capability assistant. Detail in `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W3.
+
+**CRITICAL CONSTRAINT (recommended as non-negotiable):** The AI **drafts/schedules/monitors/suggests**; the **owner approves** every outward-facing action. It does **NOT** autonomously post or reply — fully-autonomous posting risks platform-ToS violations (account bans) and brand damage. Social integration uses Business/Creator accounts via **official platform APIs**, within each platform's automation rules.
+
+**Options:**
+- **Option A (recommended):** Authorize, sequenced after core launch within/after the AI phase (Phase D); enforce human-in-the-loop social in the action path (not just UI); reuse the `V3-26` provider router; mint a dedicated `V3-NN` pass when scheduled.
+- **Option B:** Defer to V4.
+- **Option C:** Authorize the advisory/drafting half now (no social-automation surface) and defer social scheduling/monitoring to a later sub-pass.
+
+**Recommendation rationale:** High owner leverage, but it rides on the Phase D AI foundation and the company having a real operating surface to act on — hence after core launch. The human-in-the-loop constraint is the guardrail that keeps the company's own accounts safe; it must be structural, not advisory.
+
+**Blocks:** W3 (owner AI portal). Reads on `D3` (AI provider selection).
+
+**Owner answer:** PENDING — owner to authorize before W3 is scheduled (Phase D+); ratify the human-in-the-loop social posture as non-negotiable.
+
+---
+
 ## Self-verification
 
 - [x] Every decision has options + recommendation + rationale + which Pass IDs blocked
 - [x] D1–D17 covers payment, gaming, AI provider, AI margin, tax, KYC, email senders, mobile stack, monetization, localization, foundation gate, anti-clone, prior-pass reconciliation, V6 placement, branch hygiene, roadmap surface, V3-07b scope envelope
+- [x] D18–D20 cover the deferred strategic workstreams: international multi-currency (close-blocker), Flutterwave payouts (money-out), owner's personal AI portal — cross-referenced to `DEFERRED-STRATEGIC-WORKSTREAMS.md`
 - [x] D17 quotes the owner's verbatim bar for V3-07b
 - [x] D17 splits into D17.a (scope) + D17.b (locale completeness) for granular ratification
 - [x] D17 explicitly notes `packages/search-ui/` is owner-reserved
