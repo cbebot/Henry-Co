@@ -17,6 +17,7 @@ import {
 import { getMarketplaceAddresses } from "@/lib/marketplace/addresses";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
+import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const dynamic = "force-dynamic";
 
@@ -204,6 +205,7 @@ export default async function CheckoutPage({
           fullName: viewer.user.fullName ?? null,
           email: viewer.user.email ?? null,
         }}
+        cardEnabled={isMarketplaceCardCheckoutReady()}
       />
     </>
   );

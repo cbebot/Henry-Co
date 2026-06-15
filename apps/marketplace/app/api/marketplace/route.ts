@@ -25,6 +25,7 @@ import {
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
+import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const runtime = "nodejs";
 
@@ -495,11 +496,15 @@ export async function POST(request: Request) {
 
         const orderNo = makeRef("MKT-ORD");
         const rawPaymentMethod = text(formData, "payment_method") || "bank_transfer";
-        const paymentMethod = ["wallet_balance", "bank_transfer", "cod"].includes(rawPaymentMethod)
-          ? rawPaymentMethod
-          : "bank_transfer";
+        // V3-DIVISION-CHECKOUT-01: `card` is accepted ONLY when the test-mode flag is
+        // on — otherwise an unsupported value falls back to bank transfer, so a stray
+        // card request can never create an order that has no rail to pay it.
+        const allowedMethods = ["wallet_balance", "bank_transfer", "cod"];
+        if (isMarketplaceCardCheckoutReady()) allowedMethods.push("card");
+        const paymentMethod = allowedMethods.includes(rawPaymentMethod) ? rawPaymentMethod : "bank_transfer";
         const isWalletPayment = paymentMethod === "wallet_balance";
         const isBankTransfer = paymentMethod === "bank_transfer";
+        const isCardPayment = paymentMethod === "card";
         const paymentReference = text(formData, "payment_reference") || makeMarketplacePaymentReference();
         const bankReference = text(formData, "bank_reference");
         const proofFile = formData.get("proof");
@@ -610,9 +615,11 @@ export async function POST(request: Request) {
               "Order placed",
               isWalletPayment
                 ? "Paid from HenryCo wallet balance"
-                : paymentMethod === "cod"
-                  ? "Awaiting vendor acceptance"
-                  : "Payment proof submitted for finance verification",
+                : isCardPayment
+                  ? "Awaiting secure card payment"
+                  : paymentMethod === "cod"
+                    ? "Awaiting vendor acceptance"
+                    : "Payment proof submitted for finance verification",
               "HenryCo will hold seller funds in escrow until fulfillment and trust checks are complete.",
             ],
           } as never)
@@ -798,6 +805,9 @@ export async function POST(request: Request) {
             ? proofFile.name
             : text(formData, "proof_name") || null;
 
+        // Card orders get their payment record from the card-start (one row per
+        // charge attempt, anchored to the intent) — checkout only places the order.
+        if (!isCardPayment) {
         await admin.from("marketplace_payment_records").insert({
           order_id: orderId,
           order_no: orderNo,
@@ -826,6 +836,7 @@ export async function POST(request: Request) {
             proof_name: resolvedProofName,
           },
         } as never);
+        }
 
         await writeMarketplaceEvent(admin, {
           eventType: "order_checkout_submitted",
@@ -870,9 +881,11 @@ export async function POST(request: Request) {
             statusLabel:
               isWalletPayment
                 ? "paid from wallet and held in escrow"
-                : paymentMethod === "cod"
-                  ? "awaiting vendor acceptance"
-                  : "payment proof submitted for verification",
+                : isCardPayment
+                  ? "awaiting secure card payment"
+                  : paymentMethod === "cod"
+                    ? "awaiting vendor acceptance"
+                    : "payment proof submitted for verification",
           },
         });
 
@@ -894,7 +907,12 @@ export async function POST(request: Request) {
           });
         }
 
-        const response = redirectTo(request, `/track/${orderNo}?placed=1`);
+        // Card orders hand off to the card-start route (charge on the proven rail);
+        // every other method lands on order tracking.
+        const response = redirectTo(
+          request,
+          isCardPayment ? `/pay/${orderNo}/card` : `/track/${orderNo}?placed=1`,
+        );
         if (cartToken) {
           response.cookies.delete("marketplace_cart_token");
         }
