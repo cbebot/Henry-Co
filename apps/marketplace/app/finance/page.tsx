@@ -15,6 +15,7 @@ type PricingLine = {
 
 type PricingBreakdown = {
   lines: PricingLine[];
+  meta?: { unit?: unknown };
 };
 
 function hasPricingLines(value: unknown): value is PricingBreakdown {
@@ -66,11 +67,15 @@ export default async function FinancePage() {
               <div className="mt-3 grid gap-2 text-sm text-[var(--market-muted)]">
                 {payment.pricing_breakdown.lines.slice(0, 6).map((line, idx) => {
                   const amount = typeof line.amount === "object" && line.amount !== null && "amount" in line.amount ? line.amount.amount : line.amount;
+                  // V3-21 breakdowns are kobo (meta.unit); legacy rows predate the
+                  // marker and are in major units — read each accordingly.
+                  const isKobo = (payment.pricing_breakdown as PricingBreakdown).meta?.unit === "kobo";
+                  const amountNaira = isKobo ? Number(amount ?? 0) / 100 : Number(amount ?? 0);
 
                   return (
                     <div key={idx} className="flex items-center justify-between gap-3">
                       <span>{String(line.label || line.code || "Fee")}</span>
-                      <span className="font-semibold text-[var(--market-ink)]">{formatCurrency(Number(amount ?? 0))}</span>
+                      <span className="font-semibold text-[var(--market-ink)]">{formatCurrency(amountNaira)}</span>
                     </div>
                   );
                 })}

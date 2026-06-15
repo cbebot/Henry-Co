@@ -78,6 +78,13 @@ jobs:
       - name: Test (super-app)
         run: pnpm run test:workspace
 
+      # V3-21 / V3-VAT-01: the pure integer-kobo VAT/tax math (the rate engine +
+      # the ledger line builders). Gates: inclusive/exclusive carve, exempt,
+      # facilitator base, idempotency, kobo-exactness (float path == integer
+      # basis-point math), and the sale-revenue line assembly. RED on any drift.
+      - name: Test money math (tax rate engine + ledger VAT line builders)
+        run: pnpm run test:money-math
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 

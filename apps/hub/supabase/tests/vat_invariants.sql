@@ -217,6 +217,47 @@ begin
   raise notice 'PROOF c3 OK: replayed settlement is idempotent (no second entry)';
 end $$;
 
+-- ============ (g) V3-21: the INCLUSIVE output-VAT carve → post_sale_revenue is kobo-exact ============
+-- The V3-21 rate engine (@henryco/pricing computeVat, inclusive) carves output VAT OUT
+-- of a VAT-inclusive gross: vat = gross − round(gross / 1.075). This proves that exact
+-- carve, posted through post_sale_revenue, reconciles to the kobo (revenue + vat = gross)
+-- and keeps the ledger balanced, for a sweep of real-shaped grosses. PG `round()` on
+-- numeric is exact decimal (no float), and matches JS Math.round for positive values, so
+-- this is the SAME figure the TS engine emits (the engine↔ledger agreement is proven
+-- end-to-end in apps/account/scripts/prove-tax-engine.mts on fresh PGlite).
+do $$
+declare
+  v_rate constant numeric := 0.075;  -- MIRRORS @henryco/config TAX.vat.standardRate (NG 7.5%)
+  grosses bigint[] := array[1075, 10750, 10000, 250000, 1234567, 9999999, 250000000];
+  g bigint; v_vat bigint; v_rev bigint; v jsonb; v_entry uuid; c_rev bigint; c_vat bigint;
+begin
+  foreach g in array grosses loop
+    v_vat := g - round(g / (1 + v_rate));   -- the inclusive carve (engine: splitVatInclusive)
+    v_rev := g - v_vat;
+    v := payments_private.post_sale_revenue('v3-21-sale-' || g::text, g, v_vat);
+    if (v->>'posted')::boolean is not true then raise exception 'PROOF g FAILED: sale % not posted (%)', g, v; end if;
+    v_entry := (v->>'entry_id')::uuid;
+    select coalesce(sum(credit_minor) filter (where account_code='platform_revenue'),0),
+           coalesce(sum(credit_minor) filter (where account_code='vat_output_payable'),0)
+      into c_rev, c_vat from public.journal_lines where entry_id = v_entry;
+    if c_vat <> v_vat then raise exception 'PROOF g FAILED: gross % booked VAT % (expected carve %)', g, c_vat, v_vat; end if;
+    if c_rev <> v_rev then raise exception 'PROOF g FAILED: gross % booked revenue % (expected %)', g, c_rev, v_rev; end if;
+    if c_rev + c_vat <> g then raise exception 'PROOF g FAILED: revenue+VAT <> gross for %', g; end if;
+  end loop;
+  raise notice 'PROOF g OK: V3-21 inclusive VAT carve → post_sale_revenue kobo-exact across the sweep';
+end $$;
+
+-- ============ (g2) the carve degrades cleanly to zero output VAT on a zero-rated sale ============
+do $$
+declare v jsonb; v_entry uuid; n int;
+begin
+  v := payments_private.post_sale_revenue('v3-21-zero-rated', 10000, 0);  -- exempt/zero-rated → vat 0
+  v_entry := (v->>'entry_id')::uuid;
+  select count(*) into n from public.journal_lines where entry_id = v_entry and account_code = 'vat_output_payable';
+  if n <> 0 then raise exception 'PROOF g2 FAILED: zero-rated sale emitted a VAT line'; end if;
+  raise notice 'PROOF g2 OK: zero-rated/exempt sale posts revenue only (no output VAT line)';
+end $$;
+
 -- ============ (d) the ledger is STILL globally balanced after everything ============
 do $$
 declare r jsonb;

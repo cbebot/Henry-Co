@@ -13,6 +13,7 @@
     "lint:all": "pnpm -r --filter \"./apps/*\" run lint",
     "typecheck:all": "pnpm -r --filter \"./apps/*\" run typecheck",
     "test:workspace": "pnpm --filter @henryco/super-app run test:ci",
+    "test:money-math": "tsx --test packages/pricing/src/__tests__/*.test.ts packages/pricing/src/tax/__tests__/*.test.ts && pnpm --filter @henryco/payment-router run test",
     "ci:validate": "pnpm run lint:all && pnpm run typecheck:all && pnpm run test:workspace && pnpm run build:all",
     "data-governance:sanity": "node scripts/data-governance-sanity.mjs",
     "schema-drift:check": "node scripts/ci/schema-drift-check.mjs",

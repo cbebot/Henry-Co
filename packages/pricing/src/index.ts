@@ -29,6 +29,7 @@ export {
 } from './exchange-rate';
 
 // V3-VAT-01 — VAT math (output VAT on sales, inclusive-split for processor fees).
+import type { VatRatePolicy, VatTreatment } from './vat';
 export {
   splitVatInclusive,
   computeOutputVat,
@@ -36,6 +37,40 @@ export {
   type VatTreatment,
   type VatRatePolicy,
 } from './vat';
+
+// V3-21 — the tax RATE ENGINE: a configurable, integer-exact output-VAT line on
+// the marketplace + division checkout breakdown (reuses the V3-VAT-01 machinery;
+// the rate + treatment are dependency-injected from @henryco/config — never hardcoded).
+import { applyVatToBreakdown, type ApplyVatOptions } from './tax/apply';
+import type { TaxConvention } from './tax/compute-tax';
+export {
+  computeVat,
+  computeTax,
+  describeTaxTelemetry,
+  TAX_TELEMETRY,
+  type TaxConvention,
+  type VatComputation,
+  type TaxInput,
+  type TaxResult,
+  type ResolvedRate,
+} from './tax/compute-tax';
+export { applyVatToBreakdown, type ApplyVatOptions } from './tax/apply';
+export { InternalTaxAdapter, type TaxEngineAdapter, type TaxRateResolver } from './tax/adapter';
+
+/**
+ * The output-VAT policy a checkout breakdown carries its `tax` line under. The
+ * caller resolves it from `@henryco/config` (resolveCheckoutVat) and injects it,
+ * so the rate is never hardcoded in pricing. Omit it → the breakdown carries NO
+ * tax line (backward-compatible with every pre-V3-21 caller).
+ */
+export type CheckoutVatPolicy = {
+  treatment: VatTreatment;
+  convention: TaxConvention;
+  ratePolicy: VatRatePolicy;
+  /** Line codes forming the platform's taxable base; omit to tax the whole sale. */
+  taxableLineCodes?: readonly string[];
+  jurisdiction?: string;
+};
 
 // V3-49 — services-catalog pricing model (display hint validator, not a quote engine).
 export {
@@ -84,6 +119,13 @@ export type PricingBreakdown = {
     ruleBookKey: string;
     ruleVersion: string;
     computedAt: string;
+    /**
+     * The minor unit the amounts are denominated in. `"kobo"` asserts the Money
+     * contract (NGN minor units) — set by builders that produce contract-correct
+     * kobo amounts, so a persisted breakdown is self-describing (legacy rows that
+     * predate this marker may be in major units and must be read accordingly).
+     */
+    unit?: "kobo";
   };
 };
 
@@ -172,6 +214,13 @@ export function computeMarketplaceCheckoutBreakdown(input: {
   deliveryAmount?: number | null;
   /** Optional discount amount (positive int reduces total). */
   discountAmount?: number | null;
+  /**
+   * V3-21 — the output-VAT policy. When present, the breakdown carries a `tax`
+   * line (inclusive: carved out of customerTotal, total unchanged; exclusive:
+   * added on top). Omit it → no tax line (pre-V3-21 behaviour). The rate is
+   * injected (resolveCheckoutVat from @henryco/config), never hardcoded here.
+   */
+  tax?: CheckoutVatPolicy;
 }): PricingBreakdown {
   const rules = input.rules ?? defaultMarketplacePricingRules();
   const currency = rules.currency;
@@ -208,7 +257,7 @@ export function computeMarketplaceCheckoutBreakdown(input: {
 
   const customerTotal = Math.max(0, sumAmounts(lines));
 
-  return {
+  const breakdown: PricingBreakdown = {
     currency,
     lines,
     totals: {
@@ -222,8 +271,22 @@ export function computeMarketplaceCheckoutBreakdown(input: {
       ruleBookKey: rules.key,
       ruleVersion: rules.version,
       computedAt: new Date().toISOString(),
+      unit: "kobo",
     },
   };
+
+  return input.tax
+    ? applyVatToBreakdown(
+        breakdown,
+        {
+          treatment: input.tax.treatment,
+          convention: input.tax.convention,
+          taxableLineCodes: input.tax.taxableLineCodes,
+          jurisdiction: input.tax.jurisdiction,
+        },
+        input.tax.ratePolicy,
+      )
+    : breakdown;
 }
 
 export type PropertyPricingRuleSet = {
@@ -268,6 +331,8 @@ export function computePropertySubmissionFeeBreakdown(input: {
     | "verified_property";
   requiresInspection: boolean;
   premiumPlacementRequested?: boolean;
+  /** V3-21 — output-VAT policy (see computeMarketplaceCheckoutBreakdown). */
+  tax?: CheckoutVatPolicy;
 }): PricingBreakdown {
   const rules = input.rules ?? defaultPropertyPricingRules();
   const currency = rules.currency;
@@ -298,7 +363,7 @@ export function computePropertySubmissionFeeBreakdown(input: {
 
   const total = Math.max(0, sumAmounts(lines));
 
-  return {
+  const breakdown: PricingBreakdown = {
     currency,
     lines,
     totals: {
@@ -314,5 +379,18 @@ export function computePropertySubmissionFeeBreakdown(input: {
       computedAt: new Date().toISOString(),
     },
   };
+
+  return input.tax
+    ? applyVatToBreakdown(
+        breakdown,
+        {
+          treatment: input.tax.treatment,
+          convention: input.tax.convention,
+          taxableLineCodes: input.tax.taxableLineCodes,
+          jurisdiction: input.tax.jurisdiction,
+        },
+        input.tax.ratePolicy,
+      )
+    : breakdown;
 }
 

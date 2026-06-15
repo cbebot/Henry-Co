@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, resolveCheckoutVat } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
@@ -24,7 +24,7 @@ import {
 } from "@/lib/marketplace/payment";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
-import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
+import { computeMarketplaceCheckoutBreakdown, defaultMarketplacePricingRules } from "@henryco/pricing";
 
 export const runtime = "nodejs";
 
@@ -513,14 +513,53 @@ export async function POST(request: Request) {
             sum + Number(item.price || 0) * Number(item.quantity || 0),
           0
         );
+        // V3-21 — carry the correct output-VAT line on the checkout breakdown.
+        //
+        // The breakdown is built in KOBO (the canonical money minor unit the Money
+        // contract, the V3-18 receipt, and the ledger all assume) so the output-VAT
+        // line + the persisted pricing_breakdown are kobo-correct — NOT a naira
+        // figure in a kobo field. Catalog prices are whole naira, so we scale the
+        // subtotal + the default rule thresholds by 100 once; the kobo breakdown is
+        // exactly the naira breakdown ×100, so the money charged (amountKobo) and
+        // every naira-denominated order column below are UNCHANGED in value.
+        //
+        // The marketplace treatment (principal / VAT-inclusive / standard-rated) is
+        // config-governed + accountant-flagged (resolveCheckoutVat). Inclusive → the
+        // customer total does not change; the line only reveals the VAT inside the price.
+        const checkoutVat = resolveCheckoutVat({ division: "marketplace" });
+        const baseRules = defaultMarketplacePricingRules();
+        const rulesKobo = {
+          ...baseRules,
+          delivery: {
+            freeThresholdAmount: baseRules.delivery.freeThresholdAmount * 100,
+            baseAmount: baseRules.delivery.baseAmount * 100,
+          },
+          platformFee: {
+            ...baseRules.platformFee,
+            flatAmount: baseRules.platformFee.flatAmount * 100,
+            capAmount: baseRules.platformFee.capAmount * 100,
+          },
+        };
         const breakdown = computeMarketplaceCheckoutBreakdown({
-          itemsSubtotalAmount: subtotal,
+          rules: rulesKobo,
+          itemsSubtotalAmount: Math.round(subtotal * 100),
+          tax: {
+            treatment: checkoutVat.treatment,
+            convention: checkoutVat.convention,
+            ratePolicy: checkoutVat.ratePolicy,
+            taxableLineCodes: checkoutVat.taxableLineCodes,
+            jurisdiction: checkoutVat.rate?.country ?? "NG",
+          },
         });
-        const shippingTotal = breakdown.lines.find((line) => line.code === "delivery")?.amount.amount ?? 0;
-        const platformFeeTotal =
+        const shippingTotalKobo = breakdown.lines.find((line) => line.code === "delivery")?.amount.amount ?? 0;
+        const platformFeeTotalKobo =
           breakdown.lines.find((line) => line.code === "platform_fee")?.amount.amount ?? 0;
-        const grandTotal = breakdown.totals.customerTotal.amount;
-        const amountKobo = Math.max(0, Math.round(grandTotal * 100));
+        // customerTotal is already kobo (inclusive VAT does not move it).
+        const amountKobo = Math.max(0, breakdown.totals.customerTotal.amount);
+        // The existing order columns stay NAIRA-denominated (value unchanged).
+        const shippingTotal = shippingTotalKobo / 100;
+        const platformFeeTotal = platformFeeTotalKobo / 100;
+        const grandTotal = amountKobo / 100;
         let walletSnapshot: Awaited<ReturnType<typeof getMarketplaceWalletSnapshot>> | null = null;
         let proofUpload: Awaited<ReturnType<typeof uploadMarketplacePaymentProof>> | null = null;
 
