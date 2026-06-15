@@ -211,3 +211,24 @@ jobs:
 
       - name: Assert role-membership write-lockdown invariant (writes service-role-only; authenticated INSERT rejected)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/membership_grant_invariant.sql
+
+      # SEC-HARDEN-03: close the world-writable DATA-table class. The same
+      # "Service role full access" FOR ALL TO public USING(true) policy that
+      # SEC-HARDEN-02 removed from the membership tables also sits on ~40
+      # non-membership data tables (jobs/logistics/referral/trust/platform/studio +
+      # hub_homepage_content) out-of-band — a data-integrity/confidentiality hole,
+      # not escalation. Reproduce a representative slice (one+ table per disposition:
+      # service-role-only, public-reference-read, legitimate-authenticated-writer,
+      # and the deferred money-adjacent studio_payments), apply the lockdown
+      # migration, and assert the end-state: locked tables are service-role-write
+      # only, Cat-2 keeps a public read, Cat-3 keeps its scoped writer, no new
+      # world-writable table appears outside the documented deferral allowlist, an
+      # authenticated INSERT is rejected, and the academy seed is reconciled.
+      - name: Seed world-writable data surface (reproduce the prod data-integrity hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_03_min.sql
+
+      - name: Apply SEC-HARDEN-03 world-writable lockdown migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260614120000_sec_harden_03_world_writable_lockdown.sql
+
+      - name: Assert world-writable data-table lockdown invariant (writes service-role-only; class-drift guarded; authenticated INSERT rejected)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_03_grant_invariant.sql
