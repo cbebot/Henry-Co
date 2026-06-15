@@ -1,0 +1,21 @@
+{
+  "name": "henry-onyx-inbound-email-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Email Worker that captures inbound mail for the Henry Onyx owner inbox and forwards it (HMAC-signed) to the hub webhook.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "secret:set": "wrangler secret put INBOUND_EMAIL_WEBHOOK_SECRET"
+  },
+  "dependencies": {
+    "postal-mime": "^2.4.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250620.0",
+    "typescript": "^5.6.3",
+    "wrangler": "^3.95.0"
+  }
+}

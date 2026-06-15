@@ -1,0 +1,23 @@
+# Henry Onyx — owner inbound-email Worker (Cloudflare Email Routing target).
+#
+# Deploy:  cd workers/owner-inbound-email && npm install && npx wrangler deploy
+# Secret:  npx wrangler secret put INBOUND_EMAIL_WEBHOOK_SECRET
+#          (must match INBOUND_EMAIL_WEBHOOK_SECRET on the hub app)
+#
+# Then in the Cloudflare dashboard: Email Service > Email Routing > Routing Rules
+#   -> enable the Catch-all rule -> Action: "Send to a Worker" -> this Worker.
+
+name = "henry-onyx-inbound-email"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# REQUIRED: replace with the deployed hub app URL before `wrangler deploy`.
+# This is the only place the Worker learns where to forward parsed mail.
+INBOUND_WEBHOOK_URL = "https://REPLACE-WITH-HUB-DOMAIN/api/inbound/email"
+# Cap on total base64 attachment bytes forwarded inline (rest -> metadata only).
+MAX_INLINE_BASE64_BYTES = "3500000"
+
+# INBOUND_EMAIL_WEBHOOK_SECRET is a SECRET — never put it here.
+# Set it with: npx wrangler secret put INBOUND_EMAIL_WEBHOOK_SECRET
