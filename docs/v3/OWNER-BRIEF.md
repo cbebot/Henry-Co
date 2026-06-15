@@ -14,6 +14,14 @@ V3 is the 12-pillar build that turns HenryCo from a multi-division V2 baseline i
 
 ---
 
+## ⚠️ The one thing that blocks closing V3 (read this)
+
+**Launch Nigeria-first in Naira. But V3 is NOT finished — and must NOT be closed — until customers worldwide can see prices, pay, and get paid in their own currency.** That means a global processor (Stripe), a real multi-currency pricing engine (not FX approximations), multi-currency settlement + international payouts, multi-jurisdiction tax (EU VAT/OSS, US sales tax…), **and** a banking/regulatory buildout that you + legal + banking own (forex accounts, cross-border licensing, per-market tax registration). The banking/licensing track has the **longest lead time** — start it early. Full record: `DEFERRED-STRATEGIC-WORKSTREAMS.md` (§W1); decision `D18`; prerequisites `L19`/`L20`.
+
+Two more deferred-but-recorded workstreams sit alongside it: **Flutterwave payouts** (money leaving — after checkout is live, decision `D19`) and your **personal owner AI portal** (private Opus-4.8 assistant; human-in-the-loop social, never autonomous posting — decision `D20`). These don't block Phase B; they're captured so no session loses them.
+
+---
+
 ## The nine phases in one line each
 
 - **A — Audit:** ground truth. This pass. Done.
@@ -94,7 +102,8 @@ Open each prompt at `docs/v3/prompts/v3-NN-*.md` and copy it into a fresh Claude
 - `docs/v3/AUDIT-BASELINE.md` — ground truth current state
 - `docs/v3/PASS-REGISTER.md` — every pass with ID, slug, phase, deps, risk
 - `docs/v3/MASTER-PLAN.md` — execution roadmap per phase
-- `docs/v3/DECISIONS-REQUIRED.md` — your decision list with recommendations
+- `docs/v3/DECISIONS-REQUIRED.md` — your decision list with recommendations (now D1–D20)
+- `docs/v3/DEFERRED-STRATEGIC-WORKSTREAMS.md` — **deferred-but-required scope: multi-currency close-blocker (W1), payouts (W2), owner AI portal (W3)**
 - `docs/v3/DEPENDENCIES.md` — directed graph: what blocks what
 - `docs/v3/LEGAL-AND-BUSINESS.md` — non-code prerequisites (legal entity, tax, KYC vendor, app store accounts, etc.)
 - `docs/v3/ANTI-CLONE.md` — defense-in-depth patterns to apply across V3

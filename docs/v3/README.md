@@ -19,13 +19,14 @@ If you're starting a pass, open `prompts/v3-NN-*.md` for that pass and execute.
 2. **`AUDIT-BASELINE.md`** — Ground-truth state of HenryCo as of audit (2026-05-17). Builds on the V5-5 V3 discovery inventory.
 3. **`PASS-REGISTER.md`** — All 96 passes enumerated. Look up any pass by ID here.
 4. **`MASTER-PLAN.md`** — Execution roadmap per phase. Wave structure. Timeline.
-5. **`DECISIONS-REQUIRED.md`** — 16 owner decisions; each blocks specific passes.
-6. **`DEPENDENCIES.md`** — Directed graph: what blocks what; what unblocks when.
-7. **`LEGAL-AND-BUSINESS.md`** — 18 non-code prerequisites (legal entities, KYC contracts, app store accounts, trademarks).
-8. **`ANTI-CLONE.md`** — 12 defense-in-depth patterns that cross-cut every pass.
-9. **`INTEGRATION-KEYS.md`** — Single source of truth for env vars + integrations. **Every pass cites this.** No hardcoded keys, anywhere.
-10. **`prompts/v3-NN-*.md`** — One self-contained prompt per pass (96 files).
-11. **`audit/`** — Deeper per-domain audits (foundation-base-lock + pillar-gap-map; deferred for follow-up session due to sub-agent rate-limit).
+5. **`DECISIONS-REQUIRED.md`** — 20 owner decisions; each blocks specific passes.
+6. **`DEFERRED-STRATEGIC-WORKSTREAMS.md`** — Deferred-but-required strategic scope: **international multi-currency (W1 — the close-blocker), Flutterwave payouts (W2), the owner's personal AI portal (W3)**, plus the marketplace-LIVE VAT gate + per-division checkout-activation pattern. Deps, gates, sequencing.
+7. **`DEPENDENCIES.md`** — Directed graph: what blocks what; what unblocks when.
+8. **`LEGAL-AND-BUSINESS.md`** — 20 non-code prerequisites (legal entities, KYC contracts, app store accounts, trademarks, multi-currency banking + licensing).
+9. **`ANTI-CLONE.md`** — 12 defense-in-depth patterns that cross-cut every pass.
+10. **`INTEGRATION-KEYS.md`** — Single source of truth for env vars + integrations. **Every pass cites this.** No hardcoded keys, anywhere.
+11. **`prompts/v3-NN-*.md`** — One self-contained prompt per pass (96 files).
+12. **`audit/`** — Deeper per-domain audits (foundation-base-lock + pillar-gap-map; deferred for follow-up session due to sub-agent rate-limit).
 
 ---
 

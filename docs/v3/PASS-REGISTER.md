@@ -303,6 +303,9 @@ Cross-reference DECISIONS-REQUIRED.md.
 - D10 (per-market localization commitment): blocks V3-84
 - D11 (Foundation Lock acceptance): blocks Phase C start
 - D17 (V3-07b operator-surface i18n scope sign-off): blocks V3-07b only; does NOT block any phase
+- **D18 (international multi-currency close-blocker): blocks W1 → therefore blocks V3-95 + V3-96 CLOSE** (see Deferred strategic workstreams below)
+- **D19 (Flutterwave payouts authorization): blocks W2; advances V3-69**
+- **D20 (owner's personal AI portal authorization): blocks W3**
 
 ---
 
@@ -319,6 +322,25 @@ A **named track**, distinct from the numbered `V3-NN` global plan and the older 
 **Hard lines preserved by V3-COMMAND-02:** the real owner surface (`apps/hub/app/owner/(command)`) and staff surface (`apps/staff`) are left running **untouched** — live extraction is V3-COMMAND-03. No payment surface, design token, or public site is touched. Zero hardcoded domains (`henryDomain()` / `henrySubdomain()` only). Zero code-identifier changes (`@henryco/*` unchanged).
 
 **V3-COMMAND-03 gate:** the finance spine (V3-22) — so money-at-stake totals are authoritative — plus the real `henryonyx.com` subdomains.
+
+---
+
+## Deferred strategic workstreams (W1–W5)
+
+A **named track** of strategic scope the owner has deliberately deferred past the Nigeria-first core launch. These do **not** renumber the 96 passes — they either refine/expand existing passes or earn a `V3-NN` number only when scheduled. Full record (deps, gates, sequencing): **`DEFERRED-STRATEGIC-WORKSTREAMS.md`**.
+
+> ### ⚠️ W1 is a CLOSE-BLOCKER
+> **International multi-currency — customers worldwide see prices, pay, and get paid in their own currency — is the owner's hard rule for "finished." Launch NGN-first, but `V3-95` (launch-readiness) and `V3-96` (showcase) CANNOT close until W1 is done.** It spans a global processor (Stripe), a real multi-currency pricing engine (not FX approximations), multi-currency settlement + international payouts, multi-jurisdiction tax (EU VAT/OSS, US sales tax…), **and** a non-code banking/regulatory buildout (forex accounts, cross-border licensing, per-market tax registration — `L19`/`L20`). The banking/licensing track is the longest pole — start it early.
+
+| ID | Workstream | Class | Gates on | Maps to | Owner decision |
+|---|---|---|---|---|---|
+| W1 | International multi-currency | **⚠️ CLOSE-BLOCKER** | NG-core proven; likely after Phase D | V3-14, V3-16, V3-21, V3-69, V3-84, V3-85 + L1/L2/L3/L12 + L19/L20 | **D18** + D1 + D10 |
+| W2 | Flutterwave payouts (money-out) | Money-grade | Division checkout live + revenue to distribute | advances V3-69; V3-17, V3-19 | **D19** |
+| W3 | Owner's personal AI portal | New (Phase D+) | Core launch; V3-26 foundation | new pass; reuses V3-26; ≠ V3-28..33 / V3-46 | **D20** + D3 |
+| W4 | Marketplace-LIVE VAT gate | Money gate | V3-21 output-VAT | V3-21; blocks TEST→LIVE flip | (covered by D5) |
+| W5 | Per-division checkout-activation pattern | Playbook | per-division: W4 + soak | V3-13, V3-15, V3-16 | per-division operational |
+
+**Ground-truth note:** the proven rail (`packages/payment-router/` V3-13, the double-entry ledger + VAT settlement seam, the clearing→revenue RPCs) is on `origin/main`. The per-division `cardCta` ignition seam + feature flags (W5) are in-flight (worktree), not yet on main.
 
 ---
 

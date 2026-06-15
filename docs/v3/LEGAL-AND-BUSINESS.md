@@ -39,6 +39,8 @@ This is the list of things owner+lawyer+accountant work on in parallel with engi
 | L16 | Data residency commitments per market | Compliance | V3-84, V3-93 | 16 |
 | L17 | Cookie + tracker consent banner compliance (per market) | Privacy | V3-93 | 17 |
 | L18 | Refund + dispute policy published (per market) | Operational | V3-19, V3-25 | 18 |
+| L19 | Forex / multi-currency bank accounts + cross-border money-movement licensing | Financial / Compliance | **W1** (international multi-currency → V3-95/V3-96 close), V3-69, V3-85 | **start early — long lead** |
+| L20 | Per-market tax registration (EU VAT/OSS, US sales tax, etc.) | Tax | **W1(d)**, V3-21 (international), V3-84 | per committed market (D10) |
 
 ---
 
@@ -334,6 +336,40 @@ This is the list of things owner+lawyer+accountant work on in parallel with engi
 
 ---
 
+## L19 — Forex / multi-currency bank accounts + cross-border money-movement licensing
+
+**Requirement:** Bank accounts capable of holding and settling in multiple currencies (forex/multi-currency accounts), plus whatever cross-border money-movement authorization each target market requires (money-transmitter / EMI / PSD2-equivalent, or a merchant-of-record that holds it for you). Extends L1 (international entity), L3 (money-handling license), L12 (bank account).
+
+**Why:** This is the **non-code half of W1 international multi-currency** — the owner's close-blocker. Customers worldwide paying and getting paid in their own currency requires settling in those currencies and moving money across borders legally. No amount of code substitutes for the bank accounts and licenses. **This is the longest-lead item on the path to V3 closure** — licensing + multi-currency banking can take many months, so it must begin well before the engineering (W1) can ship.
+
+**Blocks:** **W1** (international multi-currency) → therefore `V3-95` (launch-readiness) and `V3-96` (showcase) close; also V3-69 (international payouts), V3-85 (per-market routing).
+
+**Recommended path:**
+- For each committed international market (per D10): open a forex/multi-currency business account (or use Wise Business / a banking partner with multi-currency capacity), under the HenryCo legal entity for that market (L1).
+- Prefer a **merchant-of-record** (Paddle, Lemon Squeezy, Polar) or a licensed payment partner that holds the cross-border money-movement authorization, to avoid HenryCo directly becoming a regulated money-transmitter in every market.
+- Where direct licensing is unavoidable, engage financial-services counsel per market and budget the multi-month timeline.
+
+**Owner action:** once D10 commits markets and D18 ratifies the close-blocker, engage banking + financial-services counsel **early**; decide MoR-vs-direct per market; open accounts.
+
+---
+
+## L20 — Per-market tax registration (international VAT/OSS, US sales tax)
+
+**Requirement:** Tax registration in each international market HenryCo sells into: EU VAT (incl. the OSS one-stop-shop), UK VAT, US sales tax (per-state nexus), and other regimes as markets are committed. Extends L2 (Nigeria VAT) to the multi-jurisdiction world.
+
+**Why:** The **multi-jurisdiction tax component of W1 (W1(d))** and the international expansion of `V3-21 payments-tax-engine` cannot compute or remit tax without registration in each market. Selling internationally without it accrues tax liability with no remittance path — a compliance exposure.
+
+**Blocks:** **W1(d)** (multi-jurisdiction tax), V3-21 (international scope), V3-84 (global localization).
+
+**Recommended path:**
+- Register only when revenue in a market crosses its threshold (e.g. UK £85k VAT threshold; EU OSS for distance sales; US economic-nexus thresholds per state).
+- Pair with the `D5` tax-engine escalation: roll-our-own Nigeria-VAT first; drop in a vendor (Avalara / Stripe Tax) when international markets demand it.
+- A merchant-of-record (L19) can absorb much of this burden by being the tax-remitting seller of record.
+
+**Owner action:** owner + accountant track per-market turnover; register as thresholds approach; decide MoR-vs-direct tax handling alongside L19.
+
+---
+
 ## Recommended acquisition order
 
 If owner can only fund the legal/business work in order, this is the critical path:
@@ -355,13 +391,18 @@ If owner can only fund the legal/business work in order, this is the critical pa
 15. **L15** (AML program scoped) — week 10
 16. **L7** (gaming legal opinion, IF D2 ≠ Option B) — week 12+
 17. **L16** (data residency commit, IF international) — when D10 decided
+18. **L19** (forex / multi-currency banking + cross-border licensing, IF international) — **start as early as D10 commits a market; longest lead time on the path to V3 close (W1)**
+19. **L20** (per-market tax registration, IF international) — as per-market revenue thresholds approach
+
+> **W1 close-blocker note:** L19 + L20 are the non-code half of international multi-currency (`DEFERRED-STRATEGIC-WORKSTREAMS.md` §W1, ratified via `D18`). V3 cannot close (`V3-95`/`V3-96`) until they — and the W1 engineering — are done. Begin L19 banking/licensing **before** the engineering; it is the long pole.
 
 ---
 
 ## Self-verification
 
-- [x] 18 non-code prerequisites enumerated
+- [x] 20 non-code prerequisites enumerated
 - [x] Each has requirement + why + Pass IDs blocked + recommended path + owner action
 - [x] Acquisition order recommended with rough weeks
 - [x] Cross-references to PASS-REGISTER.md and DECISIONS-REQUIRED.md
+- [x] L19 + L20 capture the non-code banking/regulatory + tax-registration buildout for W1 (international multi-currency close-blocker)
 - [x] Closeable inline ("Closed YYYY-MM-DD: <evidence>")

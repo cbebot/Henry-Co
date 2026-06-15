@@ -151,7 +151,7 @@ V3 is the 12-pillar build that turns HenryCo from a multi-division V2 baseline i
 
 **Owner gates:** D8 (mobile stack), D10 (per-market localization commitment).
 
-**Exit:** Public API documented and used by at least one partner; mobile apps shipped to App Store + Play Store; observability depth in place; V3 launch announced.
+**Exit:** Public API documented and used by at least one partner; mobile apps shipped to App Store + Play Store; observability depth in place; V3 launch announced. **⚠️ Closure is gated on W1 — V3 does NOT close (V3-95/V3-96) until international multi-currency is done. Launch NGN-first; do not declare V3 "finished" without global-currency parity. See "Deferred strategic workstreams" below + `DEFERRED-STRATEGIC-WORKSTREAMS.md`.**
 
 ---
 
@@ -180,6 +180,19 @@ If owner wants to start a Phase C pass in parallel with Phase B for time pressur
 | Phase G | Phase B + most of Phase C close | New product surfaces need real payments + identity to be honest |
 | Phase H | Phase G partner-adjacent passes (V3-50) close | Business suites assume verified-provider model exists |
 | Phase I | All prior phases produce content for API + closure | Public API exposes only what's solid; closure verifies the whole |
+| **Phase I CLOSE (V3-95 / V3-96)** | **W1 international multi-currency is done** | **Owner hard rule: V3 is not "finished" until customers worldwide see prices, pay, and get paid in their own currency. Launch NGN-first; do not close without it. (`D18`, `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W1.)** |
+
+---
+
+## Deferred strategic workstreams (record — do not lose)
+
+The owner has named three strategic workstreams that are **deferred past the Nigeria-first core launch, not dropped**. They are recorded in full (deps, gates, sequencing) in `DEFERRED-STRATEGIC-WORKSTREAMS.md`; the owner gates are `D18`–`D20`.
+
+- **W1 — International multi-currency (⚠️ CLOSE-BLOCKER).** Customers worldwide see prices, pay, and get paid in their own currency: a global processor (Stripe), a real multi-currency pricing engine (not FX approximations), multi-currency settlement + international payouts, multi-jurisdiction tax (EU VAT/OSS, US sales tax…), **and** the non-code banking/regulatory buildout (forex accounts, cross-border licensing, per-market tax registration — `L19`/`L20`). **Sequencing:** after NG-core launch is proven, likely after Phase D; **the banking/licensing track must start early (longest lead time).** **V3 must NOT close (Phase I) without it.**
+- **W2 — Flutterwave payouts (money LEAVING).** The highest-stakes money rail. Same secret key authorizes payouts (no new credential). Balanced ledger + guarded idempotent transfer RPC + webhook-confirmed lifecycle + balance/auth checks + reconciliation. **Sequencing:** after division checkout is live and real provider/seller revenue exists to distribute. Advances `V3-69`.
+- **W3 — Owner's personal AI portal (Phase D+).** A private, owner-only Opus-4.8 assistant that advises, assists with company work, drafts content, and helps manage social — with **human-in-the-loop social** (AI drafts/schedules/monitors/suggests; owner approves every outward action; never autonomous posting; Business/Creator accounts via official APIs). **Sequencing:** after core launch, within/after the AI phase (reuses `V3-26`).
+
+Also recorded there: the **marketplace-LIVE VAT gate** (W4 → V3-21 gates the TEST→LIVE checkout flip) and the **per-division checkout-activation pattern** (W5 — one division at a time on the proven rail).
 
 ---
 
