@@ -71,10 +71,18 @@ export async function callPaymentRpc<T = unknown>(
   } catch (e) {
     const err = e as { message?: string; code?: string };
     // Observability: money-RPC connection/exec failures were silently swallowed,
-    // which masked the real cause of unconfirmed payments. Log the pg error (code +
-    // message — no connection string / no secrets) so confirmation failures are
-    // visible in the runtime logs.
-    console.error(`[payments] callPaymentRpc ${fn} failed`, { code: err.code, message: err.message });
+    // which masked the real cause of unconfirmed payments. Log the pg error AND the
+    // configured DB host:port FIRST (the log viewer truncates the line, and the host
+    // is what we need to diagnose ENOTFOUND/reachability). Host/port only — never the
+    // user, password, or full connection string.
+    let dbHost = "unparseable";
+    try {
+      const u = new URL(process.env.PAYMENTS_DATABASE_URL ?? "");
+      dbHost = `${u.hostname}:${u.port || "5432"}`;
+    } catch {
+      /* leave as unparseable */
+    }
+    console.error(`[paydb ${dbHost}] ${fn} failed`, { code: err.code, message: err.message });
     return { data: null, error: { message: err.message ?? "payment rpc failed", code: err.code } };
   }
 }
