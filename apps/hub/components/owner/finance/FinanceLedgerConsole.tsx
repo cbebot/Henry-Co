@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   ArrowDownUp,
   Banknote,
+  CalendarRange,
   CheckCircle2,
   Coins,
   Landmark,
@@ -58,6 +59,17 @@ function ageLabel(minutes: number, t: Translate): string {
   return `${minutes}${t("m")}`;
 }
 
+/** "2026-06" → "Jun 2026" (UTC month key, no day to avoid TZ drift). */
+function monthLabel(monthKey: string): string {
+  const [y, m] = monthKey.split("-").map(Number);
+  if (!y || !m) return monthKey;
+  return new Intl.DateTimeFormat("en-NG", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(y, m - 1, 1)));
+}
+
 export default function FinanceLedgerConsole({
   snapshot,
   t,
@@ -85,7 +97,7 @@ export default function FinanceLedgerConsole({
     );
   }
 
-  const { reconciliation: r, wallet, vat, stats, stuck, recent, flow } = snapshot;
+  const { reconciliation: r, wallet, vat, monthlyVat, stats, stuck, recent, flow } = snapshot;
   const balanced = r.balanced && r.deltaMinor === 0;
   const walletReconciled = wallet.reconciled && wallet.deltaKobo === 0;
 
@@ -258,6 +270,64 @@ export default function FinanceLedgerConsole({
             </tbody>
           </table>
         </div>
+      </OwnerPanel>
+
+      {/* ── Monthly net-VAT — the filing view (output − input = net payable) ── */}
+      <OwnerPanel
+        title={t("Monthly net-VAT")}
+        description={t(
+          "Output VAT collected on sales less input/fee VAT recoverable, per calendar month — net VAT payable for that month's filing. Read-only from the ledger; this surface never sets a figure.",
+        )}
+        action={<MetricTraceDrawer traceId="finance.vat_monthly" label={t("Monthly net-VAT")} triggerLabel={t("View query")} />}
+      >
+        {monthlyVat.length ? (
+          <div className="overflow-x-auto">
+            <table className="owner-table">
+              <thead>
+                <tr>
+                  <th>{t("Month")}</th>
+                  <th className="text-right">{t("Output VAT")}</th>
+                  <th className="text-right">{t("Input / fee VAT")}</th>
+                  <th className="text-right">{t("Net VAT payable")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthlyVat.map((m) => {
+                  const reclaim = m.netVatPayableMinor < 0; // input exceeds output → reclaim, not payable
+                  return (
+                    <tr key={m.month}>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          <CalendarRange size={16} className="text-[var(--acct-muted)]" />
+                          <span className="font-semibold text-[var(--acct-ink)]">{monthLabel(m.month)}</span>
+                        </div>
+                      </td>
+                      <td className="text-right tabular-nums text-[var(--acct-muted)]">
+                        {money(m.outputVatCollectedMinor)}
+                      </td>
+                      <td className="text-right tabular-nums text-[var(--acct-muted)]">
+                        {money(m.inputVatRecoverableMinor)}
+                      </td>
+                      <td
+                        className="text-right font-semibold tabular-nums"
+                        style={{ color: reclaim ? "var(--acct-green)" : "var(--acct-ink)" }}
+                        title={reclaim ? t("Input VAT exceeds output — net reclaimable this month") : undefined}
+                      >
+                        {money(m.netVatPayableMinor)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <OwnerNotice
+            tone="info"
+            title={t("No VAT postings yet")}
+            body={t("Once sales settle and fee VAT is recognised on the ledger, each month's net VAT payable appears here for filing.")}
+          />
+        )}
       </OwnerPanel>
 
       {/* ── Stuck intents — the owner must see these without asking anyone ── */}

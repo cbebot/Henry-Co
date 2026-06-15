@@ -11,6 +11,8 @@ import {
   interpolateLegalLine,
   resolvePaymentMethodLabel,
   resolveStatusLabel,
+  resolveVatLineLabel,
+  resolveVatTreatmentNote,
 } from "../payment-document-labels";
 import { formatDate, formatDateTime, formatKobo } from "../format";
 import { letterSpacing, palette, typeScale } from "../tokens";
@@ -39,6 +41,17 @@ export type InvoiceProps = {
     subtotalKobo: number;
     /** VAT/tax in kobo. A line renders ONLY when this is > 0 (V3-18: no VAT in the breakdown → no VAT line). */
     taxKobo: number;
+    /**
+     * NRS e-invoicing: the fractional VAT rate (e.g. 0.075) so the line prints
+     * "VAT (7.5%)". Never hardcoded — read from the tax-line meta.
+     */
+    taxRate?: number | null;
+    /**
+     * NRS e-invoicing: the supply's VAT treatment (`standard` / `zero_rated` /
+     * `exempt` / `out_of_scope`). A non-standard treatment renders a short
+     * classification NOTE instead of a VAT amount.
+     */
+    taxTreatment?: string | null;
     discountKobo?: number | null;
     totalKobo: number;
     currency: string;
@@ -131,6 +144,8 @@ const styles = StyleSheet.create({
 export function InvoiceDocument({ invoice, customer, issuer, labels }: InvoiceProps) {
   const hasVat = (invoice.taxKobo ?? 0) > 0;
   const hasDiscount = (invoice.discountKobo ?? 0) > 0;
+  // NRS e-invoicing: a non-standard supply shows a classification note (no amount).
+  const treatmentNote = resolveVatTreatmentNote(invoice.taxTreatment, labels);
   const statusLabel = resolveStatusLabel(invoice.status, labels);
   const methodLabel = invoice.paymentMethod ? resolvePaymentMethodLabel(invoice.paymentMethod, labels) : "—";
 
@@ -228,8 +243,13 @@ export function InvoiceDocument({ invoice, customer, issuer, labels }: InvoicePr
           ) : null}
           {hasVat ? (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>{labels.vat}</Text>
+              <Text style={styles.totalLabel}>{resolveVatLineLabel(invoice.taxRate, labels)}</Text>
               <Text style={styles.totalValue}>{formatKobo(invoice.taxKobo, invoice.currency)}</Text>
+            </View>
+          ) : treatmentNote ? (
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>{labels.vatTreatment}</Text>
+              <Text style={styles.totalValue}>{treatmentNote}</Text>
             </View>
           ) : null}
           <View style={styles.totalRow}>

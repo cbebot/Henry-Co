@@ -10,6 +10,8 @@ import {
   type PaymentDocumentLabels,
   interpolateLegalLine,
   resolvePaymentMethodLabel,
+  resolveVatLineLabel,
+  resolveVatTreatmentNote,
 } from "../payment-document-labels";
 import { formatDateTime, formatKobo } from "../format";
 import { letterSpacing, palette, typeScale } from "../tokens";
@@ -34,6 +36,17 @@ export type ReceiptProps = {
     feesKobo?: number | null;
     /** VAT/tax in kobo. A line renders ONLY when this is > 0 (V3-18: no VAT in the breakdown → no VAT line). */
     taxKobo: number;
+    /**
+     * NRS e-invoicing: the fractional VAT rate (e.g. 0.075) carried by the breakdown,
+     * so the line prints "VAT (7.5%)". Never hardcoded — read from the tax-line meta.
+     */
+    taxRate?: number | null;
+    /**
+     * NRS e-invoicing: the supply's VAT treatment (`standard` / `zero_rated` /
+     * `exempt` / `out_of_scope`). A non-standard treatment renders a short
+     * classification NOTE instead of a VAT amount.
+     */
+    taxTreatment?: string | null;
     totalKobo: number;
     currency: string;
     notes?: string | null;
@@ -122,6 +135,9 @@ export function ReceiptDocument({ receipt, issuer, customer, items, labels }: Re
   const method = resolvePaymentMethodLabel(receipt.paymentMethod, labels);
   const hasVat = (receipt.taxKobo ?? 0) > 0;
   const hasFees = (receipt.feesKobo ?? 0) > 0;
+  // NRS e-invoicing: a non-standard supply (exempt / zero-rated / out-of-scope)
+  // carries NO VAT amount; instead it shows a short classification note.
+  const treatmentNote = resolveVatTreatmentNote(receipt.taxTreatment, labels);
 
   const columns: Array<DataTableColumn<ReceiptLineItem>> = [
     { key: "title", header: labels.colItem, flex: 3.2, render: (r) => r.title + (r.detail ? ` — ${r.detail}` : "") },
@@ -129,12 +145,19 @@ export function ReceiptDocument({ receipt, issuer, customer, items, labels }: Re
     { key: "amount", header: labels.colAmount, flex: 1.4, align: "right", mono: true, render: (r) => formatKobo(r.amountKobo, receipt.currency) },
   ];
 
-  // Settlement rows are conditional: fees and VAT only appear when real.
+  // Settlement rows: the NRS structured triad. For a standard (VATable) supply the
+  // VAT-exclusive base (subtotal), the VAT amount WITH its rate, and the total are
+  // ALWAYS present. A non-standard supply shows a classification note instead of a
+  // VAT amount. Fees only appear when real (add-on-top regime).
   const settlementRows: Array<{ label: string; value: string; mono?: boolean }> = [
     { label: labels.subtotal, value: formatKobo(receipt.subtotalKobo, receipt.currency), mono: true },
   ];
   if (hasFees) settlementRows.push({ label: labels.fees, value: formatKobo(receipt.feesKobo ?? 0, receipt.currency), mono: true });
-  if (hasVat) settlementRows.push({ label: labels.vat, value: formatKobo(receipt.taxKobo, receipt.currency), mono: true });
+  if (hasVat) {
+    settlementRows.push({ label: resolveVatLineLabel(receipt.taxRate, labels), value: formatKobo(receipt.taxKobo, receipt.currency), mono: true });
+  } else if (treatmentNote) {
+    settlementRows.push({ label: labels.vatTreatment, value: treatmentNote });
+  }
   settlementRows.push({ label: labels.total, value: formatKobo(receipt.totalKobo, receipt.currency), mono: true });
   settlementRows.push({ label: labels.metaStatus, value: labels.statusPaid });
 

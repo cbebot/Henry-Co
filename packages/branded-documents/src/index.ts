@@ -9,6 +9,9 @@ export {
   resolvePaymentMethodLabel,
   resolveStatusLabel,
   interpolateLegalLine,
+  formatVatRatePercent,
+  resolveVatLineLabel,
+  resolveVatTreatmentNote,
 } from "./payment-document-labels";
 
 export { TransactionHistoryDocument, type TransactionHistoryProps, type TransactionHistoryFilters, type TransactionRow } from "./templates/transaction-history";
