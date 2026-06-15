@@ -69,6 +69,15 @@ jobs:
       - name: Schema-drift guard (code ↔ schema column references)
         run: pnpm run schema-drift:check
 
+      # SEC-HARDEN-05: fail CI if a raw Care money write (a care_payments
+      # insert/update/delete, or a care_payment_requests status='paid' flip) is
+      # reintroduced in app code. All care payment recording must flow through the
+      # guarded care_record_manual_payment RPC (validated · idempotent · balanced
+      # double-entry). The DB grant invariant below is the hard guarantee; this is the
+      # fast static tripwire that catches a regression before it reaches the database.
+      - name: Care money-write guard (no raw care_payments / status=paid writes)
+        run: pnpm run care-money:check
+
       - name: i18n hardcoded-text gate (V3-07 S8 — strict)
         run: pnpm run i18n:check:strict
 
@@ -232,3 +241,27 @@ jobs:
 
       - name: Assert world-writable data-table lockdown invariant (writes service-role-only; class-drift guarded; authenticated INSERT rejected)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_03_grant_invariant.sql
+
+      # SEC-HARDEN-05: close Care's manual-payment free-mark-paid hole. The care money
+      # tables + their payment triggers live on prod out-of-band (early care_init, no
+      # migration the vanilla chain applies), so reproduce the pre-fix surface (4 money
+      # tables + the payment ledger/recalc triggers + the standing WIDE request-role
+      # write grants + 2 historical fixture payments), apply the guard migration, and
+      # prove the end state: the guarded RPC records a payment + posts a balanced
+      # double-entry + flips the request 'paid' atomically; the historical backfill
+      # reconciles (cash = payments = cash-journal); a raw care_payments INSERT and a
+      # raw status='paid' flip are REJECTED; the care ledger is balanced + immutable;
+      # and the grant/structural end-state holds (writes revoked for every role,
+      # care_private unreachable by anon/authenticated, status-guard + ledger triggers
+      # present). Mirrors the V3-17 ledger invariant discipline for care money.
+      - name: Seed care money surface (reproduce the prod free-mark-paid hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_min.sql
+
+      - name: Apply SEC-HARDEN-05 care payment-guard migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/care/supabase/migrations/20260615120000_sec_harden_05_care_payment_guard.sql
+
+      - name: Prove care payment invariants (guarded · idempotent · backfill-reconcile · no-raw-write · balanced · immutable)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_invariants.sql
+
+      - name: Assert care guarded-payment grant + structural invariant (writes revoked; care_private unreachable; triggers present)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_guard_invariant.sql

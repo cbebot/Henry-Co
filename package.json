@@ -17,6 +17,7 @@
     "data-governance:sanity": "node scripts/data-governance-sanity.mjs",
     "schema-drift:check": "node scripts/ci/schema-drift-check.mjs",
     "schema-drift:baseline": "node scripts/ci/schema-drift-check.mjs --write-baseline",
+    "care-money:check": "node scripts/ci/care-money-write-guard.mjs",
     "i18n:check": "node scripts/i18n-check.mjs",
     "i18n:check:strict": "node scripts/i18n-check.mjs --strict",
     "tone:check": "node scripts/v3/tone-gate.mjs",
