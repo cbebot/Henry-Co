@@ -142,14 +142,22 @@ function buildPaymentMethods(
       ),
       icon: Wallet,
     },
-    {
-      id: "bank_transfer",
-      label: t("Bank transfer"),
-      description: t(
-        "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
-      ),
-      icon: Banknote,
-    },
+    // V3-RETIRE-BANKTRANSFER (marketplace) — the manual transfer+proof rail is
+    // RETIRED once the real card rail is live: it is offered ONLY as the fallback
+    // while card is off, so the buyer is never left with no real way to pay. When
+    // `cardEnabled` is true, card replaces it and no proof-based payment is shown.
+    ...(!cardEnabled
+      ? [
+          {
+            id: "bank_transfer" as const,
+            label: t("Bank transfer"),
+            description: t(
+              "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
+            ),
+            icon: Banknote,
+          },
+        ]
+      : []),
     {
       id: "cod",
       label: t("Cash on delivery"),
@@ -254,7 +262,9 @@ export function CheckoutExperience({
       },
       usingOneShot: addresses.length === 0,
       phoneOverride: "",
-      paymentMethod: walletCanPay ? "wallet_balance" : "bank_transfer",
+      // Card-ready leads with the real card rail; otherwise wallet (if funded) and
+      // the retired bank-transfer rail is the last fallback only while card is off.
+      paymentMethod: cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "bank_transfer",
       bankReference: "",
     }),
     // Initial value is captured once on mount; subsequent prop changes
@@ -363,13 +373,29 @@ export function CheckoutExperience({
   // selected method into a valid choice. Preserved verbatim from the
   // pre-draft version of this component.
   useEffect(() => {
+    // A PERSISTED checkout draft can restore a method that is no longer offered — e.g.
+    // a `bank_transfer` draft selected before the card rail went live. Pull any method
+    // that isn't a currently-VISIBLE option back to a valid one FIRST, so a hidden /
+    // retired method can never be submitted (the route would otherwise re-point it at
+    // the wallet and silently auto-debit the buyer). Sourced from buildPaymentMethods
+    // so it can never drift from what's actually shown. (V3-RETIRE-BANKTRANSFER.)
+    // Source the visible ids from buildPaymentMethods (identity translator — we only
+    // read `.id`, never the labels, so no unstable `t` enters the deps) so this can
+    // NEVER drift from what's actually rendered.
+    const visibleMethodIds = new Set(buildPaymentMethods((s) => s, cardEnabled).map((m) => m.id));
+    if (!visibleMethodIds.has(paymentMethod)) {
+      setPaymentMethod(cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "bank_transfer");
+      return;
+    }
     if (paymentMethod === "wallet_balance" && !walletCanPay) {
-      setPaymentMethod("bank_transfer");
+      // Card-ready: the retired bank-transfer rail is no longer a valid fallback —
+      // lead with the real card rail instead.
+      setPaymentMethod(cardEnabled ? "card" : "bank_transfer");
     }
     if (paymentMethod === "bank_transfer" && !paymentRail.ready && walletCanPay) {
       setPaymentMethod("wallet_balance");
     }
-  }, [paymentMethod, paymentRail.ready, walletCanPay, setPaymentMethod]);
+  }, [paymentMethod, paymentRail.ready, walletCanPay, cardEnabled, setPaymentMethod]);
 
   // If the saved address from a restored draft is no longer in the
   // user's address book (deleted on another device, list refreshed
