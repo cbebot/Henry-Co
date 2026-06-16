@@ -599,6 +599,9 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../../packages/intelligence
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
@@ -659,6 +662,9 @@ importers:
       pg:
         specifier: ^8.20.0
         version: 8.20.0
+      postal-mime:
+        specifier: ^2.7.4
+        version: 2.7.4
       react:
         specifier: ^19.0.0
         version: 19.2.3

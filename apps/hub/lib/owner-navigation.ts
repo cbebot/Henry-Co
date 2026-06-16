@@ -15,6 +15,7 @@ import {
   UserPlus,
   KeyRound,
   Mail,
+  Inbox,
   Globe,
   Settings,
   ScrollText,
@@ -112,6 +113,16 @@ export const ownerNavItems: OwnerNavItem[] = [
   },
 
   // ── Communications ──
+  {
+    href: "/owner/inbox",
+    label: "Email Inbox",
+    icon: Inbox,
+    section: "Communications",
+    children: [
+      { href: "/owner/inbox", label: "All mail", icon: Mail },
+      { href: "/owner/inbox?view=archived", label: "Archived", icon: ScrollText },
+    ],
+  },
   {
     href: "/owner/messaging",
     label: "Messaging Center",
@@ -219,6 +230,9 @@ export function getOwnerBreadcrumbs(pathname: string) {
   }
   if (parts[0] === "owner" && parts[1] === "messaging" && parts[2] === "alerts") {
     crumbs.push({ label: "Owner Alerts", href: pathname });
+  }
+  if (parts[0] === "owner" && parts[1] === "inbox" && parts[2]) {
+    crumbs.push({ label: "Message", href: pathname });
   }
   if (parts[0] === "owner" && parts[1] === "brand" && parts[2] === "subdomains") {
     crumbs.push({ label: "Subdomains", href: pathname });
