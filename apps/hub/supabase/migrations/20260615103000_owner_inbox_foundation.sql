@@ -28,6 +28,7 @@ create extension if not exists citext;
 create or replace function public.owner_inbox_set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = timezone('utc', now());
@@ -56,6 +57,9 @@ $$;
 
 revoke all on function public.owner_inbox_is_owner() from public;
 grant execute on function public.owner_inbox_is_owner() to authenticated;
+-- Only authenticated sessions evaluate the owner-only SELECT policy; anon never
+-- reaches it. Revoke anon's auto-granted EXECUTE to shrink the surface.
+revoke execute on function public.owner_inbox_is_owner() from anon;
 
 -- ──────────────────────────────────────────────────────────────────────────────
 -- received_emails — the unified inbound mailbox (all addresses @henryonyx.com)
