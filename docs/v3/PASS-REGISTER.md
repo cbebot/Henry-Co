@@ -398,3 +398,29 @@ migration files but not in prod (it trusts the types ∪ migration-DDL union).
 With `supabase/prod-actual/schema.sql` now committed as the declared baseline,
 a table-existence check against prod-actual + the FL2 manifest set would close
 SD-8/SD-9-class blind spots in CI.
+
+---
+
+## REPO-RECONCILE-01 — captured follow-ups (2026-06-16)
+
+Repo-hygiene/consolidation pass. Estate reconciled; unmerged-but-done work captured into PRs; confirmed-dead worktrees cleaned. The durable, still-open follow-ups below were harvested from `.codex-temp` reports + live prod checks and **reconciled against current `origin/main`** (items already merged/applied were dropped: STAB-01 migration #282, SEC-HARDEN-02/03/04 #270/#287/#290, V3-VAT-CLASSIFICATION #297, V3-DIVISION-CHECKOUT #298 — all live).
+
+### Captured this pass (in PR, owner-gated for merge — DO NOT auto-merge)
+- **PR #299** (draft) — SEC-HARDEN-05: Care manual-payment guarded RPC + balanced ledger. Carries an owner-gated prod money migration (not applied).
+- **PR #300** (draft) — V3-OWNER-INBOX-01: owner email inbox (Cloudflare Email Routing inbound). Owner prereq: enable Email Routing + **merge** SPF.
+- **PR #301** — SCHEMA-TRUTH-01: types from prod-actual+FL2 + apply manifest + drift baseline (was 6 commits stranded local-only).
+
+### Open follow-ups to schedule
+
+| # | Title | What remains | Gate / dep | Class |
+|---|---|---|---|---|
+| RR-1 | **"Henry Holdings" → "Henry Onyx Limited" legal-name closure** | `packages/config/legal.ts` still sets `entity.name = "Henry Holdings Limited"` with `rcNumber: "[OWNER-TO-CONFIRM]"`; ~19 files carry the legacy name (incl. branded-documents receipt/invoice, /privacy, /terms, email layout, payment-surface). Replace with grounded CAC identity **Henry Onyx Limited, RC 9594234, TIN 2621481857689**. Supersedes the older `v3/legal-rename-01` (which renamed *to* the now-wrong "Henry Holdings"). | Owner confirm final legal entity; touches financial/legal surfaces | Compliance |
+| RR-2 | **FL2 pending-intent verify-sweep (reconciler gap)** | Reconciler only sweeps `succeeded`; it never re-verifies `pending` against the provider → paid-but-pending strands. Live evidence: `payment_attempts` rows can read `status='succeeded'` with NO real Flutterwave txn id while the intent stays `pending` (17 such on prod 2026-06-16). Build a pending-intent verify-by-reference sweep. | — (systemic) | Money |
+| RR-3 | **Cancel 17 stale/abandoned test payment_intents** | 17 `pending` FLW intents from 2 test accounts; ₦0 recognized (0 receipts/wallet/funding). Guarded, idempotent plan ready (`.codex-temp/repo-reconcile-01/stale-intent-cancellation-plan.sql`): per-intent provider verify → trigger-guarded `pending→cancelled`. | Owner money sign-off (no prod write done) | Money |
+| RR-4 | **FL2 rail activation + 48h soak** | Live-key cutover, one owner controlled real-card test charge end-to-end, then 48h soak monitoring (ledger Δ0, none stuck in `processing`). | Owner-gated (live key) | Money |
+| RR-5 | **FL2 — 7 original live-key stuck intents re-drive** | Swap to live key, verify-by-reference classify, re-drive via idempotent `advance`+`apply_payment_webhook`. | Needs live key; after soak | Money |
+| RR-6 | **23 wallet-proof assets still publicly exposed** | Financial-PII proofs still served from public CDN (V3-MEDIA-REMEDIATE remainder). Re-home → RLS-private + restrict; ~7yr legal hold means restrict-not-delete. | Owner money sign-off; money-frozen | Compliance/Money |
+| RR-7 | **Bank-transfer retirement Phase-2** | Account wallet-proof manual flow removal once FL2 soak clears + in-flight queue drains; per-division card-rail ignition (studio/marketplace/care `cardCta` still dormant). | FL2 soak + drain + division ignition | Money |
+| RR-8 | **Marketplace LIVE VAT wiring (activation)** | #297 (VAT classification) + #298 (division checkout) are merged but **DORMANT**. Live activation = per-item `buildSaleVatRecognitionByLine` wiring + `MARKETPLACE_CARD_CHECKOUT` flag + `PAYMENTS_DATABASE_URL` + accountant VAT sign-off. Cross-ref DEFERRED-STRATEGIC-WORKSTREAMS W4/W5. | Owner + accountant | Money/Compliance |
+| RR-9 | **Support PDF re-home (minor)** | 1 support PDF never publicly served (Cloudinary blocks PDF delivery); owner console download→upload to private storage. | Manual console | Low |
+| RR-10 | **Branch/worktree estate prune (deferred)** | 138 local branches fully merged to `origin/main` remain as refs; many `.codex/worktrees/*` (codex-CLI-managed) + locked agent worktrees remain. Propose a guarded branch-prune sweep + codex-side worktree cleanup, owner-gated. | Owner-gated; re-check shared-repo state first | Hygiene |
