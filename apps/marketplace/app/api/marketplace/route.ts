@@ -495,13 +495,29 @@ export async function POST(request: Request) {
         }
 
         const orderNo = makeRef("MKT-ORD");
-        const rawPaymentMethod = text(formData, "payment_method") || "bank_transfer";
-        // V3-DIVISION-CHECKOUT-01: `card` is accepted ONLY when the test-mode flag is
-        // on — otherwise an unsupported value falls back to bank transfer, so a stray
-        // card request can never create an order that has no rail to pay it.
-        const allowedMethods = ["wallet_balance", "bank_transfer", "cod"];
-        if (isMarketplaceCardCheckoutReady()) allowedMethods.push("card");
-        const paymentMethod = allowedMethods.includes(rawPaymentMethod) ? rawPaymentMethod : "bank_transfer";
+        // V3-DIVISION-CHECKOUT-01 + V3-RETIRE-BANKTRANSFER (marketplace): once the real
+        // card rail is live, the manual transfer+proof rail is RETIRED — `card` is
+        // accepted and `bank_transfer` is dropped from BOTH the allowlist and the
+        // default. While card is off, bank transfer stays as the fallback so a stray or
+        // unsupported value can never create an order with no rail to pay it (never
+        // strand). The card-ready fallback is `wallet_balance`: the buyer's OWN cleared
+        // funds, debited atomically, failing cleanly when there is no balance — never a
+        // proof-based "fake" payment.
+        const cardReady = isMarketplaceCardCheckoutReady();
+        const allowedMethods = cardReady
+          ? ["wallet_balance", "cod", "card"]
+          : ["wallet_balance", "bank_transfer", "cod"];
+        const fallbackMethod = cardReady ? "wallet_balance" : "bank_transfer";
+        const rawPaymentMethod = text(formData, "payment_method");
+        // A PRESENT but disallowed method (e.g. a stale `bank_transfer` post after the
+        // card rail goes live) must NOT be silently re-pointed at a different rail —
+        // that could auto-debit a buyer who chose another method. Reject it explicitly;
+        // the client resets a retired draft method before submit, so this only catches
+        // stale drafts that bypass JS / crafted posts. An EMPTY method → safe fallback.
+        if (rawPaymentMethod && !allowedMethods.includes(rawPaymentMethod)) {
+          return redirectTo(request, "/checkout?error=method-unavailable");
+        }
+        const paymentMethod = allowedMethods.includes(rawPaymentMethod) ? rawPaymentMethod : fallbackMethod;
         const isWalletPayment = paymentMethod === "wallet_balance";
         const isBankTransfer = paymentMethod === "bank_transfer";
         const isCardPayment = paymentMethod === "card";
