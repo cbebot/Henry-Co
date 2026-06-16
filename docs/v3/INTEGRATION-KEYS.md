@@ -70,7 +70,7 @@ The provider router (`@henryco/payment-router`) ships in V3-13 proven against an
 |---|---|---|---|---|
 | Resend (primary email) | `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET` | server | every pass touching email | Transactional + auth email primary |
 | Brevo (auth SMTP fallback) | `BREVO_API_KEY`, `BREVO_SMTP_USER`, `BREVO_SMTP_PASS` | server | V3-02, V3-46, V3-48, V3-61 | Auth email fallback when Resend hits rate limits |
-| Cloudflare Email Routing (INBOUND) | `INBOUND_EMAIL_WEBHOOK_SECRET` (hub) · Worker: `INBOUND_WEBHOOK_URL`, `MAX_INLINE_BASE64_BYTES` + secret `INBOUND_EMAIL_WEBHOOK_SECRET` | server | V3-OWNER-INBOX-01 | RECEIVING company email → owner inbox (catch-all → Worker → `/api/inbound/email`). Inbound-only; independent of Resend/Brevo SENDING. |
+| Cloudflare Email Routing (INBOUND) | `INBOUND_EMAIL_WEBHOOK_SECRET` (hub) · Worker: `INBOUND_WEBHOOK_URL`, `MAX_RAW_BYTES` + secret `INBOUND_EMAIL_WEBHOOK_SECRET` | server | V3-OWNER-INBOX-01 | RECEIVING company email → owner inbox (catch-all → Worker → `/api/inbound/email`). Inbound-only; independent of Resend/Brevo SENDING. |
 | OneSignal (web + mobile push) | `ONESIGNAL_APP_ID`, `ONESIGNAL_REST_API_KEY`, `NEXT_PUBLIC_ONESIGNAL_APP_ID` | both | V3-03, V3-45, V3-88 | Push notifications on web + mobile |
 | Twilio (SMS) | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` | server | V3-45, V3-48 (high-priority opt-in only) | SMS reminders + 2FA where SMS preferred |
 | Termii (SMS African markets) | `TERMII_API_KEY`, `TERMII_FROM` | server | V3-45 (Nigeria-primary SMS) | Better African SMS deliverability than Twilio for NG; cost-efficient |

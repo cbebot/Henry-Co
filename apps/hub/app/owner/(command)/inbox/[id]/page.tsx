@@ -115,6 +115,10 @@ export default async function OwnerInboxMessagePage({
             <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-red-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-red)]">
               <ShieldAlert size={11} /> {t("Failed authentication — possible spoof")}
             </span>
+          ) : !message.spf && !message.dkim && !message.dmarc ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-orange-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-orange)]">
+              <ShieldAlert size={11} /> {t("Authentication not verified")}
+            </span>
           ) : null}
         </div>
       </section>

@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 
 import { INBOUND_EMAIL_WEBHOOK_SECRET_ENV } from "@/lib/owner-inbox/constants";
+import { buildPayloadFromEnvelope, parseInboundEnvelope } from "@/lib/owner-inbox/parse";
 import { parseInboundPayload } from "@/lib/owner-inbox/payload";
 import { recordInboundEmail } from "@/lib/owner-inbox/repository";
 import { verifyInboundSignature } from "@/lib/owner-inbox/signature";
 
 /**
- * Inbound-email webhook. The Cloudflare Email Worker POSTs HMAC-signed parsed
- * mail here; we verify, validate, and store into the owner-only inbox.
+ * Inbound-email webhook. The Cloudflare Email Worker POSTs an HMAC-signed
+ * envelope (trusted Cloudflare from/to + auth verdict + the raw RFC822 message,
+ * size-capped, base64). We verify, parse the raw MIME server-side, and store it
+ * into the owner-only inbox.
  *
  * Security: shared-secret HMAC over `${timestamp}.${rawBody}` with a 5-minute
- * replay window (verifyInboundSignature). No secrets or body content are ever
- * logged. Storage is service-role behind owner-only RLS.
+ * replay window. SPF/DKIM/DMARC come from the trusted Cloudflare header only.
+ * No secrets or body content are ever logged. Storage is service-role behind
+ * owner-only RLS.
  */
 
 export const runtime = "nodejs";
@@ -31,6 +35,14 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
+    // DoS guard: reject an oversized declared body BEFORE buffering it in memory
+    // (well above MAX_RAW_BYTES + base64 + JSON overhead). The HMAC is verified
+    // next, but this caps an unauthenticated attacker who finds the URL.
+    const declaredLength = Number(request.headers.get("content-length") || 0);
+    if (Number.isFinite(declaredLength) && declaredLength > 8_000_000) {
+      return NextResponse.json({ error: "payload too large" }, { status: 413 });
+    }
+
     const timestamp = clean(request.headers.get("x-henry-timestamp"));
     const signature = clean(request.headers.get("x-henry-signature"));
     const rawBody = await request.text();
@@ -47,10 +59,18 @@ export async function POST(request: Request): Promise<Response> {
       return NextResponse.json({ error: "invalid json" }, { status: 400 });
     }
 
-    const parsed = parseInboundPayload(json);
+    const env = parseInboundEnvelope(json);
+    if (!env.ok) {
+      return NextResponse.json({ error: "invalid envelope", detail: env.error }, { status: 422 });
+    }
+
+    const built = await buildPayloadFromEnvelope(env.envelope);
+    const parsed = parseInboundPayload(built);
     if (!parsed.ok) {
-      // 422 (not 5xx): a shape error will not improve on retry.
-      return NextResponse.json({ error: "invalid payload", detail: parsed.error }, { status: 422 });
+      // 200 (acknowledge, don't error): a sender-less / unparseable message
+      // (e.g. a garbled bounce) will never succeed on retry, so we accept-and-skip
+      // rather than make the Worker retry it.
+      return NextResponse.json({ ok: true, status: "skipped", reason: parsed.error });
     }
 
     const result = await recordInboundEmail(parsed.payload);

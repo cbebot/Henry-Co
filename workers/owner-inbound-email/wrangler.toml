@@ -4,20 +4,21 @@
 # Secret:  npx wrangler secret put INBOUND_EMAIL_WEBHOOK_SECRET
 #          (must match INBOUND_EMAIL_WEBHOOK_SECRET on the hub app)
 #
-# Then in the Cloudflare dashboard: Email Service > Email Routing > Routing Rules
-#   -> enable the Catch-all rule -> Action: "Send to a Worker" -> this Worker.
+# Then: Email Service > Email Routing > Routing Rules > enable the Catch-all rule
+#   -> Action "Send to a Worker" -> this Worker.
+#
+# Dependency-free: no npm imports, no nodejs_compat needed. The dashboard editor
+# can host this directly (paste src/index.ts).
 
 name = "henry-onyx-inbound-email"
 main = "src/index.ts"
 compatibility_date = "2026-06-01"
-compatibility_flags = ["nodejs_compat"]
 
 [vars]
-# REQUIRED: replace with the deployed hub app URL before `wrangler deploy`.
-# This is the only place the Worker learns where to forward parsed mail.
-INBOUND_WEBHOOK_URL = "https://REPLACE-WITH-HUB-DOMAIN/api/inbound/email"
-# Cap on total base64 attachment bytes forwarded inline (rest -> metadata only).
-MAX_INLINE_BASE64_BYTES = "3500000"
+# The deployed hub app webhook URL.
+INBOUND_WEBHOOK_URL = "https://hq.henryonyx.com/api/inbound/email"
+# Max raw message bytes to forward (keeps the POST under the ~4.5 MB body limit).
+MAX_RAW_BYTES = "2500000"
 
 # INBOUND_EMAIL_WEBHOOK_SECRET is a SECRET — never put it here.
 # Set it with: npx wrangler secret put INBOUND_EMAIL_WEBHOOK_SECRET
