@@ -9,7 +9,7 @@ import {
   type DivisionSaleReconcilePort,
   type SaleReconcileOutcome,
 } from "@henryco/payment-router";
-import { extractTaxFromBreakdown, type PricingBreakdown } from "@henryco/pricing";
+import { type PricingBreakdown } from "@henryco/pricing";
 
 type AdminClient = ReturnType<typeof createAdminSupabase>;
 
@@ -32,10 +32,16 @@ const FEE_LINE_CODES = new Set(["platform_fee", "service_fee", "inspection_fee",
 
 /**
  * The order's money facts, in kobo, derived ONCE from the order row + its persisted
- * pricing breakdown. The breakdown amounts are MAJOR naira (marketplace feeds the
- * engine major units), so every part is ×100 into kobo here. Today the breakdown
- * carries no `tax` line (the V3-21 tax engine is not live) → outputVat 0; the path
- * is forward-correct the day a tax line appears.
+ * pricing breakdown. The breakdown line amounts are MAJOR naira (marketplace feeds the
+ * engine major units), so the fee/line parts are ×100 into kobo here.
+ *
+ * V3-VAT-WIRING-01 — output VAT is NOT re-derived from a naira `tax` line (that ×100
+ * was the dormant ~100× trap, and the line was never populated → 0 for every sale,
+ * under-remitting VAT on standard-rated goods). It is read VERBATIM from
+ * `breakdown.meta.vat.outputVatMinor` — the kobo-exact figure carved INCLUSIVE from
+ * the kobo gross at checkout (the only place the item→category join exists). Guarded
+ * to a non-negative integer ≤ gross; anything malformed falls back to 0 (under, never
+ * over-remit). `subtotal = gross − fees − vat` still reconciles to the gross.
  */
 function deriveOrderMoney(grandTotalMajor: number, breakdown: PricingBreakdown | null): {
   grossMinor: number;
@@ -45,8 +51,11 @@ function deriveOrderMoney(grandTotalMajor: number, breakdown: PricingBreakdown |
   lineItems: Array<{ label: string; amountMinor: number }>;
 } {
   const grossMinor = Math.round(Math.max(0, grandTotalMajor) * 100);
-  const tax = extractTaxFromBreakdown(breakdown);
-  const outputVatMinor = tax ? Math.round(Math.max(0, tax.taxMinor) * 100) : 0;
+  const stampedVat = Number(
+    (breakdown?.meta as { vat?: { outputVatMinor?: number } } | undefined)?.vat?.outputVatMinor,
+  );
+  const outputVatMinor =
+    Number.isSafeInteger(stampedVat) && stampedVat >= 0 && stampedVat < grossMinor ? stampedVat : 0;
   let feesMinor = 0;
   const lineItems: Array<{ label: string; amountMinor: number }> = [];
   if (breakdown && Array.isArray(breakdown.lines)) {

@@ -90,6 +90,23 @@ export type PricingBreakdown = {
     ruleBookKey: string;
     ruleVersion: string;
     computedAt: string;
+    /**
+     * V3-VAT-WIRING-01 — the AUTHORITATIVE output VAT for this sale, in whole KOBO,
+     * carved INCLUSIVE from the kobo gross under the per-line resolved treatment at
+     * checkout (where item→category data exists). The settlement reconcile reads this
+     * directly — it must NEVER re-derive VAT by ×100-ing a naira `tax` line (the
+     * V3-21 ~100× trap). `standardBaseMinor` is the kobo base the carve was taken
+     * from; `outputVatMinor + revenue === grossMinor` holds by construction.
+     */
+    vat?: {
+      outputVatMinor: number;
+      standardBaseMinor: number;
+      rateVersion: string;
+      jurisdiction: string;
+      /** `pending_review` flags the owner/accountant-confirmed treatment assumption
+       *  (incl. the composite delivery/fee rule) on a VATable sale; `confirmed` for 0. */
+      reviewStatus?: "pending_review" | "confirmed";
+    };
   };
 };
 
