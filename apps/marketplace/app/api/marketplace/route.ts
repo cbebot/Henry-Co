@@ -25,6 +25,7 @@ import {
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
+import { resolveOrderOutputVat } from "@/lib/checkout/order-vat";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const runtime = "nodejs";
@@ -542,6 +543,55 @@ export async function POST(request: Request) {
           breakdown.lines.find((line) => line.code === "platform_fee")?.amount.amount ?? 0;
         const grandTotal = breakdown.totals.customerTotal.amount;
         const amountKobo = Math.max(0, Math.round(grandTotal * 100));
+
+        // V3-VAT-WIRING-01 — classify each cart line by its product CATEGORY from a
+        // DIRECT, uncached read (ownership is NOT a tax marker), then carve the
+        // KOBO-EXACT output VAT from the kobo gross and stamp it onto the breakdown for
+        // the settlement reconcile to post verbatim (no naira×100 — the V3-21 ~100×
+        // trap). customerTotal / amountKobo are UNCHANGED (VAT is inclusive). A standard-
+        // rated good computes real output VAT; food/pharma/baby exempt, books zero-rated.
+        const cartProductIds = Array.from(
+          new Set((cartItems as Array<Record<string, unknown>>).map((i) => String(i.product_id)).filter(Boolean)),
+        );
+        const vatCategoryByProduct = new Map<string, string | null>();
+        if (cartProductIds.length) {
+          const { data: vatProductRows, error: vatReadError } = await admin
+            .from("marketplace_products")
+            .select("id, marketplace_categories(slug)")
+            .in("id", cartProductIds);
+          if (vatReadError) {
+            // Money-correctness: NEVER settle a sale on an unclassified cart. A failed
+            // classification read must not masquerade as "everything standard" (an over-
+            // remit on exempt goods) — reject so the buyer retries; no wrong VAT figure
+            // is ever stamped or posted.
+            return redirectTo(request, "/checkout?error=vat-classification-unavailable");
+          }
+          for (const row of (vatProductRows ?? []) as Array<Record<string, unknown>>) {
+            const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
+            const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
+            vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
+          }
+        }
+        const orderVat = resolveOrderOutputVat({
+          items: (cartItems as Array<Record<string, unknown>>).map((item) => ({
+            categoryKey: vatCategoryByProduct.get(String(item.product_id)) ?? null,
+            // A per-row `tax_treatment` column (the engine's `itemTreatment`) is the future
+            // override seam for marking a specific product exempt without a code change.
+            itemTreatment: null,
+            lineNaira: Number(item.price || 0) * Number(item.quantity || 0),
+          })),
+          shippingNaira: Number(shippingTotal) || 0,
+          platformFeeNaira: Number(platformFeeTotal) || 0,
+          grossMinor: amountKobo,
+        });
+        breakdown.meta.vat = {
+          outputVatMinor: orderVat.outputVatMinor,
+          standardBaseMinor: orderVat.standardBaseMinor,
+          rateVersion: orderVat.rateVersion,
+          jurisdiction: orderVat.jurisdiction,
+          reviewStatus: orderVat.reviewStatus,
+        };
+
         let walletSnapshot: Awaited<ReturnType<typeof getMarketplaceWalletSnapshot>> | null = null;
         let proofUpload: Awaited<ReturnType<typeof uploadMarketplacePaymentProof>> | null = null;
 
