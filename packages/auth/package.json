@@ -26,6 +26,7 @@
     "./server/verify-supabase-session": "./src/server/verify-supabase-session.ts",
     "./server/sensitive-action-guard": "./src/server/sensitive-action-guard.ts",
     "./server/reauth-cookie": "./src/server/reauth-cookie.ts",
+    "./server/acting-context": "./src/server/acting-context.ts",
     "./server/sensitive-action-rate-limit": "./src/server/sensitive-action-rate-limit.ts",
     "./server/role-status": "./src/server/role-status.ts",
     "./server/oauth-link-intent": "./src/server/oauth-link-intent.ts",

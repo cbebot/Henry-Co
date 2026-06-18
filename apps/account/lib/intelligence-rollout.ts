@@ -141,3 +141,10 @@ export const AccountIntelEvents = {
   profileUpdated: HenryEventNames.PROFILE_UPDATED,
 } as const;
 
+export const BusinessIntelEvents = {
+  profileCreated: HenryEventNames.BUSINESS_PROFILE_CREATED,
+  memberAdded: HenryEventNames.BUSINESS_MEMBER_ADDED,
+  contextSwitched: HenryEventNames.BUSINESS_CONTEXT_SWITCHED,
+  profileViewed: HenryEventNames.BUSINESS_PROFILE_VIEWED,
+} as const;
+

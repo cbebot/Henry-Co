@@ -37,6 +37,7 @@ export * from "./learn-instructors-copy";
 export * from "./learn-certifications-copy";
 export * from "./studio-copy";
 export * from "./surface-copy";
+export * from "./business-copy";
 export * from "./payment-document-copy";
 export * from "./account-copy";
 export * from "./react";
