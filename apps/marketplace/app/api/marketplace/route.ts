@@ -23,6 +23,7 @@ import {
   uploadMarketplacePaymentProof,
 } from "@/lib/marketplace/payment";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import { moderateListing } from "@/lib/marketplace/moderation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
@@ -1540,6 +1541,37 @@ export async function POST(request: Request) {
           );
         }
 
+        // V3-25 unified moderation gate (DORMANT unless MODERATION_ENFORCED).
+        // An unambiguous reject blocks the listing outright; a hold forces it
+        // into staff review (it can never reach "approved"/live). When the flag
+        // is off this is a no-op and the path behaves exactly as before.
+        const moderationOutcome = await moderateListing(admin, {
+          slug,
+          title: text(formData, "title"),
+          summary: text(formData, "summary"),
+          description: text(formData, "description"),
+          actorId: viewer.user.id,
+        });
+        if (moderationOutcome?.decision === "reject") {
+          await createModerationCase(admin, {
+            subjectType: "product_submission",
+            subjectId: slug,
+            queue: "listing_blocked",
+            note: `content_policy: ${moderationOutcome.reasons.join(", ")}`,
+          });
+          return respondError(
+            json,
+            request,
+            `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent("content policy")}`,
+            {
+              message:
+                "This listing can't be published because it doesn't meet our content policy.",
+              code: "listing-blocked",
+            }
+          );
+        }
+        const moderationHold = moderationOutcome?.decision === "hold";
+
         const payload = {
           slug,
           vendor_id: vendorScopeId,
@@ -1555,7 +1587,7 @@ export async function POST(request: Request) {
           sku: text(formData, "sku"),
           approval_status:
             decision === "submit"
-              ? assessment.requiresManualReview
+              ? assessment.requiresManualReview || moderationHold
                 ? "under_review"
                 : "submitted"
               : "draft",

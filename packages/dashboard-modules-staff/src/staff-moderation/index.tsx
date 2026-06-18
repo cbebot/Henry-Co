@@ -78,6 +78,41 @@ export async function loadModerationQueueSnapshot(supabase: ModerationSupabaseCl
   } catch {
     // empty
   }
+
+  // V3-25: merge the unified cross-division user reports into the same queue.
+  // RLS gates these to staff (is_staff_in_any); maps into the shared row shape
+  // so they render in the existing queue with no generics changes.
+  try {
+    const { data: reportData } = await supabase
+      .from("moderation_reports")
+      .select("id,content_type,content_id,reason_code,status,reporter_id,created_at")
+      .order("created_at", { ascending: false })
+      .limit(150);
+    if (reportData) {
+      const HIGH = new Set(["prohibited_item", "offensive_content", "scam_or_fraud"]);
+      const reportRows: ModerationCaseRow[] = reportData.map((r) => {
+        const reasonCode = String(r.reason_code ?? "other");
+        const status = String(r.status ?? "open");
+        return {
+          id: `report:${String(r.id ?? "")}`,
+          division: String(r.content_type ?? "unknown"),
+          entityType: String(r.content_type ?? "—"),
+          entityId: String(r.content_id ?? ""),
+          reason: reasonCode,
+          severity: HIGH.has(reasonCode) ? "high" : "normal",
+          // dismissed reports are terminal — treat as resolved for SLA counting.
+          status: status === "dismissed" ? "resolved" : status === "reviewing" ? "in_review" : status,
+          flaggedBy: r.reporter_id ? String(r.reporter_id) : null,
+          assignedTo: null,
+          createdAt: String(r.created_at ?? ""),
+          resolvedAt: status === "resolved" || status === "dismissed" ? String(r.created_at ?? "") : null,
+        };
+      });
+      rows = [...rows, ...reportRows];
+    }
+  } catch {
+    // moderation_reports not applied yet (committed-NOT-applied) — degrade quietly.
+  }
   let pending = 0,
     warn = 0,
     breach = 0;

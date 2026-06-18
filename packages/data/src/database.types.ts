@@ -20,7 +20,10 @@
  * HAND-CARRIED EXCEPTION: the abandoned_tasks Tables entry mirrors V3-37's
  * committed-NOT-applied migration (its own FL gate, not part of FL2) so the
  * merged V3-37 code keeps compiling; re-splice it after regeneration until
- * that migration lands in prod.
+ * that migration lands in prod. The moderation_decisions + moderation_reports
+ * entries mirror V3-25's committed-NOT-applied migration
+ * (20260616120000_v3_25_moderation.sql) for the same reason — re-splice after
+ * regeneration until that migration lands in prod.
  *
  * DO NOT EDIT BY HAND — re-run the regeneration after schema changes.
  */
@@ -106,6 +109,78 @@ export type Database = {
           task_type?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      moderation_decisions: {
+        Row: {
+          content_hash: string
+          content_id: string
+          content_snapshot: Json
+          content_type: string
+          created_at: string
+          decision: string
+          id: string
+          reasons: string[]
+          reviewer: string | null
+          scanner: string
+        }
+        Insert: {
+          content_hash: string
+          content_id: string
+          content_snapshot: Json
+          content_type: string
+          created_at?: string
+          decision: string
+          id?: string
+          reasons?: string[]
+          reviewer?: string | null
+          scanner: string
+        }
+        Update: {
+          content_hash?: string
+          content_id?: string
+          content_snapshot?: Json
+          content_type?: string
+          created_at?: string
+          decision?: string
+          id?: string
+          reasons?: string[]
+          reviewer?: string | null
+          scanner?: string
+        }
+        Relationships: []
+      }
+      moderation_reports: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          detail: string | null
+          id: string
+          reason_code: string
+          reporter_id: string | null
+          status: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          reason_code: string
+          reporter_id?: string | null
+          status?: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          reason_code?: string
+          reporter_id?: string | null
+          status?: string
         }
         Relationships: []
       }

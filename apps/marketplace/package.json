@@ -24,6 +24,7 @@
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",
     "@henryco/media": "workspace:^",
+    "@henryco/moderation": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/payment-router": "workspace:^",
