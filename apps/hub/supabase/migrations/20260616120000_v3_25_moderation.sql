@@ -152,10 +152,32 @@ revoke insert, update, delete, truncate on table public.moderation_reports from 
 -- ---------------------------------------------------------------------------
 do $$
 begin
-  if to_regclass('public.data_retention_policies') is null then
-    raise notice 'data_retention_policies absent — skipping governance registration';
+  if to_regclass('public.data_retention_policies') is null
+     or to_regclass('public.data_governance_domains') is null then
+    raise notice 'governance tables absent — skipping governance registration';
     return;
   end if;
+
+  -- moderation is its own governance domain (P7 Trust & Safety), distinct from
+  -- staff_audit. data_retention_policies.domain_key FKs data_governance_domains,
+  -- so register the domain first (idempotent).
+  execute $dom$
+    insert into public.data_governance_domains (
+      domain_key, display_name, owner_team, classification, restore_priority,
+      source_of_truth, backup_dependency, retention_summary, notes
+    ) values (
+      'trust_safety',
+      'Trust & safety / content moderation',
+      'Trust & Safety',
+      'OPERATOR / TRUST SIGNAL / LABELED MODERATION CORPUS (PII-redacted)',
+      5,
+      'moderation_decisions, moderation_reports',
+      'Supabase database backups.',
+      'Moderation decisions retained as an audit + training corpus; user reports retained while open and for a trailing window after resolution.',
+      'content_snapshot is PII-redacted by construction; never store raw content body.'
+    )
+    on conflict (domain_key) do nothing;
+  $dom$;
 
   execute $ret$
     insert into public.data_retention_policies (
