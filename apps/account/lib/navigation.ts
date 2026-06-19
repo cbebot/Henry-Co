@@ -23,6 +23,7 @@ import {
   Briefcase,
   RefreshCcw,
   Users,
+  Store,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,6 +58,8 @@ export const accountNavItems: NavItem[] = [
   { href: "/logistics", label: "Logistics", icon: Truck, section: "Services" },
   { href: "/property", label: "Property", icon: Building2, section: "Services" },
   { href: "/jobs", label: "Jobs", icon: Briefcase, section: "Services" },
+  // Business
+  { href: "/business", label: "Business", icon: Store, section: "Business" },
   // Trust & Settings
   { href: "/referrals", label: "Referrals", icon: Users, section: "Settings" },
   { href: "/verification", label: "Submit KYC", icon: ShieldCheck, section: "Settings" },

@@ -59,6 +59,7 @@ export {
   type LearnCertificationsCopy,
 } from "./learn-certifications-copy";
 export { getAccountCopy, formatAccountTemplate, type AccountCopy } from "./account-copy";
+export { getBusinessCopy, formatBusinessTemplate, type BusinessCopy } from "./business-copy";
 export {
   getSurfaceCopy,
   translateSurfaceLabel,

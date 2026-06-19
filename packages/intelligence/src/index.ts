@@ -73,6 +73,13 @@ export const HenryEventNames = {
   LIFECYCLE_DORMANT_DETECTED: "henry.lifecycle.dormant.detected",
   LIFECYCLE_REENTRY_COMPLETED: "henry.lifecycle.reentry.completed",
   LIFECYCLE_BLOCKER_DETECTED: "henry.lifecycle.blocker.detected",
+  // Business events (V3-57) — emitted with division 'account' + actor.kind 'user'
+  // (the acting member); the business identity rides in eventId + properties and
+  // the business role in actor.roleHint (no 'business' division/actor.kind exists).
+  BUSINESS_PROFILE_CREATED: "henry.business.profile.created",
+  BUSINESS_MEMBER_ADDED: "henry.business.member.added",
+  BUSINESS_CONTEXT_SWITCHED: "henry.business.context.switched",
+  BUSINESS_PROFILE_VIEWED: "henry.business.profile.viewed",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
