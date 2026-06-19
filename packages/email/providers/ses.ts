@@ -58,15 +58,21 @@ function formatFrom(sender: ResolvedSender): string {
 
 const encoder = new TextEncoder();
 
+// TextEncoder.encode() is typed Uint8Array<ArrayBufferLike> (TS 5.7+), which the
+// Web Crypto BufferSource params reject; copy into a fresh ArrayBuffer-backed view.
+function bytes(input: string): BufferSource {
+  return new Uint8Array(encoder.encode(input));
+}
+
 function toHex(buf: ArrayBuffer): string {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 async function sha256Hex(data: string): Promise<string> {
-  return toHex(await crypto.subtle.digest("SHA-256", encoder.encode(data)));
+  return toHex(await crypto.subtle.digest("SHA-256", bytes(data)));
 }
 
-async function hmac(key: ArrayBuffer | Uint8Array, data: string): Promise<ArrayBuffer> {
+async function hmac(key: BufferSource, data: string): Promise<ArrayBuffer> {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
     key,
@@ -74,7 +80,7 @@ async function hmac(key: ArrayBuffer | Uint8Array, data: string): Promise<ArrayB
     false,
     ["sign"],
   );
-  return crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(data));
+  return crypto.subtle.sign("HMAC", cryptoKey, bytes(data));
 }
 
 async function deriveSigningKey(
@@ -83,7 +89,7 @@ async function deriveSigningKey(
   region: string,
   service: string,
 ): Promise<ArrayBuffer> {
-  const kDate = await hmac(encoder.encode(`AWS4${secret}`), dateStamp);
+  const kDate = await hmac(bytes(`AWS4${secret}`), dateStamp);
   const kRegion = await hmac(kDate, region);
   const kService = await hmac(kRegion, service);
   return hmac(kService, "aws4_request");
