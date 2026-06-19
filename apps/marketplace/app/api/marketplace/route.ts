@@ -536,8 +536,47 @@ export async function POST(request: Request) {
             sum + Number(item.price || 0) * Number(item.quantity || 0),
           0
         );
+        // V3-VAT-WIRING-01 + free-shipping — ONE direct, uncached product read drives
+        // BOTH (a) per-line VAT classification by CATEGORY (ownership is NOT a tax
+        // marker) and (b) the free-shipping decision. Delivery is waived ONLY when
+        // EVERY cart line is a product explicitly flagged `filter_data.free_delivery`
+        // (a real product attribute) — so a normal cart always pays normal delivery.
+        const cartProductIds = Array.from(
+          new Set((cartItems as Array<Record<string, unknown>>).map((i) => String(i.product_id)).filter(Boolean)),
+        );
+        const vatCategoryByProduct = new Map<string, string | null>();
+        const freeDeliveryProductIds = new Set<string>();
+        if (cartProductIds.length) {
+          const { data: productRows, error: productReadError } = await admin
+            .from("marketplace_products")
+            .select("id, filter_data, marketplace_categories(slug)")
+            .in("id", cartProductIds);
+          if (productReadError) {
+            // Money-correctness: NEVER settle a sale on an unclassified cart. A failed
+            // read must not masquerade as "everything standard" (an over-remit on exempt
+            // goods) NOR silently grant free shipping — reject so the buyer retries; no
+            // wrong VAT figure or delivery waiver is ever stamped or posted.
+            return redirectTo(request, "/checkout?error=vat-classification-unavailable");
+          }
+          for (const row of (productRows ?? []) as Array<Record<string, unknown>>) {
+            const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
+            const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
+            vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
+            const filterData = row.filter_data as { free_delivery?: unknown } | null;
+            if (filterData && filterData.free_delivery === true) {
+              freeDeliveryProductIds.add(String(row.id));
+            }
+          }
+        }
+        // Waive delivery only when the read covered EVERY cart product and each one is
+        // flagged. A missing product row (deleted/unreadable) leaves its id unflagged →
+        // normal delivery, never an accidental free ship.
+        const allItemsFreeShipping =
+          cartProductIds.length > 0 && cartProductIds.every((id) => freeDeliveryProductIds.has(id));
+
         const breakdown = computeMarketplaceCheckoutBreakdown({
           itemsSubtotalAmount: subtotal,
+          deliveryAmount: allItemsFreeShipping ? 0 : undefined,
         });
         const shippingTotal = breakdown.lines.find((line) => line.code === "delivery")?.amount.amount ?? 0;
         const platformFeeTotal =
@@ -545,34 +584,11 @@ export async function POST(request: Request) {
         const grandTotal = breakdown.totals.customerTotal.amount;
         const amountKobo = Math.max(0, Math.round(grandTotal * 100));
 
-        // V3-VAT-WIRING-01 — classify each cart line by its product CATEGORY from a
-        // DIRECT, uncached read (ownership is NOT a tax marker), then carve the
-        // KOBO-EXACT output VAT from the kobo gross and stamp it onto the breakdown for
-        // the settlement reconcile to post verbatim (no naira×100 — the V3-21 ~100×
-        // trap). customerTotal / amountKobo are UNCHANGED (VAT is inclusive). A standard-
-        // rated good computes real output VAT; food/pharma/baby exempt, books zero-rated.
-        const cartProductIds = Array.from(
-          new Set((cartItems as Array<Record<string, unknown>>).map((i) => String(i.product_id)).filter(Boolean)),
-        );
-        const vatCategoryByProduct = new Map<string, string | null>();
-        if (cartProductIds.length) {
-          const { data: vatProductRows, error: vatReadError } = await admin
-            .from("marketplace_products")
-            .select("id, marketplace_categories(slug)")
-            .in("id", cartProductIds);
-          if (vatReadError) {
-            // Money-correctness: NEVER settle a sale on an unclassified cart. A failed
-            // classification read must not masquerade as "everything standard" (an over-
-            // remit on exempt goods) — reject so the buyer retries; no wrong VAT figure
-            // is ever stamped or posted.
-            return redirectTo(request, "/checkout?error=vat-classification-unavailable");
-          }
-          for (const row of (vatProductRows ?? []) as Array<Record<string, unknown>>) {
-            const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
-            const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
-            vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
-          }
-        }
+        // V3-VAT-WIRING-01 — carve the KOBO-EXACT output VAT from the kobo gross and
+        // stamp it onto the breakdown for the settlement reconcile to post verbatim (no
+        // naira×100 — the V3-21 ~100× trap). customerTotal / amountKobo are UNCHANGED
+        // (VAT is inclusive). A standard-rated good computes real output VAT; food/pharma/
+        // baby exempt, books zero-rated. The category map was built by the read above.
         const orderVat = resolveOrderOutputVat({
           items: (cartItems as Array<Record<string, unknown>>).map((item) => ({
             categoryKey: vatCategoryByProduct.get(String(item.product_id)) ?? null,
