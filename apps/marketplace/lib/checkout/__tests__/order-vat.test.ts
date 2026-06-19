@@ -28,6 +28,34 @@ describe("resolveOrderOutputVat — kobo-exact marketplace output VAT", () => {
     assert.equal(r.rateVersion, "NG-VAT-7.5-2020-02-01");
   });
 
+  // ── V3-FREESHIP-CLOSE-01 — money-safety of free shipping (delivery waived) × VAT ──
+  // When a product is flagged `filter_data.free_delivery`, the checkout passes
+  // deliveryAmount:0, so shippingNaira reaches the carve as 0 and the gross is goods-only.
+  // The composite base must then be the GOODS alone — no phantom delivery (over-remit),
+  // no shrunk base (under-remit). These cases pin that, incl. the exact live-proof figure.
+  it("FREE SHIPPING + standard goods: VAT carved from goods only — the live ₦1,075 → ₦75.00 proof", () => {
+    // The retired test product: ₦1,075 standard good, delivery waived → gross 107,500 kobo.
+    const r = resolveOrderOutputVat(
+      { items: [{ categoryKey: "everyday-tech", lineNaira: 1075 }], shippingNaira: 0, platformFeeNaira: 0, grossMinor: 107_500 },
+      NG,
+    );
+    assert.equal(r.treatments[0], "standard"); // free delivery does NOT change the goods treatment
+    assert.equal(r.standardBaseMinor, 107_500); // base = goods only (no delivery added/removed)
+    // 107,500 − round(107,500/1.075) = 107,500 − 100,000 = 7,500 kobo (₦75.00); net ₦1,000
+    assert.equal(r.outputVatMinor, 7_500);
+    assert.equal(r.reviewStatus, "pending_review");
+  });
+
+  it("FREE SHIPPING + exempt goods: still 0 — no spurious VAT when delivery is waived", () => {
+    const r = resolveOrderOutputVat(
+      { items: [{ categoryKey: "food", lineNaira: 1075 }], shippingNaira: 0, platformFeeNaira: 0, grossMinor: 107_500 },
+      NG,
+    );
+    assert.equal(r.treatments[0], "exempt");
+    assert.equal(r.standardBaseMinor, 0);
+    assert.equal(r.outputVatMinor, 0);
+  });
+
   it("EXEMPT category (food): posts 0 (delivery rides the exempt supply → composite 0)", () => {
     const r = resolveOrderOutputVat(
       {
