@@ -285,7 +285,7 @@ export async function enrollInCourse(input: {
   );
 
   if (existing) {
-    return { course, enrollment: existing, payment: existingPayment, firstEnrollment };
+    return { course, enrollment: existing, payment: existingPayment, firstEnrollment, created: false };
   }
 
   const idSeed = identity.userId || identity.normalizedEmail || createId();
@@ -462,7 +462,7 @@ export async function enrollInCourse(input: {
     });
   }
 
-  return { course, enrollment, payment, firstEnrollment };
+  return { course, enrollment, payment, firstEnrollment, created: true };
 }
 
 export async function toggleSavedCourse(input: {
@@ -796,6 +796,7 @@ export async function completeLesson(input: {
   return {
     enrollment: updatedEnrollment,
     certificate,
+    course,
   };
 }
 

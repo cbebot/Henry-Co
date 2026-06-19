@@ -22,6 +22,10 @@ import {
   toggleSavedCourse,
   updateLearnerPreferences,
 } from "@/lib/learn/workflows";
+import {
+  handleSellerAcademyEnrollment,
+  handleSellerAcademyCompletion,
+} from "@/lib/learn/seller-academy";
 
 function asList(formData: FormData, key: string) {
   return formData
@@ -54,6 +58,12 @@ export async function enrollInCourseAction(formData: FormData) {
   const viewer = await requireLearnUser("/courses");
   await syncViewerIdentity(viewer);
   const result = await enrollInCourse({ viewer, courseId });
+  // V3-58: seller-academy enrolment telemetry (no-op for non-track courses).
+  handleSellerAcademyEnrollment({
+    course: result.course,
+    userId: viewer.user?.id ?? null,
+    created: result.created,
+  });
   revalidatePath("/courses");
   revalidatePath(`/courses/${result.course.slug}`);
   revalidatePath("/learner");
@@ -79,6 +89,13 @@ export async function completeLessonAction(formData: FormData) {
   const lessonId = String(formData.get("lessonId") || "");
   if (!courseId || !lessonId) redirect("/learner/courses");
   const result = await completeLesson({ viewer, courseId, lessonId });
+  // V3-58: on a verified seller-academy completion, emit telemetry + recompute the
+  // learner's business tier(s). No-op for non-track courses / incomplete enrolments.
+  await handleSellerAcademyCompletion({
+    course: result.course,
+    userId: viewer.user?.id ?? null,
+    completed: result.enrollment.status === "completed",
+  });
   revalidatePath(`/learner/courses/${courseId}`);
   revalidatePath("/learner/progress");
   if (result.certificate) {

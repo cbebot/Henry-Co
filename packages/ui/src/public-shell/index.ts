@@ -81,6 +81,8 @@ export type { PublicDesignTokensNamespace } from "./public-tokens";
 
 export { PublicCard, PublicCardGrid, PublicCardHeader } from "./public-card";
 export { PublicBadge, PublicStatusDot } from "./public-badge";
+export { SellerTierBadge } from "./seller-tier-badge";
+export type { SellerTier } from "./seller-tier-badge";
 export {
   PublicField,
   PublicLabel,

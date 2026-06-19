@@ -493,6 +493,23 @@ export function isCourseVisibleToPublic(course: LearnCourse) {
   return course.status === "published" && course.visibility === "public";
 }
 
+/**
+ * V3-58 — Seller Academy track marker. Courses tagged `seller_academy` form the
+ * dedicated seller track: they are EXCLUDED from the general /courses browse and
+ * surfaced only on the /academy/seller track view (or an explicit track query).
+ */
+export const SELLER_ACADEMY_TRACK_TAG = "seller_academy";
+
+export function isSellerAcademyCourse(course: LearnCourse) {
+  return Array.isArray(course.tags) && course.tags.includes(SELLER_ACADEMY_TRACK_TAG);
+}
+
+const SELLER_ACADEMY_DIFFICULTY_ORDER: Record<string, number> = {
+  beginner: 0,
+  intermediate: 1,
+  advanced: 2,
+};
+
 export function canViewerAccessCourse(
   course: LearnCourse,
   viewer: LearnViewer | null | undefined,
@@ -547,11 +564,24 @@ export async function getCourseCatalog(filters?: {
   search?: string;
   category?: string;
   difficulty?: string;
+  /** Pass `seller_academy` to browse the dedicated track; otherwise it is hidden. */
+  track?: string;
 }) {
   const snapshot = await getPublicAcademyData();
   const search = cleanText(filters?.search).toLowerCase();
+  const wantsSellerAcademy = filters?.track === SELLER_ACADEMY_TRACK_TAG;
+  const hasCategoryFilter = Boolean(filters?.category);
 
   return snapshot.courses.filter((course) => {
+    const seller = isSellerAcademyCourse(course);
+    // The seller track is its own surface — keep it out of the general browse,
+    // but honor an explicit track=seller_academy request OR an explicit category
+    // filter (so picking "Seller Academy" in the catalogue dropdown still works).
+    if (wantsSellerAcademy) {
+      if (!seller) return false;
+    } else if (seller && !hasCategoryFilter) {
+      return false;
+    }
     if (filters?.category && course.categoryId !== filters.category) return false;
     if (filters?.difficulty && course.difficulty !== filters.difficulty) return false;
     if (!search) return true;
@@ -560,6 +590,25 @@ export async function getCourseCatalog(filters?: {
       .toLowerCase()
       .includes(search);
   });
+}
+
+/**
+ * V3-58 — the Seller Academy track: the published seller courses in learning
+ * order (foundational → intermediate → advanced) plus the track category. Used by
+ * the /academy/seller view. Honest-state: returns an empty list (not a
+ * placeholder) until the courses are seeded.
+ */
+export async function getSellerAcademyTrack() {
+  const snapshot = await getPublicAcademyData();
+  const courses = snapshot.courses
+    .filter(isSellerAcademyCourse)
+    .sort(
+      (left, right) =>
+        (SELLER_ACADEMY_DIFFICULTY_ORDER[left.difficulty] ?? 99) -
+        (SELLER_ACADEMY_DIFFICULTY_ORDER[right.difficulty] ?? 99),
+    );
+  const category = snapshot.categories.find((item) => item.slug === "seller-academy") ?? null;
+  return { courses, category };
 }
 
 export async function getCourseBySlug(slug: string, viewer?: LearnViewer | null) {

@@ -18,6 +18,7 @@ import {
 import { BRAND_EMAILS, getAccountUrl, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
+import type { SellerTier } from "@henryco/ui";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
 import { manrope, MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
@@ -256,8 +257,15 @@ export function KpiGrid({ items }: { items: MarketplaceKpi[] }) {
   );
 }
 
-export function ProductCard({ product }: { product: MarketplaceProduct }) {
-  return <ProductCardClient product={product} />;
+export function ProductCard({
+  product,
+  sellerTier,
+}: {
+  product: MarketplaceProduct;
+  /** V3-58 server-derived seller tier for the listing's vendor; omitted → no chip. */
+  sellerTier?: SellerTier;
+}) {
+  return <ProductCardClient product={product} sellerTier={sellerTier} />;
 }
 
 export function VendorCard({

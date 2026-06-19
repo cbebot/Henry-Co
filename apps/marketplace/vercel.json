@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/marketplace-automation",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/seller-tier-reconcile",
+      "schedule": "10 3 * * *"
     }
   ]
 }

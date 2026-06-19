@@ -2,12 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SUPPORTED_COUNTRIES, henryDomain, toBrandName } from "@henryco/config";
 import { getBusinessCopy } from "@henryco/i18n/server";
+import { getSellerAcademyCopy } from "@henryco/i18n";
 import type { AppLocale } from "@henryco/i18n";
+import { SellerTierBadge } from "@henryco/ui";
 import { HeroCard, DivisionLanding, type HeroCardTile } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import { businessVerificationStatus, getBusinessMembershipBySlug } from "@/lib/business";
+import {
+  businessVerificationStatus,
+  getBusinessMembershipBySlug,
+  getSellerTierForBusiness,
+} from "@/lib/business";
 import BusinessProfileForm from "@/components/business/BusinessProfileForm";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +38,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   const canEdit = role === "owner" || role === "admin";
   const verification = businessVerificationStatus(business);
   const verified = verification === "verified";
+  const isSeller = business.partnerType === "marketplace_seller";
+  const sellerTier = isSeller ? await getSellerTierForBusiness(business.id) : "none";
+  const sellerCopy = getSellerAcademyCopy(locale as AppLocale);
   const countries = SUPPORTED_COUNTRIES.map((c) => ({ code: c.code, name: c.name }));
   const publicUrl = business.status === "active" ? henryDomain("marketplace", `/business/${business.slug}`) : null;
 
@@ -68,6 +77,46 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         />
       }
       sections={[
+        ...(isSeller
+          ? [
+              {
+                id: "seller-tier",
+                title: sellerCopy.profile.eyebrow,
+                meta: sellerCopy.track.eyebrow,
+                content: (
+                  <div className="flex flex-col gap-3">
+                    {sellerTier !== "none" ? (
+                      <div className="flex flex-wrap items-center gap-3">
+                        <SellerTierBadge
+                          tier={sellerTier}
+                          label={sellerCopy.tierNames[sellerTier]}
+                          tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                        />
+                        <span className="text-sm text-[color:var(--hc-text-muted,#6b7280)]">
+                          {sellerCopy.badge.tooltip[sellerTier]}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm font-medium text-[color:var(--hc-text,#111827)]">
+                          {sellerCopy.profile.noneTitle}
+                        </p>
+                        <p className="text-sm text-[color:var(--hc-text-muted,#6b7280)]">
+                          {sellerCopy.profile.noneBody}
+                        </p>
+                      </div>
+                    )}
+                    <a href={henryDomain("learn", "/academy/seller")} className={cardLinkCls}>
+                      {sellerCopy.track.eyebrow}
+                    </a>
+                    <p className="text-xs text-[color:var(--hc-text-muted,#6b7280)]">
+                      {sellerCopy.discount.dormantNote}
+                    </p>
+                  </div>
+                ),
+              },
+            ]
+          : []),
         {
           id: "business-links",
           title: copy.common.business,
