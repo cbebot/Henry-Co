@@ -88,6 +88,7 @@ create index if not exists business_invitations_token_idx on public.business_inv
 create or replace function public.businesses_set_updated_at()
 returns trigger
 language plpgsql
+set search_path = public, pg_temp
 as $$
 begin
   new.updated_at := now();
