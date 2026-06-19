@@ -1,4 +1,4 @@
-export type EmailProviderId = "brevo" | "resend" | "none";
+export type EmailProviderId = "brevo" | "resend" | "ses" | "none";
 
 export type EmailDispatchStatus = "sent" | "skipped" | "error";
 
