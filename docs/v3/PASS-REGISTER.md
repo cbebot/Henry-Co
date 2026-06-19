@@ -424,3 +424,16 @@ Repo-hygiene/consolidation pass. Estate reconciled; unmerged-but-done work captu
 | RR-8 | **Marketplace LIVE VAT wiring (activation)** | #297 (VAT classification) + #298 (division checkout) are merged but **DORMANT**. Live activation = per-item `buildSaleVatRecognitionByLine` wiring + `MARKETPLACE_CARD_CHECKOUT` flag + `PAYMENTS_DATABASE_URL` + accountant VAT sign-off. Cross-ref DEFERRED-STRATEGIC-WORKSTREAMS W4/W5. | Owner + accountant | Money/Compliance |
 | RR-9 | **Support PDF re-home (minor)** | 1 support PDF never publicly served (Cloudinary blocks PDF delivery); owner console download→upload to private storage. | Manual console | Low |
 | RR-10 | **Branch/worktree estate prune (deferred)** | 138 local branches fully merged to `origin/main` remain as refs; many `.codex/worktrees/*` (codex-CLI-managed) + locked agent worktrees remain. Propose a guarded branch-prune sweep + codex-side worktree cleanup, owner-gated. | Owner-gated; re-check shared-repo state first | Hygiene |
+
+---
+
+## V3-FREESHIP — marketplace free shipping (2026-06-19)
+
+A **named** money-adjacent capability track (distinct from the numbered `V3-NN` plan), born when a per-product free-shipping waiver entered via a one-off VAT live-test and is now being closed out + built into a real product.
+
+| ID | Slug | Risk | Status | One-line |
+|---|---|---|---|---|
+| **V3-FREESHIP-CLOSE-01** | freeship-close-foundation | **M** (money) | ✅ this pass | Promote the per-product free-shipping waiver from test-artifact to a clean, money-safe, **DORMANT** capability: named flag contract (`lib/checkout/free-delivery.ts`), strict `=== true` guard, every-line-flagged + fail-closed checkout, VAT composition proven (₦1,075→₦75.00, exempt→0), unit + VAT tests, documented (`docs/marketplace/free-shipping-capability.md`). No live caller; nothing flagged in prod. |
+| **V3-FREESHIP-02** | freeship-seller-zones | **M** (money) + **pricing** | ⏳ owner-directed (designing) | **Seller-controlled, location-aware** free shipping: sellers set their own free-ship offers scoped by buyer location/zone (+ optional min-order). Builds on the CLOSE-01 spine (same money-safe waiver + VAT carve). This pass IS the Lane-1 money/pricing review that activates the dormant capability. Design: `docs/marketplace/free-shipping-seller-zones-design.md`. |
+
+**Posture:** V3-FREESHIP-CLOSE-01 is the money-safe FOUNDATION (dormant — flagging a product is owner/Lane-1-gated). V3-FREESHIP-02 makes it a real seller product. Any LIVE free-shipping offer activates only through V3-FREESHIP-02's reviewed seller+zone rule — never by hand-flagging `filter_data` in prod.

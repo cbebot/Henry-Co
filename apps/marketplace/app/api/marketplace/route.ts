@@ -27,6 +27,7 @@ import { moderateListing } from "@/lib/marketplace/moderation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
 import { resolveOrderOutputVat } from "@/lib/checkout/order-vat";
+import { cartQualifiesForFreeDelivery, isFreeDeliveryProduct } from "@/lib/checkout/free-delivery";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const runtime = "nodejs";
@@ -562,8 +563,7 @@ export async function POST(request: Request) {
             const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
             const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
             vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
-            const filterData = row.filter_data as { free_delivery?: unknown } | null;
-            if (filterData && filterData.free_delivery === true) {
+            if (isFreeDeliveryProduct(row.filter_data)) {
               freeDeliveryProductIds.add(String(row.id));
             }
           }
@@ -571,8 +571,10 @@ export async function POST(request: Request) {
         // Waive delivery only when the read covered EVERY cart product and each one is
         // flagged. A missing product row (deleted/unreadable) leaves its id unflagged →
         // normal delivery, never an accidental free ship.
-        const allItemsFreeShipping =
-          cartProductIds.length > 0 && cartProductIds.every((id) => freeDeliveryProductIds.has(id));
+        // ⚠️ DORMANT capability (V3-FREESHIP-CLOSE-01): no prod product is flagged
+        // free_delivery; flagging one is an owner/Lane-1 (money/pricing) reviewed action.
+        // Contract + guards live in lib/checkout/free-delivery.ts.
+        const allItemsFreeShipping = cartQualifiesForFreeDelivery(cartProductIds, freeDeliveryProductIds);
 
         const breakdown = computeMarketplaceCheckoutBreakdown({
           itemsSubtotalAmount: subtotal,
