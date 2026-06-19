@@ -197,6 +197,26 @@ export function businessVerificationStatus(business: BusinessRecord): SharedVeri
   return normalizeVerificationStatus(business.status === "active" ? "verified" : "pending");
 }
 
+/** The stored seller-tier enum (V3-58). */
+export type SellerTierValue = "none" | "bronze" | "silver" | "gold";
+
+/**
+ * V3-58 — the business's server-derived seller tier. RLS-scoped (a member reads
+ * their own business's tier). Returns 'none' when no tier row exists yet — the
+ * caller renders no badge for 'none' (honest state, not a placeholder).
+ */
+export async function getSellerTierForBusiness(businessId: string): Promise<SellerTierValue> {
+  const supabase = await createSupabaseServer();
+  const { data, error } = await supabase
+    .from("seller_tiers")
+    .select("tier")
+    .eq("business_id", businessId)
+    .maybeSingle();
+  if (error || !data) return "none";
+  const tier = (data as { tier?: string }).tier;
+  return tier === "bronze" || tier === "silver" || tier === "gold" ? tier : "none";
+}
+
 export type BusinessInsights = {
   hasStream: boolean; // false => "no data yet" (V3-08 truth rule)
   orders: number;

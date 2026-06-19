@@ -52,6 +52,15 @@ export {
   type ServicePriceDescription,
 } from './service-catalog';
 
+// V3-58 — seller-tier platform-fee discount resolver. DORMANT (0% until D9 is
+// ratified AND Lane 1 wires it into the live fee breakdown); pure, no live caller.
+export {
+  sellerTierDiscount,
+  defaultSellerTierDiscountTable,
+  type SellerTierKey,
+  type SellerTierDiscountTable,
+} from './seller-tier-discount';
+
 export type PricingBreakdownLine = {
   code:
     | "items_subtotal"

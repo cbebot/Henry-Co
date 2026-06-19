@@ -80,6 +80,15 @@ export const HenryEventNames = {
   BUSINESS_MEMBER_ADDED: "henry.business.member.added",
   BUSINESS_CONTEXT_SWITCHED: "henry.business.context.switched",
   BUSINESS_PROFILE_VIEWED: "henry.business.profile.viewed",
+  // Seller Academy / tier events (V3-58). The "seller" domain lives only in the
+  // event NAME (regex-valid); the envelope division must be a HenryDivision —
+  // academy enrol/complete ride on division 'learn', tier changes on 'marketplace'.
+  // Tier moves reuse SELLER_TIER_UPGRADED for both directions; the direction is
+  // read from properties.fromTier vs properties.toTier (a downgrade has
+  // fromTier ranked above toTier). businessId rides in eventId + properties.
+  SELLER_ACADEMY_ENROLLED: "henry.seller.academy.enrolled",
+  SELLER_ACADEMY_COMPLETED: "henry.seller.academy.completed",
+  SELLER_TIER_UPGRADED: "henry.seller.tier.upgraded",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };

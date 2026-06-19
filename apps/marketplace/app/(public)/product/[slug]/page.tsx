@@ -14,12 +14,15 @@ import {
 } from "@henryco/ui/public-design";
 import { JsonLd, buildProductLd } from "@henryco/seo";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getSellerAcademyCopy } from "@henryco/i18n";
+import { SellerTierBadge } from "@henryco/ui";
 import { henryDomain } from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
 import { TrustPassport } from "@/components/marketplace/shell";
 import { VariantMatrix } from "@/components/marketplace/variant-matrix";
 import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
+import { resolveSellerTierForVendor } from "@/lib/marketplace/seller-tier-data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { formatCurrency } from "@/lib/utils";
@@ -82,6 +85,9 @@ export default async function ProductPage({
   if (!data) notFound();
   const copy = getMarketplacePublicCopy(locale);
   const productCopy = copy.product;
+  // V3-58: public seller tier for the listing's vendor (owner→business bridge).
+  const sellerTier = data.vendor ? await resolveSellerTierForVendor(data.vendor.id) : "none";
+  const sellerCopy = getSellerAcademyCopy(locale);
 
   // Single-row detail page: wrap all visible DB-driven text fields so non-EN
   // locales render translated copy on demand.
@@ -258,6 +264,15 @@ export default async function ProductPage({
             <DisplayHeading level={1} size="display" className="mt-4 max-w-xl">
               {localizedTitle}
             </DisplayHeading>
+            {sellerTier !== "none" ? (
+              <div className="mt-4">
+                <SellerTierBadge
+                  tier={sellerTier}
+                  label={sellerCopy.tierNames[sellerTier]}
+                  tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                />
+              </div>
+            ) : null}
             {localizedDescription ? (
               <Lede className="mt-5 max-w-xl">{localizedDescription}</Lede>
             ) : null}

@@ -4,10 +4,11 @@ import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Star } from "lucide-react";
-import { HenryCoActivityIndicator } from "@henryco/ui";
+import { HenryCoActivityIndicator, SellerTierBadge, type SellerTier } from "@henryco/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
+import { getSellerAcademyCopy } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import type { MarketplaceProduct } from "@/lib/marketplace/types";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -18,13 +19,17 @@ const fallbackImage =
 export function ProductCardClient({
   product,
   priority,
+  sellerTier,
 }: {
   product: MarketplaceProduct;
   /** Above-the-fold card hint — eager-loads the image and bypasses lazy. */
   priority?: boolean;
+  /** V3-58 server-derived seller tier for this listing's vendor; 'none'/undefined → no chip. */
+  sellerTier?: SellerTier;
 }) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const copy = getMarketplacePublicCopy(locale);
+  const sellerCopy = getSellerAcademyCopy(locale);
   const { addToCart, pendingCartSlugs } = useMarketplaceCart();
   const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
   const saving = pendingWishlistSlugs.includes(product.slug);
@@ -94,6 +99,14 @@ export function ProductCardClient({
           <span className="rounded-full border border-[color:var(--home-line-15)] bg-[color:var(--home-glass-strong)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-80)] backdrop-blur-xl">
               {product.inventoryOwnerType === "company" ? copy.productCard.stockedByHenryCo : copy.productCard.verifiedSeller}
             </span>
+            {sellerTier && sellerTier !== "none" ? (
+              <SellerTierBadge
+                tier={sellerTier}
+                label={sellerCopy.tierNames[sellerTier]}
+                tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                size="sm"
+              />
+            ) : null}
             {product.stock > 0 && product.stock <= 3 ? (
               <span className="rounded-full bg-[color:var(--home-accent)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-accent-ink)]">
                 {copy.productCard.onlyLeft.replace("{count}", String(product.stock))}

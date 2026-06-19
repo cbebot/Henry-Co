@@ -147,7 +147,11 @@ function parseCreateBody(body, table) {
   }
   if (buf.trim()) defs.push(buf);
   for (let def of defs) {
-    def = def.trim();
+    // Collapse internal whitespace so a column whose definition spans MULTIPLE
+    // lines (e.g. a `check (...)` constraint on the next line) is still parsed —
+    // the name/type regex below uses `.` which never crosses a newline, so a
+    // multi-line def would otherwise be silently dropped (DRIFT false negative).
+    def = def.trim().replace(/\s+/g, " ");
     if (!def) continue;
     // Skip table-level constraints.
     if (/^(constraint|primary\s+key|foreign\s+key|unique|check|exclude|like)\b/i.test(def)) continue;

@@ -84,6 +84,7 @@ export {
 } from "./public-shell/public-tokens";
 export { PublicCard, PublicCardGrid, PublicCardHeader } from "./public-shell/public-card";
 export { PublicBadge, PublicStatusDot } from "./public-shell/public-badge";
+export { SellerTierBadge, type SellerTier } from "./public-shell/seller-tier-badge";
 export {
   PublicField,
   PublicLabel,

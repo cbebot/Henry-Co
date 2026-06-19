@@ -3,9 +3,12 @@ import Link from "next/link";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { notFound } from "next/navigation";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getSellerAcademyCopy } from "@henryco/i18n";
+import { SellerTierBadge } from "@henryco/ui";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
 import { StoreActionsClient } from "@/components/marketplace/store-actions-client";
 import { getMarketplaceVendorBySlug } from "@/lib/marketplace/data";
+import { resolveSellerTierForVendor } from "@/lib/marketplace/seller-tier-data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
@@ -39,6 +42,10 @@ export default async function StorePage({
   const data = await getMarketplaceVendorBySlug(slug);
   if (!data) notFound();
 
+  // V3-58: public-facing seller tier (resolved via the owner→business bridge).
+  const sellerTier = await resolveSellerTierForVendor(data.vendor.id);
+  const sellerCopy = getSellerAcademyCopy(locale);
+
   // Store name is a proper noun and stays as-is; the marketing description is
   // the seller's story and is the field non-EN buyers most benefit from
   // having translated.
@@ -62,6 +69,15 @@ export default async function StorePage({
         <article>
           <p className="market-kicker">{copy.store.hero.eyebrow}</p>
           <h1 className="market-display mt-5 max-w-3xl text-balance">{data.vendor.name}</h1>
+          {sellerTier !== "none" ? (
+            <div className="mt-4">
+              <SellerTierBadge
+                tier={sellerTier}
+                label={sellerCopy.tierNames[sellerTier]}
+                tooltip={sellerCopy.badge.tooltip[sellerTier]}
+              />
+            </div>
+          ) : null}
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
             {localizedVendorDescription || copy.store.hero.bodyFallback}
           </p>
@@ -190,7 +206,7 @@ export default async function StorePage({
              and translating every row on hot routes blows up DeepL quota. */
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {data.products.map((product) => (
-              <ProductCard key={product.slug} product={product} />
+              <ProductCard key={product.slug} product={product} sellerTier={sellerTier} />
             ))}
           </div>
         ) : (
