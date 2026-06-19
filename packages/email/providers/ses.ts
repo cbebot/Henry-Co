@@ -35,7 +35,7 @@ export function getSesConfig(): SesConfig | null {
     ""
   ).trim();
   if (!accessKeyId || !secretAccessKey) return null;
-  const region = (process.env.AWS_SES_REGION || process.env.AWS_REGION || "eu-north-1").trim();
+  const region = (process.env.AWS_SES_REGION || process.env.AWS_REGION || "us-east-1").trim();
   const sessionToken =
     (process.env.AWS_SES_SESSION_TOKEN || process.env.AWS_SESSION_TOKEN || "").trim() || undefined;
   return { region, accessKeyId, secretAccessKey, sessionToken };
