@@ -144,6 +144,24 @@ create index if not exists care_journal_lines_entry_idx on public.care_journal_l
 create index if not exists care_journal_lines_account_idx on public.care_journal_lines (account_code);
 
 -- ============================================================================
+-- 3b. RLS + grant lockdown on the new ledger tables (MUST be before the §11 backfill)
+-- ============================================================================
+-- Enable RLS + revoke writes on the new ledger tables HERE, right after they are created
+-- and BEFORE the §11 backfill inserts rows. The backfill leaves the deferred
+-- care_journal_lines_balanced constraint pending until COMMIT, and Postgres refuses to
+-- ALTER a table that has pending trigger events (55006). CI/shadow had an empty
+-- care_payments (backfill = no-op → no pending events) so this only bit on prod.
+-- Mirror the existing care money tables: RLS enabled, no anon/authenticated policy → the
+-- request roles are denied; service_role bypasses RLS; writes flow ONLY through the RPCs.
+alter table public.care_ledger_accounts enable row level security;
+alter table public.care_journal_entries enable row level security;
+alter table public.care_journal_lines   enable row level security;
+
+revoke insert, update, delete, truncate on public.care_ledger_accounts from anon, authenticated, service_role;
+revoke insert, update, delete, truncate on public.care_journal_entries from anon, authenticated, service_role;
+revoke insert, update, delete, truncate on public.care_journal_lines   from anon, authenticated, service_role;
+
+-- ============================================================================
 -- 4. BALANCE INVARIANT (deferred constraint trigger — unbypassable, fires at COMMIT)
 -- ============================================================================
 create or replace function care_private.assert_entry_balanced()
@@ -567,6 +585,15 @@ begin
 end $$;
 
 -- ============================================================================
+-- 11b. VALIDATE THE DEFERRED BACKFILL EVENTS NOW (belt-and-suspenders)
+-- ============================================================================
+-- The backfill queued deferred care_journal_lines_balanced events. Force them to validate
+-- immediately: this fails fast if any backfilled entry were unbalanced, and guarantees no
+-- pending trigger events linger for any ALTER later in this transaction (with §3b already
+-- ahead of the backfill this is defensive, but it keeps the migration robust to reorders).
+set constraints all immediate;
+
+-- ============================================================================
 -- 12. LOCK DOWN THE RAW WRITE PATHS (defense in depth)
 -- ============================================================================
 -- care_payments: NO role may write directly — every payment flows through the guarded
@@ -599,15 +626,12 @@ create trigger care_finance_ledger_no_truncate
   for each statement execute function care_private.block_finance_ledger_mutation();
 
 -- ============================================================================
--- 13. RLS + grant lockdown on the new care ledger tables
+-- 13. (moved to §3b) RLS + grant lockdown on the new care ledger tables
 -- ============================================================================
--- Mirror the existing care money tables (RLS enabled, no anon/authenticated policy →
--- the request roles are denied; service_role bypasses RLS for the finance dashboard).
--- Writes flow ONLY through the SECURITY DEFINER RPCs.
-alter table public.care_ledger_accounts enable row level security;
-alter table public.care_journal_entries enable row level security;
-alter table public.care_journal_lines   enable row level security;
-
-revoke insert, update, delete, truncate on public.care_ledger_accounts from anon, authenticated, service_role;
-revoke insert, update, delete, truncate on public.care_journal_entries from anon, authenticated, service_role;
-revoke insert, update, delete, truncate on public.care_journal_lines   from anon, authenticated, service_role;
+-- The ENABLE ROW LEVEL SECURITY + REVOKE statements that used to live here were moved to
+-- §3b (immediately after the tables are created, BEFORE the §11 backfill). Running them
+-- AFTER the backfill failed on a non-empty prod with:
+--   55006: cannot ALTER TABLE "care_journal_lines" because it has pending trigger events
+-- (the backfill leaves the deferred balance constraint pending until COMMIT). CI/shadow had
+-- an empty care_payments so the backfill was a no-op and never surfaced this. The lockdown
+-- is unchanged — only its position moved. Applied to prod 2026-06-19 with this ordering.
