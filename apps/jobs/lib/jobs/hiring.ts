@@ -68,7 +68,10 @@ function mapApplication(row: Record<string, unknown>): Application {
       ? asString(row.candidate_avatar_url)
       : null,
     jobTitle: asString(row.job_title),
-    stage: asString(row.stage, "applied"),
+    // prod column is `current_stage` (legacy code read `stage`, which does not
+    // exist → every card showed "applied"). Read current_stage, fall back to the
+    // legacy key for any pre-migration row. (V3-70 S2 correctness fix.)
+    stage: asString(row.current_stage ?? row.stage, "applied"),
     status: asString(row.status, "active") as Application["status"],
     coverNote: asString(row.cover_note),
     createdAt: asString(row.applied_at ?? row.created_at),
@@ -526,9 +529,11 @@ export async function updateApplicationStage(
   const admin = createAdminSupabase();
   const now = new Date().toISOString();
 
+  // prod column is `current_stage` (legacy code wrote `stage`, which does not
+  // exist → the write silently failed). Write the real column. (V3-70 S2 fix.)
   const { error } = await admin
     .from("jobs_applications")
-    .update({ stage, updated_at: now } as never)
+    .update({ current_stage: stage, updated_at: now } as never)
     .eq("id", applicationId);
 
   if (error) {

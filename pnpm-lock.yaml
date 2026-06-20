@@ -717,6 +717,9 @@ importers:
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
+      '@henryco/branded-documents':
+        specifier: workspace:^
+        version: link:../../packages/branded-documents
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
@@ -732,12 +735,18 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../../packages/intelligence
       '@henryco/media':
         specifier: workspace:^
         version: link:../../packages/media
       '@henryco/messaging-thread':
         specifier: workspace:^
         version: link:../../packages/messaging-thread
+      '@henryco/notifications':
+        specifier: workspace:^
+        version: link:../../packages/notifications
       '@henryco/observability':
         specifier: workspace:^
         version: link:../../packages/observability

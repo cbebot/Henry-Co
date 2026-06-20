@@ -89,6 +89,15 @@ export const HenryEventNames = {
   SELLER_ACADEMY_ENROLLED: "henry.seller.academy.enrolled",
   SELLER_ACADEMY_COMPLETED: "henry.seller.academy.completed",
   SELLER_TIER_UPGRADED: "henry.seller.tier.upgraded",
+  // Employer hiring suite events (V3-70). The "hiring" domain lives only in the
+  // event NAME (regex-valid); the envelope division must be a HenryDivision — all
+  // four ride on division 'jobs'. actor.kind is 'user' (the acting recruiter); the
+  // hiring business identity rides in eventId + properties and the member role in
+  // actor.roleHint (no 'business'/'hiring' division or actor.kind exists).
+  HIRING_APPLICATION_STAGED: "henry.hiring.application.staged",
+  HIRING_INTERVIEW_SCHEDULED: "henry.hiring.interview.scheduled",
+  HIRING_OFFER_SENT: "henry.hiring.offer.sent",
+  HIRING_CANDIDATE_HIRED: "henry.hiring.candidate.hired",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };

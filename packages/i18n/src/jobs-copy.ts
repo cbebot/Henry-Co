@@ -210,6 +210,77 @@ export type JobsCopy = {
     statusRejected: string;
     statusHired: string;
   };
+  employerHiringSuite: {
+    // Bulk stage move
+    bulkSelectLabel: string;
+    bulkSelectedTemplate: string;
+    bulkMoveLabel: string;
+    bulkMovePlaceholder: string;
+    bulkMoveButton: string;
+    bulkMovedTemplate: string;
+    bulkMoveError: string;
+    bulkClearLabel: string;
+    // Scoring
+    scoreTitle: string;
+    scoreBody: string;
+    scoreRubricTechnical: string;
+    scoreRubricCommunication: string;
+    scoreRubricCulture: string;
+    scoreRubricExperience: string;
+    scoreYourLabel: string;
+    scoreTeamAverage: string;
+    scoreOverall: string;
+    scoreScorersTemplate: string;
+    scoreNotYet: string;
+    scoreSave: string;
+    scoreSaving: string;
+    scoreSaved: string;
+    scoreError: string;
+    scoreCommentPlaceholder: string;
+    predictiveLabel: string;
+    // Team notes
+    notesTitle: string;
+    notesBody: string;
+    notesEmpty: string;
+    notesComposerPlaceholder: string;
+    notesPost: string;
+    notesPosting: string;
+    notesReply: string;
+    notesMentionLabel: string;
+    notesMentionHint: string;
+    notesError: string;
+    // Decision
+    decisionTitle: string;
+    decisionBody: string;
+    decisionOffer: string;
+    decisionHire: string;
+    decisionReject: string;
+    decisionToneLabel: string;
+    decisionToneWarm: string;
+    decisionToneStandard: string;
+    decisionToneBrief: string;
+    decisionConfirmRejectTemplate: string;
+    decisionSending: string;
+    decisionSent: string;
+    decisionError: string;
+    // Rejection letter document copy (merge fields filled server-side)
+    rejectionDocType: string;
+    rejectionDocTitle: string;
+    rejectionDocSubtitleTemplate: string;
+    rejectionDocKicker: string;
+    rejectionParaGreetingTemplate: string;
+    rejectionParaBodyTemplate: string;
+    rejectionParaClosingTemplate: string;
+    rejectionSignOffTemplate: string;
+    rejectionLegalLineTemplate: string;
+    // Business-context gate
+    switchToBusinessTitle: string;
+    switchToBusinessBody: string;
+    // Candidate-detail chrome (shared, all contexts)
+    applicationDetailTitle: string;
+    stageProgressionTitle: string;
+    stageProgressionBody: string;
+  };
   employerCompany: {
     pageTitle: string;
     pageSubtitle: string;
@@ -770,6 +841,75 @@ const EN: JobsCopy = {
     statusWithdrawn: "Withdrawn",
     statusRejected: "Rejected",
     statusHired: "Hired",
+  },
+  employerHiringSuite: {
+    bulkSelectLabel: "Select",
+    bulkSelectedTemplate: "{count} selected",
+    bulkMoveLabel: "Move selected to",
+    bulkMovePlaceholder: "Choose a stage…",
+    bulkMoveButton: "Move",
+    bulkMovedTemplate: "Moved {count} applicant(s).",
+    bulkMoveError: "Couldn't move the selected applicants.",
+    bulkClearLabel: "Clear selection",
+    scoreTitle: "Candidate scoring",
+    scoreBody:
+      "Score this candidate against the team rubric. Scores stay private to your hiring team — the candidate never sees them.",
+    scoreRubricTechnical: "Technical",
+    scoreRubricCommunication: "Communication",
+    scoreRubricCulture: "Culture add",
+    scoreRubricExperience: "Experience",
+    scoreYourLabel: "Your score",
+    scoreTeamAverage: "Team average",
+    scoreOverall: "Overall",
+    scoreScorersTemplate: "{count} scorer(s)",
+    scoreNotYet: "Not scored yet",
+    scoreSave: "Save score",
+    scoreSaving: "Saving…",
+    scoreSaved: "Saved",
+    scoreError: "Couldn't save score.",
+    scoreCommentPlaceholder: "Add a note (optional)",
+    predictiveLabel: "Predicted quality",
+    notesTitle: "Team notes",
+    notesBody: "Internal notes for your hiring team. Candidates never see these.",
+    notesEmpty: "No team notes yet. Start the discussion.",
+    notesComposerPlaceholder: "Write a note… type @ to mention a teammate",
+    notesPost: "Post note",
+    notesPosting: "Posting…",
+    notesReply: "Reply",
+    notesMentionLabel: "Mention",
+    notesMentionHint: "Only teammates in your business can be mentioned.",
+    notesError: "Couldn't post the note.",
+    decisionTitle: "Decision",
+    decisionBody: "Send an offer, mark the candidate hired, or send a respectful rejection.",
+    decisionOffer: "Send offer",
+    decisionHire: "Mark hired",
+    decisionReject: "Send rejection",
+    decisionToneLabel: "Tone",
+    decisionToneWarm: "Warm",
+    decisionToneStandard: "Standard",
+    decisionToneBrief: "Brief",
+    decisionConfirmRejectTemplate: "Send a rejection to {name}? This moves the application to the rejected stage.",
+    decisionSending: "Sending…",
+    decisionSent: "Decision recorded.",
+    decisionError: "Couldn't record the decision.",
+    rejectionDocType: "Application update",
+    rejectionDocTitle: "Update on your application",
+    rejectionDocSubtitleTemplate: "{role} · {business}",
+    rejectionDocKicker: "Our decision",
+    rejectionParaGreetingTemplate: "Dear {candidate},",
+    rejectionParaBodyTemplate:
+      "Thank you for applying for {role} at {business}. After careful consideration, we will not be moving forward with your application at this time.",
+    rejectionParaClosingTemplate:
+      "We were genuinely impressed by much of your background and encourage you to apply for future roles that match your strengths. We wish you every success.",
+    rejectionSignOffTemplate: "With appreciation, the {business} hiring team.",
+    rejectionLegalLineTemplate:
+      "This letter was issued by {business} via {legalEntity} on the Henry Onyx Jobs platform. It reflects the hiring decision recorded at the time of issue.",
+    switchToBusinessTitle: "Switch to your business",
+    switchToBusinessBody:
+      "These hiring tools are available when you act as your business. Switch context to manage your team's pipeline.",
+    applicationDetailTitle: "Application detail",
+    stageProgressionTitle: "Stage progression",
+    stageProgressionBody: "Track where this candidate sits in the hiring pipeline.",
   },
   employerCompany: {
     pageTitle: "Company Profile",

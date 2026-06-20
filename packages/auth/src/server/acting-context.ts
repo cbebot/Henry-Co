@@ -159,6 +159,21 @@ async function readMemberRole(businessId: string, userId: string): Promise<Busin
 export async function resolveActingContext(req?: Request): Promise<ActingContext> {
   const userId = await resolveCurrentUserId(req);
   if (!userId) return { kind: "personal", userId: "" };
+  return resolveActingContextForUser(userId);
+}
+
+/**
+ * Resolve the acting context for an ALREADY-AUTHENTICATED user id — the same
+ * signed-cookie verification + live `business_members` re-check as
+ * resolveActingContext, but with the user resolved by the caller (e.g. via the
+ * SSR session `supabase.auth.getUser()`) rather than the `x-supabase-user`
+ * middleware header. For divisions that authenticate through the SSR client and
+ * do not inject the header (e.g. jobs). The cookie is HMAC-bound to `userId`, so
+ * a lifted cookie on another user still fails; membership is re-derived every
+ * call (fail-closed to personal).
+ */
+export async function resolveActingContextForUser(userId: string): Promise<ActingContext> {
+  if (!userId) return { kind: "personal", userId: "" };
 
   const jar = await cookies();
   const raw = jar.get(HENRYCO_ACTING_CONTEXT_COOKIE)?.value;
