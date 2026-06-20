@@ -18,6 +18,8 @@ import { getSellerAcademyCopy } from "@henryco/i18n";
 import { SellerTierBadge } from "@henryco/ui";
 import { henryDomain } from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
+import { DeliveryPromiseBadge } from "@/components/marketplace/DeliveryPromiseBadge";
+import { getVendorDeliveryPromise } from "@/lib/marketplace/delivery-promises";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
 import { TrustPassport } from "@/components/marketplace/shell";
 import { VariantMatrix } from "@/components/marketplace/variant-matrix";
@@ -88,6 +90,8 @@ export default async function ProductPage({
   // V3-58: public seller tier for the listing's vendor (owner→business bridge).
   const sellerTier = data.vendor ? await resolveSellerTierForVendor(data.vendor.id) : "none";
   const sellerCopy = getSellerAcademyCopy(locale);
+  // V3-DELIVERY-COMPLETE-01 (T6): the vendor's active Delivery Promise (dormant-safe → null).
+  const deliveryPromise = data.vendor ? await getVendorDeliveryPromise(data.vendor.id) : null;
 
   // Single-row detail page: wrap all visible DB-driven text fields so non-EN
   // locales render translated copy on demand.
@@ -264,13 +268,16 @@ export default async function ProductPage({
             <DisplayHeading level={1} size="display" className="mt-4 max-w-xl">
               {localizedTitle}
             </DisplayHeading>
-            {sellerTier !== "none" ? (
-              <div className="mt-4">
-                <SellerTierBadge
-                  tier={sellerTier}
-                  label={sellerCopy.tierNames[sellerTier]}
-                  tooltip={sellerCopy.badge.tooltip[sellerTier]}
-                />
+            {sellerTier !== "none" || deliveryPromise ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                {sellerTier !== "none" ? (
+                  <SellerTierBadge
+                    tier={sellerTier}
+                    label={sellerCopy.tierNames[sellerTier]}
+                    tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                  />
+                ) : null}
+                <DeliveryPromiseBadge promise={deliveryPromise} locale={locale} />
               </div>
             ) : null}
             {localizedDescription ? (

@@ -5,6 +5,7 @@ export * from "./identity";
 export * from "./integrations";
 export * from "./legal";
 export * from "./tax";
+export * from "./geography-ng";
 export * from "./issuer";
 export * from "./support";
 export * from "./urls";

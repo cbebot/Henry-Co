@@ -7,6 +7,7 @@ import { Heart, ShoppingBag, Star } from "lucide-react";
 import { HenryCoActivityIndicator, SellerTierBadge, type SellerTier } from "@henryco/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
+import { DeliveryPromiseBadge } from "@/components/marketplace/DeliveryPromiseBadge";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { getSellerAcademyCopy } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
@@ -20,12 +21,15 @@ export function ProductCardClient({
   product,
   priority,
   sellerTier,
+  deliveryPromise,
 }: {
   product: MarketplaceProduct;
   /** Above-the-fold card hint — eager-loads the image and bypasses lazy. */
   priority?: boolean;
   /** V3-58 server-derived seller tier for this listing's vendor; 'none'/undefined → no chip. */
   sellerTier?: SellerTier;
+  /** V3-DELIVERY-COMPLETE-01 tier-clamped Delivery Promise for the vendor; null → no badge. */
+  deliveryPromise?: { coveredStates: string[] } | null;
 }) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const copy = getMarketplacePublicCopy(locale);
@@ -112,6 +116,7 @@ export function ProductCardClient({
                 {copy.productCard.onlyLeft.replace("{count}", String(product.stock))}
               </span>
             ) : null}
+            <DeliveryPromiseBadge promise={deliveryPromise ?? null} locale={locale} />
           </div>
           <button
             type="button"

@@ -6,8 +6,10 @@ import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getSellerAcademyCopy } from "@henryco/i18n";
 import { SellerTierBadge } from "@henryco/ui";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
+import { DeliveryPromiseBadge } from "@/components/marketplace/DeliveryPromiseBadge";
 import { StoreActionsClient } from "@/components/marketplace/store-actions-client";
 import { getMarketplaceVendorBySlug } from "@/lib/marketplace/data";
+import { getVendorDeliveryPromise } from "@/lib/marketplace/delivery-promises";
 import { resolveSellerTierForVendor } from "@/lib/marketplace/seller-tier-data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -45,6 +47,8 @@ export default async function StorePage({
   // V3-58: public-facing seller tier (resolved via the owner→business bridge).
   const sellerTier = await resolveSellerTierForVendor(data.vendor.id);
   const sellerCopy = getSellerAcademyCopy(locale);
+  // V3-DELIVERY-COMPLETE-01 (T6): the store's active Delivery Promise (dormant-safe → null).
+  const deliveryPromise = await getVendorDeliveryPromise(data.vendor.id);
 
   // Store name is a proper noun and stays as-is; the marketing description is
   // the seller's story and is the field non-EN buyers most benefit from
@@ -69,13 +73,16 @@ export default async function StorePage({
         <article>
           <p className="market-kicker">{copy.store.hero.eyebrow}</p>
           <h1 className="market-display mt-5 max-w-3xl text-balance">{data.vendor.name}</h1>
-          {sellerTier !== "none" ? (
-            <div className="mt-4">
-              <SellerTierBadge
-                tier={sellerTier}
-                label={sellerCopy.tierNames[sellerTier]}
-                tooltip={sellerCopy.badge.tooltip[sellerTier]}
-              />
+          {sellerTier !== "none" || deliveryPromise ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {sellerTier !== "none" ? (
+                <SellerTierBadge
+                  tier={sellerTier}
+                  label={sellerCopy.tierNames[sellerTier]}
+                  tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                />
+              ) : null}
+              <DeliveryPromiseBadge promise={deliveryPromise} locale={locale} />
             </div>
           ) : null}
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
@@ -206,7 +213,12 @@ export default async function StorePage({
              and translating every row on hot routes blows up DeepL quota. */
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {data.products.map((product) => (
-              <ProductCard key={product.slug} product={product} sellerTier={sellerTier} />
+              <ProductCard
+                key={product.slug}
+                product={product}
+                sellerTier={sellerTier}
+                deliveryPromise={deliveryPromise}
+              />
             ))}
           </div>
         ) : (

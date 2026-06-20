@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, normalizeStateInput } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
@@ -28,6 +28,9 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
 import { resolveOrderOutputVat } from "@/lib/checkout/order-vat";
 import { cartQualifiesForFreeDelivery, isFreeDeliveryProduct } from "@/lib/checkout/free-delivery";
+import { clampCoveredStatesToTier, resolveCoveredStates, type ReachKind } from "@/lib/checkout/delivery-reach";
+import { isDeliveryPromisesEnabled } from "@/lib/marketplace/delivery-promises";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const runtime = "nodejs";
@@ -547,10 +550,11 @@ export async function POST(request: Request) {
         );
         const vatCategoryByProduct = new Map<string, string | null>();
         const freeDeliveryProductIds = new Set<string>();
+        const vendorByProduct = new Map<string, string | null>();
         if (cartProductIds.length) {
           const { data: productRows, error: productReadError } = await admin
             .from("marketplace_products")
-            .select("id, filter_data, marketplace_categories(slug)")
+            .select("id, vendor_id, filter_data, marketplace_categories(slug)")
             .in("id", cartProductIds);
           if (productReadError) {
             // Money-correctness: NEVER settle a sale on an unclassified cart. A failed
@@ -563,18 +567,55 @@ export async function POST(request: Request) {
             const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
             const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
             vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
+            vendorByProduct.set(String(row.id), row.vendor_id ? String(row.vendor_id) : null);
             if (isFreeDeliveryProduct(row.filter_data)) {
               freeDeliveryProductIds.add(String(row.id));
             }
           }
         }
-        // Waive delivery only when the read covered EVERY cart product and each one is
-        // flagged. A missing product row (deleted/unreadable) leaves its id unflagged →
-        // normal delivery, never an accidental free ship.
-        // ⚠️ DORMANT capability (V3-FREESHIP-CLOSE-01): no prod product is flagged
-        // free_delivery; flagging one is an owner/Lane-1 (money/pricing) reviewed action.
-        // Contract + guards live in lib/checkout/free-delivery.ts.
-        const allItemsFreeShipping = cartQualifiesForFreeDelivery(cartProductIds, freeDeliveryProductIds);
+        // V3-FREESHIP-02 — seller Delivery Promises (location-aware). Load each cart
+        // vendor's ACTIVE promise and RE-CLAMP its covered states to the vendor's CURRENT
+        // tier (a downgrade must never keep honoring an over-reach promise). DORMANT-SAFE:
+        // if the promises table/feature is absent the read errors → no promises → normal
+        // delivery (the manual `filter_data.free_delivery` override still applies).
+        const activePromiseByVendor = new Map<string, { coveredStates: string[]; minOrderMinor: number | null }>();
+        const cartVendorIds = Array.from(
+          new Set(Array.from(vendorByProduct.values()).filter((v): v is string => Boolean(v))),
+        );
+        if (cartVendorIds.length) {
+          // The reach tier is the KYC `verification_level` (gold/silver/bronze) — the
+          // seller's VERIFIED standing — not `seller_tier` (launch/growth/scale/partner,
+          // which is listing caps/commission). Bronze→own state, Silver→zone, Gold→nationwide.
+          const { data: promiseRows, error: promiseReadError } = await admin
+            .from("marketplace_delivery_promises")
+            .select("vendor_id, covered_states, min_order_minor, origin_state, marketplace_vendors(verification_level)")
+            .in("vendor_id", cartVendorIds)
+            .eq("is_active", true);
+          if (!promiseReadError) {
+            for (const row of (promiseRows ?? []) as Array<Record<string, unknown>>) {
+              const vendorId = String(row.vendor_id);
+              const stored = Array.isArray(row.covered_states) ? (row.covered_states as unknown[]).map(String) : [];
+              const origin = typeof row.origin_state === "string" ? row.origin_state : "";
+              const v = row.marketplace_vendors as { verification_level?: string } | Array<{ verification_level?: string }> | null;
+              const currentTier = (Array.isArray(v) ? v[0]?.verification_level : v?.verification_level) ?? null;
+              activePromiseByVendor.set(vendorId, {
+                coveredStates: clampCoveredStatesToTier(stored, origin, currentTier),
+                minOrderMinor: row.min_order_minor == null ? null : Number(row.min_order_minor),
+              });
+            }
+          }
+          // promiseReadError (e.g. table not yet applied) → dormant: no promises loaded.
+        }
+        const buyerState = normalizeStateInput(shippingRegion);
+        const goodsSubtotalMinor = Math.max(0, Math.round(Number(subtotal) * 100));
+        const allItemsFreeShipping = cartQualifiesForFreeDelivery({
+          cartProductIds,
+          buyerState,
+          vendorByProduct,
+          activePromiseByVendor,
+          manualFreeProductIds: freeDeliveryProductIds,
+          goodsSubtotalMinor,
+        });
 
         const breakdown = computeMarketplaceCheckoutBreakdown({
           itemsSubtotalAmount: subtotal,
@@ -2582,6 +2623,97 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/store");
         revalidatePath("/vendor/settings");
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`,
+          { vendorId: String(vendorId) }
+        );
+      }
+
+      case "vendor_delivery_promise_upsert": {
+        // V3-DELIVERY-COMPLETE-01 (T5) — seller writes their Delivery Promise.
+        // Money-adjacent: a promise only WAIVES delivery (deliveryAmount 0) at checkout;
+        // this handler writes NO money function. DORMANT: gated by the same flag as the
+        // seller card; the migration is committed-NOT-applied.
+        if (!isDeliveryPromisesEnabled()) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=delivery-promises-off`, {
+            message: "Delivery promises are not enabled yet.",
+            code: "feature-off",
+            status: 409,
+          });
+        }
+        if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
+        }
+        const vendorId =
+          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
+          snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id;
+        if (!vendorId) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`, {
+            message: "Your store record could not be found.",
+            code: "missing-vendor",
+            status: 404,
+          });
+        }
+
+        // The buyer-facing reach is EARNED. Read the vendor's CURRENT verification_level
+        // and recompute the covered states server-side from (reach + origin + tier) — the
+        // client never submits coverage, so it cannot forge an over-reach.
+        const { data: vendorRow } = await admin
+          .from("marketplace_vendors")
+          .select("verification_level")
+          .eq("id", vendorId)
+          .maybeSingle();
+        const tier = (vendorRow as { verification_level?: string } | null)?.verification_level ?? null;
+
+        const reachKind = text(formData, "reach_kind") as ReachKind;
+        if (!["own_state", "own_zone", "states", "nationwide"].includes(reachKind)) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=bad-reach`, {
+            message: "Pick a valid delivery reach.",
+            code: "bad-reach",
+            status: 400,
+          });
+        }
+        const originState = normalizeStateInput(text(formData, "origin_state"));
+        if (!originState) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=bad-origin`, {
+            message: "Select your dispatch state.",
+            code: "bad-origin",
+            status: 400,
+          });
+        }
+        const { coveredStates } = resolveCoveredStates({ reachKind, originState, tier });
+        const minNaira = numberValue(formData, "min_order_naira", 0);
+        const minOrderMinor = minNaira > 0 ? Math.round(minNaira * 100) : null;
+        const isActive = truthyValue(formData, "is_active");
+
+        // Call the ownership-checked RPC with the CALLER's session (auth.uid()) — the DB
+        // independently proves the seller owns this vendor (defence in depth over the
+        // in-app role/membership check above). Service-role would null out auth.uid().
+        const userClient = await createSupabaseServer();
+        const { error: rpcError } = await userClient.rpc("upsert_delivery_promise", {
+          p_vendor_id: vendorId,
+          p_reach_kind: reachKind,
+          p_covered_states: coveredStates,
+          p_min_order_minor: minOrderMinor,
+          p_origin_state: originState,
+          p_is_active: isActive,
+        } as never);
+        if (rpcError) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=promise-save-failed`, {
+            message: "Your delivery promise could not be saved.",
+            code: "promise-save-failed",
+            status: 400,
+          });
+        }
+
+        revalidatePath("/vendor/settings");
+        revalidatePath(`/store/${snapshot.vendors.find((v) => v.id === String(vendorId))?.slug ?? ""}`);
         return respondSuccess(
           json,
           request,
