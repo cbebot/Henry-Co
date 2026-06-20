@@ -28,7 +28,7 @@
  * Henry Onyx.
  */
 
-import { BRAND_EMAILS, COMPANY } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY, LEGAL } from "@henryco/config";
 
 import type { EmailPurpose } from "./types";
 
@@ -39,8 +39,18 @@ import type { EmailPurpose } from "./types";
  * "Henry Holdings Limited" drift is exactly what this prevents).
  */
 const BRAND_NAME = COMPANY.group.name;
-const LEGAL_ENTITY = COMPANY.group.legalName;
-const COMPANY_LOCALE_LINE = "Lagos, Nigeria";
+const LEGAL_ENTITY = LEGAL.entity.name;
+const LEGAL_RC = LEGAL.entity.rcNumber;
+// Registered office, sourced from the grounded CAC record (legal.ts) — never a
+// hardcoded city. A serious company's mail shows its real registered address.
+const REGISTERED_OFFICE = [
+  LEGAL.entity.registeredOffice.street,
+  LEGAL.entity.registeredOffice.city,
+  LEGAL.entity.registeredOffice.state,
+  LEGAL.entity.registeredOffice.country,
+]
+  .filter(Boolean)
+  .join(", ");
 
 /**
  * Editorial serif display (Fraunces — the website display face) with a deep
@@ -183,28 +193,42 @@ function paletteFor(purpose: EmailPurpose): ResolvedPalette {
 }
 
 /**
- * Brand lockup: H·Onyx monogram tile + "Henry Onyx" set in the serif
- * display face. Rendered as native text (not an image) so the wordmark is
- * always legible regardless of image blocking. Used at the top of the card.
+ * Onyx "letterhead" masthead — the brand's signature band at the top of the
+ * card. Deliberately kept dark ONYX in BOTH the light and dark variants (the
+ * brand *is* the Onyx surface), so every Henry Onyx email opens with the same
+ * unmistakable mark regardless of the recipient's device theme.
+ *
+ * Engraved-stationery craft, all email-safe (no images — Gmail/Outlook strip
+ * inline SVG + data: URIs): a serif "H" monogram on a tile with an inset
+ * top-highlight (letterpress feel), the "Henry Onyx" serif wordmark, the
+ * division line beneath in fine tracked caps, and a copper hairline sealing the
+ * band. Rounded top corners come from the card's `overflow:hidden`.
  */
-function renderBrandMark(): string {
+function renderMasthead(eyebrow: string, palette: ResolvedPalette): string {
   const t = HENRYCO_EMAIL_TOKENS;
-  // The H·Onyx mark is rendered as native HTML/CSS text — a serif "H" on the
-  // onyx tile — NOT an image. Gmail and Outlook never render inline SVG or
-  // `data:` URI images, so an image-based mark shows broken; pure text always
-  // renders. The tile stays onyx in both light/dark variants (`.ox-tile`),
-  // so the near-white "H" keeps its contrast either way.
   return `
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 22px 0;">
-      <tr>
-        <td class="ox-tile" width="44" height="44" align="center" valign="middle" style="width:44px; height:44px; padding:0; background-color:#10161F; border:1px solid rgba(255,255,255,0.10); border-radius:12px; text-align:center; vertical-align:middle; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);">
-          <span style="display:inline-block; font-family:${t.headingFont}; font-size:25px; line-height:44px; font-weight:600; color:${t.markText}; letter-spacing:0;">H</span>
-        </td>
-        <td style="padding:0 0 0 14px; vertical-align:middle;">
-          <div class="ox-hero" style="margin:0; padding:0; font-family:${t.headingFont}; font-size:22px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry Onyx</div>
-        </td>
-      </tr>
-    </table>`;
+    <tr>
+      <td style="padding:0; background-color:#0B0F16;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="ox-mast-pad" style="padding:30px 36px 24px 36px; vertical-align:middle;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="46" height="46" align="center" valign="middle" style="width:46px; height:46px; padding:0; background-color:#11171F; border:1px solid rgba(255,255,255,0.12); border-radius:13px; text-align:center; vertical-align:middle; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);">
+                    <span style="display:inline-block; font-family:${t.headingFont}; font-size:27px; line-height:46px; font-weight:600; color:#F6F8FB; letter-spacing:0;">H</span>
+                  </td>
+                  <td style="padding:0 0 0 15px; vertical-align:middle;">
+                    <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:21px; font-weight:600; line-height:1.05; letter-spacing:-0.008em; color:#F6F8FB;">Henry&nbsp;Onyx</div>
+                    <div style="margin-top:6px; font-family:${t.bodyFont}; font-size:9.5px; font-weight:700; letter-spacing:0.34em; text-transform:uppercase; color:#9AA5B2;">${escapeHtml(eyebrow)}</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <div style="height:2px; background-color:${palette.accent}; line-height:2px; font-size:0;">&nbsp;</div>
+      </td>
+    </tr>`;
 }
 
 function renderSections(sections: HenryCoEmailSection[]): string {
@@ -375,7 +399,7 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
             ${escapeHtml(reason)}
           </p>
           <p class="ox-foot" style="margin:10px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
-            ${escapeHtml(BRAND_NAME)} is a trading name of ${escapeHtml(LEGAL_ENTITY)} &middot; ${escapeHtml(COMPANY_LOCALE_LINE)}
+            ${escapeHtml(LEGAL_ENTITY)} &middot; RC ${escapeHtml(LEGAL_RC)} &middot; ${escapeHtml(REGISTERED_OFFICE)}
           </p>
           <p class="ox-foot" style="margin:6px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
             Need help? ${supportLink}${unsubscribeBlock}${preferencesBlock}
@@ -427,7 +451,7 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
   const t = HENRYCO_EMAIL_TOKENS;
   const palette = paletteFor(layout.purpose);
   const eyebrow = layout.eyebrow || PURPOSE_KICKER[layout.purpose];
-  const brandMark = renderBrandMark();
+  const masthead = renderMasthead(eyebrow, palette);
   const sections = renderSections(layout.sections || []);
   const bullets = renderBullets(layout.bullets || []);
   const highlight = renderHighlight(layout.highlightLabel, layout.highlightValue, palette);
@@ -470,12 +494,10 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
       <tr>
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="ox-card" style="max-width:600px; background-color:${t.cardBg}; border:1px solid ${t.cardBorder}; border-radius:22px; overflow:hidden;">
+            ${masthead}
             <tr>
-              <td class="ox-card-glow ox-pad" style="padding:40px 36px 30px 36px;">
-                ${brandMark}
-                <div style="height:2px; width:42px; background-color:${palette.accent}; border-radius:999px; line-height:2px; font-size:0;">&nbsp;</div>
-                <div class="ox-accent" style="margin-top:20px; font-family:${t.bodyFont}; font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accentInk};">${escapeHtml(eyebrow)}</div>
-                <h1 class="ox-hero ox-title" style="margin:13px 0 0 0; font-family:${t.headingFont}; font-size:29px; line-height:1.22; font-weight:600; color:${t.heroText}; letter-spacing:-0.014em;">${escapeHtml(layout.title)}</h1>
+              <td class="ox-card-glow ox-pad" style="padding:34px 36px 30px 36px;">
+                <h1 class="ox-hero ox-title" style="margin:0; font-family:${t.headingFont}; font-size:29px; line-height:1.22; font-weight:600; color:${t.heroText}; letter-spacing:-0.014em;">${escapeHtml(layout.title)}</h1>
                 <p class="ox-hero" style="margin:16px 0 0 0; font-family:${t.bodyFont}; font-size:15.5px; line-height:1.78; color:${t.heroText};">${escapeHtml(layout.intro)}</p>
                 ${highlight}
                 ${sections}
@@ -546,6 +568,6 @@ export function renderHenryCoEmailText(layout: HenryCoEmailLayout): string {
     lines.push(layout.supportLine);
   }
   lines.push("");
-  lines.push(`— ${BRAND_NAME} · ${LEGAL_ENTITY} · ${COMPANY_LOCALE_LINE}`);
+  lines.push(`— ${BRAND_NAME} · ${LEGAL_ENTITY} · RC ${LEGAL_RC} · ${REGISTERED_OFFICE}`);
   return lines.join("\n");
 }
