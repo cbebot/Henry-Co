@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bell, CheckCircle2, CircleAlert, Clock3, ShieldCheck } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { henryDomain } from "@henryco/config";
+import { translateSurfaceLabel, getLearnToEarnCopy } from "@henryco/i18n/server";
 import { EmptyState, InlineNotice } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
@@ -11,6 +12,8 @@ import { StatusPill } from "@/components/workspace-shell";
 import { getSharedAccountLoginUrl, getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import { getCandidateDashboardData, getJobPostBySlug, getJobPosts } from "@/lib/jobs/data";
+import { getCourseGatesForJob, getVerifiedLearnCourseIds } from "@/lib/jobs/learn-to-earn-data";
+import { createAdminSupabase } from "@/lib/supabase";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { submitApplicationAction, toggleSavedJobAction } from "@/app/actions";
 
@@ -54,6 +57,32 @@ export default async function JobDetailPage({
   }
 
   const candidateData = viewer.user ? await getCandidateDashboardData(viewer.user.id, locale) : null;
+
+  // V3-56 S3b — resolve Learn course gates for this posting against the viewer's
+  // verified completions. A required-but-unmet gate shows a calm "take the
+  // course" CTA; a preferred-but-unmet gate is informational. Nothing renders
+  // when there are no gates or every gate is satisfied.
+  const learnCopy = getLearnToEarnCopy(locale);
+  const courseGates = await getCourseGatesForJob(createAdminSupabase(), job.slug);
+  const verifiedCourseIds = viewer.user
+    ? await getVerifiedLearnCourseIds(createAdminSupabase(), viewer.user.id)
+    : new Set<string>();
+  const unmetRequiredGate =
+    courseGates.find((gate) => gate.required && !verifiedCourseIds.has(gate.course_id)) ?? null;
+  const unmetPreferredGate =
+    courseGates.find((gate) => !gate.required && !verifiedCourseIds.has(gate.course_id)) ?? null;
+  const gateNotice = unmetRequiredGate
+    ? ({ kind: "required", gate: unmetRequiredGate } as const)
+    : unmetPreferredGate
+      ? ({ kind: "preferred", gate: unmetPreferredGate } as const)
+      : null;
+  const gateCourseLabel = gateNotice
+    ? gateNotice.gate.course_label || gateNotice.gate.course_slug || gateNotice.gate.course_id
+    : "";
+  const gateCourseHref = gateNotice?.gate.course_slug
+    ? henryDomain("learn", `/courses/${gateNotice.gate.course_slug}`)
+    : henryDomain("learn", "/courses");
+
   const existingJourney =
     candidateData?.applicationJourneys.find((journey) => journey.application.jobSlug === job.slug) ?? null;
   const related = jobs.filter((item) => item.categorySlug === job.categorySlug && item.slug !== job.slug).slice(0, 3);
@@ -427,6 +456,35 @@ export default async function JobDetailPage({
                   "Saving is private — employers are not notified. Applying sends this role, your profile, and your note to the hiring team. Either action uses your HenryCo account so nothing gets lost between devices.",
                 )}
               </p>
+
+              {gateNotice ? (
+                <div className="mt-5 rounded-2xl border border-[var(--jobs-line)] bg-[var(--jobs-paper-soft)] p-4">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
+                    {gateNotice.kind === "required"
+                      ? learnCopy.gate.requiredEyebrow
+                      : learnCopy.gate.manageEyebrow}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[var(--jobs-ink)]">
+                    {gateNotice.kind === "required"
+                      ? learnCopy.gate.requiredTitle
+                      : learnCopy.gate.preferredTitle}
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
+                    {(gateNotice.kind === "required"
+                      ? learnCopy.gate.requiredBody
+                      : learnCopy.gate.preferredBody
+                    ).replace("{course}", gateCourseLabel)}
+                  </p>
+                  <a
+                    href={gateCourseHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
+                  >
+                    {learnCopy.gate.takeCourseCta}
+                  </a>
+                </div>
+              ) : null}
 
               <div className="mt-5 space-y-3">
                 {saved ? (

@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
 import { getJobsCopy } from "@henryco/i18n";
+import { getLearnToEarnCopy } from "@henryco/i18n/server";
 import { saveCandidateProfileAction } from "@/app/actions";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
+import { getLearnVerifiedSkills } from "@/lib/jobs/learn-to-earn-data";
+import { createAdminSupabase } from "@/lib/supabase";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { InlineNotice } from "@/components/feedback";
+import { LearnVerifiedBadge } from "@/components/hiring/LearnVerifiedBadge";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 import { ProfileBuilder } from "@/components/candidate/ProfileBuilder";
@@ -47,14 +51,16 @@ export default async function CandidateProfilePage({
 }) {
   const viewer = await requireJobsUser("/candidate/profile");
   const locale = await getJobsPublicLocale();
-  const [data, params] = await Promise.all([
+  const [data, params, learnSkills] = await Promise.all([
     getCandidateDashboardData(viewer.user!.id, locale),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
+    getLearnVerifiedSkills(createAdminSupabase(), viewer.user!.id),
   ]);
   const profile = data.profile;
   const saved = params.saved === "1";
   const jobsCopy = getJobsCopy(locale);
   const copy = jobsCopy.candidateProfile;
+  const learnCopy = getLearnToEarnCopy(locale);
   const profileBuilderLabels = jobsCopy.profileBuilder;
   const verificationStatus = profile?.verificationStatus ?? "unverified";
   const documentTemplate =
@@ -119,6 +125,23 @@ export default async function CandidateProfilePage({
             title={copy.savedNoticeTitle}
             body={copy.savedNoticeBody}
           />
+        ) : null}
+
+        {/* V3-56 S2a — Learn-verified skill badges (honest empty: hidden when none). */}
+        {learnSkills.length > 0 ? (
+          <SectionCard title={learnCopy.pool.eyebrow}>
+            <div className="flex flex-wrap gap-2">
+              {learnSkills.map((skill) => (
+                <LearnVerifiedBadge
+                  key={skill.id}
+                  label={skill.label ? `${learnCopy.badge.label} · ${skill.label}` : learnCopy.badge.label}
+                  ariaLabel={skill.label ? `${learnCopy.badge.aria}: ${skill.label}` : learnCopy.badge.aria}
+                  verifyUrl={skill.verifyUrl}
+                  verifyLabel={learnCopy.badge.verifyCta}
+                />
+              ))}
+            </div>
+          </SectionCard>
         ) : null}
 
         {/* J3 — auto-save profile draft. Persists every 30s + on blur. */}

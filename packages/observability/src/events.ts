@@ -85,6 +85,10 @@ export type HenryEventName =
   | "henry.learn.progress.lesson_completed"
   | "henry.learn.certificate.issued"
   | "henry.learn.support.thread.created"
+  // learn-to-earn (V3-56): Learn completion → Jobs trust bridge
+  | "henry.learn.badge.issued"
+  | "henry.learn.candidate.listed"
+  | "henry.learn.employer.invited"
   // logistics
   | "henry.logistics.quote.requested"
   | "henry.logistics.booking.created"

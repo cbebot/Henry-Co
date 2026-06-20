@@ -9,6 +9,7 @@ import { SupportAssist } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import "./globals.css";
 
 const display = Newsreader({
@@ -55,7 +56,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
-            {children}
+            <SensitiveActionProviderBridge email={null}>
+              {children}
+            </SensitiveActionProviderBridge>
             <SupportAssist division="jobs" accent="#0E7C86" />
           </LocaleProvider>
         </PublicThemeGuard>
