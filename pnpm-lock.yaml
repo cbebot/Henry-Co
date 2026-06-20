@@ -99,6 +99,9 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../../packages/intelligence
+      '@henryco/kyc':
+        specifier: workspace:^
+        version: link:../../packages/kyc
       '@henryco/lifecycle':
         specifier: workspace:^
         version: link:../../packages/lifecycle
@@ -2286,6 +2289,34 @@ importers:
       zod:
         specifier: ^4.3.6
         version: 4.3.6
+
+  packages/kyc:
+    dependencies:
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../media
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+    devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/lifecycle:
     dependencies:
