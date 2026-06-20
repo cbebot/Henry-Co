@@ -206,7 +206,7 @@ export async function getWalletSummary(userId: string) {
   return wallet || { id: null, balance_kobo: 0, currency: "NGN", is_active: true };
 }
 
-export async function getWalletTransactions(userId: string, limit = 20) {
+export async function getWalletTransactions(userId: string, limit = 50) {
   const { data } = await admin()
     .from("customer_wallet_transactions")
     .select("*")
@@ -217,7 +217,7 @@ export async function getWalletTransactions(userId: string, limit = 20) {
   return data || [];
 }
 
-export async function getRecentActivity(userId: string, limit = 10, locale?: AppLocale) {
+export async function getRecentActivity(userId: string, limit = 40, locale?: AppLocale) {
   const { data } = await admin()
     .from("customer_activity")
     .select("*")
@@ -230,7 +230,7 @@ export async function getRecentActivity(userId: string, limit = 10, locale?: App
   return Promise.all(rows.map((row) => localizeActivityRow(row, locale)));
 }
 
-export async function getNotifications(userId: string, limit = 20) {
+export async function getNotifications(userId: string, limit = 50) {
   const { data } = await admin()
     .from("customer_notifications")
     .select("*")
@@ -316,7 +316,7 @@ export async function getNotificationFeed(
   );
 }
 
-export async function getNotificationBellFeed(userId: string, limit = 8, locale?: AppLocale) {
+export async function getNotificationBellFeed(userId: string, limit = 20, locale?: AppLocale) {
   const [items, unreadCount] = await Promise.all([
     getNotificationFeed(userId, limit, locale),
     getUnreadNotificationCount(userId),
