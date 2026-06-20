@@ -7,15 +7,8 @@ export type {
   SendTransactionalEmailInput,
 } from "./types";
 
-export {
-  resolveEmailProvider,
-  resolveProviderChain,
-  sendTransactionalEmail,
-  type ResolvedEmailProvider,
-} from "./send";
+export { sendTransactionalEmail, type ResolvedEmailProvider } from "./send";
 
-export { sendBrevoEmail, getBrevoApiKey, getBrevoSender } from "./providers/brevo";
-export { sendResendEmail, getResendApiKey, getResendSender } from "./providers/resend";
 export { sendSesEmail, getSesConfig, getSesSender } from "./providers/ses";
 
 export { resolveSenderIdentity, getNoReplyIdentity } from "./sender-identity";
