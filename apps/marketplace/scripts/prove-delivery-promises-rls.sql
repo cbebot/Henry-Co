@@ -34,17 +34,8 @@ do $$ begin
   end if;
 end $$;
 
--- (2) A non-owner cannot upsert another vendor's promise.
-do $$ begin
-  begin
-    perform public.upsert_delivery_promise(
-      '11111111-1111-1111-1111-111111111111', 'own_state',
-      array['enugu'], null, 'enugu', true);
-    raise exception 'FAIL: non-owner upsert was allowed';
-  exception when others then
-    if sqlerrm not like '%not_vendor_owner%' then raise exception 'FAIL: wrong error %', sqlerrm; end if;
-  end;
-end $$;  -- still acting as owner-aa above; switch subject to prove rejection:
+-- (2) A non-owner cannot upsert another vendor's promise. Switch the JWT subject to
+-- bb (who does NOT own vendor 1111, owned by aa) FIRST, then expect not_vendor_owner.
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000bb';
 do $$ begin
   begin

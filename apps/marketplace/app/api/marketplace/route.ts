@@ -28,7 +28,9 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
 import { resolveOrderOutputVat } from "@/lib/checkout/order-vat";
 import { cartQualifiesForFreeDelivery, isFreeDeliveryProduct } from "@/lib/checkout/free-delivery";
-import { clampCoveredStatesToTier } from "@/lib/checkout/delivery-reach";
+import { clampCoveredStatesToTier, resolveCoveredStates, type ReachKind } from "@/lib/checkout/delivery-reach";
+import { isDeliveryPromisesEnabled } from "@/lib/marketplace/delivery-promises";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const runtime = "nodejs";
@@ -2621,6 +2623,97 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/store");
         revalidatePath("/vendor/settings");
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`,
+          { vendorId: String(vendorId) }
+        );
+      }
+
+      case "vendor_delivery_promise_upsert": {
+        // V3-DELIVERY-COMPLETE-01 (T5) — seller writes their Delivery Promise.
+        // Money-adjacent: a promise only WAIVES delivery (deliveryAmount 0) at checkout;
+        // this handler writes NO money function. DORMANT: gated by the same flag as the
+        // seller card; the migration is committed-NOT-applied.
+        if (!isDeliveryPromisesEnabled()) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=delivery-promises-off`, {
+            message: "Delivery promises are not enabled yet.",
+            code: "feature-off",
+            status: 409,
+          });
+        }
+        if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
+        }
+        const vendorId =
+          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
+          snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id;
+        if (!vendorId) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`, {
+            message: "Your store record could not be found.",
+            code: "missing-vendor",
+            status: 404,
+          });
+        }
+
+        // The buyer-facing reach is EARNED. Read the vendor's CURRENT verification_level
+        // and recompute the covered states server-side from (reach + origin + tier) — the
+        // client never submits coverage, so it cannot forge an over-reach.
+        const { data: vendorRow } = await admin
+          .from("marketplace_vendors")
+          .select("verification_level")
+          .eq("id", vendorId)
+          .maybeSingle();
+        const tier = (vendorRow as { verification_level?: string } | null)?.verification_level ?? null;
+
+        const reachKind = text(formData, "reach_kind") as ReachKind;
+        if (!["own_state", "own_zone", "states", "nationwide"].includes(reachKind)) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=bad-reach`, {
+            message: "Pick a valid delivery reach.",
+            code: "bad-reach",
+            status: 400,
+          });
+        }
+        const originState = normalizeStateInput(text(formData, "origin_state"));
+        if (!originState) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=bad-origin`, {
+            message: "Select your dispatch state.",
+            code: "bad-origin",
+            status: 400,
+          });
+        }
+        const { coveredStates } = resolveCoveredStates({ reachKind, originState, tier });
+        const minNaira = numberValue(formData, "min_order_naira", 0);
+        const minOrderMinor = minNaira > 0 ? Math.round(minNaira * 100) : null;
+        const isActive = truthyValue(formData, "is_active");
+
+        // Call the ownership-checked RPC with the CALLER's session (auth.uid()) — the DB
+        // independently proves the seller owns this vendor (defence in depth over the
+        // in-app role/membership check above). Service-role would null out auth.uid().
+        const userClient = await createSupabaseServer();
+        const { error: rpcError } = await userClient.rpc("upsert_delivery_promise", {
+          p_vendor_id: vendorId,
+          p_reach_kind: reachKind,
+          p_covered_states: coveredStates,
+          p_min_order_minor: minOrderMinor,
+          p_origin_state: originState,
+          p_is_active: isActive,
+        } as never);
+        if (rpcError) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=promise-save-failed`, {
+            message: "Your delivery promise could not be saved.",
+            code: "promise-save-failed",
+            status: 400,
+          });
+        }
+
+        revalidatePath("/vendor/settings");
+        revalidatePath(`/store/${snapshot.vendors.find((v) => v.id === String(vendorId))?.slug ?? ""}`);
         return respondSuccess(
           json,
           request,

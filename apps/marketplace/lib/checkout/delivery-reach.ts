@@ -8,7 +8,7 @@
 // server-side in the upsert RPC and re-checked at checkout (a tier downgrade must
 // not keep honoring an over-reach promise).
 
-import { NG_STATES, statesInZone, zoneForState, type NgStateCode } from "@henryco/config";
+import { NG_STATES, NG_ZONES, statesInZone, zoneForState, type NgStateCode, type NgZone } from "@henryco/config";
 
 export type SellerTier = "bronze" | "silver" | "gold";
 export type ReachKind = "own_state" | "own_zone" | "states" | "nationwide";
@@ -92,4 +92,32 @@ export function clampCoveredStatesToTier(
   const allowed = new Set(reachSet(tierCeiling(tier), originState));
   const stored = new Set(coveredStates);
   return ALL_STATE_CODES.filter((c) => allowed.has(c) && stored.has(c));
+}
+
+/** A human-summarizable shape of a covered-state set, for the buyer-facing badge. */
+export type ReachSummary =
+  | { scope: "none" }
+  | { scope: "nationwide" }
+  | { scope: "zone"; zone: NgZone }
+  | { scope: "states"; count: number };
+
+/**
+ * Classify a covered-state set into the tightest honest description for a badge:
+ * nationwide (all 37), a single geopolitical zone (exactly that zone's members),
+ * or N states. Pure — the component maps the scope to localized copy. `originState`
+ * is unused today but kept in the signature so a future "from {origin}" variant
+ * needs no call-site churn.
+ */
+export function describeReachSummary(coveredStates: readonly NgStateCode[]): ReachSummary {
+  const valid = ALL_STATE_CODES.filter((c) => coveredStates.includes(c));
+  if (valid.length === 0) return { scope: "none" };
+  if (valid.length === ALL_STATE_CODES.length) return { scope: "nationwide" };
+  const set = new Set(valid);
+  for (const zone of Object.keys(NG_ZONES) as NgZone[]) {
+    const members = statesInZone(zone);
+    if (members.length === valid.length && members.every((c) => set.has(c))) {
+      return { scope: "zone", zone };
+    }
+  }
+  return { scope: "states", count: valid.length };
 }

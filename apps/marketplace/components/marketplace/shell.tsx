@@ -260,12 +260,15 @@ export function KpiGrid({ items }: { items: MarketplaceKpi[] }) {
 export function ProductCard({
   product,
   sellerTier,
+  deliveryPromise,
 }: {
   product: MarketplaceProduct;
   /** V3-58 server-derived seller tier for the listing's vendor; omitted → no chip. */
   sellerTier?: SellerTier;
+  /** V3-DELIVERY-COMPLETE-01 tier-clamped Delivery Promise for the vendor; null → no badge. */
+  deliveryPromise?: { coveredStates: string[] } | null;
 }) {
-  return <ProductCardClient product={product} sellerTier={sellerTier} />;
+  return <ProductCardClient product={product} sellerTier={sellerTier} deliveryPromise={deliveryPromise} />;
 }
 
 export function VendorCard({

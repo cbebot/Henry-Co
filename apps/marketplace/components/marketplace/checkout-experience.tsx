@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { NG_STATES } from "@henryco/config";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { useKeyboardAvoidance } from "@henryco/ui/mobile";
 import type { UserAddressRecord } from "@henryco/address-selector";
@@ -1095,12 +1096,22 @@ function DeliveryStep({
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
               {t("Region / state")}
             </span>
-            <input
+            {/* V3-DELIVERY-COMPLETE-01 (T6) — a clean state picker writing a canonical
+                code to shipping_region (the server's normalizeStateInput agrees), so a
+                seller Delivery Promise can match the buyer's state exactly. */}
+            <select
               className="market-input rounded-[1.2rem] px-4 py-3"
               value={oneShot.region}
               onChange={(event) => setOneShot({ ...oneShot, region: event.target.value })}
               required
-            />
+            >
+              <option value="">{t("Select your state")}</option>
+              {NG_STATES.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="space-y-2 sm:col-span-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">

@@ -2,8 +2,8 @@
 // verified tier permits. These pin the clamp (server RPC + checkout mirror it).
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { statesInZone } from "@henryco/config";
-import { resolveCoveredStates, tierCeiling, normalizeTier, clampCoveredStatesToTier } from "../delivery-reach";
+import { statesInZone, NG_STATES } from "@henryco/config";
+import { resolveCoveredStates, tierCeiling, normalizeTier, clampCoveredStatesToTier, describeReachSummary } from "../delivery-reach";
 
 describe("tier ceiling", () => {
   it("maps tiers to their widest reach (unknown → bronze → own state)", () => {
@@ -80,5 +80,21 @@ describe("clampCoveredStatesToTier — re-clamp a stored set to the CURRENT tier
 
   it("still Gold keeps the full stored set", () => {
     assert.deepEqual(clampCoveredStatesToTier(stored, "enugu", "gold").slice().sort(), ["enugu", "kano", "lagos"]);
+  });
+});
+
+describe("describeReachSummary — the badge's honest scope", () => {
+  it("all 37 states → nationwide", () => {
+    assert.deepEqual(describeReachSummary(NG_STATES.map((s) => s.code)), { scope: "nationwide" });
+  });
+  it("exactly a zone's members → that zone", () => {
+    assert.deepEqual(describeReachSummary(statesInZone("south_east")), { scope: "zone", zone: "south_east" });
+  });
+  it("an arbitrary subset → N states", () => {
+    assert.deepEqual(describeReachSummary(["enugu", "lagos"]), { scope: "states", count: 2 });
+  });
+  it("empty / all-invalid → none", () => {
+    assert.deepEqual(describeReachSummary([]), { scope: "none" });
+    assert.deepEqual(describeReachSummary(["not-a-state"]), { scope: "none" });
   });
 });
