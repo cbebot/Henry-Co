@@ -3,7 +3,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { statesInZone } from "@henryco/config";
-import { resolveCoveredStates, tierCeiling, normalizeTier } from "../delivery-reach";
+import { resolveCoveredStates, tierCeiling, normalizeTier, clampCoveredStatesToTier } from "../delivery-reach";
 
 describe("tier ceiling", () => {
   it("maps tiers to their widest reach (unknown → bronze → own state)", () => {
@@ -64,5 +64,21 @@ describe("resolveCoveredStates — clamped to the tier ceiling", () => {
   it("an unrecognized origin yields no coverage (fail-closed)", () => {
     const r = resolveCoveredStates({ reachKind: "own_zone", originState: "amama", tier: "gold" });
     assert.deepEqual(r.coveredStates, []);
+  });
+});
+
+describe("clampCoveredStatesToTier — re-clamp a stored set to the CURRENT tier (downgrade guard)", () => {
+  const stored = ["enugu", "lagos", "kano"]; // a promise written while Gold (nationwide)
+
+  it("downgrade to Bronze narrows to the seller's own state", () => {
+    assert.deepEqual(clampCoveredStatesToTier(stored, "enugu", "bronze"), ["enugu"]);
+  });
+
+  it("downgrade to Silver narrows to states within the seller's zone", () => {
+    assert.deepEqual(clampCoveredStatesToTier(stored, "enugu", "silver"), ["enugu"]); // lagos/kano outside South-East
+  });
+
+  it("still Gold keeps the full stored set", () => {
+    assert.deepEqual(clampCoveredStatesToTier(stored, "enugu", "gold").slice().sort(), ["enugu", "kano", "lagos"]);
   });
 });
