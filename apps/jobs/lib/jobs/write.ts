@@ -28,11 +28,13 @@ import { isEmployerSubscribed } from "@/lib/jobs/employer-subscription";
 import {
   alreadyAppliedReason,
   conflictOfInterestReason,
+  courseGateReason,
   dailyCapReason,
   detectJobPostScamSignals,
   exceedsDailyApplicationCap,
   isApplicantEmployerConflict,
 } from "@/lib/jobs/hiring-rules";
+import { assertCourseGatePassed } from "@/lib/jobs/learn-to-earn-data";
 import {
   createJobsInAppNotification,
   sendJobsEmail,
@@ -674,6 +676,16 @@ export async function submitApplication(input: {
     throw new Error(conflictOfInterestReason());
   }
 
+  // V3-56 course gate: a hard gate blocks the application until the candidate has
+  // a verified Henry Onyx Learn completion; a soft gate marks them preferred.
+  const courseGate = await assertCourseGatePassed(admin, {
+    jobSlug: job.slug,
+    candidateUserId: input.actor.userId,
+  });
+  if (courseGate.blockingGate) {
+    throw new Error(courseGateReason(courseGate.blockingGate.course_label));
+  }
+
   const existingAppRows = await admin
     .from("customer_activity")
     .select("*")
@@ -716,7 +728,11 @@ export async function submitApplication(input: {
     availability: availability || existingProfile?.availability || null,
     salaryExpectation: salaryExpectation || existingProfile?.salaryExpectation || null,
     stage: "applied",
-    recruiterConfidence: Math.min((existingProfile?.trustScore ?? 42) + 6, 100),
+    learnPreferred: courseGate.preferred,
+    recruiterConfidence: Math.min(
+      (existingProfile?.trustScore ?? 42) + (courseGate.preferred ? 10 : 6),
+      100,
+    ),
     candidateReadiness: existingProfile?.trustScore ?? 42,
     internal: job.internal,
     profileSnapshot: existingProfile,

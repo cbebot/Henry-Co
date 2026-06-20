@@ -4436,6 +4436,147 @@ export type Database = {
         }
         Relationships: []
       }
+      jobs_candidate_invites: {
+        Row: {
+          candidate_user_id: string
+          course_id: string | null
+          created_at: string
+          created_by_user_id: string
+          employer_slug: string | null
+          id: string
+          job_slug: string
+          message: string | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_user_id: string
+          course_id?: string | null
+          created_at?: string
+          created_by_user_id: string
+          employer_slug?: string | null
+          id?: string
+          job_slug: string
+          message?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_user_id?: string
+          course_id?: string | null
+          created_at?: string
+          created_by_user_id?: string
+          employer_slug?: string | null
+          id?: string
+          job_slug?: string
+          message?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      jobs_course_gates: {
+        Row: {
+          course_id: string
+          course_label: string | null
+          course_slug: string | null
+          created_at: string
+          created_by_user_id: string
+          employer_slug: string
+          id: string
+          job_slug: string
+          required: boolean
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          course_label?: string | null
+          course_slug?: string | null
+          created_at?: string
+          created_by_user_id: string
+          employer_slug: string
+          id?: string
+          job_slug: string
+          required?: boolean
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          course_label?: string | null
+          course_slug?: string | null
+          created_at?: string
+          created_by_user_id?: string
+          employer_slug?: string
+          id?: string
+          job_slug?: string
+          required?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      jobs_skill_verifications: {
+        Row: {
+          candidate_user_id: string
+          course_id: string | null
+          created_at: string
+          decision_reason: string | null
+          evidence_payload: Json
+          evidence_type: string
+          evidence_url: string | null
+          expires_at: string | null
+          id: string
+          skill_id: string | null
+          skill_label: string
+          source: string | null
+          source_ref: string | null
+          status: string
+          updated_at: string
+          verified_at: string | null
+          verified_by_user_id: string | null
+        }
+        Insert: {
+          candidate_user_id: string
+          course_id?: string | null
+          created_at?: string
+          decision_reason?: string | null
+          evidence_payload?: Json
+          evidence_type: string
+          evidence_url?: string | null
+          expires_at?: string | null
+          id?: string
+          skill_id?: string | null
+          skill_label: string
+          source?: string | null
+          source_ref?: string | null
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by_user_id?: string | null
+        }
+        Update: {
+          candidate_user_id?: string
+          course_id?: string | null
+          created_at?: string
+          decision_reason?: string | null
+          evidence_payload?: Json
+          evidence_type?: string
+          evidence_url?: string | null
+          expires_at?: string | null
+          id?: string
+          skill_id?: string | null
+          skill_label?: string
+          source?: string | null
+          source_ref?: string | null
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by_user_id?: string | null
+        }
+        Relationships: []
+      }
       jobs_applications: {
         Row: {
           applied_at: string
@@ -5006,6 +5147,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learn_candidate_optins: {
+        Row: {
+          course_id: string
+          course_slug: string | null
+          created_at: string
+          id: string
+          normalized_email: string | null
+          opted_in_at: string
+          revoked_at: string | null
+          updated_at: string
+          user_id: string
+          visibility: string
+        }
+        Insert: {
+          course_id: string
+          course_slug?: string | null
+          created_at?: string
+          id?: string
+          normalized_email?: string | null
+          opted_in_at?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id: string
+          visibility?: string
+        }
+        Update: {
+          course_id?: string
+          course_slug?: string | null
+          created_at?: string
+          id?: string
+          normalized_email?: string | null
+          opted_in_at?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id?: string
+          visibility?: string
+        }
+        Relationships: []
       }
       learn_certificate_verification: {
         Row: {

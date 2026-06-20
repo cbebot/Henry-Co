@@ -9,6 +9,7 @@ import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 
 const learn = getDivisionConfig("learn");
 
@@ -38,7 +39,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
-            {children}
+            <SensitiveActionProviderBridge email={null}>
+              {children}
+            </SensitiveActionProviderBridge>
             <SupportAssist division="learn" accent="#7C5CFF" />
           </LocaleProvider>
         </PublicThemeGuard>

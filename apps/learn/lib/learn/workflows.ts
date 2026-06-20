@@ -12,6 +12,7 @@ import {
   upsertCustomerInvoice,
 } from "@/lib/learn/shared-account";
 import { createId, deleteLearnRecord, nowIso, upsertLearnRecord } from "@/lib/learn/store";
+import { syncLearnCompletionToJobs } from "@/lib/learn/learn-to-earn-bridge";
 import { uploadTeacherApplicationMedia } from "@/lib/learn/media";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
@@ -636,6 +637,26 @@ async function issueCertificateIfEligible(input: {
     certificateNo: certificate.certificateNo,
     verificationCode: certificate.verificationCode,
   });
+
+  // V3-56 Learn→Jobs bridge: a real completion becomes a governed Jobs skill
+  // verification. Defensive — the bridge self-guards, but never let a sync
+  // failure undo a learner's earned certificate.
+  try {
+    await syncLearnCompletionToJobs({
+      certificateId: certificate.id,
+      courseId: input.course.id,
+      courseTitle: input.course.title,
+      courseSlug: input.course.slug,
+      userId: certificate.userId,
+      normalizedEmail: certificate.normalizedEmail,
+      issuedAt: certificate.issuedAt,
+      certificateNo: certificate.certificateNo,
+      verificationCode: certificate.verificationCode,
+      verifyUrl,
+    });
+  } catch {
+    // already self-guarded in the bridge; swallow to protect issuance.
+  }
 
   return certificate;
 }
