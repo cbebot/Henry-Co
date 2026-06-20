@@ -4,8 +4,7 @@ import {
   renderLocalizedAuthEmail,
   resolveRecipientLocale,
   resolveSenderIdentity,
-  sendBrevoEmail,
-  sendResendEmail,
+  sendSesEmail,
   type AuthHookEmailData,
   type EmailDispatchResult,
   type SendTransactionalEmailInput,
@@ -151,27 +150,7 @@ function parsePayload(raw: string): { user_email: string; data: AuthHookEmailDat
 }
 
 async function dispatchWithFallback(input: SendTransactionalEmailInput): Promise<EmailDispatchResult> {
-  const primary = await sendResendEmail(input);
-  if (primary.status === "sent") return primary;
-
-  // Resend failed (error or skipped). Log and try Brevo as fallback.
-  console.error("[auth-hook] resend failed", {
-    status: primary.status,
-    safeError: primary.safeError,
-    skippedReason: primary.skippedReason,
-  });
-
-  const fallback = await sendBrevoEmail(input);
-  if (fallback.status === "sent") {
-    console.warn("[auth-hook] brevo fallback succeeded after resend failure");
-    return fallback;
-  }
-  console.error("[auth-hook] brevo fallback also failed", {
-    status: fallback.status,
-    safeError: fallback.safeError,
-    skippedReason: fallback.skippedReason,
-  });
-  return fallback;
+  return sendSesEmail(input);
 }
 
 export async function POST(req: NextRequest) {
