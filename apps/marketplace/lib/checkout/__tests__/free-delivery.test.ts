@@ -1,10 +1,12 @@
-// V3-FREESHIP-CLOSE-01 — the free-shipping flag contract is strict + fail-closed.
+// V3-FREESHIP-02 — the free-delivery contract: strict manual-override flag +
+// location-aware seller-promise waiver. Both fail closed.
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   MARKETPLACE_FREE_DELIVERY_FLAG,
   isFreeDeliveryProduct,
   cartQualifiesForFreeDelivery,
+  type FreeDeliveryCartInput,
 } from "../free-delivery";
 
 describe("isFreeDeliveryProduct — strict boolean, fail-closed", () => {
@@ -28,32 +30,78 @@ describe("isFreeDeliveryProduct — strict boolean, fail-closed", () => {
     assert.equal(isFreeDeliveryProduct(true), false);
   });
 
-  it("preserves the existing flagged test-product shape (other keys ignored)", () => {
-    // The retired test product carried these alongside the flag.
-    assert.equal(
-      isFreeDeliveryProduct({ delivery: "Test item", codEligible: false, companyOwned: true, free_delivery: true }),
-      true,
-    );
-  });
-
   it("flag key is the documented constant", () => {
     assert.equal(MARKETPLACE_FREE_DELIVERY_FLAG, "free_delivery");
   });
 });
 
-describe("cartQualifiesForFreeDelivery — every line must be flagged", () => {
-  it("true only when the cart is non-empty and EVERY id is flagged", () => {
-    assert.equal(cartQualifiesForFreeDelivery(["a", "b"], new Set(["a", "b"])), true);
-    assert.equal(cartQualifiesForFreeDelivery(["a", "a"], new Set(["a"])), true); // deduped upstream
+describe("cartQualifiesForFreeDelivery — seller promise covering the buyer's state, or manual override", () => {
+  const build = (over: Partial<FreeDeliveryCartInput> = {}): FreeDeliveryCartInput => ({
+    cartProductIds: ["p1"],
+    buyerState: "enugu",
+    vendorByProduct: new Map<string, string | null>([["p1", "v1"]]),
+    activePromiseByVendor: new Map([["v1", { coveredStates: ["enugu", "lagos"], minOrderMinor: null }]]),
+    manualFreeProductIds: new Set<string>(),
+    goodsSubtotalMinor: 500_000,
+    ...over,
   });
 
-  it("false when any cart id is unflagged or missing (never accidental free ship)", () => {
-    assert.equal(cartQualifiesForFreeDelivery(["a", "b"], new Set(["a"])), false);
-    assert.equal(cartQualifiesForFreeDelivery(["a", "missing"], new Set(["a"])), false);
+  it("waives when the seller's promise covers the buyer's state", () => {
+    assert.equal(cartQualifiesForFreeDelivery(build()), true);
   });
 
-  it("false on empty cart or empty flagged set (safe default)", () => {
-    assert.equal(cartQualifiesForFreeDelivery([], new Set(["a"])), false);
-    assert.equal(cartQualifiesForFreeDelivery(["a"], new Set()), false);
+  it("does NOT waive when the buyer's state is outside the promise", () => {
+    assert.equal(cartQualifiesForFreeDelivery(build({ buyerState: "kano" })), false);
+  });
+
+  it("does NOT waive when the buyer's state is unknown (null)", () => {
+    assert.equal(cartQualifiesForFreeDelivery(build({ buyerState: null })), false);
+  });
+
+  it("multi-vendor cart: EVERY vendor must cover the state", () => {
+    const input = build({
+      cartProductIds: ["p1", "p2"],
+      vendorByProduct: new Map<string, string | null>([["p1", "v1"], ["p2", "v2"]]),
+      // v2 has NO promise → its line fails → whole cart pays delivery
+      activePromiseByVendor: new Map([["v1", { coveredStates: ["enugu"], minOrderMinor: null }]]),
+    });
+    assert.equal(cartQualifiesForFreeDelivery(input), false);
+  });
+
+  it("respects the minimum-order floor (kobo)", () => {
+    const activePromiseByVendor = new Map([["v1", { coveredStates: ["enugu"], minOrderMinor: 1_000_000 }]]);
+    assert.equal(cartQualifiesForFreeDelivery(build({ activePromiseByVendor, goodsSubtotalMinor: 999_999 })), false);
+    assert.equal(cartQualifiesForFreeDelivery(build({ activePromiseByVendor, goodsSubtotalMinor: 1_000_000 })), true);
+  });
+
+  it("an absent (inactive) promise → no waiver", () => {
+    assert.equal(cartQualifiesForFreeDelivery(build({ activePromiseByVendor: new Map() })), false);
+  });
+
+  it("a line with no known vendor → no waiver", () => {
+    assert.equal(cartQualifiesForFreeDelivery(build({ vendorByProduct: new Map<string, string | null>([["p1", null]]) })), false);
+  });
+
+  it("the manual owner override waives a line regardless of state/promise", () => {
+    assert.equal(
+      cartQualifiesForFreeDelivery(
+        build({ buyerState: null, activePromiseByVendor: new Map(), manualFreeProductIds: new Set(["p1"]) }),
+      ),
+      true,
+    );
+  });
+
+  it("mixed cart: a promise-covered line + a manual-override line both qualify", () => {
+    const input = build({
+      cartProductIds: ["p1", "p2"],
+      vendorByProduct: new Map<string, string | null>([["p1", "v1"], ["p2", "v2"]]),
+      activePromiseByVendor: new Map([["v1", { coveredStates: ["enugu"], minOrderMinor: null }]]),
+      manualFreeProductIds: new Set(["p2"]),
+    });
+    assert.equal(cartQualifiesForFreeDelivery(input), true);
+  });
+
+  it("empty cart never waives", () => {
+    assert.equal(cartQualifiesForFreeDelivery(build({ cartProductIds: [] })), false);
   });
 });
