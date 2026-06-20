@@ -132,8 +132,8 @@ export type ComposerProps = {
   composerExtras?: (ctx: ComposerExtrasContext) => ReactNode;
 };
 
-export const DEFAULT_MAX_ATTACHMENTS = 10;
-export const DEFAULT_MAX_FILE_BYTES = 20 * 1024 * 1024;
+export const DEFAULT_MAX_ATTACHMENTS = 25;
+export const DEFAULT_MAX_FILE_BYTES = 50 * 1024 * 1024;
 export const DEFAULT_ACCEPTED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
