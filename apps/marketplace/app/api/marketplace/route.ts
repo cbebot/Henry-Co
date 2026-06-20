@@ -581,9 +581,12 @@ export async function POST(request: Request) {
           new Set(Array.from(vendorByProduct.values()).filter((v): v is string => Boolean(v))),
         );
         if (cartVendorIds.length) {
+          // The reach tier is the KYC `verification_level` (gold/silver/bronze) — the
+          // seller's VERIFIED standing — not `seller_tier` (launch/growth/scale/partner,
+          // which is listing caps/commission). Bronze→own state, Silver→zone, Gold→nationwide.
           const { data: promiseRows, error: promiseReadError } = await admin
             .from("marketplace_delivery_promises")
-            .select("vendor_id, covered_states, min_order_minor, origin_state, marketplace_vendors(seller_tier)")
+            .select("vendor_id, covered_states, min_order_minor, origin_state, marketplace_vendors(verification_level)")
             .in("vendor_id", cartVendorIds)
             .eq("is_active", true);
           if (!promiseReadError) {
@@ -591,8 +594,8 @@ export async function POST(request: Request) {
               const vendorId = String(row.vendor_id);
               const stored = Array.isArray(row.covered_states) ? (row.covered_states as unknown[]).map(String) : [];
               const origin = typeof row.origin_state === "string" ? row.origin_state : "";
-              const v = row.marketplace_vendors as { seller_tier?: string } | Array<{ seller_tier?: string }> | null;
-              const currentTier = (Array.isArray(v) ? v[0]?.seller_tier : v?.seller_tier) ?? null;
+              const v = row.marketplace_vendors as { verification_level?: string } | Array<{ verification_level?: string }> | null;
+              const currentTier = (Array.isArray(v) ? v[0]?.verification_level : v?.verification_level) ?? null;
               activePromiseByVendor.set(vendorId, {
                 coveredStates: clampCoveredStatesToTier(stored, origin, currentTier),
                 minOrderMinor: row.min_order_minor == null ? null : Number(row.min_order_minor),
