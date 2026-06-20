@@ -78,3 +78,18 @@ export function resolveCoveredStates(
 
   return { coveredStates, clampedTo };
 }
+
+/**
+ * Re-clamp a STORED covered-state set to the seller's CURRENT tier ceiling. Used at
+ * checkout so a tier downgrade (Gold→Bronze) can never keep honoring an over-reach
+ * promise written while the seller was higher. Returns canonical NG order.
+ */
+export function clampCoveredStatesToTier(
+  coveredStates: readonly NgStateCode[],
+  originState: NgStateCode,
+  tier: string | null | undefined,
+): NgStateCode[] {
+  const allowed = new Set(reachSet(tierCeiling(tier), originState));
+  const stored = new Set(coveredStates);
+  return ALL_STATE_CODES.filter((c) => allowed.has(c) && stored.has(c));
+}

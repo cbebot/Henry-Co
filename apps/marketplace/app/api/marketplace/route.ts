@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, normalizeStateInput } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
@@ -28,6 +28,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
 import { resolveOrderOutputVat } from "@/lib/checkout/order-vat";
 import { cartQualifiesForFreeDelivery, isFreeDeliveryProduct } from "@/lib/checkout/free-delivery";
+import { clampCoveredStatesToTier } from "@/lib/checkout/delivery-reach";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 
 export const runtime = "nodejs";
@@ -547,10 +548,11 @@ export async function POST(request: Request) {
         );
         const vatCategoryByProduct = new Map<string, string | null>();
         const freeDeliveryProductIds = new Set<string>();
+        const vendorByProduct = new Map<string, string | null>();
         if (cartProductIds.length) {
           const { data: productRows, error: productReadError } = await admin
             .from("marketplace_products")
-            .select("id, filter_data, marketplace_categories(slug)")
+            .select("id, vendor_id, filter_data, marketplace_categories(slug)")
             .in("id", cartProductIds);
           if (productReadError) {
             // Money-correctness: NEVER settle a sale on an unclassified cart. A failed
@@ -563,18 +565,52 @@ export async function POST(request: Request) {
             const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
             const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
             vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
+            vendorByProduct.set(String(row.id), row.vendor_id ? String(row.vendor_id) : null);
             if (isFreeDeliveryProduct(row.filter_data)) {
               freeDeliveryProductIds.add(String(row.id));
             }
           }
         }
-        // Waive delivery only when the read covered EVERY cart product and each one is
-        // flagged. A missing product row (deleted/unreadable) leaves its id unflagged →
-        // normal delivery, never an accidental free ship.
-        // ⚠️ DORMANT capability (V3-FREESHIP-CLOSE-01): no prod product is flagged
-        // free_delivery; flagging one is an owner/Lane-1 (money/pricing) reviewed action.
-        // Contract + guards live in lib/checkout/free-delivery.ts.
-        const allItemsFreeShipping = cartQualifiesForFreeDelivery(cartProductIds, freeDeliveryProductIds);
+        // V3-FREESHIP-02 — seller Delivery Promises (location-aware). Load each cart
+        // vendor's ACTIVE promise and RE-CLAMP its covered states to the vendor's CURRENT
+        // tier (a downgrade must never keep honoring an over-reach promise). DORMANT-SAFE:
+        // if the promises table/feature is absent the read errors → no promises → normal
+        // delivery (the manual `filter_data.free_delivery` override still applies).
+        const activePromiseByVendor = new Map<string, { coveredStates: string[]; minOrderMinor: number | null }>();
+        const cartVendorIds = Array.from(
+          new Set(Array.from(vendorByProduct.values()).filter((v): v is string => Boolean(v))),
+        );
+        if (cartVendorIds.length) {
+          const { data: promiseRows, error: promiseReadError } = await admin
+            .from("marketplace_delivery_promises")
+            .select("vendor_id, covered_states, min_order_minor, origin_state, marketplace_vendors(seller_tier)")
+            .in("vendor_id", cartVendorIds)
+            .eq("is_active", true);
+          if (!promiseReadError) {
+            for (const row of (promiseRows ?? []) as Array<Record<string, unknown>>) {
+              const vendorId = String(row.vendor_id);
+              const stored = Array.isArray(row.covered_states) ? (row.covered_states as unknown[]).map(String) : [];
+              const origin = typeof row.origin_state === "string" ? row.origin_state : "";
+              const v = row.marketplace_vendors as { seller_tier?: string } | Array<{ seller_tier?: string }> | null;
+              const currentTier = (Array.isArray(v) ? v[0]?.seller_tier : v?.seller_tier) ?? null;
+              activePromiseByVendor.set(vendorId, {
+                coveredStates: clampCoveredStatesToTier(stored, origin, currentTier),
+                minOrderMinor: row.min_order_minor == null ? null : Number(row.min_order_minor),
+              });
+            }
+          }
+          // promiseReadError (e.g. table not yet applied) → dormant: no promises loaded.
+        }
+        const buyerState = normalizeStateInput(shippingRegion);
+        const goodsSubtotalMinor = Math.max(0, Math.round(Number(subtotal) * 100));
+        const allItemsFreeShipping = cartQualifiesForFreeDelivery({
+          cartProductIds,
+          buyerState,
+          vendorByProduct,
+          activePromiseByVendor,
+          manualFreeProductIds: freeDeliveryProductIds,
+          goodsSubtotalMinor,
+        });
 
         const breakdown = computeMarketplaceCheckoutBreakdown({
           itemsSubtotalAmount: subtotal,
