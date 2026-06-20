@@ -1,4 +1,4 @@
-export type EmailProviderId = "ses" | "none";
+export type EmailProviderId = "brevo" | "resend" | "ses" | "none";
 
 export type EmailDispatchStatus = "sent" | "skipped" | "error";
 
@@ -34,8 +34,9 @@ export type SendTransactionalEmailInput = {
   replyTo?: string;
   /**
    * Routing/sender purpose. When set, the resolver picks the correct
-   * per-division sender identity. Explicit `from` / `fromName` always
-   * win over the resolved purpose identity.
+   * per-division sender identity (and prefers Resend for support if
+   * configured). Explicit `from` / `fromName` always win over the
+   * resolved purpose identity.
    */
   purpose?: EmailPurpose;
 };

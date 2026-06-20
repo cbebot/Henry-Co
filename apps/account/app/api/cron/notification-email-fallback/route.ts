@@ -4,7 +4,8 @@ import {
   renderHenryCoEmail,
   renderHenryCoEmailText,
   resolveSenderIdentity,
-  sendSesEmail,
+  sendBrevoEmail,
+  sendResendEmail,
   type EmailDispatchResult,
   type EmailPurpose,
   type SendTransactionalEmailInput,
@@ -199,13 +200,39 @@ function divisionTitle(division: string | null | undefined): string {
   return DIVISION_TITLE[key] || "Henry Onyx";
 }
 
-// ─── Dispatch via SES ──────────────────────────────────────────────────────
+// ─── Dispatch with explicit Resend→Brevo fallback ──────────────────────────
+//
+// Why we don't use sendTransactionalEmail() here: that helper picks ONE
+// provider and returns its result. The auth-hook taught us that on a Resend
+// 5xx/rate-limit, we want a deterministic Brevo fallback for the same
+// message, not a "try again next cron run" miss. Mirrors the pattern
+// established in apps/account/app/api/auth/email-hook/route.ts.
 
 async function dispatchWithFallback(
   input: SendTransactionalEmailInput,
-): Promise<{ result: EmailDispatchResult; providerUsed: "ses" | null }> {
-  const result = await sendSesEmail(input);
-  return { result, providerUsed: result.status === "sent" ? "ses" : null };
+): Promise<{ result: EmailDispatchResult; providerUsed: "resend" | "brevo" | null }> {
+  const primary = await sendResendEmail(input);
+  if (primary.status === "sent") return { result: primary, providerUsed: "resend" };
+
+  // Resend failed; do not log title/body/email values per info-disclosure rules.
+  console.error("[cron/notification-email-fallback] resend failed", {
+    status: primary.status,
+    safeError: primary.safeError,
+    skippedReason: primary.skippedReason,
+  });
+
+  const fallback = await sendBrevoEmail(input);
+  if (fallback.status === "sent") {
+    console.warn("[cron/notification-email-fallback] brevo fallback succeeded after resend failure");
+    return { result: fallback, providerUsed: "brevo" };
+  }
+
+  console.error("[cron/notification-email-fallback] brevo fallback also failed", {
+    status: fallback.status,
+    safeError: fallback.safeError,
+    skippedReason: fallback.skippedReason,
+  });
+  return { result: fallback, providerUsed: null };
 }
 
 // ─── Worker types ──────────────────────────────────────────────────────────
@@ -370,7 +397,7 @@ async function logDelivery(
     division: string | null;
     eventType: string | null;
     status: "sent" | "error" | "skipped";
-    provider: "ses" | "none";
+    provider: "resend" | "brevo" | "none";
     errorCode?: string | null;
     errorMessage?: string | null;
     metadata?: Record<string, unknown>;
@@ -399,7 +426,7 @@ async function logDelivery(
 async function markDispatched(
   admin: AdminClient,
   notificationId: string,
-  provider: "ses" | null,
+  provider: "resend" | "brevo" | null,
   metadataPatch?: Record<string, unknown>,
 ): Promise<void> {
   // Read existing metadata to merge — supabase-js doesn't support JSON merge
@@ -495,7 +522,7 @@ function buildDigestEmail(args: {
 // ─── Per-row dispatch ──────────────────────────────────────────────────────
 
 type DispatchOutcome =
-  | { kind: "sent"; provider: "ses" }
+  | { kind: "sent"; provider: "resend" | "brevo" }
   | { kind: "skipped" }
   | { kind: "failed"; reason: string };
 
@@ -616,7 +643,8 @@ async function sendDigest(
 
 async function runWorker(): Promise<{
   considered: number;
-  individuals_sent_ses: number;
+  individuals_sent_resend: number;
+  individuals_sent_brevo: number;
   digests_sent: number;
   failed: number;
   retired_after_retries: number;
@@ -626,7 +654,8 @@ async function runWorker(): Promise<{
 }> {
   const summary = {
     considered: 0,
-    individuals_sent_ses: 0,
+    individuals_sent_resend: 0,
+    individuals_sent_brevo: 0,
     digests_sent: 0,
     failed: 0,
     retired_after_retries: 0,
@@ -791,7 +820,8 @@ async function runWorker(): Promise<{
       const outcome = await sendIndividual(admin, recipientEmail, row);
       processedTotal += 1;
       if (outcome.kind === "sent") {
-        summary.individuals_sent_ses += 1;
+        if (outcome.provider === "resend") summary.individuals_sent_resend += 1;
+        else summary.individuals_sent_brevo += 1;
       } else if (outcome.kind === "failed") {
         summary.failed += 1;
       }
