@@ -85,6 +85,7 @@
   --acct-div-jobs: #BE185D;       /* Garnet */
   --acct-div-learn: #6366F1;      /* Twilight indigo */
   --acct-div-studio: #B45309;     /* Bronze */
+  --acct-div-gaming: #A21CAF;     /* Arena magenta (Henry Onyx Live) */
   --acct-div-security: #B27A00;   /* Amber (matches severity for visual sync) */
   --acct-div-system: #6B6560;     /* Stone */
 
@@ -163,6 +164,7 @@
   --acct-div-jobs: #F472B6;
   --acct-div-learn: #818CF8;
   --acct-div-studio: #FB923C;
+  --acct-div-gaming: #C026D3;
   --acct-div-security: #D4AF37;
   --acct-div-system: #9CA3AF;
 

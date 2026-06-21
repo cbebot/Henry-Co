@@ -49,6 +49,13 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Owner answer (2026-05-28):** ANSWERED — Defer gaming arena entirely from V3. Wallet-funded player-vs-player matches with company margin is gambling under Nigerian law and most jurisdictions; requires gaming license, age verification, deposit limits, responsible-play features, exclusion lists, audited fairness — months of legal work. Revisit in V4 only after a lawyer signs off per market. Blocks/defers: the gaming portions of Phase G (V3-66 and any gaming-gated pass).
 
+**Owner answer (2026-06-21) — REFINED to Option C (RATIFIED):** The 2026-05-28 reasoning is *entirely about the money layer* (staking, company margin, licensing, AML, deposit limits, exclusion lists) — none of which applies to **free, no-prize practice play**, where there is no *consideration* and no *prize* (two of the three elements of gambling are absent). Accordingly:
+
+- **Build & launch the FREE-PLAY foundation now** — original skill games, server-authoritative, provably fair, no stake/prize, decoupled from the gambling legal gate. This is the immediate build (Pass 1, refines V3-65). See `docs/v3/gaming/ARCHITECTURE.md §2.1`, `PHASED-PLAN.md`, `LEGAL-GATE-MAP.md`.
+- **The real-money match-escrow layer stays DEFERRED/dormant** — designed in full but built and activated per market only on a countersigned stakes-specific legal opinion (`L7`), AML review (`L15`), gaming insurance (`L8`), the net-new `over18` KYC signal, and FL2 live. The 2026-05-28 deferral **stands for the money layer**.
+
+The free foundation is **unblocked**. Stakes remain blocked behind the legal trio above per market. (Implemented by pass V3-GAMING-01.)
+
 ---
 
 ## D3 — AI provider selection

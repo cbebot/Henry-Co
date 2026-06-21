@@ -10,7 +10,8 @@ export type DivisionKey =
   | "logistics"
   | "studio"
   | "jobs"
-  | "learn";
+  | "learn"
+  | "gaming";
 
 export type NavItem = {
   label: string;
@@ -492,6 +493,30 @@ export const COMPANY = {
         { label: "Help", href: "/help" }
       ],
     },
+    gaming: {
+      key: "gaming",
+      name: "Henry Onyx Live",
+      shortName: "Live",
+      sub: "Skill-based PvP arena, ranked play, and provably-fair matches",
+      tagline:
+        "A premium, provably-fair arena for skill-based player-versus-player competition.",
+      description:
+        "Henry Onyx Live is the Henry Onyx gaming arena — original, free-to-play, skill-based head-to-head matches with server-decided outcomes, ranked profiles, and a verifiable fairness proof on every match. The arena lives inside your Henry Onyx account.",
+      path: "/play",
+      subdomain: null,
+      accent: "#A21CAF",
+      accentStrong: "#F5D0FE",
+      accentText: "#86198F",
+      dark: "#0B0510",
+      supportEmail: BRAND_EMAILS.gaming,
+      supportPhone: "+2349133957084",
+      publicNav: [
+        { label: "Play", href: "/play" },
+        { label: "Games", href: "/play/games" },
+        { label: "Leaderboard", href: "/play/leaderboard" },
+        { label: "Fair play", href: "/play/fair-play" }
+      ],
+    },
   },
 } as const;
 
@@ -552,6 +577,7 @@ export const PUBLIC_DIVISION_KEYS = [
   "jobs",
   "learn",
   "care",
+  "gaming",
 ] as const satisfies readonly DivisionKey[];
 
 export type PublicDivisionLink = {

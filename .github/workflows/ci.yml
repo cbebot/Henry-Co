@@ -265,3 +265,15 @@ jobs:
 
       - name: Assert care guarded-payment grant + structural invariant (writes revoked; care_private unreachable; triggers present)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_guard_invariant.sql
+
+      # V3-GAMING-01 — free-play arena: default-deny RLS + grant-locked gaming RPCs.
+      # NO money path (no payments_private contact). The migration creates its own
+      # tables, so apply-then-assert on the same fresh DB (no _min.sql seed needed).
+      - name: Apply V3-GAMING-01 free-play arena migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260621120000_v3_gaming_01_free_play.sql
+
+      - name: Assert gaming-RPC grant invariant (writers anon/authenticated=false; service_role=true; leaderboard public)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/gaming_grant_invariant.sql
+
+      - name: Prove gaming RLS at runtime (authenticated cannot forge moves/insert matches/read non-participant data)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/gaming_rls_behaviour.sql

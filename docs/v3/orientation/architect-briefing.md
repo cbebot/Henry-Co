@@ -156,7 +156,7 @@ Source: `docs/v3/DECISIONS-REQUIRED.md` — 17 numbered decisions (D1–D17). Ev
 | ID | Decision summary | Status | Owner answer if any | Passes affected |
 |---|---|---|---|---|
 | D1 | Payment provider activation per country (Paystack+Flutterwave first vs Stripe-first vs defer) | **PENDING** | _____ | Blocks V3-14, V3-15, V3-16 |
-| D2 | Gaming-arena legal posture per market (formal opinion vs defer to V4 vs skill-only) | **PENDING** | _____ | Blocks V3-65, V3-66 |
+| D2 | Gaming-arena legal posture per market (formal opinion vs defer to V4 vs skill-only) | **ANSWERED (2026-06-21)** | Refined Option C — free-play foundation builds now (V3-GAMING-01); real-money escrow stays deferred per market until L7+L15+L8. See `DECISIONS-REQUIRED.md:50` | Unblocks free V3-65; V3-66 stays legally gated |
 | D3 | AI provider selection (Anthropic only vs Anthropic+OpenAI fallback vs open-source vs hybrid) | **PENDING** | _____ | Blocks V3-26 |
 | D4 | AI usage pricing markup (0% vs 10% vs tiered vs subscription) | **PENDING** | _____ | Blocks V3-27 |
 | D5 | Tax engine selection (Avalara vs TaxJar vs Stripe Tax vs roll-our-own vs defer) | **PENDING** | _____ | Blocks V3-21 |

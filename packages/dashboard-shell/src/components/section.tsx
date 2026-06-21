@@ -25,6 +25,7 @@ export type SectionDivisionAccent =
   | "jobs"
   | "learn"
   | "studio"
+  | "gaming"
   | "security"
   | "system";
 

@@ -11,6 +11,7 @@ const DIVISION_KEYS = new Set<DivisionKey>([
   "studio",
   "jobs",
   "learn",
+  "gaming",
 ]);
 
 function normalizePath(path = "/") {

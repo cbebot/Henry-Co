@@ -24,6 +24,7 @@ import {
   RefreshCcw,
   Users,
   Store,
+  Gamepad2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -58,6 +59,7 @@ export const accountNavItems: NavItem[] = [
   { href: "/logistics", label: "Logistics", icon: Truck, section: "Services" },
   { href: "/property", label: "Property", icon: Building2, section: "Services" },
   { href: "/jobs", label: "Jobs", icon: Briefcase, section: "Services" },
+  { href: "/play", label: "Henry Onyx Live", icon: Gamepad2, section: "Services" },
   // Business
   { href: "/business", label: "Business", icon: Store, section: "Business" },
   // Trust & Settings
@@ -68,9 +70,17 @@ export const accountNavItems: NavItem[] = [
   { href: "/settings/notifications", label: "Notification Preferences", icon: BellRing, section: "Settings" },
 ];
 
+// The arena nav entry is dormant until the public flag is set, so the free-play
+// foundation can ship "off" in prod and light up with one env flip (the page
+// itself additionally gates on the server capability via isGamingArenaReady()).
+const GAMING_NAV_VISIBLE =
+  process.env.NEXT_PUBLIC_GAMING_ARENA_ENABLED === "1" ||
+  process.env.NEXT_PUBLIC_GAMING_ARENA_ENABLED === "true";
+
 export function getNavSections() {
   const sections: Record<string, NavItem[]> = {};
   for (const item of accountNavItems) {
+    if (item.href === "/play" && !GAMING_NAV_VISIBLE) continue;
     const section = item.section || "Other";
     if (!sections[section]) sections[section] = [];
     sections[section].push(item);
