@@ -43,6 +43,7 @@ export const BRAND_EMAILS = {
   studio: at("studio"),
   jobs: at("jobs"),
   learn: at("learn"),
+  gaming: at("gaming"),
 } as const;
 
 export type BrandEmailKey = keyof typeof BRAND_EMAILS;

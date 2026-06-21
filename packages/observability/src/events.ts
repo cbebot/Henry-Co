@@ -113,6 +113,15 @@ export type HenryEventName =
   | "henry.studio_project.client_viewed"
   | "henry.studio_project.revision_requested"
   | "henry.studio_project.deliverable_approved"
+  // gaming arena (V3-GAMING-01) — free-play match lifecycle. No money/PII in
+  // payloads: game id, hashed actor ids, and PII-free outcome only.
+  | "henry.gaming.match.created"
+  | "henry.gaming.match.started"
+  | "henry.gaming.match.completed"
+  | "henry.gaming.match.abandoned"
+  | "henry.gaming.session.started"
+  | "henry.gaming.session.completed"
+  | "henry.gaming.profile.updated"
   // auth/session — V3-01 foundation lock (session persistence)
   | "henry.auth.session.refreshed"
   | "henry.auth.session.refresh_failed"

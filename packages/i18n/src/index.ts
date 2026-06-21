@@ -27,6 +27,7 @@ export * from "./care-copy";
 export * from "./care-pricing-copy";
 export * from "./care-services-copy";
 export * from "./seller-academy-copy";
+export * from "./arena-copy";
 export * from "./learn-to-earn-copy";
 export * from "./services-copy";
 export * from "./care-about-copy";

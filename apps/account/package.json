@@ -31,6 +31,7 @@
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/data": "workspace:^",
     "@henryco/email": "workspace:^",
+    "@henryco/gaming-arena": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/kyc": "workspace:^",
     "@henryco/observability": "workspace:^",
