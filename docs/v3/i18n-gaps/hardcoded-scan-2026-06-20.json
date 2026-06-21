@@ -8253,7 +8253,7 @@
     ],
     "apps/studio/app/pm/projects/page.tsx": [
       {
-        "line": 14,
+        "line": 20,
         "col": 7,
         "kind": "attr:title",
         "text": "Project-by-project operational control.",

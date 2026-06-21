@@ -106,6 +106,13 @@ export type HenryEventName =
   | "henry.studio.payment.updated"
   | "henry.studio.project.updated"
   | "henry.studio.message.added"
+  // studio project suite (V3-73) — client-facing project portal: portal view,
+  // a client change-request (one revision round), and a deliverable approval
+  // (payload carries `revision_number`). Final-file unlock + watermark export
+  // are audit-logged separately (Principle 5 export tracking).
+  | "henry.studio_project.client_viewed"
+  | "henry.studio_project.revision_requested"
+  | "henry.studio_project.deliverable_approved"
   // auth/session — V3-01 foundation lock (session persistence)
   | "henry.auth.session.refreshed"
   | "henry.auth.session.refresh_failed"
