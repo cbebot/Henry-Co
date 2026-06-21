@@ -13,17 +13,21 @@ import {
   Inbox,
   MessageSquare,
   Receipt,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { emitEvent } from "@henryco/observability/events";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import {
   getClientProjectDetail,
   unreadCountForProject,
 } from "@/lib/portal/data";
+import { getDeliverableRevisionStates } from "@/lib/portal/deliverable-revisions";
+import { isProjectPaid } from "@/lib/studio/project-payment";
 import { formatKobo, shortDate } from "@/lib/portal/helpers";
 import {
   invoiceStatusToken,
@@ -31,19 +35,46 @@ import {
   projectStatusToken,
 } from "@/lib/portal/status";
 import { ActivityFeed } from "@/components/portal/activity-feed";
-import { FileCard } from "@/components/portal/file-card";
+import {
+  PortalDeliverableCard,
+  type PortalDeliverableView,
+} from "@/components/portal/portal-deliverable-card";
+import { DeliverableApprovalPanel } from "@/components/portal/deliverable-approval-panel";
 import { StudioMessageThread } from "@/components/portal/StudioMessageThread";
 import { MilestoneProgress } from "@/components/portal/milestone-progress";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 import { PortalTabBar, type PortalTabDefinition } from "@/components/portal/tabs";
 import { StatusBadge } from "@/components/portal/status-badge";
+import type { ClientDeliverable } from "@/types/portal";
+
+// V3-73 — sanitize a deliverable for the client boundary: never ship the raw
+// file/thumbnail URL or public id into a "use client" component (it would leak
+// the un-watermarked, un-gated original into the page payload). The card only
+// needs presence + previewability booleans; URLs resolve server-side via the
+// gated asset-unlock route.
+function toDeliverableView(deliverable: ClientDeliverable): PortalDeliverableView {
+  const hasFile = Boolean(deliverable.fileUrl);
+  return {
+    id: deliverable.id,
+    title: deliverable.title,
+    description: deliverable.description ?? null,
+    version: deliverable.version,
+    status: deliverable.status,
+    sharedAt: deliverable.sharedAt ?? null,
+    fileType: deliverable.fileType,
+    hasFile,
+    canPreview: deliverable.fileType === "image" && hasFile,
+  };
+}
 
 export const metadata: Metadata = {
   title: "Project",
 };
 
+type ProjectTabId = "overview" | "progress" | "files" | "approvals" | "messages" | "payments";
+
 function buildProjectTabs(locale: AppLocale): Array<{
-  id: "overview" | "progress" | "files" | "messages" | "payments";
+  id: ProjectTabId;
   label: string;
   icon: typeof Inbox;
 }> {
@@ -52,6 +83,7 @@ function buildProjectTabs(locale: AppLocale): Array<{
     { id: "overview", label: t("Overview"), icon: Inbox },
     { id: "progress", label: t("Progress"), icon: History },
     { id: "files", label: t("Files"), icon: FileText },
+    { id: "approvals", label: t("Approvals"), icon: ShieldCheck },
     { id: "messages", label: t("Messages"), icon: MessageSquare },
     { id: "payments", label: t("Payments"), icon: CreditCard },
   ];
@@ -74,6 +106,24 @@ export default async function ClientProjectDetailPage({
   const locale = await getStudioPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const projectTabs = buildProjectTabs(locale);
+
+  // V3-73 — telemetry: a client opened the project portal. Emit once per entry
+  // (the default overview load, i.e. no ?tab=) so tab switches and the
+  // approval-panel's router.refresh() don't inflate the client_viewed metric.
+  if (!tabParam) {
+    emitEvent({
+      name: "henry.studio_project.client_viewed",
+      classification: "user_action",
+      outcome: "completed",
+      actorId: viewer.userId,
+      payload: { project_id: detail.project.id },
+    });
+  }
+
+  // Final-file unlock is gated on confirmed-paid money-truth (READ-ONLY).
+  const finalsLocked = !isProjectPaid(detail.paymentSummary);
+  // Per-deliverable revision rounds + round-trip counter (RLS-scoped read).
+  const revisionStates = await getDeliverableRevisionStates(detail.project.id);
 
   // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
   // so non-EN locales hit the cached DeepL pipeline (and any `_i18n` /
@@ -225,6 +275,10 @@ export default async function ClientProjectDetailPage({
   const outstandingInvoices = localizedDetail.invoices.filter(
     (i) => i.status === "sent" || i.status === "overdue" || i.status === "pending_verification"
   ).length;
+  const awaitingApproval = localizedDetail.deliverables.filter((d) => {
+    const revisionState = revisionStates.get(d.id);
+    return (revisionState?.latestStatus ?? null) !== "approved" && d.status !== "approved";
+  }).length;
 
   const tabs: PortalTabDefinition[] = projectTabs.map((tab) => ({
     id: tab.id,
@@ -235,6 +289,8 @@ export default async function ClientProjectDetailPage({
         ? unread
         : tab.id === "files"
         ? filesPending
+        : tab.id === "approvals"
+        ? awaitingApproval
         : tab.id === "payments"
         ? outstandingInvoices
         : 0,
@@ -295,7 +351,17 @@ export default async function ClientProjectDetailPage({
 
       {activeTab === "overview" ? <OverviewTab detail={localizedDetail} locale={locale} /> : null}
       {activeTab === "progress" ? <ProgressTab detail={localizedDetail} locale={locale} /> : null}
-      {activeTab === "files" ? <FilesTab detail={localizedDetail} locale={locale} /> : null}
+      {activeTab === "files" ? (
+        <FilesTab detail={localizedDetail} locale={locale} finalsLocked={finalsLocked} />
+      ) : null}
+      {activeTab === "approvals" ? (
+        <ApprovalsTab
+          detail={localizedDetail}
+          locale={locale}
+          revisionStates={revisionStates}
+          finalsLocked={finalsLocked}
+        />
+      ) : null}
       {activeTab === "messages" ? (
         <StudioMessageThread
           projectId={localizedDetail.project.id}
@@ -448,9 +514,11 @@ function ProgressTab({
 function FilesTab({
   detail,
   locale,
+  finalsLocked,
 }: {
   detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
   locale: AppLocale;
+  finalsLocked: boolean;
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const grouped = new Map<string | null, typeof detail.deliverables>();
@@ -471,6 +539,11 @@ function FilesTab({
 
   return (
     <div className="space-y-5">
+      {finalsLocked ? (
+        <div className="rounded-2xl border border-[var(--studio-amber-line)] bg-[var(--studio-amber-soft)] px-4 py-3 text-[12.5px] text-[var(--studio-amber-ink)]">
+          {t("Previews are watermarked. Final, full-resolution files unlock automatically once your payment is confirmed.")}
+        </div>
+      ) : null}
       {[...grouped.entries()].map(([milestoneId, deliverables]) => {
         const milestone = milestoneId
           ? detail.milestones.find((m) => m.id === milestoneId)
@@ -489,10 +562,73 @@ function FilesTab({
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {deliverables.map((deliverable) => (
-                <FileCard key={deliverable.id} deliverable={deliverable} />
+                <PortalDeliverableCard
+                  key={deliverable.id}
+                  deliverable={toDeliverableView(deliverable)}
+                  locked={finalsLocked}
+                  locale={locale}
+                />
               ))}
             </div>
           </section>
+        );
+      })}
+    </div>
+  );
+}
+
+function ApprovalsTab({
+  detail,
+  locale,
+  revisionStates,
+  finalsLocked,
+}: {
+  detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
+  locale: AppLocale;
+  revisionStates: Awaited<ReturnType<typeof getDeliverableRevisionStates>>;
+  finalsLocked: boolean;
+}) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  if (detail.deliverables.length === 0) {
+    return (
+      <PortalEmptyState
+        icon={ShieldCheck}
+        title={t("Nothing to approve yet")}
+        body={t("When the team shares a deliverable, you'll approve it or request changes here. Every approval is signed and recorded.")}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+        {t("Review each deliverable, then approve it or request changes. Your included revision rounds are tracked per deliverable.")}
+      </p>
+      {detail.deliverables.map((deliverable) => {
+        const state = revisionStates.get(deliverable.id) ?? {
+          allowance: 3,
+          used: 0,
+          remaining: 3,
+          exhausted: false,
+          billable: false,
+          latestStatus: null,
+          rounds: [],
+        };
+        return (
+          <div key={deliverable.id} className="space-y-3">
+            <DeliverableApprovalPanel
+              deliverableId={deliverable.id}
+              deliverableTitle={deliverable.title}
+              state={state}
+              locale={locale}
+            />
+            <PortalDeliverableCard
+              deliverable={toDeliverableView(deliverable)}
+              locked={finalsLocked}
+              locale={locale}
+            />
+          </div>
         );
       })}
     </div>

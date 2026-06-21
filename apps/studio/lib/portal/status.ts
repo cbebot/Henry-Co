@@ -70,9 +70,21 @@ const deliverableStatusTokens: Record<string, StatusTokenStyle> = {
   superseded: { tone: "neutral", label: "Replaced" },
 };
 
+// V3-73 — per-deliverable revision-round status (client approval depth layer).
+const revisionStatusTokens: Record<string, StatusTokenStyle> = {
+  submitted: { tone: "info", label: "Submitted" },
+  changes_requested: { tone: "warn", label: "Changes requested" },
+  approved: { tone: "success", label: "Approved" },
+};
+
 function localizeToken(token: StatusTokenStyle, locale?: AppLocale): StatusTokenStyle {
   if (!locale) return token;
   return { ...token, label: translateSurfaceLabel(locale, token.label) };
+}
+
+export function revisionStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = revisionStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  return localizeToken(token, locale);
 }
 
 export function projectStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
