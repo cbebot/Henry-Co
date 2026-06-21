@@ -32,6 +32,7 @@
     "@henryco/data": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/intelligence": "workspace:^",
+    "@henryco/kyc": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",
