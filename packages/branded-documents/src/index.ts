@@ -28,6 +28,7 @@ export {
   type PropertyManagedMaintenanceRow,
 } from "./templates/property-managed-statement";
 export { JobsApplicationDocument, type JobsApplicationProps } from "./templates/jobs-application";
+export { JobsRejectionLetterDocument, type JobsRejectionLetterProps } from "./templates/jobs-rejection-letter";
 export { LearnCertificateDocument, type LearnCertificateProps } from "./templates/learn-certificate";
 export { SupportThreadExportDocument, type SupportThreadExportProps, type SupportMessage } from "./templates/support-thread-export";
 export {

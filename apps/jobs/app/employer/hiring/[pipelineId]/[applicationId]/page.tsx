@@ -16,6 +16,18 @@ import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 import { MessageComposer } from "@/components/hiring/MessageComposer";
 import { InterviewScheduler } from "@/components/hiring/InterviewScheduler";
+import { CandidateScorePanel } from "@/components/hiring/CandidateScorePanel";
+import { TeamNotesThread } from "@/components/hiring/TeamNotesThread";
+import { DecisionActions } from "@/components/hiring/DecisionActions";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import {
+  getApplicationContext,
+  getBusinessMembers,
+  getScoreSummary,
+  getScores,
+  getTeamNotes,
+} from "@/lib/jobs/hiring-suite";
+import { HIRING_RUBRIC_KEYS } from "@/lib/jobs/hiring-suite-logic";
 
 export const dynamic = "force-dynamic";
 
@@ -41,10 +53,35 @@ export default async function ApplicationDetailPage({
 
   if (!pipeline || !application) return notFound();
 
-  const [conversation, interviews] = await Promise.all([
+  const [conversation, interviews, actingContext, appCtx] = await Promise.all([
     getConversation(applicationId),
     getInterviews(applicationId),
+    resolveHiringActingContext(),
+    getApplicationContext(applicationId),
   ]);
+
+  const suiteCopy = getJobsCopy(locale).employerHiringSuite;
+  const canManageAsBusiness =
+    actingContext.kind === "business" &&
+    appCtx?.businessId != null &&
+    actingContext.businessId === appCtx.businessId;
+
+  // V3-70 enterprise suite data — only fetched (and rendered) when the viewer is
+  // acting as the owning business.
+  const [scores, scoreSummary, teamNotes, members] = canManageAsBusiness
+    ? await Promise.all([
+        getScores(applicationId),
+        getScoreSummary(applicationId),
+        getTeamNotes(applicationId),
+        getBusinessMembers(actingContext.businessId),
+      ])
+    : [[], null, [], []];
+
+  const myUserId = actingContext.kind === "business" ? actingContext.userId : "";
+  const myScores: Record<string, number> = {};
+  for (const s of scores) {
+    if (s.scorerUserId === myUserId) myScores[s.rubricKey] = s.score;
+  }
 
   let messages: Awaited<ReturnType<typeof getMessages>> = [];
   if (conversation) {
@@ -72,7 +109,7 @@ export default async function ApplicationDetailPage({
   return (
     <WorkspaceShell
       area="employer"
-      title="Application Detail"
+      title={suiteCopy.applicationDetailTitle}
       subtitle={`${application.candidateName} for ${application.jobTitle}`}
       nav={employerNav}
       activeHref="/employer/hiring"
@@ -125,7 +162,7 @@ export default async function ApplicationDetailPage({
         </SectionCard>
 
         {/* Stage progression */}
-        <SectionCard title="Stage progression" body="Track where this candidate is in the hiring pipeline.">
+        <SectionCard title={suiteCopy.stageProgressionTitle} body={suiteCopy.stageProgressionBody}>
           <div className="flex flex-wrap items-center gap-2">
             {pipeline.stages.map((stage, index) => (
               <div key={stage} className="flex items-center gap-2">
@@ -147,6 +184,39 @@ export default async function ApplicationDetailPage({
             ))}
           </div>
         </SectionCard>
+
+        {/* V3-70 enterprise suite — scoring + decision + team notes (business-scoped) */}
+        {canManageAsBusiness ? (
+          <>
+            <SectionCard title={suiteCopy.scoreTitle} body={suiteCopy.scoreBody}>
+              <CandidateScorePanel
+                applicationId={applicationId}
+                rubricKeys={HIRING_RUBRIC_KEYS}
+                myScores={myScores}
+                summary={scoreSummary}
+                copy={suiteCopy}
+              />
+            </SectionCard>
+
+            <SectionCard title={suiteCopy.decisionTitle} body={suiteCopy.decisionBody}>
+              <DecisionActions
+                applicationId={applicationId}
+                candidateName={application.candidateName}
+                copy={suiteCopy}
+              />
+            </SectionCard>
+
+            <SectionCard title={suiteCopy.notesTitle} body={suiteCopy.notesBody}>
+              <TeamNotesThread
+                applicationId={applicationId}
+                notes={teamNotes}
+                members={members.map((m) => ({ userId: m.userId, name: m.name }))}
+                currentUserId={myUserId}
+                copy={suiteCopy}
+              />
+            </SectionCard>
+          </>
+        ) : null}
 
         {/* Conversation thread */}
         <SectionCard

@@ -8,6 +8,9 @@ import { getJobsPublicLocale } from "@/lib/locale-server";
 import { employerNav } from "@/lib/jobs/navigation";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 import { PipelineKanban } from "@/components/hiring/PipelineKanban";
+import { BulkStageMover } from "@/components/hiring/BulkStageMover";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import { getPipelineBusinessId } from "@/lib/jobs/hiring-suite";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +25,21 @@ export default async function PipelineDetailPage({
   const pipeline = await getPipelineById(pipelineId);
   if (!pipeline) return notFound();
 
-  const [applications, locale] = await Promise.all([
+  const [applications, locale, actingContext, pipelineBusinessId] = await Promise.all([
     getApplications(pipelineId),
     getJobsPublicLocale(),
+    resolveHiringActingContext(),
+    getPipelineBusinessId(pipelineId),
   ]);
   const copy = getJobsCopy(locale).employerHiringPipeline;
+  const suiteCopy = getJobsCopy(locale).employerHiringSuite;
+
+  // The enterprise suite (bulk move) is available only when the viewer is acting
+  // as the business that owns this pipeline (V3-70 S1 business scoping).
+  const canManageAsBusiness =
+    actingContext.kind === "business" &&
+    pipelineBusinessId != null &&
+    actingContext.businessId === pipelineBusinessId;
 
   const stageTone = (status: string) => {
     if (status === "active") return "good" as const;
@@ -115,6 +128,21 @@ export default async function PipelineDetailPage({
             />
           )}
         </SectionCard>
+
+        {/* V3-70 S2 — enterprise bulk stage move (business-scoped) */}
+        {canManageAsBusiness && applications.length > 0 && (
+          <SectionCard title={suiteCopy.bulkMoveLabel}>
+            <BulkStageMover
+              applicants={applications.map((app) => ({
+                applicationId: app.id,
+                candidateName: app.candidateName,
+                currentStage: app.stage,
+              }))}
+              stages={pipeline.stages}
+              copy={suiteCopy}
+            />
+          </SectionCard>
+        )}
 
         {/* Applicant list — legacy linkable detail entry */}
         <SectionCard
