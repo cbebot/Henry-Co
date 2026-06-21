@@ -26,9 +26,10 @@
 | Prod migrations applied | **98** | repo holds **161** files → **59 committed-not-applied**, **23 applied-not-in-repo**, **1 real version collision** (Appendix B) |
 | Owner decisions answered in-file | **1 of 17** (D2) | several others (D1, D5, D11) are *de-facto resolved by shipped work* but not written down — §3 |
 | Money flowing in prod today | **Yes** | marketplace commission + 7.5% VAT + processor-fee absorption live; FL2 8-file spine applied, books balance (Δ=0) — §2 |
+| AI in production today | **Yes (ungoverned)** | **direct Claude Haiku 4.5** studio copilot + owner-AI surface + `packages/intelligence` live on main (≠ the governed Phase-D vision) — §1.5; partially delivers V3-32; D3 de-facto Anthropic |
 | Hard launch blockers open | **4** | V3-94 final QA (unstarted), i18n native-translation, multi-currency (W1), mobile (Phase I) — §4 |
 
-**One-sentence state:** Phase B (Foundation Lock) and the core of Phase C (Money & Identity spine — ledger, receipts, refunds, VAT, Flutterwave, moderation) are **done and live on prod**; Phases **D (AI), E, F, most of G, H, and all of I are unbuilt**; the program's launch is gated by four measured blockers (final integration QA, i18n native translation, multi-currency, mobile) plus a migration-drift reconciliation, and the AI phase is gated entirely by two unanswered owner decisions (D3 provider, D4 margin).
+**One-sentence state:** Phase B (Foundation Lock) and the core of Phase C (Money & Identity spine — ledger, receipts, refunds, VAT, Flutterwave, moderation) are **done and live on prod**; the register's Phases **E, F, most of G, H, and all of I are unbuilt**, and Phase D's *governed/metered* AI vision is unbuilt — **but an ungoverned AI layer (direct Claude Haiku 4.5 + owner-AI surface + intelligence engine) already ships (§1.5)**; the program's launch is gated by four measured blockers (final integration QA, i18n native translation, multi-currency, mobile) plus a migration-drift reconciliation, and the *governed* AI phase needs D4 (margin) for metering — the provider (D3) is de-facto Anthropic already.
 
 ---
 
@@ -87,7 +88,7 @@
 
 ### 1.3 Phases D–I — the unbuilt / gated remainder (every pass listed)
 
-**Phase D — AI Intelligence Layer (V3-26 → V3-33): ALL PENDING.** Gated by **D3 (AI provider)** + **D4 (AI margin)** — these two decisions block the *entire* phase. None started.
+**Phase D — AI Intelligence Layer (V3-26 → V3-33): the *governed/metered* layer is PENDING — but an *ungoverned* AI layer ALREADY SHIPS (see §1.5).** ⚠️ The register's Phase D is the **provider-router + wallet-metered usage-billing + "HenryCo Intelligence" customer surface** vision, gated by **D3 (AI provider)** + **D4 (AI margin)** — that governed/abstracted/billed layer is unbuilt. **But a direct Anthropic (Claude Haiku 4.5) integration, an owner-AI command surface, and a deterministic intelligence engine are already live on `origin/main`** — so "Phase D = all pending" is true *only* for the governed vision, not for "is there any AI in the product." See **§1.5** and **Appendix C #7**.
 
 | ID | Slug | Status | Gate |
 |---|---|---|---|
@@ -97,7 +98,7 @@
 | V3-29 | ai-support-message-assist | PENDING | (V3-28) |
 | V3-30 | ai-business-message-assist | PENDING | (V3-28) |
 | V3-31 | ai-account-check-assist | PENDING | (V3-28) |
-| V3-32 | ai-studio-domain-and-brief-assist | PENDING | (V3-28) |
+| V3-32 | ai-studio-domain-and-brief-assist | **PARTIALLY DELIVERED (off-register, ungoverned)** | studio brief-copilot + domain-intelligence + portal refine-draft make **real Claude Haiku 4.5 calls** on `origin/main` (`apps/studio/lib/studio/brief-copilot-action.ts`, `portal/refine-draft-action.ts`); deterministic fallback w/o `ANTHROPIC_API_KEY`; persists to prod-applied `studio_brief_drafts`. **NOT** via the V3-26 router, **NOT** metered by V3-27. See §1.5 |
 | V3-33 | ai-personal-task-gating | PENDING | (V3-26/27) |
 
 **Phase E — Personalization & Predictive (V3-34 → V3-42): PENDING except V3-37.**
@@ -231,6 +232,29 @@ These merged to `origin/main` but are **not** formal V3-NN register rows. They c
 
 ---
 
+## 1.5 The AI & Intelligence layer that ALREADY exists (not captured by the Phase D register)
+
+The 96-pass register frames AI as a *future* governed Phase D (provider-router → usage-billing → metered "HenryCo Intelligence"). That framing hid the fact that **HenryCo already runs Claude in production-deployed code today**, plus an owner-AI surface and a deterministic intelligence engine. All of the following are on `origin/main` (verified by `git cat-file -e origin/main:<path>`). This layer is **ungoverned** relative to the Phase-D vision — direct SDK calls, not routed through V3-26, not metered through V3-27 — but it is real, structured, and must not be lost.
+
+| Component | Where (origin/main) | What it is | Status |
+|---|---|---|---|
+| **Anthropic SDK dependency** | `package.json` + `apps/studio/package.json` (`@anthropic-ai/sdk@^0.92.0`) | The actual Claude SDK, installed | LIVE on main |
+| **Studio Brief Copilot** | `apps/studio/lib/studio/brief-copilot-action.ts` (`new Anthropic()` → `client.messages.create`), `brief-copilot-prompt.ts` (`BRIEF_COPILOT_MODEL = "claude-haiku-4-5-20251001"`) | Real **Claude Haiku 4.5** call that structures a client's studio brief; rate-limited (anon 5/session, auth 20/day, ip 10/day, system 500/day), SHA-256 dedup 24h; **deterministic `buildFallbackStructured` keyword parser when `ANTHROPIC_API_KEY` is unset** | LIVE on main; **= a shipped slice of V3-32** |
+| **Studio portal refine-draft** | `apps/studio/lib/portal/refine-draft-action.ts` (`REFINE_MODEL = "claude-haiku-4-5-20251001"`) | Second real Claude call; refines a draft; reuses the SDK + key infra | LIVE on main |
+| **Studio domain-intelligence** | `apps/studio/lib/studio/domain-intelligence.ts` | Domain-availability assist (the other half of V3-32) | LIVE on main |
+| **Brief-draft persistence** | mig `studio_brief_drafts` (`20260503130000`) — **APPLIED on prod** (`20260504170556`) | Stores every Claude generation; column `model_used` defaults to `claude-haiku-4-5-20251001` | APPLIED on prod |
+| **Owner AI command surface** | `apps/hub/app/owner/(command)/ai/page.tsx` + `ai/signals/page.tsx` + `ai/insights/page.tsx` | Owner-facing AI/intelligence console (signals + insights) inside the Command Center; copy in `packages/i18n/src/hub-owner-ai-copy.ts` | LIVE on main (owner-gated) |
+| **Deterministic intelligence engine** | `packages/intelligence/src/` (`analytics.ts`, `search.ts`, `index.ts`) | The existing rules/deterministic intelligence package that PASS-REGISTER **Phase E explicitly says personalization/predictive will build "on top of"** | LIVE on main |
+| **i18n runtime translation (DeepL)** | `packages/i18n` Pattern B (`translateText`, `i18n_translation_cache` applied `20260509233549`) | A second AI/ML vendor integration — runtime machine translation; deployed-dormant until `DEEPL_API_KEY` | built; dormant (see §4 i18n gate) |
+
+**Provider decision is de-facto made.** `docs/v3/INTEGRATION-KEYS.md:54` already records **Anthropic** (`ANTHROPIC_API_KEY`, server-only) as "Primary AI provider for HenryCo Intelligence (per D3)" for V3-26/27/28-32/36/40/41, and the studio copilot already calls it. `ANTHROPIC_API_KEY` was rotated 2026-05-04 (`docs/v2/V2-CLOSURE-CERTIFICATE.md`). So **D3 is operationally Anthropic** — what remains unbuilt is the *abstraction* (V3-26 router) and the *metering/billing* (V3-27), not the provider choice.
+
+**The canonical architecture record exists** (the "how everything is structured and designed" docs): **`docs/HENRY-ONYX-PROJECT-KNOWLEDGE.md`** (compiled 2026-06-06, 34 sections A–M covering company, V3 program, monorepo topology, design system, auth, payments, i18n, comms, CMS, conventions, gotchas, glossary) + its companion **`docs/AGENT-OPERATING-MANUAL.md`**. This PROGRAM-STATUS ledger is the *status* view; those two are the *architecture/design* view — read them together.
+
+**What this means for the Phase-D plan:** V3-26 (provider-router) and V3-27 (usage-billing) should be scoped as **wrapping/governing the existing direct Claude calls** (retrofit the studio copilot behind the router + meter it), not as greenfield. The owner-AI surface and `packages/intelligence` are pre-existing foundations the register's Phase E/F build on.
+
+---
+
 ## 2. The monetization map — "how the company earns"
 
 Verified against `origin/main` code + **live prod money tables**. Prod confirms real revenue booked: `platform_revenue` CR **₦20,500**, `vat_output_payable` CR **₦75** (7,500 kobo), `processor_fees` DR **₦440.90** (owner absorbs the gateway fee), `fee_vat_recoverable` DR **₦33.08**; `marketplace_order_groups` carry **₦998,760** computed commission across 40 vendor groups.
@@ -259,14 +283,14 @@ Verified against `origin/main` code + **live prod money tables**. Prod confirms 
 | Seller monthly/posting/featured fees + payout fee (2/1.5%) | marketplace | amounts defined, listing cap DB-enforced; **no code path charges them** |
 | Marketplace **card checkout** | marketplace | behind flag `MARKETPLACE_CARD_CHECKOUT` (off); needs `PAYMENTS_DATABASE_URL` |
 
-### 2.3 PLANNED (design only, zero implementation)
+### 2.3 PLANNED (billing design only — note: the AI itself already runs, see §1.5)
 
 | Path | Where it will live | Gate |
 |---|---|---|
-| **AI usage billing (~10% margin)** | V3-27 (Phase D) — per-call metering, wallet auto-debit, wallet-zero cap | **D3 + D4** |
+| **AI usage billing (~10% margin)** | V3-27 (Phase D) — per-call metering, wallet auto-debit, wallet-zero cap. ⚠️ **Claude calls already happen today (studio copilot, §1.5) but are UNMETERED — the company absorbs the token cost.** V3-27 is the *billing* layer over an AI that's already live, not greenfield. | **D4** (margin) |
 | **Gaming match margin / escrow** | V3-66 — `gaming_company_margin` / `match_escrow_liability` accounts (clone of FL2) | **D2 legal** per market |
 | Partner payouts (money-out) | V3-69 (W2 Flutterwave payouts) | D9 |
-| AI business/studio assist (metered) | V3-30 / V3-32 | D3/D4 |
+| AI business/studio assist (metered) | V3-30 / V3-32 (studio assist exists ungoverned per §1.5; metering is the gap) | D4 |
 
 ---
 
@@ -278,8 +302,8 @@ Only **D2** is written into `docs/v3/DECISIONS-REQUIRED.md`. Several others are 
 |---|---|---|---|---|---|
 | **D1** | Payment provider per country | `_____` PENDING | **Option A executed** — Paystack (#170) then Flutterwave (#276) live; Stripe deferred | V3-14/15/16 | **Launch** — formalize (cheap) |
 | **D2** | Gaming legal posture | ✅ **RATIFIED 2026-06-21** | refined Option C — free-play live, real-money per-market-legal-gated | V3-65/66 | Gaming track |
-| **D3** | AI provider | `_____` PENDING | none | V3-26 | **AI phase (blocks all of D)** |
-| **D4** | AI margin | `_____` PENDING | none | V3-27 | **AI phase (blocks all of D)** |
+| **D3** | AI provider | `_____` PENDING | **de-facto Anthropic** — `INTEGRATION-KEYS.md:54` names it "Primary AI provider (per D3)"; studio copilot already calls Claude Haiku 4.5 (§1.5). Formalize. | V3-26 | **Formalize** — provider is decided; only the router abstraction is unbuilt |
+| **D4** | AI margin | `_____` PENDING | none — Claude calls today are **unmetered** (cost absorbed, §1.5/§2.3) | V3-27 | **AI billing (blocks metering, not provider)** |
 | **D5** | Tax engine | `_____` PENDING | **Option D executed** — roll-our-own (V3-VAT-CLASSIFICATION/WIRING), 7.5% live | V3-21 | Launch — formalize |
 | **D6** | KYC vendor | `_____` PENDING | none (only dormant vault primitive) | V3-24 → V3-50/67 | **Identity/partner track** |
 | D7 | Email senders | `_____` PENDING | hybrid in practice; SES attempt reverted | V3-46/48/61 (op) | No |
@@ -328,7 +352,7 @@ Dependency-aware path from today's state. **‖** = parallelizable.
 6. Money-rail go-live: Flutterwave live-key cutover + 48h soak; then estate-wide bank-transfer retirement once the queue drains.
 
 **Phase 2 — Decide & build AI (gated on D3+D4)**
-7. Answer **D3 (provider) + D4 (margin)** → build Phase D in order: V3-26 → V3-27 → V3-33 → V3-28 → (V3-29/30/31/32 ‖). This also unblocks V3-59 concierge.
+7. **Formalize D3** (provider is de-facto Anthropic) + **answer D4 (margin)** → build the *governed* Phase D, **retrofitting the existing ungoverned Claude calls (§1.5) behind it**: V3-26 router (wrap the studio copilot's direct SDK call) → V3-27 metering/billing (meter what's already being spent) → V3-33 → V3-28 → (V3-29/30/31/32 ‖; V3-32 already partially shipped). This also unblocks V3-59 concierge. Note: V3-26/27 are a *retrofit*, not greenfield.
 
 **Phase 3 — Launch gates (sequential close)**
 8. Close **i18n** (V3-07b after D17; native linguists for ig/yo/ha/hi/zh).
@@ -399,6 +423,7 @@ Dependency-aware path from today's state. **‖** = parallelizable.
 4. **V3-DELIVERY-COMPLETE-01's `marketplace_delivery_promises` (20260621065939) IS applied** on prod — earlier memory said committed-not-applied. **Now applied.**
 5. **Applied-migration count is 98**, not the "96" used in some earlier prose / agent labels (settled via `count(*)` on `schema_migrations`).
 6. **5 division launch-catalog auto-seed commits** (`70a54525`…`89306e68`) sit on `v3/typography-reading-foundation`; their merge to `origin/main` is **UNVERIFIED** (they are not in the `origin/main` log range audited).
+7. **The AI layer was under-represented in this ledger's first revision.** v1 flattened all of Phase D to "PENDING," which read as "there is no AI in the product." That is wrong: a **direct Anthropic Claude Haiku 4.5 integration** (studio brief-copilot + portal refine-draft + domain-intelligence), an **owner-AI command surface** (`hub/owner/(command)/ai/*`), and a **deterministic intelligence engine** (`packages/intelligence`) are all live on `origin/main`, with `studio_brief_drafts` applied on prod. The register's Phase D is the *governed/metered* vision; the *ungoverned* AI already ships. Corrected in **§1.5**, the V3-32 row (PENDING → PARTIALLY DELIVERED), the D3/D4 rows (D3 de-facto Anthropic), and §2.3. Architecture is documented in `docs/HENRY-ONYX-PROJECT-KNOWLEDGE.md` + `docs/AGENT-OPERATING-MANUAL.md`.
 
 ---
 
