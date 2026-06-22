@@ -170,5 +170,36 @@ existing arena-copy pattern. No hardcoded display strings in components.
 
 ## 9. Out of scope / follow-ups
 
-- Onyx Quiz; ranked ladders; spectator mode; sound design (optional later).
+- Onyx Quiz; ranked ladders; spectator mode.
 - Flipping `GAMING_ARENA_ENABLED` for live multiplayer (owner-gated, separate).
+
+## 10. Addendum — "World-class" elevation (owner directive, 2026-06-22, in progress)
+
+After the first slice shipped to PR #330, the owner directed a deeper pass to make the
+EXISTING free game (Onyx Lines) world-class — NOT to add games. The other catalog games
+are a separate later pass. Legal gate for the free game is cleared (free-play only here).
+Driven by the research workflow `onyx-lines-worldclass-research`; built test-first, then
+adversarially verified. Requirements (nothing left shallow):
+
+1. **AI overhaul (top priority).** Replace the 1-ply greedy bot with a genuinely strong,
+   forward-looking engine: resistance / two-distance evaluation + virtual-connection (bridge)
+   awareness + pruned alpha-beta (or MCTS) search. It MUST carry **multiple strategies/personas**
+   and **vary its play across games** (seeded softmax sampling + opening book) so a human cannot
+   memorize or predict one line and "cheat" it. Seeded/pure for reproducible tests; fresh crypto
+   seed per real game for variety.
+2. **Honest difficulty calibration.** "Easy is hard" today — recalibrate tiers so Gentle is
+   genuinely beatable by a novice and the top tier is formidable (depth + temperature + blunder
+   rate + feature gating per tier, with expected win-rates).
+3. **Premium ORIGINAL sound.** Bespoke Web Audio synthesis (no samples, no imitation) — a signature
+   Henry Onyx sonic identity with distinct place / win / loss / threat / UI cues; mute + volume
+   persisted; user-gesture init; reduced-motion/quiet-by-default respected.
+4. **Premium ORIGINAL result moment.** On a decided game, a crafted result presentation built from
+   scratch: the winning connection path animates edge-to-edge, an original animated result
+   toast/banner (win / loss / tie) with the win sound and rematch + "review the game" actions.
+   Accessible (ARIA live, focus management) and reduced-motion-aware. NOT a generic/library toast.
+5. **Depth / value features.** On-demand hint (best move + one-line why), undo/takeback in practice,
+   move history + post-game analysis (winning path + turning-point), choose-your-side (experience
+   the swap/pie rule), local records/streaks per tier, colorblind-safe colors + keyboard play.
+
+All additive, free-play, client-side: still ZERO money, ZERO migration, ZERO new DB objects.
+Lands as further commits on `v3/gaming-02-arena-learn-to-win` → updates PR #330 → same preview.
