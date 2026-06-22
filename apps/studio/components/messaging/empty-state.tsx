@@ -1,5 +1,7 @@
 import { FileUp, MessageCircle, Sparkles } from "lucide-react";
 import { HenryCoMonogram } from "@henryco/ui/brand";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 
 type Props = {
   projectName: string;
@@ -18,9 +20,13 @@ type Props = {
  * the project transitioned outside the studio_projects insert/update).
  */
 export function EmptyThreadState({ projectName, teamLabel }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const welcomeBody = teamLabel
-    ? `${projectName} is open in Studio. Your Studio team is ${teamLabel}. Questions, updates, files, and decisions all live here in one organised place — ask anything any time.`
-    : `${projectName} is open in Studio. Questions, updates, files, and decisions all live here in one organised place — ask anything any time.`;
+    ? copy.emptyState.welcomeWithTeam
+        .replace("{projectName}", projectName)
+        .replace("{teamLabel}", teamLabel)
+    : copy.emptyState.welcomeNoTeam.replace("{projectName}", projectName);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
@@ -33,25 +39,37 @@ export function EmptyThreadState({ projectName, teamLabel }: Props) {
         />
       </div>
       <h2 className="mt-6 max-w-md text-balance text-[20px] font-semibold tracking-[-0.005em] text-[#F5F4EE] sm:text-[22px]">
-        Your project conversation starts here.
+        {copy.emptyState.headline}
       </h2>
       <p className="mt-3 max-w-md text-balance text-[14px] leading-relaxed text-white/65">
-        Everything about{" "}
-        <span className="font-medium text-[#d4b14e]">{projectName}</span> —
-        questions, updates, files, and decisions — in one organised place.
+        {(() => {
+          const [before, after] = copy.emptyState.supporting.split(
+            "{projectName}",
+          );
+          return (
+            <>
+              {before}
+              <span className="font-medium text-[#d4b14e]">{projectName}</span>
+              {after}
+            </>
+          );
+        })()}
       </p>
 
       <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[12px] text-white/55">
-        <FeatureLabel icon={Sparkles} label="Real-time updates" />
-        <FeatureLabel icon={FileUp} label="File sharing" />
-        <FeatureLabel icon={MessageCircle} label="Direct team access" />
+        <FeatureLabel icon={Sparkles} label={copy.emptyState.featureRealtime} />
+        <FeatureLabel icon={FileUp} label={copy.emptyState.featureFileSharing} />
+        <FeatureLabel
+          icon={MessageCircle}
+          label={copy.emptyState.featureTeamAccess}
+        />
       </div>
 
       <div className="mt-10 w-full max-w-[420px] rounded-[16px] rounded-bl-[4px] border border-white/[0.06] bg-[#0F1524] p-4 text-left">
         <div className="text-[12px] font-medium uppercase tracking-[0.10em] text-[#d4b14e]">
           HenryCo Studio
           <span className="ml-2 text-[10px] font-medium tracking-[0.10em] text-white/35">
-            Opening note
+            {copy.emptyState.openingNote}
           </span>
         </div>
         <p className="mt-1.5 text-[14px] leading-relaxed text-[#F5F4EE]">

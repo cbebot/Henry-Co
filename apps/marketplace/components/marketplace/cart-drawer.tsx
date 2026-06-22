@@ -6,10 +6,14 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceCheckoutCopy } from "@henryco/i18n";
 import { useMarketplaceCart, useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
 
 export function MarketplaceCartDrawer() {
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceCheckoutCopy(locale).cartDrawer;
   const runtime = useMarketplaceRuntime();
   const {
     cart,
@@ -47,10 +51,15 @@ export function MarketplaceCartDrawer() {
             <div className="flex items-center justify-between border-b border-[color:rgba(255,255,255,0.12)] px-6 py-5">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[var(--market-brass)]">
-                  Mini cart
+                  {copy.miniCart}
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                  {cart.count ? `${cart.count} item${cart.count === 1 ? "" : "s"} ready` : "Your basket is empty"}
+                  {cart.count
+                    ? (cart.count === 1 ? copy.itemsReadyOne : copy.itemsReadyOther).replace(
+                        "{count}",
+                        String(cart.count),
+                      )
+                    : copy.basketEmpty}
                 </h2>
               </div>
               <button
@@ -86,7 +95,7 @@ export function MarketplaceCartDrawer() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
-                            {item.inventoryOwnerType === "company" ? "HenryCo stocked" : item.vendorName || "Verified store"}
+                            {item.inventoryOwnerType === "company" ? copy.henryCoStocked : item.vendorName || copy.verifiedStore}
                           </p>
                           <p className="mt-1 text-base font-semibold leading-6">{item.title}</p>
                           <p className="mt-1 text-sm text-[var(--market-muted)]">{item.deliveryNote}</p>
@@ -102,7 +111,7 @@ export function MarketplaceCartDrawer() {
                               className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)] disabled:cursor-wait"
                             >
                               {cartBusy ? (
-                                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" />
+                                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.updatingCart} />
                               ) : (
                                 <Minus className="h-3.5 w-3.5" />
                               )}
@@ -116,7 +125,7 @@ export function MarketplaceCartDrawer() {
                               className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)] disabled:cursor-wait"
                             >
                               {cartBusy ? (
-                                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" />
+                                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.updatingCart} />
                               ) : (
                                 <Plus className="h-3.5 w-3.5" />
                               )}
@@ -144,8 +153,8 @@ export function MarketplaceCartDrawer() {
                         pending={pendingSavedItemIds.includes(item.id)}
                         compact
                         className="inline-flex items-center gap-1.5 hover:text-[var(--market-brass)] disabled:cursor-wait"
-                        labelIdle="Save for later"
-                        labelBusy="Saving..."
+                        labelIdle={copy.saveForLater}
+                        labelBusy={copy.saving}
                       />
                       <span aria-hidden="true">·</span>
                       <ActionButton
@@ -156,7 +165,7 @@ export function MarketplaceCartDrawer() {
                           await removeCartItem(item.id);
                         }}
                       >
-                        {cartBusy ? "Updating..." : "Remove"}
+                        {cartBusy ? copy.updating : copy.remove}
                       </ActionButton>
                     </div>
                   </article>
@@ -164,9 +173,9 @@ export function MarketplaceCartDrawer() {
               ) : (
                 <div className="rounded-[1.8rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-8 text-center">
                   <ShoppingBag className="mx-auto h-8 w-8 text-[var(--market-brass)]" />
-                  <p className="mt-4 text-xl font-semibold tracking-tight">Start building the basket.</p>
+                  <p className="mt-4 text-xl font-semibold tracking-tight">{copy.emptyTitle}</p>
                   <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-                    Quick-add from any card and the basket will stay updated here without a hard refresh.
+                    {copy.emptyBody}
                   </p>
                   <div className="mt-5 flex flex-col items-center gap-2">
                     <Link
@@ -174,7 +183,7 @@ export function MarketplaceCartDrawer() {
                       onClick={closeCart}
                       className="inline-flex rounded-full bg-[var(--market-paper-white)] px-5 py-3 text-sm font-semibold text-[var(--market-noir)]"
                     >
-                      Explore products
+                      {copy.exploreProducts}
                     </Link>
                     <Link
                       href="/account/saved"
@@ -182,7 +191,7 @@ export function MarketplaceCartDrawer() {
                       className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--market-brass)]"
                     >
                       <Bookmark className="h-3 w-3" />
-                      View saved items
+                      {copy.viewSaved}
                     </Link>
                   </div>
                 </div>
@@ -196,18 +205,18 @@ export function MarketplaceCartDrawer() {
                 </div>
               ) : null}
               <div className="flex items-center justify-between text-sm text-[var(--market-muted)]">
-                <span>Subtotal</span>
+                <span>{copy.subtotal}</span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
                   {formatCurrency(cart.subtotal, cart.items[0]?.currency || "NGN")}
                 </span>
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-                Split-order clarity, delivery windows, and payment states stay visible again at checkout.
+                {copy.checkoutNote}
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {cartSyncing ? (
                   <div className="sm:col-span-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-center text-sm font-semibold text-[var(--market-muted)]">
-                    Finalizing basket before navigation...
+                    {copy.finalizing}
                   </div>
                 ) : (
                   <>
@@ -216,14 +225,14 @@ export function MarketplaceCartDrawer() {
                       onClick={closeCart}
                       className="market-button-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
                     >
-                      View cart
+                      {copy.viewCart}
                     </Link>
                     <Link
                       href="/checkout"
                       onClick={closeCart}
                       className="market-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
                     >
-                      Checkout
+                      {copy.checkout}
                     </Link>
                   </>
                 )}

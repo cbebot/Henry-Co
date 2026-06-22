@@ -1,7 +1,11 @@
 import type { StudioProjectUpdate } from "@/lib/studio/types";
 import { formatWorkspaceDate, friendlyUpdateKind } from "@/lib/studio/project-workspace-copy";
+import { getStudioProjectCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
-export function ProjectProgressTimeline({ updates }: { updates: StudioProjectUpdate[] }) {
+export async function ProjectProgressTimeline({ updates }: { updates: StudioProjectUpdate[] }) {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioProjectCopy(locale).timeline;
   const sorted = [...updates].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 
   return (
@@ -31,9 +35,9 @@ export function ProjectProgressTimeline({ updates }: { updates: StudioProjectUpd
         </ol>
       ) : (
         <div className="rounded-[1.5rem] border border-dashed border-[var(--studio-line)] bg-black/5 px-6 py-12 text-center">
-          <p className="text-sm font-medium text-[var(--studio-ink)]">No updates yet</p>
+          <p className="text-sm font-medium text-[var(--studio-ink)]">{copy.noUpdatesTitle}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            Your project timeline will appear here once work begins. Each update includes a clear headline, timestamp, and context so you always know what moved.
+            {copy.noUpdatesBody}
           </p>
         </div>
       )}
