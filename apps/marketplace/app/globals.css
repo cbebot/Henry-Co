@@ -536,3 +536,124 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .market-workspace-light .market-kicker {
   color: var(--acct-gold-text);
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+ * V3-INNER-L-MARKETPLACE (elevation) — "The Atelier Ledger".
+ *
+ * The buyer dashboard is already light Register-L (#225). This layer ELEVATES
+ * it from correct-but-plain to a remarkable editorial surface with the
+ * marketplace's OWN voice — a warm brass atelier register — WITHOUT touching
+ * apps/account (every rule is scoped under .market-workspace-light, so the
+ * shared dashboard-shell `.acct-*` primitives gain marketplace character only
+ * inside this division). Light-primary; the .dark block keeps considered
+ * parity. AA throughout: text on the brass slab is the light --acct-bg-soft
+ * the primitive already paints; brass is only ever a FILL under dark text or a
+ * TEXT colour (--acct-gold-text) on light — never white-on-gold.
+ * ──────────────────────────────────────────────────────────────────────── */
+.market-workspace-light {
+  /* Marketplace's warm metal — richer than the cool account gold. Used only
+     inside this scope; distinct from the AA --acct-gold-text used for body
+     accents (which stays for small text). */
+  --mkt-brass: #c8a36a;
+  --mkt-brass-soft: #ead7b0;
+  --mkt-brass-deep: #a6824a;
+  /* A whisper of warm paper behind the light sections — sits over the
+     --acct-bg the scope already sets; fades out before the fold so the
+     surface still reads clean, never tinted. */
+  background-image: radial-gradient(
+    150% 70% at 50% -16%,
+    color-mix(in srgb, var(--mkt-brass) 6%, transparent),
+    transparent 58%
+  );
+}
+.dark .market-workspace-light {
+  /* On the dark register the warm wash deepens slightly so the canvas reads
+     as warm graphite, not flat slate. */
+  background-image: radial-gradient(
+    150% 70% at 50% -16%,
+    color-mix(in srgb, var(--mkt-brass) 10%, transparent),
+    transparent 58%
+  );
+}
+
+/* Editorial figures — section numerals (order totals, prices) pick up the
+   serif + oldstyle-nums voice the HeroCard tiles already use, so money reads
+   like a ledger, not a stencil. */
+.market-workspace-light .acct-figure {
+  font-family: var(--acct-font-display);
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  letter-spacing: -0.005em;
+}
+
+/* The masthead slab — re-tone the shared inverted hero from account's cool
+   gold radials to marketplace's brass. The primitive keeps the slab/text
+   inversion (dark slab on the light page; light slab on the dark page) so the
+   parity grammar is unchanged — only the accent metal becomes brass. */
+.market-workspace-light .acct-hero {
+  border-color: color-mix(in srgb, var(--mkt-brass) 30%, transparent);
+  background-image:
+    radial-gradient(115% 95% at 0% 0%, color-mix(in srgb, var(--mkt-brass) 30%, transparent) 0%, transparent 56%),
+    radial-gradient(90% 92% at 100% 100%, color-mix(in srgb, var(--mkt-brass) 12%, transparent) 0%, transparent 62%);
+}
+.market-workspace-light .acct-hero[data-tone="attention"] {
+  background-image:
+    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--mkt-brass-soft) 34%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-red) 16%, transparent) 0%, transparent 60%);
+  border-color: color-mix(in srgb, var(--mkt-brass-soft) 30%, transparent);
+}
+.market-workspace-light .acct-hero[data-tone="empty"] {
+  background-image:
+    radial-gradient(115% 92% at 0% 0%, color-mix(in srgb, var(--mkt-brass) 16%, transparent) 0%, transparent 56%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
+}
+
+/* Eyebrow kicker reads brass against the slab (light text mixed with brass
+   keeps it legible on the dark slab). */
+.market-workspace-light .acct-hero__eyebrow {
+  color: color-mix(in srgb, var(--mkt-brass) 78%, var(--acct-bg-soft));
+  border-color: color-mix(in srgb, var(--mkt-brass) 28%, transparent);
+  background: color-mix(in srgb, var(--mkt-brass) 12%, transparent);
+}
+
+/* A hairline brass rule under the headline anchors the masthead like a
+   ledger heading. */
+.market-workspace-light .acct-hero__headline {
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--mkt-brass) 22%, transparent);
+}
+
+/* Tile values warm toward brass (still the primitive's light slab text, just
+   tilted to the metal). Active/warning tones already lift via the primitive. */
+.market-workspace-light .acct-hero__tile-value {
+  color: color-mix(in srgb, var(--acct-bg-soft) 94%, var(--mkt-brass));
+}
+.market-workspace-light .acct-hero__tile {
+  border-color: color-mix(in srgb, var(--mkt-brass) 18%, transparent);
+}
+
+/* Primary CTA on the masthead is a brass fill under DARK ink (AA), matching
+   the .market-button-primary metal rather than account's gold. */
+.market-workspace-light .acct-hero__cta--primary {
+  background: var(--mkt-brass);
+  color: var(--hc-ink-on-accent);
+  border-color: color-mix(in srgb, var(--mkt-brass) 80%, transparent);
+}
+.market-workspace-light .acct-hero__cta--primary:hover {
+  background: color-mix(in srgb, var(--mkt-brass) 88%, white);
+}
+.market-workspace-light .acct-hero__cta:focus-visible {
+  outline-color: var(--mkt-brass);
+}
+
+/* Side panel divider + breakdown read on the same warm metal. */
+.market-workspace-light .acct-hero__side {
+  border-color: color-mix(in srgb, var(--mkt-brass) 22%, transparent);
+}
+
+/* The single next-step row picks up a warm brass icon surround so it reads as
+   part of the same editorial system, not a generic alert. */
+.market-workspace-light .acct-next-step__icon {
+  color: var(--acct-gold-text);
+  background: color-mix(in srgb, var(--mkt-brass) 16%, transparent);
+  border-color: color-mix(in srgb, var(--mkt-brass) 26%, transparent);
+}

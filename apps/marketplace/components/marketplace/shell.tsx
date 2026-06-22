@@ -15,7 +15,8 @@ import {
   WorkspaceMobileNav,
   type WorkspaceNavGroup,
 } from "@/components/marketplace/workspace-mobile-nav";
-import { BRAND_EMAILS, getAccountUrl, getHubUrl } from "@henryco/config";
+import { BRAND_EMAILS, getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { HenryCoWordmark } from "@henryco/ui/brand";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import type { SellerTier } from "@henryco/ui";
@@ -487,6 +488,7 @@ export async function WorkspaceShell({
   nav,
   navGroups,
   actions,
+  hero,
   children,
 }: {
   title: string;
@@ -499,10 +501,20 @@ export async function WorkspaceShell({
    */
   navGroups?: WorkspaceNavGroup[];
   actions?: React.ReactNode;
+  /**
+   * V3-INNER-L (elevation) — optional editorial masthead. When provided it
+   * REPLACES the generic `title`/`description` title-bar in the main column
+   * (the buyer home passes a state-driven <HeroCard /> here, answering Q1+Q2
+   * above the fold per account-design-language). The sidebar still renders
+   * `title`/`description` as the workspace identity, and `title`/`description`
+   * still feed the mobile nav — so pages without a hero are unchanged.
+   */
+  hero?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
+  const division = getDivisionConfig("marketplace");
   const groupsForMobile: WorkspaceNavGroup[] =
     navGroups && navGroups.length > 0
       ? navGroups
@@ -517,7 +529,21 @@ export async function WorkspaceShell({
         currentLabel={activeLabel}
       />
       <aside className="market-panel hidden rounded-[2.1rem] p-4 lg:block">
-        <p className="market-kicker">{copy.workspace.kicker}</p>
+        {/* Brand lockup — engineered "Henry Onyx" SVG wordmark (currentColor →
+            ink) primary, division a muted sub-label (getDivisionConfig). No
+            CMS logo_url in chrome. */}
+        <div className="flex items-center gap-2.5 border-b border-[var(--market-line)] px-1 pb-4">
+          <HenryCoWordmark
+            fontFamily="Fraunces"
+            height={18}
+            className="text-[var(--market-paper-white)]"
+          />
+          <span aria-hidden className="h-3 w-px bg-[var(--market-line-strong)]" />
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
+            {division.shortName}
+          </span>
+        </div>
+        <p className="market-kicker mt-5">{copy.workspace.kicker}</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">{title}</h1>
         <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{description}</p>
         <nav className="mt-6 space-y-2">
@@ -545,20 +571,22 @@ export async function WorkspaceShell({
         </nav>
       </aside>
       <main className="space-y-6">
-        <section className="market-panel rounded-[2.1rem] p-6 sm:p-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="market-kicker">{copy.workspace.operatorKicker}</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
-                {title}
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
-                {description}
-              </p>
+        {hero ?? (
+          <section className="market-panel rounded-[2.1rem] p-6 sm:p-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="market-kicker">{copy.workspace.operatorKicker}</p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
+                  {title}
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
+                  {description}
+                </p>
+              </div>
+              {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
             </div>
-            {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
-          </div>
-        </section>
+          </section>
+        )}
         {children}
       </main>
     </div>
