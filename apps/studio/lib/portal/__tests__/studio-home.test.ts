@@ -247,6 +247,17 @@ describe("studioHomeState", () => {
 });
 
 describe("buildStudioHero", () => {
+  it("makes every tile an interactive deep-link to its pre-filtered destination", () => {
+    const stats = studioDashboardStats(input({ projects: [project("active", { id: "P1" })] }));
+    const hero = buildStudioHero(stats, identity);
+    assert.ok(hero.tiles.every((tile) => typeof tile.href === "string" && tile.href!.length > 0));
+    const [production, milestones, review, balance] = hero.tiles;
+    assert.match(production.href!, /\/client\/projects\?filter=active/);
+    assert.match(milestones.href!, /\/client\/projects\/P1/);
+    assert.match(review.href!, /\/client\/files/);
+    assert.match(balance.href!, /\/client\/payments/);
+  });
+
   it("mirrors the page state as the hero tone and renders four real-value tiles with a primary CTA", () => {
     const stats = studioDashboardStats(input({ projects: [project("active", { id: "P1", title: "Mobile app" })] }));
     const hero = buildStudioHero(stats, identity);

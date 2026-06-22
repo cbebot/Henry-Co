@@ -144,6 +144,8 @@ export type StudioHeroTile = {
   value: string | number;
   foot?: string | null;
   tone?: "default" | "accent" | "active" | "warning";
+  /** Deep-link to the matching, pre-filtered destination (interactive tile). */
+  href?: string;
 };
 
 export type StudioHeroBreakdownRow = { label: string; count: number; color: string };
@@ -216,30 +218,40 @@ export function buildStudioHero(
         ? t("Awaiting kickoff")
         : null;
 
+  // Interactive deep-links: each tile opens its matching, pre-filtered list
+  // instead of reading out a silent number.
+  const projectDetailHref = stats.activeProjectId
+    ? `/client/projects/${stats.activeProjectId}`
+    : "/client/projects";
+
   const tiles: StudioHeroTile[] = [
     {
       label: t("In production"),
       value: stats.activeProjects,
       foot: productionFoot,
       tone: stats.activeProjects > 0 ? "active" : "default",
+      href: "/client/projects?filter=active",
     },
     {
       label: t("Milestones"),
       value: stats.milestonesTotal > 0 ? `${stats.milestonesDone}/${stats.milestonesTotal}` : "—",
       foot: stats.milestonesTotal > 0 ? t("approved") : t("Set at kickoff"),
       tone: stats.milestonesDone > 0 ? "accent" : "default",
+      href: projectDetailHref,
     },
     {
       label: t("Awaiting your review"),
       value: stats.deliverablesAwaitingReview,
       foot: stats.deliverablesAwaitingReview > 0 ? t("files shared") : null,
       tone: stats.deliverablesAwaitingReview > 0 ? "warning" : "default",
+      href: "/client/files?filter=shared",
     },
     {
       label: t("Balance due"),
       value: stats.outstandingInvoices,
       foot: stats.outstandingInvoices > 0 ? t("awaiting payment") : null,
       tone: stats.outstandingInvoices > 0 ? "warning" : "default",
+      href: "/client/payments?filter=outstanding",
     },
   ];
 

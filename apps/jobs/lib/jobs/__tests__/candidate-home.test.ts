@@ -166,6 +166,17 @@ describe("candidateHomeState", () => {
 });
 
 describe("buildCandidateHero", () => {
+  it("makes every tile an interactive deep-link to its pre-filtered destination", () => {
+    const stats = candidateDashboardStats(input({ applicationJourneys: [journey("applied")] }));
+    const hero = buildCandidateHero(stats, identity);
+    assert.ok(hero.tiles.every((tile) => typeof tile.href === "string" && tile.href!.length > 0));
+    const [live, room, saved, recruiter] = hero.tiles;
+    assert.match(live.href!, /\/candidate\/applications\?lane=active/);
+    assert.match(room.href!, /\/candidate\/applications\?lane=room/);
+    assert.match(saved.href!, /\/candidate\/saved-jobs/);
+    assert.match(recruiter.href!, /\/candidate\/applications/);
+  });
+
   it("mirrors the page state as tone, renders four tiles + a readiness progress strip + a primary CTA", () => {
     const stats = candidateDashboardStats(input({ profile: profile(64), applicationJourneys: [journey("applied")] }));
     const hero = buildCandidateHero(stats, identity);

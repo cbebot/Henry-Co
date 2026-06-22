@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FolderKanban } from "lucide-react";
 
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getClientPortalSnapshot } from "@/lib/portal/data";
 import { shortDate } from "@/lib/portal/helpers";
 import { projectStatusToken } from "@/lib/portal/status";
@@ -24,9 +26,21 @@ const ACTIVE_STATUSES = new Set([
   "in_review",
 ]);
 
-export default async function ClientProjectsPage() {
-  const viewer = await requireClientPortalViewer("/client/projects");
+export default async function ClientProjectsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [viewer, locale, params] = await Promise.all([
+    requireClientPortalViewer("/client/projects"),
+    getStudioPublicLocale(),
+    searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
+  ]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const snapshot = await getClientPortalSnapshot(viewer);
+  // V3-DASHBOARD-TILES-INTERACTIVE — the dashboard "In production" tile links
+  // here with ?filter=active so the click lands pre-filtered to active work.
+  const activeOnly = (typeof params.filter === "string" ? params.filter : null) === "active";
 
   const active = snapshot.projects.filter((p) => ACTIVE_STATUSES.has(p.status));
   const completed = snapshot.projects.filter(
@@ -42,7 +56,7 @@ export default async function ClientProjectsPage() {
         <Header />
         <PortalEmptyState
           icon={FolderKanban}
-          title="No projects on your account yet"
+          title={t("No projects on your account yet")}
           body="Once a brief turns into a Studio engagement, it appears here with milestones, files, and the message thread tied together."
           action={
             <Link href="/request" className="portal-button portal-button-primary">
@@ -74,27 +88,36 @@ export default async function ClientProjectsPage() {
     <div className="space-y-7">
       <Header />
 
+      {activeOnly ? (
+        <Link
+          href="/client/projects"
+          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
+        >
+          {t("Show all projects")}
+        </Link>
+      ) : null}
+
       {active.length > 0 ? (
         <ProjectsGroup
-          label="Active"
+          label={t("Active")}
           projects={active}
           milestoneTotal={milestoneIndex}
           milestoneCompleted={milestoneCompleted}
         />
       ) : null}
 
-      {other.length > 0 ? (
+      {!activeOnly && other.length > 0 ? (
         <ProjectsGroup
-          label="In progress"
+          label={t("In progress")}
           projects={other}
           milestoneTotal={milestoneIndex}
           milestoneCompleted={milestoneCompleted}
         />
       ) : null}
 
-      {completed.length > 0 ? (
+      {!activeOnly && completed.length > 0 ? (
         <ProjectsGroup
-          label="Delivered"
+          label={t("Delivered")}
           projects={completed}
           milestoneTotal={milestoneIndex}
           milestoneCompleted={milestoneCompleted}

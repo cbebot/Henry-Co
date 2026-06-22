@@ -68,6 +68,14 @@ export type HeroCardTile = {
   foot?: string | null;
   /** Optional tone hint — paints the value with the matching status color in dark mode. */
   tone?: "default" | "accent" | "active" | "warning";
+  /**
+   * Optional deep-link. When set, the tile becomes an interactive, focusable
+   * link to a (usually pre-filtered) destination — e.g. an "Active projects"
+   * tile linking to the projects list filtered to active — instead of a silent
+   * read-out. Renders an <a> with a hover/focus "view" affordance; absolute
+   * URLs open in a new tab, in-app routes navigate in place.
+   */
+  href?: string;
 };
 
 export type HeroCardBreakdownRow = {
@@ -212,15 +220,38 @@ export function HeroCard({
               role="list"
               aria-label={ariaTilesLabel ?? eyebrow}
             >
-              {tiles!.map((tile, i) => (
-                <div className="acct-hero__tile" role="listitem" key={`${tile.label}-${i}`} data-tone={tile.tone ?? "default"}>
-                  <span className="acct-hero__tile-label">{tile.label}</span>
-                  <span className="acct-hero__tile-value">{tile.value}</span>
-                  {tile.foot ? (
-                    <span className="acct-hero__tile-foot">{tile.foot}</span>
-                  ) : null}
-                </div>
-              ))}
+              {tiles!.map((tile, i) => {
+                const tone = tile.tone ?? "default";
+                const key = `${tile.label}-${i}`;
+                const body = (
+                  <>
+                    <span className="acct-hero__tile-label">{tile.label}</span>
+                    <span className="acct-hero__tile-value">{tile.value}</span>
+                    {tile.foot ? <span className="acct-hero__tile-foot">{tile.foot}</span> : null}
+                  </>
+                );
+                if (tile.href) {
+                  const newTab = resolveNewTab(tile.href, undefined);
+                  return (
+                    <a
+                      className="acct-hero__tile acct-hero__tile--link"
+                      role="listitem"
+                      key={key}
+                      data-tone={tone}
+                      href={tile.href}
+                      {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : null)}
+                    >
+                      {body}
+                      <ArrowUpRight className="acct-hero__tile-go" size={14} aria-hidden />
+                    </a>
+                  );
+                }
+                return (
+                  <div className="acct-hero__tile" role="listitem" key={key} data-tone={tone}>
+                    {body}
+                  </div>
+                );
+              })}
             </div>
           ) : null}
 
