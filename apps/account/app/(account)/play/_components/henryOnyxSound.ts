@@ -23,6 +23,8 @@ let master: GainNode | null = null;
 let attached = false;
 let lastUi = 0;
 let state: State = { muted: false, volume: 0.5 };
+const listeners = new Set<() => void>();
+const notify = (): void => listeners.forEach((l) => l());
 
 const isBrowser = (): boolean => typeof window !== "undefined" && typeof window.AudioContext !== "undefined";
 
@@ -248,6 +250,7 @@ export const SoundEngine = {
     state = { ...state, muted };
     persist();
     if (master && ctx) master.gain.linearRampToValueAtTime(muted ? 0 : state.volume * MASTER, ctx.currentTime + 0.03);
+    notify();
   },
   toggleMute(): void {
     this.setMuted(!state.muted);
@@ -257,6 +260,14 @@ export const SoundEngine = {
     state = { ...state, volume: Math.min(1, Math.max(0, volume)) };
     persist();
     if (master && ctx && !state.muted) master.gain.linearRampToValueAtTime(state.volume * MASTER, ctx.currentTime + 0.03);
+    notify();
+  },
+  /** Subscribe to mute/volume changes (for React's useSyncExternalStore). */
+  subscribe(cb: () => void): () => void {
+    listeners.add(cb);
+    return () => {
+      listeners.delete(cb);
+    };
   },
   get muted(): boolean {
     ensureLoaded();

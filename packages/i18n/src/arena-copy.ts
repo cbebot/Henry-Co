@@ -91,6 +91,24 @@ export type ArenaCopy = {
     liveSoon: string;
     youAreOnyx: string;
     backToArena: string;
+    novice: string;
+    novicebody: string;
+    expert: string;
+    expertbody: string;
+    hint: string;
+    undo: string;
+    resign: string;
+    rematch: string;
+    review: string;
+    sound: string;
+    records: string;
+    streak: string;
+    best: string;
+    pickSide: string;
+    sideOnyx: string;
+    sideAlabaster: string;
+    sideRandom: string;
+    hintReasons: { "win-now": string; block: string; bridge: string; cut: string; shorten: string };
   };
   coach: {
     title: string;
@@ -230,6 +248,30 @@ const ARENA_COPY_EN: ArenaCopy = {
     liveSoon: "Live matches against real players are coming soon — practice now to be ready.",
     youAreOnyx: "You play first, as Onyx.",
     backToArena: "Back to the arena",
+    novice: "Novice",
+    novicebody: "An honest beginner — plays openings, but doesn't see bridges yet.",
+    expert: "Expert",
+    expertbody: "Full lookahead and virtual connections. No mercy.",
+    hint: "Hint",
+    undo: "Undo",
+    resign: "Resign",
+    rematch: "Rematch",
+    review: "Review the game",
+    sound: "Sound",
+    records: "Record",
+    streak: "Streak",
+    best: "Best",
+    pickSide: "Your side",
+    sideOnyx: "Onyx (top ↔ bottom)",
+    sideAlabaster: "Alabaster (left ↔ right)",
+    sideRandom: "Random",
+    hintReasons: {
+      "win-now": "Play here to connect your edges and win.",
+      block: "Block here — your opponent connects otherwise.",
+      bridge: "Form a bridge — an uncuttable two-step link.",
+      cut: "Cut here — it sets your opponent back the most.",
+      shorten: "Play here — it shortens your path to your edges.",
+    },
   },
   coach: {
     title: "How to play",
