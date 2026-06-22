@@ -1,3 +1,5 @@
+import { getAccountHeroesCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { stageTone } from "./helpers";
 
 export type ApplicationRow = {
@@ -17,7 +19,9 @@ type Props = {
   formatStamp: (iso: string) => string;
 };
 
-export function ApplicationsList({ applications, emptyTitle, emptyBody, formatStamp }: Props) {
+export async function ApplicationsList({ applications, emptyTitle, emptyBody, formatStamp }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).applicationsList;
   if (applications.length === 0) {
     return (
       <div className="acct-job__empty">
@@ -27,7 +31,7 @@ export function ApplicationsList({ applications, emptyTitle, emptyBody, formatSt
     );
   }
   return (
-    <div className="acct-job__list" role="list" aria-label="Active applications">
+    <div className="acct-job__list" role="list" aria-label={copy.listLabel}>
       {applications.map((app) => {
         const initials = (app.companyName || app.jobTitle).slice(0, 2).toUpperCase();
         const tone = stageTone(app.stageKey);
@@ -39,7 +43,7 @@ export function ApplicationsList({ applications, emptyTitle, emptyBody, formatSt
             <div className="acct-job__row-meta">
               <span className="acct-job__row-title">{app.jobTitle}</span>
               <span className="acct-job__row-sub">
-                {app.companyName} · last update {formatStamp(app.lastUpdateAt)}
+                {app.companyName} · {copy.lastUpdate} {formatStamp(app.lastUpdateAt)}
               </span>
             </div>
             <span className="acct-job__chip" data-tone={tone}>
@@ -58,7 +62,7 @@ export function ApplicationsList({ applications, emptyTitle, emptyBody, formatSt
             rel="noopener noreferrer"
             className="acct-job__row"
             role="listitem"
-            aria-label={`${app.jobTitle} at ${app.companyName}, ${app.stageLabel}`}
+            aria-label={`${app.jobTitle} ${copy.rowAria} ${app.companyName}, ${app.stageLabel}`}
           >
             {body}
           </a>

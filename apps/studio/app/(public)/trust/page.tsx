@@ -1,27 +1,31 @@
 import { ShieldCheck, Sparkles, Star, Waypoints } from "lucide-react";
 import { getStudioCatalog } from "@/lib/studio/catalog";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export default async function TrustPage() {
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).trust;
   const highlights = [
     {
-      title: "Protected controls",
-      body: "Sensitive actions stay behind secure access controls.",
+      title: copy.highlightControlsTitle,
+      body: copy.highlightControlsBody,
       icon: ShieldCheck,
     },
     {
-      title: "Milestone visibility",
-      body: "Payments and delivery checkpoints stay visible to the client.",
+      title: copy.highlightVisibilityTitle,
+      body: copy.highlightVisibilityBody,
       icon: Waypoints,
     },
     {
-      title: "Structured proposals",
-      body: "Every enquiry becomes a formal proposal with clear scope, pricing, and timelines.",
+      title: copy.highlightProposalsTitle,
+      body: copy.highlightProposalsBody,
       icon: Sparkles,
     },
     {
-      title: "Premium quality",
-      body: "Every surface is designed to feel considered, modern, and worthy of your investment.",
+      title: copy.highlightQualityTitle,
+      body: copy.highlightQualityBody,
       icon: Star,
     },
   ];
@@ -29,20 +33,18 @@ export default async function TrustPage() {
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
-        <p className="studio-kicker">Trust &amp; transparency</p>
+        <p className="studio-kicker">{copy.kicker}</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          Confidence at every stage. In writing, in the workspace, in the bank.
+          {copy.title}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Scope clarity, milestone visibility, secure file handling, payment checkpoints, and
-          accountable communication &mdash; structured so you always know what is happening and
-          what comes next.
+          {copy.intro}
         </p>
       </section>
 
       <section className="mt-16">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Four operating principles</p>
+          <p className="studio-kicker">{copy.principlesKicker}</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         <ul className="mt-7 grid gap-8 md:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-[var(--studio-line)]">
@@ -60,9 +62,9 @@ export default async function TrustPage() {
 
       <section className="mt-16 grid gap-12 lg:grid-cols-[0.95fr_1.05fr]">
         <div>
-          <p className="studio-kicker">Trust signals</p>
+          <p className="studio-kicker">{copy.signalsKicker}</p>
           <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.85rem]">
-            What stays visible from brief to bank.
+            {copy.signalsTitle}
           </h2>
           <ul className="mt-7 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
             {catalog.trustSignals.map((signal) => (
@@ -77,9 +79,9 @@ export default async function TrustPage() {
         </div>
 
         <div>
-          <p className="studio-kicker">Client confidence</p>
+          <p className="studio-kicker">{copy.confidenceKicker}</p>
           <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.85rem]">
-            What clients actually say.
+            {copy.confidenceTitle}
           </h2>
           <ul className="mt-7 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
             {catalog.testimonials.map((testimonial) => (
@@ -98,7 +100,7 @@ export default async function TrustPage() {
 
       <section className="mt-16">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Why clients choose HenryCo</p>
+          <p className="studio-kicker">{copy.whyKicker}</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         <ol className="mt-6 grid gap-8 md:grid-cols-2 md:divide-x md:divide-[var(--studio-line)]">

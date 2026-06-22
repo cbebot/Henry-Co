@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FileImage, FileText, Files, Package, Receipt, Sparkles } from "lucide-react";
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 
 export const metadata: Metadata = {
@@ -12,12 +14,6 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-
-const KIND_LABEL: Record<string, string> = {
-  reference: "Brief reference",
-  proof: "Payment proof",
-  deliverable: "Deliverable",
-};
 
 const KIND_ICON = {
   reference: Sparkles,
@@ -45,18 +41,26 @@ export default async function ClientFilesPage() {
   const viewer = await requireStudioUser("/client/files");
   const snapshot = await getStudioSnapshot();
   const clientData = studioClientSnapshot(viewer, snapshot);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale).files;
+
+  const kindLabel: Record<string, string> = {
+    reference: copy.kindReference,
+    proof: copy.kindProof,
+    deliverable: copy.kindDeliverable,
+  };
 
   if (clientData.files.length === 0) {
     return (
       <div className="space-y-6">
-        <Header />
+        <Header copy={copy} />
         <PortalEmptyState
           icon={Files}
-          title="No files attached yet"
-          body="Brief references, payment proofs, and delivery assets land here as the project moves forward. Each upload stays tied to its milestone."
+          title={copy.emptyTitle}
+          body={copy.emptyBody}
           action={
             <Link href="/client" className="portal-button portal-button-secondary">
-              Open workspace
+              {copy.openWorkspace}
               <ArrowRight className="h-4 w-4" />
             </Link>
           }
@@ -77,13 +81,13 @@ export default async function ClientFilesPage() {
 
   return (
     <div className="space-y-7">
-      <Header />
+      <Header copy={copy} />
 
       {Array.from(grouped.entries()).map(([projectId, files]) => {
         const title =
           projectId === "_unassigned"
-            ? "Brief references"
-            : titleByProject.get(projectId) || "Project";
+            ? copy.briefReferences
+            : titleByProject.get(projectId) || copy.project;
         return (
           <section key={projectId} className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -95,7 +99,7 @@ export default async function ClientFilesPage() {
                   href={`/client/projects/${projectId}?tab=files`}
                   className="text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
                 >
-                  Open project
+                  {copy.openProject}
                 </Link>
               ) : null}
             </div>
@@ -114,7 +118,7 @@ export default async function ClientFilesPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                          {KIND_LABEL[file.kind] ?? file.kind}
+                          {kindLabel[file.kind] ?? file.kind}
                         </span>
                         {file.size ? (
                           <span className="text-[10px] tabular-nums text-[var(--studio-ink-soft)]">
@@ -140,18 +144,21 @@ export default async function ClientFilesPage() {
   );
 }
 
-function Header() {
+function Header({
+  copy,
+}: {
+  copy: ReturnType<typeof getStudioClientPagesCopy>["files"];
+}) {
   return (
     <header>
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-        Project file vault
+        {copy.kicker}
       </div>
       <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-        Files
+        {copy.title}
       </h1>
       <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-        Brief references, payment proofs, and delivered assets — every file tied
-        to your engagement, grouped by project.
+        {copy.body}
       </p>
     </header>
   );

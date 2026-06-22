@@ -8,7 +8,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import {
   buildAttentionItems,
   getClientPortalSnapshot,
@@ -29,9 +31,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-function greetingFor(name: string | null): string {
+function greetingFor(
+  name: string | null,
+  copy: ReturnType<typeof getStudioClientPagesCopy>["home"],
+): string {
   const hour = new Date().getHours();
-  const slot = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const slot =
+    hour < 12 ? copy.goodMorning : hour < 18 ? copy.goodAfternoon : copy.goodEvening;
   const trimmed = (name || "").trim().split(/\s+/)[0];
   return trimmed ? `${slot}, ${trimmed}` : slot;
 }
@@ -39,6 +45,8 @@ function greetingFor(name: string | null): string {
 export default async function ClientHomePage() {
   const viewer = await requireClientPortalViewer("/client");
   const snapshot = await getClientPortalSnapshot(viewer);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale).home;
 
   const activeProject =
     snapshot.projects.find((project) =>

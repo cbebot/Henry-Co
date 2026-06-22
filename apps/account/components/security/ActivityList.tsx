@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, Globe } from "lucide-react";
+import { getAccountHeroesCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 type Event = {
   id: string;
@@ -26,7 +28,7 @@ function normalizeRisk(level: string): "high" | "medium" | "low" {
   return "low";
 }
 
-export function ActivityList({
+export async function ActivityList({
   events,
   emptyTitle,
   emptyDescription,
@@ -34,6 +36,8 @@ export function ActivityList({
   href,
   formatDateTime,
 }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).activityList;
   if (events.length === 0) {
     return (
       <div className="acct-sec__activity-empty">
@@ -45,7 +49,7 @@ export function ActivityList({
     );
   }
   return (
-    <div className="acct-sec__activity" role="list" aria-label="Recent security events">
+    <div className="acct-sec__activity" role="list" aria-label={copy.listLabel}>
       {events.map((event) => {
         const risk = normalizeRisk(event.riskLevel);
         return (

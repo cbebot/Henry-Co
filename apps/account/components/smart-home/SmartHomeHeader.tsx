@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { PageHeader as ShellPageHeader } from "@henryco/dashboard-shell";
+import { getAccountHeroesCopy, type AccountHeroesCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { formatRelative } from "@/lib/smart-home/format";
 import { RealtimeStatusOrb } from "./RealtimeStatusOrb";
+
+type SmartHomeHeaderCopy = AccountHeroesCopy["smartHomeHeader"];
 
 /**
  * SmartHomeHeader — content-first lead. Closes anti-pattern #17.
@@ -34,7 +38,7 @@ export type SmartHomeHeaderProps = {
   fallbackBody?: string;
 };
 
-export function SmartHomeHeader({
+export async function SmartHomeHeader({
   firstName,
   unreadCount,
   attentionCount,
@@ -42,10 +46,11 @@ export function SmartHomeHeader({
   savedItemsCount = 0,
   fallbackBody,
 }: SmartHomeHeaderProps) {
-  const lead = buildLead({ unreadCount, attentionCount, lastActivityIso });
-  const title = firstName ? firstName : "Your dashboard";
-  const description =
-    lead || fallbackBody || "Live signals across HenryCo will surface here as they land.";
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).smartHomeHeader;
+  const lead = buildLead({ unreadCount, attentionCount, lastActivityIso }, copy);
+  const title = firstName ? firstName : copy.fallbackTitle;
+  const description = lead || fallbackBody || copy.fallbackBody;
   return (
     <ShellPageHeader
       title={title}
@@ -60,7 +65,7 @@ export function SmartHomeHeader({
             justifyContent: "flex-end",
           }}
         >
-          {savedItemsCount > 0 ? <SavedItemsRail count={savedItemsCount} /> : null}
+          {savedItemsCount > 0 ? <SavedItemsRail count={savedItemsCount} copy={copy} /> : null}
           <RealtimeStatusOrb />
         </div>
       }
@@ -68,24 +73,37 @@ export function SmartHomeHeader({
   );
 }
 
-function buildLead({
-  unreadCount,
-  attentionCount,
-  lastActivityIso,
-}: {
-  unreadCount: number;
-  attentionCount: number;
-  lastActivityIso: string | null;
-}): string | null {
+function buildLead(
+  {
+    unreadCount,
+    attentionCount,
+    lastActivityIso,
+  }: {
+    unreadCount: number;
+    attentionCount: number;
+    lastActivityIso: string | null;
+  },
+  copy: SmartHomeHeaderCopy,
+): string | null {
   const parts: string[] = [];
   if (unreadCount > 0) {
-    parts.push(`${unreadCount} unread signal${unreadCount === 1 ? "" : "s"}`);
+    parts.push(
+      (unreadCount === 1 ? copy.unreadSignalSingular : copy.unreadSignalPlural).replace(
+        "{count}",
+        String(unreadCount),
+      ),
+    );
   }
   if (attentionCount > 0) {
-    parts.push(`${attentionCount} need${attentionCount === 1 ? "s" : ""} attention`);
+    parts.push(
+      (attentionCount === 1 ? copy.needsAttentionSingular : copy.needsAttentionPlural).replace(
+        "{count}",
+        String(attentionCount),
+      ),
+    );
   }
   const last = lastActivityIso ? formatRelative(lastActivityIso) : null;
-  if (last) parts.push(`last activity ${last}`);
+  if (last) parts.push(copy.lastActivity.replace("{time}", last));
   if (parts.length === 0) return null;
   return parts.join(" · ");
 }
@@ -97,16 +115,19 @@ function buildLead({
  * the empty-state gate. Now they earn a permanent header slot when the
  * viewer has any.
  */
-function SavedItemsRail({ count }: { count: number }) {
+function SavedItemsRail({ count, copy }: { count: number; copy: SmartHomeHeaderCopy }) {
   return (
     <Link
       href="/saved-items"
       className="hc-smart-home-saved-rail"
-      aria-label={`${count} saved item${count === 1 ? "" : "s"} — resume`}
+      aria-label={(count === 1 ? copy.savedRailAriaSingular : copy.savedRailAriaPlural).replace(
+        "{count}",
+        String(count),
+      )}
     >
       <Bookmark size={12} aria-hidden />
       <span style={{ fontVariantNumeric: "tabular-nums" }}>{count}</span>
-      <span>saved · resume</span>
+      <span>{copy.savedRailLabel}</span>
     </Link>
   );
 }

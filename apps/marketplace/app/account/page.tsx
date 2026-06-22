@@ -25,6 +25,7 @@ import type {
   MarketplaceVendor,
 } from "@/lib/marketplace/types";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -48,21 +49,23 @@ function formatCurrency(value: number, currency: string) {
   }).format(value || 0);
 }
 
-function formatRelative(iso: string) {
+type OverviewCopy = ReturnType<typeof getMarketplaceCustomerAccountCopy>["overview"];
+
+function formatRelative(iso: string, copy: OverviewCopy) {
   if (!iso) return "";
   const created = new Date(iso).getTime();
   if (Number.isNaN(created)) return "";
   const diff = Date.now() - created;
   const minutes = Math.round(diff / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return copy.relativeJustNow;
+  if (minutes < 60) return copy.relativeMinutes.replace("{value}", String(minutes));
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return copy.relativeHours.replace("{value}", String(hours));
   const days = Math.round(hours / 24);
-  if (days < 30) return `${days}d ago`;
+  if (days < 30) return copy.relativeDays.replace("{value}", String(days));
   const months = Math.round(days / 30);
-  if (months < 12) return `${months}mo ago`;
-  return `${Math.round(months / 12)}y ago`;
+  if (months < 12) return copy.relativeMonths.replace("{value}", String(months));
+  return copy.relativeYears.replace("{value}", String(Math.round(months / 12)));
 }
 
 const ORDER_STATUS_STYLES: Record<string, string> = {
@@ -101,12 +104,13 @@ function orderStatusLabel(status: MarketplaceOrder["status"]) {
 
 export default async function AccountOverviewPage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale).overview;
   await requireMarketplaceUser("/account");
   const data = await getBuyerDashboardData();
   const viewerName =
     data.viewer.user?.fullName?.trim() ||
     data.viewer.user?.email?.split("@")[0] ||
-    "Buyer";
+    copy.buyerFallback;
   const firstName = viewerName.split(/\s+/)[0];
 
   const activeStatusSet = new Set<MarketplaceOrder["status"]>(ACTIVE_ORDER_STATUSES);
@@ -123,8 +127,8 @@ export default async function AccountOverviewPage() {
 
   return (
     <WorkspaceShell
-      title={firstName ? `${firstName}'s marketplace activity` : "Marketplace activity"}
-      description="Orders, saved items, store follows, and account activity in one calmer view. HenryCo unifies these signals across divisions so the trail stays attached to the same account."
+      title={firstName ? copy.titleNamed.replace("{name}", firstName) : copy.titleFallback}
+      description={copy.description}
       {...accountWorkspaceNav("/account", locale)}
       actions={
         <div className="flex flex-wrap gap-2.5">
@@ -133,13 +137,13 @@ export default async function AccountOverviewPage() {
             className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
           >
             <Search className="h-4 w-4" />
-            Track an order
+            {copy.trackOrder}
           </Link>
           <Link
             href="/search"
             className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
           >
-            Continue shopping
+            {copy.continueShopping}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -147,83 +151,92 @@ export default async function AccountOverviewPage() {
     >
       {/* KPI rail — four operating signals from the buyer's account. */}
       <section
-        aria-label="Account snapshot"
+        aria-label={copy.snapshotLabel}
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         <KpiCard
           icon={Package}
-          label="Active orders"
+          label={copy.kpiActiveOrders}
           value={String(activeOrders.length)}
           hint={
             activeOrders.length > 0
-              ? `${activeOrders.length} order${activeOrders.length === 1 ? "" : "s"} still in motion.`
-              : "No orders in motion right now."
+              ? (activeOrders.length === 1 ? copy.kpiActiveHintSingular : copy.kpiActiveHintPlural).replace(
+                  "{count}",
+                  String(activeOrders.length),
+                )
+              : copy.kpiActiveHintEmpty
           }
         />
         <KpiCard
           icon={PackageCheck}
-          label="In transit"
+          label={copy.kpiInTransit}
           value={String(inTransit)}
-          hint={
-            inTransit > 0
-              ? "Tracked through dispatch and delivery."
-              : "Once an order ships, it lands here."
-          }
+          hint={inTransit > 0 ? copy.kpiInTransitHint : copy.kpiInTransitHintEmpty}
         />
         <KpiCard
           icon={Heart}
-          label="Saved items"
+          label={copy.kpiSavedItems}
           value={String(savedCount)}
-          hint={savedCount > 0 ? "Pieces you've kept an eye on." : "Heart anything to start a wishlist."}
+          hint={savedCount > 0 ? copy.kpiSavedHint : copy.kpiSavedHintEmpty}
         />
         <KpiCard
           icon={Store}
-          label="Following"
+          label={copy.kpiFollowing}
           value={String(followingCount)}
           hint={
             followingCount > 0
-              ? `${followingCount} store${followingCount === 1 ? "" : "s"} you follow for drops.`
-              : "Follow stores to catch new drops first."
+              ? (followingCount === 1
+                  ? copy.kpiFollowingHintSingular
+                  : copy.kpiFollowingHintPlural
+                ).replace("{count}", String(followingCount))
+              : copy.kpiFollowingHintEmpty
           }
         />
       </section>
 
       {/* Quick actions — explicit next steps that recur for buyers. */}
       <section
-        aria-label="Quick actions"
+        aria-label={copy.quickActionsLabel}
         className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
       >
         <QuickActionCard
           href="/track"
           icon={Search}
-          eyebrow="Track"
-          title="Track an order"
-          body="Look up an order by its reference code."
+          eyebrow={copy.qaTrackEyebrow}
+          title={copy.qaTrackTitle}
+          body={copy.qaTrackBody}
+          openLabel={copy.quickActionOpen}
         />
         <QuickActionCard
           href="/account/wishlist"
           icon={Heart}
-          eyebrow="Saved"
-          title="Open wishlist"
-          body="Pieces you saved, ready to revisit."
+          eyebrow={copy.qaSavedEyebrow}
+          title={copy.qaSavedTitle}
+          body={copy.qaSavedBody}
+          openLabel={copy.quickActionOpen}
         />
         <QuickActionCard
           href="/account/addresses"
           icon={PackageOpen}
-          eyebrow="Profile"
-          title="Manage addresses"
-          body="Default delivery and saved locations."
+          eyebrow={copy.qaProfileEyebrow}
+          title={copy.qaProfileTitle}
+          body={copy.qaProfileBody}
+          openLabel={copy.quickActionOpen}
         />
         <QuickActionCard
           href={data.application ? "/account/seller-application/review" : "/account/seller-application/start"}
           icon={Sparkles}
-          eyebrow={data.application ? "Application" : "Become a seller"}
-          title={data.application ? "Continue your seller application" : "Apply to sell on HenryCo"}
+          eyebrow={data.application ? copy.qaApplicationEyebrow : copy.qaSellerEyebrow}
+          title={data.application ? copy.qaApplicationTitle : copy.qaSellerTitle}
           body={
             data.application
-              ? `Status: ${data.application.status.replace(/_/g, " ")}.`
-              : "Reach buyers across the HenryCo ecosystem."
+              ? copy.qaApplicationBodyStatus.replace(
+                  "{status}",
+                  data.application.status.replace(/_/g, " "),
+                )
+              : copy.qaSellerBody
           }
+          openLabel={copy.quickActionOpen}
         />
       </section>
 
@@ -232,11 +245,11 @@ export default async function AccountOverviewPage() {
       <section className="market-paper rounded-[1.9rem] p-6 sm:p-7">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="market-kicker">Recent orders</p>
+            <p className="market-kicker">{copy.recentOrdersKicker}</p>
             <h2 className="mt-2 text-[1.4rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[1.55rem]">
               {recentOrders.length > 0
-                ? "Latest activity from your purchases"
-                : "Your orders will live here"}
+                ? copy.recentOrdersHeading
+                : copy.recentOrdersHeadingEmpty}
             </h2>
           </div>
           {data.orders.length > 0 ? (
@@ -244,7 +257,7 @@ export default async function AccountOverviewPage() {
               href="/account/orders"
               className="inline-flex items-center gap-1.5 rounded-full text-sm font-semibold text-[var(--market-paper-white)] underline-offset-4 transition hover:underline"
             >
-              View all
+              {copy.viewAll}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           ) : null}
@@ -257,15 +270,17 @@ export default async function AccountOverviewPage() {
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                      Order {order.orderNo}
+                      {copy.orderLabel.replace("{orderNo}", order.orderNo)}
                     </p>
                     <p className="mt-1 text-[1.05rem] font-semibold tracking-tight text-[var(--market-paper-white)]">
                       {formatCurrency(order.grandTotal, order.currency)}
                     </p>
                     <p className="mt-1 text-xs text-[var(--market-muted)]">
-                      Placed {formatRelative(order.placedAt)}
+                      {copy.placedRelative.replace("{relative}", formatRelative(order.placedAt, copy))}
                       {order.shippingCity ? ` · ${order.shippingCity}` : ""}
-                      {order.groups.length > 0 ? ` · ${order.groups.length} store${order.groups.length === 1 ? "" : "s"}` : ""}
+                      {order.groups.length > 0
+                        ? ` · ${(order.groups.length === 1 ? copy.storesSuffixSingular : copy.storesSuffixPlural).replace("{count}", String(order.groups.length))}`
+                        : ""}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -282,7 +297,7 @@ export default async function AccountOverviewPage() {
                       href={`/account/orders/${order.orderNo}`}
                       className="inline-flex items-center gap-1.5 rounded-full border border-[var(--market-line)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)] transition outline-none hover:bg-[rgba(255,255,255,0.04)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]"
                     >
-                      View
+                      {copy.viewOrder}
                       <ArrowUpRight className="h-3 w-3" />
                     </Link>
                   </div>
@@ -293,14 +308,13 @@ export default async function AccountOverviewPage() {
         ) : (
           <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-5">
             <p className="text-sm leading-7 text-[var(--market-muted)]">
-              You haven&rsquo;t placed an order yet. Browse the marketplace to find verified
-              stores and curated drops.
+              {copy.emptyOrdersBody}
             </p>
             <Link
               href="/search"
               className="market-button-primary mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
             >
-              Browse marketplace
+              {copy.browseMarketplace}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -312,11 +326,11 @@ export default async function AccountOverviewPage() {
         <article className="market-paper rounded-[1.9rem] p-6 sm:p-7">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="market-kicker">Saved items</p>
+              <p className="market-kicker">{copy.savedKicker}</p>
               <h3 className="mt-2 text-[1.2rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[1.35rem]">
                 {wishlistPreview.length > 0
-                  ? "Pieces you kept an eye on"
-                  : "Your wishlist is empty"}
+                  ? copy.savedHeading
+                  : copy.savedHeadingEmpty}
               </h3>
             </div>
             {wishlistPreview.length > 0 ? (
@@ -324,7 +338,7 @@ export default async function AccountOverviewPage() {
                 href="/account/wishlist"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--market-paper-white)] underline-offset-4 transition hover:underline"
               >
-                Open wishlist
+                {copy.openWishlist}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             ) : null}
@@ -337,8 +351,7 @@ export default async function AccountOverviewPage() {
             </div>
           ) : (
             <p className="mt-5 max-w-md text-sm leading-7 text-[var(--market-muted)]">
-              Heart products you want to revisit. They&rsquo;ll wait for you in your account
-              alongside your orders and follows.
+              {copy.emptySavedBody}
             </p>
           )}
         </article>
@@ -346,11 +359,11 @@ export default async function AccountOverviewPage() {
         <article className="market-paper rounded-[1.9rem] p-6 sm:p-7">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="market-kicker">Following</p>
+              <p className="market-kicker">{copy.followingKicker}</p>
               <h3 className="mt-2 text-[1.2rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[1.35rem]">
                 {followsPreview.length > 0
-                  ? "Stores you watch"
-                  : "Follow stores to catch drops first"}
+                  ? copy.followingHeading
+                  : copy.followingHeadingEmpty}
               </h3>
             </div>
             {followsPreview.length > 0 ? (
@@ -358,7 +371,7 @@ export default async function AccountOverviewPage() {
                 href="/account/following"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--market-paper-white)] underline-offset-4 transition hover:underline"
               >
-                View all
+                {copy.viewAll}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             ) : null}
@@ -367,14 +380,13 @@ export default async function AccountOverviewPage() {
             <ul className="mt-5 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
               {followsPreview.map((vendor) => (
                 <li key={vendor.id} className="py-4">
-                  <FollowedStoreRow vendor={vendor} />
+                  <FollowedStoreRow vendor={vendor} copy={copy} />
                 </li>
               ))}
             </ul>
           ) : (
             <p className="mt-5 max-w-md text-sm leading-7 text-[var(--market-muted)]">
-              Tap the store name on a product page to follow. We&rsquo;ll surface their next drop
-              here.
+              {copy.emptyFollowingBody}
             </p>
           )}
         </article>
@@ -384,11 +396,11 @@ export default async function AccountOverviewPage() {
       <section className="market-paper rounded-[1.9rem] p-6 sm:p-7">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="market-kicker">Recent activity</p>
+            <p className="market-kicker">{copy.activityKicker}</p>
             <h3 className="mt-2 text-[1.2rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[1.35rem]">
               {notificationsPreview.length > 0
-                ? "Updates from your account"
-                : "Activity will land here"}
+                ? copy.activityHeading
+                : copy.activityHeadingEmpty}
             </h3>
           </div>
           {data.notifications.length > 0 ? (
@@ -396,7 +408,7 @@ export default async function AccountOverviewPage() {
               href="/account/notifications"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--market-paper-white)] underline-offset-4 transition hover:underline"
             >
-              View all
+              {copy.viewAll}
               {unreadNotifications > 0 ? (
                 <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--market-brass)] px-1.5 text-[10px] font-semibold text-[var(--market-noir)]">
                   {unreadNotifications}
@@ -409,12 +421,12 @@ export default async function AccountOverviewPage() {
         {notificationsPreview.length > 0 ? (
           <ul className="mt-5 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {notificationsPreview.map((item) => (
-              <ActivityRow key={item.id} item={item} />
+              <ActivityRow key={item.id} item={item} copy={copy} />
             ))}
           </ul>
         ) : (
           <p className="mt-5 text-sm leading-7 text-[var(--market-muted)]">
-            Order confirmations, dispatch updates, and store messages will appear here.
+            {copy.emptyActivityBody}
           </p>
         )}
       </section>
@@ -453,12 +465,14 @@ function QuickActionCard({
   eyebrow,
   title,
   body,
+  openLabel,
 }: {
   href: string;
   icon: typeof Search;
   eyebrow: string;
   title: string;
   body: string;
+  openLabel: string;
 }) {
   return (
     <Link
@@ -476,7 +490,7 @@ function QuickActionCard({
         <p className="mt-1.5 text-sm leading-relaxed text-[var(--market-muted)]">{body}</p>
       </div>
       <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)] opacity-75 transition group-hover:opacity-100">
-        Open
+        {openLabel}
         <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
       </div>
     </Link>
@@ -518,7 +532,7 @@ function SavedItemTile({ product }: { product: MarketplaceProduct }) {
   );
 }
 
-function FollowedStoreRow({ vendor }: { vendor: MarketplaceVendor }) {
+function FollowedStoreRow({ vendor, copy }: { vendor: MarketplaceVendor; copy: OverviewCopy }) {
   const initials = vendor.name
     .split(/\s+/)
     .filter(Boolean)

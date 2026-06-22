@@ -1,3 +1,5 @@
+import { getAccountHeroesCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   buildBlurb,
   buildHeadline,
@@ -19,12 +21,14 @@ type Props = {
   };
 };
 
-export function TasksHero({ stats, eyebrow, guidanceKicker, guidanceTitle, guidanceBody, labels }: Props) {
+export async function TasksHero({ stats, eyebrow, guidanceKicker, guidanceTitle, guidanceBody, labels }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).tasksHero;
   const state = heroState(stats);
   const headline = buildHeadline(state, stats);
   const blurb = buildBlurb(state);
   return (
-    <section className="acct-tsk__hero" data-state={state} aria-label="Tasks overview">
+    <section className="acct-tsk__hero" data-state={state} aria-label={copy.heroAria}>
       <div className="acct-tsk__hero-inner">
         <div>
           <span className="acct-tsk__eyebrow">
@@ -33,26 +37,27 @@ export function TasksHero({ stats, eyebrow, guidanceKicker, guidanceTitle, guida
           </span>
           <h1 className="acct-tsk__headline">{headline}</h1>
           <p className="acct-tsk__blurb">{blurb}</p>
-          <div className="acct-tsk__hero-tiles" role="list" aria-label="Task volume">
+          <div className="acct-tsk__hero-tiles" role="list" aria-label={copy.volumeAria}>
             <div className="acct-tsk__hero-tile" role="listitem">
               <span className="acct-tsk__hero-tile-label">{labels.blocking}</span>
               <span className="acct-tsk__hero-tile-value">{stats.blocking}</span>
               <span className="acct-tsk__hero-tile-foot">
-                {stats.blocking === 0 ? "Nothing blocking right now" : "Resolve to unblock other lanes"}
+                {stats.blocking === 0 ? copy.blockingFootZero : copy.blockingFootSome}
               </span>
             </div>
             <div className="acct-tsk__hero-tile" role="listitem">
               <span className="acct-tsk__hero-tile-label">{labels.urgent}</span>
               <span className="acct-tsk__hero-tile-value">{stats.urgent}</span>
               <span className="acct-tsk__hero-tile-foot">
-                {stats.high} {labels.high} · {stats.normal + stats.low} routine
+                {stats.high} {labels.high} · {stats.normal + stats.low} {copy.urgentFootRoutine}
               </span>
             </div>
             <div className="acct-tsk__hero-tile" role="listitem">
               <span className="acct-tsk__hero-tile-label">{labels.total}</span>
               <span className="acct-tsk__hero-tile-value">{stats.total}</span>
               <span className="acct-tsk__hero-tile-foot">
-                {stats.divisions.length} division{stats.divisions.length === 1 ? "" : "s"} represented
+                {stats.divisions.length}{" "}
+                {stats.divisions.length === 1 ? copy.totalFootSingular : copy.totalFootPlural}
               </span>
             </div>
           </div>
