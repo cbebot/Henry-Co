@@ -17,6 +17,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "@henryco/i18n": "workspace:^",
     "@henryco/ui": "workspace:^",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",

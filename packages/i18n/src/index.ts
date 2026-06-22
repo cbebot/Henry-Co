@@ -40,6 +40,7 @@ export * from "./studio-messaging-copy";
 export * from "./studio-project-copy";
 export * from "./studio-support-copy";
 export * from "./surface-copy";
+export * from "./ui-misc-copy";
 export * from "./account-copy";
 export * from "./react";
 export * from "./resolve-locale";
