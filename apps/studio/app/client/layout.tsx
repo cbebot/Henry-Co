@@ -1,3 +1,4 @@
+import "@henryco/dashboard-shell/surfaces.css";
 import { headers } from "next/headers";
 import { Sparkles } from "lucide-react";
 import {
