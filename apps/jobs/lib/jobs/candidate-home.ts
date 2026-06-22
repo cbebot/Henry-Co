@@ -108,6 +108,8 @@ export type CandidateHeroTile = {
   value: string | number;
   foot?: string | null;
   tone?: "default" | "accent" | "active" | "warning";
+  /** Deep-link to the matching, pre-filtered destination (interactive tile). */
+  href?: string;
 };
 
 export type CandidateHeroBreakdownRow = { label: string; count: number; color: string };
@@ -183,12 +185,14 @@ export function buildCandidateHero(stats: CandidateStats, t: Translate): Candida
       ? { label: t("Track applications"), href: APPLICATIONS_HREF }
       : { label: t("Improve your profile"), href: PROFILE_HREF };
 
+  // Interactive deep-links: each tile opens its matching, pre-filtered list.
   const tiles: CandidateHeroTile[] = [
     {
       label: t("Live applications"),
       value: stats.activeApplications,
       foot: stats.activeApplications > 0 ? t("In play right now") : t("Apply to get started"),
       tone: stats.activeApplications > 0 ? "active" : "default",
+      href: "/candidate/applications?lane=active",
     },
     {
       label: t("In the room"),
@@ -200,17 +204,20 @@ export function buildCandidateHero(stats: CandidateStats, t: Translate): Candida
             ? t("Shortlists & interviews")
             : t("Shortlists land here"),
       tone: stats.offers > 0 ? "warning" : stats.inTheRoom > 0 ? "accent" : "default",
+      href: "/candidate/applications?lane=room",
     },
     {
       label: t("Saved roles"),
       value: stats.savedRoles,
       foot: stats.savedRoles > 0 ? t("Ready when you are") : t("Bookmark roles to compare"),
+      href: "/candidate/saved-jobs",
     },
     {
       label: t("Recruiter signals"),
       value: stats.recruiterSignals,
       foot: stats.recruiterSignals > 0 ? t("Employers engaging with you") : t("None yet — keep applying"),
       tone: stats.recruiterSignals > 0 ? "active" : "default",
+      href: "/candidate/applications",
     },
   ];
 

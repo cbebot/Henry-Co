@@ -267,6 +267,52 @@
   color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
 }
 
+/* Interactive tile (V3-DASHBOARD-TILES-INTERACTIVE) — a tile with an href
+   becomes a focusable deep-link to a (usually pre-filtered) destination instead
+   of a silent read-out: a hover lift + accent border + a "view" arrow that
+   fades in, and an AA focus ring. Selectors are scoped under .acct-hero so they
+   outrank any division's scoped .acct-hero__tile re-tone (specificity), and the
+   accent reads through --acct-gold (each division maps that to its own metal).
+   The arrow is decorative (aria-hidden); the tile text/value are unchanged, so
+   AA is untouched. Motion is dropped under prefers-reduced-motion. */
+.acct-hero .acct-hero__tile--link {
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  padding-right: 34px;
+  transition: border-color 180ms ease-out, background-color 180ms ease-out, transform 120ms ease-out;
+}
+.acct-hero .acct-hero__tile--link:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 55%, transparent);
+  background: color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  transform: translateY(-1px);
+}
+.acct-hero .acct-hero__tile--link:focus-visible {
+  outline: 2px solid var(--acct-gold-strong, var(--acct-gold));
+  outline-offset: 2px;
+}
+.acct-hero .acct-hero__tile-go {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: color-mix(in srgb, var(--acct-bg-soft) 55%, transparent);
+  opacity: 0;
+  transform: translate(-2px, 2px);
+  transition: opacity 180ms ease-out, transform 180ms ease-out, color 180ms ease-out;
+}
+.acct-hero .acct-hero__tile--link:hover .acct-hero__tile-go,
+.acct-hero .acct-hero__tile--link:focus-visible .acct-hero__tile-go {
+  opacity: 1;
+  transform: translate(0, 0);
+  color: color-mix(in srgb, var(--acct-bg-soft) 85%, var(--acct-gold));
+}
+@media (prefers-reduced-motion: reduce) {
+  .acct-hero .acct-hero__tile--link { transition: none; }
+  .acct-hero .acct-hero__tile--link:hover { transform: none; }
+  .acct-hero .acct-hero__tile-go { transition: opacity 120ms ease-out; transform: none; }
+}
+
 .acct-hero__below-tiles {
   margin-top: 16px;
 }
