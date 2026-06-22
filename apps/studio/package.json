@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test lib/studio/*.test.ts",
+    "test": "node --import tsx --test \"lib/**/*.test.ts\"",
     "seed": "node ./scripts/seed-studio.mjs",
     "smoke": "node ./scripts/smoke-studio.mjs",
     "verify:live": "node --conditions=react-server --import tsx ./scripts/verify-live-flow.ts"

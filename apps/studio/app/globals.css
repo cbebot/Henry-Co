@@ -1693,6 +1693,25 @@ html, body { overflow-x: clip; max-width: 100vw; }
   --acct-ink: #1A1814;
   --acct-muted: #6B6560;
 
+  /* V3-INNER-L-ELEVATE-STUDIO — the @henryco/dashboard-shell surface
+     primitives (surfaces.css → .acct-hero / .acct-next-step) read the --acct-*
+     accent + status family. Map studio's teal + AA status inks onto them so the
+     shared HeroCard / NextStepRow render in studio's voice. --acct-gold IS the
+     studio teal here (the masthead metal); every value late-binds through the
+     dual-valued --studio-* tokens, so one definition themes correctly in both
+     registers. AA: the accent is only ever a FILL under dark ink, or a TEXT
+     colour (--acct-gold-text), never white-on-teal. */
+  --acct-gold: var(--studio-accent);
+  --acct-gold-strong: var(--studio-accent-strong);
+  --acct-gold-text: var(--studio-accent-text);
+  --acct-gold-soft: var(--studio-accent-soft);
+  --acct-green: var(--studio-green-ink);
+  --acct-red: var(--studio-red-ink);
+  --acct-blue: var(--studio-blue-ink);
+  --acct-bg-elevated: var(--acct-bg-soft);
+  --acct-radius-lg: 24px;
+  --acct-font-display: var(--font-studio-display);
+
   /* studio CONFIGURED teal accent (the §9 resolution) */
   --studio-accent: #4AC1C5;          /* fills / borders / rings / dots */
   --studio-accent-strong: #1F7375;
@@ -2105,4 +2124,75 @@ html, body { overflow-x: clip; max-width: 100vw; }
   --studio-thread-line: rgba(255, 255, 255, 0.06);
   --studio-thread-line-soft: rgba(255, 255, 255, 0.04);
   --studio-thread-hover: rgba(255, 255, 255, 0.06);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * V3-INNER-L-ELEVATE-STUDIO — "The Studio Dossier".
+ *
+ * The /client dashboard already sits on Register L (.studio-workspace-light,
+ * above) and the --acct-* mapping at the top of that scope already renders the
+ * shared HeroCard / NextStepRow in studio teal. This layer ELEVATES that into
+ * studio's OWN editorial voice — a cool teal "drafting" register on the
+ * inverted dossier slab — by re-toning the .acct-* primitives ONLY inside this
+ * scope (the shared @henryco/dashboard-shell package is never touched).
+ * Light-primary; the var() indirection keeps considered dark parity.
+ *
+ * AA-CRITICAL: the masthead inverts (dark slab on the light page / light slab
+ * on the dark page), which flips --acct-ink under the theme. The primary CTA
+ * therefore pins its text to the theme-STABLE dark --hc-ink-on-accent (#03161B
+ * in both registers), so a teal fill is always under dark ink — never the
+ * white-on-teal the directive forbids.
+ * ════════════════════════════════════════════════════════════════════ */
+
+/* The dossier slab — refined teal "drafting" radials. */
+.studio-workspace-light .acct-hero {
+  border-color: color-mix(in srgb, var(--studio-accent) 30%, transparent);
+  background-image:
+    radial-gradient(118% 96% at 0% 0%, color-mix(in srgb, var(--studio-accent) 28%, transparent) 0%, transparent 56%),
+    radial-gradient(92% 92% at 100% 100%, color-mix(in srgb, var(--studio-accent) 13%, transparent) 0%, transparent 62%);
+}
+/* Attention leans on studio amber — a calm "needs you", not an error red. */
+.studio-workspace-light .acct-hero[data-tone="attention"] {
+  border-color: color-mix(in srgb, var(--studio-amber-ink) 32%, transparent);
+  background-image:
+    radial-gradient(122% 100% at 0% 0%, color-mix(in srgb, var(--studio-accent) 26%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--studio-amber-ink) 20%, transparent) 0%, transparent 60%);
+}
+.studio-workspace-light .acct-hero[data-tone="empty"] {
+  background-image:
+    radial-gradient(118% 92% at 0% 0%, color-mix(in srgb, var(--studio-accent) 16%, transparent) 0%, transparent 56%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
+}
+
+/* A hairline teal rule under the headline — the drafting baseline that signs
+   the dossier masthead. */
+.studio-workspace-light .acct-hero__headline {
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--studio-accent) 26%, transparent);
+}
+
+/* Tiles pick up a faint teal hairline — quiet drafting-grid precision. */
+.studio-workspace-light .acct-hero__tile {
+  border-color: color-mix(in srgb, var(--studio-accent) 18%, transparent);
+}
+
+/* Primary CTA — teal FILL under theme-stable DARK ink (AA in BOTH themes). */
+.studio-workspace-light .acct-hero__cta--primary {
+  background: var(--studio-accent);
+  color: var(--hc-ink-on-accent);
+  border-color: color-mix(in srgb, var(--studio-accent) 80%, transparent);
+}
+.studio-workspace-light .acct-hero__cta--primary:hover {
+  /* lighten the teal on hover (never darken) so dark ink keeps its AA margin */
+  background: color-mix(in srgb, var(--studio-accent) 88%, white);
+  color: var(--hc-ink-on-accent);
+}
+.studio-workspace-light .acct-hero__cta:focus-visible {
+  outline-color: var(--studio-accent);
+}
+
+/* The single next-step row gets a teal-framed icon so it reads as part of the
+   same dossier system, not a generic alert. */
+.studio-workspace-light .acct-next-step__icon {
+  border: 1px solid color-mix(in srgb, var(--studio-accent) 26%, transparent);
 }
