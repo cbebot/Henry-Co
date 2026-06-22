@@ -72,6 +72,68 @@ export type ArenaCopy = {
     emptyBody: string;
   };
   common: { play: string; games: string; leaderboard: string; fairPlay: string };
+  goalStrip: { linesOnyx: string; linesAlabaster: string; cards: string };
+  practice: {
+    cta: string;
+    body: string;
+    pickGame: string;
+    difficultyLabel: string;
+    gentle: string;
+    gentleBody: string;
+    even: string;
+    evenBody: string;
+    sharp: string;
+    sharpBody: string;
+    start: string;
+    vsAi: string;
+    thinking: string;
+    newGame: string;
+    liveSoon: string;
+    youAreOnyx: string;
+    backToArena: string;
+  };
+  coach: {
+    title: string;
+    learnCta: string;
+    replay: string;
+    next: string;
+    back: string;
+    done: string;
+    skip: string;
+    linesSteps: { title: string; body: string }[];
+    cardsSteps: { title: string; body: string }[];
+  };
+  rules: {
+    "onyx-lines": {
+      goalOnyx: string;
+      goalAlabaster: string;
+      howToConnect: string;
+      exactlyOne: string;
+      bridges: string;
+      vein: string;
+      swap: string;
+      fracture: string;
+      strategy: string[];
+    };
+    "onyx-cards": {
+      goal: string;
+      identicalHands: string;
+      prizeOrder: string;
+      effectiveValue: string;
+      facetBonus: string;
+      veinCarry: string;
+      shadowBid: string;
+      strategy: string[];
+    };
+  };
+  hints: {
+    linesBlock: string;
+    linesSwap: string;
+    linesFracture: string;
+    linesYourTurn: string;
+    cardsPrize: string;
+    cardsHoldShadow: string;
+  };
 };
 
 const ARENA_COPY_EN: ArenaCopy = {
@@ -145,6 +207,132 @@ const ARENA_COPY_EN: ArenaCopy = {
     emptyBody: "Play a match to put yourself on the board.",
   },
   common: { play: "Play", games: "Games", leaderboard: "Leaderboard", fairPlay: "Fair play" },
+  goalStrip: {
+    linesOnyx: "You're ◆ Onyx — link the TOP and BOTTOM edges before your opponent links theirs.",
+    linesAlabaster: "You're ◇ Alabaster — link the LEFT and RIGHT edges before your opponent links theirs.",
+    cards: "Win the most prize value across 10 rounds. Identical hands — only your choices differ.",
+  },
+  practice: {
+    cta: "Practice vs the Onyx AI",
+    body: "Play instantly against an on-device opponent. No waiting, no stakes — learn the game by playing it.",
+    pickGame: "Choose a game to practice",
+    difficultyLabel: "Difficulty",
+    gentle: "Gentle",
+    gentleBody: "A forgiving opponent for your first games.",
+    even: "Even",
+    evenBody: "Plays a solid, honest game.",
+    sharp: "Sharp",
+    sharpBody: "Calculates hard — bring your best.",
+    start: "Start practice",
+    vsAi: "Onyx AI",
+    thinking: "Onyx AI is thinking…",
+    newGame: "New game",
+    liveSoon: "Live matches against real players are coming soon — practice now to be ready.",
+    youAreOnyx: "You play first, as Onyx.",
+    backToArena: "Back to the arena",
+  },
+  coach: {
+    title: "How to play",
+    learnCta: "Learn how to win",
+    replay: "Replay the walkthrough",
+    next: "Next",
+    back: "Back",
+    done: "Got it",
+    skip: "Skip",
+    linesSteps: [
+      {
+        title: "Your goal",
+        body: "You are Onyx. Build an unbroken chain of your stones from the top edge to the bottom edge. Your opponent, Alabaster, is racing to link left to right.",
+      },
+      {
+        title: "How stones connect",
+        body: "Each stone touches its six neighbours. A connection follows those links — straight or diagonal — all the way across the board.",
+      },
+      {
+        title: "Someone always wins",
+        body: "When the board fills, exactly one of you will have connected — draws are impossible. So every stone you place to advance also blocks your opponent.",
+      },
+      {
+        title: "Bridges win races",
+        body: "Two of your stones a short step apart, with two empty links between them, form a bridge: your opponent can't cut both at once. Bridges let you cross faster than a solid line.",
+      },
+      {
+        title: "The twists",
+        body: "Grey 'vein' cells are neutral walls — route around them. Swap: if the opener plays too strong, the second player may claim that stone. Fracture: once per game, turn an opponent stone that touches two of yours into a wall.",
+      },
+      {
+        title: "How to win",
+        body: "Play toward the centre first, advance with bridges, and make every move sit on your opponent's shortest path. Save your fracture for the move that breaks their winning link.",
+      },
+    ],
+    cardsSteps: [
+      {
+        title: "Your goal",
+        body: "Win the most total prize value over 10 rounds. Both players hold the same hand — cards 1 to 10 — so there is no luck of the draw.",
+      },
+      {
+        title: "Each round",
+        body: "You both secretly commit one card. The higher card wins that round's prize. Both cards are spent either way, so choose what each prize is worth to you.",
+      },
+      {
+        title: "The prize track",
+        body: "Every prize and its order is public from the start — and provably fair. Plan ahead: which prizes will you fight for, and which will you let go?",
+      },
+      {
+        title: "Carry and facet bonus",
+        body: "Tie a round and nobody wins — the prize carries onto the next round, making it bigger. Win with a card whose facet matches the prize's facet for bonus points.",
+      },
+      {
+        title: "The shadow bid",
+        body: "Once per match you may shadow-bid: secretly double your committed card. It's revealed only if you lose — a hidden way to steal a key prize.",
+      },
+      {
+        title: "How to win",
+        body: "Spend high cards on high prizes and dump low cards on low ones. Watch the carry, chase facet matches, and hold your shadow bid for the prize that swings the match.",
+      },
+    ],
+  },
+  rules: {
+    "onyx-lines": {
+      goalOnyx: "Link the top and bottom edges with your stones.",
+      goalAlabaster: "Link the left and right edges with your stones.",
+      howToConnect: "Stones connect to their six touching neighbours; a path may run straight or diagonally.",
+      exactlyOne: "No draws: when the board fills, exactly one player has connected.",
+      bridges: "A bridge — two stones a step apart with two empty links — can't be cut, so it's a safe fast connection.",
+      vein: "The grey vein cells are fixed neutral walls. Route around them.",
+      swap: "Pie rule: the second player may claim the opener's first stone, so open modestly.",
+      fracture: "Once per game, fracture an opponent stone that touches two of yours into a neutral wall.",
+      strategy: [
+        "Take the centre early — central stones touch more paths.",
+        "Advance with bridges to move two steps safely.",
+        "Make every move both extend your line and block theirs.",
+        "Hold your fracture for the move that breaks their connection.",
+      ],
+    },
+    "onyx-cards": {
+      goal: "Win the most prize value across 10 rounds.",
+      identicalHands: "Both players hold cards 1–10 — only your decisions differ.",
+      prizeOrder: "The prize order is public and provably fair from the start.",
+      effectiveValue: "The higher committed card wins the round; both cards are spent.",
+      facetBonus: "Win with a facet that matches the prize for bonus points.",
+      veinCarry: "Equal commits award nothing — the prize carries to the next round.",
+      shadowBid: "Once per match, secretly double a card; revealed only on a loss.",
+      strategy: [
+        "Spend high cards on high-value prizes.",
+        "Dump low cards on prizes you're willing to lose.",
+        "Watch the carry — a tie makes the next prize worth chasing.",
+        "Save your shadow bid for a match-swinging prize.",
+      ],
+    },
+  },
+  hints: {
+    linesBlock: "⚠ Block {cell} — your opponent connects next turn.",
+    linesSwap: "You can swap: claim the opening stone as your own.",
+    linesFracture: "Fracture is available — you can break a stone that touches two of yours.",
+    linesYourTurn: "Your move. Extend toward your edges and block theirs.",
+    cardsPrize: "This prize is worth {value} now.",
+    cardsHoldShadow: "A big prize — consider your one shadow bid.",
+  },
 };
 
 // --- Per-locale overrides (deep-merge over EN). Missing keys fall back to EN. ---

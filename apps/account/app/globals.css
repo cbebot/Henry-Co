@@ -1890,3 +1890,231 @@ a.acct-lifecycle__row:hover .acct-lifecycle__cta {
   background: color-mix(in srgb, var(--acct-gold) 5%, transparent);
   border-color: color-mix(in srgb, var(--acct-ink) 22%, transparent);
 }
+
+/* ===================================================================
+   HENRY ONYX LIVE — arena surface (V3-GAMING-02 "Learn to Win")
+   Onyx stone = deep onyx; Alabaster stone = pale orchid; arena accent
+   is --acct-div-gaming (magenta). Everything below honours
+   prefers-reduced-motion (animations collapse to instant at the foot).
+   =================================================================== */
+:root {
+  --arena-onyx: #0b0510;
+  --arena-onyx-soft: #2a2333;
+  --arena-alabaster: #e9d5ff;
+  --arena-alabaster-ink: #4a1d63;
+  --arena-accent: var(--acct-div-gaming);
+}
+.dark {
+  --arena-onyx: #0b0510;
+  --arena-alabaster: #efe1ff;
+}
+
+/* --- Goal strip: states the objective and shows it in the player's colour --- */
+.acct-goalstrip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--acct-line);
+  background: color-mix(in srgb, var(--arena-accent) 6%, var(--acct-bg-elevated));
+  color: var(--acct-ink);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.acct-goalstrip__dot {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--arena-accent) 22%, transparent);
+}
+
+/* --- The coach: stepped walkthrough + contextual hint --- */
+.acct-coach {
+  border: 1px solid var(--acct-line);
+  border-radius: 14px;
+  background: var(--acct-bg-elevated);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+.acct-coach__kicker {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--arena-accent);
+  font-weight: 700;
+}
+.acct-coach__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--acct-ink);
+}
+.acct-coach__body {
+  margin: 0;
+  color: var(--acct-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.acct-coach__dots {
+  display: flex;
+  gap: 6px;
+}
+.acct-coach__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acct-line);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.acct-coach__dot--on {
+  background: var(--arena-accent);
+  transform: scale(1.25);
+}
+.acct-coach__row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.acct-coach__hint {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--arena-accent) 9%, var(--acct-surface));
+  border: 1px solid color-mix(in srgb, var(--arena-accent) 24%, transparent);
+  color: var(--acct-ink);
+  font-size: 13px;
+  line-height: 1.45;
+  animation: arenaHintIn 0.3s ease;
+}
+@keyframes arenaHintIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.acct-arena-btn {
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated);
+  color: var(--acct-ink);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.acct-arena-btn:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--arena-accent); }
+.acct-arena-btn:disabled { opacity: 0.5; cursor: default; }
+.acct-arena-btn--accent { background: var(--arena-accent); color: #fff; border-color: transparent; }
+.acct-arena-btn--accent:hover:not(:disabled) { filter: brightness(1.06); }
+
+/* --- Onyx Lines board: a sheared grid of hexagons with glowing goal edges --- */
+.acct-arena-board {
+  position: relative;
+  display: inline-block;
+  padding: 26px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--arena-accent) 4%, var(--acct-bg-elevated));
+  border: 1px solid var(--acct-line);
+}
+.acct-arena-board--mine-active { box-shadow: 0 0 0 1px color-mix(in srgb, var(--arena-accent) 30%, transparent); }
+.acct-arena-rail {
+  position: absolute;
+  border-radius: 6px;
+  opacity: 0.85;
+}
+.acct-arena-rail--h { left: 22px; right: 22px; height: 5px; }
+.acct-arena-rail--v { top: 22px; bottom: 22px; width: 5px; }
+.acct-arena-rail--top { top: 12px; }
+.acct-arena-rail--bottom { bottom: 12px; }
+.acct-arena-rail--left { left: 12px; }
+.acct-arena-rail--right { right: 12px; }
+.acct-arena-rail--onyx { background: linear-gradient(90deg, var(--arena-onyx), var(--arena-onyx-soft)); }
+.acct-arena-rail--alabaster { background: linear-gradient(180deg, var(--arena-alabaster), #c89cf0); }
+.acct-arena-rail--mine { animation: arenaEdgePulse 2.4s ease-in-out infinite; }
+@keyframes arenaEdgePulse {
+  0%, 100% { filter: drop-shadow(0 0 2px transparent); opacity: 0.8; }
+  50% { filter: drop-shadow(0 0 7px var(--arena-accent)); opacity: 1; }
+}
+.acct-arena-row { display: flex; }
+.acct-arena-hex {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 0;
+  padding: 0;
+  margin: 1.5px;
+  background: var(--acct-surface);
+  transition: transform 0.12s ease, filter 0.2s ease, background 0.2s ease;
+}
+.acct-arena-hex--onyx { background: radial-gradient(circle at 35% 30%, #3a2f47, var(--arena-onyx)); }
+.acct-arena-hex--alabaster { background: radial-gradient(circle at 35% 30%, #ffffff, var(--arena-alabaster)); }
+.acct-arena-hex--blocker {
+  background: repeating-linear-gradient(45deg, var(--acct-muted), var(--acct-muted) 3px, transparent 3px, transparent 6px),
+    var(--acct-surface);
+  opacity: 0.65;
+}
+.acct-arena-hex--clickable { cursor: pointer; }
+.acct-arena-hex--clickable:hover {
+  transform: scale(1.08);
+  background: color-mix(in srgb, var(--arena-ghost, var(--arena-accent)) 50%, var(--acct-surface));
+  z-index: 3;
+}
+.acct-arena-hex--new { animation: arenaStoneIn 0.28s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+@keyframes arenaStoneIn {
+  from { transform: scale(0.3); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.acct-arena-hex--last { filter: drop-shadow(0 0 5px var(--acct-gold)); }
+.acct-arena-hex--win { animation: arenaWinPulse 1s ease-in-out infinite; z-index: 2; }
+@keyframes arenaWinPulse {
+  0%, 100% { filter: drop-shadow(0 0 2px var(--arena-accent)); }
+  50% { filter: drop-shadow(0 0 9px var(--arena-accent)); }
+}
+.acct-arena-hex--fracturable { filter: drop-shadow(0 0 4px var(--acct-gold)); cursor: crosshair; }
+
+.acct-arena-actionbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.acct-arena-thinking { display: inline-flex; align-items: center; gap: 8px; color: var(--acct-muted); font-size: 14px; }
+.acct-arena-thinking__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--arena-accent); animation: arenaThinking 1s ease-in-out infinite; }
+@keyframes arenaThinking { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+
+/* --- Onyx Cards: prize track + hand + round reveal --- */
+.acct-cards-track { display: flex; gap: 6px; flex-wrap: wrap; }
+.acct-cards-prize {
+  width: 46px; height: 60px; border-radius: 9px;
+  border: 1px solid var(--acct-line); background: var(--acct-bg-elevated);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.acct-cards-prize--current { border-color: var(--arena-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--arena-accent) 35%, transparent); transform: translateY(-3px); }
+.acct-cards-prize--won { opacity: 0.45; }
+.acct-cards-prize__facet { width: 16px; height: 4px; border-radius: 2px; }
+.acct-cards-hand { display: flex; gap: 8px; flex-wrap: wrap; }
+.acct-cards-card {
+  width: 46px; height: 62px; border-radius: 9px; border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated); color: var(--acct-ink); font-weight: 700; font-size: 18px;
+  cursor: pointer; transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.acct-cards-card:hover:not(:disabled) { transform: translateY(-4px); border-color: var(--arena-accent); }
+.acct-cards-card:disabled { opacity: 0.5; cursor: default; }
+.acct-cards-card--selected { background: var(--arena-accent); color: #fff; border-color: transparent; }
+.acct-cards-reveal { display: flex; gap: 18px; align-items: center; animation: arenaHintIn 0.35s ease; }
+.acct-cards-reveal__card { width: 54px; height: 72px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; animation: arenaStoneIn 0.32s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-arena-hex--new,
+  .acct-arena-hex--win,
+  .acct-arena-rail--mine,
+  .acct-arena-thinking__dot,
+  .acct-coach__hint,
+  .acct-cards-reveal,
+  .acct-cards-reveal__card { animation: none !important; }
+  .acct-arena-hex,
+  .acct-cards-card,
+  .acct-cards-prize,
+  .acct-arena-btn { transition: none !important; }
+}

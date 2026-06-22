@@ -29,3 +29,6 @@ export * from "./catalog/onyx-cards";
 
 // pure view redaction (server applies before sending state to a participant)
 export * from "./view/redact";
+
+// on-device practice opponents + coach math (pure, client-safe)
+export * from "./ai/index";

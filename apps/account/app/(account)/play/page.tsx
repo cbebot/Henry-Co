@@ -10,6 +10,7 @@ import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 import { isGamingArenaReady } from "@/lib/gaming/arena-flag";
 import { getPlayModuleData, type PlayModuleData } from "@/lib/gaming/play-module";
 import { LobbyClient } from "./_components/LobbyClient";
+import { Coach } from "./_components/Coach";
 
 export const dynamic = "force-dynamic";
 
@@ -26,14 +27,41 @@ export default async function PlayPage() {
   const copy = getArenaCopy(locale);
   const division = getDivisionConfig("gaming");
 
+  // Live multiplayer is still flag-dark — but the arena is NOT dead: learning
+  // and practice-vs-AI need no server, so the foyer offers them immediately.
   if (!isGamingArenaReady()) {
     return (
-      <div className="acct-play" style={{ maxWidth: 720, margin: "0 auto" }}>
-        <EmptyStateCard
-          kicker={division.name}
-          title={copy.lobby.noLiveTitle}
-          body={copy.hero.body}
-        />
+      <div className="acct-play acct-fade-in" style={{ display: "grid", gap: 20, maxWidth: 760, margin: "0 auto" }}>
+        <header
+          style={{
+            background: "var(--acct-bg-elevated)",
+            border: "1px solid var(--acct-line)",
+            borderRadius: 16,
+            padding: "28px 24px",
+          }}
+        >
+          <p style={{ color: "var(--acct-div-gaming)", fontWeight: 600, letterSpacing: ".02em", margin: 0 }}>
+            {copy.hero.eyebrow}
+          </p>
+          <h1 style={{ fontSize: 28, margin: "8px 0 6px", color: "var(--acct-ink)" }}>{copy.hero.title}</h1>
+          <p style={{ color: "var(--acct-muted)", maxWidth: 620, margin: 0 }}>{copy.hero.body}</p>
+          <div style={{ marginTop: 18, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+            <Link
+              href="/play/practice"
+              className="acct-arena-btn acct-arena-btn--accent"
+              style={{ textDecoration: "none" }}
+            >
+              {copy.practice.cta}
+            </Link>
+            <Coach gameId="onyx-lines" copy={copy} />
+          </div>
+        </header>
+        <p style={{ color: "var(--acct-muted)", fontSize: 14, margin: 0 }}>{copy.practice.liveSoon}</p>
+        <footer>
+          <Link href="/play/fair-play" style={{ color: "var(--acct-div-gaming)", fontWeight: 600 }}>
+            {copy.hero.ctaFairness}
+          </Link>
+        </footer>
       </div>
     );
   }
@@ -71,6 +99,12 @@ export default async function PlayPage() {
         <p style={{ color: "var(--acct-muted)", maxWidth: 620, margin: 0 }}>{copy.hero.body}</p>
         <div style={{ marginTop: 18 }}>
           <LobbyClient copy={copy} games={games} accent={division.accent} />
+        </div>
+        <div style={{ marginTop: 14, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+          <Link href="/play/practice" className="acct-arena-btn" style={{ textDecoration: "none" }}>
+            {copy.practice.cta}
+          </Link>
+          <Coach gameId="onyx-lines" copy={copy} />
         </div>
       </header>
 
