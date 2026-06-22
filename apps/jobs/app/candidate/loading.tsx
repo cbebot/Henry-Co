@@ -1,11 +1,16 @@
 import { JobsWorkspaceLoading } from "@/components/loading-state";
+import { getJobsCandidateSurfaceCopy } from "@henryco/i18n";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
-export default function Loading() {
+export default async function Loading() {
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsCandidateSurfaceCopy(locale).candidateLoading;
+
   return (
     <JobsWorkspaceLoading
-      kicker="Candidate workspace"
-      title="Your roles, applications, and profile."
-      body="Applications, saved roles, alerts, files, and recruiter updates in one view."
+      kicker={copy.kicker}
+      title={copy.title}
+      body={copy.body}
     />
   );
 }

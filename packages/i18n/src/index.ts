@@ -22,6 +22,7 @@ export * from "./state-copy";
 export * from "./error-fallback-copy";
 export * from "./marketplace-copy";
 export * from "./jobs-copy";
+export * from "./jobs-candidate-surface-copy";
 export * from "./care-copy";
 export * from "./care-pricing-copy";
 export * from "./care-services-copy";
