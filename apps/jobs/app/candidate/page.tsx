@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { Bell, Bookmark, CheckCircle2, CircleAlert, FileCheck2, Sparkles } from "lucide-react";
+import { BadgeCheck, Bell, Bookmark, CalendarCheck, CheckCircle2, CircleAlert, Eye, FileCheck2, Send, Sparkles, Star } from "lucide-react";
 import "@henryco/dashboard-shell/surfaces.css";
-import { HeroCard, type HeroCardTile } from "@henryco/dashboard-shell";
+import { HeroCard, NextStepRow } from "@henryco/dashboard-shell";
 import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { EmptyState } from "@/components/feedback";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
+import {
+  buildCandidateHero,
+  buildCandidateNextStep,
+  candidateDashboardStats,
+  type CandidateHomeInput,
+  type CandidateNextStepModel,
+} from "@/lib/jobs/candidate-home";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
@@ -38,6 +46,16 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
+function nextStepIcon(iconKey: CandidateNextStepModel["iconKey"]): ReactNode {
+  const cls = "h-[18px] w-[18px]";
+  if (iconKey === "offer") return <BadgeCheck className={cls} />;
+  if (iconKey === "interview") return <CalendarCheck className={cls} />;
+  if (iconKey === "shortlist") return <Star className={cls} />;
+  if (iconKey === "profile") return <FileCheck2 className={cls} />;
+  if (iconKey === "apply") return <Send className={cls} />;
+  return <Eye className={cls} />;
+}
+
 export default async function CandidateOverviewPage() {
   const [viewer, locale] = await Promise.all([
     requireJobsUser("/candidate"),
@@ -45,48 +63,26 @@ export default async function CandidateOverviewPage() {
   ]);
   const copy = getJobsCopy(locale).candidateHome;
   const data = await getCandidateDashboardData(viewer.user!.id, locale);
-  const activeApplications = data.applicationJourneys.filter(
-    (journey) => journey.application.stage !== "rejected" && journey.application.stage !== "hired"
-  );
-  const interviewLaneCount = data.applicationJourneys.filter((journey) =>
-    ["shortlisted", "interview", "offer"].includes(journey.application.stage)
-  ).length;
-
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const readiness = data.profile?.trustScore ?? 0;
-  const recruiterSignals = data.recruiterFeed.length;
-  const savedRoles = data.savedJobs.length;
-  const hasActivity = activeApplications.length > 0 || recruiterSignals > 0;
 
-  // Q1 — "what's happening with my search": four live counts above the fold.
-  // Readiness is intentionally NOT a tile here — it carries the progress strip
-  // below, so the tiles stay focused on momentum (applied / in review / saved /
-  // who's looking at me) rather than repeating the score.
-  const heroTiles: ReadonlyArray<HeroCardTile> = [
-    {
-      label: copy.tileActiveAppsLabel,
-      value: activeApplications.length,
-      foot: activeApplications.length > 0 ? copy.tileActiveAppsDetailActive : copy.tileActiveAppsDetailEmpty,
-      tone: activeApplications.length > 0 ? "active" : "default",
-    },
-    {
-      label: copy.tileInProgressLabel,
-      value: interviewLaneCount,
-      foot: interviewLaneCount > 0 ? copy.tileInProgressDetailActive : copy.tileInProgressDetailEmpty,
-      tone: interviewLaneCount > 0 ? "accent" : "default",
-    },
-    {
-      label: copy.tileSavedRolesLabel,
-      value: savedRoles,
-      foot: savedRoles > 0 ? copy.tileSavedRolesDetailActive : copy.tileSavedRolesDetailEmpty,
-    },
-    {
-      label: t("Recruiter signals"),
-      value: recruiterSignals,
-      foot: recruiterSignals > 0 ? t("Employers engaging with you") : t("None yet — keep applying"),
-      tone: recruiterSignals > 0 ? "active" : "default",
-    },
-  ];
+  // V3-INNER-L-ELEVATE-JOBS — the above-the-fold answer (Q1 "what's happening
+  // with my search?" + Q2 "what next?") is derived in a pure, TDD'd model
+  // (lib/jobs/candidate-home.ts) and rendered through the shared Register-L
+  // HeroCard + NextStepRow ("The Candidate Ledger"). The masthead now carries
+  // the full signal: a 4-state tone (incl. attention for offers/interviews), a
+  // pipeline side breakdown, and one decisive next step — so the page body
+  // stays a thin compose and the supporting sections below are unchanged.
+  const candidateInput: CandidateHomeInput = {
+    profile: data.profile,
+    applicationJourneys: data.applicationJourneys,
+    savedJobs: data.savedJobs,
+    recommendedJobs: data.recommendedJobs,
+    recruiterFeed: data.recruiterFeed,
+    profileChecklist: data.profileChecklist,
+  };
+  const stats = candidateDashboardStats(candidateInput);
+  const hero = buildCandidateHero(stats, t);
+  const nextStep = buildCandidateNextStep(candidateInput, stats, t);
 
   return (
     <WorkspaceShell
@@ -139,24 +135,30 @@ export default async function CandidateOverviewPage() {
     >
       <div className="space-y-4">
         <HeroCard
-          variant="solo"
-          tone={hasActivity ? "active" : "empty"}
-          eyebrow={t("Your job search")}
-          headline={
-            hasActivity
-              ? t("Your applications are in motion.")
-              : t("Your next role starts with a strong profile.")
-          }
-          blurb={t("Track every role you’ve applied to, see who’s reviewing you, and keep your profile ready for the next opportunity.")}
-          ariaLabel={t("Candidate overview")}
-          ctaPrimary={{ label: copy.overviewImproveProfile, href: "/candidate/profile" }}
-          ctaSecondary={{ label: t("Track applications"), href: "/candidate/applications" }}
-          tiles={heroTiles}
-          progress={{
-            percent: readiness,
-            label: `${copy.tileProfileReadinessLabel} · ${readiness}%`,
-          }}
+          variant="paired"
+          tone={hero.tone}
+          eyebrow={hero.eyebrow}
+          headline={hero.headline}
+          blurb={hero.blurb}
+          ariaLabel={hero.ariaLabel}
+          ariaTilesLabel={hero.ariaTilesLabel}
+          ctaPrimary={hero.ctaPrimary}
+          ctaSecondary={hero.ctaSecondary}
+          tiles={hero.tiles}
+          side={hero.side}
+          progress={hero.progress}
         />
+
+        {nextStep ? (
+          <NextStepRow
+            tone={nextStep.tone}
+            kicker={nextStep.kicker}
+            title={nextStep.title}
+            detail={nextStep.detail}
+            icon={nextStepIcon(nextStep.iconKey)}
+            cta={nextStep.cta}
+          />
+        ) : null}
 
         <SectionCard
           title={copy.profileStrengthTitle}
