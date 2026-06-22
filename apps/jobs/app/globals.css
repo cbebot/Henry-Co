@@ -235,6 +235,57 @@
   outline-color: var(--jobs-bg);                                   /* vs light card 17.1:1 / fill 7.83:1 */
 }
 
+/* ════════════════════════════════════════════════════════════════════
+ * V3-INNER-L-ELEVATE-JOBS — "The Candidate Ledger".
+ *
+ * The candidate dashboard already adopted the shared HeroCard (V3-INNER-L-JOBS,
+ * with the WCAG-AA corrections above). This layer ELEVATES it into the
+ * candidate's OWN editorial voice — a deep teal-forest "career ledger" register
+ * on the inverted masthead slab — by re-toning the .acct-* primitives ONLY in
+ * the candidate workspace ([data-workspace-division="jobs-candidate"]); the
+ * shared package AND the employer/recruiter consoles are untouched.
+ * Light-primary; the var(--jobs-*) indirection keeps considered dark parity.
+ * The mode-aware on-accent CTA ink stays governed by the AA block above — this
+ * layer never re-colours the CTA text.
+ * ════════════════════════════════════════════════════════════════════ */
+
+/* The ledger slab — teal/forest radials replace the account gold. */
+[data-workspace-division="jobs-candidate"] .acct-hero {
+  border-color: color-mix(in srgb, var(--jobs-accent) 30%, transparent);
+  background-image:
+    radial-gradient(118% 96% at 0% 0%, color-mix(in srgb, var(--jobs-accent) 26%, transparent) 0%, transparent 56%),
+    radial-gradient(92% 92% at 100% 100%, color-mix(in srgb, var(--jobs-forest) 16%, transparent) 0%, transparent 62%);
+}
+/* Attention warms toward brass — a considered "you're being looked at", not alarm. */
+[data-workspace-division="jobs-candidate"] .acct-hero[data-tone="attention"] {
+  border-color: color-mix(in srgb, var(--jobs-brass) 32%, transparent);
+  background-image:
+    radial-gradient(122% 100% at 0% 0%, color-mix(in srgb, var(--jobs-accent) 26%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--jobs-brass) 22%, transparent) 0%, transparent 60%);
+}
+[data-workspace-division="jobs-candidate"] .acct-hero[data-tone="empty"] {
+  background-image:
+    radial-gradient(118% 92% at 0% 0%, color-mix(in srgb, var(--jobs-accent) 16%, transparent) 0%, transparent 56%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
+}
+
+/* A hairline teal rule under the headline — the ledger baseline. */
+[data-workspace-division="jobs-candidate"] .acct-hero__headline {
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--jobs-accent) 26%, transparent);
+}
+
+/* Tiles pick up a faint teal hairline. */
+[data-workspace-division="jobs-candidate"] .acct-hero__tile {
+  border-color: color-mix(in srgb, var(--jobs-accent) 18%, transparent);
+}
+
+/* The next-step row gets a teal-framed icon so it reads as part of the same
+   ledger system, not a generic alert. */
+[data-workspace-division="jobs-candidate"] .acct-next-step__icon {
+  border: 1px solid color-mix(in srgb, var(--jobs-accent) 26%, transparent);
+}
+
 * {
   box-sizing: border-box;
 }
