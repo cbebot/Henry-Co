@@ -386,32 +386,35 @@ export function NotificationsToastViewport({
     };
   }, []);
 
-  // Merge realtime-signal toasts + imperative toasts into one ordered, capped
-  // strip so the corner shows a calm maximum of VISIBLE_LIMIT total.
-  const ordered = useMemo(() => {
-    const merged: Array<
-      | { kind: "signal"; key: string; receivedAt: number; item: ActiveToast }
-      | { kind: "imperative"; key: string; receivedAt: number; item: ImperativeActive }
-    > = [
-      ...active.map((a) => ({
-        kind: "signal" as const,
-        key: `sig:${a.signal.id}`,
-        receivedAt: a.receivedAt,
-        item: a,
-      })),
-      ...busActive.map((b) => ({
-        kind: "imperative" as const,
-        key: `imp:${b.toast.id}`,
-        receivedAt: b.receivedAt,
-        item: b,
-      })),
-    ];
-    return merged.sort((a, b) => b.receivedAt - a.receivedAt);
-  }, [active, busActive]);
-  // Paced reveal: at most VISIBLE_LIMIT, one at a time, DRIP_GAP_MS apart.
-  const visible = useDripReleasedToasts(ordered, VISIBLE_LIMIT, DRIP_GAP_MS);
+  // V3-NOTIF-SPLIT-01: two SEPARATE lanes, never merged, so an ephemeral
+  // ACTION confirmation (shellToast/feedback — "Marked as read", "Saved")
+  // can never be mistaken for an OWNED NOTIFICATION (a realtime signal from
+  // customer_notifications about an event on the account):
+  //   - Owned notifications -> TOP-RIGHT, descending from the bell they
+  //     belong to, and persisted in the inbox.
+  //   - Action feedback     -> BOTTOM-RIGHT, transient, the consistent
+  //     app-wide feedback corner (V3-FEEDBACK-01: it never moves).
+  // Each lane is independently capped + drip-paced, so a burst in one never
+  // starves the other and the two read as distinct surfaces.
+  const signalLane = useMemo(
+    () =>
+      active
+        .map((a) => ({ key: `sig:${a.signal.id}`, receivedAt: a.receivedAt, item: a }))
+        .sort((a, b) => b.receivedAt - a.receivedAt),
+    [active],
+  );
+  const actionLane = useMemo(
+    () =>
+      busActive
+        .map((b) => ({ key: `imp:${b.toast.id}`, receivedAt: b.receivedAt, item: b }))
+        .sort((a, b) => b.receivedAt - a.receivedAt),
+    [busActive],
+  );
+  // Paced reveal: at most VISIBLE_LIMIT per lane, one at a time, DRIP_GAP_MS apart.
+  const visibleSignals = useDripReleasedToasts(signalLane, VISIBLE_LIMIT, DRIP_GAP_MS);
+  const visibleActions = useDripReleasedToasts(actionLane, VISIBLE_LIMIT, DRIP_GAP_MS);
 
-  if (visible.length === 0) return null;
+  if (visibleSignals.length === 0 && visibleActions.length === 0) return null;
 
   return (
     <>
@@ -421,25 +424,28 @@ export function NotificationsToastViewport({
         // feedback-card stylesheet) — no user content flows in.
         dangerouslySetInnerHTML={{ __html: TOAST_CSS + FEEDBACK_TOAST_CSS }}
       />
-      <div
-        role="region"
-        aria-label={tt("New activity")}
-        style={{
-          position: "fixed",
-          zIndex: 80,
-          right: "1rem",
-          bottom: "1rem",
-          left: "auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          gap: "0.5rem",
-          pointerEvents: "none",
-          paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 0.5rem, 0.5rem)",
-        }}
-      >
-        {visible.map((entry, index) =>
-          entry.kind === "signal" ? (
+      {/* OWNED NOTIFICATIONS — top-right, descending from the bell. A real
+          event on the account; mirrored in the persistent bell inbox. */}
+      {visibleSignals.length > 0 ? (
+        <div
+          role="region"
+          aria-label={tt("Notifications")}
+          style={{
+            position: "fixed",
+            zIndex: 80,
+            right: "1rem",
+            // Clear the top app bar / bell so a fresh notification appears to
+            // descend from the bell rather than float over the header.
+            top: "max(env(safe-area-inset-top, 0px) + 4.25rem, 4.25rem)",
+            left: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "0.5rem",
+            pointerEvents: "none",
+          }}
+        >
+          {visibleSignals.map((entry, index) => (
             <ToastCard
               key={entry.key}
               toast={entry.item}
@@ -448,10 +454,31 @@ export function NotificationsToastViewport({
               onDismiss={() => requestDismiss(entry.item.signal.id)}
               t={tt}
             />
-          ) : (
-            // V3-FEEDBACK-01: imperative action toasts render the SHARED
-            // card from @henryco/ui/feedback — the same component every
-            // public surface shows, inside this merged strip.
+          ))}
+        </div>
+      ) : null}
+      {/* ACTION FEEDBACK — bottom-right, the consistent transient feedback
+          corner (V3-FEEDBACK-01). The SHARED card from @henryco/ui/feedback,
+          kept in its OWN lane and never mixed with owned notifications. */}
+      {visibleActions.length > 0 ? (
+        <div
+          role="status"
+          aria-label={tt("New activity")}
+          style={{
+            position: "fixed",
+            zIndex: 81,
+            right: "1rem",
+            bottom: "1rem",
+            left: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "0.5rem",
+            pointerEvents: "none",
+            paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 0.5rem, 0.5rem)",
+          }}
+        >
+          {visibleActions.map((entry, index) => (
             <FeedbackToastCard
               key={entry.key}
               toast={entry.item.toast}
@@ -460,9 +487,9 @@ export function NotificationsToastViewport({
               onDismiss={() => requestDismissImp(entry.item.toast.id)}
               t={tt}
             />
-          ),
-        )}
-      </div>
+          ))}
+        </div>
+      ) : null}
     </>
   );
 }
