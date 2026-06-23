@@ -91,3 +91,50 @@ path changed for a legitimate owner.
 - `get_signal_feed(<other-uuid>)` raises `42501` for an authenticated caller but
   still returns rows for the service role.
 - The bell still hydrates and still receives realtime events.
+
+## APPLIED TO PROD + DATA REMEDIATION (2026-06-23, owner-authenticated session)
+
+Prod project confirmed = `rzkbgwuznmdxnnhmjazy` ("HENRY ONYX"). The other org
+project `xzrqejqovbuaksoxyhap` has no `customer_notifications` (not the account DB).
+
+**Structural migration APPLIED + verified live:**
+- Both UPDATE policies now carry `with_check = ((select auth.uid()) = user_id)`.
+- `customer_notifications` grants to `anon`/`authenticated` reduced to
+  `SELECT, REFERENCES, TRIGGER` (no write) — inbox is service-role-authored.
+- `get_signal_feed` on prod was ALREADY guarded (the captured schema was a
+  pre-#323 snapshot) — the re-assert was a confirming no-op. Read-IDOR closed.
+
+**Root cause of the owner's "fake / another user's notifications" report — found in the live data:**
+A single care booking (`care_bookings.id`) had its "Care booking available"
+notification inserted under up to **5 different real users** (distinct emails),
+because `care-sync.ts` matches guest bookings by **email/phone** and notified
+every matching account. Plus runaway duplication (one (user,booking) pair had
+**252** identical rows). `customer_activity` was far worse — **343,592**
+contaminated rows.
+
+**Surgical remediation (rightful owner = `care_bookings.customer_id`):**
+| table | before | deleted | after |
+|---|---|---|---|
+| customer_notifications | 10,062 | 6,895 wrong/unowned + 112 care dupes + 2,349 studio dupes + 155 exact dups | **551** |
+| customer_activity | ~346,000 | 343,592 wrong/unowned + 2,031 dupes | **2,706** |
+
+Verified post-clean: `care_notifs_wrong_owner_remaining = 0`,
+`care_bookings_still_shared_across_users = 0`. Worst user went 5,877 → 243.
+
+**Recurrence guard (code, this PR) — `apps/account/lib/care-sync.ts`:**
+- Read path (`findMatchedCareBookings`): a booking already CLAIMED by another
+  account (`customer_id` set ≠ viewer) is never matched/listed/notified.
+- Write path (`syncCareArtifacts`): claim an unclaimed booking for the first
+  matching account race-safely (`update … where customer_id is null`); skip if a
+  concurrent claim won. One booking → one rightful owner, permanently.
+
+**Residual, intentionally NOT auto-deleted (flagged for owner review):**
+- `studio_notification`: de-flooded 2,482 → 133, but a few titles still span
+  2–5 users (mostly the owner's own test-account name variants). Studio
+  notifications carry no authoritative owner column on the row, so a safe
+  delete needs the studio project→client mapping (follow-up; also needs the
+  studio bridge's own owner guard like care got).
+- `jobs_application` / `jobs_employer` / `jobs_post` / `learn_announcement`:
+  ~9–11 shared references each — these are plausibly LEGITIMATE multi-party
+  notifications (a class announcement reaches many students; an application
+  rightly notifies candidate + employer). Not deleted without confirmation.

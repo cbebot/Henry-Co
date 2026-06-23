@@ -22,6 +22,7 @@ export type CareAccountIdentity = {
 
 type CareBookingRow = {
   id: string;
+  customer_id: string | null;
   tracking_code: string | null;
   customer_name: string | null;
   email: string | null;
@@ -314,7 +315,7 @@ async function loadBookingsByIds(ids: string[]) {
   const { data } = await admin
     .from("care_bookings")
     .select(
-      "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+      "id, customer_id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
     )
     .in("id", ids)
     .order("created_at", { ascending: false });
@@ -331,7 +332,7 @@ async function loadBookingsByEmail(email: string | null) {
   const { data } = await admin
     .from("care_bookings")
     .select(
-      "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+      "id, customer_id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
     )
     .ilike("email", email)
     .order("created_at", { ascending: false })
@@ -351,7 +352,7 @@ async function loadBookingsByPhone(phone: string | null) {
     admin
       .from("care_bookings")
       .select(
-        "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+        "id, customer_id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
       )
       .in("phone_normalized", variants)
       .order("created_at", { ascending: false })
@@ -359,7 +360,7 @@ async function loadBookingsByPhone(phone: string | null) {
     admin
       .from("care_bookings")
       .select(
-        "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+        "id, customer_id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
       )
       .in("phone", variants)
       .order("created_at", { ascending: false })
@@ -450,6 +451,32 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
   }
 
   for (const booking of bookings) {
+    // Owner guard + claim-on-first-match (V3-NOTIF-OWNER-GUARD). The
+    // read-side matcher already drops foreign-owned bookings; this is the
+    // write-side enforcement. Claim an unclaimed booking for this account
+    // (race-safe: only the row still NULL is updated, so concurrent syncs
+    // can't both adopt it) and skip if a concurrent claim won, or if the
+    // booking is already owned by another account. Without this, the same
+    // guest booking matched by email/phone produced a notification in every
+    // matching account's inbox — the cross-user leak.
+    const ownerId = cleanText(booking.customer_id);
+    if (ownerId && ownerId !== identity.userId) {
+      continue;
+    }
+    if (!ownerId) {
+      const { data: claimed } = await admin
+        .from("care_bookings")
+        .update({ customer_id: identity.userId } as never)
+        .eq("id", booking.id)
+        .is("customer_id", null)
+        .select("id")
+        .maybeSingle();
+      if (!claimed) {
+        continue;
+      }
+      booking.customer_id = identity.userId;
+    }
+
     const actionUrl = getCareBookingHref(booking.id);
     const existingActivity = activityByBooking.get(booking.id);
     const existingNotification = notificationByBooking.get(booking.id);
@@ -620,6 +647,17 @@ async function findMatchedCareBookings(identity: CareAccountIdentity): Promise<C
 
   return [...bookingsById.values()]
     .filter((booking) => {
+      // Owner gate (V3-NOTIF-OWNER-GUARD): a care booking has exactly ONE
+      // rightful owner. Email/phone matching can surface the same guest
+      // booking to several accounts; once a booking is CLAIMED
+      // (customer_id set) it must never be matched, listed, or notified to
+      // any other account. This is the read-side half of the cross-user
+      // notification-leak fix (the write-side claim lives in
+      // syncCareArtifacts).
+      const ownerId = cleanText(booking.customer_id);
+      if (ownerId && ownerId !== identity.userId) {
+        return false;
+      }
       if (mappedIds.includes(booking.id)) {
         return true;
       }
