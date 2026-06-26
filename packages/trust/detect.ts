@@ -248,3 +248,22 @@ export function detectExternalLinks(text: string): OffPlatformResult {
   }
   return { detected: patterns.length > 0, patterns, severity: patterns.length === 0 ? "low" : "medium" };
 }
+
+// ---- Stricter display masking (additive; messaging contact-safety) --------
+
+/**
+ * Stricter display masking for messaging surfaces: extends sanitizeForDisplay
+ * (phone+email) to also mask social handles, messaging-app names, and links.
+ * Additive — sanitizeForDisplay itself is unchanged.
+ */
+export function maskContactsForDisplay(text: string): string {
+  let result = sanitizeForDisplay(text);
+  result = result.replace(SOCIAL_HANDLE_RE, (m) => m.replace(/@[\w]+/, "@***"));
+  result = result.replace(MESSAGING_APP_RE, "[removed]");
+  result = result
+    .replace(SOCIAL_URL_RE, "[link removed]")
+    .replace(EXTERNAL_MEETING_RE, "[link removed]")
+    .replace(SHORTENER_URL_RE, "[link removed]")
+    .replace(GENERIC_URL_RE, "[link removed]");
+  return result;
+}
