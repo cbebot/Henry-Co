@@ -9,7 +9,7 @@
     "./whatsapp-webhook": "./whatsapp-webhook.ts"
   },
   "scripts": {
-    "test": "node --test __tests__/*.test.mjs"
+    "test": "tsx --test __tests__/*.test.mjs"
   },
   "peerDependencies": {
     "next": "^15.0.0 || ^16.0.0",

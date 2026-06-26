@@ -1,28 +1,84 @@
-import { getDivisionConfig, henryDomainHost, type DivisionKey } from "@henryco/config";
+import {
+  getDivisionConfig,
+  getSurfaceConfig,
+  getSurfaceHost,
+  henryDomainHost,
+  type DivisionKey,
+  type SurfaceKey,
+} from "@henryco/config";
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 export const OG_CONTENT_TYPE = "image/png" as const;
 
-export type DefaultOgTemplateProps = {
-  divisionKey: DivisionKey;
+/**
+ * One shared 1200x630 OG card for the whole ecosystem. Render it for a public
+ * division (`divisionKey`) OR a non-division customer surface (`surfaceKey`,
+ * e.g. `account`) — both pull brand tokens + host label from the same config
+ * registries, so there is exactly one image design across every site.
+ */
+type OgTemplateContent = {
   title?: string;
   subtitle?: string;
   eyebrow?: string;
 };
 
-export function DefaultOgTemplate({
-  divisionKey,
-  title,
-  subtitle,
-  eyebrow,
-}: DefaultOgTemplateProps) {
-  const division = getDivisionConfig(divisionKey);
-  const accent = division.accent;
-  const accentStrong = division.accentStrong;
-  const dark = division.dark;
-  const headline = title ?? division.name;
-  const tagline = subtitle ?? division.tagline;
-  const topLabel = eyebrow ?? division.sub;
+/**
+ * Exactly one of `divisionKey` / `surfaceKey` is required — the discriminated
+ * union makes "neither" and "both" compile errors, so the invariant is enforced
+ * by the type system rather than only at runtime.
+ */
+export type DefaultOgTemplateProps =
+  | ({ divisionKey: DivisionKey; surfaceKey?: never } & OgTemplateContent)
+  | ({ surfaceKey: SurfaceKey; divisionKey?: never } & OgTemplateContent);
+
+type OgBrand = {
+  name: string;
+  tagline: string;
+  sub: string;
+  host: string;
+  accent: string;
+  accentStrong: string;
+  dark: string;
+};
+
+function resolveOgBrand(props: DefaultOgTemplateProps): OgBrand {
+  if (props.surfaceKey) {
+    const s = getSurfaceConfig(props.surfaceKey);
+    return {
+      name: s.name,
+      tagline: s.tagline,
+      sub: s.sub,
+      host: getSurfaceHost(props.surfaceKey),
+      accent: s.accent,
+      accentStrong: s.accentStrong,
+      dark: s.dark,
+    };
+  }
+  if (props.divisionKey) {
+    const d = getDivisionConfig(props.divisionKey);
+    return {
+      name: d.name,
+      tagline: d.tagline,
+      sub: d.sub,
+      host: henryDomainHost(props.divisionKey),
+      accent: d.accent,
+      accentStrong: d.accentStrong,
+      dark: d.dark,
+    };
+  }
+  throw new Error("DefaultOgTemplate requires either `divisionKey` or `surfaceKey`.");
+}
+
+export function DefaultOgTemplate(props: DefaultOgTemplateProps) {
+  const { title, subtitle, eyebrow } = props;
+  const brand = resolveOgBrand(props);
+  const accent = brand.accent;
+  const accentStrong = brand.accentStrong;
+  const dark = brand.dark;
+  const headline = title ?? brand.name;
+  const tagline = subtitle ?? brand.tagline;
+  const topLabel = eyebrow ?? brand.sub;
+  const hostLabel = brand.host;
 
   return (
     <div
@@ -63,7 +119,9 @@ export function DefaultOgTemplate({
       >
         <span
           style={{
-            display: "inline-block",
+            // Satori (next/og) only supports flex/block/none — NOT inline-block.
+            // A fixed-size flex leaf renders the same accent dash.
+            display: "flex",
             width: 36,
             height: 4,
             background: accent,
@@ -124,10 +182,11 @@ export function DefaultOgTemplate({
           opacity: 0.7,
         }}
       >
-        <span>{henryDomainHost(divisionKey)}</span>
+        <span>{hostLabel}</span>
         <span
           style={{
-            display: "inline-flex",
+            // Satori supports flex/block/none — NOT inline-flex.
+            display: "flex",
             alignItems: "center",
             justifyContent: "center",
             width: 14,

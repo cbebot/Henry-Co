@@ -103,6 +103,17 @@ function isPublicRoute(pathname: string): boolean {
     // unauthenticated with no redirect (per Apple/Google spec). The AASA
     // file has no extension, so the `includes(".")` guard below misses it.
     pathname.startsWith("/.well-known/") ||
+    // OG-SOCIAL-METADATA — Next file-convention metadata routes (the Open Graph
+    // and Twitter card images) must be fetchable by anonymous link-preview
+    // crawlers (Facebook / X / LinkedIn / WhatsApp). They have no file
+    // extension, so the `includes(".")` guard below misses them, and they would
+    // otherwise be 307'd to /login — leaving a shared account link with a
+    // broken (login-page) preview image. They carry no session and serve only a
+    // public 1200x630 brand card, so the auth proxy must let them through.
+    pathname === "/opengraph-image" ||
+    pathname === "/twitter-image" ||
+    pathname.startsWith("/opengraph-image/") ||
+    pathname.startsWith("/twitter-image/") ||
     pathname.includes(".")
   );
 }

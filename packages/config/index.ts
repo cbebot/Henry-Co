@@ -11,5 +11,6 @@ export * from "./support";
 export * from "./urls";
 export * from "./supabase-cookies";
 export * from "./countries";
+export * from "./surfaces";
 export * from "./seo";
 export * from "./security-headers";

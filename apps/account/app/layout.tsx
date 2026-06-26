@@ -11,7 +11,7 @@ import { FeedbackToastViewport } from "@henryco/ui/feedback";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
-import { henrySubdomain, toBrandName } from "@henryco/config";
+import { createSurfaceMetadata } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
@@ -44,37 +44,17 @@ function resolveTimeOfDayBucket(timezone: string): string {
   return "night";
 }
 
-export const metadata: Metadata = {
+// OG-SOCIAL-METADATA — account is a non-division, customer-facing surface
+// (authenticated, so noindex), but a shared account link still needs a proper
+// Facebook/X/LinkedIn/WhatsApp preview. It now flows through the same shared
+// helper as the public division sites: complete Open Graph + Twitter
+// (summary_large_image) tag set, canonical og:url, and og:image served by the
+// sibling `opengraph-image` / `twitter-image` routes. `noIndex` is applied
+// automatically from the SURFACES registry entry.
+export const metadata: Metadata = createSurfaceMetadata("account", {
   title: "My Account — Henry Onyx",
-  description:
-    toBrandName(
-      "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
-    ),
-  robots: { index: false, follow: false },
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? henrySubdomain("account")
-      : "http://localhost:3003"
-  ),
-  openGraph: {
-    title: "My Account — Henry Onyx",
-    description:
-      toBrandName(
-      "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
-    ),
-    siteName: "Henry Onyx Account",
-    type: "website",
-  },
-  icons: {
-    apple: [
-      {
-        url: "/brand/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
-  },
-};
+  path: "/",
+});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getAccountAppLocale();
