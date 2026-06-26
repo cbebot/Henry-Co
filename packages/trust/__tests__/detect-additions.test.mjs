@@ -18,3 +18,22 @@ test("detectExternalLinks catches shortener + generic URLs the base detector mis
   const c = detectExternalLinks("is the blue one available?");
   assert.equal(c.detected, false);
 });
+
+import { maskContactsForDisplay, detectOffPlatformContact, sanitizeForDisplay } from "../detect.ts";
+
+test("maskContactsForDisplay masks handles, app names, and links beyond phone/email", () => {
+  const out = maskContactsForDisplay("dm me @jane_doe on whatsapp or bit.ly/x");
+  assert.ok(!out.includes("@jane_doe"));
+  assert.ok(!/whatsapp/i.test(out));
+  assert.ok(!out.includes("bit.ly/x"));
+});
+
+test("REGRESSION: existing detectOffPlatformContact + sanitizeForDisplay behavior is unchanged", () => {
+  // phone + email still HIGH
+  const r = detectOffPlatformContact("call 08012345678 or me@x.com");
+  assert.equal(r.severity, "high");
+  // base sanitizer still masks phone to last-4 and email to first-2
+  const s = sanitizeForDisplay("call 08012345678 or me@x.com");
+  assert.ok(s.includes("***-5678"));
+  assert.ok(s.includes("me***@x.com"));
+});
