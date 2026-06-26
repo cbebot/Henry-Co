@@ -21,6 +21,7 @@
     "@henryco/cart-saved-items": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/contact-safety": "workspace:^",
     "@henryco/dashboard-modules-account": "workspace:^",
     "@henryco/dashboard-modules-building": "workspace:^",
     "@henryco/dashboard-modules-hotel": "workspace:^",
