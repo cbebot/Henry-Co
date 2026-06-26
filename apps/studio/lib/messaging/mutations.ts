@@ -62,7 +62,8 @@ export async function sendMessage(
 
   // Server-side contact-safety (defense-in-depth; the client is bypassable).
   // High/critical off-platform contact is blocked and never persisted; medium is
-  // masked. Only screen when there is body text (attachment-only sends pass "").
+  // masked. Screen the body server-side (the client is bypassable). Attachment-only
+  // sends pass "" which screens to allow.
   const screened = screenMessageBody(body);
   if (screened.action === "block") {
     return { ok: false, error: "contact_blocked", reason: "contact_blocked" };
@@ -252,10 +253,17 @@ export async function editMessage(
     return { ok: false, error: "Message cannot be empty." };
   }
 
+  // Server-side contact-safety on EDIT too — without this a user could send a
+  // clean message then edit it to inject a phone/email, bypassing the send screen.
+  const screened = screenMessageBody(body);
+  if (screened.action === "block") {
+    return { ok: false, error: "contact_blocked" };
+  }
+
   const result = await supabase
     .from("studio_project_messages")
     .update({
-      body,
+      body: screened.body,
       edited_at: new Date().toISOString(),
     })
     .eq("id", input.messageId)
