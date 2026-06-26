@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, BadgeCheck, MessageSquare, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { JsonLd, buildProductLd } from "@henryco/seo";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { henryDomain } from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
@@ -320,6 +321,20 @@ export default async function ProductPage({
             <div className="mt-8">
               <ProductDetailActions product={data.product} vendor={data.vendor} />
             </div>
+
+            {/* The Onyx Line (WS-4) — contact-safe "Message seller". Flag-gated
+                dark; only shown when this listing has a resolvable vendor. */}
+            {process.env.MARKETPLACE_MESSAGING_ENABLED === "1" && data.vendor ? (
+              <div className="mt-4">
+                <Link
+                  href={`/account/messages/new?anchor_type=listing&anchor_id=${data.product.id}`}
+                  className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {translateSurfaceLabel(locale, "Message seller")}
+                </Link>
+              </div>
+            ) : null}
           </article>
 
           {/* Why this feels safer — editorial border-l ribbon */}
