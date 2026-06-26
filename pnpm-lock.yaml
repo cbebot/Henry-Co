@@ -865,9 +865,15 @@ importers:
       '@henryco/cart-saved-items':
         specifier: workspace:^
         version: link:../../packages/cart-saved-items
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -880,6 +886,12 @@ importers:
       '@henryco/lifecycle':
         specifier: workspace:^
         version: link:../../packages/lifecycle
+      '@henryco/messaging':
+        specifier: workspace:^
+        version: link:../../packages/messaging
+      '@henryco/messaging-thread':
+        specifier: workspace:^
+        version: link:../../packages/messaging-thread
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
