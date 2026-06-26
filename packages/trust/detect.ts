@@ -205,3 +205,23 @@ export function calculateTrustScore(signals: TrustSignals): number {
   // Clamp to 0-100
   return Math.max(0, Math.min(100, score));
 }
+
+// ---- Obfuscation normalization (additive; used by contact-safety) --------
+
+const NUMBER_WORDS: Record<string, string> = {
+  zero: "0", oh: "0", one: "1", two: "2", three: "3", four: "4",
+  five: "5", six: "6", seven: "7", eight: "8", nine: "9",
+};
+
+/**
+ * Normalizes spoken/obfuscated contact details so the canonical detectors
+ * catch evasions like "zero eight zero", "name at gmail dot com", "0 8 0".
+ * Additive: existing detectors are unchanged; callers opt in.
+ */
+export function normalizeForDetection(text: string): string {
+  let t = text.toLowerCase();
+  t = t.replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/g, (w) => NUMBER_WORDS[w] ?? w);
+  t = t.replace(/\s+at\s+/g, "@").replace(/\s+dot\s+/g, ".");
+  t = t.replace(/(?<=\d)[\s.-]+(?=\d)/g, "");
+  return t;
+}
