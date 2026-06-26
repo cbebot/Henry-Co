@@ -63,9 +63,23 @@ export type ComposerLabels = {
   retryUploadLabel?: string;
   fullScreenTitleLabel?: string;
   shortcutHint?: string;
-  attachmentCarouselLabel?: string;
-  emptyAttachmentLabel?: string;
   failedSendLabel?: string;
+  /** Group aria-label on the inline composer shell ("Message composer"). */
+  composerAriaLabel?: string;
+  /** Textarea aria-label ("Message body"). */
+  bodyAriaLabel?: string;
+  /** Drag-over overlay copy ("Drop to attach"). */
+  dropToAttachLabel?: string;
+  /** SR-only live-region announcement while sending ("Sending message"). */
+  srSendingLabel?: string;
+  /** Attachment chip in-progress copy ("Uploading…"). */
+  uploadingLabel?: string;
+  /** Attachment chip failed-upload copy ("Failed"). */
+  attachmentFailedLabel?: string;
+  /** Attachment list aria-label ("Attached files"). */
+  attachmentListLabel?: string;
+  /** Draft indicator saving copy ("Saving…"). */
+  savingLabel?: string;
 };
 
 export type ComposerExtrasContext = {

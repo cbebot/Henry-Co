@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import { buildMessagingChromeLabels, translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   MessageThread,
   type MessageThreadAdapter,
@@ -139,6 +141,17 @@ export function StudioMessageThread({
   projectTitle,
   projectSummary,
 }: StudioMessageThreadProps) {
+  const locale = useHenryCoLocale();
+  const t = useCallback(
+    (label: string) => translateSurfaceLabel(locale, label),
+    [locale],
+  );
+  // Localized composer + thread chrome (Send button, aria, Live, failed-send),
+  // shared across all divisions via the single i18n source of truth.
+  const { composerLabels, threadLabels } = useMemo(
+    () => buildMessagingChromeLabels(t),
+    [t],
+  );
   const adapter = useMemo(() => studioAdapter(), []);
   const initial = useMemo(
     () => initialMessages.map(mapClientMessageToThread),
@@ -158,6 +171,8 @@ export function StudioMessageThread({
       viewer={{ userId: viewerId, fullName: viewerName }}
       adapter={adapter}
       getSupabase={getSupabase}
+      composerLabels={composerLabels}
+      {...threadLabels}
       composerExtras={({ draft, setDraft }) => (
         <RefineWithAiButton
           draft={draft}

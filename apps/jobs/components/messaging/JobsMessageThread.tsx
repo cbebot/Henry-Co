@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { translateSurfaceLabel } from "@henryco/i18n";
+import { buildMessagingChromeLabels, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   MessageThread,
@@ -54,6 +54,13 @@ export function JobsMessageThread({
     [locale],
   );
 
+  // Localized composer + thread chrome (Send button, aria, Live, failed-send,
+  // "is typing"), shared across all divisions via the single i18n source.
+  const { composerLabels, threadLabels } = useMemo(
+    () => buildMessagingChromeLabels(t),
+    [t],
+  );
+
   const adapter = useMemo(
     () =>
       createJobsThreadAdapter({
@@ -85,6 +92,8 @@ export function JobsMessageThread({
       viewer={{ userId: viewer.userId, fullName: viewer.fullName }}
       adapter={adapter}
       getSupabase={getSupabase}
+      composerLabels={composerLabels}
+      {...threadLabels}
       renderMarkdown
       // LEAVE ON — jobs is NOT identity-minimized; the candidate and employer
       // already see each other's names, so broadcasting "<name> is typing"

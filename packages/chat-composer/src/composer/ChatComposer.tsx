@@ -309,7 +309,7 @@ export function ChatComposer(props: ComposerProps) {
       onDrop={handleDrop}
       data-composer-root="inline"
       role="group"
-      aria-label={ariaLabel || "Message composer"}
+      aria-label={ariaLabel || labels?.composerAriaLabel || "Message composer"}
     >
       {isDragOver && enableAttachments ? (
         <div
@@ -321,7 +321,7 @@ export function ChatComposer(props: ComposerProps) {
           aria-hidden
         >
           <span className="rounded-full bg-white/95 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--composer-accent)] shadow-[0_4px_14px_rgba(15,23,42,0.08)] dark:bg-zinc-900/85">
-            Drop to attach
+            {labels?.dropToAttachLabel || "Drop to attach"}
           </span>
         </div>
       ) : null}
@@ -337,7 +337,7 @@ export function ChatComposer(props: ComposerProps) {
           minRows={1}
           maxRows={6}
           disabled={disabled}
-          aria-label={ariaLabel || "Message body"}
+          aria-label={ariaLabel || labels?.bodyAriaLabel || "Message body"}
           aria-describedby={liveRegionId}
           data-hc-no-zoom
           className="henryco-composer-input flex-1 px-2 py-2 text-[15px] leading-6 text-zinc-900 caret-[color:var(--composer-accent)] dark:text-white sm:text-[15.5px]"
@@ -363,6 +363,9 @@ export function ChatComposer(props: ComposerProps) {
           variant="inline"
           removeLabel={labels?.removeAttachmentLabel}
           retryLabel={labels?.retryUploadLabel}
+          uploadingLabel={labels?.uploadingLabel}
+          attachmentFailedLabel={labels?.attachmentFailedLabel}
+          attachmentListLabel={labels?.attachmentListLabel}
         />
       ) : null}
 
@@ -399,6 +402,7 @@ export function ChatComposer(props: ComposerProps) {
             hasContent={hasText || hasAttachments}
             onDiscard={handleDiscardDraft}
             savedLabel={labels?.draftSavedLabel}
+            savingLabel={labels?.savingLabel}
             discardLabel={labels?.discardDraftLabel}
             reduceMotion={reduceMotion}
           />
@@ -426,7 +430,9 @@ export function ChatComposer(props: ComposerProps) {
 
       <span id={liveRegionId} className="sr-only" aria-live="polite">
         {validationMessage ||
-          (sendStatus === "sending" ? "Sending message" : "")}
+          (sendStatus === "sending"
+            ? labels?.srSendingLabel || "Sending message"
+            : "")}
       </span>
 
       {validationMessage ? (
