@@ -4,6 +4,8 @@ import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageSquareQuote, ShieldCheck, Star } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import type { MarketplaceReview } from "@/lib/marketplace/types";
 
@@ -26,6 +28,8 @@ const emptyForm = {
 
 export function AccountReviewsClient({ products, initialReviews }: AccountReviewsClientProps) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale).reviewsClient;
   const { pushToast } = useMarketplaceRuntime();
   const [form, setForm] = useState(emptyForm);
   const [reviews, setReviews] = useState(initialReviews);
@@ -59,7 +63,7 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
         | null;
 
       if (!response.ok || !result?.review) {
-        throw new Error(result?.error || "Review submission failed.");
+        throw new Error(result?.error || copy.submitFailed);
       }
 
       setReviews((current) => [result.review!, ...current.filter((item) => item.id !== result.review!.id)]);
@@ -69,17 +73,17 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
         rating: current.rating,
       }));
       pushToast(
-        result.mode === "published" ? "Review published" : "Review submitted",
+        result.mode === "published" ? copy.toastPublished : copy.toastSubmitted,
         "success",
         result.mode === "published"
-          ? "Your verified review is now contributing to product and seller trust."
-          : "Your review is in moderation because we could not verify the purchase automatically."
+          ? copy.toastPublishedBody
+          : copy.toastPendingBody
       );
       startTransition(() => router.refresh());
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : "Review submission failed.";
+      const message = reason instanceof Error ? reason.message : copy.submitFailed;
       setError(message);
-      pushToast("Review submission failed", "error", message);
+      pushToast(copy.toastSubmitFailed, "error", message);
     } finally {
       setSubmitting(false);
     }
@@ -93,10 +97,9 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[var(--market-paper-white)]">Review policy</p>
+            <p className="text-sm font-semibold text-[var(--market-paper-white)]">{copy.policyTitle}</p>
             <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-              Verified purchases publish immediately and feed product plus seller trust. Unverified reviews still count
-              as evidence, but they enter moderation first instead of inflating trust instantly.
+              {copy.policyBody}
             </p>
           </div>
         </div>
@@ -110,7 +113,7 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
             className="market-select rounded-2xl px-4 py-3"
             required
           >
-            <option value="">Select product</option>
+            <option value="">{copy.selectProduct}</option>
             {products.map((product) => (
               <option key={product.slug} value={product.slug}>
                 {product.title}
@@ -125,7 +128,10 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
           >
             {[5, 4, 3, 2, 1].map((rating) => (
               <option key={rating} value={rating}>
-                {rating} star{rating === 1 ? "" : "s"}
+                {(rating === 1 ? copy.starSingular : copy.starPlural).replace(
+                  "{rating}",
+                  String(rating),
+                )}
               </option>
             ))}
           </select>
@@ -133,7 +139,7 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
             value={form.title}
             onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3 md:col-span-2"
-            placeholder="Review title"
+            placeholder={copy.titlePlaceholder}
             required
           />
           <textarea
@@ -141,7 +147,7 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
             onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
             rows={4}
             className="market-textarea rounded-[1.5rem] px-4 py-3 md:col-span-2"
-            placeholder="Share what the product and delivery experience felt like."
+            placeholder={copy.bodyPlaceholder}
             required
           />
         </div>
@@ -153,11 +159,11 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
         <button className="market-button-primary mt-4 inline-flex min-h-[46px] items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
           {submitting ? (
             <>
-              <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label="Submitting review" />
-              Submitting...
+              <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label={copy.submittingLabel} />
+              {copy.submitting}
             </>
           ) : (
-            "Submit review"
+            copy.submitReview
           )}
         </button>
       </form>
@@ -165,12 +171,10 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
       {!reviews.length ? (
         <section className="border-l-2 border-[var(--market-brass)]/55 px-5 py-4">
           <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
-            No reviews submitted yet.
+            {copy.emptyTitle}
           </p>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--market-muted)]">
-            Verified purchase reviews live here. Pick a product above, rate it,
-            and your feedback joins the trust layer the next time someone
-            considers it.
+            {copy.emptyBody}
           </p>
         </section>
       ) : (
@@ -197,7 +201,7 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
               <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{review.body}</p>
               <div className="mt-4 flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-[var(--market-muted)]">
                 <MessageSquareQuote className="h-3.5 w-3.5" />
-                {review.verifiedPurchase ? "Verified purchase" : "Awaiting moderation confirmation"}
+                {review.verifiedPurchase ? copy.verifiedPurchase : copy.awaitingModeration}
               </div>
             </article>
           ))}

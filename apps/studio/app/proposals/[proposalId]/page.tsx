@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { formatCurrency } from "@/lib/env";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 import { StudioPaymentGuide } from "@/components/studio/payment-guide";
@@ -80,6 +81,7 @@ export default async function ProposalDetailPage({
   // detail page, so the DeepL cost is acceptable. Milestone descriptions
   // ship through Promise.all alongside the proposal fields.
   const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
   const [
     localizedTitle,
     localizedSummary,
@@ -187,7 +189,7 @@ export default async function ProposalDetailPage({
       <section className="studio-panel studio-mesh rounded-[2.8rem] px-7 py-10 sm:px-10 lg:px-14">
         <div className="grid gap-6 xl:grid-cols-[1.06fr_0.94fr]">
           <div className="max-w-4xl">
-            <div className="studio-kicker">Proposal room</div>
+            <div className="studio-kicker">{copy.proposal.proposalRoom}</div>
             <h1 className="studio-heading mt-4">{localizedTitle}</h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--studio-ink-soft)]">
               {localizedSummary}
@@ -196,8 +198,8 @@ export default async function ProposalDetailPage({
             <div className="mt-6 flex flex-wrap gap-3">
               {[
                 service?.name || proposal.serviceId,
-                pkg?.name || "Custom scope",
-                team?.name || "Assigned during sales review",
+                pkg?.name || copy.proposal.customScope,
+                team?.name || copy.proposal.assignedDuringReview,
                 proposalStatusLabel(proposal.status),
               ].map((item) => (
                 <span
@@ -212,11 +214,10 @@ export default async function ProposalDetailPage({
             <div className="mt-8 rounded-[1.75rem] border border-[var(--studio-line)] bg-black/10 p-5">
               <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                 <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" />
-                <div className="text-sm font-semibold">Commercial confidence note</div>
+                <div className="text-sm font-semibold">{copy.proposal.confidenceNoteTitle}</div>
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                This proposal is not a vague estimate. It is a structured commercial record with scope,
-                milestone, deposit, and payment continuity aligned to the same Studio workflow.
+                {copy.proposal.confidenceNoteBody}
               </p>
             </div>
           </div>
@@ -225,38 +226,40 @@ export default async function ProposalDetailPage({
             <div className="rounded-[2rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.92),rgba(6,16,23,0.98))] p-6">
               <div className="flex items-center gap-3 text-[var(--studio-signal)]">
                 <CircleDollarSign className="h-5 w-5" />
-                <div className="text-xs uppercase tracking-[0.18em]">Total investment</div>
+                <div className="text-xs uppercase tracking-[0.18em]">{copy.proposal.totalInvestment}</div>
               </div>
               <div className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
                 {totalInvestment}
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                The current total reflects scope, platform architecture, delivery pace, and commercial
-                calibration for this proposal.
+                {copy.proposal.totalInvestmentBody}
               </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                  Deposit checkpoint
+                  {copy.proposal.depositCheckpoint}
                 </div>
                 <div className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
                   {depositAmount}
                 </div>
                 <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                  Activates the project room, payment verification, onboarding, and the first milestone.
+                  {copy.proposal.depositCheckpointBody}
                 </p>
               </div>
               <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                  Proposal validity
+                  {copy.proposal.proposalValidity}
                 </div>
                 <div className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
                   {new Date(proposal.validUntil).toLocaleDateString("en-NG")}
                 </div>
                 <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                  Status is currently {proposalStatusLabel(proposal.status)}.
+                  {copy.proposal.statusIsCurrently.replace(
+                    "{status}",
+                    proposalStatusLabel(proposal.status),
+                  )}
                 </p>
               </div>
             </div>
@@ -267,15 +270,15 @@ export default async function ProposalDetailPage({
       <section className="mt-10 grid gap-6 xl:grid-cols-[0.84fr_1.16fr]">
         <article className="space-y-6">
           <section className="studio-panel rounded-[1.9rem] p-6">
-            <div className="studio-kicker">Commercial brief</div>
+            <div className="studio-kicker">{copy.proposal.commercialBrief}</div>
             <div className="mt-5 space-y-3">
               {[
-                ["Client", lead?.customerName || "Studio client"],
-                ["Company", lead?.companyName || "Private brief"],
-                ["Service lane", service?.name || proposal.serviceId],
-                ["Delivery team", team?.name || "HenryCo Studio match"],
-                ["Budget lane", lead?.budgetBand || "Calibrated during review"],
-                ["Urgency", lead?.urgency || "Standard delivery lane"],
+                [copy.proposal.labelClient, lead?.customerName || copy.proposal.valueStudioClient],
+                [copy.proposal.labelCompany, lead?.companyName || copy.proposal.valuePrivateBrief],
+                [copy.proposal.labelServiceLane, service?.name || proposal.serviceId],
+                [copy.proposal.labelDeliveryTeam, team?.name || copy.proposal.valueStudioMatch],
+                [copy.proposal.labelBudgetLane, lead?.budgetBand || copy.proposal.valueCalibratedReview],
+                [copy.proposal.labelUrgency, lead?.urgency || copy.proposal.valueStandardDelivery],
               ].map(([label, value]) => (
                 <div
                   key={label}
@@ -294,7 +297,7 @@ export default async function ProposalDetailPage({
             {brief ? (
               <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                  Goals and scope
+                  {copy.proposal.goalsAndScope}
                 </div>
                 <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedBriefGoals}</p>
                 <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
@@ -316,26 +319,26 @@ export default async function ProposalDetailPage({
               <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
                 <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                   <Layers3 className="h-4 w-4 text-[var(--studio-signal)]" />
-                  <div className="text-sm font-semibold">Custom request profile</div>
+                  <div className="text-sm font-semibold">{copy.proposal.customRequestProfile}</div>
                 </div>
                 <div className="mt-4 grid gap-3">
                   {[
-                    ["Project type", localizedCustomProjectType],
-                    ["Platform preference", localizedCustomPlatform],
-                    ["Design direction", localizedCustomDesign],
+                    [copy.proposal.labelProjectType, localizedCustomProjectType],
+                    [copy.proposal.labelPlatformPreference, localizedCustomPlatform],
+                    [copy.proposal.labelDesignDirection, localizedCustomDesign],
                     [
-                      "Pages and interfaces",
+                      copy.proposal.labelPagesInterfaces,
                       // TODO(wave1): multi-row list members (pageRequirements
                       // entries) — translate each entry through DeepL in a
                       // later wave so the comma-joined string can be wrapped.
-                      customRequest.pageRequirements.join(", ") || "Tailored during scope review",
+                      customRequest.pageRequirements.join(", ") || copy.proposal.valueTailoredScope,
                     ],
                     [
-                      "Add-ons",
+                      copy.proposal.labelAddons,
                       // TODO(wave1): multi-row list members (addonServices
                       // entries) — translate each entry through DeepL in a
                       // later wave so the comma-joined string can be wrapped.
-                      customRequest.addonServices.join(", ") || "None selected",
+                      customRequest.addonServices.join(", ") || copy.proposal.valueNoneSelected,
                     ],
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-[1.2rem] border border-[var(--studio-line)] px-4 py-4">
@@ -350,7 +353,7 @@ export default async function ProposalDetailPage({
                   {customRequest.inspirationSummary ? (
                     <div className="rounded-[1.2rem] border border-[var(--studio-line)] px-4 py-4">
                       <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                        References
+                        {copy.proposal.references}
                       </div>
                       <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
                         {localizedCustomInspiration}
@@ -363,12 +366,12 @@ export default async function ProposalDetailPage({
           </section>
 
           <section className="studio-panel rounded-[1.9rem] p-6">
-            <div className="studio-kicker">Decision guidance</div>
+            <div className="studio-kicker">{copy.proposal.decisionGuidance}</div>
             <div className="mt-5 space-y-4">
               {[
-                "Approve the commercial direction and HenryCo activates the live project room.",
-                "The deposit amount below becomes the first payment checkpoint in the delivery timeline.",
-                "Finance confirms payment, then onboarding, design, build, and delivery updates stay on the same Studio record.",
+                copy.proposal.step1,
+                copy.proposal.step2,
+                copy.proposal.step3,
               ].map((step, index) => (
                 <div key={step} className="flex gap-3">
                   <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] text-xs font-semibold text-[var(--studio-signal)]">
@@ -382,11 +385,10 @@ export default async function ProposalDetailPage({
             <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
               <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                 <Sparkles className="h-4 w-4 text-[var(--studio-signal)]" />
-                <div className="text-sm font-semibold">What happens after approval</div>
+                <div className="text-sm font-semibold">{copy.proposal.afterApprovalTitle}</div>
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                The proposal converts into a live project workspace with milestone tracking, payment
-                verification, files, revisions, and support continuity on the same record.
+                {copy.proposal.afterApprovalBody}
               </p>
             </div>
 
@@ -396,15 +398,15 @@ export default async function ProposalDetailPage({
                   href={projectHref}
                   className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  Open project workspace
+                  {copy.proposal.openProjectWorkspace}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               ) : viewerHasRole(viewer, ["studio_owner", "sales_consultation"]) ? (
                 <form action={createProjectFromProposalAction}>
                   <input type="hidden" name="proposalId" value={proposal.id} />
                   <StudioSubmitButton
-                    label="Create project workspace"
-                    pendingLabel="Creating workspace..."
+                    label={copy.proposal.createProjectWorkspace}
+                    pendingLabel={copy.proposal.creatingWorkspace}
                   />
                 </form>
               ) : (
@@ -412,7 +414,7 @@ export default async function ProposalDetailPage({
                   href={viewer.user ? platform.accountDashboardUrl : loginHref}
                   className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  {viewer.user ? "Open HenryCo account" : "Sign in through HenryCo account"}
+                  {viewer.user ? copy.proposal.openHenryCoAccount : copy.proposal.signInThroughAccount}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               )}
@@ -422,7 +424,7 @@ export default async function ProposalDetailPage({
 
         <article className="space-y-6">
           <section className="studio-panel rounded-[1.9rem] p-6">
-            <div className="studio-kicker">Pricing architecture</div>
+            <div className="studio-kicker">{copy.proposal.pricingArchitecture}</div>
             <div className="mt-5 space-y-3">
               {pricingBreakdown.map((line) => (
                 <div
@@ -447,15 +449,14 @@ export default async function ProposalDetailPage({
             <div className="mt-5 flex flex-col gap-3 rounded-[1.5rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.72),rgba(6,16,23,0.96))] p-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                  Commercial total
+                  {copy.proposal.commercialTotal}
                 </div>
                 <div className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
                   {totalInvestment}
                 </div>
               </div>
               <div className="text-sm leading-7 text-[var(--studio-ink-soft)] sm:max-w-sm sm:text-right">
-                Deposit due now: {depositAmount}. Remaining payments stay attached to milestones, not
-                a vague follow-up invoice trail.
+                {copy.proposal.depositDueNow.replace("{amount}", depositAmount)}
               </div>
             </div>
           </section>
@@ -463,7 +464,7 @@ export default async function ProposalDetailPage({
           <section className="studio-panel rounded-[1.9rem] p-6">
             <div className="flex items-center gap-3 text-[var(--studio-ink)]">
               <CalendarDays className="h-4 w-4 text-[var(--studio-signal)]" />
-              <div className="text-sm font-semibold">Milestone map</div>
+              <div className="text-sm font-semibold">{copy.proposal.milestoneMap}</div>
             </div>
             <div className="mt-5 space-y-4">
               {localizedMilestones.map((milestone, index) => (
@@ -500,7 +501,7 @@ export default async function ProposalDetailPage({
           <section className="studio-panel rounded-[1.9rem] p-6">
             <div className="flex items-center gap-3 text-[var(--studio-ink)]">
               <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" />
-              <div className="text-sm font-semibold">Proposal clarity notes</div>
+              <div className="text-sm font-semibold">{copy.proposal.clarityNotes}</div>
             </div>
             <div className="mt-4 space-y-3">
               {/* TODO(wave1): comparisonNotes is a string[] not a row-shape —
@@ -518,36 +519,37 @@ export default async function ProposalDetailPage({
           </section>
 
           <StudioPaymentGuide
-            title="Transfer guidance is based on HenryCo’s live company account record."
+            title={copy.proposal.transferGuidanceTitle}
             amount={proposal.depositAmount}
             currency={proposal.currency}
             statusLabel={proposalStatusLabel(proposal.status)}
-            dueLabel={`Proposal valid until ${new Date(proposal.validUntil).toLocaleDateString("en-NG")}`}
-            instructions="The deposit unlocks the active project room, finance verification, onboarding, and the first execution milestone. The same amount and account details continue into the live payment workspace."
+            dueLabel={copy.proposal.validUntilLabel.replace(
+              "{date}",
+              new Date(proposal.validUntil).toLocaleDateString("en-NG"),
+            )}
+            instructions={copy.proposal.transferInstructions}
             bankName={platform.paymentBankName}
             accountName={platform.paymentAccountName}
             accountNumber={platform.paymentAccountNumber}
             supportEmail={platform.paymentSupportEmail}
             supportWhatsApp={platform.paymentSupportWhatsApp}
-            proofHint="If the project room is already active, upload proof inside the payment lane immediately after transfer. If not, HenryCo activates the workspace on acceptance so the exact proof path is attached to the same record."
+            proofHint={copy.proposal.proofHint}
           />
 
           <section className="studio-panel rounded-[1.9rem] p-6">
             <div className="flex items-center gap-3 text-[var(--studio-ink)]">
               <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" />
-              <div className="text-sm font-semibold">Shared-account continuity</div>
+              <div className="text-sm font-semibold">{copy.proposal.continuityTitle}</div>
             </div>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-              Studio keeps the direct proposal and project rooms here, while the broader HenryCo account
-              history remains the central place for account-level visibility, invoices, support context,
-              and future cross-division records.
+              {copy.proposal.continuityBody}
             </p>
             <div className="mt-5">
               <Link
                 href={platform.accountDashboardUrl}
                 className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open HenryCo account
+                {copy.proposal.openHenryCoAccount}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

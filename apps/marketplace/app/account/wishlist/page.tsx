@@ -3,6 +3,7 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -21,19 +22,20 @@ export default async function AccountWishlistPage({
   searchParams: Promise<SearchParams>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   await requireMarketplaceUser("/account/wishlist");
   const [data, params] = await Promise.all([getBuyerDashboardData(), searchParams]);
 
   const toast = params.removed
-    ? "Removed from wishlist."
+    ? copy.wishlist.toastRemoved
     : params.saved
-      ? "Saved to wishlist."
+      ? copy.wishlist.toastSaved
       : null;
 
   return (
     <WorkspaceShell
-      title="Wishlist"
-      description="Saved products stay attached to the account so future recommendations and concierge basket flows can start from intent, not guesswork."
+      title={copy.wishlist.title}
+      description={copy.wishlist.description}
       {...accountWorkspaceNav("/account/wishlist", locale)}
     >
       {toast ? (
@@ -55,7 +57,7 @@ export default async function AccountWishlistPage({
                   type="submit"
                   className="w-full rounded-full border border-[rgba(232,88,88,0.35)] bg-[rgba(232,88,88,0.08)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-alert,#F87171)] hover:bg-[rgba(232,88,88,0.16)]"
                 >
-                  Remove from wishlist
+                  {copy.wishlist.remove}
                 </button>
               </form>
             </div>
@@ -63,10 +65,10 @@ export default async function AccountWishlistPage({
         </div>
       ) : (
         <EmptyState
-          title="Wishlist is empty."
-          body="Save products to build a quieter, more deliberate buying shortlist."
+          title={copy.wishlist.emptyTitle}
+          body={copy.wishlist.emptyBody}
           ctaHref="/search"
-          ctaLabel="Browse marketplace"
+          ctaLabel={copy.wishlist.emptyCta}
         />
       )}
     </WorkspaceShell>

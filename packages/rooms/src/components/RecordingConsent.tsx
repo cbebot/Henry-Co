@@ -8,6 +8,8 @@ import {
   Drawer,
 } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getRoomsCopy } from "@henryco/i18n";
 
 import {
   recordConsent as recordConsentAction,
@@ -61,6 +63,8 @@ export function RecordingConsent({
   isMobile,
   onChange,
 }: RecordingConsentProps) {
+  const locale = useHenryCoLocale();
+  const copy = getRoomsCopy(locale).recordingConsent;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<RoomError | undefined>(undefined);
 
@@ -102,9 +106,7 @@ export function RecordingConsent({
           lineHeight: 1.55,
         }}
       >
-        This session may be recorded for review. The recording is stored on
-        HenryCo infrastructure and is accessible only to participants and the
-        session owner.
+        {copy.intro}
       </p>
       <ul
         style={{
@@ -117,14 +119,9 @@ export function RecordingConsent({
           lineHeight: 1.5,
         }}
       >
-        <li>You can withdraw consent at any time — recording will stop.</li>
-        <li>
-          You can request a copy or deletion of the recording from your
-          account settings.
-        </li>
-        <li>
-          Recording will not start until every participant has consented.
-        </li>
+        <li>{copy.bulletWithdraw}</li>
+        <li>{copy.bulletCopyDeletion}</li>
+        <li>{copy.bulletAllConsent}</li>
       </ul>
       <p
         style={{
@@ -133,7 +130,7 @@ export function RecordingConsent({
           color: `var(${CSS_VARS.inkMuted})`,
         }}
       >
-        Consent text version: <code>{consentTextVersion}</code>
+        {copy.versionLabel} <code>{consentTextVersion}</code>
       </p>
       {error ? (
         <p
@@ -144,7 +141,7 @@ export function RecordingConsent({
             fontSize: "0.9rem",
           }}
         >
-          We couldn&apos;t save your choice ({error.error}). Try again.
+          {copy.saveError(error.error)}
         </p>
       ) : null}
       <div
@@ -163,10 +160,10 @@ export function RecordingConsent({
               spinner={submitting}
               icon={<ShieldOff size={16} aria-hidden />}
             >
-              Withdraw consent
+              {copy.withdraw}
             </ActionButton>
             <ActionButton tone="ghost" onClick={onClose}>
-              Keep consent
+              {copy.keepConsent}
             </ActionButton>
           </>
         ) : (
@@ -177,10 +174,10 @@ export function RecordingConsent({
               spinner={submitting}
               icon={<ShieldCheck size={16} aria-hidden />}
             >
-              I consent to recording
+              {copy.consent}
             </ActionButton>
             <ActionButton tone="ghost" onClick={onClose}>
-              Not now
+              {copy.notNow}
             </ActionButton>
           </>
         )}
@@ -193,8 +190,8 @@ export function RecordingConsent({
       <BottomSheet
         open={open}
         onClose={onClose}
-        title="Recording consent"
-        kicker="Live room"
+        title={copy.title}
+        kicker={copy.kicker}
       >
         {body}
       </BottomSheet>
@@ -205,8 +202,8 @@ export function RecordingConsent({
     <Drawer
       open={open}
       onClose={onClose}
-      title="Recording consent"
-      kicker="Live room"
+      title={copy.title}
+      kicker={copy.kicker}
     >
       {body}
     </Drawer>

@@ -5,19 +5,21 @@ import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceSellerApplicationCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function SellerApplicationPage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceSellerApplicationCopy(locale);
   await requireMarketplaceUser("/account/seller-application");
   const data = await getBuyerDashboardData();
   const application = data.application;
 
   return (
     <WorkspaceShell
-      title="Seller application"
-      description="Seller onboarding now lives in the protected account area so drafts, verification, moderation notes, and approval state stay structured instead of spilling into public clutter."
+      title={copy.overview.shellTitle}
+      description={copy.overview.shellDescription}
       {...accountWorkspaceNav("/account/seller-application", locale)}
       actions={
         <Link
@@ -31,10 +33,10 @@ export default async function SellerApplicationPage() {
           className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold"
         >
           {application?.status === "approved"
-            ? "Continue vendor onboarding"
+            ? copy.overview.actions.continueOnboarding
             : application
-              ? "Continue application"
-              : "Start application"}
+              ? copy.overview.actions.continueApplication
+              : copy.overview.actions.startApplication}
         </Link>
       }
     >
@@ -46,27 +48,27 @@ export default async function SellerApplicationPage() {
               {application.storeName}
             </h2>
             <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-              Submitted {formatDate(application.submittedAt)} · {application.categoryFocus}
+              {copy.overview.statusCard.submittedPrefix} {formatDate(application.submittedAt)} · {application.categoryFocus}
             </p>
             <p className="market-soft mt-4 rounded-[1.5rem] px-4 py-4 text-sm leading-7 text-[var(--market-ink)]">
               {application.reviewNote ||
-                "Your application is in the workflow. Updates will appear here and in the notifications center."}
+                copy.overview.statusCard.defaultReviewNote}
             </p>
           </article>
 
           <div className="grid gap-5 lg:grid-cols-3">
             {[
               {
-                title: "Protected draft flow",
-                body: "Store identity, verification, and review progress now live inside the account workspace instead of the public site.",
+                title: copy.overview.cards.protectedDraft.title,
+                body: copy.overview.cards.protectedDraft.body,
               },
               {
-                title: "Owner and admin visibility",
-                body: "Submission triggers the internal approval queue and the owner-alert path immediately.",
+                title: copy.overview.cards.ownerVisibility.title,
+                body: copy.overview.cards.ownerVisibility.body,
               },
               {
-                title: "Vendor handoff",
-                body: "Approved sellers move into vendor onboarding before product submission opens.",
+                title: copy.overview.cards.vendorHandoff.title,
+                body: copy.overview.cards.vendorHandoff.body,
               },
             ].map((item) => (
               <article
@@ -81,10 +83,10 @@ export default async function SellerApplicationPage() {
         </div>
       ) : (
         <EmptyState
-          title="No seller application is active yet."
-          body="Start the protected onboarding flow to draft your store profile, add verification context, and move into moderation with real progress visibility."
+          title={copy.overview.empty.title}
+          body={copy.overview.empty.body}
           ctaHref="/account/seller-application/start"
-          ctaLabel="Start seller application"
+          ctaLabel={copy.overview.empty.ctaLabel}
         />
       )}
     </WorkspaceShell>

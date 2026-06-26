@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
+import { getAccountHeroesCopy } from "@henryco/i18n";
+
+import { getAccountAppLocale } from "@/lib/locale-server";
+
 import { divisionForKey, type TaskRow } from "./helpers";
 
 type Props = {
@@ -10,19 +14,20 @@ type Props = {
   sourceLabel: string;
 };
 
-const PRIORITY_LABEL_FALLBACK: Record<TaskRow["priority"], string> = {
-  urgent: "Urgent",
-  high: "High",
-  normal: "Routine",
-  low: "Quiet",
-};
-
-export function TasksList({ tasks, priorityLabel, blockingLabel, sourceLabel }: Props) {
+export async function TasksList({ tasks, priorityLabel, blockingLabel, sourceLabel }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale);
+  const priorityLabelFallback: Record<TaskRow["priority"], string> = {
+    urgent: copy.tasksList.priorityUrgent,
+    high: copy.tasksList.priorityHigh,
+    normal: copy.tasksList.priorityRoutine,
+    low: copy.tasksList.priorityQuiet,
+  };
   return (
-    <div className="acct-tsk__list" role="list" aria-label="Pending tasks">
+    <div className="acct-tsk__list" role="list" aria-label={copy.tasksList.listLabel}>
       {tasks.map((task) => {
         const palette = divisionForKey(task.sourceDivision);
-        const label = priorityLabel(task.priority) || PRIORITY_LABEL_FALLBACK[task.priority];
+        const label = priorityLabel(task.priority) || priorityLabelFallback[task.priority];
         return (
           <Link
             key={task.id}

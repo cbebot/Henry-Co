@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import type { NewsletterDivision, NewsletterTopicDefinition } from "@henryco/newsletter";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getHubNewsletterCopy } from "@henryco/i18n";
 
 type GroupProps = {
   groups: Array<{
@@ -16,19 +18,10 @@ type SubmissionState =
   | { status: "success"; preferenceUrl: string | null; created: boolean; topics: string[] }
   | { status: "error"; message: string };
 
-const DIVISION_LABEL: Record<NewsletterDivision, string> = {
-  hub: "HenryCo Group",
-  account: "Account",
-  care: "Care",
-  jobs: "Jobs",
-  learn: "Learn",
-  logistics: "Logistics",
-  marketplace: "Marketplace",
-  property: "Property",
-  studio: "Studio",
-};
-
 export default function NewsletterSignupClient({ groups }: GroupProps) {
+  const locale = useHenryCoLocale();
+  const copy = getHubNewsletterCopy(locale);
+  const divisionLabel = copy.divisions;
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
   const [locale, setLocale] = useState("en-NG");
@@ -81,8 +74,8 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
         const message =
           body.message ||
           (body.code === "suppressed"
-            ? "This address is on our suppression list."
-            : "Something went wrong. Try again.");
+            ? copy.signup.errorSuppressed
+            : copy.signup.errorGeneric);
         setState({ status: "error", message });
         return;
       }
@@ -95,7 +88,7 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
     } catch (err) {
       setState({
         status: "error",
-        message: err instanceof Error ? err.message : "Network error",
+        message: err instanceof Error ? err.message : copy.signup.errorNetwork,
       });
     }
   };
@@ -104,19 +97,19 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
     return (
       <div className="rounded-lg border border-[color:var(--border)] bg-[color:var(--background)] p-6">
         <h2 className="text-lg font-semibold">
-          {state.created ? "You&rsquo;re subscribed" : "Preferences updated"}
+          {state.created ? copy.signup.successSubscribedTitle : copy.signup.successUpdatedTitle}
         </h2>
         <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">
-          We&rsquo;ll email {email} about: {state.topics.join(", ")}.
+          {copy.signup.successBody(email, state.topics.join(", "))}
         </p>
         {state.preferenceUrl ? (
           <p className="mt-4 text-sm">
-            Manage preferences any time:{" "}
+            {copy.signup.managePrefsPrefix}{" "}
             <a
               href={state.preferenceUrl}
               className="underline decoration-dotted underline-offset-4"
             >
-              open preference center
+              {copy.signup.openPreferenceCenter}
             </a>
           </p>
         ) : null}
@@ -128,39 +121,39 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid gap-4 md:grid-cols-2">
         <label className="flex flex-col gap-2 text-sm">
-          <span>Email address</span>
+          <span>{copy.signup.emailLabel}</span>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder={copy.signup.emailPlaceholder}
             className="rounded-md border border-[color:var(--border)] bg-[color:var(--background)] px-3 py-2 text-sm outline-none focus:border-[color:var(--ring)] focus:ring-1 focus:ring-[color:var(--ring)]"
           />
         </label>
         <label className="flex flex-col gap-2 text-sm">
-          <span>Country (2 letter, optional)</span>
+          <span>{copy.signup.countryLabel}</span>
           <input
             type="text"
             maxLength={2}
             value={country}
             onChange={(e) => setCountry(e.target.value.toUpperCase())}
-            placeholder="NG"
+            placeholder={copy.signup.countryPlaceholder}
             className="rounded-md border border-[color:var(--border)] bg-[color:var(--background)] px-3 py-2 text-sm uppercase outline-none focus:border-[color:var(--ring)] focus:ring-1 focus:ring-[color:var(--ring)]"
           />
         </label>
       </div>
 
       <div>
-        <p className="text-sm font-medium">Pick what you want to hear about</p>
+        <p className="text-sm font-medium">{copy.signup.pickHeading}</p>
         <p className="mt-1 text-xs text-[color:var(--muted-foreground)]">
-          You can change or remove any of these later.
+          {copy.signup.pickHint}
         </p>
         <div className="mt-4 space-y-6">
           {groups.map((group) => (
             <section key={group.division} className="space-y-3">
               <h3 className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-                {DIVISION_LABEL[group.division]}
+                {divisionLabel[group.division]}
               </h3>
               <div className="space-y-2">
                 {group.topics.map((topic) => {
@@ -205,10 +198,7 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
           onChange={(e) => setConsent(e.target.checked)}
           className="mt-1 h-4 w-4"
         />
-        <span>
-          I agree to receive these newsletters from HenryCo. I understand I can unsubscribe any
-          time, and that HenryCo will suppress sends during active support or billing issues.
-        </span>
+        <span>{copy.signup.consent}</span>
       </label>
 
       <input
@@ -224,7 +214,7 @@ export default function NewsletterSignupClient({ groups }: GroupProps) {
           disabled={!canSubmit}
           className="inline-flex items-center justify-center rounded-md bg-[color:var(--foreground)] px-4 py-2 text-sm font-medium text-[color:var(--background)] disabled:opacity-50"
         >
-          {state.status === "submitting" ? "Subscribing…" : "Subscribe"}
+          {state.status === "submitting" ? copy.signup.submittingLabel : copy.signup.subscribeLabel}
         </button>
         {state.status === "error" ? (
           <span className="text-sm text-[color:var(--destructive)]">{state.message}</span>

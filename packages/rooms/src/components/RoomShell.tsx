@@ -10,6 +10,8 @@ import {
   Section,
 } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getRoomsCopy, type RoomsCopy } from "@henryco/i18n";
 
 import type {
   CreateRoomSuccess,
@@ -18,6 +20,8 @@ import type {
   RoomLifecycleState,
 } from "../types";
 import { RoomBadge } from "./RoomBadge";
+
+type RoomShellCopy = RoomsCopy["roomShell"];
 
 /**
  * RoomShell — typed wrapper around the provider video iframe.
@@ -99,9 +103,13 @@ export function RoomShell({
   renderCollabEditor,
   renderPresence,
   renderScreenShare,
-  title = "Live room",
-  kicker = "Room",
+  title,
+  kicker,
 }: RoomShellProps) {
+  const locale = useHenryCoLocale();
+  const copy = getRoomsCopy(locale).roomShell;
+  const resolvedTitle = title ?? copy.defaultTitle;
+  const resolvedKicker = kicker ?? copy.defaultKicker;
   const [retryCount, setRetryCount] = useState(0);
 
   // Build the iframe src — for Jitsi the joinToken may be a JWT (use as
@@ -115,7 +123,7 @@ export function RoomShell({
   return (
     <section
       role="region"
-      aria-label={title}
+      aria-label={resolvedTitle}
       style={{
         display: "grid",
         gap: "1.25rem",
@@ -142,7 +150,7 @@ export function RoomShell({
               fontWeight: 600,
             }}
           >
-            {kicker}
+            {resolvedKicker}
           </p>
           <h1
             style={{
@@ -152,7 +160,7 @@ export function RoomShell({
               color: `var(${CSS_VARS.ink})`,
             }}
           >
-            {title}
+            {resolvedTitle}
           </h1>
         </div>
         <div
@@ -184,7 +192,7 @@ export function RoomShell({
                 aria-hidden
                 style={{ animation: "henrycoSpin 2s linear infinite" }}
               />
-              Recording
+              {copy.recordingBadge}
             </span>
           ) : null}
         </div>
@@ -207,6 +215,7 @@ export function RoomShell({
             {lifecycle.state === "idle" ? (
               <PrejoinState
                 onJoin={lifecycle.join}
+                copy={copy}
               />
             ) : lifecycle.state === "joining" ? (
               <div style={{ minHeight: "20rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -219,12 +228,13 @@ export function RoomShell({
                   setRetryCount((c) => c + 1);
                   void lifecycle.join();
                 }}
+                copy={copy}
               />
             ) : lifecycle.state === "ended" ? (
               <EmptyState
-                kicker="Room"
-                headline="This room has ended"
-                body="Recordings, transcripts, and the scorecard remain available in this page."
+                kicker={copy.endedKicker}
+                headline={copy.endedHeadline}
+                body={copy.endedBody}
               />
             ) : (
               <div
@@ -240,7 +250,7 @@ export function RoomShell({
                 {iframeSrc ? (
                   <iframe
                     key={retryCount}
-                    title="Room video"
+                    title={copy.videoTitle}
                     src={iframeSrc}
                     allow="camera; microphone; fullscreen; speaker; display-capture; autoplay; clipboard-read; clipboard-write"
                     referrerPolicy="strict-origin-when-cross-origin"
@@ -280,9 +290,9 @@ export function RoomShell({
                   tone="secondary"
                   onClick={lifecycle.toggleHand}
                   icon={<Hand size={16} aria-hidden />}
-                  aria-label="Raise hand"
+                  aria-label={copy.raiseHand}
                 >
-                  Raise hand
+                  {copy.raiseHand}
                 </ActionButton>
                 <ActionButton
                   tone="secondary"
@@ -290,9 +300,9 @@ export function RoomShell({
                     // No-op stub — the provider iframe owns the mute.
                   }}
                   icon={<Mic size={16} aria-hidden />}
-                  aria-label="Toggle mute (use the iframe controls)"
+                  aria-label={copy.muteLabel}
                 >
-                  Mute
+                  {copy.mute}
                 </ActionButton>
                 {recordingConsent ? (
                   <ActionButton
@@ -300,13 +310,13 @@ export function RoomShell({
                     onClick={recordingConsent.onOpenConsentDialog}
                     aria-label={
                       recordingConsent.consentGiven
-                        ? "Review recording consent"
-                        : "Provide recording consent"
+                        ? copy.reviewConsentLabel
+                        : copy.provideConsentLabel
                     }
                   >
                     {recordingConsent.consentGiven
-                      ? "Recording consent: granted"
-                      : "Recording consent: pending"}
+                      ? copy.consentGranted
+                      : copy.consentPending}
                   </ActionButton>
                 ) : null}
               </div>
@@ -318,7 +328,7 @@ export function RoomShell({
                       onClick={lifecycle.stopRecording}
                       icon={<CircleStop size={16} aria-hidden />}
                     >
-                      Stop recording
+                      {copy.stopRecording}
                     </ActionButton>
                   ) : (
                     <ActionButton
@@ -326,7 +336,7 @@ export function RoomShell({
                       onClick={lifecycle.startRecording}
                       icon={<Disc3 size={16} aria-hidden />}
                     >
-                      Start recording
+                      {copy.startRecording}
                     </ActionButton>
                   )
                 ) : null}
@@ -335,7 +345,7 @@ export function RoomShell({
                   onClick={lifecycle.leave}
                   icon={<LogOut size={16} aria-hidden />}
                 >
-                  Leave
+                  {copy.leave}
                 </ActionButton>
               </div>
             </div>
@@ -367,9 +377,15 @@ export function RoomShell({
   );
 }
 
-function PrejoinState({ onJoin }: { onJoin: () => Promise<void> }) {
+function PrejoinState({
+  onJoin,
+  copy,
+}: {
+  onJoin: () => Promise<void>;
+  copy: RoomShellCopy;
+}) {
   return (
-    <Section kicker="Live room" headline="Ready when you are">
+    <Section kicker={copy.prejoinKicker} headline={copy.prejoinHeadline}>
       <p
         style={{
           margin: 0,
@@ -378,12 +394,11 @@ function PrejoinState({ onJoin }: { onJoin: () => Promise<void> }) {
           maxWidth: "55ch",
         }}
       >
-        Tap join to connect. Your camera and microphone won&apos;t turn on
-        until you confirm in the prejoin step.
+        {copy.prejoinBody}
       </p>
       <div style={{ marginTop: "1rem" }}>
         <ActionButton tone="primary" onClick={onJoin}>
-          Join room
+          {copy.joinRoom}
         </ActionButton>
       </div>
     </Section>
@@ -393,78 +408,83 @@ function PrejoinState({ onJoin }: { onJoin: () => Promise<void> }) {
 function ErrorState({
   error,
   onRetry,
+  copy,
 }: {
   error?: RoomError;
   onRetry: () => void;
+  copy: RoomShellCopy;
 }) {
-  const message = errorCopy(error);
+  const message = errorCopy(error, copy);
   return (
     <EmptyState
-      kicker="We hit a snag"
+      kicker={copy.errorKicker}
       headline={message.headline}
       body={message.body}
       action={
         <ActionButton tone="primary" onClick={onRetry}>
-          Try again
+          {copy.tryAgain}
         </ActionButton>
       }
     />
   );
 }
 
-function errorCopy(error?: RoomError): { headline: string; body: string } {
+function errorCopy(
+  error: RoomError | undefined,
+  copy: RoomShellCopy,
+): { headline: string; body: string } {
   if (!error) {
     return {
-      headline: "Couldn't join the room",
-      body: "Please try again. If this keeps happening, the live host can resend an invite.",
+      headline: copy.error.defaultHeadline,
+      body: copy.error.defaultBody,
     };
   }
   switch (error.error) {
     case "rooms_unavailable":
       return {
-        headline: "Live rooms aren't configured yet",
-        body: "An admin needs to enable the room provider for this environment.",
+        headline: copy.error.unavailableHeadline,
+        body: copy.error.unavailableBody,
       };
     case "provider_unavailable":
       return {
-        headline: "The room service is offline",
-        body: "Hold on — we'll retry, or try refreshing in a moment.",
+        headline: copy.error.offlineHeadline,
+        body: copy.error.offlineBody,
       };
     case "session_not_found":
       return {
-        headline: "Couldn't find this room",
-        body: "It may have been removed by the host. Check your invitation link.",
+        headline: copy.error.notFoundHeadline,
+        body: copy.error.notFoundBody,
       };
     case "session_not_joinable":
       return {
-        headline: "This room is closed",
-        body: "It has already ended or was cancelled by the host.",
+        headline: copy.error.closedHeadline,
+        body: copy.error.closedBody,
       };
     case "unauthorized":
       return {
-        headline: "You can't join this room",
-        body: "Sign in with the account that received the invitation.",
+        headline: copy.error.unauthorizedHeadline,
+        body: copy.error.unauthorizedBody,
       };
     case "consent_missing":
       return {
-        headline: "Recording consent is required",
-        body: "One or more participants need to consent before recording can start.",
+        headline: copy.error.consentHeadline,
+        body: copy.error.consentBody,
       };
     case "rate_limited":
       return {
-        headline: "Too many tries",
-        body: `Wait ${error.retryAfter ?? 60}s and try again.`,
+        headline: copy.error.rateLimitedHeadline,
+        body: copy.error.rateLimitedBody(error.retryAfter ?? 60),
       };
     case "validation_failed":
       return {
-        headline: "Something's off with the request",
+        headline: copy.error.validationHeadline,
         body: error.message,
       };
     case "internal_error":
     default:
       return {
-        headline: "We hit a snag",
-        body: "Please try again. If this keeps happening, refresh the page.",
+        headline: copy.error.internalHeadline,
+        body: copy.error.internalBody,
       };
   }
 }

@@ -1,5 +1,11 @@
+import { cookies, headers } from "next/headers";
 import { LayoutDashboard } from "lucide-react";
 import type { UnifiedViewer } from "@henryco/auth";
+import {
+  LOCALE_COOKIE,
+  resolveLocaleOrder,
+  type AppLocale,
+} from "@henryco/i18n";
 import {
   viewerCanUseCustomerSurface,
   type DashboardModule,
@@ -45,6 +51,21 @@ import { loadCustomerOverviewSnapshot } from "./data";
  * customer_profiles / customer_wallet_balance / customer_subscriptions
  * tables are user-scoped customer-context tables.
  */
+/**
+ * Resolve the active locale for server-rendered widgets from the shared
+ * `henryco_locale` cookie + Accept-Language / region headers. Mirrors the
+ * host shell's locale resolution without the profile-language coupling, so
+ * widget chrome copy honours the same language the surface renders in.
+ */
+async function resolveWidgetLocale(): Promise<AppLocale> {
+  const [cookieStore, headerList] = await Promise.all([cookies(), headers()]);
+  return resolveLocaleOrder({
+    cookieLocale: cookieStore.get(LOCALE_COOKIE)?.value,
+    acceptLanguage: headerList.get("accept-language"),
+    country: headerList.get("x-vercel-ip-country"),
+  });
+}
+
 export const customerOverviewModule: DashboardModule = {
   slug: "customer-overview",
   title: "Overview",
@@ -65,6 +86,7 @@ export const customerOverviewModule: DashboardModule = {
     const snapshot = await loadCustomerOverviewSnapshot(viewer);
     if (!snapshot) return [];
 
+    const locale = await resolveWidgetLocale();
     const firstName = viewer.user.fullName?.split(" ")[0] ?? null;
 
     const cards: HomeWidget[] = [
@@ -75,7 +97,7 @@ export const customerOverviewModule: DashboardModule = {
         size: "sm",
         weight: 80,
         href: "/wallet",
-        render: async () => <WalletBalanceCard snapshot={snapshot} />,
+        render: async () => <WalletBalanceCard snapshot={snapshot} locale={locale} />,
       },
       {
         id: "unread-notifications",
@@ -93,7 +115,7 @@ export const customerOverviewModule: DashboardModule = {
         size: "sm",
         weight: 60,
         href: "/subscriptions",
-        render: async () => <ActiveSubscriptionsCard snapshot={snapshot} />,
+        render: async () => <ActiveSubscriptionsCard snapshot={snapshot} locale={locale} />,
       },
       {
         id: "trust-tier",
@@ -102,7 +124,7 @@ export const customerOverviewModule: DashboardModule = {
         size: "sm",
         weight: 65,
         href: "/security",
-        render: async () => <TrustTierCard snapshot={snapshot} />,
+        render: async () => <TrustTierCard snapshot={snapshot} locale={locale} />,
       },
       {
         id: "invoices-pending",
@@ -156,6 +178,7 @@ export const customerOverviewModule: DashboardModule = {
             snapshot={snapshot}
             hasCartRecovery={false}
             firstName={firstName}
+            locale={locale}
           />
         ),
       },

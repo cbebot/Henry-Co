@@ -5,36 +5,38 @@ import type { MarketplaceDispute } from "@/lib/marketplace/types";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountDisputesPage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   await requireMarketplaceUser("/account/disputes");
   const data = await getBuyerDashboardData();
 
   return (
     <WorkspaceShell
-      title="Disputes"
-      description="Open an issue with context, keep the order linked, and see support-stage updates without losing the trail."
+      title={copy.disputes.title}
+      description={copy.disputes.description}
       {...accountWorkspaceNav("/account/disputes", locale)}
     >
       <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-5">
         <input type="hidden" name="intent" value="dispute_create" />
         <input type="hidden" name="return_to" value="/account/disputes" />
         <div className="grid gap-4 md:grid-cols-2">
-          <input name="order_no" className="market-input rounded-2xl px-4 py-3" placeholder="MKT-ORD-..." required />
-          <input name="vendor_slug" className="market-input rounded-2xl px-4 py-3" placeholder="Vendor slug (optional)" />
-          <input name="reason" className="market-input rounded-2xl px-4 py-3 md:col-span-2" placeholder="Reason for dispute" required />
-          <textarea name="note" rows={4} className="market-textarea rounded-[1.5rem] px-4 py-3 md:col-span-2" placeholder="Explain what went wrong and what resolution you expect." />
+          <input name="order_no" className="market-input rounded-2xl px-4 py-3" placeholder={copy.disputes.orderPlaceholder} required />
+          <input name="vendor_slug" className="market-input rounded-2xl px-4 py-3" placeholder={copy.disputes.vendorPlaceholder} />
+          <input name="reason" className="market-input rounded-2xl px-4 py-3 md:col-span-2" placeholder={copy.disputes.reasonPlaceholder} required />
+          <textarea name="note" rows={4} className="market-textarea rounded-[1.5rem] px-4 py-3 md:col-span-2" placeholder={copy.disputes.notePlaceholder} />
         </div>
-        <button className="market-button-primary mt-4 rounded-full px-5 py-3 text-sm font-semibold">Open dispute</button>
+        <button className="market-button-primary mt-4 rounded-full px-5 py-3 text-sm font-semibold">{copy.disputes.openDispute}</button>
       </form>
 
       {data.disputes.length === 0 ? (
         <EmptyState
-          title="No open disputes."
-          body="When you raise an issue with an order, the thread lives here with status updates from the support stage — nothing falls off the trail."
+          title={copy.disputes.emptyTitle}
+          body={copy.disputes.emptyBody}
         />
       ) : (
         <div className="space-y-4">

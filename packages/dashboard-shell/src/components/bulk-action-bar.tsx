@@ -11,6 +11,8 @@ import {
   type ReactNode,
 } from "react";
 
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getDashboardShellCopy } from "@henryco/i18n";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
@@ -108,6 +110,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
     const [error, setError] = useState<string | null>(null);
     const reasonInputRef = useRef<HTMLTextAreaElement | null>(null);
     const dialogId = useId();
+    const copy = getDashboardShellCopy(useHenryCoLocale());
 
     const selectedCount = selectedIds.length;
     const hasSelection = selectedCount > 0;
@@ -133,7 +136,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
     async function handleConfirm() {
       if (!activeAction) return;
       if (activeAction.requiresReason && reason.trim().length < 3) {
-        setError("Reason is required (3+ characters).");
+        setError(copy.bulkActionBar.reasonRequired);
         return;
       }
       setSubmitting(true);
@@ -147,7 +150,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
         setActiveAction(null);
         setReason("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Action failed. Try again.");
+        setError(e instanceof Error ? e.message : copy.bulkActionBar.actionFailed);
       } finally {
         setSubmitting(false);
       }
@@ -181,7 +184,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
         {hasSelection ? (
           <div
             role="toolbar"
-            aria-label={`${selectedCount} selected`}
+            aria-label={copy.bulkActionBar.selectedCount(selectedCount)}
             style={{
               position,
               left: 0,
@@ -215,7 +218,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {selectedCount} selected
+                {copy.bulkActionBar.selectedCount(selectedCount)}
               </span>
               {summary ? (
                 <>
@@ -267,7 +270,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
               <button
                 type="button"
                 onClick={onClear}
-                aria-label="Clear selection"
+                aria-label={copy.bulkActionBar.clearSelection}
                 style={{
                   ...typeStyle("kicker"),
                   background: "transparent",
@@ -278,7 +281,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                 }}
                 className="hc-staff-bulk-action"
               >
-                Clear
+                {copy.bulkActionBar.clear}
               </button>
             </div>
           </div>
@@ -338,9 +341,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
               >
                 {activeAction.confirmCopy
                   ? activeAction.confirmCopy(selectedCount)
-                  : `Apply "${activeAction.label}" to ${selectedCount} selected ${
-                      selectedCount === 1 ? "item" : "items"
-                    }.`}
+                  : copy.bulkActionBar.applyToSelected(activeAction.label, selectedCount)}
               </p>
               {activeAction.sampleCopy ? (
                 <p
@@ -367,7 +368,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                       color: `var(${CSS_VARS.inkMuted})`,
                     }}
                   >
-                    Reason (audit log)
+                    {copy.bulkActionBar.reasonLabel}
                   </span>
                   <textarea
                     ref={reasonInputRef}
@@ -385,7 +386,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                       padding: "0.5rem 0.625rem",
                       resize: "vertical",
                     }}
-                    placeholder="Brief justification — appears in audit_log.reason"
+                    placeholder={copy.bulkActionBar.reasonPlaceholder}
                     aria-required="true"
                   />
                 </label>
@@ -424,7 +425,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                     cursor: submitting ? "not-allowed" : "pointer",
                   }}
                 >
-                  Cancel
+                  {copy.bulkActionBar.cancel}
                 </button>
                 <button
                   type="button"
@@ -441,7 +442,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                     minHeight: "2.25rem",
                   }}
                 >
-                  {submitting ? "Working…" : `Confirm ${selectedCount}`}
+                  {submitting ? copy.bulkActionBar.working : copy.bulkActionBar.confirmCount(selectedCount)}
                 </button>
               </div>
             </div>

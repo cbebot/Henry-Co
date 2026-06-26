@@ -1,5 +1,6 @@
 import { MetricCard } from "@henryco/dashboard-shell/components";
 import { Wallet } from "lucide-react";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import { formatNaira } from "../format";
 import type { CustomerOverviewSnapshot } from "../data";
 
@@ -9,15 +10,18 @@ import type { CustomerOverviewSnapshot } from "../data";
  */
 export function WalletBalanceCard({
   snapshot,
+  locale,
 }: {
   snapshot: CustomerOverviewSnapshot;
+  locale: AppLocale;
 }) {
   const { wallet } = snapshot.summary;
   const pending = snapshot.pendingFundingKobo;
+  const copy = getDashboardShellCopy(locale);
 
   return (
     <MetricCard
-      label="Wallet balance"
+      label={copy.walletBalance.label}
       value={formatNaira(wallet.balanceKobo)}
       href="/wallet"
       icon={<Wallet size={18} aria-hidden />}
@@ -25,13 +29,13 @@ export function WalletBalanceCard({
         pending > 0
           ? {
               kind: "comparison",
-              vs: "pending verification",
+              vs: copy.walletBalance.pendingVerification,
               delta: formatNaira(pending),
             }
           : {
               kind: "trend",
               direction: "flat",
-              magnitude: "Live · synced now",
+              magnitude: copy.walletBalance.liveSyncedNow,
             }
       }
     />

@@ -7,6 +7,7 @@ import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 import type { MarketplaceSupportThread } from "@/lib/marketplace/types";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -18,14 +19,14 @@ const STATUS_TONE: Record<string, string> = {
   closed: "text-[var(--market-muted)]",
 };
 
-const SUBJECT_PRESETS = [
-  { value: "order", label: "An order or delivery" },
-  { value: "payment", label: "A payment or refund" },
-  { value: "vendor", label: "A specific store or vendor" },
-  { value: "account", label: "My Henry & Co. account" },
-  { value: "trust", label: "Trust, safety, or moderation" },
-  { value: "other", label: "Something else" },
-];
+const SUBJECT_PRESET_VALUES = [
+  "order",
+  "payment",
+  "vendor",
+  "account",
+  "trust",
+  "other",
+] as const;
 
 function formatStatusLabel(status: string) {
   return status.replaceAll("_", " ");
@@ -52,7 +53,21 @@ export default async function AccountSupportPage({
   searchParams?: Promise<{ vendor?: string; thread?: string }>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   const params = (await searchParams) ?? {};
+
+  const subjectLabels: Record<(typeof SUBJECT_PRESET_VALUES)[number], string> = {
+    order: copy.support.subjectOrder,
+    payment: copy.support.subjectPayment,
+    vendor: copy.support.subjectVendor,
+    account: copy.support.subjectAccount,
+    trust: copy.support.subjectTrust,
+    other: copy.support.subjectOther,
+  };
+  const subjectPresets = SUBJECT_PRESET_VALUES.map((value) => ({
+    value,
+    label: subjectLabels[value],
+  }));
   const vendorSlug =
     typeof params.vendor === "string" ? params.vendor.trim().toLowerCase() : "";
   const justSubmitted = params.thread === "1";
@@ -82,8 +97,8 @@ export default async function AccountSupportPage({
 
   return (
     <WorkspaceShell
-      title="Support"
-      description="Open a ticket attached to your Henry & Co. account, order history, and dispute trail. Replies stay on the same thread so you never re-type the context."
+      title={copy.support.title}
+      description={copy.support.description}
       {...accountWorkspaceNav("/account/support", locale)}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
@@ -101,34 +116,32 @@ export default async function AccountSupportPage({
             >
               <p className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-emerald-300">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-300" />
-                Thread opened
+                {copy.support.threadOpened}
               </p>
               <h2 className="mt-3 text-balance text-[1.2rem] font-semibold leading-[1.22] tracking-[-0.012em] text-[var(--market-ink)] sm:text-[1.35rem]">
-                A person on the support team will read your message and reply by email and on this thread.
+                {copy.support.submittedHeading}
               </h2>
               <p className="mt-3 max-w-xl text-[13.5px] leading-7 text-[var(--market-muted)]">
-                Typical response is within 1 business day. Updates appear in the
-                thread list on the right and in your notifications.
+                {copy.support.submittedBody}
               </p>
             </div>
           ) : null}
 
           <div className="market-paper rounded-[1.75rem] p-5 sm:p-7">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <p className="market-kicker">Open a ticket</p>
+              <p className="market-kicker">{copy.support.openTicketKicker}</p>
               {vendorRecord ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--market-line)] bg-black/15 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)]">
                   <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
-                  Store · {vendorRecord.name}
+                  {copy.support.storePrefix.replace("{name}", vendorRecord.name)}
                 </span>
               ) : null}
             </div>
             <h2 className="mt-3 text-balance text-[1.4rem] font-semibold leading-[1.16] tracking-[-0.014em] text-[var(--market-ink)] sm:text-[1.65rem]">
-              Tell us what is going on, and we will keep the order, payment, and trust history attached.
+              {copy.support.formHeading}
             </h2>
             <p className="mt-3 max-w-xl text-[13.5px] leading-7 text-[var(--market-muted)]">
-              Your account email and name come pre-filled. Add the order or
-              vendor only if it is relevant — the team can search the rest.
+              {copy.support.formIntro}
             </p>
 
             <form
@@ -145,7 +158,7 @@ export default async function AccountSupportPage({
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="space-y-1.5">
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                    Your name
+                    {copy.support.yourName}
                   </span>
                   <input
                     name="contact_name"
@@ -157,7 +170,7 @@ export default async function AccountSupportPage({
                 </label>
                 <label className="space-y-1.5">
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                    Reply-to email
+                    {copy.support.replyToEmail}
                   </span>
                   <input
                     name="contact_email"
@@ -173,14 +186,14 @@ export default async function AccountSupportPage({
 
               <label className="block space-y-1.5">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  This is about
+                  {copy.support.thisIsAbout}
                 </span>
                 <select
                   name="topic"
                   defaultValue={vendorRecord ? "vendor" : "order"}
                   className="market-input rounded-2xl px-4 py-3"
                 >
-                  {SUBJECT_PRESETS.map((option) => (
+                  {subjectPresets.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -190,37 +203,37 @@ export default async function AccountSupportPage({
 
               <label className="block space-y-1.5">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Subject
+                  {copy.support.subjectLabel}
                 </span>
                 <input
                   name="subject"
                   required
                   maxLength={140}
-                  placeholder="One short line — like the email subject you'd write us"
+                  placeholder={copy.support.subjectPlaceholder}
                   className="market-input rounded-2xl px-4 py-3"
                 />
               </label>
 
               <label className="block space-y-1.5">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  What happened
+                  {copy.support.whatHappened}
                 </span>
                 <textarea
                   name="message"
                   required
                   rows={6}
-                  placeholder="Order numbers, dates, and what you'd like us to do help us solve it faster. Don't worry about formatting."
+                  placeholder={copy.support.whatHappenedPlaceholder}
                   className="market-textarea rounded-[1.5rem] px-4 py-3"
                 />
               </label>
 
               <label className="block space-y-1.5">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Order number (optional)
+                  {copy.support.orderNumberOptional}
                 </span>
                 <input
                   name="order_no"
-                  placeholder="MKT-ORD-..."
+                  placeholder={copy.support.orderNumberPlaceholder}
                   className="market-input rounded-2xl px-4 py-3"
                 />
               </label>
@@ -237,7 +250,7 @@ export default async function AccountSupportPage({
                   "
                 >
                   <MessageSquare className="h-4 w-4" />
-                  Open the ticket
+                  {copy.support.openTheTicket}
                   <ArrowRight className="h-4 w-4" />
                 </button>
                 <Link
@@ -245,7 +258,7 @@ export default async function AccountSupportPage({
                   className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--market-muted)] underline-offset-4 transition hover:text-[var(--market-ink)] hover:underline"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Back to the help centre
+                  {copy.support.backToHelp}
                 </Link>
               </div>
             </form>
@@ -255,14 +268,12 @@ export default async function AccountSupportPage({
           <p className="mt-5 flex items-start gap-2 text-[12px] leading-6 text-[var(--market-muted)]">
             <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--market-brass)]" aria-hidden />
             <span>
-              We attach your order and dispute history to the thread for the
-              support team only. We never share contact details with vendors;
-              they reach you through the platform.{" "}
+              {copy.support.privacyNote}{" "}
               <a
                 href={`mailto:${supportEmail}`}
                 className="font-semibold text-[var(--market-paper-white)] underline-offset-4 hover:underline"
               >
-                Or email {supportEmail}
+                {copy.support.orEmail.replace("{email}", supportEmail)}
               </a>
               .
             </span>
@@ -272,12 +283,13 @@ export default async function AccountSupportPage({
         {/* ── Threads column ──────────────────────────────────────── */}
         <aside className="space-y-6 lg:sticky lg:top-24">
           <ThreadList
-            heading="Open threads"
-            kicker={`${openThreads.length} active`}
+            heading={copy.support.openThreadsHeading}
+            kicker={copy.support.activeSuffix.replace("{count}", String(openThreads.length))}
+            updatedLabel={copy.support.updatedRelative}
             empty={
               <EmptyThreadHint
-                title="No open threads"
-                body="Anything you open will appear here, with replies and updates the team posts."
+                title={copy.support.noOpenThreadsTitle}
+                body={copy.support.noOpenThreadsBody}
               />
             }
             threads={openThreads}
@@ -285,8 +297,9 @@ export default async function AccountSupportPage({
 
           {closedThreads.length > 0 ? (
             <ThreadList
-              heading="Closed"
-              kicker={`${closedThreads.length} resolved`}
+              heading={copy.support.closedHeading}
+              kicker={copy.support.resolvedSuffix.replace("{count}", String(closedThreads.length))}
+              updatedLabel={copy.support.updatedRelative}
               empty={null}
               threads={closedThreads.slice(0, 5)}
             />
@@ -294,10 +307,10 @@ export default async function AccountSupportPage({
 
           {threads.length === 0 ? (
             <EmptyState
-              title="No tickets yet — that is the goal."
-              body="If something does come up, opening a ticket here keeps the order, vendor, and any dispute notes attached so we can move on it directly."
+              title={copy.support.noTicketsTitle}
+              body={copy.support.noTicketsBody}
               ctaHref="/help"
-              ctaLabel="Browse help articles"
+              ctaLabel={copy.support.noTicketsCta}
             />
           ) : null}
         </aside>
@@ -309,11 +322,13 @@ export default async function AccountSupportPage({
 function ThreadList({
   heading,
   kicker,
+  updatedLabel,
   empty,
   threads,
 }: {
   heading: string;
   kicker: string;
+  updatedLabel: string;
   empty: React.ReactNode;
   threads: MarketplaceSupportThread[];
 }) {
@@ -350,7 +365,7 @@ function ThreadList({
                   </p>
                 ) : null}
                 <p className="mt-2 text-[10.5px] uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Updated {formatDate(thread.updatedAt)}
+                  {updatedLabel.replace("{relative}", formatDate(thread.updatedAt))}
                 </p>
               </li>
             );

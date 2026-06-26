@@ -4,6 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { Loader2, Check, Lock } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getDashboardShellCopy } from "@henryco/i18n";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
@@ -142,6 +144,7 @@ function ActionButtonInner({
   ariaLabel,
   style,
 }: InnerProps) {
+  const copy = getDashboardShellCopy(useHenryCoLocale());
   // Form-submit pending state from React 19's useFormStatus. Only
   // active when this button is inside a <form action={server-action}>.
   const formStatus = useFormStatus();
@@ -187,7 +190,7 @@ function ActionButtonInner({
 
   const childrenNode = success ? (
     <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
-      <Check size={16} aria-hidden /> Locked
+      <Check size={16} aria-hidden /> {copy.actionButton.locked}
     </span>
   ) : (
     children

@@ -6,6 +6,8 @@ import type {
   NewsletterSubscriberStatus,
   NewsletterTopicDefinition,
 } from "@henryco/newsletter";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getHubNewsletterCopy } from "@henryco/i18n";
 
 type Props = {
   token: string;
@@ -26,19 +28,11 @@ type SubmissionState =
   | { status: "saved"; topicKeys: string[]; nextStatus: string }
   | { status: "error"; message: string };
 
-const DIVISION_LABEL: Record<NewsletterDivision, string> = {
-  hub: "HenryCo Group",
-  account: "Account",
-  care: "Care",
-  jobs: "Jobs",
-  learn: "Learn",
-  logistics: "Logistics",
-  marketplace: "Marketplace",
-  property: "Property",
-  studio: "Studio",
-};
-
 export default function NewsletterPreferencesClient(props: Props) {
+  const locale = useHenryCoLocale();
+  const fullCopy = getHubNewsletterCopy(locale);
+  const copy = fullCopy.preferences;
+  const divisionLabel = fullCopy.divisions;
   const [selected, setSelected] = useState<Set<string>>(() => new Set(props.initialTopicKeys));
   const [paused, setPaused] = useState(props.initialStatus === "paused");
   const [state, setState] = useState<SubmissionState>({ status: "idle" });
@@ -78,7 +72,7 @@ export default function NewsletterPreferencesClient(props: Props) {
       if (!res.ok || !body.ok) {
         setState({
           status: "error",
-          message: body.message ?? "Unable to save preferences.",
+          message: body.message ?? copy.errorSave,
         });
         return;
       }
@@ -90,7 +84,7 @@ export default function NewsletterPreferencesClient(props: Props) {
     } catch (err) {
       setState({
         status: "error",
-        message: err instanceof Error ? err.message : "Network error",
+        message: err instanceof Error ? err.message : copy.errorNetwork,
       });
     }
   };
@@ -106,10 +100,9 @@ export default function NewsletterPreferencesClient(props: Props) {
             className="mt-1 h-4 w-4"
           />
           <span>
-            <span className="font-medium">Pause all promotional sends</span>
+            <span className="font-medium">{copy.pauseTitle}</span>
             <span className="mt-1 block text-xs text-[color:var(--muted-foreground)]">
-              You&rsquo;ll still get transactional emails (receipts, verification, shipping), just
-              not newsletters.
+              {copy.pauseHint}
             </span>
           </span>
         </label>
@@ -119,7 +112,7 @@ export default function NewsletterPreferencesClient(props: Props) {
         {props.groups.map((group) => (
           <section key={group.division} className="space-y-3">
             <h3 className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-              {DIVISION_LABEL[group.division]}
+              {divisionLabel[group.division]}
             </h3>
             <div className="space-y-2">
               {group.topics.map((topic) => {
@@ -163,7 +156,7 @@ export default function NewsletterPreferencesClient(props: Props) {
           disabled={state.status === "saving"}
           className="inline-flex items-center justify-center rounded-md bg-[color:var(--foreground)] px-4 py-2 text-sm font-medium text-[color:var(--background)] disabled:opacity-50"
         >
-          {state.status === "saving" ? "Saving…" : "Save preferences"}
+          {state.status === "saving" ? copy.savingLabel : copy.saveLabel}
         </button>
         <button
           type="button"
@@ -171,17 +164,17 @@ export default function NewsletterPreferencesClient(props: Props) {
           disabled={state.status === "saving"}
           className="inline-flex items-center justify-center rounded-md border border-[color:var(--border)] px-4 py-2 text-sm font-medium disabled:opacity-50"
         >
-          Unsubscribe from all
+          {copy.unsubscribeAllLabel}
         </button>
       </div>
 
       {state.status === "saved" ? (
         <div className="rounded-md border border-[color:var(--border)] bg-[color:var(--background)] p-4 text-sm">
-          <p className="font-medium">Preferences saved.</p>
+          <p className="font-medium">{copy.savedTitle}</p>
           <p className="mt-1 text-[color:var(--muted-foreground)]">
             {state.nextStatus === "unsubscribed"
-              ? "You&rsquo;ve been unsubscribed. We&rsquo;re sorry to see you go."
-              : `Subscribed to: ${state.topicKeys.join(", ") || "nothing"}.`}
+              ? copy.unsubscribedBody
+              : copy.subscribedBody(state.topicKeys.join(", ") || copy.subscribedNone)}
           </p>
         </div>
       ) : null}

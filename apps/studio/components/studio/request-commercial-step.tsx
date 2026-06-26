@@ -1,4 +1,6 @@
 import { useId } from "react";
+import { getStudioRequestCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { StudioDomainLaunchSection } from "@/components/studio/studio-domain-launch";
 import { StudioListbox } from "@/components/studio/studio-listbox";
@@ -16,6 +18,8 @@ function StudioBudgetInput({
   onChange: (v: string) => void;
 }) {
   const id = useId();
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   function format(raw: string) {
     const digits = raw.replace(/[^\d]/g, "");
     if (!digits) return "";
@@ -27,7 +31,7 @@ function StudioBudgetInput({
         htmlFor={id}
         className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]"
       >
-        Project budget · NGN
+        {copy.commercial.budgetLabel}
       </label>
       <input
         id={id}
@@ -39,7 +43,7 @@ function StudioBudgetInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onChange(format(e.target.value))}
-        placeholder="₦1,500,000"
+        placeholder={copy.commercial.budgetPlaceholder}
         className="studio-input mt-2 rounded-[1.4rem] px-4 py-3 text-base font-semibold tracking-tight"
         aria-describedby={`${id}-hint`}
       />
@@ -47,7 +51,7 @@ function StudioBudgetInput({
         id={`${id}-hint`}
         className="mt-2 text-[0.72rem] leading-snug text-[var(--studio-ink-soft)]"
       >
-        Fixed price. Locked at proposal acceptance — no surprise overages.
+        {copy.commercial.budgetHint}
       </span>
     </div>
   );
@@ -95,6 +99,8 @@ export function StudioRequestCommercialStep({
   | "inspirationSummary"
   | "setInspirationSummary"
 >) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   const urgencyOptions = requestConfig.urgencyOptions.filter((item) => item.isActive !== false);
   const timelineOptions = requestConfig.timelineOptions.filter((item) => item.isActive !== false);
 
@@ -103,54 +109,52 @@ export function StudioRequestCommercialStep({
       <StudioDomainLaunchSection />
 
       <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-        <div className="studio-kicker">Commercial context</div>
+        <div className="studio-kicker">{copy.commercial.commercialContext}</div>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Tell us the budget and the outcome. We come back inside one business day with a fixed
-          scope, a fixed delivery window, and a senior lead assigned by name — no junior hand-offs,
-          no scope drift.
+          {copy.commercial.intro}
         </p>
         <ul className="mt-5 grid gap-2 text-[0.78rem] leading-snug text-[var(--studio-ink-soft)] sm:grid-cols-3">
           <li className="rounded-2xl border border-[var(--studio-line)] px-3 py-2">
-            <span className="text-[var(--studio-ink)]">Senior team</span> — strategist, designer, and
-            engineer kick off together; never juniors-only.
+            <span className="text-[var(--studio-ink)]">{copy.commercial.seniorTeamTitle}</span> —{" "}
+            {copy.commercial.seniorTeamBody}
           </li>
           <li className="rounded-2xl border border-[var(--studio-line)] px-3 py-2">
-            <span className="text-[var(--studio-ink)]">Fixed price</span> — locked at proposal
-            acceptance. Change requests priced before they start.
+            <span className="text-[var(--studio-ink)]">{copy.commercial.fixedPriceTitle}</span> —{" "}
+            {copy.commercial.fixedPriceBody}
           </li>
           <li className="rounded-2xl border border-[var(--studio-line)] px-3 py-2">
-            <span className="text-[var(--studio-ink)]">Premium delivery</span> — production-ready
-            code, accessibility-checked, ready to scale on day one.
+            <span className="text-[var(--studio-ink)]">{copy.commercial.premiumDeliveryTitle}</span> —{" "}
+            {copy.commercial.premiumDeliveryBody}
           </li>
         </ul>
 
         <div className="mt-6 grid gap-4 xl:grid-cols-4">
           <StudioListbox
             name="businessType"
-            label="Business type"
+            label={copy.commercial.businessTypeLabel}
             required
             value={businessType}
             onChange={setBusinessType}
-            placeholder="Select business type"
+            placeholder={copy.commercial.businessTypePlaceholder}
             options={requestConfig.businessOptions.map((item) => ({ value: item, label: item }))}
           />
           <StudioBudgetInput value={budgetBand} onChange={setBudgetBand} />
           <StudioListbox
             name="urgency"
-            label="Urgency"
+            label={copy.commercial.urgencyLabel}
             required
             value={urgency}
             onChange={setUrgency}
-            placeholder="Select urgency"
+            placeholder={copy.commercial.urgencyPlaceholder}
             options={urgencyOptions.map((item) => ({ value: item.label, label: modifierLabel(item) }))}
           />
           <StudioListbox
             name="timeline"
-            label="Timeline expectation"
+            label={copy.commercial.timelineLabel}
             required
             value={timeline}
             onChange={setTimeline}
-            placeholder="Select timeline"
+            placeholder={copy.commercial.timelinePlaceholder}
             options={timelineOptions.map((item) => ({ value: item.label, label: modifierLabel(item) }))}
           />
         </div>
@@ -158,7 +162,7 @@ export function StudioRequestCommercialStep({
         <div className="mt-6 grid gap-5 xl:grid-cols-2">
           <div>
             <label htmlFor="studio-goals" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              What should this achieve?
+              {copy.commercial.goalsLabel}
             </label>
             <textarea
               id="studio-goals"
@@ -167,12 +171,12 @@ export function StudioRequestCommercialStep({
               value={goals}
               onChange={(event) => setGoals(event.target.value)}
               className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
-              placeholder="e.g. More qualified leads, calmer operations, clearer client onboarding…"
+              placeholder={copy.commercial.goalsPlaceholder}
             />
           </div>
           <div>
             <label htmlFor="studio-scope-notes" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              What needs to exist when we are done?
+              {copy.commercial.scopeNotesLabel}
             </label>
             <textarea
               id="studio-scope-notes"
@@ -181,7 +185,7 @@ export function StudioRequestCommercialStep({
               value={scopeNotes}
               onChange={(event) => setScopeNotes(event.target.value)}
               className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
-              placeholder="Pages, features, integrations, languages, admin tools—bullet points are fine."
+              placeholder={copy.commercial.scopeNotesPlaceholder}
             />
           </div>
         </div>
@@ -194,7 +198,7 @@ export function StudioRequestCommercialStep({
               htmlFor="studio-inspiration-summary"
               className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]"
             >
-              Anything else we should study?
+              {copy.commercial.inspirationLabel}
             </label>
             <textarea
               id="studio-inspiration-summary"
@@ -202,7 +206,7 @@ export function StudioRequestCommercialStep({
               value={inspirationSummary}
               onChange={(event) => setInspirationSummary(event.target.value)}
               className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
-              placeholder="Tone, audience, things to avoid, brand words you love, or “make it feel like X but more premium.”"
+              placeholder={copy.commercial.inspirationPlaceholder}
             />
           </div>
         </div>

@@ -1,4 +1,6 @@
 import { CheckCircle2 } from "lucide-react";
+import { getStudioRequestCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
@@ -8,13 +10,15 @@ export function StudioRequestActivationStep({
   selectedTeamId,
   setSelectedTeamId,
 }: Pick<RequestBuilderSelectionProps, "teams" | "selectedTeamId" | "setSelectedTeamId">) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   const outcomePoints = [
-    "Your domain choices from the last step travel with the brief—we confirm registration and DNS with you before launch.",
-    "You receive a real Studio record: proposal, workspace, and payment checkpoints—not a forgotten form submission.",
-    "Deposits secure your slot; proof upload keeps finance fast; milestones and files stay in one client-grade portal.",
+    copy.activation.outcomePoint1,
+    copy.activation.outcomePoint2,
+    copy.activation.outcomePoint3,
   ];
   const teamOptions = [
-    { value: "", label: "Let HenryCo recommend the best-fit team" },
+    { value: "", label: copy.activation.teamRecommendPlaceholder },
     ...teams.map((team) => ({
       value: team.id,
       label: `${team.name} · ${team.availability}`,
@@ -24,20 +28,20 @@ export function StudioRequestActivationStep({
 
   return (
     <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-      <div className="studio-kicker">Review & send</div>
+      <div className="studio-kicker">{copy.activation.reviewSend}</div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="space-y-4">
           <div>
             <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Team fit
+              {copy.activation.teamFit}
             </div>
             <div className="mt-3">
               <StudioListbox
                 name="preferredTeamPick"
-                label="Preferred team"
+                label={copy.activation.preferredTeam}
                 value={selectedTeamId}
                 onChange={setSelectedTeamId}
-                placeholder="Let HenryCo recommend the best-fit team"
+                placeholder={copy.activation.teamRecommendPlaceholder}
                 options={teamOptions}
               />
             </div>
@@ -57,7 +61,7 @@ export function StudioRequestActivationStep({
               </div>
             ) : (
               <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                We will match the strongest team to your brief based on scope, urgency, and your industry signals.
+                {copy.activation.matchStrongest}
               </p>
             )}
           </div>
@@ -65,19 +69,19 @@ export function StudioRequestActivationStep({
 
         <div className="space-y-5">
           <div className="grid gap-4 xl:grid-cols-2">
-            <input name="customerName" required className="studio-input rounded-[1.2rem] px-4 py-3" placeholder="Full name" />
-            <input name="companyName" className="studio-input rounded-[1.2rem] px-4 py-3" placeholder="Company, school, or brand (optional)" />
-            <input name="email" type="email" required className="studio-input rounded-[1.2rem] px-4 py-3" placeholder="Best email for updates" />
-            <input name="phone" className="studio-input rounded-[1.2rem] px-4 py-3" placeholder="WhatsApp or phone (helps for quick clarifications)" />
+            <input name="customerName" required className="studio-input rounded-[1.2rem] px-4 py-3" placeholder={copy.activation.fullName} />
+            <input name="companyName" className="studio-input rounded-[1.2rem] px-4 py-3" placeholder={copy.activation.companyOptional} />
+            <input name="email" type="email" required className="studio-input rounded-[1.2rem] px-4 py-3" placeholder={copy.activation.bestEmail} />
+            <input name="phone" className="studio-input rounded-[1.2rem] px-4 py-3" placeholder={copy.activation.whatsappOrPhone} />
           </div>
 
           <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
             <input type="checkbox" name="depositNow" className="mt-1" />
-            I am ready to secure a deposit-backed lane as soon as HenryCo confirms scope and pricing with me.
+            {copy.activation.depositConsent}
           </label>
 
           <div className="rounded-[1.8rem] border border-[var(--studio-line)] bg-black/10 p-5">
-            <div className="text-lg font-semibold text-[var(--studio-ink)]">What happens after submission</div>
+            <div className="text-lg font-semibold text-[var(--studio-ink)]">{copy.activation.whatHappensTitle}</div>
             <div className="mt-4 space-y-3">
               {outcomePoints.map((item) => (
                 <div key={item} className="flex gap-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
@@ -89,12 +93,10 @@ export function StudioRequestActivationStep({
           </div>
 
           <p className="text-xs leading-5 text-[var(--studio-ink-soft)]">
-            Nothing goes live until you approve scope and payment. You can still adjust references or contact
-            details with your lead before the deposit lands—this submission only opens your structured Studio
-            record.
+            {copy.activation.nothingGoesLive}
           </p>
 
-          <StudioSubmitButton label="Submit Studio brief" pendingLabel="Building your Studio brief..." />
+          <StudioSubmitButton label={copy.activation.submitLabel} pendingLabel={copy.activation.submitPendingLabel} />
         </div>
       </div>
     </section>
