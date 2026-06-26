@@ -10,6 +10,7 @@ import {
   titleCaseMarketplaceValue,
 } from "@/lib/marketplace/governance";
 import { createAdminSupabase } from "@/lib/supabase";
+import { isMarketplaceOrderOwner, type OwnershipViewer } from "@/lib/marketplace/authorization";
 import {
   demoHomeData,
 } from "@/lib/marketplace/demo";
@@ -1525,4 +1526,34 @@ export async function getOrderByNumber(orderNo: string) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Owner-scoped order fetch for the force-dynamic public surfaces (`/track`,
+ * `/pay`). `getOrderByNumber` reads via `service_role` (RLS-bypassing) keyed
+ * only on the brute-forceable `order_no` (`MKT-ORD-YYYYMMDD-{100..999}`), so
+ * exposing its result to an unauthenticated caller leaks buyer PII + the
+ * bank-receipt proof for every order (finding F-01). This wrapper proves the
+ * caller owns the order BEFORE any order data is returned: an unauthenticated
+ * or non-owning viewer always gets `null` (→ the page's `notFound()`), so
+ * enumeration discloses nothing. Owners see exactly what they saw before.
+ */
+export async function getOrderForViewer(orderNo: string, viewer: OwnershipViewer) {
+  if (!viewer?.user) return null;
+  try {
+    const admin = createAdminSupabase();
+    const { data: ownerRow } = await admin
+      .from("marketplace_orders")
+      .select("user_id, normalized_email")
+      .eq("order_no", orderNo)
+      .maybeSingle();
+    // Identical ownership shape to the dispute_create / order_confirm_completion
+    // write gates (user_id OR normalized_email) so a viewer who can read an order
+    // here can also act on it. Every checkout binds both columns, so this is
+    // fail-closed without locking out any real owner.
+    if (!isMarketplaceOrderOwner(ownerRow, viewer)) return null;
+  } catch {
+    return null;
+  }
+  return getOrderByNumber(orderNo);
 }

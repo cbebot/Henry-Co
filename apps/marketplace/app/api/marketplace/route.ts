@@ -1,10 +1,16 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getDivisionConfig, normalizeStateInput } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
+import {
+  cartItemOwnerMatches,
+  isMarketplaceOrderOwner,
+  resolveVendorProductUpsert,
+} from "@/lib/marketplace/authorization";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 import {
   buildOrderSettlementSnapshot,
@@ -452,6 +458,32 @@ export async function POST(request: Request) {
         const itemId = text(formData, "item_id");
         const quantity = Math.max(0, numberValue(formData, "quantity", 1));
         if (!itemId) return redirectTo(request, "/cart?error=missing-item");
+
+        // F-05: scope the mutation to the caller's OWN cart. This case
+        // previously updated/deleted any cart item by id with no auth at all.
+        // Mirror /api/cart's verifyCartItemOwnership — identity comes from the
+        // session (user_id) or the guest cart cookie, never a caller-supplied
+        // cart id.
+        const cookieStore = await cookies();
+        // Cookie-only, exactly like /api/cart's verifyCartItemOwnership — the
+        // guest credential must never come from a caller-supplied form field.
+        const sessionToken = cookieStore.get("marketplace_cart_token")?.value || null;
+        const { data: cartItem } = await admin
+          .from("marketplace_cart_items")
+          .select("id, cart_id")
+          .eq("id", itemId)
+          .maybeSingle();
+        const { data: cart } = cartItem?.cart_id
+          ? await admin
+              .from("marketplace_carts")
+              .select("id, user_id, session_token")
+              .eq("id", cartItem.cart_id)
+              .maybeSingle()
+          : { data: null };
+        if (!cartItem?.id || !cartItemOwnerMatches(cart, viewer, sessionToken)) {
+          return redirectTo(request, "/cart?error=missing-item");
+        }
+
         if (quantity <= 0) {
           await admin.from("marketplace_cart_items").delete().eq("id", itemId);
         } else {
@@ -1599,10 +1631,20 @@ export async function POST(request: Request) {
           return respondAuthRequired(json, request, "/vendor/products/new");
         }
 
+        // F-04: a `vendor` is always scoped to THEIR own membership's vendor —
+        // they can never target another vendor via a client-supplied
+        // `vendor_slug`. Only staff (owner/admin), who hold no vendor membership,
+        // may act on behalf of a named vendor. The previous
+        // `?? snapshot.vendors[1]?.id` arbitrary fallback is removed: an
+        // unresolved scope is rejected below rather than silently attributing the
+        // product to some other store.
+        const vendorMembershipScope =
+          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ?? null;
         const vendorScopeId =
-          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
-          snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id ??
-          snapshot.vendors[1]?.id;
+          vendorMembershipScope ??
+          (viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin"])
+            ? snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id ?? null
+            : null);
         const vendorRecord = snapshot.vendors.find((item) => item.id === vendorScopeId) ?? null;
         const categoryId =
           snapshot.categories.find((item) => item.slug === text(formData, "category_slug"))?.id ??
@@ -1610,6 +1652,33 @@ export async function POST(request: Request) {
         const brandId =
           snapshot.brands.find((item) => item.slug === text(formData, "brand_slug"))?.id ?? null;
         const slug = text(formData, "slug") || slugify(text(formData, "title"));
+
+        // F-04: `marketplace_products.slug` is GLOBALLY unique, so the
+        // `onConflict:"slug"` upsert below would let a colliding slug overwrite
+        // another vendor's product and reassign its `vendor_id` to the caller.
+        // Resolve who currently owns this slug and refuse any unscoped or
+        // cross-vendor upsert before touching the row.
+        const { data: slugOwner } = await admin
+          .from("marketplace_products")
+          .select("id, vendor_id")
+          .eq("slug", slug)
+          .maybeSingle();
+        const upsertDecision = resolveVendorProductUpsert({ vendorScopeId, existing: slugOwner });
+        if (!upsertDecision.ok) {
+          return respondError(
+            json,
+            request,
+            `/vendor/products/new?error=${upsertDecision.code}`,
+            {
+              message:
+                upsertDecision.code === "listing-conflict"
+                  ? "That product handle already belongs to another store. Choose a different handle."
+                  : "We couldn't determine your store. Re-open the vendor workspace and try again.",
+              code: upsertDecision.code,
+            },
+          );
+        }
+
         const decision = text(formData, "submission_mode") || "draft";
         const imageUrl = text(formData, "image_url");
         const requestFeaturedPlacement = text(formData, "feature_requested") === "on";
@@ -1966,7 +2035,10 @@ export async function POST(request: Request) {
       }
 
       case "payment_verify": {
-        if (!viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "finance", "support"])) {
+        // F-10: marking a payment "verified" moves the order into escrow — a
+        // finance action. `support` must not flip payment state (it can still
+        // triage via the support queue). Restricted to finance/owner/admin.
+        if (!viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "finance"])) {
           return redirectTo(request, "/account");
         }
 
@@ -2122,6 +2194,19 @@ export async function POST(request: Request) {
           .select("id, user_id, normalized_email")
           .eq("order_no", orderNo)
           .maybeSingle();
+
+        // F-02: freezing a seller's payout + flipping the order to "disputed" is
+        // a money-flow action, so it must be gated on order ownership — mirror
+        // the sibling `order_confirm_completion` check. Without this, any signed-
+        // in user could brute-force order_no (F-01) and freeze every vendor's
+        // payouts. Ownership derives from the session (auth.uid via viewer),
+        // never a caller-supplied id.
+        if (!order?.id || !isMarketplaceOrderOwner(order, viewer)) {
+          return redirectTo(
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=forbidden`,
+          );
+        }
 
         const { data: dispute } = await admin
           .from("marketplace_disputes")
