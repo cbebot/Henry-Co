@@ -19,8 +19,8 @@ type SubmissionState =
   | { status: "error"; message: string };
 
 export default function NewsletterSignupClient({ groups }: GroupProps) {
-  const locale = useHenryCoLocale();
-  const copy = getHubNewsletterCopy(locale);
+  const uiLocale = useHenryCoLocale();
+  const copy = getHubNewsletterCopy(uiLocale);
   const divisionLabel = copy.divisions;
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");

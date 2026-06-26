@@ -50,7 +50,7 @@ function AttentionCard({ item, copy }: { item: AttentionItem; copy: StudioPortal
         </div>
         <div className="mt-1 text-[12.5px] text-[var(--studio-ink-soft)]">
           {invoice.description || item.projectTitle}
-          {invoice.dueDate ? copy.attentionStrip.dueSuffix(shortDate(invoice.dueDate)) : null}
+          {invoice.dueDate ? copy.attentionStrip.dueSuffix(shortDate(invoice.dueDate) ?? "") : null}
         </div>
         <Link
           href={href}

@@ -80,7 +80,7 @@ export default async function ClientHomePage() {
     <div className="space-y-7">
       <header className="flex flex-col gap-2">
         <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          {greetingFor(viewer.fullName || viewer.email)}
+          {greetingFor(viewer.fullName || viewer.email, copy)}
         </span>
         <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
           Your Studio workspace

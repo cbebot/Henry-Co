@@ -46,7 +46,7 @@ export async function MilestoneProgress({
                   </p>
                 ) : null}
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-[11.5px] text-[var(--studio-ink-soft)]">
-                  {milestone.dueDate ? <span>{copy.milestoneProgress.duePrefix(shortDate(milestone.dueDate))}</span> : null}
+                  {milestone.dueDate ? <span>{copy.milestoneProgress.duePrefix(shortDate(milestone.dueDate) ?? "")}</span> : null}
                   {milestone.dueLabel && !milestone.dueDate ? <span>{milestone.dueLabel}</span> : null}
                 </div>
               </div>

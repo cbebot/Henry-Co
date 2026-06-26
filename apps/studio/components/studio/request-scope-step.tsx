@@ -83,6 +83,8 @@ function PricedCheckboxList({
   selected: string[];
   onToggle: (label: string) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   return (
     <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.06)]">
       {options.map((item) => {
@@ -124,7 +126,7 @@ function PricedCheckboxList({
                         : "text-[var(--studio-ink-soft)]"
                     )}
                   >
-                    {amountLabel(item.amount)}
+                    {amountLabel(item.amount, copy.scope.includedLabel)}
                   </span>
                 </div>
                 <div className="mt-0.5 text-[12.5px] leading-5">

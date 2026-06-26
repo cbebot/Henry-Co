@@ -567,7 +567,7 @@ function FollowedStoreRow({ vendor, copy }: { vendor: MarketplaceVendor; copy: O
   );
 }
 
-function ActivityRow({ item }: { item: MarketplaceNotification }) {
+function ActivityRow({ item, copy }: { item: MarketplaceNotification; copy: OverviewCopy }) {
   const isUnread = !item.readAt;
   return (
     <li className="flex items-start gap-4 py-4">
@@ -584,7 +584,7 @@ function ActivityRow({ item }: { item: MarketplaceNotification }) {
           </p>
           {isUnread ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-[var(--market-brass)]/45 bg-[var(--market-brass)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
-              New
+              {copy.newBadge}
             </span>
           ) : null}
         </div>
@@ -593,7 +593,7 @@ function ActivityRow({ item }: { item: MarketplaceNotification }) {
         </p>
         <p className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
           <Clock3 className="h-3 w-3" />
-          {formatRelative(item.createdAt)}
+          {formatRelative(item.createdAt, copy)}
         </p>
       </div>
     </li>

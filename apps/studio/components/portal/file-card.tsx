@@ -99,7 +99,7 @@ export function FileCard({
             ) : null}
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[11.5px] text-[var(--studio-ink-soft)]">
               <StatusBadge tone={status.tone} label={status.label} size="sm" />
-              {deliverable.sharedAt ? <span>{copy.fileCard.sharedPrefix(shortDate(deliverable.sharedAt))}</span> : null}
+              {deliverable.sharedAt ? <span>{copy.fileCard.sharedPrefix(shortDate(deliverable.sharedAt) ?? "")}</span> : null}
             </div>
           </div>
         </div>
