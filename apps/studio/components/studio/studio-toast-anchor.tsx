@@ -21,6 +21,10 @@ const TOAST_COPY: Record<string, { title: string; body: string }> = {
     title: "Message sent",
     body: "Your project thread is updated. We will reply from this same workspace.",
   },
+  contact_blocked: {
+    title: "Let's keep this on Henry Onyx",
+    body: "Phone numbers, emails, and off-platform links can't be sent. Keeping the conversation here is how we protect you from scammers.",
+  },
   update_logged: {
     title: "Update saved",
     body: "The project log now includes this note.",

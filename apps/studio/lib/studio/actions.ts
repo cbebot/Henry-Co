@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
+import { screenMessageBody } from "@/lib/messaging/screen-message";
 import { hasPublicSupabaseEnv } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import {
@@ -238,6 +239,15 @@ export async function appendProjectMessageAction(formData: FormData) {
   const { viewer } = await requireProjectWorkspaceAccess(projectId, accessKey, redirectPath);
   const isStaffSender = viewerHasRole(viewer, studioStaffRoles);
 
+  // Server-side contact-safety on the project-workspace chat too (the client is
+  // bypassable). This is the single caller of appendProjectMessage, so screening
+  // here also protects the downstream customer_activity copy. Block high/critical
+  // before persist; mask medium. The raw body never reaches studio_project_messages.
+  const screened = screenMessageBody(String(formData.get("body") || ""));
+  if (screened.action === "block") {
+    redirect(withStudioToast(redirectPath, "contact_blocked"));
+  }
+
   await appendProjectMessage({
     projectId,
     sender:
@@ -245,7 +255,7 @@ export async function appendProjectMessageAction(formData: FormData) {
       user?.email ||
       String(formData.get("sender") || "Studio client"),
     senderRole: isStaffSender ? "team" : "client",
-    body: String(formData.get("body") || ""),
+    body: screened.body,
     isInternal: isStaffSender && String(formData.get("isInternal") || "") === "on",
   });
 
