@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { translateSurfaceLabel } from "@henryco/i18n";
+import { buildMessagingChromeLabels, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   MessageThread,
@@ -65,6 +65,13 @@ export function MarketplaceMessageThread({
     [conversationId, viewerParty, vendorDisplayName, buyerLabel],
   );
 
+  // Localized composer + thread chrome (Send button, aria, Live, failed-send)
+  // shared across all divisions via the single i18n source of truth.
+  const { composerLabels, threadLabels } = useMemo(
+    () => buildMessagingChromeLabels(t),
+    [t],
+  );
+
   const getSupabase = useCallback((): ThreadSupabaseLike | null => {
     if (typeof window === "undefined") return null;
     try {
@@ -85,6 +92,8 @@ export function MarketplaceMessageThread({
       viewer={{ userId: viewer.userId, fullName: viewer.fullName }}
       adapter={adapter}
       getSupabase={getSupabase}
+      composerLabels={composerLabels}
+      {...threadLabels}
       renderMarkdown
       // Identity-minimization (non-negotiable): the engine's typing presence
       // broadcasts viewer.fullName over the shared channel, which would

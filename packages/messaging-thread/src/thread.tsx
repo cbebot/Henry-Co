@@ -77,24 +77,43 @@ function isImageAttachment(attachment: ThreadAttachment): boolean {
   return Boolean(attachment.type && attachment.type.startsWith("image/"));
 }
 
+/** Localized status labels for the legacy text status indicator. Each
+ * key defaults to its English literal at the call site. */
+type ThreadStatusLabels = {
+  sending?: string;
+  sent?: string;
+  delivered?: string;
+  read?: string;
+};
+
 /** Status label shown under viewer-owned bubbles. Adapters opt-in by
  * populating `readAt` / `deliveredAt`; engine-only consumers see
  * "Sending…" while optimistic and "Sent" once persisted. */
-function ownStatusLabel(message: ThreadMessage, isPending: boolean): string {
-  if (isPending) return "Sending…";
-  if (message.readAt) return "Read";
-  if (message.deliveredAt) return "Delivered";
-  return "Sent";
+function ownStatusLabel(
+  message: ThreadMessage,
+  isPending: boolean,
+  statusLabels?: ThreadStatusLabels,
+): string {
+  if (isPending) return statusLabels?.sending ?? "Sending…";
+  if (message.readAt) return statusLabels?.read ?? "Read";
+  if (message.deliveredAt) return statusLabels?.delivered ?? "Delivered";
+  return statusLabels?.sent ?? "Sent";
 }
 
 function MessageBubble({
   message,
   renderMarkdown,
   deliveryPipLabels,
+  editedLabel,
+  ownNameLabel,
+  statusLabels,
 }: {
   message: ThreadMessage;
   renderMarkdown: boolean;
   deliveryPipLabels?: DeliveryPipLabels;
+  editedLabel?: string;
+  ownNameLabel?: string;
+  statusLabels?: ThreadStatusLabels;
 }) {
   const isOwn = Boolean(message.isOwnMessage);
   const isSystem = message.senderRole === "system";
@@ -128,10 +147,10 @@ function MessageBubble({
         {!isSystem ? (
           <div className="mt-bubble-meta">
             <span className="mt-bubble-name">
-              {isOwn ? "You" : message.senderName}
+              {isOwn ? (ownNameLabel ?? "You") : message.senderName}
             </span>
             <span>{formatTime(message.createdAt)}</span>
-            {message.editedAt ? <span className="mt-bubble-edited">(edited)</span> : null}
+            {message.editedAt ? <span className="mt-bubble-edited">{editedLabel ?? "(edited)"}</span> : null}
           </div>
         ) : null}
         {message.body ? (
@@ -219,7 +238,7 @@ function MessageBubble({
                       : "sent"
               }
             >
-              {ownStatusLabel(message, isPending)}
+              {ownStatusLabel(message, isPending, statusLabels)}
             </span>
           )
         ) : null}
@@ -308,6 +327,15 @@ export function MessageThread({
   deliveryPipLabels,
   unreadDividerLabel,
   scrollToFirstUnread,
+  composerLabels,
+  liveLabel,
+  realtimeAriaLabel,
+  reconnectingLabel,
+  failedSendLabel,
+  editedLabel,
+  ownNameLabel,
+  statusLabels,
+  typingLabel,
 }: MessageThreadProps) {
   // V3-03 — first-unread divider position. Computed once per message
   // list change; renders the "New" separator above the earliest
@@ -730,7 +758,10 @@ export function MessageThread({
         setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
         // Throwing here lets ChatComposer drive its own send-failed UX
         // (shake + error region) — host doesn't have to wire it.
-        throw new Error(result.reason || "We couldn't send the message. Try again.");
+        throw new Error(
+          result.reason ||
+            (failedSendLabel ?? "We couldn't send the message. Try again."),
+        );
       }
       setMessages((prev) =>
         prev.map((m) =>
@@ -740,7 +771,7 @@ export function MessageThread({
         ),
       );
     },
-    [adapter, threadId, viewer.userId, viewer.fullName],
+    [adapter, threadId, viewer.userId, viewer.fullName, failedSendLabel],
   );
 
   const tone = useMemo(() => pickComposerTone(threadId), [threadId]);
@@ -764,17 +795,17 @@ export function MessageThread({
       {liveStatus === "reconnecting" ? (
         <div className="mt-live-banner" role="status">
           <span className="mt-live-dot" aria-hidden />
-          <span>Reconnecting…</span>
+          <span>{reconnectingLabel ?? "Reconnecting…"}</span>
         </div>
       ) : null}
       {liveStatus === "live" ? (
         <div
           className="mt-live-pill"
           role="status"
-          aria-label="Realtime updates are live"
+          aria-label={realtimeAriaLabel ?? "Realtime updates are live"}
         >
           <span className="mt-live-pill-dot" aria-hidden />
-          <span className="mt-live-pill-label">Live</span>
+          <span className="mt-live-pill-label">{liveLabel ?? "Live"}</span>
         </div>
       ) : null}
       {messages.length === 0 ? (
@@ -844,13 +875,16 @@ export function MessageThread({
                     message={message}
                     renderMarkdown={renderMarkdown}
                     deliveryPipLabels={deliveryPipLabels}
+                    editedLabel={editedLabel}
+                    ownNameLabel={ownNameLabel}
+                    statusLabels={statusLabels}
                   />,
                 );
               }
               return out;
             })()}
             {activeTypers.length > 0 ? (
-              <TypingIndicator typers={activeTypers} />
+              <TypingIndicator typers={activeTypers} typingLabel={typingLabel} />
             ) : null}
           </ul>
         </div>
@@ -874,6 +908,7 @@ export function MessageThread({
             threadId={threadId}
             tone={tone}
             placeholder={placeholder}
+            labels={composerLabels}
             enableAttachments={Boolean(adapter.attachAction)}
             enableDraft
             enableFullScreenOnMobile
@@ -900,9 +935,16 @@ export function MessageThread({
   );
 }
 
-function TypingIndicator({ typers }: { typers: Array<{ id: string; name: string }> }) {
-  const label =
-    typers.length === 1
+function TypingIndicator({
+  typers,
+  typingLabel,
+}: {
+  typers: Array<{ id: string; name: string }>;
+  typingLabel?: (names: string[]) => string;
+}) {
+  const label = typingLabel
+    ? typingLabel(typers.map((t) => t.name))
+    : typers.length === 1
       ? `${typers[0].name} is typing`
       : typers.length === 2
         ? `${typers[0].name} and ${typers[1].name} are typing`
