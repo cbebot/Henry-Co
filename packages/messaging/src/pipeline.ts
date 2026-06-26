@@ -10,10 +10,7 @@ export interface SendDeps {
 
 export type SendResult =
   | { ok: true; message: Message }
-  | { ok: false; reason: "contact_blocked"; rewritePrompt: string };
-
-const REWRITE_PROMPT =
-  "Keep it on Henry Onyx — you're protected here. Please remove phone numbers, emails, links, or off-platform contact and try again.";
+  | { ok: false; reason: "contact_blocked" };
 
 export async function sendMessage(
   input: { conversationId: string; senderId: string; senderRole: string; body: string; attachments?: string[] },
@@ -22,7 +19,9 @@ export async function sendMessage(
   const check = (deps.safety ?? contactSafety)(input.body);
 
   if (check.action === "block") {
-    return { ok: false, reason: "contact_blocked", rewritePrompt: REWRITE_PROMPT };
+    // Return only the stable reason code; the rendering surface owns the localized
+    // copy (Pattern A typed copy) — no user-facing English string in this shared package.
+    return { ok: false, reason: "contact_blocked" };
   }
 
   const body = check.action === "mask" ? check.maskedText : input.body;
