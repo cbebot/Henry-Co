@@ -31,6 +31,9 @@ export function createMarketplaceThreadAdapter(opts: {
   /** Public store name — the only counterpart label a buyer is allowed to
    * see. The buyer's identity is NEVER surfaced to the vendor. */
   vendorDisplayName: string;
+  /** Localized generic label shown to the vendor for the buyer party (never the
+   * buyer's real name). Resolved by the caller via the surface translator. */
+  buyerLabel: string;
 }): MessageThreadAdapter {
   return {
     channelName: () => `marketplace-thread-${opts.conversationId}`,
@@ -98,9 +101,9 @@ export function createMarketplaceThreadAdapter(opts: {
  *    defense-in-depth for any legacy/unscreened row.
  *  - A row authored by the viewer renders as the viewer (right-aligned).
  *  - A `system` row renders centered/muted under the brand name.
- *  - A `buyer`-authored row from the OTHER party renders as the generic
- *    label "Buyer" — the vendor must NEVER learn the buyer's real name or
- *    contact details from the thread.
+ *  - A `buyer`-authored row from the OTHER party renders as the generic,
+ *    localized `opts.buyerLabel` — the vendor must NEVER learn the buyer's
+ *    real name or contact details from the thread.
  *  - A `vendor`-authored row from the OTHER party renders as the public
  *    store name (`opts.vendorDisplayName`), which buyers are allowed to see.
  *
@@ -110,7 +113,7 @@ export function createMarketplaceThreadAdapter(opts: {
 export function mapMarketplaceRow(
   row: Record<string, unknown>,
   viewerId: string,
-  opts: { vendorDisplayName: string },
+  opts: { vendorDisplayName: string; buyerLabel: string },
 ): ThreadMessage | null {
   const id = String(row.id || "");
   if (!id) return null;
@@ -134,10 +137,10 @@ export function mapMarketplaceRow(
     senderName = "Henry & Co.";
   } else {
     senderRole = "team";
-    // Identity-minimized: a buyer is always shown as the generic "Buyer",
-    // a vendor always as its public store name. Neither path can leak the
-    // buyer's real name / email / phone.
-    senderName = senderKind === "vendor" ? opts.vendorDisplayName : "Buyer";
+    // Identity-minimized: a buyer is always shown as the generic, localized
+    // buyer label, a vendor always as its public store name. Neither path can
+    // leak the buyer's real name / email / phone.
+    senderName = senderKind === "vendor" ? opts.vendorDisplayName : opts.buyerLabel;
   }
 
   return {

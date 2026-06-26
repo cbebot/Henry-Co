@@ -2534,12 +2534,29 @@ export async function POST(request: Request) {
         }
 
         const senderKind = viewer.user.id === buyerUserId ? "buyer" : "vendor";
+
+        // Screen the subject on the same block-before-persist contract as the
+        // body — a phone/email typed into the Subject box must never persist in
+        // plaintext. Block reuses the body's contact_blocked response; otherwise
+        // the masked-or-clean subject is what we store (clip stays downstream).
+        const rawSubject = text(formData, "subject");
+        let subject: string | null = null;
+        if (rawSubject) {
+          const screenedSubject = screenMessageBody(rawSubject);
+          if (screenedSubject.action === "block") {
+            return json
+              ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+              : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+          }
+          subject = screenedSubject.body;
+        }
+
         const conversation = await findOrCreateConversation(admin, {
           buyerUserId,
           vendorId,
           anchorType,
           anchorId,
-          subject: text(formData, "subject") || null,
+          subject,
         });
 
         const startAdapter = createMarketplaceMessagingAdapter(admin);
