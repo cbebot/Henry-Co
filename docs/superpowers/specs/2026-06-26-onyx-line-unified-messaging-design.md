@@ -121,7 +121,7 @@ Warm-paper, light-default Register-L, Fraunces display + Manrope body, gold/onyx
 - **Inbox** (`/messages`): serif "Start with context" masthead + context-anchored conversation list + brass/teal pill-card entry points for starting a new contextual thread. Replaces the current plain aggregator list.
 - **Thread**: calm editorial chat — a **context header** (this thread *is about* order #/booking/job/project, with a live deep link + lifecycle status), bubbles, receipts, day dividers, brass Send composer. Built on `@henryco/messaging-thread` + `@henryco/chat-composer` (reuse, not rebuild) with re-toned tokens.
 - **Role-aware chrome**: one surface serves customer / staff / seller / buyer / client / learner; the context header, participant labels, and available actions adapt by role.
-- Mounted in `apps/account` as the hub; each division deep-links into the specific thread (`/messages/{conversationId}`), fixing the discovery finding that jobs/studio threads currently deep-link to generic landings.
+- **Two mount points, one component set (no context-losing redirect):** the thread + composer ship as reusable components in `@henryco/messaging` so a division *keeps its in-context messaging in place* (studio mounts them in its client portal, jobs in its candidate workspace — no bounce to another app). `apps/account` additionally hosts the **cross-division aggregate inbox** (the elevated `getInboxAggregate`) as the one place a person sees every conversation. Deep links resolve to the specific thread (`/messages/{conversationId}` in account, or the division's in-app thread route), fixing the discovery finding that jobs/studio threads currently deep-link to generic landings.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -356,7 +356,7 @@ create table conversation_messages (
 The complete system is designed now; it ships in safe increments behind feature flags (no big-bang). Lowest-risk-first:
 
 1. **WS-1 — Core + Safety (pure, no UI).** `@henryco/messaging` (contract + pipeline + shared offline-queue primitive) and `@henryco/contact-safety` (composing `@henryco/trust`, closing the URL/obfuscation/mask gaps) + the missing detector tests. Ships dark.
-2. **WS-2 — Elevated surface.** The editorial inbox + thread + composer in `apps/account`, on `messaging-thread`/`chat-composer`, reading the elevated `getInboxAggregate`. The "remarkable" surface the world sees.
+2. **WS-2 — Elevated surface.** The editorial thread + composer as reusable `@henryco/messaging` components (on `messaging-thread`/`chat-composer`), plus the cross-division aggregate inbox in `apps/account` reading the elevated `getInboxAggregate`. The "remarkable" surface the world sees — mountable in any division so no one loses in-context messaging.
 3. **WS-3 — Studio safety hardening.** Wire contact-safety into studio's send path (closes the HIGH leak) + display masking; no studio data move.
 4. **WS-4 — Marketplace buyer↔seller (net-new).** The canonical store + RLS + realtime + the on-platform-only participant model — the party-pair with no home today.
 5. **WS-5 — Jobs realtime + convergence.** Add jobs to the realtime publication; deep-link + unread convergence; retire the bespoke interview-room duplication toward `@henryco/rooms` (optional).
