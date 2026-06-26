@@ -32,6 +32,7 @@
     "@henryco/observability": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
     "@henryco/seo": "workspace:^",
+    "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@henryco/workspace-shell": "workspace:^",
     "@sentry/nextjs": "^10.0.0",

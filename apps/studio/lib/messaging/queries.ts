@@ -27,6 +27,7 @@ import type {
   ThreadInitialState,
 } from "./types";
 import { classifyAttachment, summariseReactions } from "./utils";
+import { maskContactsForDisplay } from "@henryco/trust/detect";
 
 type Sb = SupabaseClient;
 
@@ -324,7 +325,10 @@ function shapeMessage(
     senderName,
     senderId: raw.sender_id,
     senderRole,
-    body: raw.body || "",
+    // Defense-in-depth: mask any contact details in already-stored bodies at
+    // render (legacy rows pre-date the send/edit screens). Write-time screening
+    // keeps new rows clean; this protects history.
+    body: maskContactsForDisplay(raw.body || ""),
     messageType,
     metadata: (raw.metadata && typeof raw.metadata === "object"
       ? raw.metadata

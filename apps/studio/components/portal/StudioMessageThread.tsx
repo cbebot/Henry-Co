@@ -12,6 +12,7 @@ import {
   sendProjectMessageAction,
 } from "@/lib/portal/actions";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
+import { maskContactsForDisplay } from "@henryco/trust/detect";
 import type {
   ClientMessage,
   ClientMessageAttachment,
@@ -53,7 +54,9 @@ function studioAdapter(): MessageThreadAdapter {
         senderId,
         senderName: String(row.sender || (isOwn ? "You" : "HenryCo Studio")),
         senderRole: role,
-        body: String(row.body || ""),
+        // Defense-in-depth: mask contact details in already-stored bodies at render
+        // (legacy rows pre-date the send/edit screens). New rows are screened at write.
+        body: maskContactsForDisplay(String(row.body || "")),
         attachments,
         createdAt: String(row.created_at || new Date().toISOString()),
         editedAt: (row.edited_at as string | null) || null,
