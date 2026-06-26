@@ -14,6 +14,8 @@ import {
   PanelRight,
   WifiOff,
 } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import {
   toggleReaction as toggleReactionAction,
   markMessagesRead as markMessagesReadAction,
@@ -71,6 +73,8 @@ export function ProjectThread({
   onBack,
   hideContextPanel,
 }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const projectId = initial.context.projectId;
 
   const {
@@ -331,7 +335,7 @@ export function ProjectThread({
               type="button"
               onClick={onBack}
               className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white sm:hidden"
-              aria-label="Back to message list"
+              aria-label={copy.thread.backToList}
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </button>
@@ -347,7 +351,7 @@ export function ProjectThread({
                   <span aria-hidden>·</span>
                   <span className="inline-flex items-center gap-1 text-amber-300">
                     <WifiOff className="h-3 w-3" aria-hidden />
-                    Reconnecting
+                    {copy.thread.reconnecting}
                   </span>
                 </>
               ) : null}
@@ -357,7 +361,7 @@ export function ProjectThread({
             type="button"
             onClick={() => setSearchOpen((v) => !v)}
             className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
-            aria-label="Search this conversation"
+            aria-label={copy.thread.searchConversation}
             aria-expanded={searchOpen}
           >
             <Search className="h-4 w-4" aria-hidden />
@@ -367,7 +371,7 @@ export function ProjectThread({
               type="button"
               onClick={() => setContextOpen((v) => !v)}
               className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white lg:hidden"
-              aria-label={contextOpen ? "Hide project context" : "Show project context"}
+              aria-label={contextOpen ? copy.thread.hideContext : copy.thread.showContext}
               aria-expanded={contextOpen}
             >
               <PanelRight className="h-4 w-4" aria-hidden />
@@ -426,10 +430,10 @@ export function ProjectThread({
               type="button"
               onClick={() => scrollToBottom(true)}
               className="sticky bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[#d4b14e]/40 bg-[#0F1524] px-3 py-1.5 text-[12px] font-medium text-[#d4b14e] shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] motion-safe:animate-[studio-msg-pop-up_220ms_ease-out]"
-              aria-label="Jump to new message"
+              aria-label={copy.thread.jumpToNewMessage}
             >
               <ArrowDown className="h-3.5 w-3.5" aria-hidden />
-              New message
+              {copy.thread.newMessage}
             </button>
           ) : null}
         </div>
@@ -459,7 +463,7 @@ export function ProjectThread({
             <>
               <button
                 type="button"
-                aria-label="Close project context"
+                aria-label={copy.thread.closeContext}
                 className="fixed inset-0 z-30 bg-black/40 backdrop-blur-[2px] lg:hidden"
                 onClick={() => setContextOpen(false)}
               />
@@ -482,6 +486,8 @@ function RealtimeStatusBadge({
 }: {
   status: "idle" | "connecting" | "live" | "reconnecting" | "offline";
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   if (status === "live") {
     return (
       <span className="inline-flex items-center gap-1 text-[#d4b14e]">
@@ -489,23 +495,25 @@ function RealtimeStatusBadge({
           aria-hidden
           className="block h-1.5 w-1.5 rounded-full bg-[#d4b14e] motion-safe:animate-[studio-msg-pulse_2.4s_ease-in-out_infinite]"
         />
-        Live
+        {copy.thread.statusLive}
       </span>
     );
   }
   if (status === "connecting") {
-    return <span className="text-white/45">Connecting…</span>;
+    return <span className="text-white/45">{copy.thread.statusConnecting}</span>;
   }
   if (status === "reconnecting") {
-    return <span className="text-amber-300">Reconnecting…</span>;
+    return <span className="text-amber-300">{copy.thread.statusReconnecting}</span>;
   }
   if (status === "offline") {
-    return <span className="text-white/35">Offline</span>;
+    return <span className="text-white/35">{copy.thread.statusOffline}</span>;
   }
   return null;
 }
 
 function MobileContextStrip({ context }: { context: ProjectThreadContext }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const [open, setOpen] = useState(false);
   const milestone = context.currentMilestone;
   if (!milestone) return null;
@@ -519,7 +527,7 @@ function MobileContextStrip({ context }: { context: ProjectThreadContext }) {
       >
         <div className="min-w-0 flex-1">
           <div className="text-[10px] font-medium uppercase tracking-[0.10em] text-white/45">
-            Current milestone
+            {copy.thread.currentMilestone}
           </div>
           <div className="truncate text-[12px] font-medium text-[#F5F4EE]">
             {milestone.name}

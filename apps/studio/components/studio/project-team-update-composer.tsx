@@ -3,6 +3,8 @@
 import { ChevronDown } from "lucide-react";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
 import { createProjectUpdateAction } from "@/lib/studio/actions";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioProjectCopy } from "@henryco/i18n";
 
 export function ProjectTeamUpdateComposer({
   projectId,
@@ -11,16 +13,18 @@ export function ProjectTeamUpdateComposer({
   projectId: string;
   redirectPath: string;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioProjectCopy(locale).composer;
   return (
     <details className="group mt-8 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/12 open:border-[rgba(151,244,243,0.2)]">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
         <div>
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-            Team only
+            {copy.teamOnly}
           </div>
-          <div className="mt-1 text-sm font-semibold text-[var(--studio-ink)]">Post a project update</div>
+          <div className="mt-1 text-sm font-semibold text-[var(--studio-ink)]">{copy.postUpdateTitle}</div>
           <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
-            This appears in the client&apos;s project timeline. Keep it clear and concise.
+            {copy.postUpdateHint}
           </p>
         </div>
         <ChevronDown
@@ -34,19 +38,19 @@ export function ProjectTeamUpdateComposer({
           <input type="hidden" name="redirectPath" value={redirectPath} />
           <div>
             <label htmlFor="team-pu-title" className="text-xs font-semibold text-[var(--studio-ink)]">
-              Update title
+              {copy.updateTitleLabel}
             </label>
             <input
               id="team-pu-title"
               name="title"
               required
-              placeholder="e.g. Designs ready for your review"
+              placeholder={copy.updateTitlePlaceholder}
               className="studio-input mt-1.5 w-full rounded-[1.1rem] px-4 py-3"
             />
           </div>
           <div>
             <label htmlFor="team-pu-kind" className="text-xs font-semibold text-[var(--studio-ink)]">
-              Category
+              {copy.categoryLabel}
             </label>
             <select
               id="team-pu-kind"
@@ -54,14 +58,14 @@ export function ProjectTeamUpdateComposer({
               defaultValue="status"
               className="studio-input mt-1.5 w-full rounded-[1.1rem] px-4 py-3"
             >
-              <option value="status">Progress update</option>
-              <option value="milestone">Milestone update</option>
-              <option value="manual_update">Studio note</option>
+              <option value="status">{copy.optionStatus}</option>
+              <option value="milestone">{copy.optionMilestone}</option>
+              <option value="manual_update">{copy.optionNote}</option>
             </select>
           </div>
           <div>
             <label htmlFor="team-pu-summary" className="text-xs font-semibold text-[var(--studio-ink)]">
-              Details
+              {copy.detailsLabel}
             </label>
             <textarea
               id="team-pu-summary"
@@ -69,14 +73,14 @@ export function ProjectTeamUpdateComposer({
               required
               rows={4}
               className="studio-textarea mt-1.5 min-h-28 w-full rounded-[1.25rem] px-4 py-3"
-              placeholder="What&apos;s changed, what&apos;s next, or what the client should know."
+              placeholder={copy.detailsPlaceholder}
             />
           </div>
           <label className="flex items-center gap-3 text-sm text-[var(--studio-ink-soft)]">
             <input type="checkbox" name="notifyClient" className="rounded border-[var(--studio-line)]" defaultChecked />
-            Notify client by email and WhatsApp when available
+            {copy.notifyClient}
           </label>
-          <StudioSubmitButton label="Publish to progress log" pendingLabel="Publishing…" />
+          <StudioSubmitButton label={copy.submitLabel} pendingLabel={copy.submitPending} />
         </form>
       </div>
     </details>

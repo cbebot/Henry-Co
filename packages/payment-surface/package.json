@@ -13,6 +13,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "peerDependencies": {
+    "@henryco/i18n": "workspace:^",
     "@henryco/ui": "workspace:^",
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
@@ -20,6 +21,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@henryco/i18n": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

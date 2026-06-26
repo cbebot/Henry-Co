@@ -17,6 +17,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "@henryco/i18n": "workspace:^",
     "lucide-react": "^0.577.0"
   },
   "devDependencies": {

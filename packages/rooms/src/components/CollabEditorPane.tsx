@@ -9,6 +9,8 @@ import {
   Section,
 } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getRoomsCopy } from "@henryco/i18n";
 
 /**
  * CollabEditorPane — Yjs-backed shared code editor for technical interviews.
@@ -91,9 +93,13 @@ export function CollabEditorPane({
   initial = "",
   languages = DEFAULT_LANGUAGES,
   initialLanguage = "javascript",
-  kicker = "Live editor",
-  title = "Collab editor",
+  kicker,
+  title,
 }: CollabEditorPaneProps) {
+  const locale = useHenryCoLocale();
+  const copy = getRoomsCopy(locale).collabEditor;
+  const resolvedKicker = kicker ?? copy.defaultKicker;
+  const resolvedTitle = title ?? copy.defaultTitle;
   const [body, setBody] = useState<string>(() => source?.read() ?? initial);
   const [language, setLanguage] = useState(initialLanguage);
   const [saving, setSaving] = useState(false);
@@ -144,37 +150,37 @@ export function CollabEditorPane({
   const placeholder = useMemo(
     () =>
       language === "javascript"
-        ? "// Start typing — your collaborator sees your edits."
+        ? copy.placeholderJs
         : language === "typescript"
-          ? "// Start typing — your collaborator sees your edits."
+          ? copy.placeholderJs
           : language === "python"
-            ? "# Start typing — your collaborator sees your edits."
-            : "Start typing — your collaborator sees your edits.",
-    [language],
+            ? copy.placeholderPython
+            : copy.placeholderPlain,
+    [language, copy],
   );
 
   if (!sessionId) {
     return (
       <Panel tone="flat" padding="lg">
         <EmptyState
-          kicker={kicker}
-          headline="No session bound"
-          body="The collab editor requires a session id to persist edits."
+          kicker={resolvedKicker}
+          headline={copy.noSessionHeadline}
+          body={copy.noSessionBody}
         />
       </Panel>
     );
   }
 
   return (
-    <Panel tone="flat" padding="lg" aria-label={title}>
+    <Panel tone="flat" padding="lg" aria-label={resolvedTitle}>
       <Section
-        kicker={kicker}
-        headline={title}
+        kicker={resolvedKicker}
+        headline={resolvedTitle}
         action={
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            aria-label="Editor language"
+            aria-label={copy.languageSelectLabel}
             style={{
               padding: "0.35rem 0.65rem",
               borderRadius: "0.5rem",
@@ -199,9 +205,7 @@ export function CollabEditorPane({
             color: `var(${CSS_VARS.inkMuted})`,
           }}
         >
-          {source
-            ? "Real-time edits are synced with everyone in the room."
-            : "Edits are local until you save."}
+          {source ? copy.syncedNote : copy.localNote}
         </p>
       </Section>
       <textarea
@@ -210,7 +214,7 @@ export function CollabEditorPane({
         placeholder={placeholder}
         spellCheck={false}
         rows={16}
-        aria-label={`Editor for ${language}`}
+        aria-label={copy.editorForLanguage(language)}
         style={{
           width: "100%",
           minHeight: "20rem",
@@ -246,7 +250,7 @@ export function CollabEditorPane({
           }}
         >
           <Code2 size={14} aria-hidden />
-          {body.length.toLocaleString()} chars
+          {copy.charCount(body.length.toLocaleString())}
         </span>
         {onSave ? (
           <ActionButton
@@ -256,7 +260,7 @@ export function CollabEditorPane({
             success={saved}
             icon={<Save size={16} aria-hidden />}
           >
-            {saved ? "Saved" : "Save"}
+            {saved ? copy.saved : copy.save}
           </ActionButton>
         ) : null}
       </div>

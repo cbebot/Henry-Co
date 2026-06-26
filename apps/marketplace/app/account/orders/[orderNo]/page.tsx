@@ -5,6 +5,7 @@ import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function AccountOrderDetailPage({
   params: Promise<{ orderNo: string }>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   await requireMarketplaceUser("/account/orders");
   const { orderNo } = await params;
   const { orders } = await getBuyerDashboardData();
@@ -23,21 +25,21 @@ export default async function AccountOrderDetailPage({
   return (
     <WorkspaceShell
       title={order.orderNo}
-      description="Split-order clarity stays visible with vendor-level fulfillment and payment state broken out separately."
+      description={copy.orderDetail.description}
       {...accountWorkspaceNav("/account/orders", locale)}
     >
       <section className="market-paper rounded-[1.75rem] p-6">
         <div className="grid gap-4 md:grid-cols-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Placed</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.orderDetail.placed}</p>
             <p className="mt-2 text-lg font-semibold text-[var(--market-ink)]">{formatDate(order.placedAt)}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Total</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.orderDetail.total}</p>
             <p className="mt-2 text-lg font-semibold text-[var(--market-ink)]">{formatCurrency(order.grandTotal)}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Payment</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.orderDetail.payment}</p>
             <p className="mt-2 text-lg font-semibold text-[var(--market-ink)]">{order.paymentStatus}</p>
           </div>
         </div>
@@ -45,18 +47,18 @@ export default async function AccountOrderDetailPage({
       <section className="grid gap-4 lg:grid-cols-2">
         {order.groups.map((group) => (
           <article key={group.id} className="market-paper rounded-[1.75rem] p-5">
-            <p className="market-kicker">{group.ownerType === "company" ? "HenryCo segment" : group.vendorSlug}</p>
+            <p className="market-kicker">{group.ownerType === "company" ? copy.orderDetail.henrycoSegment : group.vendorSlug}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Fulfillment</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.orderDetail.fulfillment}</p>
                 <p className="mt-2 text-lg font-semibold capitalize text-[var(--market-ink)]">{group.fulfillmentStatus}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Tracking</p>
-                <p className="mt-2 text-lg font-semibold text-[var(--market-ink)]">{group.shipmentTrackingCode || "Pending"}</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.orderDetail.tracking}</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--market-ink)]">{group.shipmentTrackingCode || copy.orderDetail.trackingPending}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Payout status</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.orderDetail.payoutStatus}</p>
                 <p className="mt-2 text-lg font-semibold capitalize text-[var(--market-ink)]">{group.payoutStatus.replace(/_/g, " ")}</p>
               </div>
             </div>
@@ -65,15 +67,15 @@ export default async function AccountOrderDetailPage({
       </section>
       {order.groups.some((group) => group.fulfillmentStatus === "delivered" && group.payoutStatus !== "payout_released") ? (
         <section className="market-paper rounded-[1.75rem] p-6">
-          <p className="market-kicker">Buyer protection control</p>
+          <p className="market-kicker">{copy.orderDetail.protectionKicker}</p>
           <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-            Confirm completion when the delivered order is satisfactory. HenryCo keeps seller payout in escrow until confirmation or timeout logic clears the segment.
+            {copy.orderDetail.protectionBody}
           </p>
           <form action="/api/marketplace" method="POST" className="mt-5 flex flex-wrap gap-3">
             <input type="hidden" name="intent" value="order_confirm_completion" />
             <input type="hidden" name="order_no" value={order.orderNo} />
             <input type="hidden" name="return_to" value={`/account/orders/${order.orderNo}`} />
-            <button className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">Confirm completion</button>
+            <button className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">{copy.orderDetail.confirmCompletion}</button>
           </form>
         </section>
       ) : null}

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Banknote, Check, Clock3, Mail, ShieldCheck, Truck, Wallet } from "lucide-react";
+import { getMarketplaceCheckoutCopy, type MarketplaceCheckoutCopy } from "@henryco/i18n";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { formatCurrency } from "@/lib/utils";
 
 type PaymentMethod = "wallet_balance" | "bank_transfer" | "cod" | string;
@@ -10,7 +12,10 @@ type Step = {
   body: string;
 };
 
-function copyForMethod(method: PaymentMethod | null): {
+function copyForMethod(
+  method: PaymentMethod | null,
+  copy: MarketplaceCheckoutCopy["placement"],
+): {
   kicker: string;
   headline: string;
   lead: string;
@@ -18,25 +23,24 @@ function copyForMethod(method: PaymentMethod | null): {
 } {
   if (method === "wallet_balance") {
     return {
-      kicker: "Order placed · paid",
-      headline: "Paid from your HenryCo balance. Held in escrow.",
-      lead:
-        "Your wallet was debited and the order moved into escrow control. Funds release to the seller after delivery confirms — neither side carries the risk in between.",
+      kicker: copy.wallet.kicker,
+      headline: copy.wallet.headline,
+      lead: copy.wallet.lead,
       steps: [
         {
           icon: ShieldCheck,
-          title: "Escrow protection on by default",
-          body: "Seller payout is gated on fulfillment plus the cooling-off window. Open a dispute any time before then and the funds stay held.",
+          title: copy.wallet.escrowProtection.title,
+          body: copy.wallet.escrowProtection.body,
         },
         {
           icon: Truck,
-          title: "Vendor segments dispatch separately",
-          body: "Each vendor in the order ships on its own timeline. Tracking codes appear in the segments below as carriers issue them.",
+          title: copy.wallet.vendorSegments.title,
+          body: copy.wallet.vendorSegments.body,
         },
         {
           icon: Mail,
-          title: "Receipts and updates land in your inbox",
-          body: "Email and in-app notifications fire on every status change. The full audit trail also lives under Account → Orders.",
+          title: copy.wallet.receipts.title,
+          body: copy.wallet.receipts.body,
         },
       ],
     };
@@ -44,25 +48,24 @@ function copyForMethod(method: PaymentMethod | null): {
 
   if (method === "bank_transfer") {
     return {
-      kicker: "Order placed · awaiting verification",
-      headline: "Proof submitted. Finance is reviewing.",
-      lead:
-        "Your transfer evidence is now with HenryCo finance. Verification typically lands within working hours; the timeline below updates the moment it does. We'll email and notify the second the order moves into fulfillment.",
+      kicker: copy.bankTransfer.kicker,
+      headline: copy.bankTransfer.headline,
+      lead: copy.bankTransfer.lead,
       steps: [
         {
           icon: Clock3,
-          title: "Verification in working hours",
-          body: "If you transferred outside banking hours, expect the status to flip on the next business window. The reference on your receipt is the match key.",
+          title: copy.bankTransfer.verificationHours.title,
+          body: copy.bankTransfer.verificationHours.body,
         },
         {
           icon: ShieldCheck,
-          title: "Escrow lifts after fulfillment",
-          body: "Seller payout only releases after delivery confirms. Disputes opened before then keep the funds frozen by default.",
+          title: copy.bankTransfer.escrowLifts.title,
+          body: copy.bankTransfer.escrowLifts.body,
         },
         {
           icon: Mail,
-          title: "We'll reach out if anything's off",
-          body: "If the amount or reference doesn't match, the payment team contacts you on file before any status change.",
+          title: copy.bankTransfer.reachOut.title,
+          body: copy.bankTransfer.reachOut.body,
         },
       ],
     };
@@ -70,50 +73,48 @@ function copyForMethod(method: PaymentMethod | null): {
 
   if (method === "cod") {
     return {
-      kicker: "Order placed · pay on delivery",
-      headline: "Awaiting vendor acceptance. Pay the rider on delivery.",
-      lead:
-        "The seller is reviewing the order. Once accepted, the rider collects payment when the package arrives — no upfront transfer needed. Cash and POS are both supported by the dispatcher.",
+      kicker: copy.cod.kicker,
+      headline: copy.cod.headline,
+      lead: copy.cod.lead,
       steps: [
         {
           icon: Check,
-          title: "Vendor accepts before dispatch",
-          body: "If the seller can't fulfill, the order cancels cleanly with no charge. You'll see the acceptance event on the timeline below.",
+          title: copy.cod.vendorAccepts.title,
+          body: copy.cod.vendorAccepts.body,
         },
         {
           icon: Truck,
-          title: "Pay only when the parcel arrives",
-          body: "The rider settles the payment with you on delivery. Keep your phone available — the carrier will call before the drop-off window.",
+          title: copy.cod.payOnArrival.title,
+          body: copy.cod.payOnArrival.body,
         },
         {
           icon: Mail,
-          title: "Updates by email and push",
-          body: "Acceptance, dispatch, and delivery each send a notification. Full history stays under Account → Orders.",
+          title: copy.cod.updates.title,
+          body: copy.cod.updates.body,
         },
       ],
     };
   }
 
   return {
-    kicker: "Order placed",
-    headline: "We've recorded your order.",
-    lead:
-      "The order is in the system and the vendor segments below carry the rest of the journey. Refer back here for status changes — payment, fulfillment, and payout each post on their own row.",
+    kicker: copy.fallback.kicker,
+    headline: copy.fallback.headline,
+    lead: copy.fallback.lead,
     steps: [
       {
         icon: ShieldCheck,
-        title: "Escrow stays on",
-        body: "Seller payout only releases after fulfillment confirms. Disputes opened before that keep the funds frozen.",
+        title: copy.fallback.escrowStaysOn.title,
+        body: copy.fallback.escrowStaysOn.body,
       },
       {
         icon: Truck,
-        title: "Vendors dispatch separately",
-        body: "Each segment in the split order ships on its own timeline and gets its own tracking code as the carrier issues one.",
+        title: copy.fallback.vendorsDispatch.title,
+        body: copy.fallback.vendorsDispatch.body,
       },
       {
         icon: Mail,
-        title: "Notifications run on every change",
-        body: "Status updates fire by email and push. The full audit trail lives under Account → Orders.",
+        title: copy.fallback.notifications.title,
+        body: copy.fallback.notifications.body,
       },
     ],
   };
@@ -126,7 +127,7 @@ function MethodIcon({ method, className }: { method: PaymentMethod | null; class
   return <ShieldCheck className={className} aria-hidden />;
 }
 
-export function PlacementAcknowledgement({
+export async function PlacementAcknowledgement({
   orderNo,
   paymentMethod,
   buyerEmail,
@@ -139,7 +140,9 @@ export function PlacementAcknowledgement({
   grandTotal: number;
   currency: string;
 }) {
-  const { kicker, headline, lead, steps } = copyForMethod(paymentMethod);
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCheckoutCopy(locale).placement;
+  const { kicker, headline, lead, steps } = copyForMethod(paymentMethod, copy);
 
   return (
     <section
@@ -167,7 +170,7 @@ export function PlacementAcknowledgement({
           <dl className="mt-6 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                Order number
+                {copy.orderNumber}
               </dt>
               <dd className="mt-1 text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {orderNo}
@@ -175,7 +178,7 @@ export function PlacementAcknowledgement({
             </div>
             <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                Total
+                {copy.total}
               </dt>
               <dd className="mt-1 text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {formatCurrency(grandTotal, currency)}
@@ -183,10 +186,10 @@ export function PlacementAcknowledgement({
             </div>
             <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                Confirmation to
+                {copy.confirmationTo}
               </dt>
               <dd className="mt-1 truncate text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                {buyerEmail || "Your HenryCo account"}
+                {buyerEmail || copy.confirmationFallback}
               </dd>
             </div>
           </dl>
@@ -196,26 +199,26 @@ export function PlacementAcknowledgement({
               href="/account/orders"
               className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
             >
-              View all orders
+              {copy.viewAllOrders}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
             <Link
               href="/search"
               className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Continue browsing
+              {copy.continueBrowsing}
             </Link>
             <Link
               href={`/help?order=${orderNo}`}
               className="inline-flex items-center gap-2 self-center text-sm font-semibold text-[var(--market-brass)] hover:underline"
             >
-              Need help with this order?
+              {copy.needHelp}
             </Link>
           </div>
         </div>
 
         <div>
-          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">What happens next</p>
+          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">{copy.whatHappensNext}</p>
           <ol className="mt-3 space-y-3">
             {steps.map((step) => {
               const StepIcon = step.icon;

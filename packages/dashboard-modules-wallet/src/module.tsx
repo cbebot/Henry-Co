@@ -1,4 +1,10 @@
+import { cookies, headers } from "next/headers";
 import { Wallet } from "lucide-react";
+import {
+  LOCALE_COOKIE,
+  resolveLocaleOrder,
+  type AppLocale,
+} from "@henryco/i18n";
 import {
   viewerCanUseCustomerSurface,
   type DashboardModule,
@@ -45,6 +51,21 @@ import { loadWalletSnapshot } from "./data";
  * "Download statement" CTA wired to the unified branded-documents
  * endpoint at `/api/documents/wallet-statement/<userId>?download=1`.
  */
+/**
+ * Resolve the active locale for server-rendered widgets from the shared
+ * `henryco_locale` cookie + Accept-Language / region headers. Mirrors the
+ * host shell's locale resolution so widget chrome copy honours the same
+ * language the surface renders in.
+ */
+async function resolveWidgetLocale(): Promise<AppLocale> {
+  const [cookieStore, headerList] = await Promise.all([cookies(), headers()]);
+  return resolveLocaleOrder({
+    cookieLocale: cookieStore.get(LOCALE_COOKIE)?.value,
+    acceptLanguage: headerList.get("accept-language"),
+    country: headerList.get("x-vercel-ip-country"),
+  });
+}
+
 export const walletModule: DashboardModule = {
   slug: "wallet",
   title: "Wallet",
@@ -65,6 +86,7 @@ export const walletModule: DashboardModule = {
     const snapshot = await loadWalletSnapshot(viewer);
     if (!snapshot) return [];
 
+    const locale = await resolveWidgetLocale();
     const userId = viewer.user.id;
 
     return [
@@ -84,7 +106,7 @@ export const walletModule: DashboardModule = {
         size: "sm",
         weight: 70,
         href: "/wallet/funding",
-        render: async () => <PendingFundingCard snapshot={snapshot} />,
+        render: async () => <PendingFundingCard snapshot={snapshot} locale={locale} />,
       },
       {
         id: "wallet.payout-methods",
@@ -93,7 +115,7 @@ export const walletModule: DashboardModule = {
         size: "sm",
         weight: 50,
         href: "/wallet/withdrawals",
-        render: async () => <PayoutMethodsCard snapshot={snapshot} />,
+        render: async () => <PayoutMethodsCard snapshot={snapshot} locale={locale} />,
       },
       {
         id: "wallet.recent-transactions",

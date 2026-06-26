@@ -29,6 +29,8 @@ import {
   ThreadParticipantsStrip,
   type ThreadParticipant,
 } from "@henryco/messaging-thread";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioSupportCopy, type StudioSupportCopy } from "@henryco/i18n";
 
 import { StudioDownloadButton } from "./StudioDownloadButton";
 
@@ -51,16 +53,19 @@ const TONE_CLASS: Record<StatusTone, string> = {
   neutral: "studio-support-pill--neutral",
 };
 
-const TRANSFER_DIVISIONS: Array<{ value: string; label: string }> = [
-  { value: "studio", label: "Studio" },
-  { value: "care", label: "Care" },
-  { value: "jobs", label: "Jobs" },
-  { value: "learn", label: "Learn" },
-  { value: "property", label: "Property" },
-  { value: "logistics", label: "Logistics" },
-  { value: "marketplace", label: "Marketplace" },
-  { value: "account", label: "Account" },
-  { value: "support", label: "Support (general)" },
+const TRANSFER_DIVISIONS: Array<{
+  value: string;
+  labelKey: keyof StudioSupportCopy["divisions"];
+}> = [
+  { value: "studio", labelKey: "studio" },
+  { value: "care", labelKey: "care" },
+  { value: "jobs", labelKey: "jobs" },
+  { value: "learn", labelKey: "learn" },
+  { value: "property", labelKey: "property" },
+  { value: "logistics", labelKey: "logistics" },
+  { value: "marketplace", labelKey: "marketplace" },
+  { value: "account", labelKey: "account" },
+  { value: "support", labelKey: "support" },
 ];
 
 export type StudioSupportThreadHeaderProps = {
@@ -106,11 +111,13 @@ export default function StudioSupportThreadHeader({
   canTransfer,
   download,
 }: StudioSupportThreadHeaderProps) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioSupportCopy(locale);
   const tone = statusTone(status);
   return (
     <header
       className="studio-support-header"
-      aria-label="Support thread header"
+      aria-label={copy.header.ariaLabel}
     >
       <div className="studio-support-header__primary">
         <div className="studio-support-header__pills">
@@ -126,7 +133,7 @@ export default function StudioSupportThreadHeader({
           </span>
           <span
             className={`studio-support-pill studio-support-pill--status ${TONE_CLASS[tone]}`}
-            aria-label={`Status: ${statusLabel}`}
+            aria-label={copy.header.statusAria.replace("{status}", statusLabel)}
           >
             <span
               className="studio-support-pill__dot"
@@ -138,12 +145,12 @@ export default function StudioSupportThreadHeader({
         </div>
         <h1 className="studio-support-header__subject">{subject}</h1>
         <p className="studio-support-header__meta">
-          Thread #{threadId.slice(0, 8)}
+          {copy.header.threadMeta.replace("{id}", threadId.slice(0, 8))}
         </p>
         {participants.length > 0 ? (
           <ThreadParticipantsStrip
             participants={participants}
-            ariaLabel="Thread participants"
+            ariaLabel={copy.header.participantsAria}
           />
         ) : null}
       </div>
@@ -183,6 +190,8 @@ function ActionMenu({
   initialMuted: boolean;
   canTransfer: boolean;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioSupportCopy(locale);
   const [open, setOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [muted, setMuted] = useState(initialMuted);
@@ -232,7 +241,7 @@ function ActionMenu({
     return `${window.location.origin}/support/${threadId}`;
   }, [threadId]);
 
-  const copy = useCallback(async (key: string, value: string) => {
+  const copyToClipboard = useCallback(async (key: string, value: string) => {
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(value);
@@ -272,14 +281,18 @@ function ActionMenu({
         body: JSON.stringify({ threadId, muted: nextMuted }),
       });
       if (!response.ok) throw new Error("mute_failed");
-      announce(nextMuted ? "Notifications muted" : "Notifications on");
+      announce(
+        nextMuted
+          ? copy.header.feedback.notificationsMuted
+          : copy.header.feedback.notificationsOn,
+      );
     } catch {
       setMuted(!nextMuted);
-      announce("Couldn't update mute. Try again.");
+      announce(copy.header.feedback.muteFailed);
     } finally {
       setBusyKey(null);
     }
-  }, [muted, threadId, announce]);
+  }, [muted, threadId, announce, copy]);
 
   const submitTransition = useCallback(
     async (action: "resolve" | "reopen") => {
@@ -292,17 +305,19 @@ function ActionMenu({
         });
         if (!response.ok) throw new Error("transition_failed");
         announce(
-          action === "resolve" ? "Thread marked resolved" : "Thread re-opened",
+          action === "resolve"
+            ? copy.header.feedback.markedResolved
+            : copy.header.feedback.reopened,
         );
         // Allow the system message to commit before reloading the page.
         setTimeout(() => window.location.reload(), 600);
       } catch {
-        announce("Couldn't update status. Try again.");
+        announce(copy.header.feedback.statusFailed);
       } finally {
         setBusyKey(null);
       }
     },
-    [threadId, announce],
+    [threadId, announce, copy],
   );
 
   const submitTransfer = useCallback(
@@ -315,16 +330,21 @@ function ActionMenu({
           body: JSON.stringify({ threadId, division }),
         });
         if (!response.ok) throw new Error("transfer_failed");
-        announce(`Transferred to ${division}`);
+        const divisionLabel =
+          copy.divisions[division as keyof StudioSupportCopy["divisions"]] ??
+          division;
+        announce(
+          copy.header.feedback.transferred.replace("{division}", divisionLabel),
+        );
         setTimeout(() => window.location.reload(), 600);
       } catch {
-        announce("Couldn't transfer. Try again.");
+        announce(copy.header.feedback.transferFailed);
       } finally {
         setBusyKey(null);
         setTransferPanelOpen(false);
       }
     },
-    [threadId, announce],
+    [threadId, announce, copy],
   );
 
   const reportThread = useCallback(async () => {
@@ -336,13 +356,13 @@ function ActionMenu({
         body: JSON.stringify({ threadId }),
       });
       if (!response.ok) throw new Error("report_failed");
-      announce("Flagged for ops review");
+      announce(copy.header.feedback.flagged);
     } catch {
-      announce("Couldn't flag for review. Try again.");
+      announce(copy.header.feedback.flagFailed);
     } finally {
       setBusyKey(null);
     }
-  }, [threadId, announce]);
+  }, [threadId, announce, copy]);
 
   const onTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
@@ -359,8 +379,8 @@ function ActionMenu({
         className="studio-support-header__menu-trigger"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Thread actions"
-        title="Thread actions"
+        aria-label={copy.header.actionsLabel}
+        title={copy.header.actionsLabel}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={onTriggerKeyDown}
       >
@@ -370,14 +390,14 @@ function ActionMenu({
         <div
           className="studio-support-header__menu-panel"
           role="menu"
-          aria-label="Thread actions"
+          aria-label={copy.header.actionsLabel}
         >
           {transferPanelOpen ? (
             <div className="studio-support-header__menu-transfer">
               <span className="studio-support-header__menu-transfer-label">
-                Transfer to division
+                {copy.header.transfer.panelLabel}
               </span>
-              <ul role="listbox" aria-label="Transfer destination">
+              <ul role="listbox" aria-label={copy.header.transfer.destinationAria}>
                 {TRANSFER_DIVISIONS.filter(
                   (option) => option.value !== divisionValue,
                 ).map((option) => (
@@ -390,7 +410,7 @@ function ActionMenu({
                       disabled={busyKey === "transfer"}
                     >
                       <ArrowRightLeft size={12} aria-hidden />
-                      {option.label}
+                      {copy.divisions[option.labelKey]}
                     </button>
                   </li>
                 ))}
@@ -400,7 +420,7 @@ function ActionMenu({
                 className="studio-support-header__menu-transfer-cancel"
                 onClick={() => setTransferPanelOpen(false)}
               >
-                Cancel
+                {copy.header.transfer.cancel}
               </button>
             </div>
           ) : (
@@ -409,8 +429,8 @@ function ActionMenu({
                 <ActionItem
                   ref={firstItemRef}
                   icon={<RefreshCw size={14} aria-hidden />}
-                  label="Re-open thread"
-                  description="Move back to the active queue and re-stamp updated_at."
+                  label={copy.header.actions.reopen.label}
+                  description={copy.header.actions.reopen.description}
                   onSelect={() => submitTransition("reopen")}
                   disabled={busyKey === "reopen"}
                 />
@@ -418,8 +438,8 @@ function ActionMenu({
                 <ActionItem
                   ref={firstItemRef}
                   icon={<CheckCircle2 size={14} aria-hidden />}
-                  label="Mark resolved"
-                  description="Flip status to resolved + post a system message."
+                  label={copy.header.actions.resolve.label}
+                  description={copy.header.actions.resolve.description}
                   onSelect={() => submitTransition("resolve")}
                   disabled={busyKey === "resolve"}
                 />
@@ -427,8 +447,8 @@ function ActionMenu({
               {canTransfer ? (
                 <ActionItem
                   icon={<ArrowRightLeft size={14} aria-hidden />}
-                  label="Transfer division"
-                  description="Move to a different division's inbox."
+                  label={copy.header.actions.transferDivision.label}
+                  description={copy.header.actions.transferDivision.description}
                   onSelect={() => setTransferPanelOpen(true)}
                 />
               ) : null}
@@ -440,19 +460,23 @@ function ActionMenu({
                     <BellOff size={14} aria-hidden />
                   )
                 }
-                label={muted ? "Unmute notifications" : "Mute notifications"}
+                label={
+                  muted
+                    ? copy.header.actions.unmute.label
+                    : copy.header.actions.mute.label
+                }
                 description={
                   muted
-                    ? "Notifications paused for staff on this thread."
-                    : "Pause inbox pings for this thread."
+                    ? copy.header.actions.unmute.description
+                    : copy.header.actions.mute.description
                 }
                 onSelect={toggleMute}
                 disabled={busyKey === "mute"}
               />
               <ActionItem
                 icon={<AlertTriangle size={14} aria-hidden />}
-                label="Flag for review"
-                description="Promote to high priority + audit log entry."
+                label={copy.header.actions.flag.label}
+                description={copy.header.actions.flag.description}
                 onSelect={reportThread}
                 disabled={busyKey === "report"}
               />
@@ -462,15 +486,23 @@ function ActionMenu({
               />
               <ActionItem
                 icon={<Link2 size={14} aria-hidden />}
-                label={copiedKey === "link" ? "Link copied" : "Copy thread link"}
+                label={
+                  copiedKey === "link"
+                    ? copy.header.actions.copyLink.confirmed
+                    : copy.header.actions.copyLink.label
+                }
                 confirmed={copiedKey === "link"}
-                onSelect={() => copy("link", link)}
+                onSelect={() => copyToClipboard("link", link)}
               />
               <ActionItem
                 icon={<Copy size={14} aria-hidden />}
-                label={copiedKey === "id" ? "ID copied" : "Copy thread ID"}
+                label={
+                  copiedKey === "id"
+                    ? copy.header.actions.copyId.confirmed
+                    : copy.header.actions.copyId.label
+                }
                 confirmed={copiedKey === "id"}
-                onSelect={() => copy("id", threadId)}
+                onSelect={() => copyToClipboard("id", threadId)}
               />
               <div
                 className="studio-support-header__menu-divider"
@@ -478,8 +510,8 @@ function ActionMenu({
               />
               <ActionItem
                 icon={<Download size={14} aria-hidden />}
-                label="Download (use the action above)"
-                description="Use the Download button to grab a branded PDF copy."
+                label={copy.header.actions.download.label}
+                description={copy.header.actions.download.description}
                 disabled
                 onSelect={() => null}
               />
@@ -492,7 +524,7 @@ function ActionMenu({
                 </p>
               ) : null}
               <p className="studio-support-header__menu-foot">
-                Thread · {subject}
+                {copy.header.foot.replace("{subject}", subject)}
               </p>
             </>
           )}

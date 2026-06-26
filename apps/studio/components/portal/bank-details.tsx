@@ -1,7 +1,9 @@
 import { Building2, Landmark, ShieldCheck, User } from "lucide-react";
+import { getStudioPortalCopy } from "@henryco/i18n";
 import { CopyButton } from "@/components/portal/copy-button";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
-export function BankDetails({
+export async function BankDetails({
   bankName,
   accountName,
   accountNumber,
@@ -12,10 +14,13 @@ export function BankDetails({
   accountNumber: string | null;
   amountLabel: string;
 }) {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPortalCopy(locale);
+
   const rows = [
-    { icon: Landmark, label: "Bank", value: bankName, copy: false },
-    { icon: User, label: "Account name", value: accountName, copy: false },
-    { icon: Building2, label: "Account number", value: accountNumber, copy: true },
+    { icon: Landmark, label: copy.bankDetails.bankRow, value: bankName, copy: false },
+    { icon: User, label: copy.bankDetails.accountNameRow, value: accountName, copy: false },
+    { icon: Building2, label: copy.bankDetails.accountNumberRow, value: accountNumber, copy: true },
   ];
 
   return (
@@ -26,16 +31,16 @@ export function BankDetails({
         </div>
         <div>
           <h2 className="text-lg font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">
-            Pay {amountLabel} into the verified HenryCo account
+            {copy.bankDetails.heading(amountLabel)}
           </h2>
           <p className="mt-1 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-            Bank transfer is the active method for this invoice. Card payments are coming soon.
+            {copy.bankDetails.subtitle}
           </p>
         </div>
       </div>
 
       <div className="mt-5 divide-y divide-[var(--studio-line)] rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)]">
-        {rows.map(({ icon: Icon, label, value, copy }) => (
+        {rows.map(({ icon: Icon, label, value, copy: copyRow }) => (
           <div
             key={label}
             className="flex items-center justify-between gap-3 px-4 py-3.5 sm:px-5"
@@ -47,18 +52,17 @@ export function BankDetails({
                   {label}
                 </div>
                 <div className="mt-1 truncate text-[15px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
-                  {value || "Pending — contact support"}
+                  {value || copy.bankDetails.pendingValue}
                 </div>
               </div>
             </div>
-            {copy && value ? <CopyButton value={value} label="Copy number" /> : null}
+            {copyRow && value ? <CopyButton value={value} label={copy.bankDetails.copyNumber} /> : null}
           </div>
         ))}
       </div>
 
       <div className="mt-4 rounded-2xl border border-dashed border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-4 py-3 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-        Use your invoice number as the transfer reference. After the transfer, attach your proof
-        below — finance verifies within one business day.
+        {copy.bankDetails.referenceNote}
       </div>
     </div>
   );

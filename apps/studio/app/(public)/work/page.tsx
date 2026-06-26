@@ -2,26 +2,29 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { studioCaseStudySlug } from "@/lib/studio/content";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export default async function WorkPage() {
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).work;
 
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
-        <p className="studio-kicker">Selected work</p>
+        <p className="studio-kicker">{copy.kicker}</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          The work before the conversation.
+          {copy.title}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Each case study covers the business challenge, the approach, and the measurable impact.
-          No vague summaries &mdash; proof you can verify before you commit.
+          {copy.intro}
         </p>
         <dl className="mt-10 grid grid-cols-3 gap-x-6 gap-y-5 border-y border-[var(--studio-line)] py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12">
           {[
-            ["Case studies", String(catalog.caseStudies.length)],
-            ["Teams", String(catalog.teams.length)],
-            ["Services", String(catalog.services.length)],
+            [copy.caseStudiesLabel, String(catalog.caseStudies.length)],
+            [copy.teamsLabel, String(catalog.teams.length)],
+            [copy.servicesLabel, String(catalog.services.length)],
           ].map(([label, value]) => (
             <div key={label} className="flex flex-col gap-1.5">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
@@ -73,7 +76,7 @@ export default async function WorkPage() {
                 </ul>
               ) : null}
               <span className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 group-hover:underline">
-                View case study
+                {copy.viewCaseStudy}
                 <ArrowUpRight className="h-3.5 w-3.5 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </span>
             </Link>

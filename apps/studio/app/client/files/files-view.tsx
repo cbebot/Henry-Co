@@ -2,29 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { Filter } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { FileCard } from "@/components/portal/file-card";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 import type { ClientDeliverable, ClientFileType } from "@/types/portal";
-
-const FILE_TYPE_OPTIONS: Array<{ value: ClientFileType | "all"; label: string }> = [
-  { value: "all", label: "All types" },
-  { value: "image", label: "Images" },
-  { value: "pdf", label: "PDFs" },
-  { value: "video", label: "Video" },
-  { value: "archive", label: "Archives" },
-  { value: "other", label: "Other" },
-];
-
-const STATUS_OPTIONS: Array<{ value: "all" | "shared" | "approved"; label: string }> = [
-  { value: "all", label: "Any status" },
-  { value: "shared", label: "Awaiting review" },
-  { value: "approved", label: "Approved" },
-];
-
-const SORT_OPTIONS: Array<{ value: "shared" | "milestone"; label: string }> = [
-  { value: "shared", label: "Most recent" },
-  { value: "milestone", label: "By milestone" },
-];
 
 export function FilesView({
   deliverables,
@@ -33,6 +15,29 @@ export function FilesView({
   deliverables: ClientDeliverable[];
   projects: Array<{ id: string; title: string }>;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioClientPagesCopy(locale).filesView;
+
+  const FILE_TYPE_OPTIONS: Array<{ value: ClientFileType | "all"; label: string }> = [
+    { value: "all", label: copy.typeAll },
+    { value: "image", label: copy.typeImage },
+    { value: "pdf", label: copy.typePdf },
+    { value: "video", label: copy.typeVideo },
+    { value: "archive", label: copy.typeArchive },
+    { value: "other", label: copy.typeOther },
+  ];
+
+  const STATUS_OPTIONS: Array<{ value: "all" | "shared" | "approved"; label: string }> = [
+    { value: "all", label: copy.statusAll },
+    { value: "shared", label: copy.statusShared },
+    { value: "approved", label: copy.statusApproved },
+  ];
+
+  const SORT_OPTIONS: Array<{ value: "shared" | "milestone"; label: string }> = [
+    { value: "shared", label: copy.sortRecent },
+    { value: "milestone", label: copy.sortMilestone },
+  ];
+
   const [project, setProject] = useState<string>("all");
   const [type, setType] = useState<string>("all");
   const [status, setStatus] = useState<string>("all");
@@ -60,25 +65,24 @@ export function FilesView({
     <div className="space-y-6">
       <header>
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          All deliverables
+          {copy.kicker}
         </div>
         <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Files
+          {copy.title}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Every file the team has shared with you across all projects. Filter by project, type, or
-          approval status; sort by recency or milestone.
+          {copy.body}
         </p>
       </header>
 
       <section className="portal-card flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:flex-wrap sm:gap-4 sm:px-5">
         <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
           <Filter className="h-3.5 w-3.5" />
-          Filters
+          {copy.filters}
         </div>
 
-        <FilterSelect label="Project" value={project} onChange={setProject}>
-          <option value="all">All projects</option>
+        <FilterSelect label={copy.filterProject} value={project} onChange={setProject}>
+          <option value="all">{copy.allProjects}</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
               {p.title}
@@ -86,7 +90,7 @@ export function FilesView({
           ))}
         </FilterSelect>
 
-        <FilterSelect label="Type" value={type} onChange={setType}>
+        <FilterSelect label={copy.filterType} value={type} onChange={setType}>
           {FILE_TYPE_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -94,7 +98,7 @@ export function FilesView({
           ))}
         </FilterSelect>
 
-        <FilterSelect label="Status" value={status} onChange={setStatus}>
+        <FilterSelect label={copy.filterStatus} value={status} onChange={setStatus}>
           {STATUS_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -102,7 +106,7 @@ export function FilesView({
           ))}
         </FilterSelect>
 
-        <FilterSelect label="Sort" value={sort} onChange={(v) => setSort(v as "shared" | "milestone")}>
+        <FilterSelect label={copy.filterSort} value={sort} onChange={(v) => setSort(v as "shared" | "milestone")}>
           {SORT_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -114,8 +118,8 @@ export function FilesView({
       {filtered.length === 0 ? (
         <PortalEmptyState
           icon={Filter}
-          title="No files match your filters"
-          body="Try removing a filter — there are files in your account, just none that match the current selection."
+          title={copy.emptyTitle}
+          body={copy.emptyBody}
         />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,3 +1,4 @@
+import { getWorkspaceShellCopy } from "@henryco/i18n";
 import type { WorkspaceShellProps } from "./types";
 import { WorkspaceSidebar } from "./sidebar";
 import { WorkspaceMobileHeader } from "./mobile-header";
@@ -35,8 +36,10 @@ export function WorkspaceShell({
   pathname,
   sidebarTopSlot,
   rightRail,
+  locale = "en",
   children,
 }: WorkspaceShellProps) {
+  const copy = getWorkspaceShellCopy(locale);
   // Resolve sensible defaults from the navigation array so hosts can pass
   // less and still get a working shell.
   const resolvedNotifHref = notificationsHref ?? navigation[0]?.href ?? "/";
@@ -72,6 +75,7 @@ export function WorkspaceShell({
         pathname={pathname}
         accountSettingsUrl={accountSettingsUrl}
         topSlot={sidebarTopSlot}
+        locale={locale}
       />
 
       <div className="ws-shell-body">
@@ -88,7 +92,7 @@ export function WorkspaceShell({
             {rightRail ? (
               <div className="ws-shell-with-rail">
                 <div className="ws-shell-content">{children}</div>
-                <aside className="ws-shell-rail" aria-label="Sidebar context">
+                <aside className="ws-shell-rail" aria-label={copy.shell.railAria}>
                   {rightRail}
                 </aside>
               </div>
@@ -102,6 +106,7 @@ export function WorkspaceShell({
           navigation={resolvedMobileNav}
           pathname={pathname}
           badges={badges}
+          locale={locale}
         />
       </div>
     </div>

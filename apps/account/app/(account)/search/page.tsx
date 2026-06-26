@@ -1,12 +1,18 @@
 import { CrossDivisionSearchExperience } from "@henryco/ui";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
 import { getAccountSearchResults } from "@/lib/search";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Search Account",
-  description: "Search HenryCo account workflows and connected division routes.",
-};
+export async function generateMetadata() {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountMiscExtraCopy(locale);
+  return {
+    title: copy.search.metadataTitle,
+    description: copy.search.metadataDescription,
+  };
+}
 
 export default async function AccountSearchPage({
   searchParams,
@@ -15,13 +21,15 @@ export default async function AccountSearchPage({
 }) {
   const params = await searchParams;
   const query = String(params.q || "").trim();
+  const locale = await getAccountAppLocale();
+  const copy = getAccountMiscExtraCopy(locale);
 
   return (
     <CrossDivisionSearchExperience
       context="account"
-      title="Search your HenryCo workflows."
-      description="Jump directly to exact account actions and connected division routes without falling back to generic dashboards."
-      placeholder="Search account: notifications, wallet, invoices, support, jobs applications..."
+      title={copy.search.title}
+      description={copy.search.description}
+      placeholder={copy.search.placeholder}
       initialQuery={query}
       results={getAccountSearchResults()}
     />

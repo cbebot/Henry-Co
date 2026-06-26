@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
 
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { getClientPortalSnapshot } from "@/lib/portal/data";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { formatKobo, shortDate } from "@/lib/portal/helpers";
 import { invoiceStatusToken, paymentStatusToken } from "@/lib/portal/status";
 import { PortalEmptyState } from "@/components/portal/empty-state";
@@ -16,6 +18,8 @@ export const metadata: Metadata = {
 export default async function ClientPaymentsPage() {
   const viewer = await requireClientPortalViewer("/client/payments");
   const snapshot = await getClientPortalSnapshot(viewer);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
 
   const outstanding = snapshot.invoices.filter(
     (invoice) =>
@@ -36,16 +40,16 @@ export default async function ClientPaymentsPage() {
       <div className="space-y-6">
         <header>
           <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-            Billing & history
+            {copy.payments.kicker}
           </div>
           <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-            Payments
+            {copy.payments.title}
           </h1>
         </header>
         <PortalEmptyState
           icon={Receipt}
-          title="No invoices or payment history yet"
-          body="Once a project starts and we issue an invoice, this is where you will pay it and see verified payments listed alongside their reference numbers."
+          title={copy.payments.emptyTitle}
+          body={copy.payments.emptyBody}
         />
       </div>
     );
@@ -55,30 +59,29 @@ export default async function ClientPaymentsPage() {
     <div className="space-y-6">
       <header>
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          Billing & history
+          {copy.payments.kicker}
         </div>
         <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Payments
+          {copy.payments.title}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Pay outstanding invoices, see what is being verified, and review every payment you&apos;ve made
-          to HenryCo Studio.
+          {copy.payments.body}
         </p>
       </header>
 
       <section className="portal-card-elev grid gap-4 p-5 sm:grid-cols-3 sm:p-6">
-        <Stat label="Outstanding" value={formatKobo(totalOutstanding, "NGN")} accent="warn" />
-        <Stat label="Paid to date" value={formatKobo(totalPaid, "NGN")} accent="success" />
-        <Stat label="Verifying" value={String(outstanding.filter((i) => i.status === "pending_verification").length)} />
+        <Stat label={copy.payments.statOutstanding} value={formatKobo(totalOutstanding, "NGN")} accent="warn" />
+        <Stat label={copy.payments.statPaid} value={formatKobo(totalPaid, "NGN")} accent="success" />
+        <Stat label={copy.payments.statVerifying} value={String(outstanding.filter((i) => i.status === "pending_verification").length)} />
       </section>
 
       <section className="space-y-3">
         <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-          Outstanding invoices
+          {copy.payments.outstandingInvoices}
         </h2>
         {outstanding.length === 0 ? (
           <p className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-5 py-4 text-[13px] text-[var(--studio-ink-soft)]">
-            You&apos;re all caught up. Nothing to pay right now.
+            {copy.payments.allCaughtUp}
           </p>
         ) : (
           // TODO(wave1): multi-row invoice list. invoice.description plus
@@ -100,10 +103,10 @@ export default async function ClientPaymentsPage() {
                   <div className="min-w-0">
                     <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
                       {invoice.invoiceNumber}
-                      {invoice.dueDate ? ` · Due ${shortDate(invoice.dueDate)}` : ""}
+                      {invoice.dueDate ? ` · ${copy.payments.duePrefix} ${shortDate(invoice.dueDate)}` : ""}
                     </div>
                     <div className="mt-1 truncate text-[15px] font-semibold text-[var(--studio-ink)]">
-                      {invoice.description || "Studio invoice"}
+                      {invoice.description || copy.payments.studioInvoice}
                     </div>
                     {projectTitle ? (
                       <div className="mt-0.5 text-[12px] text-[var(--studio-ink-soft)]">{projectTitle}</div>
@@ -120,7 +123,7 @@ export default async function ClientPaymentsPage() {
                       href={`/client/payment/${invoice.id}`}
                       className="portal-button portal-button-primary self-start"
                     >
-                      Pay now
+                      {copy.payments.payNow}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   ) : null}
@@ -134,7 +137,7 @@ export default async function ClientPaymentsPage() {
       {snapshot.payments.length > 0 ? (
         <section className="space-y-3">
           <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-            Payment history
+            {copy.payments.paymentHistory}
           </h2>
           <div className="portal-card divide-y divide-[var(--studio-line)]">
             {snapshot.payments.map((payment) => {
@@ -147,19 +150,19 @@ export default async function ClientPaymentsPage() {
                 >
                   <div className="min-w-0">
                     <div className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                      {payment.paymentReference || "Bank transfer"}
+                      {payment.paymentReference || copy.payments.bankTransfer}
                     </div>
                     <div className="mt-0.5 text-[14px] font-semibold text-[var(--studio-ink)]">
                       {formatKobo(payment.amountKobo, payment.currency)}
                     </div>
                     <div className="mt-1 text-[11.5px] text-[var(--studio-ink-soft)]">
                       {projectTitle ? `${projectTitle} · ` : ""}
-                      Submitted {shortDate(payment.submittedAt) || "—"}
-                      {payment.verifiedAt ? ` · Verified ${shortDate(payment.verifiedAt)}` : ""}
+                      {copy.payments.submitted} {shortDate(payment.submittedAt) || "—"}
+                      {payment.verifiedAt ? ` · ${copy.payments.verifiedPrefix} ${shortDate(payment.verifiedAt)}` : ""}
                     </div>
                     {payment.status === "rejected" && payment.rejectionReason ? (
                       <div className="mt-2 rounded-xl border border-[rgba(255,143,143,0.4)] bg-[rgba(255,143,143,0.08)] px-3 py-2 text-[12px] text-[#ffb8b8]">
-                        Rejected: {payment.rejectionReason}
+                        {copy.payments.rejectedPrefix} {payment.rejectionReason}
                       </div>
                     ) : null}
                   </div>
@@ -170,7 +173,7 @@ export default async function ClientPaymentsPage() {
                         href={`/client/payment/${payment.invoiceId}`}
                         className="text-[12.5px] font-semibold text-[var(--studio-signal)] hover:underline"
                       >
-                        Resubmit
+                        {copy.payments.resubmit}
                       </Link>
                     ) : null}
                   </div>

@@ -1,5 +1,6 @@
 import { MetricCard } from "@henryco/dashboard-shell/components";
 import { ShieldCheck } from "lucide-react";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import type { CustomerOverviewSnapshot } from "../data";
 
 /**
@@ -8,14 +9,17 @@ import type { CustomerOverviewSnapshot } from "../data";
  */
 export function TrustTierCard({
   snapshot,
+  locale,
 }: {
   snapshot: CustomerOverviewSnapshot;
+  locale: AppLocale;
 }) {
   const { trustLabel, trustScore, hasDocuments } = snapshot;
+  const copy = getDashboardShellCopy(locale);
 
   return (
     <MetricCard
-      label="Trust tier"
+      label={copy.trustTier.label}
       value={trustLabel}
       href="/security"
       icon={<ShieldCheck size={18} aria-hidden />}
@@ -23,8 +27,8 @@ export function TrustTierCard({
         kind: "trend",
         direction: trustScore >= 65 ? "up" : trustScore >= 35 ? "flat" : "down",
         magnitude: hasDocuments
-          ? `Score ${trustScore} · documents on file`
-          : `Score ${trustScore} · upload to advance`,
+          ? copy.trustTier.scoreWithDocuments(trustScore)
+          : copy.trustTier.scoreUploadToAdvance(trustScore),
       }}
     />
   );

@@ -1,3 +1,6 @@
+import { getAccountWalletExtraCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
+
 type StepState = "todo" | "active" | "done";
 
 type Step = {
@@ -12,32 +15,34 @@ type Props = {
   confirmed: boolean;
 };
 
-export function FundingStepLadder({ proofUploaded, proofUploadedAtIso, confirmed }: Props) {
+export async function FundingStepLadder({ proofUploaded, proofUploadedAtIso, confirmed }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountWalletExtraCopy(locale).ladder;
   const steps: Step[] = [
     {
-      title: "Transfer funds",
-      desc: "Use the account details on this page to send your bank transfer.",
+      title: copy.transferTitle,
+      desc: copy.transferDesc,
       state: proofUploaded || confirmed ? "done" : "active",
     },
     {
-      title: "Upload proof",
+      title: copy.uploadTitle,
       desc: proofUploaded
         ? proofUploadedAtIso
-          ? `Uploaded ${new Date(proofUploadedAtIso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}`
-          : "Proof file is attached."
-        : "Attach the receipt or PDF confirmation so finance can verify.",
+          ? copy.uploadedAt(new Date(proofUploadedAtIso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }))
+          : copy.uploadDescAttached
+        : copy.uploadDescDefault,
       state: proofUploaded ? "done" : "active",
     },
     {
-      title: "Finance review",
+      title: copy.reviewTitle,
       desc: confirmed
-        ? "Confirmed. Balance has moved into your available wallet."
-        : "Our finance team confirms the bank reference matches.",
+        ? copy.reviewDescConfirmed
+        : copy.reviewDescPending,
       state: confirmed ? "done" : proofUploaded ? "active" : "todo",
     },
   ];
   return (
-    <div className="acct-wal__ladder" aria-label="Funding progress">
+    <div className="acct-wal__ladder" aria-label={copy.ariaLabel}>
       <p
         style={{
           fontSize: 11,
@@ -48,7 +53,7 @@ export function FundingStepLadder({ proofUploaded, proofUploadedAtIso, confirmed
           margin: "0 0 4px",
         }}
       >
-        Funding steps
+        {copy.kicker}
       </p>
       {steps.map((step, idx) => (
         <div className="acct-wal__step" key={step.title}>

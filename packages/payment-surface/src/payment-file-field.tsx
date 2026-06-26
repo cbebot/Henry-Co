@@ -3,6 +3,8 @@
 import { FileUp, X } from "lucide-react";
 import { useCallback, useId, useRef, useState } from "react";
 import { cn } from "@henryco/ui/cn";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getPaymentSurfaceCopy } from "@henryco/i18n";
 
 function truncateMiddle(name: string, max = 40) {
   if (name.length <= max) return name;
@@ -48,6 +50,8 @@ export function PaymentFileField({
   className,
   dropzoneClassName,
 }: PaymentFileFieldProps) {
+  const locale = useHenryCoLocale();
+  const copy = getPaymentSurfaceCopy(locale).fileField;
   const inputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const titleId = useId();
@@ -146,17 +150,15 @@ export function PaymentFileField({
           <FileUp className={variant === "compact" ? "h-4 w-4" : "h-5 w-5"} />
         </span>
         <span className="text-sm font-semibold text-[color:var(--payment-ink,white)]">
-          {variant === "compact" ? "Add file" : "Tap to add files"}
+          {variant === "compact" ? copy.addFile : copy.tapToAddFiles}
         </span>
         <span className="max-w-sm text-xs leading-5 text-[color:var(--payment-soft,rgba(255,255,255,0.65))]">
-          {multiple
-            ? "Drag and drop here if your browser supports it — multiple files allowed."
-            : "Drag and drop one file here, or tap to choose from your device."}
+          {multiple ? copy.dropMultiple : copy.dropSingle}
         </span>
       </button>
 
       {files.length > 0 ? (
-        <ul className="space-y-2" aria-label="Files ready to upload">
+        <ul className="space-y-2" aria-label={copy.filesReadyLabel}>
           {files.map((file, index) => (
             <li
               key={`${file.name}-${file.size}-${index}`}
@@ -177,7 +179,7 @@ export function PaymentFileField({
                 type="button"
                 onClick={() => removeAt(index)}
                 className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--payment-line,rgba(255,255,255,0.18))] text-[color:var(--payment-soft,rgba(255,255,255,0.65))] transition hover:border-rose-400/35 hover:text-rose-200"
-                aria-label={`Remove ${file.name}`}
+                aria-label={copy.removeFile(file.name)}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -185,7 +187,7 @@ export function PaymentFileField({
           ))}
         </ul>
       ) : (
-        <p className="text-xs text-[color:var(--payment-soft,rgba(255,255,255,0.65))]">No file selected yet.</p>
+        <p className="text-xs text-[color:var(--payment-soft,rgba(255,255,255,0.65))]">{copy.noFileSelected}</p>
       )}
 
       {footerHint ? (

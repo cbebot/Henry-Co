@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DataTable, type DataTableColumn } from "../components/DataTable";
@@ -49,6 +50,7 @@ export type InvoiceProps = {
     contactEmail: string;
     contactPhone?: string | null;
   };
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -108,16 +110,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export function InvoiceDocument({ invoice, customer, issuer }: InvoiceProps) {
+export function InvoiceDocument({ invoice, customer, issuer, locale = "en" }: InvoiceProps) {
+  const copy = getBrandedDocumentsCopy(locale);
+  const t = copy.invoice;
   const columns: Array<DataTableColumn<InvoiceLineItem>> = [
-    { key: "title", header: "Item", flex: 3, render: (r) => r.title + (r.note ? ` — ${r.note}` : "") },
-    { key: "qty", header: "Qty", flex: 0.6, align: "right", mono: true, render: (r) => (r.quantity ? String(r.quantity) : "—") },
-    { key: "unit", header: "Unit", flex: 1, align: "right", mono: true, render: (r) => (r.unitAmountKobo != null ? formatKobo(r.unitAmountKobo, invoice.currency) : "—") },
-    { key: "amount", header: "Amount", flex: 1.3, align: "right", mono: true, render: (r) => formatKobo(r.amountKobo, invoice.currency) },
+    { key: "title", header: t.columnItem, flex: 3, render: (r) => r.title + (r.note ? ` — ${r.note}` : "") },
+    { key: "qty", header: t.columnQty, flex: 0.6, align: "right", mono: true, render: (r) => (r.quantity ? String(r.quantity) : "—") },
+    { key: "unit", header: t.columnUnit, flex: 1, align: "right", mono: true, render: (r) => (r.unitAmountKobo != null ? formatKobo(r.unitAmountKobo, invoice.currency) : "—") },
+    { key: "amount", header: t.columnAmount, flex: 1.3, align: "right", mono: true, render: (r) => formatKobo(r.amountKobo, invoice.currency) },
   ];
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Invoice ${invoice.invoiceNo}`,
         author: issuer.name,
@@ -125,21 +130,21 @@ export function InvoiceDocument({ invoice, customer, issuer }: InvoiceProps) {
         keywords: ["invoice", invoice.division ?? "", "henryco", invoice.invoiceNo].filter(Boolean) as string[],
       }}
       header={{
-        documentType: "Invoice",
+        documentType: t.documentType,
         title: invoice.invoiceNo,
         subtitle: invoice.description,
         meta: [
-          { label: "Issued", value: formatDate(invoice.issuedAt) },
-          { label: "Due", value: invoice.dueAt ? formatDate(invoice.dueAt) : "On receipt" },
-          { label: "Status", value: statusToLabel(invoice.status) },
+          { label: t.metaIssued, value: formatDate(invoice.issuedAt) },
+          { label: t.metaDue, value: invoice.dueAt ? formatDate(invoice.dueAt) : t.metaDueOnReceipt },
+          { label: t.metaStatus, value: statusToLabel(invoice.status) },
         ],
-        divisionLabel: titleCase(invoice.division ?? "Group"),
+        divisionLabel: invoice.division ? titleCase(invoice.division) : t.divisionGroup,
       }}
       division={invoice.division ?? undefined}
     >
       <View style={styles.parties}>
         <View style={styles.partyCol}>
-          <Text style={styles.partyKicker}>From</Text>
+          <Text style={styles.partyKicker}>{t.partyFrom}</Text>
           <Text style={styles.partyName}>{issuer.name}</Text>
           {issuer.addressLines.map((line) => (
             <Text key={line} style={styles.partyLine}>
@@ -148,11 +153,11 @@ export function InvoiceDocument({ invoice, customer, issuer }: InvoiceProps) {
           ))}
           <Text style={styles.partyLine}>{issuer.contactEmail}</Text>
           {issuer.contactPhone ? <Text style={styles.partyLine}>{issuer.contactPhone}</Text> : null}
-          {issuer.rcNumber ? <Text style={styles.partyLine}>RC: {issuer.rcNumber}</Text> : null}
-          {issuer.vatNumber ? <Text style={styles.partyLine}>VAT: {issuer.vatNumber}</Text> : null}
+          {issuer.rcNumber ? <Text style={styles.partyLine}>{t.rcPrefix} {issuer.rcNumber}</Text> : null}
+          {issuer.vatNumber ? <Text style={styles.partyLine}>{t.vatPrefix} {issuer.vatNumber}</Text> : null}
         </View>
         <View style={styles.partyCol}>
-          <Text style={styles.partyKicker}>Bill to</Text>
+          <Text style={styles.partyKicker}>{t.partyBillTo}</Text>
           <Text style={styles.partyName}>{customer.name}</Text>
           {customer.email ? <Text style={styles.partyLine}>{customer.email}</Text> : null}
           {customer.address?.map((line) => (
@@ -163,49 +168,44 @@ export function InvoiceDocument({ invoice, customer, issuer }: InvoiceProps) {
         </View>
       </View>
 
-      <DocumentSection kicker="Line items">
-        <DataTable columns={columns} rows={invoice.lineItems} emptyMessage="No structured line items recorded." />
+      <DocumentSection kicker={t.sectionLineItems}>
+        <DataTable columns={columns} rows={invoice.lineItems} emptyMessage={t.emptyLineItems} />
       </DocumentSection>
 
       <View style={styles.totalsBlock}>
         <View style={styles.totalsLeft}>
           <DefinitionList
             rows={[
-              { label: "Payment status", value: statusToLabel(invoice.status) },
-              { label: "Payment method", value: invoice.paymentMethod ?? "—" },
-              { label: "Payment reference", value: invoice.paymentReference ?? "—", mono: true },
-              { label: "Paid at", value: invoice.paidAt ? formatDateTime(invoice.paidAt) : "—" },
+              { label: t.paymentStatus, value: statusToLabel(invoice.status) },
+              { label: t.paymentMethod, value: invoice.paymentMethod ?? "—" },
+              { label: t.paymentReference, value: invoice.paymentReference ?? "—", mono: true },
+              { label: t.paidAt, value: invoice.paidAt ? formatDateTime(invoice.paidAt) : "—" },
             ]}
           />
         </View>
         <View style={styles.totalsRight}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal</Text>
+            <Text style={styles.totalLabel}>{t.subtotal}</Text>
             <Text style={styles.totalValue}>{formatKobo(invoice.subtotalKobo, invoice.currency)}</Text>
           </View>
           {invoice.discountKobo ? (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Discount</Text>
+              <Text style={styles.totalLabel}>{t.discount}</Text>
               <Text style={styles.totalValue}>−{formatKobo(invoice.discountKobo, invoice.currency)}</Text>
             </View>
           ) : null}
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Tax</Text>
+            <Text style={styles.totalLabel}>{t.tax}</Text>
             <Text style={styles.totalValue}>{formatKobo(invoice.taxKobo, invoice.currency)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.grandLabel}>Total</Text>
+            <Text style={styles.grandLabel}>{t.total}</Text>
             <Text style={styles.grandValue}>{formatKobo(invoice.totalKobo, invoice.currency)}</Text>
           </View>
         </View>
       </View>
 
-      <LegalFooter
-        lines={[
-          "This invoice is issued under HenryCo unified billing. The originating division remains the source of truth for delivery, dispute, and refund terms.",
-          "Payments are recognised once the originating gateway confirms settlement; the status above reflects the most recent reconciliation snapshot.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

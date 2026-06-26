@@ -11,6 +11,8 @@ import {
   ImageIcon,
   Users,
 } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import type { ProjectThreadContext } from "@/lib/messaging/types";
 import { formatMessageTimestamp } from "@/lib/messaging/utils";
 
@@ -35,6 +37,9 @@ export function ContextPanel({
   onToggle,
   variant = "fixed",
 }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
+
   if (variant === "sheet" && !expanded) {
     return null;
   }
@@ -46,18 +51,18 @@ export function ContextPanel({
           ? "hidden w-[260px] shrink-0 lg:flex"
           : "fixed inset-y-0 right-0 z-40 w-[88vw] max-w-[320px] shadow-[0_24px_64px_rgba(0,0,0,0.5)] motion-safe:animate-[studio-msg-slide-in-right_240ms_ease-out] sm:w-[320px]"
       }`}
-      aria-label="Project context"
+      aria-label={copy.contextPanel.panelLabel}
     >
       <div className="flex items-center justify-between">
         <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/45">
-          Project context
+          {copy.contextPanel.panelLabel}
         </h3>
         {variant === "sheet" ? (
           <button
             type="button"
             onClick={onToggle}
             className="rounded-full p-1 text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white/80"
-            aria-label="Close project context"
+            aria-label={copy.contextPanel.closeLabel}
           >
             ×
           </button>
@@ -109,11 +114,13 @@ function Section({
 }
 
 function CurrentMilestoneSection({ context }: { context: ProjectThreadContext }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const milestone = context.currentMilestone;
   if (!milestone) {
     return (
-      <Section title="Current milestone" icon={CalendarClock}>
-        <p className="text-[12px] text-white/45">No active milestone yet.</p>
+      <Section title={copy.contextPanel.currentMilestone} icon={CalendarClock}>
+        <p className="text-[12px] text-white/45">{copy.contextPanel.noMilestone}</p>
       </Section>
     );
   }
@@ -135,7 +142,7 @@ function CurrentMilestoneSection({ context }: { context: ProjectThreadContext })
   );
 
   return (
-    <Section title="Current milestone" icon={CalendarClock}>
+    <Section title={copy.contextPanel.currentMilestone} icon={CalendarClock}>
       <div className="flex items-start justify-between gap-2">
         <h4 className="text-[14px] font-semibold leading-tight text-[#F5F4EE]">
           {milestone.name}
@@ -149,25 +156,26 @@ function CurrentMilestoneSection({ context }: { context: ProjectThreadContext })
       ) : null}
       <div className="mt-2 flex items-center gap-1.5 text-[11px] text-white/55">
         <Clock4 className="h-3 w-3" aria-hidden />
-        <span>{milestone.dueLabel || "Due TBD"}</span>
+        <span>{milestone.dueLabel || copy.contextPanel.dueTbd}</span>
       </div>
     </Section>
   );
 }
 
 function RecentFilesSection({ context }: { context: ProjectThreadContext }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   if (context.recentFiles.length === 0) {
     return (
-      <Section title="Recent files" icon={Folder}>
+      <Section title={copy.contextPanel.recentFiles} icon={Folder}>
         <p className="text-[12px] text-white/45">
-          No files shared yet. Files appear here when the team uploads
-          deliverables.
+          {copy.contextPanel.noFiles}
         </p>
       </Section>
     );
   }
   return (
-    <Section title="Recent files" icon={Folder}>
+    <Section title={copy.contextPanel.recentFiles} icon={Folder}>
       <ul className="flex flex-col gap-2">
         {context.recentFiles.map((file) => {
           const isImage =
@@ -218,18 +226,20 @@ function RecentFilesSection({ context }: { context: ProjectThreadContext }) {
         href="../files"
         className="mt-3 block text-center text-[11px] font-medium text-[#d4b14e] hover:underline"
       >
-        View all files
+        {copy.contextPanel.viewAllFiles}
       </a>
     </Section>
   );
 }
 
 function TimelineSection({ context }: { context: ProjectThreadContext }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const timeline = context.timeline;
   if (timeline.length === 0) {
     return (
-      <Section title="Project timeline" icon={CalendarClock} defaultOpen={false}>
-        <p className="text-[12px] text-white/45">Timeline will appear here as milestones are added.</p>
+      <Section title={copy.contextPanel.timeline} icon={CalendarClock} defaultOpen={false}>
+        <p className="text-[12px] text-white/45">{copy.contextPanel.timelineEmpty}</p>
       </Section>
     );
   }
@@ -243,7 +253,7 @@ function TimelineSection({ context }: { context: ProjectThreadContext }) {
       ];
 
   return (
-    <Section title="Project timeline" icon={CalendarClock} defaultOpen={false}>
+    <Section title={copy.contextPanel.timeline} icon={CalendarClock} defaultOpen={false}>
       <ol className="relative flex flex-col gap-3 pl-4">
         <span
           aria-hidden
@@ -281,17 +291,19 @@ function TimelineSection({ context }: { context: ProjectThreadContext }) {
 }
 
 function TeamSection({ context }: { context: ProjectThreadContext }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   if (context.team.length === 0) {
     return (
-      <Section title="Studio team" icon={Users} defaultOpen={false}>
+      <Section title={copy.contextPanel.team} icon={Users} defaultOpen={false}>
         <p className="text-[12px] text-white/45">
-          The Studio team for this project will appear here.
+          {copy.contextPanel.teamEmpty}
         </p>
       </Section>
     );
   }
   return (
-    <Section title="Studio team" icon={Users} defaultOpen={false}>
+    <Section title={copy.contextPanel.team} icon={Users} defaultOpen={false}>
       <ul className="flex flex-col gap-2">
         {context.team.map((member) => {
           const initials = (member.name || "")
@@ -310,7 +322,7 @@ function TeamSection({ context }: { context: ProjectThreadContext }) {
                 {member.isOnline ? (
                   <span
                     className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#070B14] bg-[#d4b14e]"
-                    aria-label="Active"
+                    aria-label={copy.contextPanel.activeLabel}
                   />
                 ) : null}
               </span>

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { type LucideIcon } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioPortalCopy } from "@henryco/i18n";
 
 export type PortalTabDefinition = {
   id: string;
@@ -12,6 +14,8 @@ export type PortalTabDefinition = {
 };
 
 export function PortalTabBar({ tabs }: { tabs: PortalTabDefinition[] }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioPortalCopy(locale);
   const pathname = usePathname() || "";
   const searchParams = useSearchParams();
   const currentTab = searchParams?.get("tab") || tabs[0]?.id;
@@ -20,7 +24,7 @@ export function PortalTabBar({ tabs }: { tabs: PortalTabDefinition[] }) {
     <div
       className="flex w-full gap-1 overflow-x-auto rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] p-1"
       role="tablist"
-      aria-label="Project sections"
+      aria-label={copy.tabBar.sectionsLabel}
     >
       {tabs.map((tab) => {
         const params = new URLSearchParams(searchParams?.toString() || "");

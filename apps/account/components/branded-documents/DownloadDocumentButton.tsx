@@ -3,6 +3,8 @@
 import { useCallback, useState, type ButtonHTMLAttributes } from "react";
 import { Download, Loader2, Share2 } from "lucide-react";
 import { cn } from "@henryco/ui/cn";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
 
 /**
  * Premium download/share trigger for HenryCo branded documents.
@@ -71,13 +73,16 @@ export function DownloadDocumentButton({
   shareTitle,
   shareText,
   variant = "primary",
-  label = "Download",
+  label,
   className,
   type = "button",
   onClick,
   disabled,
   ...rest
 }: DownloadDocumentButtonProps) {
+  const locale = useHenryCoLocale();
+  const copy = getAccountMiscExtraCopy(locale).downloadButton;
+  const resolvedLabel = label ?? copy.defaultLabel;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,13 +119,13 @@ export function DownloadDocumentButton({
         // AbortError comes from the user dismissing the share sheet — not
         // an error worth surfacing.
         if ((err as { name?: string })?.name !== "AbortError") {
-          setError("We couldn't prepare that document. Please try again.");
+          setError(copy.error);
         }
       } finally {
         setBusy(false);
       }
     },
-    [endpoint, suggestedFilename, shareTitle, shareText, onClick]
+    [endpoint, suggestedFilename, shareTitle, shareText, onClick, copy]
   );
 
   return (
@@ -138,7 +143,7 @@ export function DownloadDocumentButton({
         {...rest}
       >
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : canShareFiles() ? <Share2 className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-        <span>{busy ? "Preparing…" : label}</span>
+        <span>{busy ? copy.preparing : resolvedLabel}</span>
       </button>
       {error ? <p className="text-[0.7rem] text-[var(--acct-red,_#9C2A2A)]">{error}</p> : null}
     </div>

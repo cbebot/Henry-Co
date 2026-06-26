@@ -1,5 +1,6 @@
 import { MetricCard } from "@henryco/dashboard-shell/components";
 import { CreditCard } from "lucide-react";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import type { WalletSnapshot } from "../data";
 
 /**
@@ -8,7 +9,14 @@ import type { WalletSnapshot } from "../data";
  * `/wallet/withdrawals` where method management lives. Empty state
  * (zero methods) surfaces a "Add a payout method" trend label.
  */
-export function PayoutMethodsCard({ snapshot }: { snapshot: WalletSnapshot }) {
+export function PayoutMethodsCard({
+  snapshot,
+  locale,
+}: {
+  snapshot: WalletSnapshot;
+  locale: AppLocale;
+}) {
+  const copy = getDashboardShellCopy(locale);
   const count = snapshot.payoutMethodCount;
   const hasMethods = count > 0;
 
@@ -20,12 +28,12 @@ export function PayoutMethodsCard({ snapshot }: { snapshot: WalletSnapshot }) {
       defaultMethod.label ??
       (defaultMethod.lastFour ? `····${defaultMethod.lastFour}` : null) ??
       defaultMethod.type ??
-      "Saved method"
+      copy.payoutMethods.savedMethod
     : null;
 
   return (
     <MetricCard
-      label="Payout methods"
+      label={copy.payoutMethods.label}
       value={hasMethods ? `${count}` : "—"}
       icon={<CreditCard size={18} aria-hidden />}
       href="/wallet/withdrawals"
@@ -33,13 +41,15 @@ export function PayoutMethodsCard({ snapshot }: { snapshot: WalletSnapshot }) {
         hasMethods && defaultLabel
           ? {
               kind: "comparison",
-              vs: "default",
+              vs: copy.payoutMethods.defaultLabel,
               delta: defaultLabel,
             }
           : {
               kind: "trend",
               direction: "flat",
-              magnitude: hasMethods ? "Manage saved methods" : "Add a payout method",
+              magnitude: hasMethods
+                ? copy.payoutMethods.manageSavedMethods
+                : copy.payoutMethods.addPayoutMethod,
             }
       }
     />

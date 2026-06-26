@@ -1,4 +1,6 @@
 import { ArrowUpRight, Bookmark } from "lucide-react";
+import { getAccountHeroesCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 export type SavedRoleRow = {
   id: string;
@@ -16,7 +18,9 @@ type Props = {
   formatStamp: (iso: string) => string;
 };
 
-export function SavedRolesList({ saved, emptyTitle, emptyBody, formatStamp }: Props) {
+export async function SavedRolesList({ saved, emptyTitle, emptyBody, formatStamp }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).savedRolesList;
   if (saved.length === 0) {
     return (
       <div className="acct-job__empty">
@@ -26,7 +30,7 @@ export function SavedRolesList({ saved, emptyTitle, emptyBody, formatStamp }: Pr
     );
   }
   return (
-    <div className="acct-job__list" role="list" aria-label="Saved roles">
+    <div className="acct-job__list" role="list" aria-label={copy.listLabel}>
       {saved.map((role) => {
         const body = (
           <>
@@ -37,7 +41,7 @@ export function SavedRolesList({ saved, emptyTitle, emptyBody, formatStamp }: Pr
               <span className="acct-job__row-title">{role.title}</span>
               <span className="acct-job__row-sub">
                 {role.companyName}
-                {role.location ? ` · ${role.location}` : ""} · saved {formatStamp(role.savedAt)}
+                {role.location ? ` · ${role.location}` : ""} · {copy.saved} {formatStamp(role.savedAt)}
               </span>
             </div>
             <span aria-hidden style={{ color: "var(--acct-muted)" }}>
@@ -56,7 +60,7 @@ export function SavedRolesList({ saved, emptyTitle, emptyBody, formatStamp }: Pr
             rel="noopener noreferrer"
             className="acct-job__row"
             role="listitem"
-            aria-label={`${role.title} at ${role.companyName}`}
+            aria-label={`${role.title} ${copy.rowAria} ${role.companyName}`}
           >
             {body}
           </a>

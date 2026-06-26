@@ -3,6 +3,8 @@ import { Bookmark, Clock, ShoppingBag, Sparkles } from "lucide-react";
 import type { SavedItemRecord, SavedItemSnapshotCore, SavedItemDivision } from "@henryco/cart-saved-items";
 import { henryDomain } from "@henryco/config";
 import { formatNaira } from "@/lib/format";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 const DIVISION_LABEL: Record<SavedItemDivision, string> = {
   marketplace: "Marketplace",
@@ -46,7 +48,7 @@ type CartRecoveryRow = {
   last_visited_at: string | null;
 } | null;
 
-export function WelcomeBackSurface({
+export async function WelcomeBackSurface({
   savedItems,
   recentlyViewed,
   cartRecovery,
@@ -63,6 +65,9 @@ export function WelcomeBackSurface({
     (cartRecovery && (cartRecovery.last_item_count ?? 0) > 0);
 
   if (!hasSomething) return null;
+
+  const locale = await getAccountAppLocale();
+  const copy = getAccountMiscExtraCopy(locale).welcomeBack;
 
   const renderedAt = new Date();
   const expiringSoon = savedItems
@@ -89,12 +94,12 @@ export function WelcomeBackSurface({
       />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="acct-kicker">For you</p>
+          <p className="acct-kicker">{copy.kicker}</p>
           <h2 className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">
-            {firstName ? `Pick up where you left off, ${firstName}.` : "Pick up where you left off."}
+            {firstName ? copy.headingNamed(firstName) : copy.heading}
           </h2>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Saved items, recent finds, and an unfinished basket — all kept for you across every device.
+            {copy.subtitle}
           </p>
         </div>
         <Link
@@ -102,7 +107,7 @@ export function WelcomeBackSurface({
           className="inline-flex items-center gap-1 self-start rounded-full bg-[var(--acct-ink)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--acct-bg)] hover:opacity-90"
         >
           <Bookmark size={12} />
-          Saved items
+          {copy.savedItemsLink}
         </Link>
       </div>
 
@@ -122,22 +127,23 @@ export function WelcomeBackSurface({
                 <ShoppingBag size={16} />
               </span>
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">
-                Resume basket
+                {copy.resumeBasket}
               </p>
             </div>
             <div>
               <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                {DIVISION_LABEL[(cartRecovery!.last_division as SavedItemDivision) ?? "marketplace"]}
-                {" "}— {cartRecovery!.last_item_count} item
-                {cartRecovery!.last_item_count === 1 ? "" : "s"} waiting
+                {copy.basketWaiting(
+                  DIVISION_LABEL[(cartRecovery!.last_division as SavedItemDivision) ?? "marketplace"],
+                  cartRecovery!.last_item_count ?? 0,
+                )}
               </p>
               {cartRecovery!.last_subtotal_kobo ? (
                 <p className="mt-1 text-xs text-[var(--acct-muted)]">
-                  Subtotal {formatNaira(cartRecovery!.last_subtotal_kobo)}
+                  {copy.subtotal(formatNaira(cartRecovery!.last_subtotal_kobo))}
                 </p>
               ) : null}
             </div>
-            <p className="text-xs font-semibold text-[var(--acct-gold)]">Continue checkout →</p>
+            <p className="text-xs font-semibold text-[var(--acct-gold)]">{copy.continueCheckout}</p>
           </Link>
         ) : null}
 
@@ -152,7 +158,7 @@ export function WelcomeBackSurface({
                 <Clock size={16} />
               </span>
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">
-                Saved · expiring soon
+                {copy.savedExpiringSoon}
               </p>
             </div>
             <ul className="space-y-2">
@@ -164,13 +170,13 @@ export function WelcomeBackSurface({
                     <span className="block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--acct-gold)]" />
                     <span className="truncate text-[var(--acct-ink)]">{snap?.title || item.itemType}</span>
                     <span className="ml-auto shrink-0 text-[var(--acct-muted)]">
-                      {days <= 1 ? "today" : `${days}d`}
+                      {days <= 1 ? copy.today : copy.daysShort(days)}
                     </span>
                   </li>
                 );
               })}
             </ul>
-            <p className="text-xs font-semibold text-[var(--acct-gold)]">Open saved items →</p>
+            <p className="text-xs font-semibold text-[var(--acct-gold)]">{copy.openSavedItems}</p>
           </Link>
         ) : null}
 
@@ -182,7 +188,7 @@ export function WelcomeBackSurface({
                 <Sparkles size={16} />
               </span>
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">
-                Recently viewed
+                {copy.recentlyViewed}
               </p>
             </div>
             <ul className="space-y-2">

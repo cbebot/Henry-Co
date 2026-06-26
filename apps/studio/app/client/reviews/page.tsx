@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Quote, Star } from "lucide-react";
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { PortalEmptyState } from "@/components/portal/empty-state";
+
+type StudioClientPagesCopy = ReturnType<typeof getStudioClientPagesCopy>;
 
 export const metadata: Metadata = {
   title: "Reviews",
@@ -17,18 +21,20 @@ export default async function ClientReviewsPage() {
   const viewer = await requireStudioUser("/client/reviews");
   const snapshot = await getStudioSnapshot();
   const clientData = studioClientSnapshot(viewer, snapshot);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
 
   if (clientData.reviews.length === 0) {
     return (
       <div className="space-y-6">
-        <Header />
+        <Header copy={copy} />
         <PortalEmptyState
           icon={Star}
-          title="No published reviews yet"
-          body="Reviews appear here once a project closes and your feedback is submitted. They stay tied to the engagement so they're easy to revisit."
+          title={copy.reviews.emptyTitle}
+          body={copy.reviews.emptyBody}
           action={
             <Link href="/client" className="portal-button portal-button-secondary">
-              Open workspace
+              {copy.reviews.openWorkspace}
               <ArrowRight className="h-4 w-4" />
             </Link>
           }
@@ -41,7 +47,7 @@ export default async function ClientReviewsPage() {
 
   return (
     <div className="space-y-7">
-      <Header />
+      <Header copy={copy} />
 
       <section className="grid gap-3 lg:grid-cols-2">
         {clientData.reviews.map((review) => (
@@ -99,18 +105,17 @@ export default async function ClientReviewsPage() {
   );
 }
 
-function Header() {
+function Header({ copy }: { copy: StudioClientPagesCopy }) {
   return (
     <header>
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-        Trust layer
+        {copy.reviews.kicker}
       </div>
       <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-        Reviews
+        {copy.reviews.title}
       </h1>
       <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-        Feedback you&apos;ve published after a delivery. They stay tied to the
-        engagement so the receipt is always easy to find.
+        {copy.reviews.body}
       </p>
     </header>
   );

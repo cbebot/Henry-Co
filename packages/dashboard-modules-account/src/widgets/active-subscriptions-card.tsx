@@ -1,5 +1,6 @@
 import { MetricCard } from "@henryco/dashboard-shell/components";
 import { TrendingUp } from "lucide-react";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import type { CustomerOverviewSnapshot } from "../data";
 
 /**
@@ -8,9 +9,12 @@ import type { CustomerOverviewSnapshot } from "../data";
  */
 export function ActiveSubscriptionsCard({
   snapshot,
+  locale,
 }: {
   snapshot: CustomerOverviewSnapshot;
+  locale: AppLocale;
 }) {
+  const copy = getDashboardShellCopy(locale);
   const subs = snapshot.summary.activeSubscriptions;
   const tiers = subs
     .map((s) => s.planTier)
@@ -19,7 +23,7 @@ export function ActiveSubscriptionsCard({
 
   return (
     <MetricCard
-      label="Active subscriptions"
+      label={copy.activeSubscriptions.label}
       value={subs.length.toString()}
       href="/subscriptions"
       icon={<TrendingUp size={18} aria-hidden />}
@@ -28,12 +32,12 @@ export function ActiveSubscriptionsCard({
           ? {
               kind: "trend",
               direction: "up",
-              magnitude: tierLabel ?? "All synced",
+              magnitude: tierLabel ?? copy.activeSubscriptions.allSynced,
             }
           : {
               kind: "trend",
               direction: "flat",
-              magnitude: "No active plans",
+              magnitude: copy.activeSubscriptions.noActivePlans,
             }
       }
     />

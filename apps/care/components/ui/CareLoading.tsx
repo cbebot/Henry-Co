@@ -1,7 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import {
+  getCareSupportExtraCopy,
+  translateSurfaceLabel,
+  type AppLocale,
+} from "@henryco/i18n";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -82,7 +86,8 @@ export function CareLoadingStage({
   className?: string;
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const resolvedEyebrow = t(eyebrow || "Henry & Co. Care");
+  const copy = getCareSupportExtraCopy(locale).loading;
+  const resolvedEyebrow = eyebrow ? t(eyebrow) : copy.defaultEyebrow;
   // FIX-LT-01: title + description warmup defaults dropped (theater copy).
   // Every CareLoadingStage call site passes explicit values; an omitted
   // prop now renders no text.
@@ -158,8 +163,8 @@ export function CareLoadingStage({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 text-xs uppercase tracking-[0.18em] text-white/42">
-          <span>{t("Premium live workspace")}</span>
-          {footer ? footer : <CareLoadingPill locale={locale} label="Finishing the handoff" className="text-[10px]" />}
+          <span>{copy.premiumWorkspace}</span>
+          {footer ? footer : <CareLoadingPill locale={locale} label={copy.finishingHandoff} className="text-[10px]" />}
         </div>
       </div>
     </div>

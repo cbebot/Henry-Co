@@ -193,5 +193,5 @@ export default async function StudioPaymentWorkspace({
     theme: STUDIO_PAYMENT_THEME,
   });
 
-  return <PaymentSurface ctx={ctx} />;
+  return <PaymentSurface ctx={ctx} locale={locale} />;
 }

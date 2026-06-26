@@ -6,6 +6,8 @@ import {
   type ThreadMessage,
   type ThreadSupabaseLike,
 } from "@henryco/messaging-thread";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioSupportCopy } from "@henryco/i18n";
 // The studio page wraps both the header and room in ThreadAppearanceProvider
 // so the customization popover (which lives in the header) drives the
 // appearance attrs the engine reads (data-font / data-density / data-surface).
@@ -45,6 +47,8 @@ export default function StudioSupportThreadRoom({
   threadStatus: string;
   viewer: { userId: string; fullName: string; email?: string | null };
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioSupportCopy(locale);
   const adapter = useMemo(() => studioSupportThreadAdapter(), []);
 
   const initial = useMemo<ThreadMessage[]>(() => {
@@ -85,19 +89,17 @@ export default function StudioSupportThreadRoom({
         getSupabase={getSupabase}
         renderMarkdown
         disableComposer={isClosed}
-        placeholder="Reply with the next action, clarification, or resolution. Drafts stay here while you type."
-        emptyTitle="No replies yet"
-        emptyBody="The customer's message will appear here. Reply to start the conversation."
+        placeholder={copy.room.placeholder}
+        emptyTitle={copy.room.emptyTitle}
+        emptyBody={copy.room.emptyBody}
       />
       {isClosed ? (
         <p className="studio-support-room__closed-note" role="status">
-          This thread is closed. The customer will need to open a new
-          request to continue.
+          {copy.room.closedNote}
         </p>
       ) : isResolved ? (
         <p className="studio-support-room__resolved-note" role="status">
-          This thread is marked resolved. A reply here will re-open it
-          for the customer.
+          {copy.room.resolvedNote}
         </p>
       ) : null}
     </div>
