@@ -52,14 +52,17 @@ export function MarketplaceMessageThread({
     [locale],
   );
 
+  const buyerLabel = t("Buyer");
+
   const adapter = useMemo(
     () =>
       createMarketplaceThreadAdapter({
         conversationId,
         viewerParty,
         vendorDisplayName,
+        buyerLabel,
       }),
-    [conversationId, viewerParty, vendorDisplayName],
+    [conversationId, viewerParty, vendorDisplayName, buyerLabel],
   );
 
   const getSupabase = useCallback((): ThreadSupabaseLike | null => {

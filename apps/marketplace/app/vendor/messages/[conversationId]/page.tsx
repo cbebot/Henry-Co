@@ -5,7 +5,7 @@ import type { ThreadMessage } from "@henryco/messaging-thread";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { MarketplaceMessageThread } from "@/components/messaging/MarketplaceMessageThread";
 import { mapMarketplaceRow } from "@/components/messaging/marketplace-thread-adapter";
-import { getMarketplaceViewer } from "@/lib/marketplace/auth";
+import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { vendorNav } from "@/lib/marketplace/navigation";
 import { getConversationForViewer } from "@/lib/messaging/conversations";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -31,7 +31,13 @@ export default async function VendorMessageThreadPage({
   const locale = await getMarketplacePublicLocale();
   const t = (label: string) => translateSurfaceLabel(locale, label);
 
-  const viewer = await getMarketplaceViewer();
+  // Auth parity with the buyer thread page: redirect an unauthenticated visitor
+  // to login (rather than returning a bare 404). The per-conversation authz is
+  // still enforced below via getConversationForViewer + the viewerParty check.
+  const viewer = await requireMarketplaceRoles(
+    ["vendor", "marketplace_owner", "marketplace_admin"],
+    `/vendor/messages/${conversationId}`,
+  );
   const thread = await getConversationForViewer(conversationId, viewer);
   if (!thread || thread.viewerParty !== "vendor" || !viewer.user) notFound();
 
@@ -77,7 +83,7 @@ export default async function VendorMessageThreadPage({
           created_at: message.createdAt,
         },
         viewer.user!.id,
-        { vendorDisplayName: vendorName },
+        { vendorDisplayName: vendorName, buyerLabel: translateSurfaceLabel(locale, "Buyer") },
       ),
     )
     .filter((message): message is ThreadMessage => message !== null);

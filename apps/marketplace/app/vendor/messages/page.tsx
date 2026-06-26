@@ -33,10 +33,21 @@ export default async function VendorMessagesPage() {
     "/vendor/messages",
   );
 
-  const scopeId = [...viewerVendorScopeIds(viewer)][0];
-  if (!scopeId) notFound();
+  const scopeIds = [...viewerVendorScopeIds(viewer)];
+  if (scopeIds.length === 0) notFound();
 
-  const convos = await getVendorConversations(scopeId);
+  // A viewer can act for more than one vendor — surface conversations across
+  // ALL of their vendor scopes, not just the first. A conversation belongs to a
+  // single vendor so scopes don't overlap, but de-dupe by id defensively, then
+  // sort by recency (nulls last) across the merged set.
+  const convoLists = await Promise.all(scopeIds.map((id) => getVendorConversations(id)));
+  const byId = new Map<string, MarketplaceConversationSummary>();
+  for (const convo of convoLists.flat()) byId.set(convo.id, convo);
+  const convos = [...byId.values()].sort((a, b) => {
+    const at = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
+    const bt = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+    return bt - at;
+  });
   const anchorLabels = await resolveAnchorLabels(convos, locale);
 
   return (

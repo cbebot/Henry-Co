@@ -97,7 +97,7 @@ create policy marketplace_conversations_staff_read
       select 1 from public.marketplace_role_memberships m
       where m.user_id = (select auth.uid())
         and m.is_active = true
-        and m.role in ('marketplace_owner','marketplace_admin','finance','moderation','support','operations')
+        and m.role in ('marketplace_owner','marketplace_admin','moderation','support')
     )
   );
 
@@ -167,7 +167,7 @@ create policy marketplace_conversation_messages_staff_read
       select 1 from public.marketplace_role_memberships m
       where m.user_id = (select auth.uid())
         and m.is_active = true
-        and m.role in ('marketplace_owner','marketplace_admin','finance','moderation','support','operations')
+        and m.role in ('marketplace_owner','marketplace_admin','moderation','support')
     )
   );
 
@@ -233,12 +233,38 @@ create policy marketplace_conversation_participants_self_update
   using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
 
+-- Pin the immutable columns on update. The self_update policy bounds only
+-- user_id, so without this a participant could re-key their OWN row's
+-- conversation_id / party_kind / vendor_id (silently joining another thread or
+-- claiming a vendor read-scope). Force the structural columns back to their
+-- prior values so only last_read_at / updated_at can ever change.
+create or replace function public.marketplace_conversation_participants_pin()
+  returns trigger language plpgsql as $$
+  begin
+    new.conversation_id := old.conversation_id;
+    new.user_id := old.user_id;
+    new.party_kind := old.party_kind;
+    new.vendor_id := old.vendor_id;
+    return new;
+  end;
+  $$;
+
+drop trigger if exists marketplace_conversation_participants_pin on public.marketplace_conversation_participants;
+create trigger marketplace_conversation_participants_pin
+  before update on public.marketplace_conversation_participants
+  for each row execute function public.marketplace_conversation_participants_pin();
+
 -- ---------------------------------------------------------------------------
--- 4. Realtime — register the thread + inbox tables on the publication.
+-- 4. Realtime — register the thread messages table on the publication.
 --    Idempotent: create the publication if missing, add a table only when it
 --    is not already a member, and only when the table itself exists. Realtime
---    re-applies each table's SELECT policy, so the stream is participant-scoped
+--    re-applies the table's SELECT policy, so the stream is participant-scoped
 --    automatically. Mirrors studio_realtime_publication.sql.
+--
+--    Only the messages table goes on the wire: the thread engine subscribes to
+--    marketplace_conversation_messages. The conversations row carries
+--    buyer_user_id and is NOT needed for live thread updates in v1, so it is
+--    deliberately kept off the publication.
 -- ---------------------------------------------------------------------------
 
 do $$
@@ -252,7 +278,6 @@ do $$
 declare
   v_table text;
   v_tables text[] := array[
-    'marketplace_conversations',
     'marketplace_conversation_messages'
   ];
 begin

@@ -245,7 +245,49 @@ async function main() {
     check("buyerB's participant last_read_at remained NULL", after.rows[0].last_read_at === null);
   }
 
-  // --- realtime: both stream tables landed on the publication ---
+  // --- participants re-key non-escalation: the BEFORE UPDATE pin trigger forces
+  // the immutable columns back to their prior values, so even though the
+  // self_update policy bounds only user_id, a participant can never re-key their
+  // OWN row's conversation_id / party_kind / vendor_id to join another thread or
+  // claim a vendor read-scope. Only last_read_at / updated_at may move. ---
+  {
+    await setActor(BUYER_A);
+    let updateThrew = false;
+    try {
+      await db.query(
+        `update public.marketplace_conversation_participants
+           set party_kind = 'vendor',
+               vendor_id = '${VENDOR_X}',
+               conversation_id = 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+               last_read_at = timezone('utc', now())
+         where id = '${PART_BUYER_A}'`,
+      );
+    } catch {
+      updateThrew = true;
+    } finally {
+      await resetActor();
+    }
+
+    const row = (
+      await db.query(
+        `select conversation_id, user_id, party_kind, vendor_id, last_read_at
+           from public.marketplace_conversation_participants where id = '${PART_BUYER_A}'`,
+      )
+    ).rows[0];
+    check("participant re-key update did not error", !updateThrew);
+    check("participant party_kind pinned to 'buyer'", row.party_kind === "buyer", `party_kind=${row.party_kind}`);
+    check("participant vendor_id pinned to NULL", row.vendor_id === null, `vendor_id=${row.vendor_id}`);
+    check(
+      "participant conversation_id pinned to CONV_1",
+      String(row.conversation_id) === CONV_1,
+      `conversation_id=${row.conversation_id}`,
+    );
+    check("participant user_id unchanged", String(row.user_id) === BUYER_A, `user_id=${row.user_id}`);
+    check("participant last_read_at still moved (only mutable column)", row.last_read_at !== null);
+  }
+
+  // --- realtime: only the messages table lands on the publication; the inbox
+  // (conversations) is deliberately kept off the wire for v1 ---
   {
     const pub = await db.query(
       `select tablename from pg_publication_tables
@@ -254,8 +296,13 @@ async function main() {
     );
     const tables = pub.rows.map((r) => r.tablename);
     check(
-      "conversations + messages registered on supabase_realtime",
-      tables.includes("marketplace_conversations") && tables.includes("marketplace_conversation_messages"),
+      "messages registered on supabase_realtime",
+      tables.includes("marketplace_conversation_messages"),
+      tables.join(","),
+    );
+    check(
+      "conversations NOT on supabase_realtime (inbox kept off the wire)",
+      !tables.includes("marketplace_conversations"),
       tables.join(","),
     );
   }

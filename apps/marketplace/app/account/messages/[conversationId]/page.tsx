@@ -69,7 +69,7 @@ export default async function AccountMessageThreadPage({
           created_at: m.createdAt,
         },
         viewer.user!.id,
-        { vendorDisplayName: vendorName },
+        { vendorDisplayName: vendorName, buyerLabel: translateSurfaceLabel(locale, "Buyer") },
       ),
     )
     .filter((msg): msg is ThreadMessage => msg !== null);

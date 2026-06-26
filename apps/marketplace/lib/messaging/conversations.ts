@@ -74,7 +74,7 @@ function mapConversationRow(row: Record<string, unknown>): MarketplaceConversati
     anchorId: String(row.anchor_id || ""),
     buyerUserId: row.buyer_user_id ? String(row.buyer_user_id) : null,
     vendorId: String(row.vendor_id || ""),
-    subject: row.subject ? String(row.subject) : null,
+    subject: row.subject ? maskContactsForDisplay(String(row.subject)) : null,
     status: String(row.status || "open"),
     lastMessageAt: row.last_message_at ? String(row.last_message_at) : null,
     lastMessagePreview: preview,
