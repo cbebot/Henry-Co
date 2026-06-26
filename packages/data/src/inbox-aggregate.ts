@@ -2,6 +2,7 @@ import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
 import { createDataAdminClient, type TypedSupabaseClient } from "./client";
+import { supportThreadHref } from "./inbox-href";
 
 /**
  * @henryco/data/inbox-aggregate — V3 Wave A1 D3.
@@ -203,7 +204,7 @@ export async function getInboxAggregate(
       status,
       unread: !isClosedStatus(status),
       updatedAt,
-      href: `/support`,
+      href: supportThreadHref(row.id),
     });
   }
 
