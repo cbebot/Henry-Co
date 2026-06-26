@@ -40,7 +40,20 @@ export async function sendMessage(
     const participants = await deps.adapter.getParticipants(input.conversationId);
     const recipients = participants.filter((p) => p.userId !== input.senderId); // stable FK, never sender
     for (const r of recipients) {
-      await deps.notify({ recipientUserId: r.userId, conversationId: input.conversationId });
+      // Best-effort: the message is already persisted (the source of truth). A
+      // failing downstream notification (the host `notify` is publishNotification,
+      // itself best-effort) must NEVER reject an already-committed send — that would
+      // make a caller retry and write a duplicate. Swallow + log per recipient so one
+      // bad recipient can't starve the others, and always resolve {ok:true}.
+      try {
+        await deps.notify({ recipientUserId: r.userId, conversationId: input.conversationId });
+      } catch (err) {
+        console.warn("sendMessage: notify failed (message already persisted)", {
+          recipientUserId: r.userId,
+          conversationId: input.conversationId,
+          err,
+        });
+      }
     }
   }
 
