@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
@@ -60,6 +62,16 @@ export default async function AccountOrderDetailPage({
                 <p className="mt-2 text-lg font-semibold capitalize text-[var(--market-ink)]">{group.payoutStatus.replace(/_/g, " ")}</p>
               </div>
             </div>
+            {/* The Onyx Line (WS-4) — contact-safe "Message seller about this
+                order". Flag-gated dark; anchors to this order (UUID) + vendor. */}
+            {process.env.MARKETPLACE_MESSAGING_ENABLED === "1" && group.vendorId ? (
+              <Link
+                href={`/account/messages/new?anchor_type=order&anchor_id=${order.id}&vendor_id=${group.vendorId}`}
+                className="market-button-secondary mt-4 inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold"
+              >
+                {translateSurfaceLabel(locale, "Message seller about this order")}
+              </Link>
+            ) : null}
           </article>
         ))}
       </section>
