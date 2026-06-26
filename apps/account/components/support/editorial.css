@@ -1587,6 +1587,78 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   LIVE engine composer re-tone (The Onyx Line WS-2, Task 4).
+
+   The composer rules ABOVE in this section target a STALE
+   `[data-composer-*]` / `cc-composer` / `button[type="submit"]` contract
+   that the current @henryco/chat-composer DOM no longer emits — they are
+   DORMANT (they bind to nothing). The composer the engine actually mounts
+   inside `.mt-composer-host` is `@henryco/chat-composer`'s `ChatComposer`:
+   a `.henryco-composer-shell` whose entire accent (focus-within glow,
+   drag-overlay label, caret, and the Send gradient) is painted from the
+   `--composer-accent` / `--composer-accent-deep` custom properties. For
+   the support thread the engine resolves the `neutral` tone — teal
+   #0E7C86 / #0A5C63 — NOT the warm-paper brass this surface speaks in.
+
+   This block re-tones the live composer to brass, scoped to the support
+   room/stage only.
+
+   Why the shell-level `!important`: `ChatComposer` writes
+   `--composer-accent` / `--composer-accent-deep` INLINE on
+   `.henryco-composer-shell` via `toneStyle(tone)`. An inline custom-
+   property declaration shadows the same property merely *inherited* from
+   `.mt-composer-host`, so setting the vars on the host alone is silently
+   defeated. Re-declaring them on the shell itself with `!important` is the
+   only thing that beats the inline declaration — after which every
+   descendant (Send gradient, caret, focus ring, drop-overlay) inherits
+   the brass value. The host-level rule below is kept as the documented
+   contract / baseline for any non-shell descendant of the host.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-composer-host,
+.acct-support-stage .mt-composer-host {
+  --composer-accent: var(--acct-gold);
+  --composer-accent-deep: var(--acct-gold-strong);
+}
+
+.acct-support-room .mt-composer-host .henryco-composer-shell,
+.acct-support-stage .mt-composer-host .henryco-composer-shell {
+  --composer-accent: var(--acct-gold) !important;
+  --composer-accent-deep: var(--acct-gold-strong) !important;
+}
+
+/* AA-CRITICAL — the Send button.
+
+   `SendButton` (SendButton.tsx) paints the gold gradient (now brass via
+   the vars above) and sets its label + lucide icon to `text-white`
+   (Tailwind). White on brass is ~2.4:1 and FAILS WCAG AA — the exact
+   thing the charter forbids. The Send button carries NO dedicated class
+   and (when not icon-only, as here) NO aria-label; it is uniquely
+   identifiable by `data-ready` — `<button type="button" data-ready={ready}>`
+   in SendButton.tsx. The attach / expand pills carry `henryco-attach-pill`
+   and never `data-ready`, so this selector hits only Send. Colouring the
+   button re-inks the lucide `Send` / `Loader2` glyphs too, since lucide
+   draws with `stroke="currentColor"`.
+
+   Mode discipline — the `--acct-ink` flip trap: `--acct-ink` is dark in
+   light mode (#1A1814) but FLIPS to a light value (#F0EDE8) in dark mode,
+   and the brass stays bright (#D4AF37). Light ink on bright brass is
+   ~1.8:1 — it would re-create white-on-gold. So light mode uses
+   `--acct-ink` (#1A1814 on #C9A227 ≈ 7.3:1) and dark mode overrides to
+   `--acct-bg-soft` (#141920 on #D4AF37 ≈ 8.4:1) — dark-ink-on-brass,
+   AA-pass in BOTH modes. This mirrors the own-bubble avatar rule earlier
+   in this file. NEVER white-on-gold. */
+.acct-support-room .mt-composer-host button[data-ready],
+.acct-support-stage .mt-composer-host button[data-ready] {
+  color: var(--acct-ink);
+}
+
+.dark .acct-support-room .mt-composer-host button[data-ready],
+.dark .acct-support-stage .mt-composer-host button[data-ready] {
+  color: var(--acct-bg-soft);
+}
+
+/* ──────────────────────────────────────────────────────────────────
    Empty state — premium spotlight glyph + welcome copy
    ────────────────────────────────────────────────────────────────── */
 
