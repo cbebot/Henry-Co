@@ -20,6 +20,7 @@ import type {
   ClientMessageAttachment,
 } from "@/types/portal";
 import { RefineWithAiButton } from "./RefineWithAiButton";
+import { StudioContactSafetyHint } from "./StudioContactSafetyHint";
 
 /**
  * Studio's adapter for the shared @henryco/messaging-thread engine.
@@ -174,12 +175,15 @@ export function StudioMessageThread({
       composerLabels={composerLabels}
       {...threadLabels}
       composerExtras={({ draft, setDraft }) => (
-        <RefineWithAiButton
-          draft={draft}
-          setDraft={setDraft}
-          projectTitle={projectTitle}
-          projectSummary={projectSummary}
-        />
+        <>
+          <StudioContactSafetyHint text={draft} />
+          <RefineWithAiButton
+            draft={draft}
+            setDraft={setDraft}
+            projectTitle={projectTitle}
+            projectSummary={projectSummary}
+          />
+        </>
       )}
     />
   );
