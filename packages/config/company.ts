@@ -163,6 +163,12 @@ export const COMPANY = {
       "A premium group of service businesses built on clarity, trust, and operational excellence.",
     promise:
       "Every Henry Onyx division should feel premium, dependable, and beautifully structured.",
+    // Master-brand line shown on the shared social/OG card.
+    tagline: "One standard, held across every engine we run.",
+    // Registered-company facts (Henry Onyx Limited, CAC) used on the OG card
+    // masthead to signal a real, registered operating company.
+    established: "2026",
+    hqLocation: "Emene, Enugu",
     supportEmail: BRAND_EMAILS.hello,
     supportPhone: GROUP_SUPPORT_PHONE,
   },

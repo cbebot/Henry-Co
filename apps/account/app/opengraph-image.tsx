@@ -1,17 +1,13 @@
-import { ImageResponse } from "next/og";
-import { DefaultOgTemplate, OG_SIZE, OG_CONTENT_TYPE } from "@henryco/seo";
 import { getSurfaceConfig } from "@henryco/config";
+import { DefaultOgTemplate, OG_SIZE, OG_CONTENT_TYPE, renderDefaultOgImage } from "@henryco/seo";
 
-// OG-SOCIAL-METADATA — account now renders the ONE shared 1200x630 card
-// (DefaultOgTemplate) like every division site, sourcing its brand from the
-// SURFACES registry instead of bespoke inline JSX. Edge runtime keeps the
-// image fast and publicly reachable (account has no auth middleware on this
-// route), and Next wires it into an absolute og:image via `metadataBase`.
+// OG-SOCIAL-METADATA — account renders the ONE shared Henry Onyx card via the
+// SURFACES registry. Edge runtime, publicly reachable (proxy exempts this route).
 export const runtime = "edge";
 export const alt = getSurfaceConfig("account").name;
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 
-export default async function OG() {
-  return new ImageResponse(<DefaultOgTemplate surfaceKey="account" />, { ...OG_SIZE });
+export default function OG() {
+  return renderDefaultOgImage(<DefaultOgTemplate surfaceKey="account" />);
 }

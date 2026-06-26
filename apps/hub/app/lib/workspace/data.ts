@@ -1280,7 +1280,7 @@ function buildActivityModule(input: {
     readiness === "live" ? "structured" : readiness === "partial" ? "shared-signals" : "planned";
   const sourceSummary =
     sourceMode === "structured"
-      ? "This division is backed by dedicated live records in the shared Henry & Co. schema."
+      ? "This division is backed by dedicated live records in the shared Henry Onyx schema."
       : sourceMode === "shared-signals"
         ? "This division is currently running from shared activity, support, and notification signals because dedicated operational tables are not fully live yet."
         : "This division shell is registered, but it still needs live dedicated data structures before it can operate at full depth.";
