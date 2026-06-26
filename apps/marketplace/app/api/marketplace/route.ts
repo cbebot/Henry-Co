@@ -2567,12 +2567,19 @@ export async function POST(request: Request) {
             notify: async ({ recipientUserId, conversationId }) => {
               // Stable user id only — never email/phone, and no body (which could
               // carry a masked contact) in the notification.
+              const senderRole = senderKind;
+              const recipientRole = senderRole === "buyer" ? "vendor" : "buyer";
+              const actionUrl =
+                recipientRole === "vendor"
+                  ? `/vendor/messages/${conversationId}`
+                  : `/account/messages/${conversationId}`;
               await sendMarketplaceEvent({
-                event: "support_reply",
+                event: "marketplace_message",
                 userId: recipientUserId,
                 entityType: "marketplace_conversation",
                 entityId: conversationId,
-                payload: { note: "You have a new marketplace message." },
+                actionUrl,
+                payload: { note: "You have a new marketplace message.", conversationId, recipientRole },
               });
             },
           },
@@ -2635,12 +2642,19 @@ export async function POST(request: Request) {
           {
             adapter: replyAdapter,
             notify: async ({ recipientUserId, conversationId: notifyConversationId }) => {
+              const senderRole = thread.viewerParty;
+              const recipientRole = senderRole === "buyer" ? "vendor" : "buyer";
+              const actionUrl =
+                recipientRole === "vendor"
+                  ? `/vendor/messages/${notifyConversationId}`
+                  : `/account/messages/${notifyConversationId}`;
               await sendMarketplaceEvent({
-                event: "support_reply",
+                event: "marketplace_message",
                 userId: recipientUserId,
                 entityType: "marketplace_conversation",
                 entityId: notifyConversationId,
-                payload: { note: "You have a new marketplace message." },
+                actionUrl,
+                payload: { note: "You have a new marketplace message.", conversationId: notifyConversationId, recipientRole },
               });
             },
           },
