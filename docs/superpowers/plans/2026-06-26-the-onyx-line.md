@@ -347,7 +347,7 @@ Create `packages/contact-safety/package.json`:
     "test": "tsx --test src/__tests__/contact-safety.test.ts"
   },
   "dependencies": { "@henryco/trust": "workspace:^" },
-  "devDependencies": { "tsx": "^4.0.0", "typescript": "^5.9.3" }
+  "devDependencies": { "typescript": "^5.9.3" }
 }
 ```
 
@@ -532,7 +532,7 @@ Create `packages/messaging/package.json`:
     "test": "tsx --test src/__tests__/types.test.ts src/__tests__/anchor.test.ts src/__tests__/pipeline.test.ts src/__tests__/offline-queue.test.ts"
   },
   "dependencies": { "@henryco/contact-safety": "workspace:^" },
-  "devDependencies": { "tsx": "^4.0.0", "typescript": "^5.9.3" }
+  "devDependencies": { "typescript": "^5.9.3" }
 }
 ```
 
