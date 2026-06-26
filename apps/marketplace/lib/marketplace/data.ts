@@ -965,6 +965,7 @@ export async function getBuyerDashboardData() {
         .map((group: Record<string, unknown>) => ({
           id: String(group.id),
           vendorSlug: vendorById.get(String(group.vendor_id))?.slug || null,
+          vendorId: group.vendor_id ? String(group.vendor_id) : null,
           ownerType: String(group.owner_type || "vendor") as MarketplaceOrder["groups"][number]["ownerType"],
           fulfillmentStatus: String(group.fulfillment_status || "awaiting_acceptance") as MarketplaceOrder["groups"][number]["fulfillmentStatus"],
           paymentStatus: String(group.payment_status || "pending") as MarketplaceOrder["groups"][number]["paymentStatus"],
@@ -1498,6 +1499,7 @@ export async function getOrderByNumber(orderNo: string) {
       groups: (groupsRes.data ?? []).map((group: Record<string, unknown>) => ({
         id: String(group.id),
         vendorSlug: vendorById.get(String(group.vendor_id))?.slug || null,
+        vendorId: group.vendor_id ? String(group.vendor_id) : null,
         ownerType: String(group.owner_type || "vendor") as MarketplaceOrder["groups"][number]["ownerType"],
         fulfillmentStatus: String(group.fulfillment_status || "awaiting_acceptance") as MarketplaceOrder["groups"][number]["fulfillmentStatus"],
         paymentStatus: String(group.payment_status || "pending") as MarketplaceOrder["groups"][number]["paymentStatus"],

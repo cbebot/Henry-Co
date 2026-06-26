@@ -354,6 +354,7 @@ export const demoBuyerOrders: MarketplaceOrder[] = [
       {
         id: "group-1",
         vendorSlug: "henryco-verified",
+        vendorId: null,
         ownerType: "company",
         fulfillmentStatus: "shipped",
         paymentStatus: "verified",
@@ -369,6 +370,7 @@ export const demoBuyerOrders: MarketplaceOrder[] = [
       {
         id: "group-2",
         vendorSlug: "luminous-atelier",
+        vendorId: null,
         ownerType: "vendor",
         fulfillmentStatus: "packed",
         paymentStatus: "verified",
