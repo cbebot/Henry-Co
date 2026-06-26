@@ -6,6 +6,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "./queries";
 import { isReactionEmoji } from "./constants";
 import { classifyAttachment } from "./utils";
+import { screenMessageBody } from "./screen-message";
 import type {
   EditMessageInput,
   MarkReadInput,
@@ -59,6 +60,14 @@ export async function sendMessage(
     return { ok: false, error: "Write a message or attach a file." };
   }
 
+  // Server-side contact-safety (defense-in-depth; the client is bypassable).
+  // High/critical off-platform contact is blocked and never persisted; medium is
+  // masked. Only screen when there is body text (attachment-only sends pass "").
+  const screened = screenMessageBody(body);
+  if (screened.action === "block") {
+    return { ok: false, error: "contact_blocked", reason: "contact_blocked" };
+  }
+
   const messageType =
     input.messageType ||
     (body.length === 0 && attachments.length > 0 ? "file" : "text");
@@ -83,7 +92,7 @@ export async function sendMessage(
       sender: senderName,
       sender_id: viewer.userId,
       sender_role: senderRole,
-      body,
+      body: screened.body,
       is_internal: false,
       message_type: messageType,
       metadata: input.metadata || {},

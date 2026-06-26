@@ -186,7 +186,7 @@ export type SendMessageInput = {
 
 export type SendMessageResult =
   | { ok: true; messageId: string }
-  | { ok: false; error: string };
+  | { ok: false; error: string; reason?: "contact_blocked" };
 
 export type ToggleReactionInput = {
   messageId: string;
