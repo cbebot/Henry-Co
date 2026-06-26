@@ -2065,6 +2065,30 @@
   border-color: var(--acct-gold-strong);
 }
 
+/* Dismiss — a quiet acknowledgement affordance. Dark ink (not gold-text, which
+   is only ~4.23:1 on the gold-soft field) so it clears AA; underlined to read
+   as actionable without a heavy button chrome. Self-aligns to the start. */
+.acct-support-room .acct-contact-safety-hint__dismiss,
+.acct-support-stage .acct-contact-safety-hint__dismiss {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  padding: 0.1rem 0;
+  background: none;
+  border: none;
+  color: var(--acct-ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.acct-support-room .acct-contact-safety-hint__dismiss:focus-visible,
+.acct-support-stage .acct-contact-safety-hint__dismiss:focus-visible {
+  outline: 2px solid var(--hc-focus-ring, var(--acct-gold));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .acct-support-room .acct-contact-safety-hint,
   .acct-support-stage .acct-contact-safety-hint {
