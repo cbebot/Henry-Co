@@ -16,6 +16,7 @@
     "@henryco/auth": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/contact-safety": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
