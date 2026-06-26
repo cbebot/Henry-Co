@@ -77,3 +77,21 @@ test("pipeline persists the EXACT masked body the safety layer returns (mask)", 
   assert.equal(r.ok, true);
   assert.equal(persisted[0].body, "MASKED-BODY"); // exact masked body reaches persist
 });
+
+test("notify is per-recipient: one failing recipient does not starve the others", async () => {
+  const persisted: PersistInput[] = [];
+  const adapter: MessagingAdapter = {
+    async persistMessage(i) {
+      persisted.push(i);
+      return { id: "m1", conversationId: i.conversationId, senderId: i.senderId, senderRole: i.senderRole, body: i.body, attachments: i.attachments, deliveryState: "sent", createdAt: "2026-06-26T00:00:00Z" };
+    },
+    async getParticipants() { return [{ userId: "u_buyer", role: "buyer" }, { userId: "u_seller", role: "seller" }, { userId: "u_staff", role: "staff" }]; },
+  };
+  const notified: string[] = [];
+  const r = await sendMessage(
+    { conversationId: "c1", senderId: "u_buyer", senderRole: "buyer", body: "is it available?" },
+    { adapter, notify: async (n) => { if (n.recipientUserId === "u_seller") throw new Error("blip"); notified.push(n.recipientUserId); } },
+  );
+  assert.equal(r.ok, true);
+  assert.deepEqual(notified, ["u_staff"]); // u_seller threw but u_staff is still notified
+});

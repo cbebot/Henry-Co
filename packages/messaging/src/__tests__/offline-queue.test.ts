@@ -37,3 +37,18 @@ test("flush STOPS on a retryable server error (backpressure, no retry-storm) and
   assert.equal(calls, 1);              // stopped after the first failure
   assert.equal(q.pending().length, 2); // nothing dropped
 });
+
+test("flush DROPS a non-retryable (poison) message and continues to the next", async () => {
+  const s = memStorage();
+  const q = createOfflineQueue(s);
+  q.enqueue({ conversationId: "c1", body: "poison", attachments: [] });
+  q.enqueue({ conversationId: "c1", body: "good", attachments: [] });
+  const sent: string[] = [];
+  await q.flush(async (m) => {
+    if (m.body === "poison") return { ok: false, retryable: false };
+    sent.push(m.body);
+    return { ok: true };
+  });
+  assert.deepEqual(sent, ["good"]);     // poison dropped, good still sent
+  assert.equal(q.pending().length, 0);  // both cleared (poison dropped, good sent)
+});

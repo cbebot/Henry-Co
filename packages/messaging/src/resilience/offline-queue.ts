@@ -35,7 +35,15 @@ export function createOfflineQueue(storage: QueueStorage, key: string = DEFAULT_
         const next = items[0];
         const res = await send(next);
         if (!res.ok) {
-          // backpressure: stop on any failure; keep the item for a later flush
+          if (res.retryable === false) {
+            // Poison message: a non-retryable failure will never succeed — drop it
+            // (log, don't silently lose) and continue so it can't block the outbox head.
+            console.warn("offline-queue: dropping non-retryable message", { conversationId: next.conversationId });
+            items = items.slice(1);
+            save(items);
+            continue;
+          }
+          // Retryable (or unspecified) failure: stop and keep for a later flush (backpressure).
           return;
         }
         items = items.slice(1);

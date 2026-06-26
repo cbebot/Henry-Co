@@ -31,3 +31,10 @@ test("a shortener link is caught and masked", () => {
   assert.notEqual(r.action, "allow");
   assert.ok(!r.maskedText.includes("bit.ly/deal"));
 });
+
+test("an email is blocked (high) and never returned as-is", () => {
+  const r = contactSafety("reach me at jane.doe@gmail.com");
+  assert.equal(r.action, "block");
+  assert.equal(r.severity, "high");
+  assert.ok(!r.maskedText.includes("jane.doe@gmail.com"));
+});
