@@ -1946,3 +1946,56 @@
     page-break-inside: avoid;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────
+   Contact-safety hint (The Onyx Line WS-2) — warm-paper inline
+   pre-warning rendered below the composer input via the engine's
+   `composerExtras` slot when the live draft contains a phone / email
+   / handle / link. The decision logic lives in
+   `components/messages/contact-safety-hint.ts` (TDD'd); this only
+   paints the `.acct-contact-safety-hint` it emits.
+
+   AA discipline: NEVER white-on-gold. The body is dark ink
+   (`--acct-ink`) on a soft-gold field (`--acct-gold-soft`); the title
+   + reassurance use `--acct-gold-text` (the AA gold-as-text token,
+   ≥4.5:1), never raw `--acct-gold`. No new tokens; one documented
+   `#8a6f00` fallback carried from the rest of this file.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .acct-contact-safety-hint,
+.acct-support-stage .acct-contact-safety-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.4rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--acct-radius-sm);
+  background: var(--acct-gold-soft);
+  color: var(--acct-ink); /* dark ink on soft gold — high contrast */
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 35%, transparent);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.acct-support-room .acct-contact-safety-hint__title,
+.acct-support-room .acct-contact-safety-hint__reassure,
+.acct-support-stage .acct-contact-safety-hint__title,
+.acct-support-stage .acct-contact-safety-hint__reassure {
+  /* Dark ink on the soft-gold field (~15.9:1, AAA). Gold-as-text (--acct-gold-text)
+     only reaches ~4.23:1 on --acct-gold-soft — under the 4.5:1 AA floor at this size —
+     so emphasis here is weight, not hue. */
+  color: var(--acct-ink);
+  font-weight: 600;
+}
+
+.acct-support-room .acct-contact-safety-hint[data-tone="block"],
+.acct-support-stage .acct-contact-safety-hint[data-tone="block"] {
+  border-color: var(--acct-gold-strong);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .acct-support-room .acct-contact-safety-hint,
+  .acct-support-stage .acct-contact-safety-hint {
+    transition: opacity 160ms var(--acct-settle-curve, ease);
+  }
+}

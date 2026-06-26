@@ -8,6 +8,7 @@ import {
   type ThreadSupabaseLike,
 } from "@henryco/messaging-thread";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { ContactSafetyHint } from "@/components/messages/ContactSafetyHint";
 import {
   accountSupportThreadAdapter,
   mapRowToMessage,
@@ -119,6 +120,7 @@ export default function SupportThreadRoom({
         disableComposer={isClosed}
         dayDividerLabel={dayDividerLabel}
         autoFocusComposer={!isClosed}
+        composerExtras={(ctx) => <ContactSafetyHint text={ctx.draft} />}
         placeholder={t(
           "Reply with context, screenshots, or next steps. Drafts stay here while you type.",
         )}
