@@ -47,3 +47,33 @@ test("a medium-severity message is persisted MASKED", async () => {
   assert.equal(r.ok, true);
   assert.ok(!persisted[0].body.includes("@jane_doe"));
 });
+
+test("a notify failure does NOT reject after persist (best-effort; no duplicate-retry vector)", async () => {
+  const { adapter, persisted } = makeAdapter();
+  const r = await sendMessage(
+    { conversationId: "c1", senderId: "u_buyer", senderRole: "buyer", body: "is it available?" },
+    { adapter, notify: async () => { throw new Error("publish blip"); } },
+  );
+  assert.equal(r.ok, true);          // committed send resolves ok despite notify throwing
+  assert.equal(persisted.length, 1); // persisted exactly once — no duplicate
+});
+
+test("pipeline branches on the injected safety action regardless of text (block)", async () => {
+  const { adapter, persisted } = makeAdapter();
+  const r = await sendMessage(
+    { conversationId: "c1", senderId: "u_buyer", senderRole: "buyer", body: "totally clean text" },
+    { adapter, safety: () => ({ action: "block", maskedText: "", severity: "high" }) },
+  );
+  assert.equal(r.ok, false);
+  assert.equal(persisted.length, 0); // block path, independent of trust ranking
+});
+
+test("pipeline persists the EXACT masked body the safety layer returns (mask)", async () => {
+  const { adapter, persisted } = makeAdapter();
+  const r = await sendMessage(
+    { conversationId: "c1", senderId: "u_buyer", senderRole: "buyer", body: "raw body here" },
+    { adapter, safety: () => ({ action: "mask", maskedText: "MASKED-BODY", severity: "medium" }) },
+  );
+  assert.equal(r.ok, true);
+  assert.equal(persisted[0].body, "MASKED-BODY"); // exact masked body reaches persist
+});
