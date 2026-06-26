@@ -829,7 +829,7 @@ git commit -m "feat(messaging): define MessagingAdapter persistence interface"
 - Produces:
 ```ts
 export interface SendDeps { adapter: MessagingAdapter; notify?: (n: { recipientUserId: string; conversationId: string }) => Promise<void>; safety?: (text: string) => { action: "allow"|"mask"|"block"; maskedText: string; severity: string }; }
-export type SendResult = { ok: true; message: Message } | { ok: false; reason: "contact_blocked"; rewritePrompt: string };
+export type SendResult = { ok: true; message: Message } | { ok: false; reason: "contact_blocked" };
 export function sendMessage(input: { conversationId: string; senderId: string; senderRole: string; body: string; attachments?: string[] }, deps: SendDeps): Promise<SendResult>;
 ```
 
@@ -911,10 +911,7 @@ export interface SendDeps {
 
 export type SendResult =
   | { ok: true; message: Message }
-  | { ok: false; reason: "contact_blocked"; rewritePrompt: string };
-
-const REWRITE_PROMPT =
-  "Keep it on Henry Onyx — you're protected here. Please remove phone numbers, emails, links, or off-platform contact and try again.";
+  | { ok: false; reason: "contact_blocked" };
 
 export async function sendMessage(
   input: { conversationId: string; senderId: string; senderRole: string; body: string; attachments?: string[] },
@@ -923,7 +920,9 @@ export async function sendMessage(
   const check = (deps.safety ?? contactSafety)(input.body);
 
   if (check.action === "block") {
-    return { ok: false, reason: "contact_blocked", rewritePrompt: REWRITE_PROMPT };
+    // Return only the stable reason code; the rendering surface owns the localized
+    // copy (Pattern A typed copy) — no user-facing English string in this shared package.
+    return { ok: false, reason: "contact_blocked" };
   }
 
   const body = check.action === "mask" ? check.maskedText : input.body;
@@ -1089,7 +1088,15 @@ export function createOfflineQueue(storage: QueueStorage, key: string = DEFAULT_
         const next = items[0];
         const res = await send(next);
         if (!res.ok) {
-          // backpressure: stop on any failure; keep the item for a later flush
+          if (res.retryable === false) {
+            // Poison message: a non-retryable failure will never succeed — drop it
+            // (log, don't silently lose) and continue so it can't block the outbox head.
+            console.warn("offline-queue: dropping non-retryable message", { conversationId: next.conversationId });
+            items = items.slice(1);
+            save(items);
+            continue;
+          }
+          // Retryable (or unspecified) failure: stop and keep for a later flush (backpressure).
           return;
         }
         items = items.slice(1);

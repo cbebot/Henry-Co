@@ -317,7 +317,7 @@ create table conversation_messages (
 
 ## 9. Error handling & edge cases
 
-- **Contact-safety block:** pipeline returns `{ok:false, reason:'contact_blocked', rewritePrompt}`; the composer shows the kind localized inline message and preserves the user's draft (never destroys their text).
+- **Contact-safety block:** pipeline returns `{ok:false, reason:'contact_blocked'}` (a stable reason code only — no user-facing copy in the shared package); the composer maps that code to its localized inline message (Pattern A typed copy, so ig/yo/ha never get a machine-translated string) and preserves the user's draft (never destroys their text).
 - **Offline send:** message enters the durable queue (`queued`), UI shows queued state; auto-replay on reconnect; 5xx → stop flush, show retry; the draft is never lost across a tab close.
 - **Realtime drop:** watchdog + backoff reconnect; 30s polling fallback re-hydrates; UI shows honest connection state.
 - **Wrong-owner protection:** recipient resolution is FK-only; an email/phone match is a code smell that must fail review.
