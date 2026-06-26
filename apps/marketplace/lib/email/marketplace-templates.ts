@@ -45,6 +45,7 @@ export type MarketplaceTemplateKey =
   | "review_moderation_outcome"
   | "support_reply"
   | "support_escalation"
+  | "marketplace_message"
   | "security_notice"
   | "owner_alert";
 
