@@ -347,11 +347,11 @@ Create `packages/contact-safety/package.json`:
     "test": "tsx --test src/__tests__/contact-safety.test.ts"
   },
   "dependencies": { "@henryco/trust": "workspace:^" },
-  "devDependencies": { "typescript": "^5.9.3" }
+  "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.9.3" }
 }
 ```
 
-Then: `cp packages/messaging-thread/tsconfig.json packages/contact-safety/tsconfig.json` and `pnpm install`.
+Then create `packages/contact-safety/tsconfig.json` with the same corrected config shown in Task 6 (barrel `index.ts` at package root → `include: ["index.ts", "src/**/*"]`; `types: ["node"]` for the `.ts` test), and run `pnpm install`.
 
 - [ ] **Step 2: Run to verify it fails**
 
@@ -532,11 +532,34 @@ Create `packages/messaging/package.json`:
     "test": "tsx --test src/__tests__/types.test.ts src/__tests__/anchor.test.ts src/__tests__/pipeline.test.ts src/__tests__/offline-queue.test.ts"
   },
   "dependencies": { "@henryco/contact-safety": "workspace:^" },
-  "devDependencies": { "typescript": "^5.9.3" }
+  "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.9.3" }
 }
 ```
 
-Then: `cp packages/messaging-thread/tsconfig.json packages/messaging/tsconfig.json` and `pnpm install`. (The `test` script lists all four suites up front; suites not yet created are added in their tasks — until then run the single suite with `tsx --test src/__tests__/types.test.ts`.)
+Then create `packages/messaging/tsconfig.json` with the content below — the barrel `index.ts` lives at the package ROOT (not under `src/`), so `include` MUST list it or the library is never typechecked; `types: ["node"]` lets the `.ts` test suites resolve `node:test`/`node:assert` — and run `pnpm install`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
+  },
+  "include": ["index.ts", "src/**/*"],
+  "exclude": ["node_modules"]
+}
+```
+
+(The `test` script lists all four suites up front; suites not yet created are added in their tasks — until then run the single suite with `tsx --test src/__tests__/types.test.ts`.)
 
 - [ ] **Step 2: Run to verify it fails**
 
