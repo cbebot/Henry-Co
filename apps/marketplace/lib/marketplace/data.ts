@@ -1526,3 +1526,140 @@ export async function getOrderByNumber(orderNo: string) {
     return null;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Admin — vendor application review surface (/admin)
+// ---------------------------------------------------------------------------
+// A focused, owner-facing read of every seller application, grouped so the
+// owner can act with full context: who they are, their KYC documents, their
+// pitch — not just a store name and a button. The Approve/Reject decision is
+// taken by the SAME server action (`admin_vendor_application_decision`) the
+// page POSTs to; this is read-only enrichment around it.
+
+export type AdminVendorApplicationDoc = {
+  key: string;
+  label: string;
+  name: string;
+  status: string;
+  mimeType: string | null;
+  /** Short-lived signed URL (actionable group only); null when not signed/available. */
+  previewUrl: string | null;
+};
+
+export type AdminVendorApplication = {
+  id: string;
+  storeName: string;
+  slug: string;
+  legalName: string;
+  email: string;
+  phone: string | null;
+  category: string;
+  plan: string | null;
+  story: string;
+  status: string;
+  progressStep: string;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  reviewNote: string | null;
+  documents: AdminVendorApplicationDoc[];
+};
+
+export type AdminVendorApplicationGroups = {
+  /** Awaiting an owner decision — KYC docs are signed for preview. */
+  submitted: AdminVendorApplication[];
+  /** Already approved/rejected — shown for the audit trail. */
+  decided: AdminVendorApplication[];
+  /** Applicant has not finished the wizard yet — not actionable. */
+  drafts: AdminVendorApplication[];
+};
+
+const ADMIN_DOC_LABELS: Record<string, string> = {
+  businessRegistration: "Business registration",
+  founderIdentity: "Founder identity (KYC)",
+  payoutProof: "Payout account proof",
+};
+
+async function mapAdminApplication(
+  row: Record<string, unknown>,
+  signDocuments: boolean,
+): Promise<AdminVendorApplication> {
+  const draft =
+    row.draft_payload && typeof row.draft_payload === "object" && !Array.isArray(row.draft_payload)
+      ? (row.draft_payload as Record<string, unknown>)
+      : {};
+  // Prefer the wizard's draft documents when present (latest), else the
+  // canonical submitted documents_json — mirrors the seller-facing read.
+  const draftDocs =
+    draft.documents && typeof draft.documents === "object" && !Array.isArray(draft.documents)
+      ? (draft.documents as Record<string, unknown>)
+      : null;
+  const docsSource = draftDocs && Object.keys(draftDocs).length ? draftDocs : row.documents_json;
+
+  const normalized = normalizeSellerDocuments(docsSource);
+  const signed = signDocuments ? await signSellerDocuments(normalized) : normalized;
+
+  const documents: AdminVendorApplicationDoc[] = Object.entries(signed).map(([key, doc]) => ({
+    key,
+    label: ADMIN_DOC_LABELS[key] || doc.name || key,
+    name: doc.name,
+    status: doc.status,
+    mimeType: doc.mimeType,
+    previewUrl: signDocuments ? (doc.previewUrl ?? null) : null,
+  }));
+
+  return {
+    id: String(row.id),
+    storeName: String(row.store_name || row.proposed_store_slug || "Untitled store"),
+    slug: String(row.proposed_store_slug || ""),
+    legalName: String(row.legal_name || ""),
+    email: String(row.normalized_email || ""),
+    phone: row.contact_phone ? String(row.contact_phone) : null,
+    category: String(row.category_focus || ""),
+    plan: typeof draft.plan === "string" && draft.plan.trim() ? draft.plan.trim() : null,
+    story: String(row.story || ""),
+    status: String(row.status || "draft"),
+    progressStep: String(row.progress_step || "start"),
+    submittedAt: row.submitted_at ? String(row.submitted_at) : null,
+    reviewedAt: row.reviewed_at ? String(row.reviewed_at) : null,
+    reviewNote: row.review_note ? String(row.review_note) : null,
+    documents,
+  };
+}
+
+/**
+ * Load every seller application grouped for the admin review surface. KYC
+ * documents are signed (short-lived preview URLs) ONLY for the `submitted`
+ * group the owner acts on — decided/draft rows carry doc names without minting
+ * throwaway signed URLs. Resilient: any failure yields empty groups so the
+ * page renders rather than 500s.
+ */
+export async function getAdminVendorApplications(): Promise<AdminVendorApplicationGroups> {
+  try {
+    const admin = createAdminSupabase();
+    const { data, error } = await admin
+      .from("marketplace_vendor_applications")
+      .select("*")
+      .order("submitted_at", { ascending: false, nullsFirst: false });
+
+    if (error || !data) return { submitted: [], decided: [], drafts: [] };
+
+    const submitted: AdminVendorApplication[] = [];
+    const decided: AdminVendorApplication[] = [];
+    const drafts: AdminVendorApplication[] = [];
+
+    for (const raw of data as Array<Record<string, unknown>>) {
+      const status = String(raw.status || "draft");
+      if (status === "submitted" || status === "under_review" || status === "changes_requested") {
+        submitted.push(await mapAdminApplication(raw, true));
+      } else if (status === "approved" || status === "rejected") {
+        decided.push(await mapAdminApplication(raw, false));
+      } else {
+        drafts.push(await mapAdminApplication(raw, false));
+      }
+    }
+
+    return { submitted, decided, drafts };
+  } catch {
+    return { submitted: [], decided: [], drafts: [] };
+  }
+}
