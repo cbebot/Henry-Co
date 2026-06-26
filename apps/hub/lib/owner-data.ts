@@ -1162,7 +1162,7 @@ export async function getOwnerOverviewData() {
     companyTitle,
     companyName: toText(dataset.companySettings?.company_name) || companyTitle,
     dataHealthNote:
-      "Workforce profiles, audit history, and sign-in activity are synchronized from your live Henry & Co. account records. If a metric looks stale, refresh after the person completes their latest sign-in.",
+      "Workforce profiles, audit history, and sign-in activity are synchronized from your live Henry Onyx account records. If a metric looks stale, refresh after the person completes their latest sign-in.",
     metrics: {
       divisionsLive: divisions.filter((division) => division.status !== "building").length,
       totalRevenueNaira,
@@ -1585,7 +1585,7 @@ export async function getWorkforceCenterData() {
       managers: workforce.filter((member) => member.isManager).length,
     },
     dataHealthNote:
-      "Role and permission updates are saved to each member’s Henry & Co. account profile and recorded in the workforce audit log for traceability.",
+      "Role and permission updates are saved to each member’s Henry Onyx account profile and recorded in the workforce audit log for traceability.",
   };
 }
 
