@@ -234,6 +234,10 @@ export type MarketplaceOrderItem = {
 export type MarketplaceOrderGroup = {
   id: string;
   vendorSlug: string | null;
+  /** Vendor UUID (marketplace_order_groups.vendor_id) — the vendor's id, not
+   * buyer PII. Lets the "Message seller" CTA anchor an Onyx Line thread to a
+   * specific vendor on a multi-vendor order. */
+  vendorId: string | null;
   ownerType: "company" | "vendor";
   fulfillmentStatus: FulfillmentStatus;
   paymentStatus: PaymentStatus;

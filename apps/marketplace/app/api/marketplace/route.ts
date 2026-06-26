@@ -2569,7 +2569,12 @@ export async function POST(request: Request) {
 
         await bumpConversation(admin, conversation.id, startResult.message.body);
 
-        if (json) return NextResponse.json({ ok: true, conversationId: conversation.id });
+        if (json)
+          return NextResponse.json({
+            ok: true,
+            conversationId: conversation.id,
+            messageId: startResult.message.id,
+          });
         return redirectTo(
           request,
           `${senderKind === "buyer" ? "/account/messages" : "/vendor/messages"}/${conversation.id}?started=1`,
@@ -2632,7 +2637,12 @@ export async function POST(request: Request) {
 
         await bumpConversation(admin, conversationId, replyResult.message.body);
 
-        if (json) return NextResponse.json({ ok: true, conversationId });
+        if (json)
+          return NextResponse.json({
+            ok: true,
+            conversationId,
+            messageId: replyResult.message.id,
+          });
         return redirectTo(
           request,
           `${thread.viewerParty === "buyer" ? "/account/messages" : "/vendor/messages"}/${conversationId}?replied=1`,
