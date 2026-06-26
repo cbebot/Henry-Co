@@ -442,15 +442,24 @@ import { detectExternalLinks, normalizeForDetection, maskContactsForDisplay } fr
 const RANK = { low: 0, medium: 1, high: 2, critical: 3 } as const;
 type Sev = keyof typeof RANK;
 
+// Contact-leak floor: @henryco/trust ranks a bare social handle as `low`
+// (detected + flagged, but low severity). For contact safety a DETECTED
+// off-platform contact must never come back as `allow` — escalate any detector
+// that fired-but-ranked-low to `medium` (mask). Still composes canonical
+// outputs (`flag`/`detected`); NO local pattern list.
+function contactFloor(fired: boolean, sev: Sev): Sev {
+  return fired && RANK[sev] < RANK.medium ? "medium" : sev;
+}
+
 export function contactSafety(text: string): ContactSafetyResult {
   const raw = shouldAutoFlag(text);
   const norm = shouldAutoFlag(normalizeForDetection(text));
   const links = detectExternalLinks(text);
 
   const candidates: Sev[] = [
-    raw.severity as Sev,
-    norm.severity as Sev,
-    links.detected ? (links.severity as Sev) : "low",
+    contactFloor(raw.flag, raw.severity as Sev),
+    contactFloor(norm.flag, norm.severity as Sev),
+    contactFloor(links.detected, links.severity as Sev),
   ];
   const severity = candidates.reduce<Sev>((a, b) => (RANK[b] > RANK[a] ? b : a), "low");
 
