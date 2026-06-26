@@ -247,6 +247,46 @@ export async function getConversationById(
   return mapConversation(data as Record<string, unknown>);
 }
 
+/**
+ * Resolve only the routing + ownership FKs for a conversation deep-link.
+ *
+ * Used by the employer deep-link resolver
+ * (`app/employer/conversations/[conversationId]/page.tsx`) to authorize the
+ * viewer and forward to the canonical nested hiring thread. `candidate_id` /
+ * `employer_id` are the participating USER ids (used for the per-conversation
+ * authorization check — the viewer must be the employer party); `pipeline_id` +
+ * `application_id` locate the nested thread route. Deliberately selects NO
+ * message body / subject — it is a pure routing lookup, never a content read.
+ */
+export async function getConversationRouteRef(
+  conversationId: string
+): Promise<{
+  id: string;
+  applicationId: string | null;
+  pipelineId: string | null;
+  candidateId: string | null;
+  employerId: string | null;
+  status: string;
+} | null> {
+  const admin = createAdminSupabase();
+  const { data, error } = await admin
+    .from("jobs_conversations")
+    .select("id, application_id, pipeline_id, candidate_id, employer_id, status")
+    .eq("id", conversationId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  const row = data as Record<string, unknown>;
+  return {
+    id: asString(row.id),
+    applicationId: row.application_id ? asString(row.application_id) : null,
+    pipelineId: row.pipeline_id ? asString(row.pipeline_id) : null,
+    candidateId: row.candidate_id ? asString(row.candidate_id) : null,
+    employerId: row.employer_id ? asString(row.employer_id) : null,
+    status: asString(row.status, "open"),
+  };
+}
+
 export async function getCandidateConversations(
   candidateUserId: string
 ): Promise<Conversation[]> {

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getJobsCopy } from "@henryco/i18n";
+import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
+import type { ThreadMessage } from "@henryco/messaging-thread";
 import { requireJobsRoles } from "@/lib/auth";
 import {
   getApplicationById,
@@ -14,7 +15,8 @@ import {
 import { employerNav } from "@/lib/jobs/navigation";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
-import { MessageComposer } from "@/components/hiring/MessageComposer";
+import { JobsMessageThread } from "@/components/messaging/JobsMessageThread";
+import { mapJobsRow } from "@/components/messaging/jobs-thread-adapter";
 import { InterviewScheduler } from "@/components/hiring/InterviewScheduler";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +35,7 @@ export default async function ApplicationDetailPage({
     getJobsPublicLocale(),
   ]);
   const interviewSchedulerCopy = getJobsCopy(locale).interviewScheduler;
+  const t = (label: string) => translateSurfaceLabel(locale, label);
 
   const [pipeline, application] = await Promise.all([
     getPipelineById(pipelineId),
@@ -52,6 +55,39 @@ export default async function ApplicationDetailPage({
     // Mark messages as read for this employer user
     await markMessagesRead(conversation.id, viewer.user!.id);
   }
+
+  // Jobs is NOT identity-minimized — the candidate and employer legitimately
+  // see each other's real names. The candidate label is the application's
+  // candidate (the counterpart the employer is talking to); the employer label
+  // is the viewer's OWN company/team display name (prefer the membership that
+  // owns this pipeline, then any membership, then the viewer's own name).
+  const candidateLabel = application.candidateName;
+  const employerDisplayName =
+    viewer.employerMemberships.find((m) => m.activityId === pipeline.employerId)
+      ?.employerName ||
+    viewer.employerMemberships[0]?.employerName ||
+    viewer.user!.fullName ||
+    t("Hiring team");
+
+  // Build the engine's initial bubble list from the already-masked domain
+  // messages. `mapJobsRow` re-masks (idempotent) and resolves own/other-party
+  // labelling + roles for <JobsMessageThread>.
+  const initialMessages: ThreadMessage[] = messages
+    .map((m) =>
+      mapJobsRow(
+        {
+          id: m.id,
+          conversation_id: m.conversationId,
+          sender_id: m.senderId,
+          sender_type: m.senderType,
+          body: m.body,
+          created_at: m.createdAt,
+        },
+        viewer.user!.id,
+        { candidateLabel, employerLabel: employerDisplayName },
+      ),
+    )
+    .filter((x): x is ThreadMessage => x !== null);
 
   const stageTone = (current: string, target: string) => {
     const stages = pipeline.stages;
@@ -148,56 +184,35 @@ export default async function ApplicationDetailPage({
           </div>
         </SectionCard>
 
-        {/* Conversation thread */}
+        {/* Conversation thread — shared realtime surface (The Onyx Line WS-5).
+            Real names are shown (jobs is NOT identity-minimized) and typing
+            presence stays ON; bodies are still screened on send and masked on
+            render so no contact detail can leak either direction. */}
         <SectionCard
-          title="Conversation"
-          body={conversation ? `${messages.length} message${messages.length !== 1 ? "s" : ""} in this thread.` : "No conversation started yet."}
+          title={t("Conversation")}
+          body={
+            conversation
+              ? t(
+                  "Messages stay on Henry Onyx — contact details are never shared, so everyone in the hiring process stays protected.",
+                )
+              : t("No conversation started yet.")
+          }
         >
-          {messages.length > 0 ? (
-            <div className="space-y-3">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`rounded-2xl p-4 ${
-                    msg.senderType === "employer"
-                      ? "ml-8 bg-[var(--jobs-accent-soft)]"
-                      : msg.senderType === "system"
-                        ? "mx-4 bg-[var(--jobs-paper-soft)] text-center text-sm italic"
-                        : "mr-8 bg-[var(--jobs-paper-soft)]"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="text-xs font-semibold text-[var(--jobs-muted)]">
-                      {msg.senderName || msg.senderType}
-                    </span>
-                    <span className="text-xs text-[var(--jobs-muted)]">
-                      {new Date(msg.createdAt).toLocaleString()}
-                    </span>
-                  </div>
-                  <p className="mt-1.5 text-sm leading-6">{msg.body}</p>
-                  {msg.isFlagged && (
-                    <div className="mt-2 rounded-lg bg-[var(--jobs-warning-soft)] px-3 py-1.5 text-xs text-[var(--jobs-warning)]">
-                      Flagged: {msg.flagReason}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+          {conversation ? (
+            <JobsMessageThread
+              conversationId={conversation.id}
+              initialMessages={initialMessages}
+              viewer={{ userId: viewer.user!.id, fullName: employerDisplayName }}
+              candidateLabel={candidateLabel}
+              employerLabel={employerDisplayName}
+            />
           ) : (
             <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-6 text-center">
               <p className="text-sm text-[var(--jobs-muted)]">
-                Send the first message to start a conversation with this candidate.
+                {t(
+                  "Send the first message to start a conversation with this candidate.",
+                )}
               </p>
-            </div>
-          )}
-
-          {conversation && (
-            <div className="mt-4">
-              <MessageComposer
-                conversationId={conversation.id}
-                senderId={viewer.user!.id}
-                senderType="employer"
-              />
             </div>
           )}
         </SectionCard>
