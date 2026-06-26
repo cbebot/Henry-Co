@@ -225,3 +225,26 @@ export function normalizeForDetection(text: string): string {
   t = t.replace(/(?<=\d)[\s.-]+(?=\d)/g, "");
   return t;
 }
+
+// ---- External-link detection (additive; messaging contact-safety) --------
+
+const SHORTENER_URL_RE =
+  /\b(?:wa\.me|t\.me|bit\.ly|tinyurl\.com|cutt\.ly|rebrand\.ly|linktr\.ee)\/[^\s)]+/gi;
+
+const GENERIC_URL_RE = /\bhttps?:\/\/[^\s)]+/gi;
+
+/**
+ * Detects external links (shorteners + any http(s) URL). Kept OUT of the
+ * canonical detectOffPlatformContact so existing marketplace/listing callers
+ * are unchanged; the messaging contact-safety facade composes this explicitly.
+ */
+export function detectExternalLinks(text: string): OffPlatformResult {
+  const patterns: string[] = [];
+  const shorteners = text.match(SHORTENER_URL_RE);
+  if (shorteners) patterns.push(...shorteners);
+  const generic = text.match(GENERIC_URL_RE);
+  if (generic) {
+    for (const g of generic) if (!patterns.includes(g)) patterns.push(g);
+  }
+  return { detected: patterns.length > 0, patterns, severity: patterns.length === 0 ? "low" : "medium" };
+}
