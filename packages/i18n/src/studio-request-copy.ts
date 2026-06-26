@@ -80,6 +80,7 @@ export type StudioRequestCopy = {
     continueLabel: string;
     back: string;
     projectBrief: string;
+    briefSteps: string;
     stepProgress: (current: string, total: string) => string;
     percentComplete: (pct: number) => string;
     progressSaved: string;
@@ -284,6 +285,7 @@ const EN: StudioRequestCopy = {
     continueLabel: "Continue",
     back: "Back",
     projectBrief: "Project brief",
+    briefSteps: "Brief steps",
     stepProgress: (current: string, total: string) => `Step ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% complete`,
     progressSaved: "Progress saved — you can leave and return any time while signed in.",
@@ -501,6 +503,7 @@ const FR: DeepPartial<StudioRequestCopy> = {
     continueLabel: "Continuer",
     back: "Retour",
     projectBrief: "Brief du projet",
+    briefSteps: "Étapes du brief",
     stepProgress: (current: string, total: string) => `Étape ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% terminé`,
     progressSaved:
@@ -697,6 +700,7 @@ const ES: DeepPartial<StudioRequestCopy> = {
     continueLabel: "Continuar",
     back: "Atrás",
     projectBrief: "Brief del proyecto",
+    briefSteps: "Pasos del brief",
     stepProgress: (current: string, total: string) => `Paso ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% completado`,
     progressSaved:
@@ -893,6 +897,7 @@ const PT: DeepPartial<StudioRequestCopy> = {
     continueLabel: "Continuar",
     back: "Voltar",
     projectBrief: "Brief do projeto",
+    briefSteps: "Etapas do brief",
     stepProgress: (current: string, total: string) => `Passo ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% concluído`,
     progressSaved:
@@ -1089,6 +1094,7 @@ const AR: DeepPartial<StudioRequestCopy> = {
     continueLabel: "متابعة",
     back: "رجوع",
     projectBrief: "موجز المشروع",
+    briefSteps: "خطوات الموجز",
     stepProgress: (current: string, total: string) => `الخطوة ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% مكتمل`,
     progressSaved:
@@ -1280,6 +1286,7 @@ const DE: DeepPartial<StudioRequestCopy> = {
     continueLabel: "Weiter",
     back: "Zurück",
     projectBrief: "Projekt-Briefing",
+    briefSteps: "Briefing-Schritte",
     stepProgress: (current: string, total: string) => `Schritt ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% abgeschlossen`,
     progressSaved:
@@ -1474,6 +1481,7 @@ const IT: DeepPartial<StudioRequestCopy> = {
     continueLabel: "Continua",
     back: "Indietro",
     projectBrief: "Brief del progetto",
+    briefSteps: "Passaggi del brief",
     stepProgress: (current: string, total: string) => `Passaggio ${current} / ${total}`,
     percentComplete: (pct: number) => `${pct}% completato`,
     progressSaved:
@@ -1670,6 +1678,7 @@ const ZH: DeepPartial<StudioRequestCopy> = {
     continueLabel: "继续",
     back: "返回",
     projectBrief: "项目简报",
+    briefSteps: "简报步骤",
     stepProgress: (current: string, total: string) => `第 ${current} / ${total} 步`,
     percentComplete: (pct: number) => `已完成 ${pct}%`,
     progressSaved: "进度已保存——只要保持登录，你可以随时离开并返回。",

@@ -62,7 +62,7 @@ export async function TasksHero({ stats, eyebrow, guidanceKicker, guidanceTitle,
             </div>
           </div>
         </div>
-        <aside className="acct-tsk__hero-side" aria-label="How the queue works">
+        <aside className="acct-tsk__hero-side" aria-label={copy.guidanceAria}>
           <p className="acct-tsk__hero-side-label">{guidanceKicker}</p>
           <p className="acct-tsk__hero-side-title">{guidanceTitle}</p>
           <p className="acct-tsk__hero-side-body">{guidanceBody}</p>

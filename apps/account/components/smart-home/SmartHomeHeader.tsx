@@ -24,10 +24,10 @@ type SmartHomeHeaderCopy = AccountHeroesCopy["smartHomeHeader"];
  *     viewer can resume. Without this, saved items were dark matter on
  *     the home surface — fetched but never visible unless the page was
  *     also empty (and then they vanished into the empty fallback).
- *   - LiveChip — the calm "live data" indicator. The pulse is driven
- *     by `[data-state="pulsing"]` so DASH-6's realtime listener can
- *     flip it via a CSS variable when `revalidateTag(signalFeedTag(...))`
- *     fires. Honours `prefers-reduced-motion: reduce`.
+ *   - RealtimeStatusOrb — the calm "live data" indicator. It supersedes
+ *     the older "Live · 30s refresh" chip; DASH-6's realtime listener
+ *     drives its state when `revalidateTag(signalFeedTag(...))` fires.
+ *     Honours `prefers-reduced-motion: reduce`.
  */
 export type SmartHomeHeaderProps = {
   firstName: string | null;
@@ -129,26 +129,5 @@ function SavedItemsRail({ count, copy }: { count: number; copy: SmartHomeHeaderC
       <span style={{ fontVariantNumeric: "tabular-nums" }}>{count}</span>
       <span>{copy.savedRailLabel}</span>
     </Link>
-  );
-}
-
-/**
- * LiveChip — the calm "live data" indicator. Uses className-driven CSS
- * (rather than inline style) so DASH-6's realtime listener can flip
- * `data-state="pulsing"` on the chip when an invalidation lands and the
- * stylesheet drives the animation. `prefers-reduced-motion: reduce`
- * short-circuits the pulse so it never bothers users who opt out.
- */
-function LiveChip() {
-  return (
-    <div
-      className="hc-live-chip"
-      data-state="idle"
-      role="status"
-      aria-label="Smart home is live; data refreshes every 30 seconds"
-    >
-      <span aria-hidden className="hc-live-chip__dot" />
-      Live · 30s refresh
-    </div>
   );
 }

@@ -653,7 +653,7 @@ export function StudioRequestBuilder({
          * repeat it inside each card (the prior "long cards" issue:
          * the same paragraph rendered four times stacked on mobile,
          * pushing the actual brief fields below the fold). */}
-        <nav aria-label="Brief steps" className="mt-7">
+        <nav aria-label={copy.builder.briefSteps} className="mt-7">
           <div className="relative">
             <div className="absolute left-0 right-0 top-[18px] h-px bg-[var(--studio-line)]" />
             <div
