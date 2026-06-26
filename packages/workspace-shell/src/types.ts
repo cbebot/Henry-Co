@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import type { AppLocale } from "@henryco/i18n";
 
 /**
  * Supported workspace divisions. Each one carries a `data-workspace-division`
@@ -150,6 +151,10 @@ export type WorkspaceShellProps = {
    * three columns at lg+: sidebar (left) → main (center) → rail (right).
    * Hidden on mobile/tablet — the rail content stacks below `children`. */
   rightRail?: ReactNode;
+
+  /** Active UI locale for the shell chrome copy (nav aria-labels, the
+   * attention banner, viewer fallbacks, etc). Defaults to "en". */
+  locale?: AppLocale;
 
   /** Optional content rendered as the page body. */
   children: ReactNode;

@@ -19,6 +19,7 @@ import {
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
+import { getMarketplacePublicExtraCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ export const dynamic = "force-dynamic";
 export default async function MarketplaceHomePage() {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
+  const extraCopy = getMarketplacePublicExtraCopy(locale);
   const data = await getMarketplaceHomeData();
   const featuredProducts = data.products.filter((item) => item.featured).slice(0, 6);
   const newInProducts = [...data.products].slice(0, 4);
@@ -54,15 +56,15 @@ export default async function MarketplaceHomePage() {
     return {
       ...item,
       label: reframed
-        ? "Selective catalog"
+        ? extraCopy.home.selectiveCatalogLabel
         : index === 0
           ? copy.kpiLabels.verifiedStores
           : index === 1
             ? copy.kpiLabels.activeListings
             : copy.kpiLabels.trustRating,
-      value: reframed ? "Quality over volume" : item.value,
+      value: reframed ? extraCopy.home.qualityOverVolumeValue : item.value,
       hint: reframed
-        ? "We onboard sellers slowly so listings are vetted before they go public."
+        ? extraCopy.home.selectiveCatalogHint
         : index === 0
           ? copy.kpiHints.verifiedStores
           : index === 1
@@ -196,14 +198,13 @@ export default async function MarketplaceHomePage() {
               ))}
               <div className="flex h-full min-h-[260px] flex-col items-start justify-end rounded-[2rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.02)] p-6">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  More listings arriving
+                  {extraCopy.home.moreListingsArriving}
                 </p>
                 <p className="mt-2 text-base font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Selective catalog &mdash; quality over volume.
+                  {extraCopy.home.selectiveCatalogHeadline}
                 </p>
                 <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-                  We onboard sellers slowly so the listings you do see are
-                  vetted before they go public.
+                  {extraCopy.home.selectiveCatalogBody}
                 </p>
               </div>
             </div>
@@ -250,7 +251,7 @@ export default async function MarketplaceHomePage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
-                      {category.productCount} listings
+                      {category.productCount} {extraCopy.home.listingsSuffix}
                     </span>
                     <ArrowRight className="h-4 w-4 text-[var(--market-brass)]" />
                   </div>

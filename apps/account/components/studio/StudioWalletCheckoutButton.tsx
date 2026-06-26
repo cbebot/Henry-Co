@@ -3,9 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
 
 export function StudioWalletCheckoutButton({ paymentId }: { paymentId: string }) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const copy = getAccountMiscExtraCopy(locale).studioWallet;
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -19,13 +23,13 @@ export function StudioWalletCheckoutButton({ paymentId }: { paymentId: string })
       });
       const payload = (await res.json()) as { ok?: boolean; error?: string };
       if (!res.ok || !payload.ok) {
-        setMessage(payload.error || "Wallet checkout failed.");
+        setMessage(payload.error || copy.failed);
         return;
       }
-      setMessage("Wallet debit submitted. Finance review is now in progress.");
+      setMessage(copy.submitted);
       router.refresh();
     } catch {
-      setMessage("Wallet checkout failed. Please retry.");
+      setMessage(copy.failedRetry);
     } finally {
       setPending(false);
     }
@@ -42,11 +46,11 @@ export function StudioWalletCheckoutButton({ paymentId }: { paymentId: string })
       >
         {pending ? (
           <span className="inline-flex items-center gap-2">
-            <HenryCoActivityIndicator size="sm" className="text-[var(--acct-gold)]" label="Charging wallet" />
-            Charging wallet…
+            <HenryCoActivityIndicator size="sm" className="text-[var(--acct-gold)]" label={copy.chargingLabel} />
+            {copy.charging}
           </span>
         ) : (
-          "Pay from wallet balance"
+          copy.payFromWallet
         )}
       </button>
       {message ? <p className="text-xs text-[var(--acct-muted)]">{message}</p> : null}

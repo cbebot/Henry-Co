@@ -1,32 +1,37 @@
 import Link from "next/link";
 import { ArrowRight, CreditCard, FileCheck2, MessageSquare } from "lucide-react";
+import { getStudioPortalCopy, type StudioPortalCopy } from "@henryco/i18n";
 import { formatKobo, relativeTime, shortDate } from "@/lib/portal/helpers";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import type { AttentionItem } from "@/types/portal";
 
-export function AttentionStrip({ items }: { items: AttentionItem[] }) {
+export async function AttentionStrip({ items }: { items: AttentionItem[] }) {
   if (items.length === 0) return null;
 
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPortalCopy(locale);
+
   return (
-    <section aria-label="Items needing attention" className="space-y-3">
+    <section aria-label={copy.attentionStrip.sectionLabel} className="space-y-3">
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-          Needs your attention
+          {copy.attentionStrip.heading}
         </h2>
         <span className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-          {items.length} open
+          {items.length} {copy.attentionStrip.openSuffix}
         </span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item, index) => (
-          <AttentionCard key={`${item.kind}-${index}`} item={item} />
+          <AttentionCard key={`${item.kind}-${index}`} item={item} copy={copy} />
         ))}
       </div>
     </section>
   );
 }
 
-function AttentionCard({ item }: { item: AttentionItem }) {
+function AttentionCard({ item, copy }: { item: AttentionItem; copy: StudioPortalCopy }) {
   if (item.kind === "invoice") {
     const invoice = item.invoice;
     const tone = invoice.status === "overdue" ? "danger" : "warn";
@@ -38,20 +43,20 @@ function AttentionCard({ item }: { item: AttentionItem }) {
       <article className="portal-attention-card" data-tone={tone}>
         <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
           <CreditCard className="h-3.5 w-3.5" />
-          Outstanding invoice
+          {copy.attentionStrip.invoiceKicker}
         </div>
         <div className="mt-2 text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
           {formatKobo(invoice.amountKobo, invoice.currency)}
         </div>
         <div className="mt-1 text-[12.5px] text-[var(--studio-ink-soft)]">
           {invoice.description || item.projectTitle}
-          {invoice.dueDate ? ` · Due ${shortDate(invoice.dueDate)}` : null}
+          {invoice.dueDate ? copy.attentionStrip.dueSuffix(shortDate(invoice.dueDate)) : null}
         </div>
         <Link
           href={href}
           className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-signal)] hover:underline"
         >
-          Pay now
+          {copy.attentionStrip.payNow}
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </article>
@@ -63,19 +68,19 @@ function AttentionCard({ item }: { item: AttentionItem }) {
       <article className="portal-attention-card">
         <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
           <FileCheck2 className="h-3.5 w-3.5" />
-          Awaiting your review
+          {copy.attentionStrip.deliverableKicker}
         </div>
         <div className="mt-2 text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
           {item.deliverable.title}
         </div>
         <div className="mt-1 text-[12.5px] text-[var(--studio-ink-soft)]">
-          {item.projectTitle} · shared {relativeTime(item.deliverable.sharedAt || item.deliverable.createdAt)}
+          {item.projectTitle} · {copy.attentionStrip.sharedSuffix(relativeTime(item.deliverable.sharedAt || item.deliverable.createdAt))}
         </div>
         <Link
           href={`/client/projects/${item.deliverable.projectId}?tab=files`}
           className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-signal)] hover:underline"
         >
-          Review and approve
+          {copy.attentionStrip.reviewAndApprove}
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </article>
@@ -86,7 +91,7 @@ function AttentionCard({ item }: { item: AttentionItem }) {
     <article className="portal-attention-card">
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
         <MessageSquare className="h-3.5 w-3.5" />
-        Unread message
+        {copy.attentionStrip.messageKicker}
       </div>
       <div className="mt-2 text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
         {item.message.senderName}
@@ -98,7 +103,7 @@ function AttentionCard({ item }: { item: AttentionItem }) {
         href={`/client/projects/${item.message.projectId}?tab=messages`}
         className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-signal)] hover:underline"
       >
-        Reply
+        {copy.attentionStrip.reply}
         <ArrowRight className="h-3.5 w-3.5" />
       </Link>
     </article>

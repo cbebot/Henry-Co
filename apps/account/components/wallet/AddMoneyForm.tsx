@@ -3,11 +3,15 @@
 import { useState } from "react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { useRouter } from "next/navigation";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getAccountWalletExtraCopy } from "@henryco/i18n";
 
 const presetAmounts = [1000, 2000, 5000, 10000, 20000, 50000];
 
 export default function AddMoneyForm() {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const copy = getAccountWalletExtraCopy(locale).addMoney;
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -16,7 +20,7 @@ export default function AddMoneyForm() {
     e.preventDefault();
     const value = parseInt(amount, 10);
     if (!value || value < 100) {
-      setMessage({ type: "error", text: "Minimum amount is NGN 100." });
+      setMessage({ type: "error", text: copy.minimumError });
       return;
     }
 
@@ -44,7 +48,7 @@ export default function AddMoneyForm() {
         });
         setMessage({
           type: "error",
-          text: "We couldn't start that funding request. Please try again in a moment.",
+          text: copy.startError,
         });
         return;
       }
@@ -55,7 +59,7 @@ export default function AddMoneyForm() {
       console.error("[wallet/AddMoneyForm] network or parse error", err);
       setMessage({
         type: "error",
-        text: "We couldn't reach the wallet service. Check your connection and try again.",
+        text: copy.networkError,
       });
     } finally {
       setLoading(false);
@@ -64,7 +68,7 @@ export default function AddMoneyForm() {
 
   return (
     <form onSubmit={handleSubmit} className="acct-card p-5">
-      <p className="acct-kicker mb-3">Amount (NGN)</p>
+      <p className="acct-kicker mb-3">{copy.amountKicker}</p>
 
       {message && (
         <div
@@ -103,7 +107,7 @@ export default function AddMoneyForm() {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="acct-input text-lg font-semibold"
-          placeholder="Enter amount"
+          placeholder={copy.amountPlaceholder}
           min={100}
         />
       </div>
@@ -113,12 +117,12 @@ export default function AddMoneyForm() {
         disabled={loading || !amount}
         className="acct-button-primary mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3"
       >
-        <ButtonPendingContent pending={loading} pendingLabel="Creating request..." spinnerLabel="Creating funding request">
-          Continue to bank transfer
+        <ButtonPendingContent pending={loading} pendingLabel={copy.pendingLabel} spinnerLabel={copy.spinnerLabel}>
+          {copy.continueLabel}
         </ButtonPendingContent>
       </button>
       <p className="mt-3 text-center text-xs text-[var(--acct-muted)]">
-        You’ll confirm bank details and upload proof on the next step—balance updates after verification.
+        {copy.helper}
       </p>
     </form>
   );

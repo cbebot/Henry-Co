@@ -12,6 +12,8 @@
  */
 
 import { useEffect, useId, useMemo, useState } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getAddressSelectorCopy } from "@henryco/i18n";
 import PlacesAutocomplete from "./PlacesAutocomplete";
 import {
   USER_ADDRESS_LABELS,
@@ -110,6 +112,8 @@ export default function AddressForm({
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const formId = useId();
+  const locale = useHenryCoLocale();
+  const copy = getAddressSelectorCopy(locale);
 
   // When user picks from autocomplete: resolve to full place details.
   async function handlePick(pick: { place_id: string; description: string }) {
@@ -127,7 +131,7 @@ export default function AddressForm({
       // Refresh session token for next search session.
       setSessionToken(uuidish());
     } catch (err) {
-      setPlacesError("Couldn't resolve that address. Try a different suggestion.");
+      setPlacesError(copy.form.resolveError);
     } finally {
       setResolvingPlace(false);
     }
@@ -158,7 +162,7 @@ export default function AddressForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!picked) {
-      setErrors({ google_place_id: "Please pick the address from the suggestion list." });
+      setErrors({ google_place_id: copy.form.pickFromSuggestions });
       return;
     }
 
@@ -224,7 +228,7 @@ export default function AddressForm({
     >
       {mode !== "one_shot" && (
         <div className={classNames?.field}>
-          <label htmlFor={`${formId}-label`}>Label</label>
+          <label htmlFor={`${formId}-label`}>{copy.form.labelField}</label>
           <select
             id={`${formId}-label`}
             value={label}
@@ -237,7 +241,7 @@ export default function AddressForm({
             {labelOptions.map((opt) => (
               <option key={opt.value} value={opt.value} disabled={opt.disabled}>
                 {opt.display}
-                {opt.disabled ? " (already in use)" : ""}
+                {opt.disabled ? copy.form.alreadyInUseSuffix : ""}
               </option>
             ))}
           </select>
@@ -250,7 +254,7 @@ export default function AddressForm({
       )}
 
       <div className={classNames?.field}>
-        <label htmlFor={`${formId}-search`}>Search address</label>
+        <label htmlFor={`${formId}-search`}>{copy.form.searchField}</label>
         <PlacesAutocomplete
           placesEndpoint={placesAutocompleteEndpoint}
           sessionToken={sessionToken}
@@ -259,7 +263,7 @@ export default function AddressForm({
           onPick={handlePick}
           onClearWithoutPick={handleClearPick}
           inputClassName={classNames?.input}
-          ariaLabel="Search for your address"
+          ariaLabel={copy.form.searchAriaLabel}
           ariaInvalid={Boolean(errors.google_place_id || placesError)}
           ariaDescribedBy={
             [
@@ -270,7 +274,7 @@ export default function AddressForm({
               .join(" ") || undefined
           }
         />
-        {resolvingPlace && <p>Resolving address details…</p>}
+        {resolvingPlace && <p>{copy.form.resolving}</p>}
         {placesError && (
           <p id={`${formId}-places-err`} role="alert" className={classNames?.error}>
             {placesError}
@@ -286,7 +290,7 @@ export default function AddressForm({
       {picked && (
         <>
           <div className={classNames?.field}>
-            <label htmlFor={`${formId}-street`}>Street</label>
+            <label htmlFor={`${formId}-street`}>{copy.form.streetField}</label>
             <input
               id={`${formId}-street`}
               type="text"
@@ -304,38 +308,38 @@ export default function AddressForm({
           </div>
 
           <div className={classNames?.field}>
-            <label htmlFor={`${formId}-unit`}>Apartment / suite / floor (optional)</label>
+            <label htmlFor={`${formId}-unit`}>{copy.form.unitField}</label>
             <input
               id={`${formId}-unit`}
               type="text"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               className={classNames?.input}
-              placeholder="Apt 4B, Floor 3, Suite 200…"
+              placeholder={copy.form.unitPlaceholder}
             />
           </div>
 
           <div className={classNames?.field}>
-            <label htmlFor={`${formId}-fullname`}>Full name on address (optional)</label>
+            <label htmlFor={`${formId}-fullname`}>{copy.form.fullNameField}</label>
             <input
               id={`${formId}-fullname`}
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className={classNames?.input}
-              placeholder="Recipient name for deliveries"
+              placeholder={copy.form.fullNamePlaceholder}
             />
           </div>
 
           <div className={classNames?.field}>
-            <label htmlFor={`${formId}-phone`}>Phone (optional)</label>
+            <label htmlFor={`${formId}-phone`}>{copy.form.phoneField}</label>
             <input
               id={`${formId}-phone`}
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className={classNames?.input}
-              placeholder="+234…"
+              placeholder={copy.form.phonePlaceholder}
               aria-invalid={Boolean(errors.phone) || undefined}
               aria-describedby={errors.phone ? `${formId}-phone-err` : undefined}
             />
@@ -348,15 +352,15 @@ export default function AddressForm({
 
           <div className={classNames?.field}>
             <p>
-              <strong>City:</strong> {picked.city || "—"}
+              <strong>{copy.form.cityLabel}</strong> {picked.city || "—"}
               {" · "}
-              <strong>State:</strong> {picked.state ?? "—"}
+              <strong>{copy.form.stateLabel}</strong> {picked.state ?? "—"}
               {" · "}
-              <strong>Country:</strong> {picked.country || "—"}
+              <strong>{copy.form.countryLabel}</strong> {picked.country || "—"}
               {picked.postal_code ? (
                 <>
                   {" · "}
-                  <strong>Postal:</strong> {picked.postal_code}
+                  <strong>{copy.form.postalLabel}</strong> {picked.postal_code}
                 </>
               ) : null}
             </p>
@@ -369,7 +373,7 @@ export default function AddressForm({
                 checked={isDefault}
                 onChange={(e) => setIsDefault(e.target.checked)}
               />
-              <span>Make this my default address</span>
+              <span>{copy.form.makeDefault}</span>
             </label>
           )}
         </>
@@ -383,11 +387,11 @@ export default function AddressForm({
 
       <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
         <button type="submit" disabled={submitting || !picked} className={classNames?.button}>
-          {submitting ? "Saving…" : mode === "edit" ? "Save changes" : mode === "one_shot" ? "Use this address" : "Save address"}
+          {submitting ? copy.form.saving : mode === "edit" ? copy.form.saveChanges : mode === "one_shot" ? copy.form.useThisAddress : copy.form.saveAddress}
         </button>
         {onCancel && (
           <button type="button" onClick={onCancel} className={classNames?.buttonSecondary}>
-            Cancel
+            {copy.form.cancel}
           </button>
         )}
       </div>

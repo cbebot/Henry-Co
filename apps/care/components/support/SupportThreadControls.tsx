@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { Loader2, Send, UserCog, Sparkles, StickyNote } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getCareSupportExtraCopy } from "@henryco/i18n";
 import { emitCareToast } from "@/components/feedback/CareToaster";
 import {
   addSupportInternalNoteAction,
@@ -58,6 +60,8 @@ export default function SupportThreadControls({
   whatsappReason,
 }: SupportThreadControlsProps) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const copy = getCareSupportExtraCopy(locale).controls;
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("pending_customer");
   const [sendWhatsApp, setSendWhatsApp] = useState(false);
@@ -89,34 +93,33 @@ export default function SupportThreadControls({
     <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
       <section className="care-card rounded-[2rem] p-6">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-          Reply composer
+          {copy.composerEyebrow}
         </div>
         <h3 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
-          Send the next step clearly.
+          {copy.composerHeading}
         </h3>
         <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/65">
-          Replies are delivered by email. WhatsApp can be attempted alongside email when
-          the provider is configured and the thread has a valid customer phone number.
+          {copy.composerIntro}
         </p>
 
         <div className="mt-6 grid gap-4">
           <label className="grid gap-2">
             <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
-              Reply message
+              {copy.replyMessageLabel}
             </span>
             <textarea
               value={replyMessage}
               onChange={(event) => setReplyMessage(event.target.value)}
               rows={8}
               className={textareaCls}
-              placeholder="Explain the next action, timing, confirmation needed from the customer, and anything that should be preserved in the support record."
+              placeholder={copy.replyMessagePlaceholder}
             />
           </label>
 
           <div className="grid gap-4 md:grid-cols-[0.92fr_1.08fr]">
             <label className="grid gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
-                Status after sending
+                {copy.statusAfterSending}
               </span>
               <select
                 value={replyStatus}
@@ -142,12 +145,10 @@ export default function SupportThreadControls({
                 />
                 <div>
                   <div className="text-sm font-semibold text-zinc-950 dark:text-white">
-                    Also attempt WhatsApp delivery
+                    {copy.attemptWhatsappTitle}
                   </div>
                   <div className="mt-1 text-sm leading-6 text-zinc-600 dark:text-white/65">
-                    {whatsappConfigured
-                      ? "Provider is configured. Email remains the primary guaranteed route."
-                      : whatsappReason}
+                    {whatsappConfigured ? copy.whatsappConfiguredText : whatsappReason}
                   </div>
                 </div>
               </div>
@@ -174,7 +175,7 @@ export default function SupportThreadControls({
             }
           >
             {replyPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            {replyPending ? "Sending support reply..." : "Send support reply"}
+            {replyPending ? copy.sendingReply : copy.sendReply}
           </button>
         </div>
       </section>
@@ -184,7 +185,7 @@ export default function SupportThreadControls({
           <div className="flex items-center gap-3">
             <UserCog className="h-4 w-4 text-[color:var(--accent)]" />
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              Assignment
+              {copy.assignmentLabel}
             </div>
           </div>
           <div className="mt-5 grid gap-4">
@@ -193,7 +194,7 @@ export default function SupportThreadControls({
               onChange={(event) => setAssignment(event.target.value)}
               className={inputCls()}
             >
-              <option value="unassigned">Unassigned</option>
+              <option value="unassigned">{copy.unassigned}</option>
               {agents.map((agent) => (
                 <option key={agent.id} value={agent.id}>
                   {agent.fullName} • {agent.role}
@@ -216,7 +217,7 @@ export default function SupportThreadControls({
               }
             >
               {assignPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserCog className="h-4 w-4" />}
-              {assignPending ? "Updating assignment..." : "Update assignment"}
+              {assignPending ? copy.updatingAssignment : copy.updateAssignment}
             </button>
           </div>
         </section>
@@ -225,7 +226,7 @@ export default function SupportThreadControls({
           <div className="flex items-center gap-3">
             <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              Thread status
+              {copy.threadStatusLabel}
             </div>
           </div>
           <div className="mt-5 grid gap-4">
@@ -244,7 +245,7 @@ export default function SupportThreadControls({
               value={statusNote}
               onChange={(event) => setStatusNote(event.target.value)}
               rows={4}
-              placeholder="Optional note explaining why the status changed."
+              placeholder={copy.statusNotePlaceholder}
               className={textareaCls}
             />
             <button
@@ -266,7 +267,7 @@ export default function SupportThreadControls({
               }
             >
               {statusPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {statusPending ? "Updating status..." : "Update status"}
+              {statusPending ? copy.updatingStatus : copy.updateStatus}
             </button>
           </div>
         </section>
@@ -275,7 +276,7 @@ export default function SupportThreadControls({
           <div className="flex items-center gap-3">
             <StickyNote className="h-4 w-4 text-[color:var(--accent)]" />
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              Internal note
+              {copy.internalNoteLabel}
             </div>
           </div>
           <div className="mt-5 grid gap-4">
@@ -283,7 +284,7 @@ export default function SupportThreadControls({
               value={internalNote}
               onChange={(event) => setInternalNote(event.target.value)}
               rows={5}
-              placeholder="Capture internal context, risk, service recovery details, or what another teammate needs to know."
+              placeholder={copy.internalNotePlaceholder}
               className={textareaCls}
             />
             <button
@@ -304,7 +305,7 @@ export default function SupportThreadControls({
               }
             >
               {notePending ? <Loader2 className="h-4 w-4 animate-spin" /> : <StickyNote className="h-4 w-4" />}
-              {notePending ? "Saving note..." : "Save internal note"}
+              {notePending ? copy.savingNote : copy.saveInternalNote}
             </button>
           </div>
         </section>

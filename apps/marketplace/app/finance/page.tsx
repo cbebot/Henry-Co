@@ -4,6 +4,7 @@ import { getStaffQueueData } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceSupportCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -23,13 +24,14 @@ function hasPricingLines(value: unknown): value is PricingBreakdown {
 
 export default async function FinancePage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceSupportCopy(locale);
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin", "finance"], "/finance");
   const data = await getStaffQueueData();
 
   return (
     <WorkspaceShell
-      title="Finance"
-      description="Manual payment verification, payout approvals, and finance-led exceptions stay isolated here."
+      title={copy.finance.title}
+      description={copy.finance.description}
       nav={staffNav("/finance", "/finance", locale)}
     >
       <section className="space-y-4">
@@ -38,14 +40,14 @@ export default async function FinancePage() {
           .slice(0, 6)
           .map((payment: Record<string, unknown>) => (
           <article key={String(payment.id)} className="market-paper rounded-[1.75rem] p-5">
-            <p className="market-kicker">{String(payment.order_no || payment.reference || "Payment")}</p>
+            <p className="market-kicker">{String(payment.order_no || payment.reference || copy.finance.paymentFallback)}</p>
             <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <h2 className="text-2xl font-semibold tracking-tight text-[var(--market-ink)]">
                   {formatCurrency(Number(payment.amount || 0))}
                 </h2>
                 <p className="mt-1 text-sm capitalize text-[var(--market-muted)]">
-                  {String(payment.method || "bank_transfer").replace(/_/g, " ")} · {String(payment.status || "pending").replace(/_/g, " ")}
+                  {String(payment.method || copy.finance.methodFallback).replace(/_/g, " ")} · {String(payment.status || copy.finance.statusFallback).replace(/_/g, " ")}
                 </p>
                 {payment.proof_url ? (
                   <a
@@ -54,12 +56,12 @@ export default async function FinancePage() {
                     rel="noreferrer"
                     className="mt-2 inline-flex text-sm font-semibold text-[var(--market-brass)]"
                   >
-                    {String(payment.proof_name || "View payment proof")}
+                    {String(payment.proof_name || copy.finance.viewProof)}
                   </a>
                 ) : null}
               </div>
               <p className="rounded-full border border-[var(--market-line)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--market-muted)]">
-                {String(payment.reference || "No reference")}
+                {String(payment.reference || copy.finance.noReference)}
               </p>
             </div>
             {hasPricingLines(payment.pricing_breakdown) ? (
@@ -69,7 +71,7 @@ export default async function FinancePage() {
 
                   return (
                     <div key={idx} className="flex items-center justify-between gap-3">
-                      <span>{String(line.label || line.code || "Fee")}</span>
+                      <span>{String(line.label || line.code || copy.finance.feeFallback)}</span>
                       <span className="font-semibold text-[var(--market-ink)]">{formatCurrency(Number(amount ?? 0))}</span>
                     </div>
                   );
@@ -80,22 +82,22 @@ export default async function FinancePage() {
               <input type="hidden" name="intent" value="payment_verify" />
               <input type="hidden" name="order_no" value={String(payment.order_no || "")} />
               <input type="hidden" name="return_to" value="/finance" />
-              <input name="review_note" className="market-input min-w-[220px] rounded-full px-4 py-2" placeholder="Verification note" />
-              <button className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">Verify payment</button>
+              <input name="review_note" className="market-input min-w-[220px] rounded-full px-4 py-2" placeholder={copy.finance.notePlaceholder} />
+              <button className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">{copy.finance.verifyPayment}</button>
             </form>
           </article>
         ))}
         {data.payouts.map((payout: Record<string, unknown>) => (
           <article key={String(payout.id)} className="market-paper rounded-[1.75rem] p-5">
-            <p className="market-kicker">{String(payout.reference || "Payout")}</p>
+            <p className="market-kicker">{String(payout.reference || copy.finance.payoutFallback)}</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{formatCurrency(Number(payout.amount || 0))}</h2>
             <form action="/api/marketplace" method="POST" className="mt-4 flex flex-wrap gap-3">
               <input type="hidden" name="intent" value="payout_decision" />
               <input type="hidden" name="payout_id" value={String(payout.id)} />
               <input type="hidden" name="return_to" value="/finance" />
-              <input name="note" className="market-input min-w-[220px] rounded-full px-4 py-2" placeholder="Finance note" />
-              <button name="decision" value="approved" className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">Approve</button>
-              <button name="decision" value="rejected" className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">Reject</button>
+              <input name="note" className="market-input min-w-[220px] rounded-full px-4 py-2" placeholder={copy.finance.financeNotePlaceholder} />
+              <button name="decision" value="approved" className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">{copy.finance.approve}</button>
+              <button name="decision" value="rejected" className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">{copy.finance.reject}</button>
             </form>
           </article>
         ))}

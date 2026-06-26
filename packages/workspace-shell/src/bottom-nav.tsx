@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getWorkspaceShellCopy, type AppLocale } from "@henryco/i18n";
 import type { WorkspaceBadgeMap, WorkspaceNavItem } from "./types";
 import { isNavActive } from "./internal";
 
@@ -6,6 +7,7 @@ export type WorkspaceBottomNavProps = {
   navigation: WorkspaceNavItem[];
   pathname: string;
   badges?: WorkspaceBadgeMap;
+  locale?: AppLocale;
 };
 
 /**
@@ -15,9 +17,10 @@ export type WorkspaceBottomNavProps = {
  * surfaces). Active state is computed against `pathname` server-side;
  * no client hook needed.
  */
-export function WorkspaceBottomNav({ navigation, pathname, badges }: WorkspaceBottomNavProps) {
+export function WorkspaceBottomNav({ navigation, pathname, badges, locale = "en" }: WorkspaceBottomNavProps) {
+  const copy = getWorkspaceShellCopy(locale);
   return (
-    <nav className="ws-bottom-nav" aria-label="Mobile navigation">
+    <nav className="ws-bottom-nav" aria-label={copy.bottomNav.navAria}>
       {navigation.map((item) => {
         const Icon = item.icon;
         const active = isNavActive(pathname, item);
@@ -32,7 +35,7 @@ export function WorkspaceBottomNav({ navigation, pathname, badges }: WorkspaceBo
             <Icon className="ws-bottom-nav-icon" aria-hidden />
             <span>{item.label}</span>
             {badge > 0 ? (
-              <span className="ws-bottom-nav-badge" aria-label={`${badge} new`}>
+              <span className="ws-bottom-nav-badge" aria-label={copy.bottomNav.badgeNew(badge)}>
                 {badge > 9 ? "9+" : badge}
               </span>
             ) : null}

@@ -20,6 +20,8 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getLearnPlayerCopy } from "@henryco/i18n";
 
 export type VideoCaptionTrack = {
   src: string;
@@ -87,6 +89,8 @@ export function VideoPlayer({
   title,
   labels,
 }: VideoPlayerProps) {
+  const locale = useHenryCoLocale();
+  const copy = getLearnPlayerCopy(locale);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(initialPosition);
@@ -285,7 +289,7 @@ export function VideoPlayer({
             >
               {PLAYBACK_RATES.map((rate) => (
                 <option key={rate} value={rate} className="bg-[#0c1f1c] text-white">
-                  {rate}×
+                  {copy.player.rateLabel(rate)}
                 </option>
               ))}
             </select>
