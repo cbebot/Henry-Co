@@ -7,6 +7,7 @@ import { ACCOUNT_DOCUMENT_BUCKET, uploadAccountDocument } from "@/lib/account/me
 import { mirrorCareSupportCustomerReply } from "@/lib/support-sync";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
 import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
+import { screenReplyBody } from "./screen-reply";
 
 const ALLOWED_ATTACHMENT_TYPES = [
   "image/jpeg",
@@ -119,6 +120,15 @@ export async function POST(request: Request) {
 
     if (!thread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
 
+    // Server-side contact-safety (defense-in-depth): the client hint is
+    // bypassable, so screen the reply body here, before anything is persisted.
+    // High/critical leaks (phone/email) are blocked; medium (handles/links) are
+    // masked. The surface localizes the `contact_blocked` reason.
+    const screened = screenReplyBody(body);
+    if (screened.action === "block") {
+      return NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 });
+    }
+
     const uploadedAttachments: Array<Record<string, unknown>> = [];
     // Pre-uploaded path (MessageThread engine): the file already went through
     // /api/support/upload, which auth-gated the uploader, ran the allowed-type /
@@ -167,7 +177,7 @@ export async function POST(request: Request) {
         thread_id,
         sender_id: user.id,
         sender_type: "customer",
-        body,
+        body: screened.body,
         attachments: uploadedAttachments,
       })
       .select("id")
@@ -199,7 +209,7 @@ export async function POST(request: Request) {
           category: String(thread.category || "general"),
           priority: String(thread.priority || "normal"),
           status: "awaiting_reply",
-          message: body,
+          message: screened.body,
           attachments: uploadedAttachments,
           customer: {
             userId: user.id,

@@ -32,6 +32,17 @@ import { clampCoveredStatesToTier, resolveCoveredStates, type ReachKind } from "
 import { isDeliveryPromisesEnabled } from "@/lib/marketplace/delivery-promises";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
+import { sendMessage as sendOnyxMessage } from "@henryco/messaging/server";
+import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
+import { createMarketplaceMessagingAdapter } from "@/lib/messaging/adapter";
+import {
+  bumpConversation,
+  findOrCreateConversation,
+  getConversationForViewer,
+  markConversationRead,
+  resolveCounterpart,
+  viewerVendorScopeIds,
+} from "@/lib/messaging/conversations";
 
 export const runtime = "nodejs";
 
@@ -2809,6 +2820,281 @@ export async function POST(request: Request) {
         revalidatePath("/finance");
         revalidatePath("/vendor/payouts");
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}decision=${decision}`);
+      }
+
+      // -----------------------------------------------------------------------
+      // The Onyx Line (WS-4) — contact-safe buyer<->seller messaging.
+      // Dark behind MARKETPLACE_MESSAGING_ENABLED. Every body is screened BEFORE
+      // persist in BOTH directions (block high/critical, mask medium); all
+      // writes are service-role; counterparts are notified by stable user id
+      // only (never email/phone); no buyer contact PII enters these threads.
+      // -----------------------------------------------------------------------
+      case "mkt_conversation_start": {
+        if (process.env.MARKETPLACE_MESSAGING_ENABLED !== "1") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "messaging_disabled" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=messaging-disabled`);
+        }
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/messages");
+
+        const anchorTypeRaw = text(formData, "anchor_type");
+        const anchorType =
+          anchorTypeRaw === "order" ? "order" : anchorTypeRaw === "listing" ? "listing" : null;
+        const anchorId = text(formData, "anchor_id");
+        const body = clipBody(text(formData, "body"));
+        if (!anchorType || !anchorId || !body) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "invalid_request" }, { status: 400 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=invalid-message`);
+        }
+
+        const counterpart = await resolveCounterpart(admin, anchorType, anchorId);
+        if (!counterpart) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "anchor_not_found" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-anchor`);
+        }
+
+        const viewerVendorScopes = viewerVendorScopeIds(viewer);
+        let buyerUserId: string | null = null;
+        let vendorId: string | null = null;
+
+        if (counterpart.kind === "listing") {
+          // Buyer-initiated only: a vendor has no buyer counterpart for a bare
+          // listing, so a vendor member cannot open a listing thread.
+          if (viewerVendorScopes.has(counterpart.vendorId)) {
+            return json
+              ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+              : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+          }
+          buyerUserId = viewer.user.id;
+          vendorId = counterpart.vendorId;
+        } else {
+          const requestedVendorId = text(formData, "vendor_id");
+          if (counterpart.buyerUserId && counterpart.buyerUserId === viewer.user.id) {
+            // Buyer-initiated against one of the order's vendors.
+            buyerUserId = viewer.user.id;
+            if (requestedVendorId && counterpart.vendorIds.includes(requestedVendorId)) {
+              vendorId = requestedVendorId;
+            } else if (counterpart.vendorIds.length === 1) {
+              vendorId = counterpart.vendorIds[0];
+            } else {
+              return json
+                ? NextResponse.json({ ok: false, reason: "vendor_required" }, { status: 400 })
+                : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=select-vendor`);
+            }
+          } else {
+            // Vendor-initiated: the viewer must be a member of a vendor on the order.
+            const actingVendorId = counterpart.vendorIds.find((id) => viewerVendorScopes.has(id)) || null;
+            if (!actingVendorId) {
+              return json
+                ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+                : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+            }
+            buyerUserId = counterpart.buyerUserId;
+            vendorId = actingVendorId;
+          }
+        }
+
+        if (!buyerUserId || !vendorId) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+        }
+
+        // Screen BEFORE any write so a blocked first message never creates an
+        // empty conversation; high/critical is rejected, medium is masked.
+        const screened = screenMessageBody(body);
+        if (screened.action === "block") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        const senderKind = viewer.user.id === buyerUserId ? "buyer" : "vendor";
+
+        // Screen the subject on the same block-before-persist contract as the
+        // body — a phone/email typed into the Subject box must never persist in
+        // plaintext. Block reuses the body's contact_blocked response; otherwise
+        // the masked-or-clean subject is what we store (clip stays downstream).
+        const rawSubject = text(formData, "subject");
+        let subject: string | null = null;
+        if (rawSubject) {
+          const screenedSubject = screenMessageBody(rawSubject);
+          if (screenedSubject.action === "block") {
+            return json
+              ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+              : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+          }
+          subject = screenedSubject.body;
+        }
+
+        const conversation = await findOrCreateConversation(admin, {
+          buyerUserId,
+          vendorId,
+          anchorType,
+          anchorId,
+          subject,
+        });
+
+        const startAdapter = createMarketplaceMessagingAdapter(admin);
+        const startResult = await sendOnyxMessage(
+          { conversationId: conversation.id, senderId: viewer.user.id, senderRole: senderKind, body },
+          {
+            adapter: startAdapter,
+            notify: async ({ recipientUserId, conversationId }) => {
+              // Stable user id only — never email/phone, and no body (which could
+              // carry a masked contact) in the notification.
+              const senderRole = senderKind;
+              const recipientRole = senderRole === "buyer" ? "vendor" : "buyer";
+              const actionUrl =
+                recipientRole === "vendor"
+                  ? `/vendor/messages/${conversationId}`
+                  : `/account/messages/${conversationId}`;
+              await sendMarketplaceEvent({
+                event: "marketplace_message",
+                userId: recipientUserId,
+                entityType: "marketplace_conversation",
+                entityId: conversationId,
+                actionUrl,
+                payload: { note: "You have a new marketplace message.", conversationId, recipientRole },
+              });
+            },
+          },
+        );
+
+        if (!startResult.ok) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        await bumpConversation(admin, conversation.id, startResult.message.body);
+
+        if (json)
+          return NextResponse.json({
+            ok: true,
+            conversationId: conversation.id,
+            messageId: startResult.message.id,
+          });
+        return redirectTo(
+          request,
+          `${senderKind === "buyer" ? "/account/messages" : "/vendor/messages"}/${conversation.id}?started=1`,
+        );
+      }
+
+      case "mkt_conversation_reply": {
+        if (process.env.MARKETPLACE_MESSAGING_ENABLED !== "1") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "messaging_disabled" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=messaging-disabled`);
+        }
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/messages");
+
+        const conversationId = text(formData, "conversation_id");
+        const body = clipBody(text(formData, "body"));
+        if (!conversationId || !body) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "invalid_request" }, { status: 400 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=invalid-message`);
+        }
+
+        // Authz: viewer must be the buyer or a member of the conversation vendor.
+        const thread = await getConversationForViewer(conversationId, viewer);
+        if (!thread) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+        }
+
+        const screened = screenMessageBody(body);
+        if (screened.action === "block") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        const replyAdapter = createMarketplaceMessagingAdapter(admin);
+        const replyResult = await sendOnyxMessage(
+          { conversationId, senderId: viewer.user.id, senderRole: thread.viewerParty, body },
+          {
+            adapter: replyAdapter,
+            notify: async ({ recipientUserId, conversationId: notifyConversationId }) => {
+              const senderRole = thread.viewerParty;
+              const recipientRole = senderRole === "buyer" ? "vendor" : "buyer";
+              const actionUrl =
+                recipientRole === "vendor"
+                  ? `/vendor/messages/${notifyConversationId}`
+                  : `/account/messages/${notifyConversationId}`;
+              await sendMarketplaceEvent({
+                event: "marketplace_message",
+                userId: recipientUserId,
+                entityType: "marketplace_conversation",
+                entityId: notifyConversationId,
+                actionUrl,
+                payload: { note: "You have a new marketplace message.", conversationId: notifyConversationId, recipientRole },
+              });
+            },
+          },
+        );
+
+        if (!replyResult.ok) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        await bumpConversation(admin, conversationId, replyResult.message.body);
+
+        if (json)
+          return NextResponse.json({
+            ok: true,
+            conversationId,
+            messageId: replyResult.message.id,
+          });
+        return redirectTo(
+          request,
+          `${thread.viewerParty === "buyer" ? "/account/messages" : "/vendor/messages"}/${conversationId}?replied=1`,
+        );
+      }
+
+      case "mkt_conversation_mark_read": {
+        if (process.env.MARKETPLACE_MESSAGING_ENABLED !== "1") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "messaging_disabled" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=messaging-disabled`);
+        }
+        if (!viewer.user) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authenticated" }, { status: 401 })
+            : redirectToSharedAccountLogin(request, "/account/messages");
+        }
+
+        const conversationId = text(formData, "conversation_id");
+        if (!conversationId) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "invalid_request" }, { status: 400 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=invalid-message`);
+        }
+
+        // Authz before writing read-state (admin bypasses RLS), so a non-party
+        // can never seed a participant row on an arbitrary conversation.
+        const thread = await getConversationForViewer(conversationId, viewer);
+        if (!thread) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+        }
+
+        await markConversationRead(admin, {
+          conversationId,
+          userId: viewer.user.id,
+          partyKind: thread.viewerParty,
+          vendorId: thread.viewerParty === "vendor" ? thread.conversation.vendorId : null,
+        });
+
+        if (json) return NextResponse.json({ ok: true });
+        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}read=1`);
       }
     }
 

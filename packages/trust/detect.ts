@@ -205,3 +205,65 @@ export function calculateTrustScore(signals: TrustSignals): number {
   // Clamp to 0-100
   return Math.max(0, Math.min(100, score));
 }
+
+// ---- Obfuscation normalization (additive; used by contact-safety) --------
+
+const NUMBER_WORDS: Record<string, string> = {
+  zero: "0", oh: "0", one: "1", two: "2", three: "3", four: "4",
+  five: "5", six: "6", seven: "7", eight: "8", nine: "9",
+};
+
+/**
+ * Normalizes spoken/obfuscated contact details so the canonical detectors
+ * catch evasions like "zero eight zero", "name at gmail dot com", "0 8 0".
+ * Additive: existing detectors are unchanged; callers opt in.
+ */
+export function normalizeForDetection(text: string): string {
+  let t = text.toLowerCase();
+  t = t.replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/g, (w) => NUMBER_WORDS[w] ?? w);
+  t = t.replace(/\s+at\s+/g, "@").replace(/\s+dot\s+/g, ".");
+  t = t.replace(/(?<=\d)[\s.-]+(?=\d)/g, "");
+  return t;
+}
+
+// ---- External-link detection (additive; messaging contact-safety) --------
+
+const SHORTENER_URL_RE =
+  /\b(?:wa\.me|t\.me|bit\.ly|tinyurl\.com|cutt\.ly|rebrand\.ly|linktr\.ee)\/[^\s)]+/gi;
+
+const GENERIC_URL_RE = /\bhttps?:\/\/[^\s)]+/gi;
+
+/**
+ * Detects external links (shorteners + any http(s) URL). Kept OUT of the
+ * canonical detectOffPlatformContact so existing marketplace/listing callers
+ * are unchanged; the messaging contact-safety facade composes this explicitly.
+ */
+export function detectExternalLinks(text: string): OffPlatformResult {
+  const patterns: string[] = [];
+  const shorteners = text.match(SHORTENER_URL_RE);
+  if (shorteners) patterns.push(...shorteners);
+  const generic = text.match(GENERIC_URL_RE);
+  if (generic) {
+    for (const g of generic) if (!patterns.includes(g)) patterns.push(g);
+  }
+  return { detected: patterns.length > 0, patterns, severity: patterns.length === 0 ? "low" : "medium" };
+}
+
+// ---- Stricter display masking (additive; messaging contact-safety) --------
+
+/**
+ * Stricter display masking for messaging surfaces: extends sanitizeForDisplay
+ * (phone+email) to also mask social handles, messaging-app names, and links.
+ * Additive — sanitizeForDisplay itself is unchanged.
+ */
+export function maskContactsForDisplay(text: string): string {
+  let result = sanitizeForDisplay(text);
+  result = result.replace(SOCIAL_HANDLE_RE, (m) => m.replace(/@[\w]+/, "@***"));
+  result = result.replace(MESSAGING_APP_RE, "[removed]");
+  result = result
+    .replace(SOCIAL_URL_RE, "[link removed]")
+    .replace(EXTERNAL_MEETING_RE, "[link removed]")
+    .replace(SHORTENER_URL_RE, "[link removed]")
+    .replace(GENERIC_URL_RE, "[link removed]");
+  return result;
+}

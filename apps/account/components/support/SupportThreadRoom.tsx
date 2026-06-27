@@ -1,13 +1,18 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
+import {
+  buildMessagingChromeLabels,
+  translateSurfaceLabel,
+  useHenryCoLocale,
+} from "@henryco/i18n";
 import {
   MessageThread,
   type ThreadMessage,
   type ThreadSupabaseLike,
 } from "@henryco/messaging-thread";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { ContactSafetyHint } from "@/components/messages/ContactSafetyHint";
 import {
   accountSupportThreadAdapter,
   mapRowToMessage,
@@ -48,6 +53,13 @@ export default function SupportThreadRoom({
   );
 
   const adapter = useMemo(() => accountSupportThreadAdapter(), []);
+
+  // Localized composer + thread chrome (Send button, aria, Live, failed-send),
+  // shared across all divisions via the single i18n source of truth.
+  const { composerLabels, threadLabels } = useMemo(
+    () => buildMessagingChromeLabels(t),
+    [t],
+  );
 
   const initial = useMemo<ThreadMessage[]>(() => {
     const out: ThreadMessage[] = [];
@@ -115,10 +127,13 @@ export default function SupportThreadRoom({
         viewer={{ userId: viewer.userId, fullName: viewer.fullName }}
         adapter={adapter}
         getSupabase={getSupabase}
+        composerLabels={composerLabels}
+        {...threadLabels}
         renderMarkdown
         disableComposer={isClosed}
         dayDividerLabel={dayDividerLabel}
         autoFocusComposer={!isClosed}
+        composerExtras={(ctx) => <ContactSafetyHint text={ctx.draft} />}
         placeholder={t(
           "Reply with context, screenshots, or next steps. Drafts stay here while you type.",
         )}

@@ -40,6 +40,8 @@ export * from "./learn-instructors-copy";
 export * from "./learn-certifications-copy";
 export * from "./studio-copy";
 export * from "./moderation-copy";
+export * from "./messaging-copy";
+export * from "./messaging-chrome-copy";
 export * from "./surface-copy";
 export * from "./business-copy";
 export * from "./payment-document-copy";

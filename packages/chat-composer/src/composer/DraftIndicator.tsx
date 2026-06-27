@@ -9,6 +9,7 @@ export type DraftIndicatorProps = {
   hasContent: boolean;
   onDiscard: () => void;
   savedLabel?: string;
+  savingLabel?: string;
   discardLabel?: string;
   className?: string;
   reduceMotion?: boolean;
@@ -27,6 +28,7 @@ export function DraftIndicator({
   hasContent,
   onDiscard,
   savedLabel = "Draft saved",
+  savingLabel = "Saving…",
   discardLabel = "Discard draft",
   className,
   reduceMotion = false,
@@ -68,7 +70,7 @@ export function DraftIndicator({
             aria-hidden
           />
         )}
-        {state === "saving" ? "Saving…" : savedLabel}
+        {state === "saving" ? savingLabel : savedLabel}
       </span>
       {hasContent ? (
         <button

@@ -14,7 +14,7 @@ import {
 } from "@henryco/ui/public-design";
 import { JsonLd, buildProductLd } from "@henryco/seo";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
-import { getSellerAcademyCopy } from "@henryco/i18n";
+import { getSellerAcademyCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { SellerTierBadge } from "@henryco/ui";
 import { henryDomain } from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
@@ -237,6 +237,14 @@ export default async function ProductPage({
       ? {
           href: `/store/${data.vendor.slug}`,
           label: productCopy.detail.visitVendorTemplate.replace("{vendor}", data.vendor.name),
+        }
+      : null,
+    // The Onyx Line — contact-safe "Message seller" (flag-gated dark). Anchors a
+    // listing thread; the seller never sees the buyer's contact details.
+    data.vendor && process.env.MARKETPLACE_MESSAGING_ENABLED === "1"
+      ? {
+          href: `/account/messages/new?anchor_type=listing&anchor_id=${data.product.id}`,
+          label: translateSurfaceLabel(locale, "Message seller"),
         }
       : null,
     data.category

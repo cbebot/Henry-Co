@@ -12,6 +12,9 @@ export type AttachmentPreviewProps = {
   variant?: "inline" | "carousel";
   removeLabel?: string;
   retryLabel?: string;
+  uploadingLabel?: string;
+  attachmentFailedLabel?: string;
+  attachmentListLabel?: string;
   className?: string;
 };
 
@@ -65,6 +68,9 @@ export function AttachmentPreview({
   variant = "inline",
   removeLabel = "Remove attachment",
   retryLabel = "Retry upload",
+  uploadingLabel = "Uploading…",
+  attachmentFailedLabel = "Failed",
+  attachmentListLabel = "Attached files",
   className,
 }: AttachmentPreviewProps) {
   if (attachments.length === 0) return null;
@@ -80,7 +86,7 @@ export function AttachmentPreview({
           : "flex-wrap",
         className
       )}
-      aria-label="Attached files"
+      aria-label={attachmentListLabel}
     >
       {attachments.map((att) => {
         const isImage = att.kind === "image" && att.previewUrl;
@@ -141,11 +147,11 @@ export function AttachmentPreview({
                   <span>{formatMb(att.size)}</span>
                   {uploading ? (
                     <span className="text-[color:var(--composer-accent,#0E7C86)]">
-                      {att.progress > 0 ? `${Math.round(att.progress)}%` : "Uploading…"}
+                      {att.progress > 0 ? `${Math.round(att.progress)}%` : uploadingLabel}
                     </span>
                   ) : null}
                   {failed ? (
-                    <span className="text-red-500">{att.error || "Failed"}</span>
+                    <span className="text-red-500">{att.error || attachmentFailedLabel}</span>
                   ) : null}
                 </div>
                 {uploading ? (

@@ -14,7 +14,8 @@
     "test": "node --import tsx --test \"lib/**/*.test.ts\"",
     "seed": "node ./scripts/seed-studio.mjs",
     "smoke": "node ./scripts/smoke-studio.mjs",
-    "verify:live": "node --conditions=react-server --import tsx ./scripts/verify-live-flow.ts"
+    "verify:live": "node --conditions=react-server --import tsx ./scripts/verify-live-flow.ts",
+    "test": "tsx --test lib/messaging/__tests__/screen-message.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
@@ -22,6 +23,7 @@
     "@henryco/branded-documents": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/contact-safety": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
@@ -32,6 +34,7 @@
     "@henryco/observability": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
     "@henryco/seo": "workspace:^",
+    "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@henryco/workspace-shell": "workspace:^",
     "@sentry/nextjs": "^10.0.0",

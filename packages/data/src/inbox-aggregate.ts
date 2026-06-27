@@ -2,6 +2,7 @@ import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
 import { createDataAdminClient, type TypedSupabaseClient } from "./client";
+import { supportThreadHref } from "./inbox-href";
 
 /**
  * @henryco/data/inbox-aggregate — V3 Wave A1 D3.
@@ -203,7 +204,7 @@ export async function getInboxAggregate(
       status,
       unread: !isClosedStatus(status),
       updatedAt,
-      href: `/support`,
+      href: supportThreadHref(row.id),
     });
   }
 
@@ -227,9 +228,25 @@ export async function getInboxAggregate(
     const status = row.status ?? "open";
     const updatedAt = row.updated_at ?? row.created_at;
     const viewerIsCandidate = row.candidate_id === userId;
-    // Per-side unread counters live in jobs_messages aggregation —
-    // Wave C will plumb them through. For now treat any non-closed
-    // thread as needing attention.
+    const viewerIsEmployer = row.employer_id === userId;
+    // Role-aware per-conversation deep link (The Onyx Line WS-5 — replaces the
+    // flat `/jobs` that dumped every viewer at the division home). Candidate →
+    // their conversation thread; employer → the employer deep-link resolver
+    // (`/employer/conversations/[id]`) which re-authorizes the viewer and
+    // forwards to the canonical nested hiring thread. The `.or(...)` filter
+    // above guarantees one side matches the viewer; the `/jobs` fallback only
+    // fires if a row ever surfaces without a side (defensive — never expected).
+    const href = viewerIsCandidate
+      ? `/candidate/conversations/${row.id}`
+      : viewerIsEmployer
+        ? `/employer/conversations/${row.id}`
+        : `/jobs`;
+    // Per-side unread counters still live in jobs_messages aggregation — Wave C
+    // will plumb them through. Computing a real per-viewer unread here would
+    // require a per-conversation message scan (N+1 on a hot inbox path) and the
+    // base table carries only a single `is_read` boolean (not per-recipient), so
+    // it is left as the existing stub: any non-closed thread reads as needing
+    // attention.
     threads.push({
       key: `jobs:${row.id}`,
       division: "jobs",
@@ -239,7 +256,7 @@ export async function getInboxAggregate(
       status,
       unread: !isClosedStatus(status),
       updatedAt,
-      href: `/jobs`,
+      href,
     });
   }
 

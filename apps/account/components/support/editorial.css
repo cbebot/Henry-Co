@@ -1587,6 +1587,78 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   LIVE engine composer re-tone (The Onyx Line WS-2, Task 4).
+
+   The composer rules ABOVE in this section target a STALE
+   `[data-composer-*]` / `cc-composer` / `button[type="submit"]` contract
+   that the current @henryco/chat-composer DOM no longer emits — they are
+   DORMANT (they bind to nothing). The composer the engine actually mounts
+   inside `.mt-composer-host` is `@henryco/chat-composer`'s `ChatComposer`:
+   a `.henryco-composer-shell` whose entire accent (focus-within glow,
+   drag-overlay label, caret, and the Send gradient) is painted from the
+   `--composer-accent` / `--composer-accent-deep` custom properties. For
+   the support thread the engine resolves the `neutral` tone — teal
+   #0E7C86 / #0A5C63 — NOT the warm-paper brass this surface speaks in.
+
+   This block re-tones the live composer to brass, scoped to the support
+   room/stage only.
+
+   Why the shell-level `!important`: `ChatComposer` writes
+   `--composer-accent` / `--composer-accent-deep` INLINE on
+   `.henryco-composer-shell` via `toneStyle(tone)`. An inline custom-
+   property declaration shadows the same property merely *inherited* from
+   `.mt-composer-host`, so setting the vars on the host alone is silently
+   defeated. Re-declaring them on the shell itself with `!important` is the
+   only thing that beats the inline declaration — after which every
+   descendant (Send gradient, caret, focus ring, drop-overlay) inherits
+   the brass value. The host-level rule below is kept as the documented
+   contract / baseline for any non-shell descendant of the host.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-composer-host,
+.acct-support-stage .mt-composer-host {
+  --composer-accent: var(--acct-gold);
+  --composer-accent-deep: var(--acct-gold-strong);
+}
+
+.acct-support-room .mt-composer-host .henryco-composer-shell,
+.acct-support-stage .mt-composer-host .henryco-composer-shell {
+  --composer-accent: var(--acct-gold) !important;
+  --composer-accent-deep: var(--acct-gold-strong) !important;
+}
+
+/* AA-CRITICAL — the Send button.
+
+   `SendButton` (SendButton.tsx) paints the gold gradient (now brass via
+   the vars above) and sets its label + lucide icon to `text-white`
+   (Tailwind). White on brass is ~2.4:1 and FAILS WCAG AA — the exact
+   thing the charter forbids. The Send button carries NO dedicated class
+   and (when not icon-only, as here) NO aria-label; it is uniquely
+   identifiable by `data-ready` — `<button type="button" data-ready={ready}>`
+   in SendButton.tsx. The attach / expand pills carry `henryco-attach-pill`
+   and never `data-ready`, so this selector hits only Send. Colouring the
+   button re-inks the lucide `Send` / `Loader2` glyphs too, since lucide
+   draws with `stroke="currentColor"`.
+
+   Mode discipline — the `--acct-ink` flip trap: `--acct-ink` is dark in
+   light mode (#1A1814) but FLIPS to a light value (#F0EDE8) in dark mode,
+   and the brass stays bright (#D4AF37). Light ink on bright brass is
+   ~1.8:1 — it would re-create white-on-gold. So light mode uses
+   `--acct-ink` (#1A1814 on #C9A227 ≈ 7.3:1) and dark mode overrides to
+   `--acct-bg-soft` (#141920 on #D4AF37 ≈ 8.4:1) — dark-ink-on-brass,
+   AA-pass in BOTH modes. This mirrors the own-bubble avatar rule earlier
+   in this file. NEVER white-on-gold. */
+.acct-support-room .mt-composer-host button[data-ready],
+.acct-support-stage .mt-composer-host button[data-ready] {
+  color: var(--acct-ink);
+}
+
+.dark .acct-support-room .mt-composer-host button[data-ready],
+.dark .acct-support-stage .mt-composer-host button[data-ready] {
+  color: var(--acct-bg-soft);
+}
+
+/* ──────────────────────────────────────────────────────────────────
    Empty state — premium spotlight glyph + welcome copy
    ────────────────────────────────────────────────────────────────── */
 
@@ -1944,5 +2016,82 @@
   .acct-support-room .mt-bubble {
     box-shadow: none;
     page-break-inside: avoid;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Contact-safety hint (The Onyx Line WS-2) — warm-paper inline
+   pre-warning rendered below the composer input via the engine's
+   `composerExtras` slot when the live draft contains a phone / email
+   / handle / link. The decision logic lives in
+   `components/messages/contact-safety-hint.ts` (TDD'd); this only
+   paints the `.acct-contact-safety-hint` it emits.
+
+   AA discipline: NEVER white-on-gold. The body is dark ink
+   (`--acct-ink`) on a soft-gold field (`--acct-gold-soft`); the title
+   + reassurance use `--acct-gold-text` (the AA gold-as-text token,
+   ≥4.5:1), never raw `--acct-gold`. No new tokens; one documented
+   `#8a6f00` fallback carried from the rest of this file.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .acct-contact-safety-hint,
+.acct-support-stage .acct-contact-safety-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.4rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--acct-radius-sm);
+  background: var(--acct-gold-soft);
+  color: var(--acct-ink); /* dark ink on soft gold — high contrast */
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 35%, transparent);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.acct-support-room .acct-contact-safety-hint__title,
+.acct-support-room .acct-contact-safety-hint__reassure,
+.acct-support-stage .acct-contact-safety-hint__title,
+.acct-support-stage .acct-contact-safety-hint__reassure {
+  /* Dark ink on the soft-gold field (~15.9:1, AAA). Gold-as-text (--acct-gold-text)
+     only reaches ~4.23:1 on --acct-gold-soft — under the 4.5:1 AA floor at this size —
+     so emphasis here is weight, not hue. */
+  color: var(--acct-ink);
+  font-weight: 600;
+}
+
+.acct-support-room .acct-contact-safety-hint[data-tone="block"],
+.acct-support-stage .acct-contact-safety-hint[data-tone="block"] {
+  border-color: var(--acct-gold-strong);
+}
+
+/* Dismiss — a quiet acknowledgement affordance. Dark ink (not gold-text, which
+   is only ~4.23:1 on the gold-soft field) so it clears AA; underlined to read
+   as actionable without a heavy button chrome. Self-aligns to the start. */
+.acct-support-room .acct-contact-safety-hint__dismiss,
+.acct-support-stage .acct-contact-safety-hint__dismiss {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  padding: 0.1rem 0;
+  background: none;
+  border: none;
+  color: var(--acct-ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.acct-support-room .acct-contact-safety-hint__dismiss:focus-visible,
+.acct-support-stage .acct-contact-safety-hint__dismiss:focus-visible {
+  outline: 2px solid var(--hc-focus-ring, var(--acct-gold));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .acct-support-room .acct-contact-safety-hint,
+  .acct-support-stage .acct-contact-safety-hint {
+    transition: opacity 160ms var(--acct-settle-curve, ease);
   }
 }

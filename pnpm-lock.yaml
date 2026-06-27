@@ -69,6 +69,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-modules-account':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-account
@@ -732,6 +735,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -1074,9 +1080,15 @@ importers:
       '@henryco/cart-saved-items':
         specifier: workspace:^
         version: link:../../packages/cart-saved-items
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -1095,6 +1107,12 @@ importers:
       '@henryco/media':
         specifier: workspace:^
         version: link:../../packages/media
+      '@henryco/messaging':
+        specifier: workspace:^
+        version: link:../../packages/messaging
+      '@henryco/messaging-thread':
+        specifier: workspace:^
+        version: link:../../packages/messaging-thread
       '@henryco/moderation':
         specifier: workspace:^
         version: link:../../packages/moderation
@@ -1431,6 +1449,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -1461,6 +1482,9 @@ importers:
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -1923,6 +1947,19 @@ importers:
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
+
+  packages/contact-safety:
+    dependencies:
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/dashboard-modules-account:
     dependencies:
@@ -2397,6 +2434,19 @@ importers:
       tsx:
         specifier: ^4.20.6
         version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/messaging:
+    dependencies:
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../contact-safety
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
       typescript:
         specifier: ^5.9.3
         version: 5.9.3

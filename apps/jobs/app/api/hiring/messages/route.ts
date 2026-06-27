@@ -220,7 +220,15 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ message: result.message });
+    // Surface the persisted id as `messageId` so the shared messaging-thread
+    // engine can reconcile its optimistic bubble. `message` is kept for the
+    // existing MessageComposer caller (back-compat). result.message is non-null
+    // here — the `if (!result.message)` guard above already returned.
+    return NextResponse.json({
+      ok: true,
+      messageId: result.message.id,
+      message: result.message,
+    });
   } catch (error) {
     console.error("[hiring/messages] internal error:", error);
     return NextResponse.json(

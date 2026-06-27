@@ -27,6 +27,7 @@ type MarketplaceEventInput = {
   actorEmail?: string | null;
   entityType?: string | null;
   entityId?: string | null;
+  actionUrl?: string | null;
   payload: Record<string, unknown>;
 };
 
@@ -233,6 +234,8 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
   const payoutReference = String(payload.payoutReference || payload.reference || "");
   const note = String(payload.note || payload.reviewNote || payload.review_note || "");
   const statusLabel = String(payload.statusLabel || payload.status_label || "");
+  const conversationId = String(payload.conversationId || payload.conversation_id || "");
+  const recipientRole = String(payload.recipientRole || payload.recipient_role || "");
 
   switch (event) {
     case "buyer_welcome":
@@ -772,6 +775,23 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           bullets: [orderNo ? `Order: ${orderNo}` : null, disputeNo ? `Dispute: ${disputeNo}` : null].filter(Boolean) as string[],
           ctaLabel: "Open support",
           ctaHref: "/help",
+        },
+      };
+    case "marketplace_message":
+      return {
+        inAppTitle: "New message",
+        inAppBody: note || "You have a new marketplace message.",
+        email: {
+          templateKey: event,
+          eyebrow: "Messages",
+          headline: "You have a new marketplace message.",
+          summary: note || "You received a new message in your marketplace conversation.",
+          ctaLabel: "Open conversation",
+          ctaHref: conversationId
+            ? recipientRole === "vendor"
+              ? `/vendor/messages/${conversationId}`
+              : `/account/messages/${conversationId}`
+            : "/account/messages",
         },
       };
     case "security_notice":
@@ -1327,6 +1347,7 @@ export async function sendMarketplaceEvent(input: MarketplaceEventInput) {
           : "low",
     entityType: input.entityType,
     entityId: input.entityId,
+    actionUrl: input.actionUrl,
     amountKobo:
       typeof input.payload.amount === "number"
         ? Math.round(Number(input.payload.amount) * 100)

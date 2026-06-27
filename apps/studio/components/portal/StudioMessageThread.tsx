@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import { buildMessagingChromeLabels, translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   MessageThread,
   type MessageThreadAdapter,
@@ -12,11 +14,13 @@ import {
   sendProjectMessageAction,
 } from "@/lib/portal/actions";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
+import { maskContactsForDisplay } from "@henryco/trust/detect";
 import type {
   ClientMessage,
   ClientMessageAttachment,
 } from "@/types/portal";
 import { RefineWithAiButton } from "./RefineWithAiButton";
+import { StudioContactSafetyHint } from "./StudioContactSafetyHint";
 
 /**
  * Studio's adapter for the shared @henryco/messaging-thread engine.
@@ -53,7 +57,9 @@ function studioAdapter(): MessageThreadAdapter {
         senderId,
         senderName: String(row.sender || (isOwn ? "You" : "Henry Onyx Studio")),
         senderRole: role,
-        body: String(row.body || ""),
+        // Defense-in-depth: mask contact details in already-stored bodies at render
+        // (legacy rows pre-date the send/edit screens). New rows are screened at write.
+        body: maskContactsForDisplay(String(row.body || "")),
         attachments,
         createdAt: String(row.created_at || new Date().toISOString()),
         editedAt: (row.edited_at as string | null) || null,
@@ -136,6 +142,17 @@ export function StudioMessageThread({
   projectTitle,
   projectSummary,
 }: StudioMessageThreadProps) {
+  const locale = useHenryCoLocale();
+  const t = useCallback(
+    (label: string) => translateSurfaceLabel(locale, label),
+    [locale],
+  );
+  // Localized composer + thread chrome (Send button, aria, Live, failed-send),
+  // shared across all divisions via the single i18n source of truth.
+  const { composerLabels, threadLabels } = useMemo(
+    () => buildMessagingChromeLabels(t),
+    [t],
+  );
   const adapter = useMemo(() => studioAdapter(), []);
   const initial = useMemo(
     () => initialMessages.map(mapClientMessageToThread),
@@ -155,13 +172,18 @@ export function StudioMessageThread({
       viewer={{ userId: viewerId, fullName: viewerName }}
       adapter={adapter}
       getSupabase={getSupabase}
+      composerLabels={composerLabels}
+      {...threadLabels}
       composerExtras={({ draft, setDraft }) => (
-        <RefineWithAiButton
-          draft={draft}
-          setDraft={setDraft}
-          projectTitle={projectTitle}
-          projectSummary={projectSummary}
-        />
+        <>
+          <StudioContactSafetyHint text={draft} />
+          <RefineWithAiButton
+            draft={draft}
+            setDraft={setDraft}
+            projectTitle={projectTitle}
+            projectSummary={projectSummary}
+          />
+        </>
       )}
     />
   );

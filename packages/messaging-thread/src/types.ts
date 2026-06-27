@@ -1,3 +1,5 @@
+import type { ComposerLabels } from "@henryco/chat-composer";
+
 /**
  * Audience-agnostic message shape consumed by the thread renderer.
  * Hosts map their per-division row shape (studio_project_messages,
@@ -306,4 +308,49 @@ export type MessageThreadProps = {
    * keep the engine's default scroll-to-bottom behavior.
    */
   scrollToFirstUnread?: boolean;
+  /**
+   * WS-6 F8 — localized composer chrome forwarded verbatim to the
+   * embedded `<ChatComposer labels={composerLabels} />`. The engine
+   * stays i18n-agnostic: divisions build these strings with their own
+   * translator (eg. `@henryco/i18n` `buildMessagingChromeLabels`) and
+   * pass them in. Omitted keys fall back to English inside the composer.
+   */
+  composerLabels?: ComposerLabels;
+  /**
+   * WS-6 F8 — thread-chrome copy. Every prop below has an English
+   * default so existing callers (and the markdown-safety test) are
+   * unchanged; pass a localized string to override.
+   */
+  /** Realtime "live" pill label. Default "Live". */
+  liveLabel?: string;
+  /** Aria-label on the realtime "live" pill. Default "Realtime updates are live". */
+  realtimeAriaLabel?: string;
+  /** Banner shown while the realtime channel reconnects. Default "Reconnecting…". */
+  reconnectingLabel?: string;
+  /**
+   * Error thrown when `sendAction` reports failure (drives the composer's
+   * shake + inline error). Default "We couldn't send the message. Try again.".
+   */
+  failedSendLabel?: string;
+  /** Suffix on edited message bubbles. Default "(edited)". */
+  editedLabel?: string;
+  /** Name shown on the viewer's own bubbles. Default "You". */
+  ownNameLabel?: string;
+  /**
+   * Legacy per-bubble status labels (used when the adapter does not map
+   * `deliveryState`). Each key defaults to its English literal:
+   * "Sending…" / "Sent" / "Delivered" / "Read".
+   */
+  statusLabels?: {
+    sending?: string;
+    sent?: string;
+    delivered?: string;
+    read?: string;
+  };
+  /**
+   * Typing-indicator labeller. Receives the active typers' display names
+   * (in order). Default reproduces the English "X is typing" /
+   * "X and Y are typing" / "X and N others are typing" forms.
+   */
+  typingLabel?: (names: string[]) => string;
 };

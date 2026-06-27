@@ -5,11 +5,13 @@ import {
   shouldAutoFlag,
   escalateSeverityForRepeatOffender,
 } from "@henryco/trust";
+import { maskContactsForDisplay } from "@henryco/trust/detect";
 import {
   resolveLocalizedDynamicField,
   type AppLocale,
 } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
 import type {
   HiringPipeline,
   Application,
@@ -102,7 +104,11 @@ function mapMessage(row: Record<string, unknown>): Message {
     senderId: asString(row.sender_id),
     senderType: asString(row.sender_type, "system") as Message["senderType"],
     senderName: row.sender_name ? asString(row.sender_name) : null,
-    body: asString(row.body),
+    // Defense-in-depth: every message body is display-masked on the read path so
+    // any legacy/unscreened row (medium contact detail persisted verbatim before
+    // WS-5) is still masked when rendered to either party. Idempotent on clean or
+    // already-masked text.
+    body: maskContactsForDisplay(asString(row.body)),
     isRead: row.is_read === true,
     readAt: row.read_at ? asString(row.read_at) : null,
     isFlagged: row.is_flagged === true,
@@ -249,6 +255,46 @@ export async function getConversationById(
   return mapConversation(data as Record<string, unknown>);
 }
 
+/**
+ * Resolve only the routing + ownership FKs for a conversation deep-link.
+ *
+ * Used by the employer deep-link resolver
+ * (`app/employer/conversations/[conversationId]/page.tsx`) to authorize the
+ * viewer and forward to the canonical nested hiring thread. `candidate_id` /
+ * `employer_id` are the participating USER ids (used for the per-conversation
+ * authorization check — the viewer must be the employer party); `pipeline_id` +
+ * `application_id` locate the nested thread route. Deliberately selects NO
+ * message body / subject — it is a pure routing lookup, never a content read.
+ */
+export async function getConversationRouteRef(
+  conversationId: string
+): Promise<{
+  id: string;
+  applicationId: string | null;
+  pipelineId: string | null;
+  candidateId: string | null;
+  employerId: string | null;
+  status: string;
+} | null> {
+  const admin = createAdminSupabase();
+  const { data, error } = await admin
+    .from("jobs_conversations")
+    .select("id, application_id, pipeline_id, candidate_id, employer_id, status")
+    .eq("id", conversationId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  const row = data as Record<string, unknown>;
+  return {
+    id: asString(row.id),
+    applicationId: row.application_id ? asString(row.application_id) : null,
+    pipelineId: row.pipeline_id ? asString(row.pipeline_id) : null,
+    candidateId: row.candidate_id ? asString(row.candidate_id) : null,
+    employerId: row.employer_id ? asString(row.employer_id) : null,
+    status: asString(row.status, "open"),
+  };
+}
+
 export async function getCandidateConversations(
   candidateUserId: string
 ): Promise<Conversation[]> {
@@ -310,6 +356,13 @@ export async function sendMessage(
 ): Promise<{ message: Message | null; blocked: boolean; blockReason: string | null }> {
   const autoFlag = shouldAutoFlag(body);
 
+  // Shared rejection copy — used by both the repeat-offender high/critical block
+  // and the contact-safety screen below so a blocked send reads identically
+  // regardless of which guard rejected it.
+  const blockReason =
+    "This message could not be sent because it contains content that violates platform policy. " +
+    "Keep all communication, contact details, and payment arrangements inside Henry & Co.";
+
   // Repeat-offender escalation: look up unresolved trust flags for this sender
   // over the past 30 days and escalate the base severity before the block decision.
   let effectiveSeverity = autoFlag.severity;
@@ -353,9 +406,43 @@ export async function sendMessage(
     return {
       message: null,
       blocked: true,
-      blockReason:
-        "This message could not be sent because it contains content that violates platform policy. " +
-        "Keep all communication, contact details, and payment arrangements inside HenryCo.",
+      blockReason,
+    };
+  }
+
+  // Contact-safety screen BEFORE persist (closes the masking gap). contactSafety
+  // composes @henryco/trust, so it agrees with shouldAutoFlag on high/critical
+  // (block) AND additionally catches obfuscated/normalized contact + external
+  // links that the raw flag ranks lower — those previously persisted VERBATIM.
+  //   - block  → reject with the same blocked result (and record a trust_flags
+  //              row so repeat-offender escalation still counts it).
+  //   - mask   → persist the MASKED body (medium handle/link), never the raw text.
+  //   - allow  → persist unchanged.
+  // Direction-agnostic: the same screen runs for candidate→employer and
+  // employer→candidate, so neither side can leak contact details to the other.
+  const screened = screenMessageBody(clipBody(body));
+  if (screened.action === "block") {
+    try {
+      await createAdminSupabase().from("trust_flags").insert({
+        id: randomUUID(),
+        user_id: senderId,
+        flag_type: "off_platform_contact",
+        reason: autoFlag.reason || "off_platform_contact",
+        severity: "high",
+        source: "system",
+        entity_type: "message",
+        entity_id: null, // message was not persisted
+        metadata: { conversation_id: conversationId, sender_type: senderType, screen: "contact_safety" },
+        created_at: new Date().toISOString(),
+        resolved_at: null,
+      });
+    } catch {
+      // Tolerate — the block is unconditional regardless of writeback success
+    }
+    return {
+      message: null,
+      blocked: true,
+      blockReason,
     };
   }
 
@@ -374,7 +461,9 @@ export async function sendMessage(
       conversation_id: conversationId,
       sender_id: senderId,
       sender_type: senderType,
-      body,
+      // Persist the screened body — masked for medium contact detail, unchanged
+      // for clean text. No medium-or-worse contact detail is ever stored raw.
+      body: screened.body,
       is_read: false,
       is_flagged: isFlagged,
       flag_reason: flagReason,

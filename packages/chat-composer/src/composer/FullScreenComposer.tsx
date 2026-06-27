@@ -240,6 +240,9 @@ export function FullScreenComposer(props: Props) {
               variant="carousel"
               removeLabel={labels?.removeAttachmentLabel}
               retryLabel={labels?.retryUploadLabel}
+              uploadingLabel={labels?.uploadingLabel}
+              attachmentFailedLabel={labels?.attachmentFailedLabel}
+              attachmentListLabel={labels?.attachmentListLabel}
             />
           </div>
         ) : null}
@@ -276,6 +279,7 @@ export function FullScreenComposer(props: Props) {
               hasContent={text.length > 0 || attachments.length > 0}
               onDiscard={onDiscardDraft}
               savedLabel={labels?.draftSavedLabel}
+              savingLabel={labels?.savingLabel}
               discardLabel={labels?.discardDraftLabel}
               reduceMotion={reduceMotion}
             />
