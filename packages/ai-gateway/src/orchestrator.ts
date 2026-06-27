@@ -12,6 +12,8 @@ import type { Result } from "./result";
 import { AI_SURFACES, type AiSurfaceKey, type AiSurfacePolicy } from "./surfaces";
 import type { AiProviderAdapter, ProviderError, ProviderRequest, ProviderResult } from "./provider-types";
 import type { AiBillingPort } from "./billing-port";
+import type { AiRateLimitPort } from "./rate-limit";
+import { DAY_MS } from "./rate-limit";
 import type { AiTask, AiUsageReceipt } from "./contracts";
 import { aiError, DEFAULT_AI_ERROR_COPY, type AiGatewayError, type AiGatewayErrorCode } from "./errors";
 import { estimateInputTokens, estimateUsageUpperBound } from "./metering";
@@ -45,6 +47,9 @@ export interface AiUsageSignal {
 export interface AiTaskDeps {
   adapter: AiProviderAdapter;
   billing: AiBillingPort;
+  /** Optional anti-abuse velocity limiter. When present, a surface's `freeAllowancePerDay`
+   *  (and any future per-actor cap) is enforced after the auth gate, before dispatch. */
+  rateLimiter?: AiRateLimitPort;
   rules: AiUsageRuleSet;
   vatPolicy: VatRatePolicy;
   /** Defaults to "standard" (collect VAT). A non-standard treatment defers VAT. */
@@ -127,6 +132,22 @@ export async function runAiTaskWith(
   // (it resolves the authenticated user and passes their id); this is the router backstop.
   if (!isAuthenticatedActor(task.actorId)) {
     return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("auth_required", DEFAULT_AI_ERROR_COPY.auth_required));
+  }
+
+  // Anti-abuse velocity cap — enforced AFTER auth, BEFORE any wallet or provider work. FREE
+  // surfaces are gated by `freeAllowancePerDay` (the wallet gates metered ones); a hit returns
+  // a typed rate_limited error and the provider is never called. consume-on-attempt (the
+  // studio precedent) so retry-hammering can't bypass the cap.
+  if (deps.rateLimiter && policy.freeAllowancePerDay != null) {
+    const rl = await deps.rateLimiter.consume({
+      actorId: task.actorId,
+      surface: policy.surface,
+      maxPerWindow: policy.freeAllowancePerDay,
+      windowMs: DAY_MS,
+    });
+    if (!rl.allowed) {
+      return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("rate_limited", DEFAULT_AI_ERROR_COPY.rate_limited));
+    }
   }
 
   const tier: AiModelTier = task.tierOverride ?? policy.modelTier;

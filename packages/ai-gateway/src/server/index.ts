@@ -14,6 +14,11 @@ import { createAnthropicAdapter } from "./providers/anthropic";
 import { buildPrompt, validateDraftOutput } from "./prompts";
 import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 import { parseVerdict } from "../verify";
+import { InMemoryRateLimiter, type AiRateLimitPort } from "../rate-limit";
+
+// A per-instance anti-abuse backstop. For durable cross-instance limits, pass a
+// DB/KV-backed AiRateLimitPort via RunAiTaskOptions.rateLimiter.
+const defaultRateLimiter = new InMemoryRateLimiter();
 
 export interface RunAiTaskOptions {
   /** The billing port — the app supplies `createPgBillingPort(sql)` over a service-role
@@ -30,6 +35,9 @@ export interface RunAiTaskOptions {
   audit?: { supabase: AiTelemetryDeps["supabase"]; traceId?: string };
   /** Id generator for the FREE-surface receipt; defaults to crypto.randomUUID. */
   newId?: () => string;
+  /** Anti-abuse velocity limiter. Defaults to a per-instance in-memory backstop; pass a
+   *  durable (DB/KV-backed) AiRateLimitPort for cross-instance enforcement in production. */
+  rateLimiter?: AiRateLimitPort;
   /** Env source (defaults to process.env) — the kill switch + model routing read it. */
   env?: NodeJS.ProcessEnv;
 }
@@ -89,6 +97,7 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
     },
     onSignal,
     newId: opts.newId ?? (() => crypto.randomUUID()),
+    rateLimiter: opts.rateLimiter ?? defaultRateLimiter,
     defaultTimeoutMs: AI_GATEWAY_TIMEOUT_MS,
   };
 

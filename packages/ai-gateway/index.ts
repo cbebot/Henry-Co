@@ -45,6 +45,8 @@ export type {
   SettleResult,
 } from "./src/billing-port";
 
+export { InMemoryRateLimiter, DAY_MS, type AiRateLimitPort, type RateLimitCheck } from "./src/rate-limit";
+
 export {
   runAiTaskWith,
   type AiTaskDeps,
