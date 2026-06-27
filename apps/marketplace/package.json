@@ -34,6 +34,7 @@
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/payment-router": "workspace:^",
+    "@henryco/payments-db": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
     "@henryco/pricing": "workspace:^",
     "@henryco/seo": "workspace:^",
