@@ -24,6 +24,7 @@ import AccountPaletteHost from "@/components/search/PaletteHost";
 import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
+import { resolveModuleHomeHref } from "@/lib/module-home-href";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
 import { COMPANY } from "@henryco/config";
@@ -171,7 +172,10 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     .slice(0, 9)
     .map((m) => ({
       slug: m.slug,
-      href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
+      // Honor a module's declared `homeHref` (e.g. wallet → `/wallet`)
+      // so Cmd-jump opens the real surface, not the `/modules/<slug>`
+      // summary. customer-overview stays at `/`.
+      href: resolveModuleHomeHref(m),
     }));
 
   // BottomActionBar Modules drawer — richer entry with title +
@@ -183,7 +187,9 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     slug: m.slug,
     title: m.title,
     description: m.description,
-    href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
+    // Same homeHref resolution as the rail + Cmd-jump so tapping a module
+    // in the mobile drawer lands on its canonical surface in one tap.
+    href: resolveModuleHomeHref(m),
     icon: typeof m.icon === "function" ? m.icon() : m.icon,
     accentHex: divisionAccentFor(m.slug),
   }));

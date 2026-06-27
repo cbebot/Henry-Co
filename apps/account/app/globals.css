@@ -901,6 +901,65 @@ html, body { overflow-x: clip; max-width: 100vw; }
 }
 
 /*
+ * Home-widget click-through (Modules navigator fix).
+ *
+ * A module's home widget may declare `href` — "clicking anywhere on the
+ * widget's chrome navigates here" (the HomeWidget contract). The
+ * smart-home renderers (RankedMetricStrip / ModuleWidgetGrid) and the
+ * /modules/<slug> page wrap each tile in `.hc-widget-linkable` and
+ * stretch a `.hc-widget-open-overlay` anchor across it.
+ *
+ * The overlay (z-index:1) catches taps on the card's empty chrome; the
+ * card's OWN embedded controls (BalanceCard / RecentTransactionsCard
+ * render their ActionButtons as <a>/<button>) are lifted to z-index:2 so
+ * they keep working AND are not nested inside the overlay's <Link>
+ * (nesting interactive elements is invalid HTML → hydration error).
+ */
+.hc-widget-linkable { position: relative; }
+
+.hc-widget-open-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Match the Panel's default corner radius (RADIUS.xl = 1.5rem) so the
+     hover wash + focus ring hug the card instead of squaring off its
+     rounded corners. */
+  border-radius: 1.5rem;
+  /* No fill — the card shows through. A faint gold wash on hover signals
+     the whole surface is tappable; reads acceptably in light + dark. */
+  background-color: transparent;
+  transition: background-color 160ms ease;
+}
+
+.hc-widget-linkable:hover > .hc-widget-open-overlay {
+  background-color: rgba(201, 162, 39, 0.06);
+}
+
+.hc-widget-open-overlay:focus-visible {
+  outline: 2px solid var(--hc-accent, #c9a227);
+  outline-offset: -2px;
+}
+
+.hc-widget-open-overlay__hint {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  opacity: 0.4;
+}
+
+/* The card's own interactive controls sit above the overlay so they
+   remain clickable; taps anywhere else fall through to the overlay. */
+.hc-widget-linkable a:not(.hc-widget-open-overlay),
+.hc-widget-linkable button {
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-widget-open-overlay { transition: none; }
+}
+
+/*
  * Live chip — the small "Live · 30s refresh" indicator beside the
  * SmartHomeHeader. The dot pulses when [data-state="pulsing"] is set
  * by DASH-6's realtime listener after a `revalidateTag(...)` lands,

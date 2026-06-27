@@ -126,6 +126,21 @@ export type DashboardModule = {
   railSlot: RailSlot;
 
   /**
+   * Optional canonical home route for this module.
+   *
+   * The rail, the mobile Modules drawer, and the Cmd+1..9 jump list
+   * normally link a module to its `/modules/<slug>` catch-all surface.
+   * When a module's real, primary surface already lives at a top-level
+   * route (e.g. the wallet at `/wallet`), set `homeHref` to that route
+   * so those entries open the actual surface in one tap — matching the
+   * desktop sidebar — instead of bouncing through the generic module
+   * summary. Falls back to `/modules/<slug>` when absent.
+   *
+   * MUST be a real, live route.
+   */
+  homeHref?: string;
+
+  /**
    * V3-11 (one-job-per-card) — the module's single "exact next step".
    *
    * Per the owner's question — _"Does this open the exact next step, or

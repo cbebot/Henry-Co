@@ -51,6 +51,13 @@ export const walletModule: DashboardModule = {
   description: "Balance, funding, transactions, payout methods.",
   icon: () => <Wallet size={18} aria-hidden />,
   railSlot: "primary",
+  // The wallet's real surface is the top-level `/wallet` (the same
+  // route the desktop sidebar links to). Sending the rail / mobile
+  // Modules drawer / Cmd-jump straight there means tapping "Wallet"
+  // opens the wallet in one tap instead of the `/modules/wallet`
+  // summary, which fixes the reported "wallet never opens from the
+  // mobile Modules navigator" bug.
+  homeHref: "/wallet",
 
   getEligibleViewer(viewer) {
     return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
