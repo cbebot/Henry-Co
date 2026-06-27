@@ -14,6 +14,10 @@ export interface ProviderRequest {
   messages: Array<{ role: "user" | "assistant"; content: string }>;
   /** Hard cap on output tokens — a runaway-cost guardrail. */
   maxOutputTokens: number;
+  /** Optional image URLs to attach to the (first user) message — for multimodal surfaces
+   *  like the Henry Onyx Verified trust review, which reads the listing's media. The adapter
+   *  sends them as image content blocks; the provider/model stay server-only. */
+  images?: string[];
   /** Optional JSON-schema description used to constrain/parse the output. */
   responseSchema?: object;
   timeoutMs: number;

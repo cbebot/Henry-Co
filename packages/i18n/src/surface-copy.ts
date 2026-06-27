@@ -176,6 +176,17 @@ const EN: SurfaceCopy = {
     "Sending…": "Sending…",
     "Each reply is metered to your wallet.": "Each reply is metered to your wallet.",
     "Henry Onyx Intelligence is unavailable right now.": "Henry Onyx Intelligence is unavailable right now.",
+    // Trust layer — Henry Onyx Verified.
+    "Get Henry Onyx Verified": "Get Henry Onyx Verified",
+    "A trusted review checks your listing is honest, original, and safe — so buyers trust it more.":
+      "A trusted review checks your listing is honest, original, and safe — so buyers trust it more.",
+    "Request review": "Request review",
+    "Reviewing…": "Reviewing…",
+    "Henry Onyx Verified": "Henry Onyx Verified",
+    "Ready for review by our team.": "Ready for review by our team.",
+    "A few things to address before this can be verified.": "A few things to address before this can be verified.",
+    "This review augments our human moderation — it does not publish your listing.":
+      "This review augments our human moderation — it does not publish your listing.",
     Applications: "Applications",
     "Browse jobs": "Browse jobs",
     "Browse open jobs": "Browse open jobs",

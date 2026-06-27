@@ -1,9 +1,27 @@
 # Pass 2 — "Henry Onyx Intelligence Review" (the metered listing trust review)
 
-**Status:** Design note (owner-requested, V3-AI-01 session). Rides the V3-AI-01 governed
-gateway + metered billing built in Pass 1. Dark until built. Surface key
-`marketplace.listing.verify` is already registered in `packages/ai-gateway/src/surfaces.ts`
-(METERED, `deep` tier) so the foundation is proven to extend to it.
+**Status:** ✅ BUILT for marketplace (flag-dark), generalises to every division. The verdict
+engine, the multimodal adapter path, the deep-tier metered flow, and the marketplace mount
+are implemented and verified; cross-division mounts + a persisted badge column are the
+remaining follow-ons.
+
+**What's built:**
+- `packages/ai-gateway/src/verify.ts` — the fail-safe verdict parser + the badge gate
+  (`resolveVerdictDecision`): awards "Henry Onyx Verified" ONLY when honest + real (not
+  AI-generated) + on-standard + safe + score ≥ threshold + model-pass; unsafe → reject;
+  else → human review. Missing flags coerce to the SAFE side; an unknown verdict never
+  becomes a pass. 12 tests, incl. hostile-output cases.
+- The `marketplace.listing.verify` surface (deep tier, METERED) + its prompt builder
+  (doctrine + the honesty/AI-media/standards/safety rubric → strict JSON).
+- Multimodal: `ProviderRequest.images` + the Anthropic adapter sends image content blocks
+  (server-only; provider/model still opaque). The review reads the listing's media.
+- Marketplace mount: `verify-listing-action.ts` (metered, audited, returns only the decision
+  + reasons + redacted receipt) and `VerifyListingPanel.tsx` (Register-L), flag-dark behind
+  `MARKETPLACE_AI_LISTING_VERIFY`.
+
+**Remaining follow-ons:** a persisted `Henry Onyx Verified` badge column + buyer-facing
+filter; cross-division mounts (`jobs/learn/property/studio .listing.verify`) via the assist
+kit; reconcile the deep-tier rate to live provider price before enabling.
 
 ---
 

@@ -112,8 +112,60 @@ function buildStudioBriefPrompt(task: AiTask): AiPromptParts {
   );
 }
 
+// The Henry Onyx Verified trust review (deep tier, METERED, multimodal). Reads the listing
+// copy + media and returns a strict JSON verdict on honesty, AI-generated media, standards,
+// and safety. The verdict AUGMENTS human moderation (see verify.ts) — it never publishes.
+const LISTING_VERIFY_SYSTEM = composeSystemPrompt(
+  [
+    "Carefully review a Henry Onyx listing (its copy and any images) before it goes live, so the seller",
+    "can earn the trust of buyers. Judge ONLY what you can see; never assume facts not present. Assess:",
+    "- honest: do the claims match the images and copy? nothing fabricated or exaggerated?",
+    "- aiGeneratedMedia: do the images look AI-generated / synthetic rather than real product photos?",
+    "- matchesStandards: clear, complete, professional, and within Henry Onyx content standards?",
+    "- safeToPost: free of prohibited, unsafe, or deceptive content?",
+    "Be fair and encouraging — your goal is to help good listings earn trust, and to protect buyers from",
+    "dishonest or unsafe ones. A human reviewer makes the final call; your verdict guides them.",
+    "",
+    "Respond with ONLY a JSON object (no prose, no code fences) of exactly this shape:",
+    "{",
+    '  "honest": boolean,',
+    '  "aiGeneratedMedia": boolean,',
+    '  "matchesStandards": boolean,',
+    '  "safeToPost": boolean,',
+    '  "trustScore": number,          // 0-100 overall trustworthiness',
+    '  "reasons": string[],           // short, specific, constructive notes',
+    '  "verdict": "pass" | "review" | "reject"',
+    "}",
+  ].join("\n"),
+);
+
+function buildListingVerifyPrompt(task: AiTask, _policy: AiSurfacePolicy): AiPromptParts {
+  const title = str(task.input.title, 200);
+  const summary = str(task.input.summary, 400);
+  const description = str(task.input.description, 4000);
+  const category = str(task.input.category ?? task.input.category_slug, 120);
+  const images = Array.isArray(task.input.images)
+    ? (task.input.images as unknown[]).filter((u): u is string => typeof u === "string").slice(0, 8)
+    : [];
+
+  const userText = [
+    title ? `Title: ${title}` : "",
+    category ? `Category: ${category}` : "",
+    summary ? `Summary: ${summary}` : "",
+    description ? `Description: ${description}` : "",
+    images.length ? `(${images.length} image(s) attached.)` : "(No images provided.)",
+    "",
+    "Review this listing and return the verdict JSON.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return { system: LISTING_VERIFY_SYSTEM, messages: [{ role: "user", content: userText }], images };
+}
+
 const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSurfacePolicy) => AiPromptParts>> = {
   "marketplace.listing.draft": buildMarketplaceListingDraftPrompt,
+  "marketplace.listing.verify": buildListingVerifyPrompt,
   "intelligence.chat": buildIntelligenceChatPrompt,
   "support.message.assist": buildSupportAssistPrompt,
   "business.message.assist": buildBusinessAssistPrompt,

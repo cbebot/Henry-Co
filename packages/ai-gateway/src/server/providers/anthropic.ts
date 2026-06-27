@@ -66,13 +66,26 @@ export function createAnthropicAdapter(opts: { apiKey: string; timeoutMs?: numbe
       }
 
       const model = resolveModelForTier(req.modelTier);
+      // Multimodal: attach up to 8 images (by URL) to the FIRST user message — for the
+      // trust review, which reads the listing's media. The provider/model stay server-only.
+      const images = (req.images ?? []).filter((u) => typeof u === "string" && /^https?:\/\//.test(u)).slice(0, 8);
+      let firstUserSeen = false;
+      const messages = req.messages.map((m) => {
+        const blocks: Array<{ type: "text"; text: string } | { type: "image"; source: { type: "url"; url: string } }> = [];
+        if (!firstUserSeen && m.role === "user" && images.length > 0) {
+          firstUserSeen = true;
+          for (const url of images) blocks.push({ type: "image", source: { type: "url", url } });
+        }
+        blocks.push({ type: "text", text: m.content });
+        return { role: m.role, content: blocks };
+      });
       try {
         const response = await withTimeout(
           client.messages.create({
             model,
             max_tokens: req.maxOutputTokens,
             system: [{ type: "text", text: req.system, cache_control: { type: "ephemeral" } }],
-            messages: req.messages.map((m) => ({ role: m.role, content: [{ type: "text" as const, text: m.content }] })),
+            messages,
           }),
           req.timeoutMs,
         );

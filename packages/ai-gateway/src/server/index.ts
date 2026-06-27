@@ -13,6 +13,7 @@ import { getAiServerConfig, AI_GATEWAY_TIMEOUT_MS } from "./config";
 import { createAnthropicAdapter } from "./providers/anthropic";
 import { buildPrompt, validateDraftOutput } from "./prompts";
 import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
+import { parseVerdict } from "../verify";
 
 export interface RunAiTaskOptions {
   /** The billing port — the app supplies `createPgBillingPort(sql)` over a service-role
@@ -81,7 +82,11 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
     killSwitchEnabled: true, // already checked above
     now: () => new Date(),
     promptBuilder: buildPrompt,
-    validateOutput: (raw, t) => (t.surface === "marketplace.listing.draft" ? validateDraftOutput(raw) : true),
+    validateOutput: (raw, t) => {
+      if (t.surface === "marketplace.listing.draft") return validateDraftOutput(raw);
+      if (t.surface === "marketplace.listing.verify") return parseVerdict(raw) != null;
+      return true;
+    },
     onSignal,
     newId: opts.newId ?? (() => crypto.randomUUID()),
     defaultTimeoutMs: AI_GATEWAY_TIMEOUT_MS,

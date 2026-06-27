@@ -21,6 +21,8 @@ import { assertClientSafe, redactReceipt } from "./redaction";
 export interface AiPromptParts {
   system: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
+  /** Optional image URLs for a multimodal surface (e.g. the trust review reads listing media). */
+  images?: string[];
   responseSchema?: object;
   timeoutMs?: number;
 }
@@ -178,6 +180,7 @@ export async function runAiTaskWith(
     system: prompt.system,
     messages: prompt.messages,
     maxOutputTokens: policy.maxOutputTokens,
+    images: prompt.images,
     responseSchema: prompt.responseSchema,
     timeoutMs: prompt.timeoutMs ?? deps.defaultTimeoutMs ?? 12_000,
   };
