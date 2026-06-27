@@ -36,6 +36,7 @@ export default async function VendorProductDetailPage({
     >
       {AI_LISTING_VERIFY_ENABLED ? (
         <VerifyListingPanel
+          productId={product.id}
           copy={{
             heading: t("Get Henry Onyx Verified"),
             intro: t("A trusted review checks your listing is honest, original, and safe — so buyers trust it more."),

@@ -19,9 +19,17 @@ remaining follow-ons.
   + reasons + redacted receipt) and `VerifyListingPanel.tsx` (Register-L), flag-dark behind
   `MARKETPLACE_AI_LISTING_VERIFY`.
 
-**Remaining follow-ons:** a persisted `Henry Onyx Verified` badge column + buyer-facing
-filter; cross-division mounts (`jobs/learn/property/studio .listing.verify`) via the assist
-kit; reconcile the deep-tier rate to live provider price before enabling.
+**Now persisted (V3-AI-VERIFY-01):** the verdict is durable — `marketplace_listing_verifications`
+(append-only audit, RLS deny, no client write) + a dedicated `marketplace_products.henry_onyx_verified`
+column (NOT `trust_badges`, which the upsert overwrites) + the `record_listing_verification`
+SECURITY DEFINER writer (service-role-only) that awards the badge on `verified` and revokes it
+on a later `review`/`reject`. Proven on a throwaway DB (16/16: grant lockdown, badge
+award/revoke, RLS deny + cross-user isolation, no forge path). The verify action persists the
+verdict; the buyer-visible badge reads the column.
+
+**Remaining follow-ons:** a buyer-facing "Verified only" filter; cross-division mounts
+(`jobs/learn/property/studio .listing.verify`) via the assist kit; reconcile the deep-tier
+rate to live provider price before enabling.
 
 ---
 

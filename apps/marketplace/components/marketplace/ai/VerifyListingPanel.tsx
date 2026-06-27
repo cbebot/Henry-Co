@@ -36,7 +36,7 @@ function fieldValue(name: string): string {
  * reasons + a redacted receipt — never a provider, model, cost, or margin. The review
  * AUGMENTS human moderation; it never publishes.
  */
-export function VerifyListingPanel({ copy }: { copy: VerifyPanelCopy }) {
+export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy; productId?: string }) {
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<VerifyResult | null>(null);
   const [receiptLabel, setReceiptLabel] = useState<string | null>(null);
@@ -48,6 +48,7 @@ export function VerifyListingPanel({ copy }: { copy: VerifyPanelCopy }) {
     try {
       const imageUrl = fieldValue("image_url");
       const res = await verifyListingAction({
+        productId,
         title: fieldValue("title"),
         summary: fieldValue("summary"),
         description: fieldValue("description"),

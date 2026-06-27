@@ -5,8 +5,11 @@ import { parseVerdict, resolveVerdictDecision, type AiUsageReceipt, type Verdict
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { getPaymentsSqlExecutor } from "@/lib/payments/db";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { createAdminSupabase } from "@/lib/supabase";
 
 export interface VerifyInput {
+  /** The saved product being reviewed; omit for a pre-save dry run (audited, no badge). */
+  productId?: string;
   title: string;
   summary?: string;
   description?: string;
@@ -59,6 +62,29 @@ export async function verifyListingAction(input: VerifyInput): Promise<VerifyRes
     return { ok: false, code: "schema_validation_failed", message: "Henry Onyx Intelligence couldn’t complete the review. Please try again." };
   }
   const decision = resolveVerdictDecision(verdict);
+
+  // Persist the verdict durably (the audit record + the buyer-visible badge) via the
+  // service-role-only SECURITY DEFINER writer — the only path that can set the badge, so it
+  // can never be client-forged. Best-effort: a persistence hiccup must not lose the result
+  // the seller already paid for.
+  try {
+    const admin = createAdminSupabase();
+    await admin.rpc("record_listing_verification", {
+      p_product_id: input.productId ?? null,
+      p_user_id: viewer.user.id,
+      p_outcome: decision.outcome,
+      p_trust_score: verdict.trustScore,
+      p_honest: verdict.honest,
+      p_ai_generated_media: verdict.aiGeneratedMedia,
+      p_matches_standards: verdict.matchesStandards,
+      p_safe_to_post: verdict.safeToPost,
+      p_reasons: decision.reasons,
+      p_ai_usage_event_id: result.value.receipt.usageEventId,
+    });
+  } catch {
+    /* the verdict still returns; persistence is best-effort */
+  }
+
   return {
     ok: true,
     outcome: decision.outcome,
