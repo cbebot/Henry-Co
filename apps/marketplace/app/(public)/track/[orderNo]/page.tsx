@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ClipboardCheck, Lock, ShieldCheck, Truck } from "lucide-react";
-import { getOrderByNumber } from "@/lib/marketplace/data";
+import { getOrderForViewer } from "@/lib/marketplace/data";
+import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { formatCurrency } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -29,10 +30,15 @@ export default async function TrackOrderPage({
   const { orderNo } = await params;
   const search = (await searchParams) ?? {};
   const justPlaced = search.placed === "1";
-  const [locale, order] = await Promise.all([
+  // F-01: the order is fetched via `service_role` keyed on the brute-forceable
+  // order_no, so it must be gated on ownership — exactly as the sibling /pay
+  // surface already does. A signed-out or non-owning viewer gets `null` → the
+  // graceful track recovery page, never buyer PII or the bank-receipt proof.
+  const [locale, viewer] = await Promise.all([
     getMarketplacePublicLocale(),
-    getOrderByNumber(orderNo),
+    getMarketplaceViewer(),
   ]);
+  const order = await getOrderForViewer(orderNo, viewer);
   if (!order) notFound();
   const copy = getMarketplacePublicCopy(locale);
   const t = copy.track;

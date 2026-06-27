@@ -14,7 +14,7 @@ import type {
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
-import { getOrderByNumber } from "@/lib/marketplace/data";
+import { getOrderForViewer } from "@/lib/marketplace/data";
 import { getMarketplacePaymentRail } from "@/lib/marketplace/payment";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
@@ -68,21 +68,15 @@ export default async function MarketplacePaymentWorkspace({
     await reconcileMarketplaceOrder(orderNo).catch(() => null);
   }
 
-  const [order, viewer, rail, locale] = await Promise.all([
-    getOrderByNumber(orderNo),
+  const [viewer, rail, locale] = await Promise.all([
     getMarketplaceViewer(),
     getMarketplacePaymentRail(),
     getMarketplacePublicLocale(),
   ]);
+  // Owner-scoped fetch (same vetted gate as /track): a non-owner or signed-out
+  // viewer gets null -> notFound(), never the order's payment record or proof.
+  const order = await getOrderForViewer(orderNo, viewer);
   if (!order) notFound();
-
-  const isOwner =
-    viewer.user?.email && order.buyerEmail
-      ? viewer.user.email.toLowerCase() === order.buyerEmail.toLowerCase()
-      : false;
-  if (!isOwner) {
-    notFound();
-  }
 
   const proof = order.paymentRecord;
   const paymentLabel = `Order ${order.orderNo}`;
