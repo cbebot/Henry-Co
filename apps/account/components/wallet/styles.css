@@ -1954,3 +1954,400 @@
   .acct-wal__vault-inner { padding: 22px 20px; }
   .acct-wal__statement-head { align-items: flex-start; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * ADD MONEY — balance lead + instant top-up composition (V3-WALLET-FUNDING)
+ * A focused, token-driven "Add money" surface: a calm balance hero (NOT the
+ * reserved onyx vault), then the opaque method chooser, quick presets + free
+ * custom entry, and one confident primary action. Light + dark, mobile-first,
+ * AA contrast, CLS-stable (no layout-shifting reveals).
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* Balance lead -------------------------------------------------------- */
+.acct-wal__fund-balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  padding: 22px 24px;
+  border-radius: var(--acct-radius-lg);
+  background:
+    radial-gradient(130% 150% at 100% 0%, var(--acct-gold-soft) 0%, transparent 58%),
+    var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+}
+
+.acct-wal__fund-balance-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.acct-wal__fund-balance-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+}
+
+.acct-wal__fund-balance-label::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--acct-gold);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--acct-gold) 22%, transparent);
+}
+
+.acct-wal__fund-balance-value {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--acct-font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1;
+  color: var(--acct-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.acct-wal__fund-balance-cur {
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 500;
+  color: var(--acct-muted);
+}
+
+.acct-wal__fund-balance-amt {
+  font-size: clamp(32px, 5vw, 46px);
+}
+
+.acct-wal__fund-balance-sub {
+  font-size: 13px;
+  color: var(--acct-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.acct-wal__fund-balance-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.acct-wal__fund-arriving {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--acct-gold-soft);
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 32%, transparent);
+  color: var(--acct-gold-text);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.acct-wal__fund-arriving-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--acct-gold);
+  animation: wal-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-wal__fund-arriving-dot { animation: none; }
+}
+
+/* Top-up panel -------------------------------------------------------- */
+.acct-wal__topup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  border-radius: var(--acct-radius-lg);
+  background: var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+}
+
+@media (max-width: 560px) {
+  .acct-wal__topup { padding: 20px; }
+}
+
+.acct-wal__topup-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.acct-wal__topup-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+}
+
+.acct-wal__topup-legend-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--acct-ink);
+}
+
+.acct-wal__topup-legend-hint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--acct-muted);
+}
+
+/* Method tiles (opaque — provider never named) */
+.acct-wal__methods {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 560px) {
+  .acct-wal__methods { grid-template-columns: 1fr; }
+}
+
+.acct-wal__method {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  padding: 14px;
+  border-radius: var(--acct-radius);
+  background: var(--acct-bg);
+  border: 1.5px solid var(--acct-line);
+  cursor: pointer;
+  transition: border-color 140ms ease-out, background 140ms ease-out, transform 140ms ease-out;
+}
+
+.acct-wal__method:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 55%, var(--acct-line));
+  transform: translateY(-1px);
+}
+
+.acct-wal__method[aria-checked="true"] {
+  border-color: var(--acct-gold);
+  background: var(--acct-gold-soft);
+}
+
+.acct-wal__method:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-wal__method { transition: none; }
+  .acct-wal__method:hover { transform: none; }
+}
+
+.acct-wal__method-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--acct-radius-sm);
+  flex-shrink: 0;
+  background: var(--acct-surface);
+  color: var(--acct-muted);
+}
+
+.acct-wal__method[aria-checked="true"] .acct-wal__method-icon {
+  background: color-mix(in srgb, var(--acct-gold) 22%, transparent);
+  color: var(--acct-gold-text);
+}
+
+.acct-wal__method-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.acct-wal__method-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.acct-wal__method-hint {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--acct-muted);
+}
+
+.acct-wal__method-check {
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--acct-gold-text);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+.acct-wal__method[aria-checked="true"] .acct-wal__method-check { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-wal__method-check { transition: none; }
+}
+
+/* Quick presets */
+.acct-wal__presets {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .acct-wal__presets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.acct-wal__preset {
+  padding: 11px 8px;
+  border-radius: var(--acct-radius-sm);
+  background: var(--acct-bg);
+  border: 1.5px solid var(--acct-line);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--acct-muted);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color 140ms ease-out, color 140ms ease-out, background 140ms ease-out;
+}
+
+.acct-wal__preset:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 50%, var(--acct-line));
+  color: var(--acct-ink);
+}
+
+.acct-wal__preset[data-active="true"] {
+  border-color: var(--acct-gold);
+  background: var(--acct-gold-soft);
+  color: var(--acct-gold-text);
+}
+
+.acct-wal__preset:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-wal__preset { transition: none; }
+}
+
+/* Custom amount field with ₦ affordance */
+.acct-wal__amount {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--acct-radius);
+  background: var(--acct-bg);
+  border: 1.5px solid var(--acct-line);
+  transition: border-color 140ms ease-out, box-shadow 140ms ease-out;
+}
+
+.acct-wal__amount:focus-within {
+  border-color: var(--acct-gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--acct-gold) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-wal__amount { transition: none; }
+}
+
+.acct-wal__amount-cur {
+  font-family: var(--acct-font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--acct-muted);
+}
+
+.acct-wal__amount-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-family: var(--acct-font-display);
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 600;
+  color: var(--acct-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.acct-wal__amount-input::placeholder {
+  color: var(--acct-muted);
+  font-weight: 500;
+}
+
+/* Hide the number-spinner so the field reads as a clean money input */
+.acct-wal__amount-input::-webkit-outer-spin-button,
+.acct-wal__amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.acct-wal__amount-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Inline error + footer action */
+.acct-wal__topup-error {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--acct-radius-sm);
+  background: var(--acct-red-soft);
+  color: var(--acct-red);
+  border: 1px solid color-mix(in srgb, var(--acct-red) 30%, transparent);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.acct-wal__topup-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.acct-wal__topup-submit {
+  border-radius: var(--acct-radius);
+  padding-inline: 22px;
+}
+
+.acct-wal__topup-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--acct-muted);
+  max-width: 42ch;
+}
+
+.acct-wal__topup-note svg {
+  flex-shrink: 0;
+  color: var(--acct-gold-text);
+}

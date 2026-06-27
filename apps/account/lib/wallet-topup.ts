@@ -35,6 +35,33 @@
 export const RAIL_TOPUP_METHODS = ["card", "bank_transfer", "ussd"] as const;
 export type RailTopupMethod = (typeof RAIL_TOPUP_METHODS)[number];
 
+/**
+ * The single shared wallet-funding floor (kobo). Both the instant card/bank/USSD
+ * rail (`/api/wallet/topup/init`) and the legacy bank-transfer flow
+ * (`/api/wallet/fund`) validate against THIS one value, so the minimum can never
+ * drift between surfaces. NGN 100 = 10,000 kobo.
+ */
+export const WALLET_FUNDING_MIN_KOBO = 10_000;
+
+/** The funding floor in major units (naira), derived from the kobo floor — for copy. */
+export const WALLET_FUNDING_MIN_NAIRA = WALLET_FUNDING_MIN_KOBO / 100;
+
+/**
+ * There is NO fixed maximum top-up amount (owner decision, 2026-06). The
+ * guardrails against an absurd charge are the sensitive-action reauth (R1,
+ * enforced by the payment rail before any money moves) plus the payment
+ * provider's own per-transaction limits — deliberately NOT a hardcoded ceiling.
+ * Amount validation therefore keeps only: a positive, safe integer at or above
+ * the {@link WALLET_FUNDING_MIN_KOBO} floor.
+ */
+export type FundingAmountError = "not_integer" | "below_min";
+
+export function validateFundingAmountKobo(amountKobo: number): FundingAmountError | null {
+  if (!Number.isSafeInteger(amountKobo) || amountKobo <= 0) return "not_integer";
+  if (amountKobo < WALLET_FUNDING_MIN_KOBO) return "below_min";
+  return null; // no upper bound — see the note above
+}
+
 /** Funding-request status lifecycle for a rail top-up. */
 export const TOPUP_FUNDING_STATUS = {
   /** Created, awaiting a confirmed charge (shared initial state with the manual flow). */

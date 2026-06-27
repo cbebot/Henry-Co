@@ -5,6 +5,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { LEGACY_WALLET_TRANSACTION_PENDING_STATUS } from "@/lib/wallet-storage";
+import { WALLET_FUNDING_MIN_KOBO, WALLET_FUNDING_MIN_NAIRA } from "@/lib/wallet-topup";
 
 function buildFundingReference(userId: string) {
   const stamp = Date.now().toString(36).toUpperCase();
@@ -32,14 +33,12 @@ export async function POST(request: Request) {
     const note = typeof body.note === "string" ? body.note.trim() : "";
     const amountKobo = Math.round(amountNaira * 100);
 
-    if (!amountKobo || amountKobo < 10000) {
+    // Single shared floor; NO upper bound (owner decision — see wallet-topup.ts).
+    if (!Number.isSafeInteger(amountKobo) || amountKobo < WALLET_FUNDING_MIN_KOBO) {
       return NextResponse.json(
-        { error: "Enter at least NGN 100 to create a funding request." },
+        { error: `Enter at least NGN ${WALLET_FUNDING_MIN_NAIRA.toLocaleString("en-NG")} to create a funding request.` },
         { status: 400 }
       );
-    }
-    if (amountKobo > 10000000) {
-      return NextResponse.json({ error: "For this flow, the maximum is NGN 100,000 per request." }, { status: 400 });
     }
     if (provider !== "bank_transfer") {
       return NextResponse.json({ error: "This funding method is not available yet." }, { status: 400 });
