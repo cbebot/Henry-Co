@@ -32,6 +32,7 @@
     "@henryco/config": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/data": "workspace:^",
+    "@henryco/i18n": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@supabase/supabase-js": "^2.98.0",
     "@types/node": "^20.0.0",

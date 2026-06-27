@@ -6,11 +6,13 @@ import type { MarketplaceNotification } from "@/lib/marketplace/types";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountNotificationsPage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   await requireMarketplaceUser("/account/notifications");
   const data = await getBuyerDashboardData();
 
@@ -33,8 +35,8 @@ export default async function AccountNotificationsPage() {
 
   return (
     <WorkspaceShell
-      title="Notifications"
-      description="In-app, email, and WhatsApp lifecycle updates are designed to show up here as a single readable account timeline."
+      title={copy.notifications.title}
+      description={copy.notifications.description}
       {...accountWorkspaceNav("/account/notifications", locale)}
     >
       {localizedNotifications.length ? (
@@ -52,7 +54,7 @@ export default async function AccountNotificationsPage() {
           ))}
         </div>
       ) : (
-        <EmptyState title="No notifications yet." body="Marketplace lifecycle updates will appear here." />
+        <EmptyState title={copy.notifications.emptyTitle} body={copy.notifications.emptyBody} />
       )}
     </WorkspaceShell>
   );

@@ -1,5 +1,7 @@
+import { getStudioPortalCopy } from "@henryco/i18n";
 import { milestoneStatusToken } from "@/lib/portal/status";
 import { shortDate } from "@/lib/portal/helpers";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import type { ClientMilestone } from "@/types/portal";
 
 function dotState(status: string) {
@@ -8,7 +10,7 @@ function dotState(status: string) {
   return "upcoming";
 }
 
-export function MilestoneProgress({
+export async function MilestoneProgress({
   milestones,
   layout = "horizontal",
 }: {
@@ -16,6 +18,9 @@ export function MilestoneProgress({
   layout?: "horizontal" | "vertical";
 }) {
   if (milestones.length === 0) return null;
+
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPortalCopy(locale);
 
   if (layout === "vertical") {
     return (
@@ -41,7 +46,7 @@ export function MilestoneProgress({
                   </p>
                 ) : null}
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-[11.5px] text-[var(--studio-ink-soft)]">
-                  {milestone.dueDate ? <span>Due {shortDate(milestone.dueDate)}</span> : null}
+                  {milestone.dueDate ? <span>{copy.milestoneProgress.duePrefix(shortDate(milestone.dueDate) ?? "")}</span> : null}
                   {milestone.dueLabel && !milestone.dueDate ? <span>{milestone.dueLabel}</span> : null}
                 </div>
               </div>
@@ -55,7 +60,7 @@ export function MilestoneProgress({
   return (
     <ol
       className="grid gap-2 sm:grid-cols-3 lg:grid-cols-5"
-      aria-label="Project milestone progress"
+      aria-label={copy.milestoneProgress.progressLabel}
     >
       {milestones.map((milestone, index) => {
         const status = milestoneStatusToken(milestone.status);
@@ -70,7 +75,7 @@ export function MilestoneProgress({
               <span className="portal-progress-dot" data-state={state} />
               <div className="min-w-0">
                 <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                  Step {index + 1}
+                  {copy.milestoneProgress.stepPrefix(index + 1)}
                 </div>
                 <div className="mt-1 truncate text-[13px] font-semibold text-[var(--studio-ink)]">
                   {milestone.title}

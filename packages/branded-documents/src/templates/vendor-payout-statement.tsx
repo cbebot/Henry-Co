@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DocumentSection, DefinitionList } from "../components/DocumentSection";
@@ -72,6 +73,7 @@ export type VendorPayoutStatementProps = {
   payoutReference?: string | null;
   scheduledFor?: string | null;
   generatedAt: string;
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -110,38 +112,40 @@ export function VendorPayoutStatementDocument({
   payoutReference,
   scheduledFor,
   generatedAt,
+  locale = "en",
 }: VendorPayoutStatementProps) {
+  const t = getBrandedDocumentsCopy(locale).vendorPayout;
   const currency = vendor.settlementCurrency;
 
   const columns: Array<DataTableColumn<VendorPayoutStatementRow>> = [
     {
       key: "orderNo",
-      header: "Order",
+      header: t.columnOrder,
       flex: 1.2,
       mono: true,
       render: (row) => row.orderNo,
     },
     {
       key: "fulfilledAt",
-      header: "Fulfilled",
+      header: t.columnFulfilled,
       flex: 1.4,
       render: (row) => formatDateTime(row.fulfilledAt),
     },
     {
       key: "buyer",
-      header: "Buyer",
+      header: t.columnBuyer,
       flex: 1.6,
       render: (row) => row.buyerLabel,
     },
     {
       key: "status",
-      header: "Status",
+      header: t.columnStatus,
       flex: 1,
       render: (row) => statusToLabel(row.status),
     },
     {
       key: "gross",
-      header: "Gross",
+      header: t.columnGross,
       flex: 1.1,
       align: "right",
       mono: true,
@@ -149,7 +153,7 @@ export function VendorPayoutStatementDocument({
     },
     {
       key: "commission",
-      header: "Commission",
+      header: t.columnCommission,
       flex: 1.1,
       align: "right",
       mono: true,
@@ -157,7 +161,7 @@ export function VendorPayoutStatementDocument({
     },
     {
       key: "fee",
-      header: "Fee",
+      header: t.columnFee,
       flex: 0.9,
       align: "right",
       mono: true,
@@ -165,7 +169,7 @@ export function VendorPayoutStatementDocument({
     },
     {
       key: "refunds",
-      header: "Refunds",
+      header: t.columnRefunds,
       flex: 0.9,
       align: "right",
       mono: true,
@@ -174,7 +178,7 @@ export function VendorPayoutStatementDocument({
     },
     {
       key: "net",
-      header: "Net",
+      header: t.columnNet,
       flex: 1.2,
       align: "right",
       mono: true,
@@ -184,76 +188,77 @@ export function VendorPayoutStatementDocument({
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Vendor payout · ${vendor.name} · ${period.label}`,
-        subject: "HenryCo Marketplace vendor payout statement",
+        subject: t.subject,
         keywords: ["marketplace", "vendor", "payout", "statement", vendor.name],
       }}
       header={{
-        documentType: "Payout statement",
+        documentType: t.documentType,
         title: vendor.name,
-        subtitle: `${period.label} · ${totals.orders} order${totals.orders === 1 ? "" : "s"}`,
+        subtitle: `${period.label} · ${t.subtitleOrders(totals.orders)}`,
         meta: [
-          { label: "Period", value: period.label },
-          { label: "Settlement", value: currency },
+          { label: t.metaPeriod, value: period.label },
+          { label: t.metaSettlement, value: currency },
           {
-            label: "Reference",
+            label: t.metaReference,
             value: payoutReference ?? "—",
           },
         ],
-        divisionLabel: "Marketplace · Vendor payout",
+        divisionLabel: t.divisionLabel,
       }}
       division="marketplace"
     >
       <View style={styles.banner}>
-        <Text style={styles.bannerLabel}>Net payout</Text>
+        <Text style={styles.bannerLabel}>{t.netPayout}</Text>
         <Text style={styles.bannerValue}>
           {formatKobo(totals.netPayoutKobo, currency)}
         </Text>
       </View>
 
-      <DocumentSection kicker="Vendor" tone="elevated">
+      <DocumentSection kicker={t.sectionVendor} tone="elevated">
         <DefinitionList
           rows={[
-            { label: "Store", value: vendor.name },
-            { label: "Slug", value: vendor.storeSlug, mono: true },
-            { label: "Legal name", value: vendor.legalName ?? vendor.name },
-            { label: "Tax ID", value: vendor.taxId ?? "On file" },
-            { label: "Payout method", value: titleCase(vendor.payoutMethod) },
+            { label: t.rowStore, value: vendor.name },
+            { label: t.rowSlug, value: vendor.storeSlug, mono: true },
+            { label: t.rowLegalName, value: vendor.legalName ?? vendor.name },
+            { label: t.rowTaxId, value: vendor.taxId ?? t.onFile },
+            { label: t.rowPayoutMethod, value: titleCase(vendor.payoutMethod) },
             {
-              label: "Destination",
-              value: vendor.payoutDestination ?? "On file",
+              label: t.rowDestination,
+              value: vendor.payoutDestination ?? t.onFile,
               mono: true,
             },
             {
-              label: "Settlement currency",
+              label: t.rowSettlementCurrency,
               value: currency,
             },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Period summary">
+      <DocumentSection kicker={t.sectionPeriodSummary}>
         <DefinitionList
           rows={[
-            { label: "Orders settled", value: String(totals.orders) },
+            { label: t.rowOrdersSettled, value: String(totals.orders) },
             {
-              label: "Gross revenue",
+              label: t.rowGrossRevenue,
               value: formatKobo(totals.grossKobo, currency),
               mono: true,
             },
             {
-              label: "Platform commission",
+              label: t.rowPlatformCommission,
               value: `-${formatKobo(totals.commissionKobo, currency)}`,
               mono: true,
             },
             {
-              label: "Processing fees",
+              label: t.rowProcessingFees,
               value: `-${formatKobo(totals.processingFeeKobo, currency)}`,
               mono: true,
             },
             {
-              label: "Refunds + chargebacks",
+              label: t.rowRefundsChargebacks,
               value:
                 totals.refundsKobo > 0
                   ? `-${formatKobo(totals.refundsKobo, currency)}`
@@ -261,42 +266,36 @@ export function VendorPayoutStatementDocument({
               mono: true,
             },
             {
-              label: "Net payout",
+              label: t.rowNetPayout,
               value: formatKobo(totals.netPayoutKobo, currency),
               mono: true,
             },
             {
-              label: "Scheduled for",
-              value: scheduledFor ? formatDateTime(scheduledFor) : "Awaiting cycle",
+              label: t.rowScheduledFor,
+              value: scheduledFor ? formatDateTime(scheduledFor) : t.awaitingCycle,
             },
             {
-              label: "Generated",
+              label: t.rowGenerated,
               value: formatDateTime(generatedAt),
             },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Itemised orders">
+      <DocumentSection kicker={t.sectionItemised}>
         <DataTable
           columns={columns}
           rows={rows}
           striped
-          emptyMessage="No orders settled in this period."
+          emptyMessage={t.emptyOrders}
           footerRow={{
-            description: "Net for selected period",
+            description: t.footerNet,
             amount: formatKobo(totals.netPayoutKobo, currency),
           }}
         />
       </DocumentSection>
 
-      <LegalFooter
-        lines={[
-          "This statement reflects orders that cleared the auto-release window during the period above. Refunds or disputes opened after the cut-off appear on the next statement.",
-          "Tax position is the vendor's responsibility; HenryCo withholds only the commission and processing fees disclosed in your vendor agreement.",
-          "Discrepancies must be raised within 14 days through the vendor workspace dispute channel; we cannot re-issue payouts outside that window.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2, t.legalLine3]} />
     </BrandedDocument>
   );
 }

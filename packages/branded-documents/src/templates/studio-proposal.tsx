@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DocumentSection, DefinitionList } from "../components/DocumentSection";
@@ -76,6 +77,7 @@ export type StudioProposalProps = {
     ipAddress?: string | null;
     locale?: string | null;
   } | null;
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -159,23 +161,24 @@ const styles = StyleSheet.create({
   },
 });
 
-export function StudioProposalDocument({ proposal, client, studio, signature }: StudioProposalProps) {
+export function StudioProposalDocument({ proposal, client, studio, signature, locale = "en" }: StudioProposalProps) {
+  const t = getBrandedDocumentsCopy(locale).studioProposal;
   const milestoneColumns: Array<DataTableColumn<StudioProposalMilestone>> = [
     {
       key: "name",
-      header: "Milestone",
+      header: t.columnMilestone,
       flex: 3,
       render: (r) => r.name + (r.description ? ` — ${r.description}` : ""),
     },
     {
       key: "due",
-      header: "Due",
+      header: t.columnDue,
       flex: 1.2,
       render: (r) => r.dueLabel ?? "—",
     },
     {
       key: "amount",
-      header: "Amount",
+      header: t.columnAmount,
       flex: 1.3,
       align: "right",
       mono: true,
@@ -185,6 +188,7 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Proposal ${proposal.proposalNumber}`,
         author: studio.name,
@@ -192,21 +196,21 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
         keywords: ["proposal", "studio", "henryco", proposal.proposalNumber],
       }}
       header={{
-        documentType: "Proposal",
+        documentType: t.documentType,
         title: proposal.proposalNumber,
         subtitle: proposal.title,
         meta: [
-          { label: "Issued", value: formatDate(proposal.issuedAt) },
-          { label: "Valid until", value: formatDate(proposal.validUntil) },
-          { label: "Status", value: statusToLabel(proposal.status) },
+          { label: t.metaIssued, value: formatDate(proposal.issuedAt) },
+          { label: t.metaValidUntil, value: formatDate(proposal.validUntil) },
+          { label: t.metaStatus, value: statusToLabel(proposal.status) },
         ],
-        divisionLabel: "Studio",
+        divisionLabel: t.divisionLabel,
       }}
       division="studio"
     >
       <View style={styles.parties}>
         <View style={styles.partyCol}>
-          <Text style={styles.partyKicker}>From</Text>
+          <Text style={styles.partyKicker}>{t.partyFrom}</Text>
           <Text style={styles.partyName}>{studio.name}</Text>
           {studio.addressLines.map((line) => (
             <Text key={line} style={styles.partyLine}>
@@ -215,28 +219,28 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
           ))}
           <Text style={styles.partyLine}>{studio.contactEmail}</Text>
           {studio.contactPhone ? <Text style={styles.partyLine}>{studio.contactPhone}</Text> : null}
-          {studio.rcNumber ? <Text style={styles.partyLine}>RC: {studio.rcNumber}</Text> : null}
+          {studio.rcNumber ? <Text style={styles.partyLine}>{t.rcPrefix} {studio.rcNumber}</Text> : null}
         </View>
         <View style={styles.partyCol}>
-          <Text style={styles.partyKicker}>Prepared for</Text>
+          <Text style={styles.partyKicker}>{t.partyPreparedFor}</Text>
           <Text style={styles.partyName}>{client.name}</Text>
           {client.organisation ? <Text style={styles.partyLine}>{client.organisation}</Text> : null}
           {client.email ? <Text style={styles.partyLine}>{client.email}</Text> : null}
         </View>
       </View>
 
-      <DocumentSection kicker="Engagement overview">
+      <DocumentSection kicker={t.sectionEngagement}>
         <DefinitionList
           rows={[
-            { label: "Service", value: proposal.serviceLabel ?? "—" },
-            { label: "Package", value: proposal.packageLabel ?? "—" },
-            { label: "Team", value: proposal.teamLabel ?? "—" },
-            { label: "Timeline", value: proposal.timelineLabel ?? "—" },
+            { label: t.rowService, value: proposal.serviceLabel ?? "—" },
+            { label: t.rowPackage, value: proposal.packageLabel ?? "—" },
+            { label: t.rowTeam, value: proposal.teamLabel ?? "—" },
+            { label: t.rowTimeline, value: proposal.timelineLabel ?? "—" },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Scope">
+      <DocumentSection kicker={t.sectionScope}>
         {proposal.scopeBullets.length > 0 ? (
           proposal.scopeBullets.map((bullet, idx) => (
             <Text key={`${idx}-${bullet}`} style={styles.scopeItem}>
@@ -244,12 +248,12 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
             </Text>
           ))
         ) : (
-          <Text style={styles.scopeItem}>Scope detailed in companion brief.</Text>
+          <Text style={styles.scopeItem}>{t.scopeFallback}</Text>
         )}
       </DocumentSection>
 
       {proposal.deliverables && proposal.deliverables.length > 0 ? (
-        <DocumentSection kicker="Deliverables">
+        <DocumentSection kicker={t.sectionDeliverables}>
           {proposal.deliverables.map((line, idx) => (
             <Text key={`${idx}-${line}`} style={styles.scopeItem}>
               {`•  ${line}`}
@@ -259,8 +263,8 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
       ) : null}
 
       {proposal.milestones && proposal.milestones.length > 0 ? (
-        <DocumentSection kicker="Milestones">
-          <DataTable columns={milestoneColumns} rows={proposal.milestones} emptyMessage="No milestones recorded." />
+        <DocumentSection kicker={t.sectionMilestones}>
+          <DataTable columns={milestoneColumns} rows={proposal.milestones} emptyMessage={t.emptyMilestones} />
         </DocumentSection>
       ) : null}
 
@@ -268,23 +272,23 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
         <View style={styles.totalsLeft}>
           <DefinitionList
             rows={[
-              { label: "Deposit due to start", value: formatKobo(proposal.depositKobo, proposal.currency), mono: true },
-              { label: "Currency", value: proposal.currency },
-              { label: "Valid until", value: formatDate(proposal.validUntil) },
+              { label: t.rowDepositDue, value: formatKobo(proposal.depositKobo, proposal.currency), mono: true },
+              { label: t.rowCurrency, value: proposal.currency },
+              { label: t.rowValidUntil, value: formatDate(proposal.validUntil) },
             ]}
           />
         </View>
         <View style={styles.totalsRight}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Investment</Text>
+            <Text style={styles.totalLabel}>{t.totalInvestment}</Text>
             <Text style={styles.totalValue}>{formatKobo(proposal.investmentKobo, proposal.currency)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Deposit</Text>
+            <Text style={styles.totalLabel}>{t.totalDeposit}</Text>
             <Text style={styles.totalValue}>{formatKobo(proposal.depositKobo, proposal.currency)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.grandLabel}>Balance</Text>
+            <Text style={styles.grandLabel}>{t.totalBalance}</Text>
             <Text style={styles.grandValue}>
               {formatKobo(Math.max(proposal.investmentKobo - proposal.depositKobo, 0), proposal.currency)}
             </Text>
@@ -294,48 +298,43 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
 
       {signature ? (
         <View style={styles.signatureBlock}>
-          <Text style={styles.partyKicker}>Signed</Text>
+          <Text style={styles.partyKicker}>{t.signed}</Text>
           <View style={styles.signatureRow}>
-            <Text style={styles.signatureLabel}>Signed at</Text>
+            <Text style={styles.signatureLabel}>{t.signedAt}</Text>
             <Text style={styles.signatureValue}>{formatDateTime(signature.signedAt)}</Text>
           </View>
           {signature.signedByName ? (
             <View style={styles.signatureRow}>
-              <Text style={styles.signatureLabel}>Signed by</Text>
+              <Text style={styles.signatureLabel}>{t.signedBy}</Text>
               <Text style={styles.signatureValue}>{signature.signedByName}</Text>
             </View>
           ) : null}
           {signature.signedByEmail ? (
             <View style={styles.signatureRow}>
-              <Text style={styles.signatureLabel}>Email</Text>
+              <Text style={styles.signatureLabel}>{t.signedEmail}</Text>
               <Text style={styles.signatureValue}>{signature.signedByEmail}</Text>
             </View>
           ) : null}
           <View style={styles.signatureRow}>
-            <Text style={styles.signatureLabel}>Provider</Text>
+            <Text style={styles.signatureLabel}>{t.signedProvider}</Text>
             <Text style={styles.signatureValue}>{signature.provider}</Text>
           </View>
           {signature.ipAddress ? (
             <View style={styles.signatureRow}>
-              <Text style={styles.signatureLabel}>IP address</Text>
+              <Text style={styles.signatureLabel}>{t.signedIp}</Text>
               <Text style={styles.signatureValue}>{signature.ipAddress}</Text>
             </View>
           ) : null}
           {signature.locale ? (
             <View style={styles.signatureRow}>
-              <Text style={styles.signatureLabel}>Locale</Text>
+              <Text style={styles.signatureLabel}>{t.signedLocale}</Text>
               <Text style={styles.signatureValue}>{signature.locale}</Text>
             </View>
           ) : null}
         </View>
       ) : null}
 
-      <LegalFooter
-        lines={[
-          "This proposal is governed by the HenryCo Studio engagement terms. Acceptance is recorded electronically with timestamp, IP address, user agent, and locale captured for audit replay.",
-          "Investment + deposit figures above are exclusive of statutory tax unless explicitly noted. Currency converts at the gateway rate on the day of settlement.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

@@ -1,5 +1,7 @@
 import { Building2 } from "lucide-react";
 import CopyValueButton from "@/components/ui/CopyValueButton";
+import { getAccountWalletExtraCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 type Rail = {
   bankName?: string | null;
@@ -13,18 +15,22 @@ type Props = {
   copiedLabel?: string;
 };
 
-export function AccountDetailsCard({
+export async function AccountDetailsCard({
   rail,
-  copyLabel = "Copy",
-  copiedLabel = "Copied",
+  copyLabel,
+  copiedLabel,
 }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountWalletExtraCopy(locale).accountDetails;
+  const resolvedCopyLabel = copyLabel ?? copy.copy;
+  const resolvedCopiedLabel = copiedLabel ?? copy.copied;
   const rows: Array<{ label: string; value: string | null | undefined; mono?: boolean }> = [
-    { label: "Bank", value: rail.bankName },
-    { label: "Account name", value: rail.accountName },
-    { label: "Account number", value: rail.accountNumber, mono: true },
+    { label: copy.bankLabel, value: rail.bankName },
+    { label: copy.accountNameLabel, value: rail.accountName },
+    { label: copy.accountNumberLabel, value: rail.accountNumber, mono: true },
   ];
   return (
-    <div className="acct-wal__rail" aria-label="HenryCo finance account">
+    <div className="acct-wal__rail" aria-label={copy.ariaLabel}>
       <div className="acct-wal__rail-head">
         <span className="acct-wal__rail-icon" aria-hidden>
           <Building2 size={18} />
@@ -40,9 +46,9 @@ export function AccountDetailsCard({
               margin: 0,
             }}
           >
-            Transfer details
+            {copy.kicker}
           </p>
-          <h3 className="acct-wal__rail-title">HenryCo finance account</h3>
+          <h3 className="acct-wal__rail-title">{copy.title}</h3>
         </div>
       </div>
       {rows.map((row) => (
@@ -54,11 +60,11 @@ export function AccountDetailsCard({
                 row.mono ? " acct-wal__rail-row-value--mono" : ""
               }`}
             >
-              {row.value || "Pending"}
+              {row.value || copy.pending}
             </p>
           </div>
           {row.value ? (
-            <CopyValueButton value={row.value} label={copyLabel} copiedLabel={copiedLabel} />
+            <CopyValueButton value={row.value} label={resolvedCopyLabel} copiedLabel={resolvedCopiedLabel} />
           ) : null}
         </div>
       ))}

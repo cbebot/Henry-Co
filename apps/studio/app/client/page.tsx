@@ -8,7 +8,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import {
   buildAttentionItems,
   getClientPortalSnapshot,
@@ -29,9 +31,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-function greetingFor(name: string | null): string {
+function greetingFor(
+  name: string | null,
+  copy: ReturnType<typeof getStudioClientPagesCopy>["home"],
+): string {
   const hour = new Date().getHours();
-  const slot = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const slot =
+    hour < 12 ? copy.goodMorning : hour < 18 ? copy.goodAfternoon : copy.goodEvening;
   const trimmed = (name || "").trim().split(/\s+/)[0];
   return trimmed ? `${slot}, ${trimmed}` : slot;
 }
@@ -39,6 +45,8 @@ function greetingFor(name: string | null): string {
 export default async function ClientHomePage() {
   const viewer = await requireClientPortalViewer("/client");
   const snapshot = await getClientPortalSnapshot(viewer);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale).home;
 
   const activeProject =
     snapshot.projects.find((project) =>
@@ -72,27 +80,26 @@ export default async function ClientHomePage() {
     <div className="space-y-7">
       <header className="flex flex-col gap-2">
         <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          {greetingFor(viewer.fullName || viewer.email)}
+          {greetingFor(viewer.fullName || viewer.email, copy)}
         </span>
         <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Your Studio workspace
+          {copy.title}
         </h1>
         <p className="max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-          Everything tied to your engagement with HenryCo Studio — milestones, files,
-          messages, payments — stays current here as the work moves forward.
+          {copy.body}
         </p>
       </header>
 
       {activeProject ? (
-        <ActiveProjectCard project={activeProject} milestones={milestones} />
+        <ActiveProjectCard project={activeProject} milestones={milestones} copy={copy} />
       ) : (
         <PortalEmptyState
           icon={Sparkles}
-          title="Let's start your first project"
-          body="Once you submit a brief and we accept the proposal, your active project will live here with milestones, files, and a direct line to the team."
+          title={copy.startFirstTitle}
+          body={copy.startFirstBody}
           action={
             <Link href="/request" className="portal-button portal-button-primary">
-              Open the brief builder
+              {copy.openBriefBuilder}
               <ArrowRight className="h-4 w-4" />
             </Link>
           }
@@ -101,17 +108,17 @@ export default async function ClientHomePage() {
 
       {attention.length > 0 ? <AttentionStrip items={attention} /> : null}
 
-      <section aria-label="Recent activity" className="space-y-4">
+      <section aria-label={copy.recentActivity} className="space-y-4">
         <div className="flex items-baseline justify-between">
           <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-            Recent activity
+            {copy.recentActivity}
           </h2>
           {snapshot.projects.length > 1 ? (
             <Link
               href="/client/projects"
               className="text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
             >
-              View all projects
+              {copy.viewAllProjects}
             </Link>
           ) : null}
         </div>
@@ -122,23 +129,23 @@ export default async function ClientHomePage() {
           <PortalEmptyState
             icon={History}
             tone="muted"
-            title="The feed is just getting started"
-            body="Once we share files, complete milestones, or post updates, you will see the timeline build here. Replies and approvals from your side land here too."
+            title={copy.feedStartedTitle}
+            body={copy.feedStartedBody}
           />
         )}
       </section>
 
       {otherProjects.length > 0 ? (
-        <section aria-label="Other projects" className="space-y-3">
+        <section aria-label={copy.otherProjects} className="space-y-3">
           <div className="flex items-baseline justify-between">
             <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-              Other projects
+              {copy.otherProjects}
             </h2>
             <Link
               href="/client/projects"
               className="text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
             >
-              See all
+              {copy.seeAll}
             </Link>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -153,7 +160,7 @@ export default async function ClientHomePage() {
                     {project.title}
                   </div>
                   <div className="mt-0.5 line-clamp-1 text-[12px] text-[var(--studio-ink-soft)]">
-                    {project.summary || "Studio engagement"}
+                    {project.summary || copy.studioEngagement}
                   </div>
                 </div>
                 <ArrowRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--studio-ink-soft)] transition group-hover:text-[var(--studio-ink)]" />
@@ -169,20 +176,22 @@ export default async function ClientHomePage() {
 function ActiveProjectCard({
   project,
   milestones,
+  copy,
 }: {
   project: import("@/types/portal").ClientProject;
   milestones: import("@/types/portal").ClientMilestone[];
+  copy: ReturnType<typeof getStudioClientPagesCopy>["home"];
 }) {
   const status = projectStatusToken(project.status);
   const completed = milestones.filter((m) => ["approved", "complete"].includes(m.status)).length;
 
   return (
-    <section className="portal-card-elev p-5 sm:p-7" aria-label="Active project">
+    <section className="portal-card-elev p-5 sm:p-7" aria-label={copy.activeProject}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
             <FolderKanban className="h-3.5 w-3.5" />
-            Active project
+            {copy.activeProject}
           </div>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-[1.5rem]">
             {project.title}
@@ -201,20 +210,20 @@ function ActiveProjectCard({
       <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-[var(--studio-ink-soft)]">
         {project.startDate ? (
           <span>
-            <span className="font-semibold uppercase tracking-[0.16em]">Started</span>{" "}
+            <span className="font-semibold uppercase tracking-[0.16em]">{copy.started}</span>{" "}
             {shortDate(project.startDate)}
           </span>
         ) : null}
         {project.estimatedCompletion ? (
           <span>
-            <span className="font-semibold uppercase tracking-[0.16em]">Estimated completion</span>{" "}
+            <span className="font-semibold uppercase tracking-[0.16em]">{copy.estimatedCompletion}</span>{" "}
             {shortDate(project.estimatedCompletion)}
           </span>
         ) : null}
         {milestones.length > 0 ? (
           <span>
-            <span className="font-semibold uppercase tracking-[0.16em]">Progress</span>{" "}
-            {completed}/{milestones.length} milestones
+            <span className="font-semibold uppercase tracking-[0.16em]">{copy.progress}</span>{" "}
+            {completed}/{milestones.length} {copy.milestones}
           </span>
         ) : null}
       </div>
@@ -230,7 +239,7 @@ function ActiveProjectCard({
           href={`/client/projects/${project.id}`}
           className="portal-button portal-button-primary"
         >
-          Open project
+          {copy.openProject}
           <ArrowRight className="h-4 w-4" />
         </Link>
         <Link
@@ -238,7 +247,7 @@ function ActiveProjectCard({
           className="portal-button portal-button-secondary"
         >
           <MessageSquare className="h-4 w-4" />
-          Message the team
+          {copy.messageTeam}
         </Link>
       </div>
     </section>

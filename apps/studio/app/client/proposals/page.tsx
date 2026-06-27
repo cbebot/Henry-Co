@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ScrollText, Sparkles } from "lucide-react";
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import { friendlyProposalStatus } from "@/lib/studio/project-workspace-copy";
 import { PortalEmptyState } from "@/components/portal/empty-state";
+
+type StudioClientPagesCopy = ReturnType<typeof getStudioClientPagesCopy>;
 
 export const metadata: Metadata = {
   title: "Proposals",
@@ -27,18 +31,20 @@ export default async function ClientProposalsPage() {
   const viewer = await requireStudioUser("/client/proposals");
   const snapshot = await getStudioSnapshot();
   const clientData = studioClientSnapshot(viewer, snapshot);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
 
   if (clientData.proposals.length === 0) {
     return (
       <div className="space-y-6">
-        <Header />
+        <Header copy={copy} />
         <PortalEmptyState
           icon={Sparkles}
-          title="No proposals on your account yet"
-          body="Once a brief is reviewed, the Studio team sends a proposal with scope, pricing, and milestone logic — it lives here so you can revisit it any time."
+          title={copy.proposals.emptyTitle}
+          body={copy.proposals.emptyBody}
           action={
             <Link href="/request" className="portal-button portal-button-primary">
-              Submit a brief
+              {copy.proposals.submitBrief}
               <ArrowRight className="h-4 w-4" />
             </Link>
           }
@@ -62,7 +68,7 @@ export default async function ClientProposalsPage() {
 
   return (
     <div className="space-y-7">
-      <Header />
+      <Header copy={copy} />
 
       {/* TODO(wave1): multi-row proposal list. proposal.title /
           proposal.summary are Supabase-row text fields — translate each via
@@ -101,7 +107,7 @@ export default async function ClientProposalsPage() {
               <div className="flex items-baseline justify-between gap-3">
                 <div>
                   <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                    Investment
+                    {copy.proposals.investment}
                   </div>
                   <div className="mt-0.5 text-[18px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
                     {formatCurrency(proposal.investment, proposal.currency)}
@@ -110,7 +116,7 @@ export default async function ClientProposalsPage() {
                 {proposal.validUntil ? (
                   <div className="text-right">
                     <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                      {expired ? "Expired" : "Valid until"}
+                      {expired ? copy.proposals.expired : copy.proposals.validUntil}
                     </div>
                     <div className="mt-0.5 text-[12.5px] tabular-nums text-[var(--studio-ink-soft)]">
                       {new Date(proposal.validUntil).toLocaleDateString("en-NG", {
@@ -127,7 +133,7 @@ export default async function ClientProposalsPage() {
                 href={`/proposals/${proposal.id}?access=${proposal.accessKey}`}
                 className="portal-button portal-button-secondary self-start"
               >
-                Open proposal
+                {copy.proposals.openProposal}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </article>
@@ -138,18 +144,17 @@ export default async function ClientProposalsPage() {
   );
 }
 
-function Header() {
+function Header({ copy }: { copy: StudioClientPagesCopy }) {
   return (
     <header>
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-        Scope · pricing · milestones
+        {copy.proposals.kicker}
       </div>
       <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-        Proposals
+        {copy.proposals.title}
       </h1>
       <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-        Every Studio proposal tied to your account. Open one to revisit the
-        scope, milestone breakdown, and the deposit-or-template path.
+        {copy.proposals.body}
       </p>
     </header>
   );

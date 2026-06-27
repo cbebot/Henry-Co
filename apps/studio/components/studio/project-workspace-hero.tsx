@@ -3,6 +3,8 @@ import { formatCurrency } from "@/lib/env";
 import { clientProjectStatusLabel } from "@/lib/studio/project-workspace-copy";
 import { getStudioLoginUrl } from "@/lib/studio/links";
 import type { StudioProject } from "@/lib/studio/types";
+import { getStudioProjectCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 type Overview = {
   outstanding: number;
@@ -12,7 +14,7 @@ type Overview = {
   nextPayment: { label: string } | null;
 };
 
-export function ProjectWorkspaceHero({
+export async function ProjectWorkspaceHero({
   project,
   serviceName,
   teamLine,
@@ -35,6 +37,8 @@ export function ProjectWorkspaceHero({
   isStaff: boolean;
   clientCta: { href: string; label: string; sub?: string } | null;
 }) {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioProjectCopy(locale).hero;
   const statusLabel = clientProjectStatusLabel(project.status);
 
   return (
@@ -46,7 +50,7 @@ export function ProjectWorkspaceHero({
       <div className="relative grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(151,244,243,0.25)] bg-black/20 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">
-            Client workspace
+            {copy.clientWorkspaceBadge}
           </div>
           <h1 className="studio-display mt-6 max-w-4xl text-[var(--studio-ink)] text-[clamp(1.85rem,4vw,2.85rem)] leading-[1.08] tracking-[-0.04em]">
             {project.title}
@@ -66,11 +70,11 @@ export function ProjectWorkspaceHero({
               <p className="max-w-md text-sm leading-7 text-[var(--studio-ink-soft)]">{clientCta.sub}</p>
             ) : null}
             {!clientCta && !isStaff ? (
-              <p className="text-sm font-medium text-[var(--studio-signal)]">Next: {project.nextAction}</p>
+              <p className="text-sm font-medium text-[var(--studio-signal)]">{copy.nextPrefix}{project.nextAction}</p>
             ) : null}
             {isStaff ? (
               <p className="text-sm text-[var(--studio-ink-soft)]">
-                <span className="font-medium text-[var(--studio-ink)]">Team view</span> · {project.nextAction}
+                <span className="font-medium text-[var(--studio-ink)]">{copy.teamView}</span> · {project.nextAction}
               </p>
             ) : null}
           </div>
@@ -78,23 +82,24 @@ export function ProjectWorkspaceHero({
           <div className="mt-8 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/20 px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
             {viewer.user ? (
               <>
-                Signed in as{" "}
+                {copy.signedInAs}{" "}
                 <span className="font-medium text-[var(--studio-ink)]">
                   {viewer.user.fullName || viewer.user.email}
                 </span>
-                . Projects also live in your{" "}
+                {". "}
+                {copy.projectsLiveInPrefix}{" "}
                 <Link href={`${accountUrl}?ref=studio-project`} className="font-semibold text-[var(--studio-signal)]">
-                  HenryCo account
+                  {copy.henrycoAccount}
                 </Link>
                 .
               </>
             ) : (
               <>
-                Secure link access.{" "}
+                {copy.secureLinkAccess}{" "}
                 <Link href={getStudioLoginUrl(redirectPath)} className="font-semibold text-[var(--studio-signal)]">
-                  Sign in
+                  {copy.signIn}
                 </Link>{" "}
-                to attach this project to your account.
+                {copy.attachSuffix}
               </>
             )}
           </div>
@@ -103,21 +108,24 @@ export function ProjectWorkspaceHero({
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-1">
           {[
             {
-              label: "Project status",
+              label: copy.cardProjectStatus,
               value: statusLabel,
               detail: `${serviceName} · ${teamLine}`,
             },
             {
-              label: "Balance due",
+              label: copy.cardBalanceDue,
               value: formatCurrency(paymentOverview.outstanding, proposalCurrency),
-              detail: `${paymentOverview.approvedMilestones} of ${paymentOverview.totalMilestones} milestones approved`,
+              detail: copy.milestonesApproved(
+                paymentOverview.approvedMilestones,
+                paymentOverview.totalMilestones,
+              ),
             },
             {
-              label: "Paid to date",
+              label: copy.cardPaidToDate,
               value: formatCurrency(paymentOverview.paid, proposalCurrency),
               detail: paymentOverview.nextPayment
-                ? `Next: ${paymentOverview.nextPayment.label}`
-                : "All payments up to date",
+                ? `${copy.nextPaymentPrefix}${paymentOverview.nextPayment.label}`
+                : copy.allPaymentsUpToDate,
             },
           ].map((card) => (
             <div

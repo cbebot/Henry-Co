@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DocumentSection, DefinitionList } from "../components/DocumentSection";
@@ -80,6 +81,7 @@ export type PropertyManagedStatementProps = {
   rentRows: PropertyManagedRentRow[];
   maintenanceRows: PropertyManagedMaintenanceRow[];
   notes?: string[];
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -118,37 +120,39 @@ export function PropertyManagedStatementDocument({
   rentRows,
   maintenanceRows,
   notes,
+  locale = "en",
 }: PropertyManagedStatementProps) {
+  const t = getBrandedDocumentsCopy(locale).propertyManaged;
   const rentColumns: Array<DataTableColumn<PropertyManagedRentRow>> = [
     {
       key: "period",
-      header: "Period",
+      header: t.columnPeriod,
       flex: 1.2,
       mono: true,
       render: (row) => row.periodLabel,
     },
     {
       key: "window",
-      header: "Window",
+      header: t.columnWindow,
       flex: 1.8,
       render: (row) =>
         `${formatDateTime(row.periodStartsAt)} – ${formatDateTime(row.periodEndsAt)}`,
     },
     {
       key: "status",
-      header: "Status",
+      header: t.columnStatus,
       flex: 1,
       render: (row) => statusToLabel(row.status),
     },
     {
       key: "collectedAt",
-      header: "Collected",
+      header: t.columnCollected,
       flex: 1.2,
       render: (row) => (row.collectedAt ? formatDateTime(row.collectedAt) : "—"),
     },
     {
       key: "amount",
-      header: "Amount",
+      header: t.columnAmount,
       flex: 1.2,
       align: "right",
       mono: true,
@@ -159,37 +163,37 @@ export function PropertyManagedStatementDocument({
   const maintenanceColumns: Array<DataTableColumn<PropertyManagedMaintenanceRow>> = [
     {
       key: "summary",
-      header: "Ticket",
+      header: t.columnTicket,
       flex: 2.2,
       render: (row) => row.ticketSummary,
     },
     {
       key: "category",
-      header: "Category",
+      header: t.columnCategory,
       flex: 1.2,
       render: (row) => titleCase(row.category),
     },
     {
       key: "severity",
-      header: "Severity",
+      header: t.columnSeverity,
       flex: 1,
       render: (row) => titleCase(row.severity),
     },
     {
       key: "status",
-      header: "Status",
+      header: t.columnStatus,
       flex: 1,
       render: (row) => statusToLabel(row.status),
     },
     {
       key: "resolved",
-      header: "Resolved",
+      header: t.columnResolved,
       flex: 1.2,
       render: (row) => (row.resolvedAt ? formatDateTime(row.resolvedAt) : "—"),
     },
     {
       key: "amount",
-      header: "Amount",
+      header: t.columnAmount,
       flex: 1.2,
       align: "right",
       mono: true,
@@ -197,88 +201,85 @@ export function PropertyManagedStatementDocument({
     },
   ];
 
-  const legalLines = [
-    "This statement reflects rent collected and operating expenses applied to the managed listing above during the period. Amounts are gross of withholding tax; HenryCo remits the net pass-through on the cadence agreed in your management instrument.",
-    "Any discrepancy must be raised in writing within the dispute window stated in your management instrument; HenryCo cannot re-bill or re-collect outside that window.",
-    ...(notes ?? []),
-  ];
+  const legalLines = [t.legalLine1, t.legalLine2, ...(notes ?? [])];
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Managed-property statement · ${listing.title} · ${period.label}`,
-        subject: "HenryCo Property managed statement",
+        subject: t.subject,
         keywords: ["property", "managed", "statement", "henryco", listing.title],
       }}
       header={{
-        documentType: "Managed-property statement",
+        documentType: t.documentType,
         title: listing.title,
         subtitle: `${period.label} · ${listing.locationLabel}`,
         meta: [
-          { label: "Period", value: period.label },
-          { label: "Starts", value: formatDateTime(period.startsAt) },
-          { label: "Ends", value: formatDateTime(period.endsAt) },
+          { label: t.metaPeriod, value: period.label },
+          { label: t.metaStarts, value: formatDateTime(period.startsAt) },
+          { label: t.metaEnds, value: formatDateTime(period.endsAt) },
         ],
-        divisionLabel: "Property · Managed",
+        divisionLabel: t.divisionLabel,
       }}
       division="property"
     >
       <View style={styles.banner}>
-        <Text style={styles.bannerLabel}>Net payable to owner</Text>
+        <Text style={styles.bannerLabel}>{t.netPayable}</Text>
         <Text style={styles.bannerValue}>
           {formatKobo(totals.netPayableKobo, totals.currency)}
         </Text>
       </View>
 
-      <DocumentSection kicker="Owner" tone="elevated">
+      <DocumentSection kicker={t.sectionOwner} tone="elevated">
         <DefinitionList
           rows={[
-            { label: "Name", value: owner.name },
-            { label: "Legal name", value: owner.legalName ?? owner.name },
-            { label: "Email", value: owner.email ?? "—" },
-            { label: "Phone", value: owner.phone ?? "—" },
+            { label: t.rowName, value: owner.name },
+            { label: t.rowLegalName, value: owner.legalName ?? owner.name },
+            { label: t.rowEmail, value: owner.email ?? "—" },
+            { label: t.rowPhone, value: owner.phone ?? "—" },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Listing">
+      <DocumentSection kicker={t.sectionListing}>
         <DefinitionList
           rows={[
-            { label: "Title", value: listing.title },
+            { label: t.rowTitle, value: listing.title },
             {
-              label: "Address",
+              label: t.rowAddress,
               value: listing.addressLine
                 ? `${listing.addressLine}, ${listing.locationLabel}`
                 : listing.locationLabel,
             },
             {
-              label: "Managed since",
+              label: t.rowManagedSince,
               value: listing.managedSince ? formatDateTime(listing.managedSince) : "—",
             },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Period summary">
+      <DocumentSection kicker={t.sectionPeriodSummary}>
         <DefinitionList
           rows={[
             {
-              label: "Gross rent collected",
+              label: t.rowGrossRent,
               value: formatKobo(totals.grossRentKobo, totals.currency),
               mono: true,
             },
             {
-              label: "Maintenance spend",
+              label: t.rowMaintenanceSpend,
               value: formatKobo(totals.maintenanceKobo, totals.currency),
               mono: true,
             },
             {
-              label: "Management fee",
+              label: t.rowManagementFee,
               value: formatKobo(totals.managementFeeKobo, totals.currency),
               mono: true,
             },
             {
-              label: "Net payable to owner",
+              label: t.rowNetPayable,
               value: formatKobo(totals.netPayableKobo, totals.currency),
               mono: true,
             },
@@ -286,21 +287,21 @@ export function PropertyManagedStatementDocument({
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Rent ledger">
+      <DocumentSection kicker={t.sectionRentLedger}>
         <DataTable
           columns={rentColumns}
           rows={rentRows}
           striped
-          emptyMessage="No rent activity in this period."
+          emptyMessage={t.emptyRent}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Maintenance">
+      <DocumentSection kicker={t.sectionMaintenance}>
         <DataTable
           columns={maintenanceColumns}
           rows={maintenanceRows}
           striped
-          emptyMessage="No maintenance activity in this period."
+          emptyMessage={t.emptyMaintenance}
         />
       </DocumentSection>
 

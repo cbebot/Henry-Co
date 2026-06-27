@@ -1,12 +1,16 @@
+import { getJobsCandidateSurfaceCopy } from "@henryco/i18n";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateInterviews } from "@/lib/jobs/hiring";
 import { candidateNav } from "@/lib/jobs/navigation";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
 
 export default async function CandidateInterviewsPage() {
   const viewer = await requireJobsUser("/candidate/interviews");
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsCandidateSurfaceCopy(locale).interviews;
   const interviews = await getCandidateInterviews(viewer.user!.id);
 
   const now = new Date();
@@ -30,8 +34,8 @@ export default async function CandidateInterviewsPage() {
   return (
     <WorkspaceShell
       area="candidate"
-      title="Interviews"
-      subtitle="Your scheduled and completed interviews. Times are shown in your timezone."
+      title={copy.title}
+      subtitle={copy.subtitle}
       nav={candidateNav}
       activeHref="/candidate/interviews"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
@@ -39,13 +43,16 @@ export default async function CandidateInterviewsPage() {
       <div className="space-y-4">
         {/* Upcoming interviews */}
         <SectionCard
-          title="Upcoming"
-          body={`${upcoming.length} interview${upcoming.length !== 1 ? "s" : ""} scheduled.`}
+          title={copy.upcomingTitle}
+          body={(upcoming.length === 1 ? copy.upcomingCountSingular : copy.upcomingCountPlural).replace(
+            "{count}",
+            String(upcoming.length),
+          )}
         >
           {upcoming.length === 0 ? (
             <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-6 text-center">
               <p className="text-sm text-[var(--jobs-muted)]">
-                No upcoming interviews. When an employer schedules one, it will appear here.
+                {copy.emptyUpcoming}
               </p>
             </div>
           ) : (
@@ -70,7 +77,7 @@ export default async function CandidateInterviewsPage() {
                         })}
                       </div>
                       <div className="mt-1 flex flex-wrap gap-2 text-sm text-[var(--jobs-muted)]">
-                        <span>{interview.durationMinutes} minutes</span>
+                        <span>{interview.durationMinutes} {copy.minutes}</span>
                         <span>&middot;</span>
                         <span className="capitalize">{interview.interviewType}</span>
                         <span>&middot;</span>
@@ -84,20 +91,20 @@ export default async function CandidateInterviewsPage() {
                             rel="noopener noreferrer"
                             className="text-sm font-semibold text-[var(--jobs-accent)] hover:underline"
                           >
-                            Join meeting
+                            {copy.joinMeeting}
                           </a>
                         </div>
                       )}
                       {interview.interviewType === "in-person" && interview.location && (
                         <div className="mt-2 text-sm text-[var(--jobs-muted)]">
-                          Location: {interview.location}
+                          {copy.location}: {interview.location}
                         </div>
                       )}
                       {interview.notes && (
                         <p className="mt-2 text-sm italic text-[var(--jobs-muted)]">{interview.notes}</p>
                       )}
                     </div>
-                    <StatusPill label="Scheduled" tone="good" />
+                    <StatusPill label={copy.scheduled} tone="good" />
                   </div>
                 </div>
               ))}
@@ -107,13 +114,16 @@ export default async function CandidateInterviewsPage() {
 
         {/* Past interviews */}
         <SectionCard
-          title="Past"
-          body={`${past.length} previous interview${past.length !== 1 ? "s" : ""}.`}
+          title={copy.pastTitle}
+          body={(past.length === 1 ? copy.pastCountSingular : copy.pastCountPlural).replace(
+            "{count}",
+            String(past.length),
+          )}
         >
           {past.length === 0 ? (
             <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-6 text-center">
               <p className="text-sm text-[var(--jobs-muted)]">
-                No past interviews.
+                {copy.emptyPast}
               </p>
             </div>
           ) : (
@@ -132,7 +142,7 @@ export default async function CandidateInterviewsPage() {
                           dateStyle: "medium",
                           timeStyle: "short",
                         })}
-                        {" "}({interview.durationMinutes} min, {interview.interviewType})
+                        {" "}({interview.durationMinutes} {copy.minutesShort}, {interview.interviewType})
                       </div>
                     </div>
                     <StatusPill label={interview.status} tone={statusTone(interview.status)} />

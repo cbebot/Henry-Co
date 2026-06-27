@@ -9,6 +9,10 @@ import { studioPaymentCheckpointCopy } from "@/lib/studio/payment-status-copy";
 import { friendlyPaymentStatus } from "@/lib/studio/project-workspace-copy";
 import type { StudioPlatformSettings } from "@/lib/studio/settings-shared";
 import type { StudioPayment } from "@/lib/studio/types";
+import { getStudioProjectCopy, type StudioProjectCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
+
+type PaymentsStackCopy = StudioProjectCopy["paymentsStack"];
 
 type BreakdownLine = { label: string; amount: number; detail?: string | null };
 
@@ -45,7 +49,7 @@ function paymentWorkspaceHref(paymentId: string, access: string) {
   return `/pay/${paymentId}${access ? `?access=${encodeURIComponent(access)}` : ""}`;
 }
 
-function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
+function PaymentProofStatus({ payment, copy }: { payment: StudioPayment; copy: PaymentsStackCopy }) {
   const proofName = payment.proofName?.trim() || null;
   const proofOnFile = Boolean(proofName || payment.proofUrl);
 
@@ -56,12 +60,12 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#8de8b3]" aria-hidden />
           <div className="min-w-0">
             <div className="text-sm font-semibold text-[var(--studio-ink)]">
-              {proofOnFile ? "Payment proof verified" : "Payment verified"}
+              {proofOnFile ? copy.proofVerifiedTitle : copy.paymentVerifiedTitle}
             </div>
             <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
               {proofName
-                ? `Finance verified ${proofName} and recorded this payment against the project.`
-                : "Finance has confirmed this transfer and recorded it against the project."}
+                ? copy.proofVerifiedBody(proofName)
+                : copy.paymentVerifiedBody}
             </p>
           </div>
         </div>
@@ -75,11 +79,11 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
         <div className="flex items-start gap-3">
           <FileCheck2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-signal)]" aria-hidden />
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-[var(--studio-ink)]">Payment proof on file</div>
+            <div className="text-sm font-semibold text-[var(--studio-ink)]">{copy.proofOnFileTitle}</div>
             <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
               {proofName
-                ? `${proofName} is attached. Finance is matching it to the transfer and will mark this checkpoint confirmed once it clears.`
-                : "A proof file is attached. Finance is matching it to the transfer and will mark this checkpoint confirmed once it clears."}
+                ? copy.proofOnFileBodyNamed(proofName)
+                : copy.proofOnFileBody}
             </p>
           </div>
         </div>
@@ -92,9 +96,9 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
       <div className="flex items-start gap-3">
         <UploadCloud className="mt-0.5 h-4 w-4 shrink-0 text-[#f0c89a]" aria-hidden />
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-[var(--studio-ink)]">No payment proof uploaded yet</div>
+          <div className="text-sm font-semibold text-[var(--studio-ink)]">{copy.noProofTitle}</div>
           <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
-            Use the secure payment workspace below to transfer, attach your receipt, and move this checkpoint into finance verification.
+            {copy.noProofBody}
           </p>
         </div>
       </div>
@@ -102,7 +106,7 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
   );
 }
 
-export function ProjectPaymentsStack({
+export async function ProjectPaymentsStack({
   payments,
   paymentOverview,
   pricingBreakdown,
@@ -115,6 +119,8 @@ export function ProjectPaymentsStack({
   variant,
   sectionId,
 }: Props) {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioProjectCopy(locale).paymentsStack;
   const supportWhatsapp = supportWhatsappHref(platform.paymentSupportWhatsApp);
   const isPriority = variant === "priority";
 
@@ -129,19 +135,19 @@ export function ProjectPaymentsStack({
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="studio-kicker">{isPriority ? "Action required" : "Payments"}</div>
+          <div className="studio-kicker">{isPriority ? copy.kickerActionRequired : copy.kickerPayments}</div>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--studio-ink)] sm:text-2xl">
-            {isPriority ? "Complete your payment to begin" : "Payment overview"}
+            {isPriority ? copy.headingPriority : copy.headingSummary}
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--studio-ink-soft)]">
             {isPriority
-              ? "Each milestone begins once the corresponding payment is confirmed. Use the account details below to make your transfer, then upload proof so our team can verify and get started."
-              : "A clear breakdown of your project investment — every payment maps directly to your proposal and milestones."}
+              ? copy.introPriority
+              : copy.introSummary}
           </p>
           {isPriority ? (
             <div className="mt-4 rounded-[1.25rem] border border-[rgba(151,244,243,0.28)] bg-black/25 px-4 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
-              <span className="font-semibold text-[var(--studio-ink)]">What happens next: </span>
-              Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your HenryCo account Studio hub while finance confirms privately.
+              <span className="font-semibold text-[var(--studio-ink)]">{copy.whatHappensNextLabel}</span>
+              {copy.whatHappensNextBodyPrefix}<strong className="text-[var(--studio-ink)]">{copy.uploadPaymentProofPhrase}</strong>{copy.whatHappensNextBodySuffix}
             </div>
           ) : null}
         </div>
@@ -158,10 +164,10 @@ export function ProjectPaymentsStack({
         }`}
       >
         {[
-          ["Total", formatCurrency(paymentOverview.total, proposalCurrency)],
-          ["Paid", formatCurrency(paymentOverview.paid, proposalCurrency)],
-          ["Processing", formatCurrency(paymentOverview.processing, proposalCurrency)],
-          ["Outstanding", formatCurrency(paymentOverview.outstanding, proposalCurrency)],
+          [copy.statTotal, formatCurrency(paymentOverview.total, proposalCurrency)],
+          [copy.statPaid, formatCurrency(paymentOverview.paid, proposalCurrency)],
+          [copy.statProcessing, formatCurrency(paymentOverview.processing, proposalCurrency)],
+          [copy.statOutstanding, formatCurrency(paymentOverview.outstanding, proposalCurrency)],
         ].map(([label, value]) => (
           <div key={label} className="rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 px-3 py-3 sm:px-4 sm:py-4">
             <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">{label}</div>
@@ -182,7 +188,7 @@ export function ProjectPaymentsStack({
           open={isFinance || isStaff}
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)] outline-none [&::-webkit-details-marker]:hidden">
-            <span>Proposal pricing detail</span>
+            <span>{copy.proposalPricingDetail}</span>
             <span className="text-[var(--studio-ink-soft)] transition group-open/breakdown:rotate-180">▾</span>
           </summary>
           <div className="mt-3 space-y-2.5">
@@ -205,14 +211,14 @@ export function ProjectPaymentsStack({
 
       <div className="mt-6">
         <StudioPaymentGuide
-          title="Transfer to HenryCo’s verified company account"
+          title={copy.guideTitle}
           amount={paymentOverview.nextPayment?.amount || paymentOverview.outstanding}
           currency={paymentOverview.nextPayment?.currency || proposalCurrency}
-          statusLabel={paymentOverview.nextPayment ? friendlyPaymentStatus(paymentOverview.nextPayment.status) : "Ready to pay"}
+          statusLabel={paymentOverview.nextPayment ? friendlyPaymentStatus(paymentOverview.nextPayment.status) : copy.statusReadyToPay}
           dueLabel={
             paymentOverview.nextPayment?.dueDate
-              ? `Due ${new Date(paymentOverview.nextPayment.dueDate).toLocaleDateString("en-NG")}`
-              : "Pay when you are ready to secure the next milestone"
+              ? `${copy.duePrefix}${new Date(paymentOverview.nextPayment.dueDate).toLocaleDateString("en-NG")}`
+              : copy.payWhenReady
           }
           instructions={platform.paymentInstructions}
           bankName={platform.paymentBankName}
@@ -220,7 +226,7 @@ export function ProjectPaymentsStack({
           accountNumber={platform.paymentAccountNumber}
           supportEmail={platform.paymentSupportEmail}
           supportWhatsApp={platform.paymentSupportWhatsApp}
-          proofHint="After you transfer, upload your receipt or bank confirmation below. Our team will verify the payment privately — nothing is published publicly."
+          proofHint={copy.proofHint}
         />
       </div>
 
@@ -246,10 +252,10 @@ export function ProjectPaymentsStack({
                   </div>
                   {payment.dueDate ? (
                     <div className="mt-2 text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                      Due {new Date(payment.dueDate).toLocaleDateString("en-NG")}
+                      {copy.duePrefix}{new Date(payment.dueDate).toLocaleDateString("en-NG")}
                     </div>
                   ) : null}
-                  <PaymentProofStatus payment={payment} />
+                  <PaymentProofStatus payment={payment} copy={copy} />
                 </div>
                 {isFinance ? (
                   <form action={setPaymentStatusAction} className="flex gap-2">
@@ -260,7 +266,7 @@ export function ProjectPaymentsStack({
                       type="submit"
                       className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs font-semibold text-[var(--studio-ink)]"
                     >
-                      {payment.status === "paid" ? "Re-open" : "Mark paid"}
+                      {payment.status === "paid" ? copy.reopen : copy.markPaid}
                     </button>
                   </form>
                 ) : null}
@@ -270,9 +276,9 @@ export function ProjectPaymentsStack({
                   {!proofOnFile ? (
                     <ol className="mt-4 grid gap-2 sm:grid-cols-3">
                       {[
-                        { num: "1", label: "Transfer", body: "Use the verified bank details." },
-                        { num: "2", label: "Attach proof", body: "Receipt, alert screenshot, or PDF." },
-                        { num: "3", label: "Finance clears it", body: "Usually within one business day." },
+                        { num: "1", label: copy.stepTransferLabel, body: copy.stepTransferBody },
+                        { num: "2", label: copy.stepAttachLabel, body: copy.stepAttachBody },
+                        { num: "3", label: copy.stepFinanceLabel, body: copy.stepFinanceBody },
                       ].map((step) => (
                         <li
                           key={step.num}
@@ -302,18 +308,18 @@ export function ProjectPaymentsStack({
                       href={paymentHref}
                       className="studio-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                     >
-                      {proofOnFile ? "Open payment status" : "Open secure payment workspace"}
+                      {proofOnFile ? copy.openPaymentStatus : copy.openSecurePaymentWorkspace}
                       {proofOnFile ? <Clock3 className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                     </Link>
                     <p className="max-w-md text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-                      The focused payment page keeps the amount, account details, proof upload, and finance status in one clean view.
+                      {copy.focusedPageNote}
                     </p>
                   </div>
 
                   {shouldShowUpload ? (
                     <details className="group/proof mt-3 rounded-[1.15rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3">
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)] outline-none [&::-webkit-details-marker]:hidden">
-                        <span>Upload proof here instead</span>
+                        <span>{copy.uploadProofHereInstead}</span>
                         <span className="text-[var(--studio-ink-soft)] transition group-open/proof:rotate-180">▾</span>
                       </summary>
                       <form action={uploadPaymentProofAction} className="mt-4 space-y-3">
@@ -324,11 +330,11 @@ export function ProjectPaymentsStack({
                           name="proof"
                           required
                           variant="compact"
-                          title="Payment proof file"
-                          description="Bank receipt, debit alert screenshot, or PDF — must show amount, date, and destination."
-                          footerHint="After upload, this page will show the proof as received while finance verifies it."
+                          title={copy.proofFileTitle}
+                          description={copy.proofFileDescription}
+                          footerHint={copy.proofFileFooterHint}
                         />
-                        <StudioSubmitButton label="Submit payment proof" pendingLabel="Uploading…" />
+                        <StudioSubmitButton label={copy.submitProofLabel} pendingLabel={copy.submitProofPending} />
                       </form>
                     </details>
                   ) : null}
@@ -341,9 +347,9 @@ export function ProjectPaymentsStack({
 
       {!isStaff && unpaidPaymentsNeedHelp(payments) ? (
         <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
-          <div className="text-sm font-semibold text-[var(--studio-ink)]">Need help with your payment?</div>
+          <div className="text-sm font-semibold text-[var(--studio-ink)]">{copy.needHelpTitle}</div>
           <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            Our finance team can confirm account details, discuss timing, or walk you through the process.
+            {copy.needHelpBody}
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             {platform.paymentSupportEmail ? (
@@ -351,7 +357,7 @@ export function ProjectPaymentsStack({
                 href={`mailto:${platform.paymentSupportEmail}`}
                 className="studio-button-secondary inline-flex rounded-full px-4 py-3 text-sm font-semibold"
               >
-                Email finance
+                {copy.emailFinance}
               </a>
             ) : null}
             {supportWhatsapp ? (
@@ -361,7 +367,7 @@ export function ProjectPaymentsStack({
                 rel="noreferrer"
                 className="studio-button-secondary inline-flex rounded-full px-4 py-3 text-sm font-semibold"
               >
-                WhatsApp finance
+                {copy.whatsappFinance}
               </a>
             ) : null}
           </div>

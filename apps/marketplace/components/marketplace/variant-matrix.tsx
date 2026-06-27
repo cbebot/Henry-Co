@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceCheckoutCopy } from "@henryco/i18n";
 import { formatCurrency } from "@/lib/utils";
 import type {
   MarketplaceProduct,
@@ -32,6 +34,8 @@ type VariantMatrixProps = {
  * surface entirely in that case.
  */
 export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProps) {
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceCheckoutCopy(locale).variantMatrix;
   const axes = useMemo(() => buildAxes(variants), [variants]);
   const [selection, setSelection] = useState<Record<string, string>>(() => {
     // Pre-seed each axis with the first in-stock value if available, else first value.
@@ -70,15 +74,15 @@ export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProp
 
   return (
     <section
-      aria-label="Product variant selection"
+      aria-label={copy.sectionLabel}
       className="border-y border-[var(--market-line)] py-6"
     >
       <header className="flex flex-wrap items-baseline justify-between gap-4">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-          Choose your variant
+          {copy.chooseVariant}
         </p>
         <p className="text-xs text-[var(--market-muted)]">
-          SKU <span className="font-mono text-[var(--market-paper-white)]">{activeSku}</span>
+          {copy.skuLabel} <span className="font-mono text-[var(--market-paper-white)]">{activeSku}</span>
         </p>
       </header>
 
@@ -88,7 +92,7 @@ export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProp
             <legend className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
               {axis.label}
               <span className="ml-2 normal-case tracking-normal text-[var(--market-paper-white)]">
-                {selection[axis.key] ?? "—"}
+                {selection[axis.key] ?? copy.placeholder}
               </span>
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -119,7 +123,7 @@ export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProp
                     {entry.value}
                     {!entry.someInStock ? (
                       <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                        Out
+                        {copy.out}
                       </span>
                     ) : null}
                   </button>
@@ -133,7 +137,7 @@ export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProp
       <dl className="mt-6 grid gap-4 sm:grid-cols-3">
         <div>
           <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-            Price
+            {copy.price}
           </dt>
           <dd className="mt-1 text-lg font-semibold text-[var(--market-paper-white)]">
             {formatCurrency(activePrice, activeCurrency)}
@@ -146,22 +150,22 @@ export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProp
         </div>
         <div>
           <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-            Availability
+            {copy.availability}
           </dt>
           <dd className="mt-1 text-sm font-semibold text-[var(--market-paper-white)]">
             {activeStock > 0
-              ? `${activeStock} in stock`
-              : "Currently unavailable"}
+              ? copy.inStock.replace("{count}", String(activeStock))
+              : copy.unavailable}
           </dd>
         </div>
         <div>
           <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-            Match
+            {copy.match}
           </dt>
           <dd className="mt-1 text-sm font-semibold text-[var(--market-paper-white)]">
             {resolvedVariant
-              ? "Exact variant resolved"
-              : "Pick a value for each axis"}
+              ? copy.variantResolved
+              : copy.pickValue}
           </dd>
         </div>
       </dl>

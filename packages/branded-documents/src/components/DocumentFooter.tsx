@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 import { BrandedMonogram } from "./BrandMarks";
 import { letterSpacing, palette, typeScale } from "../tokens";
 
@@ -7,6 +8,7 @@ export type DocumentFooterProps = {
   legal?: string;
   referenceId?: string;
   verificationUrl?: string;
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -43,13 +45,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export function DocumentFooter({ legal = "Henry & Co. — every business under one trusted name." }: DocumentFooterProps) {
+export function DocumentFooter({ legal, locale = "en" }: DocumentFooterProps) {
+  const copy = getBrandedDocumentsCopy(locale);
+  const legalText = legal ?? copy.footer.defaultLegal;
   return (
     <View style={styles.wrap} fixed>
       <View style={styles.left}>
         <BrandedMonogram size={14} />
         <Text style={styles.brand}>HENRY & CO.</Text>
-        <Text style={styles.legal}>· {legal}</Text>
+        <Text style={styles.legal}>· {legalText}</Text>
       </View>
       <Text
         style={styles.page}

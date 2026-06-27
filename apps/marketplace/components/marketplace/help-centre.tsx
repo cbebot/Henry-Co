@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceSupportCopy } from "@henryco/i18n";
 import type { MarketplaceFaqCategory } from "@/lib/marketplace/help-faqs";
 
 type FaqMatch = {
@@ -20,6 +22,8 @@ export default function MarketplaceHelpCentre({
 }: {
   categories: MarketplaceFaqCategory[];
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceSupportCopy(locale);
   const [query, setQuery] = useState("");
   const [activeCategoryId, setActiveCategoryId] = useState<string>(
     categories[0]?.id ?? ""
@@ -60,16 +64,16 @@ export default function MarketplaceHelpCentre({
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search help — e.g. refund, missing item, payout"
+          placeholder={copy.helpCentre.searchPlaceholder}
           className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-black/30 pl-11 pr-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
-          aria-label="Search the help centre"
+          aria-label={copy.helpCentre.searchAriaLabel}
         />
       </div>
 
       {trimmedQuery ? (
         <section>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-muted)]">
-            {searchMatches.length} match{searchMatches.length === 1 ? "" : "es"} for
+            {copy.helpCentre.matchesLabel(searchMatches.length)}
             <span className="ml-1.5 text-[var(--market-paper-white)]">{query}</span>
           </p>
           {searchMatches.length ? (
@@ -90,8 +94,7 @@ export default function MarketplaceHelpCentre({
             </ul>
           ) : (
             <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-              No FAQ matches yet. Try fewer words, or open a support ticket below
-              and a person will read it.
+              {copy.helpCentre.noMatches}
             </p>
           )}
         </section>

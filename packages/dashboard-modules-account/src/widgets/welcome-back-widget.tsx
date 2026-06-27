@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Panel, Section, ActionButton } from "@henryco/dashboard-shell/components";
 import { Bookmark, Eye, ShoppingCart } from "lucide-react";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import type { CustomerOverviewSnapshot } from "../data";
 
 /**
@@ -20,34 +21,40 @@ export type WelcomeBackWidgetProps = {
   hasCartRecovery?: boolean;
   /** First-name greeting; falls back to "Welcome back". */
   firstName?: string | null;
+  /** Active locale for widget copy. */
+  locale: AppLocale;
 };
 
 export function WelcomeBackWidget({
   snapshot,
   hasCartRecovery,
   firstName,
+  locale,
 }: WelcomeBackWidgetProps) {
   const { savedItemsCount } = snapshot;
+  const copy = getDashboardShellCopy(locale);
   const hint =
     savedItemsCount > 0
-      ? `${savedItemsCount} saved item${savedItemsCount === 1 ? "" : "s"} waiting`
+      ? copy.welcomeBack.savedItemsWaiting(savedItemsCount)
       : hasCartRecovery
-        ? "Your cart is ready to resume"
-        : "Pick up where you left off";
+        ? copy.welcomeBack.cartReady
+        : copy.welcomeBack.pickUpWhereYouLeftOff;
 
-  const greeting = firstName ? `Welcome back, ${firstName}` : "Welcome back";
+  const greeting = firstName
+    ? copy.welcomeBack.greeting(firstName)
+    : copy.welcomeBack.greetingFallback;
 
   return (
     <Panel tone="raised">
       <Section
-        kicker="Pick up"
+        kicker={copy.welcomeBack.kicker}
         headline={greeting}
         description={hint}
         action={
           // PASS 22 issue #1 — `/saved` was a dead route; the canonical
           // saved-items surface in the account shell is `/saved-items`.
           <ActionButton href="/saved-items" tone="ghost" icon={<Bookmark size={14} />}>
-            View saved
+            {copy.welcomeBack.viewSaved}
           </ActionButton>
         }
       >
@@ -60,11 +67,11 @@ export function WelcomeBackWidget({
         >
           <ResumeTile
             href="/saved-items"
-            label="Saved for later"
+            label={copy.welcomeBack.savedForLater}
             kicker={
               savedItemsCount > 0
-                ? `${savedItemsCount} item${savedItemsCount === 1 ? "" : "s"}`
-                : "Add items here"
+                ? copy.welcomeBack.savedItemsCount(savedItemsCount)
+                : copy.welcomeBack.addItemsHere
             }
             icon={<Bookmark size={18} aria-hidden />}
           />
@@ -74,15 +81,15 @@ export function WelcomeBackWidget({
             // lives inside the saved-items surface; route there until a
             // dedicated page ships.
             href="/saved-items"
-            label="Recently viewed"
-            kicker="Keep browsing"
+            label={copy.welcomeBack.recentlyViewed}
+            kicker={copy.welcomeBack.keepBrowsing}
             icon={<Eye size={18} aria-hidden />}
           />
           {hasCartRecovery ? (
             <ResumeTile
               href="/marketplace"
-              label="Resume cart"
-              kicker="Picks up where you left off"
+              label={copy.welcomeBack.resumeCart}
+              kicker={copy.welcomeBack.resumeCartHint}
               icon={<ShoppingCart size={18} aria-hidden />}
             />
           ) : null}

@@ -7,6 +7,8 @@ import {
   studioPolicyIndex,
   type PolicyClause,
 } from "@/lib/studio/policies";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export async function generateStaticParams() {
   return studioPolicyIndex.map((policy) => ({ slug: policy.slug }));
@@ -42,6 +44,8 @@ export default async function StudioPolicyPage({
   const policy = getStudioPolicyBySlug(slug);
   if (!policy) notFound();
 
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).policyDetail;
   const others = studioPolicyIndex.filter((item) => item.slug !== policy.slug);
 
   return (
@@ -55,7 +59,7 @@ export default async function StudioPolicyPage({
         className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)] transition hover:text-[var(--studio-ink)]"
       >
         <ArrowLeft className="h-3 w-3" />
-        All policies
+        {copy.backToPolicies}
       </Link>
 
       <article className="mt-6">
@@ -72,9 +76,9 @@ export default async function StudioPolicyPage({
           </p>
 
           <dl className="mt-7 grid grid-cols-2 gap-x-6 gap-y-3 text-[13px] sm:grid-cols-3">
-            <DefinitionItem label="Effective from" value={policy.effectiveFrom} />
-            <DefinitionItem label="Last reviewed" value={policy.lastUpdated} />
-            <DefinitionItem label="Governing law" value={policy.governingLaw} />
+            <DefinitionItem label={copy.effectiveFromLabel} value={policy.effectiveFrom} />
+            <DefinitionItem label={copy.lastReviewedLabel} value={policy.lastUpdated} />
+            <DefinitionItem label={copy.governingLawLabel} value={policy.governingLaw} />
           </dl>
         </header>
 
@@ -86,9 +90,9 @@ export default async function StudioPolicyPage({
       </article>
 
       <section className="mt-16 rounded-[1.5rem] border border-[var(--studio-signal)]/35 bg-[rgba(11,42,52,0.45)] p-6 sm:p-8">
-        <p className="studio-kicker">Continue reading</p>
+        <p className="studio-kicker">{copy.continueReadingKicker}</p>
         <h2 className="mt-3 text-[1.3rem] font-semibold tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.5rem]">
-          The other agreements that govern HenryCo Studio engagements.
+          {copy.continueReadingTitle}
         </h2>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {others.map((item) => (

@@ -3,7 +3,7 @@
 import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import { getAccountUrl, getHubUrl } from "@henryco/config";
-import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { getSurfaceCopy, translateSurfaceLabel, getMarketplacePublicExtraCopy } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { logoutEverywhere } from "@henryco/auth/client";
@@ -115,6 +115,8 @@ function AccountAvatar({
   label: string;
   className?: string;
 }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const extraCopy = getMarketplacePublicExtraCopy(locale);
   const [failed, setFailed] = useState(false);
   const showImage = Boolean(avatarUrl) && !failed;
   return (
@@ -127,7 +129,7 @@ function AccountAvatar({
       {showImage && avatarUrl ? (
         <DivisionImage
           src={avatarUrl}
-          alt={`${label} avatar`}
+          alt={extraCopy.header.avatarAlt(label)}
           fill
           className="object-cover"
           sizes="48px"
@@ -145,6 +147,7 @@ function AccountAvatar({
 export function PublicHeaderClient() {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const surfaceCopy = getSurfaceCopy(locale);
+  const extraCopy = getMarketplacePublicExtraCopy(locale);
   const runtime = useMarketplaceRuntime();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -255,7 +258,7 @@ export function PublicHeaderClient() {
           <Link
             href="/"
             className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] rounded-2xl"
-            aria-label="HenryCo Marketplace home"
+            aria-label={extraCopy.header.homeAriaLabel}
           >
             <span
               className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-[var(--market-paper-white)] shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
@@ -282,7 +285,7 @@ export function PublicHeaderClient() {
             href={getHubUrl("/search")}
             className="hidden items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)] xl:inline-flex"
           >
-            Search HenryCo
+            {extraCopy.header.searchHenryCo}
           </Link>
 
           <form
@@ -544,7 +547,7 @@ export function PublicHeaderClient() {
               onClick={closeDrawer}
               className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
             >
-              Search HenryCo
+              {extraCopy.header.searchHenryCo}
             </Link>
             {runtime.shell.viewer.signedIn ? (
               <>

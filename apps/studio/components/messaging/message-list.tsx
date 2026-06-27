@@ -1,6 +1,8 @@
 "use client";
 
 import { Fragment, useMemo } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import type { ReactionEmoji } from "@/lib/messaging/constants";
 import type { StudioMessage } from "@/lib/messaging/types";
 import {
@@ -62,6 +64,8 @@ export function MessageList({
   onDelete,
   onRetry,
 }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const entries = useMemo(() => withDateSeparators(messages), [messages]);
 
   const matchesSearch = useMemo(() => {
@@ -110,7 +114,7 @@ export function MessageList({
       role="log"
       aria-live="polite"
       aria-relevant="additions text"
-      aria-label="Project conversation"
+      aria-label={copy.messageList.conversationLabel}
     >
       {entries.map((entry) => {
         if (entry.kind === "date") {

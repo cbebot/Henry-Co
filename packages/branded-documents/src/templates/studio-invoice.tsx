@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DataTable, type DataTableColumn } from "../components/DataTable";
@@ -75,6 +76,7 @@ export type StudioInvoiceProps = {
     rcNumber?: string | null;
     vatNumber?: string | null;
   };
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -141,23 +143,24 @@ const styles = StyleSheet.create({
   },
 });
 
-export function StudioInvoiceDocument({ invoice, project, client, studio }: StudioInvoiceProps) {
+export function StudioInvoiceDocument({ invoice, project, client, studio, locale = "en" }: StudioInvoiceProps) {
+  const t = getBrandedDocumentsCopy(locale).studioInvoice;
   const columns: Array<DataTableColumn<StudioInvoiceLineItem>> = [
     {
       key: "title",
-      header: "Description",
+      header: t.columnDescription,
       flex: 3,
       render: (r) => r.title + (r.note ? ` — ${r.note}` : ""),
     },
     {
       key: "milestone",
-      header: "Milestone",
+      header: t.columnMilestone,
       flex: 1.4,
       render: (r) => r.milestoneLabel ?? "—",
     },
     {
       key: "amount",
-      header: "Amount",
+      header: t.columnAmount,
       flex: 1.3,
       align: "right",
       mono: true,
@@ -172,28 +175,29 @@ export function StudioInvoiceDocument({ invoice, project, client, studio }: Stud
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Invoice ${invoice.invoiceNumber}`,
         author: studio.name,
-        subject: invoice.description || `Invoice ${invoice.invoiceNumber}`,
+        subject: invoice.description || t.subject(invoice.invoiceNumber),
         keywords: ["invoice", "studio", "henryco", invoice.invoiceNumber],
       }}
       header={{
-        documentType: "Invoice",
+        documentType: t.documentType,
         title: invoice.invoiceNumber,
         subtitle: invoice.description || project.title,
         meta: [
-          { label: "Issued", value: formatDate(invoice.issuedAt) },
-          { label: "Due", value: invoice.dueAt ? formatDate(invoice.dueAt) : "On receipt" },
-          { label: "Status", value: statusToLabel(invoice.status) },
+          { label: t.metaIssued, value: formatDate(invoice.issuedAt) },
+          { label: t.metaDue, value: invoice.dueAt ? formatDate(invoice.dueAt) : t.metaDueOnReceipt },
+          { label: t.metaStatus, value: statusToLabel(invoice.status) },
         ],
-        divisionLabel: "Studio",
+        divisionLabel: t.divisionLabel,
       }}
       division="studio"
     >
       <View style={styles.parties}>
         <View style={styles.partyCol}>
-          <Text style={styles.partyKicker}>From</Text>
+          <Text style={styles.partyKicker}>{t.partyFrom}</Text>
           <Text style={styles.partyName}>{studio.name}</Text>
           {studio.addressLines.map((line) => (
             <Text key={line} style={styles.partyLine}>
@@ -202,11 +206,11 @@ export function StudioInvoiceDocument({ invoice, project, client, studio }: Stud
           ))}
           <Text style={styles.partyLine}>{studio.contactEmail}</Text>
           {studio.contactPhone ? <Text style={styles.partyLine}>{studio.contactPhone}</Text> : null}
-          {studio.rcNumber ? <Text style={styles.partyLine}>RC: {studio.rcNumber}</Text> : null}
-          {studio.vatNumber ? <Text style={styles.partyLine}>VAT: {studio.vatNumber}</Text> : null}
+          {studio.rcNumber ? <Text style={styles.partyLine}>{t.rcPrefix} {studio.rcNumber}</Text> : null}
+          {studio.vatNumber ? <Text style={styles.partyLine}>{t.vatPrefix} {studio.vatNumber}</Text> : null}
         </View>
         <View style={styles.partyCol}>
-          <Text style={styles.partyKicker}>Bill to</Text>
+          <Text style={styles.partyKicker}>{t.partyBillTo}</Text>
           <Text style={styles.partyName}>{client.name}</Text>
           {client.organisation ? <Text style={styles.partyLine}>{client.organisation}</Text> : null}
           {client.email ? <Text style={styles.partyLine}>{client.email}</Text> : null}
@@ -218,65 +222,62 @@ export function StudioInvoiceDocument({ invoice, project, client, studio }: Stud
         </View>
       </View>
 
-      <DocumentSection kicker="Project">
+      <DocumentSection kicker={t.sectionProject}>
         <DefinitionList
           rows={[
-            { label: "Project", value: project.title },
-            { label: "Payment plan", value: project.paymentPlanName ?? "—" },
-            { label: "Next milestone", value: project.nextMilestone ?? "—" },
+            { label: t.rowProject, value: project.title },
+            { label: t.rowPaymentPlan, value: project.paymentPlanName ?? "—" },
+            { label: t.rowNextMilestone, value: project.nextMilestone ?? "—" },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Line items">
-        <DataTable columns={columns} rows={invoice.lineItems} emptyMessage="No structured line items recorded." />
+      <DocumentSection kicker={t.sectionLineItems}>
+        <DataTable columns={columns} rows={invoice.lineItems} emptyMessage={t.emptyLineItems} />
       </DocumentSection>
 
       <View style={styles.totalsBlock}>
         <View style={styles.totalsLeft}>
           <DefinitionList
             rows={[
-              { label: "Payment status", value: statusToLabel(invoice.status) },
-              { label: "Payment method", value: invoice.paymentMethod ?? "—" },
-              { label: "Payment reference", value: invoice.paymentReference ?? "—", mono: true },
-              { label: "Paid at", value: invoice.paidAt ? formatDateTime(invoice.paidAt) : "—" },
+              { label: t.paymentStatus, value: statusToLabel(invoice.status) },
+              { label: t.paymentMethod, value: invoice.paymentMethod ?? "—" },
+              { label: t.paymentReference, value: invoice.paymentReference ?? "—", mono: true },
+              { label: t.paidAt, value: invoice.paidAt ? formatDateTime(invoice.paidAt) : "—" },
             ]}
           />
         </View>
         <View style={styles.totalsRight}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal</Text>
+            <Text style={styles.totalLabel}>{t.subtotal}</Text>
             <Text style={styles.totalValue}>{formatKobo(invoice.subtotalKobo, invoice.currency)}</Text>
           </View>
           {invoice.discountKobo ? (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Discount</Text>
+              <Text style={styles.totalLabel}>{t.discount}</Text>
               <Text style={styles.totalValue}>−{formatKobo(invoice.discountKobo, invoice.currency)}</Text>
             </View>
           ) : null}
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Tax</Text>
+            <Text style={styles.totalLabel}>{t.tax}</Text>
             <Text style={styles.totalValue}>{formatKobo(invoice.taxKobo, invoice.currency)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.grandLabel}>Total</Text>
+            <Text style={styles.grandLabel}>{t.total}</Text>
             <Text style={styles.grandValue}>{formatKobo(invoice.totalKobo, invoice.currency)}</Text>
           </View>
           {paidInForeign ? (
             <Text style={styles.fxNote}>
-              {`Settled as ${formatKobo(invoice.paidKobo ?? 0, invoice.paidCurrency ?? invoice.currency)}`}
-              {invoice.fxRate ? ` at ${invoice.fxRate.toFixed(4)} ${invoice.paidCurrency}/${invoice.currency}` : ""}
+              {t.settledAs(formatKobo(invoice.paidKobo ?? 0, invoice.paidCurrency ?? invoice.currency))}
+              {invoice.fxRate
+                ? t.fxAt(invoice.fxRate.toFixed(4), invoice.paidCurrency ?? invoice.currency, invoice.currency)
+                : ""}
             </Text>
           ) : null}
         </View>
       </View>
 
-      <LegalFooter
-        lines={[
-          "Issued under HenryCo Studio billing. Multi-currency settlement is captured at the gateway rate on the day of payment; both invoice currency and settled currency are recorded for audit.",
-          "Disputes must be raised within seven calendar days of issue. Late payment may attract reminder schedule per the engagement agreement.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

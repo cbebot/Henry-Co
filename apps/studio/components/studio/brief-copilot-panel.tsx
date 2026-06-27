@@ -11,7 +11,7 @@ import {
   Sparkles,
   Wand2,
 } from "lucide-react";
-import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { getStudioRequestCopy, type StudioRequestCopy } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   generateStudioBriefDraftAction,
@@ -19,27 +19,14 @@ import {
   type BriefCopilotStructured,
 } from "@/lib/studio/brief-copilot-action";
 
-function getExamplePrompts(locale: AppLocale): Array<{ label: string; body: string }> {
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+function getExamplePrompts(
+  copy: StudioRequestCopy["copilot"],
+): Array<{ label: string; body: string }> {
+  const ex = copy.examplePrompts;
   return [
-    {
-      label: t("Logistics SaaS"),
-      body: t(
-        "A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard. We need a customer-facing order page, courier mobile UX, dispatcher console, payments, and analytics. Launch within ten weeks.",
-      ),
-    },
-    {
-      label: t("Members investment platform"),
-      body: t(
-        "A members-only investment platform for accredited Nigerian investors. People apply, sign documents, fund their account by bank transfer, and view performance updates monthly. Strong KYC, two-factor auth, and an admin compliance dashboard. We want a clean, restrained, executive feel. Budget around eight to fifteen million naira.",
-      ),
-    },
-    {
-      label: t("Internal ops tool"),
-      body: t(
-        "An internal ops tool for our 30-person agency. Project intake, milestone tracking, time logs, invoicing, and a client portal. Has to integrate with our existing accounting package. Should feel calm and not overwhelming. Soft launch in six weeks.",
-      ),
-    },
+    { label: ex.logisticsLabel, body: ex.logisticsBody },
+    { label: ex.investmentLabel, body: ex.investmentBody },
+    { label: ex.opsLabel, body: ex.opsBody },
   ];
 }
 
@@ -58,7 +45,8 @@ export function BriefCopilotPanel({
   onApply: (structured: BriefCopilotStructured) => void;
 }) {
   const locale = useHenryCoLocale();
-  const examplePrompts = useMemo(() => getExamplePrompts(locale), [locale]);
+  const copy = getStudioRequestCopy(locale).copilot;
+  const examplePrompts = useMemo(() => getExamplePrompts(copy), [copy]);
   const [description, setDescription] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
   const [pending, startTransition] = useTransition();
@@ -122,22 +110,20 @@ export function BriefCopilotPanel({
         <div>
           <p className="flex items-center gap-2 studio-kicker">
             <Sparkles className="h-3.5 w-3.5" />
-            Brief Co-pilot · Studio Intelligence
+            {copy.kicker}
           </p>
           <h2 className="mt-3 max-w-2xl text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.02em] text-[var(--studio-ink)] sm:text-[1.8rem]">
-            Describe what you want in your own words. We&rsquo;ll structure it.
+            {copy.heading}
           </h2>
           <p className="mt-3 max-w-2xl text-[14.5px] leading-[1.65] text-[var(--studio-ink-soft)]">
-            One paragraph is enough — goals, audience, key features, any constraints. The
-            co-pilot drafts the rest of the brief; every field stays editable below before you
-            submit.
+            {copy.intro}
           </p>
         </div>
       </div>
 
       <div className="mt-6">
         <label htmlFor="copilot-description" className="sr-only">
-          Describe your project
+          {copy.describeLabel}
         </label>
         <textarea
           id="copilot-description"
@@ -149,14 +135,14 @@ export function BriefCopilotPanel({
           }}
           rows={5}
           maxLength={MAX_LENGTH}
-          placeholder="A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard…"
+          placeholder={copy.placeholder}
           className="w-full rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(0,0,0,0.18)] px-4 py-3.5 text-[15px] leading-[1.65] text-[var(--studio-ink)] outline-none transition focus:border-[rgba(151,244,243,0.55)] focus:bg-[rgba(0,0,0,0.22)] focus:ring-2 focus:ring-[rgba(151,244,243,0.18)]"
           disabled={pending}
         />
         <div className="mt-2 flex items-center justify-between text-[11.5px] font-medium text-[var(--studio-ink-soft)]">
-          <span>{description.length === 0 ? "Tip: under 8 sentences works best." : null}</span>
+          <span>{description.length === 0 ? copy.tip : null}</span>
           <span aria-live="polite">
-            {charsLeft >= 0 ? `${charsLeft} characters left` : "Trim a little"}
+            {charsLeft >= 0 ? copy.charactersLeft(charsLeft) : copy.trim}
           </span>
         </div>
       </div>
@@ -165,7 +151,7 @@ export function BriefCopilotPanel({
         <div className="mt-6">
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
             <Lightbulb className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
-            Try one of these starting points
+            {copy.starterPointsLabel}
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-3">
             {examplePrompts.map((example) => (
@@ -176,7 +162,7 @@ export function BriefCopilotPanel({
                 className="group flex flex-col items-start gap-2 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)]"
               >
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
-                  Example
+                  {copy.exampleBadge}
                 </span>
                 <span className="text-[13px] font-semibold text-[var(--studio-ink)]">
                   {example.label}
@@ -195,7 +181,7 @@ export function BriefCopilotPanel({
           {state.kind === "success" ? (
             <span className="inline-flex items-center gap-1.5 text-[#bdf2cf]">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Brief seeded below — review every field before you submit.
+              {copy.seededBelow}
             </span>
           ) : state.kind === "error" ? (
             <span className="inline-flex items-center gap-1.5 text-[#ffb8b8]">
@@ -203,9 +189,7 @@ export function BriefCopilotPanel({
               {state.message}
             </span>
           ) : (
-            <span>
-              Free for early users · Powered by HenryCo Studio Intelligence · Your text is never used to train external models.
-            </span>
+            <span>{copy.footerNote}</span>
           )}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -220,7 +204,7 @@ export function BriefCopilotPanel({
               className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-[13px] font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.4)]"
             >
               <RefreshCw className="h-3.5 w-3.5" />
-              Try a different paragraph
+              {copy.tryDifferentParagraph}
             </button>
           ) : null}
           <button
@@ -233,12 +217,12 @@ export function BriefCopilotPanel({
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Drafting your brief…
+                {copy.draftingBrief}
               </>
             ) : (
               <>
                 <Wand2 className="h-4 w-4" />
-                {isSuccess ? "Re-draft brief" : "Draft my brief"}
+                {isSuccess ? copy.redraftBrief : copy.draftMyBrief}
               </>
             )}
           </button>
@@ -254,6 +238,7 @@ export function BriefCopilotPanel({
             setShowApplyHint(false);
           }}
           showApplyHint={showApplyHint}
+          copy={copy}
         />
       ) : null}
     </section>
@@ -265,11 +250,13 @@ function SuccessSummary({
   meta,
   onApply,
   showApplyHint,
+  copy,
 }: {
   structured: BriefCopilotStructured;
   meta: { confidence: number; cached: boolean; callsRemaining: number | null };
   onApply: () => void;
   showApplyHint: boolean;
+  copy: StudioRequestCopy["copilot"];
 }) {
   const confidencePct = Math.round(meta.confidence * 100);
   return (
@@ -278,7 +265,7 @@ function SuccessSummary({
         <div>
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
             <Edit3 className="h-3.5 w-3.5" />
-            Co-pilot draft
+            {copy.coPilotDraft}
           </p>
           <p className="mt-2 text-[13.5px] leading-5 text-[var(--studio-ink)]">{structured.summary || structured.goals}</p>
         </div>
@@ -293,29 +280,31 @@ function SuccessSummary({
                     : "bg-[#f3d28a]"
               }`}
             />
-            Confidence {confidencePct}%
+            {copy.confidence(confidencePct)}
           </span>
           {meta.cached ? (
             <span className="text-[10.5px] uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-              Cache hit · faster &amp; cheaper
+              {copy.cacheHit}
             </span>
           ) : null}
         </div>
       </div>
 
       <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-        <DraftField label="Project type" value={structured.projectType} />
-        <DraftField label="Budget band" value={structured.budgetBand} />
-        <DraftField label="Urgency" value={structured.urgency} />
-        <DraftField label="Design direction" value={structured.designDirection} />
+        <DraftField label={copy.fieldProjectType} value={structured.projectType} emptyDash={copy.emptyDash} />
+        <DraftField label={copy.fieldBudgetBand} value={structured.budgetBand} emptyDash={copy.emptyDash} />
+        <DraftField label={copy.fieldUrgency} value={structured.urgency} emptyDash={copy.emptyDash} />
+        <DraftField label={copy.fieldDesignDirection} value={structured.designDirection} emptyDash={copy.emptyDash} />
         <DraftField
-          label="Pages / sections"
-          value={structured.pageRequirements.join(", ") || "—"}
+          label={copy.fieldPages}
+          value={structured.pageRequirements.join(", ") || copy.emptyDash}
+          emptyDash={copy.emptyDash}
           full
         />
         <DraftField
-          label="Required features"
-          value={structured.requiredFeatures.join(", ") || "—"}
+          label={copy.fieldFeatures}
+          value={structured.requiredFeatures.join(", ") || copy.emptyDash}
+          emptyDash={copy.emptyDash}
           full
         />
       </dl>
@@ -323,7 +312,7 @@ function SuccessSummary({
       {structured.uncertainties.length > 0 ? (
         <div className="mt-4 rounded-xl border border-[var(--studio-line)] bg-[rgba(0,0,0,0.18)] p-3.5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-            Worth clarifying as you scroll down
+            {copy.worthClarifying}
           </p>
           <ul className="mt-2 space-y-1 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
             {structured.uncertainties.map((item) => (
@@ -338,8 +327,7 @@ function SuccessSummary({
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-[12px] leading-5 text-[var(--studio-ink-soft)]">
-          The brief below is now seeded with these answers. You can edit anything before you
-          submit — you stay in control.
+          {copy.seededControl}
         </p>
         {showApplyHint ? (
           <button
@@ -348,17 +336,19 @@ function SuccessSummary({
             className="inline-flex items-center gap-2 rounded-full border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] px-4 py-2 text-[12.5px] font-semibold text-[var(--studio-signal)] transition hover:bg-[rgba(151,244,243,0.14)]"
           >
             <RefreshCw className="h-3.5 w-3.5" />
-            Re-apply to brief below
+            {copy.reapplyToBrief}
           </button>
         ) : null}
       </div>
 
-      <NextActionsRail structured={structured} confidence={confidencePct} />
+      <NextActionsRail structured={structured} confidence={confidencePct} copy={copy} />
 
       {meta.callsRemaining !== null ? (
         <p className="mt-3 text-[11px] text-[var(--studio-ink-soft)]">
-          {meta.callsRemaining} co-pilot {meta.callsRemaining === 1 ? "draft" : "drafts"} left in
-          this window.
+          {copy.callsRemaining(
+            meta.callsRemaining,
+            meta.callsRemaining === 1 ? copy.draftSingular : copy.draftPlural,
+          )}
         </p>
       ) : null}
     </div>
@@ -383,9 +373,11 @@ function SuccessSummary({
 function NextActionsRail({
   structured,
   confidence,
+  copy,
 }: {
   structured: BriefCopilotStructured;
   confidence: number;
+  copy: StudioRequestCopy["copilot"];
 }) {
   const wantsTemplates =
     structured.projectType !== "Other" &&
@@ -402,7 +394,7 @@ function NextActionsRail({
   return (
     <div className="mt-4 border-t border-[var(--studio-line)] pt-4">
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-        Next steps
+        {copy.nextSteps}
       </p>
       <ol className="mt-2 grid gap-2 sm:grid-cols-3">
         <li>
@@ -419,10 +411,10 @@ function NextActionsRail({
             </span>
             <div className="min-w-0">
               <div className="text-[12.5px] font-semibold text-[var(--studio-ink)]">
-                Review &amp; refine the brief
+                {copy.reviewRefineTitle}
               </div>
               <div className="mt-0.5 text-[11px] leading-5 text-[var(--studio-ink-soft)]">
-                Every field stays editable below.
+                {copy.reviewRefineBody}
               </div>
             </div>
           </button>
@@ -444,14 +436,10 @@ function NextActionsRail({
             </span>
             <div className="min-w-0">
               <div className="text-[12.5px] font-semibold text-[var(--studio-ink)]">
-                {lowConfidence
-                  ? "Talk to a Studio lead first"
-                  : "Submit & lock the scope"}
+                {lowConfidence ? copy.talkToLeadTitle : copy.submitLockTitle}
               </div>
               <div className="mt-0.5 text-[11px] leading-5 text-[var(--studio-ink-soft)]">
-                {lowConfidence
-                  ? "A few details still need clarifying — a senior lead can shape the brief with you in 15 minutes."
-                  : "Submit the brief; we issue a fixed-price proposal and a deposit invoice within a business day."}
+                {lowConfidence ? copy.talkToLeadBody : copy.submitLockBody}
               </div>
             </div>
           </a>
@@ -469,14 +457,10 @@ function NextActionsRail({
             </span>
             <div className="min-w-0">
               <div className="text-[12.5px] font-semibold text-[var(--studio-ink)]">
-                {wantsTemplates
-                  ? "Or skip — pay deposit on a template"
-                  : "Pay a deposit & start"}
+                {wantsTemplates ? copy.skipTemplateTitle : copy.payDepositTitle}
               </div>
               <div className="mt-0.5 text-[11px] leading-5 text-[var(--studio-ink-soft)]">
-                {wantsTemplates
-                  ? "Ready-made templates ship in days. Browse the gallery if you want to skip the brief entirely."
-                  : "Reserve your slot now — we open the project workspace the moment your deposit clears."}
+                {wantsTemplates ? copy.skipTemplateBody : copy.payDepositBody}
               </div>
             </div>
           </a>
@@ -486,13 +470,23 @@ function NextActionsRail({
   );
 }
 
-function DraftField({ label, value, full = false }: { label: string; value: string; full?: boolean }) {
+function DraftField({
+  label,
+  value,
+  emptyDash,
+  full = false,
+}: {
+  label: string;
+  value: string;
+  emptyDash: string;
+  full?: boolean;
+}) {
   return (
     <div className={full ? "sm:col-span-2" : ""}>
       <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
         {label}
       </dt>
-      <dd className="mt-1 text-[13.5px] font-medium text-[var(--studio-ink)]">{value || "—"}</dd>
+      <dd className="mt-1 text-[13.5px] font-medium text-[var(--studio-ink)]">{value || emptyDash}</dd>
     </div>
   );
 }

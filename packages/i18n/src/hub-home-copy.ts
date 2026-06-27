@@ -28,6 +28,7 @@ export type HubHomeCopy = {
     titleAfter: string;
     ctaExplore: string;
     ctaFeatured: string;
+    proofPoints: string[];
   };
   introDefault: string;
   brandPanel: {
@@ -218,6 +219,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     titleAfter: ".",
     ctaExplore: "Browse all divisions",
     ctaFeatured: "See what is live",
+    proofPoints: ["One operating standard", "Built in-house, end to end", "Many focused divisions"],
   },
   introDefault:
     "The public home for Henry & Co. and the operating businesses inside it. Find the right division, understand how the group is run, and move straight to the surface you need.",
@@ -468,6 +470,7 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     titleAfter: ".",
     ctaExplore: "Explorer toutes les divisions",
     ctaFeatured: "Voir les divisions à la une",
+    proofPoints: ["Un seul standard d'exploitation", "Conçu en interne, de bout en bout", "De nombreuses divisions spécialisées"],
   },
   introDefault:
     "Henry & Co. réunit des entreprises ciblées sous une identité de groupe respectée. Ce hub aide clients, partenaires et parties prenantes à comprendre le groupe, à trouver la bonne division et à avancer sereinement.",
@@ -698,6 +701,7 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
     titleAfter: ".",
     ctaExplore: "Explorar todas las divisiones",
     ctaFeatured: "Ver divisiones destacadas",
+    proofPoints: ["Un único estándar operativo", "Desarrollado internamente, de principio a fin", "Múltiples divisiones especializadas"],
   },
   introDefault: "Henry & Co. reúne negocios enfocados bajo una identidad de grupo reconocida. Este hub ayuda a clientes, socios y partes interesadas a comprender la empresa, encontrar la división correcta y avanzar con confianza.",
   brandPanel: { eyebrow: "Sistema de marca corporativa", baseDomain: "Dominio base", accent: "Acento", logoStatus: "Estado del logo", logoConfigured: "Configurado", logoFallback: "Marca de respaldo", subtitleFallback: "Plataforma corporativa" },
@@ -831,6 +835,7 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
     titleAfter: ".",
     ctaExplore: "Explorar todas as divisões",
     ctaFeatured: "Ver divisões em destaque",
+    proofPoints: ["Um único padrão operacional", "Desenvolvido internamente, de ponta a ponta", "Várias divisões especializadas"],
   },
   introDefault: "A Henry & Co. reúne negócios focados sob uma identidade de grupo respeitada. Este hub ajuda clientes, parceiros e partes interessadas a entender a empresa, localizar a divisão certa e avançar com confiança.",
   brandPanel: { eyebrow: "Sistema de marca corporativa", baseDomain: "Domínio base", accent: "Destaque", logoStatus: "Status do logo", logoConfigured: "Configurado", logoFallback: "Marca de reserva", subtitleFallback: "Plataforma corporativa" },
@@ -964,6 +969,7 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
     titleAfter: ".",
     ctaExplore: "استكشاف جميع الأقسام",
     ctaFeatured: "عرض الأقسام المميزة",
+    proofPoints: ["معيار تشغيلي واحد", "مبني داخليًا من البداية إلى النهاية", "أقسام متخصصة متعددة"],
   },
   introDefault: "تجمع Henry & Co. الأعمال المتخصصة تحت هوية مجموعة موثوقة. يساعد هذا المركز العملاء والشركاء وأصحاب المصلحة على فهم الشركة وتحديد القسم المناسب والمضي قدماً بثقة.",
   brandPanel: { eyebrow: "نظام علامة الشركة", baseDomain: "النطاق الأساسي", accent: "اللون المميز", logoStatus: "حالة الشعار", logoConfigured: "مُهيأ", logoFallback: "علامة احتياطية", subtitleFallback: "منصة مؤسسية" },
@@ -1097,6 +1103,7 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
     titleAfter: ".",
     ctaExplore: "Alle Abteilungen erkunden",
     ctaFeatured: "Ausgewählte Abteilungen anzeigen",
+    proofPoints: ["Ein einheitlicher Betriebsstandard", "Im eigenen Haus entwickelt, von A bis Z", "Viele fokussierte Geschäftsbereiche"],
   },
   introDefault: "Henry & Co. vereint fokussierte Unternehmen unter einer angesehenen Gruppenidentität. Dieser Hub hilft Kunden, Partnern und Stakeholdern dabei, das Unternehmen zu verstehen, die richtige Abteilung zu finden und sicher voranzuschreiten.",
   brandPanel: { eyebrow: "Unternehmens-Markensystem", baseDomain: "Basisdomain", accent: "Akzent", logoStatus: "Logo-Status", logoConfigured: "Konfiguriert", logoFallback: "Ersatzmarke", subtitleFallback: "Unternehmensplattform" },
@@ -1230,6 +1237,7 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
     titleAfter: " 的业务、服务和运营部门。",
     ctaExplore: "探索所有部门",
     ctaFeatured: "查看精选部门",
+    proofPoints: ["统一的运营标准", "全程自主打造", "多个专注领域的业务部门"],
   },
   introDefault: "Henry & Co. 将专注型业务集合在一个受人尊敬的集团品牌下。这个中心帮助客户、合作伙伴和利益相关者了解公司、找到合适的部门并自信地前进。",
   brandPanel: { eyebrow: "公司品牌体系", baseDomain: "基础域名", accent: "强调色", logoStatus: "标志状态", logoConfigured: "已配置", logoFallback: "备用标志", subtitleFallback: "企业平台" },
@@ -1910,7 +1918,8 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
     "titleBefore": "Esplora le attività, i servizi e le divisioni operative di",
     "titleAfter": ".",
     "ctaExplore": "Esplora tutte le divisioni",
-    "ctaFeatured": "Visualizza le divisioni in primo piano"
+    "ctaFeatured": "Visualizza le divisioni in primo piano",
+    "proofPoints": ["Un unico standard operativo", "Realizzato internamente, dall'inizio alla fine", "Numerose divisioni specializzate"]
   },
   "introDefault": "Henry & Co. riunisce aziende mirate sotto un'identità di gruppo rispettata. Questo hub aiuta clienti, partner e stakeholder a comprendere l'azienda, individuare la divisione giusta e andare avanti con sicurezza.",
   "brandPanel": {

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 import { letterSpacing, palette, typeScale } from "../tokens";
 
 export type SignatureBlockProps = {
@@ -7,6 +8,7 @@ export type SignatureBlockProps = {
   signatoryRole: string;
   signedAt?: string;
   signatureImage?: string;
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -58,16 +60,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export function SignatureBlock({ signatoryName, signatoryRole, signedAt }: SignatureBlockProps) {
+export function SignatureBlock({ signatoryName, signatoryRole, signedAt, locale = "en" }: SignatureBlockProps) {
+  const copy = getBrandedDocumentsCopy(locale);
   return (
     <View style={styles.wrap}>
       <View style={styles.column}>
         <Text style={styles.scriptName}>{signatoryName}</Text>
         <View style={styles.rule} />
-        <Text style={styles.caption}>Authorised signatory</Text>
+        <Text style={styles.caption}>{copy.signature.authorisedSignatory}</Text>
         <Text style={styles.name}>{signatoryName}</Text>
         <Text style={styles.role}>{signatoryRole}</Text>
-        {signedAt ? <Text style={styles.date}>Signed · {signedAt}</Text> : null}
+        {signedAt ? <Text style={styles.date}>{copy.signature.signedPrefix} · {signedAt}</Text> : null}
       </View>
     </View>
   );

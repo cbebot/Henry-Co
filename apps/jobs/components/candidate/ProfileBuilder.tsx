@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getJobsCandidateSurfaceCopy } from "@henryco/i18n";
 
 /**
  * V3 PASS 21 — Candidate <ProfileBuilder> with auto-save (J3).
@@ -82,6 +84,8 @@ export function ProfileBuilder({
   initialDraft,
   labels,
 }: ProfileBuilderProps) {
+  const locale = useHenryCoLocale();
+  const builderCopy = getJobsCandidateSurfaceCopy(locale).profileBuilder;
   const [draft, setDraft] = useState<ProfileBuilderDraft>(() => ({
     basics: initialDraft?.basics ?? {},
     experience: initialDraft?.experience ?? [],
@@ -248,7 +252,7 @@ export function ProfileBuilder({
             onClick={addExperience}
             className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--jobs-accent)]"
           >
-            + Add
+            {builderCopy.addButton}
           </button>
         </div>
         <ol className="mt-3 space-y-3">
@@ -260,7 +264,7 @@ export function ProfileBuilder({
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   type="text"
-                  placeholder="Role"
+                  placeholder={builderCopy.rolePlaceholder}
                   value={entry.role ?? ""}
                   onChange={(e) =>
                     updateExperience(entry.id, { role: e.target.value })
@@ -269,7 +273,7 @@ export function ProfileBuilder({
                 />
                 <input
                   type="text"
-                  placeholder="Company"
+                  placeholder={builderCopy.companyPlaceholder}
                   value={entry.company ?? ""}
                   onChange={(e) =>
                     updateExperience(entry.id, { company: e.target.value })
@@ -279,7 +283,7 @@ export function ProfileBuilder({
               </div>
               <textarea
                 rows={3}
-                placeholder="Describe your contributions"
+                placeholder={builderCopy.descriptionPlaceholder}
                 value={entry.description ?? ""}
                 onChange={(e) =>
                   updateExperience(entry.id, { description: e.target.value })
@@ -291,7 +295,7 @@ export function ProfileBuilder({
                 onClick={() => removeExperience(entry.id)}
                 className="mt-2 text-xs font-semibold text-[var(--jobs-muted)] hover:text-red-600"
               >
-                Remove
+                {builderCopy.removeButton}
               </button>
             </li>
           ))}
@@ -303,7 +307,7 @@ export function ProfileBuilder({
         <div className="jobs-kicker">{labels.sectionSkills}</div>
         <input
           type="text"
-          placeholder="Press Enter to add"
+          placeholder={builderCopy.skillPlaceholder}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               const value = event.currentTarget.value.trim();

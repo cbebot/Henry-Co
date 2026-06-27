@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { LogOut, Sparkles, type LucideIcon } from "lucide-react";
+import { getWorkspaceShellCopy, type AppLocale } from "@henryco/i18n";
 import type {
   WorkspaceBadgeMap,
   WorkspaceBrand,
@@ -18,6 +19,7 @@ export type WorkspaceSidebarProps = {
   pathname: string;
   accountSettingsUrl?: string;
   topSlot?: React.ReactNode;
+  locale?: AppLocale;
 };
 
 function getInitials(viewer: WorkspaceViewer): string {
@@ -44,13 +46,15 @@ export function WorkspaceSidebar({
   pathname,
   accountSettingsUrl,
   topSlot,
+  locale = "en",
 }: WorkspaceSidebarProps) {
+  const copy = getWorkspaceShellCopy(locale);
   const initials = getInitials(viewer);
   const BrandIcon: LucideIcon = brand.icon ?? Sparkles;
   const brandHref = brand.href ?? navigation[0]?.href ?? "/";
 
   return (
-    <aside className="ws-sidebar" aria-label="Primary navigation">
+    <aside className="ws-sidebar" aria-label={copy.sidebar.navAria}>
       {topSlot}
 
       <Link href={brandHref} className="ws-sidebar-brand">
@@ -66,15 +70,15 @@ export function WorkspaceSidebar({
       {attentionCount > 0 ? (
         <div className="ws-sidebar-attention">
           <div className="ws-sidebar-attention-title">
-            {attentionCount} item{attentionCount === 1 ? "" : "s"} need attention
+            {copy.sidebar.attentionTitle(attentionCount)}
           </div>
           <p style={{ marginTop: "0.25rem" }}>
-            Outstanding items, files awaiting your review, and unread messages from the team.
+            {copy.sidebar.attentionBody}
           </p>
         </div>
       ) : null}
 
-      <nav className="ws-sidebar-nav" aria-label="Sections">
+      <nav className="ws-sidebar-nav" aria-label={copy.sidebar.sectionsAria}>
         {navigation.map((item) => {
           const active = isNavActive(pathname, item);
           const badge = badges?.[item.href] ?? 0;
@@ -92,7 +96,7 @@ export function WorkspaceSidebar({
                 <span>{item.label}</span>
               </span>
               {badge > 0 ? (
-                <span className="ws-sidebar-badge" aria-label={`${badge} new`}>
+                <span className="ws-sidebar-badge" aria-label={copy.sidebar.badgeNew(badge)}>
                   {badge > 99 ? "99+" : badge}
                 </span>
               ) : null}
@@ -106,7 +110,7 @@ export function WorkspaceSidebar({
           {viewer.avatarUrl ? (
             <Image
               src={viewer.avatarUrl}
-              alt={viewer.fullName || "Profile"}
+              alt={viewer.fullName || copy.sidebar.avatarAlt}
               width={40}
               height={40}
               unoptimized
@@ -120,14 +124,14 @@ export function WorkspaceSidebar({
           )}
           <div style={{ minWidth: 0, flex: 1 }}>
             <div className="ws-sidebar-viewer-name">
-              {viewer.fullName || viewer.email || "Member"}
+              {viewer.fullName || viewer.email || copy.sidebar.viewerFallback}
             </div>
             {viewer.email ? <div className="ws-sidebar-viewer-email">{viewer.email}</div> : null}
           </div>
         </div>
         {accountSettingsUrl ? (
           <a className="ws-sidebar-viewer-cta" href={accountSettingsUrl}>
-            <span>Account &amp; settings</span>
+            <span>{copy.sidebar.accountSettings}</span>
             <LogOut className="h-3.5 w-3.5" style={{ transform: "rotate(-90deg)" }} aria-hidden />
           </a>
         ) : null}

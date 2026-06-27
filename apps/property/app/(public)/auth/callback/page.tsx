@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { getPropertySubmitCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { getSharedAccountPropertyUrl, sanitizePropertyAuthReturnTarget } from "@/lib/property/links";
 
 export default function PropertyAuthCallbackPage() {
+  const locale = useHenryCoLocale();
+  const copy = getPropertySubmitCopy(locale);
   const searchParams = useSearchParams();
-  const [message, setMessage] = useState("Completing your HenryCo Property sign-in...");
+  const [message, setMessage] = useState(copy.callback.completing);
 
   useEffect(() => {
     let active = true;
@@ -28,7 +32,7 @@ export default function PropertyAuthCallbackPage() {
       }
 
       if (!accessToken || !refreshToken) {
-        if (active) setMessage("This sign-in link is missing session credentials.");
+        if (active) setMessage(copy.callback.missingCredentials);
         return;
       }
 
@@ -44,13 +48,13 @@ export default function PropertyAuthCallbackPage() {
     return () => {
       active = false;
     };
-  }, [searchParams]);
+  }, [searchParams, copy.callback.missingCredentials]);
 
   return (
     <main className="mx-auto max-w-[42rem] px-5 py-14 sm:px-8">
       <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Property access</div>
-        <h1 className="property-heading mt-4">Finishing your sign-in.</h1>
+        <div className="property-kicker">{copy.callback.kicker}</div>
+        <h1 className="property-heading mt-4">{copy.callback.heading}</h1>
         <p className="mt-4 text-base leading-8 text-[var(--property-ink-soft)]">{message}</p>
       </div>
     </main>

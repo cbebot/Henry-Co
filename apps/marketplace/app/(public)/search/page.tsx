@@ -1,6 +1,8 @@
 import { PageIntro } from "@/components/marketplace/shell";
 import { SearchExperience } from "@/components/marketplace/search-experience";
 import { getMarketplaceHomeData, searchMarketplace } from "@/lib/marketplace/data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicExtraCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +12,8 @@ export default async function SearchPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = (await searchParams) ?? {};
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicExtraCopy(locale);
   const [snapshot, products] = await Promise.all([
     getMarketplaceHomeData(),
     searchMarketplace(params),
@@ -18,9 +22,9 @@ export default async function SearchPage({
   return (
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
       <PageIntro
-        kicker="Search"
-        title="Find it fast. Trust what you see."
-        description="Refine by verified seller, brand, category, and COD readiness. Results update as you filter, stay readable on mobile, and surface the trust signals you care about before you click through."
+        kicker={copy.search.kicker}
+        title={copy.search.title}
+        description={copy.search.description}
       />
 
       <SearchExperience

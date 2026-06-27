@@ -1,38 +1,49 @@
 import { CrossDivisionSearchExperience } from "@henryco/ui";
+import { getHubNewsletterCopy } from "@henryco/i18n";
 import {
   buildHubSearchSignInHref,
   getHubLockedSearchResults,
   getHubSearchResults,
 } from "@/lib/search";
 import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
+import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Search HenryCo",
-  description: "Search HenryCo divisions, workflows, and support routes from one hub.",
-};
+export async function generateMetadata() {
+  const locale = await getHubPublicLocale();
+  const copy = getHubNewsletterCopy(locale).search;
+  return {
+    title: copy.metaTitle,
+    description: copy.metaDescription,
+  };
+}
 
 export default async function HubSearchPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  const [params, chipUser] = await Promise.all([searchParams, getHubPublicChipUser()]);
+  const [params, chipUser, locale] = await Promise.all([
+    searchParams,
+    getHubPublicChipUser(),
+    getHubPublicLocale(),
+  ]);
+  const copy = getHubNewsletterCopy(locale).search;
   const query = String(params.q || "").trim();
   const signedIn = Boolean(chipUser);
 
   return (
     <CrossDivisionSearchExperience
       context="public"
-      title="Search HenryCo across divisions, workflows, and help routes."
-      description="Find divisions, account workflows, and support routes from one calm entry point."
-      placeholder="Search HenryCo: notifications, wallet, marketplace orders, jobs help, logistics tracking..."
+      title={copy.title}
+      description={copy.description}
+      placeholder={copy.placeholder}
       initialQuery={query}
       results={getHubSearchResults({ signedIn })}
       lockedResults={signedIn ? [] : getHubLockedSearchResults()}
       signInHref={signedIn ? undefined : buildHubSearchSignInHref(query)}
-      signInLabel="Sign in and continue search"
+      signInLabel={copy.signInLabel}
     />
   );
 }

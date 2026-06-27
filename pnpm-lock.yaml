@@ -631,7 +631,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -1437,6 +1437,9 @@ importers:
 
   packages/address-selector:
     dependencies:
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0
@@ -1519,6 +1522,9 @@ importers:
       '@henryco/brand':
         specifier: workspace:^
         version: link:../brand
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@react-pdf/renderer':
         specifier: ^4.3.0
         version: 4.5.1(react@19.2.3)
@@ -1554,6 +1560,9 @@ importers:
 
   packages/chat-composer:
     dependencies:
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@henryco/ui':
         specifier: workspace:^
         version: link:../ui
@@ -1639,6 +1648,9 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@types/node':
         specifier: ^20
         version: 20.19.37
@@ -1882,6 +1894,9 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@types/node':
         specifier: ^20
         version: 20.19.37
@@ -1916,6 +1931,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@henryco/notifications-ui':
         specifier: workspace:^
         version: link:../notifications-ui
@@ -2133,6 +2151,9 @@ importers:
         specifier: ^19.0.0
         version: 19.2.3(react@19.2.3)
     devDependencies:
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@henryco/ui':
         specifier: workspace:^
         version: link:../ui
@@ -2172,6 +2193,9 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@henryco/observability':
         specifier: workspace:^
         version: link:../observability
@@ -2373,6 +2397,9 @@ importers:
 
   packages/workspace-shell:
     dependencies:
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       lucide-react:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.3)

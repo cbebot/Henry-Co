@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DataTable, type DataTableColumn } from "../components/DataTable";
@@ -37,6 +38,7 @@ export type ReceiptProps = {
     deliveryAddress?: string[] | null;
   };
   items: ReceiptLineItem[];
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -67,76 +69,73 @@ const styles = StyleSheet.create({
   },
 });
 
-export function ReceiptDocument({ receipt, customer, items }: ReceiptProps) {
+export function ReceiptDocument({ receipt, customer, items, locale = "en" }: ReceiptProps) {
+  const t = getBrandedDocumentsCopy(locale).receipt;
   const columns: Array<DataTableColumn<ReceiptLineItem>> = [
-    { key: "title", header: "Item", flex: 3.2, render: (r) => r.title + (r.detail ? ` — ${r.detail}` : "") },
-    { key: "qty", header: "Qty", flex: 0.6, align: "right", mono: true, render: (r) => (r.quantity ? String(r.quantity) : "—") },
-    { key: "amount", header: "Amount", flex: 1.4, align: "right", mono: true, render: (r) => formatKobo(r.amountKobo, receipt.currency) },
+    { key: "title", header: t.columnItem, flex: 3.2, render: (r) => r.title + (r.detail ? ` — ${r.detail}` : "") },
+    { key: "qty", header: t.columnQty, flex: 0.6, align: "right", mono: true, render: (r) => (r.quantity ? String(r.quantity) : "—") },
+    { key: "amount", header: t.columnAmount, flex: 1.4, align: "right", mono: true, render: (r) => formatKobo(r.amountKobo, receipt.currency) },
   ];
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Receipt ${receipt.receiptNo}`,
-        subject: "Payment receipt",
+        subject: t.subject,
         keywords: ["receipt", "henryco", receipt.division, receipt.receiptNo],
       }}
       header={{
-        documentType: "Receipt",
+        documentType: t.documentType,
         title: receipt.receiptNo,
-        subtitle: `Paid ${formatDateTime(receipt.paidAt)} · ${titleCase(receipt.paymentMethod)}`,
+        subtitle: t.subtitle(formatDateTime(receipt.paidAt), titleCase(receipt.paymentMethod)),
         meta: [
-          { label: "Paid", value: formatDateTime(receipt.paidAt) },
-          { label: "Method", value: titleCase(receipt.paymentMethod) },
-          { label: "Reference", value: receipt.paymentReference ?? "—" },
+          { label: t.metaPaid, value: formatDateTime(receipt.paidAt) },
+          { label: t.metaMethod, value: titleCase(receipt.paymentMethod) },
+          { label: t.metaReference, value: receipt.paymentReference ?? "—" },
         ],
         divisionLabel: titleCase(receipt.division),
       }}
       division={receipt.division}
     >
       <View style={styles.banner}>
-        <Text style={styles.bannerLabel}>Total paid</Text>
+        <Text style={styles.bannerLabel}>{t.totalPaid}</Text>
         <Text style={styles.bannerValue}>{formatKobo(receipt.totalKobo, receipt.currency)}</Text>
       </View>
 
-      <DocumentSection kicker="Customer">
+      <DocumentSection kicker={t.sectionCustomer}>
         <DefinitionList
           rows={[
-            { label: "Name", value: customer.name },
-            { label: "Email", value: customer.email ?? "—" },
-            { label: "Delivery", value: customer.deliveryAddress?.join(", ") ?? "—" },
+            { label: t.rowName, value: customer.name },
+            { label: t.rowEmail, value: customer.email ?? "—" },
+            { label: t.rowDelivery, value: customer.deliveryAddress?.join(", ") ?? "—" },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="What was paid">
-        <DataTable columns={columns} rows={items} striped emptyMessage="No items recorded." />
+      <DocumentSection kicker={t.sectionWhatPaid}>
+        <DataTable columns={columns} rows={items} striped emptyMessage={t.emptyItems} />
       </DocumentSection>
 
-      <DocumentSection kicker="Settlement">
+      <DocumentSection kicker={t.sectionSettlement}>
         <DefinitionList
           rows={[
-            { label: "Subtotal", value: formatKobo(receipt.subtotalKobo, receipt.currency), mono: true },
-            { label: "Fees", value: formatKobo(receipt.feesKobo ?? 0, receipt.currency), mono: true },
-            { label: "Tax", value: formatKobo(receipt.taxKobo, receipt.currency), mono: true },
-            { label: "Total", value: formatKobo(receipt.totalKobo, receipt.currency), mono: true },
-            { label: "Status", value: statusToLabel("paid") },
+            { label: t.rowSubtotal, value: formatKobo(receipt.subtotalKobo, receipt.currency), mono: true },
+            { label: t.rowFees, value: formatKobo(receipt.feesKobo ?? 0, receipt.currency), mono: true },
+            { label: t.rowTax, value: formatKobo(receipt.taxKobo, receipt.currency), mono: true },
+            { label: t.rowTotal, value: formatKobo(receipt.totalKobo, receipt.currency), mono: true },
+            { label: t.rowStatus, value: statusToLabel("paid") },
           ]}
         />
       </DocumentSection>
 
       {receipt.notes ? (
-        <DocumentSection kicker="Notes" tone="elevated">
+        <DocumentSection kicker={t.sectionNotes} tone="elevated">
           <Text style={{ fontSize: typeScale.body, color: palette.inkSoft, fontFamily: "HenryCoSans" }}>{receipt.notes}</Text>
         </DocumentSection>
       ) : null}
 
-      <LegalFooter
-        lines={[
-          "This receipt evidences payment captured by HenryCo on behalf of the originating division. Tax position reflects the rate in force on the paid date above.",
-          "If you spot a discrepancy, contact HenryCo support within 7 days for the fastest resolution path.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DataTable, type DataTableColumn } from "../components/DataTable";
@@ -24,6 +25,7 @@ export type KycSummaryProps = {
   reviewedAt?: string | null;
   reviewerNote?: string | null;
   submissions: KycSubmissionRow[];
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -53,71 +55,65 @@ const styles = StyleSheet.create({
   },
 });
 
-export function KycSummaryDocument({ user, status, submittedAt, reviewedAt, reviewerNote, submissions }: KycSummaryProps) {
+export function KycSummaryDocument({ user, status, submittedAt, reviewedAt, reviewerNote, submissions, locale = "en" }: KycSummaryProps) {
+  const t = getBrandedDocumentsCopy(locale).kyc;
   const columns: Array<DataTableColumn<KycSubmissionRow>> = [
-    { key: "type", header: "Document", flex: 2, render: (r) => titleCase(r.documentType) },
-    { key: "status", header: "Status", flex: 1, render: (r) => statusToLabel(r.status) },
-    { key: "submitted", header: "Submitted", flex: 1.4, render: (r) => formatDateTime(r.submittedAt), mono: true },
-    { key: "reviewed", header: "Reviewed", flex: 1.4, render: (r) => (r.reviewedAt ? formatDateTime(r.reviewedAt) : "—"), mono: true },
-    { key: "note", header: "Reviewer note", flex: 2.2, render: (r) => r.reviewerNote ?? "—" },
+    { key: "type", header: t.columnDocument, flex: 2, render: (r) => titleCase(r.documentType) },
+    { key: "status", header: t.columnStatus, flex: 1, render: (r) => statusToLabel(r.status) },
+    { key: "submitted", header: t.columnSubmitted, flex: 1.4, render: (r) => formatDateTime(r.submittedAt), mono: true },
+    { key: "reviewed", header: t.columnReviewed, flex: 1.4, render: (r) => (r.reviewedAt ? formatDateTime(r.reviewedAt) : "—"), mono: true },
+    { key: "note", header: t.columnReviewerNote, flex: 2.2, render: (r) => r.reviewerNote ?? "—" },
   ];
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `KYC summary · ${user.name}`,
-        subject: "Identity verification summary",
+        subject: t.subject,
         keywords: ["kyc", "verification", "henryco", user.id],
       }}
       header={{
-        documentType: "Identity verification summary",
+        documentType: t.documentType,
         title: user.name,
-        subtitle: `Status · ${statusToLabel(status)}`,
+        subtitle: `${t.statusPrefix} · ${statusToLabel(status)}`,
         meta: [
-          { label: "Submitted", value: submittedAt ? formatDateTime(submittedAt) : "—" },
-          { label: "Reviewed", value: reviewedAt ? formatDateTime(reviewedAt) : "—" },
+          { label: t.metaSubmitted, value: submittedAt ? formatDateTime(submittedAt) : "—" },
+          { label: t.metaReviewed, value: reviewedAt ? formatDateTime(reviewedAt) : "—" },
         ],
-        divisionLabel: "Trust & Compliance",
+        divisionLabel: t.divisionLabel,
       }}
       division="account"
     >
       <View style={styles.notice}>
-        <Text style={styles.noticeKicker}>Privacy posture</Text>
-        <Text style={styles.noticeBody}>
-          This summary records what was submitted and how the HenryCo trust team has reviewed it. The underlying ID
-          documents are never embedded in this PDF — only the metadata you see below.
-        </Text>
+        <Text style={styles.noticeKicker}>{t.privacyKicker}</Text>
+        <Text style={styles.noticeBody}>{t.privacyBody}</Text>
       </View>
 
-      <DocumentSection kicker="Account holder" tone="elevated">
+      <DocumentSection kicker={t.accountHolder} tone="elevated">
         <DefinitionList
           rows={[
-            { label: "Name", value: user.name },
-            { label: "Email", value: user.email ?? "—" },
-            { label: "Account ID", value: user.id, mono: true },
-            { label: "Overall status", value: statusToLabel(status) },
+            { label: t.rowName, value: user.name },
+            { label: t.rowEmail, value: user.email ?? "—" },
+            { label: t.rowAccountId, value: user.id, mono: true },
+            { label: t.rowOverallStatus, value: statusToLabel(status) },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Submissions">
-        <DataTable columns={columns} rows={submissions} emptyMessage="No KYC submissions on file." />
+      <DocumentSection kicker={t.sectionSubmissions}>
+        <DataTable columns={columns} rows={submissions} emptyMessage={t.emptySubmissions} />
       </DocumentSection>
 
       {reviewerNote ? (
-        <DocumentSection kicker="Reviewer note" tone="accent">
+        <DocumentSection kicker={t.sectionReviewerNote} tone="accent">
           <Text style={{ fontSize: typeScale.body, color: palette.inkSoft, fontFamily: "HenryCoSans", lineHeight: 1.5 }}>
             {reviewerNote}
           </Text>
         </DocumentSection>
       ) : null}
 
-      <LegalFooter
-        lines={[
-          "HenryCo retains identity documents only as long as required by Nigerian law and applicable KYC obligations. This summary is your audit-trail copy and does not include the document images themselves.",
-          "If you need to update an ID, do so from your HenryCo account verification page; the original record will then move to historical state and a new entry will replace it in this view.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

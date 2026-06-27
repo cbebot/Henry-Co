@@ -27,6 +27,8 @@ import { getPreferences } from "@/lib/account-data";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
 import { COMPANY } from "@henryco/config";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 // Side-effect import — registers every module so getEligibleModules
 // has a populated registry when computing moduleJumpEntries below.
@@ -102,12 +104,14 @@ async function signOutAction(): Promise<void> {
 }
 
 export default async function AccountLayout({ children, rail, drawer }: LayoutProps) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountMiscExtraCopy(locale);
   return (
     <Suspense
       fallback={
         <AccountRouteLoading
-          title="Opening your account"
-          description="Confirming your session and loading navigation."
+          title={copy.layout.loadingTitle}
+          description={copy.layout.loadingDescription}
         />
       }
     >

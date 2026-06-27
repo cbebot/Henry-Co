@@ -1,39 +1,42 @@
 "use client";
 
 import { Link2 } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMiscCopy } from "@henryco/i18n";
 import { StudioFileField } from "@/components/studio/studio-file-field";
 
 export function StudioReferenceAttachments() {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMiscCopy(locale);
   return (
     <div className="space-y-5">
       <div>
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
           <Link2 className="h-3.5 w-3.5" aria-hidden />
-          Inspiration links (optional)
+          {copy.referenceAttachments.inspirationLinksTitle}
         </div>
         <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
-          Paste sites you admire, competitors to surpass, or internal PDFs that show tone. Rough links are fine—we care
-          more about direction than perfection.
+          {copy.referenceAttachments.inspirationLinksDescription}
         </p>
         <div className="mt-3 grid gap-3">
           <input
             name="referenceLinks"
             className="studio-input rounded-[1.2rem] px-4 py-3"
-            placeholder="https://a-site-whose-pace-you-like.com"
+            placeholder={copy.referenceAttachments.referencePlaceholder1}
             inputMode="url"
             autoComplete="url"
           />
           <input
             name="referenceLinks"
             className="studio-input rounded-[1.2rem] px-4 py-3"
-            placeholder="Another reference (optional)"
+            placeholder={copy.referenceAttachments.referencePlaceholder2}
             inputMode="url"
             autoComplete="url"
           />
           <input
             name="referenceLinks"
             className="studio-input rounded-[1.2rem] px-4 py-3"
-            placeholder="Third link (optional)"
+            placeholder={copy.referenceAttachments.referencePlaceholder3}
             inputMode="url"
             autoComplete="url"
           />
@@ -44,9 +47,9 @@ export function StudioReferenceAttachments() {
         <StudioFileField
           name="referenceFiles"
           multiple
-          title="Moodboards, notes, or exports"
-          description="Screenshots, short PDFs, or a messy deck—upload what you have. We only use this to understand you."
-          footerHint="Files stay inside your Studio brief and project record; they are never published to the web."
+          title={copy.referenceAttachments.moodboardsTitle}
+          description={copy.referenceAttachments.moodboardsDescription}
+          footerHint={copy.referenceAttachments.moodboardsFooterHint}
         />
       </div>
     </div>

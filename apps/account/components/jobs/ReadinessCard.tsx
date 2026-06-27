@@ -1,4 +1,6 @@
 import { CheckCircle2, Circle } from "lucide-react";
+import { getAccountHeroesCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 export type ChecklistRow = {
   id: string;
@@ -12,9 +14,11 @@ type Props = {
   checklist: ReadonlyArray<ChecklistRow>;
 };
 
-export function ReadinessCard({ title, body, checklist }: Props) {
+export async function ReadinessCard({ title, body, checklist }: Props) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).readinessCard;
   return (
-    <div className="acct-job__readiness" aria-label="Profile readiness checklist">
+    <div className="acct-job__readiness" aria-label={copy.cardAria}>
       <h3 className="acct-job__readiness-title">{title}</h3>
       <p className="acct-job__readiness-body">{body}</p>
       <ul className="acct-job__checklist" role="list">

@@ -5,18 +5,20 @@ import type { MarketplacePaymentRecord } from "@/lib/marketplace/types";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPaymentsPage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   await requireMarketplaceUser("/account/payments");
   const data = await getBuyerDashboardData();
 
   return (
     <WorkspaceShell
-      title="Payments"
-      description="Payment verification stays visible next to the order reference so bank-transfer review never feels opaque."
+      title={copy.payments.title}
+      description={copy.payments.description}
       {...accountWorkspaceNav("/account/payments", locale)}
     >
       {data.payments.length ? (
@@ -30,13 +32,13 @@ export default async function AccountPaymentsPage() {
                 </div>
                 <div className="text-sm text-[var(--market-muted)]">
                   <p className="font-semibold capitalize text-[var(--market-ink)]">{payment.status}</p>
-                  <p>{payment.verifiedAt ? formatDate(payment.verifiedAt) : "Awaiting review"}</p>
+                  <p>{payment.verifiedAt ? formatDate(payment.verifiedAt) : copy.payments.awaitingReview}</p>
                 </div>
               </div>
               <dl className="mt-4 grid gap-3 border-t border-[var(--market-line)] pt-4 text-sm sm:grid-cols-3">
                 <div>
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                    Method
+                    {copy.payments.method}
                   </dt>
                   <dd className="mt-1 font-semibold capitalize text-[var(--market-ink)]">
                     {payment.method.replace(/_/g, " ")}
@@ -44,23 +46,23 @@ export default async function AccountPaymentsPage() {
                 </div>
                 <div>
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                    HenryCo reference
+                    {copy.payments.reference}
                   </dt>
                   <dd className="mt-1 font-semibold text-[var(--market-ink)]">{payment.reference}</dd>
                 </div>
                 <div>
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                    Proof
+                    {copy.payments.proof}
                   </dt>
                   <dd className="mt-1 font-semibold text-[var(--market-ink)]">
                     {payment.proofUrl ? (
                       <a href={payment.proofUrl} target="_blank" rel="noreferrer" className="text-[var(--market-brass)]">
-                        {payment.proofName || "View proof"}
+                        {payment.proofName || copy.payments.viewProof}
                       </a>
                     ) : payment.walletTransactionId ? (
-                      "Wallet debit recorded"
+                      copy.payments.walletDebitRecorded
                     ) : (
-                      "Not uploaded"
+                      copy.payments.notUploaded
                     )}
                   </dd>
                 </div>
@@ -69,7 +71,7 @@ export default async function AccountPaymentsPage() {
           ))}
         </div>
       ) : (
-        <EmptyState title="No payment records yet." body="Payment evidence and COD state updates will appear here after checkout." />
+        <EmptyState title={copy.payments.emptyTitle} body={copy.payments.emptyBody} />
       )}
     </WorkspaceShell>
   );

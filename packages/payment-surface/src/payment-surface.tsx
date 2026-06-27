@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "@henryco/ui/cn";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
+import { getPaymentSurfaceCopy, DEFAULT_LOCALE, type AppLocale } from "@henryco/i18n";
 import { PaymentGuide } from "./payment-guide";
 import { PaymentProcessing } from "./payment-processing";
 import { PaymentProofUpload } from "./payment-proof-upload";
@@ -18,24 +19,6 @@ import {
   friendlyPaymentStatus,
 } from "./format";
 import type { PaymentSurfaceContext } from "./types";
-
-const DEFAULT_BODY: Record<string, string> = {
-  pending:
-    "Send your payment using the verified company details below, then attach your proof so finance can confirm and unlock the next step.",
-  processing:
-    "Payment proof received. Finance is verifying — you can track confirmation here.",
-  paid: "Payment confirmed. Thank you — your record stays moving.",
-  failed:
-    "We could not match this transfer. Please re-upload your proof or contact finance support below.",
-  refunded: "Refund issued. The transfer was returned to the source account.",
-  cancelled: "This payment was cancelled. No further action is needed.",
-};
-
-const DEFAULT_INSTRUCTIONS =
-  "Bank transfer is the active payment method. Proof can be a debit alert screenshot, bank receipt, or PDF — anything showing amount, date, and destination.";
-
-const DEFAULT_PROOF_HINT =
-  "After sending, attach the proof below — finance reviews within one business day. You'll see the status flip to processing here as soon as the upload lands.";
 
 /**
  * PaymentSurface — top-level composition rendered at every /pay route.
@@ -56,14 +39,25 @@ const DEFAULT_PROOF_HINT =
  */
 export interface PaymentSurfaceProps {
   ctx: PaymentSurfaceContext;
+  /** Active locale for shared-surface copy. Defaults to EN when omitted. */
+  locale?: AppLocale;
 }
 
-export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
+export function PaymentSurface({ ctx, locale = DEFAULT_LOCALE }: PaymentSurfaceProps) {
   const { payment, record, platform, upload, copy, theme } = ctx;
+  const t = getPaymentSurfaceCopy(locale).surface;
+  const defaultBody: Record<string, string> = {
+    pending: t.bodyPending,
+    processing: t.bodyProcessing,
+    paid: t.bodyPaid,
+    failed: t.bodyFailed,
+    refunded: t.bodyRefunded,
+    cancelled: t.bodyCancelled,
+  };
   const statusLabel = friendlyPaymentStatus(payment.status, payment.statusLabel ?? null);
   const dueLabel = formatPaymentDueDate(payment.dueDate);
-  const bodyByStatus = { ...DEFAULT_BODY, ...(copy?.bodyByStatus ?? {}) } as Record<string, string>;
-  const heroBody = bodyByStatus[payment.status] ?? DEFAULT_BODY[payment.status] ?? DEFAULT_BODY.pending;
+  const bodyByStatus = { ...defaultBody, ...(copy?.bodyByStatus ?? {}) } as Record<string, string>;
+  const heroBody = bodyByStatus[payment.status] ?? defaultBody[payment.status] ?? defaultBody.pending;
   const isPaid = payment.status === "paid";
   const isProcessing = payment.status === "processing";
   const isCancelled = payment.status === "cancelled" || payment.status === "refunded";
@@ -74,7 +68,7 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
   const showReceipt = isPaid;
   const heroEyebrow =
     copy?.eyebrow ??
-    (payment.rank ? `Payment · ${payment.rank.index} of ${payment.rank.total}` : statusLabel);
+    (payment.rank ? t.rankEyebrow(payment.rank.index, payment.rank.total) : statusLabel);
 
   return (
     <main
@@ -101,7 +95,7 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
       </Link>
 
       <h1 className="sr-only">
-        Payment workspace · {payment.label || "Payment"} · {record.title}
+        {t.workspaceHeading(payment.label || t.paymentFallback, record.title)}
       </h1>
 
       <div className="mt-5">
@@ -109,35 +103,35 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
           tone={theme?.heroTone ?? "contrast"}
           accentVar={theme?.accentVar ?? "var(--payment-accent, #97f4f3)"}
           eyebrow={heroEyebrow}
-          title={payment.label || "Payment"}
+          title={payment.label || t.paymentFallback}
           body={heroBody}
           rows={[
             {
               key: "amount",
               icon: <Receipt className="h-4 w-4" />,
-              label: "Amount due",
+              label: t.amountDue,
               value: formatPaymentAmount(payment.amount, payment.currency),
             },
             {
               key: "status",
               icon: <Shield className="h-4 w-4" />,
-              label: "Status",
+              label: t.status,
               value: statusLabel,
             },
             {
               key: "due",
               icon: <CalendarClock className="h-4 w-4" />,
-              label: "Due",
+              label: t.due,
               value: dueLabel,
             },
             ...(record.subtitle
-              ? [{ key: "subtitle", label: "Context", value: record.subtitle }]
+              ? [{ key: "subtitle", label: t.context, value: record.subtitle }]
               : []),
             { key: "record", label: record.back.label, value: record.title },
           ]}
           footer={
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <span>Reference your record name on the transfer.</span>
+              <span>{t.footerReference}</span>
               {record.primaryCta ? (
                 <Link
                   href={record.primaryCta.href}
@@ -158,16 +152,17 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
       {showGuide ? (
         <div className="mt-6">
           <PaymentGuide
-            title={copy?.guideTitle ?? "Send the payment using the verified company account"}
+            title={copy?.guideTitle ?? t.guideDefaultTitle}
             amount={payment.amount}
             currency={payment.currency}
             statusLabel={statusLabel}
-            dueLabel={`Due ${dueLabel}`}
-            instructions={copy?.instructions ?? DEFAULT_INSTRUCTIONS}
-            proofHint={copy?.proofHint ?? DEFAULT_PROOF_HINT}
+            dueLabel={t.duePrefix(dueLabel)}
+            instructions={copy?.instructions ?? t.defaultInstructions}
+            proofHint={copy?.proofHint ?? t.defaultProofHint}
             platform={platform}
             copy={copy}
             theme={theme}
+            locale={locale}
           />
         </div>
       ) : null}
@@ -185,6 +180,7 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
             theme={theme}
             status={payment.status}
             successLocked={false}
+            locale={locale}
           />
         </div>
       ) : null}

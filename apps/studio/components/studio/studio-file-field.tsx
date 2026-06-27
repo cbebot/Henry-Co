@@ -2,6 +2,8 @@
 
 import { FileUp, X } from "lucide-react";
 import { useCallback, useId, useRef, useState } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMiscCopy } from "@henryco/i18n";
 
 function truncateMiddle(name: string, max = 40) {
   if (name.length <= max) return name;
@@ -32,6 +34,8 @@ export function StudioFileField({
   accept?: string;
   variant?: "full" | "compact";
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMiscCopy(locale);
   const inputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const titleId = useId();
@@ -116,17 +120,15 @@ export function StudioFileField({
           <FileUp className={variant === "compact" ? "h-4 w-4" : "h-5 w-5"} />
         </span>
         <span className="text-sm font-semibold text-[var(--studio-ink)]">
-          {variant === "compact" ? "Add file" : "Tap to add files"}
+          {variant === "compact" ? copy.fileField.addFile : copy.fileField.tapToAddFiles}
         </span>
         <span className="max-w-sm text-xs leading-5 text-[var(--studio-ink-soft)]">
-          {multiple
-            ? "Drag and drop here if your browser supports it—multiple files allowed."
-            : "Drag and drop one file here, or tap to choose from your device."}
+          {multiple ? copy.fileField.dragMultiple : copy.fileField.dragSingle}
         </span>
       </button>
 
       {files.length > 0 ? (
-        <ul className="space-y-2" aria-label="Files ready to upload">
+        <ul className="space-y-2" aria-label={copy.fileField.filesReadyAriaLabel}>
           {files.map((file, index) => (
             <li
               key={`${file.name}-${file.size}-${index}`}
@@ -144,7 +146,7 @@ export function StudioFileField({
                 type="button"
                 onClick={() => removeAt(index)}
                 className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] text-[var(--studio-ink-soft)] transition hover:border-rose-400/35 hover:text-rose-200"
-                aria-label={`Remove ${file.name}`}
+                aria-label={copy.fileField.removeAriaLabel(file.name)}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -152,7 +154,7 @@ export function StudioFileField({
           ))}
         </ul>
       ) : (
-        <p className="text-xs text-[var(--studio-ink-soft)]">No file selected yet.</p>
+        <p className="text-xs text-[var(--studio-ink-soft)]">{copy.fileField.noFileSelected}</p>
       )}
 
       {footerHint ? <p className="text-[11px] leading-5 text-[var(--studio-ink-soft)]">{footerHint}</p> : null}

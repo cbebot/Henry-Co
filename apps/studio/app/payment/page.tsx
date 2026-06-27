@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowRight, FileQuestion, Sparkles } from "lucide-react";
 
 import { resolveLocalizedDynamicField, type AppLocale } from "@henryco/i18n/server";
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioLoginUrl } from "@/lib/studio/links";
 import { getStudioPublicLocale } from "@/lib/locale-server";
@@ -39,6 +40,7 @@ export default async function StudioPaymentPage({
   const viewer = await getClientPortalViewer();
   const catalog = await getStudioCatalog();
   const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
 
   // Scenario A — token-based access (unauthenticated or otherwise).
   if (token) {
@@ -50,9 +52,10 @@ export default async function StudioPaymentPage({
         catalog,
         /* token */ token,
         locale,
+        copy,
       );
     }
-    return renderInvoiceNotFound();
+    return renderInvoiceNotFound(copy);
   }
 
   // Scenarios B & C — authenticated portal user, or direct nav.
@@ -67,11 +70,11 @@ export default async function StudioPaymentPage({
       <main className="portal-shell mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <PortalEmptyState
           icon={Sparkles}
-          title="You're all paid up"
-          body="There are no outstanding invoices on your account. As soon as a new milestone invoice is issued, it will show up here and inside your client portal."
+          title={copy.payment.allPaidTitle}
+          body={copy.payment.allPaidBody}
           action={
             <Link href="/client/dashboard" className="portal-button portal-button-secondary">
-              Open client portal
+              {copy.payment.openClientPortal}
             </Link>
           }
         />
@@ -80,21 +83,20 @@ export default async function StudioPaymentPage({
   }
 
   if (invoices.length === 1) {
-    return renderInvoicePay(invoices[0], null, catalog, /* token */ null, locale);
+    return renderInvoicePay(invoices[0], null, catalog, /* token */ null, locale, copy);
   }
 
   return (
     <main className="portal-shell mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <header className="space-y-2">
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          Outstanding invoices
+          {copy.payment.outstandingInvoices}
         </div>
         <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Choose an invoice to pay
+          {copy.payment.chooseInvoice}
         </h1>
         <p className="max-w-xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          You have {invoices.length} outstanding invoices. Pick one to view bank details and submit
-          proof of payment.
+          {copy.payment.chooseInvoiceBody.replace("{count}", String(invoices.length))}
         </p>
       </header>
 
@@ -115,10 +117,12 @@ export default async function StudioPaymentPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
                   <span>{invoice.invoiceNumber}</span>
-                  {invoice.dueDate ? <span>· Due {shortDate(invoice.dueDate)}</span> : null}
+                  {invoice.dueDate ? (
+                    <span>· {copy.payment.duePrefix} {shortDate(invoice.dueDate)}</span>
+                  ) : null}
                 </div>
                 <div className="mt-1 truncate text-base font-semibold text-[var(--studio-ink)]">
-                  {invoice.description || "Studio invoice"}
+                  {invoice.description || copy.payment.studioInvoice}
                 </div>
                 <div className="mt-2">
                   <StatusBadge tone={status.tone} label={status.label} size="sm" />
@@ -138,20 +142,20 @@ export default async function StudioPaymentPage({
   );
 }
 
-function renderInvoiceNotFound() {
+function renderInvoiceNotFound(copy: ReturnType<typeof getStudioClientPagesCopy>) {
   return (
     <main className="portal-shell mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <PortalEmptyState
         icon={FileQuestion}
-        title="We couldn't find that invoice"
-        body="The link may have expired or been mistyped. If you received the link by email, try opening it directly. Otherwise, log in to your client portal to see your live invoices."
+        title={copy.payment.notFoundTitle}
+        body={copy.payment.notFoundBody}
         action={
           <div className="flex flex-col gap-2 sm:flex-row">
             <Link href="/client/dashboard" className="portal-button portal-button-primary">
-              Open client portal
+              {copy.payment.openClientPortal}
             </Link>
             <Link href="/contact" className="portal-button portal-button-secondary">
-              Contact support
+              {copy.payment.contactSupport}
             </Link>
           </div>
         }
@@ -166,6 +170,7 @@ async function renderInvoicePay(
   catalog: Awaited<ReturnType<typeof getStudioCatalog>>,
   token: string | null,
   locale: AppLocale,
+  copy: ReturnType<typeof getStudioClientPagesCopy>,
 ) {
   const platform = catalog.platform;
   const amountLabel = formatKobo(invoice.amountKobo, invoice.currency);
@@ -198,7 +203,7 @@ async function renderInvoicePay(
   return (
     <main className="portal-shell mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <h1 className="sr-only">
-        Pay invoice {localizedInvoice.invoiceNumber} · {amountLabel}
+        {copy.payment.payInvoiceSr} {localizedInvoice.invoiceNumber} · {amountLabel}
       </h1>
 
       <div className="space-y-5">
@@ -210,29 +215,26 @@ async function renderInvoicePay(
               <Sparkles className="h-6 w-6" />
             </div>
             <h2 className="mt-5 text-xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">
-              This invoice is fully paid
+              {copy.payment.fullyPaidTitle}
             </h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[var(--studio-ink-soft)]">
-              Thank you. Your client portal shows the milestone unlock and what the team is working on
-              next.
+              {copy.payment.fullyPaidBody}
             </p>
             <Link
               href="/client/dashboard"
               className="portal-button portal-button-primary mt-5"
             >
-              Open client portal
+              {copy.payment.openClientPortal}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         ) : isPending ? (
           <div className="portal-card-elev p-5 sm:p-6">
             <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Verification in progress
+              {copy.payment.verificationTitle}
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
-              We have your payment proof. Finance is verifying — usually within one business day. You
-              do not need to do anything else. We will email you and update this page as soon as the
-              transfer is confirmed.
+              {copy.payment.verificationBody}
             </p>
           </div>
         ) : (
@@ -250,8 +252,7 @@ async function renderInvoicePay(
               amountLabel={amountLabel}
             />
             <div className="rounded-2xl border border-dashed border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-5 py-4 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-              Card payments are coming soon. For now, bank transfer is the fastest way to confirm and
-              keep your project moving.
+              {copy.payment.cardComingSoon}
             </div>
           </>
         )}
@@ -261,7 +262,7 @@ async function renderInvoicePay(
             href="/client/dashboard"
             className="inline-flex items-center gap-1.5 font-semibold transition hover:text-[var(--studio-ink)]"
           >
-            Back to client portal
+            {copy.payment.backToPortal}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
           {platform.paymentSupportEmail ? (
@@ -269,7 +270,7 @@ async function renderInvoicePay(
               href={`mailto:${platform.paymentSupportEmail}`}
               className="inline-flex items-center gap-1.5 font-semibold transition hover:text-[var(--studio-ink)]"
             >
-              Contact finance
+              {copy.payment.contactFinance}
             </a>
           ) : null}
         </div>

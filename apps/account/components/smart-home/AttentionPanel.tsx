@@ -1,6 +1,8 @@
 import { AlertOctagon, Clock } from "lucide-react";
 import { Panel, SignalCard } from "@henryco/dashboard-shell";
+import { getAccountHeroesCopy } from "@henryco/i18n";
 import type { SignalFeedItem } from "@henryco/data";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import type { LifecycleSnapshot } from "@henryco/lifecycle";
 import LifecycleContinuePanel from "@/components/lifecycle/LifecycleContinuePanel";
 import { divisionColor, divisionLabel } from "@/lib/format";
@@ -33,7 +35,9 @@ export type AttentionPanelProps = {
   lifecycle: LifecycleSnapshot | null;
 };
 
-export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelProps) {
+export async function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelProps) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).attentionPanel;
   const hasSignals = attentionSignals.length > 0;
   const hasLifecycle = (lifecycle?.actionables.length ?? 0) > 0;
   if (!hasSignals && !hasLifecycle) return null;
@@ -83,7 +87,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
                   margin: 0,
                 }}
               >
-                Attention
+                {copy.kicker}
               </p>
               <h2
                 style={{
@@ -94,7 +98,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
                   marginTop: "0.15rem",
                 }}
               >
-                Open threads ranked by what blocks first
+                {copy.title}
               </h2>
             </div>
           </div>
@@ -102,7 +106,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
             {securityCount > 0 ? (
               <PriorityChip
                 count={securityCount}
-                label="security"
+                label={copy.chipSecurity}
                 background="rgba(185, 28, 28, 0.10)"
                 color="#B91C1C"
               />
@@ -110,7 +114,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
             {urgentCount > 0 ? (
               <PriorityChip
                 count={urgentCount}
-                label="urgent"
+                label={copy.chipUrgent}
                 background="rgba(217, 119, 6, 0.12)"
                 color="#B45309"
               />
@@ -118,7 +122,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
             {lifecycleBlocking > 0 ? (
               <PriorityChip
                 count={lifecycleBlocking}
-                label="blocking"
+                label={copy.chipBlocking}
                 background="rgba(124, 58, 237, 0.12)"
                 color="#6D28D9"
               />
@@ -161,7 +165,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
               }}
             >
               <Clock size={14} aria-hidden />
-              <span>Continue where you left off</span>
+              <span>{copy.continueLabel}</span>
             </header>
             <LifecycleContinuePanel snapshot={lifecycle} />
           </div>

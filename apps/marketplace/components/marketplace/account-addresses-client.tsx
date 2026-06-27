@@ -4,6 +4,8 @@ import { startTransition, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, Pencil, Star, Trash2 } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import type { MarketplaceAddress } from "@/lib/marketplace/types";
 
@@ -41,6 +43,8 @@ function sortAddresses(addresses: MarketplaceAddress[]) {
 
 export function AccountAddressesClient({ initialAddresses }: AccountAddressesClientProps) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale).addressesClient;
   const { pushToast } = useMarketplaceRuntime();
   const [addresses, setAddresses] = useState<MarketplaceAddress[]>(sortAddresses(initialAddresses));
   const [form, setForm] = useState<AddressFormState>(emptyForm);
@@ -50,8 +54,8 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
   const [error, setError] = useState<string | null>(null);
 
   const heading = useMemo(
-    () => (editingId ? "Update your saved address" : "Add a saved address"),
-    [editingId]
+    () => (editingId ? copy.headingEdit : copy.headingAdd),
+    [editingId, copy]
   );
 
   function resetForm() {
@@ -108,7 +112,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
         | null;
 
       if (!response.ok || !result?.address) {
-        throw new Error(result?.error || "Address save failed.");
+        throw new Error(result?.error || copy.saveFailed);
       }
 
       setAddresses((current) => {
@@ -120,18 +124,18 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
       });
 
       pushToast(
-        editingId ? "Address updated" : "Address saved",
+        editingId ? copy.toastUpdated : copy.toastSaved,
         "success",
         result.address.isDefault
-          ? "This address is now your default checkout destination."
-          : "The address is now available across your marketplace account."
+          ? copy.toastUpdatedDefaultBody
+          : copy.toastSavedBody
       );
       resetForm();
       startTransition(() => router.refresh());
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : "Address save failed.";
+      const message = reason instanceof Error ? reason.message : copy.saveFailed;
       setError(message);
-      pushToast("Address save failed", "error", message);
+      pushToast(copy.toastSaveFailed, "error", message);
     } finally {
       setSubmitting(false);
     }
@@ -160,13 +164,13 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
         | null;
 
       if (!response.ok) {
-        throw new Error(result?.error || "Address action failed.");
+        throw new Error(result?.error || copy.actionFailed);
       }
 
       if (intent === "address_delete") {
         setAddresses((current) => current.filter((item) => item.id !== addressId));
         if (editingId === addressId) resetForm();
-        pushToast("Address removed", "success");
+        pushToast(copy.toastRemoved, "success");
       } else if (result?.address) {
         setAddresses((current) =>
           sortAddresses(
@@ -180,14 +184,14 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
             )
           )
         );
-        pushToast("Default address updated", "success");
+        pushToast(copy.toastDefaultUpdated, "success");
       }
 
       startTransition(() => router.refresh());
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : "Address action failed.";
+      const message = reason instanceof Error ? reason.message : copy.actionFailed;
       setError(message);
-      pushToast("Address action failed", "error", message);
+      pushToast(copy.toastActionFailed, "error", message);
     } finally {
       setBusyAction(null);
     }
@@ -203,8 +207,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
           <div>
             <p className="text-sm font-semibold text-[var(--market-paper-white)]">{heading}</p>
             <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-              Saved destinations are reused by checkout, support follow-up, and future account continuity. Default
-              changes take effect immediately.
+              {copy.introBody}
             </p>
           </div>
         </div>
@@ -216,56 +219,56 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
             value={form.label}
             onChange={(event) => setForm((current) => ({ ...current, label: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3"
-            placeholder="Label: Home, Office..."
+            placeholder={copy.labelPlaceholder}
             required
           />
           <input
             value={form.recipient_name}
             onChange={(event) => setForm((current) => ({ ...current, recipient_name: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3"
-            placeholder="Recipient name"
+            placeholder={copy.recipientPlaceholder}
             required
           />
           <input
             value={form.phone}
             onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3"
-            placeholder="Phone number"
+            placeholder={copy.phonePlaceholder}
             required
           />
           <input
             value={form.city}
             onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3"
-            placeholder="City"
+            placeholder={copy.cityPlaceholder}
             required
           />
           <input
             value={form.region}
             onChange={(event) => setForm((current) => ({ ...current, region: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3"
-            placeholder="Region / State"
+            placeholder={copy.regionPlaceholder}
             required
           />
           <input
             value={form.country}
             onChange={(event) => setForm((current) => ({ ...current, country: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3"
-            placeholder="Country"
+            placeholder={copy.countryPlaceholder}
             required
           />
           <input
             value={form.line1}
             onChange={(event) => setForm((current) => ({ ...current, line1: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3 md:col-span-2"
-            placeholder="Address line 1"
+            placeholder={copy.line1Placeholder}
             required
           />
           <input
             value={form.line2}
             onChange={(event) => setForm((current) => ({ ...current, line2: event.target.value }))}
             className="market-input rounded-2xl px-4 py-3 md:col-span-2"
-            placeholder="Address line 2 (optional)"
+            placeholder={copy.line2Placeholder}
           />
         </div>
         <label className="mt-4 flex items-center gap-3 rounded-[1.25rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-3 text-sm text-[var(--market-ink)]">
@@ -274,7 +277,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
             checked={form.is_default}
             onChange={(event) => setForm((current) => ({ ...current, is_default: event.target.checked }))}
           />
-          Set as default address
+          {copy.setDefault}
         </label>
         {error ? (
           <p className="mt-4 rounded-[1.2rem] bg-[rgba(126,33,18,0.08)] px-4 py-3 text-sm font-medium text-[var(--market-alert)]">
@@ -288,13 +291,13 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
           >
             {submitting ? (
               <>
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label="Saving address" />
-                Saving...
+                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label={copy.savingLabel} />
+                {copy.saving}
               </>
             ) : editingId ? (
-              "Update address"
+              copy.updateAddress
             ) : (
-              "Save address"
+              copy.saveAddress
             )}
           </button>
           {editingId ? (
@@ -303,7 +306,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
               onClick={resetForm}
               className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Cancel edit
+              {copy.cancelEdit}
             </button>
           ) : null}
         </div>
@@ -311,9 +314,9 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
 
       {!addresses.length ? (
         <section className="market-soft rounded-[1.7rem] p-6 text-center">
-          <p className="text-xl font-semibold text-[var(--market-paper-white)]">No saved addresses yet.</p>
+          <p className="text-xl font-semibold text-[var(--market-paper-white)]">{copy.emptyTitle}</p>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-            Save a destination once and HenryCo will keep it ready for future checkout, support, and order-follow-up flows.
+            {copy.emptyBody}
           </p>
         </section>
       ) : (
@@ -331,7 +334,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
                   {address.isDefault ? (
                     <span className="inline-flex items-center gap-2 rounded-full bg-[rgba(144,215,186,0.12)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--market-success)]">
                       <Star className="h-3.5 w-3.5 fill-current" />
-                      Default
+                      {copy.defaultBadge}
                     </span>
                   ) : null}
                 </div>
@@ -347,7 +350,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
                     className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                   >
                     <Pencil className="h-4 w-4" />
-                    Edit
+                    {copy.edit}
                   </button>
                   {!address.isDefault ? (
                     <button
@@ -357,11 +360,11 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
                       className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                     >
                       {defaultBusy ? (
-                        <HenryCoActivityIndicator size="sm" label="Updating default address" />
+                        <HenryCoActivityIndicator size="sm" label={copy.updatingDefaultLabel} />
                       ) : (
                         <Star className="h-4 w-4" />
                       )}
-                      Set default
+                      {copy.setDefaultAction}
                     </button>
                   ) : null}
                   <button
@@ -371,11 +374,11 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
                     className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,171,151,0.22)] px-4 py-2 text-sm font-semibold text-[var(--market-alert)]"
                   >
                     {deleteBusy ? (
-                      <HenryCoActivityIndicator size="sm" label="Deleting address" />
+                      <HenryCoActivityIndicator size="sm" label={copy.deletingLabel} />
                     ) : (
                       <Trash2 className="h-4 w-4" />
                     )}
-                    Delete
+                    {copy.deleteAction}
                   </button>
                 </div>
               </article>

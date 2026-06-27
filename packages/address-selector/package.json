@@ -20,6 +20,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@henryco/i18n": "workspace:^",
     "@supabase/supabase-js": "^2.98.0"
   },
   "peerDependencies": {

@@ -5,29 +5,38 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { ChatComposer } from "@henryco/chat-composer";
 import type { ComposerSendPayload } from "@henryco/chat-composer";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getJobsCandidateSurfaceCopy } from "@henryco/i18n";
 
-const CONTACT_PATTERNS = [
-  { regex: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, label: "email address" },
+type ContactTypeKey =
+  | "emailAddress"
+  | "phoneNumber"
+  | "socialHandle"
+  | "messagingApp"
+  | "socialLink";
+
+const CONTACT_PATTERNS: Array<{ regex: RegExp; key: ContactTypeKey }> = [
+  { regex: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, key: "emailAddress" },
   {
     regex: /(?:\+?\d{1,4}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g,
-    label: "phone number",
+    key: "phoneNumber",
   },
-  { regex: /@[a-zA-Z0-9_]{2,30}/g, label: "social handle" },
+  { regex: /@[a-zA-Z0-9_]{2,30}/g, key: "socialHandle" },
   {
     regex: /(?:whatsapp|telegram|signal|viber)\s*[:\-]?\s*[\w.+@]/i,
-    label: "messaging app",
+    key: "messagingApp",
   },
   {
     regex: /(?:instagram|facebook|twitter|linkedin)\.com\/[\w.-]+/i,
-    label: "social link",
+    key: "socialLink",
   },
 ];
 
 function checkOffPlatform(text: string) {
-  const found: string[] = [];
-  for (const { regex, label } of CONTACT_PATTERNS) {
+  const found: ContactTypeKey[] = [];
+  for (const { regex, key } of CONTACT_PATTERNS) {
     regex.lastIndex = 0;
-    if (regex.test(text) && !found.includes(label)) found.push(label);
+    if (regex.test(text) && !found.includes(key)) found.push(key);
   }
   return found;
 }
@@ -42,6 +51,8 @@ export function MessageComposer({
   senderType: string;
 }) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const copy = getJobsCandidateSurfaceCopy(locale).messageComposer;
   const [warning, setWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,12 +65,11 @@ export function MessageComposer({
       setError(null);
       const detected = checkOffPlatform(text);
       if (detected.length > 0) {
-        setWarning(
-          `Detected ${detected.join(
-            ", "
-          )}. To keep the hiring process secure and auditable, please share contact details through the platform once both parties are ready.`
-        );
-        throw new Error("Off-platform contact detected. Adjust and retry.");
+        const detectedLabels = detected
+          .map((key) => copy.contactTypes[key])
+          .join(", ");
+        setWarning(copy.offPlatformWarning.replace("{items}", detectedLabels));
+        throw new Error(copy.offPlatformError);
       }
       setWarning(null);
 
@@ -77,27 +87,27 @@ export function MessageComposer({
         const data = (await res.json().catch(() => ({}))) as {
           error?: string;
         };
-        throw new Error(data.error || "Failed to send message.");
+        throw new Error(data.error || copy.sendFailedError);
       }
       router.refresh();
     },
-    [conversationId, senderId, senderType, router]
+    [conversationId, senderId, senderType, router, copy]
   );
 
   const labels = useMemo(
     () => ({
-      sendLabel: "Send",
-      sendingLabel: "Sending…",
-      attachLabel: "Attach",
-      draftSavedLabel: "Draft saved",
-      discardDraftLabel: "Discard",
-      expandLabel: "Open full-screen composer",
-      collapseLabel: "Collapse composer",
-      fullScreenTitleLabel: "New message",
-      removeAttachmentLabel: "Remove attachment",
-      retryUploadLabel: "Retry upload",
+      sendLabel: copy.sendLabel,
+      sendingLabel: copy.sendingLabel,
+      attachLabel: copy.attachLabel,
+      draftSavedLabel: copy.draftSavedLabel,
+      discardDraftLabel: copy.discardDraftLabel,
+      expandLabel: copy.expandLabel,
+      collapseLabel: copy.collapseLabel,
+      fullScreenTitleLabel: copy.fullScreenTitleLabel,
+      removeAttachmentLabel: copy.removeAttachmentLabel,
+      retryUploadLabel: copy.retryUploadLabel,
     }),
-    []
+    [copy]
   );
 
   return (
@@ -115,8 +125,8 @@ export function MessageComposer({
       <ChatComposer
         threadId={conversationId}
         tone="jobs"
-        ariaLabel="Hiring conversation composer"
-        placeholder="Type your message…"
+        ariaLabel={copy.ariaLabel}
+        placeholder={copy.placeholder}
         enableAttachments={false}
         edgeToEdgeMobile
         labels={labels}

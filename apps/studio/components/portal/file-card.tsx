@@ -13,6 +13,8 @@ import {
   Video,
   X,
 } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioPortalCopy } from "@henryco/i18n";
 import { StatusBadge } from "@/components/portal/status-badge";
 import { deliverableStatusToken } from "@/lib/portal/status";
 import { shortDate } from "@/lib/portal/helpers";
@@ -34,6 +36,8 @@ export function FileCard({
   deliverable: ClientDeliverable;
   canApprove?: boolean;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioPortalCopy(locale);
   const [open, setOpen] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [approved, setApproved] = useState(deliverable.status === "approved");
@@ -55,7 +59,7 @@ export function FileCard({
     if (result.ok) {
       setApproved(true);
     } else {
-      setError("We couldn't approve this right now. Try again in a moment.");
+      setError(copy.fileCard.approveError);
     }
   }
 
@@ -84,7 +88,7 @@ export function FileCard({
               </span>
               {deliverable.version > 1 ? (
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                  v{deliverable.version}
+                  {copy.fileCard.versionPrefix}{deliverable.version}
                 </span>
               ) : null}
             </div>
@@ -95,7 +99,7 @@ export function FileCard({
             ) : null}
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[11.5px] text-[var(--studio-ink-soft)]">
               <StatusBadge tone={status.tone} label={status.label} size="sm" />
-              {deliverable.sharedAt ? <span>· Shared {shortDate(deliverable.sharedAt)}</span> : null}
+              {deliverable.sharedAt ? <span>{copy.fileCard.sharedPrefix(shortDate(deliverable.sharedAt) ?? "")}</span> : null}
             </div>
           </div>
         </div>
@@ -109,7 +113,7 @@ export function FileCard({
               onClick={() => setOpen(true)}
             >
               <Eye className="h-3.5 w-3.5" />
-              Preview
+              {copy.fileCard.preview}
             </button>
           ) : null}
           {deliverable.fileUrl ? (
@@ -118,13 +122,13 @@ export function FileCard({
               // route the file through the studio's own proxy which
               // re-streams with Content-Disposition: attachment. Cloudinary
               // + Supabase storage hosts are allowlisted in the route.
-              href={`/api/portal/download?u=${encodeURIComponent(deliverable.fileUrl)}&n=${encodeURIComponent(deliverable.title || "deliverable")}`}
+              href={`/api/portal/download?u=${encodeURIComponent(deliverable.fileUrl)}&n=${encodeURIComponent(deliverable.title || copy.fileCard.fallbackName)}`}
               className="portal-button portal-button-secondary"
               style={{ padding: "0.55rem 0.95rem", minHeight: 36 }}
               download={deliverable.title || true}
             >
               <Download className="h-3.5 w-3.5" />
-              Download
+              {copy.fileCard.download}
             </a>
           ) : null}
           {!approved && canApprove && deliverable.status === "shared" ? (
@@ -138,12 +142,12 @@ export function FileCard({
               {isApproving ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Approving…
+                  {copy.fileCard.approving}
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  Mark approved
+                  {copy.fileCard.markApproved}
                 </>
               )}
             </button>
@@ -151,7 +155,7 @@ export function FileCard({
           {approved ? (
             <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#8de8b3]">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Approved
+              {copy.fileCard.approved}
             </span>
           ) : null}
         </div>
@@ -175,7 +179,7 @@ export function FileCard({
               type="button"
               onClick={() => setOpen(false)}
               className="self-end rounded-full border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.06)] p-1.5 text-[var(--studio-ink)]"
-              aria-label="Close preview"
+              aria-label={copy.fileCard.closePreview}
             >
               <X className="h-4 w-4" />
             </button>
@@ -197,7 +201,7 @@ export function FileCard({
               rel="noreferrer"
               className="self-end text-[12.5px] font-semibold text-[var(--studio-signal)] hover:underline"
             >
-              Open in new tab
+              {copy.fileCard.openInNewTab}
             </a>
           </div>
         </div>

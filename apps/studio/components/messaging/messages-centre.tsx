@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import type {
   ProjectThreadSummary,
   ThreadInitialState,
@@ -32,6 +34,8 @@ export function MessagesCentre({
   initialThread,
   hrefTemplate,
 }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const hrefForProject = hrefTemplate
     ? (projectId: string) => hrefTemplate.replace("{projectId}", projectId)
     : undefined;
@@ -60,7 +64,7 @@ export function MessagesCentre({
     return (
       <div className="flex h-full min-h-0 w-full items-center justify-center bg-[#050816] p-6">
         <EmptyThreadState
-          projectName="your projects"
+          projectName={copy.centre.yourProjects}
           teamLabel={null}
         />
       </div>
@@ -77,13 +81,24 @@ export function MessagesCentre({
       >
         <header className="shrink-0 border-b border-white/[0.06] px-4 py-3">
           <h1 className="text-[16px] font-semibold tracking-[-0.005em] text-[#F5F4EE]">
-            Messages
+            {copy.centre.heading}
           </h1>
           <p className="mt-0.5 text-[11px] text-white/45">
-            {sorted.length} project{sorted.length === 1 ? "" : "s"} ·
-            <span className="ml-1 text-[#d4b14e]">
-              {sorted.reduce((acc, s) => acc + s.unreadCount, 0)} unread
-            </span>
+            {(() => {
+              const [before, after] = copy.centre.projectsSummary
+                .replace("{projects}", String(sorted.length))
+                .replace("{plural}", sorted.length === 1 ? "" : "s")
+                .split("{unread}");
+              return (
+                <>
+                  {before}
+                  <span className="text-[#d4b14e]">
+                    {sorted.reduce((acc, s) => acc + s.unreadCount, 0)}
+                    {after}
+                  </span>
+                </>
+              );
+            })()}
           </p>
         </header>
         <ul className="flex-1 overflow-y-auto">
@@ -140,11 +155,11 @@ export function MessagesCentre({
                           <span className="font-medium text-white/70">
                             {summary.lastMessage.senderName}:
                           </span>{" "}
-                          {summary.lastMessage.bodyExcerpt || "(attachment)"}
+                          {summary.lastMessage.bodyExcerpt || copy.centre.attachment}
                         </>
                       ) : (
                         <span className="italic text-white/35">
-                          No messages yet
+                          {copy.centre.noMessages}
                         </span>
                       )}
                     </p>
@@ -154,7 +169,7 @@ export function MessagesCentre({
                       </span>
                       {summary.unreadCount > 0 ? (
                         <span className="rounded-full bg-[#d4b14e]/20 px-1.5 py-0.5 text-[9px] font-medium tabular-nums text-[#d4b14e]">
-                          {summary.unreadCount} new
+                          {copy.centre.newCount.replace("{new}", String(summary.unreadCount))}
                         </span>
                       ) : null}
                     </div>
@@ -163,7 +178,7 @@ export function MessagesCentre({
                         href={hrefForProject(summary.projectId)}
                         className="mt-1 inline-flex items-center gap-1 text-[10px] font-medium text-[#d4b14e]/85 hover:text-[#d4b14e]"
                       >
-                        Project workspace
+                        {copy.centre.projectWorkspace}
                         <ArrowRight className="h-3 w-3" aria-hidden />
                       </Link>
                     ) : null}
@@ -215,10 +230,12 @@ function ThreadColumnPlaceholder({
   summary: ProjectThreadSummary | null;
   onBack: () => void;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   if (!projectId || !summary) {
     return (
       <div className="flex h-full items-center justify-center px-6 text-center text-[13px] text-white/45">
-        Select a project to open its conversation.
+        {copy.centre.selectPrompt}
       </div>
     );
   }
@@ -232,7 +249,7 @@ function ThreadColumnPlaceholder({
           type="button"
           onClick={onBack}
           className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white sm:hidden"
-          aria-label="Back to message list"
+          aria-label={copy.centre.backToList}
         >
           ←
         </button>
@@ -244,14 +261,13 @@ function ThreadColumnPlaceholder({
       </header>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
         <p className="max-w-md text-[13px] text-white/55">
-          Open this project&apos;s full conversation, including history, files,
-          and team context.
+          {copy.centre.placeholderBody}
         </p>
         <Link
           href={href}
           className="inline-flex items-center gap-2 rounded-full border border-[#d4b14e]/40 bg-[#d4b14e]/10 px-4 py-2 text-[12px] font-medium text-[#d4b14e] transition-colors hover:bg-[#d4b14e]/15"
         >
-          Open project conversation
+          {copy.centre.openConversation}
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
         </Link>
       </div>

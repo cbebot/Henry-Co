@@ -10,6 +10,8 @@ import {
 import Link from "next/link";
 import { X } from "lucide-react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 import {
   NOTIFICATION_TOAST_DISMISS_MS,
@@ -58,6 +60,8 @@ export function NotificationToast({
   hrefTemplate,
   paused,
 }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const hrefForProject = useCallback(
     (projectId: string) => hrefTemplate.replace("{projectId}", projectId),
     [hrefTemplate],
@@ -70,10 +74,27 @@ export function NotificationToast({
   }, [projectSubscriptions]);
   const pausedRef = useRef(paused);
   const seenIdsRef = useRef(new Set<string>());
+  const fallbackCopyRef = useRef({
+    projectUpdate: copy.notifications.projectUpdate,
+    studioSenderFallback: copy.notifications.studioSenderFallback,
+    attachment: copy.notifications.attachment,
+  });
 
   useEffect(() => {
     pausedRef.current = paused;
   }, [paused]);
+
+  useEffect(() => {
+    fallbackCopyRef.current = {
+      projectUpdate: copy.notifications.projectUpdate,
+      studioSenderFallback: copy.notifications.studioSenderFallback,
+      attachment: copy.notifications.attachment,
+    };
+  }, [
+    copy.notifications.projectUpdate,
+    copy.notifications.studioSenderFallback,
+    copy.notifications.attachment,
+  ]);
 
   useEffect(() => {
     if (!viewerId) return;
@@ -113,15 +134,16 @@ export function NotificationToast({
             if (raw.sender_id && raw.sender_id === viewerId) return;
             seenIdsRef.current.add(raw.id);
 
+            const fallbacks = fallbackCopyRef.current;
             const projectTitle =
-              projectMap.get(raw.project_id) || "Project update";
+              projectMap.get(raw.project_id) || fallbacks.projectUpdate;
 
             const notification: Notification = {
               id: raw.id,
               projectId: raw.project_id,
               projectTitle,
-              senderName: raw.sender || "HenryCo Studio",
-              body: excerpt(raw.body || "(attachment)", 80),
+              senderName: raw.sender || fallbacks.studioSenderFallback,
+              body: excerpt(raw.body || fallbacks.attachment, 80),
               arrivedAt: Date.now(),
               href: hrefForProject(raw.project_id),
             };
@@ -172,7 +194,7 @@ export function NotificationToast({
     <div
       className="pointer-events-none fixed inset-x-3 bottom-3 z-50 flex flex-col gap-2 sm:left-auto sm:right-4 sm:bottom-4 sm:max-w-[360px]"
       role="region"
-      aria-label="Project notifications"
+      aria-label={copy.notifications.regionLabel}
       aria-live="polite"
     >
       {notifications.map((notification) => (
@@ -199,7 +221,7 @@ export function NotificationToast({
                 {notification.senderName}
               </span>
               <span className="shrink-0 text-[10px] uppercase tracking-[0.08em] text-[#d4b14e]/85">
-                New
+                {copy.notifications.newBadge}
               </span>
             </div>
             <div className="mt-0.5 truncate text-[10px] text-white/45">
@@ -217,7 +239,7 @@ export function NotificationToast({
               dismiss(notification.id);
             }}
             className="shrink-0 rounded-full p-1 text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
-            aria-label="Dismiss notification"
+            aria-label={copy.notifications.dismiss}
           >
             <X className="h-3.5 w-3.5" aria-hidden />
           </button>

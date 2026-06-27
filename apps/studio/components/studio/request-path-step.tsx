@@ -1,4 +1,6 @@
 import { Layers3, Sparkles } from "lucide-react";
+import { getStudioRequestCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   joinClassNames,
 } from "@/components/studio/request-builder-data";
@@ -6,8 +8,8 @@ import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { filterPricedOptions } from "@/lib/studio/request-config";
 
-function formatAmount(amount: number) {
-  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : "Included";
+function formatAmount(amount: number, includedLabel: string) {
+  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : includedLabel;
 }
 
 export function StudioRequestPathStep({
@@ -50,32 +52,34 @@ export function StudioRequestPathStep({
   | "preferredLanguage"
   | "setPreferredLanguage"
 >) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   const projectTypeOptions = filterPricedOptions(requestConfig.projectTypes, serviceKind);
   const platformOptions = filterPricedOptions(requestConfig.platformOptions, serviceKind);
 
   return (
     <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-      <div className="studio-kicker">Buying lane</div>
+      <div className="studio-kicker">{copy.path.buyingLane}</div>
       {/* Two-up segmented control. Replaces the prior pair of large
        * tile-cards with a horizontal segment for fast comparison —
        * less vertical real estate, equal information weight, no
        * card stacking on narrow widths. */}
       <div
         role="radiogroup"
-        aria-label="Buying lane"
+        aria-label={copy.path.buyingLane}
         className="mt-5 grid grid-cols-2 gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 p-1.5"
       >
         {[
           {
             value: "package" as const,
-            title: "Package",
-            body: "Predefined lane",
+            title: copy.path.packageTitle,
+            body: copy.path.packageBody,
             icon: Layers3,
           },
           {
             value: "custom" as const,
-            title: "Custom",
-            body: "Tailored scope",
+            title: copy.path.customTitle,
+            body: copy.path.customBody,
             icon: Sparkles,
           },
         ].map((item) => {
@@ -183,8 +187,7 @@ export function StudioRequestPathStep({
         <div className="mt-7">
           {filteredPackages.length === 0 ? (
             <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink-soft)]">
-              No fixed package is available for this service yet. Switch to the
-              custom project route.
+              {copy.path.noPackage}
             </div>
           ) : null}
           <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10">
@@ -221,7 +224,7 @@ export function StudioRequestPathStep({
                         ₦{pkg.price.toLocaleString("en-NG")}
                       </div>
                       <div className="mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                        {Math.round(pkg.depositRate * 100)}% deposit
+                        {copy.path.depositSuffix(Math.round(pkg.depositRate * 100))}
                       </div>
                     </div>
                   </button>
@@ -235,23 +238,23 @@ export function StudioRequestPathStep({
           <div>
             <div className="flex items-baseline justify-between gap-4">
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Project type or category
+                {copy.path.projectTypeTitle}
               </div>
               <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
-                {projectTypeOptions.length} options
+                {copy.path.optionsCount(projectTypeOptions.length)}
               </div>
             </div>
             <div className="mt-3">
               <StudioListbox
                 name="projectType"
-                label="Project type or category"
+                label={copy.path.projectTypeTitle}
                 value={selectedProjectType}
                 onChange={(next) => next && setSelectedProjectType(next)}
-                placeholder="Choose project type…"
+                placeholder={copy.path.projectTypePlaceholder}
                 required
                 options={projectTypeOptions.map((item) => ({
                   value: item.label,
-                  label: `${item.label} · ${formatAmount(item.amount)}`,
+                  label: `${item.label} · ${formatAmount(item.amount, copy.path.includedLabel)}`,
                 }))}
               />
             </div>
@@ -269,23 +272,23 @@ export function StudioRequestPathStep({
           <div>
             <div className="flex items-baseline justify-between gap-4">
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Delivery platform
+                {copy.path.deliveryPlatformTitle}
               </div>
               <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
-                {platformOptions.length} options
+                {copy.path.optionsCount(platformOptions.length)}
               </div>
             </div>
             <div className="mt-3">
               <StudioListbox
                 name="platformPreference"
-                label="Delivery platform"
+                label={copy.path.deliveryPlatformTitle}
                 value={selectedPlatform}
                 onChange={(next) => next && setSelectedPlatform(next)}
-                placeholder="Choose platform…"
+                placeholder={copy.path.platformPlaceholder}
                 required
                 options={platformOptions.map((item) => ({
                   value: item.label,
-                  label: `${item.label} · ${formatAmount(item.amount)}`,
+                  label: `${item.label} · ${formatAmount(item.amount, copy.path.includedLabel)}`,
                 }))}
               />
             </div>
@@ -303,15 +306,15 @@ export function StudioRequestPathStep({
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Design direction
+                {copy.path.designDirectionTitle}
               </div>
               <div className="mt-3">
                 <StudioListbox
                   name="designDirectionDropdown"
-                  label="Design direction"
+                  label={copy.path.designDirectionTitle}
                   value={selectedDesign}
                   onChange={(next) => next && setSelectedDesign(next)}
-                  placeholder="Choose design direction…"
+                  placeholder={copy.path.designPlaceholder}
                   required
                   options={requestConfig.designOptions.map((item) => ({
                     value: item,
@@ -322,20 +325,22 @@ export function StudioRequestPathStep({
             </div>
             <div>
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                Project/content language
+                {copy.path.contentLanguageTitle}
               </div>
               <div className="mt-3">
                 <StudioListbox
                   name="preferredLanguageDropdown"
-                  label="Project/content language"
+                  label={copy.path.contentLanguageTitle}
                   value={preferredLanguage}
                   onChange={(next) => next && setPreferredLanguage(next)}
-                  placeholder="Choose language…"
+                  placeholder={copy.path.languagePlaceholder}
                   required
-                  options={["English", "French", "Arabic", "Portuguese"].map((item) => ({
-                    value: item,
-                    label: item,
-                  }))}
+                  options={[
+                    { value: "English", label: copy.path.languageEnglish },
+                    { value: "French", label: copy.path.languageFrench },
+                    { value: "Arabic", label: copy.path.languageArabic },
+                    { value: "Portuguese", label: copy.path.languagePortuguese },
+                  ]}
                 />
               </div>
               <input type="hidden" name="preferredLanguage" value={preferredLanguage} />

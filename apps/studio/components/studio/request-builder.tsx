@@ -2,6 +2,8 @@
 
 import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getStudioRequestCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { requestSteps } from "@/components/studio/request-builder-data";
 import { StudioRequestActivationStep } from "@/components/studio/request-activation-step";
@@ -98,6 +100,8 @@ export function StudioRequestBuilder({
   initialStepIndex = 0,
   initialPathway,
 }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   const resolvedKind =
     presetHint?.serviceKind && services.some((s) => s.kind === presetHint.serviceKind)
       ? presetHint.serviceKind
@@ -561,7 +565,7 @@ export function StudioRequestBuilder({
     if (nextIndex === stepIndex) return;
     setIsStepTransitioning(true);
     setStepIndex(nextIndex);
-    setProgressHint("Progress saved — you can leave and return any time while signed in.");
+    setProgressHint(copy.builder.progressSaved);
     if (typeof window !== "undefined") {
       window.setTimeout(() => setProgressHint(null), 6000);
       window.requestAnimationFrame(() => {
@@ -615,10 +619,13 @@ export function StudioRequestBuilder({
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
           <div>
             <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--studio-signal)]">
-              Project brief
+              {copy.builder.projectBrief}
               <span className="mx-2 opacity-40">·</span>
               <span className="text-[var(--studio-ink-soft)]">
-                Step {String(stepIndex + 1).padStart(2, "0")} / {String(totalSteps).padStart(2, "0")}
+                {copy.builder.stepProgress(
+                  String(stepIndex + 1).padStart(2, "0"),
+                  String(totalSteps).padStart(2, "0"),
+                )}
               </span>
             </p>
             <h2 className="mt-3 max-w-3xl text-balance text-[1.7rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[2.1rem] md:text-[2.4rem]">
@@ -633,10 +640,10 @@ export function StudioRequestBuilder({
             {isStepTransitioning ? (
               <span className="inline-flex items-center gap-1.5 text-[var(--studio-signal)]">
                 <LoaderCircle className="h-3 w-3 animate-spin" />
-                Loading
+                {copy.builder.loading}
               </span>
             ) : (
-              <span className="text-[var(--studio-ink-soft)]">{progressPct}% complete</span>
+              <span className="text-[var(--studio-ink-soft)]">{copy.builder.percentComplete(progressPct)}</span>
             )}
           </div>
         </div>
@@ -646,7 +653,7 @@ export function StudioRequestBuilder({
          * repeat it inside each card (the prior "long cards" issue:
          * the same paragraph rendered four times stacked on mobile,
          * pushing the actual brief fields below the fold). */}
-        <nav aria-label="Brief steps" className="mt-7">
+        <nav aria-label={copy.builder.briefSteps} className="mt-7">
           <div className="relative">
             <div className="absolute left-0 right-0 top-[18px] h-px bg-[var(--studio-line)]" />
             <div
@@ -797,7 +804,7 @@ export function StudioRequestBuilder({
               }`}
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Back
+              {copy.builder.back}
             </button>
             {stepIndex < requestSteps.length - 1 ? (
               <button
@@ -809,7 +816,7 @@ export function StudioRequestBuilder({
                 {isStepTransitioning ? (
                   <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                 ) : null}
-                {isStepTransitioning ? "Loading next step" : "Continue"}
+                {isStepTransitioning ? copy.builder.loadingNextStep : copy.builder.continueLabel}
                 {!isStepTransitioning ? <ArrowRight className="h-3.5 w-3.5" /> : null}
               </button>
             ) : null}
@@ -820,7 +827,7 @@ export function StudioRequestBuilder({
           pathway={pathway}
           readinessScore={readinessScore}
           pricingPreview={pricingPreview}
-          recommendedTeamName={recommendedTeam?.name || "HenryCo team recommendation"}
+          recommendedTeamName={recommendedTeam?.name || copy.builder.teamRecommendationFallback}
         />
       </div>
     </form>

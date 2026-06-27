@@ -2,6 +2,8 @@
 
 import { useId, type CSSProperties, type ReactNode } from "react";
 
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getDashboardShellCopy } from "@henryco/i18n";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
@@ -116,11 +118,12 @@ export function AdvancedFilterBar({
 }: AdvancedFilterBarProps) {
   const id = useId();
   const active = activeCount(values);
+  const copy = getDashboardShellCopy(useHenryCoLocale());
 
   return (
     <div
       role="search"
-      aria-label="Advanced filters"
+      aria-label={copy.advancedFilterBar.ariaLabel}
       style={{
         display: "flex",
         flexWrap: "wrap",
@@ -172,7 +175,7 @@ export function AdvancedFilterBar({
                 }}
                 style={fieldStyle()}
               >
-                {!field.multi ? <option value="">Any</option> : null}
+                {!field.multi ? <option value="">{copy.advancedFilterBar.anyOption}</option> : null}
                 {field.options.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -249,7 +252,7 @@ export function AdvancedFilterBar({
                 id={fieldId}
                 type="search"
                 value={cur}
-                placeholder={field.placeholder ?? "Search…"}
+                placeholder={field.placeholder ?? copy.advancedFilterBar.searchPlaceholder}
                 onChange={(e) => onChange(field.id, e.currentTarget.value || null)}
                 style={{ ...fieldStyle(), minWidth: "12rem" }}
               />
@@ -332,7 +335,7 @@ export function AdvancedFilterBar({
             whiteSpace: "nowrap",
           }}
         >
-          Clear {active} {active === 1 ? "filter" : "filters"}
+          {copy.advancedFilterBar.clearFilters(active)}
         </button>
       ) : null}
 

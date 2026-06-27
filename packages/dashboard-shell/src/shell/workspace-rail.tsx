@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
 import { SPACING } from "../tokens/spacing";
@@ -17,12 +18,15 @@ export type WorkspaceRailProps = {
   children?: ReactNode;
   /** Optional kicker shown at the top of the rail. */
   label?: string;
+  /** Active locale for chrome copy (aria-label). Defaults to English. */
+  locale?: AppLocale;
 };
 
-export function WorkspaceRail({ children, label }: WorkspaceRailProps) {
+export function WorkspaceRail({ children, label, locale = "en" }: WorkspaceRailProps) {
+  const copy = getDashboardShellCopy(locale);
   return (
     <nav
-      aria-label="Workspace navigation"
+      aria-label={copy.workspaceRail.navAria}
       style={{
         flexShrink: 0,
         width: SPACING.chrome.railWidth,

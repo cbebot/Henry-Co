@@ -1,4 +1,9 @@
 import { CheckCircle2, FileUp, FlagTriangleRight, Receipt, Sparkles, ShieldCheck } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import {
+  getStudioMessagingCopy,
+  type StudioMessagingCopy,
+} from "@henryco/i18n";
 import type { StudioMessage } from "@/lib/messaging/types";
 import { formatMessageTimestamp } from "@/lib/messaging/utils";
 
@@ -11,8 +16,10 @@ type Props = { message: StudioMessage };
  * conversation while keeping them in the timeline.
  */
 export function SystemMessage({ message }: Props) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const meta = message.metadata || {};
-  const headline = headlineForMessage(message);
+  const headline = headlineForMessage(message, copy.systemMessage);
   const subtle = formatMessageTimestamp(message.createdAt);
 
   return (
@@ -67,43 +74,49 @@ function renderTypeIcon(type: StudioMessage["messageType"]) {
   }
 }
 
-function headlineForMessage(message: StudioMessage): string {
+function headlineForMessage(
+  message: StudioMessage,
+  copy: StudioMessagingCopy["systemMessage"],
+): string {
   const meta = (message.metadata || {}) as Record<string, unknown>;
   const team =
     typeof meta.actor === "string" && meta.actor
       ? String(meta.actor)
-      : "the Studio team";
+      : copy.studioTeam;
 
   switch (message.messageType) {
     case "milestone_update": {
-      const title = typeof meta.milestone_title === "string" ? meta.milestone_title : "the milestone";
+      const title = typeof meta.milestone_title === "string" ? meta.milestone_title : copy.theMilestone;
       const status = typeof meta.status === "string" ? meta.status : "updated";
       const verb =
         status === "approved"
-          ? "marked complete"
+          ? copy.verbComplete
           : status === "in_progress"
-            ? "started"
+            ? copy.verbStarted
             : status === "blocked"
-              ? "flagged blocked"
-              : "updated";
-      return `${title} ${verb} by ${team}`;
+              ? copy.verbBlocked
+              : copy.verbUpdated;
+      return copy.milestoneHeadline
+        .replace("{title}", title)
+        .replace("{verb}", verb)
+        .replace("{team}", team);
     }
     case "file_share": {
-      const label = typeof meta.label === "string" ? meta.label : "a file";
-      return `${team} shared ${label}`;
+      const label = typeof meta.label === "string" ? meta.label : copy.aFile;
+      return copy.fileShared.replace("{team}", team).replace("{label}", label);
     }
     case "payment_update": {
-      const label = typeof meta.label === "string" ? meta.label : "the invoice";
-      const status = typeof meta.status === "string" ? meta.status : "updated";
-      return `${label} ${status}`;
+      const label = typeof meta.label === "string" ? meta.label : copy.theInvoice;
+      const status = typeof meta.status === "string" ? meta.status : copy.verbUpdated;
+      return copy.paymentHeadline.replace("{label}", label).replace("{status}", status);
     }
     case "approval_request": {
-      const label = typeof meta.label === "string" ? meta.label : "an approval";
-      return `${team} requested ${label}`;
+      const label = typeof meta.label === "string" ? meta.label : copy.anApproval;
+      return copy.approvalRequested.replace("{team}", team).replace("{label}", label);
     }
     case "system":
-      return message.body || "Project update";
+      return message.body || copy.projectUpdate;
     default:
-      return message.body || "Update";
+      return message.body || copy.update;
   }
 }

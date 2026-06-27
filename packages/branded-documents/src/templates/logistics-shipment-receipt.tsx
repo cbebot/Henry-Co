@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DocumentSection, DefinitionList } from "../components/DocumentSection";
@@ -87,6 +88,7 @@ export type LogisticsShipmentReceiptProps = {
     proofType: string;
     note?: string | null;
   } | null;
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -140,17 +142,19 @@ export function LogisticsShipmentReceiptDocument({
   dropoffAddress,
   pricingItems,
   proofOfDelivery,
+  locale = "en",
 }: LogisticsShipmentReceiptProps) {
+  const t = getBrandedDocumentsCopy(locale).logisticsReceipt;
   const columns: Array<DataTableColumn<LogisticsShipmentReceiptItem>> = [
     {
       key: "label",
-      header: "Line item",
+      header: t.columnLineItem,
       flex: 3,
       render: (r) => r.label + (r.detail ? ` — ${r.detail}` : ""),
     },
     {
       key: "amount",
-      header: "Amount",
+      header: t.columnAmount,
       flex: 1.4,
       align: "right",
       mono: true,
@@ -160,142 +164,138 @@ export function LogisticsShipmentReceiptDocument({
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `Shipment receipt ${shipment.trackingCode}`,
-        subject: "HenryCo Logistics shipment receipt",
+        subject: t.subject,
         keywords: ["logistics", "shipment", "henryco", shipment.trackingCode],
       }}
       header={{
-        documentType: "Shipment receipt",
+        documentType: t.documentType,
         title: shipment.trackingCode,
         subtitle: `${titleCase(shipment.serviceType)} · ${statusToLabel(shipment.status)}`,
         meta: [
-          { label: "Booked", value: formatDateTime(shipment.bookedAt) },
+          { label: t.metaBooked, value: formatDateTime(shipment.bookedAt) },
           {
-            label: "Scheduled",
+            label: t.metaScheduled,
             value: shipment.scheduledPickupAt
               ? formatDateTime(shipment.scheduledPickupAt)
               : "—",
           },
-          { label: "Status", value: statusToLabel(shipment.status) },
+          { label: t.metaStatus, value: statusToLabel(shipment.status) },
         ],
-        divisionLabel: "Logistics",
+        divisionLabel: t.divisionLabel,
       }}
       division="logistics"
     >
       <View style={styles.banner}>
-        <Text style={styles.bannerLabel}>Amount paid</Text>
+        <Text style={styles.bannerLabel}>{t.amountPaid}</Text>
         <Text style={styles.bannerValue}>
           {formatKobo(shipment.amountPaidKobo, shipment.currency)}
         </Text>
       </View>
 
-      <DocumentSection kicker="Customer" tone="elevated">
+      <DocumentSection kicker={t.sectionCustomer} tone="elevated">
         <DefinitionList
           rows={[
-            { label: "Name", value: customer.name },
-            { label: "Email", value: customer.email ?? "—" },
-            { label: "Phone", value: customer.phone ?? "—" },
-            { label: "Tracking code", value: shipment.trackingCode, mono: true },
+            { label: t.rowName, value: customer.name },
+            { label: t.rowEmail, value: customer.email ?? "—" },
+            { label: t.rowPhone, value: customer.phone ?? "—" },
+            { label: t.rowTrackingCode, value: shipment.trackingCode, mono: true },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Pickup">
+      <DocumentSection kicker={t.sectionPickup}>
         <Text style={styles.addressBlock}>
           {formatAddressLines(pickupAddress).join("\n")}
         </Text>
       </DocumentSection>
 
-      <DocumentSection kicker="Drop-off">
+      <DocumentSection kicker={t.sectionDropoff}>
         <Text style={styles.addressBlock}>
           {formatAddressLines(dropoffAddress).join("\n")}
         </Text>
       </DocumentSection>
 
-      <DocumentSection kicker="Parcel + service">
+      <DocumentSection kicker={t.sectionParcelService}>
         <DefinitionList
           rows={[
-            { label: "Service", value: titleCase(shipment.serviceType) },
-            { label: "Urgency", value: titleCase(shipment.urgency) },
-            { label: "Parcel", value: shipment.parcelType },
+            { label: t.rowService, value: titleCase(shipment.serviceType) },
+            { label: t.rowUrgency, value: titleCase(shipment.urgency) },
+            { label: t.rowParcel, value: shipment.parcelType },
             {
-              label: "Description",
+              label: t.rowDescription,
               value: shipment.parcelDescription ?? "—",
             },
             {
-              label: "Weight",
-              value: shipment.weightKg ? `${shipment.weightKg} kg` : "—",
+              label: t.rowWeight,
+              value: shipment.weightKg ? t.weightUnit(shipment.weightKg) : "—",
             },
-            { label: "Size tier", value: titleCase(shipment.sizeTier) },
+            { label: t.rowSizeTier, value: titleCase(shipment.sizeTier) },
             {
-              label: "Corridor",
+              label: t.rowCorridor,
               value: shipment.zoneLabel ?? "—",
             },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Pricing breakdown">
+      <DocumentSection kicker={t.sectionPricing}>
         <DataTable
           columns={columns}
           rows={pricingItems}
           striped
-          emptyMessage="No itemised pricing recorded."
+          emptyMessage={t.emptyPricing}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Settlement">
+      <DocumentSection kicker={t.sectionSettlement}>
         <DefinitionList
           rows={[
             {
-              label: "Quoted",
+              label: t.rowQuoted,
               value: formatKobo(shipment.amountQuotedKobo, shipment.currency),
               mono: true,
             },
             {
-              label: "Paid",
+              label: t.rowPaid,
               value: formatKobo(shipment.amountPaidKobo, shipment.currency),
               mono: true,
             },
             {
-              label: "Method",
+              label: t.rowMethod,
               value: shipment.paymentMethod
                 ? titleCase(shipment.paymentMethod)
                 : "—",
             },
             {
-              label: "Reference",
+              label: t.rowReference,
               value: shipment.paymentReference ?? "—",
               mono: true,
             },
-            { label: "Status", value: statusToLabel(shipment.status) },
+            { label: t.rowStatus, value: statusToLabel(shipment.status) },
           ]}
         />
       </DocumentSection>
 
       {proofOfDelivery ? (
-        <DocumentSection kicker="Proof of delivery" tone="elevated">
+        <DocumentSection kicker={t.sectionProof} tone="elevated">
           <DefinitionList
             rows={[
-              { label: "Recipient", value: proofOfDelivery.recipientName },
+              { label: t.rowRecipient, value: proofOfDelivery.recipientName },
               {
-                label: "Delivered",
+                label: t.rowDelivered,
                 value: formatDateTime(proofOfDelivery.deliveredAt),
               },
-              { label: "Type", value: titleCase(proofOfDelivery.proofType) },
-              { label: "Note", value: proofOfDelivery.note ?? "—" },
+              { label: t.rowType, value: titleCase(proofOfDelivery.proofType) },
+              { label: t.rowNote, value: proofOfDelivery.note ?? "—" },
             ]}
           />
         </DocumentSection>
       ) : null}
 
-      <LegalFooter
-        lines={[
-          "HenryCo Logistics is the operator of record for this shipment. Insurance, claim windows, and lost-package liability are governed by the HenryCo Logistics service agreement.",
-          "If a discrepancy exists between this receipt and the live shipment record, contact logistics support within 7 days for the fastest resolution path.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

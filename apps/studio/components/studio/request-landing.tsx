@@ -9,6 +9,8 @@ import {
   Layers3,
   Wand2,
 } from "lucide-react";
+import { getStudioRequestCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { BriefCopilotPanel } from "@/components/studio/brief-copilot-panel";
 import { StudioRequestBuilder } from "@/components/studio/request-builder";
 import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
@@ -31,33 +33,36 @@ type PathKey = "copilot" | "custom";
 
 type PathTileDefinition = {
   key: PathKey;
-  kicker: string;
-  title: string;
-  summary: string;
-  hint: string;
   icon: typeof Wand2;
 };
 
 const PATHS: PathTileDefinition[] = [
   {
     key: "copilot",
-    kicker: "Quickest start",
-    title: "Draft with the Co-pilot",
-    summary:
-      "Describe what you want in a paragraph. The co-pilot drafts every field of the brief and shows pricing while you review.",
-    hint: "About 30 seconds",
     icon: Wand2,
   },
   {
     key: "custom",
-    kicker: "Most control",
-    title: "Build your own brief",
-    summary:
-      "Step through the manual builder. Every choice updates pricing live. Best when you already know your stack and scope.",
-    hint: "4 calm steps",
     icon: Compass,
   },
 ];
+
+/** Localized kicker/title/summary/hint for a path tile, keyed by path. */
+function pathTileText(copy: ReturnType<typeof getStudioRequestCopy>, key: PathKey) {
+  return key === "copilot"
+    ? {
+        kicker: copy.landing.copilotKicker,
+        title: copy.landing.copilotTitle,
+        summary: copy.landing.copilotSummary,
+        hint: copy.landing.copilotHint,
+      }
+    : {
+        kicker: copy.landing.customKicker,
+        title: copy.landing.customTitle,
+        summary: copy.landing.customSummary,
+        hint: copy.landing.customHint,
+      };
+}
 
 /**
  * Three-path entry for the Studio brief request flow.
@@ -104,6 +109,8 @@ export function StudioRequestLanding({
    * The user can still switch paths via the compact switcher. */
   pathChosenUpstream?: boolean;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   const [activePath, setActivePath] = useState<PathKey>(initialPath ?? "copilot");
   const [copilotSeed, setCopilotSeed] = useState<BriefCopilotStructured | null>(null);
   const [seedVersion, setSeedVersion] = useState(0);
@@ -141,7 +148,7 @@ export function StudioRequestLanding({
       {activePath === "copilot" ? (
         <section className="space-y-10" aria-labelledby="studio-path-copilot">
           <h2 id="studio-path-copilot" className="sr-only">
-            Draft with the co-pilot
+            {copy.landing.draftWithCopilotHeading}
           </h2>
           <BriefCopilotPanel onApply={handleCopilotApply} />
           <div id="studio-brief-builder">
@@ -162,12 +169,10 @@ export function StudioRequestLanding({
       {activePath === "custom" ? (
         <section className="space-y-6" aria-labelledby="studio-path-custom">
           <h2 id="studio-path-custom" className="sr-only">
-            Build your own brief
+            {copy.landing.buildOwnBriefHeading}
           </h2>
           <p className="max-w-2xl text-[13.5px] leading-7 text-[var(--studio-ink-soft)]">
-            Step through every choice. Pricing updates live in the side panel as
-            you select scope, platform, timeline, and team. You can switch back
-            to the co-pilot at any time without losing your place.
+            {copy.landing.customIntro}
           </p>
           <div id="studio-brief-builder">
             <StudioRequestBuilder
@@ -206,7 +211,10 @@ function CompactPathSwitcher({
   active: PathKey;
   onSelect: (path: PathKey) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   const activePath = PATHS.find((p) => p.key === active);
+  const activeText = activePath ? pathTileText(copy, activePath.key) : null;
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <div className="flex items-center gap-3 min-w-0">
@@ -220,16 +228,16 @@ function CompactPathSwitcher({
         ) : null}
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-            {activePath?.kicker || "Brief path"}
+            {activeText?.kicker || copy.landing.briefPathFallbackKicker}
           </p>
           <p className="truncate text-[13px] font-semibold text-[var(--studio-ink)]">
-            {activePath?.title || "Build your brief"}
+            {activeText?.title || copy.landing.briefPathFallbackTitle}
           </p>
         </div>
       </div>
       <div
         role="tablist"
-        aria-label="Switch brief path"
+        aria-label={copy.landing.switchBriefPath}
         className="flex flex-wrap gap-1.5"
       >
         {PATHS.map((path) => {
@@ -249,7 +257,7 @@ function CompactPathSwitcher({
               ].join(" ")}
             >
               <path.icon className="h-3 w-3" aria-hidden />
-              {path.key === "copilot" ? "Co-pilot" : "Custom"}
+              {path.key === "copilot" ? copy.landing.copilotPill : copy.landing.customPill}
             </button>
           );
         })}
@@ -265,15 +273,18 @@ function PathSelector({
   active: PathKey;
   onSelect: (path: PathKey) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   return (
     <div
       role="tablist"
-      aria-label="How would you like to start your brief?"
+      aria-label={copy.landing.howToStart}
       className="grid gap-3 sm:grid-cols-3"
     >
       {PATHS.map((path) => {
         const isActive = path.key === active;
         const Icon = path.icon;
+        const text = pathTileText(copy, path.key);
         return (
           <button
             key={path.key}
@@ -309,17 +320,17 @@ function PathSelector({
                     : "text-[var(--studio-ink-soft)]",
                 ].join(" ")}
               >
-                {path.kicker}
+                {text.kicker}
               </span>
             </div>
             <h3 className="mt-4 text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--studio-ink)] sm:text-[1.15rem]">
-              {path.title}
+              {text.title}
             </h3>
             <p className="mt-2 text-[13px] leading-6 text-[var(--studio-ink-soft)]">
-              {path.summary}
+              {text.summary}
             </p>
             <div className="mt-4 flex items-center gap-2 text-[12px] font-semibold text-[var(--studio-signal)]">
-              <span>{path.hint}</span>
+              <span>{text.hint}</span>
               <ArrowRight
                 className={[
                   "h-3.5 w-3.5 transition",
@@ -348,6 +359,8 @@ function PathSelector({
  * duplication where both surfaces re-displayed the template browser.
  */
 function TemplatesLinkCard({ count }: { count: number }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioRequestCopy(locale);
   return (
     <Link
       href="/pick"
@@ -362,18 +375,18 @@ function TemplatesLinkCard({ count }: { count: number }) {
         </span>
         <div className="min-w-0">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-            Or skip the brief — pay the deposit and start
+            {copy.landing.skipBriefKicker}
           </p>
           <p className="mt-1 text-[14px] font-semibold text-[var(--studio-ink)] sm:text-[15px]">
-            Browse {count} ready-made templates with real prices, real timelines.
+            {copy.landing.browseTemplates(count)}
           </p>
           <p className="mt-1 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-            Each template ships in days. Pay the deposit on the template page and we start the moment payment clears.
+            {copy.landing.eachTemplateShips}
           </p>
         </div>
       </div>
       <span className="inline-flex shrink-0 items-center gap-1.5 self-end text-[12.5px] font-semibold text-[var(--studio-signal)] underline-offset-4 group-hover/tpl-link:underline sm:self-center">
-        Browse templates
+        {copy.landing.browseTemplatesLink}
         <ArrowUpRight className="h-3.5 w-3.5" />
       </span>
     </Link>

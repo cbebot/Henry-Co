@@ -1,6 +1,8 @@
 import { Mail, ShieldCheck, Smartphone } from "lucide-react";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
+import { getStudioMiscCopy } from "@henryco/i18n";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { StudioCopyButton } from "@/components/studio/copy-button";
 
 function supportWhatsappHref(value: string | null) {
@@ -19,7 +21,7 @@ function supportWhatsappHref(value: string | null) {
  * call sites (proposal page + project workspace ProjectPaymentsStack)
  * continue to work without changes.
  */
-export function StudioPaymentGuide({
+export async function StudioPaymentGuide({
   title,
   amount,
   currency,
@@ -46,6 +48,8 @@ export function StudioPaymentGuide({
   supportWhatsApp: string | null;
   proofHint: string;
 }) {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioMiscCopy(locale);
   const whatsappHref = supportWhatsappHref(supportWhatsApp);
   const formattedAmount = formatCurrency(amount, currency);
 
@@ -60,19 +64,19 @@ export function StudioPaymentGuide({
         rows={[
           {
             key: "amount",
-            label: "Amount due",
+            label: copy.paymentGuide.amountDueLabel,
             value: formattedAmount,
           },
           {
             key: "due",
-            label: "Due",
+            label: copy.paymentGuide.dueLabel,
             value: dueLabel,
           },
         ]}
         footer={
           <div className="flex flex-wrap items-center gap-2">
-            <span>Reference this exact amount and your project name when you send proof of payment.</span>
-            <StudioCopyButton value={String(Math.round(amount))} label="Copy amount" />
+            <span>{copy.paymentGuide.footerReference}</span>
+            <StudioCopyButton value={String(Math.round(amount))} label={copy.paymentGuide.copyAmount} />
           </div>
         }
       />
@@ -81,17 +85,16 @@ export function StudioPaymentGuide({
       <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
         <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
           <ShieldCheck className="h-3.5 w-3.5" />
-          Verified company payee
+          {copy.paymentGuide.verifiedPayee}
         </div>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Transfer only to the HenryCo company account shown below. Each detail has a copy
-          button so nothing has to be retyped.
+          {copy.paymentGuide.transferIntro}
         </p>
         <dl className="mt-4 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
           {[
-            { key: "bank", label: "Bank", value: bankName, copyLabel: "Copy bank" },
-            { key: "account-name", label: "Account name", value: accountName, copyLabel: "Copy name" },
-            { key: "account-number", label: "Account number", value: accountNumber, copyLabel: "Copy number" },
+            { key: "bank", label: copy.paymentGuide.bankLabel, value: bankName, copyLabel: copy.paymentGuide.copyBank },
+            { key: "account-name", label: copy.paymentGuide.accountNameLabel, value: accountName, copyLabel: copy.paymentGuide.copyName },
+            { key: "account-number", label: copy.paymentGuide.accountNumberLabel, value: accountNumber, copyLabel: copy.paymentGuide.copyNumber },
           ].map((item) => (
             <div
               key={item.key}
@@ -102,7 +105,7 @@ export function StudioPaymentGuide({
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
                 <span className="min-w-0 flex-1 truncate font-mono text-sm font-semibold text-[var(--studio-ink)] sm:flex-initial sm:text-right">
-                  {item.value || "Awaiting finance configuration"}
+                  {item.value || copy.paymentGuide.awaitingFinance}
                 </span>
                 {item.value ? (
                   <StudioCopyButton value={item.value} label={item.copyLabel} />
@@ -117,14 +120,14 @@ export function StudioPaymentGuide({
           nested cards, no oversized chrome. */}
       <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          What happens, step by step
+          {copy.paymentGuide.stepsHeading}
         </div>
         <ol className="mt-3 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
           {[
-            "Copy the amount and account details from the section above.",
-            "Transfer from your bank or company account using your project name as reference.",
-            "Upload your receipt or proof below — finance reviews and confirms within one business day.",
-            "Once confirmed, your project moves forward and you receive an update by email.",
+            copy.paymentGuide.step1,
+            copy.paymentGuide.step2,
+            copy.paymentGuide.step3,
+            copy.paymentGuide.step4,
           ].map((step, index) => (
             <li key={step} className="flex items-start gap-3 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
               <span
@@ -144,7 +147,7 @@ export function StudioPaymentGuide({
       {supportEmail || (supportWhatsApp && whatsappHref) ? (
         <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
           <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-            Need help before or after payment
+            {copy.paymentGuide.needHelpHeading}
           </div>
           <ul className="mt-3 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
             {supportEmail ? (
@@ -158,7 +161,7 @@ export function StudioPaymentGuide({
                     <span className="min-w-0 break-all">{supportEmail}</span>
                   </span>
                   <span className="shrink-0 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
-                    Email
+                    {copy.paymentGuide.emailTag}
                   </span>
                 </a>
               </li>
@@ -176,7 +179,7 @@ export function StudioPaymentGuide({
                     <span className="min-w-0 break-all">{supportWhatsApp}</span>
                   </span>
                   <span className="shrink-0 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
-                    WhatsApp
+                    {copy.paymentGuide.whatsappTag}
                   </span>
                 </a>
               </li>

@@ -2,26 +2,29 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export default async function PricingPage() {
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).pricing;
 
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
       {/* Editorial hero */}
       <section>
-        <p className="studio-kicker">Packages and pricing</p>
+        <p className="studio-kicker">{copy.kicker}</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          Clear packages for common projects. Custom scoping for everything else.
+          {copy.title}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Transparent bands when the scope is repeatable, a milestone-priced brief when it
-          isn&rsquo;t. You see the number before the first conversation.
+          {copy.intro}
         </p>
         <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-[var(--studio-line)] py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12">
           <div className="flex flex-col gap-1.5">
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Available packages
+              {copy.availablePackagesLabel}
             </dt>
             <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2rem]">
               {catalog.packages.length}
@@ -29,7 +32,7 @@ export default async function PricingPage() {
           </div>
           <div className="flex flex-col gap-1.5">
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Service areas
+              {copy.serviceAreasLabel}
             </dt>
             <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2rem]">
               {catalog.services.length}
@@ -41,7 +44,7 @@ export default async function PricingPage() {
       {/* Packages — divided editorial cards, no panel chrome */}
       <section className="mt-16">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Packages</p>
+          <p className="studio-kicker">{copy.packagesKicker}</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         {/* TODO(wave1): multi-row packages list. pkg.name / pkg.summary /
@@ -60,10 +63,10 @@ export default async function PricingPage() {
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                    {service?.name || "Studio package"}
+                    {service?.name || copy.fallbackPackageLabel}
                   </p>
                   <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
-                    {pkg.timelineWeeks} weeks
+                    {copy.weeksValue.replace("{weeks}", String(pkg.timelineWeeks))}
                   </span>
                 </div>
                 <p className="mt-5 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2.2rem]">
@@ -78,7 +81,7 @@ export default async function PricingPage() {
                 <dl className="mt-5 grid grid-cols-2 gap-x-4 border-y border-[var(--studio-line)] py-3">
                   <div>
                     <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                      Deposit
+                      {copy.depositLabel}
                     </dt>
                     <dd className="mt-1 text-[1.1rem] font-semibold tracking-tight text-[var(--studio-ink)]">
                       {Math.round(pkg.depositRate * 100)}%
@@ -86,7 +89,7 @@ export default async function PricingPage() {
                   </div>
                   <div>
                     <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                      Best for
+                      {copy.bestForLabel}
                     </dt>
                     <dd className="mt-1 text-sm leading-snug text-[var(--studio-ink)]">
                       {pkg.bestFor}
@@ -108,7 +111,7 @@ export default async function PricingPage() {
                   href={`/request?package=${pkg.id}`}
                   className="studio-button-primary group mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px]"
                 >
-                  Start with this package
+                  {copy.startWithPackage}
                   <ArrowRight className="h-3.5 w-3.5 transition motion-safe:group-hover:translate-x-0.5" aria-hidden />
                 </Link>
               </article>

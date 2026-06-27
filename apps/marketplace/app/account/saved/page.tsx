@@ -12,8 +12,12 @@ import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
+import type { MarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
+
+type SavedCopy = MarketplaceCustomerAccountCopy["saved"];
 
 /**
  * /account/saved — saved-for-later items.
@@ -30,6 +34,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function AccountSavedPage() {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   const viewer = await requireMarketplaceUser("/account/saved");
   const admin = createAdminSupabase();
   const items = await listSavedItems(admin, viewer.user!.id, {
@@ -38,21 +43,21 @@ export default async function AccountSavedPage() {
 
   return (
     <WorkspaceShell
-      title="Saved for later"
-      description="Items you moved out of the cart so they don't lock up your basket — restore one when you're ready, or clear it."
+      title={copy.saved.title}
+      description={copy.saved.description}
       {...accountWorkspaceNav("/account/saved", locale)}
     >
       {items.length === 0 ? (
         <EmptyState
-          title="No saved items yet."
-          body="When you press 'Save for later' on a cart item it lands here, with the price you locked in. Saved items live for 90 days; we'll warn you if anything is about to expire."
+          title={copy.saved.emptyTitle}
+          body={copy.saved.emptyBody}
           ctaHref="/search"
-          ctaLabel="Browse the marketplace"
+          ctaLabel={copy.saved.emptyCta}
         />
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">
           {items.map((item) => (
-            <SavedItemCard key={item.id} item={item} />
+            <SavedItemCard key={item.id} item={item} copy={copy.saved} />
           ))}
         </ul>
       )}
@@ -62,11 +67,13 @@ export default async function AccountSavedPage() {
 
 function SavedItemCard({
   item,
+  copy,
 }: {
   item: Awaited<ReturnType<typeof listSavedItems>>[number];
+  copy: SavedCopy;
 }) {
   const snapshot = item.itemSnapshot ?? {};
-  const title = String(snapshot.title || "Saved item");
+  const title = String(snapshot.title || copy.savedItemFallback);
   const subtitle = snapshot.subtitle ? String(snapshot.subtitle) : null;
   const image = snapshot.image ? String(snapshot.image) : null;
   const href = snapshot.href ? String(snapshot.href) : null;
@@ -147,13 +154,13 @@ function SavedItemCard({
             ) : null}
           </div>
           <p className="text-[10.5px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
-            Saved {formatDate(item.addedAt)}
+            {copy.savedRelative.replace("{relative}", formatDate(item.addedAt))}
           </p>
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--market-line)] pt-4">
-          <RestoreForm savedItemId={item.id} />
-          <RemoveForm savedItemId={item.id} />
+          <RestoreForm savedItemId={item.id} copy={copy} />
+          <RemoveForm savedItemId={item.id} copy={copy} />
         </div>
       </div>
     </li>
@@ -189,7 +196,7 @@ async function removeAction(formData: FormData) {
   revalidatePath("/account/saved");
 }
 
-function RestoreForm({ savedItemId }: { savedItemId: string }) {
+function RestoreForm({ savedItemId, copy }: { savedItemId: string; copy: SavedCopy }) {
   return (
     <form action={restoreAction} className="contents">
       <input type="hidden" name="savedItemId" value={savedItemId} />
@@ -204,14 +211,14 @@ function RestoreForm({ savedItemId }: { savedItemId: string }) {
         "
       >
         <ShoppingBag className="h-3.5 w-3.5" />
-        Restore to cart
+        {copy.restoreToCart}
         <ArrowRight className="h-3.5 w-3.5" />
       </button>
     </form>
   );
 }
 
-function RemoveForm({ savedItemId }: { savedItemId: string }) {
+function RemoveForm({ savedItemId, copy }: { savedItemId: string; copy: SavedCopy }) {
   return (
     <form action={removeAction} className="contents">
       <input type="hidden" name="savedItemId" value={savedItemId} />
@@ -222,10 +229,10 @@ function RemoveForm({ savedItemId }: { savedItemId: string }) {
           border border-red-500/30 bg-transparent px-3.5 py-2 text-[12.5px] font-semibold
           text-red-500 transition hover:border-red-400/50 hover:text-red-400
         "
-        aria-label="Remove saved item"
+        aria-label={copy.removeAria}
       >
         <BookmarkPlus className="h-3.5 w-3.5 rotate-45" aria-hidden />
-        Clear
+        {copy.clear}
       </button>
     </form>
   );

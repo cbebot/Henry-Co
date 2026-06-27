@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Document, Page, View, StyleSheet } from "@react-pdf/renderer";
+import type { AppLocale } from "@henryco/i18n";
 import { AccentStripe, DocumentHeader, type DocumentHeaderProps } from "./DocumentHeader";
 import { DocumentFooter, type DocumentFooterProps } from "./DocumentFooter";
 import { BrandedMonogram } from "./BrandMarks";
@@ -20,6 +21,7 @@ export type BrandedDocumentProps = {
   division?: string;
   watermark?: boolean;
   size?: "A4" | "LETTER";
+  locale?: AppLocale;
   children: React.ReactNode;
 };
 
@@ -52,6 +54,7 @@ export function BrandedDocument({
   division,
   watermark,
   size = "A4",
+  locale = "en",
   children,
 }: BrandedDocumentProps) {
   return (
@@ -74,7 +77,7 @@ export function BrandedDocument({
         ) : null}
         <DocumentHeader {...header} />
         <View style={{ marginTop: 18 }}>{children}</View>
-        <DocumentFooter {...(footer ?? {})} />
+        <DocumentFooter locale={locale} {...(footer ?? {})} />
       </Page>
     </Document>
   );

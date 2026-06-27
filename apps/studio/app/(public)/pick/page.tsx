@@ -6,6 +6,8 @@ import {
   studioTemplateCategories,
   studioTemplates,
 } from "@/lib/studio/templates";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export const metadata: Metadata = {
   title: "Ready-made websites and apps | HenryCo Studio",
@@ -59,7 +61,9 @@ function TemplateGradient({
   );
 }
 
-export default function StudioPickPage() {
+export default async function StudioPickPage() {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).pick;
   const totalTemplates = studioTemplates.length;
   const minPrice = studioTemplates.reduce(
     (min, tpl) => Math.min(min, tpl.price),
@@ -73,13 +77,12 @@ export default function StudioPickPage() {
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[92rem] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
       <section>
-        <p className="studio-kicker">Ready-made by HenryCo Studio</p>
+        <p className="studio-kicker">{copy.kicker}</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          Pick a site. We launch a customised version in days.
+          {copy.title}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Every template is a real, production-ready HenryCo Studio site. Real prices.
-          Real timelines. Real scope. We tailor it to your brand and content, then ship.
+          {copy.intro}
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
@@ -87,13 +90,13 @@ export default function StudioPickPage() {
             className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-transparent px-5 py-2.5 text-sm font-semibold text-[var(--studio-ink)] transition hover:border-[var(--studio-signal)]/40 hover:bg-[rgba(0,0,0,0.04)]"
           >
             <Compass className="h-3.5 w-3.5" />
-            Need something custom? Open a free-form brief
+            {copy.customBriefCta}
           </Link>
           <Link
             href="/pricing"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
           >
-            Compare package bands
+            {copy.compareBandsCta}
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -101,7 +104,7 @@ export default function StudioPickPage() {
         <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-[var(--studio-line)] py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12">
           <div className="flex flex-col gap-1.5">
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Templates
+              {copy.templatesLabel}
             </dt>
             <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2rem]">
               {totalTemplates}
@@ -109,7 +112,7 @@ export default function StudioPickPage() {
           </div>
           <div className="flex flex-col gap-1.5">
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Starts from
+              {copy.startsFromLabel}
             </dt>
             <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2rem]">
               {formatCurrency(minPrice)}
@@ -117,15 +120,15 @@ export default function StudioPickPage() {
           </div>
           <div className="flex flex-col gap-1.5">
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Fastest launch
+              {copy.fastestLaunchLabel}
             </dt>
             <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2rem]">
-              {fastestDays} days
+              {copy.daysValue.replace("{days}", String(fastestDays))}
             </dd>
           </div>
           <div className="flex flex-col gap-1.5">
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Categories
+              {copy.categoriesLabel}
             </dt>
             <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[2rem]">
               {studioTemplateCategories.length}
@@ -147,7 +150,10 @@ export default function StudioPickPage() {
                 </h2>
               </div>
               <p className="hidden text-sm leading-7 text-[var(--studio-ink-soft)] sm:block">
-                {items.length} template{items.length === 1 ? "" : "s"}
+                {(items.length === 1
+                  ? copy.templateCountOne
+                  : copy.templateCountMany
+                ).replace("{count}", String(items.length))}
               </p>
             </div>
 
@@ -176,7 +182,7 @@ export default function StudioPickPage() {
                     <dl className="mt-5 grid grid-cols-2 gap-x-4 border-y border-[var(--studio-line)] py-3">
                       <div>
                         <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                          Price
+                          {copy.cardPriceLabel}
                         </dt>
                         <dd className="mt-1 text-[1.05rem] font-semibold tracking-tight text-[var(--studio-ink)]">
                           {formatCurrency(tpl.price)}
@@ -184,17 +190,17 @@ export default function StudioPickPage() {
                       </div>
                       <div>
                         <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                          Ready in
+                          {copy.cardReadyInLabel}
                         </dt>
                         <dd className="mt-1 inline-flex items-center gap-1 text-[1.05rem] font-semibold tracking-tight text-[var(--studio-ink)]">
                           <Clock className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
-                          {tpl.readyInDays} days
+                          {copy.daysValue.replace("{days}", String(tpl.readyInDays))}
                         </dd>
                       </div>
                     </dl>
 
                     <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                      Often for
+                      {copy.cardOftenForLabel}
                     </p>
                     <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--studio-ink-soft)]">
                       {tpl.audience}
@@ -212,17 +218,23 @@ export default function StudioPickPage() {
                       ))}
                       {tpl.pages.length > 4 ? (
                         <li className="text-[11.5px] italic leading-relaxed text-[var(--studio-ink-soft)]">
-                          + {tpl.pages.length - 4} more
+                          {copy.cardMorePages.replace(
+                            "{count}",
+                            String(tpl.pages.length - 4),
+                          )}
                         </li>
                       ) : null}
                     </ul>
 
                     <div className="mt-auto flex items-center justify-between gap-3 pt-5 text-[12.5px]">
                       <span className="font-semibold text-[var(--studio-ink)]">
-                        View template
+                        {copy.cardViewTemplate}
                       </span>
                       <span className="font-mono uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                        {tpl.timelineWeeks} wk launch
+                        {copy.cardWeekLaunch.replace(
+                          "{weeks}",
+                          String(tpl.timelineWeeks),
+                        )}
                       </span>
                     </div>
                   </Link>
@@ -236,21 +248,19 @@ export default function StudioPickPage() {
       <section className="mt-16 border-l-2 border-[var(--studio-signal)]/55 pl-5 sm:pl-6">
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--studio-signal)]">
           <Sparkles className="h-3.5 w-3.5" />
-          None of these fit? Describe what you actually need.
+          {copy.ctaKicker}
         </p>
         <h2 className="mt-3 max-w-2xl text-balance text-[1.45rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.7rem]">
-          Custom builds use the same milestone discipline — and skip the template entirely.
+          {copy.ctaTitle}
         </h2>
         <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Multi-role portals, bespoke software, deep integrations: we scope against your
-          requirements, not a template you have to fit into. Brief takes about eight minutes
-          and returns indicative pricing.
+          {copy.ctaBody}
         </p>
         <Link
           href="/request?path=custom"
           className="studio-button-primary mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold"
         >
-          Describe a fully custom build
+          {copy.ctaButton}
           <ArrowRight className="h-4 w-4" />
         </Link>
       </section>
