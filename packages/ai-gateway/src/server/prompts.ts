@@ -163,6 +163,41 @@ function buildListingVerifyPrompt(task: AiTask, _policy: AiSurfacePolicy): AiPro
   return { system: LISTING_VERIFY_SYSTEM, messages: [{ role: "user", content: userText }], images };
 }
 
+// A generic structured-draft builder for the company-wide *.draft surfaces (jobs posting,
+// learn course, property listing). Inherits the doctrine; produces the same JSON shape the
+// marketplace draft uses, so every division's draft panel can fill its form uniformly.
+const CONTENT_DRAFT_KIND: Partial<Record<AiSurfaceKey, string>> = {
+  "jobs.posting.draft": "job posting (role, responsibilities, requirements)",
+  "learn.course.draft": "course outline (what it teaches, who it's for, modules)",
+  "property.listing.draft": "property listing (the place, its features, the terms)",
+};
+
+function buildContentDraftPrompt(task: AiTask, policy: AiSurfacePolicy): AiPromptParts {
+  const kind = CONTENT_DRAFT_KIND[policy.surface] ?? "listing";
+  const title = str(task.input.title, 200);
+  const notes = str(task.input.notes ?? task.input.text ?? task.input.summary, 1600);
+  return {
+    system: composeSystemPrompt(
+      [
+        `Help the person turn a short idea into a clear, honest, conversion-ready ${kind} that helps them`,
+        "succeed — making their offering look its best without ever inventing facts, prices, credentials,",
+        "or guarantees they did not provide. They edit everything before publishing. If the request is",
+        'off-topic or outside the boundaries, return the JSON with "summary":"" and a short, warm',
+        '"description" explaining what you can help draft.',
+        "",
+        "Respond with ONLY a JSON object (no prose, no code fences) of exactly this shape:",
+        "{",
+        '  "summary": string,        // a one-line summary (<= 140 chars)',
+        '  "description": string,    // 2-4 short paragraphs of honest detail',
+        '  "category": string,       // a suggested category/label (may be empty)',
+        '  "specifications": string  // bullet-style key points as plain text (may be empty)',
+        "}",
+      ].join("\n"),
+    ),
+    messages: [{ role: "user", content: `${title ? `Idea: ${title}\n` : ""}${notes ? `Notes: ${notes}\n` : ""}\nDraft the ${kind} as the specified JSON object.` }],
+  };
+}
+
 const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSurfacePolicy) => AiPromptParts>> = {
   "marketplace.listing.draft": buildMarketplaceListingDraftPrompt,
   "marketplace.listing.verify": buildListingVerifyPrompt,
@@ -172,6 +207,14 @@ const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSur
   "account.check.assist": buildAccountCheckPrompt,
   "studio.brief.staff": buildStudioBriefPrompt,
   "studio.brief.client": buildStudioBriefPrompt,
+  // Company-wide: drafts reuse the generic structured-draft builder; the trust reviews reuse
+  // the generic verdict builder (honest / not-AI-generated / on-standard / safe).
+  "jobs.posting.draft": buildContentDraftPrompt,
+  "learn.course.draft": buildContentDraftPrompt,
+  "property.listing.draft": buildContentDraftPrompt,
+  "jobs.posting.verify": buildListingVerifyPrompt,
+  "learn.course.verify": buildListingVerifyPrompt,
+  "property.listing.verify": buildListingVerifyPrompt,
 };
 
 export function buildPrompt(task: AiTask, policy: AiSurfacePolicy): AiPromptParts {

@@ -91,8 +91,8 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
     now: () => new Date(),
     promptBuilder: buildPrompt,
     validateOutput: (raw, t) => {
-      if (t.surface === "marketplace.listing.draft") return validateDraftOutput(raw);
-      if (t.surface === "marketplace.listing.verify") return parseVerdict(raw) != null;
+      if (t.surface.endsWith(".draft")) return validateDraftOutput(raw);
+      if (t.surface.endsWith(".verify")) return parseVerdict(raw) != null;
       return true;
     },
     onSignal,

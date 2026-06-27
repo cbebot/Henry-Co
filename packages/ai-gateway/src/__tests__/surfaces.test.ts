@@ -39,6 +39,24 @@ describe("AI_SURFACES registry", () => {
     assert.equal(p.modelTier, "deep", "verification runs on the strongest model so nothing slips through");
   });
 
+  it("registers company-wide draft surfaces as METERED standard-tier", () => {
+    for (const key of ["jobs.posting.draft", "learn.course.draft", "property.listing.draft"] as const) {
+      const p = getSurfacePolicy(key);
+      assert.ok(p, `${key} registered`);
+      assert.equal(p.billable, true, `${key} METERED`);
+      assert.equal(p.modelTier, "standard", `${key} standard tier`);
+    }
+  });
+
+  it("registers company-wide trust reviews as METERED deep-tier (the cross-division moat)", () => {
+    for (const key of ["jobs.posting.verify", "learn.course.verify", "property.listing.verify"] as const) {
+      const p = getSurfacePolicy(key);
+      assert.ok(p, `${key} registered`);
+      assert.equal(p.billable, true, `${key} METERED`);
+      assert.equal(p.modelTier, "deep", `${key} deep tier`);
+    }
+  });
+
   it("returns null for an unknown surface key", () => {
     assert.equal(getSurfacePolicy("does.not.exist" as never), null);
   });
