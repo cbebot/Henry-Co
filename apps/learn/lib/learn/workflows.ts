@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { getDivisionUrl } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
-import { getLearnSnapshot } from "@/lib/learn/data";
+import { getLearnSnapshot, getLessonPlayback } from "@/lib/learn/data";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getLearnUrl } from "@/lib/learn/links";
 import {
   appendCustomerActivity,
@@ -11,7 +11,8 @@ import {
   ensureCustomerProfile,
   upsertCustomerInvoice,
 } from "@/lib/learn/shared-account";
-import { createId, deleteLearnRecord, nowIso, upsertLearnRecord } from "@/lib/learn/store";
+import { createId, deleteLearnRecord, hasLearnTable, nowIso, upsertLearnRecord } from "@/lib/learn/store";
+import { verifyLessonWatch } from "@/lib/learn/watch-verification";
 import { syncLearnCompletionToJobs } from "@/lib/learn/learn-to-earn-bridge";
 import { uploadTeacherApplicationMedia } from "@/lib/learn/media";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -714,6 +715,29 @@ export async function completeLesson(input: {
     throw new Error(`Complete "${firstIncompleteRequiredLesson.title}" before this lesson.`);
   }
 
+  // LRN-1 — proof-of-watch gate. A client-supplied `secondsWatched` is never
+  // trusted on its own: for video lessons we verify against the server-side
+  // playback heartbeat and persist the heartbeat's position. Strictly gated on
+  // table presence so reading lessons and pre-migration prod are unaffected.
+  const isVideoLesson = lesson.lessonType === "video" || Boolean(lesson.videoUrl);
+  let secondsWatched = Number(input.secondsWatched || lesson.durationMinutes * 60);
+  if (isVideoLesson && (await hasLearnTable("learn_lesson_playback"))) {
+    const playback = await getLessonPlayback(enrollment.id, lesson.id);
+    const verification = verifyLessonWatch({
+      lessonType: lesson.lessonType,
+      videoUrl: lesson.videoUrl,
+      durationMinutes: lesson.durationMinutes,
+      playback,
+    });
+    if (!verification.ok) {
+      throw new Error(
+        `Keep watching "${lesson.title}" — you need to view at least 85% of the video before it can be marked complete.`
+      );
+    }
+    // Trust the heartbeat, not the request body.
+    secondsWatched = verification.watchedSeconds || secondsWatched;
+  }
+
   const progressId = stableId("progress", `${enrollment.id}:${lesson.id}`);
   const completedAt = nowIso();
   await upsertLearnRecord(
@@ -725,7 +749,7 @@ export async function completeLesson(input: {
       module_id: lesson.moduleId,
       lesson_id: lesson.id,
       status: "completed",
-      seconds_watched: Number(input.secondsWatched || lesson.durationMinutes * 60),
+      seconds_watched: secondsWatched,
       score: null,
       completed_at: completedAt,
     },
@@ -745,7 +769,7 @@ export async function completeLesson(input: {
       moduleId: lesson.moduleId,
       lessonId: lesson.id,
       status: "completed" as const,
-      secondsWatched: Number(input.secondsWatched || lesson.durationMinutes * 60),
+      secondsWatched,
       score: null,
       completedAt,
     },

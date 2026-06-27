@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { loadStudioThread } from "@/lib/studio/support-threads";
 
 export const runtime = "nodejs";
 
@@ -42,6 +43,11 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
+    // STU-a — only stamp read-state on studio-division threads.
+    const thread = await loadStudioThread(admin, threadId);
+    if (!thread) {
+      return NextResponse.json({ ok: false }, { status: 404 });
+    }
     await admin
       .from("support_threads")
       .update({ staff_last_read_at: new Date().toISOString() } as never)

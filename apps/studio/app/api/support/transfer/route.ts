@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { appendSupportMessage } from "@/lib/studio/shared-account";
+import { loadStudioThread } from "@/lib/studio/support-threads";
 
 export const runtime = "nodejs";
 
@@ -78,11 +79,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: existing } = await admin
-      .from("support_threads")
-      .select("id, division, category")
-      .eq("id", threadId)
-      .maybeSingle<{ id: string; division: string | null; category: string | null }>();
+    // STU-a — the SOURCE thread must be studio-division before we move it.
+    // (The TARGET division write below is intentionally unscoped — transfer
+    // is precisely the act of re-homing the thread to another division.)
+    const existing = await loadStudioThread(admin, threadId);
     if (!existing) {
       return NextResponse.json(
         { ok: false, error: "Thread not found" },

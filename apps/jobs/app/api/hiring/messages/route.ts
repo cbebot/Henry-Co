@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { sendMessage } from "@/lib/jobs/hiring";
 import { getJobsViewer } from "@/lib/auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import { decideHiringConvoRole } from "@/lib/jobs/hiring-authz";
 import {
   checkMessagesRate,
   type MessagesRateCheck,
@@ -59,11 +61,12 @@ async function resolveParticipantRole(
     return { role: "moderator" };
   }
 
-  // Pull conversation + linked application + linked pipeline in one round-trip.
+  // Pull conversation + linked application + linked pipeline (incl. the owning
+  // business_id) in one round-trip.
   const { data, error } = await admin
     .from("jobs_conversations")
     .select(
-      "id, candidate_id, application_id, jobs_applications:application_id ( id, candidate_id, pipeline_id, jobs_hiring_pipelines:pipeline_id ( id, employer_id, company_id ) )",
+      "id, candidate_id, application_id, jobs_applications:application_id ( id, candidate_id, pipeline_id, jobs_hiring_pipelines:pipeline_id ( id, employer_id, company_id, business_id ) )",
     )
     .eq("id", conversationId)
     .maybeSingle();
@@ -76,11 +79,7 @@ async function resolveParticipantRole(
   // (which equals jobs_applications.candidate_id by construction).
   const conversationCandidateId =
     typeof row.candidate_id === "string" ? row.candidate_id : null;
-  if (conversationCandidateId && conversationCandidateId === viewerId) {
-    return { role: "candidate" };
-  }
 
-  // Application's candidate_id can also be the source of truth — verify both.
   const application = row.jobs_applications as
     | Record<string, unknown>
     | Array<Record<string, unknown>>
@@ -90,38 +89,33 @@ async function resolveParticipantRole(
     appRow && typeof appRow.candidate_id === "string"
       ? appRow.candidate_id
       : null;
-  if (appCandidateId && appCandidateId === viewerId) {
-    return { role: "candidate" };
-  }
 
-  // Employer path: the linked pipeline's employer_id (or company_id) must
-  // match a record in customer_activity that names this viewer as an active
-  // employer member. We resolve via reference_id (the employer slug) joined
-  // through getEmployerMembershipsByUser already loaded on `viewer`.
-  // For the strict per-conversation match we need pipeline.employer_id
-  // resolved to a slug. Until the schema linkage is unambiguous (no
-  // production conversations exist yet), require BOTH:
-  //   (a) viewer has ≥ 1 active EmployerMembership, AND
-  //   (b) the conversation's pipeline exists (sanity check).
-  // This is intentionally conservative: it lets actual employers in their
-  // own conversations through, while blocking authenticated non-employers
-  // outright. Once production conversations exist, a follow-up can tighten
-  // (b) to "viewer's active membership matches this pipeline's employer".
+  // Employer path: the linked pipeline's OWNING business must equal the business
+  // the viewer is currently acting as. business_id is the unambiguous owner key
+  // — employer_id may store an activityId (not a slug), so it is never used for
+  // the ownership decision. "Has some employer membership" is NOT sufficient.
   const pipeline =
     appRow && (appRow.jobs_hiring_pipelines as
       | Record<string, unknown>
       | Array<Record<string, unknown>>
       | null);
   const pipelineRow = Array.isArray(pipeline) ? pipeline[0] : pipeline;
+  const owningBusinessId =
+    pipelineRow && typeof pipelineRow.business_id === "string"
+      ? pipelineRow.business_id
+      : null;
 
-  if (
-    pipelineRow &&
-    typeof pipelineRow.id === "string" &&
-    viewer.employerMemberships.length > 0
-  ) {
-    return { role: "employer" };
-  }
+  const acting = await resolveHiringActingContext();
+  const actingBusinessId = acting.kind === "business" ? acting.businessId : null;
 
+  const role = decideHiringConvoRole({
+    viewerId,
+    candidateIds: [conversationCandidateId, appCandidateId],
+    owningBusinessId,
+    actingBusinessId,
+  });
+  if (role === "candidate") return { role: "candidate" };
+  if (role === "employer") return { role: "employer" };
   return null;
 }
 

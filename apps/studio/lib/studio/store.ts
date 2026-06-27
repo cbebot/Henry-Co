@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
-import { formatCurrency, getOptionalEnv, normalizeEmail, normalizePhone } from "@/lib/env";
+import { formatCurrency, getRequiredEnv, normalizeEmail, normalizePhone } from "@/lib/env";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import {
   STUDIO_DOCUMENT_BUCKET,
@@ -55,18 +55,28 @@ type StudioUpsertEvent =
   | "studio_review_upsert"
   | "studio_notification_append";
 
-const FALLBACK_SECRET = "henryco-studio-secret";
 const STUDIO_STORE_ROUTE = "/studio/store";
 
 const tablePresenceCache = new Map<string, boolean>();
 const tableColumnSupportCache = new Map<string, boolean>();
 
+/**
+ * STU-c — the HMAC key behind every deterministic portal access key
+ * (`createAccessKey(seed)` for proposal/project share links).
+ *
+ * This MUST be a dedicated, high-entropy secret. It previously chained
+ * silently to CRON_SECRET, then the service-role key, then an in-repo
+ * literal ("henryco-studio-secret") — which made the access key (an HMAC
+ * of a low-entropy, publicly-known id) forgeable by anyone who read the
+ * source. We now require STUDIO_PORTAL_SECRET and THROW when it's absent:
+ * fail closed rather than mint forgeable tokens. Set it in every deploy
+ * target to the current effective secret value BEFORE shipping, or portal
+ * link issuance/verification 500s and existing share links break.
+ */
 function stableSecret() {
-  return (
-    getOptionalEnv("STUDIO_PORTAL_SECRET") ||
-    getOptionalEnv("CRON_SECRET") ||
-    getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-    FALLBACK_SECRET
+  return getRequiredEnv(
+    "STUDIO_PORTAL_SECRET",
+    "STUDIO_PORTAL_SECRET is required to sign studio portal access keys. Refusing to fall back to a shared or in-repo secret (forgeable tokens).",
   );
 }
 

@@ -31,12 +31,17 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
   const wantsDownload = url.searchParams.get("download") === "1";
 
   const admin = createAdminSupabase();
+  // STU-1 — `support_threads` is a SHARED cross-division table keyed by id
+  // only. Pin `division = "studio"` (STRICT) so a studio staffer can never
+  // export another division's thread PII. A non-studio (or NULL-division)
+  // row returns 404 — NOT 403 — so the endpoint isn't an existence oracle.
   const { data: thread } = await admin
     .from("support_threads")
     .select(
       "id, user_id, subject, division, status, created_at, updated_at, reference_id, category",
     )
     .eq("id", id)
+    .eq("division", "studio")
     .maybeSingle();
   if (!thread) {
     return NextResponse.json({ error: "Thread not found" }, { status: 404 });

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { flagMessage } from "@/lib/jobs/hiring";
 import { getJobsViewer } from "@/lib/auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import { decideHiringConvoRole } from "@/lib/jobs/hiring-authz";
 
 /**
  * Secure hiring messages flag endpoint.
@@ -57,12 +59,12 @@ async function resolveFlaggerRole(
     return { role: "moderator" };
   }
 
-  // Resolve the message → conversation → application → pipeline chain in
-  // one round-trip.
+  // Resolve the message → conversation → application → pipeline chain (incl. the
+  // owning business_id) in one round-trip.
   const { data, error } = await admin
     .from("jobs_messages")
     .select(
-      "id, conversation_id, jobs_conversations:conversation_id ( id, candidate_id, application_id, jobs_applications:application_id ( id, candidate_id, pipeline_id, jobs_hiring_pipelines:pipeline_id ( id, employer_id, company_id ) ) )",
+      "id, conversation_id, jobs_conversations:conversation_id ( id, candidate_id, application_id, jobs_applications:application_id ( id, candidate_id, pipeline_id, jobs_hiring_pipelines:pipeline_id ( id, employer_id, company_id, business_id ) ) )",
     )
     .eq("id", messageId)
     .maybeSingle();
@@ -79,9 +81,6 @@ async function resolveFlaggerRole(
 
   const convoCandidateId =
     typeof convoRow.candidate_id === "string" ? convoRow.candidate_id : null;
-  if (convoCandidateId && convoCandidateId === viewerId) {
-    return { role: "candidate" };
-  }
 
   const application = convoRow.jobs_applications as
     | Record<string, unknown>
@@ -92,27 +91,32 @@ async function resolveFlaggerRole(
     appRow && typeof appRow.candidate_id === "string"
       ? appRow.candidate_id
       : null;
-  if (appCandidateId && appCandidateId === viewerId) {
-    return { role: "candidate" };
-  }
 
+  // Employer path: gate on the pipeline's OWNING business_id matching the
+  // viewer's acting business — never on "has some employer membership" and never
+  // on employer_id (which may store an activityId, not a slug).
   const pipeline =
     appRow && (appRow.jobs_hiring_pipelines as
       | Record<string, unknown>
       | Array<Record<string, unknown>>
       | null);
   const pipelineRow = Array.isArray(pipeline) ? pipeline[0] : pipeline;
+  const owningBusinessId =
+    pipelineRow && typeof pipelineRow.business_id === "string"
+      ? pipelineRow.business_id
+      : null;
 
-  // Match the conservative membership rule used by /api/hiring/messages:
-  // pipeline must exist AND viewer must have ≥ 1 active employer membership.
-  if (
-    pipelineRow &&
-    typeof pipelineRow.id === "string" &&
-    viewer.employerMemberships.length > 0
-  ) {
-    return { role: "employer" };
-  }
+  const acting = await resolveHiringActingContext();
+  const actingBusinessId = acting.kind === "business" ? acting.businessId : null;
 
+  const role = decideHiringConvoRole({
+    viewerId,
+    candidateIds: [convoCandidateId, appCandidateId],
+    owningBusinessId,
+    actingBusinessId,
+  });
+  if (role === "candidate") return { role: "candidate" };
+  if (role === "employer") return { role: "employer" };
   return null;
 }
 
