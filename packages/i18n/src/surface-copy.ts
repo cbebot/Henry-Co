@@ -153,6 +153,21 @@ const EN: SurfaceCopy = {
   labels: {
     About: "About",
     Account: "Account",
+    // V3-AI-01 — Henry Onyx Intelligence draft-a-listing (marketplace).
+    "Draft with Henry Onyx Intelligence": "Draft with Henry Onyx Intelligence",
+    "Describe your product and Henry Onyx Intelligence will draft a listing you can edit before publishing.":
+      "Describe your product and Henry Onyx Intelligence will draft a listing you can edit before publishing.",
+    "Product idea": "Product idea",
+    "Anything else to include? (optional)": "Anything else to include? (optional)",
+    "Draft listing": "Draft listing",
+    "Drafting…": "Drafting…",
+    "Use this draft": "Use this draft",
+    "Henry Onyx Intelligence couldn’t help with that. Please try again.":
+      "Henry Onyx Intelligence couldn’t help with that. Please try again.",
+    "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}":
+      "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}",
+    "Drafts are advisory — review and edit every field before you submit.":
+      "Drafts are advisory — review and edit every field before you submit.",
     Applications: "Applications",
     "Browse jobs": "Browse jobs",
     "Browse open jobs": "Browse open jobs",

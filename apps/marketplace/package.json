@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@henryco/address-selector": "workspace:^",
+    "@henryco/ai-gateway": "workspace:^",
     "@henryco/auth": "workspace:^",
     "@henryco/brand": "workspace:^",
     "@henryco/cart-saved-items": "workspace:^",

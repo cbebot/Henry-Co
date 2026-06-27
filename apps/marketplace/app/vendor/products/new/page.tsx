@@ -1,5 +1,6 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
+import { DraftWithIntelligencePanel } from "@/components/marketplace/ai/DraftWithIntelligencePanel";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -7,6 +8,12 @@ import { vendorNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
+
+// Flag-dark by default. The metered draft-a-listing surface renders only when the company
+// explicitly turns it on AND the global AI kill switch is enabled (the gateway enforces the
+// latter server-side; this gates the UI). Reconcile the rate card to live provider prices
+// and set PAYMENTS_DATABASE_URL before enabling.
+const AI_LISTING_ASSIST_ENABLED = process.env.MARKETPLACE_AI_LISTING_ASSIST === "true";
 
 export default async function NewVendorProductPage() {
   const locale = await getMarketplacePublicLocale();
@@ -20,6 +27,24 @@ export default async function NewVendorProductPage() {
       description="Listings are built with moderation, pricing governance, and trust scoring in mind: title, story, delivery proof, featured-slot requests, and posting-fee visibility are explicit."
       nav={vendorNav("/vendor/products", locale)}
     >
+      {AI_LISTING_ASSIST_ENABLED ? (
+        <DraftWithIntelligencePanel
+          copy={{
+            heading: t("Draft with Henry Onyx Intelligence"),
+            intro: t(
+              "Describe your product and Henry Onyx Intelligence will draft a listing you can edit before publishing.",
+            ),
+            ideaLabel: t("Product idea"),
+            notesLabel: t("Anything else to include? (optional)"),
+            draftButton: t("Draft listing"),
+            drafting: t("Drafting…"),
+            useDraft: t("Use this draft"),
+            errorFallback: t("Henry Onyx Intelligence couldn’t help with that. Please try again."),
+            priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+            advisory: t("Drafts are advisory — review and edit every field before you submit."),
+          }}
+        />
+      ) : null}
       <section className="market-panel rounded-[1.75rem] p-5">
         <p className="market-kicker">Seller economics in this flow</p>
         <div className="mt-4 grid gap-4 md:grid-cols-3">

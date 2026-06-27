@@ -61,6 +61,18 @@ export {
   type SellerTierDiscountTable,
 } from './seller-tier-discount';
 
+// V3-AI-01 — governed AI usage margin engine (provider cost → + tier margin % → + VAT).
+// Pure, integer kobo; VAT policy is injected so this stays a dependency-free leaf.
+export {
+  meterAiCostKobo,
+  computeAiUsageBreakdown,
+  defaultAiUsageRules,
+  type AiModelTier,
+  type AiTierRate,
+  type AiUsageRuleSet,
+  type MeteredUsage,
+} from './ai-usage';
+
 export type PricingBreakdownLine = {
   code:
     | "items_subtotal"
@@ -71,6 +83,12 @@ export type PricingBreakdownLine = {
     | "discount"
     | "hold_reserve"
     | "payout_fee"
+    // V3-AI-01: the governed AI usage engine. `ai_compute` = the provider cost
+    // (internal-only — never shown to a customer); `ai_margin` = the company's
+    // margin (incl. any per-call floor top-up). Both feed the ledger/analytics, not
+    // a client receipt (see packages/ai-gateway redaction). VAT still reuses `tax`.
+    | "ai_compute"
+    | "ai_margin"
     // V3-18: the VAT/tax SEAM. No engine computes it yet (V3-21 owns that) and the
     // rate is NEVER hardcoded — a breakdown only carries a `tax` line once a tax
     // engine populates one. Receipts/invoices render a VAT line iff such a line is
@@ -95,10 +113,13 @@ export type PricingBreakdown = {
   };
   /** Machine-friendly snapshot for auditability. */
   meta: {
-    division: "marketplace" | "property" | "logistics" | "shared";
+    division: "marketplace" | "property" | "logistics" | "shared" | "ai";
     ruleBookKey: string;
     ruleVersion: string;
     computedAt: string;
+    /** V3-AI-01 — the capability tier an AI usage call resolved to
+     *  (`fast`/`standard`/`deep`). A user-safe label, NEVER a model name. */
+    tier?: string;
     /**
      * V3-VAT-WIRING-01 — the AUTHORITATIVE output VAT for this sale, in whole KOBO,
      * carved INCLUSIVE from the kobo gross under the per-line resolved treatment at

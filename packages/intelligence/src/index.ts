@@ -17,6 +17,9 @@ export const henryDivisionSchema = z.enum([
   "staff",
   "system",
   "wallet",
+  // V3-AI-01 — Henry Onyx Intelligence (the governed AI engine). The provider/model
+  // behind it is server-only and never named here; this is only an envelope division.
+  "ai",
 ]);
 
 export type HenryDivision = z.infer<typeof henryDivisionSchema>;
@@ -98,6 +101,14 @@ export const HenryEventNames = {
   HIRING_INTERVIEW_SCHEDULED: "henry.hiring.interview.scheduled",
   HIRING_OFFER_SENT: "henry.hiring.offer.sent",
   HIRING_CANDIDATE_HIRED: "henry.hiring.candidate.hired",
+  // Henry Onyx Intelligence usage events (V3-AI-01). Emitted with division 'ai'.
+  // These are observability signals only — NEVER the source of truth for a charge
+  // (money posts through the ledger via post_ai_usage_charge). No provider/model
+  // name ever rides in the envelope properties.
+  AI_USAGE_ESTIMATED: "henry.ai.usage.estimated",
+  AI_USAGE_METERED: "henry.ai.usage.metered",
+  AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
+  AI_PROVIDER_FAILED: "henry.ai.provider.failed",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -291,7 +302,11 @@ export interface RiskSignal {
 export type HenryFeatureFlagName =
   | "intelligence_events"
   | "intelligence_recommendations"
-  | "intelligence_staff_queues";
+  | "intelligence_staff_queues"
+  // V3-AI-01 — the system-wide Henry Onyx Intelligence kill switch. Default OFF
+  // (absent env ⇒ false), so the AI engine launches dark; flipping it off halts all
+  // gateway dispatch instantly (in-flight holds expire and release — no stranded funds).
+  | "ai_gateway";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -335,6 +350,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_INTELLIGENCE_STAFF_QUEUES) ||
       list.has("intelligence_staff_queues") ||
       list.has("staff_queues"),
+    // V3-AI-01 kill switch — default OFF; enabled only when explicitly set.
+    ai_gateway:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_AI_GATEWAY) ||
+      list.has("ai_gateway") ||
+      list.has("ai"),
   };
 }
 

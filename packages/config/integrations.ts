@@ -93,6 +93,25 @@ export function getPublicSentryConfig() {
   };
 }
 
+/**
+ * V3-AI-01 — SERVER-ONLY AI provider secret seam. Centralises the ad-hoc
+ * `ANTHROPIC_API_KEY` read (today scattered across apps/studio). Deliberately NOT a
+ * `getPublic*` / `NEXT_PUBLIC_` config: the key is a secret that must NEVER reach a
+ * client bundle. Call this ONLY from server code (the `@henryco/ai-gateway` `./server`
+ * boundary, which carries `import "server-only"`). The provider/source identity and
+ * the concrete model name are intentionally absent here — they live behind the gateway
+ * adapter, server-only, and are never exposed (Henry Onyx Intelligence opacity rule).
+ * In any client context `process.env.ANTHROPIC_API_KEY` is undefined, so `isConfigured`
+ * is `false` and no secret is emitted.
+ */
+export function getAiProviderConfig() {
+  const apiKey = cleanEnv(process.env.ANTHROPIC_API_KEY);
+  return {
+    apiKey,
+    isConfigured: Boolean(apiKey),
+  };
+}
+
 export function getPublicTypesenseConfig() {
   const protocol = normalizeProtocol(process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL);
   const port = normalizePort(process.env.NEXT_PUBLIC_TYPESENSE_PORT, protocol === "https" ? 443 : 80);

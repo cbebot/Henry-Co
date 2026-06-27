@@ -46,6 +46,20 @@ function getPool(): Pool {
 }
 
 /**
+ * The same pooled, TLS-verified direct-pg connection the card-sale reconciler uses,
+ * exposed as a minimal `{ query }` executor for `@henryco/ai-gateway`'s `createPgBillingPort`.
+ * The AI billing RPCs (`reserve_wallet_for_ai_usage` / `post_ai_usage_charge`) live in the
+ * same non-PostgREST-exposed `payments_private` schema, so they require this direct path —
+ * supabase-js cannot reach them. Constructed lazily: with the AI flag OFF the gateway never
+ * touches billing, so a missing `PAYMENTS_DATABASE_URL` does not throw on the dark path.
+ */
+export function getPaymentsSqlExecutor(): { query<T = Record<string, unknown>>(text: string, params: unknown[]): Promise<{ rows: T[] }> } {
+  return {
+    query: (text, params) => getPool().query(text, params as unknown[]) as Promise<{ rows: never[] }>,
+  };
+}
+
+/**
  * The constrained set of `payments_private` RPCs the division card-sale path
  * calls. NO new money function — these all exist (V3-VAT-01 / V3-18) and are
  * granted to service_role only:

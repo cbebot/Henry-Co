@@ -180,6 +180,19 @@ jobs:
       - name: Assert refunds money-RPC grant invariant (V3-19 end state)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_grant_invariant.sql
 
+      # V3-AI-01: the governed AI gateway's metered wallet/ledger billing. Seed the
+      # minimal rate-card prerequisite, apply the V3-AI-01 migration on the same fresh DB,
+      # then assert the AI money-RPC grant lockdown + RLS end state (the same revoke
+      # discipline the payments/ledger/refund RPCs carry, applied to reserve/settle/release).
+      - name: Seed AI billing prerequisites (pricing_rule_books + tx.division)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ai_billing_min.sql
+
+      - name: Apply V3-AI-01 metered-billing migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260627120000_v3_ai_01_metered_billing.sql
+
+      - name: Assert V3-AI-01 money-RPC grant invariant (service-role-only; RLS; no PUBLIC)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ai_money_rpc_grant_invariant.sql
+
       # SEC-HARDEN-01: lock down the SECURITY DEFINER audit writers (same revoke
       # discipline as the money RPCs). The two writers + is_staff_in_any live on
       # prod out-of-band (not created by any FL2 migration), so create faithful

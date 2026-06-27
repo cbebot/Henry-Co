@@ -301,7 +301,17 @@ export type HenryEventName =
   | "henry.receipt.downloaded"
   // credit notes (V3-19): the legal face of a confirmed refund (HO-CRN-),
   // issuer Henry Onyx Limited, processor never named.
-  | "henry.credit_note.generated";
+  | "henry.credit_note.generated"
+  // Henry Onyx Intelligence usage (V3-AI-01). `usage.estimated` fires pre-flight
+  // with the reserved upper-bound price; `usage.metered` on a settled charge;
+  // `usage.blocked` on a refusal (insufficient funds / cap / kill switch);
+  // `provider.failed` on a provider error. As with payments above, NO payload
+  // names the provider/source or the real model (ANTI-CLONE Principle 9 / the AI
+  // opacity rule) — only a capability tier label and kobo figures.
+  | "henry.ai.usage.estimated"
+  | "henry.ai.usage.metered"
+  | "henry.ai.usage.blocked"
+  | "henry.ai.provider.failed";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

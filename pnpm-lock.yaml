@@ -1071,6 +1071,9 @@ importers:
       '@henryco/address-selector':
         specifier: workspace:^
         version: link:../../packages/address-selector
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
@@ -1755,6 +1758,40 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       typescript:
         specifier: ^5.6.0
+        version: 5.9.3
+
+  packages/ai-gateway:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.92.0
+        version: 0.92.0(zod@4.3.6)
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../pricing
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
         version: 5.9.3
 
   packages/auth:
@@ -2616,7 +2653,14 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/pricing: {}
+  packages/pricing:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/push:
     dependencies:
