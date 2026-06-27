@@ -38,6 +38,26 @@ export async function verifyListingAction(input: VerifyInput): Promise<VerifyRes
     return { ok: false, code: "rate_limited", message: "Add your listing details first." };
   }
 
+  // Ownership (IDOR guard) — checked BEFORE charging so a vendor can never spend to attach a
+  // verdict/badge to a product they don't own. A vendor must be an active member of the
+  // product's vendor; platform staff may review any. The SECURITY DEFINER writer enforces
+  // the same rule unbypassably as a backstop. (A null productId is a pre-save dry run.)
+  if (input.productId) {
+    const admin = createAdminSupabase();
+    const { data: product } = await admin
+      .from("marketplace_products")
+      .select("vendor_id")
+      .eq("id", input.productId)
+      .maybeSingle();
+    const isStaff = viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin"]);
+    const ownsVendor =
+      product?.vendor_id != null &&
+      viewer.memberships.some((m) => m.scopeType === "vendor" && m.scopeId === product.vendor_id);
+    if (!product || (!isStaff && !ownsVendor)) {
+      return { ok: false, code: "forbidden", message: "You can only review your own listings." };
+    }
+  }
+
   const supabase = await createSupabaseServer();
   const result = await runAiTask(
     {

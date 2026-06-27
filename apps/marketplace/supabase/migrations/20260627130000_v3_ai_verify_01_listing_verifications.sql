@@ -78,6 +78,28 @@ begin
     raise exception 'record_listing_verification: invalid outcome %', p_outcome using errcode = 'check_violation';
   end if;
 
+  -- AUTHORIZATION (IDOR guard): this fn is SECURITY DEFINER and sets a public trust badge,
+  -- so it MUST verify the actor owns the product before touching it — otherwise a vendor
+  -- could award/revoke the badge on ANOTHER vendor's listing by passing its id. The actor
+  -- must hold an active vendor membership on the product's vendor, or be platform staff.
+  -- (A null product is a pre-save dry run — audited under the actor, affects no product.)
+  if p_product_id is not null then
+    if not exists (
+      select 1
+      from public.marketplace_products mp
+      join public.marketplace_role_memberships m
+        on m.user_id = p_user_id and m.is_active = true
+      where mp.id = p_product_id
+        and (
+          (m.scope_type = 'vendor' and m.scope_id = mp.vendor_id)
+          or (m.scope_type = 'platform' and m.role in ('marketplace_owner', 'marketplace_admin'))
+        )
+    ) then
+      raise exception 'record_listing_verification: actor % is not authorized for product %', p_user_id, p_product_id
+        using errcode = 'insufficient_privilege';
+    end if;
+  end if;
+
   insert into public.marketplace_listing_verifications
     (product_id, user_id, ai_usage_event_id, outcome, trust_score,
      honest, ai_generated_media, matches_standards, safe_to_post, reasons)
