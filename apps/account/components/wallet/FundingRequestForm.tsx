@@ -24,8 +24,8 @@ export default function FundingRequestForm() {
       case "Enter at least NGN 100 to create a funding request.":
       case "Minimum amount is NGN 100.":
         return t("Minimum amount is NGN 100.");
-      case "For this flow, the maximum is NGN 100,000 per request.":
-        return t("For this flow, the maximum is NGN 100,000 per request.");
+      // No maximum funding amount (owner decision) — the old "max NGN 100,000"
+      // case was removed so stale copy can't contradict the server.
       case "This funding method is not available yet.":
         return t("This funding method is not available yet.");
       case "We couldn’t open your wallet. Please try again shortly.":

@@ -4,6 +4,9 @@ import assert from "node:assert/strict";
 import {
   decideTopupReconcile,
   reconcileWalletTopups,
+  validateFundingAmountKobo,
+  WALLET_FUNDING_MIN_KOBO,
+  WALLET_FUNDING_MIN_NAIRA,
   RAIL_TOPUP_METHODS,
   TOPUP_FUNDING_STATUS,
   TOPUP_LEDGER_REFERENCE_TYPE,
@@ -11,6 +14,37 @@ import {
   type IntentRow,
   type WalletTopupReconcilePort,
 } from "./wallet-topup";
+
+/* -------------------------------------------------------------------------- */
+/*  validateFundingAmountKobo — the shared min floor with NO upper bound       */
+/* -------------------------------------------------------------------------- */
+
+test("funding min: floor is NGN 100 (10,000 kobo) and the naira derivation matches", () => {
+  assert.equal(WALLET_FUNDING_MIN_KOBO, 10_000);
+  assert.equal(WALLET_FUNDING_MIN_NAIRA, 100);
+});
+
+test("validate: an amount exactly at the floor is accepted", () => {
+  assert.equal(validateFundingAmountKobo(WALLET_FUNDING_MIN_KOBO), null);
+});
+
+test("validate: an amount below the floor is rejected (below_min)", () => {
+  assert.equal(validateFundingAmountKobo(WALLET_FUNDING_MIN_KOBO - 1), "below_min");
+  assert.equal(validateFundingAmountKobo(0), "not_integer");
+});
+
+test("validate: a non-integer / non-positive / non-finite amount is rejected (not_integer)", () => {
+  assert.equal(validateFundingAmountKobo(150.5), "not_integer");
+  assert.equal(validateFundingAmountKobo(-50_000), "not_integer");
+  assert.equal(validateFundingAmountKobo(Number.NaN), "not_integer");
+  assert.equal(validateFundingAmountKobo(Number.POSITIVE_INFINITY), "not_integer");
+});
+
+test("validate: there is NO fixed maximum — very large safe-integer amounts pass", () => {
+  // Owner decision: no ceiling here; R1 reauth + provider limits are the guardrails.
+  assert.equal(validateFundingAmountKobo(5_000_000_00), null); // NGN 5,000,000
+  assert.equal(validateFundingAmountKobo(Number.MAX_SAFE_INTEGER), null);
+});
 
 /* -------------------------------------------------------------------------- */
 /*  decideTopupReconcile — the pure money decision                            */

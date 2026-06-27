@@ -2,13 +2,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
-import { RAIL_TOPUP_METHODS, TOPUP_FUNDING_STATUS, type RailTopupMethod } from "@/lib/wallet-topup";
+import {
+  RAIL_TOPUP_METHODS,
+  TOPUP_FUNDING_STATUS,
+  WALLET_FUNDING_MIN_NAIRA,
+  validateFundingAmountKobo,
+  type RailTopupMethod,
+} from "@/lib/wallet-topup";
 
 export const runtime = "nodejs";
-
-/** Wallet top-up bounds (kobo) — mirrors the existing bank-transfer funding flow. */
-const MIN_KOBO = 10_000; // NGN 100
-const MAX_KOBO = 10_000_000; // NGN 100,000
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -50,12 +52,14 @@ export async function POST(request: NextRequest) {
   if (!isRailMethod(body.method)) {
     return NextResponse.json({ error: "Choose a payment method." }, { status: 400 });
   }
+  // Single shared floor; NO upper bound (owner decision — R1 reauth on the
+  // payment rail + provider limits are the guardrails, not a hardcoded ceiling).
   const amountKobo = Number(body.amountKobo);
-  if (!Number.isSafeInteger(amountKobo) || amountKobo < MIN_KOBO) {
-    return NextResponse.json({ error: "Enter at least NGN 100 to top up." }, { status: 400 });
-  }
-  if (amountKobo > MAX_KOBO) {
-    return NextResponse.json({ error: "For this flow, the maximum is NGN 100,000 per top-up." }, { status: 400 });
+  if (validateFundingAmountKobo(amountKobo) !== null) {
+    return NextResponse.json(
+      { error: `Enter at least NGN ${WALLET_FUNDING_MIN_NAIRA.toLocaleString("en-NG")} to top up.` },
+      { status: 400 },
+    );
   }
 
   await ensureAccountProfileRecords(user);

@@ -4,20 +4,23 @@ import { useRef, useState, type ComponentType } from "react";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { fetchWithSensitiveAction } from "@henryco/auth/client/sensitive-action-modal";
-import { ArrowRight, CreditCard, Landmark, ShieldCheck, Smartphone } from "lucide-react";
+import { ArrowRight, Check, CreditCard, Landmark, Smartphone, ShieldCheck } from "lucide-react";
 
-import { RAIL_TOPUP_METHODS, type RailTopupMethod } from "@/lib/wallet-topup";
+import {
+  RAIL_TOPUP_METHODS,
+  WALLET_FUNDING_MIN_NAIRA,
+  type RailTopupMethod,
+} from "@/lib/wallet-topup";
 
-const PRESET_NAIRA = [5000, 10000, 25000, 50000, 100000];
+/** Quick-pick amounts (naira). Free custom entry stays available alongside these. */
+const PRESET_NAIRA = [1000, 5000, 20000, 50000, 100000];
 
 type MethodOption = { key: RailTopupMethod; label: string; hint: string; Icon: ComponentType<{ size?: number }> };
 
 /**
  * V3-15-JOB-B — the buyer entry point for the proven hosted-redirect payment
- * rail. Card / bank / USSD is the DEFAULT primary method; the bank-transfer-proof
- * flow remains as a fallback rendered below this on the page.
- *
- * It does NOT rebuild the rail — it CALLS it:
+ * rail. It does NOT rebuild the rail — it CALLS it, and that money contract is
+ * preserved exactly:
  *   1. POST /api/wallet/topup/init   → durable funding record (shared idempotency UUID)
  *   2. fetchWithSensitiveAction(POST /api/payments/intents) → the proven create
  *      (handles the R1 reauth challenge and retries with the SAME body/key, A11)
@@ -25,25 +28,31 @@ type MethodOption = { key: RailTopupMethod; label: string; hint: string; Icon: C
  *
  * On return, /payments/callback advances pending→processing, the webhook confirms
  * →succeeded, and the wallet credit is reconciled on the /wallet load.
+ *
+ * The method chooser presents Card / Pay from bank app / USSD as opaque tiles —
+ * the underlying provider is never surfaced. There is NO maximum amount (owner
+ * decision): the guardrails are the R1 reauth above + the provider's own limits.
  */
 export default function WalletTopUpClient() {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const numberLocale = locale === "en" ? "en-NG" : locale;
+  const minNairaLabel = WALLET_FUNDING_MIN_NAIRA.toLocaleString(numberLocale);
 
   const methods: MethodOption[] = [
     { key: "card", label: t("Card"), hint: t("Debit or credit card"), Icon: CreditCard },
-    { key: "bank_transfer", label: t("Bank transfer"), hint: t("Pay from your bank app"), Icon: Landmark },
+    { key: "bank_transfer", label: t("Pay from bank app"), hint: t("Transfer from your banking app"), Icon: Landmark },
     { key: "ussd", label: t("USSD"), hint: t("Dial a short code to pay"), Icon: Smartphone },
   ];
 
-  const [amount, setAmount] = useState("10000");
+  const [amount, setAmount] = useState("5000");
   const [method, setMethod] = useState<RailTopupMethod>("card");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submittingRef = useRef(false);
 
   const amountNaira = Number(amount) || 0;
-  const amountLabel = amountNaira > 0 ? `NGN ${amountNaira.toLocaleString(locale === "en" ? "en-NG" : locale)}` : "";
+  const amountLabel = amountNaira > 0 ? `₦${amountNaira.toLocaleString(numberLocale)}` : "";
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -52,12 +61,9 @@ export default function WalletTopUpClient() {
       setError(t("Choose a payment method."));
       return;
     }
-    if (!amountNaira || amountNaira < 100) {
-      setError(t("Minimum amount is NGN 100."));
-      return;
-    }
-    if (amountNaira > 100000) {
-      setError(t("For this flow, the maximum is NGN 100,000 per top-up."));
+    // Single shared floor; NO ceiling (owner decision — wallet-topup.ts).
+    if (!amountNaira || amountNaira < WALLET_FUNDING_MIN_NAIRA) {
+      setError(t("Minimum amount is NGN {min}.").replace("{min}", minNairaLabel));
       return;
     }
 
@@ -110,7 +116,7 @@ export default function WalletTopUpClient() {
 
       if (!intentRes.ok) {
         if (intentData.code === "manual_fallback") {
-          throw new Error(t("Instant payment isn't available right now — use bank transfer with proof below."));
+          throw new Error(t("Instant payment isn't available right now. Please try again shortly."));
         }
         throw new Error(intentData.error || t("Payment could not be started. Please try again."));
       }
@@ -130,104 +136,104 @@ export default function WalletTopUpClient() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="acct-card p-5 sm:p-6" data-live-refresh-pause="true">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="acct-kicker">{t("Pay instantly")}</p>
-          <p className="mt-1 text-sm leading-5 text-[var(--acct-muted)]">
-            {t("Top up with card, bank transfer or USSD. Your balance updates the moment payment is confirmed.")}
-          </p>
-        </div>
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--acct-gold-soft)] text-[var(--acct-gold)]">
-          <ShieldCheck size={18} />
-        </span>
-      </div>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-3" role="radiogroup" aria-label={t("Payment method")}>
-        {methods.map(({ key, label, hint, Icon }) => {
-          const selected = method === key;
-          return (
-            <button
-              key={key}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              onClick={() => setMethod(key)}
-              className={`flex items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
-                selected
-                  ? "border-[var(--acct-gold)] bg-[var(--acct-gold-soft)]"
-                  : "border-[var(--acct-line)] bg-[var(--acct-bg)] hover:border-[var(--acct-gold)]"
-              }`}
-            >
-              <span
-                className={`mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                  selected ? "bg-white/80 text-[var(--acct-gold)]" : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
-                }`}
+    <form onSubmit={handleSubmit} className="acct-wal__topup" data-live-refresh-pause="true">
+      {/* 1 — Method chooser: opaque, tappable tiles (provider never named) */}
+      <fieldset className="acct-wal__topup-block">
+        <legend className="acct-wal__topup-legend">
+          <span className="acct-wal__topup-legend-title">{t("Choose how to pay")}</span>
+          <span className="acct-wal__topup-legend-hint">
+            {t("Your balance updates the moment payment is confirmed.")}
+          </span>
+        </legend>
+        <div className="acct-wal__methods" role="radiogroup" aria-label={t("Payment method")}>
+          {methods.map(({ key, label, hint, Icon }) => {
+            const selected = method === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setMethod(key)}
+                className="acct-wal__method"
               >
-                <Icon size={17} />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-semibold text-[var(--acct-ink)]">{label}</span>
-                <span className="mt-0.5 block text-xs leading-4 text-[var(--acct-muted)]">{hint}</span>
-              </span>
+                <span className="acct-wal__method-icon" aria-hidden="true">
+                  <Icon size={18} />
+                </span>
+                <span className="acct-wal__method-meta">
+                  <span className="acct-wal__method-name">{label}</span>
+                  <span className="acct-wal__method-hint">{hint}</span>
+                </span>
+                <span className="acct-wal__method-check" aria-hidden="true">
+                  <Check size={16} strokeWidth={3} />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* 2 — Amount: quick presets + free custom entry */}
+      <div className="acct-wal__topup-block">
+        <div className="acct-wal__topup-legend">
+          <span className="acct-wal__topup-legend-title">{t("How much would you like to add?")}</span>
+          <span className="acct-wal__topup-legend-hint">
+            {t("Pick a quick amount or type your own.")}
+          </span>
+        </div>
+        <div className="acct-wal__presets">
+          {PRESET_NAIRA.map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              data-active={amount === String(preset)}
+              onClick={() => setAmount(String(preset))}
+              className="acct-wal__preset"
+            >
+              ₦{preset.toLocaleString(numberLocale)}
             </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-5">
-        {PRESET_NAIRA.map((preset) => (
-          <button
-            key={preset}
-            type="button"
-            onClick={() => setAmount(String(preset))}
-            className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
-              amount === String(preset)
-                ? "border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] text-[var(--acct-gold)]"
-                : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)]"
-            }`}
-          >
-            NGN {preset.toLocaleString(locale === "en" ? "en-NG" : locale)}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-5">
-        <label className="mb-1.5 block text-sm font-medium text-[var(--acct-ink)]">{t("Amount")}</label>
-        <input
-          type="number"
-          min={100}
-          max={100000}
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          className="acct-input text-lg font-semibold"
-          placeholder={t("Enter amount in naira")}
-          inputMode="numeric"
-        />
+          ))}
+        </div>
+        <label className="acct-wal__amount">
+          <span className="acct-wal__amount-cur" aria-hidden="true">₦</span>
+          <input
+            type="number"
+            min={WALLET_FUNDING_MIN_NAIRA}
+            step={1}
+            value={amount}
+            onChange={(event) => setAmount(event.target.value)}
+            className="acct-wal__amount-input"
+            placeholder={t("Enter amount")}
+            inputMode="numeric"
+            aria-label={t("Amount")}
+          />
+        </label>
       </div>
 
       {error ? (
-        <div className="mt-4 rounded-2xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]" role="alert">
+        <p className="acct-wal__topup-error" role="alert">
           {error}
-        </div>
+        </p>
       ) : null}
 
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <button type="submit" disabled={loading} className="acct-button-primary rounded-2xl px-5 py-3">
+      {/* 3 — One confident primary action */}
+      <div className="acct-wal__topup-foot">
+        <button type="submit" disabled={loading} className="acct-button-primary acct-wal__topup-submit">
           <ButtonPendingContent
             pending={loading}
             pendingLabel={t("Opening secure checkout...")}
             spinnerLabel={t("Opening secure checkout...")}
           >
             <>
-              {amountLabel ? `${t("Top up")} ${amountLabel}` : t("Top up wallet")}
+              {amountLabel ? `${t("Add")} ${amountLabel}` : t("Add money")}
               <ArrowRight size={16} />
             </>
           </ButtonPendingContent>
         </button>
-        <p className="text-xs leading-5 text-[var(--acct-muted)]">
-          {t("You'll complete payment on a secure checkout, then return here automatically.")}
-        </p>
+        <span className="acct-wal__topup-note">
+          <ShieldCheck size={15} aria-hidden="true" />
+          {t("You'll finish on a secure checkout, then return here automatically.")}
+        </span>
       </div>
     </form>
   );
