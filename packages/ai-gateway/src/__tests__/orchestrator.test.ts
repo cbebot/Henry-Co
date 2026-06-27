@@ -82,6 +82,48 @@ describe("runAiTaskWith — the prepaid gate (wallet-zero ⇒ provider never cal
   });
 });
 
+describe("runAiTaskWith — V3-33 personal-task gating (no anonymous AI at the router)", () => {
+  it("refuses a metered call with no authenticated actor (auth_required) before any wallet/provider work", async () => {
+    const adapter = recordingAdapter();
+    const billing = new InMemoryBilling({ balances: { "": 1_000_000 } });
+    const res = await runAiTaskWith(makeDeps({ adapter, billing }), task({ actorId: "" }));
+    assert.equal(res.ok === false && res.error.code, "auth_required");
+    assert.equal(adapter.calls(), 0, "anonymous calls never reach the provider");
+    assert.equal(billing.reserveCount, 0, "anonymous calls never touch the wallet");
+  });
+
+  it("refuses a blank/whitespace actor too", async () => {
+    const adapter = recordingAdapter();
+    const billing = new InMemoryBilling({ balances: {} });
+    const res = await runAiTaskWith(makeDeps({ adapter, billing }), task({ actorId: "   " }));
+    assert.equal(res.ok === false && res.error.code, "auth_required");
+    assert.equal(adapter.calls(), 0);
+  });
+
+  it("refuses a FREE surface for an anonymous actor (zero personal-task usage for unauth)", async () => {
+    const adapter = recordingAdapter();
+    const billing = new InMemoryBilling({ balances: {} });
+    const res = await runAiTaskWith(makeDeps({ adapter, billing }), task({ surface: "support.message.assist", actorId: "" }));
+    assert.equal(res.ok === false && res.error.code, "auth_required");
+    assert.equal(adapter.calls(), 0);
+  });
+
+  it("emits a blocked signal for the auth refusal so every call is audited", async () => {
+    const signals: Array<{ kind: string; code?: string }> = [];
+    const adapter = recordingAdapter();
+    const billing = new InMemoryBilling({ balances: {} });
+    await runAiTaskWith(makeDeps({ adapter, billing, onSignal: (s) => signals.push(s) }), task({ actorId: "" }));
+    assert.ok(signals.some((s) => s.kind === "blocked" && s.code === "auth_required"));
+  });
+
+  it("still serves an authenticated actor normally", async () => {
+    const adapter = recordingAdapter();
+    const billing = new InMemoryBilling({ balances: { [VENDOR]: 1_000_000 } });
+    const res = await runAiTaskWith(makeDeps({ adapter, billing }), task());
+    assert.equal(res.ok, true);
+  });
+});
+
 describe("runAiTaskWith — metered happy path", () => {
   it("meters, prices the worked example (₦25.54), debits once, and returns a redacted receipt", async () => {
     const adapter = recordingAdapter();

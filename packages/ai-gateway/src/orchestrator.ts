@@ -74,6 +74,12 @@ function lineAmount(breakdown: PricingBreakdown, code: string): number {
   return breakdown.lines.find((l) => l.code === code)?.amount.amount ?? 0;
 }
 
+/** V3-33: a call is allowed only for an authenticated actor — a non-empty user id the
+ *  surface resolved from the session. A blank/missing id is anonymous and refused. */
+function isAuthenticatedActor(actorId: unknown): boolean {
+  return typeof actorId === "string" && actorId.trim().length > 0;
+}
+
 function mapProviderError(error: ProviderError): AiGatewayErrorCode {
   const code = (error.code || "").toLowerCase();
   if (code.includes("timeout")) return "provider_timeout";
@@ -111,6 +117,14 @@ export async function runAiTaskWith(
   // Kill switch — evaluated BEFORE any wallet or provider work.
   if (!deps.killSwitchEnabled) {
     return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("kill_switch_active", DEFAULT_AI_ERROR_COPY.kill_switch_active));
+  }
+
+  // V3-33 personal-task gating — no anonymous AI. Every call requires an authenticated
+  // actor; an unauth/blank actor is refused AT THE ROUTER, before any wallet or provider
+  // work, and the refusal is signalled (audited). The surface is the auth trust boundary
+  // (it resolves the authenticated user and passes their id); this is the router backstop.
+  if (!isAuthenticatedActor(task.actorId)) {
+    return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("auth_required", DEFAULT_AI_ERROR_COPY.auth_required));
   }
 
   const tier: AiModelTier = task.tierOverride ?? policy.modelTier;

@@ -12,6 +12,7 @@ import { runAiTaskWith, type AiTaskDeps, type AiTaskSuccess, type AiUsageSignal 
 import { getAiServerConfig, AI_GATEWAY_TIMEOUT_MS } from "./config";
 import { createAnthropicAdapter } from "./providers/anthropic";
 import { buildPrompt, validateDraftOutput } from "./prompts";
+import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 
 export interface RunAiTaskOptions {
   /** The billing port — the app supplies `createPgBillingPort(sql)` over a service-role
@@ -22,14 +23,18 @@ export interface RunAiTaskOptions {
   /** "standard" collects VAT (default); a non-standard treatment defers it. */
   vatTreatment?: VatTreatment;
   onSignal?: (signal: AiUsageSignal) => void;
+  /** V3-33 — durable audit + telemetry. Pass a user-scoped Supabase client and every call
+   *  (estimate / settled charge / refusal / provider failure) is emitted, persisted to
+   *  henry_events, and (for state changes/refusals) written to the V19 audit log. */
+  audit?: { supabase: AiTelemetryDeps["supabase"]; traceId?: string };
   /** Id generator for the FREE-surface receipt; defaults to crypto.randomUUID. */
   newId?: () => string;
   /** Env source (defaults to process.env) — the kill switch + model routing read it. */
   env?: NodeJS.ProcessEnv;
 }
 
-function emitBlocked(opts: RunAiTaskOptions, surface: AiTask["surface"], code: AiGatewayError["code"]): void {
-  opts.onSignal?.({ kind: "blocked", surface, tier: "standard", billable: true, code });
+function emitBlocked(onSignal: (s: AiUsageSignal) => void, surface: AiTask["surface"], code: AiGatewayError["code"]): void {
+  onSignal({ kind: "blocked", surface, tier: "standard", billable: true, code });
 }
 
 /**
@@ -45,16 +50,25 @@ function emitBlocked(opts: RunAiTaskOptions, surface: AiTask["surface"], code: A
 export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<Result<AiTaskSuccess, AiGatewayError>> {
   const env = opts.env ?? process.env;
 
+  // V3-33 — compose durable audit/telemetry with any caller signal. The audit actor is the
+  // authenticated id, or null for an anonymous (refused) call.
+  const auditActorId = typeof task.actorId === "string" && task.actorId.trim().length > 0 ? task.actorId : null;
+  const telemetry = opts.audit ? createAiTelemetry({ supabase: opts.audit.supabase, actorId: auditActorId, traceId: opts.audit.traceId }) : undefined;
+  const onSignal = (signal: AiUsageSignal): void => {
+    telemetry?.(signal);
+    opts.onSignal?.(signal);
+  };
+
   // 1. System-wide kill switch — default OFF. Nothing else runs while paused.
   if (!isFlagEnabled(parseHenryFeatureFlags(env), "ai_gateway")) {
-    emitBlocked(opts, task.surface, "kill_switch_active");
+    emitBlocked(onSignal, task.surface, "kill_switch_active");
     return { ok: false, error: aiError("kill_switch_active", DEFAULT_AI_ERROR_COPY.kill_switch_active) };
   }
 
   // 2. Provider configured? A missing key degrades gracefully (no charge, calm copy).
   const cfg = getAiServerConfig();
   if (!cfg.isConfigured) {
-    emitBlocked(opts, task.surface, "not_configured");
+    emitBlocked(onSignal, task.surface, "not_configured");
     return { ok: false, error: aiError("not_configured", DEFAULT_AI_ERROR_COPY.not_configured) };
   }
 
@@ -68,7 +82,7 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
     now: () => new Date(),
     promptBuilder: buildPrompt,
     validateOutput: (raw, t) => (t.surface === "marketplace.listing.draft" ? validateDraftOutput(raw) : true),
-    onSignal: opts.onSignal,
+    onSignal,
     newId: opts.newId ?? (() => crypto.randomUUID()),
     defaultTimeoutMs: AI_GATEWAY_TIMEOUT_MS,
   };

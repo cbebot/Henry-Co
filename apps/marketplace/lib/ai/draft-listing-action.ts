@@ -4,6 +4,7 @@ import { runAiTask, createPgBillingPort, parseDraftOutput } from "@henryco/ai-ga
 import type { AiUsageReceipt } from "@henryco/ai-gateway";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { getPaymentsSqlExecutor } from "@/lib/payments/db";
+import { createSupabaseServer } from "@/lib/supabase/server";
 
 export interface ListingDraft {
   summary: string;
@@ -42,6 +43,7 @@ export async function draftListingAction(input: {
     return { ok: false, code: "rate_limited", message: "Add a product idea first." };
   }
 
+  const supabase = await createSupabaseServer();
   const result = await runAiTask(
     {
       surface: "marketplace.listing.draft",
@@ -49,7 +51,12 @@ export async function draftListingAction(input: {
       input: { title, notes: input.notes ?? "", category: input.category ?? "" },
       idempotencyKey: input.idempotencyKey,
     },
-    { billing: createPgBillingPort(getPaymentsSqlExecutor()) },
+    {
+      billing: createPgBillingPort(getPaymentsSqlExecutor()),
+      // V3-33: durable audit — every call (estimate / charge / refusal) is emitted,
+      // persisted to henry_events, and written to the V19 audit log under the vendor.
+      audit: { supabase: supabase as never },
+    },
   );
 
   if (!result.ok) {
