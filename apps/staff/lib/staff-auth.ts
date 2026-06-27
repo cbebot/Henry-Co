@@ -3,6 +3,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
+  filterGrantedMemberships,
   getAccountUrl,
   getStaffHqUrl,
   isRecoverableSupabaseAuthError,
@@ -34,6 +35,12 @@ type MembershipRow = {
   role: string | null;
   scope_type: string | null;
   scope_id: string | null;
+};
+
+type MembershipFetchRow = MembershipRow & {
+  user_id: string | null;
+  normalized_email: string | null;
+  is_active: boolean | null;
 };
 
 const STAFF_DIVISION_PATHS: Partial<Record<WorkspaceDivision, string>> = {
@@ -96,7 +103,8 @@ async function readStaffAuthUser(supabase: StaffServerSupabase) {
 async function readMembershipRows(
   division: WorkspaceDivision,
   userId: string,
-  normalizedEmailAddress: string | null
+  normalizedEmailAddress: string | null,
+  emailVerified: boolean
 ) {
   const admin = createStaffAdminSupabase();
   const tableByDivision: Partial<Record<WorkspaceDivision, string>> = {
@@ -104,7 +112,8 @@ async function readMembershipRows(
     studio: "studio_role_memberships",
     property: "property_role_memberships",
     learn: "learn_role_memberships",
-    logistics: "logistics_role_memberships",
+    // logistics_role_memberships intentionally omitted — that table is not
+    // created on disk; logistics staff identity resolves via profiles.role.
   };
 
   const table = tableByDivision[division];
@@ -116,12 +125,18 @@ async function readMembershipRows(
       : `user_id.eq.${userId}`;
     const { data, error } = await admin
       .from(table)
-      .select("id, role, scope_type, scope_id")
+      .select("id, role, scope_type, scope_id, user_id, normalized_email, is_active")
       .eq("is_active", true)
       .or(filter);
 
     if (error) return [] as MembershipRow[];
-    return (data ?? []) as MembershipRow[];
+    // Shared grant rule: bound rows match only their owner; an unclaimed
+    // (user_id null) seed grants only to a verified, matching mailbox.
+    return filterGrantedMemberships((data ?? []) as MembershipFetchRow[], {
+      userId,
+      normalizedEmail: normalizedEmailAddress,
+      emailVerified,
+    });
   } catch {
     return [] as MembershipRow[];
   }
@@ -175,6 +190,7 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
 
   const admin = createStaffAdminSupabase();
   const normalizedEmailAddress = normalizeEmail(user.email);
+  const emailVerified = Boolean(user.email_confirmed_at);
   const { data: profile } = await admin
     .from("profiles")
     .select("full_name, role")
@@ -202,7 +218,7 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
     "learn",
     "logistics",
   ] as WorkspaceDivision[]) {
-    const rows = await readMembershipRows(division, user.id, normalizedEmailAddress);
+    const rows = await readMembershipRows(division, user.id, normalizedEmailAddress, emailVerified);
     const roles = unique(rows.flatMap((row) => normalizeLegacyDivisionRoles(division, row.role)));
     if (roles.length > 0) {
       explicitDivisionState.set(division, { rows, roles });

@@ -1961,8 +1961,14 @@ const settings: Array<Record<string, unknown>> = [
   { id: seedId(1502), key: "academy_support", value: { email: learn.supportEmail, phone: learn.supportPhone, hours: "Mon-Fri 9:00-18:00 WAT" }, created_at: createdAt, updated_at: updatedAt },
   { id: seedId(1503), key: "academy_banner", value: { title: "New courses are live.", body: "Sell on WhatsApp & Instagram, price for profit, keep clean books, and build a brand that brings buyers — plus marketplace certification and internal readiness, all in one premium academy." }, created_at: createdAt, updated_at: updatedAt },
 ];
+// SECURITY: seeded INERT (is_active: false). An active, user_id-null,
+// internal-email row is an email-claimable privilege seed — anyone who
+// registers academy@henryonyx.com would inherit academy_owner. Bootstrap runs
+// against prod, so this row must never be re-activated here; grant the real
+// academy owner by binding a user_id (or activating after verifying the
+// mailbox owner). The resolver also requires a verified, matching mailbox.
 const roleMemberships: Array<Record<string, unknown>> = [
-  { id: seedId(1601), user_id: null, normalized_email: "academy@henryonyx.com", scope_type: "platform", scope_id: null, role: "academy_owner", is_active: true, created_at: createdAt, updated_at: updatedAt },
+  { id: seedId(1601), user_id: null, normalized_email: "academy@henryonyx.com", scope_type: "platform", scope_id: null, role: "academy_owner", is_active: false, created_at: createdAt, updated_at: updatedAt },
 ];
 
 export async function seedLearnBaseline(meta?: LearnUpsertMeta) {

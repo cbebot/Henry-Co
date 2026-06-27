@@ -74,6 +74,13 @@ export type UnifiedViewer = {
     avatarUrl: string | null;
     appMetadata: Record<string, unknown>;
     userMetadata: Record<string, unknown>;
+    /**
+     * Whether the viewer's email is verified (Supabase `email_confirmed_at`).
+     * Gates email-only role-membership grants — an unclaimed seed is claimable
+     * only by a viewer who provably controls that mailbox. Optional for
+     * back-compat; absent is treated as unverified (deny).
+     */
+    emailVerified?: boolean;
   };
   access: AccessSnapshot;
   /**

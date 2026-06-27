@@ -2,6 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import {
+  filterGrantedMemberships,
   isRecoverableSupabaseAuthError,
   normalizeEmail,
   resolveUserAvatarFromSources,
@@ -27,6 +28,12 @@ type MembershipRow = {
   role: PropertyRole;
   scope_type: string;
   scope_id: string | null;
+};
+
+type PropertyMembershipFetch = MembershipRow & {
+  user_id: string | null;
+  normalized_email: string | null;
+  is_active: boolean | null;
 };
 
 function uniqueRoles(roles: PropertyRole[]) {
@@ -114,7 +121,7 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
   try {
     const { data, error } = await admin
       .from("property_role_memberships")
-      .select("id, role, scope_type, scope_id")
+      .select("id, role, scope_type, scope_id, user_id, normalized_email, is_active")
       .eq("is_active", true)
       .or(
         normalized
@@ -123,7 +130,13 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
       );
 
     if (!error) {
-      memberships = (data as MembershipRow[] | null) ?? [];
+      // Shared grant rule: bound rows match only their owner; an unclaimed
+      // (user_id null) seed grants only to a verified, matching mailbox.
+      memberships = filterGrantedMemberships((data as PropertyMembershipFetch[] | null) ?? [], {
+        userId: user.id,
+        normalizedEmail: normalized,
+        emailVerified: Boolean(user.email_confirmed_at),
+      });
     }
   } catch {
     memberships = [];

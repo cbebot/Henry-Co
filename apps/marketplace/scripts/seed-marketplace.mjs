@@ -79,6 +79,20 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(0);
 }
 
+// SECURITY: this dev/local seed inserts ACTIVE, user_id-null role-membership
+// rows keyed by internal @henryonyx.com emails — i.e. email-claimable staff
+// seeds. Running it against production would re-plant a privilege-escalation
+// path. Refuse to target the live project unless explicitly overridden.
+const PROD_PROJECT_REF = "rzkbgwuznmdxnnhmjazy";
+if (SUPABASE_URL.includes(PROD_PROJECT_REF) && process.env.ALLOW_PROD_SEED !== "1") {
+  console.error(
+    `[marketplace:seed] REFUSING to run against production (${PROD_PROJECT_REF}).\n` +
+      "It inserts active, email-claimable staff role-membership rows.\n" +
+      "Set ALLOW_PROD_SEED=1 only if you truly intend to seed production."
+  );
+  process.exit(1);
+}
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });

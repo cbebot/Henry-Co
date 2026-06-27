@@ -2,7 +2,12 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { getAccountUrl, normalizeEmail } from "@henryco/config";
+import {
+  filterGrantedMemberships,
+  getAccountUrl,
+  normalizeEmail,
+  type MembershipGrantRow,
+} from "@henryco/config";
 
 import { createAdminSupabase } from "./_internal/admin-supabase";
 import type {
@@ -85,9 +90,11 @@ async function readAccessSnapshot(user: {
   email: string | null;
   app_metadata?: Record<string, unknown>;
   user_metadata?: Record<string, unknown>;
+  emailVerified?: boolean;
 }): Promise<AccessSnapshot> {
   const admin = createAdminSupabase();
   const normalizedEmailAddress = normalizeEmail(user.email);
+  const emailVerified = Boolean(user.emailVerified);
 
   const [{ data: profile }, { data: directOwnerProfile }, staffMembershipResults] =
     await Promise.all([
@@ -110,12 +117,20 @@ async function readAccessSnapshot(user: {
           try {
             const { data, error } = await admin
               .from(table)
-              .select("id")
+              .select("user_id, normalized_email, is_active")
               .eq("is_active", true)
-              .or(filter)
-              .limit(1);
+              .or(filter);
             if (error) return false;
-            return Boolean(data?.length);
+            // Shared grant rule: a bound row matches only its owner; an
+            // unclaimed (user_id null) seed grants only to a verified,
+            // matching mailbox.
+            return (
+              filterGrantedMemberships((data ?? []) as MembershipGrantRow[], {
+                userId: user.id,
+                normalizedEmail: normalizedEmailAddress,
+                emailVerified,
+              }).length > 0
+            );
           } catch {
             return false;
           }
@@ -173,10 +188,11 @@ async function readAccessSnapshot(user: {
  *   - the audit-logging layer (cite which division produced an action)
  */
 async function readStaffMemberships(
-  user: { id: string; email: string | null },
+  user: { id: string; email: string | null; emailVerified?: boolean },
 ): Promise<ReadonlyArray<StaffDivisionMembership>> {
   const admin = createAdminSupabase();
   const normalizedEmailAddress = normalizeEmail(user.email);
+  const emailVerified = Boolean(user.emailVerified);
 
   const [profile, divisionalRows] = await Promise.all([
     admin
@@ -192,12 +208,18 @@ async function readStaffMemberships(
         try {
           const { data, error } = await admin
             .from(table)
-            .select("role")
+            .select("role, user_id, normalized_email, is_active")
             .eq("is_active", true)
-            .or(filter)
-            .limit(1);
-          if (error || !data?.length) return null;
-          const role = normalizeRole((data[0] as { role?: string | null }).role) || "staff";
+            .or(filter);
+          if (error) return null;
+          // Shared grant rule: bound rows match only their owner; an unclaimed
+          // (user_id null) seed grants only to a verified, matching mailbox.
+          const granted = filterGrantedMemberships(
+            (data ?? []) as Array<MembershipGrantRow & { role: string | null }>,
+            { userId: user.id, normalizedEmail: normalizedEmailAddress, emailVerified }
+          );
+          if (!granted.length) return null;
+          const role = normalizeRole(granted[0].role) || "staff";
           return { division, role, source: "division_table" as const };
         } catch {
           return null;
@@ -308,6 +330,7 @@ export async function requireUnifiedViewer(): Promise<UnifiedViewer> {
   let parsed: {
     id: string;
     email?: string | null;
+    email_confirmed_at?: string | null;
     app_metadata?: Record<string, unknown>;
     user_metadata?: Record<string, unknown>;
   };
@@ -321,11 +344,13 @@ export async function requireUnifiedViewer(): Promise<UnifiedViewer> {
     redirect(getAccountUrl("/login"));
   }
 
+  const emailVerified = Boolean(parsed.email_confirmed_at);
   const access = await readAccessSnapshot({
     id: parsed.id,
     email: parsed.email ?? null,
     app_metadata: parsed.app_metadata,
     user_metadata: parsed.user_metadata,
+    emailVerified,
   });
   const { role, kind } = resolveRole(access);
 
@@ -343,6 +368,7 @@ export async function requireUnifiedViewer(): Promise<UnifiedViewer> {
         null,
       appMetadata: parsed.app_metadata ?? {},
       userMetadata: parsed.user_metadata ?? {},
+      emailVerified,
     },
     access,
     role,
@@ -369,12 +395,16 @@ export async function buildUnifiedViewer(user: {
   avatarUrl?: string | null;
   app_metadata?: Record<string, unknown>;
   user_metadata?: Record<string, unknown>;
+  email_confirmed_at?: string | null;
+  emailVerified?: boolean;
 }): Promise<UnifiedViewer> {
+  const emailVerified = Boolean(user.emailVerified ?? user.email_confirmed_at);
   const access = await readAccessSnapshot({
     id: user.id,
     email: user.email,
     app_metadata: user.app_metadata,
     user_metadata: user.user_metadata,
+    emailVerified,
   });
   const { role, kind } = resolveRole(access);
 
@@ -386,6 +416,7 @@ export async function buildUnifiedViewer(user: {
       avatarUrl: user.avatarUrl ?? null,
       appMetadata: user.app_metadata ?? {},
       userMetadata: user.user_metadata ?? {},
+      emailVerified,
     },
     access,
     role,
@@ -402,6 +433,7 @@ export async function getViewerRoles(viewer: UnifiedViewer): Promise<ViewerRoles
   const memberships = await readStaffMemberships({
     id: viewer.user.id,
     email: viewer.user.email,
+    emailVerified: Boolean(viewer.user.emailVerified),
   });
 
   return {

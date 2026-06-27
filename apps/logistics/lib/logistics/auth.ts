@@ -1,7 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError } from "@henryco/config";
+import { filterGrantedMemberships, isRecoverableSupabaseAuthError } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getLogisticsSharedLoginUrl } from "@/lib/logistics-public-links";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -18,6 +18,12 @@ type MembershipRow = {
   role: string | null;
   scope_type: string | null;
   scope_id: string | null;
+};
+
+type LogisticsMembershipFetch = MembershipRow & {
+  user_id: string | null;
+  normalized_email: string | null;
+  is_active: boolean | null;
 };
 
 function uniqueRoles(roles: LogisticsRole[]) {
@@ -74,20 +80,31 @@ export async function getLogisticsViewer(): Promise<LogisticsViewer> {
 
   const admin = createAdminSupabase();
   const normalized = normalizeEmail(user.email);
+  const emailVerified = Boolean(user.email_confirmed_at);
 
-  const [{ data: profile }, { data: membershipRows }] = await Promise.all([
+  const [{ data: profile }, { data: membershipCandidates }] = await Promise.all([
     admin.from("profiles").select("full_name, role").eq("id", user.id).maybeSingle<SharedProfile>(),
     admin
       .from("logistics_role_memberships")
-      .select("id, role, scope_type, scope_id")
+      .select("id, role, scope_type, scope_id, user_id, normalized_email, is_active")
       .eq("is_active", true)
       .or(
         normalized
           ? `user_id.eq.${user.id},normalized_email.eq.${normalized}`
           : `user_id.eq.${user.id}`
       )
-      .returns<MembershipRow[]>(),
+      .returns<LogisticsMembershipFetch[]>(),
   ]);
+
+  // Shared grant rule: bound rows match only their owner; an unclaimed
+  // (user_id null) seed grants only to a verified, matching mailbox. (The
+  // logistics_role_memberships table is not created yet — this keeps the
+  // resolver safe for the day it ships.)
+  const membershipRows = filterGrantedMemberships(membershipCandidates ?? [], {
+    userId: user.id,
+    normalizedEmail: normalized,
+    emailVerified,
+  });
 
   const baseRoles = mapSharedRoleToLogisticsRoles(
     profile?.role ||
