@@ -93,3 +93,6 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
 export { createPgBillingPort, type SqlExecutor } from "./billing";
 export { parseDraftOutput } from "./prompts";
 export { resolveModelForTier } from "./config";
+export { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
+// The company-wide mount helper — a division wires any surface in ~8 lines.
+export { createAssistRunner, type AssistRunnerConfig, type AssistActor, type AssistResult } from "./assist-kit";

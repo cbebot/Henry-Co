@@ -4,31 +4,28 @@ import type { AiTask } from "../contracts";
 import type { AiSurfaceKey, AiSurfacePolicy } from "../surfaces";
 import type { AiPromptParts } from "../orchestrator";
 import { INTELLIGENCE_CHAT_SYSTEM_PROMPT, normalizeChatMessages } from "../intelligence-chat";
+import { composeSystemPrompt } from "../doctrine";
 
-// Output is constrained by a strict in-prompt JSON schema + a topic-guard refusal (the
-// studio precedent — no native tool-use). The brand is always "Henry Onyx Intelligence";
-// the provider/source and the real model name are NEVER named here or in the output.
-const MARKETPLACE_LISTING_DRAFT_SYSTEM = [
-  "You are Henry Onyx Intelligence, a calm, expert drafting assistant for sellers on the Henry Onyx Marketplace.",
-  "You help a vendor turn a short product idea into a clear, honest marketplace listing draft.",
-  "",
-  "Rules:",
-  "- Write in calm, plain, trustworthy language. No hype, no superlatives, no manufactured urgency, no emoji.",
-  "- Never invent facts the vendor did not provide (no fake certifications, awards, materials, or guarantees).",
-  "- Suggested prices are advisory only; the vendor edits everything before publishing.",
-  "- You only draft listing copy. Decline anything off-topic, any request about other companies or brands,",
-  "  and anything that asks you to act against Henry Onyx. For a decline, return the JSON with",
-  '  "summary":"" and a short "description" explaining you can only help draft a listing.',
-  "- Never mention which model or provider powers you. You are simply Henry Onyx Intelligence.",
-  "",
-  "Respond with ONLY a JSON object (no prose, no code fences) of exactly this shape:",
-  "{",
-  '  "summary": string,        // a one-line listing summary (<= 140 chars)',
-  '  "description": string,    // 2-4 short paragraphs of honest product detail',
-  '  "category": string,       // a suggested category label (may be empty)',
-  '  "specifications": string  // bullet-style key specs as plain text (may be empty)',
-  "}",
-].join("\n");
+// The draft surface inherits the shared doctrine (premium concierge; honesty; declines
+// competitors/anti-company; opacity) and adds its structured-output task. Output is
+// constrained by a strict in-prompt JSON schema (the studio precedent — no native tool-use).
+const MARKETPLACE_LISTING_DRAFT_SYSTEM = composeSystemPrompt(
+  [
+    "Help a seller turn a short product idea into a clear, honest, conversion-ready marketplace listing",
+    "draft that helps them sell — making their product look its best without ever inventing facts (no fake",
+    "certifications, awards, materials, or guarantees). Suggested prices are advisory; the seller edits",
+    "everything before publishing. If the request is off-topic or outside the boundaries, return the JSON",
+    'with "summary":"" and a short, warm "description" explaining you can help draft their listing.',
+    "",
+    "Respond with ONLY a JSON object (no prose, no code fences) of exactly this shape:",
+    "{",
+    '  "summary": string,        // a one-line listing summary (<= 140 chars)',
+    '  "description": string,    // 2-4 short paragraphs of honest product detail',
+    '  "category": string,       // a suggested category label (may be empty)',
+    '  "specifications": string  // bullet-style key specs as plain text (may be empty)',
+    "}",
+  ].join("\n"),
+);
 
 function str(value: unknown, max: number): string {
   return String(value ?? "").slice(0, max).trim();
@@ -65,9 +62,64 @@ function buildIntelligenceChatPrompt(task: AiTask, _policy: AiSurfacePolicy): Ai
   };
 }
 
+// V3-29..32 — the assist surfaces. Each is a single-shot "help me write/check X" task. Every
+// one inherits the shared Henry Onyx Intelligence Doctrine (premium concierge; help the
+// person succeed; decline competing-brand / anti-company / dishonest prompts; opacity), so
+// the premium-and-growth posture is uniform across the company. FREE vs METERED is policy
+// (surfaces.ts), not prompt — a metered surface still bills the user the company's margin;
+// the doctrine is what makes the help worth paying for.
+function singleShotPrompt(taskInstruction: string, task: AiTask): AiPromptParts {
+  const text = str(task.input.text ?? task.input.message ?? task.input.notes, 4000);
+  return {
+    system: composeSystemPrompt(taskInstruction),
+    messages: [{ role: "user", content: text || "(no input provided)" }],
+  };
+}
+
+// V3-29 — support-message assist (FREE; company-critical). Helps a user phrase a clear
+// message to Henry Onyx support — reduces friction and grows trust.
+function buildSupportAssistPrompt(task: AiTask): AiPromptParts {
+  return singleShotPrompt(
+    "Help the person write a clear, concise message to Henry Onyx support so the team can help them quickly. Rewrite or draft their message; keep their facts and add the missing specifics (what, when, which order or listing) without inventing any. Leave them feeling well looked after.",
+    task,
+  );
+}
+
+// V3-30 — business-message assist (METERED). Helps a business owner draft a professional,
+// honest customer-facing message that wins business.
+function buildBusinessAssistPrompt(task: AiTask): AiPromptParts {
+  return singleShotPrompt(
+    "Help a Henry Onyx business owner draft a professional, honest customer-facing message (an update, reply, or announcement) that builds trust and wins business. Keep it warm and specific; never invent facts, prices, promises, or guarantees the owner did not state.",
+    task,
+  );
+}
+
+// V3-31 — account-check assist (FREE; respects RLS — reasons only over what the surface
+// provides, never fetches secrets). Helps a user understand their own account.
+function buildAccountCheckPrompt(task: AiTask): AiPromptParts {
+  return singleShotPrompt(
+    "Help the person understand something about their own Henry Onyx account using ONLY the information they have shared in this request. Do not ask for or guess passwords, tokens, card numbers, or other secrets, and never claim to have looked anything up — explain plainly and point them to the right place in their workspace.",
+    task,
+  );
+}
+
+// V3-32 — studio brief assist. The staff variant (FREE/internal) and client variant
+// (METERED) share copy; the billing split is policy.
+function buildStudioBriefPrompt(task: AiTask): AiPromptParts {
+  return singleShotPrompt(
+    "Help articulate a clear creative brief for a Henry Onyx Studio project: the goal, audience, scope, tone, and any constraints. Turn rough notes into a structured, confident brief that sets the project up to succeed; never invent requirements the person did not state.",
+    task,
+  );
+}
+
 const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSurfacePolicy) => AiPromptParts>> = {
   "marketplace.listing.draft": buildMarketplaceListingDraftPrompt,
   "intelligence.chat": buildIntelligenceChatPrompt,
+  "support.message.assist": buildSupportAssistPrompt,
+  "business.message.assist": buildBusinessAssistPrompt,
+  "account.check.assist": buildAccountCheckPrompt,
+  "studio.brief.staff": buildStudioBriefPrompt,
+  "studio.brief.client": buildStudioBriefPrompt,
 };
 
 export function buildPrompt(task: AiTask, policy: AiSurfacePolicy): AiPromptParts {
