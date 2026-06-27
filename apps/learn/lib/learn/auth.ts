@@ -1,7 +1,11 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@henryco/config";
+import {
+  filterGrantedMemberships,
+  isRecoverableSupabaseAuthError,
+  resolveUserAvatarFromSources,
+} from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { createAdminSupabase, hasSupabaseServiceRole } from "@/lib/supabase";
@@ -152,13 +156,16 @@ export async function getLearnViewer(): Promise<LearnViewer> {
         .maybeSingle<SharedProfile>(),
     ]);
 
-    const membershipRows = (
-      await readLearnCollection<MembershipRow>("learn_role_memberships", "created_at", false)
-    ).filter((membership) => {
-      if (membership.is_active === false) return false;
-      if (membership.user_id && membership.user_id === user.id) return true;
-      return !!normalized && membership.normalized_email === normalized;
-    });
+    // Shared grant rule: bound rows match only their owner; an unclaimed
+    // (user_id null) seed grants only to a verified, matching mailbox.
+    const membershipRows = filterGrantedMemberships(
+      await readLearnCollection<MembershipRow>("learn_role_memberships", "created_at", false),
+      {
+        userId: user.id,
+        normalizedEmail: normalized,
+        emailVerified: Boolean(user.email_confirmed_at),
+      }
+    );
 
     const baseRoles = mapSharedRoleToLearnRoles(
       profile?.role ||
