@@ -3,6 +3,7 @@ import "server-only";
 import type { AiTask } from "../contracts";
 import type { AiSurfaceKey, AiSurfacePolicy } from "../surfaces";
 import type { AiPromptParts } from "../orchestrator";
+import { INTELLIGENCE_CHAT_SYSTEM_PROMPT, normalizeChatMessages } from "../intelligence-chat";
 
 // Output is constrained by a strict in-prompt JSON schema + a topic-guard refusal (the
 // studio precedent — no native tool-use). The brand is always "Henry Onyx Intelligence";
@@ -54,8 +55,19 @@ function buildMarketplaceListingDraftPrompt(task: AiTask, _policy: AiSurfacePoli
   };
 }
 
+/** V3-28 — the governed Intelligence chat: a fixed governance system prompt + the
+ *  normalised (safe, bounded, user-first) conversation history. The topic guard
+ *  (declines competing-brand / anti-company) lives in the system prompt. */
+function buildIntelligenceChatPrompt(task: AiTask, _policy: AiSurfacePolicy): AiPromptParts {
+  return {
+    system: INTELLIGENCE_CHAT_SYSTEM_PROMPT,
+    messages: normalizeChatMessages(task.input.messages),
+  };
+}
+
 const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSurfacePolicy) => AiPromptParts>> = {
   "marketplace.listing.draft": buildMarketplaceListingDraftPrompt,
+  "intelligence.chat": buildIntelligenceChatPrompt,
 };
 
 export function buildPrompt(task: AiTask, policy: AiSurfacePolicy): AiPromptParts {

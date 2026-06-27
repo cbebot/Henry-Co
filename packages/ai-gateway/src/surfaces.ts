@@ -5,6 +5,7 @@ import type { AiModelTier } from "@henryco/pricing";
 export type AiSurfaceKey =
   | "marketplace.listing.draft" // Pass 1 — METERED (a seller's business task)
   | "marketplace.listing.verify" // Pass 2 — METERED, deep tier (the trust review; see docs/v3/ai/PASS-2-LISTING-VERIFY.md)
+  | "intelligence.chat" // V3-28 — METERED (the governed Henry Onyx Intelligence chat; a personal task)
   | "support.message.assist" // later — FREE (company-critical)
   | "account.check.assist" // later — FREE
   | "studio.brief.staff" // later — FREE/internal (the existing staff copilot; NOT billed)
@@ -54,6 +55,17 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     ruleBookKey: DEFAULT_RULE_BOOK_KEY,
     modelTier: "deep",
     maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  // V3-28 — the governed Henry Onyx Intelligence chat. A personal conversational task, so
+  // METERED per turn at the standard tier; the topic guard (declines competing-brand /
+  // anti-company) lives in the system prompt. Dark until mounted.
+  "intelligence.chat": {
+    surface: "intelligence.chat",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 700,
     maxCalls: 1,
   },
   "support.message.assist": {

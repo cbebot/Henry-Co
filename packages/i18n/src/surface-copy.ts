@@ -168,6 +168,14 @@ const EN: SurfaceCopy = {
       "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}",
     "Drafts are advisory — review and edit every field before you submit.":
       "Drafts are advisory — review and edit every field before you submit.",
+    // V3-28 — Henry Onyx Intelligence chat.
+    "Ask Henry Onyx Intelligence": "Ask Henry Onyx Intelligence",
+    "Ask anything about running your Henry Onyx workspace.": "Ask anything about running your Henry Onyx workspace.",
+    "Type your message": "Type your message",
+    Send: "Send",
+    "Sending…": "Sending…",
+    "Each reply is metered to your wallet.": "Each reply is metered to your wallet.",
+    "Henry Onyx Intelligence is unavailable right now.": "Henry Onyx Intelligence is unavailable right now.",
     Applications: "Applications",
     "Browse jobs": "Browse jobs",
     "Browse open jobs": "Browse open jobs",

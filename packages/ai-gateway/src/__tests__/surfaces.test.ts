@@ -20,9 +20,16 @@ describe("AI_SURFACES registry", () => {
   });
 
   it("keeps personal/business surfaces METERED", () => {
-    for (const key of ["studio.brief.client", "business.message.assist"] as const) {
+    for (const key of ["studio.brief.client", "business.message.assist", "intelligence.chat"] as const) {
       assert.equal(AI_SURFACES[key].billable, true, `${key} must be METERED`);
     }
+  });
+
+  it("registers the Intelligence chat as a METERED standard-tier surface", () => {
+    const p = getSurfacePolicy("intelligence.chat");
+    assert.ok(p);
+    assert.equal(p.billable, true);
+    assert.equal(p.modelTier, "standard");
   });
 
   it("registers the Pass-2 listing-verify trust review as METERED at the deep tier", () => {
