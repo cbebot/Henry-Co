@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getClientPortalViewer } from "@/lib/portal/auth";
+import { isAllowedRemoteUrl } from "@/lib/portal/download-allowlist";
 
 /**
  * /api/portal/download — server-proxy that forces a real attachment
@@ -20,39 +21,23 @@ import { getClientPortalViewer } from "@/lib/portal/auth";
  *
  * Security:
  *   - Caller must be an authenticated portal viewer.
- *   - The remote URL is validated against an allowlist of trusted
- *     hosts (Cloudinary, Supabase storage). Anything else is rejected
- *     to prevent SSRF / using the route as an open proxy.
+ *   - The remote URL is validated against an EXACT-host allowlist of
+ *     trusted hosts (see @/lib/portal/download-allowlist) — pinned hosts
+ *     only, no broad suffix matching — to prevent SSRF / using the route
+ *     as an open proxy.
+ *   - The upstream fetch is bounded by a timeout (slow-origin DoS) and a
+ *     Content-Length cap (oversized-payload relay).
  *   - Filename is sanitised (no path traversal, no header injection).
  */
 
-const ALLOWED_HOSTS = new Set<string>([
-  "res.cloudinary.com",
-  "rzkbgwuznmdxnnhmjazy.supabase.co",
-]);
-
-const ALLOWED_HOST_SUFFIXES = [
-  ".cloudinary.com",
-  ".supabase.co",
-];
-
-function isAllowedRemoteUrl(raw: string): { ok: true; url: URL } | { ok: false; reason: string } {
-  let parsed: URL;
-  try {
-    parsed = new URL(raw);
-  } catch {
-    return { ok: false, reason: "invalid_url" };
-  }
-  if (parsed.protocol !== "https:") {
-    return { ok: false, reason: "non_https" };
-  }
-  const host = parsed.hostname.toLowerCase();
-  if (ALLOWED_HOSTS.has(host)) return { ok: true, url: parsed };
-  if (ALLOWED_HOST_SUFFIXES.some((suffix) => host.endsWith(suffix))) {
-    return { ok: true, url: parsed };
-  }
-  return { ok: false, reason: "host_not_allowed" };
-}
+// Bound the upstream connection / time-to-first-byte so a slow or hung
+// origin can't pin a request open indefinitely. The body stream is not
+// killed once headers arrive.
+const FETCH_TIMEOUT_MS = 15_000;
+// Hard ceiling on the relayed payload so the proxy can't be used to stream
+// arbitrarily large files through the app server. Studio deliverables are
+// documents / images, comfortably under this.
+const MAX_DOWNLOAD_BYTES = 100 * 1024 * 1024; // 100 MB
 
 function sanitiseFilename(raw: string | null, urlPath: string): string {
   const fromUrl = decodeURIComponent(urlPath.split("/").pop() || "").trim();
@@ -82,6 +67,10 @@ export async function GET(request: NextRequest) {
   }
 
   let upstream: Response;
+  // Bound time-to-first-byte only; cleared once headers arrive so the body
+  // stream itself is never aborted mid-transfer.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     upstream = await fetch(validation.url.toString(), {
       // Cache GETs at the edge for 5 minutes — same file rarely changes.
@@ -89,9 +78,12 @@ export async function GET(request: NextRequest) {
       // Don't forward viewer cookies upstream; the source hosts use
       // their own auth (signed URL or public).
       headers: {},
+      signal: controller.signal,
     });
   } catch {
     return NextResponse.json({ error: "fetch_failed" }, { status: 502 });
+  } finally {
+    clearTimeout(timeout);
   }
 
   if (!upstream.ok || !upstream.body) {
@@ -101,6 +93,11 @@ export async function GET(request: NextRequest) {
   const filename = sanitiseFilename(filenameParam, validation.url.pathname);
   const contentType = upstream.headers.get("content-type") || "application/octet-stream";
   const contentLength = upstream.headers.get("content-length");
+
+  // Reject oversized payloads up front when the origin advertises a size.
+  if (contentLength && Number(contentLength) > MAX_DOWNLOAD_BYTES) {
+    return NextResponse.json({ error: "file_too_large" }, { status: 413 });
+  }
 
   const headers: Record<string, string> = {
     "Content-Type": contentType,

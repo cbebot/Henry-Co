@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendSupportReplyNotification } from "@/lib/studio/email/send";
 import { appendSupportMessage } from "@/lib/studio/shared-account";
+import { loadStudioThread } from "@/lib/studio/support-threads";
 
 export const runtime = "nodejs";
 
@@ -96,11 +97,10 @@ export async function POST(request: Request) {
   }
 
   const admin = createAdminSupabase();
-  const { data: thread } = await admin
-    .from("support_threads")
-    .select("id, user_id, subject")
-    .eq("id", threadId)
-    .maybeSingle<{ id: string; user_id: string | null; subject: string | null }>();
+  // STU-a — only ever touch a studio-division thread (shared table, id-only
+  // key). A non-studio thread reads as "not found" so this route can't be
+  // used to append into another division's conversation.
+  const thread = await loadStudioThread(admin, threadId);
 
   if (!thread) {
     if (isJson) {

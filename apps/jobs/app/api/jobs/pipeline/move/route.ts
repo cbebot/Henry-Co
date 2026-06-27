@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getJobsViewer } from "@/lib/auth";
 import { updateApplicationStage } from "@/lib/jobs/hiring";
-import { createAdminSupabase } from "@/lib/supabase";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import { getApplicationContext } from "@/lib/jobs/hiring-suite";
+import { actingBusinessOwnsApplication } from "@/lib/jobs/hiring-authz";
 
 /**
  * V3 PASS 21 — POST /api/jobs/pipeline/move — Distinctive Rule #3.
@@ -69,25 +71,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Resolve pipeline for membership confirmation.
+    // Ownership gate (non-staff): the viewer must be acting as the business that
+    // OWNS the application's pipeline. business_id is the unambiguous owner key —
+    // existence alone is not enough (any employer could move any company's
+    // applications) and employer_id may store an activityId, not a slug.
     if (!isStaff) {
-      if (viewer.employerMemberships.length === 0) {
+      const ctx = await resolveHiringActingContext();
+      if (ctx.kind !== "business") {
         return NextResponse.json(
-          { error: "forbidden", message: "Employer membership required." },
+          { error: "forbidden", message: "Switch to your business to move applicants." },
           { status: 403 },
         );
       }
 
-      const admin = createAdminSupabase();
-      const { data: appRow, error: appError } = await admin
-        .from("jobs_applications")
-        .select("id, pipeline_id")
-        .eq("id", applicationId)
-        .maybeSingle();
-
-      if (appError || !appRow) {
+      const appCtx = await getApplicationContext(applicationId);
+      if (!actingBusinessOwnsApplication(ctx, appCtx)) {
         return NextResponse.json(
-          { error: "forbidden", message: "Application not visible." },
+          { error: "forbidden", message: "Application not in your business." },
           { status: 403 },
         );
       }
