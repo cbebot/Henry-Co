@@ -4,6 +4,8 @@ import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
 import { Briefcase, Bell, ArrowRight } from "lucide-react";
 import { JOBS_HOME_HREF, type JobsSnapshot } from "../data";
 
+const RECRUITER_UPDATES_LABEL = "Recruiter updates";
+
 /**
  * ApplicationsInMotionCard — the lead jobs widget.
  *
@@ -62,7 +64,7 @@ export function ApplicationsInMotionCard({
           <Stat
             icon={<Bell size={16} />}
             value={String(recruiterUpdatesCount)}
-            label="Recruiter updates"
+            label={RECRUITER_UPDATES_LABEL}
             hint={
               recruiterUpdatesCount > 0
                 ? "Latest movement on your pipeline."

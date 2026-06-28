@@ -36,14 +36,14 @@ const STUDIO_PROJECTS_HREF = `${STUDIO_HOME_HREF}#studio-projects`;
  * sends the rail / mobile drawer / Cmd-jump straight there in one tap.
  *
  * `getHomeWidgets` surfaces real per-viewer metrics — active projects +
- * deliverables, pending payments + proofs — read through
+ * deliverables and live payment confirmations — read through
  * `loadStudioSnapshot` (the read-only port of
  * `getStudioDashboardData().metrics`). No fabricated numbers.
  */
 export const studioModule: DashboardModule = {
   slug: "studio",
   title: "Studio",
-  description: "Active projects, pending payments, proofs, and deliverables.",
+  description: "Active projects, pending payments, live confirmations, and deliverables.",
   icon: () => <Palette size={18} aria-hidden />,
   railSlot: "secondary",
   homeHref: STUDIO_HOME_HREF,
@@ -126,7 +126,7 @@ export const studioModule: DashboardModule = {
         kicker: "Studio",
         groupLabel: "Open",
         href: STUDIO_PAYMENTS_HREF,
-        keywords: ["payments", "invoice", "billing", "proof", "studio"],
+        keywords: ["payments", "invoice", "billing", "checkout", "studio"],
       },
       {
         id: "studio.open",

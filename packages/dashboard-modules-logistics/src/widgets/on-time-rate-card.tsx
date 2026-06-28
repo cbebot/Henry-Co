@@ -3,6 +3,8 @@ import { Gauge } from "lucide-react";
 
 import { LOGISTICS_HOME_HREF, type LogisticsSnapshot } from "../data";
 
+const ON_TIME_RATE_LABEL = "On-time rate";
+
 /**
  * OnTimeRateCard — the real on-time delivery rate
  * (`metrics.onTimeRatePct`), measured as completed shipments delivered
@@ -20,7 +22,7 @@ export function OnTimeRateCard({ snapshot }: { snapshot: LogisticsSnapshot }) {
 
   return (
     <MetricCard
-      label="On-time rate"
+      label={ON_TIME_RATE_LABEL}
       value={hasRate ? `${onTimeRatePct}%` : "—"}
       icon={<Gauge size={18} aria-hidden />}
       href={LOGISTICS_HOME_HREF}

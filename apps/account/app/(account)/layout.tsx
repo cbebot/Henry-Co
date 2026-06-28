@@ -24,10 +24,13 @@ import AccountPaletteHost from "@/components/search/PaletteHost";
 import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { resolveModuleHomeHref } from "@/lib/module-home-href";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
+import { MobileDashboardNavigator } from "./MobileDashboardNavigator";
 import { COMPANY } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
 
 // Side-effect import — registers every module so getEligibleModules
 // has a populated registry when computing moduleJumpEntries below.
@@ -147,6 +150,8 @@ export default async function AccountLayout({ children, rail, drawer }: LayoutPr
 
 async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
   const user = await requireAccountUser();
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   // DIAG-IOS-01 hardening. The previous Promise.all rejected as a unit
   // — a single fetcher hiccup (e.g. a transient Supabase auth-RLS flake
   // mid-deploy) collapsed every authenticated route into V3-10's
@@ -192,6 +197,23 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     preferencesResult.status === "fulfilled" ? preferencesResult.value : null;
 
   const switcherOptions = options.length > 1 ? options : undefined;
+  const identityLabels = {
+    accountMenu: t("Account"),
+    search: t("Search"),
+    searchAriaLabel: t("Search HenryCo"),
+    switchLane: t("Switch lane"),
+    signOut: t("Sign out"),
+  };
+  const mobileDashboardLabels = {
+    trigger: t("Dashboard"),
+    openLabel: t("Open dashboard navigation"),
+    dialogLabel: t("Dashboard navigation"),
+    allPages: t("All pages"),
+    closeLabel: t("Close dashboard navigation"),
+    searchPlaceholder: t("Search pages"),
+    sectionsLabel: t("Navigation sections"),
+    pagesLabel: t("Dashboard pages"),
+  };
 
   // Cmd+1..9 module shortcuts — first 9 eligible modules in rail
   // order. Computed server-side so the client bridge receives a
@@ -262,6 +284,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             options={switcherOptions}
             onSelectOption={selectLaneAction}
             onSignOut={signOutAction}
+            labels={identityLabels}
             notificationsTrigger={
               <ContextDrawer>
                 <NotificationsDrawerBody
@@ -281,6 +304,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             modules={mobileModuleEntries}
             onSignOut={signOutAction}
           />
+          <MobileDashboardNavigator labels={mobileDashboardLabels} />
           <NotificationsToastViewport audience="customer" />
         </div>
       </AccountPaletteHost>

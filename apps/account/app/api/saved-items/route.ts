@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import {
   bulkRestoreSavedItems,
   emitEngagementEvent,
-  listSavedItems,
-  removeSavedItem,
 } from "@henryco/cart-saved-items/server";
 import { requireAccountUser } from "@/lib/auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import {
+  getUnifiedSavedItems,
+  removeUnifiedSavedItem,
+} from "@/lib/saved-items-sync";
 
 export const runtime = "nodejs";
 
@@ -20,11 +22,8 @@ type RemovePayload = {
 
 export async function GET() {
   const user = await requireAccountUser();
-  const admin = createAdminSupabase();
-  const items = await listSavedItems(admin, user.id, {
-    includeStatuses: ["active", "expired"],
-  });
-  return NextResponse.json({ items });
+  const items = await getUnifiedSavedItems(user.id, user.email);
+  return NextResponse.json({ items: [...items.active, ...items.expired] });
 }
 
 /**
@@ -41,7 +40,8 @@ export async function PATCH(request: Request) {
   const admin = createAdminSupabase();
   const payload = (await request.json().catch(() => ({}))) as RestorePayload;
   const ids = Array.isArray(payload.ids) ? payload.ids.filter(Boolean) : [];
-  if (ids.length === 0) {
+  const restoreIds = ids.filter((id) => !String(id).includes(":"));
+  if (restoreIds.length === 0) {
     return NextResponse.json({ error: "No items to restore." }, { status: 400 });
   }
 
@@ -51,7 +51,7 @@ export async function PATCH(request: Request) {
     .from("saved_items")
     .select("id, division, item_id, item_snapshot")
     .eq("user_id", user.id)
-    .in("id", ids);
+    .in("id", restoreIds);
 
   const items = (rows ?? []) as Array<{
     id: string;
@@ -119,7 +119,7 @@ export async function PATCH(request: Request) {
     }
   }
 
-  await bulkRestoreSavedItems(admin, user.id, ids);
+  await bulkRestoreSavedItems(admin, user.id, restoreIds);
 
   for (const row of items) {
     await emitEngagementEvent(admin, {
@@ -133,15 +133,14 @@ export async function PATCH(request: Request) {
     });
   }
 
-  return NextResponse.json({ ok: true, restored: ids.length });
+  return NextResponse.json({ ok: true, restored: restoreIds.length });
 }
 
 export async function DELETE(request: Request) {
   const user = await requireAccountUser();
-  const admin = createAdminSupabase();
   const payload = (await request.json().catch(() => ({}))) as RemovePayload;
   const id = String(payload.id || "").trim();
   if (!id) return NextResponse.json({ error: "Missing id." }, { status: 400 });
-  const ok = await removeSavedItem(admin, user.id, id);
+  const ok = await removeUnifiedSavedItem(user.id, user.email, id);
   return NextResponse.json({ ok });
 }

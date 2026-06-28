@@ -67,7 +67,6 @@ export default async function WalletFundingPage() {
     amount_kobo: number;
     status: string;
     reference: string | null;
-    proof_url?: string | null;
     created_at: string;
   }>;
 

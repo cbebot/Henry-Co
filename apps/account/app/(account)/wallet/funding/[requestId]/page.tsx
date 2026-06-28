@@ -7,10 +7,8 @@ import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingRequestById } from "@/lib/account-data";
 
 import "@/components/wallet/styles.css";
-import FundingProofUpload from "@/components/wallet/FundingProofUpload";
 import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
 import { WalletPageHeader } from "@/components/wallet/WalletPageHeader";
-import { FundingStepLadder } from "@/components/wallet/FundingStepLadder";
 import {
   formatKoboMajor,
   fundingStatusTone,
@@ -40,7 +38,7 @@ function formatCreated(iso: string | null | undefined): string {
  * Wallet · Funding request detail (Onyx Ledger).
  *
  * The amount is the header figure; a status chip + the step ladder show
- * exactly where the request stands, then the transfer rail + proof upload.
+ * exactly where the request stands, then the payment rail reference.
  */
 export default async function WalletFundingRequestPage({ params }: Props) {
   const { requestId } = await params;
@@ -77,7 +75,7 @@ export default async function WalletFundingRequestPage({ params }: Props) {
     statusReadable(request.status);
   const confirmed = request.status === "completed" || request.status === "verified";
   const refDisplay = request.reference || request.id.slice(0, 8).toUpperCase();
-  const proofState = request.proof_url ? t("Proof uploaded") : t("Awaiting proof");
+  const railState = confirmed ? t("Confirmed") : t("Processing");
 
   return (
     <div className="acct-wal acct-fade-in">
@@ -88,7 +86,7 @@ export default async function WalletFundingRequestPage({ params }: Props) {
         backLabel={t("Back to funding")}
         eyebrow={t("Wallet · Funding request")}
         title={refDisplay}
-        blurb={`${t("Created")} ${formatCreated(request.created_at)} · ${proofState}`}
+        blurb={`${t("Created")} ${formatCreated(request.created_at)} · ${railState}`}
         figure={{ label: t("Amount"), value: `₦${formatKoboMajor(request.amount_kobo)}` }}
         chip={{ label: statusLabel, tone }}
       />
@@ -96,34 +94,47 @@ export default async function WalletFundingRequestPage({ params }: Props) {
       <section className="acct-wal__section">
         <div className="acct-wal__section-head">
           <h2 className="acct-wal__section-title acct-display">{t("Where we are")}</h2>
-          <span className="acct-wal__section-meta">{t("3 quick steps")}</span>
+          <span className="acct-wal__section-meta">{statusLabel}</span>
         </div>
-        <FundingStepLadder
-          proofUploaded={Boolean(request.proof_url)}
-          proofUploadedAtIso={request.proof_uploaded_at || null}
-          confirmed={confirmed}
-        />
-        {request.proof_url ? (
-          <Link
-            href={request.proof_url}
-            target="_blank"
-            rel="noreferrer"
-            className="acct-wal__ghost-btn"
-            style={{ marginTop: 16 }}
-          >
-            {t("View proof")}
-          </Link>
-        ) : null}
+        <div className="acct-wal__ladder">
+          <div className="acct-wal__step">
+            <div className="acct-wal__step-rail">
+              <span className="acct-wal__step-bubble" data-state="done">1</span>
+            </div>
+            <span className="acct-wal__step-title">{t("Request created")}</span>
+            <span className="acct-wal__step-desc">
+              {t("Your funding reference is registered on the payment rail.")}
+            </span>
+          </div>
+          <div className="acct-wal__step">
+            <div className="acct-wal__step-rail">
+              <span className="acct-wal__step-bubble" data-state={confirmed ? "done" : "active"}>2</span>
+            </div>
+            <span className="acct-wal__step-title">{t("Reference matching")}</span>
+            <span className="acct-wal__step-desc">
+              {t("We reconcile the provider reference automatically when payment settles.")}
+            </span>
+          </div>
+          <div className="acct-wal__step">
+            <div className="acct-wal__step-rail">
+              <span className="acct-wal__step-bubble" data-state={confirmed ? "done" : "todo"}>3</span>
+            </div>
+            <span className="acct-wal__step-title">{t("Wallet credit")}</span>
+            <span className="acct-wal__step-desc">
+              {t("Your balance updates once the live rail confirms the payment.")}
+            </span>
+          </div>
+        </div>
       </section>
 
       <section className="acct-wal__section">
         <div className="acct-wal__section-head">
-          <h2 className="acct-wal__section-title acct-display">{t("Transfer rail")}</h2>
+          <h2 className="acct-wal__section-title acct-display">{t("Payment rail")}</h2>
           <span className="acct-wal__section-meta">
-            {request.note ? request.note : t("Tap any value to copy. Then upload your transfer proof.")}
+            {request.note ? request.note : t("Keep the reference intact so reconciliation stays automatic.")}
           </span>
         </div>
-        <div className="acct-wal__columns">
+        <div className="acct-wal__columns acct-wal__columns--single">
           <AccountDetailsCard
             rail={{
               bankName: request.bank_name,
@@ -133,7 +144,6 @@ export default async function WalletFundingRequestPage({ params }: Props) {
             copyLabel={t("Copy")}
             copiedLabel={t("Copied")}
           />
-          <FundingProofUpload requestId={request.id} currentProofUrl={request.proof_url} />
         </div>
       </section>
     </div>

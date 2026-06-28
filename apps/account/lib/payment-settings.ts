@@ -41,7 +41,7 @@ export const getSharedPaymentRail = cache(async (): Promise<SharedPaymentRail> =
     currency: asText(data?.payment_currency) || "NGN",
     instructions:
       asText(data?.payment_instructions) ||
-      "Transfer the exact amount shown, keep the reference intact, and upload proof immediately so the HenryCo team can confirm the funding request.",
+      "Transfer the exact amount shown and keep the reference intact so the live payment rail can confirm the funding request.",
     supportEmail:
       asNullableText(data?.payment_support_email) ?? asNullableText(data?.support_email),
     supportWhatsApp:

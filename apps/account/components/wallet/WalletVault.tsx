@@ -7,16 +7,16 @@ import { formatKoboMajor } from "./helpers";
 /**
  * WalletVault — the statement header of the Onyx Ledger wallet.
  *
- * A theme-invariant, engraved-onyx instrument (not the generic gold-gradient
- * hero, not a card-on-card stack). The available balance is the single
- * confident figure in NGN — the settlement truth — with the user's currency
- * shown beneath as a clearly-labelled approximation when a live rate exists.
+ * A theme-aware ledger instrument (not the generic gold-gradient hero, not a
+ * card-on-card stack). The available balance is the single confident figure in
+ * NGN — the settlement truth — with the user's currency shown beneath as a
+ * clearly-labelled approximation when a live rate exists.
  *
  * MONEY INVARIANT: every figure here is rendered from server-confirmed kobo.
  * Nothing is computed or mutated client-side; the foreign line is display-only.
  *
- * The class is `.acct-wal__vault` (no `__hero` substring) so it does NOT inherit
- * the global `.dark .acct-*[__hero]` rescue overrides — it owns its palette.
+ * The class is `.acct-wal__vault` (no `__hero` substring) so it owns its palette
+ * through account tokens instead of global hero overrides.
  */
 export type WalletVaultCopy = {
   eyebrow: string;

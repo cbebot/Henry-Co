@@ -4,6 +4,8 @@ import { Wallet } from "lucide-react";
 import { CARE_HOME_HREF, type CareSnapshot } from "../data";
 import { formatNaira } from "../format";
 
+const PAYMENTS_DUE_LABEL = "Payments due";
+
 /**
  * PaymentsDueCard — the outstanding-balance metric for care bookings.
  *
@@ -20,7 +22,7 @@ export function PaymentsDueCard({ snapshot }: { snapshot: CareSnapshot }) {
 
   return (
     <MetricCard
-      label="Payments due"
+      label={PAYMENTS_DUE_LABEL}
       value={hasDue ? formatNaira(outstandingBalanceKobo) : "All settled"}
       icon={<Wallet size={18} aria-hidden />}
       href={CARE_HOME_HREF}

@@ -6,6 +6,9 @@ import { Layers, PackageCheck, ArrowRight } from "lucide-react";
 import { STUDIO_HOME_HREF, type StudioMetricsSnapshot } from "../data";
 import { pluralize } from "../format";
 
+const IN_MOTION_LABEL = "In motion";
+const DELIVERABLES_SHARED_LABEL = "Deliverables shared";
+
 /**
  * ProjectsPulseCard — surfaces the viewer's live studio project pulse:
  * how many projects are active (not delivered / archived) and how many
@@ -57,12 +60,12 @@ export function ProjectsPulseCard({
             <StudioStat
               icon={<Layers size={16} />}
               value={activeProjects}
-              label="In motion"
+              label={IN_MOTION_LABEL}
             />
             <StudioStat
               icon={<PackageCheck size={16} />}
               value={deliverables}
-              label="Deliverables shared"
+              label={DELIVERABLES_SHARED_LABEL}
             />
           </div>
         ) : (

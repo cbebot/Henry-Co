@@ -49,7 +49,7 @@ export const dynamic = "force-dynamic";
  *   2. WalletVault    — engraved-onyx statement header; the available balance in
  *                       NGN (settlement truth) + an approximate line in the
  *                       user's currency when a live rate exists.
- *   3. Attention      — the single highest-friction next move (proof / identity).
+ *   3. Attention      — the single highest-friction next move (identity).
  *   4. Insight band   — running-balance trend (balance_after_kobo) + cashflow
  *                       (money IN and OUT) + withdrawal readiness.
  *   5. Funding lane   — recent funding requests in review (when present).
@@ -133,19 +133,12 @@ export default async function WalletPage() {
     amount_kobo: number;
     status: string;
     reference: string | null;
-    proof_url?: string | null;
     created_at: string;
   }>;
   const pendingFundingCount = fundingRequests.filter((r) => {
     const s = String(r.status || "");
     return s !== "completed" && s !== "verified";
   }).length;
-  const fundingAwaitingProof =
-    fundingRequests.find((r) => {
-      const status = String(r.status || "");
-      return !r.proof_url && status !== "completed" && status !== "verified";
-    }) ?? null;
-
   // Completed/visible transactions for the trend, cashflow and statement.
   const transactions: WalletTransaction[] = (rawTransactions as Array<Record<string, unknown>>)
     .filter((t) => {
@@ -195,17 +188,9 @@ export default async function WalletPage() {
         ? copy.trust.verificationLabels.rejected
         : copy.trust.verificationLabels.notSubmitted;
 
-  // The single highest-friction next move.
-  const attention = fundingAwaitingProof
-    ? {
-        title: copy.alert.proofTitle,
-        desc: formatAccountTemplate(copy.alert.proofDescTemplate, {
-          reference: fundingAwaitingProof.reference ?? "",
-        }),
-        cta: copy.alert.proofCta,
-        href: `/wallet/funding/${fundingAwaitingProof.id}`,
-      }
-    : !verificationDone && pendingWithdrawalCount > 0
+  // The single highest-friction next move. Live payment rails handle
+  // confirmation now; legacy funding rows stay visible in their own lane.
+  const attention = !verificationDone && pendingWithdrawalCount > 0
       ? {
           title: copy.alert.identityTitle,
           desc: formatAccountTemplate(copy.alert.identityDescTemplate, {
