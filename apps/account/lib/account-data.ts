@@ -11,6 +11,7 @@ import {
 } from "@/lib/notification-center";
 import { resolveNotificationPresentationAsync } from "@/lib/notification-localization";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
+import { getUnifiedSavedItems } from "@/lib/saved-items-sync";
 import {
   extractLegacyWithdrawalPinHash,
   isLegacyPayoutMethodRow,
@@ -470,12 +471,8 @@ export async function getPreferences(userId: string) {
  * sidebar badge and the overview "Saved" metric tile.
  */
 export async function getSavedItemsCount(userId: string) {
-  const { count } = await admin()
-    .from("saved_items")
-    .select("id", { head: true, count: "exact" })
-    .eq("user_id", userId)
-    .eq("status", "active");
-  return count ?? 0;
+  const items = await getUnifiedSavedItems(userId);
+  return items.active.length;
 }
 
 /**

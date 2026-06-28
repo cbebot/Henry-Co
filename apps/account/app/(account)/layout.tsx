@@ -26,6 +26,7 @@ import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
+import { MobileDashboardNavigator } from "./MobileDashboardNavigator";
 import { COMPANY } from "@henryco/config";
 
 // Side-effect import — registers every module so getEligibleModules
@@ -37,7 +38,7 @@ import "@/app/(account)/_modules";
  * - care/marketplace/property/logistics/studio/jobs/learn/building/hotel
  *   → COMPANY.divisions[slug].accent
  * - customer-overview / wallet / support / notifications / settings →
- *   the default HenryCo gold (`COMPANY.divisions.hub.accent`).
+ *   the default Henry & Co. gold (`COMPANY.divisions.hub.accent`).
  *
  * Lives in apps/account because COMPANY.divisions is the host-app's
  * canonical config; the shell stays decoupled from the division
@@ -249,6 +250,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             modules={mobileModuleEntries}
             onSignOut={signOutAction}
           />
+          <MobileDashboardNavigator />
           <NotificationsToastViewport audience="customer" />
         </div>
       </AccountPaletteHost>

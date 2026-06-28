@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { RouteLiveRefresh } from "@henryco/ui";
 
 import { translateSurfaceLabel } from "@henryco/i18n/server";
@@ -12,10 +11,8 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import "@/components/wallet/styles.css";
-import FundingProofUpload from "@/components/wallet/FundingProofUpload";
 import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
 import { BackNav } from "@/components/wallet/BackNav";
-import { FundingStepLadder } from "@/components/wallet/FundingStepLadder";
 import {
   formatKoboMajor,
   fundingStatusTone,
@@ -89,33 +86,50 @@ export default async function WalletFundingRequestPage({ params }: Props) {
             tone={heroTone}
             eyebrow={`${t("Wallet")} · ${t("Funding request")}`}
             headline={refDisplay}
-            blurb={`₦${formatKoboMajor(request.amount_kobo)} · ${t("created")} ${formatCreated(request.created_at)} · ${label}${request.proof_url ? ` · ${t("Proof uploaded")}` : ` · ${t("Awaiting proof")}`}`}
+            blurb={`₦${formatKoboMajor(request.amount_kobo)} · ${t("created")} ${formatCreated(request.created_at)} · ${label}`}
           />
         }
         sections={[
           {
             id: "wal-fund-flow",
-            title: t("Where we are"),
-            meta: t("3 quick steps"),
+            title: t("Payment status"),
+            meta: confirmed ? t("Confirmed") : t("Live rail review"),
             content: (
-              <>
-                <FundingStepLadder
-                  proofUploaded={Boolean(request.proof_url)}
-                  proofUploadedAtIso={request.proof_uploaded_at || null}
-                  confirmed={confirmed}
-                />
-                {request.proof_url ? (
-                  <Link
-                    href={request.proof_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="acct-wal__cta acct-wal__cta--ghost"
-                    style={{ marginTop: 16 }}
-                  >
-                    {t("View proof")}
-                  </Link>
-                ) : null}
-              </>
+              <div className="acct-card p-5">
+                <div className="acct-wal__chip-row">
+                  <span className="acct-wal__chip" data-tone={tone}>
+                    {label}
+                  </span>
+                  <span className="acct-wal__chip" data-tone={confirmed ? "success" : "active"}>
+                    {confirmed ? t("Balance confirmed") : t("Reference in review")}
+                  </span>
+                </div>
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
+                    <p className="acct-kicker">{t("Amount")}</p>
+                    <p className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">
+                      ₦{formatKoboMajor(request.amount_kobo)}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
+                    <p className="acct-kicker">{t("Reference")}</p>
+                    <p className="mt-2 break-all text-sm font-semibold text-[var(--acct-ink)]">
+                      {refDisplay}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
+                    <p className="acct-kicker">{t("Provider")}</p>
+                    <p className="mt-2 text-sm font-semibold capitalize text-[var(--acct-ink)]">
+                      {request.provider.replaceAll("_", " ")}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-[var(--acct-muted)]">
+                  {confirmed
+                    ? t("This funding request has cleared and is reflected in your wallet balance.")
+                    : t("Keep the generated reference intact. The live payment rail or finance review will update this request when the money is confirmed.")}
+                </p>
+              </div>
             ),
           },
           {
@@ -123,7 +137,7 @@ export default async function WalletFundingRequestPage({ params }: Props) {
             title: t("Transfer rail"),
             meta: request.note
               ? request.note
-              : t("Tap any value to copy. Then upload your transfer proof."),
+              : t("Tap any value to copy. Keep the reference intact for reconciliation."),
             content: (
               <div className="acct-wal__columns">
                 <AccountDetailsCard
@@ -135,7 +149,16 @@ export default async function WalletFundingRequestPage({ params }: Props) {
                   copyLabel={t("Copy")}
                   copiedLabel={t("Copied")}
                 />
-                <FundingProofUpload requestId={request.id} currentProofUrl={request.proof_url} />
+                <div className="acct-card p-5">
+                  <p className="acct-kicker">{t("Funding reference")}</p>
+                  <p className="mt-3 break-all text-lg font-semibold text-[var(--acct-ink)]">
+                    {refDisplay}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-[var(--acct-muted)]">
+                    {request.instructions ||
+                      t("Use this exact reference when paying so the rail can match the transfer to your account automatically.")}
+                  </p>
+                </div>
               </div>
             ),
           },

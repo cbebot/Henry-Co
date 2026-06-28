@@ -11,7 +11,6 @@ type FundingRequest = {
   amount_kobo: number;
   status: string;
   reference: string | null;
-  proof_url?: string | null;
   created_at: string;
 };
 
@@ -44,6 +43,9 @@ function localizedStatus(
 ): string {
   const key = typeof status === "string" && status.length > 0 ? status : "pending";
   const labels = statusLabels as Record<string, string | undefined>;
+  if (key === "awaiting_proof") {
+    return labels.awaiting_review ?? labels.pending ?? "Processing";
+  }
   return labels[key] ?? key.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
 }
 
@@ -64,15 +66,6 @@ export function FundingRequestRow({ request, copy, statusLabels }: Props) {
           <span className="acct-wal__chip" data-tone={tone}>
             {label}
           </span>
-          {request.proof_url ? (
-            <span className="acct-wal__chip" data-tone="success">
-              {copy.proofUploaded}
-            </span>
-          ) : (
-            <span className="acct-wal__chip" data-tone="warn">
-              {copy.awaitingProof}
-            </span>
-          )}
         </div>
         <span className="acct-wal__funding-amount">₦{formatKoboMajor(request.amount_kobo)}</span>
         <span className="acct-wal__funding-ref">

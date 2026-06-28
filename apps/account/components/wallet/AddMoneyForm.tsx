@@ -118,7 +118,7 @@ export default function AddMoneyForm() {
         </ButtonPendingContent>
       </button>
       <p className="mt-3 text-center text-xs text-[var(--acct-muted)]">
-        You’ll confirm bank details and upload proof on the next step—balance updates after verification.
+        You will confirm bank details on the next step. Balance updates after live rail confirmation.
       </p>
     </form>
   );

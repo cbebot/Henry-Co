@@ -2,11 +2,10 @@ import { NextResponse } from "next/server";
 import {
   bulkRestoreSavedItems,
   emitEngagementEvent,
-  listSavedItems,
-  removeSavedItem,
 } from "@henryco/cart-saved-items/server";
 import { requireAccountUser } from "@/lib/auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getUnifiedSavedItems, removeUnifiedSavedItem } from "@/lib/saved-items-sync";
 
 export const runtime = "nodejs";
 
@@ -20,29 +19,29 @@ type RemovePayload = {
 
 export async function GET() {
   const user = await requireAccountUser();
-  const admin = createAdminSupabase();
-  const items = await listSavedItems(admin, user.id, {
-    includeStatuses: ["active", "expired"],
-  });
-  return NextResponse.json({ items });
+  const items = await getUnifiedSavedItems(user.id, user.email);
+  return NextResponse.json({ items: [...items.active, ...items.expired] });
 }
 
 /**
  * PATCH — restore one or many saved items back to their division's cart.
  *
- * Marketplace is the only division with a true persistent cart today, so the
- * restore path inserts directly into marketplace_cart_items for marketplace
- * items. For other divisions (care, learn, logistics) the snapshot already
- * carries the data — we mark them restored and link the user back to the
- * division surface; the division flow re-uses the snapshot to pre-fill.
+ * Marketplace cart saves are the only records that can be restored into a
+ * persistent cart today. Native division saves (jobs, property, learn,
+ * marketplace wishlist) stay as open/remove actions in the client.
  */
 export async function PATCH(request: Request) {
   const user = await requireAccountUser();
   const admin = createAdminSupabase();
   const payload = (await request.json().catch(() => ({}))) as RestorePayload;
-  const ids = Array.isArray(payload.ids) ? payload.ids.filter(Boolean) : [];
+  const ids = Array.isArray(payload.ids)
+    ? payload.ids.filter((id) => typeof id === "string" && id.length > 0 && !id.includes(":"))
+    : [];
   if (ids.length === 0) {
-    return NextResponse.json({ error: "No items to restore." }, { status: 400 });
+    return NextResponse.json(
+      { error: "No cart-restorable saved items selected." },
+      { status: 400 },
+    );
   }
 
   // Look up the rows we're about to restore so we know which divisions/items
@@ -59,9 +58,18 @@ export async function PATCH(request: Request) {
     item_id: string;
     item_snapshot: Record<string, unknown>;
   }>;
+  const restorableIds = items
+    .filter((row) => row.division === "marketplace")
+    .map((row) => row.id);
+  if (restorableIds.length === 0) {
+    return NextResponse.json(
+      { error: "No cart-restorable saved items selected." },
+      { status: 400 },
+    );
+  }
 
   // Marketplace direct-restore: ensure cart, insert items, then emit events.
-  const marketplaceItems = items.filter((r) => r.division === "marketplace");
+  const marketplaceItems = items.filter((row) => restorableIds.includes(row.id));
   if (marketplaceItems.length) {
     let cartId: string | null = null;
     const { data: cart } = await admin
@@ -119,9 +127,9 @@ export async function PATCH(request: Request) {
     }
   }
 
-  await bulkRestoreSavedItems(admin, user.id, ids);
+  await bulkRestoreSavedItems(admin, user.id, restorableIds);
 
-  for (const row of items) {
+  for (const row of marketplaceItems) {
     await emitEngagementEvent(admin, {
       userId: user.id,
       eventType: "saved_item_restored",
@@ -133,15 +141,14 @@ export async function PATCH(request: Request) {
     });
   }
 
-  return NextResponse.json({ ok: true, restored: ids.length });
+  return NextResponse.json({ ok: true, restored: restorableIds.length });
 }
 
 export async function DELETE(request: Request) {
   const user = await requireAccountUser();
-  const admin = createAdminSupabase();
   const payload = (await request.json().catch(() => ({}))) as RemovePayload;
   const id = String(payload.id || "").trim();
   if (!id) return NextResponse.json({ error: "Missing id." }, { status: 400 });
-  const ok = await removeSavedItem(admin, user.id, id);
+  const ok = await removeUnifiedSavedItem(user.id, user.email, id);
   return NextResponse.json({ ok });
 }

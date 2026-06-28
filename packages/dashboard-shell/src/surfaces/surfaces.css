@@ -43,25 +43,27 @@
   border-radius: var(--acct-radius-lg, 24px);
   overflow: hidden;
   isolation: isolate;
-  color: var(--acct-bg-soft);
-  background-color: var(--acct-ink);
+  color: var(--acct-ink);
+  background-color: var(--acct-bg-elevated, var(--acct-bg));
   background-image:
-    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 26%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-gold) 10%, transparent) 0%, transparent 60%);
-  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, transparent);
+    linear-gradient(135deg, color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold)) 28%, transparent) 0%, transparent 42%),
+    radial-gradient(86% 70% at 100% 0%, color-mix(in srgb, var(--acct-blue, #2563eb) 12%, transparent) 0%, transparent 62%),
+    radial-gradient(70% 60% at 0% 100%, color-mix(in srgb, var(--acct-green, #1f8b4c) 10%, transparent) 0%, transparent 64%);
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 24%, var(--acct-line, transparent));
+  box-shadow: 0 18px 60px color-mix(in srgb, var(--acct-ink) 10%, transparent);
 }
 
 .acct-hero[data-tone="attention"] {
   background-image:
-    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 36%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-red, #b91c1c) 14%, transparent) 0%, transparent 60%);
-  border-color: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 32%, transparent);
+    linear-gradient(135deg, color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 24%, transparent) 0%, transparent 44%),
+    radial-gradient(86% 70% at 100% 0%, color-mix(in srgb, var(--acct-red, #b91c1c) 10%, transparent) 0%, transparent 62%);
+  border-color: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 36%, var(--acct-line, transparent));
 }
 
 .acct-hero[data-tone="empty"] {
   background-image:
-    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 14%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
+    linear-gradient(135deg, color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold)) 18%, transparent) 0%, transparent 48%),
+    radial-gradient(80% 70% at 100% 100%, color-mix(in srgb, var(--acct-muted) 8%, transparent) 0%, transparent 60%);
 }
 
 .acct-hero__inner {
@@ -100,13 +102,13 @@
   gap: 8px;
   padding: 6px 12px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 18%, transparent);
+  background: color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold)) 70%, var(--acct-bg-elevated, var(--acct-bg)));
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 32%, transparent);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-bg-soft));
+  color: var(--acct-gold-text, var(--acct-gold));
 }
 
 .acct-hero__eyebrow-dot {
@@ -137,9 +139,9 @@
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
   font-size: clamp(26px, 3.4vw, 38px);
   line-height: 1.1;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   font-weight: 600;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink);
   margin: 16px 0 12px;
 }
 
@@ -148,7 +150,7 @@
 }
 
 .acct-hero__blurb {
-  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+  color: var(--acct-muted);
   font-size: 14px;
   line-height: 1.65;
   max-width: 56ch;
@@ -170,7 +172,7 @@
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   text-decoration: none;
   transition: background-color 180ms ease-out, color 180ms ease-out, border-color 180ms ease-out, transform 120ms ease-out;
   min-height: 44px;
@@ -189,14 +191,14 @@
 }
 
 .acct-hero__cta--ghost {
-  color: var(--acct-bg-soft);
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 22%, transparent);
+  color: var(--acct-ink);
+  background: color-mix(in srgb, var(--acct-bg-elevated, var(--acct-bg)) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-ink) 16%, var(--acct-line, transparent));
 }
 
 .acct-hero__cta--ghost:hover {
-  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
-  border-color: color-mix(in srgb, var(--acct-bg-soft) 34%, transparent);
+  background: color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold)) 34%, var(--acct-bg-elevated, var(--acct-bg)));
+  border-color: color-mix(in srgb, var(--acct-gold) 34%, var(--acct-line, transparent));
 }
 
 .acct-hero__cta:focus-visible {
@@ -231,16 +233,16 @@
   gap: 4px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  background: color-mix(in srgb, var(--acct-bg, #fff) 76%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-ink) 10%, var(--acct-line, transparent));
 }
 
 .acct-hero__tile-label {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 64%, transparent);
+  color: var(--acct-muted);
 }
 
 .acct-hero__tile-value {
@@ -248,23 +250,23 @@
   font-size: clamp(22px, 2.4vw, 30px);
   line-height: 1.05;
   font-weight: 500;
-  letter-spacing: -0.005em;
-  color: var(--acct-bg-soft);
+  letter-spacing: 0;
+  color: var(--acct-ink);
   font-variant-numeric: oldstyle-nums proportional-nums;
 }
 
 .acct-hero__tile[data-tone="warning"] .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 92%, var(--acct-gold-strong, var(--acct-gold)));
+  color: var(--acct-gold-text, var(--acct-gold));
 }
 
 .acct-hero__tile[data-tone="active"] .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 92%, var(--acct-gold));
+  color: var(--acct-gold-text, var(--acct-gold));
 }
 
 .acct-hero__tile-foot {
   font-size: 11px;
   line-height: 1.4;
-  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+  color: var(--acct-muted);
 }
 
 .acct-hero__below-tiles {
@@ -281,7 +283,7 @@
 .acct-hero__progress-track {
   height: 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  background: color-mix(in srgb, var(--acct-ink) 10%, transparent);
   overflow: hidden;
 }
 
@@ -294,9 +296,9 @@
 .acct-hero__progress-label {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 64%, transparent);
+  color: var(--acct-muted);
 }
 
 .acct-hero__side {
@@ -305,16 +307,16 @@
   gap: 8px;
   padding: 22px 22px 24px;
   border-radius: 18px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  background: color-mix(in srgb, var(--acct-bg, #fff) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-ink) 10%, var(--acct-line, transparent));
 }
 
 .acct-hero__side-kicker {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+  color: var(--acct-muted);
   margin: 0;
 }
 
@@ -322,30 +324,30 @@
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
   font-size: 18px;
   line-height: 1.25;
-  letter-spacing: -0.005em;
-  color: var(--acct-bg-soft);
+  letter-spacing: 0;
+  color: var(--acct-ink);
   margin: 0;
 }
 
 .acct-hero__side-body {
   font-size: 12.5px;
   line-height: 1.55;
-  color: color-mix(in srgb, var(--acct-bg-soft) 72%, transparent);
+  color: var(--acct-muted);
   margin: 0;
 }
 
 .acct-hero__breakdown {
   margin-top: 6px;
   padding-top: 12px;
-  border-top: 1px solid color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--acct-ink) 10%, transparent);
 }
 
 .acct-hero__breakdown-label {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 56%, transparent);
+  color: var(--acct-muted);
   margin: 0 0 8px;
 }
 
@@ -361,7 +363,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: color-mix(in srgb, var(--acct-bg-soft) 86%, transparent);
+  color: var(--acct-ink);
 }
 
 .acct-hero__breakdown-dot {
@@ -375,7 +377,7 @@
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
   font-weight: 500;
   font-feature-settings: "lnum" 0, "onum" 1;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink);
 }
 
 /* ────────────────────────────────────────────────────────────────────
@@ -426,7 +428,7 @@ a.acct-next-step:focus-visible {
 .acct-next-step__kicker {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: var(--acct-muted);
   margin: 0 0 2px;
@@ -435,7 +437,7 @@ a.acct-next-step:focus-visible {
 .acct-next-step__title {
   font-size: 15px;
   font-weight: 600;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   color: var(--acct-ink);
   margin: 0;
   line-height: 1.35;
@@ -525,7 +527,7 @@ a.acct-metric-strip__cell:focus-visible {
 .acct-metric-strip__label {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: var(--acct-muted);
 }
@@ -535,7 +537,7 @@ a.acct-metric-strip__cell:focus-visible {
   font-size: clamp(28px, 3vw, 38px);
   line-height: 1.05;
   font-weight: 500;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   color: var(--acct-ink);
   font-feature-settings: "lnum" 0, "onum" 1;
 }
@@ -660,7 +662,7 @@ a.acct-timeline__row:focus-visible {
 .acct-timeline__chip {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 999px;
@@ -697,7 +699,7 @@ a.acct-timeline__row:focus-visible {
   flex-shrink: 0;
   font-size: 11px;
   color: var(--acct-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   align-self: flex-start;
   margin-top: 4px;
 }
@@ -736,7 +738,7 @@ a.acct-timeline__row:focus-visible {
 .acct-empty-card__kicker {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: var(--acct-muted);
   margin: 0;
@@ -747,7 +749,7 @@ a.acct-timeline__row:focus-visible {
   font-size: clamp(20px, 2vw, 24px);
   line-height: 1.2;
   font-weight: 500;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   color: var(--acct-ink);
   margin: 0;
   max-width: 38ch;
@@ -817,7 +819,7 @@ a.acct-timeline__row:focus-visible {
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
   font-size: clamp(18px, 2vw, 22px);
   line-height: 1.2;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   font-weight: 500;
   color: var(--acct-ink);
   margin: 0;
@@ -826,7 +828,7 @@ a.acct-timeline__row:focus-visible {
 .acct-division-landing__section-meta {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: var(--acct-muted);
 }

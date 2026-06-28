@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { CreditCard } from "lucide-react";
-import { formatAccountTemplate, getAccountCopy } from "@henryco/i18n/server";
+import {
+  formatAccountTemplate,
+  getAccountCopy,
+  translateSurfaceLabel,
+} from "@henryco/i18n/server";
 import {
   HeroCard,
   EmptyStateCard,
@@ -19,6 +23,7 @@ type PaymentMethodRow = {
   type: string | null;
   last_four: string | null;
   bank_name: string | null;
+  provider: string | null;
   is_default: boolean | null;
 };
 
@@ -27,15 +32,15 @@ type PaymentMethodRow = {
  *
  * ACCOUNT-PREMIUM-01 (session 2, Phase 2D).
  *
- * Critical bug fixed: the previous page rendered an `<button>` "Add method"
- * CTA with no onClick handler. Wired through HeroCard's ctaPrimary to
- * `/wallet/funding` (the funding lane is the canonical add-money flow).
- *
- * Wallet remains documented as a payment option via a card-level CTA.
+ * Payment methods here are provider-returned reusable authorizations only.
+ * We deliberately do not collect raw card/bank details from this account page.
+ * Flutterwave/live-rail callbacks can populate customer_payment_methods after
+ * a successful tokenized checkout; this page reflects those real records.
  */
 export default async function PaymentsPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const accountCopy = getAccountCopy(locale);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const copy = accountCopy.payments;
   const methods = (await getPaymentMethods(user.id)) as PaymentMethodRow[];
 
@@ -48,10 +53,11 @@ export default async function PaymentsPage() {
           tone={methods.length === 0 ? "empty" : "calm"}
           eyebrow={copy.wallet.eyebrow}
           headline={copy.hero.title}
-          blurb={copy.hero.description}
-          // BUG FIX: was a no-op <button>; now routes to the canonical
-          // add-funds / saved-method route under /wallet/funding.
-          ctaPrimary={{ label: copy.hero.addMethodCta, href: "/wallet/funding" }}
+          blurb={
+            methods.length === 0
+              ? t("Saved checkout methods appear here after a tokenized Flutterwave or live-rail payment returns a reusable authorization. Henry & Co. never stores raw card details.")
+              : copy.hero.description
+          }
         />
       }
       sections={[
@@ -64,8 +70,7 @@ export default async function PaymentsPage() {
               <EmptyStateCard
                 kicker={copy.wallet.eyebrow}
                 title={copy.empty.title}
-                body={copy.empty.description}
-                cta={{ label: copy.empty.cta, href: "/wallet/funding" }}
+                body={t("No reusable checkout authorization is on file yet. Complete a supported live checkout and the provider token will be saved here for faster future payments.")}
               />
             ) : (
               <div className="space-y-3">
@@ -87,6 +92,7 @@ export default async function PaymentsPage() {
                               last4: m.last_four ?? "",
                             })
                           : m.bank_name || m.type}
+                        {m.provider ? ` · ${m.provider}` : ""}
                         {m.is_default && (
                           <span className="ml-2 acct-chip acct-chip-green text-[0.6rem]">
                             {accountCopy.common.defaultBadge}
