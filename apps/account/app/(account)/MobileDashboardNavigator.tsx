@@ -9,6 +9,28 @@ import { getNavSections, type NavItem } from "@/lib/navigation";
 
 const SECTION_ORDER = ["Account", "Financial", "Services", "Business", "Settings"] as const;
 
+export type MobileDashboardNavigatorLabels = {
+  trigger: string;
+  openLabel: string;
+  dialogLabel: string;
+  allPages: string;
+  closeLabel: string;
+  searchPlaceholder: string;
+  sectionsLabel: string;
+  pagesLabel: string;
+};
+
+const DEFAULT_LABELS: MobileDashboardNavigatorLabels = {
+  trigger: "Dashboard",
+  openLabel: "Open dashboard navigation",
+  dialogLabel: "Dashboard navigation",
+  allPages: "All pages",
+  closeLabel: "Close dashboard navigation",
+  searchPlaceholder: "Search pages",
+  sectionsLabel: "Navigation sections",
+  pagesLabel: "Dashboard pages",
+};
+
 function uniqueNavItems(items: NavItem[]) {
   const seen = new Set<string>();
   return items.filter((item) => {
@@ -30,7 +52,11 @@ function sectionForPath(pathname: string, items: NavItem[]) {
   return match?.section || "Account";
 }
 
-export function MobileDashboardNavigator() {
+export function MobileDashboardNavigator({
+  labels = DEFAULT_LABELS,
+}: {
+  labels?: MobileDashboardNavigatorLabels;
+}) {
   const pathname = usePathname() ?? "/";
   const navItems = useMemo(() => uniqueNavItems(Object.values(getNavSections()).flat()), []);
   const grouped = useMemo(() => {
@@ -77,10 +103,10 @@ export function MobileDashboardNavigator() {
         }}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="Open dashboard navigation"
+        aria-label={labels.openLabel}
       >
         <Compass size={18} aria-hidden />
-        <span>Dashboard</span>
+        <span>{labels.trigger}</span>
       </button>
 
       {open ? (
@@ -93,20 +119,20 @@ export function MobileDashboardNavigator() {
             className="acct-mobile-dashnav__panel"
             role="dialog"
             aria-modal="true"
-            aria-label="Dashboard navigation"
+            aria-label={labels.dialogLabel}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="acct-mobile-dashnav__handle" aria-hidden />
             <header className="acct-mobile-dashnav__head">
               <div>
-                <p className="acct-mobile-dashnav__kicker">Dashboard</p>
-                <h2>All pages</h2>
+                <p className="acct-mobile-dashnav__kicker">{labels.trigger}</p>
+                <h2>{labels.allPages}</h2>
               </div>
               <button
                 type="button"
                 className="acct-mobile-dashnav__icon-button"
                 onClick={() => setOpen(false)}
-                aria-label="Close dashboard navigation"
+                aria-label={labels.closeLabel}
               >
                 <X size={18} aria-hidden />
               </button>
@@ -117,13 +143,13 @@ export function MobileDashboardNavigator() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search pages"
+                placeholder={labels.searchPlaceholder}
                 data-hc-no-zoom
               />
             </label>
 
             {!normalizedQuery ? (
-              <div className="acct-mobile-dashnav__tabs" role="tablist" aria-label="Navigation sections">
+              <div className="acct-mobile-dashnav__tabs" role="tablist" aria-label={labels.sectionsLabel}>
                 {sections.map((section) => (
                   <button
                     key={section}
@@ -140,7 +166,7 @@ export function MobileDashboardNavigator() {
               </div>
             ) : null}
 
-            <nav className="acct-mobile-dashnav__list" aria-label="Dashboard pages">
+            <nav className="acct-mobile-dashnav__list" aria-label={labels.pagesLabel}>
               {visibleItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(pathname, item.href);

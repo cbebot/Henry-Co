@@ -21,6 +21,13 @@ export type IdentityBarProps = {
   trailing?: ReactNode;
   notificationsTrigger?: ReactNode;
   unreadCount?: number;
+  labels?: {
+    accountMenu?: string;
+    search?: string;
+    searchAriaLabel?: string;
+    switchLane?: string;
+    signOut?: string;
+  };
 };
 
 const IDENTITY_BAR_CSS = `
@@ -109,6 +116,7 @@ export function IdentityBar({
   trailing,
   notificationsTrigger,
   unreadCount,
+  labels,
 }: IdentityBarProps) {
   const [peekOpen, setPeekOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
@@ -118,6 +126,13 @@ export function IdentityBar({
 
   const displayName = viewer.user.fullName || viewer.user.email || "HenryCo viewer";
   const email = viewer.user.email && viewer.user.email !== displayName ? viewer.user.email : null;
+  const copy = {
+    accountMenu: labels?.accountMenu ?? "Account",
+    search: labels?.search ?? "Search",
+    searchAriaLabel: labels?.searchAriaLabel ?? "Search HenryCo",
+    switchLane: labels?.switchLane ?? "Switch lane",
+    signOut: labels?.signOut ?? "Sign out",
+  };
   const initials = (viewer.user.fullName ?? viewer.user.email ?? "?")
     .split(/\s+/)
     .filter(Boolean)
@@ -227,7 +242,7 @@ export function IdentityBar({
           <div
             className="hc-idbar__peek"
             role="menu"
-            aria-label="Account"
+            aria-label={copy.accountMenu}
             style={{
               position: "absolute",
               top: "calc(100% + 0.5rem)",
@@ -295,7 +310,7 @@ export function IdentityBar({
                     margin: "0.15rem 0.35rem 0.35rem",
                   }}
                 >
-                  Switch lane
+                    {copy.switchLane}
                 </p>
                 {options.map((option) => (
                   <button
@@ -344,7 +359,7 @@ export function IdentityBar({
                   }}
                 >
                   <LogOut size={16} aria-hidden />
-                  Sign out
+                  {copy.signOut}
                 </button>
               </div>
             ) : null}
@@ -376,7 +391,7 @@ export function IdentityBar({
             type="button"
             className="hc-idbar__searchbtn"
             onClick={onSearchClick}
-            aria-label="Search HenryCo"
+            aria-label={copy.searchAriaLabel}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -392,7 +407,7 @@ export function IdentityBar({
             }}
           >
             <Search size={15} aria-hidden />
-            <span style={{ flex: 1, textAlign: "left" }}>Search</span>
+            <span style={{ flex: 1, textAlign: "left" }}>{copy.search}</span>
           </button>
         </div>
       ) : null}
@@ -424,7 +439,7 @@ export function IdentityBar({
                 ...focusVisibleStyle(),
               }}
             >
-              Switch lane <ChevronDown size={14} aria-hidden />
+              {copy.switchLane} <ChevronDown size={14} aria-hidden />
             </button>
             {switcherOpen ? (
               <div
@@ -473,7 +488,7 @@ export function IdentityBar({
             type="button"
             className="hc-idbar__deskonly"
             onClick={onSignOut}
-            aria-label="Sign out"
+            aria-label={copy.signOut}
             style={{
               background: "transparent",
               border: "none",
