@@ -3,7 +3,6 @@ import { after } from "next/server";
 import { Suspense } from "react";
 import {
   getRegisteredModules,
-  WorkspaceSlot,
   LoadingSkeleton,
   ErrorBoundary,
 } from "@henryco/dashboard-shell";
@@ -22,6 +21,7 @@ import {
 import { requireAccountUser } from "@/lib/auth";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import { WidgetOpenOverlay } from "@/components/smart-home/WidgetOpenOverlay";
 
 // Side-effect: register modules. Without this import the registry is
 // empty and getRegisteredModules() returns [].
@@ -120,83 +120,81 @@ export default async function ModulePage({ params, searchParams }: PageProps) {
   const widgetsPromise = targetModule.getHomeWidgets(viewer);
 
   return (
-    <WorkspaceSlot>
-      <DivisionLanding
-        className="acct-fade-in"
-        hero={
-          <HeroCard
-            variant="compact"
-            tone="calm"
-            eyebrow={t("Module")}
-            headline={targetModule.title}
-            blurb={targetModule.description}
-          />
-        }
-        sections={[
-          ...(isDetail
-            ? [
-                {
-                  id: "module-detail-notice",
-                  title: t("Deep-link landing pending"),
-                  meta: t("Module sub-route"),
-                  content: (
-                    <EmptyStateCard
-                      tone="ghost"
-                      kicker={targetModule.title}
-                      title={t(
-                        "Deep-link landing for this module is being built.",
-                      )}
-                      body={t(
-                        "The module's home view is below — DASH-3 wires per-detail rendering.",
-                      )}
-                    />
-                  ),
-                },
-              ]
-            : []),
-          {
-            id: "module-home",
-            title: targetModule.title,
-            meta: t("Live widgets"),
-            content: (
-              <Suspense
-                fallback={
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))",
-                      gap: "1rem",
-                    }}
-                  >
-                    <LoadingSkeleton variant="metric" />
-                    <LoadingSkeleton variant="metric" />
-                    <LoadingSkeleton variant="metric" />
-                    <LoadingSkeleton variant="metric" />
-                  </div>
-                }
-              >
-                <ErrorBoundary
-                  label={`${targetModule.title} module`}
-                  fallback={() => (
-                    <EmptyStateCard
-                      kicker={targetModule.title}
-                      title={t("Something went wrong loading this module.")}
-                      body={t("Refresh the page or come back in a moment.")}
-                    />
-                  )}
-                >
-                  <ModuleHome
-                    moduleSlug={targetModule.slug}
-                    moduleTitle={targetModule.title}
-                    widgetsPromise={widgetsPromise}
+    <DivisionLanding
+      className="acct-fade-in"
+      hero={
+        <HeroCard
+          variant="compact"
+          tone="calm"
+          eyebrow={t("Module")}
+          headline={targetModule.title}
+          blurb={targetModule.description}
+        />
+      }
+      sections={[
+        ...(isDetail
+          ? [
+              {
+                id: "module-detail-notice",
+                title: t("Deep-link landing pending"),
+                meta: t("Module sub-route"),
+                content: (
+                  <EmptyStateCard
+                    tone="ghost"
+                    kicker={targetModule.title}
+                    title={t(
+                      "Deep-link landing for this module is being built.",
+                    )}
+                    body={t(
+                      "The module's home view is below — DASH-3 wires per-detail rendering.",
+                    )}
                   />
-                </ErrorBoundary>
-              </Suspense>
-            ),
-          },
-        ]}
-      />
-    </WorkspaceSlot>
+                ),
+              },
+            ]
+          : []),
+        {
+          id: "module-home",
+          title: targetModule.title,
+          meta: t("Live widgets"),
+          content: (
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))",
+                    gap: "1rem",
+                  }}
+                >
+                  <LoadingSkeleton variant="metric" />
+                  <LoadingSkeleton variant="metric" />
+                  <LoadingSkeleton variant="metric" />
+                  <LoadingSkeleton variant="metric" />
+                </div>
+              }
+            >
+              <ErrorBoundary
+                label={`${targetModule.title} module`}
+                fallback={() => (
+                  <EmptyStateCard
+                    kicker={targetModule.title}
+                    title={t("Something went wrong loading this module.")}
+                    body={t("Refresh the page or come back in a moment.")}
+                  />
+                )}
+              >
+                <ModuleHome
+                  moduleSlug={targetModule.slug}
+                  moduleTitle={targetModule.title}
+                  widgetsPromise={widgetsPromise}
+                />
+              </ErrorBoundary>
+            </Suspense>
+          ),
+        },
+      ]}
+    />
   );
 }
 
@@ -210,8 +208,11 @@ async function ModuleHome({
   widgetsPromise: Promise<
     ReadonlyArray<{
       id: string;
+      title: string;
       render: () => Promise<React.ReactNode>;
       size: "sm" | "md" | "lg";
+      /** When set, the whole tile navigates here (HomeWidget contract). */
+      href?: string;
     }>
   >;
 }) {
@@ -232,7 +233,9 @@ async function ModuleHome({
   const rendered = await Promise.all(
     widgets.map(async (widget) => ({
       id: widget.id,
+      title: widget.title,
       size: widget.size,
+      href: widget.href,
       node: await widget.render(),
     })),
   );
@@ -246,14 +249,20 @@ async function ModuleHome({
       }}
     >
       {rendered.map((w) => (
+        // `hc-widget-linkable` + the stretched WidgetOpenOverlay make the
+        // whole tile open `widget.href` (HomeWidget contract: "clicking
+        // anywhere on the widget's chrome navigates here") without nesting
+        // the card's own ActionButtons inside a <Link>.
         <div
           key={w.id}
+          className="hc-widget-linkable"
           style={{
             gridColumn:
               w.size === "lg" ? "span 2" : w.size === "md" ? "span 2" : "span 1",
           }}
         >
           {w.node}
+          {w.href ? <WidgetOpenOverlay href={w.href} label={w.title} /> : null}
         </div>
       ))}
     </div>

@@ -3,6 +3,7 @@ import { getEligibleModules, WorkspaceRail } from "@henryco/dashboard-shell";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import { requireAccountUser } from "@/lib/auth";
+import { resolveModuleHomeHref } from "@/lib/module-home-href";
 
 // Side-effect registration: import the module index so each module
 // calls registerModule() before getEligibleModules(viewer) walks the
@@ -45,7 +46,7 @@ export default async function RailDefault() {
   return (
     <WorkspaceRail label="Modules">
       {primary.map((m) => (
-        <RailEntry key={m.slug} slug={m.slug} title={m.title} icon={renderIcon(m.icon)} />
+        <RailEntry key={m.slug} href={resolveModuleHomeHref(m)} title={m.title} icon={renderIcon(m.icon)} />
       ))}
       {secondary.length > 0 ? (
         <div
@@ -57,7 +58,7 @@ export default async function RailDefault() {
         />
       ) : null}
       {secondary.map((m) => (
-        <RailEntry key={m.slug} slug={m.slug} title={m.title} icon={renderIcon(m.icon)} />
+        <RailEntry key={m.slug} href={resolveModuleHomeHref(m)} title={m.title} icon={renderIcon(m.icon)} />
       ))}
       {utility.length > 0 ? (
         <div
@@ -69,7 +70,7 @@ export default async function RailDefault() {
         />
       ) : null}
       {utility.map((m) => (
-        <RailEntry key={m.slug} slug={m.slug} title={m.title} icon={renderIcon(m.icon)} />
+        <RailEntry key={m.slug} href={resolveModuleHomeHref(m)} title={m.title} icon={renderIcon(m.icon)} />
       ))}
     </WorkspaceRail>
   );
@@ -81,21 +82,19 @@ function renderIcon(icon: React.ReactNode | (() => React.ReactNode)): React.Reac
 }
 
 function RailEntry({
-  slug,
+  href,
   title,
   icon,
 }: {
-  slug: string;
+  /**
+   * Pre-resolved destination (via `resolveModuleHomeHref`): `/` for
+   * customer-overview, a module's declared `homeHref` when present
+   * (e.g. wallet → `/wallet`), else the `/modules/<slug>` catch-all.
+   */
+  href: string;
   title: string;
   icon: React.ReactNode;
 }) {
-  // The customer-overview module's home is the account home (`/`),
-  // not `/modules/customer-overview`. Every other module deep-links
-  // through the catch-all router. Keeping the customer-overview at
-  // `/` preserves the 45 protected-route landing surface.
-  const href =
-    slug === "customer-overview" ? "/" : `/modules/${slug}`;
-
   return (
     <Link
       href={href}
