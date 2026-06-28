@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { ErrorBoundary, LoadingSkeleton, Section } from "@henryco/dashboard-shell";
 import type { AnnotatedHomeWidget } from "@/lib/smart-home/widgets";
+import { WidgetOpenOverlay } from "./WidgetOpenOverlay";
 
 /**
  * RankedMetricStrip — the top-of-fold cross-module metric cluster.
@@ -39,15 +40,24 @@ export function RankedMetricStrip({ widgets }: RankedMetricStripProps) {
             label={widget.title}
             fallback={renderWidgetError(widget.error)}
           >
-            <Suspense
-              fallback={
-                widget.loading ?? (
-                  <LoadingSkeleton variant="metric" />
-                )
-              }
-            >
-              <RenderedWidget widget={widget} />
-            </Suspense>
+            {/* `hc-widget-linkable` + the stretched WidgetOpenOverlay make
+                the whole card open `widget.href` (HomeWidget contract)
+                without nesting the card's own ActionButtons inside a
+                <Link>. */}
+            <div className="hc-widget-linkable">
+              <Suspense
+                fallback={
+                  widget.loading ?? (
+                    <LoadingSkeleton variant="metric" />
+                  )
+                }
+              >
+                <RenderedWidget widget={widget} />
+              </Suspense>
+              {widget.href ? (
+                <WidgetOpenOverlay href={widget.href} label={widget.title} />
+              ) : null}
+            </div>
           </ErrorBoundary>
         ))}
       </div>
