@@ -747,7 +747,7 @@ export async function getDocuments(userId: string) {
 export async function getPaymentMethods(userId: string) {
   const { data } = await admin()
     .from("customer_payment_methods")
-    .select("*")
+    .select("id, type, label, last_four, bank_name, is_default, provider, metadata, created_at")
     .eq("user_id", userId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });

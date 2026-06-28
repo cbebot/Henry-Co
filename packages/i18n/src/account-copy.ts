@@ -2949,8 +2949,8 @@ const EN: AccountCopy = {
       fallbackTitle: "Wallet transaction",
     },
     funding: {
-      proofUploaded: "Proof uploaded",
-      awaitingProof: "Awaiting proof",
+      proofUploaded: "Rail verified",
+      awaitingProof: "Processing",
       ariaLabelTemplate: "Funding request {reference} for ₦{amount}",
     },
     vault: {
@@ -2972,9 +2972,9 @@ const EN: AccountCopy = {
       ctaWithdraw: "Withdraw",
     },
     alert: {
-      proofTitle: "Proof needed",
-      proofDescTemplate: "{reference} is waiting for your transfer proof.",
-      proofCta: "Add proof",
+      proofTitle: "Rail check pending",
+      proofDescTemplate: "{reference} is waiting for live rail confirmation.",
+      proofCta: "View rail",
       identityTitle: "Verify your identity",
       identityDescTemplate: "{label}. Verify once to unlock withdrawals.",
       identityCta: "Continue",
@@ -3014,7 +3014,7 @@ const EN: AccountCopy = {
     },
     statusLabels: {
       pending: "Awaiting review",
-      awaiting_proof: "Awaiting proof",
+      awaiting_proof: "Processing",
       awaiting_review: "Awaiting review",
       in_review: "In review",
       rejected: "Rejected",
@@ -3074,14 +3074,14 @@ const EN: AccountCopy = {
   payments: {
     hero: {
       title: "Payment Methods",
-      description: "Manage your saved payment options for quick checkout.",
-      addMethodCta: "Add method",
+      description: "Review payment options saved by secure live checkout.",
+      addMethodCta: "Use live checkout",
     },
     empty: {
       title: "No payment methods",
       description:
-        "Add a debit card, bank account, or other payment method for quick checkout across all HenryCo services.",
-      cta: "Add payment method",
+        "Complete a secure checkout and supported tokenized methods will appear here for faster future payments.",
+      cta: "Use live checkout",
     },
     card: {
       savedMethodFallback: "Saved method",
@@ -5221,13 +5221,13 @@ const FR: DeepPartial<AccountCopy> = {
       fallbackTitle: "Transaction du portefeuille",
     },
     funding: {
-      proofUploaded: "Preuve téléversée",
-      awaitingProof: "En attente de preuve",
+      proofUploaded: "Rail vérifié",
+      awaitingProof: "Traitement",
       ariaLabelTemplate: "Demande d’approvisionnement {reference} de ₦{amount}",
     },
     statusLabels: {
       pending: "En attente d’examen",
-      awaiting_proof: "En attente de preuve",
+      awaiting_proof: "Traitement",
       awaiting_review: "En attente d’examen",
       in_review: "En cours d’examen",
       rejected: "Refusé",
@@ -5287,14 +5287,14 @@ const FR: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "Moyens de paiement",
-      description: "Gérez vos options de paiement enregistrées pour un paiement rapide.",
-      addMethodCta: "Ajouter un moyen",
+      description: "Consultez les options enregistrées par le paiement sécurisé en direct.",
+      addMethodCta: "Utiliser le paiement en direct",
     },
     empty: {
       title: "Aucun moyen de paiement",
       description:
-        "Ajoutez une carte bancaire, un compte bancaire ou un autre moyen de paiement pour passer rapidement à la caisse dans tous les services HenryCo.",
-      cta: "Ajouter un moyen de paiement",
+        "Terminez un paiement sécurisé et les moyens tokenisés compatibles apparaîtront ici pour accélérer les prochains paiements.",
+      cta: "Utiliser le paiement en direct",
     },
     card: {
       savedMethodFallback: "Moyen enregistré",
@@ -7360,13 +7360,13 @@ const DE: DeepPartial<AccountCopy> = {
       fallbackTitle: "Wallet-Transaktion",
     },
     funding: {
-      proofUploaded: "Beleg hochgeladen",
-      awaitingProof: "Beleg ausstehend",
+      proofUploaded: "Rail verifiziert",
+      awaitingProof: "Wird verarbeitet",
       ariaLabelTemplate: "Einzahlungsanfrage {reference} über ₦{amount}",
     },
     statusLabels: {
       pending: "Wartet auf Prüfung",
-      awaiting_proof: "Beleg ausstehend",
+      awaiting_proof: "Wird verarbeitet",
       awaiting_review: "Wartet auf Prüfung",
       in_review: "In Prüfung",
       rejected: "Abgelehnt",
@@ -7426,14 +7426,14 @@ const DE: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "Zahlungsmethoden",
-      description: "Verwalten Sie Ihre gespeicherten Zahlungsoptionen für einen schnellen Bezahlvorgang.",
-      addMethodCta: "Methode hinzufügen",
+      description: "Prüfen Sie Zahlungsoptionen, die durch sicheren Live-Checkout gespeichert wurden.",
+      addMethodCta: "Live-Checkout nutzen",
     },
     empty: {
       title: "Keine Zahlungsmethoden",
       description:
-        "Fügen Sie eine Debitkarte, ein Bankkonto oder eine andere Zahlungsmethode hinzu, um in allen HenryCo-Diensten schnell zu bezahlen.",
-      cta: "Zahlungsmethode hinzufügen",
+        "Schließen Sie einen sicheren Checkout ab; unterstützte tokenisierte Methoden erscheinen hier für schnellere künftige Zahlungen.",
+      cta: "Live-Checkout nutzen",
     },
     card: {
       savedMethodFallback: "Gespeicherte Methode",
@@ -9501,13 +9501,13 @@ const IT: DeepPartial<AccountCopy> = {
       fallbackTitle: "Transazione del portafoglio",
     },
     funding: {
-      proofUploaded: "Prova caricata",
-      awaitingProof: "In attesa di prova",
+      proofUploaded: "Rail verificato",
+      awaitingProof: "In elaborazione",
       ariaLabelTemplate: "Richiesta di ricarica {reference} per ₦{amount}",
     },
     statusLabels: {
       pending: "In attesa di revisione",
-      awaiting_proof: "In attesa di prova",
+      awaiting_proof: "In elaborazione",
       awaiting_review: "In attesa di revisione",
       in_review: "In revisione",
       rejected: "Rifiutato",
@@ -9567,14 +9567,14 @@ const IT: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "Metodi di pagamento",
-      description: "Gestisci le tue opzioni di pagamento salvate per un checkout rapido.",
-      addMethodCta: "Aggiungi metodo",
+      description: "Controlla le opzioni salvate dal checkout sicuro in tempo reale.",
+      addMethodCta: "Usa checkout live",
     },
     empty: {
       title: "Nessun metodo di pagamento",
       description:
-        "Aggiungi una carta di debito, un conto bancario o un altro metodo di pagamento per un checkout rapido in tutti i servizi HenryCo.",
-      cta: "Aggiungi metodo di pagamento",
+        "Completa un checkout sicuro e i metodi tokenizzati supportati appariranno qui per pagamenti futuri più rapidi.",
+      cta: "Usa checkout live",
     },
     card: {
       savedMethodFallback: "Metodo salvato",
@@ -11645,13 +11645,13 @@ const IG: DeepPartial<AccountCopy> = {
       fallbackTitle: "Azụmahịa obere akpa ego",
     },
     funding: {
-      proofUploaded: "Ebugoro ihe akaebe",
-      awaitingProof: "Na-echere ihe akaebe",
+      proofUploaded: "Rail enyochala",
+      awaitingProof: "Na-arụ ọrụ",
       ariaLabelTemplate: "Arịrịọ itinye ego {reference} maka ₦{amount}",
     },
     statusLabels: {
       pending: "Na-eche nyocha",
-      awaiting_proof: "Na-echere ihe akaebe",
+      awaiting_proof: "Na-arụ ọrụ",
       awaiting_review: "Na-eche nyocha",
       in_review: "Na nyocha",
       rejected: "Ajụrụ",
@@ -11711,14 +11711,14 @@ const IG: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "Ụzọ ịkwụ ụgwọ",
-      description: "Jikwaa ụzọ ịkwụ ụgwọ ndị ị chekwara maka ngwa ngwa ịkwụ ụgwọ.",
-      addMethodCta: "Tinye ụzọ",
+      description: "Lelee nhọrọ ịkwụ ụgwọ echekwara site na checkout ndụ dị nchebe.",
+      addMethodCta: "Jiri checkout ndụ",
     },
     empty: {
       title: "Enweghị ụzọ ịkwụ ụgwọ",
       description:
-        "Tinye kaadị debit, akaụntụ ụlọakụ, ma ọ bụ ụzọ ịkwụ ụgwọ ọzọ maka ngwa ngwa ịkwụ ụgwọ n’ọrụ HenryCo niile.",
-      cta: "Tinye ụzọ ịkwụ ụgwọ",
+        "Mechaa checkout dị nchebe; ụzọ tokenized akwadoro ga-apụta ebe a maka ịkwụ ụgwọ ọzọ ngwa ngwa.",
+      cta: "Jiri checkout ndụ",
     },
     card: {
       savedMethodFallback: "Ụzọ echekwara",
@@ -13788,13 +13788,13 @@ const YO: DeepPartial<AccountCopy> = {
       fallbackTitle: "Owó-iṣẹ́ àpamọ́wọ́",
     },
     funding: {
-      proofUploaded: "A ti gbé ẹ̀rí sókè",
-      awaitingProof: "Ń dúró fún ẹ̀rí",
+      proofUploaded: "Rail ti jẹrisi",
+      awaitingProof: "Ń ṣiṣẹ́",
       ariaLabelTemplate: "Ìbéèrè ìfowóran {reference} fún ₦{amount}",
     },
     statusLabels: {
       pending: "Ń dúró àyẹ̀wò",
-      awaiting_proof: "Ń dúró fún ẹ̀rí",
+      awaiting_proof: "Ń ṣiṣẹ́",
       awaiting_review: "Ń dúró àyẹ̀wò",
       in_review: "Nínú àyẹ̀wò",
       rejected: "Kọ",
@@ -13854,14 +13854,14 @@ const YO: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "Àwọn ọ̀nà ìsanwó",
-      description: "Ṣàkóso àwọn àṣàyàn ìsanwó tí o tọ́jú fún ìsanwó yára.",
-      addMethodCta: "Ṣàfikún ọ̀nà",
+      description: "Ṣàyẹ̀wò àwọn àṣàyàn ìsanwó tí checkout alààyè tó ní ààbò ti tọ́jú.",
+      addMethodCta: "Lo checkout alààyè",
     },
     empty: {
       title: "Kò sí ọ̀nà ìsanwó",
       description:
-        "Ṣàfikún káàdì débítì, àkáǹtì báńkì, tàbí ọ̀nà ìsanwó míràn fún ìsanwó yára kọjá gbogbo iṣẹ́ HenryCo.",
-      cta: "Ṣàfikún ọ̀nà ìsanwó",
+        "Parí checkout tó ní ààbò; àwọn ọ̀nà tokenized tí a ṣe àtìlẹ́yìn fún yóò hàn níbí fún ìsanwó ọjọ́ iwájú tó yára.",
+      cta: "Lo checkout alààyè",
     },
     card: {
       savedMethodFallback: "Ọ̀nà tí a tọ́jú",
@@ -15931,13 +15931,13 @@ const HA: DeepPartial<AccountCopy> = {
       fallbackTitle: "Cinikayyar walat",
     },
     funding: {
-      proofUploaded: "An loda shaida",
-      awaitingProof: "Ana jiran shaida",
+      proofUploaded: "An tabbatar da rail",
+      awaitingProof: "Ana sarrafawa",
       ariaLabelTemplate: "Buƙatar shigar da kuɗi {reference} don ₦{amount}",
     },
     statusLabels: {
       pending: "Ana jiran bita",
-      awaiting_proof: "Ana jiran shaida",
+      awaiting_proof: "Ana sarrafawa",
       awaiting_review: "Ana jiran bita",
       in_review: "Cikin bita",
       rejected: "An ƙi",
@@ -15997,14 +15997,14 @@ const HA: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "Hanyoyin biya",
-      description: "Sarrafa zaɓuɓɓukan biya da kuka adana don saurin kammala biya.",
-      addMethodCta: "Ƙara hanya",
+      description: "Duba zaɓuɓɓukan biya da aka adana ta checkout kai tsaye mai tsaro.",
+      addMethodCta: "Yi amfani da checkout kai tsaye",
     },
     empty: {
       title: "Babu hanyoyin biya",
       description:
-        "Ƙara katin debit, asusun banki, ko wata hanyar biya don saurin biya a duk sabis na HenryCo.",
-      cta: "Ƙara hanyar biya",
+        "Kammala checkout mai tsaro; hanyoyin tokenized da ake tallafawa za su bayyana a nan don biya na gaba cikin sauri.",
+      cta: "Yi amfani da checkout kai tsaye",
     },
     card: {
       savedMethodFallback: "Hanyar da aka adana",
@@ -18072,13 +18072,13 @@ const ZH: DeepPartial<AccountCopy> = {
       fallbackTitle: "钱包交易",
     },
     funding: {
-      proofUploaded: "已上传凭证",
-      awaitingProof: "等待凭证",
+      proofUploaded: "通道已验证",
+      awaitingProof: "处理中",
       ariaLabelTemplate: "充值申请 {reference} 金额 ₦{amount}",
     },
     statusLabels: {
       pending: "等待审核",
-      awaiting_proof: "等待凭证",
+      awaiting_proof: "处理中",
       awaiting_review: "等待审核",
       in_review: "审核中",
       rejected: "已拒绝",
@@ -18138,13 +18138,13 @@ const ZH: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "支付方式",
-      description: "管理您已保存的支付选项,实现快速结账。",
-      addMethodCta: "添加方式",
+      description: "查看由安全实时结账保存的支付选项。",
+      addMethodCta: "使用实时结账",
     },
     empty: {
       title: "暂无支付方式",
-      description: "添加借记卡、银行账户或其他支付方式,可在所有 HenryCo 服务中快速结账。",
-      cta: "添加支付方式",
+      description: "完成安全结账后,受支持的令牌化支付方式会显示在这里,方便以后更快付款。",
+      cta: "使用实时结账",
     },
     card: {
       savedMethodFallback: "已保存的方式",
@@ -20195,13 +20195,13 @@ const HI: DeepPartial<AccountCopy> = {
       fallbackTitle: "वॉलेट लेनदेन",
     },
     funding: {
-      proofUploaded: "प्रमाण अपलोड किया गया",
-      awaitingProof: "प्रमाण की प्रतीक्षा",
+      proofUploaded: "रेल सत्यापित",
+      awaitingProof: "प्रसंस्करण",
       ariaLabelTemplate: "₦{amount} के लिए जमा अनुरोध {reference}",
     },
     statusLabels: {
       pending: "समीक्षा की प्रतीक्षा",
-      awaiting_proof: "प्रमाण की प्रतीक्षा",
+      awaiting_proof: "प्रसंस्करण",
       awaiting_review: "समीक्षा की प्रतीक्षा",
       in_review: "समीक्षा में",
       rejected: "अस्वीकृत",
@@ -20261,14 +20261,14 @@ const HI: DeepPartial<AccountCopy> = {
   payments: {
     hero: {
       title: "भुगतान विधियाँ",
-      description: "त्वरित चेकआउट के लिए अपने सहेजे गए भुगतान विकल्प प्रबंधित करें।",
-      addMethodCta: "विधि जोड़ें",
+      description: "सुरक्षित लाइव चेकआउट से सहेजे गए भुगतान विकल्प देखें।",
+      addMethodCta: "लाइव चेकआउट इस्तेमाल करें",
     },
     empty: {
       title: "कोई भुगतान विधि नहीं",
       description:
-        "सभी HenryCo सेवाओं में त्वरित चेकआउट के लिए डेबिट कार्ड, बैंक खाता, या अन्य भुगतान विधि जोड़ें।",
-      cta: "भुगतान विधि जोड़ें",
+        "सुरक्षित चेकआउट पूरा करें; समर्थित टोकनाइज़्ड विधियाँ भविष्य के तेज़ भुगतान के लिए यहाँ दिखेंगी।",
+      cta: "लाइव चेकआउट इस्तेमाल करें",
     },
     card: {
       savedMethodFallback: "सहेजी गई विधि",

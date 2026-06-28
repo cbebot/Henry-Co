@@ -743,13 +743,13 @@ export const ACCOUNT_COPY_ES = {
       "fallbackTitle": "Transacción de la cartera"
     },
     "funding": {
-      "proofUploaded": "Comprobante cargado",
-      "awaitingProof": "Esperando comprobante",
+      "proofUploaded": "Carril verificado",
+      "awaitingProof": "Procesando",
       "ariaLabelTemplate": "Solicitud de recarga {reference} por ₦{amount}"
     },
     "statusLabels": {
       "pending": "Esperando revisión",
-      "awaiting_proof": "Esperando comprobante",
+      "awaiting_proof": "Procesando",
       "awaiting_review": "Esperando revisión",
       "in_review": "En revisión",
       "rejected": "Rechazado",
@@ -807,13 +807,13 @@ export const ACCOUNT_COPY_ES = {
   "payments": {
     "hero": {
       "title": "Métodos de pago",
-      "description": "Gestiona tus opciones de pago guardadas para un pago rápido.",
-      "addMethodCta": "Añadir método"
+      "description": "Revisa las opciones guardadas por el checkout seguro en vivo.",
+      "addMethodCta": "Usar checkout en vivo"
     },
     "empty": {
       "title": "Sin métodos de pago",
-      "description": "Añade una tarjeta de débito, cuenta bancaria u otro método de pago para pagar rápido en todos los servicios HenryCo.",
-      "cta": "Añadir método de pago"
+      "description": "Completa un checkout seguro y los métodos tokenizados compatibles aparecerán aquí para pagos futuros más rápidos.",
+      "cta": "Usar checkout en vivo"
     },
     "card": {
       "savedMethodFallback": "Método guardado",
@@ -2841,13 +2841,13 @@ export const ACCOUNT_COPY_PT = {
       "fallbackTitle": "Transação da carteira"
     },
     "funding": {
-      "proofUploaded": "Comprovativo carregado",
-      "awaitingProof": "À espera de comprovativo",
+      "proofUploaded": "Rail verificado",
+      "awaitingProof": "Em processamento",
       "ariaLabelTemplate": "Pedido de carregamento {reference} por ₦{amount}"
     },
     "statusLabels": {
       "pending": "À espera de revisão",
-      "awaiting_proof": "À espera de comprovativo",
+      "awaiting_proof": "Em processamento",
       "awaiting_review": "À espera de revisão",
       "in_review": "Em revisão",
       "rejected": "Rejeitado",
@@ -2905,13 +2905,13 @@ export const ACCOUNT_COPY_PT = {
   "payments": {
     "hero": {
       "title": "Métodos de pagamento",
-      "description": "Gerencie suas opções de pagamento salvas para um checkout rápido.",
-      "addMethodCta": "Adicionar método"
+      "description": "Revise as opções salvas pelo checkout seguro ao vivo.",
+      "addMethodCta": "Usar checkout ao vivo"
     },
     "empty": {
       "title": "Sem métodos de pagamento",
-      "description": "Adicione um cartão de débito, conta bancária ou outro método de pagamento para um checkout rápido em todos os serviços HenryCo.",
-      "cta": "Adicionar método de pagamento"
+      "description": "Conclua um checkout seguro e os métodos tokenizados compatíveis aparecerão aqui para pagamentos futuros mais rápidos.",
+      "cta": "Usar checkout ao vivo"
     },
     "card": {
       "savedMethodFallback": "Método salvo",
@@ -4939,13 +4939,13 @@ export const ACCOUNT_COPY_AR = {
       "fallbackTitle": "معاملة المحفظة"
     },
     "funding": {
-      "proofUploaded": "تم رفع الإثبات",
-      "awaitingProof": "في انتظار الإثبات",
+      "proofUploaded": "تم تأكيد المسار",
+      "awaitingProof": "قيد المعالجة",
       "ariaLabelTemplate": "طلب تعبئة {reference} بقيمة ₦{amount}"
     },
     "statusLabels": {
       "pending": "في انتظار المراجعة",
-      "awaiting_proof": "في انتظار الإثبات",
+      "awaiting_proof": "قيد المعالجة",
       "awaiting_review": "في انتظار المراجعة",
       "in_review": "قيد المراجعة",
       "rejected": "مرفوض",
@@ -5003,13 +5003,13 @@ export const ACCOUNT_COPY_AR = {
   "payments": {
     "hero": {
       "title": "طرق الدفع",
-      "description": "أدر خيارات الدفع المحفوظة لإتمام الدفع بسرعة.",
-      "addMethodCta": "إضافة طريقة"
+      "description": "راجع خيارات الدفع التي يحفظها checkout مباشر وآمن.",
+      "addMethodCta": "استخدام checkout مباشر"
     },
     "empty": {
       "title": "لا توجد طرق دفع",
-      "description": "أضف بطاقة خصم أو حسابًا مصرفيًا أو طريقة دفع أخرى لإتمام الدفع بسرعة في جميع خدمات HenryCo.",
-      "cta": "إضافة طريقة دفع"
+      "description": "أكمل checkout آمنًا وستظهر الطرق المرمّزة المدعومة هنا لتسريع المدفوعات المستقبلية.",
+      "cta": "استخدام checkout مباشر"
     },
     "card": {
       "savedMethodFallback": "طريقة محفوظة",

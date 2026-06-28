@@ -27,11 +27,9 @@ type PaymentMethodRow = {
  *
  * ACCOUNT-PREMIUM-01 (session 2, Phase 2D).
  *
- * Critical bug fixed: the previous page rendered an `<button>` "Add method"
- * CTA with no onClick handler. Wired through HeroCard's ctaPrimary to
- * `/wallet/funding` (the funding lane is the canonical add-money flow).
- *
- * Wallet remains documented as a payment option via a card-level CTA.
+ * Payment methods are not manually created here. Live checkout rails attach
+ * reusable methods when a provider returns a tokenized method record; this page
+ * only displays methods that actually exist.
  */
 export default async function PaymentsPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
@@ -49,9 +47,6 @@ export default async function PaymentsPage() {
           eyebrow={copy.wallet.eyebrow}
           headline={copy.hero.title}
           blurb={copy.hero.description}
-          // BUG FIX: was a no-op <button>; now routes to the canonical
-          // add-funds / saved-method route under /wallet/funding.
-          ctaPrimary={{ label: copy.hero.addMethodCta, href: "/wallet/funding" }}
         />
       }
       sections={[

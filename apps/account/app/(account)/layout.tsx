@@ -26,6 +26,7 @@ import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
+import { MobileDashboardNavigator } from "./MobileDashboardNavigator";
 import { COMPANY } from "@henryco/config";
 
 // Side-effect import — registers every module so getEligibleModules
@@ -246,6 +247,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             modules={mobileModuleEntries}
             onSignOut={signOutAction}
           />
+          <MobileDashboardNavigator />
           <NotificationsToastViewport audience="customer" />
         </div>
       </AccountPaletteHost>

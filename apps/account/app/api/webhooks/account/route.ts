@@ -224,6 +224,78 @@ export async function POST(request: Request) {
         }
         break;
       }
+      case "payment.method.saved": {
+        const provider = clean(payload.provider) || "live_rail";
+        const providerToken =
+          clean(payload.provider_token) ||
+          clean(payload.authorization_code) ||
+          clean(payload.token) ||
+          clean(payload.payment_method_id);
+        if (!providerToken) {
+          return NextResponse.json({ error: "provider_token required" }, { status: 400 });
+        }
+
+        const methodType = clean(payload.type) || clean(payload.method_type) || "card";
+        const lastFour = clean(payload.last_four) || clean(payload.last4) || null;
+        const bankName = clean(payload.bank_name) || clean(payload.bank) || clean(payload.issuer) || null;
+        const label =
+          clean(payload.label) ||
+          [clean(payload.brand) || (methodType === "card" ? "Card" : methodType), lastFour ? `•••• ${lastFour}` : ""]
+            .filter(Boolean)
+            .join(" ");
+        const shouldDefault = payload.is_default === true || payload.default === true;
+        const metadata = {
+          source: "account_webhook",
+          eventId,
+          brand: clean(payload.brand) || null,
+          expMonth: clean(payload.exp_month) || clean(payload.expiry_month) || null,
+          expYear: clean(payload.exp_year) || clean(payload.expiry_year) || null,
+          country: clean(payload.country) || null,
+        };
+
+        const { data: existing } = await admin
+          .from("customer_payment_methods")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("provider", provider)
+          .eq("provider_token", providerToken)
+          .maybeSingle();
+
+        if (shouldDefault) {
+          await admin
+            .from("customer_payment_methods")
+            .update({ is_default: false, updated_at: new Date().toISOString() } as never)
+            .eq("user_id", userId)
+            .not("provider_token", "is", null);
+        }
+
+        const baseRecord = {
+          user_id: userId,
+          type: methodType,
+          label: label || "Saved method",
+          last_four: lastFour,
+          bank_name: bankName,
+          provider,
+          provider_token: providerToken,
+          expires_at: clean(payload.expires_at) || null,
+          metadata,
+          updated_at: new Date().toISOString(),
+        };
+        const record =
+          existing?.id && !shouldDefault
+            ? baseRecord
+            : {
+                ...baseRecord,
+                is_default: shouldDefault,
+              };
+
+        if (existing?.id) {
+          await admin.from("customer_payment_methods").update(record as never).eq("id", existing.id);
+        } else {
+          await admin.from("customer_payment_methods").insert(record as never);
+        }
+        break;
+      }
       case "activity.log": {
         await admin.from("customer_activity").insert({
           user_id: userId,

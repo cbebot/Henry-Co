@@ -317,6 +317,10 @@
   .acct-wal__columns { grid-template-columns: 1fr; }
 }
 
+.acct-wal__columns--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* Spend strip --------------------------------------------------------- */
 
 .acct-wal__spend {
@@ -1017,22 +1021,19 @@
   border-radius: var(--acct-radius-lg);
   overflow: hidden;
   isolation: isolate;
-  /* Intentional theme-INVARIANT brand surface — a black onyx instrument that
-   * reads identically in light and dark, like a physical card. The neutral
-   * darks are fixed; every accent derives from the live --acct-gold token. */
-  --vault-onyx: #0b0a08;
-  --vault-onyx-2: #16130d;
-  --vault-ink: color-mix(in srgb, #ffffff 92%, var(--acct-gold));
-  --vault-ink-soft: color-mix(in srgb, #ffffff 64%, transparent);
-  --vault-ink-faint: color-mix(in srgb, #ffffff 42%, transparent);
-  --vault-hair: color-mix(in srgb, #ffffff 14%, transparent);
+  --vault-base: var(--acct-bg-soft);
+  --vault-base-2: var(--acct-bg-elevated, var(--acct-bg));
+  --vault-ink: var(--acct-ink);
+  --vault-ink-soft: var(--acct-muted);
+  --vault-ink-faint: color-mix(in srgb, var(--acct-muted) 76%, transparent);
+  --vault-hair: color-mix(in srgb, var(--acct-line) 86%, transparent);
   color: var(--vault-ink);
   background:
-    radial-gradient(130% 120% at 86% -12%, color-mix(in srgb, var(--acct-gold) 26%, transparent) 0%, transparent 52%),
-    radial-gradient(120% 130% at -10% 115%, color-mix(in srgb, var(--acct-gold) 12%, transparent) 0%, transparent 55%),
-    linear-gradient(150deg, var(--vault-onyx-2) 0%, var(--vault-onyx) 62%);
-  border: 1px solid color-mix(in srgb, var(--acct-gold) 30%, #000000);
-  box-shadow: 0 22px 54px -28px color-mix(in srgb, var(--acct-gold) 42%, #000000);
+    radial-gradient(120% 120% at 86% -12%, color-mix(in srgb, var(--acct-gold) 20%, transparent) 0%, transparent 56%),
+    radial-gradient(90% 120% at -10% 115%, color-mix(in srgb, var(--acct-blue, #2563eb) 9%, transparent) 0%, transparent 58%),
+    linear-gradient(150deg, var(--vault-base) 0%, var(--vault-base-2) 100%);
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 24%, var(--acct-line));
+  box-shadow: var(--acct-shadow-lg, 0 22px 54px -34px color-mix(in srgb, var(--acct-ink) 28%, transparent));
 }
 
 .acct-wal__vault-engrave {
@@ -1042,8 +1043,8 @@
   pointer-events: none;
   opacity: 0.6;
   background-image:
-    repeating-linear-gradient(58deg, color-mix(in srgb, var(--acct-gold) 9%, transparent) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(-58deg, color-mix(in srgb, var(--acct-gold) 6%, transparent) 0 1px, transparent 1px 9px);
+    repeating-linear-gradient(58deg, color-mix(in srgb, var(--acct-gold) 8%, transparent) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-58deg, color-mix(in srgb, var(--acct-ink) 4%, transparent) 0 1px, transparent 1px 9px);
   -webkit-mask-image: radial-gradient(125% 125% at 82% -5%, #000 0%, transparent 72%);
   mask-image: radial-gradient(125% 125% at 82% -5%, #000 0%, transparent 72%);
 }
@@ -1053,7 +1054,7 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(42% 64% at 100% 0%, color-mix(in srgb, var(--acct-gold) 20%, transparent), transparent 70%);
+  background: radial-gradient(42% 64% at 100% 0%, color-mix(in srgb, var(--acct-gold) 18%, transparent), transparent 70%);
 }
 
 .acct-wal__vault-inner {
@@ -1092,7 +1093,7 @@
   gap: 7px;
   padding: 5px 11px;
   border-radius: 999px;
-  background: color-mix(in srgb, #ffffff 7%, transparent);
+  background: color-mix(in srgb, var(--acct-bg) 72%, transparent);
   border: 1px solid var(--vault-hair);
   font-size: 11px;
   font-weight: 600;
@@ -1110,9 +1111,9 @@
 
 /* Live — green, with a smooth breathing glow (real status, not decoration). */
 .acct-wal__vault-sync[data-live="true"] {
-  color: color-mix(in srgb, var(--acct-green) 78%, #ffffff);
-  border-color: color-mix(in srgb, var(--acct-green) 34%, transparent);
-  background: color-mix(in srgb, var(--acct-green) 12%, transparent);
+  color: color-mix(in srgb, var(--acct-green) 76%, var(--acct-ink));
+  border-color: color-mix(in srgb, var(--acct-green) 34%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-green) 12%, var(--acct-bg));
 }
 
 .acct-wal__vault-sync[data-live="true"] .acct-wal__vault-sync-dot {
@@ -1122,9 +1123,9 @@
 
 /* On hold — calm amber, static (no blink). */
 .acct-wal__vault-sync[data-live="false"] {
-  color: color-mix(in srgb, var(--acct-orange) 82%, #ffffff);
-  border-color: color-mix(in srgb, var(--acct-orange) 36%, transparent);
-  background: color-mix(in srgb, var(--acct-orange) 12%, transparent);
+  color: color-mix(in srgb, var(--acct-orange) 82%, var(--acct-ink));
+  border-color: color-mix(in srgb, var(--acct-orange) 36%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-orange) 12%, var(--acct-bg));
 }
 
 .acct-wal__vault-sync[data-live="false"] .acct-wal__vault-sync-dot {
@@ -1202,7 +1203,7 @@
   padding: 3px 9px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--acct-gold) 16%, transparent);
-  color: color-mix(in srgb, var(--acct-gold) 75%, #ffffff);
+  color: var(--acct-gold-text);
   font-variant-numeric: normal;
 }
 
@@ -1240,7 +1241,7 @@
 .acct-wal__vault-stat--arriving dt {
   display: inline-flex;
   align-items: center;
-  color: color-mix(in srgb, var(--acct-gold) 80%, #ffffff);
+  color: var(--acct-gold-text);
   letter-spacing: 0.02em;
   text-transform: none;
   font-size: 12px;
@@ -1313,30 +1314,30 @@
   color: var(--vault-ink);
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, #ffffff 15%, transparent) 0%,
-    color-mix(in srgb, #ffffff 7%, transparent) 100%
+    color-mix(in srgb, var(--acct-bg) 86%, transparent) 0%,
+    color-mix(in srgb, var(--acct-surface) 92%, transparent) 100%
   );
-  border-color: color-mix(in srgb, var(--acct-gold) 32%, color-mix(in srgb, #ffffff 26%, transparent));
+  border-color: color-mix(in srgb, var(--acct-gold) 28%, var(--acct-line));
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   box-shadow:
-    0 1px 0 color-mix(in srgb, #ffffff 16%, transparent) inset,
-    0 12px 26px -16px #000000;
+    0 1px 0 color-mix(in srgb, var(--acct-bg) 50%, transparent) inset,
+    0 12px 26px -18px color-mix(in srgb, var(--acct-ink) 30%, transparent);
 }
 
 .acct-wal__vault-cta--secondary .acct-wal__vault-cta-icon {
   background: color-mix(in srgb, var(--acct-gold) 24%, transparent);
-  color: color-mix(in srgb, var(--acct-gold) 72%, #ffffff);
+  color: var(--acct-gold-text);
 }
 
 .acct-wal__vault-cta--secondary:hover {
   transform: translateY(-2px);
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, #ffffff 21%, transparent) 0%,
-    color-mix(in srgb, #ffffff 11%, transparent) 100%
+    color-mix(in srgb, var(--acct-gold-soft) 64%, var(--acct-bg)) 0%,
+    color-mix(in srgb, var(--acct-bg) 92%, transparent) 100%
   );
-  border-color: color-mix(in srgb, var(--acct-gold) 55%, #ffffff);
+  border-color: color-mix(in srgb, var(--acct-gold) 55%, var(--acct-line));
 }
 
 .acct-wal__vault-cta:active { transform: translateY(0); }
