@@ -78,12 +78,36 @@ importers:
       '@henryco/dashboard-modules-building':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-building
+      '@henryco/dashboard-modules-business':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-business
+      '@henryco/dashboard-modules-care':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-care
       '@henryco/dashboard-modules-hotel':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-hotel
+      '@henryco/dashboard-modules-jobs':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-jobs
+      '@henryco/dashboard-modules-learn':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-learn
+      '@henryco/dashboard-modules-logistics':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-logistics
       '@henryco/dashboard-modules-marketplace':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-marketplace
+      '@henryco/dashboard-modules-play':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-play
+      '@henryco/dashboard-modules-property':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-property
+      '@henryco/dashboard-modules-studio':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-studio
       '@henryco/dashboard-modules-wallet':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-wallet
@@ -2078,6 +2102,89 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/dashboard-modules-business:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/cart-saved-items':
+        specifier: workspace:^
+        version: link:../cart-saved-items
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-care:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/dashboard-modules-hotel:
     dependencies:
       react:
@@ -2096,6 +2203,129 @@ importers:
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../dashboard-shell
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-jobs:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-learn:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-logistics:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
       '@types/node':
         specifier: ^20
         version: 20.19.37
@@ -2201,6 +2431,86 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/dashboard-modules-play:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/gaming-arena':
+        specifier: workspace:^
+        version: link:../gaming-arena
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-property:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/dashboard-modules-staff:
     dependencies:
       react:
@@ -2225,6 +2535,46 @@ importers:
       '@henryco/observability':
         specifier: workspace:^
         version: link:../observability
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-studio:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
       '@types/node':
         specifier: ^20
         version: 20.19.37
