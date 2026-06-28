@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 import { CheckCircle2, Info, MessageSquare, Sparkles, X } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioPortalCopy } from "@henryco/i18n";
 
 type ToastTone = "info" | "success" | "message";
 
@@ -73,6 +75,8 @@ export function PortalToastProvider({ children }: { children: React.ReactNode })
 }
 
 function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioPortalCopy(locale);
   const Icon =
     toast.tone === "message" ? MessageSquare : toast.tone === "success" ? CheckCircle2 : Info;
   const accent =
@@ -100,7 +104,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
             className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
           >
             <Sparkles className="h-3 w-3" />
-            View
+            {copy.toast.viewAction}
           </a>
         ) : null}
       </div>
@@ -108,7 +112,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
         type="button"
         onClick={onDismiss}
         className="rounded-full p-1 text-[var(--studio-ink-soft)] transition hover:bg-[rgba(255,255,255,0.05)] hover:text-[var(--studio-ink)]"
-        aria-label="Dismiss notification"
+        aria-label={copy.toast.dismiss}
       >
         <X className="h-3.5 w-3.5" />
       </button>

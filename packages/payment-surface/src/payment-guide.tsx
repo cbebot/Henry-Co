@@ -1,6 +1,7 @@
 import { Mail, ShieldCheck, Smartphone } from "lucide-react";
 import { cn } from "@henryco/ui/cn";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
+import { getPaymentSurfaceCopy, DEFAULT_LOCALE, type AppLocale } from "@henryco/i18n";
 import { PaymentCopyButton } from "./payment-copy-button";
 import { formatPaymentAmount } from "./format";
 import type { PaymentPlatformAccount, PaymentSurfaceCopy, PaymentSurfaceTheme } from "./types";
@@ -16,6 +17,8 @@ export interface PaymentGuideProps {
   platform: PaymentPlatformAccount;
   copy?: PaymentSurfaceCopy;
   theme?: PaymentSurfaceTheme;
+  /** Active locale for shared-surface copy. Defaults to EN when omitted. */
+  locale?: AppLocale;
 }
 
 function whatsappHrefOf(value: string | null) {
@@ -41,7 +44,9 @@ export function PaymentGuide({
   platform,
   copy,
   theme,
+  locale = DEFAULT_LOCALE,
 }: PaymentGuideProps) {
+  const t = getPaymentSurfaceCopy(locale).guide;
   const formattedAmount = formatPaymentAmount(amount, currency);
   const whatsapp = whatsappHrefOf(platform.supportWhatsApp);
   const panelClass = cn(
@@ -64,13 +69,13 @@ export function PaymentGuide({
         title={copy?.guideTitle ?? title}
         body={instructions}
         rows={[
-          { key: "amount", label: "Amount due", value: formattedAmount },
-          { key: "due", label: "Due", value: dueLabel },
+          { key: "amount", label: t.amountDue, value: formattedAmount },
+          { key: "due", label: t.due, value: dueLabel },
         ]}
         footer={
           <div className="flex flex-wrap items-center gap-2">
-            <span>Reference this exact amount and your record name when you send proof of payment.</span>
-            <PaymentCopyButton value={String(Math.round(amount))} label="Copy amount" />
+            <span>{t.footerReference}</span>
+            <PaymentCopyButton value={String(Math.round(amount))} label={t.copyAmount} />
           </div>
         }
       />
@@ -83,17 +88,16 @@ export function PaymentGuide({
           )}
         >
           <ShieldCheck className="h-3.5 w-3.5" />
-          Verified company payee
+          {t.verifiedPayee}
         </div>
         <p className={cn("mt-2 max-w-2xl text-sm leading-6", softClass)}>
-          Transfer only to the HenryCo company account shown below. Each detail has a copy button so nothing
-          has to be retyped.
+          {t.transferOnly}
         </p>
         <dl className="mt-4 divide-y divide-[color:var(--payment-line,rgba(255,255,255,0.18))] border-y border-[color:var(--payment-line,rgba(255,255,255,0.18))]">
           {[
-            { key: "bank", label: "Bank", value: platform.bankName, copyLabel: "Copy bank" },
-            { key: "name", label: "Account name", value: platform.accountName, copyLabel: "Copy name" },
-            { key: "number", label: "Account number", value: platform.accountNumber, copyLabel: "Copy number" },
+            { key: "bank", label: t.bankLabel, value: platform.bankName, copyLabel: t.copyBank },
+            { key: "name", label: t.accountNameLabel, value: platform.accountName, copyLabel: t.copyName },
+            { key: "number", label: t.accountNumberLabel, value: platform.accountNumber, copyLabel: t.copyNumber },
           ].map((item) => (
             <div
               key={item.key}
@@ -109,7 +113,7 @@ export function PaymentGuide({
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
                 <span className={cn("min-w-0 flex-1 truncate font-mono text-sm font-semibold sm:flex-initial sm:text-right", inkClass)}>
-                  {item.value || "Awaiting finance configuration"}
+                  {item.value || t.awaitingConfiguration}
                 </span>
                 {item.value ? <PaymentCopyButton value={item.value} label={item.copyLabel} /> : null}
               </dd>
@@ -120,15 +124,10 @@ export function PaymentGuide({
 
       <div className={panelClass}>
         <div className={cn("text-[10.5px] font-semibold uppercase tracking-[0.22em]", accentTextClass)}>
-          What happens, step by step
+          {t.stepsHeading}
         </div>
         <ol className="mt-3 divide-y divide-[color:var(--payment-line,rgba(255,255,255,0.18))] border-y border-[color:var(--payment-line,rgba(255,255,255,0.18))]">
-          {[
-            "Copy the amount and account details from the section above.",
-            "Transfer from your bank or company account using your record name as reference.",
-            "Upload your receipt or proof below — finance reviews and confirms within one business day.",
-            "Once confirmed, your record advances and you receive an update by email.",
-          ].map((step, index) => (
+          {[t.step1, t.step2, t.step3, t.step4].map((step, index) => (
             <li
               key={step}
               className={cn("flex items-start gap-3 py-3 text-sm leading-6", softClass)}
@@ -153,7 +152,7 @@ export function PaymentGuide({
       {platform.supportEmail || (platform.supportWhatsApp && whatsapp) ? (
         <div className={panelClass}>
           <div className={cn("text-[10.5px] font-semibold uppercase tracking-[0.22em]", accentTextClass)}>
-            Need help before or after payment
+            {t.supportHeading}
           </div>
           <ul className="mt-3 divide-y divide-[color:var(--payment-line,rgba(255,255,255,0.18))] border-y border-[color:var(--payment-line,rgba(255,255,255,0.18))]">
             {platform.supportEmail ? (
@@ -172,7 +171,7 @@ export function PaymentGuide({
                     <span className="min-w-0 break-all">{platform.supportEmail}</span>
                   </span>
                   <span className={cn("shrink-0 text-[10.5px] font-semibold uppercase tracking-[0.22em]", softClass)}>
-                    Email
+                    {t.emailLabel}
                   </span>
                 </a>
               </li>
@@ -195,7 +194,7 @@ export function PaymentGuide({
                     <span className="min-w-0 break-all">{platform.supportWhatsApp}</span>
                   </span>
                   <span className={cn("shrink-0 text-[10.5px] font-semibold uppercase tracking-[0.22em]", softClass)}>
-                    WhatsApp
+                    {t.whatsappLabel}
                   </span>
                 </a>
               </li>

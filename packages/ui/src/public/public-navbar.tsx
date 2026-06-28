@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getUiMiscCopy } from "@henryco/i18n";
 import { cn } from "../lib/cn";
 import { PublicButton } from "./public-button";
 import { ThemeToggle } from "./theme-toggle";
@@ -38,6 +40,7 @@ export function PublicNavbar({
   headerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const copy = getUiMiscCopy(useHenryCoLocale()).navbar;
 
   return (
     <header
@@ -109,7 +112,7 @@ export function PublicNavbar({
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white/70 text-zinc-950 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-white/5 dark:text-white"
-            aria-label="Toggle menu"
+            aria-label={copy.toggleMenu}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { BrandedDocument } from "../components/BrandedDocument";
 import { DocumentSection, DefinitionList } from "../components/DocumentSection";
@@ -57,6 +58,7 @@ export type LogisticsB2BStatementProps = {
     currency: string;
   };
   rows: LogisticsB2BStatementRow[];
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -92,37 +94,39 @@ export function LogisticsB2BStatementDocument({
   period,
   totals,
   rows,
+  locale = "en",
 }: LogisticsB2BStatementProps) {
+  const t = getBrandedDocumentsCopy(locale).logisticsB2b;
   const columns: Array<DataTableColumn<LogisticsB2BStatementRow>> = [
     {
       key: "trackingCode",
-      header: "Tracking",
+      header: t.columnTracking,
       flex: 1.2,
       mono: true,
       render: (row) => row.trackingCode,
     },
     {
       key: "recipient",
-      header: "Recipient",
+      header: t.columnRecipient,
       flex: 2,
       render: (row) => row.recipientName,
     },
     {
       key: "service",
-      header: "Service",
+      header: t.columnService,
       flex: 1.6,
       render: (row) =>
         `${titleCase(row.serviceType)}${row.zone ? ` · ${row.zone}` : ""}`,
     },
     {
       key: "status",
-      header: "Status",
+      header: t.columnStatus,
       flex: 1,
       render: (row) => statusToLabel(row.status),
     },
     {
       key: "amount",
-      header: "Amount",
+      header: t.columnAmount,
       flex: 1.2,
       align: "right",
       mono: true,
@@ -132,59 +136,60 @@ export function LogisticsB2BStatementDocument({
 
   return (
     <BrandedDocument
+      locale={locale}
       metadata={{
         title: `B2B statement · ${account.name} · ${period.label}`,
-        subject: "HenryCo Logistics B2B statement",
+        subject: t.subject,
         keywords: ["logistics", "b2b", "statement", "henryco", account.name],
       }}
       header={{
-        documentType: "B2B statement",
+        documentType: t.documentType,
         title: account.name,
-        subtitle: `${period.label} · ${totals.shipments} shipments`,
+        subtitle: `${period.label} · ${t.subtitleShipments(totals.shipments)}`,
         meta: [
-          { label: "Period", value: period.label },
-          { label: "Starts", value: formatDateTime(period.startsAt) },
-          { label: "Ends", value: formatDateTime(period.endsAt) },
+          { label: t.metaPeriod, value: period.label },
+          { label: t.metaStarts, value: formatDateTime(period.startsAt) },
+          { label: t.metaEnds, value: formatDateTime(period.endsAt) },
         ],
-        divisionLabel: "Logistics · B2B",
+        divisionLabel: t.divisionLabel,
       }}
       division="logistics"
     >
       <View style={styles.banner}>
-        <Text style={styles.bannerLabel}>Gross spend</Text>
+        <Text style={styles.bannerLabel}>{t.grossSpend}</Text>
         <Text style={styles.bannerValue}>
           {formatKobo(totals.grossKobo, totals.currency)}
         </Text>
       </View>
 
-      <DocumentSection kicker="Account" tone="elevated">
+      <DocumentSection kicker={t.sectionAccount} tone="elevated">
         <DefinitionList
           rows={[
-            { label: "Name", value: account.name },
-            { label: "Legal name", value: account.legalName ?? account.name },
+            { label: t.rowName, value: account.name },
+            { label: t.rowLegalName, value: account.legalName ?? account.name },
             {
-              label: "Billing terms",
+              label: t.rowBillingTerms,
               value: titleCase(account.billingTerms),
             },
             {
-              label: "Billing email",
+              label: t.rowBillingEmail,
               value: account.billingEmail ?? "—",
             },
           ]}
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Period summary">
+      <DocumentSection kicker={t.sectionPeriodSummary}>
         <DefinitionList
           rows={[
-            { label: "Shipments", value: String(totals.shipments) },
-            { label: "Delivered", value: String(totals.delivered) },
+            { label: t.rowShipments, value: String(totals.shipments) },
+            { label: t.rowDelivered, value: String(totals.delivered) },
             {
-              label: "On-time",
+              label: t.rowOnTime,
               value: `${totals.onTimePct}%`,
             },
             {
-              label: "Gross spend",
+              label: t.rowGrossSpend,
               value: formatKobo(totals.grossKobo, totals.currency),
               mono: true,
             },
@@ -192,21 +197,16 @@ export function LogisticsB2BStatementDocument({
         />
       </DocumentSection>
 
-      <DocumentSection kicker="Itemised shipments">
+      <DocumentSection kicker={t.sectionItemised}>
         <DataTable
           columns={columns}
           rows={rows}
           striped
-          emptyMessage="No shipments in this period."
+          emptyMessage={t.emptyShipments}
         />
       </DocumentSection>
 
-      <LegalFooter
-        lines={[
-          "This statement summarises shipment activity booked through your HenryCo B2B account during the period above. Amounts are gross of any negotiated rebate, which is settled separately on the agreed cadence.",
-          "Discrepancies must be raised within the dispute window stated in your service agreement; we cannot re-bill outside that window.",
-        ]}
-      />
+      <LegalFooter lines={[t.legalLine1, t.legalLine2]} />
     </BrandedDocument>
   );
 }

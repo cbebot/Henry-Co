@@ -1,13 +1,18 @@
 import { HenryCoPublicContentSkeleton } from "@henryco/ui";
 import { PublicRouteLoader } from "@henryco/ui/public-shell";
+import { getJobsCandidateSurfaceCopy } from "@henryco/i18n";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 
-export default function Loading() {
+export default async function Loading() {
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsCandidateSurfaceCopy(locale).pageLoading;
+
   return (
     <div className="jobs-page">
       <PublicRouteLoader
-        eyebrow="HenryCo Jobs"
-        title="Gathering this page for you"
-        subtitle="We are loading the latest jobs and updates. You can keep this tab open — nothing is wrong on your side."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        subtitle={copy.subtitle}
         className="mx-auto max-w-7xl"
       >
         <HenryCoPublicContentSkeleton cards={3} className="pt-2" />

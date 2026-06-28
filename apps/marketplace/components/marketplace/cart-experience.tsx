@@ -5,6 +5,8 @@ import { SaveForLaterButton } from "@henryco/cart-saved-items/client";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceCheckoutCopy } from "@henryco/i18n";
 import {
   useMarketplaceCart,
   useMarketplaceWishlist,
@@ -12,6 +14,8 @@ import {
 import { formatCurrency } from "@/lib/utils";
 
 export function CartExperience() {
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceCheckoutCopy(locale).cartExperience;
   const {
     cart,
     cartBusy,
@@ -41,14 +45,14 @@ export function CartExperience() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-                  Split-order clarity
+                  {copy.splitOrderClarity}
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)]">
                   {groupName}
                 </h2>
               </div>
               <p className="rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
-                {items[0]?.inventoryOwnerType === "company" ? "HenryCo stocked" : "Verified vendor"}
+                {items[0]?.inventoryOwnerType === "company" ? copy.henryCoStocked : copy.verifiedVendor}
               </p>
             </div>
 
@@ -78,7 +82,7 @@ export function CartExperience() {
                     <div className="flex flex-col gap-4">
                       <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
-                          {item.vendorName || "Trusted seller"}
+                          {item.vendorName || copy.trustedSeller}
                         </p>
                         <h3 className="mt-2 text-xl font-semibold tracking-tight text-[var(--market-paper-white)]">
                           {item.title}
@@ -94,7 +98,7 @@ export function CartExperience() {
                             onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
                             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--market-paper-white)] disabled:cursor-wait"
                           >
-                            {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" /> : "-"}
+                            {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.updatingCart} /> : "-"}
                           </button>
                           <span className="min-w-10 text-center text-sm font-semibold text-[var(--market-paper-white)]">
                             {item.quantity}
@@ -106,7 +110,7 @@ export function CartExperience() {
                             onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
                             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--market-paper-white)] disabled:cursor-wait"
                           >
-                            {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" /> : "+"}
+                            {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.updatingCart} /> : "+"}
                           </button>
                         </div>
                         <div className="text-right">
@@ -127,8 +131,8 @@ export function CartExperience() {
                           }}
                           pending={movingToSaved}
                           className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold disabled:cursor-wait"
-                          labelIdle="Save for later"
-                          labelBusy="Saving..."
+                          labelIdle={copy.saveForLater}
+                          labelBusy={copy.saving}
                         />
                         <ActionButton
                           tone="ghost"
@@ -137,9 +141,9 @@ export function CartExperience() {
                           }}
                           disabled={cartBusy}
                           icon={<Trash2 className="h-4 w-4" />}
-                          aria-label={`Remove ${item.title} from cart`}
+                          aria-label={copy.removeAria.replace("{title}", item.title)}
                         >
-                          Remove
+                          {copy.remove}
                         </ActionButton>
                         <ActionButton
                           tone="ghost"
@@ -149,13 +153,13 @@ export function CartExperience() {
                           spinner={saving}
                           disabled={saving}
                         >
-                          {saved ? "Wishlisted" : "Add to wishlist"}
+                          {saved ? copy.wishlisted : copy.addToWishlist}
                         </ActionButton>
                         <Link
                           href={`/product/${item.productSlug}`}
                           className="ml-auto text-sm font-semibold text-[var(--market-brass)]"
                         >
-                          Open product
+                          {copy.openProduct}
                         </Link>
                       </div>
                     </div>
@@ -169,41 +173,41 @@ export function CartExperience() {
 
       <aside className="market-panel sticky top-28 h-fit rounded-[2rem] p-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-          Checkout readiness
+          {copy.checkoutReadiness}
         </p>
         <div className="mt-5 space-y-3 text-sm text-[var(--market-muted)]">
           <div className="flex items-center justify-between">
-            <span>Items</span>
+            <span>{copy.items}</span>
             <span className="font-semibold text-[var(--market-paper-white)]">{cart.count}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span>Subtotal</span>
+            <span>{copy.subtotal}</span>
             <span className="font-semibold text-[var(--market-paper-white)]">
               {formatCurrency(cart.subtotal, cart.items[0]?.currency || "NGN")}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span>Estimated shipping</span>
+            <span>{copy.estimatedShipping}</span>
             <span className="font-semibold text-[var(--market-paper-white)]">
-              {cart.subtotal > 350000 ? "Free" : formatCurrency(18000, cart.items[0]?.currency || "NGN")}
+              {cart.subtotal > 350000 ? copy.free : formatCurrency(18000, cart.items[0]?.currency || "NGN")}
             </span>
           </div>
         </div>
         <div className="mt-6 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
-          Each vendor segment stays visible during checkout so buyers understand delivery timing, payment state, and post-order support before confirming.
+          {copy.vendorSegmentNote}
         </div>
         <div className="mt-6 grid gap-3">
           <Link
             href="/checkout"
             className="market-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Continue to checkout
+            {copy.continueToCheckout}
           </Link>
           <Link
             href="/search"
             className="market-button-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
           >
-            Keep browsing
+            {copy.keepBrowsing}
           </Link>
         </div>
       </aside>

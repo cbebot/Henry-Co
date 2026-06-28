@@ -7,6 +7,8 @@ import {
   Panel,
 } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getRoomsCopy } from "@henryco/i18n";
 
 import { sendRoomMessage as sendRoomMessageAction } from "../server/actions";
 import { useRoomsRealtime } from "../realtime/rooms-realtime";
@@ -66,6 +68,8 @@ export function RoomChat({
   maxHeight = "24rem",
   renderComposer,
 }: RoomChatProps) {
+  const locale = useHenryCoLocale();
+  const copy = getRoomsCopy(locale).roomChat;
   const { messages, status } = useRoomsRealtime();
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -90,12 +94,12 @@ export function RoomChat({
       });
       setSending(false);
       if (isRoomError(result)) {
-        setError(`Could not send: ${result.error}`);
+        setError(copy.sendError(result.error));
         return;
       }
       setDraft("");
     },
-    [sessionId],
+    [sessionId, copy],
   );
 
   const onSubmit = useCallback(
@@ -132,11 +136,11 @@ export function RoomChat({
         }}
       >
         <textarea
-          aria-label="Chat message"
+          aria-label={copy.messageLabel}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Type a message — Enter to send."
+          placeholder={copy.placeholder}
           rows={2}
           disabled={sending}
           style={{
@@ -157,7 +161,7 @@ export function RoomChat({
         <button
           type="submit"
           disabled={sending || !draft.trim()}
-          aria-label="Send message"
+          aria-label={copy.sendLabel}
           style={{
             padding: "0.5rem 0.85rem",
             minHeight: "2.5rem",
@@ -170,17 +174,17 @@ export function RoomChat({
             opacity: sending || !draft.trim() ? 0.6 : 1,
           }}
         >
-          {sending ? "Sending…" : "Send"}
+          {sending ? copy.sending : copy.send}
         </button>
       </form>
     );
-  }, [renderComposer, send, sending, draft, onSubmit, onKeyDown]);
+  }, [renderComposer, send, sending, draft, onSubmit, onKeyDown, copy]);
 
   return (
     <Panel
       tone="flat"
       padding="md"
-      aria-label="Room chat"
+      aria-label={copy.panelLabel}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -200,9 +204,9 @@ export function RoomChat({
           <LoadingSkeleton variant="card" lines={3} />
         ) : messages.length === 0 ? (
           <EmptyState
-            kicker="Room chat"
-            headline="No messages yet"
-            body="Send the first message — others in the room will see it instantly."
+            kicker={copy.emptyKicker}
+            headline={copy.emptyHeadline}
+            body={copy.emptyBody}
             align="start"
           />
         ) : (
@@ -221,7 +225,10 @@ export function RoomChat({
                 key={m.id}
                 message={m}
                 selfUserId={selfUserId}
-                displayName={resolveDisplayName?.(m.senderUserId) ?? "Participant"}
+                displayName={
+                  resolveDisplayName?.(m.senderUserId) ?? copy.participantFallback
+                }
+                selfLabel={copy.you}
               />
             ))}
           </ul>
@@ -249,10 +256,12 @@ function MessageRow({
   message,
   selfUserId,
   displayName,
+  selfLabel,
 }: {
   message: RoomMessage;
   selfUserId: string;
   displayName: string;
+  selfLabel: string;
 }) {
   const isSelf = message.senderUserId === selfUserId;
   return (
@@ -270,7 +279,7 @@ function MessageRow({
           marginBottom: "0.15rem",
         }}
       >
-        {isSelf ? "You" : displayName} ·{" "}
+        {isSelf ? selfLabel : displayName} ·{" "}
         {new Date(message.sentAt).toLocaleTimeString(undefined, {
           hour: "2-digit",
           minute: "2-digit",

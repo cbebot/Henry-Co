@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ExternalLink, MailIcon, ShieldCheck, UserCircle } from "lucide-react";
 
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioAccountUrl } from "@/lib/studio/links";
 
 export const metadata: Metadata = {
@@ -13,19 +15,20 @@ export const metadata: Metadata = {
 export default async function ClientProfilePage() {
   const viewer = await requireClientPortalViewer("/client/profile");
   const accountUrl = getStudioAccountUrl();
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
 
   return (
     <div className="space-y-6">
       <header>
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-          Account
+          {copy.profile.kicker}
         </div>
         <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Profile
+          {copy.profile.title}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Your sign-in details and security settings live on the shared HenryCo account. Open it
-          there to update your name, password, two-factor settings, and connected divisions.
+          {copy.profile.body}
         </p>
       </header>
 
@@ -33,7 +36,7 @@ export default async function ClientProfilePage() {
         {viewer.avatarUrl ? (
           <Image
             src={viewer.avatarUrl}
-            alt={viewer.fullName || "Profile"}
+            alt={viewer.fullName || copy.profile.avatarAlt}
             width={64}
             height={64}
             unoptimized
@@ -47,7 +50,7 @@ export default async function ClientProfilePage() {
 
         <div className="min-w-0 flex-1">
           <div className="text-[18px] font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-            {viewer.fullName || viewer.email || "Studio client"}
+            {viewer.fullName || viewer.email || copy.profile.fallbackName}
           </div>
           {viewer.email ? (
             <div className="mt-1 inline-flex items-center gap-1.5 text-[13px] text-[var(--studio-ink-soft)]">
@@ -59,22 +62,22 @@ export default async function ClientProfilePage() {
           <div className="mt-5 grid gap-3">
             <ProfileLink
               icon={ExternalLink}
-              title="Update profile"
-              body="Change your name, avatar, and contact details on your HenryCo account."
+              title={copy.profile.updateTitle}
+              body={copy.profile.updateBody}
               href={accountUrl}
               external
             />
             <ProfileLink
               icon={ShieldCheck}
-              title="Security & sign-in"
-              body="Update your password, manage two-factor authentication, and review active sessions."
+              title={copy.profile.securityTitle}
+              body={copy.profile.securityBody}
               href={`${accountUrl}/security`}
               external
             />
             <ProfileLink
               icon={UserCircle}
-              title="HenryCo account home"
-              body="See all your divisions in one place — Studio, Care, Hub, and more."
+              title={copy.profile.accountHomeTitle}
+              body={copy.profile.accountHomeBody}
               href={accountUrl}
               external
             />
@@ -84,18 +87,17 @@ export default async function ClientProfilePage() {
 
       <section className="portal-card p-5 sm:p-6">
         <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
-          Need help?
+          {copy.profile.needHelp}
         </h2>
         <p className="mt-2 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-          For anything project-related, message the team directly inside your project. For account
-          questions, billing escalations, or anything else, you can always reach support.
+          {copy.profile.needHelpBody}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/contact" className="portal-button portal-button-secondary">
-            Contact support
+            {copy.profile.contactSupport}
           </Link>
           <Link href="/client/messages" className="portal-button portal-button-ghost">
-            Open inbox
+            {copy.profile.openInbox}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

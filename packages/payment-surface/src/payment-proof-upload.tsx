@@ -1,5 +1,6 @@
 import { UploadCloud } from "lucide-react";
 import { cn } from "@henryco/ui/cn";
+import { getPaymentSurfaceCopy, DEFAULT_LOCALE, type AppLocale } from "@henryco/i18n";
 import { PaymentActionButton } from "./payment-action-button";
 import { PaymentFileField } from "./payment-file-field";
 import type { PaymentProofUploadConfig, PaymentSurfaceTheme, PaymentStatus } from "./types";
@@ -11,6 +12,8 @@ export interface PaymentProofUploadProps {
   status: PaymentStatus;
   /** Drives the success-lock state on the submit button when status flips. */
   successLocked?: boolean;
+  /** Active locale for shared-surface copy. Defaults to EN when omitted. */
+  locale?: AppLocale;
 }
 
 /**
@@ -20,9 +23,10 @@ export interface PaymentProofUploadProps {
  * back-end action remains app-owned (per V2-PAYMENT-UNIFICATION anti-pattern
  * "do not change the underlying payment data model").
  */
-export function PaymentProofUpload({ upload, theme, status, successLocked }: PaymentProofUploadProps) {
+export function PaymentProofUpload({ upload, theme, status, successLocked, locale = DEFAULT_LOCALE }: PaymentProofUploadProps) {
+  const t = getPaymentSurfaceCopy(locale).proofUpload;
   const eyebrow =
-    status === "processing" ? "Attach the missing proof" : "Send your proof";
+    status === "processing" ? t.eyebrowProcessing : t.eyebrowSend;
 
   return (
     <section
@@ -52,8 +56,7 @@ export function PaymentProofUpload({ upload, theme, status, successLocked }: Pay
               theme?.softTextClassName,
             )}
           >
-            Upload your receipt or alert. Finance reviews and confirms within one business day —
-            this page will update automatically.
+            {t.intro}
           </p>
         </div>
       </div>
@@ -67,15 +70,15 @@ export function PaymentProofUpload({ upload, theme, status, successLocked }: Pay
           required
           variant="compact"
           accept={upload.accept ?? "image/*,application/pdf"}
-          title="Payment proof file"
-          description="Bank receipt, debit alert screenshot, or PDF — must show amount, date, and destination."
-          footerHint="We trim the file name to a clean label finance can scan quickly."
+          title={t.fieldTitle}
+          description={t.fieldDescription}
+          footerHint={t.fieldFooterHint}
         />
         <PaymentActionButton
-          label={upload.submitLabel ?? "Submit payment proof"}
-          pendingLabel={upload.pendingLabel ?? "Uploading…"}
+          label={upload.submitLabel ?? t.submitLabel}
+          pendingLabel={upload.pendingLabel ?? t.pendingLabel}
           successLocked={successLocked}
-          successLabel="Proof received"
+          successLabel={t.successLabel}
         />
       </form>
     </section>

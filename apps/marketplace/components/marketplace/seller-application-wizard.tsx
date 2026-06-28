@@ -5,6 +5,11 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileCheck2, ShieldCheck, UploadCloud } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { ActionButton } from "@henryco/dashboard-shell/components";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import {
+  getMarketplaceSellerApplicationCopy,
+  type MarketplaceSellerApplicationCopy,
+} from "@henryco/i18n";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { sellerPlans } from "@/lib/marketplace/governance";
 import type {
@@ -38,29 +43,28 @@ const stepOrder: SellerWizardStep[] = ["start", "verification", "review"];
 
 const documentRequirements: Array<{
   key: DocumentKey;
-  label: string;
-  help: string;
   required: boolean;
 }> = [
   {
     key: "businessRegistration",
-    label: "Business registration or operating proof",
-    help: "Recommended. This accelerates approval for registered entities and reduces follow-up.",
     required: false,
   },
   {
     key: "founderIdentity",
-    label: "Founder identity / KYC document",
-    help: "Required before trust review can close. Upload a clear government-issued ID or approved KYC file.",
     required: true,
   },
   {
     key: "payoutProof",
-    label: "Payout account proof",
-    help: "Required before payout-sensitive seller permissions can unlock.",
     required: true,
   },
 ];
+
+function documentCopy(
+  copy: MarketplaceSellerApplicationCopy,
+  key: DocumentKey,
+): { label: string; help: string } {
+  return copy.wizard.documents[key];
+}
 
 function nextStep(step: SellerWizardStep) {
   return stepOrder[Math.min(stepOrder.indexOf(step) + 1, stepOrder.length - 1)];
@@ -140,6 +144,8 @@ export function SellerApplicationWizard({
   initialPlan = null,
 }: SellerApplicationWizardProps) {
   const { pushToast } = useMarketplaceRuntime();
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceSellerApplicationCopy(locale);
   const initialDraft = initialApplication?.draftPayload ?? {};
   const draftPlan =
     typeof (initialDraft as Record<string, unknown>).plan === "string"
@@ -170,8 +176,8 @@ export function SellerApplicationWizard({
     () =>
       documentRequirements
         .filter((item) => item.required && !form.documents[item.key]?.fileUrl)
-        .map((item) => item.label),
-    [form.documents]
+        .map((item) => documentCopy(copy, item.key).label),
+    [form.documents, copy]
   );
 
   useEffect(() => {
@@ -207,12 +213,12 @@ export function SellerApplicationWizard({
             });
             if (!response.ok) {
               const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-              throw new Error(payload?.error || "Draft save failed.");
+              throw new Error(payload?.error || copy.wizard.draftSaveFailed);
             }
             setError(null);
             setSavedAt(new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
           } catch (reason) {
-            setError(reason instanceof Error ? reason.message : "Draft save failed.");
+            setError(reason instanceof Error ? reason.message : copy.wizard.draftSaveFailed);
           } finally {
             setSaving(false);
           }
@@ -223,7 +229,7 @@ export function SellerApplicationWizard({
     return () => {
       window.clearTimeout(timer);
     };
-  }, [form, initialApplication, step]);
+  }, [form, initialApplication, step, copy.wizard.draftSaveFailed]);
 
   async function submitApplication() {
     setSubmitState("submitting");
@@ -242,15 +248,19 @@ export function SellerApplicationWizard({
 
     if (response.ok) {
       setSubmitState("submitted");
-      pushToast("Seller application submitted", "success", "HenryCo review has started.");
+      pushToast(
+        copy.wizard.toast.submittedTitle,
+        "success",
+        copy.wizard.toast.submittedBody
+      );
       window.location.href = "/account/seller-application?submitted=1";
       return;
     }
 
     const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    const message = payload?.error || "Application submission failed.";
+    const message = payload?.error || copy.wizard.toast.submissionFailed;
     setError(message);
-    pushToast("Submission blocked", "error", message);
+    pushToast(copy.wizard.toast.submissionBlockedTitle, "error", message);
     setSubmitState("idle");
   }
 
@@ -274,7 +284,7 @@ export function SellerApplicationWizard({
         | null;
 
       if (!response.ok || !result?.document) {
-        throw new Error(result?.error || "Upload failed.");
+        throw new Error(result?.error || copy.wizard.toast.uploadFailed);
       }
 
       setForm((current) => ({
@@ -284,11 +294,11 @@ export function SellerApplicationWizard({
           [key]: result.document!,
         },
       }));
-      pushToast("Document uploaded", "success", file.name);
+      pushToast(copy.wizard.toast.documentUploadedTitle, "success", file.name);
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : "Upload failed.";
+      const message = reason instanceof Error ? reason.message : copy.wizard.toast.uploadFailed;
       setError(message);
-      pushToast("Upload failed", "error", message);
+      pushToast(copy.wizard.toast.uploadFailedTitle, "error", message);
     } finally {
       setUploadingKeys((current) => current.filter((item) => item !== key));
     }
@@ -299,21 +309,21 @@ export function SellerApplicationWizard({
       {selectedPlanDefinition ? (
         <div className="market-panel rounded-[1.9rem] p-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-            Plan selected from pricing
+            {copy.wizard.plan.kicker}
           </p>
           <p className="mt-2 text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
             {selectedPlanDefinition.name}
             {" — "}
             <span className="text-[var(--market-brass)]">
               {selectedPlanDefinition.monthlyFee == null
-                ? "Custom"
+                ? copy.wizard.plan.custom
                 : selectedPlanDefinition.monthlyFee === 0
-                  ? "Free"
-                  : `NGN ${selectedPlanDefinition.monthlyFee.toLocaleString()}/month`}
+                  ? copy.wizard.plan.free
+                  : copy.wizard.plan.monthlyFee(selectedPlanDefinition.monthlyFee.toLocaleString())}
             </span>
           </p>
           <p className="mt-1.5 text-sm leading-7 text-[var(--market-muted)]">
-            {selectedPlanDefinition.summary} You can confirm or change this when vendor onboarding opens after approval.
+            {selectedPlanDefinition.summary}{copy.wizard.plan.summarySuffix}
           </p>
         </div>
       ) : null}
@@ -331,12 +341,20 @@ export function SellerApplicationWizard({
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-current/12 text-xs">
                 {index + 1}
               </span>
-              {item === "start" ? "Store identity" : item === "verification" ? "Verification" : "Review"}
+              {item === "start"
+                ? copy.wizard.steps.storeIdentity
+                : item === "verification"
+                  ? copy.wizard.steps.verification
+                  : copy.wizard.steps.review}
             </div>
           ))}
         </div>
         <p className="mt-4 text-sm leading-7 text-[var(--market-muted)]">
-          {saving ? "Saving draft..." : savedAt ? `Draft saved at ${savedAt}.` : "Drafts autosave while you work."}
+          {saving
+            ? copy.wizard.autosave.saving
+            : savedAt
+              ? copy.wizard.autosave.savedAt(savedAt)
+              : copy.wizard.autosave.idle}
         </p>
         {error ? (
           <p className="mt-2 rounded-full bg-[rgba(126,33,18,0.08)] px-4 py-2 text-sm font-medium text-[var(--market-alert)]">
@@ -350,7 +368,7 @@ export function SellerApplicationWizard({
           <div className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="space-y-2">
-                <span className="text-sm font-semibold text-[var(--market-ink)]">Store name</span>
+                <span className="text-sm font-semibold text-[var(--market-ink)]">{copy.wizard.start.storeName}</span>
                 <input
                   value={form.storeName}
                   onChange={(event) => setForm((current) => ({ ...current, storeName: event.target.value }))}
@@ -358,7 +376,7 @@ export function SellerApplicationWizard({
                 />
               </label>
               <label className="space-y-2">
-                <span className="text-sm font-semibold text-[var(--market-ink)]">Store slug</span>
+                <span className="text-sm font-semibold text-[var(--market-ink)]">{copy.wizard.start.storeSlug}</span>
                 <input
                   value={form.storeSlug}
                   onChange={(event) => setForm((current) => ({ ...current, storeSlug: event.target.value }))}
@@ -366,7 +384,7 @@ export function SellerApplicationWizard({
                 />
               </label>
               <label className="space-y-2">
-                <span className="text-sm font-semibold text-[var(--market-ink)]">Legal business name</span>
+                <span className="text-sm font-semibold text-[var(--market-ink)]">{copy.wizard.start.legalName}</span>
                 <input
                   value={form.legalName}
                   onChange={(event) => setForm((current) => ({ ...current, legalName: event.target.value }))}
@@ -374,7 +392,7 @@ export function SellerApplicationWizard({
                 />
               </label>
               <label className="space-y-2">
-                <span className="text-sm font-semibold text-[var(--market-ink)]">Operating phone</span>
+                <span className="text-sm font-semibold text-[var(--market-ink)]">{copy.wizard.start.operatingPhone}</span>
                 <input
                   value={form.phone}
                   onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
@@ -382,18 +400,17 @@ export function SellerApplicationWizard({
                 />
               </label>
               <label className="space-y-2 sm:col-span-2">
-                <span className="text-sm font-semibold text-[var(--market-ink)]">Category focus</span>
+                <span className="text-sm font-semibold text-[var(--market-ink)]">{copy.wizard.start.categoryFocus}</span>
                 <input
                   value={form.categoryFocus}
                   onChange={(event) => setForm((current) => ({ ...current, categoryFocus: event.target.value }))}
                   className="market-input rounded-[1.2rem] px-4 py-3"
-                  placeholder="Premium home, founder office, elevated style..."
+                  placeholder={copy.wizard.start.categoryPlaceholder}
                 />
               </label>
             </div>
             <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5 text-sm leading-7 text-[var(--market-muted)]">
-              Store identity is what the moderation and owner review queue will see first. Keep the name, legal entity,
-              and category focus precise so approval and trust-routing do not stall.
+              {copy.wizard.start.guidance}
             </div>
           </div>
         ) : null}
@@ -402,13 +419,13 @@ export function SellerApplicationWizard({
           <div className="space-y-5">
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
               <label className="block space-y-2">
-                <span className="text-sm font-semibold text-[var(--market-ink)]">Store story and trust angle</span>
+                <span className="text-sm font-semibold text-[var(--market-ink)]">{copy.wizard.verification.storyLabel}</span>
                 <textarea
                   value={form.story}
                   onChange={(event) => setForm((current) => ({ ...current, story: event.target.value }))}
                   className="market-textarea rounded-[1.5rem] px-4 py-3"
                   rows={10}
-                  placeholder="Explain what you sell, why buyers should trust the store, and the service standard you can maintain."
+                  placeholder={copy.wizard.verification.storyPlaceholder}
                 />
               </label>
               <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] p-5">
@@ -417,14 +434,14 @@ export function SellerApplicationWizard({
                     <ShieldCheck className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[var(--market-paper-white)]">Verification posture</p>
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Live trust gating</p>
+                    <p className="text-sm font-semibold text-[var(--market-paper-white)]">{copy.wizard.verification.postureTitle}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{copy.wizard.verification.postureSubtitle}</p>
                   </div>
                 </div>
                 <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--market-muted)]">
-                  <p>Founder identity and payout proof are mandatory before submission can enter the serious review lane.</p>
-                  <p>Business registration is recommended for faster approval and fewer clarification requests.</p>
-                  <p>Uploaded evidence is recorded into HenryCo documents and linked to the seller moderation workflow.</p>
+                  <p>{copy.wizard.verification.posturePoint1}</p>
+                  <p>{copy.wizard.verification.posturePoint2}</p>
+                  <p>{copy.wizard.verification.posturePoint3}</p>
                 </div>
               </div>
             </div>
@@ -448,8 +465,8 @@ export function SellerApplicationWizard({
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-[var(--market-paper-white)]">{item.label}</p>
-                        <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{item.help}</p>
+                        <p className="text-sm font-semibold text-[var(--market-paper-white)]">{documentCopy(copy, item.key).label}</p>
+                        <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{documentCopy(copy, item.key).help}</p>
                       </div>
                       <span
                         className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
@@ -458,7 +475,7 @@ export function SellerApplicationWizard({
                             : "bg-[rgba(117,209,255,0.12)] text-[var(--market-sky)]"
                         }`}
                       >
-                        {item.required ? "Required" : "Recommended"}
+                        {item.required ? copy.wizard.verification.requiredBadge : copy.wizard.verification.recommendedBadge}
                       </span>
                     </div>
 
@@ -467,7 +484,7 @@ export function SellerApplicationWizard({
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-[var(--market-success)]">
                             <CheckCircle2 className="h-4 w-4" />
-                            <span className="text-sm font-semibold">Uploaded</span>
+                            <span className="text-sm font-semibold">{copy.wizard.verification.uploaded}</span>
                           </div>
                           <p className="text-sm font-medium text-[var(--market-paper-white)]">{document.name}</p>
                           <p className="text-xs text-[var(--market-muted)]">
@@ -481,17 +498,17 @@ export function SellerApplicationWizard({
                             className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
                           >
                             <FileCheck2 className="h-4 w-4" />
-                            Review file
+                            {copy.wizard.verification.reviewFile}
                           </a>
                         </div>
                       ) : (
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-[var(--market-muted)]">
                             <UploadCloud className="h-4 w-4" />
-                            <span className="text-sm font-semibold">No file uploaded yet</span>
+                            <span className="text-sm font-semibold">{copy.wizard.verification.noFileYet}</span>
                           </div>
                           <p className="text-xs leading-6 text-[var(--market-muted)]">
-                            Accepted formats: JPG, PNG, WebP, PDF. Max 10 MB.
+                            {copy.wizard.verification.acceptedFormats}
                           </p>
                         </div>
                       )}
@@ -504,13 +521,13 @@ export function SellerApplicationWizard({
                       >
                         {uploading ? (
                           <>
-                            <HenryCoActivityIndicator size="sm" label="Uploading seller document" />
-                            Uploading...
+                            <HenryCoActivityIndicator size="sm" label={copy.wizard.verification.uploadingIndicatorLabel} />
+                            {copy.wizard.verification.uploading}
                           </>
                         ) : (
                           <>
                             <UploadCloud className="h-4 w-4" />
-                            {document ? "Replace file" : "Upload file"}
+                            {document ? copy.wizard.verification.replaceFile : copy.wizard.verification.uploadFile}
                           </>
                         )}
                       </label>
@@ -541,7 +558,7 @@ export function SellerApplicationWizard({
                 type="checkbox"
               />
               <span className="text-sm leading-7 text-[var(--market-ink)]">
-                I accept HenryCo Marketplace moderation, trust, payout-protection, and response-standard requirements.
+                {copy.wizard.verification.agreement}
               </span>
             </label>
           </div>
@@ -550,12 +567,12 @@ export function SellerApplicationWizard({
         {step === "review" ? (
           <div className="space-y-5">
             <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] p-5">
-              <p className="text-sm font-semibold text-[var(--market-ink)]">{form.storeName || "Store name pending"}</p>
+              <p className="text-sm font-semibold text-[var(--market-ink)]">{form.storeName || copy.wizard.review.storeNamePending}</p>
               <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-                {form.categoryFocus || "Category focus not added yet"}
+                {form.categoryFocus || copy.wizard.review.categoryPending}
               </p>
               <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-                {form.story || "Store story still needs to be completed before submission."}
+                {form.story || copy.wizard.review.storyPending}
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {documentRequirements.map((item) => {
@@ -563,10 +580,10 @@ export function SellerApplicationWizard({
                   return (
                     <div key={item.key} className="market-soft rounded-[1.3rem] px-4 py-4">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
-                        {item.label}
+                        {documentCopy(copy, item.key).label}
                       </p>
                       <p className="mt-2 text-sm font-medium break-all text-[var(--market-ink)]">
-                        {document?.name || "Pending"}
+                        {document?.name || copy.wizard.review.documentPending}
                       </p>
                     </div>
                   );
@@ -576,13 +593,12 @@ export function SellerApplicationWizard({
 
             {missingCriticalDocuments.length > 0 ? (
               <div className="rounded-[1.5rem] border border-[rgba(255,171,151,0.24)] bg-[rgba(126,33,18,0.08)] p-5 text-sm leading-7 text-[var(--market-alert)]">
-                Submission is still blocked until the required proof set is complete: {missingCriticalDocuments.join(", ")}.
+                {copy.wizard.review.blockedPrefix}{missingCriticalDocuments.join(", ")}{copy.wizard.review.blockedSuffix}
               </div>
             ) : null}
 
             <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-paper-white)]">
-              Submission routes the application into the live moderation queue, records the verification evidence in HenryCo
-              documents, and triggers owner/admin alerts. Publishing access stays locked until approval is complete.
+              {copy.wizard.review.submissionNote}
             </div>
           </div>
         ) : null}
@@ -596,7 +612,7 @@ export function SellerApplicationWizard({
             }
             className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
           >
-            {step === "start" ? "Back" : "Previous"}
+            {step === "start" ? copy.wizard.nav.back : copy.wizard.nav.previous}
           </Link>
 
           <div className="flex flex-wrap gap-3">
@@ -605,7 +621,7 @@ export function SellerApplicationWizard({
                 href={`/account/seller-application/${nextStep(step)}`}
                 className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Continue
+                {copy.wizard.nav.continue}
               </Link>
             ) : (
               <ActionButton
@@ -621,10 +637,10 @@ export function SellerApplicationWizard({
                 onClick={() => submitApplication()}
               >
                 {submitState === "submitting"
-                  ? "Submitting..."
+                  ? copy.wizard.nav.submitting
                   : submitState === "submitted"
-                    ? "Submitted"
-                    : "Submit seller application"}
+                    ? copy.wizard.nav.submitted
+                    : copy.wizard.nav.submit}
               </ActionButton>
             )}
           </div>

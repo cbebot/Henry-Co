@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronDown, Search, LogOut } from "lucide-react";
 import type { DashboardOption, DashboardRole, UnifiedViewer } from "@henryco/auth";
 
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getDashboardShellCopy, type DashboardShellCopy } from "@henryco/i18n";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
 import { RADIUS, SPACING } from "../tokens/spacing";
@@ -193,9 +195,10 @@ export function IdentityBar({
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const avatarWrapRef = useRef<HTMLDivElement>(null);
   const switcherRef = useRef<HTMLDivElement>(null);
+  const copy = getDashboardShellCopy(useHenryCoLocale());
   const showSwitcher = (options?.length ?? 0) > 1;
 
-  const displayName = viewer.user.fullName || viewer.user.email || "Your account";
+  const displayName = viewer.user.fullName || viewer.user.email || copy.identityBar.viewerFallback;
   const email =
     viewer.user.email && viewer.user.email !== displayName ? viewer.user.email : null;
 
@@ -300,7 +303,7 @@ export function IdentityBar({
           data-open={peekOpen ? "true" : "false"}
           aria-haspopup="menu"
           aria-expanded={peekOpen}
-          aria-label="Account"
+          aria-label={displayName}
           onClick={() => setPeekOpen((v) => !v)}
           style={{ ...focusVisibleStyle() }}
         >
@@ -369,7 +372,7 @@ export function IdentityBar({
                   </p>
                 ) : null}
                 <div style={{ marginTop: "0.35rem" }}>
-                  <Chip tone={chipToneForRole(viewer.role)}>{labelForRole(viewer.role)}</Chip>
+                    <Chip tone={chipToneForRole(viewer.role)}>{labelForRole(viewer.role, copy)}</Chip>
                 </div>
               </div>
             </div>
@@ -384,7 +387,7 @@ export function IdentityBar({
                     margin: "0.15rem 0.35rem 0.35rem",
                   }}
                 >
-                  Switch lane
+                        {copy.identityBar.switchLane}
                 </p>
                 {options.map((opt) => (
                   <button
@@ -434,7 +437,7 @@ export function IdentityBar({
                   }}
                 >
                   <LogOut size={16} aria-hidden />
-                  Sign out
+                  {copy.identityBar.signOut}
                 </button>
               </div>
             ) : null}
@@ -457,7 +460,7 @@ export function IdentityBar({
           {displayName}
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.15rem" }}>
-          <Chip tone={chipToneForRole(viewer.role)}>{labelForRole(viewer.role)}</Chip>
+          <Chip tone={chipToneForRole(viewer.role)}>{labelForRole(viewer.role, copy)}</Chip>
         </div>
       </div>
 
@@ -469,7 +472,7 @@ export function IdentityBar({
             type="button"
             className="hc-idbar__searchbtn"
             onClick={onSearchClick}
-            aria-label="Search"
+            aria-label={copy.identityBar.searchAria}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -485,7 +488,7 @@ export function IdentityBar({
             }}
           >
             <Search size={15} aria-hidden />
-            <span style={{ flex: 1, textAlign: "left" }}>Search</span>
+            <span style={{ flex: 1, textAlign: "left" }}>{copy.identityBar.searchLabel}</span>
           </button>
         </div>
       ) : null}
@@ -519,7 +522,7 @@ export function IdentityBar({
                 ...focusVisibleStyle(),
               }}
             >
-              Switch lane <ChevronDown size={14} aria-hidden />
+              {copy.identityBar.switchLane} <ChevronDown size={14} aria-hidden />
             </button>
             {switcherOpen ? (
               <div
@@ -570,7 +573,7 @@ export function IdentityBar({
             type="button"
             className="hc-idbar__deskonly"
             onClick={onSignOut}
-            aria-label="Sign out"
+            aria-label={copy.identityBar.signOut}
             style={{
               background: "transparent",
               border: "none",
@@ -592,16 +595,16 @@ export function IdentityBar({
   );
 }
 
-function labelForRole(role: DashboardRole): string {
+function labelForRole(role: DashboardRole, copy: DashboardShellCopy): string {
   switch (role) {
     case "customer":
-      return "Customer";
+      return copy.identityBar.roleCustomer;
     case "staff":
-      return "Staff";
+      return copy.identityBar.roleStaff;
     case "division_operator":
-      return "Operator";
+      return copy.identityBar.roleOperator;
     case "super_admin":
-      return "Owner";
+      return copy.identityBar.roleOwner;
   }
 }
 

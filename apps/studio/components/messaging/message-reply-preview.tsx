@@ -1,6 +1,8 @@
 "use client";
 
 import { CornerUpLeft, X } from "lucide-react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import type { ReplyPreview } from "@/lib/messaging/types";
 
 type ComposerPreviewProps = {
@@ -13,6 +15,8 @@ type ComposerPreviewProps = {
  * a reply. Cancel restores the composer to a normal send.
  */
 export function ReplyComposerPreview({ preview, onCancel }: ComposerPreviewProps) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   return (
     <div
       className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-[#0A0E1A] px-3 py-2"
@@ -26,17 +30,17 @@ export function ReplyComposerPreview({ preview, onCancel }: ComposerPreviewProps
       </span>
       <div className="min-w-0 flex-1 border-l-2 border-[#d4b14e] pl-3">
         <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#d4b14e]">
-          Replying to {preview.senderName}
+          {copy.replyPreview.replyingTo.replace("{senderName}", preview.senderName)}
         </div>
         <p className="mt-0.5 truncate text-[12px] text-white/70">
-          {preview.bodyExcerpt || "(no content)"}
+          {preview.bodyExcerpt || copy.replyPreview.noContent}
         </p>
       </div>
       <button
         type="button"
         onClick={onCancel}
         className="shrink-0 rounded-full p-1 text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
-        aria-label="Cancel reply"
+        aria-label={copy.replyPreview.cancelReply}
       >
         <X className="h-4 w-4" aria-hidden />
       </button>
@@ -59,13 +63,15 @@ export function ReplyBubblePreview({
   ownTone,
   onJump,
 }: BubblePreviewProps) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const tone = ownTone ? "border-white/30 text-[#F5F4EE]/85" : "border-[#d4b14e] text-white/75";
   return (
     <button
       type="button"
       onClick={() => onJump?.(preview.id)}
       className={`block w-full rounded-lg border-l-2 px-2.5 py-1.5 text-left transition-opacity hover:opacity-90 ${tone}`}
-      aria-label={`Jump to original message from ${preview.senderName}`}
+      aria-label={copy.replyPreview.jumpToOriginal.replace("{senderName}", preview.senderName)}
     >
       <div
         className={`text-[11px] font-medium uppercase tracking-[0.10em] ${
@@ -75,7 +81,7 @@ export function ReplyBubblePreview({
         {preview.senderName}
       </div>
       <p className="mt-0.5 truncate text-[12px] leading-snug">
-        {preview.bodyExcerpt || "(no content)"}
+        {preview.bodyExcerpt || copy.replyPreview.noContent}
       </p>
     </button>
   );

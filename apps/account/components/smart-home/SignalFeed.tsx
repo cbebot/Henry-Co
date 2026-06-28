@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 import { EmptyState, Panel, Section, SignalCard } from "@henryco/dashboard-shell";
+import { getAccountHeroesCopy } from "@henryco/i18n";
 import type { SignalFeedItem, SignalFeedCursor } from "@henryco/data";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { divisionColor, divisionLabel } from "@/lib/format";
 import {
   formatRelative,
@@ -48,15 +50,17 @@ export type SignalFeedProps = {
   timezone?: string;
 };
 
-export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }: SignalFeedProps) {
+export async function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }: SignalFeedProps) {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountHeroesCopy(locale).signalFeed;
   if (items.length === 0) {
     if (hideEmpty) return null;
     return (
       <Panel tone="flat">
         <EmptyState
-          kicker="Signal feed"
-          headline="Nothing to surface yet."
-          body="When notifications, lifecycle updates, or division activity land, they appear here ranked by priority."
+          kicker={copy.kicker}
+          headline={copy.emptyHeadline}
+          body={copy.emptyBody}
         />
       </Panel>
     );
@@ -70,8 +74,8 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
 
   return (
     <Section
-      kicker="Signal feed"
-      headline="Everything across HenryCo, ranked"
+      kicker={copy.kicker}
+      headline={copy.headline}
       action={
         <Link
           href="/notifications"
@@ -85,7 +89,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
             textDecoration: "none",
           }}
         >
-          <Inbox size={14} aria-hidden /> Open inbox
+          <Inbox size={14} aria-hidden /> {copy.openInbox}
         </Link>
       }
     >
@@ -135,7 +139,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
                     href={signal.actionUrl ?? "/notifications"}
                     read={signal.emailDispatched}
                     action={
-                      signal.emailDispatched ? { label: "Emailed", tone: "neutral" } : undefined
+                      signal.emailDispatched ? { label: copy.emailed, tone: "neutral" } : undefined
                     }
                   />
                 ))}
@@ -146,7 +150,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
       </div>
       {(prevHref || nextHref) ? (
         <nav
-          aria-label="Signal feed pagination"
+          aria-label={copy.paginationAria}
           style={{
             display: "flex",
             justifyContent: "space-between",
@@ -169,7 +173,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
                 textDecoration: "none",
               }}
             >
-              <ChevronLeft size={14} aria-hidden /> Newer
+              <ChevronLeft size={14} aria-hidden /> {copy.newer}
             </Link>
           ) : (
             <span aria-hidden />
@@ -187,7 +191,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
                 textDecoration: "none",
               }}
             >
-              Older <ChevronRight size={14} aria-hidden />
+              {copy.older} <ChevronRight size={14} aria-hidden />
             </Link>
           ) : (
             <span aria-hidden />

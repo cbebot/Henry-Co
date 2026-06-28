@@ -1,5 +1,7 @@
 import { CheckCircle2 } from "lucide-react";
 import type { StudioPayment } from "@/lib/studio/types";
+import { getStudioProjectCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 type Props = {
   unpaidPayments: StudioPayment[];
@@ -7,38 +9,40 @@ type Props = {
   projectStatus: string;
 };
 
-export function ProjectStatusRail({ unpaidPayments, payments, projectStatus }: Props) {
+export async function ProjectStatusRail({ unpaidPayments, payments, projectStatus }: Props) {
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioProjectCopy(locale).statusRail;
   const openInvoice = unpaidPayments.filter((p) => p.status === "requested" || p.status === "overdue");
   const verifying = payments.some((p) => p.status === "processing");
   const anyPaid = payments.some((p) => p.status === "paid");
 
   const steps = [
     {
-      title: "Payment",
+      title: copy.stepPaymentTitle,
       body:
         openInvoice.length > 0
-          ? "Complete your transfer and upload proof to unlock scheduled work."
-          : "No outstanding payments at this time.",
+          ? copy.stepPaymentBodyOpen
+          : copy.stepPaymentBodyNone,
       emphasis: openInvoice.length > 0,
       complete: openInvoice.length === 0 && anyPaid,
     },
     {
-      title: "Verification",
+      title: copy.stepVerificationTitle,
       body: verifying
-        ? "Our finance team is reviewing your proof. This page updates automatically once confirmed."
-        : "After you upload proof, our team verifies the transfer privately before confirming.",
+        ? copy.stepVerificationBodyActive
+        : copy.stepVerificationBodyIdle,
       emphasis: verifying,
       complete: !verifying && anyPaid && openInvoice.length === 0,
     },
     {
-      title: "Build & delivery",
-      body: "Your team works through milestones, sharing updates and files directly in this workspace.",
+      title: copy.stepBuildTitle,
+      body: copy.stepBuildBody,
       emphasis: anyPaid && !openInvoice.length && !verifying && ["active", "in_review"].includes(projectStatus),
       complete: projectStatus === "delivered",
     },
     {
-      title: "Launch & handoff",
-      body: "Final review, domain setup, and go-live — handled together, not rushed.",
+      title: copy.stepLaunchTitle,
+      body: copy.stepLaunchBody,
       emphasis: projectStatus === "in_review",
       complete: projectStatus === "delivered",
     },
@@ -47,9 +51,9 @@ export function ProjectStatusRail({ unpaidPayments, payments, projectStatus }: P
   return (
     <aside className="space-y-4 lg:sticky lg:top-28">
       <div className="studio-panel rounded-[1.75rem] p-5">
-        <div className="studio-kicker">Project progress</div>
+        <div className="studio-kicker">{copy.progressKicker}</div>
         <p className="mt-3 text-xs leading-6 text-[var(--studio-ink-soft)]">
-          Your project follows a clear sequence: payment, verification, build, and launch. This panel tracks where you are.
+          {copy.progressIntro}
         </p>
         <ol className="mt-6 space-y-3">
           {steps.map((step, i) => (

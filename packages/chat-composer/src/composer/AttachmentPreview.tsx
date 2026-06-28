@@ -2,6 +2,8 @@
 
 import { File as FileIcon, FileText, Film, RotateCw, X } from "lucide-react";
 import { cn } from "@henryco/ui/cn";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getUiMiscCopy } from "@henryco/i18n";
 import type { ComposerAttachment } from "../types";
 import { formatMb } from "../util/validateAttachment";
 
@@ -66,16 +68,20 @@ export function AttachmentPreview({
   onRemove,
   onRetry,
   variant = "inline",
-  removeLabel = "Remove attachment",
-  retryLabel = "Retry upload",
-  uploadingLabel = "Uploading…",
-  attachmentFailedLabel = "Failed",
-  attachmentListLabel = "Attached files",
+  removeLabel,
+  retryLabel,
+  uploadingLabel,
+  attachmentFailedLabel,
+  attachmentListLabel,
   className,
 }: AttachmentPreviewProps) {
+  const locale = useHenryCoLocale();
+  const copy = getUiMiscCopy(locale).attachmentPreview;
   if (attachments.length === 0) return null;
 
   const isCarousel = variant === "carousel";
+  const resolvedRemoveLabel = removeLabel ?? copy.removeLabel;
+  const resolvedRetryLabel = retryLabel ?? copy.retryLabel;
 
   return (
     <ul
@@ -86,7 +92,7 @@ export function AttachmentPreview({
           : "flex-wrap",
         className
       )}
-      aria-label={attachmentListLabel}
+      aria-label={attachmentListLabel ?? copy.listLabel}
     >
       {attachments.map((att) => {
         const isImage = att.kind === "image" && att.previewUrl;
@@ -147,11 +153,11 @@ export function AttachmentPreview({
                   <span>{formatMb(att.size)}</span>
                   {uploading ? (
                     <span className="text-[color:var(--composer-accent,#0E7C86)]">
-                      {att.progress > 0 ? `${Math.round(att.progress)}%` : uploadingLabel}
+                      {att.progress > 0 ? `${Math.round(att.progress)}%` : (uploadingLabel ?? copy.uploading)}
                     </span>
                   ) : null}
                   {failed ? (
-                    <span className="text-red-500">{att.error || attachmentFailedLabel}</span>
+                    <span className="text-red-500">{att.error || attachmentFailedLabel || copy.failed}</span>
                   ) : null}
                 </div>
                 {uploading ? (
@@ -170,7 +176,7 @@ export function AttachmentPreview({
                 <button
                   type="button"
                   onClick={() => onRetry(att.id)}
-                  aria-label={retryLabel}
+                  aria-label={resolvedRetryLabel}
                   className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-zinc-700 shadow-[0_2px_6px_rgba(15,23,42,0.18)] ring-1 ring-black/5 transition hover:scale-105 dark:bg-zinc-900 dark:text-white dark:ring-white/10"
                 >
                   <RotateCw className="h-3 w-3" aria-hidden />
@@ -179,7 +185,7 @@ export function AttachmentPreview({
               <button
                 type="button"
                 onClick={() => onRemove(att.id)}
-                aria-label={removeLabel}
+                aria-label={resolvedRemoveLabel}
                 className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-zinc-700 shadow-[0_2px_6px_rgba(15,23,42,0.18)] ring-1 ring-black/5 transition hover:scale-105 dark:bg-zinc-900 dark:text-white dark:ring-white/10"
               >
                 <X className="h-3 w-3" aria-hidden />

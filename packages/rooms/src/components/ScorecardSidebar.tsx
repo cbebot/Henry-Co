@@ -9,6 +9,8 @@ import {
   Section,
 } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getRoomsCopy } from "@henryco/i18n";
 
 import { submitScorecard as submitScorecardAction } from "../server/actions";
 import { isRoomError } from "../types";
@@ -86,9 +88,13 @@ export function ScorecardSidebar({
   sessionId,
   initial,
   dimensions = DEFAULT_INTERVIEW_DIMENSIONS,
-  kicker = "Reviewer",
-  title = "Scorecard",
+  kicker,
+  title,
 }: ScorecardSidebarProps) {
+  const locale = useHenryCoLocale();
+  const copy = getRoomsCopy(locale).scorecard;
+  const resolvedKicker = kicker ?? copy.defaultKicker;
+  const resolvedTitle = title ?? copy.defaultTitle;
   const [values, setValues] = useState<ScorecardDimensions>(
     () => initial?.dimensions ?? {},
   );
@@ -131,17 +137,17 @@ export function ScorecardSidebar({
     return (
       <Panel tone="flat" padding="lg">
         <EmptyState
-          kicker={kicker}
-          headline="No scorecard configured"
-          body="Pass a `dimensions` prop to render a reviewer scorecard for this session."
+          kicker={resolvedKicker}
+          headline={copy.noScorecardHeadline}
+          body={copy.noScorecardBody}
         />
       </Panel>
     );
   }
 
   return (
-    <Panel tone="flat" padding="lg" aria-label={title}>
-      <Section kicker={kicker} headline={title}>
+    <Panel tone="flat" padding="lg" aria-label={resolvedTitle}>
+      <Section kicker={resolvedKicker} headline={resolvedTitle}>
         <p
           style={{
             fontSize: "0.85rem",
@@ -149,7 +155,7 @@ export function ScorecardSidebar({
             margin: 0,
           }}
         >
-          {Math.round(completion * 100)}% complete
+          {copy.percentComplete(Math.round(completion * 100))}
         </p>
       </Section>
       <div
@@ -178,13 +184,13 @@ export function ScorecardSidebar({
               color: `var(${CSS_VARS.inkSoft})`,
             }}
           >
-            Notes
+            {copy.notesLabel}
           </label>
           <textarea
             id={`notes-${sessionId}`}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Anything the next reviewer should know."
+            placeholder={copy.notesPlaceholder}
             rows={4}
             disabled={submitting}
             style={{
@@ -210,7 +216,7 @@ export function ScorecardSidebar({
               fontSize: "0.9rem",
             }}
           >
-            We couldn&apos;t save your scorecard ({error.error}). Try again.
+            {copy.saveError(error.error)}
           </p>
         ) : null}
         <div>
@@ -225,7 +231,7 @@ export function ScorecardSidebar({
               ) : undefined
             }
           >
-            {submitted ? "Submitted" : "Submit scorecard"}
+            {submitted ? copy.submitted : copy.submit}
           </ActionButton>
         </div>
       </div>

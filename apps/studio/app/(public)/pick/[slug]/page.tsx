@@ -17,6 +17,8 @@ import {
   studioTemplateCategories,
   studioTemplates,
 } from "@/lib/studio/templates";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export async function generateStaticParams() {
   return studioTemplates.map((tpl) => ({ slug: tpl.slug }));
@@ -58,6 +60,8 @@ export default async function StudioTemplateDetailPage({
   const template = getStudioTemplateBySlug(slug);
   if (!template) notFound();
 
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).pickDetail;
   const category = studioTemplateCategories.find((c) => c.id === template.category);
   const related = studioTemplates
     .filter((tpl) => tpl.category === template.category && tpl.id !== template.id)
@@ -72,12 +76,12 @@ export default async function StudioTemplateDetailPage({
         className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)] transition hover:text-[var(--studio-ink)]"
       >
         <ArrowLeft className="h-3 w-3" />
-        All templates
+        {copy.backToTemplates}
       </Link>
 
       <section className="mt-6 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <p className="studio-kicker">{category?.label || "Studio template"}</p>
+          <p className="studio-kicker">{category?.label || copy.fallbackCategory}</p>
           <h1 className="mt-4 max-w-3xl text-balance text-[2.1rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.6rem] md:text-[3rem]">
             {template.name}
           </h1>
@@ -93,7 +97,10 @@ export default async function StudioTemplateDetailPage({
               href={`/checkout/template/${template.slug}`}
               className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Pay {Math.round(template.depositRate * 100)}% deposit & start
+              {copy.payDepositStart.replace(
+                "{percent}",
+                String(Math.round(template.depositRate * 100)),
+              )}
               <ArrowRight className="h-4 w-4" />
             </Link>
             {template.demoUrl ? (
@@ -103,7 +110,7 @@ export default async function StudioTemplateDetailPage({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-5 py-2.5 text-sm font-semibold text-[var(--studio-ink)] transition hover:border-[var(--studio-signal)]/40"
               >
-                View live demo
+                {copy.viewLiveDemo}
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             ) : null}
@@ -111,7 +118,7 @@ export default async function StudioTemplateDetailPage({
               href={`/request?template=${template.slug}`}
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
             >
-              Customise the brief first
+              {copy.customiseBriefFirst}
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -119,7 +126,7 @@ export default async function StudioTemplateDetailPage({
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-[var(--studio-line)] py-5 sm:grid-cols-4">
             <div className="flex flex-col gap-1.5">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                Price
+                {copy.priceLabel}
               </dt>
               <dd className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)]">
                 {formatCurrency(template.price)}
@@ -127,23 +134,26 @@ export default async function StudioTemplateDetailPage({
             </div>
             <div className="flex flex-col gap-1.5">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                Ready in
+                {copy.readyInLabel}
               </dt>
               <dd className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)]">
-                {template.readyInDays} days
+                {copy.readyInDays.replace("{days}", String(template.readyInDays))}
               </dd>
             </div>
             <div className="flex flex-col gap-1.5">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                Build window
+                {copy.buildWindowLabel}
               </dt>
               <dd className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)]">
-                {template.timelineWeeks} wks
+                {copy.buildWindowWeeks.replace(
+                  "{weeks}",
+                  String(template.timelineWeeks),
+                )}
               </dd>
             </div>
             <div className="flex flex-col gap-1.5">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                Deposit
+                {copy.depositLabel}
               </dt>
               <dd className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)]">
                 {Math.round(template.depositRate * 100)}%
@@ -152,7 +162,7 @@ export default async function StudioTemplateDetailPage({
           </dl>
 
           <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            <span className="font-semibold text-[var(--studio-ink)]">Often for:</span>{" "}
+            <span className="font-semibold text-[var(--studio-ink)]">{copy.oftenForLabel}</span>{" "}
             {template.audience}
           </p>
         </div>
@@ -185,37 +195,39 @@ export default async function StudioTemplateDetailPage({
             </div>
             <div className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur">
               <Clock className="h-3 w-3" />
-              {template.readyInDays} days
+              {copy.badgeReadyInDays.replace(
+                "{days}",
+                String(template.readyInDays),
+              )}
             </div>
           </div>
 
           <div className="mt-5 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-              Payment plan
+              {copy.paymentPlanLabel}
             </p>
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-baseline justify-between gap-3 border-b border-[var(--studio-line)] pb-3">
-                <dt className="text-[var(--studio-ink-soft)]">Deposit on accept</dt>
+                <dt className="text-[var(--studio-ink-soft)]">{copy.depositOnAccept}</dt>
                 <dd className="font-semibold text-[var(--studio-ink)]">
                   {formatCurrency(depositAmount)}
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-3 border-b border-[var(--studio-line)] pb-3">
-                <dt className="text-[var(--studio-ink-soft)]">Balance at launch</dt>
+                <dt className="text-[var(--studio-ink-soft)]">{copy.balanceAtLaunch}</dt>
                 <dd className="font-semibold text-[var(--studio-ink)]">
                   {formatCurrency(balanceAmount)}
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-[var(--studio-ink-soft)]">Total</dt>
+                <dt className="text-[var(--studio-ink-soft)]">{copy.totalLabel}</dt>
                 <dd className="text-[1.05rem] font-semibold tracking-tight text-[var(--studio-ink)]">
                   {formatCurrency(template.price)}
                 </dd>
               </div>
             </dl>
             <p className="mt-4 text-[12.5px] leading-relaxed text-[var(--studio-ink-soft)]">
-              Bank transfer or card via Paystack / Flutterwave. Branded receipt issued the
-              moment finance confirms.
+              {copy.paymentNote}
             </p>
           </div>
         </aside>
@@ -225,7 +237,7 @@ export default async function StudioTemplateDetailPage({
         <div className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-6 sm:p-7">
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
             <Layers3 className="h-3.5 w-3.5" />
-            Pages included
+            {copy.pagesIncludedLabel}
           </p>
           <ul className="mt-5 space-y-2.5">
             {template.pages.map((page) => (
@@ -243,7 +255,7 @@ export default async function StudioTemplateDetailPage({
         <div className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-6 sm:p-7">
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
             <Sparkles className="h-3.5 w-3.5" />
-            Features built in
+            {copy.featuresBuiltInLabel}
           </p>
           <ul className="mt-5 space-y-2.5">
             {template.features.map((feature) => (
@@ -263,7 +275,7 @@ export default async function StudioTemplateDetailPage({
         <div>
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
             <Target className="h-3.5 w-3.5" />
-            Outcomes you can expect
+            {copy.outcomesLabel}
           </p>
           <ul className="mt-5 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
             {template.outcomes.map((outcome) => (
@@ -279,7 +291,7 @@ export default async function StudioTemplateDetailPage({
 
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-            Tech stack
+            {copy.techStackLabel}
           </p>
           <div className="mt-5 flex flex-wrap gap-1.5">
             {template.stack.map((item) => (
@@ -292,8 +304,7 @@ export default async function StudioTemplateDetailPage({
             ))}
           </div>
           <p className="mt-6 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            You can pin a different stack on the brief — HenryCo will quote the delta if it
-            changes the build effort, or honour your choice at no cost when it doesn&rsquo;t.
+            {copy.stackNote}
           </p>
         </div>
       </section>
@@ -301,13 +312,15 @@ export default async function StudioTemplateDetailPage({
       <section className="mt-14 rounded-[1.6rem] border border-[var(--studio-signal)]/40 bg-[rgba(11,42,52,0.55)] p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-5">
           <div className="max-w-xl">
-            <p className="studio-kicker">Move forward</p>
+            <p className="studio-kicker">{copy.moveForwardKicker}</p>
             <h2 className="mt-2 text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.65rem]">
-              Customise this template and launch in {template.readyInDays} days.
+              {copy.moveForwardTitle.replace(
+                "{days}",
+                String(template.readyInDays),
+              )}
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-              The brief takes about eight minutes. We confirm scope, send a milestone-priced
-              proposal, and start work the moment your deposit clears.
+              {copy.moveForwardBody}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -315,20 +328,20 @@ export default async function StudioTemplateDetailPage({
               href={`/checkout/template/${template.slug}`}
               className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Pay deposit & start
+              {copy.payDepositStartShort}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href={`/request?template=${template.slug}`}
               className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Customise the brief first
+              {copy.customiseBriefFirst}
             </Link>
             <Link
               href="/contact"
               className="inline-flex items-center gap-1.5 self-center text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
             >
-              Talk to a Studio lead
+              {copy.talkToLead}
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -339,9 +352,14 @@ export default async function StudioTemplateDetailPage({
         <section className="mt-16">
           <div className="flex items-end justify-between gap-4 border-b border-[var(--studio-line)] pb-5">
             <div>
-              <p className="studio-kicker">Other {category?.label.toLowerCase()} templates</p>
+              <p className="studio-kicker">
+                {copy.relatedKicker.replace(
+                  "{category}",
+                  category?.label.toLowerCase() ?? "",
+                )}
+              </p>
               <h2 className="mt-3 text-[1.35rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.55rem]">
-                Compare nearby ready-made paths.
+                {copy.relatedTitle}
               </h2>
             </div>
           </div>
@@ -370,7 +388,7 @@ export default async function StudioTemplateDetailPage({
                       {formatCurrency(tpl.price)}
                     </span>
                     <span className="font-mono uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                      {tpl.readyInDays} days
+                      {copy.readyInDays.replace("{days}", String(tpl.readyInDays))}
                     </span>
                   </div>
                 </Link>

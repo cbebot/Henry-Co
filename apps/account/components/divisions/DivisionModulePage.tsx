@@ -11,6 +11,8 @@ import {
 import { timeAgo, formatNaira, divisionLabel, divisionColor } from "@/lib/format";
 import { activityMessageHref, notificationMessageHref } from "@/lib/notification-center";
 import PageHeader from "@/components/layout/PageHeader";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 type DivisionModulePageProps = {
   divisionKey: string;
@@ -25,7 +27,7 @@ type DivisionModulePageProps = {
   features: { label: string; description: string; href?: string }[];
 };
 
-export default function DivisionModulePage({
+export default async function DivisionModulePage({
   divisionKey,
   icon: Icon,
   title,
@@ -40,6 +42,8 @@ export default function DivisionModulePage({
   const color = divisionColor(divisionKey);
   const label = divisionLabel(divisionKey);
   const pageTitle = title || label;
+  const locale = await getAccountAppLocale();
+  const copy = getAccountMiscExtraCopy(locale).divisionModule;
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -56,7 +60,7 @@ export default function DivisionModulePage({
               className="acct-button-primary rounded-xl"
               style={{ backgroundColor: color }}
             >
-              Go to {label} <ExternalLink size={14} />
+              {copy.goTo(label)} <ExternalLink size={14} />
             </a>
           ) : undefined
         }
@@ -122,18 +126,18 @@ export default function DivisionModulePage({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Activity size={14} className="text-[var(--acct-muted)]" />
-              <p className="acct-kicker">Recent Activity</p>
+              <p className="acct-kicker">{copy.recentActivity}</p>
             </div>
             <Link
               href="/activity"
               className="flex items-center gap-1 text-xs font-medium text-[var(--acct-gold)] hover:underline"
             >
-              All activity <ChevronRight size={14} />
+              {copy.allActivity} <ChevronRight size={14} />
             </Link>
           </div>
           {activity.length === 0 ? (
             <p className="py-6 text-center text-sm text-[var(--acct-muted)]">
-              No {label} activity yet
+              {copy.noActivity(label)}
             </p>
           ) : (
             <div className="space-y-2">
@@ -160,18 +164,18 @@ export default function DivisionModulePage({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bell size={14} className="text-[var(--acct-muted)]" />
-              <p className="acct-kicker">Notifications</p>
+              <p className="acct-kicker">{copy.notifications}</p>
             </div>
             <Link
               href="/notifications"
               className="flex items-center gap-1 text-xs font-medium text-[var(--acct-gold)] hover:underline"
             >
-              All <ChevronRight size={14} />
+              {copy.all} <ChevronRight size={14} />
             </Link>
           </div>
           {notifications.length === 0 ? (
             <p className="py-6 text-center text-sm text-[var(--acct-muted)]">
-              No notifications from {label}
+              {copy.noNotifications(label)}
             </p>
           ) : (
             <div className="space-y-2">
@@ -200,13 +204,13 @@ export default function DivisionModulePage({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Receipt size={14} className="text-[var(--acct-muted)]" />
-              <p className="acct-kicker">{label} Invoices</p>
+              <p className="acct-kicker">{copy.invoices(label)}</p>
             </div>
             <Link
               href="/invoices"
               className="flex items-center gap-1 text-xs font-medium text-[var(--acct-gold)] hover:underline"
             >
-              All invoices <ChevronRight size={14} />
+              {copy.allInvoices} <ChevronRight size={14} />
             </Link>
           </div>
           <div className="space-y-2">
@@ -217,7 +221,7 @@ export default function DivisionModulePage({
               >
                 <div>
                   <p className="text-sm font-medium text-[var(--acct-ink)]">
-                    {inv.description || `Invoice ${inv.invoice_no}`}
+                    {inv.description || copy.invoiceFallback(String(inv.invoice_no))}
                   </p>
                   <p className="text-xs text-[var(--acct-muted)]">{inv.invoice_no}</p>
                 </div>
@@ -234,13 +238,13 @@ export default function DivisionModulePage({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <LifeBuoy size={14} className="text-[var(--acct-muted)]" />
-              <p className="acct-kicker">{label} Support</p>
+              <p className="acct-kicker">{copy.support(label)}</p>
             </div>
             <Link
               href="/support"
               className="flex items-center gap-1 text-xs font-medium text-[var(--acct-gold)] hover:underline"
             >
-              All support <ChevronRight size={14} />
+              {copy.allSupport} <ChevronRight size={14} />
             </Link>
           </div>
           <div className="space-y-2">

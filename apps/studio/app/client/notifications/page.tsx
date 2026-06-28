@@ -10,7 +10,9 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import {
   buildAttentionItems,
   getClientPortalSnapshot,
@@ -46,34 +48,36 @@ export default async function ClientNotificationsPage() {
   const unread = unreadMessageCount(snapshot);
   const projectTitleById = new Map(snapshot.projects.map((p) => [p.id, p.title]));
   const recent = snapshot.updates.slice(0, 12);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale).notifications;
 
   return (
     <div className="space-y-7">
       <header className="flex flex-col gap-2">
         <span className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
           <Bell className="h-3.5 w-3.5" />
-          Activity & alerts
+          {copy.kicker}
         </span>
         <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Notifications
+          {copy.title}
         </h1>
         <p className="max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-          Items that need your action sit at the top. The activity timeline below shows the
-          last few updates the team has posted on your projects.
+          {copy.body}
         </p>
       </header>
 
-      <section className="space-y-3" aria-label="Needs your attention">
+      <section className="space-y-3" aria-label={copy.needsAttention}>
         <div className="flex items-baseline justify-between">
           <h2 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-ink-soft)]">
-            Needs your attention · {attention.length}
+            {copy.needsAttention} · {attention.length}
           </h2>
           {unread > 0 ? (
             <Link
               href="/client/messages"
               className="text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
             >
-              {unread} unread message{unread === 1 ? "" : "s"}
+              {unread}{" "}
+              {unread === 1 ? copy.unreadMessageSingular : copy.unreadMessagePlural}
             </Link>
           ) : null}
         </div>
@@ -82,8 +86,8 @@ export default async function ClientNotificationsPage() {
           <PortalEmptyState
             icon={CheckCircle2}
             tone="muted"
-            title="You're all caught up"
-            body="When something needs your action — an overdue invoice, a deliverable awaiting approval, or a new team message — it will appear here first."
+            title={copy.caughtUpTitle}
+            body={copy.caughtUpBody}
           />
         ) : (
           <ul className="space-y-2.5">
@@ -103,12 +107,12 @@ export default async function ClientNotificationsPage() {
                         <div className="flex flex-wrap items-baseline gap-2">
                           <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
                             {item.invoice.invoiceNumber}
-                            {item.invoice.dueDate ? ` · Due ${shortDate(item.invoice.dueDate)}` : ""}
+                            {item.invoice.dueDate ? ` · ${copy.duePrefix} ${shortDate(item.invoice.dueDate)}` : ""}
                           </span>
                           <StatusBadge tone={status.tone} label={status.label} size="sm" />
                         </div>
                         <div className="mt-0.5 truncate text-[13.5px] font-semibold text-[var(--studio-ink)]">
-                          {item.invoice.description || "Studio invoice"}
+                          {item.invoice.description || copy.studioInvoice}
                         </div>
                         <div className="mt-0.5 text-[12px] text-[var(--studio-ink-soft)]">
                           {item.projectTitle} · {formatKobo(item.invoice.amountKobo, item.invoice.currency)}
@@ -132,7 +136,7 @@ export default async function ClientNotificationsPage() {
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                          New deliverable awaiting your review
+                          {copy.newDeliverable}
                         </div>
                         <div className="mt-0.5 truncate text-[13.5px] font-semibold text-[var(--studio-ink)]">
                           {item.deliverable.title}
@@ -140,7 +144,7 @@ export default async function ClientNotificationsPage() {
                         <div className="mt-0.5 text-[12px] text-[var(--studio-ink-soft)]">
                           {item.projectTitle}
                           {item.deliverable.sharedAt
-                            ? ` · Shared ${relativeTime(item.deliverable.sharedAt)}`
+                            ? ` · ${copy.sharedPrefix} ${relativeTime(item.deliverable.sharedAt)}`
                             : ""}
                         </div>
                       </div>
@@ -184,10 +188,10 @@ export default async function ClientNotificationsPage() {
         )}
       </section>
 
-      <section className="space-y-3" aria-label="Recent activity">
+      <section className="space-y-3" aria-label={copy.recentActivity}>
         <div className="flex items-baseline justify-between">
           <h2 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-ink-soft)]">
-            Recent activity
+            {copy.recentActivity}
           </h2>
         </div>
         {recent.length > 0 ? (
@@ -196,8 +200,8 @@ export default async function ClientNotificationsPage() {
           <PortalEmptyState
             icon={History}
             tone="muted"
-            title="No activity yet"
-            body="Once we share files, complete milestones, or post project updates, they will show on the timeline here."
+            title={copy.noActivityTitle}
+            body={copy.noActivityBody}
           />
         )}
       </section>

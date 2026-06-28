@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { henryDomainHost } from "@henryco/config";
+import { getAccountMiscExtraCopy } from "@henryco/i18n";
 
 export const runtime = "edge";
 export const alt = "HenryCo Account";
@@ -9,8 +10,11 @@ export const contentType = "image/png";
 // V3-07(S2): label sourced from the COMPANY registry — preview deployments
 // drop their own base-domain into the OG image instead of always production.
 // Account is a non-division subdomain; build the host inline to stay edge-safe.
+// Crawler-facing OG copy resolves to the English baseline: this image is
+// generated at the edge (no per-request locale/session) and is locale-agnostic.
 
 export default async function OG() {
+  const copy = getAccountMiscExtraCopy("en").og;
   return new ImageResponse(
     (
       <div
@@ -79,7 +83,7 @@ export default async function OG() {
               fontWeight: 500,
             }}
           >
-            Single sign-on across every Henry & Co. division
+            {copy.tagline}
           </span>
           <span
             style={{
@@ -89,7 +93,7 @@ export default async function OG() {
               letterSpacing: -2,
             }}
           >
-            HenryCo Account
+            {copy.title}
           </span>
           <span
             style={{
@@ -100,7 +104,7 @@ export default async function OG() {
               fontWeight: 400,
             }}
           >
-            One identity, one secure session, every HenryCo service in one place.
+            {copy.description}
           </span>
         </div>
         <div

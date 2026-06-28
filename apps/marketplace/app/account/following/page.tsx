@@ -3,6 +3,7 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplaceCustomerAccountCopy } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -21,19 +22,20 @@ export default async function AccountFollowingPage({
   searchParams: Promise<SearchParams>;
 }) {
   const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplaceCustomerAccountCopy(locale);
   await requireMarketplaceUser("/account/following");
   const [data, params] = await Promise.all([getBuyerDashboardData(), searchParams]);
 
   const toast = params.unfollowed
-    ? "Unfollowed store."
+    ? copy.following.toastUnfollowed
     : params.followed
-      ? "Now following store."
+      ? copy.following.toastFollowed
       : null;
 
   return (
     <WorkspaceShell
-      title="Following"
-      description="Followed stores persist into the account record so merchandising and re-engagement can stay contextual instead of generic."
+      title={copy.following.title}
+      description={copy.following.description}
       {...accountWorkspaceNav("/account/following", locale)}
     >
       {toast ? (
@@ -55,7 +57,7 @@ export default async function AccountFollowingPage({
                   type="submit"
                   className="w-full rounded-full border border-[rgba(232,88,88,0.35)] bg-[rgba(232,88,88,0.08)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-alert,#F87171)] hover:bg-[rgba(232,88,88,0.16)]"
                 >
-                  Unfollow store
+                  {copy.following.unfollow}
                 </button>
               </form>
             </div>
@@ -63,10 +65,10 @@ export default async function AccountFollowingPage({
         </div>
       ) : (
         <EmptyState
-          title="No followed stores yet."
-          body="Follow a store to keep its trust passport and latest offers close."
+          title={copy.following.emptyTitle}
+          body={copy.following.emptyBody}
           ctaHref="/search"
-          ctaLabel="Discover stores"
+          ctaLabel={copy.following.emptyCta}
         />
       )}
     </WorkspaceShell>

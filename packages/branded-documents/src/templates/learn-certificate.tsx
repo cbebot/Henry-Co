@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
+import { getBrandedDocumentsCopy, type AppLocale } from "@henryco/i18n";
 
 import { AccentStripe } from "../components/DocumentHeader";
 import { BrandedMonogram, BrandedWordmark } from "../components/BrandMarks";
@@ -24,6 +25,7 @@ export type LearnCertificateProps = {
     title: string;
     accreditation?: string | null;
   };
+  locale?: AppLocale;
 };
 
 const styles = StyleSheet.create({
@@ -202,19 +204,20 @@ const styles = StyleSheet.create({
   },
 });
 
-export function LearnCertificateDocument({ certificate, verificationUrl, qrDataUrl, issuer }: LearnCertificateProps) {
+export function LearnCertificateDocument({ certificate, verificationUrl, qrDataUrl, issuer, locale = "en" }: LearnCertificateProps) {
+  const t = getBrandedDocumentsCopy(locale).learn;
   const issuerInfo = issuer ?? {
-    name: "Adaeze Henry-Mbachu",
-    title: "Director, HenryCo Learn",
-    accreditation: "Issued under HenryCo Learn academic standards",
+    name: t.defaultIssuerName,
+    title: t.defaultIssuerTitle,
+    accreditation: t.defaultIssuerAccreditation,
   };
 
   return (
     <Document
       title={`Certificate ${certificate.certificateNo} — ${certificate.learnerName}`}
-      author="Henry & Co. — HenryCo Learn"
-      subject={`Certificate of completion for ${certificate.courseTitle}`}
-      keywords={`certificate, henryco learn, ${certificate.courseTitle}, ${certificate.certificateNo}`}
+      author={t.author}
+      subject={t.subject(certificate.courseTitle)}
+      keywords={`${t.keywords}, ${certificate.courseTitle}, ${certificate.certificateNo}`}
       creator="HenryCo Branded Documents"
       producer="HenryCo Branded Documents"
       language="en-NG"
@@ -235,17 +238,17 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
             <BrandedWordmark variant="full" height={22} />
             <View style={styles.topMonogramCol}>
               <BrandedMonogram size={28} accent={palette.copperDeep} />
-              <Text style={[styles.kicker, { marginTop: 6 }]}>HenryCo Learn</Text>
+              <Text style={[styles.kicker, { marginTop: 6 }]}>{t.learnLabel}</Text>
             </View>
             <View style={{ width: 96, alignItems: "flex-end" }}>
-              <Text style={[styles.kicker, { textAlign: "right" }]}>Certificate of Completion</Text>
+              <Text style={[styles.kicker, { textAlign: "right" }]}>{t.certificateOfCompletion}</Text>
             </View>
           </View>
 
-          <Text style={styles.preamble}>This is to certify that</Text>
+          <Text style={styles.preamble}>{t.preamble}</Text>
           <Text style={styles.learner}>{certificate.learnerName}</Text>
           <View style={styles.hairline} />
-          <Text style={styles.body}>has satisfied every learning, assessment, and integrity requirement set for</Text>
+          <Text style={styles.body}>{t.body}</Text>
           <Text style={styles.course}>{certificate.courseTitle}</Text>
 
           {certificate.completionRule ? (
@@ -259,15 +262,15 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
           <View style={styles.signatureCol}>
             <Text style={styles.scriptName}>{issuerInfo.name}</Text>
             <View style={styles.rule} />
-            <Text style={styles.caption}>Issuing officer</Text>
+            <Text style={styles.caption}>{t.issuingOfficer}</Text>
             <Text style={styles.meta}>{issuerInfo.title}</Text>
             {issuerInfo.accreditation ? <Text style={styles.meta}>{issuerInfo.accreditation}</Text> : null}
           </View>
 
           <View style={{ alignItems: "center", flex: 1 }}>
-            <Text style={styles.caption}>Certificate number</Text>
+            <Text style={styles.caption}>{t.certificateNumber}</Text>
             <Text style={[styles.metaMono, { fontSize: typeScale.subhead, marginTop: 4 }]}>{certificate.certificateNo}</Text>
-            <Text style={[styles.caption, { marginTop: 12 }]}>Issued</Text>
+            <Text style={[styles.caption, { marginTop: 12 }]}>{t.issued}</Text>
             <Text style={styles.metaMono}>
               {new Date(certificate.issuedAt).toLocaleDateString("en-NG", {
                 day: "numeric",
@@ -277,7 +280,7 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
             </Text>
             {certificate.score != null ? (
               <>
-                <Text style={[styles.caption, { marginTop: 8 }]}>Score</Text>
+                <Text style={[styles.caption, { marginTop: 8 }]}>{t.score}</Text>
                 <Text style={styles.metaMono}>{certificate.score}</Text>
               </>
             ) : null}
@@ -285,15 +288,15 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
 
           <View style={styles.qrCol}>
             <Image src={qrDataUrl} style={styles.qr} />
-            <Text style={styles.qrLabel}>Verify this credential</Text>
+            <Text style={styles.qrLabel}>{t.verifyCredential}</Text>
             <Text style={styles.qrUrl}>{verificationUrl}</Text>
-            <Text style={[styles.qrUrl, { marginTop: 2 }]}>Code · {certificate.verificationCode}</Text>
+            <Text style={[styles.qrUrl, { marginTop: 2 }]}>{t.codePrefix} · {certificate.verificationCode}</Text>
           </View>
         </View>
 
         <View style={styles.bottomFooter} fixed>
-          <Text style={styles.footerText}>HENRY & CO. · HenryCo Learn academic certificate</Text>
-          <Text style={styles.footerText}>Genuine certificates resolve at the URL above</Text>
+          <Text style={styles.footerText}>{t.footerLeft}</Text>
+          <Text style={styles.footerText}>{t.footerRight}</Text>
         </View>
       </Page>
     </Document>

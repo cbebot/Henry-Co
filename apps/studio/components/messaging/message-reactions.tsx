@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getStudioMessagingCopy } from "@henryco/i18n";
 import { REACTIONS, type ReactionEmoji } from "@/lib/messaging/constants";
 import type { MessageReaction } from "@/lib/messaging/types";
 
@@ -23,6 +25,8 @@ export function ReactionDisplay({
   ownTone,
   busy,
 }: ReactionDisplayProps) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   if (reactions.length === 0) return null;
   return (
     <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -43,7 +47,9 @@ export function ReactionDisplay({
             onClick={() => onToggle(reaction.emoji)}
             disabled={isBusy}
             aria-pressed={isApplied}
-            aria-label={`${labelFor(reaction.emoji)} reaction, ${reaction.count}`}
+            aria-label={copy.reactions.reactionLabel
+              .replace("{label}", labelFor(reaction.emoji, copy.reactions.reactFallback))
+              .replace("{count}", String(reaction.count))}
             className={`group inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all ${baseToneCls} ${
               isBusy ? "opacity-60" : ""
             }`}
@@ -84,6 +90,8 @@ export function ReactionPicker({
   onClose,
   alignRight,
 }: ReactionPickerProps) {
+  const locale = useHenryCoLocale();
+  const copy = getStudioMessagingCopy(locale);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [focusIdx, setFocusIdx] = useState(0);
 
@@ -130,7 +138,7 @@ export function ReactionPicker({
     <div
       ref={containerRef}
       role="menu"
-      aria-label="React with"
+      aria-label={copy.reactions.pickerLabel}
       className={`absolute -top-12 z-30 flex items-center gap-1 rounded-full border border-white/[0.06] bg-[#0A0E1A]/95 px-1.5 py-1.5 shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] backdrop-blur-sm motion-safe:animate-[studio-msg-fade-in_140ms_ease-out] ${
         alignRight ? "right-0" : "left-0"
       }`}
@@ -159,7 +167,7 @@ export function ReactionPicker({
   );
 }
 
-function labelFor(emoji: string): string {
+function labelFor(emoji: string, fallback: string): string {
   const found = REACTIONS.find((r) => r.emoji === emoji);
-  return found?.label || "React";
+  return found?.label || fallback;
 }

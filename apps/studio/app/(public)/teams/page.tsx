@@ -3,31 +3,33 @@ import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { studioTeamSlug } from "@/lib/studio/content";
 import { studioLeadership } from "@/lib/studio/templates";
+import { getStudioPublicExtraCopy } from "@henryco/i18n";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 export default async function TeamsPage() {
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioPublicExtraCopy(locale).teams;
 
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
-        <p className="studio-kicker">Teams</p>
+        <p className="studio-kicker">{copy.kicker}</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-          The people accountable for your build.
+          {copy.title}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          HenryCo Studio runs four delivery pods — each tuned to a kind of work — backed by a named
-          leadership group that owns scope, quality, and the launch date.
+          {copy.intro}
         </p>
       </section>
 
       <section className="mt-12">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Studio leadership</p>
+          <p className="studio-kicker">{copy.leadershipKicker}</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Every project has a named lead from this group. You&rsquo;ll know who signs off on scope,
-          who answers when something slips, and who is on the hook for launch.
+          {copy.leadershipBody}
         </p>
         <ol className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {studioLeadership.map((leader) => (
@@ -70,12 +72,11 @@ export default async function TeamsPage() {
 
       <section className="mt-14">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Delivery pods</p>
+          <p className="studio-kicker">{copy.podsKicker}</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Pick the pod that fits your project, or send the brief and let Studio route you
-          to the right match.
+          {copy.podsBody}
         </p>
       </section>
 
@@ -133,13 +134,13 @@ export default async function TeamsPage() {
                   href={`/request?team=${team.id}`}
                   className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
                 >
-                  Select this team
+                  {copy.selectTeam}
                 </Link>
                 <Link
                   href={`/teams/${studioTeamSlug(team)}`}
                   className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
                 >
-                  Team detail
+                  {copy.teamDetail}
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

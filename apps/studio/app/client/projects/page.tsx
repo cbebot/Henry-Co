@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FolderKanban } from "lucide-react";
 
+import { getStudioClientPagesCopy } from "@henryco/i18n";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { getClientPortalSnapshot } from "@/lib/portal/data";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { shortDate } from "@/lib/portal/helpers";
 import { projectStatusToken } from "@/lib/portal/status";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 import { StatusBadge } from "@/components/portal/status-badge";
+
+type StudioClientPagesCopy = ReturnType<typeof getStudioClientPagesCopy>;
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -27,6 +31,8 @@ const ACTIVE_STATUSES = new Set([
 export default async function ClientProjectsPage() {
   const viewer = await requireClientPortalViewer("/client/projects");
   const snapshot = await getClientPortalSnapshot(viewer);
+  const locale = await getStudioPublicLocale();
+  const copy = getStudioClientPagesCopy(locale);
 
   const active = snapshot.projects.filter((p) => ACTIVE_STATUSES.has(p.status));
   const completed = snapshot.projects.filter(
@@ -39,14 +45,14 @@ export default async function ClientProjectsPage() {
   if (snapshot.projects.length === 0) {
     return (
       <div className="space-y-6">
-        <Header />
+        <Header copy={copy} />
         <PortalEmptyState
           icon={FolderKanban}
-          title="No projects on your account yet"
-          body="Once a brief turns into a Studio engagement, it appears here with milestones, files, and the message thread tied together."
+          title={copy.projects.emptyTitle}
+          body={copy.projects.emptyBody}
           action={
             <Link href="/request" className="portal-button portal-button-primary">
-              Submit a brief
+              {copy.projects.submitBrief}
               <ArrowRight className="h-4 w-4" />
             </Link>
           }
@@ -72,50 +78,52 @@ export default async function ClientProjectsPage() {
 
   return (
     <div className="space-y-7">
-      <Header />
+      <Header copy={copy} />
 
       {active.length > 0 ? (
         <ProjectsGroup
-          label="Active"
+          label={copy.projects.groupActive}
           projects={active}
           milestoneTotal={milestoneIndex}
           milestoneCompleted={milestoneCompleted}
+          copy={copy}
         />
       ) : null}
 
       {other.length > 0 ? (
         <ProjectsGroup
-          label="In progress"
+          label={copy.projects.groupInProgress}
           projects={other}
           milestoneTotal={milestoneIndex}
           milestoneCompleted={milestoneCompleted}
+          copy={copy}
         />
       ) : null}
 
       {completed.length > 0 ? (
         <ProjectsGroup
-          label="Delivered"
+          label={copy.projects.groupDelivered}
           projects={completed}
           milestoneTotal={milestoneIndex}
           milestoneCompleted={milestoneCompleted}
+          copy={copy}
         />
       ) : null}
     </div>
   );
 }
 
-function Header() {
+function Header({ copy }: { copy: StudioClientPagesCopy }) {
   return (
     <header>
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-        Studio engagements
+        {copy.projects.kicker}
       </div>
       <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-        Projects
+        {copy.projects.title}
       </h1>
       <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-        Every active and delivered Studio engagement, with quick access to
-        milestones, files, the message thread, and any open invoices.
+        {copy.projects.body}
       </p>
     </header>
   );
@@ -126,11 +134,13 @@ function ProjectsGroup({
   projects,
   milestoneTotal,
   milestoneCompleted,
+  copy,
 }: {
   label: string;
   projects: import("@/types/portal").ClientProject[];
   milestoneTotal: Map<string, number>;
   milestoneCompleted: Map<string, number>;
+  copy: StudioClientPagesCopy;
 }) {
   return (
     <section className="space-y-3" aria-label={label}>
@@ -171,20 +181,20 @@ function ProjectsGroup({
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-[var(--studio-ink-soft)]">
                 {project.startDate ? (
-                  <span>Started {shortDate(project.startDate)}</span>
+                  <span>{copy.projects.startedPrefix} {shortDate(project.startDate)}</span>
                 ) : null}
                 {project.estimatedCompletion ? (
-                  <span>Due {shortDate(project.estimatedCompletion)}</span>
+                  <span>{copy.projects.duePrefix} {shortDate(project.estimatedCompletion)}</span>
                 ) : null}
                 {total > 0 ? (
                   <span>
-                    {done}/{total} milestones
+                    {done}/{total} {copy.projects.milestones}
                   </span>
                 ) : null}
               </div>
 
               <div className="mt-1 flex items-center gap-1 text-[12px] font-semibold text-[var(--studio-signal)]">
-                Open project
+                {copy.projects.openProject}
                 <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
               </div>
             </Link>

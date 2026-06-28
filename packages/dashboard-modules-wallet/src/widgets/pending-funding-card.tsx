@@ -1,5 +1,6 @@
 import { MetricCard } from "@henryco/dashboard-shell/components";
 import { ShieldCheck } from "lucide-react";
+import { getDashboardShellCopy, type AppLocale } from "@henryco/i18n";
 import { formatNaira } from "../format";
 import type { WalletSnapshot } from "../data";
 
@@ -8,27 +9,34 @@ import type { WalletSnapshot } from "../data";
  * that haven't yet been verified. Mirrors the wallet page's "Pending
  * funding" section as a compact metric. Deep-links to `/wallet/funding`.
  */
-export function PendingFundingCard({ snapshot }: { snapshot: WalletSnapshot }) {
+export function PendingFundingCard({
+  snapshot,
+  locale,
+}: {
+  snapshot: WalletSnapshot;
+  locale: AppLocale;
+}) {
+  const copy = getDashboardShellCopy(locale);
   const count = snapshot.pendingFundingCount;
   const hasPending = count > 0;
 
   return (
     <MetricCard
-      label="Pending funding"
-      value={hasPending ? formatNaira(snapshot.pendingFundingKobo) : "All clear"}
+      label={copy.pendingFunding.label}
+      value={hasPending ? formatNaira(snapshot.pendingFundingKobo) : copy.pendingFunding.allClear}
       icon={<ShieldCheck size={18} aria-hidden />}
       href="/wallet/funding"
       context={
         hasPending
           ? {
               kind: "comparison",
-              vs: `${count} request${count === 1 ? "" : "s"}`,
-              delta: "awaiting verification",
+              vs: copy.pendingFunding.requestCount(count),
+              delta: copy.pendingFunding.awaitingVerification,
             }
           : {
               kind: "trend",
               direction: "flat",
-              magnitude: "No requests in review",
+              magnitude: copy.pendingFunding.noRequestsInReview,
             }
       }
     />

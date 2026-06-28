@@ -32,6 +32,7 @@
   "devDependencies": {
     "@henryco/auth": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/i18n": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/ui": "workspace:^",

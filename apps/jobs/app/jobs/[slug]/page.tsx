@@ -162,7 +162,7 @@ export default async function JobDetailPage({
         </section>
 
         <nav
-          aria-label="Page sections"
+          aria-label={t("Page sections")}
           className="sticky top-4 z-20 -mx-4 overflow-x-auto border-y border-[var(--jobs-line)] bg-[var(--jobs-paper)] px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
         >
           <div className="flex min-w-max gap-2">
@@ -465,7 +465,7 @@ export default async function JobDetailPage({
                       label={existingJourney.stageLabel}
                       tone={toneForStage(existingJourney.application.stage)}
                     />
-                    <span className="jobs-chip">{existingJourney.progressPercent}% complete</span>
+                    <span className="jobs-chip">{existingJourney.progressPercent}% {t("complete")}</span>
                   </div>
                   <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--jobs-line)]">
                     <div
@@ -485,7 +485,7 @@ export default async function JobDetailPage({
                     {existingJourney.recruiterActionBody}
                   </p>
                   <p className="mt-2 text-xs text-[var(--jobs-muted)]">
-                    Updated{" "}
+                    {t("Updated")}{" "}
                     {formatDateTime(
                       existingJourney.recruiterActionAt || existingJourney.application.createdAt,
                     )}

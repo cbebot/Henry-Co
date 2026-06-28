@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Heart, ShoppingBag, Sparkles, Store } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { getMarketplaceCheckoutCopy } from "@henryco/i18n";
 import {
   useMarketplaceCart,
   useMarketplaceFollows,
@@ -17,6 +19,8 @@ export function ProductDetailActions({
   product: MarketplaceProduct;
   vendor: MarketplaceVendor | null;
 }) {
+  const locale = useHenryCoLocale();
+  const copy = getMarketplaceCheckoutCopy(locale).productActions;
   const { addToCart, pendingCartSlugs } = useMarketplaceCart();
   const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
   const { isFollowing, pendingFollowSlugs, toggleFollow } = useMarketplaceFollows();
@@ -53,11 +57,11 @@ export function ProductDetailActions({
           >
             {adding ? (
               <>
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label="Adding to cart" />
-                Adding…
+                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label={copy.addingToCart} />
+                {copy.adding}
               </>
             ) : (
-              "Add to cart"
+              copy.addToCart
             )}
           </button>
           <button
@@ -72,11 +76,11 @@ export function ProductDetailActions({
             }`}
           >
             {saving ? (
-              <HenryCoActivityIndicator size="sm" label="Updating wishlist" />
+              <HenryCoActivityIndicator size="sm" label={copy.updatingWishlist} />
             ) : (
               <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} />
             )}
-            {saving ? "Saving…" : wishlisted ? "Saved to wishlist" : "Save"}
+            {saving ? copy.saving : wishlisted ? copy.savedToWishlist : copy.save}
           </button>
           {vendor ? (
             <button
@@ -91,20 +95,20 @@ export function ProductDetailActions({
               }`}
             >
               {followingBusy ? (
-                <HenryCoActivityIndicator size="sm" label="Updating store follow" />
+                <HenryCoActivityIndicator size="sm" label={copy.updatingFollow} />
               ) : (
                 <Store className="h-4 w-4" />
               )}
-              {followingBusy ? "Updating…" : following ? "Following store" : "Follow store"}
+              {followingBusy ? copy.updating : following ? copy.followingStore : copy.followStore}
             </button>
           ) : null}
           <Link href="/search" className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
             <Sparkles className="h-4 w-4" />
-            Compare more
+            {copy.compareMore}
           </Link>
         </div>
         <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-sm leading-7 text-[var(--market-muted)]">
-          Quick-add updates the mini-cart instantly. Saved items, follows, notifications, and future payment events stay attached to the same HenryCo account identity.
+          {copy.note}
         </p>
       </div>
 
@@ -115,7 +119,7 @@ export function ProductDetailActions({
             onClick={() => void toggleWishlist(product.slug)}
             disabled={saving}
             aria-busy={saving}
-            aria-label={saving ? "Updating wishlist" : wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            aria-label={saving ? copy.updatingWishlist : wishlisted ? copy.removeFromWishlist : copy.saveToWishlist}
             className={`inline-flex h-12 w-12 items-center justify-center rounded-full border text-[var(--market-paper-white)] ${
               wishlisted
                 ? "border-[rgba(221,182,120,0.26)] bg-[rgba(221,182,120,0.14)]"
@@ -123,7 +127,7 @@ export function ProductDetailActions({
             }`}
           >
             {saving ? (
-              <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating wishlist" />
+              <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.updatingWishlist} />
             ) : (
               <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} />
             )}
@@ -134,7 +138,7 @@ export function ProductDetailActions({
               onClick={() => void toggleFollow(vendor.slug)}
               disabled={followingBusy}
               aria-busy={followingBusy}
-              aria-label={followingBusy ? "Updating store follow" : following ? "Following store" : "Follow store"}
+              aria-label={followingBusy ? copy.updatingFollow : following ? copy.followingStore : copy.followStore}
               className={`inline-flex h-12 w-12 items-center justify-center rounded-full border text-[var(--market-paper-white)] ${
                 following
                   ? "border-[rgba(117,209,255,0.26)] bg-[rgba(117,209,255,0.12)]"
@@ -142,7 +146,7 @@ export function ProductDetailActions({
               }`}
             >
               {followingBusy ? (
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating store follow" />
+                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.updatingFollow} />
               ) : (
                 <Store className="h-4 w-4" />
               )}
@@ -156,11 +160,11 @@ export function ProductDetailActions({
             className="market-button-primary inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait"
           >
             {adding ? (
-              <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label="Adding to cart" />
+              <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label={copy.addingToCart} />
             ) : (
               <ShoppingBag className="h-4 w-4" />
             )}
-            {adding ? "Adding…" : "Add to cart"}
+            {adding ? copy.adding : copy.addToCart}
           </button>
         </div>
       </div>
