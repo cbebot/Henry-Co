@@ -48,8 +48,8 @@ export const dynamic = "force-dynamic";
  *   1. <HeroCard variant="paired" tone={state}> — available balance is the
  *      headline value; 3 tiles for verified/pending-funding/pending-withdrawal;
  *      side panel summarises the trust-ladder readiness.
- *   2. <NextStepRow> — when pending funding without proof OR identity blocks
- *      withdrawal, the highest-impact next move surfaces here.
+ *   2. <NextStepRow> — when identity blocks withdrawal, the highest-impact
+ *      next move surfaces here.
  *   3. <MetricStrip> — quick glance over pending operations + available cell
  *      (preserves PendingOpsTiles intent in a primitive shape).
  *   4. Sections — Actions, Flow (spend strip + trust ladder), Funding
@@ -57,7 +57,7 @@ export const dynamic = "force-dynamic";
  *
  * State picker (page-local):
  *   - empty:     wallet has zero history and nothing pending.
- *   - attention: pending funding without proof OR identity-blocked withdrawal.
+ *   - attention: identity-blocked withdrawal.
  *   - active:    pending funding or withdrawal in flight.
  *   - calm:      verified balance with no pending operations.
  */
@@ -101,19 +101,12 @@ export default async function WalletPage() {
     amount_kobo: number;
     status: string;
     reference: string | null;
-    proof_url?: string | null;
     created_at: string;
   }>;
   const pendingFundingCount = fundingRequests.filter((r) => {
     const s = String(r.status || "");
     return s !== "completed" && s !== "verified";
   }).length;
-  // Funding requests awaiting proof — the highest-friction status.
-  const fundingAwaitingProof = fundingRequests.find((r) => {
-    const status = String(r.status || "");
-    return !r.proof_url && status !== "completed" && status !== "verified";
-  }) ?? null;
-
   const transactions: WalletTransaction[] = (rawTransactions as Array<Record<string, unknown>>)
     .filter((t) => {
       const refType = String(t.reference_type || "");
@@ -154,8 +147,8 @@ export default async function WalletPage() {
           : copy.trust.verificationLabels.notSubmitted;
 
   // ── State picker ─────────────────────────────────────────────────
-  // attention beats active: a pending funding without proof OR an identity
-  // block on withdrawal is the worst friction we want to surface.
+  // attention beats active: an identity block on withdrawal is the worst
+  // friction we want to surface. Pending funding now follows live rail review.
   const verificationBlocksWithdrawal = verification.status !== "verified";
   const heroState: "empty" | "calm" | "active" | "attention" =
     balanceKobo === 0 &&
@@ -163,8 +156,7 @@ export default async function WalletPage() {
     pendingWithdrawalKobo === 0 &&
     transactions.length === 0
       ? "empty"
-      : fundingAwaitingProof !== null ||
-          (verificationBlocksWithdrawal && pendingWithdrawalCount > 0)
+      : verificationBlocksWithdrawal && pendingWithdrawalCount > 0
         ? "attention"
         : pendingFundingCount > 0 || pendingWithdrawalCount > 0
           ? "active"
@@ -194,27 +186,8 @@ export default async function WalletPage() {
   ];
 
   // ── NextStep picker ──────────────────────────────────────────────
-  // Highest-priority: upload proof for an awaiting-proof funding request.
-  // Otherwise: verify identity to unlock withdrawals.
   let nextStep: React.ReactNode = null;
-  if (fundingAwaitingProof) {
-    nextStep = (
-      <NextStepRow
-        tone="attention"
-        kicker={copy.pendingOps.fundingKicker}
-        title={
-          fundingAwaitingProof.reference
-            ? `${copy.funding.awaitingProof} · ${fundingAwaitingProof.reference}`
-            : copy.funding.awaitingProof
-        }
-        detail={copy.pendingOps.fundingDescSingular.replaceAll("{count}", "1")}
-        cta={{
-          label: copy.pendingOps.fundingCta,
-          href: `/wallet/funding/${fundingAwaitingProof.id}`,
-        }}
-      />
-    );
-  } else if (verificationBlocksWithdrawal && pendingWithdrawalCount > 0) {
+  if (verificationBlocksWithdrawal && pendingWithdrawalCount > 0) {
     nextStep = (
       <NextStepRow
         tone="attention"

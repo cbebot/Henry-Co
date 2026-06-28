@@ -1,7 +1,3 @@
-import {
-  listSavedItems,
-} from "@henryco/cart-saved-items/server";
-import type { SavedItemRecord } from "@henryco/cart-saved-items";
 import { getAccountCopy } from "@henryco/i18n/server";
 import { formatAccountTemplate } from "@henryco/i18n";
 import {
@@ -11,8 +7,8 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
-import { createAdminSupabase } from "@/lib/supabase";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import { getUnifiedSavedItems } from "@/lib/saved-items-sync";
 import { SavedItemsClient } from "@/components/saved-items/SavedItemsClient";
 
 export const dynamic = "force-dynamic";
@@ -34,14 +30,9 @@ export default async function SavedItemsPage() {
     getAccountAppLocale(),
     requireAccountUser(),
   ]);
-  const admin = createAdminSupabase();
 
-  const [active, expired] = await Promise.all([
-    listSavedItems(admin, user.id, { includeStatuses: ["active"] }),
-    listSavedItems(admin, user.id, { includeStatuses: ["expired"], limit: 30 }),
-  ]);
+  const { active, expired, grouped } = await getUnifiedSavedItems(user.id, user.email);
 
-  const grouped = groupByDivision(active);
   const copy = getAccountCopy(locale).savedItems;
 
   const totalSaved = active.length + expired.length;
@@ -117,13 +108,4 @@ export default async function SavedItemsPage() {
       ]}
     />
   );
-}
-
-function groupByDivision(items: SavedItemRecord[]) {
-  const groups: Record<string, SavedItemRecord[]> = {};
-  for (const item of items) {
-    if (!groups[item.division]) groups[item.division] = [];
-    groups[item.division].push(item);
-  }
-  return groups;
 }

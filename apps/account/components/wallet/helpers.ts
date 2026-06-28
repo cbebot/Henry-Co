@@ -2,7 +2,7 @@ export type ChipTone = "active" | "success" | "warn" | "danger" | "neutral";
 
 const FUNDING_TONE_BY_STATUS: Record<string, ChipTone> = {
   pending: "active",
-  awaiting_proof: "warn",
+  awaiting_proof: "active",
   awaiting_review: "active",
   in_review: "active",
   rejected: "danger",
@@ -24,7 +24,7 @@ const WITHDRAWAL_TONE_BY_STATUS: Record<string, ChipTone> = {
 
 const HUMAN_STATUS: Record<string, string> = {
   pending: "Awaiting review",
-  awaiting_proof: "Awaiting proof",
+  awaiting_proof: "Processing",
   awaiting_review: "Awaiting review",
   in_review: "In review",
   rejected: "Rejected",

@@ -33,6 +33,11 @@ function asNumber(value: unknown, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function lastFour(value: unknown) {
+  const digits = clean(value).replace(/\D/g, "");
+  return digits.length >= 4 ? digits.slice(-4) : "";
+}
+
 function getSigningSecret() {
   return clean(process.env.ACCOUNT_WEBHOOK_SIGNING_SECRET || process.env.CRON_SECRET);
 }
@@ -89,8 +94,89 @@ async function recordWebhookReceipt(input: {
   } as never);
 }
 
+async function saveProviderPaymentMethod(input: {
+  userId: string;
+  payload: Record<string, unknown>;
+  eventId: string;
+}) {
+  const provider = clean(input.payload.provider) || "flutterwave";
+  const providerToken =
+    clean(input.payload.provider_token) ||
+    clean(input.payload.authorization_code) ||
+    clean(input.payload.reusable_authorization) ||
+    clean(input.payload.token);
+  if (!providerToken) {
+    return { ok: false, error: "provider_token required" };
+  }
+
+  const methodType = clean(input.payload.type) || clean(input.payload.method_type) || "card";
+  const last4 = lastFour(input.payload.last_four || input.payload.last4);
+  const bankName = clean(input.payload.bank_name) || null;
+  const label =
+    clean(input.payload.label) ||
+    [
+      provider.charAt(0).toUpperCase() + provider.slice(1),
+      methodType === "card" && last4 ? `•••• ${last4}` : methodType,
+    ]
+      .filter(Boolean)
+      .join(" ");
+  const isDefault = input.payload.is_default === true;
+  const admin = createAdminSupabase();
+
+  if (isDefault) {
+    await admin
+      .from("customer_payment_methods")
+      .update({ is_default: false })
+      .eq("user_id", input.userId);
+  }
+
+  const metadata = {
+    brand: clean(input.payload.brand) || null,
+    exp_month: clean(input.payload.exp_month) || null,
+    exp_year: clean(input.payload.exp_year) || null,
+    provider_customer_id: clean(input.payload.provider_customer_id) || null,
+    provider_reference: clean(input.payload.provider_reference || input.payload.flw_ref) || null,
+    source_event_id: input.eventId,
+  };
+
+  const { data: existing } = await admin
+    .from("customer_payment_methods")
+    .select("id")
+    .eq("user_id", input.userId)
+    .eq("provider", provider)
+    .eq("provider_token", providerToken)
+    .maybeSingle();
+
+  const payload = {
+    user_id: input.userId,
+    type: methodType,
+    label,
+    last_four: last4 || null,
+    bank_name: bankName,
+    provider,
+    provider_token: providerToken,
+    metadata,
+    is_default: isDefault || Boolean(!existing?.id),
+    updated_at: new Date().toISOString(),
+  };
+
+  const result = existing?.id
+    ? await admin
+        .from("customer_payment_methods")
+        .update(payload)
+        .eq("id", existing.id)
+        .eq("user_id", input.userId)
+    : await admin.from("customer_payment_methods").insert(payload);
+
+  if (result.error) {
+    return { ok: false, error: result.error.message };
+  }
+
+  return { ok: true };
+}
+
 // Webhook endpoint for cross-division account events
-// Other HenryCo apps can POST here to trigger account-level actions
+// Other Henry & Co. apps can POST here to trigger account-level actions
 export async function POST(request: Request) {
   try {
     const signingSecret = getSigningSecret();
@@ -224,6 +310,13 @@ export async function POST(request: Request) {
         }
         break;
       }
+      case "payment.method.saved": {
+        const result = await saveProviderPaymentMethod({ userId, payload, eventId });
+        if (!result.ok) {
+          return NextResponse.json({ error: result.error }, { status: 400 });
+        }
+        break;
+      }
       case "activity.log": {
         await admin.from("customer_activity").insert({
           user_id: userId,
@@ -288,7 +381,7 @@ export async function POST(request: Request) {
         break;
       }
       case "referral.qualify": {
-        // Another HenryCo app (marketplace, care, property, etc.) is
+        // Another Henry & Co. app (marketplace, care, property, etc.) is
         // signalling that `user_id` has completed a qualifying transaction.
         // Qualify any outstanding converted referrals so the reward unlocks.
         const reason =

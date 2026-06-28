@@ -59,7 +59,7 @@ export const ACCOUNT_COPY_ES = {
     "attentionKicker": "¿Qué necesita tu atención?",
     "attentionTitle": "En progreso, esperando por ti o aún sin resolver",
     "pendingWalletVerification": "Pendiente de verificación de billetera",
-    "pendingWalletVerificationDetail": "El comprobante de su billetera todavía está esperando la confirmación financiera.",
+    "pendingWalletVerificationDetail": "La referencia de su billetera todavía está esperando conciliación del riel financiero.",
     "unreadNotificationsAttention": "Notificaciones no leídas",
     "unreadNotificationsAttentionDetail": "Las actualizaciones no leídas todavía están esperando su revisión.",
     "activePlansInMotion": "Planes activos en marcha",
@@ -126,7 +126,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "taskDescriptions": {
       "trustFallback": "Actualice el nivel de confianza para desbloquear más capacidades.",
-      "walletFunding": "Su prueba está esperando confirmación financiera.",
+      "walletFunding": "Su referencia está esperando conciliación financiera.",
       "support": "Las conversaciones de soporte abiertas aún necesitan su atención.",
       "notifications": "Las actualizaciones no leídas están esperando revisión."
     },
@@ -682,7 +682,7 @@ export const ACCOUNT_COPY_ES = {
     "quickActions": {
       "ariaLabel": "Acciones rápidas de la cartera",
       "addFundsLabel": "Añadir fondos",
-      "addFundsDesc": "Transferencia bancaria con comprobante y confirmación inmediata.",
+      "addFundsDesc": "Transferencia bancaria con referencia y confirmación del riel en vivo.",
       "withdrawLabel": "Retirar",
       "withdrawDesc": "Mueve el saldo disponible a una cuenta bancaria verificada.",
       "paymentsLabel": "Pagos",
@@ -693,8 +693,8 @@ export const ACCOUNT_COPY_ES = {
     "pendingOps": {
       "fundingKicker": "Recarga pendiente",
       "fundingDescEmpty": "Los fondos que transfieres permanecen aquí hasta que finanzas confirme la referencia bancaria.",
-      "fundingDescSingular": "{count} solicitud en revisión — el comprobante hace avanzar la cola.",
-      "fundingDescPlural": "{count} solicitudes en revisión — el comprobante hace avanzar la cola.",
+      "fundingDescSingular": "{count} solicitud en revisión del riel — la conciliación de referencia hace avanzar la cola.",
+      "fundingDescPlural": "{count} solicitudes en revisión del riel — la conciliación de referencia hace avanzar la cola.",
       "fundingCta": "Abrir vía de recarga",
       "withdrawalKicker": "Retiros pendientes",
       "withdrawalDescEmpty": "Los retiros esperan aquí mientras finanzas los revisa — tu saldo disponible nunca se promete dos veces.",
@@ -743,13 +743,13 @@ export const ACCOUNT_COPY_ES = {
       "fallbackTitle": "Transacción de la cartera"
     },
     "funding": {
-      "proofUploaded": "Comprobante cargado",
-      "awaitingProof": "Esperando comprobante",
+      "proofUploaded": "Referencia conciliada",
+      "awaitingProof": "Procesando",
       "ariaLabelTemplate": "Solicitud de recarga {reference} por ₦{amount}"
     },
     "statusLabels": {
       "pending": "Esperando revisión",
-      "awaiting_proof": "Esperando comprobante",
+      "awaiting_proof": "Procesando",
       "awaiting_review": "Esperando revisión",
       "in_review": "En revisión",
       "rejected": "Rechazado",
@@ -2155,7 +2155,7 @@ export const ACCOUNT_COPY_PT = {
     "attentionKicker": "O que precisa de sua atenção",
     "attentionTitle": "Em andamento, esperando por você ou ainda não resolvido",
     "pendingWalletVerification": "Verificação de carteira pendente",
-    "pendingWalletVerificationDetail": "O comprovante da sua carteira ainda aguarda confirmação do financiamento.",
+    "pendingWalletVerificationDetail": "A referência da sua carteira ainda aguarda conciliação do trilho financeiro.",
     "unreadNotificationsAttention": "Notificações não lidas",
     "unreadNotificationsAttentionDetail": "As atualizações não lidas ainda aguardam sua análise.",
     "activePlansInMotion": "Planos ativos em movimento",
@@ -2222,7 +2222,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "taskDescriptions": {
       "trustFallback": "Atualize o nível de confiança para desbloquear mais recursos.",
-      "walletFunding": "Seu comprovante está aguardando confirmação do financiamento.",
+      "walletFunding": "A sua referência aguarda conciliação financeira.",
       "support": "Conversas abertas de suporte ainda precisam de sua atenção.",
       "notifications": "Atualizações não lidas estão aguardando revisão."
     },
@@ -2778,7 +2778,7 @@ export const ACCOUNT_COPY_PT = {
     "quickActions": {
       "ariaLabel": "Ações rápidas da carteira",
       "addFundsLabel": "Adicionar fundos",
-      "addFundsDesc": "Transferência bancária com comprovativo e confirmação imediata.",
+      "addFundsDesc": "Transferência bancária com referência e confirmação do trilho em direto.",
       "withdrawLabel": "Levantar",
       "withdrawDesc": "Move o saldo disponível para uma conta bancária verificada.",
       "paymentsLabel": "Pagamentos",
@@ -2789,8 +2789,8 @@ export const ACCOUNT_COPY_PT = {
     "pendingOps": {
       "fundingKicker": "Carregamento pendente",
       "fundingDescEmpty": "Os fundos que transfere permanecem aqui até a área financeira confirmar a referência bancária.",
-      "fundingDescSingular": "{count} pedido em revisão — o comprovativo faz a fila avançar.",
-      "fundingDescPlural": "{count} pedidos em revisão — o comprovativo faz a fila avançar.",
+      "fundingDescSingular": "{count} pedido em revisão do trilho — a conciliação da referência faz a fila avançar.",
+      "fundingDescPlural": "{count} pedidos em revisão do trilho — a conciliação da referência faz a fila avançar.",
       "fundingCta": "Abrir via de carregamento",
       "withdrawalKicker": "Levantamentos pendentes",
       "withdrawalDescEmpty": "Os levantamentos aguardam aqui durante a revisão — o seu saldo disponível nunca é prometido duas vezes.",
@@ -2839,13 +2839,13 @@ export const ACCOUNT_COPY_PT = {
       "fallbackTitle": "Transação da carteira"
     },
     "funding": {
-      "proofUploaded": "Comprovativo carregado",
-      "awaitingProof": "À espera de comprovativo",
+      "proofUploaded": "Referência conciliada",
+      "awaitingProof": "Processando",
       "ariaLabelTemplate": "Pedido de carregamento {reference} por ₦{amount}"
     },
     "statusLabels": {
       "pending": "À espera de revisão",
-      "awaiting_proof": "À espera de comprovativo",
+      "awaiting_proof": "Processando",
       "awaiting_review": "À espera de revisão",
       "in_review": "Em revisão",
       "rejected": "Rejeitado",
@@ -4251,7 +4251,7 @@ export const ACCOUNT_COPY_AR = {
     "attentionKicker": "ما يحتاج إلى انتباهك",
     "attentionTitle": "قيد التقدم، في انتظارك، أو لا يزال دون حل",
     "pendingWalletVerification": "في انتظار التحقق من المحفظة",
-    "pendingWalletVerificationDetail": "لا يزال إثبات محفظتك في انتظار تأكيد التمويل.",
+    "pendingWalletVerificationDetail": "لا يزال مرجع محفظتك ينتظر مطابقة مسار الدفع المالي.",
     "unreadNotificationsAttention": "الإخطارات غير المقروءة",
     "unreadNotificationsAttentionDetail": "التحديثات غير المقروءة لا تزال تنتظر مراجعتك.",
     "activePlansInMotion": "خطط نشطة قيد التنفيذ",
@@ -4318,7 +4318,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "taskDescriptions": {
       "trustFallback": "قم بترقية مستوى الثقة لفتح المزيد من الإمكانات.",
-      "walletFunding": "إثباتك في انتظار تأكيد التمويل.",
+      "walletFunding": "مرجعك في انتظار المطابقة المالية.",
       "support": "لا تزال محادثات الدعم المفتوحة بحاجة إلى اهتمامك.",
       "notifications": "التحديثات غير المقروءة في انتظار المراجعة."
     },
@@ -4874,7 +4874,7 @@ export const ACCOUNT_COPY_AR = {
     "quickActions": {
       "ariaLabel": "إجراءات سريعة للمحفظة",
       "addFundsLabel": "إضافة أموال",
-      "addFundsDesc": "تحويل مصرفي مع رفع إثبات وتأكيد فوري.",
+      "addFundsDesc": "تحويل مصرفي مع مرجع وتأكيد مسار مباشر.",
       "withdrawLabel": "سحب",
       "withdrawDesc": "نقل الرصيد المتاح إلى حساب مصرفي موثق.",
       "paymentsLabel": "المدفوعات",
@@ -4885,8 +4885,8 @@ export const ACCOUNT_COPY_AR = {
     "pendingOps": {
       "fundingKicker": "تعبئة معلّقة",
       "fundingDescEmpty": "تبقى الأموال التي تحوّلها هنا حتى تؤكد الإدارة المالية المرجع المصرفي.",
-      "fundingDescSingular": "{count} طلب قيد المراجعة — يدفع الإثبات الطابور للأمام.",
-      "fundingDescPlural": "{count} طلبات قيد المراجعة — يدفع الإثبات الطابور للأمام.",
+      "fundingDescSingular": "{count} طلب قيد مراجعة مسار الدفع — مطابقة المرجع تدفع الطابور للأمام.",
+      "fundingDescPlural": "{count} طلبات قيد مراجعة مسار الدفع — مطابقة المرجع تدفع الطابور للأمام.",
       "fundingCta": "فتح مسار التعبئة",
       "withdrawalKicker": "عمليات سحب معلّقة",
       "withdrawalDescEmpty": "تنتظر عمليات السحب هنا أثناء المراجعة — لا يُوعد رصيدك المتاح مرتين أبدًا.",
@@ -4935,13 +4935,13 @@ export const ACCOUNT_COPY_AR = {
       "fallbackTitle": "معاملة المحفظة"
     },
     "funding": {
-      "proofUploaded": "تم رفع الإثبات",
-      "awaitingProof": "في انتظار الإثبات",
+      "proofUploaded": "تمت مطابقة المرجع",
+      "awaitingProof": "قيد المعالجة",
       "ariaLabelTemplate": "طلب تعبئة {reference} بقيمة ₦{amount}"
     },
     "statusLabels": {
       "pending": "في انتظار المراجعة",
-      "awaiting_proof": "في انتظار الإثبات",
+      "awaiting_proof": "قيد المعالجة",
       "awaiting_review": "في انتظار المراجعة",
       "in_review": "قيد المراجعة",
       "rejected": "مرفوض",

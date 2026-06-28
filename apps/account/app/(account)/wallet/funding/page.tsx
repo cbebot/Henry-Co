@@ -42,18 +42,18 @@ export default async function WalletFundingPage() {
             variant="compact"
             tone="active"
             eyebrow={t("Wallet · funding")}
-            headline={t("Add money to your HenryCo wallet")}
+            headline={t("Add money to your Henry & Co. wallet")}
             blurb={t(
-              "Send a bank transfer using the rail below, then upload proof. Finance confirms the amount and your balance moves into available funds.",
+              "Create a funding reference and pay through the live rail. Your balance moves into available funds after provider or finance confirmation.",
             )}
           />
         }
         sections={[
           {
             id: "wal-fund-rail",
-            title: t("Transfer to HenryCo"),
+            title: t("Transfer to Henry & Co."),
             meta: t(
-              "Send your bank transfer to these details, then upload proof.",
+              "Use the generated reference exactly so the live payment rail can reconcile the transfer.",
             ),
             content: (
               <div className="acct-wal__columns">
