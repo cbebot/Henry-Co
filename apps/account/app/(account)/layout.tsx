@@ -34,7 +34,34 @@ import { COMPANY } from "@henryco/config";
 import "@/app/(account)/_modules";
 
 /**
+ * Per-slug accent overrides for module slugs that do NOT map 1:1 onto a
+ * `COMPANY.divisions` key:
+ *   - `play` → the gaming division's magenta (the slug is `play`, the
+ *     division key is `gaming`).
+ *   - `business` → a dedicated indigo (the seller/business workspace is
+ *     cross-division and has no `DivisionKey`). Kept in lockstep with
+ *     `BUSINESS_IDENTITY.accent` in `@henryco/dashboard-modules-business`.
+ *
+ * The six division-aligned new modules (care, jobs, learn, logistics,
+ * property, studio) resolve directly from `COMPANY.divisions` below, so
+ * they need no override; they are listed here for completeness/intent.
+ */
+const MODULE_ACCENT_OVERRIDES: Record<string, string> = {
+  care: "#6B7CFF",
+  jobs: "#0E7C86",
+  learn: "#3C8C7A",
+  logistics: "#D06F32",
+  property: "#B06C3E",
+  studio: "#4AC1C5",
+  play: "#A21CAF",
+  business: "#4F46E5",
+};
+
+/**
  * Map a module slug to its division accent hex.
+ * - play / business and the six division-aligned new slugs →
+ *   `MODULE_ACCENT_OVERRIDES[slug]` (authoritative for slugs the
+ *   division catalog doesn't key directly, e.g. `play`/`business`).
  * - care/marketplace/property/logistics/studio/jobs/learn/building/hotel
  *   → COMPANY.divisions[slug].accent
  * - customer-overview / wallet / support / notifications / settings →
@@ -45,6 +72,8 @@ import "@/app/(account)/_modules";
  * catalog.
  */
 function divisionAccentFor(slug: string): string {
+  const override = MODULE_ACCENT_OVERRIDES[slug];
+  if (override) return override;
   const direct = (COMPANY.divisions as Record<string, { accent: string }>)[slug];
   if (direct) return direct.accent;
   return COMPANY.divisions.hub.accent;
