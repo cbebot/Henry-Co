@@ -48,6 +48,8 @@ export type ModuleSlug =
   | "support"
   | "notifications"
   | "settings"
+  | "play" // Henry Onyx Live — gaming arena; flag-dark until launch
+  | "business" // Henry Onyx Business — seller/business workspace
   | "building" // hidden until V3 launch
   | "hotel"; // hidden until V3 launch
 
