@@ -2,6 +2,8 @@ import { MetricCard } from "@henryco/dashboard-shell/components";
 import { CalendarCheck } from "lucide-react";
 import { PROPERTY_HOME_HREF, type PropertySnapshot } from "../data";
 
+const VIEWING_REQUESTS_LABEL = "Viewing requests";
+
 /**
  * ViewingRequestsCard — a compact metric surfacing the viewer's REAL
  * viewing-request count, with their open inquiry count as required
@@ -18,7 +20,7 @@ export function ViewingRequestsCard({ snapshot }: { snapshot: PropertySnapshot }
 
   return (
     <MetricCard
-      label="Viewing requests"
+      label={VIEWING_REQUESTS_LABEL}
       value={String(viewings)}
       icon={<CalendarCheck size={18} aria-hidden />}
       href={PROPERTY_HOME_HREF}

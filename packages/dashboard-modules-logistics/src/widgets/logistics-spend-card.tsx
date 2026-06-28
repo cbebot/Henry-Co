@@ -4,6 +4,8 @@ import { Wallet } from "lucide-react";
 import { formatMoney } from "../format";
 import { LOGISTICS_HOME_HREF, type LogisticsSnapshot } from "../data";
 
+const TOTAL_SPEND_LABEL = "Total spend";
+
 /**
  * LogisticsSpendCard — lifetime logistics spend
  * (`metrics.totalSpendMinor`, minor units) with the real lifetime
@@ -14,7 +16,7 @@ export function LogisticsSpendCard({ snapshot }: { snapshot: LogisticsSnapshot }
 
   return (
     <MetricCard
-      label="Total spend"
+      label={TOTAL_SPEND_LABEL}
       value={formatMoney(totalSpendMinor, snapshot.currency)}
       icon={<Wallet size={18} aria-hidden />}
       href={LOGISTICS_HOME_HREF}

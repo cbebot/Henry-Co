@@ -27,7 +27,7 @@ import { normalizeEmail } from "@henryco/config";
  *     `delivered` / `archived`.
  *   - `pendingPayments` — visible payments whose status is not
  *     `paid` / `cancelled`.
- *   - `proofSubmitted`  — visible payments carrying a `proof_url`.
+ *   - `confirmedPayments` — visible payments confirmed by the live payment rail.
  *   - `deliverables`    — visible deliverables count.
  *
  * Visibility mirrors `loadStudioContext`: a project is visible when the
@@ -52,8 +52,8 @@ export type StudioMetricsSnapshot = {
   activeProjects: number;
   /** Visible payments whose status is not paid / cancelled. */
   pendingPayments: number;
-  /** Visible payments carrying a payment proof. */
-  proofSubmitted: number;
+  /** Visible payments confirmed by the live payment rail. */
+  confirmedPayments: number;
   /** Visible deliverables count. */
   deliverables: number;
   /** Every visible project, regardless of status — drives empty-state copy. */
@@ -187,7 +187,7 @@ async function loadVisibleProjects(
   return [...merged.values()];
 }
 
-type PaymentRow = { id: string; status: string | null; proof_url: string | null };
+type PaymentRow = { id: string; status: string | null };
 
 /**
  * Every payment the viewer can see — hanging off a visible project,
@@ -201,7 +201,7 @@ async function loadVisiblePayments(
   projectIds: Set<string>,
   activityPaymentIds: Set<string>,
 ): Promise<PaymentRow[]> {
-  const select = "id, status, proof_url";
+  const select = "id, status";
   const queries: Array<PromiseLike<{ data: PaymentRow[] | null; error: unknown }>> = [
     client
       .from("studio_payments")
@@ -246,7 +246,7 @@ async function loadVisiblePayments(
     for (const row of rows) {
       const id = cleanText(row.id);
       if (id && !merged.has(id)) {
-        merged.set(id, { id, status: row.status, proof_url: row.proof_url });
+        merged.set(id, { id, status: row.status });
       }
     }
   }
@@ -320,14 +320,14 @@ export async function loadStudioSnapshot(
     (payment) => !SETTLED_PAYMENT_STATUSES.has(cleanText(payment.status)),
   ).length;
 
-  const proofSubmitted = payments.filter(
-    (payment) => cleanText(payment.proof_url) !== "",
+  const confirmedPayments = payments.filter(
+    (payment) => cleanText(payment.status) === "paid",
   ).length;
 
   return {
     activeProjects,
     pendingPayments,
-    proofSubmitted,
+    confirmedPayments,
     deliverables,
     totalProjects: projects.length,
     totalPayments: payments.length,

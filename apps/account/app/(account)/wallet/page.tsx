@@ -188,8 +188,8 @@ export default async function WalletPage() {
         ? copy.trust.verificationLabels.rejected
         : copy.trust.verificationLabels.notSubmitted;
 
-  // The single highest-friction next move. Live payment rails no longer need
-  // proof upload prompts; legacy funding rows stay visible in their own lane.
+  // The single highest-friction next move. Live payment rails handle
+  // confirmation now; legacy funding rows stay visible in their own lane.
   const attention = !verificationDone && pendingWithdrawalCount > 0
       ? {
           title: copy.alert.identityTitle,

@@ -1,18 +1,20 @@
 import type { ReactNode } from "react";
 import { Panel, Section, ActionButton } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
-import { Wallet, FileCheck2, ArrowRight } from "lucide-react";
+import { Wallet, CircleCheck, ArrowRight } from "lucide-react";
 
 import { STUDIO_HOME_HREF, type StudioMetricsSnapshot } from "../data";
 import { pluralize } from "../format";
 
 /** Deep-links into the payments section the studio landing renders. */
 const STUDIO_PAYMENTS_HREF = `${STUDIO_HOME_HREF}#studio-payments`;
+const PENDING_CHECKPOINTS_LABEL = "Pending checkpoints";
+const CONFIRMED_PAYMENTS_LABEL = "Confirmed payments";
 
 /**
  * PaymentsDueCard — surfaces the viewer's studio payment posture: how
  * many payment checkpoints are still open (not paid / cancelled) and how
- * many already carry an uploaded proof. Both numbers come straight from
+ * many are already confirmed by the live payment rail. Both numbers come straight from
  * `loadStudioSnapshot` (the read-only port of
  * `getStudioDashboardData().metrics`); nothing is fabricated.
  *
@@ -24,7 +26,7 @@ export function PaymentsDueCard({
 }: {
   snapshot: StudioMetricsSnapshot;
 }) {
-  const { pendingPayments, proofSubmitted, totalPayments } = snapshot;
+  const { pendingPayments, confirmedPayments, totalPayments } = snapshot;
 
   return (
     <Panel tone="raised">
@@ -61,14 +63,14 @@ export function PaymentsDueCard({
           >
             <PaymentRow
               icon={<Wallet size={16} />}
-              label="Pending checkpoints"
+              label={PENDING_CHECKPOINTS_LABEL}
               value={pendingPayments}
               emphasize={pendingPayments > 0}
             />
             <PaymentRow
-              icon={<FileCheck2 size={16} />}
-              label="Proofs submitted"
-              value={proofSubmitted}
+              icon={<CircleCheck size={16} />}
+              label={CONFIRMED_PAYMENTS_LABEL}
+              value={confirmedPayments}
             />
           </ul>
         ) : (
@@ -80,7 +82,7 @@ export function PaymentsDueCard({
             }}
           >
             Payment checkpoints for your studio projects appear here, with
-            proof upload built in.
+            live payment confirmation built in.
           </p>
         )}
       </Section>
