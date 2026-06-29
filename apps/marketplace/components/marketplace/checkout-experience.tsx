@@ -6,7 +6,6 @@ import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components
 import Link from "next/link";
 import {
   AlertCircle,
-  Banknote,
   Bookmark,
   Check,
   ChevronLeft,
@@ -143,22 +142,10 @@ function buildPaymentMethods(
       ),
       icon: Wallet,
     },
-    // V3-RETIRE-BANKTRANSFER (marketplace) — the manual transfer+proof rail is
-    // RETIRED once the real card rail is live: it is offered ONLY as the fallback
-    // while card is off, so the buyer is never left with no real way to pay. When
-    // `cardEnabled` is true, card replaces it and no proof-based payment is shown.
-    ...(!cardEnabled
-      ? [
-          {
-            id: "bank_transfer" as const,
-            label: t("Bank transfer"),
-            description: t(
-              "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
-            ),
-            icon: Banknote,
-          },
-        ]
-      : []),
+    // Bank transfer is RETIRED — no more manual transfer + proof. The buyer pays by the live
+    // card rail (confirmed the moment it clears) or with cleared wallet funds. Cash on
+    // delivery is kept for eligible orders. The persisted-draft guard below pulls any retired
+    // method back to a valid one, so bank_transfer can never be submitted.
     {
       id: "cod",
       label: t("Cash on delivery"),
@@ -265,7 +252,7 @@ export function CheckoutExperience({
       phoneOverride: "",
       // Card-ready leads with the real card rail; otherwise wallet (if funded) and
       // the retired bank-transfer rail is the last fallback only while card is off.
-      paymentMethod: cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "bank_transfer",
+      paymentMethod: cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "cod",
       bankReference: "",
     }),
     // Initial value is captured once on mount; subsequent prop changes
@@ -385,13 +372,13 @@ export function CheckoutExperience({
     // NEVER drift from what's actually rendered.
     const visibleMethodIds = new Set(buildPaymentMethods((s) => s, cardEnabled).map((m) => m.id));
     if (!visibleMethodIds.has(paymentMethod)) {
-      setPaymentMethod(cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "bank_transfer");
+      setPaymentMethod(cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "cod");
       return;
     }
     if (paymentMethod === "wallet_balance" && !walletCanPay) {
-      // Card-ready: the retired bank-transfer rail is no longer a valid fallback —
-      // lead with the real card rail instead.
-      setPaymentMethod(cardEnabled ? "card" : "bank_transfer");
+      // Card-ready: lead with the live card rail; otherwise fall back to cash on delivery
+      // (bank transfer is retired).
+      setPaymentMethod(cardEnabled ? "card" : "cod");
     }
     if (paymentMethod === "bank_transfer" && !paymentRail.ready && walletCanPay) {
       setPaymentMethod("wallet_balance");

@@ -24,11 +24,11 @@ export const dynamic = "force-dynamic";
 const CHECKOUT_ERROR_COPY: Record<string, { title: string; body: string }> = {
   "wallet-unavailable": {
     title: "Wallet isn't ready for marketplace debits yet",
-    body: "Your Henry Onyx wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
+    body: "Your Henry Onyx wallet isn't activated for direct payments. Pay by card, or top up your wallet first.",
   },
   "insufficient-balance": {
     title: "Wallet balance didn't cover the order",
-    body: "Top up the shortfall, switch to bank transfer with proof, or use cash on delivery if the order is eligible.",
+    body: "Top up the shortfall, pay by card, or use cash on delivery if the order is eligible.",
   },
   "missing-bank-reference": {
     title: "Bank reference missing",
