@@ -14,6 +14,7 @@
     "verify": "tsx --conditions=react-server ./scripts/verify-jobs-live.ts"
   },
   "dependencies": {
+    "@henryco/ai-gateway": "workspace:^",
     "@henryco/auth": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
@@ -23,6 +24,7 @@
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",
+    "@henryco/payments-db": "workspace:^",
     "@henryco/media": "workspace:^",
     "@henryco/messaging-thread": "workspace:^",
     "@henryco/notifications": "workspace:^",
