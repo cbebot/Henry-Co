@@ -65,7 +65,7 @@ export default async function CheckoutPage({
 
   if (!cart.items.length) {
     return (
-      <div className="mx-auto max-w-[1480px] px-4 py-8 sm:px-6 xl:px-8">
+      <div className="mx-auto max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
         <EmptyState
           title="There is nothing to check out yet."
           body="Add products to your cart, or restore something you saved earlier — your saved items keep the price you locked in."

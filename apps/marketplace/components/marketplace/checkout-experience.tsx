@@ -643,7 +643,7 @@ export function CheckoutExperience({
   const shippingLine1 = usingOneShot ? oneShot.line1 : selectedAddress?.street || "";
 
   return (
-    <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
+    <div className="mx-auto max-w-[1180px] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="market-kicker">{t("Checkout")}</p>
@@ -656,7 +656,7 @@ export function CheckoutExperience({
         </div>
         <Link
           href="/cart"
-          className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
+          className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           {t("Edit cart")}
@@ -666,7 +666,7 @@ export function CheckoutExperience({
       {/* Stepper — bespoke HenryCo brass-on-noir, motion-aware */}
       <CheckoutStepper currentStep={step} />
 
-      <section className="grid gap-6 xl:grid-cols-[1fr,420px]">
+      <section className="grid gap-6 lg:grid-cols-[1fr,380px]">
         <form
           ref={formRef}
           action="/api/marketplace"
@@ -793,7 +793,7 @@ export function CheckoutExperience({
               <button
                 type="button"
                 onClick={back}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.07)]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[var(--market-fill-soft)]"
               >
                 <ChevronLeft className="h-4 w-4" />
                 {t("Back")}
@@ -902,7 +902,7 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
                       ? "border-transparent bg-gradient-to-br from-[#f7edd9] via-[var(--market-brass)] to-[var(--market-aurora)] text-[#101114] shadow-[0_8px_22px_rgba(200,163,106,0.35)]"
                       : status === "active"
                       ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.16)] text-[var(--market-brass-soft)] shadow-[0_8px_22px_rgba(200,163,106,0.18)]"
-                      : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] text-[var(--market-muted)]"
+                      : "border-[var(--market-line)] bg-[var(--market-fill-faint)] text-[var(--market-muted)]"
                   }`}
                 >
                   {status === "done" ? <Check className="h-4 w-4" /> : index + 1}
@@ -988,7 +988,7 @@ function DeliveryStep({
                   className={`group relative flex cursor-pointer flex-col gap-2 rounded-[1.5rem] border p-4 transition ${
                     active
                       ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.08)] shadow-[0_18px_50px_rgba(200,163,106,0.18)]"
-                      : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] hover:border-[var(--market-line-strong)]"
+                      : "border-[var(--market-line)] bg-[var(--market-fill-faint)] hover:border-[var(--market-line-strong)]"
                   }`}
                 >
                   <input
@@ -1061,7 +1061,7 @@ function DeliveryStep({
           </button>
         </div>
       ) : (
-        <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
+        <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
           {t("You don't have any saved addresses yet. Enter delivery details below — we'll offer to save it to your address book after the order is placed.")}
         </p>
       )}
@@ -1259,7 +1259,7 @@ function PaymentStep({
                   ? "cursor-not-allowed border-dashed border-[var(--market-line)] opacity-50"
                   : active
                   ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.08)] shadow-[0_18px_50px_rgba(200,163,106,0.18)]"
-                  : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] hover:border-[var(--market-line-strong)]"
+                  : "border-[var(--market-line)] bg-[var(--market-fill-faint)] hover:border-[var(--market-line-strong)]"
               }`}
             >
               <input
@@ -1270,7 +1270,7 @@ function PaymentStep({
                 disabled={disabled}
               />
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--market-fill-soft)] text-[var(--market-brass)]">
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
@@ -1294,7 +1294,7 @@ function PaymentStep({
       </div>
 
       {method === "wallet_balance" ? (
-        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <div className="grid gap-3 text-sm sm:grid-cols-3">
             <Metric label={t("Available balance")} value={formatCurrency(available, wallet.currency)} />
             <Metric label={t("Order total")} value={formatCurrency(total, currency)} />
@@ -1330,7 +1330,7 @@ function PaymentStep({
       ) : null}
 
       {method === "bank_transfer" ? (
-        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
@@ -1368,7 +1368,7 @@ function PaymentStep({
               {bankDetails.map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
+                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4"
                 >
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
                     {label}
@@ -1422,7 +1422,7 @@ function PaymentStep({
       ) : null}
 
       {method === "cod" ? (
-        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm leading-7 text-[var(--market-muted)]">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Cash on delivery
           </p>
@@ -1490,7 +1490,7 @@ function ProofUploadField({
             ? "border-red-400/40 bg-red-400/5"
             : isBusy
             ? "border-[var(--market-brass)]/60 bg-[rgba(200,163,106,0.06)]"
-            : "border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.03)]"
+            : "border-dashed border-[var(--market-line)] bg-[var(--market-fill-faint)]"
         }`}
       >
         <span
@@ -1611,7 +1611,7 @@ function ProofUploadField({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4">
+    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
         {label}
       </p>
@@ -1674,7 +1674,7 @@ function ConfirmStep({
       </header>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Delivers to
           </p>
@@ -1709,7 +1709,7 @@ function ConfirmStep({
           ) : null}
         </section>
 
-        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Payment method
           </p>
@@ -1728,7 +1728,7 @@ function ConfirmStep({
         </section>
       </div>
 
-      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Items ({cart.count})
@@ -1740,7 +1740,7 @@ function ConfirmStep({
             return (
               <li
                 key={item.id}
-                className="grid grid-cols-[64px,1fr,auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-3"
+                className="grid grid-cols-[64px,1fr,auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
               >
                 <div className="relative h-14 w-14 overflow-hidden rounded-[0.9rem] bg-[var(--market-soft-wash)]">
                   {item.image ? (
@@ -1777,7 +1777,7 @@ function ConfirmStep({
         </ul>
       </section>
 
-      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5 text-sm">
+      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5 text-sm">
         <div className="flex items-center justify-between text-[var(--market-muted)]">
           <span>Subtotal</span>
           <span className="font-semibold text-[var(--market-paper-white)]">{formatCurrency(subtotal, currency)}</span>
@@ -1796,7 +1796,7 @@ function ConfirmStep({
         </div>
       </section>
 
-      <label className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+      <label className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm leading-7 text-[var(--market-muted)]">
         <input
           type="checkbox"
           checked={agreed}
@@ -1896,7 +1896,7 @@ function OrderSummaryRail({
         </div>
       </div>
 
-      <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-xs leading-7 text-[var(--market-muted)]">
+      <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-xs leading-7 text-[var(--market-muted)]">
         <p className="font-semibold text-[var(--market-paper-white)]">
           Your basket waits for you
         </p>
