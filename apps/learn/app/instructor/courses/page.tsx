@@ -1,11 +1,16 @@
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { addModuleLessonDefinitionAction, saveCourseDefinitionAction } from "@/lib/learn/actions";
+import { DraftCoursePanel } from "@/components/ai/DraftCoursePanel";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { instructorNav } from "@/lib/learn/navigation";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnSectionIntro, LearnWorkspaceShell } from "@/components/learn/ui";
+
+// Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
+// company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
+const LEARN_AI_COURSE_ASSIST = process.env.LEARN_AI_COURSE_ASSIST === "true";
 
 export default async function InstructorCoursesPage() {
   await requireLearnRoles(
@@ -31,6 +36,19 @@ export default async function InstructorCoursesPage() {
           "Every field here is a server action — saving updates the live catalogue. Keep titles plain, descriptions outcome-focused, and the syllabus tight.",
         )}
       />
+      {LEARN_AI_COURSE_ASSIST ? (
+        <DraftCoursePanel
+          copy={{
+            heading: t("Draft with Henry Onyx Intelligence"),
+            intro: t("Henry Onyx Intelligence drafts a starting point from your idea — review and edit every field before you publish."),
+            draftButton: t("Draft with Henry Onyx Intelligence"),
+            drafting: t("Drafting…"),
+            needTitle: t("Add a title first, then let Henry Onyx Intelligence draft the rest."),
+            errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
+            priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+          }}
+        />
+      ) : null}
       <LearnPanel className="mt-6 rounded-[1.6rem]">
         <form
           action={saveCourseDefinitionAction}

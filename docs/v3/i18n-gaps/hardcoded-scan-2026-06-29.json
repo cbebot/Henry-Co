@@ -1,10 +1,10 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-29T17:42:48.112Z",
+  "generatedAt": "2026-06-29T22:38:16.534Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1464,
+    "scannedFiles": 1465,
     "entries": 1261,
     "counts": {
       "OK": 2,
@@ -12,7 +12,7 @@
       "EXEMPT": 33,
       "AMBIGUOUS": 59
     },
-    "durationMs": 4405
+    "durationMs": 4066
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
