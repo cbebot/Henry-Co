@@ -5,6 +5,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { PropertySectionIntro } from "@/components/property/ui";
 import { PropertySubmissionForm } from "@/components/property/submit/PropertySubmissionForm";
+import { DraftListingPanel } from "@/components/property/ai/DraftListingPanel";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
@@ -15,6 +16,10 @@ import {
 } from "@/lib/property/links";
 
 export const dynamic = "force-dynamic";
+
+// Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
+// company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
+const PROPERTY_AI_LISTING_ASSIST = process.env.PROPERTY_AI_LISTING_ASSIST === "true";
 
 const standards = [
   {
@@ -238,6 +243,21 @@ export default async function SubmitListingPage({
           </p>
           {viewer.user ? (
             <div className="mt-6">
+              {PROPERTY_AI_LISTING_ASSIST ? (
+                <div className="mb-4">
+                  <DraftListingPanel
+                    copy={{
+                      heading: t("Draft with Henry Onyx Intelligence"),
+                      intro: t("Henry Onyx Intelligence drafts a starting point from your idea — review and edit every field before you publish."),
+                      draftButton: t("Draft with Henry Onyx Intelligence"),
+                      drafting: t("Drafting…"),
+                      needTitle: t("Add a title first, then let Henry Onyx Intelligence draft the rest."),
+                      errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
+                      priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+                    }}
+                  />
+                </div>
+              ) : null}
               <PropertySubmissionForm
                 areas={snapshot.areas.map((area) => ({
                   id: area.id,
