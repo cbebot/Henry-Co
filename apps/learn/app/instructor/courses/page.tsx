@@ -2,6 +2,7 @@ import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { addModuleLessonDefinitionAction, saveCourseDefinitionAction } from "@/lib/learn/actions";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { DraftCoursePanel } from "@/components/ai/DraftCoursePanel";
+import { VerifyCoursePanel } from "@/components/ai/VerifyCoursePanel";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -12,6 +13,7 @@ import { LearnPanel, LearnSectionIntro, LearnWorkspaceShell } from "@/components
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
 const LEARN_AI_COURSE_ASSIST = isAiSurfaceEnabled(process.env.LEARN_AI_COURSE_ASSIST, process.env);
+const LEARN_AI_COURSE_VERIFY = isAiSurfaceEnabled(process.env.LEARN_AI_COURSE_VERIFY, process.env);
 
 export default async function InstructorCoursesPage() {
   await requireLearnRoles(
@@ -45,6 +47,22 @@ export default async function InstructorCoursesPage() {
             draftButton: t("Draft with Henry Onyx Intelligence"),
             drafting: t("Drafting…"),
             needTitle: t("Add a title first, then let Henry Onyx Intelligence draft the rest."),
+            errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
+            priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+          }}
+        />
+      ) : null}
+      {LEARN_AI_COURSE_VERIFY ? (
+        <VerifyCoursePanel
+          copy={{
+            heading: t("Get Henry Onyx Verified"),
+            intro: t("Henry Onyx Intelligence reviews your draft for honesty and safety before it goes live."),
+            request: t("Request a trust review"),
+            reviewing: t("Reviewing…"),
+            verifiedBadge: t("Henry Onyx Verified"),
+            readyForReview: t("Ready for review by our team."),
+            needsWork: t("A few things to address before this can be verified."),
+            augmentsNote: t("This review augments our human moderation — it does not publish anything on its own."),
             errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
             priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
           }}

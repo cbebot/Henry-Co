@@ -7,6 +7,7 @@ import { PropertySectionIntro } from "@/components/property/ui";
 import { PropertySubmissionForm } from "@/components/property/submit/PropertySubmissionForm";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { DraftListingPanel } from "@/components/property/ai/DraftListingPanel";
+import { VerifyListingPanel } from "@/components/property/ai/VerifyListingPanel";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
@@ -21,6 +22,7 @@ export const dynamic = "force-dynamic";
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
 const PROPERTY_AI_LISTING_ASSIST = isAiSurfaceEnabled(process.env.PROPERTY_AI_LISTING_ASSIST, process.env);
+const PROPERTY_AI_LISTING_VERIFY = isAiSurfaceEnabled(process.env.PROPERTY_AI_LISTING_VERIFY, process.env);
 
 const standards = [
   {
@@ -253,6 +255,24 @@ export default async function SubmitListingPage({
                       draftButton: t("Draft with Henry Onyx Intelligence"),
                       drafting: t("Drafting…"),
                       needTitle: t("Add a title first, then let Henry Onyx Intelligence draft the rest."),
+                      errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
+                      priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+                    }}
+                  />
+                </div>
+              ) : null}
+              {PROPERTY_AI_LISTING_VERIFY ? (
+                <div className="mb-4">
+                  <VerifyListingPanel
+                    copy={{
+                      heading: t("Get Henry Onyx Verified"),
+                      intro: t("Henry Onyx Intelligence reviews your draft for honesty and safety before it goes live."),
+                      request: t("Request a trust review"),
+                      reviewing: t("Reviewing…"),
+                      verifiedBadge: t("Henry Onyx Verified"),
+                      readyForReview: t("Ready for review by our team."),
+                      needsWork: t("A few things to address before this can be verified."),
+                      augmentsNote: t("This review augments our human moderation — it does not publish anything on its own."),
                       errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
                       priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
                     }}

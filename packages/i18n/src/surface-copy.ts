@@ -193,6 +193,12 @@ const EN: SurfaceCopy = {
     "A few things to address before this can be verified.": "A few things to address before this can be verified.",
     "This review augments our human moderation — it does not publish your listing.":
       "This review augments our human moderation — it does not publish your listing.",
+    // Division-neutral trust-review strings (jobs/learn/property verify reuse these).
+    "Request a trust review": "Request a trust review",
+    "Henry Onyx Intelligence reviews your draft for honesty and safety before it goes live.":
+      "Henry Onyx Intelligence reviews your draft for honesty and safety before it goes live.",
+    "This review augments our human moderation — it does not publish anything on its own.":
+      "This review augments our human moderation — it does not publish anything on its own.",
     Applications: "Applications",
     "Browse jobs": "Browse jobs",
     "Browse open jobs": "Browse open jobs",
