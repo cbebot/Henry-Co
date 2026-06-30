@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { VerifyListingPanel } from "@/components/marketplace/ai/VerifyListingPanel";
 import { WorkspaceShell } from "@/components/marketplace/shell";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 // Flag-dark: the metered "Henry Onyx Verified" trust review renders only when the company
 // turns it on (and the global AI kill switch is enabled — the gateway enforces that). The
 // review augments human moderation; it never publishes.
-const AI_LISTING_VERIFY_ENABLED = process.env.MARKETPLACE_AI_LISTING_VERIFY === "true";
+const AI_LISTING_VERIFY_ENABLED = isAiSurfaceEnabled(process.env.MARKETPLACE_AI_LISTING_VERIFY, process.env);
 
 export default async function VendorProductDetailPage({
   params,

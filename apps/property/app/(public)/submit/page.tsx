@@ -5,6 +5,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { PropertySectionIntro } from "@/components/property/ui";
 import { PropertySubmissionForm } from "@/components/property/submit/PropertySubmissionForm";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { DraftListingPanel } from "@/components/property/ai/DraftListingPanel";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
@@ -19,7 +20,7 @@ export const dynamic = "force-dynamic";
 
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
-const PROPERTY_AI_LISTING_ASSIST = process.env.PROPERTY_AI_LISTING_ASSIST === "true";
+const PROPERTY_AI_LISTING_ASSIST = isAiSurfaceEnabled(process.env.PROPERTY_AI_LISTING_ASSIST, process.env);
 
 const standards = [
   {

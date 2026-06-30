@@ -1,5 +1,6 @@
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { addModuleLessonDefinitionAction, saveCourseDefinitionAction } from "@/lib/learn/actions";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { DraftCoursePanel } from "@/components/ai/DraftCoursePanel";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
@@ -10,7 +11,7 @@ import { LearnPanel, LearnSectionIntro, LearnWorkspaceShell } from "@/components
 
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
-const LEARN_AI_COURSE_ASSIST = process.env.LEARN_AI_COURSE_ASSIST === "true";
+const LEARN_AI_COURSE_ASSIST = isAiSurfaceEnabled(process.env.LEARN_AI_COURSE_ASSIST, process.env);
 
 export default async function InstructorCoursesPage() {
   await requireLearnRoles(

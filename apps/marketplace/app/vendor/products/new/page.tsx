@@ -1,4 +1,5 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { DraftWithIntelligencePanel } from "@/components/marketplace/ai/DraftWithIntelligencePanel";
 import { WorkspaceShell } from "@/components/marketplace/shell";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 // explicitly turns it on AND the global AI kill switch is enabled (the gateway enforces the
 // latter server-side; this gates the UI). Reconcile the rate card to live provider prices
 // and set PAYMENTS_DATABASE_URL before enabling.
-const AI_LISTING_ASSIST_ENABLED = process.env.MARKETPLACE_AI_LISTING_ASSIST === "true";
+const AI_LISTING_ASSIST_ENABLED = isAiSurfaceEnabled(process.env.MARKETPLACE_AI_LISTING_ASSIST, process.env);
 
 export default async function NewVendorProductPage() {
   const locale = await getMarketplacePublicLocale();

@@ -28,6 +28,7 @@ export { redactReceipt, assertClientSafe, AI_LOG_REDACT_KEYS } from "./src/redac
 export { mapSignalToTelemetry, type AiTelemetryRecord } from "./src/telemetry-map";
 export { normalizeChatMessages, INTELLIGENCE_CHAT_SYSTEM_PROMPT, type ChatMessage } from "./src/intelligence-chat";
 export { HENRY_ONYX_INTELLIGENCE_DOCTRINE, composeSystemPrompt } from "./src/doctrine";
+export { isAiGatewayLive, isAiSurfaceEnabled } from "./src/flags";
 export {
   parseVerdict,
   resolveVerdictDecision,
