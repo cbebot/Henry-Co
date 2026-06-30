@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { createJobPostAction } from "@/app/actions";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { DraftPostingPanel } from "@/components/ai/DraftPostingPanel";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
-const JOBS_AI_POSTING_ASSIST = process.env.JOBS_AI_POSTING_ASSIST === "true";
+const JOBS_AI_POSTING_ASSIST = isAiSurfaceEnabled(process.env.JOBS_AI_POSTING_ASSIST, process.env);
 
 export async function generateMetadata() {
   const locale = await getJobsPublicLocale();
