@@ -3,6 +3,7 @@ import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { createJobPostAction } from "@/app/actions";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { DraftPostingPanel } from "@/components/ai/DraftPostingPanel";
+import { VerifyPostingPanel } from "@/components/ai/VerifyPostingPanel";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
@@ -18,6 +19,7 @@ export const dynamic = "force-dynamic";
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
 const JOBS_AI_POSTING_ASSIST = isAiSurfaceEnabled(process.env.JOBS_AI_POSTING_ASSIST, process.env);
+const JOBS_AI_POSTING_VERIFY = isAiSurfaceEnabled(process.env.JOBS_AI_POSTING_VERIFY, process.env);
 
 export async function generateMetadata() {
   const locale = await getJobsPublicLocale();
@@ -186,6 +188,22 @@ export default async function EmployerNewJobPage() {
                 draftButton: translateSurfaceLabel(locale, "Draft with Henry Onyx Intelligence"),
                 drafting: translateSurfaceLabel(locale, "Drafting…"),
                 needTitle: translateSurfaceLabel(locale, "Add a title first, then let Henry Onyx Intelligence draft the rest."),
+                errorFallback: translateSurfaceLabel(locale, "Henry Onyx Intelligence is unavailable right now."),
+                priceTemplate: translateSurfaceLabel(locale, "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+              }}
+            />
+          ) : null}
+          {JOBS_AI_POSTING_VERIFY ? (
+            <VerifyPostingPanel
+              copy={{
+                heading: translateSurfaceLabel(locale, "Get Henry Onyx Verified"),
+                intro: translateSurfaceLabel(locale, "Henry Onyx Intelligence reviews your draft for honesty and safety before it goes live."),
+                request: translateSurfaceLabel(locale, "Request a trust review"),
+                reviewing: translateSurfaceLabel(locale, "Reviewing…"),
+                verifiedBadge: translateSurfaceLabel(locale, "Henry Onyx Verified"),
+                readyForReview: translateSurfaceLabel(locale, "Ready for review by our team."),
+                needsWork: translateSurfaceLabel(locale, "A few things to address before this can be verified."),
+                augmentsNote: translateSurfaceLabel(locale, "This review augments our human moderation — it does not publish anything on its own."),
                 errorFallback: translateSurfaceLabel(locale, "Henry Onyx Intelligence is unavailable right now."),
                 priceTemplate: translateSurfaceLabel(locale, "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
               }}
