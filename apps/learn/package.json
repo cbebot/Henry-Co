@@ -17,6 +17,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@henryco/ai-gateway": "workspace:^",
     "@henryco/auth": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
     "@henryco/config": "workspace:^",
@@ -24,6 +25,7 @@
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/media": "workspace:^",
+    "@henryco/payments-db": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/seo": "workspace:^",

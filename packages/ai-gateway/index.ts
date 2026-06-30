@@ -25,6 +25,17 @@ export type { AiUsageReceipt, AiTask } from "./src/contracts";
 
 export { estimateInputTokens, estimateUsageUpperBound } from "./src/metering";
 export { redactReceipt, assertClientSafe, AI_LOG_REDACT_KEYS } from "./src/redaction";
+export { mapSignalToTelemetry, type AiTelemetryRecord } from "./src/telemetry-map";
+export { normalizeChatMessages, INTELLIGENCE_CHAT_SYSTEM_PROMPT, type ChatMessage } from "./src/intelligence-chat";
+export { HENRY_ONYX_INTELLIGENCE_DOCTRINE, composeSystemPrompt } from "./src/doctrine";
+export {
+  parseVerdict,
+  resolveVerdictDecision,
+  VERIFIED_TRUST_THRESHOLD,
+  type ListingVerdict,
+  type VerdictDecision,
+  type VerdictResolution,
+} from "./src/verify";
 
 export type {
   AiBillingPort,
@@ -33,6 +44,8 @@ export type {
   SettleInput,
   SettleResult,
 } from "./src/billing-port";
+
+export { InMemoryRateLimiter, DAY_MS, type AiRateLimitPort, type RateLimitCheck } from "./src/rate-limit";
 
 export {
   runAiTaskWith,

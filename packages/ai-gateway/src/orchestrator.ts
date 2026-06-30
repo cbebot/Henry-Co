@@ -12,6 +12,8 @@ import type { Result } from "./result";
 import { AI_SURFACES, type AiSurfaceKey, type AiSurfacePolicy } from "./surfaces";
 import type { AiProviderAdapter, ProviderError, ProviderRequest, ProviderResult } from "./provider-types";
 import type { AiBillingPort } from "./billing-port";
+import type { AiRateLimitPort } from "./rate-limit";
+import { DAY_MS } from "./rate-limit";
 import type { AiTask, AiUsageReceipt } from "./contracts";
 import { aiError, DEFAULT_AI_ERROR_COPY, type AiGatewayError, type AiGatewayErrorCode } from "./errors";
 import { estimateInputTokens, estimateUsageUpperBound } from "./metering";
@@ -21,6 +23,8 @@ import { assertClientSafe, redactReceipt } from "./redaction";
 export interface AiPromptParts {
   system: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
+  /** Optional image URLs for a multimodal surface (e.g. the trust review reads listing media). */
+  images?: string[];
   responseSchema?: object;
   timeoutMs?: number;
 }
@@ -43,6 +47,9 @@ export interface AiUsageSignal {
 export interface AiTaskDeps {
   adapter: AiProviderAdapter;
   billing: AiBillingPort;
+  /** Optional anti-abuse velocity limiter. When present, a surface's `freeAllowancePerDay`
+   *  (and any future per-actor cap) is enforced after the auth gate, before dispatch. */
+  rateLimiter?: AiRateLimitPort;
   rules: AiUsageRuleSet;
   vatPolicy: VatRatePolicy;
   /** Defaults to "standard" (collect VAT). A non-standard treatment defers VAT. */
@@ -72,6 +79,12 @@ export interface AiTaskSuccess {
 
 function lineAmount(breakdown: PricingBreakdown, code: string): number {
   return breakdown.lines.find((l) => l.code === code)?.amount.amount ?? 0;
+}
+
+/** V3-33: a call is allowed only for an authenticated actor — a non-empty user id the
+ *  surface resolved from the session. A blank/missing id is anonymous and refused. */
+function isAuthenticatedActor(actorId: unknown): boolean {
+  return typeof actorId === "string" && actorId.trim().length > 0;
 }
 
 function mapProviderError(error: ProviderError): AiGatewayErrorCode {
@@ -111,6 +124,30 @@ export async function runAiTaskWith(
   // Kill switch — evaluated BEFORE any wallet or provider work.
   if (!deps.killSwitchEnabled) {
     return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("kill_switch_active", DEFAULT_AI_ERROR_COPY.kill_switch_active));
+  }
+
+  // V3-33 personal-task gating — no anonymous AI. Every call requires an authenticated
+  // actor; an unauth/blank actor is refused AT THE ROUTER, before any wallet or provider
+  // work, and the refusal is signalled (audited). The surface is the auth trust boundary
+  // (it resolves the authenticated user and passes their id); this is the router backstop.
+  if (!isAuthenticatedActor(task.actorId)) {
+    return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("auth_required", DEFAULT_AI_ERROR_COPY.auth_required));
+  }
+
+  // Anti-abuse velocity cap — enforced AFTER auth, BEFORE any wallet or provider work. FREE
+  // surfaces are gated by `freeAllowancePerDay` (the wallet gates metered ones); a hit returns
+  // a typed rate_limited error and the provider is never called. consume-on-attempt (the
+  // studio precedent) so retry-hammering can't bypass the cap.
+  if (deps.rateLimiter && policy.freeAllowancePerDay != null) {
+    const rl = await deps.rateLimiter.consume({
+      actorId: task.actorId,
+      surface: policy.surface,
+      maxPerWindow: policy.freeAllowancePerDay,
+      windowMs: DAY_MS,
+    });
+    if (!rl.allowed) {
+      return fail(deps, "blocked", policy.surface, policy.modelTier, policy.billable, aiError("rate_limited", DEFAULT_AI_ERROR_COPY.rate_limited));
+    }
   }
 
   const tier: AiModelTier = task.tierOverride ?? policy.modelTier;
@@ -164,6 +201,7 @@ export async function runAiTaskWith(
     system: prompt.system,
     messages: prompt.messages,
     maxOutputTokens: policy.maxOutputTokens,
+    images: prompt.images,
     responseSchema: prompt.responseSchema,
     timeoutMs: prompt.timeoutMs ?? deps.defaultTimeoutMs ?? 12_000,
   };

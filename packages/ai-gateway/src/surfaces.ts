@@ -5,11 +5,20 @@ import type { AiModelTier } from "@henryco/pricing";
 export type AiSurfaceKey =
   | "marketplace.listing.draft" // Pass 1 — METERED (a seller's business task)
   | "marketplace.listing.verify" // Pass 2 — METERED, deep tier (the trust review; see docs/v3/ai/PASS-2-LISTING-VERIFY.md)
+  | "intelligence.chat" // V3-28 — METERED (the governed Henry Onyx Intelligence chat; a personal task)
   | "support.message.assist" // later — FREE (company-critical)
   | "account.check.assist" // later — FREE
   | "studio.brief.staff" // later — FREE/internal (the existing staff copilot; NOT billed)
   | "studio.brief.client" // later — METERED (client-end briefs)
-  | "business.message.assist"; // later — METERED
+  | "business.message.assist" // later — METERED
+  // Company-wide metered surfaces (one brain, every division) — draft (standard tier) +
+  // the deep-tier trust review. The wallet + rail are shared; each division just mounts.
+  | "jobs.posting.draft" // METERED — an employer drafts a job post
+  | "jobs.posting.verify" // METERED, deep — anti-scam/fake-job trust review before a post goes live
+  | "learn.course.draft" // METERED — an educator drafts a course
+  | "learn.course.verify" // METERED, deep — verify a course is genuine, on-standard, safe
+  | "property.listing.draft" // METERED — an agent drafts a property listing
+  | "property.listing.verify"; // METERED, deep — verify a property listing is honest, real, safe
 
 export interface AiSurfacePolicy {
   surface: AiSurfaceKey;
@@ -56,6 +65,17 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxOutputTokens: 1500,
     maxCalls: 1,
   },
+  // V3-28 — the governed Henry Onyx Intelligence chat. A personal conversational task, so
+  // METERED per turn at the standard tier; the topic guard (declines competing-brand /
+  // anti-company) lives in the system prompt. Dark until mounted.
+  "intelligence.chat": {
+    surface: "intelligence.chat",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 700,
+    maxCalls: 1,
+  },
   "support.message.assist": {
     surface: "support.message.assist",
     billable: false,
@@ -96,6 +116,55 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     ruleBookKey: DEFAULT_RULE_BOOK_KEY,
     modelTier: "standard",
     maxOutputTokens: 600,
+    maxCalls: 1,
+  },
+  // ---- Company-wide draft + trust-review surfaces (METERED; mounted per division) ----
+  "jobs.posting.draft": {
+    surface: "jobs.posting.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "jobs.posting.verify": {
+    surface: "jobs.posting.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  "learn.course.draft": {
+    surface: "learn.course.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "learn.course.verify": {
+    surface: "learn.course.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  "property.listing.draft": {
+    surface: "property.listing.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "property.listing.verify": {
+    surface: "property.listing.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
     maxCalls: 1,
   },
 };

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
+import { VerifyListingPanel } from "@/components/marketplace/ai/VerifyListingPanel";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -8,6 +9,11 @@ import { vendorNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
+
+// Flag-dark: the metered "Henry Onyx Verified" trust review renders only when the company
+// turns it on (and the global AI kill switch is enabled — the gateway enforces that). The
+// review augments human moderation; it never publishes.
+const AI_LISTING_VERIFY_ENABLED = process.env.MARKETPLACE_AI_LISTING_VERIFY === "true";
 
 export default async function VendorProductDetailPage({
   params,
@@ -28,6 +34,23 @@ export default async function VendorProductDetailPage({
       description="Product detail editing stays anchored to moderation readiness."
       nav={vendorNav("/vendor/products", locale)}
     >
+      {AI_LISTING_VERIFY_ENABLED ? (
+        <VerifyListingPanel
+          productId={product.id}
+          copy={{
+            heading: t("Get Henry Onyx Verified"),
+            intro: t("A trusted review checks your listing is honest, original, and safe — so buyers trust it more."),
+            request: t("Request review"),
+            reviewing: t("Reviewing…"),
+            verifiedBadge: t("Henry Onyx Verified"),
+            readyForReview: t("Ready for review by our team."),
+            needsWork: t("A few things to address before this can be verified."),
+            augmentsNote: t("This review augments our human moderation — it does not publish your listing."),
+            errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
+            priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+          }}
+        />
+      ) : null}
       <div className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
         <MarketplaceActionForm
           intent="vendor_product_upsert"

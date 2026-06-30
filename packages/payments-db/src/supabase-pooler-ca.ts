@@ -1,15 +1,13 @@
 /**
- * Supabase Root 2021 CA — the self-signed root that anchors the Supabase
- * transaction pooler's TLS chain (`*.pooler.supabase.com`). It is NOT in Node's
- * default trust store, so a plain `rejectUnauthorized: true` connection to the
- * pooler fails with `SELF_SIGNED_CERT_IN_CHAIN`. Bundling it here lets the money
- * RPC connection verify the chain (leaf → Supabase Intermediate 2021 CA → this
- * root) WITHOUT disabling certificate verification.
+ * Supabase Root 2021 CA — the self-signed root that anchors the Supabase transaction
+ * pooler's TLS chain (`*.pooler.supabase.com`). It is NOT in Node's default trust store, so
+ * a plain `rejectUnauthorized: true` connection to the pooler fails with
+ * `SELF_SIGNED_CERT_IN_CHAIN`. Bundling it lets the money-RPC connection verify the chain
+ * (leaf → Supabase Intermediate 2021 CA → this root) WITHOUT disabling verification.
  *
- * Public certificate (not a secret); a byte-for-byte copy of
- * apps/account/lib/payments/supabase-pooler-ca.ts (the proven money path). The
- * division checkout reaches the SAME `payments_private` RPCs over the SAME pooler.
- * If Supabase ever rotates the root, set PAYMENTS_DB_SSL_CA (it overrides this).
+ * The canonical copy for the whole company (every division reaches the SAME `payments_private`
+ * RPCs over the SAME pooler). Public certificate, not a secret. If Supabase ever rotates the
+ * root, set `PAYMENTS_DB_SSL_CA` (it overrides this).
  */
 export const SUPABASE_POOLER_CA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL

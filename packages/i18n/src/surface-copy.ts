@@ -168,6 +168,31 @@ const EN: SurfaceCopy = {
       "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}",
     "Drafts are advisory — review and edit every field before you submit.":
       "Drafts are advisory — review and edit every field before you submit.",
+    // V3-28 — Henry Onyx Intelligence chat.
+    "Ask Henry Onyx Intelligence": "Ask Henry Onyx Intelligence",
+    "Ask anything about running your Henry Onyx workspace.": "Ask anything about running your Henry Onyx workspace.",
+    "Type your message": "Type your message",
+    Send: "Send",
+    "Sending…": "Sending…",
+    "Each reply is metered to your wallet.": "Each reply is metered to your wallet.",
+    "Henry Onyx Intelligence is unavailable right now.": "Henry Onyx Intelligence is unavailable right now.",
+    // Company-wide draft surfaces (jobs/learn/property reuse these generic labels;
+    // "Draft with Henry Onyx Intelligence" / "Drafting…" / "Use this draft" already exist above).
+    "Henry Onyx Intelligence drafts a starting point from your idea — review and edit every field before you publish.":
+      "Henry Onyx Intelligence drafts a starting point from your idea — review and edit every field before you publish.",
+    "Add a title first, then let Henry Onyx Intelligence draft the rest.":
+      "Add a title first, then let Henry Onyx Intelligence draft the rest.",
+    // Trust layer — Henry Onyx Verified.
+    "Get Henry Onyx Verified": "Get Henry Onyx Verified",
+    "A trusted review checks your listing is honest, original, and safe — so buyers trust it more.":
+      "A trusted review checks your listing is honest, original, and safe — so buyers trust it more.",
+    "Request review": "Request review",
+    "Reviewing…": "Reviewing…",
+    "Henry Onyx Verified": "Henry Onyx Verified",
+    "Ready for review by our team.": "Ready for review by our team.",
+    "A few things to address before this can be verified.": "A few things to address before this can be verified.",
+    "This review augments our human moderation — it does not publish your listing.":
+      "This review augments our human moderation — it does not publish your listing.",
     Applications: "Applications",
     "Browse jobs": "Browse jobs",
     "Browse open jobs": "Browse open jobs",

@@ -1,10 +1,10 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-27T22:58:30.402Z",
+  "generatedAt": "2026-06-29T23:16:33.556Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1463,
+    "scannedFiles": 1465,
     "entries": 1261,
     "counts": {
       "OK": 2,
@@ -12,7 +12,7 @@
       "EXEMPT": 33,
       "AMBIGUOUS": 59
     },
-    "durationMs": 4587
+    "durationMs": 3932
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -6353,7 +6353,7 @@
     ],
     "apps/marketplace/components/marketplace/checkout-experience.tsx": [
       {
-        "line": 61,
+        "line": 60,
         "col": 37,
         "kind": "jsx_text",
         "text": "string): Array",
@@ -6361,7 +6361,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 1669,
+        "line": 1656,
         "col": 39,
         "kind": "jsx_text",
         "text": "Step 3 of 3",
@@ -6369,7 +6369,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 1837,
+        "line": 1824,
         "col": 35,
         "kind": "jsx_text",
         "text": "Order review",

@@ -24,11 +24,11 @@ export const dynamic = "force-dynamic";
 const CHECKOUT_ERROR_COPY: Record<string, { title: string; body: string }> = {
   "wallet-unavailable": {
     title: "Wallet isn't ready for marketplace debits yet",
-    body: "Your Henry Onyx wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
+    body: "Your Henry Onyx wallet isn't activated for direct payments. Pay by card, or top up your wallet first.",
   },
   "insufficient-balance": {
     title: "Wallet balance didn't cover the order",
-    body: "Top up the shortfall, switch to bank transfer with proof, or use cash on delivery if the order is eligible.",
+    body: "Top up the shortfall, pay by card, or use cash on delivery if the order is eligible.",
   },
   "missing-bank-reference": {
     title: "Bank reference missing",
@@ -65,7 +65,7 @@ export default async function CheckoutPage({
 
   if (!cart.items.length) {
     return (
-      <div className="mx-auto max-w-[1480px] px-4 py-8 sm:px-6 xl:px-8">
+      <div className="mx-auto max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
         <EmptyState
           title="There is nothing to check out yet."
           body="Add products to your cart, or restore something you saved earlier — your saved items keep the price you locked in."

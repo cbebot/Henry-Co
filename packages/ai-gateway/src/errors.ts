@@ -5,6 +5,7 @@
  * the provider/source or the real model.
  */
 export type AiGatewayErrorCode =
+  | "auth_required" // V3-33: anonymous/unauthenticated actor → blocked at the router, no call
   | "insufficient_funds" // wallet can't cover the estimate → provider NOT called
   | "cap_exceeded" // estimate over the tier's per-call cost ceiling → not called
   | "kill_switch_active" // global AI flag off → not called
@@ -30,6 +31,7 @@ export function aiError(code: AiGatewayErrorCode, message: string): AiGatewayErr
 
 /** Safe default copy per code (a surface may localise/override via i18n). */
 export const DEFAULT_AI_ERROR_COPY: Record<AiGatewayErrorCode, string> = {
+  auth_required: "Sign in to use Henry Onyx Intelligence.",
   insufficient_funds: "Top up your wallet to continue.",
   cap_exceeded: "This is too large to run in one step.",
   kill_switch_active: "Henry Onyx Intelligence is paused.",

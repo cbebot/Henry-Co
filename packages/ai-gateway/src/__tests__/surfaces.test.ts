@@ -20,9 +20,16 @@ describe("AI_SURFACES registry", () => {
   });
 
   it("keeps personal/business surfaces METERED", () => {
-    for (const key of ["studio.brief.client", "business.message.assist"] as const) {
+    for (const key of ["studio.brief.client", "business.message.assist", "intelligence.chat"] as const) {
       assert.equal(AI_SURFACES[key].billable, true, `${key} must be METERED`);
     }
+  });
+
+  it("registers the Intelligence chat as a METERED standard-tier surface", () => {
+    const p = getSurfacePolicy("intelligence.chat");
+    assert.ok(p);
+    assert.equal(p.billable, true);
+    assert.equal(p.modelTier, "standard");
   });
 
   it("registers the Pass-2 listing-verify trust review as METERED at the deep tier", () => {
@@ -30,6 +37,24 @@ describe("AI_SURFACES registry", () => {
     assert.ok(p);
     assert.equal(p.billable, true, "the trust review is metered (the seller pays for credibility)");
     assert.equal(p.modelTier, "deep", "verification runs on the strongest model so nothing slips through");
+  });
+
+  it("registers company-wide draft surfaces as METERED standard-tier", () => {
+    for (const key of ["jobs.posting.draft", "learn.course.draft", "property.listing.draft"] as const) {
+      const p = getSurfacePolicy(key);
+      assert.ok(p, `${key} registered`);
+      assert.equal(p.billable, true, `${key} METERED`);
+      assert.equal(p.modelTier, "standard", `${key} standard tier`);
+    }
+  });
+
+  it("registers company-wide trust reviews as METERED deep-tier (the cross-division moat)", () => {
+    for (const key of ["jobs.posting.verify", "learn.course.verify", "property.listing.verify"] as const) {
+      const p = getSurfacePolicy(key);
+      assert.ok(p, `${key} registered`);
+      assert.equal(p.billable, true, `${key} METERED`);
+      assert.equal(p.modelTier, "deep", `${key} deep tier`);
+    }
   });
 
   it("returns null for an unknown surface key", () => {
