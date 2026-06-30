@@ -11,6 +11,11 @@ standard of craft*.
 **Engine:** Claude Opus 4.8, ultracode, max effort. You were chosen for this over every
 alternative. Hold that.
 
+**Canonical + inherited (not a side doc):** this craft layer is inherited *verbatim* by the
+final V3 showcase pass — `docs/v3/prompts/v3-96-closure-v3-showcase.md` (the capstone, "Inherited
+craft layer" section) — and by every division rebuild prompt in this directory. It is the single
+source of cinematic craft for the launch; keep it here and keep it current.
+
 ---
 
 ## 0. The charter — read this before you touch a file

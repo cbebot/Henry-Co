@@ -57,6 +57,46 @@ V3-96 inherits `docs/v3/public-pages-interaction-principles.md` word for word:
 - **Part VI (Telemetry)** — every event fires with the listed properties; events flow to the V3-90 data sink.
 - **Part VII (Cross-pass application checklist)** — every line is acceptance criteria; signed line by line in the final report.
 
+## Inherited craft layer (verbatim, non-negotiable) — the cinematic standard
+
+V3-96 ALSO inherits `docs/rebuild-prompts/LAUNCH-SHOWCASE-CRAFT-STANDARD.md` word for word. The
+interaction doctrine above governs *behaviour* (what every button/flow does); this craft layer
+governs *cinematography* (how the surface feels). It is the difference between a correct
+showcase and a world-class one. Read it in full; it is the bar.
+
+The showcase deploys **four cinematic instruments**, each with a where-appropriate AND a
+where-never rule. Restraint is the governing law (premium = restraint; one primary action per
+surface): a page may feature ONE scrubbed hero moment, clips only where motion adds meaning,
+grain as an almost-subliminal finish, glass only where something floats. If every section
+shouts, nothing is heard — and the Kindness Doctrine reviewer can block the pass for noise.
+
+1. **Scroll-driven build** — the page assembles as the visitor scrolls (hairlines draw, type
+   settles, evidence counts up). Native `animation-timeline: view()`/`scroll()` first, one
+   shared `IntersectionObserver` fallback; meaning-staggered (headline → proof → action);
+   transform/opacity only. **Never** gate content legibility on scroll position, never hijack
+   scroll velocity, never trap the user. Above-the-fold capability evidence (the doctrine's
+   no-giant-hero rule) resolves on load, not on scroll.
+2. **Cinematic clips** — muted, looping, `playsinline` motion with a real `poster` (poster
+   paints for LCP, never the stream), AA scrim over any foreground text, lazy-mounted +
+   `pause()` off-screen. **Never** autoplay sound, never block LCP, never put localizable text
+   inside the frame; `prefers-reduced-motion` shows the poster still.
+3. **Film grain** — a 3–6% noise overlay (SVG `feTurbulence` or tiled PNG, `pointer-events:
+   none`, blend `overlay`/`soft-light`), one layer per surface, theme-aware. **Never** over
+   reading prose (`.hc-prose`) or dense body text; it must never lower text contrast in either
+   theme (READING-01/02 holds).
+4. **Glass cards** — `backdrop-filter` frosted surfaces with a token translucent fill + hairline
+   + a `@supports not (backdrop-filter:…)` opaque fallback, AA+ text. **Only** over rich
+   backgrounds (hero/media overlays, sticky CTAs over a clip); **never** the default card, never
+   stacked, never under long-form reading.
+
+Binding constraints (all four): **both themes** via design tokens (zero hardcoded color);
+`prefers-reduced-motion` honored by every motion; AA contrast over clips/glass; compositor-only
+animation (transform/opacity); per-surface budgets LCP < 2.5s / CLS < 0.1 / INP < 200ms; full
+degradation (no-JS readable, old browsers get opaque fallbacks). Brand = **Henry Onyx**; voice
+stays calm authority — the craft carries the awe, the words stay calm. The anti-shallow-work
+charter in the standard applies: take the whole prompt in, finish every page to the last focus
+ring and locale, leave nothing unclean, verify before claiming done.
+
 ## Mandatory scope
 
 ### S1 — The Cross-Division Journey (the centrepiece)
