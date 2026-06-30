@@ -1,6 +1,6 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-06-30T03:46:34.309Z",
+  "generatedAt": "2026-06-30T09:12:11.865Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
@@ -12,7 +12,7 @@
       "EXEMPT": 33,
       "AMBIGUOUS": 59
     },
-    "durationMs": 4231
+    "durationMs": 5628
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -5911,7 +5911,7 @@
     ],
     "apps/marketplace/app/vendor/products/new/page.tsx": [
       {
-        "line": 26,
+        "line": 27,
         "col": 7,
         "kind": "attr:title",
         "text": "New product",
@@ -5919,7 +5919,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 49,
+        "line": 50,
         "col": 37,
         "kind": "jsx_text",
         "text": "Seller economics in this flow",
@@ -5927,7 +5927,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 92,
+        "line": 93,
         "col": 78,
         "kind": "attr:placeholder",
         "text": "Product title",
@@ -5935,7 +5935,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 94,
+        "line": 95,
         "col": 94,
         "kind": "attr:placeholder",
         "text": "Short conversion summary",
@@ -5943,7 +5943,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 95,
+        "line": 96,
         "col": 118,
         "kind": "attr:placeholder",
         "text": "Longer product story and detail.",
@@ -5951,7 +5951,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 104,
+        "line": 105,
         "col": 29,
         "kind": "jsx_text",
         "text": "No brand",
@@ -5959,7 +5959,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 111,
+        "line": 112,
         "col": 97,
         "kind": "attr:placeholder",
         "text": "Base price",
@@ -5967,7 +5967,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 112,
+        "line": 113,
         "col": 103,
         "kind": "attr:placeholder",
         "text": "Compare-at price",
@@ -5975,7 +5975,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 117,
+        "line": 118,
         "col": 86,
         "kind": "attr:placeholder",
         "text": "Delivery note",
@@ -5983,7 +5983,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 118,
+        "line": 119,
         "col": 82,
         "kind": "attr:placeholder",
         "text": "Lead time",
@@ -5991,7 +5991,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 119,
+        "line": 120,
         "col": 96,
         "kind": "attr:placeholder",
         "text": "Primary image URL",
@@ -5999,7 +5999,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 123,
+        "line": 124,
         "col": 61,
         "kind": "jsx_text",
         "text": "Eligible for cash on delivery",
@@ -6007,7 +6007,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 127,
+        "line": 128,
         "col": 61,
         "kind": "jsx_text",
         "text": "Request featured placement review (extra fee applies if approved)",
@@ -6027,7 +6027,7 @@
     ],
     "apps/marketplace/app/vendor/products/[id]/page.tsx": [
       {
-        "line": 84,
+        "line": 85,
         "col": 109,
         "kind": "attr:placeholder",
         "text": "Product title",
@@ -6035,7 +6035,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 86,
+        "line": 87,
         "col": 127,
         "kind": "attr:placeholder",
         "text": "Short conversion summary",
@@ -6043,7 +6043,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 87,
+        "line": 88,
         "col": 155,
         "kind": "attr:placeholder",
         "text": "Long-form story and detail.",
@@ -6051,7 +6051,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 96,
+        "line": 97,
         "col": 31,
         "kind": "jsx_text",
         "text": "No brand",
@@ -6059,7 +6059,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 103,
+        "line": 104,
         "col": 132,
         "kind": "attr:placeholder",
         "text": "Base price",
@@ -6067,7 +6067,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 104,
+        "line": 105,
         "col": 156,
         "kind": "attr:placeholder",
         "text": "Compare-at price",
@@ -6075,7 +6075,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 106,
+        "line": 107,
         "col": 116,
         "kind": "attr:placeholder",
         "text": "Lead time",
@@ -6083,7 +6083,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 111,
+        "line": 112,
         "col": 15,
         "kind": "attr:placeholder",
         "text": "Delivery note",
@@ -6091,7 +6091,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 117,
+        "line": 118,
         "col": 15,
         "kind": "attr:placeholder",
         "text": "Primary image URL",
@@ -6099,7 +6099,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 122,
+        "line": 123,
         "col": 63,
         "kind": "jsx_text",
         "text": "Eligible for cash on delivery",
@@ -6107,7 +6107,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 128,
+        "line": 129,
         "col": 41,
         "kind": "jsx_text",
         "text": "Moderation readiness",
