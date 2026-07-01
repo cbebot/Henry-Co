@@ -19,11 +19,10 @@ const SERVER_BOUNDARY = join("packages", "ai-gateway", "src", "server");
 const MODEL_ID = /claude-(?:haiku|sonnet|opus|fable|mythos)-[0-9]/;
 const SDK_IMPORT = /from\s+["']@anthropic-ai\/sdk["']|require\(\s*["']@anthropic-ai\/sdk["']\s*\)/;
 
-// Scope: the V3-AI-01 surface — the governed gateway + the marketplace AI surface it
-// powers. (apps/studio's three pre-existing inline `new Anthropic(...)` server actions are
-// the documented Pass-2 gateway-migration target — server-side `"use server"`, not a client
-// leak — and are out of this pass's scope.)
-const SCAN_ROOTS = ["packages/ai-gateway", "apps/marketplace"];
+// Scope: every app/package that touches an AI surface — the governed gateway + the divisions
+// that mount it. apps/studio joined here in V3-12 once its three inline `new Anthropic(...)`
+// server actions were migrated onto @henryco/ai-gateway (no provider SDK, no model id remains).
+const SCAN_ROOTS = ["packages/ai-gateway", "apps/marketplace", "apps/studio"];
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "build", ".turbo", "coverage", ".git"]);
 const CODE_EXT = /\.(ts|tsx|js|jsx|mjs|cjs)$/;
 

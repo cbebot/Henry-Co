@@ -10,6 +10,7 @@ export type AiSurfaceKey =
   | "account.check.assist" // later — FREE
   | "studio.brief.staff" // later — FREE/internal (the existing staff copilot; NOT billed)
   | "studio.brief.client" // later — METERED (client-end briefs)
+  | "studio.brief.coach" // V3-12 — FREE/internal: the multi-turn "talk it through" brief coach
   | "business.message.assist" // later — METERED
   // Company-wide metered surfaces (one brain, every division) — draft (standard tier) +
   // the deep-tier trust review. The wallet + rail are shared; each division just mounts.
@@ -108,6 +109,14 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     ruleBookKey: DEFAULT_RULE_BOOK_KEY,
     modelTier: "standard",
     maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "studio.brief.coach": {
+    surface: "studio.brief.coach",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 512,
     maxCalls: 1,
   },
   "business.message.assist": {

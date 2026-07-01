@@ -5,6 +5,11 @@ import type { AiSurfaceKey, AiSurfacePolicy } from "../surfaces";
 import type { AiPromptParts } from "../orchestrator";
 import { INTELLIGENCE_CHAT_SYSTEM_PROMPT, normalizeChatMessages } from "../intelligence-chat";
 import { composeSystemPrompt } from "../doctrine";
+import {
+  buildStudioBriefStructuredPrompt,
+  buildStudioMessageRefinePrompt,
+  buildStudioBriefCoachPrompt,
+} from "../studio-prompts";
 
 // The draft surface inherits the shared doctrine (premium concierge; honesty; declines
 // competitors/anti-company; opacity) and adds its structured-output task. Output is
@@ -103,15 +108,6 @@ function buildAccountCheckPrompt(task: AiTask): AiPromptParts {
   );
 }
 
-// V3-32 — studio brief assist. The staff variant (FREE/internal) and client variant
-// (METERED) share copy; the billing split is policy.
-function buildStudioBriefPrompt(task: AiTask): AiPromptParts {
-  return singleShotPrompt(
-    "Help articulate a clear creative brief for a Henry Onyx Studio project: the goal, audience, scope, tone, and any constraints. Turn rough notes into a structured, confident brief that sets the project up to succeed; never invent requirements the person did not state.",
-    task,
-  );
-}
-
 // The Henry Onyx Verified trust review (deep tier, METERED, multimodal). Reads the listing
 // copy + media and returns a strict JSON verdict on honesty, AI-generated media, standards,
 // and safety. The verdict AUGMENTS human moderation (see verify.ts) — it never publishes.
@@ -205,8 +201,9 @@ const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSur
   "support.message.assist": buildSupportAssistPrompt,
   "business.message.assist": buildBusinessAssistPrompt,
   "account.check.assist": buildAccountCheckPrompt,
-  "studio.brief.staff": buildStudioBriefPrompt,
-  "studio.brief.client": buildStudioBriefPrompt,
+  "studio.brief.staff": buildStudioBriefStructuredPrompt,
+  "studio.brief.client": buildStudioMessageRefinePrompt,
+  "studio.brief.coach": buildStudioBriefCoachPrompt,
   // Company-wide: drafts reuse the generic structured-draft builder; the trust reviews reuse
   // the generic verdict builder (honest / not-AI-generated / on-standard / safe).
   "jobs.posting.draft": buildContentDraftPrompt,

@@ -1,54 +1,34 @@
 "use server";
 
-import Anthropic from "@anthropic-ai/sdk";
-import { getOptionalEnv } from "@/lib/env";
+import { randomUUID } from "node:crypto";
+import { runAiTask, createPgBillingPort, noBillingPort } from "@henryco/ai-gateway/server";
+import { isAiGatewayLive } from "@henryco/ai-gateway";
+import { getPaymentsSqlExecutor, isPaymentsDbConfigured } from "@henryco/payments-db";
 import { getClientPortalViewer } from "@/lib/portal/auth";
+import { createSupabaseServer } from "@/lib/supabase/server";
 
 /**
- * refineDraftAction — server action that polishes a client/team message
- * draft via Claude Haiku.
+ * refineDraftAction — polishes a client/team message draft through the governed
+ * @henryco/ai-gateway (surface `studio.brief.client`, METERED). It never imports a provider SDK
+ * and never sees or returns a provider id, model, or cost — the gateway prices, reserves,
+ * meters, and returns only a refined string (+ a redacted receipt). Operates strictly as a
+ * "polish" step: same intent, same voice, tighter wording.
  *
- * Reuses the @anthropic-ai/sdk + ANTHROPIC_API_KEY infrastructure already
- * proven by brief-copilot-action.ts. Operates strictly as a "polish"
- * step: takes the draft, returns a refined version. Never adds new
- * information, never changes intent.
- *
- * Falls back gracefully when no key is configured — returns the original
- * draft so the UX doesn't dead-end on an unused environment variable.
+ * Flag-dark by default: with the `ai_gateway` master switch off it behaves exactly like the old
+ * "no API key" path — returns the original draft so the UX never dead-ends. METERED, so it fails
+ * closed (kept-as-is) until studio's wallet rail is configured.
  */
-const REFINE_MODEL = "claude-haiku-4-5-20251001";
-const REFINE_TIMEOUT_MS = 12_000;
 const MIN_DRAFT_CHARS = 6;
 const MAX_DRAFT_CHARS = 4_000;
 
-const SYSTEM_PROMPT = [
-  "You are a polish assistant for messages exchanged between a client and the Henry Onyx Studio team in a project workspace.",
-  "Your job: take the user's draft and return a refined version that is clearer, warmer, and more concise.",
-  "",
-  "Rules — strict:",
-  "  - Preserve intent. Never add facts, names, dates, or commitments not present in the draft.",
-  "  - Preserve voice. If the draft is casual, keep it casual; if formal, keep it formal. Never become more formal than the input.",
-  "  - Preserve language. If the draft is in French, return French. If pidgin, return pidgin. Don't translate.",
-  "  - Strip filler (um, just, basically, kind of), tighten verbose constructions.",
-  "  - Keep it brief. Aim for 1-3 sentences unless the draft is genuinely longer.",
-  "  - No greetings or sign-offs unless the draft already had them.",
-  "  - Return ONLY the refined message. No commentary, no explanations, no quote marks.",
-].join("\n");
-
 export type RefineDraftResult =
-  | {
-      ok: true;
-      refined: string;
-      modelUsed: string;
-      durationMs: number;
-      cached: false;
-    }
+  | { ok: true; refined: string; cached: false }
   | {
       ok: false;
-      reason: "unauthorised" | "input_too_short" | "input_too_long" | "no_api_key" | "model_error" | "timeout";
+      reason: "unauthorised" | "input_too_short" | "input_too_long" | "unavailable" | "model_error";
       message: string;
-      /** When falling back, return the original draft so the caller can
-       * still update the UI without re-typing. */
+      /** When falling back, return the original draft so the caller can update the UI
+       * without re-typing. */
       originalDraft?: string;
     };
 
@@ -74,88 +54,56 @@ export async function refineDraftAction(formData: FormData): Promise<RefineDraft
     };
   }
 
-  // Auth check — only authenticated portal viewers can call. Defence in
-  // depth: the route is already protected, but the action is exported
-  // and could be reached out-of-band.
+  // Auth — only authenticated portal viewers. Defence in depth: the route is already protected,
+  // but the action is exported and could be reached out-of-band.
   const viewer = await getClientPortalViewer();
   if (!viewer) {
-    return {
-      ok: false,
-      reason: "unauthorised",
-      message: "Sign in to use AI refinement.",
-      originalDraft: draft,
-    };
+    return { ok: false, reason: "unauthorised", message: "Sign in to use AI refinement.", originalDraft: draft };
   }
 
-  const apiKey = getOptionalEnv("ANTHROPIC_API_KEY");
-  if (!apiKey) {
-    // Silent fallback — the UX should still work without a key set,
-    // it just doesn't change the draft.
+  // Flag-dark short-circuit — when the master switch is off, behave exactly like "no key" today.
+  if (!isAiGatewayLive(process.env)) {
     return {
       ok: false,
-      reason: "no_api_key",
+      reason: "unavailable",
       message: "AI refinement is disabled — message kept as-is.",
       originalDraft: draft,
     };
   }
 
-  const startedAt = Date.now();
+  const supabase = await createSupabaseServer();
+  // METERED surface. Fail closed when studio's wallet rail is not configured yet (never silently
+  // free): the gateway's reserve refuses ⇒ the provider is never called ⇒ we keep the draft as-is.
+  const billing = isPaymentsDbConfigured() ? createPgBillingPort(getPaymentsSqlExecutor()) : noBillingPort;
 
-  try {
-    const client = new Anthropic({ apiKey, timeout: REFINE_TIMEOUT_MS });
+  const result = await runAiTask(
+    {
+      surface: "studio.brief.client",
+      actorId: viewer.userId,
+      input: { draft, projectTitle, projectSummary },
+      idempotencyKey: randomUUID(),
+    },
+    { billing, audit: { supabase: supabase as never } },
+  );
 
-    const userMessageParts: string[] = [];
-    if (projectTitle || projectSummary) {
-      userMessageParts.push(
-        "Context — this message is being sent inside an active project workspace:",
-      );
-      if (projectTitle) userMessageParts.push(`  - Project: ${projectTitle}`);
-      if (projectSummary) userMessageParts.push(`  - Summary: ${projectSummary}`);
-      userMessageParts.push("");
-    }
-    userMessageParts.push("Draft to refine:");
-    userMessageParts.push("");
-    userMessageParts.push(draft);
-
-    const response = await client.messages.create({
-      model: REFINE_MODEL,
-      max_tokens: 600,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userMessageParts.join("\n") }],
-    });
-
-    const refined = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("")
-      .trim();
-
-    if (!refined) {
-      return {
-        ok: false,
-        reason: "model_error",
-        message: "AI returned an empty response — message kept as-is.",
-        originalDraft: draft,
-      };
-    }
-
-    return {
-      ok: true,
-      refined,
-      modelUsed: response.model || REFINE_MODEL,
-      durationMs: Date.now() - startedAt,
-      cached: false,
-    };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    const isTimeout = /timeout|aborted/i.test(message);
+  if (!result.ok) {
+    // Every gateway refusal maps to the graceful "kept as-is" UX (never a raw error code).
     return {
       ok: false,
-      reason: isTimeout ? "timeout" : "model_error",
-      message: isTimeout
-        ? "AI refinement timed out — message kept as-is."
-        : "AI refinement is busy — message kept as-is.",
+      reason: "model_error",
+      message: "AI refinement is unavailable right now — message kept as-is.",
       originalDraft: draft,
     };
   }
+
+  const refined = result.value.output.trim();
+  if (!refined) {
+    return {
+      ok: false,
+      reason: "model_error",
+      message: "AI returned an empty response — message kept as-is.",
+      originalDraft: draft,
+    };
+  }
+  return { ok: true, refined, cached: false };
 }

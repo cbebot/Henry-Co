@@ -1,12 +1,12 @@
 "use server";
 
-import Anthropic from "@anthropic-ai/sdk";
-import { getOptionalEnv } from "@/lib/env";
-import { BRIEF_COPILOT_MODEL } from "@/lib/studio/brief-copilot-prompt";
+import { randomUUID } from "node:crypto";
+import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
+import { isAiGatewayLive } from "@henryco/ai-gateway";
+import { STUDIO_AI_MODEL_LABEL, shouldBackOffOnGatewayCode } from "@/lib/studio/ai-runtime";
 import {
   BRIEF_CHAT_MAX_MESSAGE_CHARS,
   BRIEF_CHAT_MAX_TURNS,
-  BRIEF_CHAT_SYSTEM_PROMPT,
   BRIEF_CHAT_CLOSING,
   countAssistantTurns,
   nextCoachReply,
@@ -15,10 +15,8 @@ import {
   type BriefChatMessage,
 } from "@/lib/studio/brief-chat";
 
-// In-memory billing/auth backoff — same pattern as the one-shot generator.
-// Resets per cold start, which is acceptable: it only suppresses doomed
-// model calls until a human resolves the underlying billing/key issue.
-const MODEL_TIMEOUT_MS = 12 * 1000;
+// In-memory backoff — same pattern as the one-shot generator. Resets per cold start, which is
+// acceptable: it only suppresses doomed model calls until a human resolves the underlying issue.
 const MODEL_DISABLED_BACKOFF_MS = 15 * 60 * 1000;
 let modelDisabledUntil = 0;
 
@@ -27,6 +25,7 @@ export type BriefChatTurn = {
   ready: boolean;
   /** Assistant-turn count after this reply — drives the client's turn meter. */
   turn: number;
+  /** Brand-opaque label only (never a provider/model id). */
   modelUsed: string;
 };
 
@@ -50,32 +49,6 @@ function sanitizeMessages(raw: unknown): BriefChatMessage[] | null {
   return cleaned;
 }
 
-async function withModelTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  promise.catch(() => undefined);
-  try {
-    return await Promise.race([
-      promise,
-      new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error(`model_timeout:${timeoutMs}`)), timeoutMs);
-      }),
-    ]);
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
-}
-
-function shouldTemporarilyDisableModel(message: string): boolean {
-  const lower = message.toLowerCase();
-  return (
-    lower.includes("credit balance") ||
-    lower.includes("billing") ||
-    lower.includes("authentication") ||
-    lower.includes("invalid x-api-key") ||
-    lower.includes("permission")
-  );
-}
-
 function coachTurn(messages: BriefChatMessage[]): BriefChatResult {
   const { reply, ready } = nextCoachReply(messages);
   return {
@@ -87,11 +60,11 @@ function coachTurn(messages: BriefChatMessage[]): BriefChatResult {
 /**
  * Advance the brief intake conversation by one assistant turn.
  *
- * The transcript always ends with the buyer's latest message. With a model
- * key we ask Haiku for the next question (or a wrap-up); without one — or
- * on any model failure — we walk the deterministic coach prompts so the
- * conversation never stalls. The transcript itself is not persisted here;
- * it is recorded at finalize via the proven one-shot generator.
+ * The transcript always ends with the buyer's latest message. When the gateway is live we ask it
+ * for the next question (or a wrap-up) through the governed `studio.brief.coach` surface; when it
+ * is dark — or on any refusal — we walk the deterministic coach prompts so the conversation never
+ * stalls. The transcript itself is not persisted here; it is recorded at finalize via the proven
+ * one-shot generator.
  */
 export async function continueStudioBriefChatAction(input: {
   messages: BriefChatMessage[];
@@ -117,71 +90,51 @@ export async function continueStudioBriefChatAction(input: {
     };
   }
 
-  const apiKey = getOptionalEnv("ANTHROPIC_API_KEY");
-  if (!apiKey || modelDisabledUntil > Date.now()) {
+  // Flag-dark or backing off → deterministic coach (no provider call).
+  if (!isAiGatewayLive(process.env) || modelDisabledUntil > Date.now()) {
     return coachTurn(messages);
   }
 
-  try {
-    const client = new Anthropic({ apiKey, timeout: 25 * 1000, maxRetries: 0 });
+  // Redact PII from the transcript before it leaves our server, then route through the gateway.
+  // The transcript starts with a user turn (the opener greeting is UI-only), so it maps cleanly
+  // onto the provider's user-first alternating contract.
+  const redacted = messages.map((message) => ({
+    role: message.role,
+    content: redactChatText(message.content),
+  }));
 
-    // Redact PII from transcript before it leaves our server. The transcript
-    // starts with a user turn (the opener greeting is UI-only), so it maps
-    // cleanly onto Anthropic's user-first alternating contract.
-    const apiMessages = messages.map((message) => ({
-      role: message.role,
-      content: redactChatText(message.content),
-    }));
+  const result = await runAiTask(
+    {
+      surface: "studio.brief.coach",
+      // Public funnel (prospective clients, pre-signup): a stable-per-call synthetic actor so the
+      // gateway's "no anonymous AI" gate never refuses this FREE intake. The turn ceiling above is
+      // the real abuse guard.
+      actorId: `studio-coach:${randomUUID()}`,
+      input: { messages: redacted },
+      idempotencyKey: randomUUID(),
+    },
+    { billing: noBillingPort },
+  );
 
-    const response = await withModelTimeout(
-      client.messages.create({
-        model: BRIEF_COPILOT_MODEL,
-        max_tokens: 400,
-        system: [
-          {
-            type: "text",
-            text: BRIEF_CHAT_SYSTEM_PROMPT,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages: apiMessages,
-      }),
-      MODEL_TIMEOUT_MS,
-    );
-
-    const modelUsed = response.model || BRIEF_COPILOT_MODEL;
-    const text = response.content
-      .filter(
-        (block): block is Extract<(typeof response.content)[number], { type: "text" }> =>
-          block.type === "text",
-      )
-      .map((block) => block.text)
-      .join("\n")
-      .trim();
-
-    const envelope = parseChatEnvelope(text);
-    if (!envelope) {
-      return coachTurn(messages);
-    }
-
-    return {
-      ok: true,
-      turn: {
-        reply: envelope.reply,
-        ready: envelope.ready,
-        turn: countAssistantTurns(messages) + 1,
-        modelUsed,
-      },
-    };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Co-pilot chat call failed";
-    console.error("[studio][brief-chat] model call failed", {
-      reason: message.slice(0, 240),
-      name: error instanceof Error ? error.name : "unknown",
-    });
-    if (shouldTemporarilyDisableModel(message)) {
+  if (!result.ok) {
+    if (shouldBackOffOnGatewayCode(result.error.code)) {
       modelDisabledUntil = Date.now() + MODEL_DISABLED_BACKOFF_MS;
     }
     return coachTurn(messages);
   }
+
+  const envelope = parseChatEnvelope(result.value.output);
+  if (!envelope) {
+    return coachTurn(messages);
+  }
+
+  return {
+    ok: true,
+    turn: {
+      reply: envelope.reply,
+      ready: envelope.ready,
+      turn: countAssistantTurns(messages) + 1,
+      modelUsed: STUDIO_AI_MODEL_LABEL,
+    },
+  };
 }

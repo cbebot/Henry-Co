@@ -2,7 +2,8 @@
 
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { cookies, headers } from "next/headers";
-import Anthropic from "@anthropic-ai/sdk";
+import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
+import { isAiGatewayLive } from "@henryco/ai-gateway";
 import { getOptionalEnv, normalizeEmail } from "@/lib/env";
 import {
   createAdminSupabase,
@@ -10,12 +11,20 @@ import {
   hasPublicSupabaseEnv,
 } from "@/lib/supabase";
 import { getStudioViewer } from "@/lib/studio/auth";
+import { STUDIO_AI_MODEL_LABEL, shouldBackOffOnGatewayCode } from "@/lib/studio/ai-runtime";
 import {
-  BRIEF_COPILOT_MODEL,
-  BRIEF_COPILOT_SYSTEM_PROMPT,
-} from "@/lib/studio/brief-copilot-prompt";
+  normaliseStructured,
+  parseAssistantJson,
+  buildFallbackStructured,
+  countWords,
+  type BriefCopilotStructured,
+} from "@/lib/studio/brief-copilot-structured";
 import { writeStudioLog } from "@/lib/studio/store";
 import type { StudioViewer } from "@/lib/studio/types";
+
+// The structured brief shape's true home is brief-copilot-structured.ts; re-exported here for the
+// components/lib that historically import it from this action module (unchanged for consumers).
+export type { BriefCopilotStructured };
 
 const SESSION_COOKIE = "studio_copilot_session";
 
@@ -49,7 +58,6 @@ const MIN_WORD_COUNT = 8;
 const DEDUP_WINDOW_SECONDS = 60 * 60 * 24;
 const COPILOT_INTENT = "studio_brief";
 const FALLBACK_MODEL = "studio-local-brief-parser-v1";
-const MODEL_TIMEOUT_MS = 12 * 1000;
 const MODEL_DISABLED_BACKOFF_MS = 15 * 60 * 1000;
 
 let modelDisabledUntil = 0;
@@ -85,372 +93,6 @@ export type BriefCopilotResult =
       message: string;
       callsRemaining?: number | null;
     };
-
-export type BriefCopilotStructured = {
-  projectType: string;
-  platformPreference: string;
-  designDirection: string;
-  preferredLanguage: string;
-  frameworkPreference: string;
-  backendPreference: string;
-  hostingPreference: string;
-  pageRequirements: string[];
-  requiredFeatures: string[];
-  addonServices: string[];
-  techPreferences: string[];
-  businessType: string;
-  budgetBand: string;
-  urgency: string;
-  timeline: string;
-  goals: string;
-  scopeNotes: string;
-  summary: string;
-  confidence: number;
-  uncertainties: string[];
-};
-
-function clampString(value: unknown, maxLength = 200, fallback = ""): string {
-  const trimmed = String(value ?? "").trim();
-  return trimmed.length > 0 ? trimmed.slice(0, maxLength) : fallback;
-}
-
-function clampArray(value: unknown, max = 8, itemMax = 80): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => clampString(item, itemMax, ""))
-    .filter((item) => item.length > 0)
-    .slice(0, max);
-}
-
-function clampNumber(value: unknown, min: number, max: number, fallback: number): number {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return fallback;
-  return Math.min(max, Math.max(min, num));
-}
-
-function normaliseStructured(raw: unknown): BriefCopilotStructured | null {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
-  const r = raw as Record<string, unknown>;
-
-  return {
-    projectType: clampString(r.projectType, 80, "Custom website"),
-    platformPreference: clampString(r.platformPreference, 80, "Best-fit recommendation"),
-    designDirection: clampString(r.designDirection, 200, "Quiet luxury and high-trust"),
-    preferredLanguage: clampString(r.preferredLanguage, 40, "English"),
-    frameworkPreference: clampString(
-      r.frameworkPreference,
-      80,
-      "Henry Onyx's framework recommendation"
-    ),
-    backendPreference: clampString(
-      r.backendPreference,
-      80,
-      "Henry Onyx recommends the backend"
-    ),
-    hostingPreference: clampString(r.hostingPreference, 80, "Henry Onyx recommends the host"),
-    pageRequirements: clampArray(r.pageRequirements, 12, 60),
-    requiredFeatures: clampArray(r.requiredFeatures, 10, 80),
-    addonServices: clampArray(r.addonServices, 5, 60),
-    techPreferences: clampArray(r.techPreferences, 8, 60),
-    businessType: clampString(r.businessType, 60, "Not specified"),
-    budgetBand: clampString(r.budgetBand, 40, "Not sure yet"),
-    urgency: clampString(r.urgency, 60, "No fixed deadline"),
-    timeline: clampString(r.timeline, 80, "To be confirmed"),
-    goals: clampString(r.goals, 600, ""),
-    scopeNotes: clampString(r.scopeNotes, 1000, ""),
-    summary: clampString(r.summary, 240, ""),
-    confidence: clampNumber(r.confidence, 0, 1, 0.5),
-    uncertainties: clampArray(r.uncertainties, 4, 140),
-  };
-}
-
-function includesAny(value: string, terms: string[]) {
-  return terms.some((term) => value.includes(term));
-}
-
-function uniqueList(items: string[], max: number) {
-  return [...new Set(items.map((item) => item.trim()).filter(Boolean))].slice(0, max);
-}
-
-function redactSensitiveText(value: string) {
-  return value
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email removed]")
-    .replace(/(?:\+?\d[\d\s().-]{7,}\d)/g, "[phone removed]")
-    .trim();
-}
-
-function resolveFallbackProjectType(input: string) {
-  if (includesAny(input, ["redesign", "revamp", "refresh existing"])) return "Website redesign";
-  if (includesAny(input, ["mobile app", "react native", "flutter", "ios", "android"])) {
-    return "Mobile app";
-  }
-  if (includesAny(input, ["internal", "ops", "operation", "admin", "staff tool"])) {
-    return "Internal ops tool";
-  }
-  if (includesAny(input, ["storefront", "ecommerce", "e-commerce", "shop", "cart"])) {
-    return "Storefront";
-  }
-  if (includesAny(input, ["platform", "saas", "dashboard", "portal", "marketplace"])) {
-    return "Web app or platform";
-  }
-  if (includesAny(input, ["landing", "funnel", "campaign"])) return "Landing page or funnel";
-  if (includesAny(input, ["brand", "identity", "logo"])) return "Brand system";
-  if (includesAny(input, ["website", "site", "web"])) return "Custom website";
-  return "Other";
-}
-
-function resolveFallbackPlatform(input: string) {
-  if (input.includes("react native")) return "React Native";
-  if (input.includes("flutter")) return "Flutter";
-  if (input.includes("shopify")) return "Shopify";
-  if (input.includes("wordpress")) return "WordPress";
-  if (input.includes("webflow")) return "Webflow";
-  if (input.includes("next.js") || input.includes("nextjs")) return "Next.js";
-  if (includesAny(input, ["saas", "dashboard", "portal", "platform", "internal"])) return "Next.js";
-  return "Best-fit recommendation";
-}
-
-function resolveFallbackBackend(input: string) {
-  if (input.includes("supabase")) return "Supabase";
-  if (input.includes("firebase")) return "Firebase";
-  if (input.includes("postgres") || input.includes("postgresql")) return "Postgres";
-  if (input.includes("node")) return "Node.js API";
-  if (input.includes("python")) return "Python backend";
-  if (includesAny(input, ["auth", "login", "payment", "database", "admin", "dashboard", "api"])) {
-    return "Henry Onyx recommends the backend";
-  }
-  return "Henry Onyx recommends the backend";
-}
-
-function resolveFallbackHosting(input: string) {
-  if (input.includes("vercel")) return "Vercel";
-  if (input.includes("aws")) return "AWS";
-  if (input.includes("gcp") || input.includes("google cloud")) return "Google Cloud";
-  if (input.includes("cloudflare")) return "Cloudflare";
-  return "Henry Onyx recommends the host";
-}
-
-function resolveFallbackBudget(input: string) {
-  const wordNumbers: Record<string, number> = {
-    one: 1,
-    two: 2,
-    three: 3,
-    four: 4,
-    five: 5,
-    six: 6,
-    seven: 7,
-    eight: 8,
-    nine: 9,
-    ten: 10,
-    eleven: 11,
-    twelve: 12,
-    fifteen: 15,
-    twenty: 20,
-  };
-  const numericMillions = [...input.matchAll(/(\d+(?:\.\d+)?)\s*(?:m|million|mn)\b/g)].map(
-    (match) => Number(match[1])
-  );
-  const wordMillions = Object.entries(wordNumbers)
-    .filter(([word]) => input.includes(`${word} million`))
-    .map(([, amount]) => amount);
-  const amounts = [...numericMillions, ...wordMillions].filter(Number.isFinite);
-  const maxAmount = amounts.length ? Math.max(...amounts) : 0;
-
-  if (!maxAmount) return "Not sure yet";
-  if (maxAmount < 1) return "Below ₦1M";
-  if (maxAmount <= 3) return "₦1M – ₦3M";
-  if (maxAmount <= 8) return "₦3M – ₦8M";
-  if (maxAmount <= 20) return "₦8M – ₦20M";
-  return "₦20M+";
-}
-
-function resolveFallbackUrgency(input: string) {
-  if (includesAny(input, ["asap", "urgent", "immediately", "two weeks", "2 weeks"])) {
-    return "ASAP — within 2 weeks";
-  }
-  if (includesAny(input, ["four weeks", "4 weeks", "one month", "next month"])) {
-    return "Within 4 weeks";
-  }
-  if (includesAny(input, ["six weeks", "6 weeks", "eight weeks", "8 weeks"])) {
-    return "Within 8 weeks";
-  }
-  if (includesAny(input, ["ten weeks", "10 weeks", "twelve weeks", "12 weeks", "quarter"])) {
-    return "Within 3 months";
-  }
-  return "No fixed deadline";
-}
-
-function resolveFallbackBusinessType(input: string) {
-  if (input.includes("logistics")) return "Logistics operations";
-  if (includesAny(input, ["investment", "investor", "finance", "fintech"])) return "Financial services";
-  if (includesAny(input, ["agency", "studio", "creative"])) return "Agency operations";
-  if (includesAny(input, ["school", "learn", "education", "course"])) return "Education";
-  if (includesAny(input, ["clinic", "health", "medical"])) return "Healthcare";
-  if (includesAny(input, ["real estate", "property"])) return "Real estate";
-  if (includesAny(input, ["restaurant", "food", "hotel", "hospitality"])) return "Hospitality";
-  return "Digital business";
-}
-
-function buildFallbackPages(input: string, projectType: string) {
-  const pages =
-    projectType === "Internal ops tool"
-      ? ["Login", "Operations dashboard", "Project intake", "Reporting"]
-      : projectType === "Mobile app"
-        ? ["Onboarding", "User dashboard", "Core workflow", "Settings"]
-        : projectType === "Storefront"
-          ? ["Home", "Product catalog", "Product detail", "Cart", "Checkout"]
-          : ["Home", "Services", "About", "Contact"];
-
-  if (includesAny(input, ["admin", "compliance"])) pages.push("Admin dashboard");
-  if (includesAny(input, ["client portal", "customer portal", "portal"])) pages.push("Client portal");
-  if (includesAny(input, ["analytics", "reporting", "reports"])) pages.push("Analytics");
-  if (includesAny(input, ["payment", "invoice", "bank transfer"])) pages.push("Payments");
-  if (includesAny(input, ["courier", "dispatch", "tracking"])) pages.push("Tracking dashboard");
-  return uniqueList(pages, 12);
-}
-
-function buildFallbackFeatures(input: string) {
-  const features = ["Responsive interface", "Secure contact capture", "Admin-ready content model"];
-  if (includesAny(input, ["auth", "login", "member", "kyc", "two-factor", "2fa"])) {
-    features.push("Authentication and access control");
-  }
-  if (includesAny(input, ["payment", "invoice", "bank transfer", "checkout"])) {
-    features.push("Payment and invoice flow");
-  }
-  if (includesAny(input, ["dashboard", "analytics", "reporting", "reports"])) {
-    features.push("Dashboard and reporting");
-  }
-  if (includesAny(input, ["file", "document", "sign documents"])) {
-    features.push("Document handling");
-  }
-  if (includesAny(input, ["mobile", "courier", "dispatch"])) {
-    features.push("Mobile workflow support");
-  }
-  if (includesAny(input, ["integrate", "integration", "accounting", "api"])) {
-    features.push("Third-party integration");
-  }
-  return uniqueList(features, 10);
-}
-
-function buildFallbackStructured(description: string): BriefCopilotStructured {
-  const safeDescription = redactSensitiveText(description);
-  const input = safeDescription.toLowerCase();
-  const projectType = resolveFallbackProjectType(input);
-  const platformPreference = resolveFallbackPlatform(input);
-  const requiredFeatures = buildFallbackFeatures(input);
-  const urgency = resolveFallbackUrgency(input);
-  const pageRequirements = buildFallbackPages(input, projectType);
-  const techPreferences = uniqueList(
-    [
-      input.includes("next.js") || input.includes("nextjs") ? "Next.js" : "",
-      input.includes("react native") ? "React Native" : "",
-      input.includes("flutter") ? "Flutter" : "",
-      input.includes("supabase") ? "Supabase" : "",
-      input.includes("postgres") ? "Postgres" : "",
-      input.includes("stripe") ? "Stripe" : "",
-      input.includes("paystack") ? "Paystack" : "",
-      input.includes("vercel") ? "Vercel" : "",
-    ],
-    8
-  );
-
-  return {
-    projectType,
-    platformPreference,
-    designDirection: includesAny(input, ["luxury", "executive", "premium", "restrained"])
-      ? "Restrained, executive, high-trust interface"
-      : "Clean, modern, high-trust product experience",
-    preferredLanguage: "English",
-    frameworkPreference:
-      platformPreference === "Best-fit recommendation"
-        ? "Henry Onyx's framework recommendation"
-        : platformPreference,
-    backendPreference: resolveFallbackBackend(input),
-    hostingPreference: resolveFallbackHosting(input),
-    pageRequirements,
-    requiredFeatures,
-    addonServices: uniqueList(
-      [
-        includesAny(input, ["seo", "search"]) ? "SEO setup" : "",
-        includesAny(input, ["analytics", "reporting"]) ? "Analytics wiring" : "",
-        includesAny(input, ["payment", "invoice", "checkout"]) ? "Payment setup" : "",
-        includesAny(input, ["copy", "content"]) ? "Copy refinement" : "",
-      ],
-      5
-    ),
-    techPreferences,
-    businessType: resolveFallbackBusinessType(input),
-    budgetBand: resolveFallbackBudget(input),
-    urgency,
-    timeline:
-      urgency === "No fixed deadline"
-        ? "To be confirmed"
-        : urgency.replace("ASAP — ", ""),
-    goals: safeDescription.slice(0, 600),
-    scopeNotes: `Initial structured draft generated from the supplied paragraph. Review scope, integrations, payment needs, content ownership, and launch constraints before submitting.`,
-    summary: `${projectType} brief with ${requiredFeatures.slice(0, 3).join(", ").toLowerCase()}.`,
-    confidence: countWords(safeDescription) >= 35 ? 0.68 : 0.56,
-    uncertainties: uniqueList(
-      [
-        "Confirm final budget range.",
-        "Confirm launch deadline and priority features.",
-        "Confirm integrations and admin access needs.",
-        techPreferences.length === 0 ? "Confirm preferred technology stack." : "",
-      ],
-      4
-    ),
-  };
-}
-
-function parseAssistantJson(text: string): unknown {
-  const trimmed = text.trim();
-  // Anthropic Haiku 4.5 in JSON mode usually returns clean JSON; strip a
-  // possible code-fence just in case.
-  const fenced = trimmed.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
-  try {
-    return JSON.parse(fenced);
-  } catch {
-    // Find the first {…} block as a last-ditch fallback.
-    const start = fenced.indexOf("{");
-    const end = fenced.lastIndexOf("}");
-    if (start === -1 || end === -1 || end < start) return null;
-    try {
-      return JSON.parse(fenced.slice(start, end + 1));
-    } catch {
-      return null;
-    }
-  }
-}
-
-async function withModelTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  promise.catch(() => undefined);
-  try {
-    return await Promise.race([
-      promise,
-      new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error(`model_timeout:${timeoutMs}`)), timeoutMs);
-      }),
-    ]);
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
-}
-
-function shouldTemporarilyDisableModel(message: string) {
-  const lower = message.toLowerCase();
-  return (
-    lower.includes("credit balance") ||
-    lower.includes("billing") ||
-    lower.includes("authentication") ||
-    lower.includes("invalid x-api-key") ||
-    lower.includes("permission")
-  );
-}
-
-function countWords(value: string): number {
-  return value.trim().split(/\s+/).filter(Boolean).length;
-}
 
 // Salted SHA-256. Salt comes from BRIEF_COPILOT_HASH_SALT (server-only)
 // so a leaked database can't be reverse-resolved to raw IPs or inputs.
@@ -614,6 +256,51 @@ async function findCachedDraft(input: {
   }
 }
 
+/**
+ * Records a studio_brief_drafts row for anti-abuse accounting + the dedup cache.
+ *
+ * Opacity: the provider/model is NEVER named in a row. The governed gateway owns redacted usage
+ * telemetry (tokens, cost), so studio persists ONLY the brand-opaque label + its own accounting
+ * fields — no provider token counts. (The table's historical `model_used` default is a concrete
+ * model id; we always write the opaque label explicitly so that default is never reached.)
+ */
+async function recordDraftRow(row: {
+  userId: string | null;
+  email: string | null;
+  sessionId: string;
+  ipHash: string | null;
+  inputHash: string;
+  description: string;
+  structuredOutput: Record<string, unknown>;
+  status: "completed" | "failed" | "rate_limited";
+  errorReason?: string;
+  durationMs?: number;
+}): Promise<void> {
+  if (!hasAdminSupabaseEnv()) return;
+  const admin = createAdminSupabase();
+  await admin
+    .from("studio_brief_drafts")
+    .insert({
+      id: randomUUID(),
+      user_id: row.userId,
+      normalized_email: row.email,
+      session_id: row.sessionId,
+      ip_hash: row.ipHash,
+      input_hash: row.inputHash,
+      intent: COPILOT_INTENT,
+      raw_input: row.description,
+      structured_output: row.structuredOutput,
+      model_used: STUDIO_AI_MODEL_LABEL,
+      status: row.status,
+      ...(row.errorReason ? { error_reason: row.errorReason } : {}),
+      ...(row.durationMs != null ? { duration_ms: row.durationMs } : {}),
+    } as never)
+    .then(
+      () => undefined,
+      () => undefined,
+    );
+}
+
 export async function generateStudioBriefDraftAction(
   formData: FormData
 ): Promise<BriefCopilotResult> {
@@ -643,23 +330,9 @@ export async function generateStudioBriefDraftAction(
     };
   }
 
-  const apiKey = getOptionalEnv("ANTHROPIC_API_KEY");
-  if (!apiKey) {
-    const fallback = buildFallbackStructured(description);
-    return {
-      ok: true,
-      structured: fallback,
-      meta: {
-        modelUsed: FALLBACK_MODEL,
-        durationMs: 0,
-        confidence: fallback.confidence,
-        cached: false,
-        callsRemaining: null,
-      },
-    };
-  }
-
-  if (modelDisabledUntil > Date.now()) {
+  // Flag-dark or backing off → instant deterministic fallback (no anti-abuse churn, no provider
+  // call). With the `ai_gateway` master switch off this is exactly the old "no API key" behaviour.
+  if (!isAiGatewayLive(process.env) || modelDisabledUntil > Date.now()) {
     const fallback = buildFallbackStructured(description);
     return {
       ok: true,
@@ -719,7 +392,7 @@ export async function generateStudioBriefDraftAction(
       ok: true,
       structured: cachedDraft,
       meta: {
-        modelUsed: BRIEF_COPILOT_MODEL,
+        modelUsed: STUDIO_AI_MODEL_LABEL,
         durationMs: 0,
         confidence: cachedDraft.confidence,
         cached: true,
@@ -738,29 +411,17 @@ export async function generateStudioBriefDraftAction(
           : null;
 
   if (tripped) {
-    if (hasAdminSupabaseEnv()) {
-      const admin = createAdminSupabase();
-      await admin
-        .from("studio_brief_drafts")
-        .insert({
-          id: randomUUID(),
-          user_id: userId,
-          normalized_email: email,
-          session_id: sessionId,
-          ip_hash: ipHash,
-          input_hash: inputHash,
-          intent: COPILOT_INTENT,
-          raw_input: description,
-          structured_output: {},
-          model_used: BRIEF_COPILOT_MODEL,
-          status: "rate_limited",
-          error_reason: `limit_exceeded:${tripped}:${limit}`,
-        } as never)
-        .then(
-          () => undefined,
-          () => undefined
-        );
-    }
+    await recordDraftRow({
+      userId,
+      email,
+      sessionId,
+      ipHash,
+      inputHash,
+      description,
+      structuredOutput: {},
+      status: "rate_limited",
+      errorReason: `limit_exceeded:${tripped}:${limit}`,
+    });
     const message =
       tripped === "system"
         ? "The co-pilot has hit today's safety ceiling. Studio is paused while staff review usage — please fill the brief manually below; we read every submission."
@@ -778,112 +439,46 @@ export async function generateStudioBriefDraftAction(
   }
 
   const start = Date.now();
-  let assistantText = "";
-  let tokensIn = 0;
-  let tokensOut = 0;
-  let cacheReadInputTokens = 0;
-  let cacheCreationInputTokens = 0;
-  let modelUsed = BRIEF_COPILOT_MODEL;
+  const result = await runAiTask(
+    {
+      surface: "studio.brief.staff",
+      // Public funnel (prospective clients, pre-signup): a stable synthetic actor keyed off the
+      // session so the gateway's "no anonymous AI" gate never refuses this FREE draft. Studio's
+      // 6-layer anti-abuse above is the real guard.
+      actorId: userId ?? `studio-brief:${sessionId}`,
+      input: { description },
+      idempotencyKey: randomUUID(),
+    },
+    { billing: noBillingPort },
+  );
 
-  try {
-    // SDK timeout 25s + no automatic retry, wrapped by a shorter Studio
-    // timeout so billing/auth outages fall back before the page feels stuck.
-    const client = new Anthropic({
-      apiKey,
-      timeout: 25 * 1000,
-      maxRetries: 0,
-    });
-
-    const response = await withModelTimeout(
-      client.messages.create({
-        model: BRIEF_COPILOT_MODEL,
-        max_tokens: 1024,
-        system: [
-          {
-            type: "text",
-            text: BRIEF_COPILOT_SYSTEM_PROMPT,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Brief input from prospective Studio client:\n\n"""\n${description}\n"""\n\nReturn the structured JSON now. JSON object only.`,
-              },
-            ],
-          },
-        ],
-      }),
-      MODEL_TIMEOUT_MS
-    );
-
-    modelUsed = response.model || BRIEF_COPILOT_MODEL;
-    const usage = response.usage as
-      | {
-          input_tokens?: number;
-          output_tokens?: number;
-          cache_read_input_tokens?: number;
-          cache_creation_input_tokens?: number;
-        }
-      | undefined;
-    tokensIn = Number(usage?.input_tokens ?? 0);
-    tokensOut = Number(usage?.output_tokens ?? 0);
-    cacheReadInputTokens = Number(usage?.cache_read_input_tokens ?? 0);
-    cacheCreationInputTokens = Number(usage?.cache_creation_input_tokens ?? 0);
-
-    const textBlocks = response.content.filter(
-      (block): block is Extract<(typeof response.content)[number], { type: "text" }> =>
-        block.type === "text"
-    );
-    assistantText = textBlocks.map((block) => block.text).join("\n").trim();
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Co-pilot model call failed";
-    // Surface the underlying API error to Vercel runtime logs so we can
-    // diagnose failures without scraping Supabase. Log message + name
-    // (e.g. APIConnectionError, APIError) — never the API key. The user
-    // gets back the friendly "didn't respond in time" copy regardless.
-    console.error("[studio][brief-copilot] model call failed", {
-      reason: message.slice(0, 240),
-      name: error instanceof Error ? error.name : "unknown",
-      authed: isAuthenticated,
-    });
-    if (shouldTemporarilyDisableModel(message)) {
+  if (!result.ok) {
+    // The gateway error code carries no provider/model name — safe to log.
+    if (shouldBackOffOnGatewayCode(result.error.code)) {
       modelDisabledUntil = Date.now() + MODEL_DISABLED_BACKOFF_MS;
     }
-    if (hasAdminSupabaseEnv()) {
-      const admin = createAdminSupabase();
-      await admin
-        .from("studio_brief_drafts")
-        .insert({
-          id: randomUUID(),
-          user_id: userId,
-          normalized_email: email,
-          session_id: sessionId,
-          ip_hash: ipHash,
-          input_hash: inputHash,
-          intent: COPILOT_INTENT,
-          raw_input: description,
-          structured_output: {},
-          model_used: BRIEF_COPILOT_MODEL,
-          status: "failed",
-          error_reason: message.slice(0, 240),
-          duration_ms: Date.now() - start,
-        } as never)
-        .then(
-          () => undefined,
-          () => undefined
-        );
-    }
+    console.error("[studio][brief-copilot] gateway refusal", {
+      code: result.error.code,
+      authed: isAuthenticated,
+    });
+    await recordDraftRow({
+      userId,
+      email,
+      sessionId,
+      ipHash,
+      inputHash,
+      description,
+      structuredOutput: {},
+      status: "failed",
+      errorReason: result.error.code,
+      durationMs: Date.now() - start,
+    });
     await writeStudioLog({
       eventType: "studio_brief_copilot_failed",
       route: "/request",
       success: false,
       meta: { userId, email, role: isAuthenticated ? "client" : "anon" },
-      details: { error: message.slice(0, 240) },
+      details: { error: result.error.code },
     });
     const fallback = buildFallbackStructured(description);
     return {
@@ -899,6 +494,7 @@ export async function generateStudioBriefDraftAction(
     };
   }
 
+  const assistantText = result.value.output.trim();
   if (!assistantText) {
     const fallback = buildFallbackStructured(description);
     return {
@@ -917,34 +513,18 @@ export async function generateStudioBriefDraftAction(
   const parsed = parseAssistantJson(assistantText);
   const structured = normaliseStructured(parsed);
   if (!structured) {
-    if (hasAdminSupabaseEnv()) {
-      const admin = createAdminSupabase();
-      await admin
-        .from("studio_brief_drafts")
-        .insert({
-          id: randomUUID(),
-          user_id: userId,
-          normalized_email: email,
-          session_id: sessionId,
-          ip_hash: ipHash,
-          input_hash: inputHash,
-          intent: COPILOT_INTENT,
-          raw_input: description,
-          structured_output: { raw_text: assistantText.slice(0, 4000) },
-          model_used: modelUsed,
-          tokens_in: tokensIn,
-          tokens_out: tokensOut,
-          cache_read_input_tokens: cacheReadInputTokens,
-          cache_creation_input_tokens: cacheCreationInputTokens,
-          duration_ms: Date.now() - start,
-          status: "failed",
-          error_reason: "invalid_json",
-        } as never)
-        .then(
-          () => undefined,
-          () => undefined
-        );
-    }
+    await recordDraftRow({
+      userId,
+      email,
+      sessionId,
+      ipHash,
+      inputHash,
+      description,
+      structuredOutput: { raw_text: assistantText.slice(0, 4000) },
+      status: "failed",
+      errorReason: "invalid_json",
+      durationMs: Date.now() - start,
+    });
     const fallback = buildFallbackStructured(description);
     return {
       ok: true,
@@ -960,34 +540,17 @@ export async function generateStudioBriefDraftAction(
   }
 
   const durationMs = Date.now() - start;
-
-  if (hasAdminSupabaseEnv()) {
-    const admin = createAdminSupabase();
-    await admin
-      .from("studio_brief_drafts")
-      .insert({
-        id: randomUUID(),
-        user_id: userId,
-        normalized_email: email,
-        session_id: sessionId,
-        ip_hash: ipHash,
-        input_hash: inputHash,
-        intent: COPILOT_INTENT,
-        raw_input: description,
-        structured_output: structured as unknown as Record<string, unknown>,
-        model_used: modelUsed,
-        tokens_in: tokensIn,
-        tokens_out: tokensOut,
-        cache_read_input_tokens: cacheReadInputTokens,
-        cache_creation_input_tokens: cacheCreationInputTokens,
-        duration_ms: durationMs,
-        status: "completed",
-      } as never)
-      .then(
-        () => undefined,
-        () => undefined
-      );
-  }
+  await recordDraftRow({
+    userId,
+    email,
+    sessionId,
+    ipHash,
+    inputHash,
+    description,
+    structuredOutput: structured as unknown as Record<string, unknown>,
+    status: "completed",
+    durationMs,
+  });
 
   await writeStudioLog({
     eventType: "studio_brief_copilot_success",
@@ -995,10 +558,6 @@ export async function generateStudioBriefDraftAction(
     success: true,
     meta: { userId, email, role: isAuthenticated ? "client" : "anon" },
     details: {
-      model: modelUsed,
-      tokens_in: tokensIn,
-      tokens_out: tokensOut,
-      cache_read: cacheReadInputTokens,
       duration_ms: durationMs,
       confidence: structured.confidence,
     },
@@ -1008,10 +567,10 @@ export async function generateStudioBriefDraftAction(
     ok: true,
     structured,
     meta: {
-      modelUsed,
+      modelUsed: STUDIO_AI_MODEL_LABEL,
       durationMs,
       confidence: structured.confidence,
-      cached: cacheReadInputTokens > 0,
+      cached: false,
       callsRemaining: Math.max(0, limit - (usedCount + 1)),
     },
   };
