@@ -5,7 +5,7 @@ import { parseVerdict, resolveVerdictDecision, type AiUsageReceipt, type Verdict
 import { getPaymentsSqlExecutor } from "@henryco/payments-db";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { createAdminSupabase } from "@/lib/supabase/admin";
+import { createAdminSupabase } from "@/lib/supabase";
 
 export interface VerifyListingInput {
   /** The saved listing being reviewed; omit for a pre-save dry run (audited, no badge). */
