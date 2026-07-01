@@ -18,7 +18,7 @@
     "test": "tsx --test lib/messaging/__tests__/screen-message.test.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.92.0",
+    "@henryco/ai-gateway": "workspace:^",
     "@henryco/auth": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
@@ -33,6 +33,7 @@
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
+    "@henryco/payments-db": "workspace:^",
     "@henryco/seo": "workspace:^",
     "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",
