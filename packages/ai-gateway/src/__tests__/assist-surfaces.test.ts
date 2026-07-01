@@ -70,6 +70,11 @@ describe("assist surfaces — FREE vs METERED policy", () => {
     assert.equal(AI_SURFACES["studio.brief.staff"].billable, false);
   });
 
+  it("studio.brief.coach is FREE/internal (multi-turn coach, not billed)", () => {
+    assert.equal(AI_SURFACES["studio.brief.coach"].billable, false);
+    assert.equal(AI_SURFACES["studio.brief.coach"].modelTier, "fast");
+  });
+
   it("business.message.assist is METERED — reserves + debits the wallet", async () => {
     const ad = adapter();
     const billing = new InMemoryBilling({ balances: { [USER]: 1_000_000 } });

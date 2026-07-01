@@ -104,6 +104,19 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
   return runAiTaskWith(deps, task);
 }
 
+/** A billing port for FREE surfaces (never invoked — the orchestrator skips billing when
+ *  `!policy.billable`) and the fail-closed default for a METERED surface whose division wallet
+ *  is not configured yet (reserve refuses ⇒ provider never called ⇒ caller falls back). */
+export const noBillingPort: AiBillingPort = {
+  async reserve() {
+    return { ok: false, error: aiError("not_configured", DEFAULT_AI_ERROR_COPY.not_configured) };
+  },
+  async settle() {
+    return { ok: false, error: aiError("not_configured", DEFAULT_AI_ERROR_COPY.not_configured) };
+  },
+  async release() {},
+};
+
 export { createPgBillingPort, type SqlExecutor } from "./billing";
 export { parseDraftOutput } from "./prompts";
 export { resolveModelForTier } from "./config";
