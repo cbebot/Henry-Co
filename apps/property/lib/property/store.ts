@@ -6,6 +6,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, normalizePhone, getOptionalEnv } from "@/lib/env";
 import { slugify } from "@/lib/utils";
 import { demoPropertySnapshot } from "@/lib/property/demo";
+import { isPropertyDbListingsEnabled, listListingsFromDb } from "@/lib/property/db";
 import {
   PROPERTY_DOCUMENT_RULE,
   PROPERTY_IMAGE_RULE,
@@ -350,10 +351,16 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     };
   });
 
+  // Stage 1 — DB-backed listings (flag-gated, non-breaking). When PROPERTY_DB_LISTINGS is on and
+  // the property_listings table has rows, they are the source of truth; otherwise fall back to the
+  // Storage snapshot so the live site is identical to today.
+  const dbListings = isPropertyDbListingsEnabled() ? await listListingsFromDb() : [];
+  const effectiveListings = dbListings.length > 0 ? dbListings : listings;
+
   const snapshot = {
     areas: dedupeById(areas),
     agents: dedupeById(agents),
-    listings: dedupeById(listings),
+    listings: dedupeById(effectiveListings),
     inquiries,
     viewingRequests: hydratedViewings,
     applications,

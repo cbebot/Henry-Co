@@ -149,6 +149,8 @@ export type PropertyListing = {
   petFriendly: boolean;
   shortletReady: boolean;
   managedByHenryCo: boolean;
+  /** V3-AI-VERIFY — the durable AI trust-review badge, overlaid from property_listings.henry_onyx_verified. */
+  henryOnyxVerified?: boolean;
   featured: boolean;
   promoted: boolean;
   heroImage: string;
