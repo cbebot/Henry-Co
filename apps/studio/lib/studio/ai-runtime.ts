@@ -3,8 +3,10 @@
 // `modelUsed` UI field keeps existing, but never names the provider/model again.
 export const STUDIO_AI_MODEL_LABEL = "henry-onyx-intelligence";
 
-/** Mirror the old `modelDisabledUntil` heuristic against gateway error codes: temporarily stop
- *  attempting the model only when the trouble is provider/config-level, not a routine refusal. */
+/** Mirror the old `modelDisabledUntil` heuristic against the gateway's AiGatewayError.code
+ *  taxonomy (NOT the telemetry signal `kind`): temporarily stop attempting the model only when
+ *  the trouble is provider/config-level — a real outage or a missing provider — and never on a
+ *  routine, per-input refusal (`provider_refusal`, `schema_validation_failed`, `rate_limited`). */
 export function shouldBackOffOnGatewayCode(code: string): boolean {
-  return code === "provider_failed" || code === "not_configured";
+  return code === "provider_error" || code === "provider_timeout" || code === "not_configured";
 }
