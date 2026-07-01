@@ -33,3 +33,44 @@ export async function listListingsFromDb(): Promise<PropertyListing[]> {
     .map((row) => rowToListing(row))
     .filter((listing): listing is PropertyListing => listing != null);
 }
+
+/**
+ * Stage 2 dual-write: upsert the listing's relational row + full `data` jsonb alongside the
+ * Storage write. Flag-gated (inert until PROPERTY_DB_LISTINGS is on) and best-effort — a DB
+ * hiccup must never fail the Storage write (the primary during transition).
+ *
+ * CRITICAL: never writes `henry_onyx_verified` — the badge is the service_role-only SECURITY
+ * DEFINER writer's exclusive column, so an owner edit can never reset a granted badge.
+ */
+export async function writeListingToDb(listing: PropertyListing): Promise<void> {
+  if (!isPropertyDbListingsEnabled()) return;
+  try {
+    const admin = createAdminSupabase();
+    await admin.from("property_listings").upsert(
+      {
+        id: listing.id,
+        slug: listing.slug,
+        title: listing.title,
+        summary: listing.summary,
+        description: listing.description,
+        kind: listing.kind,
+        status: listing.status,
+        visibility: listing.visibility,
+        location_slug: listing.locationSlug,
+        location_label: listing.locationLabel,
+        district: listing.district,
+        address_line: listing.addressLine,
+        price: listing.price,
+        currency: listing.currency,
+        managed_by_henryco: listing.managedByHenryCo,
+        owner_user_id: listing.ownerUserId,
+        agent_id: listing.agentId,
+        data: listing,
+        updated_at: new Date().toISOString(),
+      } as never,
+      { onConflict: "id" },
+    );
+  } catch {
+    /* best-effort; the Storage write is the primary during transition */
+  }
+}

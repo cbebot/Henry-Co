@@ -6,7 +6,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, normalizePhone, getOptionalEnv } from "@/lib/env";
 import { slugify } from "@/lib/utils";
 import { demoPropertySnapshot } from "@/lib/property/demo";
-import { isPropertyDbListingsEnabled, listListingsFromDb } from "@/lib/property/db";
+import { isPropertyDbListingsEnabled, listListingsFromDb, writeListingToDb } from "@/lib/property/db";
 import {
   PROPERTY_DOCUMENT_RULE,
   PROPERTY_IMAGE_RULE,
@@ -422,13 +422,16 @@ export async function seedPropertyRuntimeSnapshot(snapshot: PropertySnapshot = d
 }
 
 export async function upsertPropertyListing(listing: PropertyListing) {
-  await writeJsonRecord("listings", listing.id, {
+  const record: PropertyListing = {
     ...listing,
     normalizedEmail: normalizeEmail(listing.normalizedEmail || listing.ownerEmail),
     ownerPhone: normalizePhone(listing.ownerPhone),
     ownerEmail: normalizeEmail(listing.ownerEmail),
     updatedAt: new Date().toISOString(),
-  } satisfies PropertyListing);
+  };
+  await writeJsonRecord("listings", listing.id, record);
+  // Stage 2 — dual-write the DB row (flag-gated, best-effort; never touches henry_onyx_verified).
+  await writeListingToDb(record);
 }
 
 export async function upsertPropertyInspection(inspection: PropertyListingInspection) {
