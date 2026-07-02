@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildChatThreadLabels, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
@@ -83,9 +83,15 @@ export default function HarnessClient() {
 
   const counter = useRef(0);
   const failedOnce = useRef(new Set<string>());
-  const [messages, setMessages] = useState<ChatThreadMessage[]>(() =>
-    seedMessages(Date.now()),
-  );
+  const [messages, setMessages] = useState<ChatThreadMessage[]>([]);
+
+  // Seed on the client only — Date.now()-derived timestamps in SSR output
+  // would hydration-mismatch. Dev-only rig, so a mount-gated seed is fine.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMessages(seedMessages(Date.now()));
+    setMounted(true);
+  }, []);
 
   const pushIncoming = useCallback(
     (body: string, attachments?: ChatThreadMessage["attachments"]) => {
@@ -141,6 +147,14 @@ export default function HarnessClient() {
     },
     [],
   );
+
+  if (!mounted) {
+    return (
+      <div className="dev-chat-stage">
+        <style dangerouslySetInnerHTML={{ __html: HARNESS_CSS }} />
+      </div>
+    );
+  }
 
   return (
     <div className="dev-chat-stage">

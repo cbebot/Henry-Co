@@ -193,6 +193,7 @@ export function ChatThread(props: ChatThreadProps) {
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const paneRef = useRef<HTMLDivElement | null>(null);
+  const colRef = useRef<HTMLDivElement | null>(null);
 
   // --- optimistic outbox (ref-mirrored so rapid sends chain synchronously) ---
   const [outbox, setOutboxState] = useState<OutboxState>(() => emptyOutbox());
@@ -278,6 +279,24 @@ export function ChatThread(props: ChatThreadProps) {
   useEffect(() => {
     if (typing && followRef.current.following) pinToBottom("auto");
   }, [typing, pinToBottom]);
+
+  // Size-change re-pin: while following, ANY geometry change keeps the
+  // newest message in view — the pane box shrinking (composer grew: async
+  // draft hydration, multi-line input, keyboard) and the content column
+  // growing (web-font swap, image decode without dimensions). Readers who
+  // scrolled up are never touched (follow guard).
+  useEffect(() => {
+    const pane = paneRef.current;
+    if (!pane || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      if (followRef.current.following) {
+        pane.scrollTop = pane.scrollHeight;
+      }
+    });
+    observer.observe(pane);
+    if (colRef.current) observer.observe(colRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleScroll = useCallback(() => {
     const pane = paneRef.current;
@@ -547,7 +566,7 @@ export function ChatThread(props: ChatThreadProps) {
           role="log"
           aria-label={header.title}
         >
-          <div className="ct-col">
+          <div className="ct-col" ref={colRef}>
             {merged.length === 0 && emptyState ? (
               <div className="ct-empty">{emptyState}</div>
             ) : null}
