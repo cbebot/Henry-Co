@@ -439,18 +439,31 @@ export async function generateStudioBriefDraftAction(
   }
 
   const start = Date.now();
-  const result = await runAiTask(
-    {
-      surface: "studio.brief.staff",
-      // Public funnel (prospective clients, pre-signup): a stable synthetic actor keyed off the
-      // session so the gateway's "no anonymous AI" gate never refuses this FREE draft. Studio's
-      // 6-layer anti-abuse above is the real guard.
-      actorId: userId ?? `studio-brief:${sessionId}`,
-      input: { description },
-      idempotencyKey: randomUUID(),
-    },
-    { billing: noBillingPort },
-  );
+  let result: Awaited<ReturnType<typeof runAiTask>>;
+  try {
+    result = await runAiTask(
+      {
+        surface: "studio.brief.staff",
+        // Public funnel (prospective clients, pre-signup): a stable synthetic actor keyed off the
+        // session so the gateway's "no anonymous AI" gate never refuses this FREE draft. Studio's
+        // 6-layer anti-abuse above is the real guard.
+        actorId: userId ?? `studio-brief:${sessionId}`,
+        input: { description },
+        idempotencyKey: randomUUID(),
+      },
+      { billing: noBillingPort },
+    );
+  } catch (error) {
+    // Defence in depth: the gateway returns a typed Result by contract, but a runtime throw
+    // (misconfig / adapter / unexpected) must degrade to the graceful deterministic fallback
+    // below — never crash the action into a client-facing "failed, try again". This restores
+    // the resilience the pre-gateway inline try/catch provided. The error name is logged (no
+    // provider/model) so a real throw is diagnosable from runtime logs.
+    console.error("[studio][brief-copilot] gateway threw", {
+      name: error instanceof Error ? error.name : "unknown",
+    });
+    result = { ok: false, error: { code: "provider_error", message: "" } };
+  }
 
   if (!result.ok) {
     // The gateway error code carries no provider/model name — safe to log.

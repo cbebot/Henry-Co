@@ -81,27 +81,42 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
     return { ok: false, error: aiError("not_configured", DEFAULT_AI_ERROR_COPY.not_configured) };
   }
 
-  const deps: AiTaskDeps = {
-    adapter: createAnthropicAdapter({ apiKey: cfg.apiKey }),
-    billing: opts.billing,
-    rules: opts.rules ?? defaultAiUsageRules(),
-    vatPolicy: TAX.vat satisfies VatRatePolicy,
-    vatTreatment: opts.vatTreatment ?? "standard",
-    killSwitchEnabled: true, // already checked above
-    now: () => new Date(),
-    promptBuilder: buildPrompt,
-    validateOutput: (raw, t) => {
-      if (t.surface.endsWith(".draft")) return validateDraftOutput(raw);
-      if (t.surface.endsWith(".verify")) return parseVerdict(raw) != null;
-      return true;
-    },
-    onSignal,
-    newId: opts.newId ?? (() => crypto.randomUUID()),
-    rateLimiter: opts.rateLimiter ?? defaultRateLimiter,
-    defaultTimeoutMs: AI_GATEWAY_TIMEOUT_MS,
-  };
+  // The gateway is a Result-returning contract — it must NEVER throw, because a throw would crash
+  // the caller's server action and surface as a generic failure to the user. Any unexpected
+  // exception below (adapter init, rate card, prompt build, orchestration) degrades to a typed
+  // provider_error the surface maps to its graceful fallback. Defence in depth for every mount.
+  try {
+    const deps: AiTaskDeps = {
+      adapter: createAnthropicAdapter({ apiKey: cfg.apiKey }),
+      billing: opts.billing,
+      rules: opts.rules ?? defaultAiUsageRules(),
+      vatPolicy: TAX.vat satisfies VatRatePolicy,
+      vatTreatment: opts.vatTreatment ?? "standard",
+      killSwitchEnabled: true, // already checked above
+      now: () => new Date(),
+      promptBuilder: buildPrompt,
+      validateOutput: (raw, t) => {
+        if (t.surface.endsWith(".draft")) return validateDraftOutput(raw);
+        if (t.surface.endsWith(".verify")) return parseVerdict(raw) != null;
+        return true;
+      },
+      onSignal,
+      newId: opts.newId ?? (() => crypto.randomUUID()),
+      rateLimiter: opts.rateLimiter ?? defaultRateLimiter,
+      defaultTimeoutMs: AI_GATEWAY_TIMEOUT_MS,
+    };
 
-  return runAiTaskWith(deps, task);
+    return await runAiTaskWith(deps, task);
+  } catch (error) {
+    // Name only — never the message (could echo provider/model text) — so it stays diagnosable
+    // without leaking the provider/source.
+    console.error("[ai-gateway] runAiTask threw — degrading to provider_error (contract: never throw)", {
+      surface: task.surface,
+      name: error instanceof Error ? error.name : "unknown",
+    });
+    emitBlocked(onSignal, task.surface, "provider_error");
+    return { ok: false, error: aiError("provider_error", DEFAULT_AI_ERROR_COPY.provider_error) };
+  }
 }
 
 /** A billing port for FREE surfaces (never invoked — the orchestrator skips billing when
