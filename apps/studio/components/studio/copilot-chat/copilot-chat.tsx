@@ -66,8 +66,10 @@ export function CopilotChat({
   const [sending, setSending] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   const [ready, setReady] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const autoFinalized = useRef(false);
 
   const messages = transcript.value;
   const assistantTurns = countAssistantTurns(messages);
@@ -94,6 +96,7 @@ export function CopilotChat({
       if (result.ok) {
         transcript.setValue((prev) => [...prev, { role: "assistant", content: result.turn.reply }]);
         setReady(result.turn.ready);
+        setProgress(result.turn.progress);
       } else {
         setError(result.message);
       }
@@ -152,6 +155,16 @@ export function CopilotChat({
     [send],
   );
 
+  // Auto-handoff: the moment the coach reports the brief is complete, close the conversation
+  // gracefully and build the brief — no dead-end chatting after "that's everything I need".
+  // A short beat first so the person reads the closing line; the manual button stays as backup.
+  useEffect(() => {
+    if (!ready || finalizing || autoFinalized.current) return;
+    autoFinalized.current = true;
+    const timer = setTimeout(() => void finalize(), 1400);
+    return () => clearTimeout(timer);
+  }, [ready, finalizing, finalize]);
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       {/* Compact header — kicker + small h1. No oversized headline chrome. */}
@@ -206,6 +219,28 @@ export function CopilotChat({
               </p>
             ) : null}
 
+            {progress > 0 ? (
+              <div className="mt-5">
+                <div className="flex items-center justify-between text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                  <span>{t("Brief progress")}</span>
+                  <span aria-hidden>{progress}%</span>
+                </div>
+                <div
+                  className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--studio-line)]"
+                  role="progressbar"
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={t("Brief progress")}
+                >
+                  <div
+                    className="h-full rounded-full bg-[var(--studio-signal)] transition-[width] duration-700"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </div>
+            ) : null}
+
             <div className="mt-6 border-t border-[var(--studio-line)] pt-5">
               <div className="flex items-end gap-3">
                 <textarea
@@ -214,12 +249,13 @@ export function CopilotChat({
                   onKeyDown={onKeyDown}
                   rows={2}
                   placeholder={t("Type your reply…")}
-                  className="studio-textarea flex-1 rounded-[1rem] px-4 py-3 leading-7"
+                  disabled={ready}
+                  className="studio-textarea flex-1 rounded-[1rem] px-4 py-3 leading-7 disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={() => void send()}
-                  disabled={!input.trim() || sending}
+                  disabled={!input.trim() || sending || ready}
                   aria-label={t("Send")}
                   className="studio-button-primary inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -227,7 +263,11 @@ export function CopilotChat({
                 </button>
               </div>
 
-              {canFinalize ? (
+              {ready ? (
+                <p className="mt-4 text-center text-[12.5px] font-semibold leading-6 text-[var(--studio-ink)]" role="status">
+                  {t("Your brief is ready — building it now…")}
+                </p>
+              ) : canFinalize ? (
                 <button
                   type="button"
                   onClick={() => void finalize()}
