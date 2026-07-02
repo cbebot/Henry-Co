@@ -119,8 +119,11 @@ If the input is anything other than describing a product they want Henry Onyx to
 
 OUTPUT FORMAT
 Respond with ONLY a JSON object, no prose, no code fence:
-{"reply": string, "ready": boolean}
-"reply" is the message shown to the client. "ready" is true only when you have enough to hand off.`;
+{"reply": string, "ready": boolean, "progress": number}
+"reply" is the message shown to the client. "ready" is true only when you have enough to hand off.
+"progress" is a whole number 0-100: how complete the brief is so far, judged across the six things
+to gather (purpose, audience, pages/features, budget, timeline, outcome). Move it forward as
+answers land; set 100 only when ready is true.`;
 
 export function buildStudioBriefCoachPrompt(task: AiTask): AiPromptParts {
   return {
@@ -129,10 +132,12 @@ export function buildStudioBriefCoachPrompt(task: AiTask): AiPromptParts {
   };
 }
 
-/** The coach's `{reply, ready}` output envelope. */
+/** The coach's `{reply, ready, progress}` output envelope. */
 export interface CoachEnvelope {
   reply: string;
   ready: boolean;
+  /** 0-100 — model-reported brief completeness (drives the client's progress bar). */
+  progress: number;
 }
 
 /**
@@ -153,7 +158,11 @@ export function parseCoachEnvelope(text: string): CoachEnvelope | null {
       const record = parsed as Record<string, unknown>;
       const reply = String(record.reply ?? "").trim();
       if (!reply) return null;
-      return { reply, ready: record.ready === true };
+      const ready = record.ready === true;
+      // progress is optional/back-compatible: clamp to 0-100; ready implies 100; absent → 0.
+      const rawProgress = Number(record.progress);
+      const progress = ready ? 100 : Number.isFinite(rawProgress) ? Math.min(100, Math.max(0, Math.round(rawProgress))) : 0;
+      return { reply, ready, progress };
     } catch {
       return null;
     }
