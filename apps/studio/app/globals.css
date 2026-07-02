@@ -5,6 +5,7 @@
 @import "../../../packages/ui/src/styles/public-design.css";
 @import "../../../packages/workspace-shell/src/styles.css";
 @import "../../../packages/messaging-thread/src/styles.css";
+@import "../../../packages/chat-thread/src/styles.css";
 
 /* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
    media query — without this, the toggled theme and `dark:` utilities decouple. */
@@ -2195,4 +2196,98 @@ html, body { overflow-x: clip; max-width: 100vw; }
    same dossier system, not a generic alert. */
 .studio-workspace-light .acct-next-step__icon {
   border: 1px solid color-mix(in srgb, var(--studio-accent) 26%, transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ChatThread full-immersion stage — /request/copilot rebuilt on
+   @henryco/chat-thread (assistant variant). Fixed full-viewport chat
+   screen: only .ct-pane scrolls; the page never moves. The stage mounts
+   inside the .studio-public subtree, so the aliased --studio-* tokens
+   below resolve to the theme-aware --home-* public system (Fraunces via
+   --font-studio-display on the same wrapper).
+   ══════════════════════════════════════════════════════════════════════ */
+
+body:has(.studio-chat-stage) {
+  overflow: hidden;
+}
+
+/* The floating SupportAssist capsule would overlap the composer —
+   suppress it on the chat screen (it stays everywhere else). */
+body:has(.studio-chat-stage) .hc-assist-trigger {
+  display: none !important;
+}
+
+.studio-chat-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 70; /* above SupportAssist (z-59), below the toast anchor (z-100) */
+  display: flex;
+  flex-direction: column;
+  background: var(--studio-bg);
+  color: var(--studio-ink);
+
+  /* Token bridge: ChatThread reads --ct-*. Studio's BRIGHT teal accent
+     takes dark ink on top (AA both modes) — never white on teal. */
+  --ct-bg: var(--studio-bg);
+  --ct-ink: var(--studio-ink);
+  --ct-ink-soft: var(--studio-ink-soft);
+  --ct-line: var(--studio-line);
+  --ct-accent: var(--studio-mint);
+  --ct-accent-contrast: #0a0a0a;
+  --ct-surface: var(--studio-surface);
+  --ct-surface-own: var(--studio-mint-soft);
+  --ct-header-bg: var(--studio-bg);
+  --ct-composer-bg: var(--studio-bg);
+  --ct-font-display: var(--font-studio-display, inherit);
+}
+
+.studio-chat-stage .ct-viewport {
+  flex: 1 1 auto;
+}
+
+.studio-chat-stage__escape {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--studio-signal);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+}
+
+.studio-chat-stage__escape:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Model-reported brief completeness, rendered inline in the chat header's
+   status line (replaces #369's in-card progress block on this surface). */
+.studio-chat-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.studio-chat-progress__track {
+  display: inline-block;
+  width: 72px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--studio-line);
+  overflow: hidden;
+}
+
+.studio-chat-progress__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--studio-signal);
+  transition: width 700ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-chat-progress__fill {
+    transition: none;
+  }
 }

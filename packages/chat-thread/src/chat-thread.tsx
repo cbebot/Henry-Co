@@ -92,11 +92,20 @@ export type ChatThreadSuggestion = {
   id: string;
   label: string;
   kind?: "default" | "primary";
+  /**
+   * When set, tapping the chip dispatches this text through the same
+   * optimistic send pipeline as the composer (quick replies). Chips
+   * without text only fire `onSuggestion` (action chips, e.g. a
+   * finalize CTA).
+   */
+  text?: string;
 };
 
 export type ChatThreadComposerOptions = {
   placeholder?: string;
   disabled?: boolean;
+  /** Blocks sending without greying the textarea (e.g. while the AI replies). */
+  busy?: boolean;
   tone?: ComposerTone;
   enterKeyBehavior?: "newline" | "send";
   autoFocus?: boolean;
@@ -138,6 +147,13 @@ export type ChatThreadProps = {
   /** BCP-47 locale for time/date formatting. Defaults to the browser locale. */
   locale?: string;
   /**
+   * Day pills between calendar days. Default true; turn off for
+   * session-scoped conversations without persisted timestamps.
+   */
+  showDaySeparators?: boolean;
+  /** Per-group time labels. Default true; see showDaySeparators. */
+  showTimestamps?: boolean;
+  /**
    * Wrap the screen in `.ct-viewport` (height 100dvh − --ct-viewport-offset
    * − keyboard inset). Hosts embedding inside their own height-constrained
    * container can leave this off.
@@ -163,6 +179,8 @@ export function ChatThread(props: ChatThreadProps) {
     labels: labelOverrides,
     composer = {},
     locale,
+    showDaySeparators = true,
+    showTimestamps = true,
     fillViewport = false,
     className,
     emptyState,
@@ -419,6 +437,11 @@ export function ChatThread(props: ChatThreadProps) {
           : "other";
     const last = item.messages[item.messages.length - 1];
     const lastState = side === "own" ? last.deliveryState : null;
+    const showMeta =
+      showTimestamps ||
+      lastState === "sent" ||
+      lastState === "delivered" ||
+      lastState === "read";
     return (
       <li key={item.key} className="ct-group" data-side={side}>
         {side === "other" ? (
@@ -450,20 +473,24 @@ export function ChatThread(props: ChatThreadProps) {
               />
             );
           })}
-          <span className="ct-group-meta">
-            <time dateTime={last.createdAt}>
-              {timeFormatter.format(new Date(last.createdAt))}
-            </time>
-            {variant === "support" && lastState === "sent" ? (
-              <span className="ct-badge">{labels.sent}</span>
-            ) : null}
-            {lastState === "delivered" ? (
-              <span className="ct-state-label">{labels.delivered}</span>
-            ) : null}
-            {lastState === "read" ? (
-              <span className="ct-state-label">{labels.read}</span>
-            ) : null}
-          </span>
+          {showMeta ? (
+            <span className="ct-group-meta">
+              {showTimestamps ? (
+                <time dateTime={last.createdAt}>
+                  {timeFormatter.format(new Date(last.createdAt))}
+                </time>
+              ) : null}
+              {variant === "support" && lastState === "sent" ? (
+                <span className="ct-badge">{labels.sent}</span>
+              ) : null}
+              {lastState === "delivered" ? (
+                <span className="ct-state-label">{labels.delivered}</span>
+              ) : null}
+              {lastState === "read" ? (
+                <span className="ct-state-label">{labels.read}</span>
+              ) : null}
+            </span>
+          ) : null}
         </div>
       </li>
     );
@@ -527,9 +554,11 @@ export function ChatThread(props: ChatThreadProps) {
             <ol className="ct-list">
               {view.map((item) =>
                 item.kind === "day" ? (
-                  <li key={item.key} className="ct-day" role="separator">
-                    <span>{dayText(item)}</span>
-                  </li>
+                  showDaySeparators ? (
+                    <li key={item.key} className="ct-day" role="separator">
+                      <span>{dayText(item)}</span>
+                    </li>
+                  ) : null
                 ) : (
                   renderGroup(item)
                 ),
@@ -569,7 +598,10 @@ export function ChatThread(props: ChatThreadProps) {
                 type="button"
                 className="ct-suggestion"
                 data-kind={suggestion.kind ?? "default"}
-                onClick={() => onSuggestion?.(suggestion.id)}
+                onClick={() => {
+                  if (suggestion.text) dispatchSend({ body: suggestion.text });
+                  onSuggestion?.(suggestion.id);
+                }}
               >
                 {suggestion.label}
               </button>
@@ -582,6 +614,7 @@ export function ChatThread(props: ChatThreadProps) {
           placeholder={composer.placeholder}
           tone={composer.tone ?? "neutral"}
           disabled={composer.disabled}
+          busy={composer.busy}
           enableAttachments={composer.enableAttachments ?? false}
           uploadAttachment={composer.uploader}
           maxAttachments={composer.maxAttachments}
