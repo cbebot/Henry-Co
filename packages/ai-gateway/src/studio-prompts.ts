@@ -119,12 +119,60 @@ If the input is anything other than describing a product they want Henry Onyx to
 
 OUTPUT FORMAT
 Respond with ONLY a JSON object, no prose, no code fence:
-{"reply": string, "ready": boolean}
-"reply" is the message shown to the client. "ready" is true only when you have enough to hand off.`;
+{"reply": string, "ready": boolean, "progress": number}
+"reply" is the message shown to the client. "ready" is true only when you have enough to hand off.
+"progress" is a whole number 0-100: how complete the brief is so far, judged across the six things
+to gather (purpose, audience, pages/features, budget, timeline, outcome). Move it forward as
+answers land; set 100 only when ready is true.`;
 
 export function buildStudioBriefCoachPrompt(task: AiTask): AiPromptParts {
   return {
     system: composeSystemPrompt(STUDIO_BRIEF_COACH_TASK),
     messages: normalizeChatMessages(task.input.messages, { maxTurns: 12, maxChars: 1200 }),
   };
+}
+
+/** The coach's `{reply, ready, progress}` output envelope. */
+export interface CoachEnvelope {
+  reply: string;
+  ready: boolean;
+  /** 0-100 — model-reported brief completeness (drives the client's progress bar). */
+  progress: number;
+}
+
+/**
+ * Parse the coach's `{reply, ready}` envelope. Tolerates a stray code fence or surrounding
+ * prose by extracting the first balanced object; returns null when nothing usable is found.
+ * Registered as the orchestrator's `validateOutput` for `studio.brief.coach`, so a malformed
+ * envelope triggers ONE automatic model retry (then a typed refusal) instead of silently
+ * degrading the conversation — the coach never answers with a reply that ignored the user.
+ */
+export function parseCoachEnvelope(text: string): CoachEnvelope | null {
+  const trimmed = String(text ?? "").trim();
+  const fenced = trimmed.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+
+  const attempt = (candidate: string): CoachEnvelope | null => {
+    try {
+      const parsed = JSON.parse(candidate) as unknown;
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+      const record = parsed as Record<string, unknown>;
+      const reply = String(record.reply ?? "").trim();
+      if (!reply) return null;
+      const ready = record.ready === true;
+      // progress is optional/back-compatible: clamp to 0-100; ready implies 100; absent → 0.
+      const rawProgress = Number(record.progress);
+      const progress = ready ? 100 : Number.isFinite(rawProgress) ? Math.min(100, Math.max(0, Math.round(rawProgress))) : 0;
+      return { reply, ready, progress };
+    } catch {
+      return null;
+    }
+  };
+
+  const direct = attempt(fenced);
+  if (direct) return direct;
+
+  const start = fenced.indexOf("{");
+  const end = fenced.lastIndexOf("}");
+  if (start === -1 || end === -1 || end < start) return null;
+  return attempt(fenced.slice(start, end + 1));
 }

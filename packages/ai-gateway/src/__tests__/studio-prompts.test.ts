@@ -4,6 +4,7 @@ import {
   buildStudioBriefStructuredPrompt,
   buildStudioMessageRefinePrompt,
   buildStudioBriefCoachPrompt,
+  parseCoachEnvelope,
 } from "../studio-prompts";
 import type { AiTask } from "../contracts";
 
@@ -57,5 +58,30 @@ describe("studio.brief.coach — multi-turn coach builder", () => {
     assert.match(parts.system, /"ready"/);
     assert.equal(parts.messages[0].role, "user"); // leading assistant dropped
     assert.match(parts.messages[0].content, /couriers/);
+  });
+});
+
+describe("parseCoachEnvelope — the coach output contract the orchestrator validates", () => {
+  it("parses the strict {reply,ready,progress} envelope", () => {
+    assert.deepEqual(parseCoachEnvelope('{"reply":"Who is it for?","ready":false,"progress":35}'), {
+      reply: "Who is it for?",
+      ready: false,
+      progress: 35,
+    });
+  });
+  it("tolerates code fences and surrounding prose", () => {
+    assert.deepEqual(parseCoachEnvelope('```json\n{"reply":"Done.","ready":true,"progress":100}\n```'), { reply: "Done.", ready: true, progress: 100 });
+    assert.deepEqual(parseCoachEnvelope('Sure! {"reply":"Noted — and the budget?","ready":false,"progress":60} hope that helps'), { reply: "Noted — and the budget?", ready: false, progress: 60 });
+  });
+  it("progress is back-compatible: absent → 0, out-of-range clamped, ready implies 100", () => {
+    assert.equal(parseCoachEnvelope('{"reply":"Hi","ready":false}')?.progress, 0);
+    assert.equal(parseCoachEnvelope('{"reply":"Hi","ready":false,"progress":250}')?.progress, 100);
+    assert.equal(parseCoachEnvelope('{"reply":"Hi","ready":false,"progress":-4}')?.progress, 0);
+    assert.equal(parseCoachEnvelope('{"reply":"Done","ready":true,"progress":40}')?.progress, 100);
+  });
+  it("returns null for prose without an envelope (so the orchestrator RETRIES instead of falling back)", () => {
+    assert.equal(parseCoachEnvelope("What's the main purpose of the site?"), null);
+    assert.equal(parseCoachEnvelope('{"ready":true}'), null);
+    assert.equal(parseCoachEnvelope(""), null);
   });
 });
