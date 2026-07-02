@@ -103,18 +103,29 @@ export async function continueStudioBriefChatAction(input: {
     content: redactChatText(message.content),
   }));
 
-  const result = await runAiTask(
-    {
-      surface: "studio.brief.coach",
-      // Public funnel (prospective clients, pre-signup): a stable-per-call synthetic actor so the
-      // gateway's "no anonymous AI" gate never refuses this FREE intake. The turn ceiling above is
-      // the real abuse guard.
-      actorId: `studio-coach:${randomUUID()}`,
-      input: { messages: redacted },
-      idempotencyKey: randomUUID(),
-    },
-    { billing: noBillingPort },
-  );
+  let result: Awaited<ReturnType<typeof runAiTask>>;
+  try {
+    result = await runAiTask(
+      {
+        surface: "studio.brief.coach",
+        // Public funnel (prospective clients, pre-signup): a stable-per-call synthetic actor so the
+        // gateway's "no anonymous AI" gate never refuses this FREE intake. The turn ceiling above is
+        // the real abuse guard.
+        actorId: `studio-coach:${randomUUID()}`,
+        input: { messages: redacted },
+        idempotencyKey: randomUUID(),
+      },
+      { billing: noBillingPort },
+    );
+  } catch (error) {
+    // Defence in depth: a runtime throw from the gateway degrades to the deterministic coach turn
+    // below rather than crashing the action into a client-facing failure (restores the pre-gateway
+    // try/catch resilience). Error name only — no provider/model — so it's diagnosable from logs.
+    console.error("[studio][brief-chat] gateway threw", {
+      name: error instanceof Error ? error.name : "unknown",
+    });
+    result = { ok: false, error: { code: "provider_error", message: "" } };
+  }
 
   if (!result.ok) {
     if (shouldBackOffOnGatewayCode(result.error.code)) {
