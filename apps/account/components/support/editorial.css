@@ -2035,7 +2035,8 @@
    ────────────────────────────────────────────────────────────────── */
 
 .acct-support-room .acct-contact-safety-hint,
-.acct-support-stage .acct-contact-safety-hint {
+.acct-support-stage .acct-contact-safety-hint,
+.acct-chat-stage .acct-contact-safety-hint {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
@@ -2052,7 +2053,9 @@
 .acct-support-room .acct-contact-safety-hint__title,
 .acct-support-room .acct-contact-safety-hint__reassure,
 .acct-support-stage .acct-contact-safety-hint__title,
-.acct-support-stage .acct-contact-safety-hint__reassure {
+.acct-support-stage .acct-contact-safety-hint__reassure,
+.acct-chat-stage .acct-contact-safety-hint__title,
+.acct-chat-stage .acct-contact-safety-hint__reassure {
   /* Dark ink on the soft-gold field (~15.9:1, AAA). Gold-as-text (--acct-gold-text)
      only reaches ~4.23:1 on --acct-gold-soft — under the 4.5:1 AA floor at this size —
      so emphasis here is weight, not hue. */
@@ -2061,7 +2064,8 @@
 }
 
 .acct-support-room .acct-contact-safety-hint[data-tone="block"],
-.acct-support-stage .acct-contact-safety-hint[data-tone="block"] {
+.acct-support-stage .acct-contact-safety-hint[data-tone="block"],
+.acct-chat-stage .acct-contact-safety-hint[data-tone="block"] {
   border-color: var(--acct-gold-strong);
 }
 
@@ -2069,7 +2073,8 @@
    is only ~4.23:1 on the gold-soft field) so it clears AA; underlined to read
    as actionable without a heavy button chrome. Self-aligns to the start. */
 .acct-support-room .acct-contact-safety-hint__dismiss,
-.acct-support-stage .acct-contact-safety-hint__dismiss {
+.acct-support-stage .acct-contact-safety-hint__dismiss,
+.acct-chat-stage .acct-contact-safety-hint__dismiss {
   align-self: flex-start;
   margin-top: 0.15rem;
   padding: 0.1rem 0;
@@ -2083,7 +2088,8 @@
   cursor: pointer;
 }
 .acct-support-room .acct-contact-safety-hint__dismiss:focus-visible,
-.acct-support-stage .acct-contact-safety-hint__dismiss:focus-visible {
+.acct-support-stage .acct-contact-safety-hint__dismiss:focus-visible,
+.acct-chat-stage .acct-contact-safety-hint__dismiss:focus-visible {
   outline: 2px solid var(--hc-focus-ring, var(--acct-gold));
   outline-offset: 2px;
   border-radius: 2px;
@@ -2091,7 +2097,72 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .acct-support-room .acct-contact-safety-hint,
-  .acct-support-stage .acct-contact-safety-hint {
+  .acct-support-stage .acct-contact-safety-hint,
+  .acct-chat-stage .acct-contact-safety-hint {
     transition: opacity 160ms var(--acct-settle-curve, ease);
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ChatThread full-immersion stage — /support/[threadId] rebuilt on
+   @henryco/chat-thread. The stage is a fixed full-viewport surface: only
+   the .ct-pane scrolls; the shell (identity bar, sidebar, bottom action
+   bar, dashboard pill) stays behind it and the page never scrolls.
+   ══════════════════════════════════════════════════════════════════════ */
+
+body:has(.acct-chat-stage) {
+  overflow: hidden;
+}
+
+/* The floating mobile chrome would overlap the composer — suppress it on
+   the conversation screen (the header's back affordance replaces it,
+   WhatsApp-conversation style). */
+body:has(.acct-chat-stage) .hc-bottom-action-bar,
+body:has(.acct-chat-stage) .hc-bottom-action-bar-spacer,
+body:has(.acct-chat-stage) .acct-mobile-dashnav__trigger {
+  display: none !important;
+}
+
+.acct-chat-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 120; /* above .hc-idbar (z-100) and the dashnav pill (z-91) */
+  display: flex;
+  flex-direction: column;
+  background: var(--acct-bg);
+
+  /* Token bridge: ChatThread reads --ct-*; account supplies its editorial
+     palette (light + dark both flow through the --acct-* flip). AA note:
+     accent-contrast is dark ink — never white on gold. */
+  --ct-bg: var(--acct-bg);
+  --ct-ink: var(--acct-ink);
+  --ct-ink-soft: var(--acct-muted);
+  --ct-line: var(--acct-line);
+  --ct-accent: var(--acct-gold);
+  --ct-accent-contrast: #0a0a0a;
+  --ct-surface: var(--acct-surface);
+  --ct-surface-own: var(--acct-gold-soft);
+  --ct-header-bg: var(--acct-bg);
+  --ct-composer-bg: var(--acct-bg);
+  --ct-font-display: var(--acct-font-display, inherit);
+}
+
+.acct-chat-stage .ct-viewport {
+  flex: 1 1 auto;
+}
+
+.acct-chat-stage .acct-chat-empty-title {
+  margin: 0 0 0.4rem;
+  font-family: var(--acct-font-display, inherit);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.acct-chat-stage .acct-chat-empty-body {
+  margin: 0;
+  max-width: 26rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--acct-muted);
 }

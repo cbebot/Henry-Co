@@ -66,6 +66,9 @@ importers:
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
+      '@henryco/chat-thread':
+        specifier: workspace:^
+        version: link:../../packages/chat-thread
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
