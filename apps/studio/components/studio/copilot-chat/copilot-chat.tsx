@@ -320,7 +320,10 @@ export function CopilotChat({
         fillViewport
         composer={{
           placeholder: t("Type your reply…"),
-          tone: "studio",
+          // "neutral" = the composer's dark teal pair (#0E7C86/#0A5C63) —
+          // same family as the public studio accent AND AA with the send
+          // button's white label; the "studio" tone is the dashboard gold.
+          tone: "neutral",
           busy: sending,
           // The coach closed the conversation — no further replies are
           // expected while the auto-handoff builds the brief.

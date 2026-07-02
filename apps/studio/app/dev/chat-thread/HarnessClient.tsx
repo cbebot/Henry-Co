@@ -30,6 +30,16 @@ const HARNESS_CSS = `
 }
 body:has(.dev-chat-stage) { overflow: hidden; }
 .dev-chat-stage .ct-viewport { flex: 1 1 auto; }
+/* Studio pins --hc-* light at :root, so the theme toggle can't flip the
+   bridge here — supply the canonical dark token values (packages/ui
+   globals.css .dark block) directly so the harness proves the component
+   under dark tokens too. */
+html.dark .dev-chat-stage {
+  --ct-bg: #0a0a0b;
+  --ct-ink: #f5f1e8;
+  --ct-line: rgba(245, 241, 232, 0.14);
+  --ct-accent: #d4af37;
+}
 .dev-chat-stage__ctl {
   border: 1px solid var(--ct-line);
   background: transparent;
