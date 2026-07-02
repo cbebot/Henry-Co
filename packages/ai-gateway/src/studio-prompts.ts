@@ -128,3 +128,42 @@ export function buildStudioBriefCoachPrompt(task: AiTask): AiPromptParts {
     messages: normalizeChatMessages(task.input.messages, { maxTurns: 12, maxChars: 1200 }),
   };
 }
+
+/** The coach's `{reply, ready}` output envelope. */
+export interface CoachEnvelope {
+  reply: string;
+  ready: boolean;
+}
+
+/**
+ * Parse the coach's `{reply, ready}` envelope. Tolerates a stray code fence or surrounding
+ * prose by extracting the first balanced object; returns null when nothing usable is found.
+ * Registered as the orchestrator's `validateOutput` for `studio.brief.coach`, so a malformed
+ * envelope triggers ONE automatic model retry (then a typed refusal) instead of silently
+ * degrading the conversation — the coach never answers with a reply that ignored the user.
+ */
+export function parseCoachEnvelope(text: string): CoachEnvelope | null {
+  const trimmed = String(text ?? "").trim();
+  const fenced = trimmed.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+
+  const attempt = (candidate: string): CoachEnvelope | null => {
+    try {
+      const parsed = JSON.parse(candidate) as unknown;
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+      const record = parsed as Record<string, unknown>;
+      const reply = String(record.reply ?? "").trim();
+      if (!reply) return null;
+      return { reply, ready: record.ready === true };
+    } catch {
+      return null;
+    }
+  };
+
+  const direct = attempt(fenced);
+  if (direct) return direct;
+
+  const start = fenced.indexOf("{");
+  const end = fenced.lastIndexOf("}");
+  if (start === -1 || end === -1 || end < start) return null;
+  return attempt(fenced.slice(start, end + 1));
+}

@@ -14,6 +14,7 @@ import { createAnthropicAdapter } from "./providers/anthropic";
 import { buildPrompt, validateDraftOutput } from "./prompts";
 import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 import { parseVerdict } from "../verify";
+import { parseCoachEnvelope } from "../studio-prompts";
 import { InMemoryRateLimiter, type AiRateLimitPort } from "../rate-limit";
 
 // A per-instance anti-abuse backstop. For durable cross-instance limits, pass a
@@ -98,6 +99,9 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
       validateOutput: (raw, t) => {
         if (t.surface.endsWith(".draft")) return validateDraftOutput(raw);
         if (t.surface.endsWith(".verify")) return parseVerdict(raw) != null;
+        // The coach must return the {reply,ready} envelope — a malformed one triggers the
+        // orchestrator's single automatic retry, so the conversation never silently degrades.
+        if (t.surface === "studio.brief.coach") return parseCoachEnvelope(raw) != null;
         return true;
       },
       onSignal,

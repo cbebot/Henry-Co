@@ -37,6 +37,7 @@ export {
   type VerdictDecision,
   type VerdictResolution,
 } from "./src/verify";
+export { parseCoachEnvelope, type CoachEnvelope } from "./src/studio-prompts";
 
 export type {
   AiBillingPort,

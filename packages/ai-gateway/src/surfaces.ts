@@ -102,6 +102,8 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     modelTier: "fast",
     maxOutputTokens: 1024,
     maxCalls: 1,
+    // Gateway backstop behind studio's own 6-layer anti-abuse (per-session/account/IP/system caps).
+    freeAllowancePerDay: 40,
   },
   "studio.brief.client": {
     surface: "studio.brief.client",
@@ -118,6 +120,9 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     modelTier: "fast",
     maxOutputTokens: 512,
     maxCalls: 1,
+    // The cost guard now that the coach NEVER degrades to canned replies: per-session daily cap
+    // (the action passes a stable session-scoped actorId) on top of the 12-turn ceiling.
+    freeAllowancePerDay: 60,
   },
   "business.message.assist": {
     surface: "business.message.assist",
