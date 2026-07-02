@@ -18,7 +18,7 @@ import {
   filterPricedOptions,
   type StudioRequestConfig,
 } from "@/lib/studio/request-config";
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 import type { StudioService } from "@/lib/studio/types";
 
 // ─── Draft storage key + schema version ───────────────────────────────────────

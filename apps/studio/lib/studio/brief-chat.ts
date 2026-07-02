@@ -17,7 +17,7 @@
  *   - The system prompt + JSON-envelope parser for the model path.
  */
 
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 import type { StudioServiceKind } from "@/lib/studio/types";
 
 export type BriefChatRole = "assistant" | "user";

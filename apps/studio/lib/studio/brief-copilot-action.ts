@@ -22,9 +22,11 @@ import {
 import { writeStudioLog } from "@/lib/studio/store";
 import type { StudioViewer } from "@/lib/studio/types";
 
-// The structured brief shape's true home is brief-copilot-structured.ts; re-exported here for the
-// components/lib that historically import it from this action module (unchanged for consumers).
-export type { BriefCopilotStructured };
+// NOTE: no type re-exports here. A "use server" module may only export async functions — even an
+// `export type { … }` CLAUSE makes Turbopack emit a runtime reference that throws
+// `ReferenceError … is not defined` at module evaluation, 500-ing EVERY action in this chunk
+// (prod incident, digest 793253544). Consumers import BriefCopilotStructured from its true home,
+// @/lib/studio/brief-copilot-structured. Inline `export type X = {…}` declarations remain safe.
 
 const SESSION_COOKIE = "studio_copilot_session";
 

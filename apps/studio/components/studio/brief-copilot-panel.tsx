@@ -16,8 +16,8 @@ import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   generateStudioBriefDraftAction,
   type BriefCopilotResult,
-  type BriefCopilotStructured,
 } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 
 function getExamplePrompts(locale: AppLocale): Array<{ label: string; body: string }> {
   const t = (text: string) => translateSurfaceLabel(locale, text);

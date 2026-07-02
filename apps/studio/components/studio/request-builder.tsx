@@ -27,7 +27,7 @@ import {
   validateStep,
   type StudioBriefDraft,
 } from "@/lib/studio/request-fields";
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
 
