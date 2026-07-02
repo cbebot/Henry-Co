@@ -20,7 +20,7 @@ import {
   filterPricedOptions,
   type StudioRequestConfig,
 } from "@/lib/studio/request-config";
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 import type { StudioService, StudioServiceKind } from "@/lib/studio/types";
 
 // ─── Answer + option + question shapes ────────────────────────────────────────

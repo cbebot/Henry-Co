@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { BriefCopilotPanel } from "@/components/studio/brief-copilot-panel";
 import { StudioRequestBuilder } from "@/components/studio/request-builder";
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type {
