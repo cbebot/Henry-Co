@@ -1,9 +1,8 @@
 "use server";
 
-import { createHash, randomBytes, randomUUID } from "node:crypto";
-import { cookies, headers } from "next/headers";
+import { createHash, randomUUID } from "node:crypto";
+import { headers } from "next/headers";
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
-import { isAiGatewayLive } from "@henryco/ai-gateway";
 import { getOptionalEnv, normalizeEmail } from "@/lib/env";
 import {
   createAdminSupabase,
@@ -11,11 +10,11 @@ import {
   hasPublicSupabaseEnv,
 } from "@/lib/supabase";
 import { getStudioViewer } from "@/lib/studio/auth";
-import { STUDIO_AI_MODEL_LABEL, shouldBackOffOnGatewayCode } from "@/lib/studio/ai-runtime";
+import { STUDIO_AI_MODEL_LABEL, briefFailureCopy, isRetryableGatewayCode } from "@/lib/studio/ai-runtime";
+import { getOrCreateCopilotSessionId } from "@/lib/studio/copilot-session";
 import {
   normaliseStructured,
   parseAssistantJson,
-  buildFallbackStructured,
   countWords,
   type BriefCopilotStructured,
 } from "@/lib/studio/brief-copilot-structured";
@@ -27,8 +26,6 @@ import type { StudioViewer } from "@/lib/studio/types";
 // `ReferenceError … is not defined` at module evaluation, 500-ing EVERY action in this chunk
 // (prod incident, digest 793253544). Consumers import BriefCopilotStructured from its true home,
 // @/lib/studio/brief-copilot-structured. Inline `export type X = {…}` declarations remain safe.
-
-const SESSION_COOKIE = "studio_copilot_session";
 
 /**
  * Anti-abuse rules — kept conservative on purpose. These are the
@@ -59,10 +56,6 @@ const MIN_INPUT_LENGTH = 30;
 const MIN_WORD_COUNT = 8;
 const DEDUP_WINDOW_SECONDS = 60 * 60 * 24;
 const COPILOT_INTENT = "studio_brief";
-const FALLBACK_MODEL = "studio-local-brief-parser-v1";
-const MODEL_DISABLED_BACKOFF_MS = 15 * 60 * 1000;
-
-let modelDisabledUntil = 0;
 
 const ANONYMOUS_VIEWER: StudioViewer = {
   user: null,
@@ -123,21 +116,6 @@ async function resolveRequestIp(): Promise<string | null> {
   } catch {
     return null;
   }
-}
-
-async function getOrCreateSessionId(): Promise<string> {
-  const store = await cookies();
-  const existing = store.get(SESSION_COOKIE)?.value?.trim();
-  if (existing && /^[A-Za-z0-9_-]{16,64}$/.test(existing)) return existing;
-  const fresh = randomBytes(18).toString("base64url");
-  store.set(SESSION_COOKIE, fresh, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 30,
-  });
-  return fresh;
 }
 
 async function getCopilotViewer(): Promise<StudioViewer> {
@@ -332,25 +310,8 @@ export async function generateStudioBriefDraftAction(
     };
   }
 
-  // Flag-dark or backing off → instant deterministic fallback (no anti-abuse churn, no provider
-  // call). With the `ai_gateway` master switch off this is exactly the old "no API key" behaviour.
-  if (!isAiGatewayLive(process.env) || modelDisabledUntil > Date.now()) {
-    const fallback = buildFallbackStructured(description);
-    return {
-      ok: true,
-      structured: fallback,
-      meta: {
-        modelUsed: FALLBACK_MODEL,
-        durationMs: 0,
-        confidence: fallback.confidence,
-        cached: false,
-        callsRemaining: null,
-      },
-    };
-  }
-
   const viewer = await getCopilotViewer();
-  const sessionId = await getOrCreateSessionId();
+  const sessionId = await getOrCreateCopilotSessionId();
   const userId = viewer.user?.id ?? null;
   const email = viewer.normalizedEmail || normalizeEmail(viewer.user?.email);
   const rawIp = await resolveRequestIp();
@@ -441,37 +402,40 @@ export async function generateStudioBriefDraftAction(
   }
 
   const start = Date.now();
-  let result: Awaited<ReturnType<typeof runAiTask>>;
-  try {
-    result = await runAiTask(
-      {
-        surface: "studio.brief.staff",
-        // Public funnel (prospective clients, pre-signup): a stable synthetic actor keyed off the
-        // session so the gateway's "no anonymous AI" gate never refuses this FREE draft. Studio's
-        // 6-layer anti-abuse above is the real guard.
-        actorId: userId ?? `studio-brief:${sessionId}`,
-        input: { description },
-        idempotencyKey: randomUUID(),
-      },
-      { billing: noBillingPort },
-    );
-  } catch (error) {
-    // Defence in depth: the gateway returns a typed Result by contract, but a runtime throw
-    // (misconfig / adapter / unexpected) must degrade to the graceful deterministic fallback
-    // below — never crash the action into a client-facing "failed, try again". This restores
-    // the resilience the pre-gateway inline try/catch provided. The error name is logged (no
-    // provider/model) so a real throw is diagnosable from runtime logs.
-    console.error("[studio][brief-copilot] gateway threw", {
-      name: error instanceof Error ? error.name : "unknown",
-    });
-    result = { ok: false, error: { code: "provider_error", message: "" } };
+  const attempt = async (): Promise<Awaited<ReturnType<typeof runAiTask>>> => {
+    try {
+      return await runAiTask(
+        {
+          surface: "studio.brief.staff",
+          // Public funnel (prospective clients, pre-signup): a stable synthetic actor keyed off the
+          // session so the gateway's "no anonymous AI" gate never refuses this FREE draft. Studio's
+          // 6-layer anti-abuse above is the real guard.
+          actorId: userId ?? `studio-brief:${sessionId}`,
+          input: { description },
+          idempotencyKey: randomUUID(),
+        },
+        { billing: noBillingPort },
+      );
+    } catch (error) {
+      // Defence in depth — the gateway's contract is to never throw; if it somehow does, the
+      // person gets honest copy below, not a crash. Error name only (no provider/model).
+      console.error("[studio][brief-copilot] gateway threw", {
+        name: error instanceof Error ? error.name : "unknown",
+      });
+      return { ok: false, error: { code: "provider_error", message: "" } };
+    }
+  };
+
+  // Model-only, by design: NO deterministic stand-in brief (a keyword-guessed draft presented as
+  // the co-pilot's work misleads). One transparent retry on transport trouble; every other
+  // refusal reports honestly and the person tries again or continues with the manual form.
+  let result = await attempt();
+  if (!result.ok && isRetryableGatewayCode(result.error.code)) {
+    result = await attempt();
   }
 
   if (!result.ok) {
     // The gateway error code carries no provider/model name — safe to log.
-    if (shouldBackOffOnGatewayCode(result.error.code)) {
-      modelDisabledUntil = Date.now() + MODEL_DISABLED_BACKOFF_MS;
-    }
     console.error("[studio][brief-copilot] gateway refusal", {
       code: result.error.code,
       authed: isAuthenticated,
@@ -495,38 +459,18 @@ export async function generateStudioBriefDraftAction(
       meta: { userId, email, role: isAuthenticated ? "client" : "anon" },
       details: { error: result.error.code },
     });
-    const fallback = buildFallbackStructured(description);
+    const code = result.error.code;
     return {
-      ok: true,
-      structured: fallback,
-      meta: {
-        modelUsed: FALLBACK_MODEL,
-        durationMs: Date.now() - start,
-        confidence: fallback.confidence,
-        cached: false,
-        callsRemaining: Math.max(0, limit - usedCount),
-      },
+      ok: false,
+      reason: code === "rate_limited" ? "rate_limited" : code === "kill_switch_active" || code === "not_configured" ? "model_unavailable" : "model_error",
+      message: briefFailureCopy(code),
+      callsRemaining: Math.max(0, limit - usedCount),
     };
   }
 
   const assistantText = result.value.output.trim();
-  if (!assistantText) {
-    const fallback = buildFallbackStructured(description);
-    return {
-      ok: true,
-      structured: fallback,
-      meta: {
-        modelUsed: FALLBACK_MODEL,
-        durationMs: Date.now() - start,
-        confidence: fallback.confidence,
-        cached: false,
-        callsRemaining: Math.max(0, limit - usedCount),
-      },
-    };
-  }
-
-  const parsed = parseAssistantJson(assistantText);
-  const structured = normaliseStructured(parsed);
+  const parsed = assistantText ? parseAssistantJson(assistantText) : null;
+  const structured = parsed ? normaliseStructured(parsed) : null;
   if (!structured) {
     await recordDraftRow({
       userId,
@@ -540,17 +484,11 @@ export async function generateStudioBriefDraftAction(
       errorReason: "invalid_json",
       durationMs: Date.now() - start,
     });
-    const fallback = buildFallbackStructured(description);
     return {
-      ok: true,
-      structured: fallback,
-      meta: {
-        modelUsed: FALLBACK_MODEL,
-        durationMs: Date.now() - start,
-        confidence: fallback.confidence,
-        cached: false,
-        callsRemaining: Math.max(0, limit - usedCount),
-      },
+      ok: false,
+      reason: "invalid_response",
+      message: briefFailureCopy("schema_validation_failed"),
+      callsRemaining: Math.max(0, limit - usedCount),
     };
   }
 
