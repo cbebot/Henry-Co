@@ -38,6 +38,7 @@ export {
   type VerdictResolution,
 } from "./src/verify";
 export { parseCoachEnvelope, type CoachEnvelope } from "./src/studio-prompts";
+export { aiTierBrandName, AI_TIER_BRAND_NAMES } from "./src/tier-brand";
 
 export type {
   AiBillingPort,

@@ -359,20 +359,22 @@ revoke all     on function payments_private.release_wallet_ai_hold(uuid) from pu
 grant  execute on function payments_private.release_wallet_ai_hold(uuid) to service_role;
 
 -- ---------------------------------------------------------------------------
--- 6. Seed the governed AI rate card (division='ai'). Tunable live; the per-token costs
---    are the design-doc baseline and MUST be reconciled to the live provider list prices
---    for the model routed to each tier before the AI kill switch is enabled. rule_book_key
---    is the sole unique key.
+-- 6. Seed the governed AI rate card (division='ai'). Tunable live. RECONCILED (owner
+--    decision, 2026-07-03): per-token rates equal the live provider list price for the
+--    model routed to each tier at ~₦1,600/USD, so the ai_compute ledger line is TRUE
+--    provider cost (COGS). Margins carry the pricing posture: fast/standard 10%, deep
+--    35% (the deliberate premium). Keep in lockstep with defaultAiUsageRules().
+--    rule_book_key is the sole unique key.
 -- ---------------------------------------------------------------------------
 insert into public.pricing_rule_books (rule_book_key, label, description, division, currency, status, version, rules)
 values (
   'ai-usage-rate-card-v1',
   'Henry Onyx Intelligence usage rate card',
-  'Per-tier AI usage rates, margins, per-call floor + cost caps. Tunable live; reconcile per-token costs to the live provider list prices before enabling the AI flag.',
-  'ai', 'NGN', 'active', '2026-06-27',
+  'Per-tier AI usage rates, margins, per-call floor + cost caps. Rates equal the live provider list price per tier (true COGS); margins are the pricing posture. Tunable live.',
+  'ai', 'NGN', 'active', '2026-07-03',
   jsonb_build_object(
     'key', 'ai-usage-rate-card-v1',
-    'version', '2026-06-27',
+    'version', '2026-07-03',
     'currency', 'NGN',
     'tiers', jsonb_build_object(
       'fast', jsonb_build_object(
@@ -382,8 +384,8 @@ values (
         'rate', jsonb_build_object('in', 0.48, 'out', 2.4, 'cacheRead', 0.048, 'cacheWrite', 0.6),
         'marginRate', 0.1, 'minChargeableKobo', 500, 'maxCostKoboPerCall', 100000),
       'deep', jsonb_build_object(
-        'rate', jsonb_build_object('in', 2.4, 'out', 12, 'cacheRead', 0.24, 'cacheWrite', 3),
-        'marginRate', 0.15, 'minChargeableKobo', 500, 'maxCostKoboPerCall', 200000)
+        'rate', jsonb_build_object('in', 0.8, 'out', 4, 'cacheRead', 0.08, 'cacheWrite', 1),
+        'marginRate', 0.35, 'minChargeableKobo', 500, 'maxCostKoboPerCall', 200000)
     )
   )
 )
