@@ -12,12 +12,13 @@ import { StudioListbox } from "@/components/studio/studio-listbox";
 import { filterPricedOptions } from "@/lib/studio/request-config";
 
 /** Price delta label. The money fragment is dynamic; the "Included" fallback
- * is authored copy localized via the passed-in translator. */
-function amountLabel(amount: number, t: (text: string) => string) {
+ * is authored copy localized via the passed-in translator. Exported so the
+ * brief composer's section editors price their options identically. */
+export function amountLabel(amount: number, t: (text: string) => string) {
   return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : t("Included");
 }
 
-function ScopeSummaryHeader({
+export function ScopeSummaryHeader({
   kicker,
   selected,
   total,
@@ -76,14 +77,20 @@ function ScopeSummaryHeader({
  * scan faster, and reads as editorial rather than form-heavy. Selected
  * state is communicated by an accent left-rail + brighter text instead
  * of a heavy gradient fill.
+ *
+ * Exported for the brief composer's section editors. `name` is optional
+ * there on purpose: the composer's always-mounted hidden mirror is the only
+ * posting source for multi-value fields (the submit action reads them via
+ * getAll, so a second named control would double-count into pricing). The
+ * wizard keeps passing `name` — its step unmounts before submit.
  */
-function PricedCheckboxList({
+export function PricedCheckboxList({
   name,
   options,
   selected,
   onToggle,
 }: {
-  name: string;
+  name?: string;
   options: { id: string; label: string; description: string; amount: number }[];
   selected: string[];
   onToggle: (label: string) => void;
