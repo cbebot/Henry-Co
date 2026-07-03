@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { StudioRequestBuilder } from "@/components/studio/request-builder";
+import { BriefComposer } from "@/components/studio/brief-composer/brief-composer";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import {
   resolveStudioRequestPreset,
@@ -14,9 +14,9 @@ import {
 export const maxDuration = 60;
 
 export const metadata: Metadata = {
-  title: "Build your brief — Henry Onyx Studio",
+  title: "Review your brief — Henry Onyx Studio",
   description:
-    "Step through the Henry Onyx Studio brief builder: choose a package or custom path, pick the capabilities you need, and see honest pricing before you submit.",
+    "Review your Henry Onyx Studio brief: adjust the project, scope, stack, and timing, and see honest pricing before you submit.",
   alternates: { canonical: "/request/build" },
   robots: { index: true, follow: true },
 };
@@ -52,14 +52,15 @@ export default async function RequestBuildPage({
     templateHint ?? resolveStudioRequestPreset(params.preset, catalog.requestConfig);
 
   // Lane resolution: an explicit ?path=package|custom wins; otherwise a
-  // template/preset hint carries its own lane; otherwise the builder's
+  // template/preset hint carries its own lane; otherwise the composer's
   // default ("custom").
   const explicitPathway =
     params.path === "package" || params.path === "custom" ? params.path : null;
   const resolvedPathway = explicitPathway ?? presetHint?.pathway ?? "custom";
 
-  // Skip the Path step only when the custom lane was chosen upstream — the
-  // package lane needs step 0 so the buyer can actually pick a package.
+  // Envelope parity with the wizard's on-ramps: the composer has no steps,
+  // but the v1 draft shape carries stepIndex, so we keep passing the same
+  // value the wizard would have used.
   const pathChosenUpstream = Boolean(explicitPathway || presetHint);
   const initialStepIndex = pathChosenUpstream && resolvedPathway === "custom" ? 1 : 0;
 
@@ -69,7 +70,7 @@ export default async function RequestBuildPage({
       tabIndex={-1}
       className="mx-auto max-w-[88rem] px-5 pb-20 pt-8 sm:px-8 sm:pt-10 lg:px-10"
     >
-      <StudioRequestBuilder
+      <BriefComposer
         services={catalog.services}
         packages={catalog.packages}
         teams={catalog.teams}
