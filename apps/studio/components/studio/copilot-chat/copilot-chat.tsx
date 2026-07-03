@@ -2,13 +2,22 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, LoaderCircle, SendHorizontal, SlidersHorizontal } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { LoaderCircle, Sparkles } from "lucide-react";
+import {
+  buildChatThreadLabels,
+  buildMessagingChromeLabels,
+  translateSurfaceLabel,
+} from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { saveDraft, useFormDraft } from "@henryco/lifecycle/drafts";
-import { ChatMessage } from "@/components/studio/copilot-chat/chat-message";
+import {
+  ChatThread,
+  type ChatSendPayload,
+  type ChatSendResult,
+  type ChatThreadMessage,
+  type ChatThreadSuggestion,
+} from "@henryco/chat-thread";
 import {
   continueStudioBriefChatAction,
 } from "@/lib/studio/brief-chat-action";
@@ -22,7 +31,6 @@ import {
   type BriefChatMessage,
 } from "@/lib/studio/brief-chat";
 import { generateStudioBriefDraftAction } from "@/lib/studio/brief-copilot-action";
-import { useStudioMotion } from "@/lib/studio/motion";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
 import {
   STUDIO_BRIEF_DRAFT_KEY,
@@ -35,15 +43,20 @@ const CHAT_TRANSCRIPT_KEY = "studio-copilot-chat";
 const CHAT_TRANSCRIPT_VERSION = 1;
 
 /**
- * CopilotChat — the "Talk it through" on-ramp.
+ * CopilotChat — the "Talk it through" on-ramp, rendered on the shared
+ * @henryco/chat-thread screen (assistant variant): fixed 100dvh viewport,
+ * compact header, contained scroll, optimistic per-message send state with
+ * inline retry, animated typing indicator, and suggested-reply chips.
  *
- * Runs a short intake conversation (model-driven when a key is present,
- * a deterministic coach-prompt walk otherwise), persisting the transcript
- * in its own draft envelope. On finish it assembles the buyer's words into
- * one description, reuses the proven one-shot synthesis to structure it
- * (with a local backstop so it never dead-ends), stages a `studio-brief-new`
- * draft on the Scope step, then routes to /request/build — the same submit
- * contract every on-ramp converges on.
+ * The intake pipeline is unchanged: transcript persisted in its own draft
+ * envelope ("studio-copilot-chat" v1, opener NEVER stored — the server
+ * action requires user-first alternating turns), model-only engine with
+ * validated envelopes, and finalize converges on the same submit contract
+ * as every on-ramp (assemble → one-shot synthesis with a local backstop →
+ * staged draft → /request/build). The model reports brief completeness
+ * (0-100) each turn — surfaced as a slim progress bar in the header — and
+ * when it declares the brief ready the conversation closes gracefully and
+ * auto-finalizes after a short beat.
  */
 export function CopilotChat({
   services,
@@ -55,59 +68,97 @@ export function CopilotChat({
   preferredTeamId: string | null;
 }) {
   const locale = useHenryCoLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
-  const m = useStudioMotion();
+  const t = useCallback(
+    (text: string) => translateSurfaceLabel(locale, text),
+    [locale],
+  );
   const router = useRouter();
 
   const transcript = useFormDraft<BriefChatMessage[]>(CHAT_TRANSCRIPT_KEY, [], {
     version: CHAT_TRANSCRIPT_VERSION,
   });
-  const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const autoFinalized = useRef(false);
 
   const messages = transcript.value;
   const assistantTurns = countAssistantTurns(messages);
   const canFinalize = ready || assistantTurns >= BRIEF_CHAT_MIN_FINALIZE_TURNS;
-  const hasStarted = messages.length > 0;
 
-  // Keep the latest turn in view as the conversation grows.
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages.length, sending, finalizing]);
+  // The stored transcript carries no timestamps — synthesize a stable
+  // per-mount timeline so ordering is deterministic. Timestamps and day
+  // pills are hidden on this surface (showTimestamps/showDaySeparators off).
+  const baseTimeRef = useRef(Date.now());
 
-  const send = useCallback(async () => {
-    const trimmed = input.trim();
-    if (!trimmed || sending || finalizing) return;
+  // The transcript is append-only (turns are never edited, removed, or
+  // reordered — finalize navigates away), so index-derived ids are stable
+  // React keys for the lifetime of the surface.
+  const chatMessages = useMemo<ChatThreadMessage[]>(() => {
+    const list: ChatThreadMessage[] = [
+      {
+        id: "opener",
+        authorId: "assistant",
+        authorRole: "other",
+        body: t(BRIEF_CHAT_OPENER),
+        createdAt: new Date(baseTimeRef.current).toISOString(),
+      },
+    ];
+    messages.forEach((message, index) => {
+      list.push({
+        id: `t-${index}`,
+        authorId: message.role === "user" ? "viewer" : "assistant",
+        authorRole: message.role === "user" ? "viewer" : "other",
+        body: message.content,
+        createdAt: new Date(baseTimeRef.current + (index + 1) * 1000).toISOString(),
+      });
+    });
+    return list;
+  }, [messages, t]);
 
-    const nextMessages: BriefChatMessage[] = [...messages, { role: "user", content: trimmed }];
-    transcript.setValue(nextMessages);
-    setInput("");
-    setError(null);
-    setSending(true);
+  const threadLabels = useMemo(() => buildChatThreadLabels(t), [t]);
+  const { composerLabels } = useMemo(() => buildMessagingChromeLabels(t), [t]);
 
-    try {
-      const result = await continueStudioBriefChatAction({ messages: nextMessages });
-      if (result.ok) {
-        transcript.setValue((prev) => [...prev, { role: "assistant", content: result.turn.reply }]);
+  const sendMessage = useCallback(
+    async ({ body }: ChatSendPayload): Promise<ChatSendResult> => {
+      const next: BriefChatMessage[] = [
+        ...transcript.value,
+        { role: "user", content: body },
+      ];
+      setSending(true);
+      try {
+        const result = await continueStudioBriefChatAction({ messages: next });
+        if (!result.ok) {
+          return { ok: false, reason: t(result.message) };
+        }
+        transcript.setValue([
+          ...next,
+          { role: "assistant", content: result.turn.reply },
+        ]);
         setReady(result.turn.ready);
         setProgress(result.turn.progress);
-      } else {
-        setError(result.message);
+        return {
+          ok: true,
+          message: {
+            id: `t-${next.length - 1}`,
+            authorId: "viewer",
+            authorRole: "viewer",
+            body,
+            createdAt: new Date(
+              baseTimeRef.current + next.length * 1000,
+            ).toISOString(),
+          },
+        };
+      } catch {
+        // Network failure — the bubble keeps the text with inline retry.
+        return { ok: false, reason: t("That didn't go through. Try sending again.") };
+      } finally {
+        setSending(false);
       }
-    } catch {
-      // Network failure — invite a retry rather than dead-ending the lane.
-      // Stored canonical; translated at render so the callback stays stable.
-      setError("That didn't go through. Try sending again.");
-    } finally {
-      setSending(false);
-    }
-  }, [finalizing, input, messages, sending, transcript]);
+    },
+    [transcript, t],
+  );
 
   const finalize = useCallback(async () => {
     if (finalizing) return;
@@ -145,19 +196,10 @@ export function CopilotChat({
     router.push("/request/build");
   }, [finalizing, messages, preferredTeamId, requestConfig, router, services]);
 
-  const onKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        void send();
-      }
-    },
-    [send],
-  );
-
-  // Auto-handoff: the moment the coach reports the brief is complete, close the conversation
-  // gracefully and build the brief — no dead-end chatting after "that's everything I need".
-  // A short beat first so the person reads the closing line; the manual button stays as backup.
+  // Auto-handoff: the moment the coach reports the brief is complete, close
+  // the conversation gracefully and build the brief — no dead-end chatting
+  // after "that's everything I need". A short beat first so the person reads
+  // the closing line; the manual chip stays as backup before that fires.
   useEffect(() => {
     if (!ready || finalizing || autoFinalized.current) return;
     autoFinalized.current = true;
@@ -165,140 +207,133 @@ export function CopilotChat({
     return () => clearTimeout(timer);
   }, [ready, finalizing, finalize]);
 
-  return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      {/* Compact header — kicker + small h1. No oversized headline chrome. */}
-      <header>
-        <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--studio-signal)]">
-          {t("Talk it through")}
-        </p>
-        <h1 className="mt-2 text-[1.5rem] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--studio-ink)] sm:text-[1.8rem]">
-          {t("Describe it in your words")}
-        </h1>
-      </header>
+  // Quick-reply chips: example briefs to start; the finalize CTA once the
+  // conversation has enough shape (backup while the auto-handoff beat runs).
+  // Hidden while a turn is in flight so a second dispatch can't race the
+  // alternating-turn contract.
+  const suggestions = useMemo<ChatThreadSuggestion[]>(() => {
+    if (sending || finalizing) return [];
+    if (canFinalize) {
+      return [{ id: "finalize", label: t("Build my brief"), kind: "primary" }];
+    }
+    if (messages.length === 0) {
+      return [
+        {
+          id: "example-brand",
+          label: t("A logo and brand kit for my café"),
+          text: t("A logo and brand kit for my café"),
+        },
+        {
+          id: "example-site",
+          label: t("A simple website for my consulting business"),
+          text: t("A simple website for my consulting business"),
+        },
+        {
+          id: "example-photo",
+          label: t("Product photos for my online store"),
+          text: t("Product photos for my online store"),
+        },
+      ];
+    }
+    return [];
+  }, [sending, finalizing, canFinalize, messages.length, t]);
 
-      <div className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
-        {finalizing ? (
-          <div className="flex min-h-[16rem] flex-col items-center justify-center gap-3 text-center">
-            <LoaderCircle className="h-6 w-6 animate-spin text-[var(--studio-signal)]" />
-            <p className="text-[14px] font-semibold text-[var(--studio-ink)]">
-              {t("Shaping your brief…")}
-            </p>
-            <p className="max-w-sm text-[12.5px] leading-6 text-[var(--studio-ink-soft)]">
-              {t("Pulling our conversation into a clear plan with honest pricing.")}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-4">
-              {/* Static opener — always shown above the live transcript. */}
-              <motion.div variants={m.messageIn} initial="hidden" animate="visible">
-                <ChatMessage role="assistant" content={t(BRIEF_CHAT_OPENER)} />
-              </motion.div>
-              {messages.map((message, index) => (
-                <motion.div
-                  key={index}
-                  variants={m.messageIn}
-                  initial="hidden"
-                  animate="visible"
-                >
-                  <ChatMessage role={message.role} content={message.content} />
-                </motion.div>
-              ))}
-              {sending ? (
-                <p className="pl-11 text-[12.5px] italic text-[var(--studio-ink-soft)]">
-                  {t("Thinking…")}
-                </p>
-              ) : null}
-              <div ref={bottomRef} />
-            </div>
+  const handleSuggestion = useCallback(
+    (id: string) => {
+      if (id === "finalize") void finalize();
+    },
+    [finalize],
+  );
 
-            {error ? (
-              <p className="mt-4 text-[12.5px] leading-6 text-[color:var(--studio-warn,_#d99a13)]">
-                {t(error)}
-              </p>
-            ) : null}
+  // Header status: the model-reported completeness once the conversation is
+  // moving; the ready hand-off line once the coach closes; the kicker before.
+  const headerStatus = ready ? (
+    <span role="status">{t("Your brief is ready — building it now…")}</span>
+  ) : progress > 0 ? (
+    <span className="studio-chat-progress">
+      <span>{t("Brief progress")}</span>
+      <span
+        className="studio-chat-progress__track"
+        role="progressbar"
+        aria-valuenow={progress}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={t("Brief progress")}
+      >
+        <span
+          className="studio-chat-progress__fill"
+          style={{ width: `${progress}%` }}
+        />
+      </span>
+      <span aria-hidden>{progress}%</span>
+    </span>
+  ) : (
+    t("Talk it through")
+  );
 
-            {progress > 0 ? (
-              <div className="mt-5">
-                <div className="flex items-center justify-between text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                  <span>{t("Brief progress")}</span>
-                  <span aria-hidden>{progress}%</span>
-                </div>
-                <div
-                  className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--studio-line)]"
-                  role="progressbar"
-                  aria-valuenow={progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={t("Brief progress")}
-                >
-                  <div
-                    className="h-full rounded-full bg-[var(--studio-signal)] transition-[width] duration-700"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
-            ) : null}
-
-            <div className="mt-6 border-t border-[var(--studio-line)] pt-5">
-              <div className="flex items-end gap-3">
-                <textarea
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  onKeyDown={onKeyDown}
-                  rows={2}
-                  placeholder={t("Type your reply…")}
-                  disabled={ready}
-                  className="studio-textarea flex-1 rounded-[1rem] px-4 py-3 leading-7 disabled:opacity-60"
-                />
-                <button
-                  type="button"
-                  onClick={() => void send()}
-                  disabled={!input.trim() || sending || ready}
-                  aria-label={t("Send")}
-                  className="studio-button-primary inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <SendHorizontal className="h-4 w-4" />
-                </button>
-              </div>
-
-              {ready ? (
-                <p className="mt-4 text-center text-[12.5px] font-semibold leading-6 text-[var(--studio-ink)]" role="status">
-                  {t("Your brief is ready — building it now…")}
-                </p>
-              ) : canFinalize ? (
-                <button
-                  type="button"
-                  onClick={() => void finalize()}
-                  className="studio-button-primary mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-semibold"
-                >
-                  {t("Build my brief")}
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              ) : (
-                <p className="mt-4 text-center text-[12px] leading-6 text-[var(--studio-ink-soft)]">
-                  {hasStarted
-                    ? t("Keep going — a few more answers and we'll shape your brief.")
-                    : t("Send your first message to begin.")}
-                </p>
-              )}
-            </div>
-          </>
-        )}
+  if (finalizing) {
+    return (
+      <div className="studio-chat-stage">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+          <LoaderCircle className="h-6 w-6 animate-spin text-[var(--studio-signal)]" />
+          <p className="text-[14px] font-semibold text-[var(--studio-ink)]">
+            {t("Shaping your brief…")}
+          </p>
+          <p className="max-w-sm text-[12.5px] leading-6 text-[var(--studio-ink-soft)]">
+            {t("Pulling our conversation into a clear plan with honest pricing.")}
+          </p>
+        </div>
       </div>
+    );
+  }
 
-      {/* Calm escape hatch — for buyers who'd rather drive every field. */}
-      <p className="flex items-center gap-2 text-[13px] leading-7 text-[var(--studio-ink-soft)]">
-        <SlidersHorizontal className="h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]" />
-        {t("Prefer full control?")}{" "}
-        <Link
-          href="/request/build"
-          className="font-semibold text-[var(--studio-signal)] underline-offset-4 transition hover:underline"
-        >
-          {t("Build it yourself →")}
-        </Link>
-      </p>
+  return (
+    <div className="studio-chat-stage">
+      <ChatThread
+        variant="assistant"
+        threadId="studio-copilot"
+        viewer={{ id: "viewer" }}
+        messages={chatMessages}
+        onSendMessage={sendMessage}
+        header={{
+          title: t("Describe it in your words"),
+          status: headerStatus,
+          onBack: () => router.push("/request"),
+          actions: (
+            <Link
+              href="/request/build"
+              className="studio-chat-stage__escape"
+              title={t("Prefer full control?")}
+            >
+              {t("Build it yourself →")}
+            </Link>
+          ),
+        }}
+        typing={sending}
+        suggestions={suggestions}
+        onSuggestion={handleSuggestion}
+        otherAvatar={<Sparkles aria-hidden />}
+        labels={threadLabels}
+        locale={locale}
+        showDaySeparators={false}
+        showTimestamps={false}
+        fillViewport
+        composer={{
+          placeholder: t("Type your reply…"),
+          // "neutral" = the composer's dark teal pair (#0E7C86/#0A5C63) —
+          // same family as the public studio accent AND AA with the send
+          // button's white label; the "studio" tone is the dashboard gold.
+          tone: "neutral",
+          busy: sending,
+          // The coach closed the conversation — no further replies are
+          // expected while the auto-handoff builds the brief.
+          disabled: ready,
+          autoFocus: true,
+          enterKeyBehavior: "send",
+          enableAttachments: false,
+          labels: composerLabels,
+        }}
+      />
     </div>
   );
 }

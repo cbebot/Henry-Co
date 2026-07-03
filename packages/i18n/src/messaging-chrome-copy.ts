@@ -150,3 +150,48 @@ export function buildMessagingChromeLabels(
     },
   };
 }
+
+/** Chrome labels for the full-viewport chat screen — structurally matches
+ *  `ChatThreadLabels` from `@henryco/chat-thread` (same engine-agnostic
+ *  boundary as above: plain object, no engine import; English sources
+ *  byte-identical to the component defaults). */
+export type ChatThreadChromeLabels = {
+  newMessages: string;
+  retry: string;
+  sending: string;
+  sent: string;
+  delivered: string;
+  read: string;
+  typing: string;
+  today: string;
+  yesterday: string;
+  back: string;
+  live: string;
+  reconnecting: string;
+  systemName: string;
+};
+
+/**
+ * Build the localized chrome labels for `@henryco/chat-thread`'s ChatThread.
+ * Pass the result as the `labels` prop; combine with
+ * `buildMessagingChromeLabels(t).composerLabels` for the embedded composer.
+ */
+export function buildChatThreadLabels(
+  t: (s: string) => string,
+): ChatThreadChromeLabels {
+  return {
+    newMessages: t("New messages"),
+    retry: t("Didn't send — tap to retry"),
+    sending: t("Sending…"),
+    sent: t("Sent"),
+    delivered: t("Delivered"),
+    read: t("Read"),
+    typing: t("Typing…"),
+    today: t("Today"),
+    yesterday: t("Yesterday"),
+    back: t("Back"),
+    live: t("Live"),
+    reconnecting: t("Reconnecting…"),
+    systemName: t("System"),
+  };
+}

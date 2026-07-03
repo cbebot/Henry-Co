@@ -87,6 +87,8 @@ export function ChatComposer(props: ComposerProps) {
     composerExtras,
     autoFocus = false,
     edgeToEdgeMobile = false,
+    enterKeyBehavior = "newline",
+    maxRows = 6,
   } = props;
 
   useEffect(() => {
@@ -163,7 +165,9 @@ export function ChatComposer(props: ComposerProps) {
   }, [validationMessage]);
 
   const macLike = useMemo(() => isMacLike(), []);
-  const shortcutHint = labels?.shortcutHint || shortcutHintText(macLike);
+  const shortcutHint =
+    labels?.shortcutHint ||
+    (enterKeyBehavior === "send" ? "Enter to send" : shortcutHintText(macLike));
 
   const trimmed = text.trim();
   const hasText = trimmed.length > 0;
@@ -227,6 +231,7 @@ export function ChatComposer(props: ComposerProps) {
     onSubmit: handleSubmit,
     onEscape: isFullScreen ? () => setIsFullScreen(false) : undefined,
     disabled,
+    enterSends: enterKeyBehavior === "send",
   });
 
   const handleDiscardDraft = useCallback(async () => {
@@ -335,7 +340,7 @@ export function ChatComposer(props: ComposerProps) {
           placeholder={placeholder || labels?.placeholder || "Write a message…"}
           name={textareaName}
           minRows={1}
-          maxRows={6}
+          maxRows={maxRows}
           disabled={disabled}
           aria-label={ariaLabel || labels?.bodyAriaLabel || "Message body"}
           aria-describedby={liveRegionId}

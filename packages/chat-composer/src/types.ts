@@ -144,6 +144,20 @@ export type ComposerProps = {
    * without forcing the engine to expose its internal state via context.
    */
   composerExtras?: (ctx: ComposerExtrasContext) => ReactNode;
+  /**
+   * Enter-key contract. "newline" (default) is the historical behavior:
+   * plain Enter inserts a newline, Cmd/Ctrl+Enter sends. "send" is
+   * chat-app parity: plain Enter sends, Shift+Enter inserts a newline
+   * (Cmd/Ctrl+Enter still sends). Existing surfaces are unaffected
+   * unless they opt in.
+   */
+  enterKeyBehavior?: "newline" | "send";
+  /**
+   * Auto-grow ceiling for the inline textarea, in lines. Defaults to 6
+   * (the historical value). Chat-first surfaces that want tighter
+   * vertical rhythm can lower it.
+   */
+  maxRows?: number;
 };
 
 export const DEFAULT_MAX_ATTACHMENTS = 25;

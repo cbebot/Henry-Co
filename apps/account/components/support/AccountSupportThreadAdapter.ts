@@ -60,9 +60,17 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
         }
       }
 
+      // Per-dispatch idempotency key: a retry of the SAME message reuses the
+      // key, so a send that persisted server-side but failed on the network
+      // replays the stored response instead of double-posting (the reply
+      // route keys idempotency on this header).
+      const idempotencyKey = String(formData.get("idempotencyKey") || "");
       const response = await fetch("/api/support/reply", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
+        },
         body: JSON.stringify({
           thread_id: threadId,
           body,
@@ -73,11 +81,16 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
       const data = (await response.json().catch(() => ({}))) as {
         message_id?: string;
         error?: string;
+        reason?: string;
       };
       if (!response.ok || !data.message_id) {
+        // The reply route reports contact-safety blocks as `reason`
+        // ("contact_blocked", 422) and other failures as `error` — read
+        // both so blocked sends surface their real cause instead of the
+        // generic copy.
         return {
           ok: false,
-          reason: data.error || "We couldn't send your reply.",
+          reason: data.error || data.reason || "We couldn't send your reply.",
         };
       }
       return { ok: true, messageId: data.message_id };

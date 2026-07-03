@@ -1,0 +1,635 @@
+/**
+ * @henryco/chat-thread — full-viewport chat screen styles.
+ *
+ * Namespace: .ct-* (deliberately distinct from messaging-thread's .mt-* —
+ * both stylesheets coexist in the same app globals).
+ *
+ * Theming: a small --ct-* token contract with fallbacks chained to the
+ * canonical --hc-* registry, then to the brand dark values (gold #C9A227 =
+ * --hc-accent light-mode source, cream #F5F1E8, ink #0A0A0A — all existing
+ * canonical values; no new hex is introduced). Hosts re-map --ct-* inside
+ * their stage wrapper for division/light theming.
+ */
+
+.ct-viewport {
+  height: calc(
+    100dvh - var(--ct-viewport-offset, 0px) - var(--ct-kb-inset, 0px)
+  );
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--ct-bg, var(--hc-bg, #0a0a0b));
+}
+
+.ct-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--ct-bg, var(--hc-bg, #0a0a0b));
+  color: var(--ct-ink, var(--hc-ink, #f5f1e8));
+}
+
+/* ---------------------------------------------------------------- header */
+
+.ct-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 56px;
+  max-height: 64px;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--ct-line, rgba(245, 241, 232, 0.14));
+  background: var(--ct-header-bg, var(--ct-bg, var(--hc-bg, #0a0a0b)));
+}
+
+.ct-header-back {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.ct-header-back:hover {
+  background: color-mix(in srgb, var(--ct-ink, #f5f1e8) 8%, transparent);
+}
+
+.ct-header-back svg {
+  width: 22px;
+  height: 22px;
+}
+
+.ct-header-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ct-header-title {
+  margin: 0;
+  font-family: var(--ct-font-display, var(--hc-font-display, inherit));
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ct-header-status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  line-height: 1.2;
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 62%, transparent));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ct-header-sep {
+  opacity: 0.6;
+}
+
+.ct-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ct-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--ct-success, #22c55e);
+}
+
+.ct-live[data-state="live"] .ct-live-dot {
+  animation: ct-pulse 2.4s ease-in-out infinite;
+}
+
+.ct-live[data-state="reconnecting"] .ct-live-dot {
+  background: var(--ct-warning, #f59e0b);
+}
+
+.ct-header-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ------------------------------------------------------------------ pane */
+
+.ct-body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ct-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-bottom: 1rem;
+}
+
+.ct-col {
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1rem 0.9rem 1.1rem;
+}
+
+.ct-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ct-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 10rem;
+  text-align: center;
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 62%, transparent));
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------- day pills */
+
+.ct-day {
+  display: flex;
+  justify-content: center;
+}
+
+.ct-day span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.26rem 0.8rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ct-ink, #f5f1e8) 8%, transparent);
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 62%, transparent));
+}
+
+/* ---------------------------------------------------------------- groups */
+
+.ct-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.ct-group[data-side="own"] {
+  flex-direction: row-reverse;
+}
+
+.ct-group[data-side="system"] {
+  justify-content: center;
+}
+
+.ct-avatar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: color-mix(in srgb, var(--ct-accent, var(--hc-accent, #c9a227)) 22%, transparent);
+  color: var(--ct-ink, var(--hc-ink, #f5f1e8));
+  overflow: hidden;
+}
+
+.ct-avatar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ct-group-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 78%;
+  min-width: 0;
+}
+
+.ct-group[data-side="own"] .ct-group-stack {
+  align-items: flex-end;
+}
+
+.ct-group[data-side="system"] .ct-group-stack {
+  align-items: center;
+  max-width: 88%;
+}
+
+.ct-group-name {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 62%, transparent));
+  padding-inline: 0.25rem;
+}
+
+.ct-group-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.66rem;
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 55%, transparent));
+  padding-inline: 0.25rem;
+}
+
+.ct-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ct-accent, var(--hc-accent, #c9a227)) 20%, transparent);
+  color: var(--ct-accent-ink, var(--ct-ink, #f5f1e8));
+}
+
+.ct-state-label {
+  font-size: 0.64rem;
+}
+
+/* --------------------------------------------------------------- bubbles */
+
+.ct-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+  animation: ct-msg-in 0.18s ease-out;
+}
+
+.ct-group[data-side="own"] .ct-msg {
+  align-items: flex-end;
+}
+
+.ct-bubble {
+  padding: 0.55rem 0.8rem;
+  border-radius: 1.05rem;
+  border: 1px solid var(--ct-line, rgba(245, 241, 232, 0.14));
+  background: var(--ct-surface, color-mix(in srgb, var(--ct-ink, #f5f1e8) 7%, transparent));
+  font-size: 0.92rem;
+  line-height: 1.55;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ct-group[data-side="own"] .ct-bubble {
+  background: var(--ct-surface-own, color-mix(in srgb, var(--ct-accent, var(--hc-accent, #c9a227)) 18%, transparent));
+  border-color: color-mix(in srgb, var(--ct-accent, var(--hc-accent, #c9a227)) 26%, transparent);
+}
+
+.ct-group[data-side="system"] .ct-bubble {
+  border-style: dashed;
+  background: transparent;
+  font-size: 0.8rem;
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 62%, transparent));
+}
+
+/* Group interior corners flatten so a run reads as one unit. */
+.ct-group[data-side="other"] .ct-msg[data-pos="first"] .ct-bubble,
+.ct-group[data-side="other"] .ct-msg[data-pos="middle"] .ct-bubble {
+  border-bottom-left-radius: 0.35rem;
+}
+
+.ct-group[data-side="other"] .ct-msg[data-pos="middle"] .ct-bubble,
+.ct-group[data-side="other"] .ct-msg[data-pos="last"] .ct-bubble {
+  border-top-left-radius: 0.35rem;
+}
+
+.ct-group[data-side="own"] .ct-msg[data-pos="first"] .ct-bubble,
+.ct-group[data-side="own"] .ct-msg[data-pos="middle"] .ct-bubble {
+  border-bottom-right-radius: 0.35rem;
+}
+
+.ct-group[data-side="own"] .ct-msg[data-pos="middle"] .ct-bubble,
+.ct-group[data-side="own"] .ct-msg[data-pos="last"] .ct-bubble {
+  border-top-right-radius: 0.35rem;
+}
+
+.ct-bubble-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.ct-msg[data-state="sending"] .ct-bubble {
+  opacity: 0.72;
+}
+
+/* Danger default is the LIGHT red (#f87171): the package's fallback theme is
+   dark (bg #0a0a0b), where #f87171 clears AA (~6.8:1) while #dc2626 does not
+   (~3.3:1). Light-mode hosts must bridge --ct-danger to a dark red. */
+.ct-msg[data-state="failed"] .ct-bubble {
+  border-color: color-mix(in srgb, var(--ct-danger, #f87171) 55%, transparent);
+}
+
+.ct-msg-state {
+  font-size: 0.66rem;
+  font-style: italic;
+  color: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 55%, transparent));
+  padding-inline: 0.25rem;
+}
+
+.ct-retry {
+  border: none;
+  background: none;
+  padding: 0.15rem 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ct-danger, #f87171);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+/* Keyboard focus on every interactive element the component introduces. */
+.ct-retry:focus-visible,
+.ct-chip:focus-visible,
+.ct-suggestion:focus-visible,
+.ct-header-back:focus-visible {
+  outline: 2px solid var(--ct-accent, var(--hc-accent, #c9a227));
+  outline-offset: 2px;
+}
+
+/* ----------------------------------------------------------------- media */
+
+.ct-media-grid {
+  display: grid;
+  gap: 4px;
+  margin-top: 0.3rem;
+  grid-template-columns: 1fr;
+}
+
+.ct-media-grid[data-count="many"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ct-media {
+  display: block;
+  border-radius: 0.7rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ct-ink, #f5f1e8) 10%, transparent);
+  max-width: 18rem;
+}
+
+.ct-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ct-files {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ct-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--ct-line, rgba(245, 241, 232, 0.14));
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.ct-file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ct-file svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* ------------------------------------------------------------------ chip */
+
+.ct-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--ct-accent, var(--hc-accent, #c9a227));
+  color: var(--ct-accent-contrast, #0a0a0a);
+  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.55);
+  animation: ct-chip-in 0.18s ease-out;
+}
+
+.ct-chip svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------------------------------------------------------------- typing */
+
+.ct-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 2.1rem;
+}
+
+.ct-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ct-ink-soft, color-mix(in srgb, var(--ct-ink, #f5f1e8) 62%, transparent));
+  animation: ct-typing-bounce 1.2s ease-in-out infinite;
+}
+
+.ct-typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ct-typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* ----------------------------------------------------------- suggestions */
+
+.ct-suggestions {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.15rem 0.15rem 0.55rem;
+  scrollbar-width: none;
+}
+
+.ct-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+.ct-suggestion {
+  flex: none;
+  max-width: 100%;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--ct-line, rgba(245, 241, 232, 0.18));
+  background: transparent;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ct-suggestion:hover {
+  background: color-mix(in srgb, var(--ct-ink, #f5f1e8) 7%, transparent);
+}
+
+.ct-suggestion[data-kind="primary"] {
+  background: var(--ct-accent, var(--hc-accent, #c9a227));
+  border-color: transparent;
+  color: var(--ct-accent-contrast, #0a0a0a);
+}
+
+/* -------------------------------------------------------------- composer */
+
+.ct-composer {
+  flex: none;
+  padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--ct-line, rgba(245, 241, 232, 0.14));
+  background: var(--ct-composer-bg, var(--ct-bg, var(--hc-bg, #0a0a0b)));
+}
+
+.ct-composer > .henryco-composer-shell {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------ a11y */
+
+.ct-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------ animations */
+
+@keyframes ct-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ct-chip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes ct-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes ct-typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct-msg,
+  .ct-chip {
+    animation: none;
+  }
+  .ct-typing-dot {
+    animation: none;
+    opacity: 0.7;
+  }
+  .ct-live[data-state="live"] .ct-live-dot {
+    animation: none;
+  }
+}
