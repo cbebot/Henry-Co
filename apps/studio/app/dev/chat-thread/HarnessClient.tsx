@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { buildChatThreadLabels, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
@@ -12,6 +18,8 @@ import {
 import type { AttachmentUploader } from "@henryco/chat-composer/types";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const subscribeNever = () => () => {};
 
 const HARNESS_CSS = `
 .dev-chat-stage {
@@ -93,15 +101,18 @@ export default function HarnessClient() {
 
   const counter = useRef(0);
   const failedOnce = useRef(new Set<string>());
-  const [messages, setMessages] = useState<ChatThreadMessage[]>([]);
-
-  // Seed on the client only — Date.now()-derived timestamps in SSR output
-  // would hydration-mismatch. Dev-only rig, so a mount-gated seed is fine.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMessages(seedMessages(Date.now()));
-    setMounted(true);
-  }, []);
+  // Hydration gate without setState-in-effect: server snapshot is false, so
+  // SSR renders no thread; the client's first paint flips to true and the
+  // Date.now()-seeded messages (initializer below) render client-only —
+  // no timestamp hydration mismatch.
+  const mounted = useSyncExternalStore(
+    subscribeNever,
+    () => true,
+    () => false,
+  );
+  const [messages, setMessages] = useState<ChatThreadMessage[]>(() =>
+    seedMessages(Date.now()),
+  );
 
   const pushIncoming = useCallback(
     (body: string, attachments?: ChatThreadMessage["attachments"]) => {
