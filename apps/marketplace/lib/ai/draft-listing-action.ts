@@ -7,10 +7,15 @@ import { getPaymentsSqlExecutor } from "@/lib/payments/db";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export interface ListingDraft {
+  title: string;
   summary: string;
   description: string;
   category: string;
   specifications: string;
+  material: string;
+  warranty: string;
+  deliveryNote: string;
+  leadTime: string;
 }
 
 export type DraftListingResult =

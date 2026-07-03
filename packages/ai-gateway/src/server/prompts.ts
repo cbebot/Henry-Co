@@ -22,12 +22,20 @@ const MARKETPLACE_LISTING_DRAFT_SYSTEM = composeSystemPrompt(
     "everything before publishing. If the request is off-topic or outside the boundaries, return the JSON",
     'with "summary":"" and a short, warm "description" explaining you can help draft their listing.',
     "",
+    "Fill every field the seller's words genuinely support. Leave a field you cannot ground in their",
+    "words as an empty string — an empty field is honest; a guessed one is not.",
+    "",
     "Respond with ONLY a JSON object (no prose, no code fences) of exactly this shape:",
     "{",
+    '  "title": string,          // a polished product title built from the idea (<= 90 chars)',
     '  "summary": string,        // a one-line listing summary (<= 140 chars)',
     '  "description": string,    // 2-4 short paragraphs of honest product detail',
     '  "category": string,       // a suggested category label (may be empty)',
-    '  "specifications": string  // bullet-style key specs as plain text (may be empty)',
+    '  "specifications": string, // bullet-style key specs as plain text (may be empty)',
+    '  "material": string,       // ONLY if stated or clearly implied by the seller, else ""',
+    '  "warranty": string,       // ONLY if the seller mentioned one, else ""',
+    '  "delivery_note": string,  // a short honest delivery/fulfilment line if inferable, else ""',
+    '  "lead_time": string       // ONLY if the seller mentioned production/shipping time, else ""',
     "}",
   ].join("\n"),
 );
@@ -243,16 +251,33 @@ export function validateDraftOutput(raw: string): boolean {
   }
 }
 
-/** Parse a validated draft into a plain view-model the surface can map onto form fields. */
-export function parseDraftOutput(raw: string): { summary: string; description: string; category: string; specifications: string } | null {
+/** Parse a validated draft into a plain view-model the surface can map onto form fields.
+ *  The extended fields (title/material/warranty/deliveryNote/leadTime) are additive: surfaces
+ *  whose prompts don't request them simply parse them as "". */
+export function parseDraftOutput(raw: string): {
+  title: string;
+  summary: string;
+  description: string;
+  category: string;
+  specifications: string;
+  material: string;
+  warranty: string;
+  deliveryNote: string;
+  leadTime: string;
+} | null {
   try {
     const parsed = JSON.parse(stripFences(raw)) as Record<string, unknown>;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     return {
+      title: str(parsed.title, 120),
       summary: str(parsed.summary, 200),
       description: str(parsed.description, 4000),
       category: str(parsed.category, 120),
       specifications: str(parsed.specifications, 2000),
+      material: str(parsed.material, 160),
+      warranty: str(parsed.warranty, 160),
+      deliveryNote: str(parsed.delivery_note ?? parsed.deliveryNote, 240),
+      leadTime: str(parsed.lead_time ?? parsed.leadTime, 120),
     };
   } catch {
     return null;
