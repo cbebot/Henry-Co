@@ -14,8 +14,7 @@
     "test": "node --import tsx --test \"lib/**/*.test.ts\"",
     "seed": "node ./scripts/seed-studio.mjs",
     "smoke": "node ./scripts/smoke-studio.mjs",
-    "verify:live": "node --conditions=react-server --import tsx ./scripts/verify-live-flow.ts",
-    "test": "tsx --test lib/messaging/__tests__/screen-message.test.ts"
+    "verify:live": "node --conditions=react-server --import tsx ./scripts/verify-live-flow.ts"
   },
   "dependencies": {
     "@henryco/ai-gateway": "workspace:^",

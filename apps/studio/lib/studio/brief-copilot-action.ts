@@ -155,6 +155,11 @@ async function countRecentDrafts(input: {
     const { count, error } = await admin
       .from("studio_brief_drafts")
       .select("id", { count: "exact", head: true })
+      // Intent-scoped: the coach chat lane accounts on the same table
+      // (intent "studio_brief_chat") — its turns must never eat into the
+      // one-shot generation allowance. Historical rows are all this
+      // intent, so the filter is a no-op for existing data.
+      .eq("intent", COPILOT_INTENT)
       .or(filter)
       .gte("created_at", since)
       .neq("status", "rate_limited");
@@ -173,6 +178,7 @@ async function countByIpHash(ipHash: string, windowSeconds: number): Promise<num
     const { count, error } = await admin
       .from("studio_brief_drafts")
       .select("id", { count: "exact", head: true })
+      .eq("intent", COPILOT_INTENT)
       .eq("ip_hash", ipHash)
       .gte("created_at", since)
       .neq("status", "rate_limited");
