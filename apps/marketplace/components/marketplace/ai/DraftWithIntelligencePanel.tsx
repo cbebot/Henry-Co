@@ -26,9 +26,27 @@ function fillField(name: string, value: string, onlyIfEmpty = false): void {
   const el = document.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLTextAreaElement | null;
   if (!el || !value) return;
   if (onlyIfEmpty && el.value) return;
-  el.value = value;
+  // Set through the native prototype setter so React-controlled inputs update their state
+  // too (a direct .value assignment is invisible to React's synthetic change tracking).
+  const proto =
+    el instanceof HTMLTextAreaElement ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+  if (setter) {
+    setter.call(el, value);
+  } else {
+    el.value = value;
+  }
   el.dispatchEvent(new Event("input", { bubbles: true }));
   el.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+/** The description plus the drafted key specs — the form has no separate specifications
+ *  field, so the specs the model grounded in the seller's words ride in the description
+ *  (previously they were silently discarded). */
+function buildDescription(draft: ListingDraft): string {
+  if (!draft.specifications) return draft.description;
+  if (!draft.description) return draft.specifications;
+  return `${draft.description}\n\n${draft.specifications}`;
 }
 
 function fillCategory(value: string): void {
@@ -104,14 +122,23 @@ export function DraftWithIntelligencePanel({
 
   function onUse() {
     if (!draft) return;
+    // State-owned path: hand the draft (plus the idea, the title fallback) to the form.
     if (onApply) {
       onApply(draft, idea);
       return;
     }
-    fillField("title", idea, true);
+    // Legacy DOM path for mounts without onApply. "Use this draft" means use it —
+    // the seller reviews before submit.
+    fillField("title", draft.title || idea);
     fillField("summary", draft.summary);
-    fillField("description", draft.description);
+    fillField("description", buildDescription(draft));
     fillCategory(draft.category);
+    // Factual attributes: fill only when the model grounded them in the seller's words,
+    // and never overwrite something the seller already typed themselves.
+    fillField("material", draft.material, true);
+    fillField("warranty", draft.warranty, true);
+    fillField("delivery_note", draft.deliveryNote, true);
+    fillField("lead_time", draft.leadTime, true);
   }
 
   return (
