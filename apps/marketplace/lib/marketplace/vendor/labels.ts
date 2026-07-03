@@ -148,3 +148,23 @@ export function disputeResolutionLabel(resolutionType: string, t: Translate): st
       return humanizeEnumValue(resolutionType);
   }
 }
+
+/**
+ * Human detail for the `?error=<code>` the payout_request intent redirects
+ * back with. Unknown codes get no detail — the page's generic error title
+ * still shows, never a raw code.
+ */
+export function payoutRequestErrorDetail(code: string, t: Translate): string | undefined {
+  switch (code) {
+    case "open-request-exists":
+      return t("A payout request is already under review. It has to conclude before the next one.");
+    case "amount-exceeds-releasable":
+      return t("The amount has to be within your releasable balance.");
+    case "no-releasable-balance":
+      return t("No releasable settlements are available yet.");
+    case "missing-vendor":
+      return t("No seller profile is linked to this account.");
+    default:
+      return undefined;
+  }
+}

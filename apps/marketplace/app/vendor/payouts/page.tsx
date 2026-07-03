@@ -1,70 +1,122 @@
-import { WorkspaceShell } from "@/components/marketplace/shell";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
+import {
+  PayoutRequestForm,
+  type PayoutRequestOutcome,
+} from "@/components/marketplace/vendor/payout-request-form";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import {
+  payoutRequestErrorDetail,
+  payoutRequestStatusLabel,
+} from "@/lib/marketplace/vendor/labels";
+import { formatVendorMoney } from "@/lib/marketplace/vendor/money";
+import { formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export default async function VendorPayoutsPage() {
+export default async function VendorPayoutsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ requested?: string; error?: string }>;
+}) {
   const locale = await getMarketplacePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/payouts");
-  const data = await getVendorWorkspaceData();
+  const [data, params] = await Promise.all([getVendorWorkspaceData(), searchParams]);
+  // Settlement rows carry whole naira; the display seam takes kobo.
+  const money = (naira: number) => formatVendorMoney(Math.round(naira * 100), locale);
+
+  // The payout_request intent answers with a 303 back here — resolve its
+  // query params into ONE outcome for the form's toast.
+  const errorCode = typeof params.error === "string" ? params.error : null;
+  const outcome: PayoutRequestOutcome | null =
+    params.requested === "1"
+      ? { kind: "success" }
+      : errorCode
+        ? { kind: "error", detail: payoutRequestErrorDetail(errorCode, t) }
+        : null;
+
+  const balances = [
+    { label: t("Held"), value: money(data.balanceSummary.held) },
+    { label: t("Awaiting auto-release"), value: money(data.balanceSummary.awaitingAutoRelease) },
+    { label: t("Releasable"), value: money(data.balanceSummary.releasable) },
+    { label: t("Frozen"), value: money(data.balanceSummary.frozen) },
+  ];
 
   return (
     <WorkspaceShell
-      title="Payouts"
-      description="Payout requests only draw from releasable balances. HenryCo keeps held, frozen, requested, approved, and released funds separated for audit and finance review."
+      title={t("Payouts")}
+      description={t(
+        "Payout requests only draw from releasable balances. Held, frozen, requested, approved, and released funds stay separated for audit and finance review.",
+      )}
       {...vendorWorkspaceNav("/vendor/payouts", locale)}
     >
       <section className="grid gap-4 md:grid-cols-4">
-        <article className="market-paper rounded-[1.5rem] p-5">
-          <p className="market-kicker">Held</p>
-          <p className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{formatCurrency(data.balanceSummary.held)}</p>
-        </article>
-        <article className="market-paper rounded-[1.5rem] p-5">
-          <p className="market-kicker">Awaiting auto-release</p>
-          <p className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{formatCurrency(data.balanceSummary.awaitingAutoRelease)}</p>
-        </article>
-        <article className="market-paper rounded-[1.5rem] p-5">
-          <p className="market-kicker">Releasable</p>
-          <p className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{formatCurrency(data.balanceSummary.releasable)}</p>
-        </article>
-        <article className="market-paper rounded-[1.5rem] p-5">
-          <p className="market-kicker">Frozen</p>
-          <p className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{formatCurrency(data.balanceSummary.frozen)}</p>
-        </article>
+        {balances.map((balance) => (
+          <article key={balance.label} className="market-paper rounded-[1.5rem] p-5">
+            <p className="market-kicker">{balance.label}</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{balance.value}</p>
+          </article>
+        ))}
       </section>
-      <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-5">
-        <input type="hidden" name="intent" value="payout_request" />
-        <input type="hidden" name="return_to" value="/vendor/payouts" />
+
+      <PayoutRequestForm
+        outcome={outcome}
+        labels={{
+          submit: t("Request payout"),
+          pending: t("Requesting payout"),
+          successTitle: t("Payout request submitted."),
+          successBody: t("Finance reviews the request before funds move to your settlement account."),
+          errorTitle: t("Payout could not be requested."),
+        }}
+        className="market-paper rounded-[1.75rem] p-5"
+        buttonClassName="market-button-primary mt-4 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80"
+      >
         <div className="flex flex-col gap-4 sm:flex-row">
           <input
             name="amount"
             type="number"
-            className="market-input rounded-full px-4 py-3"
-            placeholder="Amount"
+            min={1}
             max={Math.max(0, data.balanceSummary.releasable)}
+            className="market-input rounded-full px-4 py-3"
+            placeholder={t("Amount in naira")}
+            aria-label={t("Amount in naira")}
             required
           />
-          <button className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">Request payout</button>
         </div>
         <p className="mt-4 text-sm leading-7 text-[var(--market-muted)]">
-          Trust tier: {data.trustProfile.label}. Reserve window: {data.trustProfile.payoutDelayDays} days. Auto-release after delivery: {data.trustProfile.autoReleaseDays} days unless disputes or risk holds intervene.
+          {t(
+            "Trust tier: {tier}. Reserve window: {reserve} days. Auto-release after delivery: {auto} days unless disputes or risk holds intervene.",
+          )
+            .replace("{tier}", data.trustProfile.label)
+            .replace("{reserve}", String(data.trustProfile.payoutDelayDays))
+            .replace("{auto}", String(data.trustProfile.autoReleaseDays))}
         </p>
-      </form>
-      <div className="space-y-4">
-        {data.payouts.map((payout) => (
-          <article key={payout.id} className="market-paper rounded-[1.75rem] p-5">
-            <p className="market-kicker">{payout.reference}</p>
-            <h2 className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{formatCurrency(payout.amount)}</h2>
-            <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-              {payout.status} · {formatDate(payout.requestedAt)}
-            </p>
-          </article>
-        ))}
-      </div>
+      </PayoutRequestForm>
+
+      {data.payouts.length === 0 ? (
+        <EmptyState
+          title={t("No payout requests yet")}
+          body={t(
+            "When you request a payout from your releasable balance, its review status appears here.",
+          )}
+        />
+      ) : (
+        <div className="space-y-4">
+          {data.payouts.map((payout) => (
+            <article key={payout.id} className="market-paper rounded-[1.75rem] p-5">
+              <p className="market-kicker">{payout.reference}</p>
+              <h2 className="mt-3 text-2xl font-semibold text-[var(--market-ink)]">{money(payout.amount)}</h2>
+              <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
+                {payoutRequestStatusLabel(payout.status, t)} · {formatDate(payout.requestedAt)}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
     </WorkspaceShell>
   );
 }

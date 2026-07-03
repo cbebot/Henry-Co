@@ -6,6 +6,7 @@ import {
   fulfillmentStatusLabel,
   humanizeEnumValue,
   paymentStatusLabel,
+  payoutRequestErrorDetail,
   payoutRequestStatusLabel,
   payoutStatusLabel,
 } from "./labels";
@@ -46,6 +47,14 @@ describe("vendor enum labels — raw enum values never reach the page", () => {
     assert.equal(humanizeEnumValue("some_new_state"), "Some new state");
     assert.equal(fulfillmentStatusLabel("some_new_state", t), "Some new state");
     assert.equal(payoutStatusLabel("", t), "");
+  });
+
+  it("maps payout redirect error codes to human detail, unknown codes to none", () => {
+    assert.equal(
+      payoutRequestErrorDetail("amount-exceeds-releasable", t),
+      "The amount has to be within your releasable balance.",
+    );
+    assert.equal(payoutRequestErrorDetail("something-new", t), undefined);
   });
 
   it("routes every known value through the injected t", () => {
