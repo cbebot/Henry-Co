@@ -2,6 +2,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { DraftWithIntelligencePanel } from "@/components/marketplace/ai/DraftWithIntelligencePanel";
+import { ImageUploadField } from "@/components/marketplace/vendor/image-upload-field";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -117,7 +118,21 @@ export default async function NewVendorProductPage() {
           <input name="warranty" className="market-input rounded-2xl px-4 py-3" placeholder="Warranty" />
           <input name="delivery_note" className="market-input rounded-2xl px-4 py-3" placeholder="Delivery note" />
           <input name="lead_time" className="market-input rounded-2xl px-4 py-3" placeholder="Lead time" />
-          <input name="image_url" className="market-input rounded-2xl px-4 py-3 sm:col-span-2" placeholder="Primary image URL" />
+          <div className="sm:col-span-2">
+            <ImageUploadField
+              name="image_url"
+              scope="product"
+              label={t("Primary image")}
+              hint={t("JPG, PNG, or WebP, up to 8MB.")}
+              labels={{
+                drop: t("Add a photo"),
+                replace: t("Replace photo"),
+                remove: t("Remove photo"),
+                uploading: t("Uploading…"),
+                failed: t("That upload didn’t go through. Try again."),
+              }}
+            />
+          </div>
         </div>
         <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
           <input type="checkbox" name="cod_eligible" />

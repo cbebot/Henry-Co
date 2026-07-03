@@ -3,9 +3,11 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { VerifyListingPanel } from "@/components/marketplace/ai/VerifyListingPanel";
+import { ImageUploadField } from "@/components/marketplace/vendor/image-upload-field";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
+import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -111,12 +113,22 @@ export default async function VendorProductDetailPage({
               className="market-input rounded-2xl px-4 py-3 sm:col-span-2"
               placeholder="Delivery note"
             />
-            <input
-              name="image_url"
-              defaultValue={product.gallery[0] ?? ""}
-              className="market-input rounded-2xl px-4 py-3 sm:col-span-2"
-              placeholder="Primary image URL"
-            />
+            <div className="sm:col-span-2">
+              <ImageUploadField
+                name="image_url"
+                scope="product"
+                label={t("Primary image")}
+                hint={t("JPG, PNG, or WebP, up to 8MB. Leave as is to keep the current photo.")}
+                initialUrl={resolveMarketplaceImageUrl(product.gallery[0] ?? null)}
+                labels={{
+                  drop: t("Add a photo"),
+                  replace: t("Replace photo"),
+                  remove: t("Remove photo"),
+                  uploading: t("Uploading…"),
+                  failed: t("That upload didn’t go through. Try again."),
+                }}
+              />
+            </div>
           </div>
           <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
             <input type="checkbox" name="cod_eligible" defaultChecked={product.codEligible} />
