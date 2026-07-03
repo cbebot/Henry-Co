@@ -163,25 +163,24 @@ export function computeAiUsageBreakdown(input: {
 }
 
 /**
- * The D4 LAUNCH BASELINE rate card (governed, tunable live via `pricing_rule_books`).
- * Per-token kobo rates are pinned at ~₦1,600/USD. Margins: 10% fast/standard, 15% deep
- * (heavier reasoning earns more — the owner's "higher model, higher bill"). Floor ₦5;
- * per-call cost ceilings are the runaway-cost guardrail. The concrete Claude model
- * behind each tier is server-only company config, never named here.
+ * The D4 LAUNCH rate card (governed, tunable live via `pricing_rule_books`).
+ * Per-token kobo rates are pinned at ~₦1,600/USD. Floor ₦5; per-call cost ceilings are
+ * the runaway-cost guardrail. The concrete Claude model behind each tier is server-only
+ * company config, never named here.
  *
- * ⚠️ PRE-LAUNCH RECONCILIATION GATE (flag is OFF until done): these are the design doc's
- * baseline figures and reproduce its worked example (₦25.54 standard / ₦133.52 deep).
- * `standard` (0.48/2.40) already equals Sonnet 4.6's real list price ($3/$15). `deep`
- * (2.40/12.00 ≈ $15/$75) reflects the doc's illustrative figure, which is ABOVE Claude
- * Opus 4.8's current list price ($5/$25 ≈ 0.80/4.00 kobo/token). Before enabling the
- * AI kill switch, the owner MUST set each tier's per-token cost to the live provider
- * list price for the model routed to that tier (governance console, Pass 3) so users
- * are billed on actual provider cost — do not go live on these placeholders.
+ * ✅ RECONCILED (owner decision, 2026-07-03): every tier's per-token rate equals the live
+ * provider list price for the model routed to that tier, so the `ai_compute` line the
+ * ledger posts as COGS is TRUE provider cost — fast $1/$5 → 0.16/0.80, standard $3/$15 →
+ * 0.48/2.40, deep $5/$25 → 0.80/4.00 kobo/token. Margins carry the pricing posture:
+ * fast/standard 10%, deep 35% (the deliberate premium — "higher model, higher bill").
+ * Worked example (1,500 in / 600 out): ₦25.54 standard / ₦52.25 deep. If the provider
+ * reprices or the naira moves materially, update these rates AND the pricing_rule_books
+ * seed together, and bump the version.
  */
 export function defaultAiUsageRules(): AiUsageRuleSet {
   return {
     key: "ai-usage-rate-card-v1",
-    version: "2026-06-27",
+    version: "2026-07-03",
     currency: "NGN",
     tiers: {
       fast: {
@@ -197,8 +196,8 @@ export function defaultAiUsageRules(): AiUsageRuleSet {
         maxCostKoboPerCall: 100_000,
       },
       deep: {
-        rate: { in: 2.4, out: 12, cacheRead: 0.24, cacheWrite: 3 },
-        marginRate: 0.15,
+        rate: { in: 0.8, out: 4, cacheRead: 0.08, cacheWrite: 1 },
+        marginRate: 0.35,
         minChargeableKobo: 500,
         maxCostKoboPerCall: 200_000,
       },

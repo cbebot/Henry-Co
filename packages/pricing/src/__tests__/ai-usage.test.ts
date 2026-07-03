@@ -14,10 +14,10 @@ import {
 // value is @henryco/config TAX.vat (7.5%). Mirrors vat.test.ts:18.
 const NG_VAT = { standardRate: 0.075, rateVersion: "NG-VAT-7.5-2020-02-01" };
 
-// The D4 LAUNCH BASELINE rate card the worked example in
-// docs/v3/ai/ENGINEERING-REFERENCE.md §1 is computed against. Illustrative
-// per-token kobo rates: standard ≈ a Sonnet-class model, deep ≈ an Opus-class
-// model, at ~₦1,600/USD. Margin: standard 10%, deep 15%. Floor 500 kobo.
+// The D4 LAUNCH rate card (owner-reconciled 2026-07-03): per-token kobo rates equal the
+// live provider list price per tier at ~₦1,600/USD (fast $1/$5, standard $3/$15,
+// deep $5/$25) so the ai_compute line is TRUE cost. Margin: fast/standard 10%,
+// deep 35% (the deliberate premium). Floor 500 kobo.
 const RULES: AiUsageRuleSet = {
   key: "ai-usage-rate-card-test",
   version: "test-2026-06-27",
@@ -36,8 +36,8 @@ const RULES: AiUsageRuleSet = {
       maxCostKoboPerCall: 100_000,
     },
     deep: {
-      rate: { in: 2.4, out: 12, cacheRead: 0.24, cacheWrite: 3 },
-      marginRate: 0.15,
+      rate: { in: 0.8, out: 4, cacheRead: 0.08, cacheWrite: 1 },
+      marginRate: 0.35,
       minChargeableKobo: 500,
       maxCostKoboPerCall: 200_000,
     },
@@ -79,7 +79,7 @@ describe("computeAiUsageBreakdown — the worked example reproduces and balances
     assert.equal((b.meta as { tier?: string }).tier, "standard");
   });
 
-  it("deep tier bills ₦133.52 (13,352 kobo) for the identical question", () => {
+  it("deep tier bills ₦52.25 (5,225 kobo) for the identical question", () => {
     const b = computeAiUsageBreakdown({
       rules: RULES,
       tier: "deep",
@@ -87,13 +87,13 @@ describe("computeAiUsageBreakdown — the worked example reproduces and balances
       vat: { policy: NG_VAT },
     });
 
-    // cost = round(1500*2.40 + 600*12.00) = 3600 + 7200 = 10800
-    assert.equal(lineAmount(b, "ai_compute"), 10_800);
-    // margin = round(10800 * 0.15) = 1620 ; net = 12420
-    assert.equal(lineAmount(b, "ai_margin"), 1_620);
-    // VAT = round(12420 * 0.075) = round(931.5) = 932
-    assert.equal(lineAmount(b, "tax"), 932);
-    assert.equal(b.totals.customerTotal.amount, 13_352);
+    // cost = round(1500*0.80 + 600*4.00) = 1200 + 2400 = 3600 (true Opus-class list price)
+    assert.equal(lineAmount(b, "ai_compute"), 3_600);
+    // margin = round(3600 * 0.35) = 1260 ; net = 4860 (the deliberate deep premium)
+    assert.equal(lineAmount(b, "ai_margin"), 1_260);
+    // VAT = round(4860 * 0.075) = round(364.5) = 365
+    assert.equal(lineAmount(b, "tax"), 365);
+    assert.equal(b.totals.customerTotal.amount, 5_225);
   });
 
   it("the breakdown balances: customerTotal = cost + margin + VAT", () => {
@@ -198,11 +198,11 @@ describe("meterAiCostKobo — the provable upper-bound foundation", () => {
 });
 
 describe("defaultAiUsageRules — the shipped launch baseline", () => {
-  it("reproduces the worked example end to end (₦25.54 standard / ₦133.52 deep)", () => {
+  it("reproduces the worked example end to end (₦25.54 standard / ₦52.25 deep)", () => {
     const rules = defaultAiUsageRules();
     const std = computeAiUsageBreakdown({ rules, tier: "standard", usage: WORKED_USAGE, vat: { policy: NG_VAT } });
     const deep = computeAiUsageBreakdown({ rules, tier: "deep", usage: WORKED_USAGE, vat: { policy: NG_VAT } });
     assert.equal(std.totals.customerTotal.amount, 2_554);
-    assert.equal(deep.totals.customerTotal.amount, 13_352);
+    assert.equal(deep.totals.customerTotal.amount, 5_225);
   });
 });
