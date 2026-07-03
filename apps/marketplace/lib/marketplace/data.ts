@@ -16,6 +16,7 @@ import {
 } from "@/lib/marketplace/demo";
 import { ensureMarketplaceBootstrap } from "@/lib/marketplace/seed";
 import { signMarketplaceMediaUrl } from "@/lib/marketplace/media";
+import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import type {
   MarketplaceAddress,
@@ -388,7 +389,9 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
       reviewScore: Number(row.review_score || 0),
       followersCount: Number(row.followers_count || 0),
       accent: String(row.accent || "#B2863B"),
-      heroImage: String(row.hero_image_url || ""),
+      // READ BOUNDARY: hero uploads store `media://` refs; legacy rows store
+      // absolute URLs. Resolve once so VendorCard and the storefront render both.
+      heroImage: resolveMarketplaceImageUrl(row.hero_image_url ? String(row.hero_image_url) : null) ?? "",
       badges: Array.isArray(row.badges) ? row.badges.map(String) : [],
       ownerType: String(row.owner_type || "vendor") as MarketplaceVendor["ownerType"],
       supportEmail: String(row.support_email || BRAND_EMAILS.marketplace),
@@ -404,9 +407,15 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
     for (const row of mediaRows as Array<Record<string, unknown>>) {
       const key = String(row.product_id);
       const existing = mediaByProduct.get(key) ?? [];
-      if (row.url) existing.push(String(row.url));
+      // READ BOUNDARY: stored values are either `media://` refs (direct uploads)
+      // or legacy absolute URLs. Resolve ONCE here so every downstream consumer
+      // (product cards, detail gallery, cart/checkout lines, saved items,
+      // search, JSON-LD, vendor workspace) renders a real URL — junk resolves
+      // to null and is dropped instead of becoming a broken src.
+      const url = resolveMarketplaceImageUrl(row.url ? String(row.url) : null);
+      if (url) existing.push(url);
       mediaByProduct.set(key, existing);
-      if (row.id && row.url) mediaUrlById.set(String(row.id), String(row.url));
+      if (row.id && url) mediaUrlById.set(String(row.id), url);
     }
 
     // V3 PASS 21 — variant matrix lookup. Pre-bucket the variants by
