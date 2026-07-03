@@ -99,7 +99,7 @@ export function PropertyVerificationBadge({
   listing,
   locale = "en",
 }: {
-  listing: Pick<PropertyListing, "status" | "managedByHenryCo" | "trustBadges">;
+  listing: Pick<PropertyListing, "status" | "managedByHenryCo" | "trustBadges" | "henryOnyxVerified">;
   locale?: AppLocale;
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -113,6 +113,12 @@ export function PropertyVerificationBadge({
       className="border-l-2 border-[var(--property-line)] pl-4"
     >
       <div className="flex flex-wrap items-center gap-3">
+        {listing.henryOnyxVerified ? (
+          <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-accent-line,var(--property-line))] px-3 py-1 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--home-accent-text)]">
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+            {t("Henry Onyx Verified")}
+          </span>
+        ) : null}
         <span
           className={`inline-flex items-center gap-2 rounded-full border border-[var(--property-line)] px-3 py-1 text-[11.5px] font-semibold uppercase tracking-[0.2em] ${copy.tone}`}
         >
