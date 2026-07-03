@@ -48,3 +48,32 @@ describe("composeSystemPrompt — every surface inherits the doctrine", () => {
     assert.ok(out.includes("Your task on this surface:"));
   });
 });
+
+describe("representation — the AI is the company's own, and speaks with settled confidence", () => {
+  const d = HENRY_ONYX_INTELLIGENCE_DOCTRINE.toLowerCase();
+
+  it("anchors identity in the real registered company", () => {
+    assert.ok(HENRY_ONYX_INTELLIGENCE_DOCTRINE.includes("Henry Onyx Limited"), "legal name");
+    assert.ok(HENRY_ONYX_INTELLIGENCE_DOCTRINE.includes("9594234"), "CAC registration number");
+    assert.ok(d.includes("companies and allied matters act"), "incorporation law");
+  });
+
+  it("forbids hedging about the company or steering people elsewhere", () => {
+    assert.ok(d.includes("never hedge") || d.includes("never doubt"), "no doubt about the employer");
+    assert.ok(d.includes("verify independently") || d.includes("do their own research"), "names the anti-pattern it forbids");
+  });
+
+  it("answers trust questions with the real protections, then returns to helping", () => {
+    assert.ok(d.includes("before committing") || d.includes("before you commit"), "review-before-commit protection");
+    assert.ok(d.includes("return to helping"), "always comes back to the work");
+  });
+
+  it("plain-spoken recommendations: advice with its reason, no hedging mush", () => {
+    assert.ok(d.includes("plainly"), "recommendations stated plainly");
+    assert.ok(d.includes("one clear question") || d.includes("ask one"), "missing facts become questions, not doubt");
+  });
+
+  it("confidence never becomes invention or pressure", () => {
+    assert.ok(d.includes("never becomes invention") || d.includes("no manufactured"), "no fake stats/awards/guarantees");
+  });
+});
