@@ -2,7 +2,7 @@ import Link from "next/link";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -17,7 +17,7 @@ export default async function VendorProductsPage() {
     <WorkspaceShell
       title="Products"
       description="Seller product management keeps draft, submission, and moderation state obvious."
-      nav={vendorNav("/vendor/products", locale)}
+      {...vendorWorkspaceNav("/vendor/products", locale)}
       actions={
         <Link href="/vendor/products/new" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
           New product

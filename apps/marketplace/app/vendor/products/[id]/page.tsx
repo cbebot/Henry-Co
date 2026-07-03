@@ -6,7 +6,7 @@ import { VerifyListingPanel } from "@/components/marketplace/ai/VerifyListingPan
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +33,7 @@ export default async function VendorProductDetailPage({
     <WorkspaceShell
       title={product.title}
       description="Product detail editing stays anchored to moderation readiness."
-      nav={vendorNav("/vendor/products", locale)}
+      {...vendorWorkspaceNav("/vendor/products", locale)}
     >
       {AI_LISTING_VERIFY_ENABLED ? (
         <VerifyListingPanel

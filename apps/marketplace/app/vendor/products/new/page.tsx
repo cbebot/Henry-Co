@@ -5,7 +5,7 @@ import { DraftWithIntelligencePanel } from "@/components/marketplace/ai/DraftWit
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function NewVendorProductPage() {
     <WorkspaceShell
       title="New product"
       description="Listings are built with moderation, pricing governance, and trust scoring in mind: title, story, delivery proof, featured-slot requests, and posting-fee visibility are explicit."
-      nav={vendorNav("/vendor/products", locale)}
+      {...vendorWorkspaceNav("/vendor/products", locale)}
     >
       {AI_LISTING_ASSIST_ENABLED ? (
         <DraftWithIntelligencePanel

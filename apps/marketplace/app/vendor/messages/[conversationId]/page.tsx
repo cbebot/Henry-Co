@@ -6,7 +6,7 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { MarketplaceMessageThread } from "@/components/messaging/MarketplaceMessageThread";
 import { mapMarketplaceRow } from "@/components/messaging/marketplace-thread-adapter";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getConversationForViewer } from "@/lib/messaging/conversations";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
@@ -94,7 +94,7 @@ export default async function VendorMessageThreadPage({
       description={t(
         "Messages stay on Henry Onyx and the buyer's contact details are never shared. You're protected, and so is the buyer.",
       )}
-      nav={vendorNav("/vendor/messages", locale)}
+      {...vendorWorkspaceNav("/vendor/messages", locale)}
     >
       <section className="market-paper rounded-[1.75rem] p-5 sm:p-6">
         <div className="flex items-center gap-2 text-[var(--market-brass)]">
