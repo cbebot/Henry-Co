@@ -2114,9 +2114,12 @@ body:has(.acct-chat-stage) {
   overflow: hidden;
 }
 
-/* The floating mobile chrome would overlap the composer — suppress it on
-   the conversation screen (the header's back affordance replaces it,
-   WhatsApp-conversation style). */
+/* Shell chrome is suppressed (not covered) on the conversation screen —
+   the compact header's back affordance replaces it, WhatsApp-style. Hiding
+   the identity bar instead of stacking over it lets the stage sit at a LOW
+   z-index so notification toasts (z-80) and the Cmd+K palette (z-8500)
+   stay reachable above the chat. */
+body:has(.acct-chat-stage) .hc-idbar,
 body:has(.acct-chat-stage) .hc-bottom-action-bar,
 body:has(.acct-chat-stage) .hc-bottom-action-bar-spacer,
 body:has(.acct-chat-stage) .acct-mobile-dashnav__trigger {
@@ -2126,7 +2129,7 @@ body:has(.acct-chat-stage) .acct-mobile-dashnav__trigger {
 .acct-chat-stage {
   position: fixed;
   inset: 0;
-  z-index: 120; /* above .hc-idbar (z-100) and the dashnav pill (z-91) */
+  z-index: 60; /* above page content + sidebar; below toasts (80) + palette (8500) */
   display: flex;
   flex-direction: column;
   background: var(--acct-bg);
@@ -2145,6 +2148,14 @@ body:has(.acct-chat-stage) .acct-mobile-dashnav__trigger {
   --ct-header-bg: var(--acct-bg);
   --ct-composer-bg: var(--acct-bg);
   --ct-font-display: var(--acct-font-display, inherit);
+  /* Retry/danger text is 11.5px — needs 4.5:1. --acct-red (#EF4444) is only
+     ~3.7:1 on the light canvas, so bridge a darker red here; the .dark
+     override below returns to the token (AA on the dark canvas). */
+  --ct-danger: #b91c1c;
+}
+
+.dark .acct-chat-stage {
+  --ct-danger: var(--acct-red);
 }
 
 .acct-chat-stage .ct-viewport {

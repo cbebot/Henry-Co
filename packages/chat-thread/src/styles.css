@@ -356,8 +356,11 @@
   opacity: 0.72;
 }
 
+/* Danger default is the LIGHT red (#f87171): the package's fallback theme is
+   dark (bg #0a0a0b), where #f87171 clears AA (~6.8:1) while #dc2626 does not
+   (~3.3:1). Light-mode hosts must bridge --ct-danger to a dark red. */
 .ct-msg[data-state="failed"] .ct-bubble {
-  border-color: color-mix(in srgb, var(--ct-danger, #dc2626) 55%, transparent);
+  border-color: color-mix(in srgb, var(--ct-danger, #f87171) 55%, transparent);
 }
 
 .ct-msg-state {
@@ -373,11 +376,20 @@
   padding: 0.15rem 0.25rem;
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--ct-danger, #dc2626);
+  color: var(--ct-danger, #f87171);
   text-decoration: underline dotted;
   text-underline-offset: 3px;
   cursor: pointer;
   text-align: inherit;
+}
+
+/* Keyboard focus on every interactive element the component introduces. */
+.ct-retry:focus-visible,
+.ct-chip:focus-visible,
+.ct-suggestion:focus-visible,
+.ct-header-back:focus-visible {
+  outline: 2px solid var(--ct-accent, var(--hc-accent, #c9a227));
+  outline-offset: 2px;
 }
 
 /* ----------------------------------------------------------------- media */

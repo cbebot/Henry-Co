@@ -2239,6 +2239,9 @@ body:has(.studio-chat-stage) .hc-assist-trigger {
   --ct-header-bg: var(--studio-bg);
   --ct-composer-bg: var(--studio-bg);
   --ct-font-display: var(--font-studio-display, inherit);
+  /* /request is light-primary — the package's light-red danger default is
+     tuned for dark canvases; bridge a dark red for AA at retry-text size. */
+  --ct-danger: #b91c1c;
 }
 
 .studio-chat-stage .ct-viewport {

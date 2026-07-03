@@ -60,9 +60,17 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
         }
       }
 
+      // Per-dispatch idempotency key: a retry of the SAME message reuses the
+      // key, so a send that persisted server-side but failed on the network
+      // replays the stored response instead of double-posting (the reply
+      // route keys idempotency on this header).
+      const idempotencyKey = String(formData.get("idempotencyKey") || "");
       const response = await fetch("/api/support/reply", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
+        },
         body: JSON.stringify({
           thread_id: threadId,
           body,

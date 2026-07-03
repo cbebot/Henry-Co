@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   buildChatThreadLabels,
@@ -153,11 +153,25 @@ export default function SupportChatScreen({
     },
   });
 
+  // One idempotency key per dispatched message. ChatThread retries reuse the
+  // same payload object, so the WeakMap returns the same key and the reply
+  // route can dedupe a commit-then-network-drop retry.
+  const idempotencyKeys = useRef(new WeakMap<ChatSendPayload, string>());
+
   const sendMessage = useCallback(
     async (payload: ChatSendPayload): Promise<ChatSendResult> => {
+      let idempotencyKey = idempotencyKeys.current.get(payload);
+      if (!idempotencyKey) {
+        idempotencyKey =
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        idempotencyKeys.current.set(payload, idempotencyKey);
+      }
       const formData = new FormData();
       formData.set("threadId", threadId);
       formData.set("body", payload.body);
+      formData.set("idempotencyKey", idempotencyKey);
       if (payload.attachments && payload.attachments.length > 0) {
         formData.set(
           "attachments",
