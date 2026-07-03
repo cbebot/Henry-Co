@@ -152,11 +152,17 @@ export function ChatComposer(props: ComposerProps) {
     setDraftHydrated(true);
   }, [draft.hydrated, draft.initialDraft, draftHydrated, initialText]);
 
+  // Depend on the STABLE persist callback, never the hook's result object —
+  // a fresh `draft` identity every render + persist()'s own state cycle
+  // (dirty → saving → saved → idle each re-renders) re-fired this effect
+  // forever: the draft pill pulsed endlessly and its "Saving…"/"Draft saved"
+  // width swaps jittered the whole actions row (Send + Discard "blinking").
+  const persistDraft = draft.persist;
   useEffect(() => {
     if (!draftHydrated) return;
-    draft.persist(text);
+    persistDraft(text);
     if (text) onTyping?.();
-  }, [text, draftHydrated, draft, onTyping]);
+  }, [text, draftHydrated, persistDraft, onTyping]);
 
   useEffect(() => {
     if (!validationMessage) return;
