@@ -371,6 +371,13 @@ export function ChatThread(props: ChatThreadProps) {
 
   const retrySend = useCallback(
     (localId: string) => {
+      // Only a currently-failed entry may retry — outboxRef updates
+      // synchronously, so a same-frame double-tap sees "sending" and
+      // no-ops instead of firing a second POST.
+      const entry = outboxRef.current.entries.find(
+        (candidate) => candidate.localId === localId,
+      );
+      if (!entry || entry.state !== "failed") return;
       const payload = payloadsRef.current.get(localId);
       if (!payload) return;
       applyOutbox((state) => outboxRetry(state, localId));
