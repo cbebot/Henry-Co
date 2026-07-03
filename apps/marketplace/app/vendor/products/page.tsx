@@ -5,7 +5,7 @@ import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { approvalStatusLabel, listingGuidance } from "@/lib/marketplace/vendor/listing-guidance";
-import { formatCurrency } from "@/lib/utils";
+import { formatVendorMoney } from "@/lib/marketplace/vendor/money";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -47,7 +47,12 @@ export default async function VendorProductsPage() {
                     <h2 className="text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{product.title}</h2>
                     <p className="text-sm leading-7 text-[var(--market-muted)]">{product.summary || product.description}</p>
                     <div className="flex flex-wrap gap-3 text-sm text-[var(--market-muted)]">
-                      <span>{t("{price} base").replace("{price}", formatCurrency(product.basePrice))}</span>
+                      <span>
+                        {t("{price} base").replace(
+                          "{price}",
+                          formatVendorMoney(Math.round(product.basePrice * 100), locale),
+                        )}
+                      </span>
                       <span>{t("{count} in stock").replace("{count}", String(product.stock))}</span>
                       <span>{product.leadTime || t("Lead time pending")}</span>
                     </div>

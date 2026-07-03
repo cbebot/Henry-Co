@@ -7,6 +7,7 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
+import { formatVendorMoney } from "@/lib/marketplace/vendor/money";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +65,7 @@ export default async function NewVendorProductPage() {
           <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm text-[var(--market-paper-white)]">
             {t("Featured request fee: {fee}").replace(
               "{fee}",
-              `NGN ${vendorData.trustProfile.plan.featuredSlotFee.toLocaleString()}`,
+              formatVendorMoney(Math.round(vendorData.trustProfile.plan.featuredSlotFee * 100), locale),
             )}
           </div>
         </div>
