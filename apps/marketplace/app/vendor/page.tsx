@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MetricCard, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -17,7 +17,7 @@ export default async function VendorOverviewPage() {
     <WorkspaceShell
       title={data.vendor.name}
       description="Seller operations are split by products, orders, disputes, payouts, analytics, store profile, and settings so merchants can work with less noise and better coaching."
-      nav={vendorNav("/vendor", locale)}
+      {...vendorWorkspaceNav("/vendor", locale)}
       actions={
         <Link href="/vendor/products/new" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
           Add product

@@ -5,7 +5,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import type { AppLocale } from "@henryco/i18n/server";
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import {
   getVendorConversations,
   viewerVendorScopeIds,
@@ -56,7 +56,7 @@ export default async function VendorMessagesPage() {
       description={t(
         "Buyer conversations anchored to an order or a listing. The buyer's contact details are never shared with you — everything you need to fulfil stays on the order.",
       )}
-      nav={vendorNav("/vendor/messages", locale)}
+      {...vendorWorkspaceNav("/vendor/messages", locale)}
     >
       <section className="market-paper rounded-[1.75rem] p-5 sm:p-6">
         <div className="flex items-center gap-2 text-[var(--market-brass)]">

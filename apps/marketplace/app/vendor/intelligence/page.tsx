@@ -4,7 +4,7 @@ import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { IntelligenceChatPanel } from "@/components/marketplace/ai/IntelligenceChatPanel";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +25,7 @@ export default async function VendorIntelligencePage() {
     <WorkspaceShell
       title={t("Ask Henry Onyx Intelligence")}
       description={t("Ask anything about running your Henry Onyx workspace.")}
-      nav={vendorNav("/vendor/intelligence", locale)}
+      {...vendorWorkspaceNav("/vendor/intelligence", locale)}
     >
       <IntelligenceChatPanel
         copy={{

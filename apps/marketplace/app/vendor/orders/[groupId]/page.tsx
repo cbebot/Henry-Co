@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -24,7 +24,7 @@ export default async function VendorOrderDetailPage({
     <WorkspaceShell
       title={order.orderNo}
       description="Detailed vendor order handling with payment and fulfillment signals aligned."
-      nav={vendorNav("/vendor/orders", locale)}
+      {...vendorWorkspaceNav("/vendor/orders", locale)}
     >
       <article className="market-paper rounded-[1.75rem] p-6">
         <p className="market-kicker">{order.fulfillmentStatus}</p>

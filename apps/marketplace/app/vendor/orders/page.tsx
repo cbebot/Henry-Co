@@ -3,7 +3,7 @@ import { MarketplaceActionForm } from "@/components/marketplace/actions/Marketpl
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -19,7 +19,7 @@ export default async function VendorOrdersPage() {
     <WorkspaceShell
       title="Orders"
       description="Seller order handling stays segmented by fulfillment state and payment readiness."
-      nav={vendorNav("/vendor/orders", locale)}
+      {...vendorWorkspaceNav("/vendor/orders", locale)}
     >
       <div className="space-y-4">
         {data.orders.map((order) => (

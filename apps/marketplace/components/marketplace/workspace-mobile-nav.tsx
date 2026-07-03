@@ -31,6 +31,15 @@ type Props = {
   groups: WorkspaceNavGroup[];
   /** Pre-computed label of the currently active item (e.g., "Orders"). */
   currentLabel?: string | null;
+  /** Translated chrome copy — the shell passes these; EN defaults preserve the old API. */
+  labels?: {
+    kicker: string;
+    currentSection: string;
+    openMenu: string;
+    menuTitle: string;
+    closeMenu: string;
+    fallbackActive: string;
+  };
 };
 
 const DRAWER_SURFACE = "marketplace.profile_drawer";
@@ -59,11 +68,25 @@ const DRAWER_SURFACE = "marketplace.profile_drawer";
  *
  * Public API preserved: `title`, `description`, `groups`, `currentLabel`.
  */
-export function WorkspaceMobileNav({ title, description, groups, currentLabel }: Props) {
+export function WorkspaceMobileNav({ title, description, groups, currentLabel, labels }: Props) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() =>
     seedExpanded(groups),
   );
+  // The BottomSheet portals to document.body — OUTSIDE any theme scope the page applies
+  // (e.g. `.market-workspace-light` on /vendor and /account). Without re-establishing that
+  // scope inside the portal, --market-* tokens resolve to the dark :root base and paint
+  // near-white ink on the sheet's white surface. Detect the trigger's scope and mirror it.
+  const [sheetScopeClass, setSheetScopeClass] = useState<string | null>(null);
+  const chrome = {
+    kicker: "Workspace",
+    currentSection: "Current section",
+    openMenu: "Open workspace menu",
+    menuTitle: "Workspace menu",
+    closeMenu: "Close workspace menu",
+    fallbackActive: "Overview",
+    ...labels,
+  };
 
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
@@ -75,8 +98,8 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
   const activeLabel = useMemo(() => {
     if (currentLabel) return currentLabel;
     const found = groups.flatMap((g) => g.items).find((item) => item.active);
-    return found?.label ?? "Overview";
-  }, [currentLabel, groups]);
+    return found?.label ?? chrome.fallbackActive;
+  }, [currentLabel, groups, chrome.fallbackActive]);
 
   const handleOpen = useCallback(() => {
     // Re-seed expanded state on every open so a return visit starts
@@ -84,6 +107,9 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
     // since the last open). Initial state is also seeded via the
     // `useState` initializer — this covers subsequent opens.
     setExpanded(seedExpanded(groups));
+    setSheetScopeClass(
+      triggerRef.current?.closest(".market-workspace-light") ? "market-workspace-light" : null,
+    );
     setOpen(true);
     emitDrawerEvent({
       name: "henry.marketplace.profile_drawer.opened",
@@ -126,7 +152,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
   return (
     <div className="lg:hidden">
       <div className="market-panel rounded-[1.6rem] p-4 sm:p-5">
-        <p className="market-kicker">Workspace</p>
+        <p className="market-kicker">{chrome.kicker}</p>
         <h1 className="mt-2 text-[1.45rem] font-semibold tracking-tight text-[var(--market-paper-white)]">
           {title}
         </h1>
@@ -134,7 +160,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
         <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[var(--market-line)] bg-[color:var(--market-fill-faint)] px-3.5 py-3">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-              Current section
+              {chrome.currentSection}
             </p>
             <p className="mt-0.5 truncate text-sm font-semibold text-[var(--market-paper-white)]">
               {activeLabel}
@@ -147,10 +173,10 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
             aria-haspopup="dialog"
             aria-expanded={open}
             aria-controls={drawerId}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-2.5 text-[12px] font-semibold text-[color:var(--market-bg)] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--market-bg)]"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--market-line-strong)] bg-[color:var(--market-fill-faint)] px-4 py-2.5 text-[12px] font-semibold text-[var(--market-paper-white)] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--market-bg)]"
           >
             <Menu className="h-3.5 w-3.5" />
-            Open workspace menu
+            {chrome.openMenu}
           </button>
         </div>
       </div>
@@ -165,10 +191,13 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
         triggerRef={triggerRef}
         initialFocusRef={closeRef}
       >
+        {/* Re-establish the page's theme scope INSIDE the portal (custom properties inherit
+            through display:contents), so the light workspace re-tones reach the sheet. */}
+        <div className={cn("contents", sheetScopeClass)}>
         <header className="flex items-start justify-between gap-3 border-b border-[var(--market-line)] px-5 pb-4 pt-2">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-              Workspace menu
+              {chrome.menuTitle}
             </p>
             <p
               id={titleId}
@@ -190,7 +219,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
             type="button"
             onClick={() => handleClose("tap_close")}
             className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-muted)] transition hover:text-[var(--market-paper-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
-            aria-label="Close workspace menu"
+            aria-label={chrome.closeMenu}
           >
             <X className="h-4 w-4" />
           </button>
@@ -267,6 +296,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
               </section>
             );
           })}
+        </div>
         </div>
       </BottomSheet>
     </div>

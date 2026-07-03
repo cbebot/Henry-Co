@@ -1,7 +1,7 @@
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -16,7 +16,7 @@ export default async function VendorPayoutsPage() {
     <WorkspaceShell
       title="Payouts"
       description="Payout requests only draw from releasable balances. HenryCo keeps held, frozen, requested, approved, and released funds separated for audit and finance review."
-      nav={vendorNav("/vendor/payouts", locale)}
+      {...vendorWorkspaceNav("/vendor/payouts", locale)}
     >
       <section className="grid gap-4 md:grid-cols-4">
         <article className="market-paper rounded-[1.5rem] p-5">

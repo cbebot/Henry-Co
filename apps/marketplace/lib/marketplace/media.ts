@@ -10,6 +10,7 @@ import {
 } from "@henryco/media";
 
 import { createAdminSupabase } from "@/lib/supabase";
+import { MARKETPLACE_IMAGE_BUCKET, MARKETPLACE_IMAGE_RULE } from "@/lib/marketplace/media-image";
 
 /**
  * Marketplace media adapter over @henryco/media (Supabase-first, vendor-swappable).
@@ -77,6 +78,35 @@ function getMarketplaceMediaStore(): MediaStore {
   // Fresh service-role client per call (repo convention: admin clients are not
   // module-cached), injected so the media layer never reads credentials itself.
   return createSupabaseMediaStore({ client: createAdminSupabase() });
+}
+
+let imageBucketEnsured = false;
+
+/** Idempotently ensure the PUBLIC image bucket exists (product photos, store branding). */
+export async function ensureMarketplaceImageBucket() {
+  if (imageBucketEnsured) return;
+  try {
+    await ensureBucket(MARKETPLACE_IMAGE_BUCKET, { public: true, fileSizeLimit: "8MB" });
+    imageBucketEnsured = true;
+  } catch {
+    // Keep runtime resilient; the upload call surfaces any real failure.
+  }
+}
+
+/**
+ * Upload a buyer-visible image (product photo, store hero/logo) to the PUBLIC bucket and
+ * return its `media://public/...` reference — it drops into the existing string url
+ * columns unchanged, and `resolveMarketplaceImageUrl` renders it at the read boundary.
+ */
+export async function uploadMarketplaceImage(pathPrefix: string, file: File): Promise<string> {
+  await ensureMarketplaceImageBucket();
+  return getMarketplaceMediaStore().upload({
+    file,
+    visibility: "public",
+    bucket: MARKETPLACE_IMAGE_BUCKET,
+    pathPrefix,
+    rule: MARKETPLACE_IMAGE_RULE,
+  });
 }
 
 /**

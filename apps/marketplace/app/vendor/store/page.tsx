@@ -3,7 +3,7 @@ import { MarketplaceActionForm } from "@/components/marketplace/actions/Marketpl
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getVendorWorkspaceData } from "@/lib/marketplace/data";
-import { vendorNav } from "@/lib/marketplace/navigation";
+import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export default async function VendorStorePage() {
     <WorkspaceShell
       title="Store profile"
       description="Branding, trust narrative, and contact clarity belong on a focused surface rather than being buried in settings."
-      nav={vendorNav("/vendor/store", locale)}
+      {...vendorWorkspaceNav("/vendor/store", locale)}
     >
       <MarketplaceActionForm
         intent="vendor_store_update"

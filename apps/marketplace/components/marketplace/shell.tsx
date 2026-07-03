@@ -515,10 +515,11 @@ export async function WorkspaceShell({
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
   const division = getDivisionConfig("marketplace");
+  const tShell = (s: string) => translateSurfaceLabel(locale, s);
   const groupsForMobile: WorkspaceNavGroup[] =
     navGroups && navGroups.length > 0
       ? navGroups
-      : [{ label: "Workspace", items: nav }];
+      : [{ label: tShell("Workspace"), items: nav }];
   const activeLabel = nav.find((item) => item.active)?.label ?? null;
   return (
     <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px,1fr] xl:px-8">
@@ -527,6 +528,14 @@ export async function WorkspaceShell({
         description={description}
         groups={groupsForMobile}
         currentLabel={activeLabel}
+        labels={{
+          kicker: tShell("Workspace"),
+          currentSection: tShell("Current section"),
+          openMenu: tShell("Open workspace menu"),
+          menuTitle: tShell("Workspace menu"),
+          closeMenu: tShell("Close workspace menu"),
+          fallbackActive: tShell("Overview"),
+        }}
       />
       <aside className="market-panel hidden rounded-[2.1rem] p-4 lg:block">
         {/* Brand lockup — engineered "Henry Onyx" SVG wordmark (currentColor →

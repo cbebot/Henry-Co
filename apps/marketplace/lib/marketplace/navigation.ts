@@ -1,5 +1,6 @@
 import type { AppLocale } from "@henryco/i18n/server";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 
 type NavItem = { href: string; label: string; active: boolean };
 
@@ -108,8 +109,56 @@ export function vendorNav(active: string, locale: AppLocale) {
     { href: "/vendor/disputes", label: t("Disputes"), active: active === "/vendor/disputes" },
     { href: "/vendor/payouts", label: t("Payouts"), active: active === "/vendor/payouts" },
     { href: "/vendor/analytics", label: t("Analytics"), active: active === "/vendor/analytics" },
+    ...(isAiSurfaceEnabled(process.env.MARKETPLACE_AI_CHAT, process.env)
+      ? [{ href: "/vendor/intelligence", label: t("Intelligence"), active: active === "/vendor/intelligence" }]
+      : []),
     { href: "/vendor/store", label: t("Store"), active: active === "/vendor/store" },
     { href: "/vendor/settings", label: t("Settings"), active: active === "/vendor/settings" },
+  ];
+}
+
+/**
+ * One-call helper for every /vendor/* page — flat nav + mobile groups together:
+ * `<WorkspaceShell {...vendorWorkspaceNav("/vendor/orders", locale)} />`.
+ */
+export function vendorWorkspaceNav(active: string, locale: AppLocale) {
+  return { nav: vendorNav(active, locale), navGroups: vendorNavGroups(active, locale) };
+}
+
+/**
+ * Same routes as `vendorNav` bucketed into mobile-friendly groups, so the seller's
+ * drawer reads as a workspace, not a nine-item flat list.
+ */
+export function vendorNavGroups(active: string, locale: AppLocale) {
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+  const messagingEnabled = process.env.MARKETPLACE_MESSAGING_ENABLED === "1";
+  const intelligenceEnabled = isAiSurfaceEnabled(process.env.MARKETPLACE_AI_CHAT, process.env);
+  const flat = vendorNav(active, locale);
+  const byHref = (href: string) => flat.find((item) => item.href === href)!;
+  return [
+    {
+      label: t("Storefront"),
+      items: [byHref("/vendor"), byHref("/vendor/products"), byHref("/vendor/store")],
+    },
+    {
+      label: t("Sales"),
+      items: [
+        byHref("/vendor/orders"),
+        ...(messagingEnabled ? [byHref("/vendor/messages")] : []),
+        byHref("/vendor/disputes"),
+      ],
+    },
+    {
+      label: t("Money"),
+      items: [byHref("/vendor/payouts"), byHref("/vendor/analytics")],
+    },
+    {
+      label: t("Trust"),
+      items: [
+        byHref("/vendor/settings"),
+        ...(intelligenceEnabled ? [byHref("/vendor/intelligence")] : []),
+      ],
+    },
   ];
 }
 
