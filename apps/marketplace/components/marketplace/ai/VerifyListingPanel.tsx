@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
+import { aiTierBrandName } from "@henryco/ai-gateway";
 import { verifyListingAction, type VerifyResult } from "@/lib/ai/verify-listing-action";
 
 export interface VerifyPanelCopy {
@@ -19,10 +20,6 @@ export interface VerifyPanelCopy {
 
 function naira(kobo: number): string {
   return `₦${(kobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function titleCase(tier: string): string {
-  return tier.charAt(0).toUpperCase() + tier.slice(1);
 }
 
 function fieldValue(name: string): string {
@@ -62,7 +59,7 @@ export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy;
           formatSurfaceTemplate(copy.priceTemplate, {
             price: naira(res.receipt.totalKobo),
             vat: naira(res.receipt.vatKobo),
-            tier: titleCase(res.receipt.tier),
+            tier: aiTierBrandName(res.receipt.tier),
           }),
         );
       }

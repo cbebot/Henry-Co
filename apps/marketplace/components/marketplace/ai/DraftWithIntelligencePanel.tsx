@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
+import { aiTierBrandName } from "@henryco/ai-gateway";
 import { draftListingAction, type ListingDraft } from "@/lib/ai/draft-listing-action";
 
 export interface DraftPanelCopy {
@@ -19,10 +20,6 @@ export interface DraftPanelCopy {
 
 function naira(kobo: number): string {
   return `₦${(kobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function titleCase(tier: string): string {
-  return tier.charAt(0).toUpperCase() + tier.slice(1);
 }
 
 function fillField(name: string, value: string, onlyIfEmpty = false): void {
@@ -84,7 +81,7 @@ export function DraftWithIntelligencePanel({ copy }: { copy: DraftPanelCopy }) {
           formatSurfaceTemplate(copy.priceTemplate, {
             price: naira(res.receipt.totalKobo),
             vat: naira(res.receipt.vatKobo),
-            tier: titleCase(res.receipt.tier),
+            tier: aiTierBrandName(res.receipt.tier),
           }),
         );
       }
