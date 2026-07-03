@@ -67,8 +67,9 @@ test("title derives from the FIRST user message and clamps long text", () => {
 });
 
 test("sortedConversations orders by updatedAt descending", () => {
-  let { store, id: a } = createConversation(emptyBriefStore(), { now: 1000 });
-  store = updateConversation(store, a, { messages: [user("first")], now: 1000 });
+  const created0 = createConversation(emptyBriefStore(), { now: 1000 });
+  const a = created0.id;
+  let store = updateConversation(created0.store, a, { messages: [user("first")], now: 1000 });
   const created = createConversation(store, { now: 2000 });
   store = updateConversation(created.store, created.id, {
     messages: [user("second")],
@@ -80,8 +81,9 @@ test("sortedConversations orders by updatedAt descending", () => {
 });
 
 test("deleteConversation removes and repoints activeId", () => {
-  let { store, id: a } = createConversation(emptyBriefStore(), { now: 1000 });
-  store = updateConversation(store, a, { messages: [user("first")], now: 1000 });
+  const created0 = createConversation(emptyBriefStore(), { now: 1000 });
+  const a = created0.id;
+  let store = updateConversation(created0.store, a, { messages: [user("first")], now: 1000 });
   const created = createConversation(store, { now: 2000 });
   store = updateConversation(created.store, created.id, { messages: [user("second")], now: 2000 });
   store = deleteConversation(store, created.id);
