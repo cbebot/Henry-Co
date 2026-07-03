@@ -15,9 +15,10 @@ describe("marketplace image pipeline — pure parts", () => {
   });
 
   it("image rule allows buyer-visible photo types only, capped at 8MB", () => {
-    assert.ok(MARKETPLACE_IMAGE_RULE.allowedTypes.includes("image/webp"));
-    assert.ok(MARKETPLACE_IMAGE_RULE.allowedTypes.includes("image/jpeg"));
-    assert.ok(!MARKETPLACE_IMAGE_RULE.allowedTypes.includes("application/pdf"));
+    const allowed = MARKETPLACE_IMAGE_RULE.allowedTypes ?? [];
+    assert.ok(allowed.includes("image/webp"));
+    assert.ok(allowed.includes("image/jpeg"));
+    assert.ok(!allowed.includes("application/pdf"));
     assert.equal(MARKETPLACE_IMAGE_RULE.maxBytes, 8 * 1024 * 1024);
   });
 
