@@ -2714,6 +2714,9 @@ export async function POST(request: Request) {
             support_phone: text(formData, "support_phone") || undefined,
             response_sla_hours: numberValue(formData, "response_sla_hours", 0) || undefined,
             accent: text(formData, "accent") || undefined,
+            // Store hero upload (Stage B): a `media://` ref from ImageUploadField.
+            // Empty means "unchanged" — same convention as every field above.
+            hero_image_url: text(formData, "hero_image_url") || undefined,
           } as never)
           .eq("id", vendorId);
 

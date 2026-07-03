@@ -3,9 +3,12 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { VerifyListingPanel } from "@/components/marketplace/ai/VerifyListingPanel";
+import { ImageUploadField } from "@/components/marketplace/vendor/image-upload-field";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
+import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
+import { approvalStatusLabel, listingGuidance } from "@/lib/marketplace/vendor/listing-guidance";
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -32,7 +35,7 @@ export default async function VendorProductDetailPage({
   return (
     <WorkspaceShell
       title={product.title}
-      description="Product detail editing stays anchored to moderation readiness."
+      description={t("Product detail editing stays anchored to moderation readiness.")}
       {...vendorWorkspaceNav("/vendor/products", locale)}
     >
       {AI_LISTING_VERIFY_ENABLED ? (
@@ -81,58 +84,108 @@ export default async function VendorProductDetailPage({
             },
           ]}
         >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <input name="title" defaultValue={product.title} className="market-input rounded-2xl px-4 py-3" placeholder="Product title" required />
-            <input name="sku" defaultValue={product.sku} className="market-input rounded-2xl px-4 py-3" placeholder="SKU" required />
-            <input name="summary" defaultValue={product.summary} className="market-input rounded-2xl px-4 py-3 sm:col-span-2" placeholder="Short conversion summary" required />
-            <textarea name="description" defaultValue={product.description} rows={6} className="market-textarea rounded-[1.5rem] px-4 py-3 sm:col-span-2" placeholder="Long-form story and detail." required />
-            <select name="category_slug" defaultValue={product.categorySlug} className="market-select rounded-2xl px-4 py-3">
-              {snapshot.categories.map((category) => (
-                <option key={category.slug} value={category.slug}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <select name="brand_slug" defaultValue={product.brandSlug ?? ""} className="market-select rounded-2xl px-4 py-3">
-              <option value="">No brand</option>
-              {snapshot.brands.map((brand) => (
-                <option key={brand.slug} value={brand.slug}>
-                  {brand.name}
-                </option>
-              ))}
-            </select>
-            <input name="base_price" type="number" defaultValue={product.basePrice} className="market-input rounded-2xl px-4 py-3" placeholder="Base price" required />
-            <input name="compare_at_price" type="number" defaultValue={product.compareAtPrice ?? undefined} className="market-input rounded-2xl px-4 py-3" placeholder="Compare-at price" />
-            <input name="stock" type="number" defaultValue={product.stock} className="market-input rounded-2xl px-4 py-3" placeholder="Stock" required />
-            <input name="lead_time" defaultValue={product.leadTime} className="market-input rounded-2xl px-4 py-3" placeholder="Lead time" />
-            <input
-              name="delivery_note"
-              defaultValue={product.deliveryNote}
-              className="market-input rounded-2xl px-4 py-3 sm:col-span-2"
-              placeholder="Delivery note"
-            />
-            <input
+          <section className="space-y-4">
+            <p className="market-kicker">{t("Essentials")}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input name="title" defaultValue={product.title} className="market-input rounded-2xl px-4 py-3" placeholder={t("Product title")} required />
+              <input name="summary" defaultValue={product.summary} className="market-input rounded-2xl px-4 py-3" placeholder={t("Short conversion summary")} required />
+              <textarea
+                name="description"
+                defaultValue={product.description}
+                rows={6}
+                className="market-textarea rounded-[1.5rem] px-4 py-3 sm:col-span-2"
+                placeholder={t("Long-form story and detail.")}
+                required
+              />
+              <select name="category_slug" defaultValue={product.categorySlug} aria-label={t("Category")} className="market-select rounded-2xl px-4 py-3">
+                {snapshot.categories.map((category) => (
+                  <option key={category.slug} value={category.slug}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              <select name="brand_slug" defaultValue={product.brandSlug ?? ""} aria-label={t("Brand")} className="market-select rounded-2xl px-4 py-3">
+                <option value="">{t("No brand")}</option>
+                {snapshot.brands.map((brand) => (
+                  <option key={brand.slug} value={brand.slug}>
+                    {brand.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </section>
+          <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
+            <p className="market-kicker">{t("Media")}</p>
+            <ImageUploadField
               name="image_url"
-              defaultValue={product.gallery[0] ?? ""}
-              className="market-input rounded-2xl px-4 py-3 sm:col-span-2"
-              placeholder="Primary image URL"
+              scope="product"
+              label={t("Primary image")}
+              hint={t("JPG, PNG, or WebP, up to 8MB. Leave as is to keep the current photo.")}
+              initialUrl={resolveMarketplaceImageUrl(product.gallery[0] ?? null)}
+              labels={{
+                drop: t("Add a photo"),
+                replace: t("Replace photo"),
+                remove: t("Remove photo"),
+                uploading: t("Uploading…"),
+                failed: t("That upload didn’t go through. Try again."),
+              }}
             />
-          </div>
-          <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
-            <input type="checkbox" name="cod_eligible" defaultChecked={product.codEligible} />
-            <span className="text-sm text-[var(--market-ink)]">Eligible for cash on delivery</span>
-          </label>
+          </section>
+          <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
+            <p className="market-kicker">{t("Pricing & stock")}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input name="base_price" type="number" defaultValue={product.basePrice} className="market-input rounded-2xl px-4 py-3" placeholder={t("Base price")} required />
+              <input name="compare_at_price" type="number" defaultValue={product.compareAtPrice ?? undefined} className="market-input rounded-2xl px-4 py-3" placeholder={t("Compare-at price")} />
+              <input name="stock" type="number" defaultValue={product.stock} className="market-input rounded-2xl px-4 py-3" placeholder={t("Stock")} required />
+              <input name="sku" defaultValue={product.sku} className="market-input rounded-2xl px-4 py-3" placeholder={t("SKU")} required />
+              <input name="lead_time" defaultValue={product.leadTime} className="market-input rounded-2xl px-4 py-3" placeholder={t("Lead time")} />
+            </div>
+          </section>
+          <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
+            <p className="market-kicker">{t("Fulfillment & trust")}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input
+                name="delivery_note"
+                defaultValue={product.deliveryNote}
+                className="market-input rounded-2xl px-4 py-3 sm:col-span-2"
+                placeholder={t("Delivery note")}
+              />
+              <input
+                name="material"
+                defaultValue={product.specifications.Material ?? ""}
+                className="market-input rounded-2xl px-4 py-3"
+                placeholder={t("Material")}
+              />
+              <input
+                name="warranty"
+                defaultValue={product.specifications.Warranty ?? ""}
+                className="market-input rounded-2xl px-4 py-3"
+                placeholder={t("Warranty")}
+              />
+            </div>
+            <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
+              <input type="checkbox" name="cod_eligible" defaultChecked={product.codEligible} />
+              <span className="text-sm text-[var(--market-ink)]">{t("Eligible for cash on delivery")}</span>
+            </label>
+          </section>
         </MarketplaceActionForm>
 
         <aside className="space-y-4">
           <article className="market-paper rounded-[1.9rem] p-6">
-            <p className="market-kicker">Moderation readiness</p>
+            <p className="market-kicker">{t("Moderation readiness")}</p>
             <div className="mt-5 grid gap-4">
               {[
-                `${product.approvalStatus} status is visible to moderation and admin queues.`,
-                `${product.stock} units are currently available for order acceptance.`,
-                product.leadTime || "Lead time should be explicit before resubmission.",
-                product.deliveryNote || "Delivery note should clarify dispatch and city coverage.",
+                t("Current state: {status}. This is visible to moderation and admin queues.").replace(
+                  "{status}",
+                  approvalStatusLabel(product.approvalStatus, t),
+                ),
+                t("{count} units are currently available for order acceptance.").replace(
+                  "{count}",
+                  String(product.stock),
+                ),
+                product.leadTime || t("Lead time should be explicit before resubmission."),
+                product.deliveryNote || t("Delivery note should clarify dispatch and city coverage."),
+                listingGuidance(product.filterData, t),
               ].map((item) => (
                 <div
                   key={item}
