@@ -25,7 +25,7 @@ const MARKETPLACE_LISTING_DRAFT_SYSTEM = composeSystemPrompt(
     "Respond with ONLY a JSON object (no prose, no code fences) of exactly this shape:",
     "{",
     '  "summary": string,        // a one-line listing summary (<= 140 chars)',
-    '  "description": string,    // 2-4 short paragraphs of honest product detail',
+    "  \"description\": string, // the product story: 3-5 short paragraphs (roughly 120-250 words) — what it is, who it is for, and what makes it worth buying, grounded ONLY in the seller's words",
     '  "category": string,       // a suggested category label (may be empty)',
     '  "specifications": string  // bullet-style key specs as plain text (may be empty)',
     "}",
