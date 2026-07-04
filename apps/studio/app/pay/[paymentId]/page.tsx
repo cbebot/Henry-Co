@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -7,10 +6,7 @@ import {
   buildPaymentRecordView,
   buildPaymentSurfaceContext,
 } from "@henryco/payment-surface";
-import type {
-  PaymentSurfaceContext,
-  PaymentSurfaceTheme,
-} from "@henryco/payment-surface";
+import type { PaymentSurfaceContext } from "@henryco/payment-surface";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { uploadPaymentProofAction } from "@/lib/studio/actions";
 import { getStudioViewer } from "@/lib/studio/auth";
@@ -21,6 +17,7 @@ import {
   getStudioAccountUrl,
   getStudioLoginUrl,
 } from "@/lib/studio/links";
+import { STUDIO_PAYMENT_THEME } from "@/lib/studio/payment-surface-theme";
 import { friendlyPaymentStatus } from "@/lib/studio/project-workspace-copy";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
 
@@ -32,24 +29,6 @@ export const metadata: Metadata = {
   description:
     "Send payment proof and track confirmation for your Henry Onyx Studio engagement.",
   robots: { index: false, follow: false },
-};
-
-/**
- * Studio theme adapter — maps studio CSS variables onto the canonical
- * --payment-* token namespace consumed by @henryco/payment-surface.
- * Studio keeps using its own design system; the surface stays of-a-piece
- * with the rest of the studio app.
- */
-const STUDIO_PAYMENT_THEME: PaymentSurfaceTheme = {
-  accentVar: "var(--studio-signal, #97f4f3)",
-  heroTone: "contrast",
-  rootStyle: {
-    ["--payment-accent" as never]: "var(--studio-signal, #97f4f3)",
-    ["--payment-ink" as never]: "var(--studio-ink, white)",
-    ["--payment-soft" as never]: "var(--studio-ink-soft, rgba(255,255,255,0.65))",
-    ["--payment-line" as never]: "var(--studio-line, rgba(255,255,255,0.18))",
-    ["--payment-surface" as never]: "color-mix(in srgb, var(--studio-surface) 88%, transparent)",
-  } as CSSProperties,
 };
 
 function relativeProjectPath(projectId: string, accessKey: string | null) {
