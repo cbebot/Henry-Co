@@ -19,6 +19,7 @@
     "@henryco/address-selector": "workspace:^",
     "@henryco/auth": "workspace:^",
     "@henryco/brand": "workspace:^",
+    "@henryco/ai-gateway": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
     "@henryco/cart-saved-items": "workspace:^",
     "@henryco/chat-composer": "workspace:^",

@@ -10,6 +10,7 @@ import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { FeedbackToastViewport } from "@henryco/ui/feedback";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { createSurfaceMetadata } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -84,7 +85,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <FeedbackToastViewport />
             </LocaleProvider>
           </ThirdPartyRuntimeProviders>
-          <SupportAssist division="account" />
+          {/* Intelligence Live (flag-dark): the company AI launcher replaces the static "?"
+              only where NEXT_PUBLIC_INTELLIGENCE_LIVE is on; otherwise the concierge stands. */}
+          {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+            <IntelligenceLauncher division="account" />
+          ) : (
+            <SupportAssist division="account" />
+          )}
           <ConsentNotice preferencesHref="/settings#privacy-controls" locale={locale} />
         </ThemeProvider>
       </body>
