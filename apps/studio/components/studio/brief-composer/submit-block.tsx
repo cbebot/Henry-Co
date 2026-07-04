@@ -1,6 +1,7 @@
 "use client";
 
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, Sparkles, UserCheck } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { StudioListbox } from "@/components/studio/studio-listbox";
@@ -19,14 +20,24 @@ export function SubmitBlock({
   teams,
   selectedTeamId,
   setSelectedTeamId,
+  viewerIdentity,
 }: {
   id: string;
   teams: StudioTeamProfile[];
   selectedTeamId: string;
   setSelectedTeamId: (value: string) => void;
+  /** Signed-in name + email (server-resolved). Present → greet, don't re-ask. */
+  viewerIdentity: { name: string; email: string } | null;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  // A signed-in person with an email on file skips the identity form entirely —
+  // their known details post via hidden inputs (same names, same submit contract).
+  // "Use different details" opens the form for the edge cases (submitting for a
+  // colleague, new company, changed phone).
+  const knownIdentity = Boolean(viewerIdentity?.email);
+  const [editDetails, setEditDetails] = useState(false);
+  const showIdentityForm = !knownIdentity || editDetails;
 
   const teamOptions = teams.map((team) => ({
     value: team.id,
@@ -83,35 +94,63 @@ export function SubmitBlock({
 
         <div>
           <div className="studio-kicker">{t("Your details")}</div>
-          <div className="mt-3 grid gap-3">
-            <input
-              name="customerName"
-              required
-              className="studio-input rounded-[1.2rem] px-4 py-3"
-              placeholder={t("Full name")}
-              autoComplete="name"
-            />
-            <input
-              name="companyName"
-              className="studio-input rounded-[1.2rem] px-4 py-3"
-              placeholder={t("Company, school, or brand (optional)")}
-              autoComplete="organization"
-            />
-            <input
-              name="email"
-              type="email"
-              required
-              className="studio-input rounded-[1.2rem] px-4 py-3"
-              placeholder={t("Best email for updates")}
-              autoComplete="email"
-            />
-            <input
-              name="phone"
-              className="studio-input rounded-[1.2rem] px-4 py-3"
-              placeholder={t("WhatsApp or phone (optional)")}
-              autoComplete="tel"
-            />
-          </div>
+          {knownIdentity && !editDetails ? (
+            <div className="mt-3 rounded-[1.4rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-4 py-4">
+              {/* The signed-in person's known details post via hidden inputs — a client
+                  we already know never re-types their own name and email. */}
+              <input type="hidden" name="customerName" value={viewerIdentity?.name || viewerIdentity?.email || ""} />
+              <input type="hidden" name="email" value={viewerIdentity?.email ?? ""} />
+              <div className="flex items-start gap-3">
+                <UserCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-signal)]" aria-hidden />
+                <div className="min-w-0 text-sm leading-6">
+                  <p className="font-semibold text-[var(--studio-ink)]">
+                    {viewerIdentity?.name || t("Signed in")}
+                  </p>
+                  <p className="truncate text-[var(--studio-ink-soft)]">{viewerIdentity?.email}</p>
+                  <button
+                    type="button"
+                    onClick={() => setEditDetails(true)}
+                    className="mt-2 text-[12.5px] font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
+                  >
+                    {t("Use different details")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+          {showIdentityForm ? (
+            <div className="mt-3 grid gap-3">
+              <input
+                name="customerName"
+                required
+                defaultValue={viewerIdentity?.name ?? ""}
+                className="studio-input rounded-[1.2rem] px-4 py-3"
+                placeholder={t("Full name")}
+                autoComplete="name"
+              />
+              <input
+                name="companyName"
+                className="studio-input rounded-[1.2rem] px-4 py-3"
+                placeholder={t("Company, school, or brand (optional)")}
+                autoComplete="organization"
+              />
+              <input
+                name="email"
+                type="email"
+                required
+                defaultValue={viewerIdentity?.email ?? ""}
+                className="studio-input rounded-[1.2rem] px-4 py-3"
+                placeholder={t("Best email for updates")}
+                autoComplete="email"
+              />
+              <input
+                name="phone"
+                className="studio-input rounded-[1.2rem] px-4 py-3"
+                placeholder={t("WhatsApp or phone (optional)")}
+                autoComplete="tel"
+              />
+            </div>
+          ) : null}
         </div>
 
         <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]">

@@ -44,6 +44,16 @@ export function isStudioCardCheckoutReady(): boolean {
   return isStudioCardCheckoutEnabled() && Boolean(getOptionalEnv("PAYMENTS_DATABASE_URL"));
 }
 
+/**
+ * Bank transfer retired → the pay surface goes card-first (no bank guide, no proof upload).
+ * INTERLOCKED to the card rail being READY: retiring transfer can never strand a payer with
+ * no way to pay. The owner sets STUDIO_BANK_TRANSFER_RETIRED=1 only AFTER the live card
+ * settle test passes; flipping it off instantly restores bank transfer (no code change).
+ */
+export function isStudioBankTransferRetired(): boolean {
+  return getOptionalEnv("STUDIO_BANK_TRANSFER_RETIRED") === "1" && isStudioCardCheckoutReady();
+}
+
 export type StudioCardClientAction =
   | { type: "redirect"; url: string }
   | { type: "sdk"; token: string }
