@@ -19,6 +19,12 @@ type Props = {
   chime?: boolean;
   /** Clear the (uncontrolled) fields after success — typed create-forms only. */
   resetOnSuccess?: boolean;
+  /**
+   * Called after a confirmed success. Controlled forms (state-owned fields)
+   * use this to clear their own state — `form.reset()` alone cannot reach
+   * React state, so `resetOnSuccess` needs this companion there.
+   */
+  onSuccess?: () => void;
   className?: string;
   buttonClassName?: string;
   /** Wrapper class for the submit row (e.g. a bordered footer row). */
@@ -62,6 +68,7 @@ export function MarketplaceActionForm({
   errorTitle,
   chime,
   resetOnSuccess,
+  onSuccess,
   className,
   buttonClassName,
   buttonRowClassName,
@@ -121,6 +128,7 @@ export function MarketplaceActionForm({
         chime: (mode ? mode.chime : chime) === true,
       });
       if (resetOnSuccess) form.reset();
+      onSuccess?.();
       router.refresh();
     } finally {
       setPending(false);

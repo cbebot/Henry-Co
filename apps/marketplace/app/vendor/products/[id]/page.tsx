@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
-import { MarketplaceActionForm } from "@/components/marketplace/actions/MarketplaceActionForm";
 import { VerifyListingPanel } from "@/components/marketplace/ai/VerifyListingPanel";
 import { ImageUploadField } from "@/components/marketplace/vendor/image-upload-field";
+import { VendorProductEditor } from "@/components/marketplace/vendor/vendor-product-editor";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
@@ -56,119 +56,96 @@ export default async function VendorProductDetailPage({
         />
       ) : null}
       <div className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
-        <MarketplaceActionForm
-          intent="vendor_product_upsert"
-          hidden={{ return_to: `/vendor/products/${product.id}`, slug: product.slug }}
-          successTitle={t("Product updated.")}
-          errorTitle={t("Product could not be updated.")}
-          className="market-paper space-y-5 rounded-[1.9rem] p-6"
-          submitButtons={[
-            {
-              name: "submission_mode",
-              value: "draft",
-              label: t("Save draft"),
-              pendingLabel: t("Saving draft"),
-              className: "market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
-              successTitle: t("Draft saved."),
-              successBody: t("The listing stays private until you submit it for moderation."),
+        <VendorProductEditor
+          form={{
+            intent: "vendor_product_upsert",
+            hidden: { return_to: `/vendor/products/${product.id}`, slug: product.slug },
+            successTitle: t("Product updated."),
+            errorTitle: t("Product could not be updated."),
+            className: "market-paper space-y-5 rounded-[1.9rem] p-6",
+            submitButtons: [
+              {
+                name: "submission_mode",
+                value: "draft",
+                label: t("Save draft"),
+                pendingLabel: t("Saving draft"),
+                className: "market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
+                successTitle: t("Draft saved."),
+                successBody: t("The listing stays private until you submit it for moderation."),
+              },
+              {
+                name: "submission_mode",
+                value: "submit",
+                label: t("Submit update"),
+                pendingLabel: t("Submitting update"),
+                className: "market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
+                successTitle: t("Update submitted."),
+                successBody: t("The revised listing enters moderation review."),
+                chime: true,
+              },
+            ],
+          }}
+          fields={{
+            initial: {
+              title: product.title,
+              summary: product.summary,
+              description: product.description,
+              category_slug: product.categorySlug,
+              brand_slug: product.brandSlug ?? "",
+              base_price: String(product.basePrice),
+              compare_at_price: product.compareAtPrice == null ? "" : String(product.compareAtPrice),
+              stock: String(product.stock),
+              sku: product.sku,
+              lead_time: product.leadTime,
+              delivery_note: product.deliveryNote,
+              material: product.specifications.Material ?? "",
+              warranty: product.specifications.Warranty ?? "",
+              cod_eligible: product.codEligible,
             },
-            {
-              name: "submission_mode",
-              value: "submit",
-              label: t("Submit update"),
-              pendingLabel: t("Submitting update"),
-              className: "market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
-              successTitle: t("Update submitted."),
-              successBody: t("The revised listing enters moderation review."),
-              chime: true,
+            categories: snapshot.categories.map((category) => ({ slug: category.slug, name: category.name })),
+            brands: snapshot.brands.map((brand) => ({ slug: brand.slug, name: brand.name })),
+            descriptionRows: 6,
+            labels: {
+              essentials: t("Essentials"),
+              title: t("Product title"),
+              summary: t("Short conversion summary"),
+              description: t("Long-form story and detail."),
+              category: t("Category"),
+              brand: t("Brand"),
+              noBrand: t("No brand"),
+              pricingStock: t("Pricing & stock"),
+              basePrice: t("Base price"),
+              compareAtPrice: t("Compare-at price"),
+              stock: t("Stock"),
+              sku: t("SKU"),
+              leadTime: t("Lead time"),
+              fulfillmentTrust: t("Fulfillment & trust"),
+              deliveryNote: t("Delivery note"),
+              material: t("Material"),
+              warranty: t("Warranty"),
+              codEligible: t("Eligible for cash on delivery"),
             },
-          ]}
-        >
-          <section className="space-y-4">
-            <p className="market-kicker">{t("Essentials")}</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input name="title" defaultValue={product.title} className="market-input rounded-2xl px-4 py-3" placeholder={t("Product title")} required />
-              <input name="summary" defaultValue={product.summary} className="market-input rounded-2xl px-4 py-3" placeholder={t("Short conversion summary")} required />
-              <textarea
-                name="description"
-                defaultValue={product.description}
-                rows={6}
-                className="market-textarea rounded-[1.5rem] px-4 py-3 sm:col-span-2"
-                placeholder={t("Long-form story and detail.")}
-                required
+          }}
+          media={
+            <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
+              <p className="market-kicker">{t("Media")}</p>
+              <ImageUploadField
+                name="image_url"
+                scope="product"
+                label={t("Primary image")}
+                hint={t("JPG, PNG, or WebP, up to 8MB. Leave as is to keep the current photo.")}
+                initialUrl={resolveMarketplaceImageUrl(product.gallery[0] ?? null)}
+                labels={{
+                  drop: t("Add a photo"),
+                  replace: t("Replace photo"),
+                  remove: t("Remove photo"),
+                  uploading: t("Uploading…"),
+                  failed: t("That upload didn’t go through. Try again."),
+                }}
               />
-              <select name="category_slug" defaultValue={product.categorySlug} aria-label={t("Category")} className="market-select rounded-2xl px-4 py-3">
-                {snapshot.categories.map((category) => (
-                  <option key={category.slug} value={category.slug}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <select name="brand_slug" defaultValue={product.brandSlug ?? ""} aria-label={t("Brand")} className="market-select rounded-2xl px-4 py-3">
-                <option value="">{t("No brand")}</option>
-                {snapshot.brands.map((brand) => (
-                  <option key={brand.slug} value={brand.slug}>
-                    {brand.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </section>
-          <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
-            <p className="market-kicker">{t("Media")}</p>
-            <ImageUploadField
-              name="image_url"
-              scope="product"
-              label={t("Primary image")}
-              hint={t("JPG, PNG, or WebP, up to 8MB. Leave as is to keep the current photo.")}
-              initialUrl={resolveMarketplaceImageUrl(product.gallery[0] ?? null)}
-              labels={{
-                drop: t("Add a photo"),
-                replace: t("Replace photo"),
-                remove: t("Remove photo"),
-                uploading: t("Uploading…"),
-                failed: t("That upload didn’t go through. Try again."),
-              }}
-            />
-          </section>
-          <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
-            <p className="market-kicker">{t("Pricing & stock")}</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input name="base_price" type="number" defaultValue={product.basePrice} className="market-input rounded-2xl px-4 py-3" placeholder={t("Base price")} required />
-              <input name="compare_at_price" type="number" defaultValue={product.compareAtPrice ?? undefined} className="market-input rounded-2xl px-4 py-3" placeholder={t("Compare-at price")} />
-              <input name="stock" type="number" defaultValue={product.stock} className="market-input rounded-2xl px-4 py-3" placeholder={t("Stock")} required />
-              <input name="sku" defaultValue={product.sku} className="market-input rounded-2xl px-4 py-3" placeholder={t("SKU")} required />
-              <input name="lead_time" defaultValue={product.leadTime} className="market-input rounded-2xl px-4 py-3" placeholder={t("Lead time")} />
-            </div>
-          </section>
-          <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
-            <p className="market-kicker">{t("Fulfillment & trust")}</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                name="delivery_note"
-                defaultValue={product.deliveryNote}
-                className="market-input rounded-2xl px-4 py-3 sm:col-span-2"
-                placeholder={t("Delivery note")}
-              />
-              <input
-                name="material"
-                defaultValue={product.specifications.Material ?? ""}
-                className="market-input rounded-2xl px-4 py-3"
-                placeholder={t("Material")}
-              />
-              <input
-                name="warranty"
-                defaultValue={product.specifications.Warranty ?? ""}
-                className="market-input rounded-2xl px-4 py-3"
-                placeholder={t("Warranty")}
-              />
-            </div>
-            <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
-              <input type="checkbox" name="cod_eligible" defaultChecked={product.codEligible} />
-              <span className="text-sm text-[var(--market-ink)]">{t("Eligible for cash on delivery")}</span>
-            </label>
-          </section>
-        </MarketplaceActionForm>
+            </section>
+          }
+        />
 
         <aside className="space-y-4">
           <article className="market-paper rounded-[1.9rem] p-6">

@@ -51,8 +51,18 @@ function fillCategory(value: string): void {
  * human still reviews and submits — it never writes the listing itself. The client only
  * ever sees a redacted receipt: a kobo total + VAT + a capability tier label, NEVER a
  * provider, model, cost, or margin.
+ *
+ * When `onApply` is provided, "Use this draft" hands the draft (plus the seller's idea,
+ * the title fallback) to the state-owning form through the typed callback — no DOM
+ * queries. The legacy querySelector path remains only for mounts that don't pass it.
  */
-export function DraftWithIntelligencePanel({ copy }: { copy: DraftPanelCopy }) {
+export function DraftWithIntelligencePanel({
+  copy,
+  onApply,
+}: {
+  copy: DraftPanelCopy;
+  onApply?: (draft: ListingDraft, idea: string) => void;
+}) {
   const [idea, setIdea] = useState("");
   const [notes, setNotes] = useState("");
   const [pending, setPending] = useState(false);
@@ -94,6 +104,10 @@ export function DraftWithIntelligencePanel({ copy }: { copy: DraftPanelCopy }) {
 
   function onUse() {
     if (!draft) return;
+    if (onApply) {
+      onApply(draft, idea);
+      return;
+    }
     fillField("title", idea, true);
     fillField("summary", draft.summary);
     fillField("description", draft.description);
