@@ -37,14 +37,21 @@ async function main() {
   // Force the (normally flag-gated) dual-writer for the one-time backfill.
   process.env.PROPERTY_DB_LISTINGS = "true";
   let written = 0;
+  let failed = 0;
   for (const listing of listings) {
-    await writeListingToDb(listing);
-    written += 1;
+    // The writer returns real success (supabase-js returns errors, it does not throw) —
+    // count what actually landed, never loop iterations.
+    if (await writeListingToDb(listing)) written += 1;
+    else failed += 1;
   }
 
   const after = await listListingsFromDb();
-  console.log(`\nBackfilled ${written} listing(s). property_listings (DB) now: ${after.length} row(s).`);
-  console.log(after.length >= listings.length ? "PARITY OK ✓" : "PARITY MISMATCH — investigate before Stage 4 cutover");
+  console.log(`\nBackfilled ${written} listing(s) (${failed} failed). property_listings (DB) now: ${after.length} row(s).`);
+  if (failed > 0 || after.length < listings.length) {
+    console.log("PARITY MISMATCH — investigate before Stage 4 cutover");
+    process.exit(1);
+  }
+  console.log("PARITY OK ✓");
 }
 
 main().catch((error) => {

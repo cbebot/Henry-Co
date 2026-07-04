@@ -6,6 +6,7 @@ import { getPaymentsSqlExecutor } from "@henryco/payments-db";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { stableListingRowId } from "@/lib/property/listing-mapping";
 
 export interface VerifyListingInput {
   /** The saved listing being reviewed; omit for a pre-save dry run (audited, no badge). */
@@ -48,12 +49,15 @@ export async function verifyPropertyListingAction(input: VerifyListingInput): Pr
   // (admin / managed-ops), mirroring the SECURITY DEFINER writer's guard exactly so the app
   // never charges for a call the writer would then refuse. (A null listingId is a pre-save
   // dry run — audited, no badge.)
-  if (input.listingId) {
+  // The DB row id is the deterministic uuid mapping of the app-level id (legacy Storage-era
+  // ids are strings — a raw .eq on the uuid column would 22P02 before the guard even ran).
+  const listingRowId = input.listingId ? stableListingRowId(input.listingId) : null;
+  if (listingRowId) {
     const admin = createAdminSupabase();
     const { data: listing } = await admin
       .from("property_listings")
       .select("owner_user_id")
-      .eq("id", input.listingId)
+      .eq("id", listingRowId)
       .maybeSingle();
     const ownsListing = listing?.owner_user_id != null && listing.owner_user_id === viewer.user.id;
     let isStaff = false;
@@ -104,7 +108,7 @@ export async function verifyPropertyListingAction(input: VerifyListingInput): Pr
   try {
     const admin = createAdminSupabase();
     await admin.rpc("record_property_listing_verification", {
-      p_listing_id: input.listingId ?? null,
+      p_listing_id: listingRowId,
       p_user_id: viewer.user.id,
       p_outcome: decision.outcome,
       p_trust_score: verdict.trustScore,
