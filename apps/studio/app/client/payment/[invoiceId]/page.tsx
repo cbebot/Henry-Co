@@ -3,12 +3,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 
+import { PaymentSurface, buildPaymentSurfaceContext } from "@henryco/payment-surface";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getClientPortalSnapshot, getInvoiceByIdForViewer } from "@/lib/portal/data";
 import { formatKobo } from "@/lib/portal/helpers";
+import { invoiceStatusToken } from "@/lib/portal/status";
 import { getStudioPublicLocale } from "@/lib/locale-server";
+import { isPortalPaymentSurfaceEnabled } from "@/lib/studio/portal-payment-flag";
+import {
+  invoiceProofOnFile,
+  latestSubmissionForInvoice,
+  portalInvoiceToPaymentRecordView,
+} from "@/lib/studio/portal-payment-mapping";
+import { STUDIO_PAYMENT_THEME_EMBEDDED } from "@/lib/studio/payment-surface-theme";
 import { BankDetails } from "@/components/portal/bank-details";
 import { InvoiceSummary } from "@/components/portal/invoice-summary";
 import { PaymentForm } from "@/components/portal/payment-form";
@@ -22,6 +32,7 @@ export default async function ClientPaymentByIdPage({
 }: {
   params: Promise<{ invoiceId: string }>;
 }) {
+  // ——— Shared data-load: identical for the legacy and flag-on renders. ———
   const { invoiceId } = await params;
   const viewer = await requireClientPortalViewer(`/client/payment/${invoiceId}`);
   const invoice = await getInvoiceByIdForViewer(viewer, invoiceId);
@@ -74,6 +85,75 @@ export default async function ClientPaymentByIdPage({
     ]);
   const localizedInvoice = { ...invoice, description: localizedInvoiceDescription };
 
+  // ——— Flag on: shared @henryco/payment-surface rendering. The proof
+  // submission action and its fields stay exactly the portal's PaymentForm
+  // (bank reference + proof file + notes → submitPaymentProofAction). ———
+  if (isPortalPaymentSurfaceEnabled()) {
+    const t = (text: string) => translateSurfaceLabel(locale, text);
+    const submission = latestSubmissionForInvoice(snapshot.payments, invoice.id);
+    const view = portalInvoiceToPaymentRecordView(localizedInvoice, {
+      label: localizedInvoiceDescription.trim() || t("Studio invoice"),
+      statusLabel: invoiceStatusToken(invoice.status, locale).label,
+      proof: invoiceProofOnFile(invoice, submission),
+    });
+    const ctx = buildPaymentSurfaceContext({
+      payment: view,
+      record: {
+        title: project ? localizedProjectTitle : t("Henry Onyx Studio"),
+        subtitle: milestone ? localizedMilestoneTitle : undefined,
+        back: { href: "/client/payments", label: t("All payments") },
+        account: { href: "/client/dashboard", label: t("Client portal home") },
+        primaryCta: project
+          ? { href: `/client/projects/${project.id}`, label: t("Open project") }
+          : undefined,
+      },
+      platform: {
+        bankName: platform.paymentBankName,
+        accountName: platform.paymentAccountName,
+        accountNumber: platform.paymentAccountNumber,
+        supportEmail: platform.paymentSupportEmail,
+        supportWhatsApp: platform.paymentSupportWhatsApp,
+      },
+      copy: {
+        bodyByStatus: {
+          pending: t(
+            "Send your transfer using the verified company details below, then attach your proof so finance can confirm and unlock the next milestone.",
+          ),
+          processing: t(
+            "We have your payment proof. Finance is verifying — usually within one business day. You do not need to do anything else.",
+          ),
+          paid: t("This invoice is fully paid. Thank you — the next milestone is unlocked."),
+        },
+        guideTitle: t("Pay by bank transfer into the verified Henry Onyx account"),
+        instructions: t(
+          "Use your invoice number as the transfer reference. Proof can be a bank receipt, debit alert screenshot, or PDF — anything showing amount, date, and destination.",
+        ),
+        proofHint: t(
+          "After the transfer, attach your proof in the form below — finance verifies within one business day.",
+        ),
+        receiptText: t(
+          "Confirmed on {date}.{proof} Your client portal shows the milestone unlock and what the team is working on next.",
+        ),
+      },
+      theme: STUDIO_PAYMENT_THEME_EMBEDDED,
+    });
+
+    return (
+      <div className="space-y-6">
+        <PaymentSurface ctx={ctx} />
+        {view.status === "pending" ? (
+          <PaymentForm
+            invoiceId={localizedInvoice.id}
+            invoiceToken={null}
+            invoiceNumber={localizedInvoice.invoiceNumber}
+            amountLabel={amountLabel}
+          />
+        ) : null}
+      </div>
+    );
+  }
+
+  // ——— Flag off (default): the existing portal rendering, unchanged. ———
   return (
     <div className="space-y-5">
       <Link

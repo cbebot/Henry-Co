@@ -439,6 +439,38 @@ export async function getInvoiceByToken(token: string): Promise<InvoiceLookupRes
   }
 }
 
+/**
+ * Newest payment submission attached to an invoice — read-only display
+ * support for the shared payment surface (real proof-on-file details while
+ * finance verifies). Uses the admin client because the token pay flow has no
+ * session; call it only AFTER the invoice was resolved through an authorised
+ * lookup (getInvoiceByToken / getInvoiceByIdForViewer). Never writes.
+ */
+export async function getLatestPaymentSubmissionForInvoice(
+  invoiceId: string
+): Promise<StudioPaymentSubmission | null> {
+  const safeId = clean(invoiceId);
+  if (!safeId) return null;
+  if (!hasAdminSupabaseEnv()) return null;
+  const admin = createAdminSupabase();
+
+  try {
+    const { data, error } = await admin
+      .from("studio_payments")
+      .select(
+        "id,invoice_id,project_id,client_user_id,amount,amount_kobo,currency,payment_reference,reference,proof_url,proof_public_id,proof_name,submitted_at,verified_at,verified_by,status,rejection_reason,notes,created_at"
+      )
+      .eq("invoice_id", safeId)
+      .order("submitted_at", { ascending: false, nullsFirst: false })
+      .limit(1);
+
+    if (error || !data || data.length === 0) return null;
+    return mapPaymentRow(data[0] as Record<string, unknown>);
+  } catch {
+    return null;
+  }
+}
+
 export async function getInvoiceByIdForViewer(
   viewer: ClientPortalViewer,
   invoiceId: string
