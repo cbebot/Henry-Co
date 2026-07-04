@@ -1,5 +1,39 @@
 import { createHash } from "node:crypto";
-import type { PropertyListing } from "@/lib/property/types";
+import type { PropertyListing, PropertyListingKind, PropertyListingStatus } from "@/lib/property/types";
+
+/** The live table's status check-constraint vocabulary (the moderation pipeline's). */
+export type RelationalListingStatus = "draft" | "submitted" | "changes_requested" | "approved" | "rejected" | "archived";
+
+const RELATIONAL_STATUS: Record<PropertyListingStatus, RelationalListingStatus> = {
+  draft: "draft",
+  submitted: "submitted",
+  awaiting_documents: "submitted",
+  awaiting_eligibility: "submitted",
+  inspection_requested: "submitted",
+  inspection_scheduled: "submitted",
+  under_review: "submitted",
+  escalated: "submitted",
+  requires_correction: "changes_requested",
+  changes_requested: "changes_requested",
+  verified: "approved",
+  published: "approved",
+  approved: "approved",
+  rejected: "rejected",
+  blocked: "rejected",
+  archived: "archived",
+};
+
+/** Translate the app's rich status into the DB column's allowed set. The app truth keeps living
+ *  inside `data`; this column exists for SQL-side filtering, so the mapping groups by class:
+ *  live-public → approved, in-pipeline → submitted, needs-vendor-action → changes_requested. */
+export function relationalListingStatus(status: PropertyListingStatus): RelationalListingStatus {
+  return RELATIONAL_STATUS[status] ?? "submitted";
+}
+
+/** Translate the app's kind into the DB check's set — `land` sells, so it joins the sale class. */
+export function relationalListingKind(kind: PropertyListingKind): Exclude<PropertyListingKind, "land"> {
+  return kind === "land" ? "sale" : kind;
+}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

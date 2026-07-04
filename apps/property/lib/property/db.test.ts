@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { isUuid, rowToListing, stableListingRowId } from "./listing-mapping";
+import { isUuid, relationalListingKind, relationalListingStatus, rowToListing, stableListingRowId } from "./listing-mapping";
 import type { PropertyListing } from "./types";
 
 // A representative slice of the rich PropertyListing shape (nested feeBreakdown + arrays) — the
@@ -69,5 +69,30 @@ describe("stableListingRowId — deterministic row ids for uuid columns", () => 
     assert.equal(isUuid(null), false);
     assert.equal(isUuid(undefined), false);
     assert.equal(isUuid("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"), true);
+  });
+});
+
+describe("relational vocabulary translators — live check constraints vs app unions", () => {
+  it("maps every app status into the DB's allowed set", () => {
+    const allowed = new Set(["draft", "submitted", "changes_requested", "approved", "rejected", "archived"]);
+    const appStatuses = [
+      "draft", "submitted", "awaiting_documents", "awaiting_eligibility", "inspection_requested",
+      "inspection_scheduled", "under_review", "requires_correction", "verified", "published",
+      "changes_requested", "approved", "rejected", "blocked", "escalated", "archived",
+    ] as const;
+    for (const status of appStatuses) {
+      assert.ok(allowed.has(relationalListingStatus(status)), `${status} must map into the allowed set`);
+    }
+    assert.equal(relationalListingStatus("published"), "approved");
+    assert.equal(relationalListingStatus("blocked"), "rejected");
+    assert.equal(relationalListingStatus("requires_correction"), "changes_requested");
+    assert.equal(relationalListingStatus("under_review"), "submitted");
+  });
+
+  it("maps kind: land joins the sale class; the DB's own values pass through", () => {
+    assert.equal(relationalListingKind("land"), "sale");
+    for (const kind of ["rent", "sale", "commercial", "managed", "shortlet"] as const) {
+      assert.equal(relationalListingKind(kind), kind);
+    }
   });
 });

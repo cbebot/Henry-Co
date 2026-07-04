@@ -3,7 +3,14 @@ import "server-only";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getOptionalEnv } from "@/lib/env";
 import type { PropertyListing } from "@/lib/property/types";
-import { isUuid, rowToListing, stableListingRowId, type PropertyListingRow } from "@/lib/property/listing-mapping";
+import {
+  isUuid,
+  relationalListingKind,
+  relationalListingStatus,
+  rowToListing,
+  stableListingRowId,
+  type PropertyListingRow,
+} from "@/lib/property/listing-mapping";
 
 /**
  * Stage 1 of the property Storage-JSON → Postgres listings migration
@@ -57,8 +64,8 @@ export async function writeListingToDb(listing: PropertyListing): Promise<boolea
         title: listing.title,
         summary: listing.summary,
         description: listing.description,
-        kind: listing.kind,
-        status: listing.status,
+        kind: relationalListingKind(listing.kind),
+        status: relationalListingStatus(listing.status),
         visibility: listing.visibility,
         location_slug: listing.locationSlug,
         location_label: listing.locationLabel,
