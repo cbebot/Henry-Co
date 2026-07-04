@@ -20,6 +20,8 @@ import {
 import { STUDIO_PAYMENT_THEME } from "@/lib/studio/payment-surface-theme";
 import { friendlyPaymentStatus } from "@/lib/studio/project-workspace-copy";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
+import { isStudioCardCheckoutReady, reconcileStudioCardPayment } from "@/lib/studio/card-rail";
+import { translateSurfaceLabel } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -81,6 +83,14 @@ export default async function StudioPaymentWorkspace({
   }
 
   const { payment, project, milestone, platform, sameProjectPayments } = workspace;
+
+  // Card-rail reconcile on the buyer's return (flag-gated; a no-op otherwise): if the
+  // provider confirmed the charge, the row flipped to paid — render that truth now.
+  if (isStudioCardCheckoutReady()) {
+    const outcome = await reconcileStudioCardPayment(payment).catch(() => "unchanged" as const);
+    if (outcome === "paid") payment.status = "paid";
+  }
+
   const projectAccessKey = project.accessKey ?? accessKey;
   const projectHref = relativeProjectPath(project.id, projectAccessKey);
   const paidIndex = sameProjectPayments.findIndex((p) => p.id === payment.id);
@@ -117,6 +127,16 @@ export default async function StudioPaymentWorkspace({
         })
       : Promise.resolve(""),
   ]);
+
+  // The card option rides beside bank transfer (never replacing it) — flag-dark, and only
+  // for signed-in viewers (the payment intent is user-owned). /card does the POST-only start.
+  const cardCta =
+    isStudioCardCheckoutReady() && viewer.user && payment.status !== "paid" && payment.status !== "cancelled"
+      ? {
+          label: translateSurfaceLabel(locale, "Pay with card"),
+          href: `/pay/${payment.id}/card${projectAccessKey ? `?access=${encodeURIComponent(projectAccessKey)}` : ""}`,
+        }
+      : null;
 
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
@@ -170,6 +190,7 @@ export default async function StudioPaymentWorkspace({
         "After sending, attach the proof below — finance reviews within one business day. You'll see the status flip to processing here as soon as the upload lands.",
     },
     theme: STUDIO_PAYMENT_THEME,
+    cardCta,
   });
 
   return <PaymentSurface ctx={ctx} />;
