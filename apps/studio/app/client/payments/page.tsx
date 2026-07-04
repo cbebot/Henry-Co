@@ -2,10 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
 
+import {
+  formatPaymentAmount,
+  formatPaymentReference,
+} from "@henryco/payment-surface/format";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { getClientPortalSnapshot } from "@/lib/portal/data";
-import { formatKobo, shortDate } from "@/lib/portal/helpers";
+import { shortDate } from "@/lib/portal/helpers";
 import { invoiceStatusToken, paymentStatusToken } from "@/lib/portal/status";
+import { koboToMajorUnits } from "@/lib/studio/portal-payment-mapping";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 import { StatusBadge } from "@/components/portal/status-badge";
 
@@ -67,8 +72,8 @@ export default async function ClientPaymentsPage() {
       </header>
 
       <section className="portal-card-elev grid gap-4 p-5 sm:grid-cols-3 sm:p-6">
-        <Stat label="Outstanding" value={formatKobo(totalOutstanding, "NGN")} accent="warn" />
-        <Stat label="Paid to date" value={formatKobo(totalPaid, "NGN")} accent="success" />
+        <Stat label="Outstanding" value={formatPaymentAmount(koboToMajorUnits(totalOutstanding), "NGN")} accent="warn" />
+        <Stat label="Paid to date" value={formatPaymentAmount(koboToMajorUnits(totalPaid), "NGN")} accent="success" />
         <Stat label="Verifying" value={String(outstanding.filter((i) => i.status === "pending_verification").length)} />
       </section>
 
@@ -111,7 +116,7 @@ export default async function ClientPaymentsPage() {
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--studio-ink-soft)]">
                       <StatusBadge tone={status.tone} label={status.label} size="sm" />
                       <span className="font-semibold text-[var(--studio-ink)]">
-                        {formatKobo(invoice.amountKobo, invoice.currency)}
+                        {formatPaymentAmount(koboToMajorUnits(invoice.amountKobo), invoice.currency)}
                       </span>
                     </div>
                   </div>
@@ -147,10 +152,10 @@ export default async function ClientPaymentsPage() {
                 >
                   <div className="min-w-0">
                     <div className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                      {payment.paymentReference || "Bank transfer"}
+                      {formatPaymentReference(payment.id, payment.paymentReference)}
                     </div>
                     <div className="mt-0.5 text-[14px] font-semibold text-[var(--studio-ink)]">
-                      {formatKobo(payment.amountKobo, payment.currency)}
+                      {formatPaymentAmount(koboToMajorUnits(payment.amountKobo), payment.currency)}
                     </div>
                     <div className="mt-1 text-[11.5px] text-[var(--studio-ink-soft)]">
                       {projectTitle ? `${projectTitle} · ` : ""}
