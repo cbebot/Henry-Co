@@ -7,6 +7,7 @@ import {
   Lock,
   Receipt,
   Shield,
+  Wallet,
 } from "lucide-react";
 import { COMPANY } from "@henryco/config";
 import { cn } from "@henryco/ui/cn";
@@ -63,7 +64,7 @@ export interface PaymentSurfaceProps {
 }
 
 export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
-  const { payment, record, platform, upload, copy, theme, cardCta } = ctx;
+  const { payment, record, platform, upload, copy, theme, cardCta, walletCta, cardOnly } = ctx;
   const reference = formatPaymentReference(payment.id, payment.reference);
   const statusLabel = friendlyPaymentStatus(payment.status, payment.statusLabel ?? null);
   const dueLabel = formatPaymentDueDate(payment.dueDate);
@@ -73,16 +74,22 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
   const isProcessing = payment.status === "processing";
   const isCancelled = payment.status === "cancelled" || payment.status === "refunded";
   const proofOnFile = Boolean(payment.proofName || payment.proofUrl);
-  const showGuide = !isPaid && !proofOnFile && !isCancelled;
+  // cardOnly: the division has retired bank transfer — the card CTA is the ONLY open-payment
+  // action; the bank guide and proof upload never render (a proof already on file from the
+  // transfer era still shows its processing state until finance resolves it).
+  const showGuide = !cardOnly && !isPaid && !proofOnFile && !isCancelled;
   const showProcessing = proofOnFile && !isPaid && !isCancelled;
-  const showUpload = !isPaid && !proofOnFile && !isCancelled && Boolean(upload);
+  const showUpload = !cardOnly && !isPaid && !proofOnFile && !isCancelled && Boolean(upload);
   const showReceipt = isPaid;
   // Card CTA shows only while the payment is genuinely open: not settled, not
   // closed, not already in a verification/processing flow, and no proof on file
   // (a transfer already in motion). This keeps the card path from competing
   // with a payment the customer has already started.
-  const showCardCta =
-    Boolean(cardCta) && !isPaid && !isProcessing && !isCancelled && !proofOnFile;
+  // The open-payment window: the card + wallet actions show only while the payment is
+  // genuinely open (not settled/closed, no verification flow, no transfer proof in motion).
+  const showPayActions = !isPaid && !isProcessing && !isCancelled && !proofOnFile;
+  const showCardCta = Boolean(cardCta) && showPayActions;
+  const showWalletCta = Boolean(walletCta) && showPayActions;
   const heroEyebrow =
     copy?.eyebrow ??
     (payment.rank ? `Payment · ${payment.rank.index} of ${payment.rank.total}` : statusLabel);
@@ -190,23 +197,49 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
         </span>
       </div>
 
-      {showCardCta && cardCta ? (
-        <div className="mt-5">
-          <Link
-            href={cardCta.href}
-            data-testid="payment-card-cta"
-            className={cn(
-              "group inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold sm:w-auto",
-              "bg-[color:var(--payment-accent,#97f4f3)] text-black/90",
-              "transition outline-none",
-              "focus-visible:ring-2 focus-visible:ring-[color:var(--payment-accent,#97f4f3)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
-              "[@media(hover:hover)]:hover:brightness-110",
-            )}
-          >
-            <CreditCard className="h-4 w-4" />
-            {cardCta.label}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+      {showCardCta || showWalletCta ? (
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+          {showCardCta && cardCta ? (
+            <Link
+              href={cardCta.href}
+              data-testid="payment-card-cta"
+              className={cn(
+                "group inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold sm:w-auto",
+                "bg-[color:var(--payment-accent,#97f4f3)] text-black/90",
+                "transition outline-none",
+                "focus-visible:ring-2 focus-visible:ring-[color:var(--payment-accent,#97f4f3)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
+                "[@media(hover:hover)]:hover:brightness-110",
+              )}
+            >
+              <CreditCard className="h-4 w-4" />
+              {cardCta.label}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : null}
+          {showWalletCta && walletCta ? (
+            <div className="flex flex-col gap-1">
+              <Link
+                href={walletCta.href}
+                data-testid="payment-wallet-cta"
+                className={cn(
+                  "group inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-5 py-3.5 text-sm font-semibold sm:w-auto",
+                  "border-[color:var(--payment-accent,#97f4f3)]/45 text-[color:var(--payment-accent,#97f4f3)]",
+                  "transition outline-none",
+                  "focus-visible:ring-2 focus-visible:ring-[color:var(--payment-accent,#97f4f3)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
+                  "[@media(hover:hover)]:hover:brightness-110",
+                )}
+              >
+                <Wallet className="h-4 w-4" />
+                {walletCta.label}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              {walletCta.note ? (
+                <span className="text-xs text-[color:var(--payment-muted,rgba(255,255,255,0.6))]">
+                  {walletCta.note}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       ) : null}
 

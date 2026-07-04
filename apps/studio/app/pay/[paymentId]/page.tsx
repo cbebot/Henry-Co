@@ -13,6 +13,7 @@ import { getStudioViewer } from "@/lib/studio/auth";
 import { getPaymentWorkspace } from "@/lib/studio/data";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { getAccountUrl } from "@henryco/config";
 import {
   getStudioAccountUrl,
   getStudioLoginUrl,
@@ -20,7 +21,11 @@ import {
 import { STUDIO_PAYMENT_THEME } from "@/lib/studio/payment-surface-theme";
 import { friendlyPaymentStatus } from "@/lib/studio/project-workspace-copy";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
-import { isStudioCardCheckoutReady, reconcileStudioCardPayment } from "@/lib/studio/card-rail";
+import {
+  isStudioBankTransferRetired,
+  isStudioCardCheckoutReady,
+  reconcileStudioCardPayment,
+} from "@/lib/studio/card-rail";
 import { translateSurfaceLabel } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
@@ -138,6 +143,18 @@ export default async function StudioPaymentWorkspace({
         }
       : null;
 
+  // Pay from wallet balance — reuses the account app's proven, guarded wallet-debit checkout
+  // (it debits the wallet, records the transaction, and marks this exact studio_payments row).
+  // Signed-in only (the wallet is the person's own); links out to the account surface.
+  const walletCta =
+    viewer.user && payment.status !== "paid" && payment.status !== "cancelled" && payment.status !== "processing"
+      ? {
+          label: translateSurfaceLabel(locale, "Pay from wallet balance"),
+          href: getAccountUrl(`/studio/payments/${payment.id}`),
+          note: translateSurfaceLabel(locale, "Uses your Henry Onyx wallet — no card needed."),
+        }
+      : null;
+
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
       id: payment.id,
@@ -191,6 +208,10 @@ export default async function StudioPaymentWorkspace({
     },
     theme: STUDIO_PAYMENT_THEME,
     cardCta,
+    walletCta,
+    // Card-first: when bank transfer is retired (interlocked to a ready card rail), the surface
+    // hides the bank guide + proof upload — card + wallet are the ways. Off → surface untouched.
+    cardOnly: isStudioBankTransferRetired(),
   });
 
   return <PaymentSurface ctx={ctx} />;
