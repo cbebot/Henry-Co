@@ -39,17 +39,23 @@ export interface ProductFormLabels {
 
 /** One record backs the whole form; `initial` overrides land on top of the
  *  empty defaults. The category defaults to the first option — the same
- *  selection the previous uncontrolled `<select>` posted. */
+ *  selection the previous uncontrolled `<select>` showed and posted, including
+ *  when a stored slug no longer matches any option. */
 export function buildInitialProductFieldValues(
   initial: Partial<ProductFieldValues>,
   categories: ProductOption[],
 ): ProductFieldValues {
+  const firstCategory = categories[0]?.slug ?? "";
+  const initialCategory = initial.category_slug;
+  const category_slug =
+    typeof initialCategory === "string" && categories.some((option) => option.slug === initialCategory)
+      ? initialCategory
+      : firstCategory;
   return {
     title: "",
     slug: "",
     summary: "",
     description: "",
-    category_slug: categories[0]?.slug ?? "",
     brand_slug: "",
     base_price: "",
     compare_at_price: "",
@@ -62,6 +68,7 @@ export function buildInitialProductFieldValues(
     cod_eligible: false,
     feature_requested: false,
     ...initial,
+    category_slug,
   };
 }
 
