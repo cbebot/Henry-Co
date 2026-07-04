@@ -26,9 +26,27 @@ function fillField(name: string, value: string, onlyIfEmpty = false): void {
   const el = document.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLTextAreaElement | null;
   if (!el || !value) return;
   if (onlyIfEmpty && el.value) return;
-  el.value = value;
+  // Set through the native prototype setter so React-controlled inputs update their state
+  // too (a direct .value assignment is invisible to React's synthetic change tracking).
+  const proto =
+    el instanceof HTMLTextAreaElement ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+  if (setter) {
+    setter.call(el, value);
+  } else {
+    el.value = value;
+  }
   el.dispatchEvent(new Event("input", { bubbles: true }));
   el.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+/** The description plus the drafted key specs — the form has no separate specifications
+ *  field, so the specs the model grounded in the seller's words ride in the description
+ *  (previously they were silently discarded). */
+function buildDescription(draft: ListingDraft): string {
+  if (!draft.specifications) return draft.description;
+  if (!draft.description) return draft.specifications;
+  return `${draft.description}\n\n${draft.specifications}`;
 }
 
 function fillCategory(value: string): void {
@@ -51,8 +69,18 @@ function fillCategory(value: string): void {
  * human still reviews and submits — it never writes the listing itself. The client only
  * ever sees a redacted receipt: a kobo total + VAT + a capability tier label, NEVER a
  * provider, model, cost, or margin.
+ *
+ * When `onApply` is provided, "Use this draft" hands the draft (plus the seller's idea,
+ * the title fallback) to the state-owning form through the typed callback — no DOM
+ * queries. The legacy querySelector path remains only for mounts that don't pass it.
  */
-export function DraftWithIntelligencePanel({ copy }: { copy: DraftPanelCopy }) {
+export function DraftWithIntelligencePanel({
+  copy,
+  onApply,
+}: {
+  copy: DraftPanelCopy;
+  onApply?: (draft: ListingDraft, idea: string) => void;
+}) {
   const [idea, setIdea] = useState("");
   const [notes, setNotes] = useState("");
   const [pending, setPending] = useState(false);
@@ -94,10 +122,23 @@ export function DraftWithIntelligencePanel({ copy }: { copy: DraftPanelCopy }) {
 
   function onUse() {
     if (!draft) return;
-    fillField("title", idea, true);
+    // State-owned path: hand the draft (plus the idea, the title fallback) to the form.
+    if (onApply) {
+      onApply(draft, idea);
+      return;
+    }
+    // Legacy DOM path for mounts without onApply. "Use this draft" means use it —
+    // the seller reviews before submit.
+    fillField("title", draft.title || idea);
     fillField("summary", draft.summary);
-    fillField("description", draft.description);
+    fillField("description", buildDescription(draft));
     fillCategory(draft.category);
+    // Factual attributes: fill only when the model grounded them in the seller's words,
+    // and never overwrite something the seller already typed themselves.
+    fillField("material", draft.material, true);
+    fillField("warranty", draft.warranty, true);
+    fillField("delivery_note", draft.deliveryNote, true);
+    fillField("lead_time", draft.leadTime, true);
   }
 
   return (
