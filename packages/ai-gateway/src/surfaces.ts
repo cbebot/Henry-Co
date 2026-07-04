@@ -77,14 +77,18 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxOutputTokens: 700,
     maxCalls: 1,
   },
+  // Intelligence Live — the FREE general-support brain behind the launcher on every
+  // division page. Conversational (multi-turn), emits the {reply, navigate, handoff}
+  // envelope. Fast tier so free support stays cheap; a generous daily allowance so a
+  // real conversation never hits the cap mid-thread.
   "support.message.assist": {
     surface: "support.message.assist",
     billable: false,
     ruleBookKey: DEFAULT_RULE_BOOK_KEY,
     modelTier: "fast",
-    maxOutputTokens: 512,
+    maxOutputTokens: 800,
     maxCalls: 1,
-    freeAllowancePerDay: 20,
+    freeAllowancePerDay: 120,
   },
   "account.check.assist": {
     surface: "account.check.assist",

@@ -84,7 +84,8 @@ describe("orchestrator — FREE-surface rate limiting", () => {
     const ad = adapter();
     const billing = new InMemoryBilling({ balances: {} });
     // Tight limit via a tiny limiter window is awkward; instead use a limiter and a policy
-    // override surface with freeAllowancePerDay. support.message.assist has freeAllowancePerDay=20.
+    // override surface with a freeAllowancePerDay of 2 (the real support.message.assist
+    // allowance is higher — see surfaces.ts — but the override keeps this test fast).
     const rateLimiter = new InMemoryRateLimiter(() => 0);
     const d = deps({ adapter: ad, billing, rateLimiter });
 

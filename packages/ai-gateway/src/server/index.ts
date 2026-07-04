@@ -15,6 +15,7 @@ import { buildPrompt, validateDraftOutput } from "./prompts";
 import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 import { parseVerdict } from "../verify";
 import { parseCoachEnvelope } from "../studio-prompts";
+import { parseSupportAssistEnvelope } from "../support-assist";
 import { InMemoryRateLimiter, type AiRateLimitPort } from "../rate-limit";
 
 // A per-instance anti-abuse backstop. For durable cross-instance limits, pass a
@@ -102,6 +103,9 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
         // The coach must return the {reply,ready} envelope — a malformed one triggers the
         // orchestrator's single automatic retry, so the conversation never silently degrades.
         if (t.surface === "studio.brief.coach") return parseCoachEnvelope(raw) != null;
+        // Support assist returns the {reply,navigate,handoff} envelope — same guard, so a
+        // person never sees raw JSON and the retry recovers a malformed turn.
+        if (t.surface === "support.message.assist") return parseSupportAssistEnvelope(raw) != null;
         return true;
       },
       onSignal,
