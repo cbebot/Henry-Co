@@ -71,6 +71,10 @@ type Props = {
   /** Pathway preselect — when the path was chosen upstream we know the
    * lane and don't want a re-pick. Defaults to presetHint?.pathway or "custom". */
   initialPathway?: "package" | "custom";
+  /** The signed-in person's own name + email (server-resolved). When present, the
+   * submit block greets them instead of re-asking — a known client never re-enters
+   * details we already hold. Null for anonymous prospects (the full form shows). */
+  viewerIdentity?: { name: string; email: string } | null;
 };
 
 function computeInitialOpen(draft: StudioBriefDraft): Record<ComposerSectionKey, boolean> {
@@ -101,6 +105,7 @@ export function BriefComposer({
   copilotSeed,
   initialStepIndex = 0,
   initialPathway,
+  viewerIdentity,
 }: Props) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -668,6 +673,7 @@ export function BriefComposer({
             teams={teams}
             selectedTeamId={selectedTeamId}
             setSelectedTeamId={(value) => setField("selectedTeamId", value)}
+            viewerIdentity={viewerIdentity ?? null}
           />
         </aside>
       </div>

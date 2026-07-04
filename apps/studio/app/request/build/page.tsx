@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BriefComposer } from "@/components/studio/brief-composer/brief-composer";
 import { getStudioCatalog } from "@/lib/studio/catalog";
+import { getStudioViewer } from "@/lib/studio/auth";
 import {
   resolveStudioRequestPreset,
   resolveStudioTemplatePreset,
@@ -46,7 +47,12 @@ export default async function RequestBuildPage({
     redirect("/pick");
   }
 
-  const catalog = await getStudioCatalog();
+  const [catalog, viewer] = await Promise.all([getStudioCatalog(), getStudioViewer()]);
+  // Signed-in identity, so the composer never re-asks a known person for their name/email.
+  // Slim + client-safe: only what they already own (their own name + email).
+  const viewerIdentity = viewer.user
+    ? { name: viewer.user.fullName ?? "", email: viewer.user.email ?? "" }
+    : null;
   const templateHint = resolveStudioTemplatePreset(params.template, catalog.requestConfig);
   const presetHint =
     templateHint ?? resolveStudioRequestPreset(params.preset, catalog.requestConfig);
@@ -79,6 +85,7 @@ export default async function RequestBuildPage({
         presetHint={presetHint}
         initialStepIndex={initialStepIndex}
         initialPathway={resolvedPathway}
+        viewerIdentity={viewerIdentity}
       />
     </main>
   );
