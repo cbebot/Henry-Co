@@ -23,7 +23,7 @@ export default async function SellerApplicationPage() {
         <Link
           href={
             application?.status === "approved"
-              ? "/vendor/onboarding"
+              ? "/vendor"
               : application?.status === "submitted" || application?.status === "under_review"
               ? "/account/seller-application/review"
               : "/account/seller-application/start"

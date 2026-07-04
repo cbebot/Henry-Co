@@ -28,8 +28,10 @@ export default async function VendorSettingsPage() {
 
   return (
     <WorkspaceShell
-      title="Settings"
-      description="Marketplace settings stay focused on seller operations: payout details, shipping expectations, support coverage, and moderation policy acknowledgement."
+      title={t("Settings")}
+      description={t(
+        "Seller operations in one place: support coverage, response expectations, storefront accent, and delivery promises.",
+      )}
       {...vendorWorkspaceNav("/vendor/settings", locale)}
     >
       <MarketplaceActionForm
@@ -39,15 +41,48 @@ export default async function VendorSettingsPage() {
         pendingLabel={t("Saving seller settings")}
         successTitle={t("Seller settings saved.")}
         errorTitle={t("Seller settings could not be saved.")}
-        className="market-paper rounded-[1.75rem] p-6"
+        className="market-paper space-y-5 rounded-[1.75rem] p-6"
         buttonClassName="market-button-primary mt-4 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80"
       >
-        <div className="grid gap-4 md:grid-cols-2">
-          <input name="support_email" defaultValue={data.vendor.supportEmail} className="market-input rounded-2xl px-4 py-3" placeholder={t("Support email")} />
-          <input name="support_phone" defaultValue={data.vendor.supportPhone} className="market-input rounded-2xl px-4 py-3" placeholder={t("Support phone")} />
-          <input name="response_sla_hours" type="number" defaultValue={data.vendor.responseSlaHours} className="market-input rounded-2xl px-4 py-3" placeholder={t("Response SLA hours")} />
-          <input name="accent" defaultValue={data.vendor.accent} className="market-input rounded-2xl px-4 py-3" placeholder={t("Accent hex")} />
-        </div>
+        <section className="space-y-4">
+          <p className="market-kicker">{t("Support & response")}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <input
+              name="support_email"
+              defaultValue={data.vendor.supportEmail}
+              className="market-input rounded-2xl px-4 py-3"
+              placeholder={t("Support email")}
+              aria-label={t("Support email")}
+            />
+            <input
+              name="support_phone"
+              defaultValue={data.vendor.supportPhone}
+              className="market-input rounded-2xl px-4 py-3"
+              placeholder={t("Support phone")}
+              aria-label={t("Support phone")}
+            />
+            <input
+              name="response_sla_hours"
+              type="number"
+              defaultValue={data.vendor.responseSlaHours}
+              className="market-input rounded-2xl px-4 py-3"
+              placeholder={t("Response SLA hours")}
+              aria-label={t("Response SLA hours")}
+            />
+          </div>
+        </section>
+        <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
+          <p className="market-kicker">{t("Storefront accent")}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <input
+              name="accent"
+              defaultValue={data.vendor.accent}
+              className="market-input rounded-2xl px-4 py-3"
+              placeholder={t("Accent hex")}
+              aria-label={t("Accent hex")}
+            />
+          </div>
+        </section>
       </MarketplaceActionForm>
 
       {/* V3-DELIVERY-COMPLETE-01 (T5) — seller Delivery Promise. */}
@@ -68,7 +103,7 @@ export default async function VendorSettingsPage() {
         <div className="market-paper mt-6 rounded-[1.75rem] p-6">
           <DeliveryPromiseFields tier={data.vendor.verificationLevel} current={currentPromise} disabled />
           <p className="mt-4 rounded-2xl border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-3 text-sm text-[var(--market-muted)]">
-            {t("Delivery promises activate once HenryCo turns them on. Preview your reach here in the meantime.")}
+            {t("Delivery promises activate once Henry Onyx turns them on. Preview your reach here in the meantime.")}
           </p>
         </div>
       )}

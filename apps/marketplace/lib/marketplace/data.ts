@@ -1318,6 +1318,9 @@ export async function getVendorWorkspaceData() {
             subtotal: Number(row.subtotal || 0),
             netVendorAmount: Number(row.net_vendor_amount || 0),
             placedAt: String(order?.placed_at || order?.created_at || new Date().toISOString()),
+            deliveredAt: row.delivered_at ? String(row.delivered_at) : null,
+            shipmentCarrier: row.shipment_carrier ? String(row.shipment_carrier) : "",
+            shipmentTrackingCode: row.shipment_tracking_code ? String(row.shipment_tracking_code) : "",
           };
         }) ?? [],
     };
@@ -1341,6 +1344,9 @@ export async function getVendorWorkspaceData() {
         subtotal: number;
         netVendorAmount: number;
         placedAt: string;
+        deliveredAt: string | null;
+        shipmentCarrier: string;
+        shipmentTrackingCode: string;
       }>,
       issue: "Vendor workspace data is unavailable right now.",
     };
