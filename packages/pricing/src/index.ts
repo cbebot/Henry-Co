@@ -13,9 +13,13 @@ export {
   buildExchangeRateSnapshot,
   buildFallbackExchangeRateSnapshot,
   assertNoAmbiguousCurrency,
+  resolvePayerCurrency,
+  parseChargeCurrencies,
   type CurrencyLayerSnapshot,
   type ExchangeRateSnapshot,
   type SettlementAvailabilityStatus,
+  type PayerCurrencyResolution,
+  type PayerCurrencySource,
 } from './currency-model';
 
 // Live FX access (Open Exchange Rates, 30-min cache). SERVER-ONLY — these read
