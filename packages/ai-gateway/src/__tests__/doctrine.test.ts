@@ -77,3 +77,16 @@ describe("representation — the AI is the company's own, and speaks with settle
     assert.ok(d.includes("never becomes invention") || d.includes("no manufactured"), "no fake stats/awards/guarantees");
   });
 });
+
+describe("language mirroring — the AI speaks the person's language", () => {
+  const d = HENRY_ONYX_INTELLIGENCE_DOCTRINE.toLowerCase();
+  it("requires replying in the language of the person's latest message", () => {
+    assert.ok(d.includes("speak the person's language"), "the rule is present");
+    assert.ok(d.includes("never answer one language with another"), "names the failure it forbids");
+    assert.ok(d.includes("spanish gets spanish"), "concrete example anchors the behavior");
+  });
+  it("keeps brand names and structured keys stable across languages", () => {
+    assert.ok(d.includes("onyx swift"), "tier names stay as-is");
+    assert.ok(d.includes("required keys and format"), "structured output stays parseable");
+  });
+});
