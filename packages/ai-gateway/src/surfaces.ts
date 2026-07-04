@@ -122,7 +122,9 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxCalls: 1,
     // The cost guard now that the coach NEVER degrades to canned replies: per-session daily cap
     // (the action passes a stable session-scoped actorId) on top of the 12-turn ceiling.
-    freeAllowancePerDay: 60,
+    // Sized for enthusiastic REAL use (owner report: honest heavy testing was getting declined) —
+    // fast-tier 512-token turns are cheap; scripts are stopped by the burst/IP/system brakes.
+    freeAllowancePerDay: 200,
   },
   "business.message.assist": {
     surface: "business.message.assist",

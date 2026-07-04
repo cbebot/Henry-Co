@@ -38,9 +38,12 @@ import {
  * Counters live on studio_brief_drafts (intent "studio_brief_chat", no
  * transcript content) and fail open — the gateway allowance still binds.
  */
-const CHAT_BURST_LIMIT_PER_MINUTE = 8;
-const CHAT_IP_LIMIT_PER_DAY = 150;
-const CHAT_SYSTEM_LIMIT_PER_DAY = 4000;
+// Sized for humans first (owner directive: limit abuse, never helpfulness): a fast typer in a
+// real back-and-forth peaks near 10-12 turns/minute; shared/NAT'd offices share one IP; the
+// system brake is a runaway guard, not a business cap. Scripts still hit walls fast.
+const CHAT_BURST_LIMIT_PER_MINUTE = 12;
+const CHAT_IP_LIMIT_PER_DAY = 400;
+const CHAT_SYSTEM_LIMIT_PER_DAY = 6000;
 const DAY_SECONDS = 60 * 60 * 24;
 
 export type BriefChatTurn = {
