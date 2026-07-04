@@ -5,6 +5,7 @@ import type { AiSurfaceKey, AiSurfacePolicy } from "../surfaces";
 import type { AiPromptParts } from "../orchestrator";
 import { INTELLIGENCE_CHAT_SYSTEM_PROMPT, normalizeChatMessages } from "../intelligence-chat";
 import { composeSystemPrompt } from "../doctrine";
+import { listSupportAssistDestinations } from "../support-assist";
 import {
   buildStudioBriefStructuredPrompt,
   buildStudioMessageRefinePrompt,
@@ -89,13 +90,56 @@ function singleShotPrompt(taskInstruction: string, task: AiTask): AiPromptParts 
   };
 }
 
-// V3-29 — support-message assist (FREE; company-critical). Helps a user phrase a clear
-// message to Henry Onyx support — reduces friction and grows trust.
+// Intelligence Live L1 — the FREE general-support brain behind the launcher on every
+// division page. Multi-turn: it answers, offers navigation to the person's own workspace,
+// and hands off to a human on the Onyx Line when it cannot help or when asked. Output is
+// the {reply, navigate, handoff} envelope so the client can render branded buttons and the
+// escalation path — never raw JSON. The doctrine already governs language mirroring, the
+// representation posture, opacity, and the calm premium voice.
 function buildSupportAssistPrompt(task: AiTask): AiPromptParts {
-  return singleShotPrompt(
-    "Help the person write a clear, concise message to Henry Onyx support so the team can help them quickly. Rewrite or draft their message; keep their facts and add the missing specifics (what, when, which order or listing) without inventing any. Leave them feeling well looked after.",
-    task,
-  );
+  const division = str(task.input.division, 40) || "the platform";
+  const page = str(task.input.page, 200);
+  // Real, RLS-safe account facts land here at L3; at L1 it is empty and the model reasons
+  // only over the conversation. Never invented — absent means "not provided".
+  const account = str(task.input.account, 1500);
+
+  const context = [
+    `The person is using Henry Onyx ${division}.`,
+    page ? `They are currently on: ${page}.` : "",
+    account
+      ? `Here are verified facts about THIS person's own account — use them to answer with real specifics; never guess beyond them:\n${account}`
+      : "You do not have this person's account records in this turn. Answer from the conversation; if a real record is needed, offer to open the right place in their workspace or hand off to the team — never invent a balance, order, status, or date.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const instruction = [
+    "You are the live support concierge for Henry Onyx. Help the person resolve what they came for:",
+    "answer their question clearly, or move them to the exact place that does it. Keep replies short and",
+    "warm — a sentence or two, or a tight list. One idea at a time; ask a single clear question when you",
+    "need a fact.",
+    "",
+    context,
+    "",
+    "You may offer up to two navigation buttons, but ONLY to these destinations (use the exact target id):",
+    listSupportAssistDestinations(),
+    "",
+    "Hand off to a human on the Onyx Line (set handoff true) when: the person asks for a person or the team,",
+    "you cannot resolve their issue, or it needs an action only staff can take (a refund, a dispute, a",
+    "correction to their record). When you hand off, say so warmly in the reply — tell them the team will",
+    "pick it up in their support inbox — and do not also invent a resolution.",
+    "",
+    "OUTPUT FORMAT — respond with ONLY a JSON object, no prose, no code fence:",
+    '{"reply": string, "navigate": [{"target": string, "label": string}], "handoff": boolean}',
+    '"reply" is the message shown to the person, in THEIR language. "navigate" is 0-2 buttons whose "target"',
+    'is one of the destination ids above and whose "label" is a short button text in their language (never a',
+    'raw id). "handoff" is true only per the rule above. Use [] for navigate when nothing fits.',
+  ].join("\n");
+
+  return {
+    system: composeSystemPrompt(instruction),
+    messages: normalizeChatMessages(task.input.messages, { maxTurns: 12, maxChars: 1500 }),
+  };
 }
 
 // V3-30 — business-message assist (METERED). Helps a business owner draft a professional,

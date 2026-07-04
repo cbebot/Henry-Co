@@ -10,6 +10,7 @@
     "./cn": "./src/cn.ts",
     "./public": "./src/public/index.ts",
     "./support": "./src/support/index.ts",
+    "./intelligence": "./src/intelligence/index.ts",
     "./public-shell": "./src/public-shell/index.ts",
     "./public-design": "./src/public-design/index.ts",
     "./a11y": "./src/a11y/index.ts",
@@ -32,6 +33,7 @@
   "dependencies": {
     "@fingerprintjs/fingerprintjs-pro-react": "^2.7.1",
     "@henryco/auth": "workspace:^",
+    "@henryco/chat-thread": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",

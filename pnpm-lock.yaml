@@ -51,6 +51,9 @@ importers:
       '@henryco/address-selector':
         specifier: workspace:^
         version: link:../../packages/address-selector
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
@@ -240,7 +243,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -358,7 +361,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -3287,6 +3290,9 @@ importers:
       '@henryco/auth':
         specifier: workspace:^
         version: link:../auth
+      '@henryco/chat-thread':
+        specifier: workspace:^
+        version: link:../chat-thread
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
