@@ -677,6 +677,31 @@
   line-height: var(--hc-leading-prose);
 }
 
+/* AI-authored text (the <AiProse> primitive). Rides `.hc-prose` for the brand reading
+   serif + inherited colour; these only set the SIZE/MEASURE right for an AI reply. The AI
+   fills its container (a chat bubble, a draft card), so the reading measure cap is dropped.
+   `--chat` is compact for bubbles + inline drafts; `--reading` keeps the full editorial size
+   for long-form paid results. */
+.hc-ai-prose {
+  max-width: none;
+  /* AI output arrives as a plain string with blank-line paragraph breaks; preserve them so
+     replies read as real paragraphs instead of one collapsed blob. Safe when children are
+     real elements too. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.hc-ai-prose.hc-ai-prose--chat {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.hc-ai-prose.hc-ai-prose--chat > * + * {
+  margin-top: 0.55em;
+}
+.hc-ai-prose.hc-ai-prose--reading {
+  font-size: var(--hc-text-reading);
+  line-height: var(--hc-leading-prose);
+}
+
 /* Standalone measure caps for non-prose reading blocks
    (hero sub-copy, card descriptions, section intros). */
 .hc-measure {

@@ -11,6 +11,7 @@
     "./public": "./src/public/index.ts",
     "./support": "./src/support/index.ts",
     "./intelligence": "./src/intelligence/index.ts",
+    "./prose": "./src/prose/index.ts",
     "./public-shell": "./src/public-shell/index.ts",
     "./public-design": "./src/public-design/index.ts",
     "./a11y": "./src/a11y/index.ts",

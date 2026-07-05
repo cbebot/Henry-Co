@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
@@ -25,6 +25,15 @@ const display = Space_Grotesk({
   variable: "--font-studio-display",
 });
 
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` (every AI reply, and the company-wide reading face to come) renders
+// in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
+
 const studio = getDivisionConfig("studio");
 
 // PASS 18C — emit hreflang + og:locale per request.
@@ -47,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable} ${reading.variable}`}>
       <body className="min-h-screen bg-[var(--studio-bg)] text-[var(--studio-ink)] antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>
