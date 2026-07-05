@@ -120,6 +120,7 @@
  *  See `docs/v3/theme-tokens.md` for the full registry.
  */
 
+@import "./fonts.css";
 @import "../theme/tokens.css";
 
 /* ─────────────────────────────────────────────────────────── */
