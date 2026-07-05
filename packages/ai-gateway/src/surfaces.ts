@@ -19,7 +19,13 @@ export type AiSurfaceKey =
   | "learn.course.draft" // METERED — an educator drafts a course
   | "learn.course.verify" // METERED, deep — verify a course is genuine, on-standard, safe
   | "property.listing.draft" // METERED — an agent drafts a property listing
-  | "property.listing.verify"; // METERED, deep — verify a property listing is honest, real, safe
+  | "property.listing.verify" // METERED, deep — verify a property listing is honest, real, safe
+  // Intelligence Live L4 — CHARGEABLE deep-work capabilities. Free general support stays free
+  // (support.message.assist); these are the personalised, wallet-billed pieces the person
+  // confirms a price for before it runs. Deep tier (the premium the rate card already prices).
+  | "intelligence.deep.growth" // METERED, deep — a tailored growth plan for their business
+  | "intelligence.deep.marketing" // METERED, deep — a deep marketing analysis of their own store/listings
+  | "intelligence.deep.listing"; // METERED, deep — a conversion review of their own listings/products
 
 export interface AiSurfacePolicy {
   surface: AiSurfaceKey;
@@ -185,6 +191,33 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     ruleBookKey: DEFAULT_RULE_BOOK_KEY,
     modelTier: "deep",
     maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  // Intelligence Live L4 — chargeable deep-work capabilities. Deep tier, billable, one call.
+  // A larger output budget than a verify verdict because these produce a real written plan or
+  // analysis the person paid for. The price is quoted and confirmed before any of this runs.
+  "intelligence.deep.growth": {
+    surface: "intelligence.deep.growth",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 2200,
+    maxCalls: 1,
+  },
+  "intelligence.deep.marketing": {
+    surface: "intelligence.deep.marketing",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 2200,
+    maxCalls: 1,
+  },
+  "intelligence.deep.listing": {
+    surface: "intelligence.deep.listing",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 2000,
     maxCalls: 1,
   },
 };

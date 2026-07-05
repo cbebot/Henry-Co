@@ -44,6 +44,14 @@ export {
   type ResolvedAssistAction,
   type SupportAssistTurn,
 } from "./src/support-assist";
+export {
+  INTELLIGENCE_CAPABILITIES,
+  getCapability,
+  isCapabilityKey,
+  getCapabilityForSurface,
+  listCapabilitiesForPrompt,
+  type IntelligenceCapability,
+} from "./src/capabilities";
 export { isAiGatewayLive, isAiSurfaceEnabled } from "./src/flags";
 export {
   parseVerdict,

@@ -115,8 +115,10 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
           const env = parseSupportAssistEnvelope(raw);
           return env != null && !assistantReplyLeaksProvider(env.reply);
         }
-        // The Intelligence chat returns free text; scan it directly for an opacity leak.
-        if (t.surface === "intelligence.chat") return !assistantReplyLeaksProvider(raw);
+        // The Intelligence chat + the deep-work capabilities return free prose; scan directly
+        // for an opacity leak (the person paid for these, so a leaked provider name is worse).
+        if (t.surface === "intelligence.chat" || t.surface.startsWith("intelligence.deep."))
+          return !assistantReplyLeaksProvider(raw);
         return true;
       },
       onSignal,
@@ -157,3 +159,6 @@ export { resolveModelForTier } from "./config";
 export { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 // The company-wide mount helper — a division wires any surface in ~8 lines.
 export { createAssistRunner, type AssistRunnerConfig, type AssistActor, type AssistResult } from "./assist-kit";
+// Intelligence Live L4 — the price-before-run quote for a chargeable capability (server-only:
+// the rate card never leaves the server; only the final kobo totals cross to the client).
+export { quoteCapability, type CapabilityQuote } from "./quote";
