@@ -134,6 +134,12 @@ body {
     linear-gradient(180deg, #090b10 0%, #08090d 42%, #111016 100%);
   color: var(--market-ink);
   font-family: var(--font-marketplace-sans);
+  /* Bridge the loaded editorial serif (Fraunces, via next/font on <body>) into the shared
+     reading seam, so `.hc-prose` — every editorial reading surface, including the Henry Onyx
+     Intelligence replies — renders in the real brand serif instead of a system fallback.
+     Declared here (not :root) because the next/font family lives on <body>; the reference
+     resolves to the loaded Fraunces at this element and inherits down to .hc-prose. */
+  --font-reading: var(--font-marketplace-display);
 }
 
 body::before {
