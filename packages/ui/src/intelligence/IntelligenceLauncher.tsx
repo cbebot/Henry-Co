@@ -37,6 +37,13 @@ export interface IntelligenceLauncherProps {
   accent?: string;
   /** Same-origin endpoint. Defaults to "/api/intelligence/chat". */
   endpoint?: string;
+  /**
+   * Extra bottom clearance (any CSS length) applied ONLY at mobile widths, so the launcher
+   * clears a fixed bottom navigation bar instead of hiding behind it. The account dashboard
+   * has a bottom action bar (3.5rem); it passes that height + a gap. Division apps have no
+   * bottom bar and omit this, so the launcher stays at the default 1rem corner offset.
+   */
+  bottomOffset?: string;
 }
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
@@ -93,7 +100,7 @@ function useSessionId(division: string): string {
   }, [division]);
 }
 
-export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = "/api/intelligence/chat" }: IntelligenceLauncherProps) {
+export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = "/api/intelligence/chat", bottomOffset }: IntelligenceLauncherProps) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const t = useCallback((text: string) => translateSurfaceLabel(locale as AppLocale, text), [locale]);
 
@@ -337,8 +344,10 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
       ({
         ["--ct-accent" as string]: accent,
         ["--hc-il-accent" as string]: accent,
+        // Mobile-only lift so the launcher clears a host bottom nav bar (account dashboard).
+        ...(bottomOffset ? { ["--hc-il-lift" as string]: bottomOffset } : {}),
       }) as CSSProperties,
-    [accent],
+    [accent, bottomOffset],
   );
 
   return (
@@ -419,6 +428,9 @@ function IntelligenceLauncherStyles() {
    (a white panel with a dark composer). Every colour flows from four --hc-il-* seam tokens
    that flip once under .dark, and the chat-thread + composer tokens are bridged from them. */
 .hc-il-root{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:.75rem;font-family:inherit}
+/* On mobile, lift above a host bottom nav bar (account dashboard) so the launcher is never
+   hidden behind it. --hc-il-lift is set by the bottomOffset prop; 0 (no lift) everywhere else. */
+@media (max-width:767px){.hc-il-root{bottom:calc(max(1rem,env(safe-area-inset-bottom)) + var(--hc-il-lift,0px))}}
 .hc-il-fab{display:inline-flex;align-items:center;justify-content:center;width:3.5rem;height:3.5rem;border-radius:999px;border:none;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:var(--hc-il-on-accent,#0b1220);box-shadow:0 14px 34px -8px color-mix(in srgb,var(--hc-il-accent,#C9A227) 55%,transparent),0 4px 12px rgba(11,18,32,.18);transition:transform .2s cubic-bezier(.22,1,.36,1),filter .18s,box-shadow .2s}
 .hc-il-fab:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .hc-il-fab:active{transform:scale(.95)}

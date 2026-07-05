@@ -97,7 +97,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {/* Intelligence Live (flag-dark): the company AI launcher replaces the static "?"
               only where NEXT_PUBLIC_INTELLIGENCE_LIVE is on; otherwise the concierge stands. */}
           {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
-            <IntelligenceLauncher division="account" />
+            // Lift the launcher above the mobile bottom action bar (3.5rem) + a 1rem gap, so
+            // the AI support button is never hidden behind it on the dashboard.
+            <IntelligenceLauncher division="account" bottomOffset="calc(3.5rem + 1rem)" />
           ) : (
             <SupportAssist division="account" />
           )}
