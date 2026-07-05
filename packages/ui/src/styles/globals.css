@@ -734,6 +734,19 @@
   font-optical-sizing: auto;
 }
 
+/* Brand-wide: text a PERSON TYPES carries the company reading face, so every field
+   speaks in the same voice as the rest of the product. Scoped under `body` (specificity
+   0,0,2) so it beats the per-app `button, input, select, textarea { font: inherit }`
+   resets no matter the import order — while any input that sets its OWN font-family via a
+   class (a monospace code / OTP field, a tabular amount input) still wins on higher
+   specificity and opts out for free. Colour + size are untouched; only the FACE changes.
+   Resolves to the real Fraunces wherever `--font-reading` is wired (every app), else a
+   premium system serif, never an unstyled default. */
+body :is(input, textarea, select) {
+  font-family: var(--hc-font-reading);
+  font-optical-sizing: auto;
+}
+
 /* ─────────────────────────────────────────────────────────── */
 /*  PASS 19 — Surface utility classes                          */
 /* ─────────────────────────────────────────────────────────── */
