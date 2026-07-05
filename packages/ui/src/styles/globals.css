@@ -194,6 +194,14 @@
      --font-reading per-app to swap in a text serif without touching .hc-prose. */
   --hc-font-reading: var(--font-reading, var(--hc-font-display));
 
+  /* Family tokens — the three faces the OWNED type system repoints on reveal
+     (see [data-onyx-type="live"] below). Until then they alias the existing
+     seam so every surface — including studio — resolves to a premium stack,
+     never nothing. Once the brand faces load, the fallback chain carries NO
+     system font; the font:coverage gate proves that. */
+  --hc-font-serif: var(--hc-font-display);
+  --hc-font-sans: var(--hc-font-body);
+
   /* Radii — explicit so component code does not invent */
   --hc-radius-sm: 0.5rem;
   --hc-radius-md: 0.875rem;
