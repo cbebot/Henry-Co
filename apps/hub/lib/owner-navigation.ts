@@ -158,6 +158,7 @@ export const ownerNavItems: OwnerNavItem[] = [
     section: "Intelligence",
     children: [
       { href: "/owner/ai", label: "Helper Dashboard", icon: CircuitBoard },
+      { href: "/owner/ai/conversations", label: "Conversations", icon: MessagesSquare },
       { href: "/owner/ai/signals", label: "Signals", icon: Network },
       { href: "/owner/ai/insights", label: "Insights", icon: Sparkles },
     ],
