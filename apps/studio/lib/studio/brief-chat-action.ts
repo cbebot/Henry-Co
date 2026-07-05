@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
-import { parseCoachEnvelope, COACH_DISCOVERY_AREAS } from "@henryco/ai-gateway";
+import { parseCoachEnvelope, COACH_DISCOVERY_AREAS, assessFreeMessage } from "@henryco/ai-gateway";
 import { STUDIO_AI_MODEL_LABEL, briefFailureCopy, isRetryableGatewayCode } from "@/lib/studio/ai-runtime";
 import { getOrCreateCopilotSessionId } from "@/lib/studio/copilot-session";
 import {
@@ -96,6 +96,15 @@ export async function continueStudioBriefChatAction(input: {
   }
   if (messages[messages.length - 1]?.role !== "user") {
     return { ok: false, message: "Waiting on your reply before the next question." };
+  }
+
+  // Cheap pre-model abuse filter: reject obvious junk (empty, paste-bomb, exact repeat, a
+  // character mashed) WITHOUT spending a model call. High-precision, so a real question, in any
+  // language, always passes. This is the biggest saving against people burning the free key.
+  const lastUserText = messages[messages.length - 1]?.content ?? "";
+  const priorUserTexts = messages.filter((m) => m.role === "user").slice(0, -1).map((m) => m.content);
+  if (!assessFreeMessage({ text: lastUserText, recentUserTexts: priorUserTexts }).ok) {
+    return { ok: false, message: "Tell me a little about the product you'd like Henry Onyx to build, and I'll help you shape it." };
   }
 
   // Hard ceiling — wrap up honestly (a completion, not a stand-in) rather than burn more calls.
