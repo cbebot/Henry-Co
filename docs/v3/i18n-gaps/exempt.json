@@ -41,11 +41,15 @@
     "Focus search",
     "Move between results",
     "Open the highlighted route",
-    "Or jump to a top route"
+    "Or jump to a top route",
+    "Invoice HO-1001",
+    "Invoice HO-1002",
+    "Invoice HO-1003"
   ],
   "filePrefixes": [
     "apps/super-app",
-    "apps/company-hub"
+    "apps/company-hub",
+    "apps/hub/app/type-sample"
   ],
   "notes": {
     "strings": "Day + month tokens that resolve via Intl on the surface but appear as fallback literals in non-localised utility files. '= 1024 && unit' is a scanner false positive on packages/messaging-thread/src/thread.tsx:51 — the formatBytes JS `value >= 1024 && unit < units.length - 1` loop condition parsed as JSX text. 'Realtime updates are live' is a screen-reader aria-label on the messaging-thread Live pill — deferred to V3-07b operator-surface i18n pass. 'Loading content.' is a screen-reader-only a11y label in apps/property/app/account/loading.tsx — deferred to V3-07b for systematic sr-only string handling. 'Henry &amp; Co.' and 'HENRY & CO.' are fixed brand wordmarks; the payment proof helper and 'Copy amount' are existing payment-surface literals whose line numbers moved during the V3-LEGAL-RENAME-01 config import pass and are not new copy. '): Promise' is the same TS-type-annotation false-positive class as the '(r.ok ? (r.json() as Promise' entry: the `>([^<>{}]{2,})<` JSX-text regex captures the `): Promise` between the `>` of `Record<string, unknown>` and the `<` of `Promise<void>` in async telemetry helpers (apps/account/components/smart-home/DashboardRefreshTracker.tsx + EmptyStateCtaTracker.tsx) — never user-facing copy. 'Clear search' / 'Filter results by division' / 'Search results' are sr-only a11y labels (aria-label / visually-hidden <label>), and 'Focus search' / 'Move between results' / 'Open the highlighted route' / 'Or jump to a top route' are keyboard-cheatsheet + jump-list helper strings in the rebuilt hub /search (apps/hub/app/(site)/search/HubSearchExperience.tsx) — same class as the existing 'Keyboard shortcuts' / 'Close workspace menu' a11y labels, deferred to the hub i18n wave that will own the whole public /search surface.",
