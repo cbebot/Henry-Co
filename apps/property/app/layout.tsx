@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
@@ -71,7 +72,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
-            <SupportAssist division="property" accent="#BF7A47" />
+            {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+              <IntelligenceLauncher division="property" accent="#BF7A47" endpoint={getAccountUrl("/api/intelligence/chat")} />
+            ) : (
+              <SupportAssist division="property" accent="#BF7A47" />
+            )}
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

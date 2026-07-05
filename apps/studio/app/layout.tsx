@@ -4,8 +4,9 @@ import "./globals.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
-import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -54,7 +55,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <LocaleProvider locale={lang}>
             {children}
             <StudioToastRoot />
-            <SupportAssist division="studio" accent={studio.accent} />
+            {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+              <IntelligenceLauncher division="studio" accent={studio.accent} endpoint={getAccountUrl("/api/intelligence/chat")} />
+            ) : (
+              <SupportAssist division="studio" accent={studio.accent} />
+            )}
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics vercelAnalytics={false} />

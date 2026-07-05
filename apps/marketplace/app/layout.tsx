@@ -5,8 +5,9 @@ import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-pro
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
-import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -62,7 +63,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <LocaleProvider locale={lang}>
             <MarketplaceRuntimeProvider initialShell={shell}>
               {children}
-              <SupportAssist division="marketplace" accent="#B2863B" />
+              {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+                <IntelligenceLauncher division="marketplace" accent="#B2863B" endpoint={getAccountUrl("/api/intelligence/chat")} />
+              ) : (
+                <SupportAssist division="marketplace" accent="#B2863B" />
+              )}
             </MarketplaceRuntimeProvider>
           </LocaleProvider>
         </PublicThemeGuard>
