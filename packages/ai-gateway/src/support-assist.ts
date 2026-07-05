@@ -165,6 +165,10 @@ export interface ResolvedAssistAction {
 export function resolveSupportAssistActions(actions: SupportAssistAction[]): ResolvedAssistAction[] {
   const resolved: ResolvedAssistAction[] = [];
   for (const action of actions) {
+    // OWN-property check before indexing: a target like "__proto__", "toString", or
+    // "constructor" would otherwise resolve to an inherited Object member (truthy) and either
+    // crash on href() or smuggle a non-catalog entry. The catalog is a closed allow-list.
+    if (!Object.prototype.hasOwnProperty.call(DESTINATIONS, action.target)) continue;
     const destination = DESTINATIONS[action.target];
     if (!destination) continue;
     resolved.push({ label: action.label, href: destination.href() });

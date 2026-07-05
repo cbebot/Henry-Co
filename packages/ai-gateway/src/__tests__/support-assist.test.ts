@@ -97,6 +97,17 @@ describe("support-assist envelope — resolve to real hrefs", () => {
     assert.match(resolved[0].href, /^https?:\/\//, "absolute href from config");
   });
 
+  it("does not crash or leak on prototype-chain target names (own-property guard)", () => {
+    const resolved = resolveSupportAssistActions([
+      { target: "__proto__", label: "x" },
+      { target: "constructor", label: "x" },
+      { target: "toString", label: "x" },
+      { target: "hasOwnProperty", label: "x" },
+      { target: "valueOf", label: "x" },
+    ]);
+    assert.deepEqual(resolved, [], "inherited Object members are never treated as catalog entries");
+  });
+
   it("every advertised destination resolves (catalog integrity)", () => {
     const lines = listSupportAssistDestinations().split("\n");
     assert.ok(lines.length >= 8, "catalog is non-trivial");

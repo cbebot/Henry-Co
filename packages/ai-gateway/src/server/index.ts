@@ -16,6 +16,7 @@ import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 import { parseVerdict } from "../verify";
 import { parseCoachEnvelope } from "../studio-prompts";
 import { parseSupportAssistEnvelope } from "../support-assist";
+import { assistantReplyLeaksProvider } from "../doctrine";
 import { InMemoryRateLimiter, type AiRateLimitPort } from "../rate-limit";
 
 // A per-instance anti-abuse backstop. For durable cross-instance limits, pass a
@@ -102,10 +103,20 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
         if (t.surface.endsWith(".verify")) return parseVerdict(raw) != null;
         // The coach must return the {reply,ready} envelope — a malformed one triggers the
         // orchestrator's single automatic retry, so the conversation never silently degrades.
-        if (t.surface === "studio.brief.coach") return parseCoachEnvelope(raw) != null;
+        // The reply is ALSO scanned for a provider/model self-disclosure (defence in depth for
+        // opacity): a leak fails validation and the retry gives the model a chance to comply.
+        if (t.surface === "studio.brief.coach") {
+          const env = parseCoachEnvelope(raw);
+          return env != null && !assistantReplyLeaksProvider(env.reply);
+        }
         // Support assist returns the {reply,navigate,handoff} envelope — same guard, so a
-        // person never sees raw JSON and the retry recovers a malformed turn.
-        if (t.surface === "support.message.assist") return parseSupportAssistEnvelope(raw) != null;
+        // person never sees raw JSON, and the same opacity leak-scan on the reply.
+        if (t.surface === "support.message.assist") {
+          const env = parseSupportAssistEnvelope(raw);
+          return env != null && !assistantReplyLeaksProvider(env.reply);
+        }
+        // The Intelligence chat returns free text; scan it directly for an opacity leak.
+        if (t.surface === "intelligence.chat") return !assistantReplyLeaksProvider(raw);
         return true;
       },
       onSignal,
