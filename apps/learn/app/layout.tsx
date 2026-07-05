@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
@@ -13,6 +14,14 @@ import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 
 const learn = getDivisionConfig("learn");
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
 
 // PASS 18C — emit hreflang + og:locale per request.
 export async function generateMetadata(): Promise<Metadata> {
@@ -35,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
-      <body className="min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased">
+      <body className={`${reading.variable} min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased`}>
         <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />

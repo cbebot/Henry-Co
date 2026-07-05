@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
@@ -18,6 +18,14 @@ const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
   display: "swap",
+});
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
 });
 
 // PASS 18C — emit hreflang + og:locale per request.
@@ -50,7 +58,7 @@ export default async function RootLayout({
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={`${manrope.variable} ${reading.variable}`} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>
