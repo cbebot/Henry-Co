@@ -2,15 +2,19 @@
 import localFont from "next/font/local";
 
 // Interim self-hosted Latin faces. The bespoke woff2 drop into these same paths
-// on reveal (Track A). The `fallback` arrays are next/font's load-window metric
-// placeholders ONLY; the settled, rendered stacks are the OWNED-only CSS token
-// chains in globals.css. (Interim exception per spec §14#2.)
+// on reveal (Track A). adjustFontFallback:false + NO `fallback` array is
+// DELIBERATE: next/font must not append a system font (Georgia/Arial/serif) to
+// --font-brand-*, or that generic would sit AHEAD of the owned Arabic/CJK
+// companions in the globals.css token stack and intercept non-Latin glyphs in a
+// SYSTEM font (proven live: companions stayed `unloaded`). The CSS token layer
+// owns the entire OWNED-only chain: brand face -> owned companions -> a generic
+// the coverage gate proves unreachable. (Interim load FOUT accepted, spec §14#2.)
 export const brandSerif = localFont({
   src: [{ path: "../../fonts/henryonyx-serif-interim.woff2", weight: "100 900", style: "normal" }],
   variable: "--font-brand-serif",
   display: "swap",
   preload: true,
-  fallback: ["Georgia", "serif"],
+  adjustFontFallback: false,
 });
 
 export const brandSans = localFont({
@@ -18,7 +22,7 @@ export const brandSans = localFont({
   variable: "--font-brand-sans",
   display: "swap",
   preload: true,
-  fallback: ["system-ui", "sans-serif"],
+  adjustFontFallback: false,
 });
 
 export const brandMono = localFont({
@@ -26,7 +30,7 @@ export const brandMono = localFont({
   variable: "--font-brand-mono",
   display: "swap",
   preload: false,
-  fallback: ["ui-monospace", "monospace"],
+  adjustFontFallback: false,
 });
 
 export const brandFontVariables = `${brandSerif.variable} ${brandSans.variable} ${brandMono.variable}`;
