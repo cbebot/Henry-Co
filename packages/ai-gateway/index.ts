@@ -66,6 +66,14 @@ export {
   type FreeAccessDecision,
   type FreeAccessOutcome,
 } from "./src/abuse-guard";
+export {
+  evaluateFreeBudget,
+  resolveFreeBudgetKobo,
+  FREE_AI_DAILY_BUDGET_KOBO_DEFAULT,
+  FREE_BUDGET_CONSERVE_AT,
+  type FreeBudgetDecision,
+  type FreeBudgetOutcome,
+} from "./src/free-budget";
 export { isAiGatewayLive, isAiSurfaceEnabled } from "./src/flags";
 export {
   parseVerdict,
