@@ -386,6 +386,61 @@ function normalizeIso4217(code: string | null | undefined): string | null {
   return /^[A-Z]{3}$/.test(upper) ? upper : null;
 }
 
+// ---------------------------------------------------------------------------
+// V3-MONEY-MC · M1 — the payer-currency charge amount
+// ---------------------------------------------------------------------------
+
+/** The amount to charge, in the payer's currency and its minor units. */
+export interface PayerChargeAmount {
+  /** ISO 4217 the charge is created in. */
+  currency: string;
+  /** The amount in that currency's MINOR units (e.g. kobo for NGN, cents for USD). */
+  minorAmount: number;
+  /** True when this is not the NGN base (a frozen FX rate was applied). */
+  converted: boolean;
+}
+
+/**
+ * Compute the exact amount to charge a payer in THEIR currency, from a price quoted in the
+ * pricing currency. This is the single seam every card rail should call so no rail scatters its
+ * own currency math. Returns null (the rail then charges NGN as today) when the payer currency
+ * is not chargeable: not in the allowlist, or the price/rate/exponent is not usable.
+ *
+ * The minor amount is scaled by the payer currency's OWN exponent (passed in — NGN=2, XOF=0),
+ * never a blanket x100, so a zero-decimal currency is not mis-scaled 100x. The rate is applied
+ * from a FROZEN snapshot at charge time; reconcile must match this exact figure, never re-derive
+ * it from a fresh rate. NGN (base) always uses rate 1 and needs no allowlist entry.
+ */
+export function computePayerChargeMinor(input: {
+  /** The price in `pricingCurrency` major units (e.g. 1500 means ₦1,500 when pricing is NGN). */
+  amountMajor: number;
+  pricingCurrency: string;
+  payerCurrency: string;
+  /** The allowlist of chargeable currencies (from parseChargeCurrencies). NGN is always allowed. */
+  chargeCurrencies: string[];
+  /** pricingCurrency -> payerCurrency rate (1 when the same). Must be > 0. */
+  rate: number;
+  /** The payer currency's minor-unit exponent (NGN=2, USD=2, XOF=0). Must be >= 0. */
+  payerMinorExponent: number;
+}): PayerChargeAmount | null {
+  const pricing = normalizeIso4217(input.pricingCurrency);
+  const payer = normalizeIso4217(input.payerCurrency);
+  if (!pricing || !payer) return null;
+  if (!(input.amountMajor > 0) || !(input.rate > 0) || !(input.payerMinorExponent >= 0)) return null;
+
+  // Chargeable only for the NGN base or an allowlisted currency; otherwise the rail charges NGN.
+  const allow = new Set((input.chargeCurrencies ?? []).map((c) => c.toUpperCase()));
+  allow.add(SYSTEM_BASE_CURRENCY);
+  if (!allow.has(payer)) return null;
+
+  const rate = payer === pricing ? 1 : input.rate;
+  const payerMajor = input.amountMajor * rate;
+  const minorAmount = Math.round(payerMajor * Math.pow(10, input.payerMinorExponent));
+  if (!(minorAmount > 0)) return null;
+
+  return { currency: payer, minorAmount, converted: payer !== SYSTEM_BASE_CURRENCY };
+}
+
 /**
  * Throw a descriptive error when a money amount is missing its currency context.
  * Call at system boundaries (API handlers, DB writes) to prevent ambiguous records.

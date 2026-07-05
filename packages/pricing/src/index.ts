@@ -15,11 +15,13 @@ export {
   assertNoAmbiguousCurrency,
   resolvePayerCurrency,
   parseChargeCurrencies,
+  computePayerChargeMinor,
   type CurrencyLayerSnapshot,
   type ExchangeRateSnapshot,
   type SettlementAvailabilityStatus,
   type PayerCurrencyResolution,
   type PayerCurrencySource,
+  type PayerChargeAmount,
 } from './currency-model';
 
 // Live FX access (Open Exchange Rates, 30-min cache). SERVER-ONLY — these read
