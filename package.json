@@ -21,6 +21,7 @@
     "i18n:check": "node scripts/i18n-check.mjs",
     "i18n:check:strict": "node scripts/i18n-check.mjs --strict",
     "tone:check": "node scripts/v3/tone-gate.mjs",
+    "font:check": "node scripts/font/font-check.mjs",
     "i18n:scan": "node scripts/v3/hardcoded-text-scan.mjs",
     "dead-link:scan": "node scripts/v3/dead-link-scan.mjs",
     "dead-link:check": "node scripts/v3/dead-link-scan.mjs --check",

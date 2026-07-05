@@ -84,6 +84,9 @@ jobs:
       - name: Company-voice tone gate (TONE-01 — voice.ts is law)
         run: pnpm run tone:check
 
+      - name: Owned-type font guard (warn-mode until reveal)
+        run: pnpm run font:check
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 
