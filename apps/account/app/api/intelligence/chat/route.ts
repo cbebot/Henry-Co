@@ -1,12 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "node:crypto";
 
-import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
+import { runAiTask, noBillingPort, estimateFreeTurnCostKobo } from "@henryco/ai-gateway/server";
 import { interpretSupportAssistOutput, assessFreeMessage, type ChatMessage } from "@henryco/ai-gateway";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { persistIntelligenceTurn } from "@/lib/intelligence/persist";
 import { intelligenceCorsHeaders as corsHeaders, intelligencePreflight } from "@/lib/intelligence/cors";
 import { resolveFreeActor, checkFreeAiAccess, recordFreeAiTurn } from "@/lib/intelligence/abuse-guard";
+import { checkFreeBudget, recordFreeSpend } from "@/lib/intelligence/budget-guard";
 import { buildAccountFactsForAI } from "@/lib/intelligence/account-facts";
 
 /** A guard response in the normal chat shape, so the launcher renders it like any turn. */
@@ -99,6 +100,26 @@ export async function POST(request: NextRequest) {
     return guardReply("Tell me what you need help with on Henry Onyx, and I will point you the right way.", cors);
   }
 
+  // Economic guardrail: free AI must never lose more in a day than the budget (which the owner
+  // keeps no higher than AI earnings). Past the conserve line, anonymous visitors are nudged to
+  // sign in or the paid deep-work; at the ceiling, everyone is pointed to paid or a human. This
+  // is a soft cap that keeps attracting signed-in people while capping the loss.
+  const budget = await checkFreeBudget(actor.isAnonymous);
+  if (budget.decision === "exhausted") {
+    return guardReply(
+      "Free Henry Onyx Intelligence is at capacity for today. You can run a deeper, personalised piece of work anytime, and the team is always here to help.",
+      cors,
+      { handoff: true },
+    );
+  }
+  if (budget.decision === "conserve") {
+    return guardReply(
+      "Free Henry Onyx Intelligence is busy right now. Sign in to keep going, and your history stays with you.",
+      cors,
+      { needsSignIn: true },
+    );
+  }
+
   // L3 — ground the AI with the signed-in person's OWN RLS-safe account facts (their real wallet
   // balance and details), so it answers with truth instead of guessing. Anonymous visitors send
   // no account facts. Best-effort: if the facts cannot be read, the AI simply answers without them.
@@ -130,6 +151,15 @@ export async function POST(request: NextRequest) {
   // Record this turn against the actor; a turn the AI flagged as clear misuse counts toward a
   // restriction, so repeat offenders are held across sessions (best-effort).
   await recordFreeAiTurn(actor, turn.abuse);
+
+  // Add this turn's estimated provider cost (the real loss) to today's free-AI spend, so the
+  // budget guardrail sees it on the next turn. Best-effort.
+  await recordFreeSpend(
+    estimateFreeTurnCostKobo({
+      surface: "support.message.assist",
+      inputText: messages.map((m) => m.content).join(" "),
+    }),
+  );
 
   // Persist + escalate (best-effort — never blocks or breaks the reply).
   const persisted = await persistIntelligenceTurn({
