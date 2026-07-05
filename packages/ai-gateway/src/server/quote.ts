@@ -37,6 +37,31 @@ function lineAmount(breakdown: PricingBreakdown, code: string): number {
 }
 
 /**
+ * The Free-AI Economic Guardrail's cost meter: the upper-bound PROVIDER cost of one free turn in
+ * kobo — the company's actual LOSS on that turn (the ai_compute line, NOT the customer total,
+ * since a free surface has no margin or VAT). Accumulated per turn into the daily spend ledger so
+ * free-AI spend can be capped at a budget the owner keeps no higher than AI earnings.
+ */
+export function estimateFreeTurnCostKobo(input: {
+  surface: AiSurfaceKey;
+  inputText: string;
+  rules?: AiUsageRuleSet;
+}): number {
+  const policy = getSurfacePolicy(input.surface);
+  if (!policy) return 0;
+  const rules = input.rules ?? defaultAiUsageRules();
+  const promptTokens = estimateInputTokens(String(input.inputText ?? ""));
+  const usage = estimateUsageUpperBound({ promptTokens, policy });
+  const breakdown = computeAiUsageBreakdown({
+    rules,
+    tier: policy.modelTier,
+    usage,
+    vat: { policy: TAX.vat, treatment: "standard" },
+  });
+  return lineAmount(breakdown, "ai_compute");
+}
+
+/**
  * Quote a chargeable capability for the text the person will run it on. Pure of side effects
  * (no wallet touch); returns a typed error when the key is unknown or the surface is not
  * billable, so a caller can never accidentally quote free work as paid.
