@@ -27,7 +27,12 @@ export { estimateInputTokens, estimateUsageUpperBound } from "./src/metering";
 export { redactReceipt, assertClientSafe, AI_LOG_REDACT_KEYS } from "./src/redaction";
 export { mapSignalToTelemetry, type AiTelemetryRecord } from "./src/telemetry-map";
 export { normalizeChatMessages, INTELLIGENCE_CHAT_SYSTEM_PROMPT, type ChatMessage } from "./src/intelligence-chat";
-export { HENRY_ONYX_INTELLIGENCE_DOCTRINE, composeSystemPrompt } from "./src/doctrine";
+export {
+  HENRY_ONYX_INTELLIGENCE_DOCTRINE,
+  composeSystemPrompt,
+  humanizeAssistantText,
+  assistantReplyLeaksProvider,
+} from "./src/doctrine";
 export {
   parseSupportAssistEnvelope,
   resolveSupportAssistActions,

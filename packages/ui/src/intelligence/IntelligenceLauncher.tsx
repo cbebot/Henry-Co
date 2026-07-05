@@ -200,9 +200,19 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
                 typing={typing}
                 showDaySeparators={false}
                 showTimestamps={false}
+                // Render the assistant's replies in the company reading face (.hc-prose owns
+                // the face + rhythm; ink is inherited from this light panel, never forced, so
+                // it stays legible in both host themes). The person's own turns stay plain.
+                renderBody={(message) =>
+                  message.authorRole === "other" ? (
+                    <div className="hc-il-prose hc-prose">{message.body}</div>
+                  ) : (
+                    <span style={{ whiteSpace: "pre-wrap" }}>{message.body}</span>
+                  )
+                }
                 header={{
                   title: t("Henry Onyx Intelligence"),
-                  status: t("Here to help — free"),
+                  status: t("Here to help, free"),
                   actions: (
                     <button type="button" className="hc-il-close" aria-label={t("Close")} onClick={() => setOpen(false)}>
                       <X aria-hidden />
@@ -264,6 +274,9 @@ function IntelligenceLauncherStyles() {
 .hc-il-chip:hover{filter:brightness(.97)}
 .hc-il-chip-human{border-color:rgba(11,18,32,.16);background:rgba(11,18,32,.04)}
 .hc-il-chip-icon{width:.85rem;height:.85rem}
+.hc-il-prose{font-size:.9rem;line-height:1.55}
+.hc-il-prose p{margin:0 0 .5rem}
+.hc-il-prose p:last-child{margin-bottom:0}
 .hc-il-empty{display:flex;flex-direction:column;gap:.4rem;padding:1.25rem;text-align:left}
 .hc-il-empty-title{font-size:1rem;font-weight:700;color:#0b1220;margin:0}
 .hc-il-empty-body{font-size:.875rem;line-height:1.5;color:rgba(11,18,32,.62);margin:0}

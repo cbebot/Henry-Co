@@ -8,6 +8,7 @@
 // route — the catalog IS the boundary.
 
 import { getAccountUrl, getDivisionUrl } from "@henryco/config";
+import { humanizeAssistantText } from "./doctrine";
 
 /** One navigation button the assistant offers: a catalog target + a label in the person's language. */
 export interface SupportAssistAction {
@@ -43,7 +44,7 @@ export function parseSupportAssistEnvelope(text: string): SupportAssistEnvelope 
       const parsed = JSON.parse(candidate) as unknown;
       if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
       const record = parsed as Record<string, unknown>;
-      const reply = String(record.reply ?? "").trim();
+      const reply = humanizeAssistantText(String(record.reply ?? ""));
       if (!reply) return null;
 
       const navigate: SupportAssistAction[] = [];
@@ -164,6 +165,10 @@ export interface ResolvedAssistAction {
 export function resolveSupportAssistActions(actions: SupportAssistAction[]): ResolvedAssistAction[] {
   const resolved: ResolvedAssistAction[] = [];
   for (const action of actions) {
+    // OWN-property check before indexing: a target like "__proto__", "toString", or
+    // "constructor" would otherwise resolve to an inherited Object member (truthy) and either
+    // crash on href() or smuggle a non-catalog entry. The catalog is a closed allow-list.
+    if (!Object.prototype.hasOwnProperty.call(DESTINATIONS, action.target)) continue;
     const destination = DESTINATIONS[action.target];
     if (!destination) continue;
     resolved.push({ label: action.label, href: destination.href() });
