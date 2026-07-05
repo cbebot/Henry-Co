@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { AiProse } from "@henryco/ui/prose";
 import {
   generateStudioBriefDraftAction,
   type BriefCopilotResult,
@@ -280,7 +281,9 @@ function SuccessSummary({
             <Edit3 className="h-3.5 w-3.5" />
             Co-pilot draft
           </p>
-          <p className="mt-2 text-[13.5px] leading-5 text-[var(--studio-ink)]">{structured.summary || structured.goals}</p>
+          <AiProse size="chat" className="mt-2 text-[var(--studio-ink)]">
+            {structured.summary || structured.goals}
+          </AiProse>
         </div>
         <div className="flex flex-col items-end gap-1.5">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] bg-[color:var(--home-sheet)] px-3 py-1 text-[11px] font-semibold text-[var(--studio-ink-soft)]">
@@ -325,14 +328,13 @@ function SuccessSummary({
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
             Worth clarifying as you scroll down
           </p>
-          <ul className="mt-2 space-y-1 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-            {structured.uncertainties.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span aria-hidden className="text-[var(--studio-signal)]">·</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          <AiProse size="chat" className="mt-2 text-[var(--studio-ink-soft)]">
+            <ul>
+              {structured.uncertainties.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </AiProse>
         </div>
       ) : null}
 

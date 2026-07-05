@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
 import { Suspense } from "react";
 import {
   isRtlLocale,
@@ -16,6 +17,14 @@ import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const [settings, locale] = await Promise.all([getCareSettings(), getCarePublicLocale()]);
@@ -62,7 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body
-        className="min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white"
+        className={`${reading.variable} min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white`}
       >
         <SeoJsonLd />
         <PublicThemeGuard>

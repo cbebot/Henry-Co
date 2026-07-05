@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { Fraunces } from "next/font/google";
 import "./globals.css";
 // ACCOUNT-PREMIUM-01 — mount the surface-primitives stylesheet once at
 // the layout root so any page that renders <HeroCard /> et al. picks up
@@ -15,6 +16,14 @@ import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { createSurfaceMetadata } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
 
 /**
  * Resolve the time-of-day bucket for the ambient canvas tint.
@@ -68,7 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <body
-        className="min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased"
+        className={`${reading.variable} min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased`}
         data-hc-tod={todBucket}
       >
         <HenryCoThemeBlocking />
