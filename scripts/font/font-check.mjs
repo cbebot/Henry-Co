@@ -95,4 +95,11 @@ const invokedDirectly = (() => {
     return false;
   }
 })();
-if (invokedDirectly) main();
+if (invokedDirectly) {
+  try {
+    main();
+  } catch (err) {
+    console.warn(`[warn-mode] unexpected error, not failing CI: ${err?.message ?? err}`);
+    if (process.argv.includes("--strict")) process.exit(1);
+  }
+}

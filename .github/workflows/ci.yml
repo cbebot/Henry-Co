@@ -90,6 +90,9 @@ jobs:
       - name: Owned-type coverage gate (warn-mode until reveal)
         run: pnpm run font:coverage
 
+      - name: Owned-type token integrity (undefined --hc-font-* references)
+        run: pnpm run font:tokens
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 

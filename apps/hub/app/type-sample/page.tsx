@@ -5,6 +5,7 @@
 // app flips. Not in nav; not a product surface. Interim faces are placeholders
 // (Fraunces/Manrope/JetBrains) until the bespoke superfamily lands at reveal.
 export const dynamic = "force-static";
+export const metadata = { robots: { index: false, follow: false } };
 
 export default function TypeSamplePage() {
   return (

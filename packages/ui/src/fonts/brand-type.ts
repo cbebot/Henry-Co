@@ -13,7 +13,7 @@ export const brandSerif = localFont({
   src: [{ path: "../../fonts/henryonyx-serif-interim.woff2", weight: "100 900", style: "normal" }],
   variable: "--font-brand-serif",
   display: "swap",
-  preload: true,
+  preload: false, // preload flips true at reveal — keeps flag-dark dark for payload too
   adjustFontFallback: false,
 });
 
@@ -21,7 +21,7 @@ export const brandSans = localFont({
   src: [{ path: "../../fonts/henryonyx-sans-interim.woff2", weight: "100 900", style: "normal" }],
   variable: "--font-brand-sans",
   display: "swap",
-  preload: true,
+  preload: false, // preload flips true at reveal — keeps flag-dark dark for payload too
   adjustFontFallback: false,
 });
 

@@ -24,6 +24,7 @@
     "font:check": "node scripts/font/font-check.mjs",
     "font:vendor": "node scripts/font/vendor-fonts.mjs",
     "font:coverage": "node scripts/font/font-coverage.mjs",
+    "font:tokens": "node scripts/font/token-integrity.mjs",
     "i18n:scan": "node scripts/v3/hardcoded-text-scan.mjs",
     "dead-link:scan": "node scripts/v3/dead-link-scan.mjs",
     "dead-link:check": "node scripts/v3/dead-link-scan.mjs --check",
