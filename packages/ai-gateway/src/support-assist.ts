@@ -8,6 +8,7 @@
 // route — the catalog IS the boundary.
 
 import { getAccountUrl, getDivisionUrl } from "@henryco/config";
+import { humanizeAssistantText } from "./doctrine";
 
 /** One navigation button the assistant offers: a catalog target + a label in the person's language. */
 export interface SupportAssistAction {
@@ -43,7 +44,7 @@ export function parseSupportAssistEnvelope(text: string): SupportAssistEnvelope 
       const parsed = JSON.parse(candidate) as unknown;
       if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
       const record = parsed as Record<string, unknown>;
-      const reply = String(record.reply ?? "").trim();
+      const reply = humanizeAssistantText(String(record.reply ?? ""));
       if (!reply) return null;
 
       const navigate: SupportAssistAction[] = [];

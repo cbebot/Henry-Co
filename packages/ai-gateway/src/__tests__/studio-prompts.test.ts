@@ -61,12 +61,15 @@ describe("studio.brief.coach — multi-turn coach builder", () => {
     assert.match(parts.messages[0].content, /couriers/);
   });
 
-  it("carries the consultative posture: consult-then-ask, outcome-first, complexity-scaled discovery", () => {
+  it("carries the advisor posture: diagnose-before-prescribe, outcome-first, three named modes", () => {
     const parts = buildStudioBriefCoachPrompt(task("studio.brief.coach", { messages: [] }));
-    assert.match(parts.system, /Answer before you ask/i);
+    assert.match(parts.system, /Diagnose before you prescribe/i);
+    assert.match(parts.system, /Explain, then ask/i);
     assert.match(parts.system, /outcome/i);
-    assert.match(parts.system, /SCALE THE DISCOVERY/i);
-    assert.match(parts.system, /discovery session/i);
+    assert.match(parts.system, /MATCH YOUR DEPTH/i);
+    assert.match(parts.system, /Discovery mode/i);
+    assert.match(parts.system, /Solution design mode/i);
+    assert.match(parts.system, /Enterprise mode/i);
     assert.match(parts.system, /never the same redirect twice/i);
   });
 });
@@ -87,8 +90,9 @@ describe("parseCoachEnvelope — the coach output contract the orchestrator vali
       progress: 100,
       covered: ["purpose", "audience", "features", "budget", "timeline", "outcome"],
     });
+    // The reply is humanized: a clause-joining em dash becomes a comma (no AI tell reaches the client).
     assert.deepEqual(parseCoachEnvelope('Sure! {"reply":"Noted — and the budget?","ready":false,"progress":60} hope that helps'), {
-      reply: "Noted — and the budget?",
+      reply: "Noted, and the budget?",
       ready: false,
       progress: 60,
       covered: [],
