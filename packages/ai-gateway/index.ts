@@ -52,6 +52,20 @@ export {
   listCapabilitiesForPrompt,
   type IntelligenceCapability,
 } from "./src/capabilities";
+export {
+  assessFreeMessage,
+  evaluateFreeAccess,
+  shouldRestrict,
+  ANON_FREE_TURNS_BEFORE_SIGN_IN,
+  FREE_ABUSE_REFUSAL_THRESHOLD,
+  FREE_RESTRICTION_WINDOW_MS,
+  FREE_MESSAGE_MAX_CHARS,
+  type FreeMessageAssessment,
+  type JunkVerdict,
+  type FreeActorStats,
+  type FreeAccessDecision,
+  type FreeAccessOutcome,
+} from "./src/abuse-guard";
 export { isAiGatewayLive, isAiSurfaceEnabled } from "./src/flags";
 export {
   parseVerdict,
