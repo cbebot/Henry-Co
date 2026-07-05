@@ -282,6 +282,110 @@ export function buildFallbackExchangeRateSnapshot(
   };
 }
 
+// ---------------------------------------------------------------------------
+// V3-MONEY-MC · M0 — payer currency resolution
+// ---------------------------------------------------------------------------
+// The last mile of the multi-currency program: decide which currency THIS payer
+// is charged/quoted in, and whether it is chargeable today. Resolution and
+// chargeability are separate facts — a surface may DISPLAY a local currency it
+// cannot yet CHARGE (labelled approximate), which is exactly today's behaviour
+// made honest. A currency becomes chargeable per division only when it is in the
+// CHARGE_CURRENCIES allowlist AND the division's settlement status permits it.
+// The allowlist is the interlock the owner flips per currency after a live test.
+
+/** Where a resolved payer currency came from, most specific first. */
+export type PayerCurrencySource = 'user' | 'locality' | 'default';
+
+export interface PayerCurrencyResolution {
+  /** ISO 4217 — the currency to quote/charge this payer in. */
+  currency: string;
+  /** How it was chosen: explicit preference, locality, or the NGN fallback. */
+  source: PayerCurrencySource;
+  /**
+   * True only when a real charge can settle in `currency` for this division today
+   * (in the allowlist AND the division settles live/ngn-permitting). When false,
+   * the surface shows the currency as an approximate display and charges NGN.
+   */
+  chargeable: boolean;
+}
+
+/**
+ * The currencies the platform may CHARGE in, per environment. NGN is always
+ * present (the live base). Extend via the `CHARGE_CURRENCIES` env var
+ * (comma-separated ISO 4217, e.g. "NGN,USD") — the owner's per-currency interlock,
+ * flipped only after a real settle test in that currency. Parsing is defensive:
+ * unknown/blank tokens are ignored and NGN can never be removed.
+ */
+export function parseChargeCurrencies(raw: string | null | undefined): string[] {
+  const set = new Set<string>([SYSTEM_BASE_CURRENCY]);
+  for (const token of String(raw ?? '').split(',')) {
+    const code = token.trim().toUpperCase();
+    if (/^[A-Z]{3}$/.test(code)) set.add(code);
+  }
+  return [...set];
+}
+
+/**
+ * Resolve the payer's currency and whether it is chargeable today.
+ *
+ * Priority: the person's explicit currency/region preference → their locality
+ * currency (from the country code) → NGN. `chargeable` is true only when the
+ * resolved currency is in the allowlist AND the division's settlement status is
+ * live or ngn-permitting; otherwise the caller displays it as approximate and
+ * charges NGN. Never throws — an unknown input degrades to the NGN default.
+ */
+export function resolvePayerCurrency(input: {
+  /** The person's explicit ISO-4217 preference, if they set one. */
+  userPreference?: string | null;
+  /** The person's country (ISO-3166-1 alpha-2), for the locality fallback. */
+  countryCode?: string | null;
+  division: string;
+  /** The charge allowlist (from parseChargeCurrencies). Defaults to NGN-only. */
+  chargeCurrencies?: string[];
+}): PayerCurrencyResolution {
+  const allow = new Set(
+    (input.chargeCurrencies && input.chargeCurrencies.length > 0 ? input.chargeCurrencies : [SYSTEM_BASE_CURRENCY]).map((c) =>
+      c.toUpperCase(),
+    ),
+  );
+  allow.add(SYSTEM_BASE_CURRENCY);
+
+  const preference = normalizeIso4217(input.userPreference);
+
+  // Locality is a REAL signal only when the country actually mapped. An unknown country
+  // resolves to NGN via the fallback — that is the default, not a discovered locality, so
+  // we do not mislabel its source. (NG legitimately maps to NGN.)
+  const countryUpper = String(input.countryCode ?? '').trim().toUpperCase();
+  const localityRaw = countryUpper ? resolveDisplayCurrencyForCountry(countryUpper) : null;
+  const localityIsReal = !!localityRaw && (localityRaw !== SYSTEM_BASE_CURRENCY || countryUpper === 'NG');
+  const locality = localityIsReal ? normalizeIso4217(localityRaw) : null;
+
+  let currency: string;
+  let source: PayerCurrencySource;
+  if (preference) {
+    currency = preference;
+    source = 'user';
+  } else if (locality) {
+    currency = locality;
+    source = 'locality';
+  } else {
+    currency = SYSTEM_BASE_CURRENCY;
+    source = 'default';
+  }
+
+  const { status } = resolveSettlementCurrencyForDivision(input.division);
+  const divisionSettles = status === 'live' || status === 'ngn_only';
+  const chargeable = currency === SYSTEM_BASE_CURRENCY || (allow.has(currency) && divisionSettles);
+
+  return { currency, source, chargeable };
+}
+
+/** Normalise an ISO-4217 code to upper-case, or null when it is not a 3-letter code. */
+function normalizeIso4217(code: string | null | undefined): string | null {
+  const upper = String(code ?? '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(upper) ? upper : null;
+}
+
 /**
  * Throw a descriptive error when a money amount is missing its currency context.
  * Call at system boundaries (API handlers, DB writes) to prevent ambiguous records.
