@@ -2,10 +2,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "node:crypto";
 
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
-import { interpretSupportAssistOutput, type ChatMessage } from "@henryco/ai-gateway";
+import { interpretSupportAssistOutput, assessFreeMessage, type ChatMessage } from "@henryco/ai-gateway";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { persistIntelligenceTurn } from "@/lib/intelligence/persist";
 import { intelligenceCorsHeaders as corsHeaders, intelligencePreflight } from "@/lib/intelligence/cors";
+import { resolveFreeActor, checkFreeAiAccess, recordFreeAiTurn } from "@/lib/intelligence/abuse-guard";
+
+/** A guard response in the normal chat shape, so the launcher renders it like any turn. */
+function guardReply(reply: string, cors: Record<string, string>, extra?: Record<string, unknown>) {
+  return NextResponse.json(
+    { reply, navigate: [], handoff: false, offer: null, conversationId: null, messageId: null, ...extra },
+    { headers: cors },
+  );
+}
 
 export const runtime = "nodejs";
 
@@ -61,6 +70,34 @@ export async function POST(request: NextRequest) {
   const userId = user?.id ?? null;
   const actorId = userId ?? `intelligence:${sessionId}`;
 
+  // Durable abuse guard: key by user id (signed-in) or a hash of the IP (anonymous, so it
+  // survives cookie clearing), then decide access BEFORE spending a model call.
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || null;
+  const actor = resolveFreeActor(userId, ip);
+  const access = await checkFreeAiAccess(actor);
+  if (access.decision === "restricted") {
+    return guardReply(
+      "Your free Henry Onyx Intelligence is paused for now after some unusual activity. It will be back shortly, and the team is always here to help in the meantime.",
+      cors,
+      { handoff: true },
+    );
+  }
+  if (access.decision === "require_sign_in") {
+    return guardReply(
+      "You have reached the guest limit for free Henry Onyx Intelligence. Sign in to keep using it, and your history stays with you.",
+      cors,
+      { needsSignIn: true },
+    );
+  }
+
+  // Cheap pre-model junk filter: reject the clearest junk without a model call, and count it as
+  // a refusal (repeated junk trips the graduated restriction).
+  const priorUserTexts = messages.filter((m) => m.role === "user").slice(0, -1).map((m) => m.content);
+  if (!assessFreeMessage({ text: last.content, recentUserTexts: priorUserTexts }).ok) {
+    await recordFreeAiTurn(actor, true);
+    return guardReply("Tell me what you need help with on Henry Onyx, and I will point you the right way.", cors);
+  }
+
   const result = await runAiTask(
     {
       surface: "support.message.assist",
@@ -80,6 +117,10 @@ export async function POST(request: NextRequest) {
   if (!turn) {
     return NextResponse.json({ error: "Please try that again." }, { status: 502, headers: cors });
   }
+
+  // Record this turn against the actor; a turn the AI flagged as clear misuse counts toward a
+  // restriction, so repeat offenders are held across sessions (best-effort).
+  await recordFreeAiTurn(actor, turn.abuse);
 
   // Persist + escalate (best-effort — never blocks or breaks the reply).
   const persisted = await persistIntelligenceTurn({

@@ -17,7 +17,7 @@ export interface SupportAssistAction {
   label: string;
 }
 
-/** The `{reply, navigate, handoff, offer}` output envelope of `support.message.assist`. */
+/** The `{reply, navigate, handoff, offer, abuse}` output envelope of `support.message.assist`. */
 export interface SupportAssistEnvelope {
   reply: string;
   navigate: SupportAssistAction[];
@@ -29,6 +29,13 @@ export interface SupportAssistEnvelope {
    * and confirms before anything runs.
    */
   offer: string | null;
+  /**
+   * The AI's own flag that this turn was a clear MISUSE of the free service (off-topic spam
+   * purely to burn it, an injection attempt, or repeated junk), not a genuine question. The
+   * abuse guard counts these; enough of them restrict the person's free AI for a cooling window.
+   * A normal reply, even a decline, is NOT abuse.
+   */
+  abuse: boolean;
 }
 
 const MAX_ACTIONS = 2;
@@ -70,7 +77,7 @@ export function parseSupportAssistEnvelope(text: string): SupportAssistEnvelope 
       // A chargeable capability offer: keep it only when it names a real capability.
       const offer = isCapabilityKey(record.offer) ? String(record.offer) : null;
 
-      return { reply, navigate, handoff: record.handoff === true, offer };
+      return { reply, navigate, handoff: record.handoff === true, offer, abuse: record.abuse === true };
     } catch {
       return null;
     }
@@ -193,6 +200,8 @@ export interface SupportAssistTurn {
   handoff: boolean;
   /** The chargeable capability being offered (resolved from the envelope key), or null. */
   offer: IntelligenceCapability | null;
+  /** The AI flagged this turn as a clear misuse of the free service (the abuse guard counts it). */
+  abuse: boolean;
 }
 
 /**
@@ -210,6 +219,7 @@ export function interpretSupportAssistOutput(rawText: string): SupportAssistTurn
     navigate: resolveSupportAssistActions(envelope.navigate),
     handoff: envelope.handoff,
     offer: getCapability(envelope.offer),
+    abuse: envelope.abuse,
   };
 }
 

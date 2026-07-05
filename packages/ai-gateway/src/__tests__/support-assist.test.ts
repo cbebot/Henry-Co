@@ -70,6 +70,12 @@ describe("support-assist envelope — parse", () => {
     assert.equal(no?.handoff, false);
   });
 
+  it("abuse is strictly boolean-true and defaults false (the abuse guard's misuse flag)", () => {
+    assert.equal(parseSupportAssistEnvelope(JSON.stringify({ reply: "r", navigate: [], abuse: true }))?.abuse, true);
+    assert.equal(parseSupportAssistEnvelope(JSON.stringify({ reply: "r", navigate: [], abuse: "1" }))?.abuse, false);
+    assert.equal(parseSupportAssistEnvelope(JSON.stringify({ reply: "r", navigate: [] }))?.abuse, false, "absent → false");
+  });
+
   it("clamps an over-long label and target", () => {
     const env = parseSupportAssistEnvelope(
       JSON.stringify({
