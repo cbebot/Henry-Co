@@ -87,6 +87,9 @@ jobs:
       - name: Owned-type font guard (warn-mode until reveal)
         run: pnpm run font:check
 
+      - name: Owned-type coverage gate (warn-mode until reveal)
+        run: pnpm run font:coverage
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 

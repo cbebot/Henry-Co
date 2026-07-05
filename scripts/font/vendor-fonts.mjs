@@ -7,10 +7,12 @@ const require = createRequire(import.meta.url);
 const OUT = "packages/ui/fonts";
 
 // [package, lowercase substring filters to pick ONE representative woff2, output name]
+// Use "latin-wght" (not just "latin") to avoid picking "latin-ext" subsets, which
+// contain only extended Latin characters and lack Basic Latin (A–Z, a–z, 0–9).
 const MAP = [
-  ["@fontsource-variable/fraunces", ["latin", "normal"], "henryonyx-serif-interim.woff2"],
-  ["@fontsource-variable/manrope", ["latin", "normal"], "henryonyx-sans-interim.woff2"],
-  ["@fontsource-variable/jetbrains-mono", ["latin", "normal"], "henryonyx-mono-interim.woff2"],
+  ["@fontsource-variable/fraunces", ["latin-wght", "normal"], "henryonyx-serif-interim.woff2"],
+  ["@fontsource-variable/manrope", ["latin-wght", "normal"], "henryonyx-sans-interim.woff2"],
+  ["@fontsource-variable/jetbrains-mono", ["latin-wght", "normal"], "henryonyx-mono-interim.woff2"],
   ["@fontsource/noto-sans-arabic", ["arabic", "400", "normal"], "henryonyx-arabic-interim.woff2"],
   ["@fontsource/noto-sans-sc", ["chinese", "400", "normal"], "henryonyx-cjk-interim.woff2"],
 ];
