@@ -43,6 +43,61 @@ export type PersistResult = {
   assistantMessageId: string | null;
 };
 
+/**
+ * Persist a completed PAID deep-work result into the conversation (L4) — one assistant message
+ * carrying the output, tagged with the capability. Best-effort and ownership-checked: a
+ * client-supplied conversationId is only written to when it belongs to this user; otherwise the
+ * result is stored on a fresh conversation. Never throws (the person already has their answer).
+ */
+export async function persistDeepResult(input: {
+  conversationId: string | null;
+  userId: string;
+  division: string;
+  capability: { key: string; title: string };
+  output: string;
+}): Promise<void> {
+  const division = DIVISIONS.has(input.division) ? input.division : "account";
+  try {
+    const admin = createAdminSupabase();
+
+    let conversationId: string | null = null;
+    if (input.conversationId) {
+      const { data } = await admin
+        .from("intelligence_conversations")
+        .select("id, user_id")
+        .eq("id", input.conversationId)
+        .maybeSingle();
+      const row = data as { id: string; user_id: string | null } | null;
+      if (row && row.user_id === input.userId) conversationId = row.id;
+    }
+    if (!conversationId) {
+      const { data } = await admin
+        .from("intelligence_conversations")
+        .insert({ user_id: input.userId, session_id: `deep:${input.userId}`, division, status: "active" } as never)
+        .select("id")
+        .single();
+      conversationId = (data as { id: string } | null)?.id ?? null;
+    }
+    if (!conversationId) return;
+
+    await admin
+      .from("intelligence_conversations")
+      .update({ last_message_at: new Date().toISOString() } as never)
+      .eq("id", conversationId);
+    // A light provenance header so the owner console can tell a paid result from free support
+    // without a schema change (the deep result is otherwise just the output).
+    await admin.from("intelligence_messages").insert({
+      conversation_id: conversationId,
+      role: "assistant",
+      content: `[${input.capability.title}]\n\n${input.output}`,
+      navigate: [],
+      handoff: false,
+    } as never);
+  } catch {
+    /* best-effort */
+  }
+}
+
 export async function persistIntelligenceTurn(input: PersistInput): Promise<PersistResult> {
   const division = DIVISIONS.has(input.division) ? input.division : "account";
   try {

@@ -3,34 +3,15 @@ import { randomUUID } from "node:crypto";
 
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
 import { interpretSupportAssistOutput, type ChatMessage } from "@henryco/ai-gateway";
-import { isFirstPartyOrigin } from "@henryco/config";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { persistIntelligenceTurn } from "@/lib/intelligence/persist";
+import { intelligenceCorsHeaders as corsHeaders, intelligencePreflight } from "@/lib/intelligence/cors";
 
 export const runtime = "nodejs";
 
-/**
- * The Intelligence brain is centralised here (the account app owns the Onyx Line spine). The
- * shared launcher, mounted on every division page, POSTs to this one endpoint cross-subdomain,
- * so we allow-list first-party origins for credentialed requests. Only henryonyx.com and its
- * subdomains (and local dev) are ever reflected — never an arbitrary origin.
- */
-function corsHeaders(request: NextRequest): Record<string, string> {
-  const origin = request.headers.get("origin");
-  if (!isFirstPartyOrigin(origin) || !origin) return {};
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Max-Age": "86400",
-    Vary: "Origin",
-  };
-}
-
 /** CORS preflight for the cross-subdomain launcher. */
 export function OPTIONS(request: NextRequest) {
-  return new NextResponse(null, { status: 204, headers: corsHeaders(request) });
+  return intelligencePreflight(request);
 }
 
 /**
@@ -115,6 +96,11 @@ export async function POST(request: NextRequest) {
       reply: turn.reply,
       navigate: turn.navigate,
       handoff: turn.handoff,
+      // A chargeable deep-work offer (L4): the render-ready capability, or null. The person
+      // prices and confirms it before anything runs (see /api/intelligence/quote + /run).
+      offer: turn.offer
+        ? { key: turn.offer.key, title: turn.offer.title, blurb: turn.offer.blurb }
+        : null,
       conversationId: persisted.conversationId,
       messageId: persisted.assistantMessageId,
     },
