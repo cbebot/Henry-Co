@@ -300,11 +300,15 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             {children}
             {drawer}
           </AccountLayoutInner>
+          {/* The dashboard page index now lives INSIDE the bottom bar's "More"
+              sheet (navigatorSlot), not as a floating corner pill — so mobile
+              navigation is one consistent list and the only floating control is
+              the Intelligence launcher. */}
           <MobileChromeBridge
             modules={mobileModuleEntries}
             onSignOut={signOutAction}
+            navigatorSlot={<MobileDashboardNavigator labels={mobileDashboardLabels} />}
           />
-          <MobileDashboardNavigator labels={mobileDashboardLabels} />
           <NotificationsToastViewport audience="customer" />
         </div>
       </AccountPaletteHost>

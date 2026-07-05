@@ -97,6 +97,13 @@ export type BottomActionBarProps = {
    * Same contract as IdentityBar.onSignOut.
    */
   onSignOut?: () => void;
+  /**
+   * Optional "browse all pages" navigator, rendered at the TOP of the More
+   * sheet (above Settings/Help). The account shell passes its dashboard page
+   * index here so navigation lives in one place instead of a separate floating
+   * control. Omitted → the More sheet is settings/help/theme/sign-out only.
+   */
+  navigatorSlot?: ReactNode;
   /** Optional translation function for ARIA labels. */
   t?: (key: string) => string;
 };
@@ -113,6 +120,7 @@ export function BottomActionBar({
   statusHref,
   themeToggleSlot,
   onSignOut,
+  navigatorSlot,
   t = (s) => s,
 }: BottomActionBarProps) {
   const pathname = usePathname() ?? "/";
@@ -273,6 +281,7 @@ export function BottomActionBar({
           statusHref={statusHref}
           themeToggleSlot={themeToggleSlot}
           onSignOut={onSignOut}
+          navigatorSlot={navigatorSlot}
           onItemPick={() => setOpenSheet(null)}
           t={t}
         />
@@ -549,6 +558,7 @@ type MoreSheetBodyProps = {
   statusHref?: string;
   themeToggleSlot?: ReactNode;
   onSignOut?: () => void;
+  navigatorSlot?: ReactNode;
   onItemPick: () => void;
   t: (key: string) => string;
 };
@@ -559,6 +569,7 @@ function MoreSheetBody({
   statusHref,
   themeToggleSlot,
   onSignOut,
+  navigatorSlot,
   onItemPick,
   t,
 }: MoreSheetBodyProps) {
@@ -572,6 +583,21 @@ function MoreSheetBody({
       className="hc-more-sheet-body"
       style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
     >
+      {/* "Browse all pages" navigator, when the host supplies one — it leads the
+          sheet so the whole mobile navigation surface reads as one list. */}
+      {navigatorSlot ? (
+        <>
+          {navigatorSlot}
+          <span
+            aria-hidden
+            style={{
+              height: "1px",
+              margin: "0.25rem 0",
+              backgroundColor: `var(${CSS_VARS.hairline})`,
+            }}
+          />
+        </>
+      ) : null}
       <MoreLink
         href={settingsHref}
         icon={<Settings size={18} aria-hidden />}
