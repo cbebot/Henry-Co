@@ -80,9 +80,11 @@ empty. (Reference by symbol, not line — the line numbers differ per branch.)
 - **`IntelligenceLauncher`** exists on `main` at `packages/ui/src/intelligence/` and
   is the primary AI-reply surface (uses `.hc-prose`).
 
-**Governance is greenfield.** There is **no `tone:check` script** anywhere (the brief
-was wrong — CI runs lint/typecheck/`i18n:check:strict`/test/build only), and **no
-font guard**. `docs/v3/reading-foundation.md` (READING-01) exists and already sets
+**Governance is partly built.** On `main`, both `tone:check`
+(`scripts/v3/tone-gate.mjs` — the company-voice gate) and `i18n:check:strict` run in
+CI; the new font gates sit **alongside** them. There is **no font guard** yet. *(The
+earlier audit ran on the account-wallet branch, where `tone:check` was absent; on
+`main` it exists — verify on the base, always.)* `docs/v3/reading-foundation.md` (READING-01) exists and already sets
 `--hc-measure:66ch`, `--hc-leading-prose:1.6`, `--hc-text-reading:18px` and the
 philosophy that *structure stays sans; the serif is for genuine reading prose only*.
 The referenced `typography-language-ecosystem-findings.md` does **not** exist.
@@ -380,6 +382,12 @@ figures reads as one voice).
 
 - **Serif:** display + reading. Optical range desirable (display vs text sizes).
 - **Sans:** the workhorse — nav/UI/body; the largest share of every screen.
+  **Aspiration:** the warm, humanist, optically-refined premium of a bespoke brand
+  sans in the class of Anthropic's custom sans — real personality at display,
+  invisibly legible at 14px — and **better**: more of our own character, drawn for
+  the Henry Onyx voice rather than adapted from an existing face. This sans is the
+  single biggest lever on "feels like an expensive company," since it carries most
+  of every screen.
 - **Mono:** full ASCII, box-drawing, tabular figures.
 - **Weights (from §7 scale):** 400 / 500 / 600 / 650 / 700 minimum, plus italics for
   serif reading.
@@ -462,6 +470,6 @@ time visitor reads it as an established, expensive, professional company.
 - **Email:** `packages/email/layout.ts` (`HEADING_FONT_STACK`, `BODY_FONT_STACK`).
 - **PDF:** `packages/branded-documents/src/fonts/`, `tokens.ts`, `render.ts`.
 - **Markdown/chat:** `packages/messaging-thread/src/{markdown.tsx,thread.tsx,styles.css}`, `packages/ui/src/intelligence/IntelligenceLauncher.tsx`.
-- **CI:** `.github/workflows/ci.yml` (`i18n:check:strict` present; no `tone:check`, no font guard).
+- **CI:** `.github/workflows/ci.yml` (`i18n:check:strict` **and** `tone:check` both present on `main`; no font guard yet).
 - **Docs:** `docs/v3/reading-foundation.md` (READING-01) exists;
   `typography-language-ecosystem-findings.md` does **not** (dangling ref to remove).
