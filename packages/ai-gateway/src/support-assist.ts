@@ -9,6 +9,7 @@
 
 import { getAccountUrl, getDivisionUrl } from "@henryco/config";
 import { humanizeAssistantText } from "./doctrine";
+import { getCapability, isCapabilityKey, type IntelligenceCapability } from "./capabilities";
 
 /** One navigation button the assistant offers: a catalog target + a label in the person's language. */
 export interface SupportAssistAction {
@@ -16,12 +17,18 @@ export interface SupportAssistAction {
   label: string;
 }
 
-/** The `{reply, navigate, handoff}` output envelope of `support.message.assist`. */
+/** The `{reply, navigate, handoff, offer}` output envelope of `support.message.assist`. */
 export interface SupportAssistEnvelope {
   reply: string;
   navigate: SupportAssistAction[];
   /** True when the person asked for a human or the AI cannot resolve it — the Onyx Line takes over. */
   handoff: boolean;
+  /**
+   * A chargeable deep-work capability the brain is OFFERING (L4). A validated capability key or
+   * null. The support surface stays free; this only proposes paid work, which the person prices
+   * and confirms before anything runs.
+   */
+  offer: string | null;
 }
 
 const MAX_ACTIONS = 2;
@@ -60,7 +67,10 @@ export function parseSupportAssistEnvelope(text: string): SupportAssistEnvelope 
         }
       }
 
-      return { reply, navigate, handoff: record.handoff === true };
+      // A chargeable capability offer: keep it only when it names a real capability.
+      const offer = isCapabilityKey(record.offer) ? String(record.offer) : null;
+
+      return { reply, navigate, handoff: record.handoff === true, offer };
     } catch {
       return null;
     }
@@ -176,18 +186,21 @@ export function resolveSupportAssistActions(actions: SupportAssistAction[]): Res
   return resolved;
 }
 
-/** A fully interpreted support turn: the reply, the render-ready buttons, the escalation flag. */
+/** A fully interpreted support turn: the reply, the render-ready buttons, the escalation flag, the paid offer. */
 export interface SupportAssistTurn {
   reply: string;
   navigate: ResolvedAssistAction[];
   handoff: boolean;
+  /** The chargeable capability being offered (resolved from the envelope key), or null. */
+  offer: IntelligenceCapability | null;
 }
 
 /**
- * The one call an app route makes on the raw model output: parse the envelope and resolve
- * its navigation against the catalog in a single step. Returns null only when the output is
- * unparseable — which the orchestrator's `validateOutput` already prevents by retrying — so
- * a route can treat null as a rare hard failure, never as a normal turn.
+ * The one call an app route makes on the raw model output: parse the envelope, resolve its
+ * navigation against the catalog, and resolve any chargeable offer against the capability
+ * registry, in one step. Returns null only when the output is unparseable — which the
+ * orchestrator's `validateOutput` already prevents by retrying — so a route can treat null as
+ * a rare hard failure, never as a normal turn.
  */
 export function interpretSupportAssistOutput(rawText: string): SupportAssistTurn | null {
   const envelope = parseSupportAssistEnvelope(rawText);
@@ -196,6 +209,7 @@ export function interpretSupportAssistOutput(rawText: string): SupportAssistTurn
     reply: envelope.reply,
     navigate: resolveSupportAssistActions(envelope.navigate),
     handoff: envelope.handoff,
+    offer: getCapability(envelope.offer),
   };
 }
 
