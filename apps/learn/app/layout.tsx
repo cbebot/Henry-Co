@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
-import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
@@ -42,7 +43,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <SensitiveActionProviderBridge email={null}>
               {children}
             </SensitiveActionProviderBridge>
-            <SupportAssist division="learn" accent="#7C5CFF" />
+            {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+              <IntelligenceLauncher division="learn" accent="#7C5CFF" endpoint={getAccountUrl("/api/intelligence/chat")} />
+            ) : (
+              <SupportAssist division="learn" accent="#7C5CFF" />
+            )}
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

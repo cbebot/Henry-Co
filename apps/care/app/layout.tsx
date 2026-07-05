@@ -9,7 +9,8 @@ import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
-import { createDivisionMetadata } from "@henryco/config";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { createDivisionMetadata, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { getCareSettings } from "@/lib/care-data";
@@ -70,7 +71,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CareToaster locale={lang} />
           </Suspense>
           {children}
-          <SupportAssist division="care" accent="#6B7CFF" />
+          {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+            <IntelligenceLauncher division="care" accent="#6B7CFF" endpoint={getAccountUrl("/api/intelligence/chat")} />
+          ) : (
+            <SupportAssist division="care" accent="#6B7CFF" />
+          )}
         </PublicThemeGuard>
         <HenryCoAnalytics />
       </body>

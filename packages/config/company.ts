@@ -623,6 +623,25 @@ export function getAccountUrl(path = "/") {
   );
 }
 
+/**
+ * True when an Origin header belongs to the Henry Onyx first party — the base domain, any
+ * subdomain of it, or a local dev host. Used to allow-list cross-subdomain, credentialed
+ * requests (e.g. the shared Intelligence launcher POSTing from a division page to the
+ * account app's endpoint). Deliberately narrow: never reflects an arbitrary origin.
+ */
+export function isFirstPartyOrigin(origin: string | null | undefined): boolean {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+    const host = url.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1") return true;
+    return host === BASE_DOMAIN || host.endsWith(`.${BASE_DOMAIN}`);
+  } catch {
+    return false;
+  }
+}
+
 export function getHqUrl(path = "/") {
   return joinOriginAndPath(
     resolveAppOrigin(HQ_URL_OVERRIDE, "hq", HQ_LIVE_FALLBACK_ORIGIN),

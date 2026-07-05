@@ -3,7 +3,8 @@ import { Manrope } from "next/font/google";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
-import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -56,7 +57,11 @@ export default async function RootLayout({
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
-            <SupportAssist division="logistics" accent="#D06F32" />
+            {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+              <IntelligenceLauncher division="logistics" accent="#D06F32" endpoint={getAccountUrl("/api/intelligence/chat")} />
+            ) : (
+              <SupportAssist division="logistics" accent="#D06F32" />
+            )}
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

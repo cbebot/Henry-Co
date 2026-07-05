@@ -9,7 +9,8 @@ import {
   ThirdPartyRuntimeProviders,
 } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
-import { COMPANY, createDivisionMetadata } from "@henryco/config";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { COMPANY, createDivisionMetadata, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
@@ -49,7 +50,11 @@ export default async function RootLayout({
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
-          <SupportAssist division="hub" />
+          {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+            <IntelligenceLauncher division="hub" endpoint={getAccountUrl("/api/intelligence/chat")} />
+          ) : (
+            <SupportAssist division="hub" />
+          )}
           <ConsentNotice preferencesHref="/preferences" locale={lang} />
           <LocaleSuggestion suggestedLocale={suggestedLocale} currentLocale={lang} />
         </PublicThemeGuard>

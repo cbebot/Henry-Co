@@ -102,6 +102,9 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
       try {
         const res = await fetch(endpoint, {
           method: "POST",
+          // Cross-subdomain to the account endpoint — send the platform session cookie so a
+          // signed-in person is recognised (the server still derives identity from the cookie).
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: outbound,
