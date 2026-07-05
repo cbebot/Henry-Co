@@ -105,8 +105,11 @@ export function MobileDashboardNavigator({
         aria-expanded={open}
         aria-label={labels.openLabel}
       >
-        <Compass size={18} aria-hidden />
-        <span>{labels.trigger}</span>
+        <span className="acct-mobile-dashnav__trigger-icon" aria-hidden>
+          <Compass size={18} />
+        </span>
+        <span className="acct-mobile-dashnav__trigger-label">{labels.allPages}</span>
+        <ChevronRight size={16} aria-hidden />
       </button>
 
       {open ? (
@@ -199,40 +202,55 @@ export function MobileDashboardNavigator({
 }
 
 const MOBILE_DASHBOARD_NAV_CSS = `
-.acct-mobile-dashnav__trigger,
 .acct-mobile-dashnav__overlay {
   display: none;
 }
 
+/* The trigger is now an inline row inside the bottom bar's "More" sheet (it used to
+   float in the bottom-right corner, where it crowded the AI launcher). It matches the
+   sheet's other rows so navigation reads as one consistent list. */
+.acct-mobile-dashnav__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.85rem;
+  border-radius: 14px;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg);
+  color: var(--acct-ink);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.acct-mobile-dashnav__trigger-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: var(--acct-bg-elevated, var(--acct-bg));
+  color: var(--acct-gold-text, var(--acct-gold));
+}
+
+.acct-mobile-dashnav__trigger-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.acct-mobile-dashnav__trigger > svg:last-child {
+  color: var(--acct-muted);
+  flex: 0 0 auto;
+}
+
 @media (max-width: 767px) {
-  .acct-mobile-dashnav__trigger {
-    position: fixed;
-    right: 14px;
-    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
-    z-index: 91;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    max-width: calc(100vw - 28px);
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--acct-gold) 38%, var(--acct-line, transparent));
-    background:
-      linear-gradient(135deg, color-mix(in srgb, var(--acct-bg-elevated, var(--acct-bg)) 90%, var(--acct-gold-soft, transparent)), var(--acct-bg-elevated, var(--acct-bg)));
-    color: var(--acct-ink);
-    box-shadow: 0 18px 42px color-mix(in srgb, var(--acct-ink) 20%, transparent);
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-
-  .acct-mobile-dashnav__trigger svg {
-    color: var(--acct-gold-text, var(--acct-gold));
-  }
-
   .acct-mobile-dashnav__overlay {
     position: fixed;
     inset: 0;
