@@ -249,6 +249,42 @@ Measure stays `--hc-measure: 66ch`. Each role gets paired size / line-height /
 weight / tracking tokens. **These values are a starting proposal**; the bespoke
 optical sizes may retune them at reveal (a token edit, not a structural change).
 
+### 7.4 Premium craft standard — what makes it *feel* expensive
+
+Coverage makes the type correct; **craft** makes it feel like a premium,
+professional company. These are enforceable defaults baked into the seam (so all 12
+apps inherit the same taste), not left to each app:
+
+- **Optical sizing on.** `font-optical-sizing: auto` (already on `.hc-prose`);
+  display roles use the serif's `opsz` axis for refined high-contrast forms while
+  small UI stays legible. The bespoke faces are commissioned with an optical axis /
+  display + text cuts (§12).
+- **Tabular, lining figures for money & data.** `font-feature-settings: "tnum" 1,
+  "lnum" 1` on prices, ledgers, receipts, tables, IDs — numbers align in a column.
+  (Misaligned figures are the #1 "cheap" tell.) Ship a `.hc-numeric` utility and
+  adopt it in the money/table components.
+- **Real ligatures + contextual alternates** (`liga`, `calt`) on reading/display;
+  discretionary ligatures **off** by default (restraint).
+- **No synthetic styles.** Ship real weights and **real italics**; the guard rejects
+  faux-bold / faux-italic. Kerning on (`font-kerning: normal`).
+- **Tracking discipline** (tokenised): display/h1 slightly tight
+  (`--hc-track-display: -0.02em`), body neutral, all-caps / eyebrow labels open
+  (`--hc-track-caps: 0.06em`). Tight-but-not-cramped display reads as premium.
+- **Rhythm & no orphans.** `text-wrap: pretty` on prose (already) + `text-wrap:
+  balance` on headings; consistent vertical rhythm; `--hc-measure: 66ch`. No lone
+  widow on a heading.
+- **Weight restraint.** A small, deliberate weight ladder (§7.3) — hierarchy from
+  contrast, not from a pile of weights.
+- **Load & reveal polish.** Preload the Latin face; metric-matched fallback so there
+  is **no FOUT jank and no layout shift** — including on reveal day.
+- **Contrast held.** Premium ≠ low-contrast grey mush; reading stays at a
+  comfortable size and AA contrast (ink inherited, never forced — the `.hc-prose`
+  rule).
+
+Implemented as `font-feature-settings` + tracking / rhythm tokens in the seam. The
+Phase-1 sample page and the reveal are reviewed through the **frontend-design**
+skill, judged against these rules on real surfaces in both themes and on mobile.
+
 ---
 
 ## 8. The flip mechanism
@@ -354,6 +390,13 @@ figures reads as one voice).
 - **Non-Latin** (Arabic, CJK) is **not** bespoke — served by owned self-hosted
   companions behind the same tokens.
 
+**Quality bar (this is where "premium" is ultimately drawn, §7.4):** true italics
+(not obliqued), refined optical/display cuts, dense professional **kerning**, tabular
++ lining figures, OpenType features (`liga`, `calt`, `tnum`, `lnum`, `case`, `frac`
+for prices, `ordn`), proper hinting for screen at small sizes, and typographic
+punctuation (real quotes, dashes). The face must look intentional and expensive at
+14px in a form label *and* at 64px in a hero — that range is the commission's job.
+
 ---
 
 ## 13. Verification (per phase)
@@ -365,6 +408,12 @@ figures reads as one voice).
 - Money surfaces and `packages/search-ui` untouched.
 - At reveal: `font:coverage` passes against the **real** bespoke faces before the
   flag flips.
+
+**Premium acceptance (eyeball on the sample page + one surface per division, both
+themes, desktop + mobile):** figures in a price table align in a column; no heading
+leaves a widow; display type is tight, not loose; no faux-bold / faux-italic; reading
+measure ≈ 66ch; the reveal produces no layout shift; and — the real test — a first-
+time visitor reads it as an established, expensive, professional company.
 
 ---
 
@@ -397,6 +446,9 @@ figures reads as one voice).
   layout shift.
 - Reading surfaces render the editorial serif; structure/UI render the brand sans —
   the system reads as intentional, not "one font everywhere".
+- **The felt outcome:** a first-time visitor, in any supported language, on any
+  surface, experiences the product as an established, expensive, premium, professional
+  company — and stays to keep reading. This is the point of the whole program.
 
 ---
 
