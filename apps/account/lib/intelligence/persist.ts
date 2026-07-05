@@ -49,9 +49,37 @@ export async function persistIntelligenceTurn(input: PersistInput): Promise<Pers
     const admin = createAdminSupabase();
     const status = input.turn.handoff ? "escalated" : "active";
 
-    // 1) Ensure the conversation of record.
-    let conversationId = input.conversationId;
+    // 1) Ensure the conversation of record. The conversationId is CLIENT-SUPPLIED and every
+    //    write here is service-role (RLS bypassed), so we must verify ownership before we
+    //    touch it — otherwise a caller could append turns to, or escalate, someone else's
+    //    conversation (IDOR). A signed-in person owns rows with their user_id; an anonymous
+    //    visitor owns rows with a null user_id AND their own session_id. If a supplied id is
+    //    not theirs (or is gone), we silently start a FRESH conversation — never write across.
+    let conversationId: string | null = null;
     let escalatedThreadId: string | null = null;
+    if (input.conversationId) {
+      const { data } = await admin
+        .from("intelligence_conversations")
+        .select("id, user_id, session_id, escalated_thread_id")
+        .eq("id", input.conversationId)
+        .maybeSingle();
+      const row = data as
+        | { id: string; user_id: string | null; session_id: string; escalated_thread_id: string | null }
+        | null;
+      const owns = row
+        ? input.userId
+          ? row.user_id === input.userId
+          : row.user_id === null && row.session_id === input.sessionId
+        : false;
+      if (row && owns) {
+        conversationId = row.id;
+        escalatedThreadId = row.escalated_thread_id;
+        await admin
+          .from("intelligence_conversations")
+          .update({ status, last_message_at: new Date().toISOString() } as never)
+          .eq("id", conversationId);
+      }
+    }
     if (!conversationId) {
       const { data } = await admin
         .from("intelligence_conversations")
@@ -59,14 +87,6 @@ export async function persistIntelligenceTurn(input: PersistInput): Promise<Pers
         .select("id")
         .single();
       conversationId = (data as { id: string } | null)?.id ?? null;
-    } else {
-      const { data } = await admin
-        .from("intelligence_conversations")
-        .update({ status, last_message_at: new Date().toISOString() } as never)
-        .eq("id", conversationId)
-        .select("id, escalated_thread_id")
-        .maybeSingle();
-      escalatedThreadId = (data as { escalated_thread_id: string | null } | null)?.escalated_thread_id ?? null;
     }
     if (!conversationId) return { conversationId: null, assistantMessageId: null };
 
