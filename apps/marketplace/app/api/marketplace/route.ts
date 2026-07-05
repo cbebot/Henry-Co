@@ -12,6 +12,7 @@ import {
   resolveVendorProductUpsert,
 } from "@/lib/marketplace/authorization";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { parseProductImageRefs, buildProductMediaRows } from "@/lib/marketplace/product-images";
 import {
   buildOrderSettlementSnapshot,
   computePayoutBalance,
@@ -1691,7 +1692,10 @@ export async function POST(request: Request) {
         }
 
         const decision = text(formData, "submission_mode") || "draft";
-        const imageUrl = text(formData, "image_url");
+        // Ordered product images (first = cover). New multi-image field posts a JSON array in
+        // `image_urls`; the legacy single `image_url` is honoured as a one-element fallback.
+        const imageRefs = parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url"));
+        const coverImage = imageRefs[0] ?? "";
         const requestFeaturedPlacement = text(formData, "feature_requested") === "on";
         const [{ count: productCount }, { count: openDisputeCount }, { data: duplicateMedia }] = await Promise.all([
           admin.from("marketplace_products").select("id", { count: "exact", head: true }).eq("vendor_id", vendorScopeId),
@@ -1700,11 +1704,11 @@ export async function POST(request: Request) {
             .select("id", { count: "exact", head: true })
             .eq("vendor_id", vendorScopeId)
             .in("status", ["open", "investigating"]),
-          imageUrl
+          coverImage
             ? admin
                 .from("marketplace_product_media")
                 .select("id, product_id")
-                .eq("url", imageUrl)
+                .eq("url", coverImage)
                 .limit(3)
             : Promise.resolve({ data: [] }),
         ]);
@@ -1719,7 +1723,7 @@ export async function POST(request: Request) {
           summary: text(formData, "summary"),
           description: text(formData, "description"),
           categorySlug: text(formData, "category_slug"),
-          imageUrl,
+          imageUrl: coverImage,
           sku: text(formData, "sku"),
           leadTime: text(formData, "lead_time"),
           deliveryNote: text(formData, "delivery_note"),
@@ -1827,14 +1831,15 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (error) throw error;
 
-        if (imageUrl && product?.id) {
-          await admin.from("marketplace_product_media").upsert({
-            product_id: product.id,
-            url: imageUrl,
-            kind: "image",
-            is_primary: true,
-            sort_order: 0,
-          } as never);
+        // Replace the product's gallery with the posted ordered set (first = cover). We
+        // delete-then-insert so re-saving never accumulates duplicate rows and the order the
+        // vendor chose is the order buyers see. An empty set leaves existing photos untouched
+        // (a draft save that didn't change images).
+        if (imageRefs.length > 0 && product?.id) {
+          await admin.from("marketplace_product_media").delete().eq("product_id", product.id).eq("kind", "image");
+          await admin
+            .from("marketplace_product_media")
+            .insert(buildProductMediaRows(String(product.id), imageRefs) as never);
         }
 
         if (decision === "submit" || assessment.requiresManualReview) {

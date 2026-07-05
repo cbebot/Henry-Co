@@ -1,6 +1,6 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
-import { ImageUploadField } from "@/components/marketplace/vendor/image-upload-field";
+import { MultiImageUploadField } from "@/components/marketplace/vendor/multi-image-upload-field";
 import { VendorProductEditor } from "@/components/marketplace/vendor/vendor-product-editor";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
@@ -134,17 +134,20 @@ export default async function NewVendorProductPage() {
         media={
           <section className="space-y-4 border-t border-[var(--market-line)] pt-5">
             <p className="market-kicker">{t("Media")}</p>
-            <ImageUploadField
-              name="image_url"
+            <MultiImageUploadField
+              name="image_urls"
               scope="product"
-              label={t("Primary image")}
-              hint={t("JPG, PNG, or WebP, up to 8MB.")}
+              label={t("Product photos")}
+              hint={t("JPG, PNG, or WebP, up to 8MB each. Add several at once.")}
               labels={{
-                drop: t("Add a photo"),
-                replace: t("Replace photo"),
-                remove: t("Remove photo"),
+                addFirst: t("Add photos"),
+                add: t("Add more"),
                 uploading: t("Uploading…"),
                 failed: t("That upload didn’t go through. Try again."),
+                remove: t("Remove photo"),
+                makeCover: t("Make cover"),
+                cover: t("Cover"),
+                coverHint: t("The first photo is the product’s cover; the rest sit behind it in the gallery."),
               }}
             />
           </section>
