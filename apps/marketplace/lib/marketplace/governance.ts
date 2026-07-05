@@ -336,6 +336,11 @@ export function evaluateListingSubmission(input: {
     filterData: {
       qualityScore,
       riskScore,
+      // Whether a primary image is actually present, so downstream guidance never tells a
+      // seller to "add a photo" when they already have one (it was previously inferred from
+      // the score alone, which is wrong whenever a listing has a photo but scores low for
+      // other reasons — a thin title, short description, missing SKU).
+      hasPrimaryImage: cleanText(input.imageUrl).length > 12,
       externalPaymentRisk: riskScore >= 60,
       duplicateImageRisk: Boolean(input.duplicateImageDetected),
       featuredPlacementRequested: Boolean(input.requestFeaturedPlacement),
