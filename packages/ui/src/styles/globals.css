@@ -737,7 +737,9 @@
 [data-onyx-type="live"] {
   --hc-font-serif: var(--font-brand-serif), "HenryOnyxSerifArabic", "HenryOnyxSerifCJK", serif;
   --hc-font-sans: var(--font-brand-sans), "HenryOnyxSansArabic", "HenryOnyxSansCJK", sans-serif;
-  --hc-font-mono: var(--font-brand-mono), "HenryOnyxMonoCJK", monospace;
+  /* Interim: reuse the owned CJK companion so CJK-in-mono stays OWNED (never a
+     system monospace). The bespoke mono gets its own CJK cut at reveal. */
+  --hc-font-mono: var(--font-brand-mono), "HenryOnyxSansCJK", monospace;
 }
 
 /* Tabular, lining figures for money & data — the single biggest premium tell. */
