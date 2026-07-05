@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
-import { parseCoachEnvelope } from "@henryco/ai-gateway";
+import { parseCoachEnvelope, COACH_DISCOVERY_AREAS } from "@henryco/ai-gateway";
 import { STUDIO_AI_MODEL_LABEL, briefFailureCopy, isRetryableGatewayCode } from "@/lib/studio/ai-runtime";
 import { getOrCreateCopilotSessionId } from "@/lib/studio/copilot-session";
 import {
@@ -53,6 +53,8 @@ export type BriefChatTurn = {
   turn: number;
   /** 0-100 — model-reported brief completeness (drives the client's progress bar). */
   progress: number;
+  /** Discovery areas landed so far (validated tokens) — drives the client's ✓/pending checklist. */
+  covered: string[];
   /** Brand-opaque label only (never a provider/model id). */
   modelUsed: string;
 };
@@ -105,6 +107,7 @@ export async function continueStudioBriefChatAction(input: {
         ready: true,
         turn: countAssistantTurns(messages) + 1,
         progress: 100,
+        covered: [...COACH_DISCOVERY_AREAS],
         modelUsed: STUDIO_AI_MODEL_LABEL,
       },
     };
@@ -215,6 +218,7 @@ export async function continueStudioBriefChatAction(input: {
       ready: envelope.ready,
       turn: countAssistantTurns(messages) + 1,
       progress: envelope.progress,
+      covered: envelope.covered,
       modelUsed: STUDIO_AI_MODEL_LABEL,
     },
   };
