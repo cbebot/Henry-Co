@@ -25,6 +25,11 @@ export type StoredBriefChat = {
   ready: boolean;
   /** Last model-reported completeness (0-100). */
   progress: number;
+  /**
+   * Discovery areas landed so far (validated coach tokens) — drives the ✓/pending
+   * checklist. Optional so drafts stored before this field existed load unchanged.
+   */
+  covered?: string[];
   /** Set when the conversation was handed off to /request/build. */
   finalizedAt: number | null;
 };
@@ -131,6 +136,7 @@ export function updateConversation(
     messages?: BriefChatMessage[];
     ready?: boolean;
     progress?: number;
+    covered?: string[];
     finalizedAt?: number | null;
     now: number;
   },
@@ -144,6 +150,7 @@ export function updateConversation(
       title: deriveBriefTitle(messages) || c.title,
       ready: patch.ready ?? c.ready,
       progress: patch.progress ?? c.progress,
+      covered: patch.covered ?? c.covered,
       finalizedAt: patch.finalizedAt !== undefined ? patch.finalizedAt : c.finalizedAt,
       updatedAt: patch.now,
     };

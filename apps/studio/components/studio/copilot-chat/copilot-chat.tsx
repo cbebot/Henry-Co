@@ -126,6 +126,7 @@ export function CopilotChat({
   const messages = useMemo(() => active?.messages ?? [], [active]);
   const ready = active?.ready ?? false;
   const progress = active?.progress ?? 0;
+  const covered = useMemo(() => active?.covered ?? [], [active]);
   const assistantTurns = countAssistantTurns(messages);
   const canFinalize = ready || assistantTurns >= BRIEF_CHAT_MIN_FINALIZE_TURNS;
 
@@ -209,6 +210,7 @@ export function CopilotChat({
             messages: withReply,
             ready: result.turn.ready,
             progress: result.turn.progress,
+            covered: result.turn.covered,
             now: Date.now(),
           }),
         );
@@ -325,6 +327,46 @@ export function CopilotChat({
     },
     [finalize],
   );
+
+  // The discovery checklist — the six areas the consultant is landing, rendered
+  // as ✓/pending chips above the composer once the conversation is moving. This
+  // is the reviewer-requested "show progress" upgrade: the person always sees
+  // what is settled and what remains, instead of a bare percentage.
+  const DISCOVERY_LABELS: Array<{ key: string; label: string }> = useMemo(
+    () => [
+      { key: "purpose", label: t("Purpose") },
+      { key: "audience", label: t("Audience") },
+      { key: "features", label: t("Features") },
+      { key: "budget", label: t("Budget") },
+      { key: "timeline", label: t("Timeline") },
+      { key: "outcome", label: t("Outcome") },
+    ],
+    [t],
+  );
+
+  const discoveryChecklist = useCallback(() => {
+    if (ready || (progress <= 0 && covered.length === 0)) return null;
+    return (
+      <div className="studio-chat-checklist" aria-label={t("Brief progress")}>
+        {DISCOVERY_LABELS.map(({ key, label }) => {
+          const done = covered.includes(key);
+          return (
+            <span
+              key={key}
+              className={
+                done
+                  ? "studio-chat-checklist__item studio-chat-checklist__item--done"
+                  : "studio-chat-checklist__item"
+              }
+            >
+              <span aria-hidden>{done ? "✓" : "·"}</span>
+              {label}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }, [ready, progress, covered, DISCOVERY_LABELS, t]);
 
   // Header status: the model-reported completeness once the conversation is
   // moving; the ready hand-off line once the coach closes; the kicker before.
@@ -506,6 +548,7 @@ export function CopilotChat({
           enterKeyBehavior: "send",
           enableAttachments: false,
           labels: composerLabels,
+          extras: discoveryChecklist,
         }}
       />
     </div>

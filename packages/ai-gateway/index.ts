@@ -48,7 +48,12 @@ export {
   type VerdictDecision,
   type VerdictResolution,
 } from "./src/verify";
-export { parseCoachEnvelope, type CoachEnvelope } from "./src/studio-prompts";
+export {
+  parseCoachEnvelope,
+  COACH_DISCOVERY_AREAS,
+  type CoachEnvelope,
+  type CoachDiscoveryArea,
+} from "./src/studio-prompts";
 export { aiTierBrandName, AI_TIER_BRAND_NAMES } from "./src/tier-brand";
 
 export type {

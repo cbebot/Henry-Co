@@ -2295,6 +2295,37 @@ body:has(.studio-chat-stage) .hc-assist-trigger {
   }
 }
 
+/* The discovery checklist — six ✓/pending chips above the composer showing which
+   brief areas have landed (purpose/audience/features/budget/timeline/outcome).
+   Ink + line come from the studio surface tokens so both themes hold. */
+.studio-chat-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.4rem 0 0.15rem;
+}
+
+.studio-chat-checklist__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--studio-line);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--studio-ink-soft);
+  background: transparent;
+  transition: color 300ms ease, border-color 300ms ease;
+}
+
+.studio-chat-checklist__item--done {
+  color: var(--studio-ink);
+  border-color: color-mix(in srgb, var(--studio-signal) 55%, transparent);
+  background: color-mix(in srgb, var(--studio-signal) 10%, transparent);
+}
+
 /* Header actions on the copilot chat (briefs list + new brief). */
 .studio-chat-stage__action {
   position: relative;

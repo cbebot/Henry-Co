@@ -38,7 +38,7 @@ const CHAT_DESCRIPTION_MAX_CHARS = 1600;
  * localized at render via translateSurfaceLabel.
  */
 export const BRIEF_CHAT_OPENER =
-  "Tell me what you're hoping to build — in your own words. I'll ask a few questions, then turn it into a clear brief with honest pricing.";
+  "Tell me what you're hoping to build — in your own words. I'll ask a few questions and shape it into a clear brief; you'll see honest pricing when you review it.";
 
 /**
  * Deterministic fallback conversation. When the model is unavailable we
@@ -56,7 +56,7 @@ export const BRIEF_CHAT_COACH_PROMPTS: string[] = [
 
 /** Closing line once the coach walk (or MAX_TURNS) is exhausted. */
 export const BRIEF_CHAT_CLOSING =
-  "That's everything I need. Let's shape it into a brief you can review — with honest pricing before you commit.";
+  "That's everything I need. Let's shape it into a brief you can review — the honest pricing is right there before you commit.";
 
 export function countAssistantTurns(messages: BriefChatMessage[]): number {
   return messages.filter((message) => message.role === "assistant").length;
