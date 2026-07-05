@@ -39,7 +39,11 @@ const RULES = [
   { rule: "next-font-google", re: /from\s+["']next\/font\/google["']/g },
   { rule: "google-import", re: /@import[^;]*fonts\.(googleapis|gstatic)\.com/g },
   { rule: "system-stack", re: SYSTEM_RE },
-  { rule: "tailwind-font-util", re: /className=["'][^"']*\bfont-(sans|serif)\b/g },
+  // Matches a font-sans/font-serif class token inside ANY quoted string, so it
+  // catches className="…", cn("…"), clsx(`…`), and template-literal classNames —
+  // not just literal className= attributes. The quoted-string requirement keeps
+  // CSS `var(--…font-sans)` (unquoted) from false-positiving.
+  { rule: "tailwind-font-util", re: /["'`][^"'`]*\bfont-(sans|serif)\b/g },
 ];
 
 export function scanSource(text, filename) {

@@ -22,6 +22,11 @@ test("clean owned CSS produces no violations", () => {
   assert.equal(scanSource("a { font-family: var(--hc-font-sans); }", "apps/x/app/globals.css").length, 0);
 });
 
+test("flags a Tailwind font utility inside cn()/clsx()/template classNames", () => {
+  assert.ok(scanSource('cn("rounded font-serif px-2")', "apps/x/page.tsx").some((x) => x.rule === "tailwind-font-util"));
+  assert.ok(scanSource("clsx(`text-sm font-sans`)", "apps/x/page.tsx").some((x) => x.rule === "tailwind-font-util"));
+});
+
 test("the seam and font packages are allowlisted", () => {
   assert.equal(isAllowlisted("packages/ui/src/styles/globals.css"), true);
   assert.equal(isAllowlisted("packages/rn-type/index.ts"), true);
