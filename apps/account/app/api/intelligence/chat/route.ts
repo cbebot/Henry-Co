@@ -7,6 +7,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { persistIntelligenceTurn } from "@/lib/intelligence/persist";
 import { intelligenceCorsHeaders as corsHeaders, intelligencePreflight } from "@/lib/intelligence/cors";
 import { resolveFreeActor, checkFreeAiAccess, recordFreeAiTurn } from "@/lib/intelligence/abuse-guard";
+import { buildAccountFactsForAI } from "@/lib/intelligence/account-facts";
 
 /** A guard response in the normal chat shape, so the launcher renders it like any turn. */
 function guardReply(reply: string, cors: Record<string, string>, extra?: Record<string, unknown>) {
@@ -98,11 +99,19 @@ export async function POST(request: NextRequest) {
     return guardReply("Tell me what you need help with on Henry Onyx, and I will point you the right way.", cors);
   }
 
+  // L3 — ground the AI with the signed-in person's OWN RLS-safe account facts (their real wallet
+  // balance and details), so it answers with truth instead of guessing. Anonymous visitors send
+  // no account facts. Best-effort: if the facts cannot be read, the AI simply answers without them.
+  let account: string | undefined;
+  if (user) {
+    account = await buildAccountFactsForAI(user).catch(() => undefined);
+  }
+
   const result = await runAiTask(
     {
       surface: "support.message.assist",
       actorId,
-      input: { messages, division, page },
+      input: { messages, division, page, account },
       idempotencyKey: randomUUID(),
     },
     { billing: noBillingPort },
