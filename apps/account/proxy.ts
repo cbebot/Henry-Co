@@ -10,6 +10,7 @@ import {
 } from "@henryco/auth/server/session-state";
 import { HC_REAUTH_CONTEXT_COOKIE } from "@henryco/auth/server/reauth-context";
 import { getHqUrl, getSharedCookieDomain } from "@henryco/config";
+import { isPublicAccountRoute } from "./lib/proxy-public-routes";
 
 /**
  * Account proxy — V3-01 wired (the SSO host).
@@ -29,18 +30,6 @@ import { getHqUrl, getSharedCookieDomain } from "@henryco/config";
  * preserves the draft key + return path so an in-flight form survives
  * the round-trip.
  */
-const PUBLIC_ROUTES = [
-  "/login",
-  "/signup",
-  "/forgot-password",
-  "/reset-password",
-  "/auth/callback",
-  "/auth/confirm",
-  "/auth/resolve",
-  "/auth/verified",
-  "/auth/reauth", // V3-01: the reauth surface itself must be reachable signed-out
-];
-
 const REFERRAL_COOKIE_NAME = "hc_ref";
 const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
@@ -81,43 +70,6 @@ function captureReferralCode(request: NextRequest, response: NextResponse): void
   });
 }
 
-function isPublicRoute(pathname: string): boolean {
-  return (
-    PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/cron/") ||
-    pathname.startsWith("/api/webhooks/account") ||
-    // V3-15-FIX-01: provider payment webhooks (e.g. /api/payments/webhooks/paystack)
-    // are server-to-server, HMAC-signature-authenticated, and carry NO session.
-    // The auth proxy must NOT 307 them to /login (Paystack does not follow
-    // redirects → every webhook would be lost). Mirrors /api/webhooks/account.
-    pathname.startsWith("/api/payments/webhooks/") ||
-    // Push registration self-authenticates (session cookie OR a native
-    // `Bearer` access token), so the proxy must not 307 it to /login — the
-    // native app carries no session cookie and the route handler is the auth
-    // authority (returns 401 when neither credential is valid).
-    pathname.startsWith("/api/push/subscribe") ||
-    pathname === "/api/health" ||
-    // V3-04 (S2): Universal-Link / App-Link manifests MUST be reachable
-    // unauthenticated with no redirect (per Apple/Google spec). The AASA
-    // file has no extension, so the `includes(".")` guard below misses it.
-    pathname.startsWith("/.well-known/") ||
-    // OG-SOCIAL-METADATA — Next file-convention metadata routes (the Open Graph
-    // and Twitter card images) must be fetchable by anonymous link-preview
-    // crawlers (Facebook / X / LinkedIn / WhatsApp). They have no file
-    // extension, so the `includes(".")` guard below misses them, and they would
-    // otherwise be 307'd to /login — leaving a shared account link with a
-    // broken (login-page) preview image. They carry no session and serve only a
-    // public 1200x630 brand card, so the auth proxy must let them through.
-    pathname === "/opengraph-image" ||
-    pathname === "/twitter-image" ||
-    pathname.startsWith("/opengraph-image/") ||
-    pathname.startsWith("/twitter-image/") ||
-    pathname.includes(".")
-  );
-}
-
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
@@ -128,7 +80,7 @@ export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
   const session = await verifySupabaseSession(request, response);
 
-  if (isPublicRoute(pathname)) {
+  if (isPublicAccountRoute(pathname)) {
     // Public auth routes: pass through with verification side effects
     // (cookie refresh + state tag + referral capture). No redirect.
     const state = sessionStateFor(session);
