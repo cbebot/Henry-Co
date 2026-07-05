@@ -45,6 +45,7 @@
     "@henryco/gaming-arena": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/kyc": "workspace:^",
+    "@henryco/payments-db": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",

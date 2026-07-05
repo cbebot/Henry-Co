@@ -12,7 +12,7 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { MessageCircle, X, ArrowUpRight, LifeBuoy } from "lucide-react";
+import { MessageCircle, X, ArrowUpRight, LifeBuoy, Sparkles as Sparkle } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
@@ -41,11 +41,22 @@ export interface IntelligenceLauncherProps {
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
 type NavAction = { label: string; href: string };
+/** A chargeable deep-work capability the brain proposed (L4). */
+type Offer = { key: string; title: string; blurb: string };
+/** A price to show before running: the real NGN charge + a payer-currency display (approximate). */
+type Quote = {
+  chargeKobo: number;
+  chargeCurrency: string;
+  displayAmountMinor: number;
+  displayCurrency: string;
+  approximate: boolean;
+};
 
 type ChatApiResponse = {
   reply?: string;
   navigate?: NavAction[];
   handoff?: boolean;
+  offer?: Offer | null;
   conversationId?: string | null;
   messageId?: string | null;
   error?: string;
@@ -54,6 +65,16 @@ type ChatApiResponse = {
 const nowIso = () => new Date().toISOString();
 const newId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `id-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+
+/** Kobo -> a currency string. NGN today; the currency travels with the quote for the seam. */
+function formatMoney(kobo: number, currency: string): string {
+  const major = Math.round(kobo) / 100;
+  try {
+    return new Intl.NumberFormat(undefined, { style: "currency", currency: currency || "NGN", maximumFractionDigits: 2 }).format(major);
+  } catch {
+    return `${currency || "NGN"} ${major.toFixed(2)}`;
+  }
+}
 
 /** A stable per-division session id (groups anonymous turns + rate-limits per visitor). */
 function useSessionId(division: string): string {
@@ -81,6 +102,11 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   const [typing, setTyping] = useState(false);
   const [actions, setActions] = useState<NavAction[]>([]);
   const [handoff, setHandoff] = useState(false);
+  // L4 paid deep-work: the current offer, its quote once fetched, and the run state.
+  const [offer, setOffer] = useState<Offer | null>(null);
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [deepBusy, setDeepBusy] = useState(false);
+  const [deepError, setDeepError] = useState<string | null>(null);
 
   const sessionId = useSessionId(division);
   // The conversation of record for building each request + the server's returned id.
@@ -88,6 +114,10 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   const conversationRef = useRef<string | null>(null);
 
   const supportHref = getAccountUrl("/support");
+  // The quote/run endpoints sit beside the chat endpoint (same account origin).
+  const quoteEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/quote"), [endpoint]);
+  const runEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/run"), [endpoint]);
+  const lastUserText = () => [...historyRef.current].reverse().find((m) => m.role === "user")?.content ?? "";
 
   const send = useCallback(
     async (payload: ChatSendPayload): Promise<ChatSendResult> => {
@@ -96,9 +126,12 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
 
       const outbound = [...historyRef.current, { role: "user" as const, content: body }];
       setTyping(true);
-      // A new turn supersedes the previous turn's buttons.
+      // A new turn supersedes the previous turn's buttons + any pending offer.
       setActions([]);
       setHandoff(false);
+      setOffer(null);
+      setQuote(null);
+      setDeepError(null);
       try {
         const res = await fetch(endpoint, {
           method: "POST",
@@ -134,6 +167,7 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
         setMessages((prev) => [...prev, assistantMessage]);
         setActions(Array.isArray(data.navigate) ? data.navigate.slice(0, 2) : []);
         setHandoff(Boolean(data.handoff));
+        setOffer(data.offer ?? null);
         setTyping(false);
 
         // Reconcile the composer's optimistic user bubble by returning the sent message.
@@ -155,25 +189,148 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
     [division, endpoint, sessionId, t],
   );
 
+  // L4 — fetch the price for the current offer (no wallet touch). Signed-in only.
+  const getQuote = useCallback(async () => {
+    if (!offer) return;
+    setDeepBusy(true);
+    setDeepError(null);
+    try {
+      const res = await fetch(quoteEndpoint, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ capabilityKey: offer.key, input: lastUserText() }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        charge?: { amountKobo: number; currency: string };
+        display?: { amountMinor: number; currency: string; approximate: boolean };
+        error?: string;
+        needsSignIn?: boolean;
+      } | null;
+      if (!res.ok || !data?.charge || !data?.display) {
+        setDeepError(data?.error || t("We couldn't price that right now. Please try again."));
+        setDeepBusy(false);
+        return;
+      }
+      setQuote({
+        chargeKobo: data.charge.amountKobo,
+        chargeCurrency: data.charge.currency,
+        displayAmountMinor: data.display.amountMinor,
+        displayCurrency: data.display.currency,
+        approximate: Boolean(data.display.approximate),
+      });
+    } catch {
+      setDeepError(t("We couldn't reach the service. Please try again."));
+    }
+    setDeepBusy(false);
+  }, [offer, quoteEndpoint, t]);
+
+  // L4 — run the confirmed deep work. Charges the wallet through the metered rail; the result
+  // lands as an assistant message rendered in the reading face.
+  const runDeep = useCallback(async () => {
+    if (!offer) return;
+    setDeepBusy(true);
+    setDeepError(null);
+    try {
+      const res = await fetch(runEndpoint, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          capabilityKey: offer.key,
+          input: lastUserText(),
+          idempotencyKey: newId(),
+          conversationId: conversationRef.current,
+          division,
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        output?: string;
+        receipt?: { totalKobo: number; vatKobo: number; billed: boolean };
+        error?: string;
+        code?: string;
+      } | null;
+      if (!res.ok || !data?.output) {
+        setDeepError(
+          data?.code === "insufficient_funds"
+            ? t("Your wallet needs a top-up to run this.")
+            : data?.error || t("We couldn't run that right now. Please try again."),
+        );
+        setDeepBusy(false);
+        return;
+      }
+      historyRef.current = [...historyRef.current, { role: "assistant", content: data.output }];
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), authorId: null, authorRole: "other", body: data.output as string, createdAt: nowIso() },
+      ]);
+      // Clear the offer once delivered; the receipt total is on the wallet.
+      setOffer(null);
+      setQuote(null);
+    } catch {
+      setDeepError(t("We couldn't reach the service. Please try again."));
+    }
+    setDeepBusy(false);
+  }, [offer, runEndpoint, division, t]);
+
   const extras = useCallback(() => {
-    if (actions.length === 0 && !handoff) return null;
+    const hasOffer = Boolean(offer);
+    if (actions.length === 0 && !handoff && !hasOffer) return null;
     return (
-      <div className="hc-il-actions">
-        {actions.map((action) => (
-          <a key={action.href} href={action.href} className="hc-il-chip">
-            {action.label}
-            <ArrowUpRight className="hc-il-chip-icon" aria-hidden />
-          </a>
-        ))}
-        {handoff ? (
-          <a href={supportHref} className="hc-il-chip hc-il-chip-human">
-            <LifeBuoy className="hc-il-chip-icon" aria-hidden />
-            {t("Talk to the team")}
-          </a>
+      <div className="hc-il-extras">
+        {offer ? (
+          <div className="hc-il-offer">
+            <div className="hc-il-offer-head">
+              <Sparkle className="hc-il-offer-icon" aria-hidden />
+              <span className="hc-il-offer-title">{offer.title}</span>
+            </div>
+            <p className="hc-il-offer-blurb">{offer.blurb}</p>
+            {quote ? (
+              <>
+                <p className="hc-il-offer-price">
+                  {formatMoney(quote.displayAmountMinor, quote.displayCurrency)}
+                  {quote.approximate ? (
+                    <span className="hc-il-offer-approx">
+                      {t("approx. charged in")} {quote.chargeCurrency} {formatMoney(quote.chargeKobo, quote.chargeCurrency)}
+                    </span>
+                  ) : null}
+                </p>
+                <div className="hc-il-offer-actions">
+                  <button type="button" className="hc-il-offer-run" onClick={() => void runDeep()} disabled={deepBusy}>
+                    {deepBusy ? t("Running…") : t("Run it")}
+                  </button>
+                  <button type="button" className="hc-il-offer-cancel" onClick={() => setQuote(null)} disabled={deepBusy}>
+                    {t("Not now")}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <button type="button" className="hc-il-offer-see" onClick={() => void getQuote()} disabled={deepBusy}>
+                {deepBusy ? t("Checking the price…") : t("See the price")}
+              </button>
+            )}
+            {deepError ? <p className="hc-il-offer-error">{deepError}</p> : null}
+          </div>
+        ) : null}
+        {actions.length || handoff ? (
+          <div className="hc-il-actions">
+            {actions.map((action) => (
+              <a key={action.href} href={action.href} className="hc-il-chip">
+                {action.label}
+                <ArrowUpRight className="hc-il-chip-icon" aria-hidden />
+              </a>
+            ))}
+            {handoff ? (
+              <a href={supportHref} className="hc-il-chip hc-il-chip-human">
+                <LifeBuoy className="hc-il-chip-icon" aria-hidden />
+                {t("Talk to the team")}
+              </a>
+            ) : null}
+          </div>
         ) : null}
       </div>
     );
-  }, [actions, handoff, supportHref, t]);
+  }, [actions, handoff, offer, quote, deepBusy, deepError, supportHref, getQuote, runDeep, t]);
 
   const panelStyle = useMemo(
     () =>
@@ -274,6 +431,19 @@ function IntelligenceLauncherStyles() {
 .hc-il-chip:hover{filter:brightness(.97)}
 .hc-il-chip-human{border-color:rgba(11,18,32,.16);background:rgba(11,18,32,.04)}
 .hc-il-chip-icon{width:.85rem;height:.85rem}
+.hc-il-extras{display:flex;flex-direction:column;gap:.5rem;padding:.4rem 0 .15rem}
+.hc-il-offer{border:1px solid color-mix(in srgb,var(--hc-il-accent,#C9A227) 40%,transparent);background:color-mix(in srgb,var(--hc-il-accent,#C9A227) 8%,#fff);border-radius:1rem;padding:.7rem .8rem}
+.hc-il-offer-head{display:flex;align-items:center;gap:.4rem}
+.hc-il-offer-icon{width:1rem;height:1rem;color:var(--hc-il-accent,#C9A227)}
+.hc-il-offer-title{font-size:.85rem;font-weight:700;color:#0b1220}
+.hc-il-offer-blurb{margin:.3rem 0 .55rem;font-size:.8rem;line-height:1.45;color:rgba(11,18,32,.66)}
+.hc-il-offer-price{display:flex;flex-direction:column;gap:.1rem;margin:0 0 .55rem;font-size:1.05rem;font-weight:700;color:#0b1220;tabular-nums}
+.hc-il-offer-approx{font-size:.7rem;font-weight:600;color:rgba(11,18,32,.55)}
+.hc-il-offer-actions{display:flex;gap:.5rem}
+.hc-il-offer-see,.hc-il-offer-run{border:none;border-radius:999px;padding:.45rem .9rem;font-size:.8rem;font-weight:700;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:#0b1220}
+.hc-il-offer-see:disabled,.hc-il-offer-run:disabled{opacity:.6;cursor:default}
+.hc-il-offer-cancel{border:1px solid rgba(11,18,32,.16);border-radius:999px;padding:.45rem .8rem;font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:rgba(11,18,32,.66)}
+.hc-il-offer-error{margin:.5rem 0 0;font-size:.75rem;color:#b45309}
 .hc-il-prose{font-size:.9rem;line-height:1.55}
 .hc-il-prose p{margin:0 0 .5rem}
 .hc-il-prose p:last-child{margin-bottom:0}
