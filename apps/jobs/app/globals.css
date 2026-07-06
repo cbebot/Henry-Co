@@ -90,19 +90,11 @@
 
 :root {
   color-scheme: light;
-  --font-jobs-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-jobs-display:
-    "Newsreader",
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+  /* Owned type — route jobs' sans/display THROUGH the shared family tokens so the
+     owned-type flip reaches jobs' own chrome (it consumes --font-jobs-*). Brand at
+     reveal; interim/system fallback pre-reveal (same genre as before). */
+  --font-jobs-sans: var(--hc-font-sans);
+  --font-jobs-display: var(--hc-font-serif);
   --jobs-bg: #eef4f4;
   --jobs-paper: rgba(255, 255, 255, 0.92);
   --jobs-paper-soft: rgba(249, 252, 252, 0.72);
