@@ -8,6 +8,7 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
@@ -74,7 +75,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable} ${reading.variable}`}>
+    <html lang={lang} dir={dir} suppressHydrationWarning data-onyx-type={onyxTypeAttr()} className={`${brandFontVariables} ${sans.variable} ${display.variable} ${reading.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>

@@ -9,6 +9,7 @@ import "@henryco/dashboard-shell/surfaces.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { FeedbackToastViewport } from "@henryco/ui/feedback";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { IntelligenceLauncher } from "@henryco/ui/intelligence";
@@ -75,7 +76,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const todBucket = resolveTimeOfDayBucket(timezone);
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning className={brandFontVariables} data-onyx-type={onyxTypeAttr()}>
       <body
         className={`${reading.variable} min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased`}
         data-hc-tod={todBucket}

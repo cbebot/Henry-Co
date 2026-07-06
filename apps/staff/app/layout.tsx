@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Fraunces } from "next/font/google";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { getStaffHqUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning className={reading.variable}>
+    <html lang="en" dir="ltr" suppressHydrationWarning data-onyx-type={onyxTypeAttr()} className={`${brandFontVariables} ${reading.variable}`}>
       <body className="min-h-screen antialiased">
         <PublicThemeGuard includeToasts={false}>
           <ScrollToTopOnNavigation />

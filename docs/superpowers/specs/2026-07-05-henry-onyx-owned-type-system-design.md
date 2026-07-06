@@ -289,6 +289,27 @@ skill, judged against these rules on real surfaces in both themes and on mobile.
 
 ---
 
+### 7.5 Display-heading elevation (owner direction, 2026-07-06)
+
+An editorial page title must NOT be a plain sans scaled up. A sans is drawn to disappear
+at 14px, so at 40px it looks generic and bare; a display-optical serif does the opposite —
+its thick/thin contrast and terminals open up at size and the title becomes an image. The
+display heading is the single biggest "expensive" signal, so:
+
+- **Editorial page titles / hero display → the SERIF, in a dedicated DISPLAY optical cut**
+  (high-contrast, characterful at large size). `--hc-font-display` already routes to the
+  serif; surfaces that currently set a *sans* title (e.g. Studio's Terms page) are
+  re-pointed to `--hc-font-display` in a targeted adoption pass.
+- **Section / wayfinding headings (h2/h3 in app chrome) → sans**, kept for scannability and
+  contrast against the serif drama.
+- **Body / reading → serif** (unchanged — the reference look; owner-confirmed as-is).
+- **Eyebrows / labels / metadata → sans caps, tracked** (unchanged — already correct).
+
+At reveal the bespoke serif's display cut makes these titles unmistakably ours; before
+reveal the same surfaces already read more premium once titles use the serif display role.
+
+---
+
 ## 8. The flip mechanism
 
 Layouts always load the brand `localFont` (placeholder now, bespoke later). A
@@ -380,7 +401,10 @@ is a **matched superfamily** (shared vertical metrics, rhythm, proportions so se
 sans + mono mix on one page — e.g. a receipt with a serif heading, sans labels, mono
 figures reads as one voice).
 
-- **Serif:** display + reading. Optical range desirable (display vs text sizes).
+- **Serif:** display + reading — **TWO optical cuts are required, not one**: a dramatic
+  high-contrast DISPLAY cut for page titles / hero (the biggest "expensive" signal, per
+  §7.5) and a calm low-contrast TEXT cut for long-form reading. The display cut is a
+  first-class deliverable, not an afterthought scaled up from the text cut.
 - **Sans:** the workhorse — nav/UI/body; the largest share of every screen.
   **Aspiration:** the warm, humanist, optically-refined premium of a bespoke brand
   sans in the class of Anthropic's custom sans — real personality at display,

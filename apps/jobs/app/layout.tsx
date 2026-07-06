@@ -10,6 +10,7 @@ import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import "./globals.css";
 
@@ -57,7 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={brandFontVariables} data-onyx-type={onyxTypeAttr()} suppressHydrationWarning>
       <body
         className={`${display.variable} ${sans.variable} ${reading.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
