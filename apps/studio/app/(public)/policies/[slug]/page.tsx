@@ -64,7 +64,11 @@ export default async function StudioPolicyPage({
             <ScrollText className="h-3.5 w-3.5" />
             {policy.shortTitle}
           </p>
-          <h1 className="mt-4 text-balance text-[2rem] font-semibold leading-[1.05] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.4rem] md:text-[2.8rem]">
+          {/* Owner direction (spec §7.5): the editorial page title reads in the SERIF,
+              not a flat sans scaled up. .hc-font-reading gives the clean editorial serif
+              (optical-sizing:auto opens its display contrast at this size) and becomes the
+              bespoke serif at reveal. The neat serif body below is kept as the reference. */}
+          <h1 className="hc-font-reading mt-4 text-balance text-[2rem] font-semibold leading-[1.05] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.4rem] md:text-[2.8rem]">
             {policy.title}
           </h1>
           {/* READING-02: hero intent reads in the editorial serif face
