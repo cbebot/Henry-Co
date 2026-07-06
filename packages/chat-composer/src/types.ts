@@ -94,6 +94,13 @@ export type ComposerProps = {
   onSend: ComposerSendHandler;
   placeholder?: string;
   tone?: ComposerTone;
+  /**
+   * Raw accent override (any CSS colour). When set, it drives the composer's accent
+   * (`--composer-accent` + a computed deep) instead of the `tone` map — so a host with an
+   * arbitrary division colour (the Intelligence launcher passes its `accent`) matches its
+   * surroundings, even for divisions the `ComposerTone` enum can't express.
+   */
+  accent?: string;
   disabled?: boolean;
   busy?: boolean;
   maxAttachments?: number;

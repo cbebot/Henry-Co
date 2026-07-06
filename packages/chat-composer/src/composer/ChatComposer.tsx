@@ -47,11 +47,15 @@ const TONE_ACCENT: Record<string, { base: string; deep: string }> = {
   studio: { base: "#d4b14e", deep: "#a98835" },
 };
 
-function toneStyle(tone: string): React.CSSProperties {
-  const accent = TONE_ACCENT[tone] || TONE_ACCENT.neutral;
+function toneStyle(tone: string, accent?: string): React.CSSProperties {
+  const preset = TONE_ACCENT[tone] || TONE_ACCENT.neutral;
+  // A raw accent override wins over the tone map (so an arbitrary division colour matches its
+  // host). The deep shade is derived so a single colour is enough to pass in.
+  const base = accent || preset.base;
+  const deep = accent ? `color-mix(in srgb, ${accent} 78%, #000)` : preset.deep;
   return {
-    ["--composer-accent" as keyof React.CSSProperties]: accent.base,
-    ["--composer-accent-deep" as keyof React.CSSProperties]: accent.deep,
+    ["--composer-accent" as keyof React.CSSProperties]: base,
+    ["--composer-accent-deep" as keyof React.CSSProperties]: deep,
     ["--composer-muted" as keyof React.CSSProperties]: "rgba(15,23,42,0.5)",
   } as React.CSSProperties;
 }
@@ -64,6 +68,7 @@ export function ChatComposer(props: ComposerProps) {
     onSend,
     placeholder,
     tone = "neutral",
+    accent,
     disabled,
     busy: externalBusy,
     maxAttachments = DEFAULT_MAX_ATTACHMENTS,
@@ -302,7 +307,7 @@ export function ChatComposer(props: ComposerProps) {
         "dark:shadow-[0_24px_64px_rgba(0,0,0,0.5)]",
         className
       )}
-      style={toneStyle(tone)}
+      style={toneStyle(tone, accent)}
       data-drag-over={isDragOver ? "true" : undefined}
       data-has-text={text.length > 0 || hasAttachments ? "true" : "false"}
       data-hc-edge-to-edge={edgeToEdgeMobile ? "true" : undefined}

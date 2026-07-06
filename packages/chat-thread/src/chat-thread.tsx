@@ -107,6 +107,9 @@ export type ChatThreadComposerOptions = {
   /** Blocks sending without greying the textarea (e.g. while the AI replies). */
   busy?: boolean;
   tone?: ComposerTone;
+  /** Raw accent override (any CSS colour) — matches the composer to a host's division colour
+   *  when the `tone` enum can't express it. */
+  accent?: string;
   enterKeyBehavior?: "newline" | "send";
   autoFocus?: boolean;
   enableAttachments?: boolean;
@@ -639,6 +642,7 @@ export function ChatThread(props: ChatThreadProps) {
           onSend={handleComposerSend}
           placeholder={composer.placeholder}
           tone={composer.tone ?? "neutral"}
+          accent={composer.accent}
           disabled={composer.disabled}
           busy={composer.busy}
           enableAttachments={composer.enableAttachments ?? false}
