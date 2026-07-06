@@ -174,4 +174,4 @@ export { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 export { createAssistRunner, type AssistRunnerConfig, type AssistActor, type AssistResult } from "./assist-kit";
 // Intelligence Live L4 — the price-before-run quote for a chargeable capability (server-only:
 // the rate card never leaves the server; only the final kobo totals cross to the client).
-export { quoteCapability, estimateFreeTurnCostKobo, type CapabilityQuote } from "./quote";
+export { quoteCapability, quoteSurface, estimateFreeTurnCostKobo, type CapabilityQuote } from "./quote";

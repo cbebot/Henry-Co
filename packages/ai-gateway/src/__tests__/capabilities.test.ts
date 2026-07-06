@@ -9,7 +9,7 @@ import {
   listCapabilitiesForPrompt,
 } from "../capabilities";
 import { getSurfacePolicy } from "../surfaces";
-import { quoteCapability } from "../server/quote";
+import { quoteCapability, quoteSurface } from "../server/quote";
 import { parseSupportAssistEnvelope, interpretSupportAssistOutput } from "../support-assist";
 
 describe("Intelligence capability registry", () => {
@@ -63,6 +63,36 @@ describe("quoteCapability — the price shown before a run", () => {
   it("refuses an unknown capability (never quotes phantom work)", () => {
     const res = quoteCapability({ capabilityKey: "totally_made_up", inputText: "x" });
     assert.equal(res.ok, false);
+  });
+});
+
+describe("quoteSurface — price-before-run for a paid surface (seller verify)", () => {
+  it("quotes the metered listing-verify surface with a positive VAT-inclusive deep-tier total", () => {
+    const res = quoteSurface({
+      surface: "marketplace.listing.verify",
+      inputText: "Handwoven leather tote, full-grain, made in Aba.",
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.value.tier, "deep");
+    assert.equal(res.value.currency, "NGN");
+    assert.ok(res.value.totalKobo > 0, "a real price to charge the seller");
+    assert.ok(res.value.vatKobo > 0 && res.value.vatKobo < res.value.totalKobo);
+  });
+
+  it("refuses a FREE surface — free work can never be quoted as paid", () => {
+    const res = quoteSurface({ surface: "support.message.assist", inputText: "hi" });
+    assert.equal(res.ok, false);
+  });
+
+  it("more listing text never lowers the quote (monotonic upper bound = never a surprise charge)", () => {
+    const small = quoteSurface({ surface: "marketplace.listing.verify", inputText: "tote" });
+    const big = quoteSurface({
+      surface: "marketplace.listing.verify",
+      inputText: "a much longer listing description ".repeat(40),
+    });
+    assert.ok(small.ok && big.ok);
+    if (small.ok && big.ok) assert.ok(big.value.totalKobo >= small.value.totalKobo);
   });
 });
 
