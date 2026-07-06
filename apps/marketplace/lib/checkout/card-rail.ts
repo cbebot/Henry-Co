@@ -57,7 +57,11 @@ export type StartCardCheckoutResult =
   | { ok: false; reason: "amount" | "no_provider" | "provider_error" | "db" };
 
 const MIN_KOBO = 10_000; // NGN 100
-const MAX_KOBO = 50_000_000; // NGN 500,000 — division order ceiling for the card rail
+// A high SANITY ceiling, not a product limit: expensive marketplace orders (electronics,
+// furniture, bulk) must go through, so this bounds only absurd amounts — a fat-finger/pricing-bug
+// charge or an obviously-fraudulent total. Real per-transaction limits live at the card + provider
+// layer (the issuing bank's online limit, the processor's fraud checks), not here.
+const MAX_KOBO = 10_000_000_000; // NGN 100,000,000
 
 export async function startMarketplaceCardCheckout(input: {
   order: { id: string; orderNo: string; grandTotalMajor: number; currency: string };
