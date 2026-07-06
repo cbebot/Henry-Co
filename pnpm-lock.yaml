@@ -33,6 +33,9 @@ importers:
       '@fontsource-variable/manrope':
         specifier: ^5.2.8
         version: 5.2.8
+      '@fontsource/newsreader':
+        specifier: ^5.1.0
+        version: 5.2.10
       '@fontsource/noto-sans-arabic':
         specifier: ^5.2.10
         version: 5.2.10
