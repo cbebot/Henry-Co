@@ -473,6 +473,7 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
       featured: Boolean(row.featured),
       approvalStatus: String(row.approval_status || "approved") as MarketplaceProduct["approvalStatus"],
       trustBadges: Array.isArray(row.trust_badges) ? row.trust_badges.map(String) : [],
+      henryOnyxVerified: Boolean(row.henry_onyx_verified),
       gallery: mediaByProduct.get(String(row.id)) ?? [],
       specifications:
         row.specifications && typeof row.specifications === "object"
