@@ -202,6 +202,17 @@ jobs:
       - name: Assert V3-AI-01 money-RPC grant invariant (service-role-only; RLS; no PUBLIC)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ai_money_rpc_grant_invariant.sql
 
+      # V3-MONEY-MC: the multi-currency, in-currency ledger. Apply the widening migration on the
+      # same fresh DB (the NGN entries from the earlier proofs remain), then prove a valid ISO-4217
+      # currency posts + settles IN-CURRENCY, a malformed currency is still rejected, a foreign fee
+      # gets NO fabricated Nigerian VAT split (while NGN keeps its statutory split), and
+      # ledger_reconciliation is per-currency — each currency balancing to zero independently.
+      - name: Apply V3-MONEY-MC multi-currency ledger migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260706120000_v3_money_mc_multicurrency_ledger.sql
+
+      - name: Prove multi-currency ledger invariants (post · reject-bad · settle-usd · no-NG-VAT · NGN-split · per-currency)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/multicurrency_ledger_invariants.sql
+
       # SEC-HARDEN-01: lock down the SECURITY DEFINER audit writers (same revoke
       # discipline as the money RPCs). The two writers + is_staff_in_any live on
       # prod out-of-band (not created by any FL2 migration), so create faithful
