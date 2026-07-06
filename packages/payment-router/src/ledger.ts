@@ -8,12 +8,26 @@
 // proven money edges post. It mirrors the payment state machine's TS/SQL pairing:
 // the SQL is a transcription of these rules, kept in lockstep deliberately.
 //
-// Amounts are kobo (NGN minor units) as whole integers — never float, never ×100.
-// The ledger currency is always the NGN system base (FX is display-only).
+// Amounts are minor units as whole integers — never float, never ×100. Each entry posts in ONE
+// currency and its lines balance in THAT currency (the in-currency ledger, V3-MONEY-MC); the
+// line math below is currency-neutral (the currency is a property of the entry, not the lines).
+// NGN is the reporting/presentation base; FX appears only at reporting, never inside a posting.
 // ---------------------------------------------------------------------------
 
-/** ISO 4217 — the platform accounting base. Mirrors @henryco/pricing SYSTEM_BASE_CURRENCY. */
+/** ISO 4217 — the reporting/presentation base. Mirrors @henryco/pricing SYSTEM_BASE_CURRENCY. */
 export const LEDGER_CURRENCY = "NGN" as const;
+
+/**
+ * ISO-4217 shape guard for an entry's currency — the TS mirror of the DB
+ * `journal_entries_currency_iso` CHECK + the `post_ledger_entry` currency guard. An entry may
+ * post in ANY valid ISO-4217 currency (the in-currency ledger); which currencies are actually
+ * charged is gated separately by the CHARGE_CURRENCIES allowlist in @henryco/pricing (empty =
+ * NGN-only, inert). Money-safety never rests on this shape check — the per-entry balance
+ * invariant is currency-agnostic and holds regardless.
+ */
+export function isValidLedgerCurrency(code: string): boolean {
+  return /^[A-Z]{3}$/.test(code);
+}
 
 /** Double-entry account classes and their normal (increase) balance side. */
 export type LedgerAccountType = "asset" | "liability" | "revenue" | "expense" | "equity";

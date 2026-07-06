@@ -4,8 +4,10 @@ import {
   LEDGER_ACCOUNTS,
   LEDGER_CURRENCY,
   assertBalanced,
+  isValidLedgerCurrency,
   LedgerImbalanceError,
   buildChargeSettlementLines,
+  buildChargeSettlementLinesWithFee,
   buildWalletTopupLines,
   buildRefundLines,
   type JournalLine,
@@ -164,5 +166,53 @@ describe("entry builders — balanced + correctly directed", () => {
       assert.throws(() => buildWalletTopupLines(bad), LedgerImbalanceError);
       assert.throws(() => buildRefundLines(bad), LedgerImbalanceError);
     }
+  });
+});
+
+describe("V3-MONEY-MC — the in-currency ledger (currency is an entry property, not a line one)", () => {
+  it("accepts any valid ISO-4217 code and rejects malformed ones (mirrors the DB CHECK)", () => {
+    for (const good of ["NGN", "USD", "GBP", "EUR", "GHS", "KES"]) {
+      assert.equal(isValidLedgerCurrency(good), true, good);
+    }
+    for (const bad of ["ngn", "US", "USDD", "US1", "", "$$$", "12A", "N G"]) {
+      assert.equal(isValidLedgerCurrency(bad), false, JSON.stringify(bad));
+    }
+  });
+
+  it("the balance invariant is currency-agnostic — the same lines balance for NGN or USD", () => {
+    // The line math carries no currency; a USD charge (cents) and an NGN charge (kobo) produce
+    // the same balanced shape. The currency lives on the ENTRY (post_ledger_entry), so per-entry
+    // balance gives per-currency balance for free — the design's core safety property.
+    const usdCents = buildChargeSettlementLines(4999); // $49.99
+    assert.doesNotThrow(() => assertBalanced(usdCents));
+    assert.deepEqual(usdCents, [dr("cash_settlement", 4999), cr("payments_clearing", 4999)]);
+  });
+
+  it("a foreign fee with no reported VAT is a plain fee expense — never a fabricated NG VAT split", () => {
+    // The caller (post_charge_settlement) passes feeVat=0 for a non-NGN fee with no provider
+    // breakdown, so the fee is wholly processor_fees and no fee_vat_recoverable line appears.
+    const lines = buildChargeSettlementLinesWithFee({ grossMinor: 10_000, feeMinor: 300, feeVatMinor: 0 });
+    assert.doesNotThrow(() => assertBalanced(lines));
+    assert.deepEqual(lines, [
+      dr("cash_settlement", 9_700),
+      dr("processor_fees", 300),
+      cr("payments_clearing", 10_000),
+    ]);
+    assert.ok(!lines.some((l) => l.accountCode === "fee_vat_recoverable"), "no VAT-recoverable line");
+  });
+
+  it("a provider-reported fee VAT still splits out — honoured for any currency", () => {
+    const lines = buildChargeSettlementLinesWithFee({ grossMinor: 10_000, feeMinor: 300, feeVatMinor: 20 });
+    assert.doesNotThrow(() => assertBalanced(lines));
+    assert.deepEqual(lines, [
+      dr("cash_settlement", 9_700),
+      dr("processor_fees", 280),
+      dr("fee_vat_recoverable", 20),
+      cr("payments_clearing", 10_000),
+    ]);
+  });
+
+  it("NGN stays the reporting base constant (books are currency-neutral, presentation is NGN)", () => {
+    assert.equal(LEDGER_CURRENCY, "NGN");
   });
 });
