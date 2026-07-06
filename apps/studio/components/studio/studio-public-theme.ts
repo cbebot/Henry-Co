@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
+import { onyxTypeAttr } from "@henryco/ui/fonts";
 
 /**
  * Shared public-surface theme wiring for Studio (V3-PUBLIC-REBUILD-studio).
@@ -39,6 +40,17 @@ const studio = getDivisionConfig("studio");
 const SERIF_STACK =
   'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
+// Owned type — when the flag is live at build, the public marketing subtree routes
+// through the shared brand family tokens instead of the interim Fraunces/Manrope
+// next/font handles. Pre-reveal keeps the interim faces (identical to before). The
+// --hc-font-display/body/reading entries below reference --home-font-*, so they flip
+// automatically.
+const live = onyxTypeAttr() === "live";
+const HOME_DISPLAY = live ? "var(--hc-font-serif)" : SERIF_STACK;
+const HOME_SANS = live
+  ? "var(--hc-font-sans)"
+  : 'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
 /**
  * Adopt --home-* on a public subtree (see §9 + §10 of docs/v3/design-system.md):
  *  • Studio accent = config teal (#4AC1C5 / #1F7375); --accent-text-dark lifts it
@@ -53,13 +65,12 @@ const SERIF_STACK =
  */
 export const STUDIO_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
-  ["--home-font-sans" as string]:
-    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  ["--home-font-sans" as string]: HOME_SANS,
   ["--accent" as string]: studio.accent,
   ["--accent-text" as string]: studio.accentText,
   ["--accent-text-dark" as string]: "#63D2D5",
-  ["--home-font-display" as string]: SERIF_STACK,
-  ["--font-studio-display" as string]: SERIF_STACK,
+  ["--home-font-display" as string]: HOME_DISPLAY,
+  ["--font-studio-display" as string]: HOME_DISPLAY,
   // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
   // inner var() freezes there), so the canonical seam must be re-declared on
   // THIS element — where the font .variable classes resolve — for .hc-prose /

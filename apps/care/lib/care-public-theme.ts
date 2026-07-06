@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
+import { onyxTypeAttr } from "@henryco/ui/fonts";
 
 /**
  * Public-surface theme wiring for Henry Onyx Fabric Care (V3-PUBLIC-REBUILD-care).
@@ -46,18 +47,28 @@ export const manrope = Manrope({
 const SERIF_STACK =
   'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
+// Owned type — when the flag is live at build, the public marketing subtree routes
+// through the shared brand family tokens instead of the interim Fraunces/Manrope
+// next/font handles. Pre-reveal keeps the interim faces (identical to before). The
+// --hc-font-display/body/reading entries below reference --home-font-*, so they flip
+// automatically.
+const live = onyxTypeAttr() === "live";
+const HOME_DISPLAY = live ? "var(--hc-font-serif)" : SERIF_STACK;
+const HOME_SANS = live
+  ? "var(--hc-font-sans)"
+  : 'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
 export const CARE_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
   // Manrope is the public body sans (display heads stay Fraunces via --home-font-display).
-  ["--home-font-sans" as string]:
-    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  ["--home-font-sans" as string]: HOME_SANS,
   // Cobalt soul. --accent-text is AA on warm paper; the dark variant lifts the
   // cobalt so it stays AA on the near-black canvas.
   ["--accent" as string]: "#6B7CFF",
   ["--accent-text" as string]: "#4F5BD0",
   ["--accent-text-dark" as string]: "#AAB4FF",
-  ["--home-font-display" as string]: SERIF_STACK,
-  ["--font-display" as string]: SERIF_STACK,
+  ["--home-font-display" as string]: HOME_DISPLAY,
+  ["--font-display" as string]: HOME_DISPLAY,
   // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
   // inner var() freezes there), so the canonical seam must be re-declared on
   // THIS element — where the font .variable classes resolve — for .hc-prose /

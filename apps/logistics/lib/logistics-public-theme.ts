@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
+import { onyxTypeAttr } from "@henryco/ui/fonts";
 
 /**
  * Public-surface theme wiring for Henry Onyx Logistics (V3-PUBLIC-REBUILD-logistics).
@@ -57,18 +58,28 @@ const logistics = getDivisionConfig("logistics");
 const SERIF_STACK =
   'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
+// Owned type — when the flag is live at build, the public marketing subtree routes
+// through the shared brand family tokens instead of the interim Fraunces/Manrope
+// next/font handles. Pre-reveal keeps the interim faces (identical to before). The
+// --hc-font-display/body/reading entries below reference --home-font-*, so they flip
+// automatically.
+const live = onyxTypeAttr() === "live";
+const HOME_DISPLAY = live ? "var(--hc-font-serif)" : SERIF_STACK;
+const HOME_SANS = live
+  ? "var(--hc-font-sans)"
+  : 'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
 export const LOGISTICS_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
   // Manrope is the public body sans (matches the hub); Fraunces stays display only.
-  ["--home-font-sans" as string]:
-    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  ["--home-font-sans" as string]: HOME_SANS,
   // Copper soul — read from company.ts per §9. --accent-text is AA on warm paper;
   // --accent-text-dark lifts the copper so it stays AA on the near-black canvas.
   ["--accent" as string]: logistics.accent || "#D06F32",
   ["--accent-text" as string]: logistics.accentText || "#9D4F1F",
   ["--accent-text-dark" as string]: "#F3A877",
-  ["--home-font-display" as string]: SERIF_STACK,
-  ["--font-logistics-display" as string]: SERIF_STACK,
+  ["--home-font-display" as string]: HOME_DISPLAY,
+  ["--font-logistics-display" as string]: HOME_DISPLAY,
   // The portal `.log-pf` module renders its serif via --hc-font-display; re-point
   // it at Fraunces so the home + track editorial headings adopt the shared face.
   // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
