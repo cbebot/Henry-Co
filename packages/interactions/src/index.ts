@@ -33,3 +33,14 @@ export {
   CurrencyProvider,
   useCurrencyFormatter,
 } from "./context";
+
+// Engine 1 — CTA
+export { CtaButton } from "./engines/cta";
+export type { CtaButtonProps, CtaVariant, CtaLabels } from "./engines/cta";
+export {
+  resolveCtaState,
+  initialCtaState,
+  SUCCESS_MS,
+  CONFIRM_WINDOW_MS,
+} from "./engines/cta";
+export type { CtaState, CtaEvent, CtaPhase, CtaOptions } from "./engines/cta";
