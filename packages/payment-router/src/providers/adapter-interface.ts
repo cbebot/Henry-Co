@@ -106,6 +106,22 @@ export interface VerifiedWebhook {
     /** The provider's settlement-side refund reference, when present. */
     refundReference: string | null;
   };
+  /**
+   * V3-MONEY-PAYOUT — set for OUTBOUND transfer (payout) OUTCOME events
+   * (transfer.completed / transfer.failed). Payout money truth flows through the withdrawal RPCs
+   * keyed on OUR `reference` (the withdrawal request id), NOT through {@link impliedStatus} (which
+   * is charge-only). The webhook is a NOTICE — the caller re-verifies the transfer before settling.
+   * When set, impliedStatus is null.
+   */
+  transferEvent?: {
+    /** Our reference echoed back — the withdrawal request id we sent as the transfer reference. */
+    reference: string;
+    /** The provider-side transfer id — used to authoritatively re-verify before settling. */
+    providerReference: string;
+    outcome: "completed" | "failed";
+    /** The real transfer fee (minor units) the provider charged, when the payload reports it. */
+    feeMinor?: number;
+  };
 }
 
 /**
@@ -149,6 +165,57 @@ export interface BalanceResult {
   asOf: string;
 }
 
+// ── V3-MONEY-PAYOUT — outbound transfers (automatic withdrawal payouts to a user's bank) ──
+
+/** Resolve a bank account to its holder name — checked BEFORE a payout so the money can't be
+ *  sent to a mistyped/mismatched account. */
+export interface ResolveBankAccountParams {
+  accountNumber: string;
+  /** Provider bank code (Flutterwave NIP code / Paystack bank code). */
+  bankCode: string;
+}
+export interface ResolvedBankAccount {
+  /** The account holder's name exactly as the bank reports it. */
+  accountName: string;
+}
+
+export interface CreateTransferParams {
+  /**
+   * OUR idempotency reference for this payout — the withdrawal request id. The provider dedups on
+   * it (Flutterwave `reference` is unique per transfer), and it is the key we re-verify + match the
+   * webhook on, so a redelivery or retry can never pay out twice.
+   */
+  reference: string;
+  amountMinor: number;
+  currency: ISO4217;
+  accountNumber: string;
+  bankCode: string;
+  /** Statement narration for the recipient. */
+  narration?: string;
+}
+export interface CreateTransferResult {
+  /** Provider-side transfer id/handle. Persisted; verify + webhook key on it or on our reference. */
+  providerReference: string;
+  /** The provider's transfer status verbatim (e.g. NEW / PENDING / SUCCESSFUL / FAILED). A create
+   *  is NEVER treated as "paid" — only a verified `completed` outcome settles. */
+  status: string;
+}
+
+export interface VerifyTransferParams {
+  /** The provider-side transfer id (from {@link CreateTransferResult.providerReference} or the
+   *  webhook) — the provider verifies a transfer by its own id. The result echoes OUR reference
+   *  back so the caller matches it to the withdrawal. */
+  providerReference: string;
+}
+export interface VerifiedTransfer {
+  reference: string;
+  providerReference: string;
+  /** The terminal outcome, or null while the transfer is still pending (never assume). */
+  outcome: "completed" | "failed" | null;
+  /** The real transfer fee (minor units) the provider charged, when it reports it. */
+  feeMinor?: number;
+}
+
 /**
  * The vendor-agnostic contract every payment provider implements. V3-13 ships
  * only {@link MockProvider}; Stripe/Paystack/Flutterwave adapters land in
@@ -187,4 +254,27 @@ export interface PaymentProviderAdapter {
   listRefunds?(
     params: ListRefundsParams,
   ): Promise<Result<ProviderRefundSummary[], ProviderError>>;
+  /**
+   * V3-MONEY-PAYOUT — resolve a bank account to its holder name, so a payout is never sent to a
+   * mistyped account. Optional; the payout rail requires it before creating a transfer.
+   */
+  resolveBankAccount?(
+    params: ResolveBankAccountParams,
+  ): Promise<Result<ResolvedBankAccount, ProviderError>>;
+  /**
+   * V3-MONEY-PAYOUT — create an OUTBOUND transfer (payout) to a bank account. Idempotent on OUR
+   * `reference` (the withdrawal request id). A successful create only means "accepted/queued" —
+   * money truth waits for a verified `completed` outcome. Optional.
+   */
+  createTransfer?(
+    params: CreateTransferParams,
+  ): Promise<Result<CreateTransferResult, ProviderError>>;
+  /**
+   * V3-MONEY-PAYOUT — authoritatively re-verify a transfer's outcome by our reference (the payout
+   * D1 confirm, mirroring the charge verify). The webhook is only a notice; the caller settles the
+   * ledger on THIS result, never on the webhook alone. Optional.
+   */
+  verifyTransfer?(
+    params: VerifyTransferParams,
+  ): Promise<Result<VerifiedTransfer, ProviderError>>;
 }

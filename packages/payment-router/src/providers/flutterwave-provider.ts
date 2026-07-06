@@ -11,6 +11,12 @@ import type {
   FinalizeResult,
   BalanceParams,
   BalanceResult,
+  ResolveBankAccountParams,
+  ResolvedBankAccount,
+  CreateTransferParams,
+  CreateTransferResult,
+  VerifyTransferParams,
+  VerifiedTransfer,
 } from "./adapter-interface";
 import { type Result, normalizeCurrency, minorUnitExponent } from "../types";
 import type { ProviderError } from "../errors";
@@ -86,6 +92,16 @@ interface FlwTxnData {
   amount_settled?: number;
   currency?: string;
   status?: string;
+}
+
+/** The transfer object Flutterwave returns from POST /transfers, GET /transfers/:id, and the
+ *  transfer.* webhook. `amount`/`fee` are MAJOR units; `status` is NEW/PENDING/SUCCESSFUL/FAILED. */
+interface FlwTransferData {
+  id?: number | string;
+  reference?: string;
+  status?: string;
+  fee?: number;
+  currency?: string;
 }
 
 /** What a verify call yields, normalised once for both `finalize` and the webhook re-verify. */
@@ -289,8 +305,9 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
 
     if (event.startsWith("refund")) return this.handleRefundWebhook(event, data);
     if (event.startsWith("charge")) return this.handleChargeWebhook(event, data);
+    if (event.startsWith("transfer")) return this.handleTransferWebhook(event, data);
 
-    // Informational event (transfer.*, etc.): ack, no effect, no API call.
+    // Informational event (other): ack, no effect, no API call.
     return {
       ok: true,
       value: {
@@ -461,6 +478,156 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
         currency: params.currency,
         availableMinor: majorToMinor(match.available_balance, exp),
         asOf: new Date().toISOString(),
+      },
+    };
+  }
+
+  // ── V3-MONEY-PAYOUT — outbound transfers (automatic withdrawal payouts) ──
+
+  /** Flutterwave transfer status → our terminal outcome. NEW/PENDING → null (never settled). */
+  private classifyTransferStatus(status: unknown): VerifiedTransfer["outcome"] {
+    const s = typeof status === "string" ? status.toUpperCase() : "";
+    if (s === "SUCCESSFUL") return "completed";
+    if (s === "FAILED") return "failed";
+    return null; // NEW / PENDING / anything unknown → not terminal
+  }
+
+  /**
+   * Resolve a bank account to its holder name (POST /accounts/resolve). Checked BEFORE a payout so
+   * money is never sent to a mistyped/mismatched account.
+   */
+  async resolveBankAccount(
+    params: ResolveBankAccountParams,
+  ): Promise<Result<ResolvedBankAccount, ProviderError>> {
+    if (!params.accountNumber || !params.bankCode) return this.err("flutterwave_resolve_missing_account", false);
+    const res = await this.call("POST", "/accounts/resolve", {
+      account_number: params.accountNumber,
+      account_bank: params.bankCode,
+    });
+    if (!res.ok) return res;
+    const data = (res.value.data ?? {}) as { account_name?: string };
+    if (!data.account_name) return this.err("flutterwave_resolve_no_name", false);
+    return { ok: true, value: { accountName: data.account_name } };
+  }
+
+  /**
+   * Create an OUTBOUND transfer (POST /transfers). `reference` is OUR withdrawal request id — the
+   * provider dedups on it, so a retry can never double-pay. A successful create only means
+   * "accepted"; money truth waits for a verified `completed` outcome (verifyTransfer / the webhook).
+   */
+  async createTransfer(
+    params: CreateTransferParams,
+  ): Promise<Result<CreateTransferResult, ProviderError>> {
+    if (!params.accountNumber || !params.bankCode) return this.err("flutterwave_transfer_missing_account", false);
+    const currency = normalizeCurrency(params.currency);
+    if (!currency.ok) return this.err("flutterwave_unsupported_currency", false);
+    const amountMajor = minorToMajorString(params.amountMinor, minorUnitExponent(currency.value));
+    const body: Record<string, unknown> = {
+      account_bank: params.bankCode,
+      account_number: params.accountNumber,
+      amount: amountMajor, // MAJOR units — never the raw kobo
+      currency: currency.value,
+      reference: params.reference, // our idempotency key (the withdrawal request id)
+      narration: params.narration ?? "Henry Onyx withdrawal",
+    };
+    const res = await this.call("POST", "/transfers", body);
+    if (!res.ok) return res;
+    const data = (res.value.data ?? {}) as FlwTransferData;
+    if (data.id == null) return this.err("flutterwave_bad_transfer_response", false);
+    return {
+      ok: true,
+      value: { providerReference: String(data.id), status: typeof data.status === "string" ? data.status : "NEW" },
+    };
+  }
+
+  /**
+   * Authoritatively re-verify a transfer by its provider id (GET /transfers/:id) — the payout D1
+   * confirm. The same read backs the webhook re-verify, so a notice is never trusted on its own.
+   */
+  async verifyTransfer(
+    params: VerifyTransferParams,
+  ): Promise<Result<VerifiedTransfer, ProviderError>> {
+    return this.readVerifiedTransfer(params.providerReference);
+  }
+
+  private async readVerifiedTransfer(providerReference: string): Promise<Result<VerifiedTransfer, ProviderError>> {
+    if (!providerReference) return this.err("flutterwave_transfer_no_id", false);
+    const res = await this.call("GET", `/transfers/${encodeURIComponent(providerReference)}`);
+    if (!res.ok) return res;
+    const data = (res.value.data ?? {}) as FlwTransferData;
+    const reference = typeof data.reference === "string" ? data.reference : "";
+    let feeMinor: number | undefined;
+    if (typeof data.fee === "number" && typeof data.currency === "string") {
+      const cur = normalizeCurrency(data.currency);
+      if (cur.ok) feeMinor = majorToMinor(data.fee, minorUnitExponent(cur.value));
+    }
+    return {
+      ok: true,
+      value: {
+        reference,
+        providerReference: data.id != null ? String(data.id) : providerReference,
+        outcome: this.classifyTransferStatus(data.status),
+        feeMinor,
+      },
+    };
+  }
+
+  /**
+   * Classify a transfer.* webhook. verif-hash is a STATIC shared secret, so a completed/failed
+   * notice is NEVER trusted on its own — we re-verify by the transfer id (GET /transfers/:id) and
+   * report the VERIFIED outcome, binding it to OUR reference. A still-pending notice (or a payload
+   * whose reference disagrees with the verify) is an informational ack, never a settle.
+   */
+  private async handleTransferWebhook(
+    event: string,
+    data: Record<string, unknown>,
+  ): Promise<Result<VerifiedWebhook, ProviderError>> {
+    const providerReference = data.id != null ? String(data.id) : "";
+    const payloadRef = typeof data.reference === "string" ? data.reference : "";
+    const payloadOutcome = this.classifyTransferStatus(data.status);
+    // A still-pending transfer notice (NEW/PENDING) or one with no id — ack, no re-verify, no effect.
+    if (!providerReference || payloadOutcome === null) {
+      return {
+        ok: true,
+        value: {
+          providerEventId: `event:${event}:${providerReference || payloadRef}`,
+          eventType: event,
+          providerReference: payloadRef,
+          impliedStatus: null,
+        },
+      };
+    }
+    const v = await this.readVerifiedTransfer(providerReference);
+    if (!v.ok) return v;
+    // Verified still pending despite the notice → no settle yet (informational).
+    if (v.value.outcome === null) {
+      return {
+        ok: true,
+        value: {
+          providerEventId: `event:${event}:${providerReference}`,
+          eventType: event,
+          providerReference: v.value.reference,
+          impliedStatus: null,
+        },
+      };
+    }
+    // Footgun: the notice reference must match the verified reference — bind the event to OUR ref.
+    if (payloadRef && v.value.reference && payloadRef !== v.value.reference) {
+      return this.err("flutterwave_transfer_ref_mismatch", false);
+    }
+    return {
+      ok: true,
+      value: {
+        providerEventId: `transfer:${providerReference}`, // stable webhook-layer dedup key
+        eventType: event,
+        providerReference: v.value.reference, // OUR reference (the withdrawal id)
+        impliedStatus: null,
+        transferEvent: {
+          reference: v.value.reference,
+          providerReference,
+          outcome: v.value.outcome,
+          feeMinor: v.value.feeMinor,
+        },
       },
     };
   }
