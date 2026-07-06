@@ -12,6 +12,7 @@ const ALLOWLIST = [
   "packages/rn-type/",
   "packages/branded-documents/",
   "packages/email/",
+  "packages/newsletter/",
   "packages/seo/src/og/",
 ];
 
