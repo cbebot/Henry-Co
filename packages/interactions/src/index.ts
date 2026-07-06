@@ -44,3 +44,14 @@ export {
   CONFIRM_WINDOW_MS,
 } from "./engines/cta";
 export type { CtaState, CtaEvent, CtaPhase, CtaOptions } from "./engines/cta";
+
+// Engine 5 — Joy
+export { JoyState, joyContentFor, JOY_ENVELOPE_MS } from "./engines/joy";
+export type {
+  JoyStateProps,
+  JoyNextAction,
+  JoyVariant,
+  JoyOutcome,
+  JoyLabels,
+  JoyContent,
+} from "./engines/joy";
