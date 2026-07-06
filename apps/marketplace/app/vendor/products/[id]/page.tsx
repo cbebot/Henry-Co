@@ -44,7 +44,11 @@ export default async function VendorProductDetailPage({
           copy={{
             heading: t("Get Henry Onyx Verified"),
             intro: t("A trusted review checks your listing is honest, original, and safe — so buyers trust it more."),
-            request: t("Request review"),
+            seePrice: t("See price"),
+            quoting: t("Getting price…"),
+            quoteTemplate: t("This review costs {price} (incl. {vat} VAT), charged from your wallet."),
+            confirmTemplate: t("Run review · {price}"),
+            cancel: t("Cancel"),
             reviewing: t("Reviewing…"),
             verifiedBadge: t("Henry Onyx Verified"),
             readyForReview: t("Ready for review by our team."),

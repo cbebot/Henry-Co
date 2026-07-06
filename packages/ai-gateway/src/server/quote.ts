@@ -62,6 +62,42 @@ export function estimateFreeTurnCostKobo(input: {
 }
 
 /**
+ * Quote a billable SURFACE directly (no capability indirection) for the text a run will be
+ * grounded in. Same price-before-run contract as quoteCapability: pure of side effects (no
+ * wallet touch), reuses the identical estimate → rate card → VAT path the orchestrator reserves
+ * against, and refuses a free surface so free work can never be quoted as paid. For paid actions
+ * that are NOT chat-offered capabilities (e.g. the seller-initiated marketplace.listing.verify
+ * trust review), so the seller sees the price and confirms BEFORE any charge.
+ */
+export function quoteSurface(input: {
+  surface: AiSurfaceKey;
+  /** The text the run will be grounded in (the listing fields the seller is reviewing). */
+  inputText: string;
+  rules?: AiUsageRuleSet;
+}): Result<Omit<CapabilityQuote, "capabilityKey">, AiGatewayError> {
+  const policy = getSurfacePolicy(input.surface);
+  if (!policy || !policy.billable) {
+    return err(aiError("not_configured", DEFAULT_AI_ERROR_COPY.not_configured));
+  }
+  const rules = input.rules ?? defaultAiUsageRules();
+  const promptTokens = estimateInputTokens(String(input.inputText ?? ""));
+  const usage = estimateUsageUpperBound({ promptTokens, policy });
+  const breakdown = computeAiUsageBreakdown({
+    rules,
+    tier: policy.modelTier,
+    usage,
+    vat: { policy: TAX.vat, treatment: "standard" },
+  });
+  return ok({
+    surface: policy.surface,
+    tier: policy.modelTier,
+    totalKobo: breakdown.totals.customerTotal.amount,
+    vatKobo: lineAmount(breakdown, "tax"),
+    currency: rules.currency,
+  });
+}
+
+/**
  * Quote a chargeable capability for the text the person will run it on. Pure of side effects
  * (no wallet touch); returns a typed error when the key is unknown or the surface is not
  * billable, so a caller can never accidentally quote free work as paid.

@@ -1,6 +1,6 @@
 "use server";
 
-import { runAiTask, createPgBillingPort } from "@henryco/ai-gateway/server";
+import { runAiTask, quoteSurface, createPgBillingPort } from "@henryco/ai-gateway/server";
 import { parseVerdict, resolveVerdictDecision, type AiUsageReceipt, type VerdictDecision } from "@henryco/ai-gateway";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { getPaymentsSqlExecutor } from "@/lib/payments/db";
@@ -21,6 +21,36 @@ export interface VerifyInput {
 export type VerifyResult =
   | { ok: true; outcome: VerdictDecision; badge: boolean; trustScore: number; reasons: string[]; receipt: AiUsageReceipt }
   | { ok: false; code: string; message: string };
+
+export type VerifyQuote =
+  | { ok: true; totalKobo: number; vatKobo: number; currency: string }
+  | { ok: false; code: string; message: string };
+
+/**
+ * Price-before-run: the VAT-inclusive cost of the trust review, shown to the seller BEFORE any
+ * charge so they price it and confirm (the L4 doctrine, applied to the seller-initiated verify).
+ * No wallet touch — a pure estimate on the same rate card the run reserves against, so the seller
+ * is never charged above what they confirmed. Auth-gated to sellers; no ownership check is needed
+ * because a price estimate reveals nothing and moves no money (the RUN keeps the IDOR guard).
+ */
+export async function quoteListingVerifyAction(input: {
+  title: string;
+  summary?: string;
+  description?: string;
+  category?: string;
+}): Promise<VerifyQuote> {
+  const viewer = await getMarketplaceViewer();
+  if (!viewer.user || !viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
+    return { ok: false, code: "auth_required", message: "Sign in as a seller to request a review." };
+  }
+  // Ground the estimate in the same listing text the run's prompt is built from.
+  const inputText = [input.title, input.summary, input.description, input.category]
+    .filter(Boolean)
+    .join(" ");
+  const quote = quoteSurface({ surface: "marketplace.listing.verify", inputText });
+  if (!quote.ok) return { ok: false, code: quote.error.code, message: quote.error.message };
+  return { ok: true, totalKobo: quote.value.totalKobo, vatKobo: quote.value.vatKobo, currency: quote.value.currency };
+}
 
 /**
  * V3 trust layer — "Henry Onyx Verified". Runs the deep-tier, METERED, multimodal review

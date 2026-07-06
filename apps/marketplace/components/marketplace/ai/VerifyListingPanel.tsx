@@ -4,12 +4,20 @@ import { useState } from "react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
 import { aiTierBrandName } from "@henryco/ai-gateway";
 import { AiProse } from "@henryco/ui/prose";
-import { verifyListingAction, type VerifyResult } from "@/lib/ai/verify-listing-action";
+import {
+  quoteListingVerifyAction,
+  verifyListingAction,
+  type VerifyResult,
+} from "@/lib/ai/verify-listing-action";
 
 export interface VerifyPanelCopy {
   heading: string;
   intro: string;
-  request: string;
+  seePrice: string;
+  quoting: string;
+  quoteTemplate: string;
+  confirmTemplate: string;
+  cancel: string;
   reviewing: string;
   verifiedBadge: string;
   readyForReview: string;
@@ -34,15 +42,49 @@ function fieldValue(name: string): string {
  * reasons + a redacted receipt — never a provider, model, cost, or margin. The review
  * AUGMENTS human moderation; it never publishes.
  */
+type Quote = { totalKobo: number; vatKobo: number };
+
 export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy; productId?: string }) {
+  // A small state machine so the seller ALWAYS sees the price and confirms before any charge
+  // (price-before-run): idle → quoting → quoted (confirm/cancel) → running → result.
   const [pending, setPending] = useState(false);
+  const [quote, setQuote] = useState<Quote | null>(null);
   const [result, setResult] = useState<VerifyResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [receiptLabel, setReceiptLabel] = useState<string | null>(null);
 
-  async function onRequest() {
+  // Step 1 — fetch the price. No wallet touch; nothing runs yet.
+  async function onSeePrice() {
     setPending(true);
     setResult(null);
+    setError(null);
     setReceiptLabel(null);
+    try {
+      const res = await quoteListingVerifyAction({
+        title: fieldValue("title"),
+        summary: fieldValue("summary"),
+        description: fieldValue("description"),
+        category: fieldValue("category_slug"),
+      });
+      if (res.ok) setQuote({ totalKobo: res.totalKobo, vatKobo: res.vatKobo });
+      else setError(res.message);
+    } catch {
+      setError(copy.errorFallback);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  function onCancel() {
+    setQuote(null);
+    setError(null);
+  }
+
+  // Step 2 — the seller confirmed the price; NOW run the metered review (charges the wallet,
+  // hard-capped at the reservation, so never above the price just confirmed).
+  async function onConfirmRun() {
+    setPending(true);
+    setError(null);
     try {
       const imageUrl = fieldValue("image_url");
       const res = await verifyListingAction({
@@ -55,6 +97,7 @@ export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy;
         idempotencyKey: crypto.randomUUID(),
       });
       setResult(res);
+      setQuote(null);
       if (res.ok && res.receipt.billed) {
         setReceiptLabel(
           formatSurfaceTemplate(copy.priceTemplate, {
@@ -63,9 +106,11 @@ export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy;
             tier: aiTierBrandName(res.receipt.tier),
           }),
         );
+      } else if (!res.ok) {
+        setError(res.message);
       }
     } catch {
-      setResult({ ok: false, code: "provider_error", message: copy.errorFallback });
+      setError(copy.errorFallback);
     } finally {
       setPending(false);
     }
@@ -76,19 +121,50 @@ export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy;
       <p className="market-kicker">{copy.heading}</p>
       <p className="mt-2 max-w-2xl text-sm text-[var(--market-paper-white)]">{copy.intro}</p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={onRequest}
-          disabled={pending}
-          className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-70"
-        >
-          {pending ? copy.reviewing : copy.request}
-        </button>
-        {receiptLabel ? <span className="text-xs text-[var(--market-muted)]">{receiptLabel}</span> : null}
-      </div>
+      {quote ? (
+        <div className="mt-4 grid gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
+          <p className="text-sm text-[var(--market-paper-white)]">
+            {formatSurfaceTemplate(copy.quoteTemplate, {
+              price: naira(quote.totalKobo),
+              vat: naira(quote.vatKobo),
+            })}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={onConfirmRun}
+              disabled={pending}
+              className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-70"
+            >
+              {pending
+                ? copy.reviewing
+                : formatSurfaceTemplate(copy.confirmTemplate, { price: naira(quote.totalKobo) })}
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={pending}
+              className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-70"
+            >
+              {copy.cancel}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={onSeePrice}
+            disabled={pending}
+            className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-70"
+          >
+            {pending ? copy.quoting : copy.seePrice}
+          </button>
+          {receiptLabel ? <span className="text-xs text-[var(--market-muted)]">{receiptLabel}</span> : null}
+        </div>
+      )}
 
-      {result && !result.ok ? <p className="mt-3 text-sm text-[var(--market-muted)]">{result.message}</p> : null}
+      {error ? <p className="mt-3 text-sm text-[var(--market-muted)]">{error}</p> : null}
 
       {result && result.ok ? (
         <div className="mt-4 grid gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
