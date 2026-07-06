@@ -1,6 +1,6 @@
-import { ImageResponse } from "next/og";
 import type { DivisionKey } from "@henryco/config";
-import { DefaultOgTemplate, OG_SIZE } from "./template";
+import { DefaultOgTemplate } from "./template";
+import { renderDefaultOgImage } from "./render";
 
 type Resolver<T> = T | ((params: Record<string, string>) => T | Promise<T>);
 
@@ -29,16 +29,16 @@ export function createOgRouteHandler(opts: CreateOgRouteHandlerOptions) {
       resolve(opts.subtitle, params),
       resolve(opts.eyebrow, params),
     ]);
-    return new ImageResponse(
-      (
-        <DefaultOgTemplate
-          divisionKey={opts.divisionKey}
-          title={title}
-          subtitle={subtitle}
-          eyebrow={eyebrow}
-        />
-      ),
-      { ...OG_SIZE }
+    // Delegate to the shared renderer so this path ALSO loads the self-hosted
+    // brand serif (previously it built its own fonts-less ImageResponse and
+    // rendered in Satori's default sans).
+    return renderDefaultOgImage(
+      <DefaultOgTemplate
+        divisionKey={opts.divisionKey}
+        title={title}
+        subtitle={subtitle}
+        eyebrow={eyebrow}
+      />
     );
   };
 }
