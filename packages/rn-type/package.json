@@ -1,0 +1,16 @@
+{
+  "name": "@henryco/rn-type",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./fonts": "./src/fonts.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.9.3"
+  }
+}
