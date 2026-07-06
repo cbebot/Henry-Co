@@ -45,6 +45,20 @@ export {
 } from "./engines/cta";
 export type { CtaState, CtaEvent, CtaPhase, CtaOptions } from "./engines/cta";
 
+// Engine 3 — Trust Reveal
+export {
+  TrustStair,
+  TrustOutcome,
+  TrustQuote,
+  TrustSafetyNet,
+  TrustPaymentMarks,
+  useTrustStage,
+  resolveVisibleStage,
+  stageIndex,
+  TRUST_STAGES,
+} from "./engines/trust-reveal";
+export type { TrustStairProps, TrustStage, TrustPosition } from "./engines/trust-reveal";
+
 // Engine 5 — Joy
 export { JoyState, joyContentFor, JOY_ENVELOPE_MS } from "./engines/joy";
 export type {
