@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Fraunces } from "next/font/google";
 import { isRtlLocale } from "@henryco/i18n/server";
 import {
   ConsentNotice,
@@ -16,6 +17,14 @@ import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
 import { SeoJsonLd } from "./components/SeoJsonLd";
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
 
 // PASS 18C — generateMetadata so hreflang + og:locale reflect the active
 // locale on every request. createDivisionMetadata emits the alternate
@@ -52,7 +61,7 @@ export default async function RootLayout({
       className={brandFontVariables}
       suppressHydrationWarning
     >
-      <body className="min-h-screen antialiased">
+      <body className={`${reading.variable} min-h-screen antialiased`}>
         <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />

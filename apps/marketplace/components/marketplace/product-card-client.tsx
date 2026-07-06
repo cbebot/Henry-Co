@@ -3,13 +3,13 @@
 import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Heart, ShieldCheck, ShoppingBag, Star } from "lucide-react";
 import { HenryCoActivityIndicator, SellerTierBadge, type SellerTier } from "@henryco/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
 import { DeliveryPromiseBadge } from "@/components/marketplace/DeliveryPromiseBadge";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
-import { getSellerAcademyCopy } from "@henryco/i18n";
+import { getSellerAcademyCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import type { MarketplaceProduct } from "@/lib/marketplace/types";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -100,6 +100,15 @@ export function ProductCardClient({
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
         <div className="flex flex-wrap gap-2">
+            {product.henryOnyxVerified ? (
+              <span
+                className="inline-flex items-center gap-1 rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-accent-text)] backdrop-blur-xl"
+                title={translateSurfaceLabel(locale, "Henry Onyx Verified")}
+              >
+                <ShieldCheck className="h-3 w-3" aria-hidden />
+                {translateSurfaceLabel(locale, "Henry Onyx Verified")}
+              </span>
+            ) : null}
           <span className="rounded-full border border-[color:var(--home-line-15)] bg-[color:var(--home-glass-strong)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-80)] backdrop-blur-xl">
               {product.inventoryOwnerType === "company" ? copy.productCard.stockedByHenryCo : copy.productCard.verifiedSeller}
             </span>

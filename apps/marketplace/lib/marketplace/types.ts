@@ -157,6 +157,9 @@ export type MarketplaceProduct = {
   featured: boolean;
   approvalStatus: ProductApprovalStatus;
   trustBadges: string[];
+  /** The durable "Henry Onyx Verified" trust badge — awarded by the paid AI review, buyer-visible.
+   *  Optional: absent/false on a product that has not earned it. */
+  henryOnyxVerified?: boolean;
   gallery: string[];
   specifications: Record<string, string>;
   filterData: Record<string, string | string[] | boolean>;

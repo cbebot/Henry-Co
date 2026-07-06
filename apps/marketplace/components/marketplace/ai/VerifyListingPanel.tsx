@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
 import { aiTierBrandName } from "@henryco/ai-gateway";
+import { AiProse } from "@henryco/ui/prose";
 import { verifyListingAction, type VerifyResult } from "@/lib/ai/verify-listing-action";
 
 export interface VerifyPanelCopy {
@@ -99,11 +100,14 @@ export function VerifyListingPanel({ copy, productId }: { copy: VerifyPanelCopy;
             </p>
           )}
           {result.reasons.length ? (
-            <ul className="grid gap-1 text-sm text-[var(--market-muted)]">
-              {result.reasons.map((r, i) => (
-                <li key={i}>• {r}</li>
-              ))}
-            </ul>
+            /* The AI's constructive review notes render in the brand editorial serif. */
+            <AiProse size="chat" className="text-[var(--market-muted)]">
+              <ul>
+                {result.reasons.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+            </AiProse>
           ) : null}
           <span className="text-xs text-[var(--market-muted)]">{copy.augmentsNote}</span>
         </div>

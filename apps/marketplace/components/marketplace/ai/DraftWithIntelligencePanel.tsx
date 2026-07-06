@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
 import { aiTierBrandName } from "@henryco/ai-gateway";
+import { AiProse } from "@henryco/ui/prose";
 import { draftListingAction, type ListingDraft } from "@/lib/ai/draft-listing-action";
 
 export interface DraftPanelCopy {
@@ -179,8 +180,12 @@ export function DraftWithIntelligencePanel({
 
       {draft ? (
         <div className="mt-4 grid gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
-          {draft.summary ? <p className="text-sm font-semibold text-[var(--market-paper-white)]">{draft.summary}</p> : null}
-          {draft.description ? <p className="whitespace-pre-line text-sm text-[var(--market-paper-white)]">{draft.description}</p> : null}
+          {draft.summary || draft.description ? (
+            <AiProse size="chat" className="text-[var(--market-paper-white)]">
+              {draft.summary ? <p className="font-semibold">{draft.summary}</p> : null}
+              {draft.description ? <p>{draft.description}</p> : null}
+            </AiProse>
+          ) : null}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="text-xs text-[var(--market-muted)]">{copy.advisory}</span>
             <button type="button" onClick={onUse} className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">

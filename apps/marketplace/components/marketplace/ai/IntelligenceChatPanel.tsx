@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
 import { aiTierBrandName } from "@henryco/ai-gateway";
 import type { ChatMessage } from "@henryco/ai-gateway";
+import { AiProse } from "@henryco/ui/prose";
 import { intelligenceChatAction } from "@/lib/ai/intelligence-chat-action";
 
 export interface ChatPanelCopy {
@@ -73,19 +74,22 @@ export function IntelligenceChatPanel({ copy }: { copy: ChatPanelCopy }) {
       <div className="mt-4 grid gap-3">
         {messages.length > 0 ? (
           <div className="grid gap-2 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
-            {messages.map((m, i) => (
-              <p
-                key={i}
-                className={
-                  m.role === "user"
-                    ? "whitespace-pre-line text-sm text-[var(--market-paper-white)]"
-                    : "whitespace-pre-line text-sm text-[var(--market-muted)]"
-                }
-              >
-                <span className="font-semibold">{m.role === "user" ? "You" : "Henry Onyx Intelligence"}: </span>
-                {m.content}
-              </p>
-            ))}
+            {messages.map((m, i) =>
+              m.role === "user" ? (
+                <p key={i} className="whitespace-pre-line text-sm text-[var(--market-paper-white)]">
+                  <span className="font-semibold">You: </span>
+                  {m.content}
+                </p>
+              ) : (
+                <div key={i}>
+                  <span className="text-xs font-semibold text-[var(--market-muted)]">Henry Onyx Intelligence</span>
+                  {/* The reply renders in the brand editorial reading serif. */}
+                  <AiProse size="chat" className="mt-1 text-[var(--market-paper-white)]">
+                    {m.content}
+                  </AiProse>
+                </div>
+              ),
+            )}
           </div>
         ) : null}
 

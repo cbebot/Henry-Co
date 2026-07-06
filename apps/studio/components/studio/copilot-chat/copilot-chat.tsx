@@ -25,6 +25,7 @@ import {
   type ChatThreadMessage,
   type ChatThreadSuggestion,
 } from "@henryco/chat-thread";
+import { AiProse } from "@henryco/ui/prose";
 import {
   continueStudioBriefChatAction,
 } from "@/lib/studio/brief-chat-action";
@@ -529,6 +530,15 @@ export function CopilotChat({
         suggestions={suggestions}
         onSuggestion={handleSuggestion}
         otherAvatar={<Sparkles aria-hidden />}
+        // The coach's replies render in the brand editorial reading serif (AiProse →
+        // .hc-prose); the buyer's own turns stay in the plain sans bubble.
+        renderBody={(message) =>
+          message.authorRole === "other" ? (
+            <AiProse size="chat">{message.body}</AiProse>
+          ) : (
+            <span style={{ whiteSpace: "pre-wrap" }}>{message.body}</span>
+          )
+        }
         labels={threadLabels}
         locale={locale}
         showDaySeparators={false}

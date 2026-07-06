@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Fraunces } from "next/font/google";
 import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
@@ -43,6 +44,14 @@ const display = localFont({
   fallback: ["Times New Roman", "Georgia", "serif"],
 });
 
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
+
 const property = getDivisionConfig("property");
 
 // PASS 18C — emit hreflang + og:locale per request.
@@ -65,7 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable} ${reading.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>
