@@ -14,6 +14,7 @@ import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { COMPANY, createDivisionMetadata, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
 import { SeoJsonLd } from "./components/SeoJsonLd";
 
@@ -53,7 +54,13 @@ export default async function RootLayout({
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html
+      lang={lang}
+      dir={dir}
+      data-onyx-type={onyxTypeAttr()}
+      className={brandFontVariables}
+      suppressHydrationWarning
+    >
       <body className={`${reading.variable} min-h-screen antialiased`}>
         <SeoJsonLd />
         <PublicThemeGuard>

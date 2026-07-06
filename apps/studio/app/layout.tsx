@@ -5,6 +5,7 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
 import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
@@ -56,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable} ${reading.variable}`}>
+    <html lang={lang} dir={dir} suppressHydrationWarning data-onyx-type={onyxTypeAttr()} className={`${brandFontVariables} ${sans.variable} ${display.variable} ${reading.variable}`}>
       <body className="min-h-screen bg-[var(--studio-bg)] text-[var(--studio-ink)] antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>

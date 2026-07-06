@@ -8,6 +8,7 @@ import {
 } from "@henryco/i18n/server";
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { IntelligenceLauncher } from "@henryco/ui/intelligence";
@@ -69,7 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={brandFontVariables} data-onyx-type={onyxTypeAttr()}>
       <body
         className={`${reading.variable} min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white`}
       >

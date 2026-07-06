@@ -13,6 +13,7 @@ import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -53,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={brandFontVariables} data-onyx-type={onyxTypeAttr()} suppressHydrationWarning>
       <body
         className={`${fraunces.variable} ${manrope.variable} min-h-screen bg-[var(--market-bg)] text-[var(--market-ink)] antialiased`}
       >

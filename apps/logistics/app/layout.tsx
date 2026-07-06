@@ -10,6 +10,7 @@ import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import "./globals.css";
 
 const logistics = getDivisionConfig("logistics");
@@ -58,7 +59,7 @@ export default async function RootLayout({
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} className={`${manrope.variable} ${reading.variable}`} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={`${brandFontVariables} ${manrope.variable} ${reading.variable}`} data-onyx-type={onyxTypeAttr()} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>

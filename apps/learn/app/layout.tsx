@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces } from "next/font/google";
 import { LocaleProvider } from "@henryco/i18n/react";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
 import { IntelligenceLauncher } from "@henryco/ui/intelligence";
@@ -43,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={brandFontVariables} data-onyx-type={onyxTypeAttr()}>
       <body className={`${reading.variable} min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased`}>
         <SeoJsonLd />
         <PublicThemeGuard>
