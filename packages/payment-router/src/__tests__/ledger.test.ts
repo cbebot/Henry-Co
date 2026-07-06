@@ -10,6 +10,9 @@ import {
   buildChargeSettlementLinesWithFee,
   buildWalletTopupLines,
   buildRefundLines,
+  buildWithdrawalReserveLines,
+  buildWithdrawalSettlementLines,
+  buildWithdrawalReleaseLines,
   type JournalLine,
 } from "../ledger";
 
@@ -214,5 +217,76 @@ describe("V3-MONEY-MC — the in-currency ledger (currency is an entry property,
 
   it("NGN stays the reporting base constant (books are currency-neutral, presentation is NGN)", () => {
     assert.equal(LEDGER_CURRENCY, "NGN");
+  });
+});
+
+describe("V3-MONEY-PAYOUT — the withdrawal (payout) rail, top-up in reverse", () => {
+  it("reserve = DR customer_wallet_liability / CR withdrawals_payable (reclassify, no cash)", () => {
+    const lines = buildWithdrawalReserveLines(50_000);
+    assert.doesNotThrow(() => assertBalanced(lines));
+    assert.deepEqual(lines, [dr("customer_wallet_liability", 50_000), cr("withdrawals_payable", 50_000)]);
+  });
+
+  it("release exactly reverses reserve, so a failed withdrawal nets to zero everywhere", () => {
+    const reserve = buildWithdrawalReserveLines(50_000);
+    const release = buildWithdrawalReleaseLines(50_000);
+    assert.doesNotThrow(() => assertBalanced(release));
+    assert.deepEqual(release, [dr("withdrawals_payable", 50_000), cr("customer_wallet_liability", 50_000)]);
+    // reserve + release net to zero on every account — the failed withdrawal leaves no trace.
+    const net = new Map<string, number>();
+    for (const l of [...reserve, ...release]) {
+      net.set(l.accountCode, (net.get(l.accountCode) ?? 0) + l.debitMinor - l.creditMinor);
+    }
+    assert.equal(net.get("customer_wallet_liability"), 0);
+    assert.equal(net.get("withdrawals_payable"), 0);
+  });
+
+  it("settle with no fee = DR withdrawals_payable / CR cash_settlement (cash leaves)", () => {
+    const lines = buildWithdrawalSettlementLines({ amountKobo: 50_000, feeKobo: 0 });
+    assert.doesNotThrow(() => assertBalanced(lines));
+    assert.deepEqual(lines, [dr("withdrawals_payable", 50_000), cr("cash_settlement", 50_000)]);
+  });
+
+  it("settle with a fee: company absorbs it — DR payable + DR processor_fees / CR cash (amount+fee)", () => {
+    const lines = buildWithdrawalSettlementLines({ amountKobo: 50_000, feeKobo: 4500 });
+    assert.doesNotThrow(() => assertBalanced(lines));
+    assert.deepEqual(lines, [
+      dr("withdrawals_payable", 50_000),
+      dr("processor_fees", 4500),
+      cr("cash_settlement", 54_500),
+    ]);
+    // The user withdrew 50000 and receives 50000; the company's cash out is 54500 (fee absorbed).
+    const cashOut = lines.filter((l) => l.accountCode === "cash_settlement").reduce((s, l) => s + l.creditMinor, 0);
+    assert.equal(cashOut, 54_500);
+  });
+
+  it("reserve → settle nets to DR wallet_liability / DR fee / CR cash (the money genuinely left)", () => {
+    // Across a successful withdrawal the two entries combine: the payable is raised then cleared,
+    // so it nets to zero, leaving wallet-liability down by amount and cash down by amount+fee.
+    const reserve = buildWithdrawalReserveLines(50_000);
+    const settle = buildWithdrawalSettlementLines({ amountKobo: 50_000, feeKobo: 4500 });
+    const net = new Map<string, number>();
+    for (const l of [...reserve, ...settle]) {
+      net.set(l.accountCode, (net.get(l.accountCode) ?? 0) + l.debitMinor - l.creditMinor);
+    }
+    assert.equal(net.get("withdrawals_payable"), 0, "payable is transient — nets to zero");
+    assert.equal(net.get("customer_wallet_liability"), 50_000, "we owe the user 50000 less (DR)");
+    assert.equal(net.get("processor_fees"), 4500, "fee expense (DR)");
+    assert.equal(net.get("cash_settlement"), -54_500, "cash left: amount + fee (CR)");
+  });
+
+  it("withdrawal builders reject a non-positive amount / non-whole fee", () => {
+    for (const bad of [0, -1, 10.5, Number.NaN]) {
+      assert.throws(() => buildWithdrawalReserveLines(bad), LedgerImbalanceError);
+      assert.throws(() => buildWithdrawalReleaseLines(bad), LedgerImbalanceError);
+      assert.throws(() => buildWithdrawalSettlementLines({ amountKobo: bad, feeKobo: 0 }), LedgerImbalanceError);
+    }
+    assert.throws(() => buildWithdrawalSettlementLines({ amountKobo: 50_000, feeKobo: -1 }), LedgerImbalanceError);
+    assert.throws(() => buildWithdrawalSettlementLines({ amountKobo: 50_000, feeKobo: 4.5 }), LedgerImbalanceError);
+  });
+
+  it("withdrawals_payable is a credit-normal liability in the chart", () => {
+    assert.equal(LEDGER_ACCOUNTS.withdrawals_payable.type, "liability");
+    assert.equal(LEDGER_ACCOUNTS.withdrawals_payable.normalBalance, "credit");
   });
 });
