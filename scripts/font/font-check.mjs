@@ -44,7 +44,14 @@ const RULES = [
   // catches className="…", cn("…"), clsx(`…`), and template-literal classNames —
   // not just literal className= attributes. The quoted-string requirement keeps
   // CSS `var(--…font-sans)` (unquoted) from false-positiving.
-  { rule: "tailwind-font-util", re: /["'`][^"'`]*\bfont-(sans|serif)\b/g },
+  //
+  // The `(?<![-\w])` lookbehind excludes hyphen/word-preceded matches — i.e. the
+  // CSS custom-property names `--hc-font-sans` / `--font-sans` / `--hc-font-serif`,
+  // which are the CORRECT owned-type routing tokens and often appear inside quoted
+  // JS inline styles (`fontFamily: "var(--hc-font-sans, …)"`). A real Tailwind
+  // utility (`className="… font-sans"`, `cn("font-serif")`) is preceded by a quote,
+  // space, or `:` — never a hyphen/word char — so it is still flagged.
+  { rule: "tailwind-font-util", re: /["'`][^"'`]*(?<![-\w])font-(sans|serif)\b/g },
 ];
 
 export function scanSource(text, filename) {

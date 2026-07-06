@@ -8,20 +8,12 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --font-property-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-property-display:
-    "Cormorant Garamond",
-    "Times New Roman",
-    ui-serif,
-    Georgia,
-    serif;
+  /* Owned type — property's sans/display route THROUGH the shared family tokens so
+     the owned-type flip reaches every property surface (they consume --font-property-*).
+     At reveal these become the bespoke faces; the previous Manrope/Cormorant + system
+     stacks are superseded by --hc-font-*. */
+  --font-property-sans: var(--hc-font-sans);
+  --font-property-display: var(--hc-font-serif);
   --property-bg: #130d0a;
   --property-bg-soft: #1a1210;
   --property-surface: rgba(28, 20, 17, 0.84);
