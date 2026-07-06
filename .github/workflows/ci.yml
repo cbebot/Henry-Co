@@ -84,11 +84,11 @@ jobs:
       - name: Company-voice tone gate (TONE-01 — voice.ts is law)
         run: pnpm run tone:check
 
-      - name: Owned-type font guard (warn-mode until reveal)
-        run: pnpm run font:check
+      - name: Owned-type font guard (strict once the reveal flag is live)
+        run: pnpm run font:check ${{ env.NEXT_PUBLIC_ONYX_TYPE_LIVE == '1' && '-- --strict' || '' }}
 
-      - name: Owned-type coverage gate (warn-mode until reveal)
-        run: pnpm run font:coverage
+      - name: Owned-type coverage gate (strict once the reveal flag is live)
+        run: pnpm run font:coverage ${{ env.NEXT_PUBLIC_ONYX_TYPE_LIVE == '1' && '-- --strict' || '' }}
 
       - name: Owned-type token integrity (undefined --hc-font-* references)
         run: pnpm run font:tokens

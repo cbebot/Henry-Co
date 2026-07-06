@@ -1,13 +1,21 @@
 import {
+  configureFonts,
   MD3DarkTheme,
   MD3LightTheme,
   type MD3Theme,
 } from "react-native-paper";
 
+import { brandType } from "@henryco/rn-type";
+
 const gold = "#C9A227";
+
+// Owned type — every react-native-paper text variant uses the brand sans
+// (flag-gated: platform default until the reveal flag is live).
+const fonts = configureFonts({ config: { fontFamily: brandType().sans } });
 
 export const hubPaperTheme: MD3Theme = {
   ...MD3DarkTheme,
+  fonts,
   colors: {
     ...MD3DarkTheme.colors,
     primary: gold,
@@ -40,6 +48,7 @@ export const hubPaperTheme: MD3Theme = {
 
 export const hubPaperLightTheme: MD3Theme = {
   ...MD3LightTheme,
+  fonts,
   colors: {
     ...MD3LightTheme.colors,
     primary: gold,
