@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import { formatSurfaceTemplate } from "@henryco/i18n";
 import { aiTierBrandName } from "@henryco/ai-gateway";
 import { AiProse } from "@henryco/ui/prose";
@@ -17,6 +18,13 @@ export interface DraftPanelCopy {
   errorFallback: string;
   priceTemplate: string;
   advisory: string;
+  /**
+   * Optional discovery nudge shown once a draft exists: points the seller to the paid
+   * Henry Onyx Verified review (the trust badge buyers filter for). Set it on surfaces where
+   * verification is the natural next step (a new listing, before it is saved); omit it where
+   * the verify panel is already on the page.
+   */
+  verifyNudge?: string;
 }
 
 function naira(kobo: number): string {
@@ -192,6 +200,12 @@ export function DraftWithIntelligencePanel({
               {copy.useDraft}
             </button>
           </div>
+          {copy.verifyNudge ? (
+            <p className="flex items-start gap-2 border-t border-[var(--market-line)] pt-3 text-xs leading-5 text-[var(--market-muted)]">
+              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--market-brass)]" aria-hidden />
+              <span>{copy.verifyNudge}</span>
+            </p>
+          ) : null}
         </div>
       ) : null}
     </section>

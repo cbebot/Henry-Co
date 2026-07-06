@@ -48,6 +48,9 @@ export default async function NewVendorProductPage() {
                   errorFallback: t("Henry Onyx Intelligence couldn’t help with that. Please try again."),
                   priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
                   advisory: t("Drafts are advisory — review and edit every field before you submit."),
+                  verifyNudge: t(
+                    "Once your listing is saved, you can get it Henry Onyx Verified — an independent review that earns the trust badge buyers filter for.",
+                  ),
                 },
                 appliedNote: t("Draft applied — review each section before you publish."),
               }
