@@ -15,7 +15,7 @@ import { buildPrompt, validateDraftOutput } from "./prompts";
 import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 import { parseVerdict } from "../verify";
 import { parseCoachEnvelope } from "../studio-prompts";
-import { parseSupportAssistEnvelope } from "../support-assist";
+import { parseSupportAssistEnvelope, salvageSupportAssistEnvelope } from "../support-assist";
 import { assistantReplyLeaksProvider } from "../doctrine";
 import { InMemoryRateLimiter, type AiRateLimitPort } from "../rate-limit";
 
@@ -120,6 +120,19 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
         if (t.surface === "intelligence.chat" || t.surface.startsWith("intelligence.deep."))
           return !assistantReplyLeaksProvider(raw);
         return true;
+      },
+      // FREE support only: after validateOutput has failed twice, recover a plain reply from the
+      // model's prose so a person is never stonewalled on real work (e.g. asking it to book a
+      // shipment, when the model answers conversationally instead of in the envelope). Opacity
+      // stays absolute on this degraded path: a salvaged reply that leaks a provider/model name
+      // is refused (returns null → the orchestrator fails closed) rather than shown.
+      salvageOutput: (raw, t) => {
+        if (t.surface !== "support.message.assist") return null;
+        const salvaged = salvageSupportAssistEnvelope(raw);
+        if (!salvaged) return null;
+        const env = parseSupportAssistEnvelope(salvaged);
+        if (!env || assistantReplyLeaksProvider(env.reply)) return null;
+        return salvaged;
       },
       onSignal,
       newId: opts.newId ?? (() => crypto.randomUUID()),

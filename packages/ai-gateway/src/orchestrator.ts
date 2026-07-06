@@ -63,6 +63,15 @@ export interface AiTaskDeps {
   promptBuilder: (task: AiTask, policy: AiSurfacePolicy) => AiPromptParts;
   /** Optional output validator — on false the call is retried once, then refused. */
   validateOutput?: (raw: string, task: AiTask) => boolean;
+  /**
+   * Optional last-resort salvage for a surface that must NEVER hard-stop the user on a
+   * formatting miss (the free support chat). Invoked only after validateOutput has already
+   * failed on both the original AND the retry: given the model's raw text, it returns a
+   * normalized, valid output to use instead, or null to fail closed. Surfaces that omit it —
+   * every billable/structured one — keep failing closed, so a malformed paid result is never
+   * charged for or returned. Only ever wired for FREE surfaces.
+   */
+  salvageOutput?: (raw: string, task: AiTask) => string | null;
   /** Generates an id for the FREE-surface receipt (the metered path's id comes from settle). */
   newId?: () => string;
   onSignal?: (signal: AiUsageSignal) => void;
@@ -218,14 +227,24 @@ export async function runAiTaskWith(
     return fail(deps, "provider_failed", policy.surface, tier, policy.billable, aiError("provider_refusal", DEFAULT_AI_ERROR_COPY.provider_refusal));
   }
 
-  // ---- Optional output validation (retry once). --------------------------------
+  // ---- Optional output validation (retry once, then salvage or refuse). --------
   if (deps.validateOutput && !deps.validateOutput(result.value.output, task)) {
     const retry = await safeGenerate(deps.adapter, request);
     if (retry.ok && retry.value.finishReason !== "refusal" && deps.validateOutput(retry.value.output, task)) {
       result = retry;
     } else {
-      await releaseHold(deps, holdId);
-      return fail(deps, "provider_failed", policy.surface, tier, policy.billable, aiError("schema_validation_failed", DEFAULT_AI_ERROR_COPY.schema_validation_failed));
+      // Both attempts failed validation. Prefer any usable text the retry produced (freshest),
+      // else the original answer, and offer it to the surface's salvage. A FREE support turn
+      // recovers a plain reply here instead of stonewalling the person; a surface with no
+      // salvage still fails closed.
+      const rawForSalvage = retry.ok ? retry.value.output : result.value.output;
+      const salvaged = deps.salvageOutput?.(rawForSalvage, task) ?? null;
+      if (salvaged != null) {
+        result = { ok: true, value: { ...result.value, output: salvaged } };
+      } else {
+        await releaseHold(deps, holdId);
+        return fail(deps, "provider_failed", policy.surface, tier, policy.billable, aiError("schema_validation_failed", DEFAULT_AI_ERROR_COPY.schema_validation_failed));
+      }
     }
   }
 

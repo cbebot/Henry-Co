@@ -92,6 +92,45 @@ export function parseSupportAssistEnvelope(text: string): SupportAssistEnvelope 
   return attempt(fenced.slice(start, end + 1));
 }
 
+/**
+ * Last-resort salvage for a support turn whose envelope failed to parse even after the
+ * orchestrator's single retry. A person must NEVER be stonewalled with "couldn't format that"
+ * on a free support turn — the reply is the essential thing; the buttons are not. When the model
+ * answered in prose (common the moment a person asks it to actually DO something, e.g. book a
+ * shipment) or emitted a broken envelope, recover a usable REPLY and wrap it in a minimal valid
+ * envelope: no navigation, no offer, not flagged abuse. Returns a normalized envelope JSON string
+ * that re-parses cleanly through parseSupportAssistEnvelope, or null when there is genuinely
+ * nothing safe to show (empty, or output that is still raw JSON we must not leak). The caller
+ * layer re-applies the opacity leak-scan on the salvaged reply before using it.
+ */
+export function salvageSupportAssistEnvelope(rawText: string): string | null {
+  const trimmed = String(rawText ?? "").trim();
+  if (!trimmed) return null;
+  const fenced = trimmed.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+
+  let candidate = "";
+  // A broken/partial envelope: pull the first "reply" string value, tolerating the unescaped
+  // newlines that made strict JSON.parse choke ([^"\\] matches newlines, so the capture spans
+  // them up to the next unescaped quote).
+  const replyMatch = fenced.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (replyMatch) {
+    try {
+      candidate = JSON.parse(`"${replyMatch[1]}"`) as string;
+    } catch {
+      candidate = replyMatch[1];
+    }
+  } else if (!fenced.startsWith("{") && !fenced.startsWith("[")) {
+    // No envelope at all — the model replied in plain prose. Use it verbatim.
+    candidate = fenced;
+  }
+
+  const reply = humanizeAssistantText(candidate);
+  // Never surface raw JSON/braces as a reply. If that is all we could recover, fail closed.
+  if (!reply || /^[[{]/.test(reply.trim())) return null;
+
+  return JSON.stringify({ reply, navigate: [], handoff: false, offer: null, abuse: false });
+}
+
 // ─── The navigation catalog ────────────────────────────────────────────────
 //
 // Every target maps to a route that already exists and is already deep-linked by the
