@@ -773,6 +773,26 @@
 /* Tabular, lining figures for money & data — the single biggest premium tell. */
 .hc-numeric { font-feature-settings: var(--hc-feature-numeric); font-variant-numeric: tabular-nums lining-nums; }
 
+/* Re-compute the reading-face alias in BODY scope. `--hc-font-reading` at :root substitutes
+   `--font-reading` as it exists on <html>. But many app layouts place the loaded next/font
+   `--font-reading` variable on <body> (not <html>), so at :root it is absent and the alias
+   FREEZES to a system-serif fallback — the loaded Fraunces never reaches `.hc-prose`, the AI
+   chat bubbles, or inputs. Re-declaring the alias here re-runs the substitution where
+   `--font-reading` actually lives (body, or inherited from <html>), so every app resolves to
+   the REAL loaded brand serif. Harmless where it is on <html> (body inherits it) or absent
+   (same fallback as before). */
+body {
+  --hc-font-reading: var(--font-reading, var(--hc-font-display));
+}
+/* When the type FLIP is live, re-assert the owned serif at body scope. A body-scope custom
+   property shadows the [data-onyx-type="live"] html-scope declaration above for the entire
+   body subtree, which would silently revert reading back to the per-app --font-reading and
+   break the "total reveal". This higher-specificity (0,1,1) rule keeps reading on the owned
+   superfamily wherever the flip is set — matching the flip block's intent. */
+[data-onyx-type="live"] body {
+  --hc-font-reading: var(--hc-font-serif);
+}
+
 /* Brand-wide: text a PERSON TYPES carries the company reading face, so every field
    speaks in the same voice as the rest of the product. Scoped under `body` (specificity
    0,0,2) so it beats the per-app `button, input, select, textarea { font: inherit }`

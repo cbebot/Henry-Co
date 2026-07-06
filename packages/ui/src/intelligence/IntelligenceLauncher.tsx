@@ -10,7 +10,7 @@
  * height), and renders navigation + the Onyx Line handoff through the composer's extras slot.
  */
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { MessageCircle, X, ArrowUpRight, LifeBuoy, Sparkles as Sparkle } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
@@ -19,6 +19,11 @@ import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import type { AppLocale } from "@henryco/i18n";
 import { ChatThread } from "@henryco/chat-thread";
 import type { ChatSendPayload, ChatSendResult, ChatThreadMessage } from "@henryco/chat-thread";
+// Bundle the chat-thread layout with the launcher itself. The panel embeds <ChatThread>, whose
+// styles live in this stylesheet; without it, any host app that doesn't already import it (the
+// hub, marketplace, …) renders the panel UNSTYLED — oversized, a floating composer, and
+// system-font bubbles. Importing it here makes the launcher self-contained on every subdomain.
+import "@henryco/chat-thread/styles";
 
 export type IntelligenceDivision =
   | "marketplace"
@@ -119,6 +124,21 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   // The conversation of record for building each request + the server's returned id.
   const historyRef = useRef<ChatTurn[]>([]);
   const conversationRef = useRef<string | null>(null);
+
+  // Dialog behaviour: closing returns focus to the launcher, and Escape dismisses the panel.
+  const fabRef = useRef<HTMLButtonElement | null>(null);
+  const closePanel = useCallback(() => {
+    setOpen(false);
+    fabRef.current?.focus();
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closePanel();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, closePanel]);
 
   const supportHref = getAccountUrl("/support");
   // The quote/run endpoints sit beside the chat endpoint (same account origin).
@@ -366,30 +386,31 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
                 typing={typing}
                 showDaySeparators={false}
                 showTimestamps={false}
-                // Render the assistant's replies in the company reading face (.hc-prose owns
-                // the face + rhythm; ink is inherited from this light panel, never forced, so
-                // it stays legible in both host themes). The person's own turns stay plain.
-                renderBody={(message) =>
-                  message.authorRole === "other" ? (
-                    <div className="hc-il-prose hc-prose">{message.body}</div>
-                  ) : (
-                    <span style={{ whiteSpace: "pre-wrap" }}>{message.body}</span>
-                  )
-                }
+                // A brand mark on the AI side instead of the default bullet.
+                otherAvatar={<Sparkle aria-hidden />}
+                // BOTH sides render in the company reading face (.hc-prose owns the face +
+                // rhythm; ink is inherited from the bubble, never forced, so it stays legible on
+                // either bubble tint in both host themes). Rendering the person's OWN turns in the
+                // same face is deliberate: what they type in the brand serif stays the brand serif
+                // once sent, instead of snapping back to the system font.
+                renderBody={(message) => <div className="hc-il-prose hc-prose">{message.body}</div>}
                 header={{
                   title: t("Henry Onyx Intelligence"),
                   status: t("Here to help, free"),
                   actions: (
-                    <button type="button" className="hc-il-close" aria-label={t("Close")} onClick={() => setOpen(false)}>
+                    <button type="button" className="hc-il-close" aria-label={t("Close")} onClick={closePanel}>
                       <X aria-hidden />
                     </button>
                   ),
                 }}
+                // The division accent flows into the composer too (send button, focus ring,
+                // caret), so the whole panel is one accent instead of a stray teal CTA.
                 composer={{
                   placeholder: t("Ask Henry Onyx Intelligence…"),
                   busy: typing,
                   autoFocus: true,
                   enterKeyBehavior: "send",
+                  accent,
                   extras,
                 }}
                 emptyState={
@@ -406,9 +427,11 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
         ) : null}
 
         <button
+          ref={fabRef}
           type="button"
           className="hc-il-fab"
           aria-expanded={open}
+          aria-haspopup="dialog"
           aria-label={open ? t("Close Henry Onyx Intelligence") : t("Open Henry Onyx Intelligence")}
           onClick={() => setOpen((v) => !v)}
         >
@@ -434,12 +457,20 @@ function IntelligenceLauncherStyles() {
 .hc-il-fab{display:inline-flex;align-items:center;justify-content:center;width:3.5rem;height:3.5rem;border-radius:999px;border:none;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:var(--hc-il-on-accent,#0b1220);box-shadow:0 14px 34px -8px color-mix(in srgb,var(--hc-il-accent,#C9A227) 55%,transparent),0 4px 12px rgba(11,18,32,.18);transition:transform .2s cubic-bezier(.22,1,.36,1),filter .18s,box-shadow .2s}
 .hc-il-fab:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .hc-il-fab:active{transform:scale(.95)}
-.hc-il-fab:focus-visible{outline:2px solid var(--hc-il-accent,#C9A227);outline-offset:3px}
+/* Two-tone focus ring so the indicator holds >=3:1 on ANY host background (the FAB floats over
+   arbitrary division pages, light or dark): a light gap ring then a dark outer ring. */
+.hc-il-fab:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 0 0 6px rgba(11,18,32,.55)}
+/* Branded focus ring on every in-panel control (close, offer buttons, nav chips). */
+.hc-il-close:focus-visible,.hc-il-chip:focus-visible,.hc-il-offer-see:focus-visible,.hc-il-offer-run:focus-visible,.hc-il-offer-cancel:focus-visible{outline:2px solid var(--hc-il-accent,#C9A227);outline-offset:2px}
 .hc-il-fab svg{width:1.5rem;height:1.5rem}
 /* --- the four seam tokens (light default) + everything bridged from them --- */
 .hc-il-panel{
   --hc-il-surface:#ffffff;--hc-il-ink:#0b1220;--hc-il-ink-soft:rgba(11,18,32,.62);--hc-il-line:rgba(11,18,32,.1);
   --hc-il-on-accent:#0b1220;
+  /* Danger flips per theme (chat-thread's --ct-danger defaults to a LIGHT red tuned for a dark bg,
+     which fails AA on the light panel): deep red on light, lighter red on dark. Drives the
+     failed-send retry + the offer error copy. */
+  --hc-il-danger:#b3261e;--ct-danger:#b3261e;
   width:min(24.5rem,calc(100vw - 2rem));height:min(35rem,calc(100dvh - 7rem));
   background:var(--hc-il-surface);border-radius:1.35rem;overflow:hidden;
   box-shadow:0 32px 70px -24px rgba(11,18,32,.42),0 10px 24px -16px rgba(11,18,32,.24);
@@ -452,6 +483,7 @@ function IntelligenceLauncherStyles() {
   --ct-accent:var(--hc-il-accent,#C9A227);--ct-accent-ink:var(--hc-il-ink);--ct-accent-contrast:var(--hc-il-on-accent)}
 :where(html.dark,html[data-theme="dark"],.dark) .hc-il-panel{
   --hc-il-surface:#0f1a2c;--hc-il-ink:#F5F1E8;--hc-il-ink-soft:rgba(245,241,232,.64);--hc-il-line:rgba(245,241,232,.14);
+  --hc-il-danger:#f4a48f;--ct-danger:#f87171;
   box-shadow:0 34px 80px -24px rgba(0,0,0,.6),0 10px 24px -14px rgba(0,0,0,.5)}
 @keyframes hc-il-rise{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 .hc-il-thread{display:flex;flex-direction:column;height:100%;min-height:0}
@@ -464,7 +496,9 @@ function IntelligenceLauncherStyles() {
 .hc-il-chip:hover{filter:brightness(1.04);transform:translateY(-1px)}
 .hc-il-chip-human{border-color:var(--hc-il-line);background:color-mix(in srgb,var(--hc-il-ink) 5%,transparent)}
 .hc-il-chip-icon{width:.85rem;height:.85rem}
-.hc-il-extras{display:flex;flex-direction:column;gap:.5rem;padding:.4rem 0 .15rem}
+/* The offer card + nav chips take their OWN full-width line above Send (the composer renders
+   extras in its flex-wrap action row; flex-basis:100% forces a wrap) instead of a cramped island. */
+.hc-il-extras{display:flex;flex-direction:column;gap:.5rem;padding:.4rem 0 .15rem;flex-basis:100%;width:100%}
 .hc-il-offer{border:1px solid color-mix(in srgb,var(--hc-il-accent,#C9A227) 38%,transparent);background:color-mix(in srgb,var(--hc-il-accent,#C9A227) 9%,var(--hc-il-surface));border-radius:1rem;padding:.75rem .85rem}
 .hc-il-offer-head{display:flex;align-items:center;gap:.4rem}
 .hc-il-offer-icon{width:1rem;height:1rem;color:var(--hc-il-accent,#C9A227)}
@@ -476,11 +510,17 @@ function IntelligenceLauncherStyles() {
 .hc-il-offer-see,.hc-il-offer-run{border:none;border-radius:999px;padding:.48rem .95rem;font-size:.8rem;font-weight:700;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:var(--hc-il-on-accent)}
 .hc-il-offer-see:disabled,.hc-il-offer-run:disabled{opacity:.6;cursor:default}
 .hc-il-offer-cancel{border:1px solid var(--hc-il-line);border-radius:999px;padding:.48rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:var(--hc-il-ink-soft)}
-.hc-il-offer-error{margin:.5rem 0 0;font-size:.75rem;color:#e0894b}
-.hc-il-prose{font-size:.92rem;line-height:1.6}
+.hc-il-offer-error{margin:.5rem 0 0;font-size:.75rem;color:var(--hc-il-danger,#b3261e)}
+.hc-il-prose{font-size:.92rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
 .hc-il-prose p{margin:0 0 .55rem}
 .hc-il-prose p:last-child{margin-bottom:0}
-.hc-il-empty{display:flex;flex-direction:column;gap:.45rem;padding:1.5rem 1.35rem;text-align:left}
+/* Fill + vertically centre the first-run welcome so it sits balanced above the composer,
+   not stranded in a band at the top of the pane. */
+.hc-il-empty{display:flex;flex-direction:column;justify-content:center;gap:.45rem;min-height:100%;padding:1.5rem 1.35rem;text-align:left}
+/* The panel floats above the device safe area, so the composer must not ALSO inset for it
+   (chat-thread + edge-to-edge each add env(safe-area-inset-bottom), stacking dead space on
+   notched phones). Flatten it here. */
+.hc-il-panel .ct-composer{padding-bottom:.55rem}
 .hc-il-empty-title{font-size:1.05rem;font-weight:700;color:var(--hc-il-ink);margin:0;letter-spacing:-.01em}
 .hc-il-empty-body{font-size:.9rem;line-height:1.55;color:var(--hc-il-ink-soft);margin:0}
 @media (max-width:480px){.hc-il-panel{width:calc(100vw - 1.5rem);height:min(32rem,calc(100dvh - 6rem))}}
