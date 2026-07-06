@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Filter, Search, SlidersHorizontal, X } from "lucide-react";
+import { Filter, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
@@ -20,6 +20,7 @@ type SearchExperienceProps = {
     category?: string;
     brand?: string;
     verified?: string;
+    onyxVerified?: string;
     cod?: string;
   };
 };
@@ -36,6 +37,7 @@ export function SearchExperience({
   const [category, setCategory] = useState(initialQuery.category || "");
   const [brand, setBrand] = useState(initialQuery.brand || "");
   const [verified, setVerified] = useState(initialQuery.verified === "1");
+  const [onyxVerified, setOnyxVerified] = useState(initialQuery.onyxVerified === "1");
   const [cod, setCod] = useState(initialQuery.cod === "1");
   const [items, setItems] = useState(initialItems);
   const [loading, setLoading] = useState(false);
@@ -63,6 +65,7 @@ export function SearchExperience({
     if (category) params.set("category", category);
     if (brand) params.set("brand", brand);
     if (verified) params.set("verified", "1");
+    if (onyxVerified) params.set("onyxverified", "1");
     if (cod) params.set("cod", "1");
 
     async function run() {
@@ -82,7 +85,7 @@ export function SearchExperience({
     return () => {
       active = false;
     };
-  }, [brand, category, cod, deferredQuery, verified]);
+  }, [brand, category, cod, deferredQuery, onyxVerified, verified]);
 
   useEffect(() => {
     let active = true;
@@ -178,6 +181,9 @@ export function SearchExperience({
           label: brands.find((item) => item.slug === brand)?.name || brand,
           clear: () => setBrand(""),
         }
+      : null,
+    onyxVerified
+      ? { label: "Henry Onyx Verified", clear: () => setOnyxVerified(false) }
       : null,
     verified ? { label: "Verified sellers", clear: () => setVerified(false) } : null,
     cod ? { label: "COD eligible", clear: () => setCod(false) } : null,
@@ -279,6 +285,25 @@ export function SearchExperience({
           Trust filters
         </p>
         <ul className="mt-3 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
+          <li>
+            <label className="flex cursor-pointer items-start gap-3 py-3 text-sm text-[var(--market-paper-white)]">
+              <input
+                checked={onyxVerified}
+                onChange={(event) => setOnyxVerified(event.target.checked)}
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 rounded border-[var(--market-line)] bg-transparent accent-[var(--market-brass)]"
+              />
+              <span className="flex-1">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[var(--market-brass)]" aria-hidden />
+                  Henry Onyx Verified
+                </span>
+                <span className="mt-1 block text-xs leading-5 text-[var(--market-muted)]">
+                  Listings independently checked by Henry Onyx.
+                </span>
+              </span>
+            </label>
+          </li>
           <li>
             <label className="flex cursor-pointer items-center gap-3 py-3 text-sm text-[var(--market-paper-white)]">
               <input
