@@ -624,6 +624,25 @@ export function getAccountUrl(path = "/") {
 }
 
 /**
+ * Origins the shared Intelligence launcher fetches cross-subdomain. The launcher is mounted on
+ * every division page but the /api/intelligence/* endpoints (chat, quote, run) all live in the
+ * account app, so it POSTs to the account origin from whatever subdomain the visitor is on.
+ *
+ * A browser applies TWO independent gates to that cross-origin fetch: the destination's CORS
+ * headers (handled by intelligenceCorsHeaders) AND the CALLING page's own `connect-src` CSP.
+ * Any app that ships a strict `connect-src` (hub, staff) MUST splice these origins in, or the
+ * browser blocks the request before it leaves the page and the panel shows "couldn't reach the
+ * service" — a failure invisible to a server-side probe because CSP is browser-only.
+ *
+ * Derived from the same `getAccountUrl` the launcher fetches, so the CSP allow-list and the
+ * fetch target can never drift apart. Returns bare origins (scheme + host), ready to join into a
+ * connect-src directive.
+ */
+export function getIntelligenceConnectSrc(): string[] {
+  return [new URL(getAccountUrl("/")).origin];
+}
+
+/**
  * True when an Origin header belongs to the Henry Onyx first party — the base domain, any
  * subdomain of it, or a local dev host. Used to allow-list cross-subdomain, credentialed
  * requests (e.g. the shared Intelligence launcher POSTing from a division page to the
