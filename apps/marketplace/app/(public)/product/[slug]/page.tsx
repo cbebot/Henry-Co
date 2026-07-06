@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 import {
   Body,
   DisplayHeading,
@@ -276,8 +276,17 @@ export default async function ProductPage({
             <DisplayHeading level={1} size="display" className="mt-4 max-w-xl">
               {localizedTitle}
             </DisplayHeading>
-            {sellerTier !== "none" || deliveryPromise ? (
+            {data.product.henryOnyxVerified || sellerTier !== "none" || deliveryPromise ? (
               <div className="mt-4 flex flex-wrap items-center gap-2">
+                {data.product.henryOnyxVerified ? (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--home-accent-text)]"
+                    title={translateSurfaceLabel(locale, "Reviewed by Henry Onyx Intelligence for authenticity and safety")}
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+                    {translateSurfaceLabel(locale, "Henry Onyx Verified")}
+                  </span>
+                ) : null}
                 {sellerTier !== "none" ? (
                   <SellerTierBadge
                     tier={sellerTier}
