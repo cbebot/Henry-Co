@@ -101,10 +101,15 @@
      would compute to an invalid value before the font var is ever set, and that
      invalidity would inherit — the custom-property lazy-substitution trap.) See the
      hub's app/(site)/layout.tsx and §6 of docs/v3/design-system.md. */
-  --home-font-display: "Iowan Old Style", "Palatino Linotype", "Baskerville",
-    "Times New Roman", Times, serif;
-  --home-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  /* Owned type — the public marketing home routes through the shared family tokens
+     so every home surface flips at reveal. Nested fallbacks preserve the prior
+     editorial serif / system sans only if the @henryco/ui seam is somehow absent
+     (it always defines --hc-font-* in the same :root cascade, so no lazy-substitution
+     trap — see comment above). */
+  --home-font-display: var(--hc-font-serif, "Iowan Old Style", "Palatino Linotype",
+    "Baskerville", "Times New Roman", Times, serif);
+  --home-font-sans: var(--hc-font-sans, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif);
   --home-font-mono: var(--hc-font-mono, ui-monospace, "SF Mono", "JetBrains Mono",
     Menlo, Consolas, monospace);
 

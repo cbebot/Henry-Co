@@ -10,6 +10,7 @@ import {
 } from "@henryco/i18n/server";
 import { EcosystemPreferences } from "@henryco/ui/public";
 import { getAccountUrl } from "@henryco/config";
+import { onyxTypeAttr } from "@henryco/ui/fonts";
 import PublicSiteShell from "../components/PublicSiteShell";
 import { HubPublicProviders } from "../components/HubPublicProviders";
 import { getCompanySettings } from "../lib/company-settings";
@@ -220,6 +221,11 @@ export default async function SiteLayout({
     signupHref: getHubSharedSignupUrl(returnPath),
     accountHref: getAccountUrl("/"),
   };
+  // Owned type — when the flag is live at build, the public marketing subtree routes
+  // through the shared brand family tokens instead of interim Fraunces/Manrope. The
+  // --acct-font-* + --hc-font-reading aliases below reference --home-font-*, so they
+  // flip automatically. Pre-reveal keeps the interim faces (identical to before).
+  const live = onyxTypeAttr() === "live";
 
   return (
     // Scope the editorial serif (Fraunces) to the public subtree. --font-fraunces is
@@ -235,8 +241,9 @@ export default async function SiteLayout({
           // Public body copy reads in the loaded Manrope (declared HERE so
           // var(--font-manrope) resolves on the same element next/font set it).
           fontFamily: "var(--home-font-sans)",
-          ["--home-font-display" as string]:
-            'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif',
+          ["--home-font-display" as string]: live
+            ? "var(--hc-font-serif)"
+            : 'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif',
           ["--acct-font-display" as string]: "var(--home-font-display)",
           // READING-01: point the long-form reading serif (.hc-prose) at the
           // already-loaded Fraunces, so editorial body copy reads like the
@@ -247,8 +254,9 @@ export default async function SiteLayout({
           // READING-01 (premium sans): pair Fraunces with the loaded Manrope for
           // public body/UI copy — a crafted sans where the serif isn't carrying
           // the reading. --acct-font-sans aliases it so the body rule adopts it.
-          ["--home-font-sans" as string]:
-            'var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          ["--home-font-sans" as string]: live
+            ? "var(--hc-font-sans)"
+            : 'var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
           ["--acct-font-sans" as string]: "var(--home-font-sans)",
         } as CSSProperties
       }

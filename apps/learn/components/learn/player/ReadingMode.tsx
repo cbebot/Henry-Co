@@ -156,7 +156,7 @@ export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
       {/* Body — markdown is pre-sanitised at the data layer (LearnMarkdown). */}
       <article
         ref={containerRef}
-        className="order-1 max-w-[68ch] font-serif text-[17px] leading-[1.7] text-[var(--learn-ink)] lg:order-2"
+        className="order-1 max-w-[68ch] hc-font-reading text-[17px] leading-[1.7] text-[var(--learn-ink)] lg:order-2"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

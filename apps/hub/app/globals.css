@@ -33,8 +33,11 @@
   --acct-radius-sm: 0.75rem;
   --acct-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
   --acct-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --acct-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
-  --acct-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Owned type — route the owner console's display/sans THROUGH the shared family
+     tokens so the flip reaches hub (its dashboard-shell surfaces consume --acct-font-*).
+     Brand at reveal; system fallback pre-reveal (identical to before). */
+  --acct-font-display: var(--hc-font-serif);
+  --acct-font-sans: var(--hc-font-sans);
   --acct-sidebar-width: 260px;
   --owner-sidebar-width: 288px;
   --owner-accent: #d4af37;

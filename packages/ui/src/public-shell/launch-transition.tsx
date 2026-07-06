@@ -213,7 +213,7 @@ function LaunchOverlay({
             <span
               style={{
                 fontSize: 27,
-                fontFamily: "'Fraunces', 'Georgia', serif",
+                fontFamily: "var(--hc-font-serif, 'Fraunces', 'Georgia', serif)",
                 fontWeight: 700,
                 color: accent,
                 animation: "hc-launch-breathe 1.8s ease-in-out infinite",
@@ -230,7 +230,7 @@ function LaunchOverlay({
               style={{
                 display: "block",
                 fontSize: "clamp(23px, 5vw, 31px)",
-                fontFamily: "'Fraunces', 'Georgia', serif",
+                fontFamily: "var(--hc-font-serif, 'Fraunces', 'Georgia', serif)",
                 fontWeight: 600,
                 color: "#fff",
                 letterSpacing: "-0.025em",
@@ -245,7 +245,7 @@ function LaunchOverlay({
                   display: "block",
                   fontSize: 13,
                   color: "rgba(255,255,255,0.5)",
-                  fontFamily: "system-ui, sans-serif",
+                  fontFamily: "var(--hc-font-sans, system-ui, sans-serif)",
                   letterSpacing: "0.01em",
                   lineHeight: 1.5,
                 }}
@@ -279,7 +279,7 @@ function LaunchOverlay({
           <span
             style={{
               fontSize: 11,
-              fontFamily: "system-ui, sans-serif",
+              fontFamily: "var(--hc-font-sans, system-ui, sans-serif)",
               fontWeight: 600,
               letterSpacing: "0.13em",
               textTransform: "uppercase",

@@ -139,7 +139,7 @@ export default async function OwnerInboxMessagePage({
             />
           </div>
         ) : message.textBody ? (
-          <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-6 text-[var(--acct-ink)]">
+          <pre className="whitespace-pre-wrap break-words hc-font-body text-sm leading-6 text-[var(--acct-ink)]">
             {message.textBody}
           </pre>
         ) : (
