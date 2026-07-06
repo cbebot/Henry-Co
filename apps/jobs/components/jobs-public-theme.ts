@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
+import { onyxTypeAttr } from "@henryco/ui/fonts";
 
 /**
  * Public-surface theme wiring for Henry Onyx Jobs (V3-PUBLIC-REBUILD-jobs).
@@ -53,19 +54,29 @@ const jobs = getDivisionConfig("jobs");
 const SERIF_STACK =
   'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
 
+// Owned type — when the flag is live at build, the public marketing subtree routes
+// through the shared brand family tokens instead of the interim Fraunces/Manrope
+// next/font handles. Pre-reveal keeps the interim faces (identical to before). The
+// --hc-font-display/body/reading entries below reference --home-font-*, so they flip
+// automatically.
+const live = onyxTypeAttr() === "live";
+const HOME_DISPLAY = live ? "var(--hc-font-serif)" : SERIF_STACK;
+const HOME_SANS = live
+  ? "var(--hc-font-sans)"
+  : 'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
 export const JOBS_PUBLIC_THEME_STYLE: CSSProperties = {
   fontFamily: "var(--home-font-sans)",
   // Manrope is the shared public BODY sans (next/font dedupes the file across
   // importers); point --home-font-sans at it so all UI/body copy reads Manrope
   // while Fraunces keeps the display heads + the .hc-prose reading face.
-  ["--home-font-sans" as string]:
-    'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  ["--home-font-sans" as string]: HOME_SANS,
   // Teal soul. --accent-text is AA on the warm-paper light canvas; the
   // dark variant lifts the teal so it stays AA on the near-black canvas.
   ["--accent" as string]: jobs.accent, // #0E7C86
   ["--accent-text" as string]: "#0B6B74",
   ["--accent-text-dark" as string]: "#5CC9D0",
-  ["--home-font-display" as string]: SERIF_STACK,
+  ["--home-font-display" as string]: HOME_DISPLAY,
   // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
   // inner var() freezes there), so the canonical seam must be re-declared on
   // THIS element — where the next/font .variable classes live — for .hc-prose /
@@ -73,7 +84,7 @@ export const JOBS_PUBLIC_THEME_STYLE: CSSProperties = {
   ["--hc-font-display" as string]: "var(--home-font-display)",
   ["--hc-font-body" as string]: "var(--home-font-sans)",
   ["--hc-font-reading" as string]: "var(--home-font-display)",
-  ["--font-jobs-display" as string]: SERIF_STACK,
+  ["--font-jobs-display" as string]: HOME_DISPLAY,
   // Alias the legacy --jobs-* tokens onto theme-aware --home-* equivalents so
   // every jobs-* class (.jobs-panel, .jobs-input, .jobs-kicker, .jobs-table…)
   // re-tones with the page instead of staying on the standalone jobs palette.
