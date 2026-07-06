@@ -1,5 +1,15 @@
 # Henry Onyx Live — Gaming Arena (Design Index)
 
+> **LICENCE STATUS UPDATE (2026-07-06, per the owner).** The gaming/betting **licence has been
+> obtained**. These docs were written earlier (2026-06-21), when the licence was still a
+> prerequisite, so every "requires a gaming licence" / "dormant until legal sign-off" /
+> "licensing not yet held" statement below is **superseded on the licence itself** — that gate is
+> now satisfied. The remaining gates for real-money play are unchanged and still apply: the money
+> layer must be **built** (it is still designed-only in these docs), and each market is enabled
+> only after its **per-market** legal confirmation (age-verification, AML, geofence) — the licence
+> is company-held, but market-by-market rollout and the responsible-gaming controls remain. Update
+> the specific lines below in a later editorial pass; this note is the authoritative correction.
+
 **Pass:** V3-GAMING-DESIGN-01 — gaming arena architecture + phased build plan (**design only**: no feature code, no migration in this pass).
 **Compiled:** 2026-06-21 · Opus 4.8 (1M context), max effort.
 **Status:** Draft for owner + counsel review. **Owner must ratify the refined D2 decision before any build pass starts** (see `ARCHITECTURE.md §2.1`).
