@@ -661,6 +661,10 @@ export async function searchMarketplace(query: URLSearchParams | Record<string, 
   const category = String(getValue("category") || "").trim().toLowerCase();
   const brand = String(getValue("brand") || "").trim().toLowerCase();
   const verifiedOnly = String(getValue("verified") || "") === "1";
+  // Listing-level Henry Onyx Verified: the paid AI vision review confirmed the
+  // photo is real, present, and error-free. Distinct from seller verification
+  // above — a verified seller can still list an unchecked item, and vice versa.
+  const onyxVerifiedOnly = String(getValue("onyxverified") || "") === "1";
   const codOnly = String(getValue("cod") || "") === "1";
 
   return snapshot.products.filter((product) => {
@@ -670,6 +674,7 @@ export async function searchMarketplace(query: URLSearchParams | Record<string, 
       const vendor = snapshot.vendors.find((item) => item.slug === product.vendorSlug);
       if (!vendor || vendor.verificationLevel === "bronze") return false;
     }
+    if (onyxVerifiedOnly && !product.henryOnyxVerified) return false;
     if (codOnly && !product.codEligible) return false;
     if (!search) return true;
 

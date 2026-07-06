@@ -20,7 +20,7 @@ export default async function SearchPage({
       <PageIntro
         kicker="Search"
         title="Find it fast. Trust what you see."
-        description="Refine by verified seller, brand, category, and COD readiness. Results update as you filter, stay readable on mobile, and surface the trust signals you care about before you click through."
+        description="Refine by Henry Onyx Verified listings, verified seller, brand, category, and COD readiness. Results update as you filter, stay readable on mobile, and surface the trust signals you care about before you click through."
       />
 
       <SearchExperience
@@ -32,6 +32,9 @@ export default async function SearchPage({
           category: Array.isArray(params.category) ? params.category[0] : params.category,
           brand: Array.isArray(params.brand) ? params.brand[0] : params.brand,
           verified: Array.isArray(params.verified) ? params.verified[0] : params.verified,
+          onyxVerified: Array.isArray(params.onyxverified)
+            ? params.onyxverified[0]
+            : params.onyxverified,
           cod: Array.isArray(params.cod) ? params.cod[0] : params.cod,
         }}
       />
