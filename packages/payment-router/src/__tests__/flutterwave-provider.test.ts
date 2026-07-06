@@ -626,3 +626,120 @@ describe("createPaymentRouter — FLW_SECRET_KEY activation seam (G3: config-onl
     }
   });
 });
+
+// ── V3-MONEY-PAYOUT — outbound transfers (payout rail W1) ──
+describe("FlutterwaveProvider — outbound transfers (automatic withdrawal payouts)", () => {
+  const provider = (fetchImpl: FlutterwaveFetch) => new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
+
+  it("resolveBankAccount returns the holder name (POST /accounts/resolve)", async () => {
+    const { fetchImpl, calls } = fakeFetch((c) => {
+      assert.ok(c.url.endsWith("/accounts/resolve"));
+      return { status: 200, body: { status: "success", data: { account_name: "ADA LOVELACE" } } };
+    });
+    const res = await provider(fetchImpl).resolveBankAccount({ accountNumber: "0690000031", bankCode: "044" });
+    assert.ok(res.ok);
+    if (res.ok) assert.equal(res.value.accountName, "ADA LOVELACE");
+    const body = JSON.parse(calls[0].init.body ?? "{}");
+    assert.equal(body.account_number, "0690000031");
+    assert.equal(body.account_bank, "044");
+  });
+
+  it("resolveBankAccount fails fast on a missing account (no API call)", async () => {
+    const { fetchImpl, calls } = fakeFetch(() => ({ status: 200, body: {} }));
+    const res = await provider(fetchImpl).resolveBankAccount({ accountNumber: "", bankCode: "044" });
+    assert.equal(res.ok, false);
+    assert.equal(calls.length, 0);
+  });
+
+  it("createTransfer POSTs /transfers with MAJOR amount + OUR reference, returns the provider id", async () => {
+    const { fetchImpl, calls } = fakeFetch((c) => {
+      assert.ok(c.url.endsWith("/transfers"));
+      assert.equal(c.init.method, "POST");
+      return { status: 200, body: { status: "success", data: { id: 28237, reference: "wd-req-1", status: "NEW" } } };
+    });
+    const res = await provider(fetchImpl).createTransfer({
+      reference: "wd-req-1", amountMinor: 50_000, currency: "NGN", accountNumber: "0690000031", bankCode: "044", narration: "payout",
+    });
+    assert.ok(res.ok);
+    if (res.ok) {
+      assert.equal(res.value.providerReference, "28237");
+      assert.equal(res.value.status, "NEW");
+    }
+    const body = JSON.parse(calls[0].init.body ?? "{}");
+    assert.equal(body.amount, "500"); // 50000 kobo → MAJOR "500", never raw kobo
+    assert.equal(body.reference, "wd-req-1"); // our idempotency key
+    assert.equal(body.account_number, "0690000031");
+    assert.equal(body.account_bank, "044");
+    assert.equal(body.currency, "NGN");
+  });
+
+  it("createTransfer never treats a create as paid — status is verbatim, not an outcome", async () => {
+    const { fetchImpl } = fakeFetch(() => ({ status: 200, body: { status: "success", data: { id: 1, status: "NEW" } } }));
+    const res = await provider(fetchImpl).createTransfer({ reference: "r", amountMinor: 1000, currency: "NGN", accountNumber: "1", bankCode: "044" });
+    assert.ok(res.ok && res.value.status === "NEW"); // NEW != completed; only verifyTransfer confirms
+  });
+
+  it("verifyTransfer maps SUCCESSFUL→completed with the real fee, FAILED→failed, PENDING→null", async () => {
+    const mk = (status: string, fee?: number) =>
+      provider(fakeFetch(() => ({ status: 200, body: { status: "success", data: { id: 28237, reference: "wd-req-1", status, fee, currency: "NGN" } } })).fetchImpl);
+    const ok = await mk("SUCCESSFUL", 10.75).verifyTransfer({ providerReference: "28237" });
+    assert.ok(ok.ok);
+    if (ok.ok) {
+      assert.equal(ok.value.outcome, "completed");
+      assert.equal(ok.value.reference, "wd-req-1");
+      assert.equal(ok.value.feeMinor, 1075); // ₦10.75 → 1075 kobo
+    }
+    const failed = await mk("FAILED").verifyTransfer({ providerReference: "28237" });
+    assert.ok(failed.ok && failed.value.outcome === "failed");
+    const pending = await mk("PENDING").verifyTransfer({ providerReference: "28237" });
+    assert.ok(pending.ok && pending.value.outcome === null); // never assume — pending stays null
+  });
+
+  it("a transfer.completed webhook RE-VERIFIES by id and yields a transferEvent bound to our reference", async () => {
+    let sawVerify = false;
+    const { fetchImpl } = fakeFetch((c) => {
+      if (c.url.includes("/transfers/28237")) {
+        sawVerify = true;
+        return { status: 200, body: { status: "success", data: { id: 28237, reference: "wd-req-1", status: "SUCCESSFUL", fee: 10.75, currency: "NGN" } } };
+      }
+      return { status: 200, body: {} };
+    });
+    const rawBody = JSON.stringify({ event: "transfer.completed", data: { id: 28237, reference: "wd-req-1", status: "SUCCESSFUL" } });
+    const res = await provider(fetchImpl).verifyWebhook({ rawBody, signature: SECRET_HASH, secret: SECRET_HASH });
+    assert.ok(res.ok);
+    if (res.ok) {
+      assert.ok(sawVerify, "the webhook must re-verify, never trust the static-hash payload alone");
+      assert.equal(res.value.impliedStatus, null); // payout truth is NOT a charge status
+      assert.deepEqual(res.value.transferEvent, {
+        reference: "wd-req-1", providerReference: "28237", outcome: "completed", feeMinor: 1075,
+      });
+    }
+  });
+
+  it("a still-PENDING transfer notice is informational — no re-verify, no transferEvent", async () => {
+    const { fetchImpl, calls } = fakeFetch(() => ({ status: 200, body: {} }));
+    const rawBody = JSON.stringify({ event: "transfer.completed", data: { id: 28237, reference: "wd-req-1", status: "PENDING" } });
+    const res = await provider(fetchImpl).verifyWebhook({ rawBody, signature: SECRET_HASH, secret: SECRET_HASH });
+    assert.ok(res.ok);
+    if (res.ok) assert.equal(res.value.transferEvent, undefined);
+    assert.equal(calls.length, 0, "a pending notice makes no verify call");
+  });
+
+  it("a transfer webhook whose reference disagrees with the verify is rejected (footgun guard)", async () => {
+    const { fetchImpl } = fakeFetch((c) =>
+      c.url.includes("/transfers/28237")
+        ? { status: 200, body: { status: "success", data: { id: 28237, reference: "SOMEONE-ELSE", status: "SUCCESSFUL" } } }
+        : { status: 200, body: {} });
+    const rawBody = JSON.stringify({ event: "transfer.completed", data: { id: 28237, reference: "wd-req-1", status: "SUCCESSFUL" } });
+    const res = await provider(fetchImpl).verifyWebhook({ rawBody, signature: SECRET_HASH, secret: SECRET_HASH });
+    assert.equal(res.ok, false);
+  });
+
+  it("a transfer webhook with a bad signature is rejected before any work", async () => {
+    const { fetchImpl, calls } = fakeFetch(() => ({ status: 200, body: {} }));
+    const rawBody = JSON.stringify({ event: "transfer.completed", data: { id: 28237, reference: "wd-req-1", status: "SUCCESSFUL" } });
+    const res = await provider(fetchImpl).verifyWebhook({ rawBody, signature: "WRONG", secret: SECRET_HASH });
+    assert.equal(res.ok, false);
+    assert.equal(calls.length, 0);
+  });
+});
