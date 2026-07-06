@@ -21,5 +21,15 @@ export type {
 } from "./telemetry";
 export { noopSink, createConsoleSink, createCollectingSink } from "./telemetry";
 
+// Motion + copy + currency utilities
+export { MOTION, useReducedMotion } from "./motion";
+export { interpolate } from "./labels";
+export { defaultCurrencyFormatter, type CurrencyFormatter } from "./pricing";
+
 // Dependency-injection edge (providers + hooks)
-export { InteractionTelemetryProvider, useInteractionTelemetry } from "./context";
+export {
+  InteractionTelemetryProvider,
+  useInteractionTelemetry,
+  CurrencyProvider,
+  useCurrencyFormatter,
+} from "./context";
