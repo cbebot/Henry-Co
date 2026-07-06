@@ -25,7 +25,7 @@ env:
   NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
   NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ci-placeholder-signature
   SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.ci-placeholder-signature
-  NEXT_PUBLIC_BASE_DOMAIN: henrycogroup.com
+  NEXT_PUBLIC_BASE_DOMAIN: henryonyx.com
 
 jobs:
   lint-typecheck-test-build:
