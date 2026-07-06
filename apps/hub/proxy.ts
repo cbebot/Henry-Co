@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { COMPANY, buildSecurityHeaders, isSupabaseAuthTokenCookie } from "@henryco/config";
+import {
+  COMPANY,
+  buildSecurityHeaders,
+  getIntelligenceConnectSrc,
+  isSupabaseAuthTokenCookie,
+} from "@henryco/config";
 import { writeSessionStateCookie } from "@henryco/auth/server/session-state";
 
+// The Intelligence launcher mounted on every hub page POSTs cross-subdomain to the account
+// app's /api/intelligence/* endpoints, so the account origin has to be in connect-src or the
+// browser's CSP blocks the fetch before it leaves the page (the panel then reports "couldn't
+// reach the service"). Sourced from the same getAccountUrl the launcher fetches so the two
+// cannot drift.
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -11,7 +21,7 @@ const csp = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https://*.supabase.co https://api.cloudinary.com",
+  `connect-src 'self' ${getIntelligenceConnectSrc().join(" ")} https://*.supabase.co https://api.cloudinary.com`,
   "media-src 'self' blob: https://res.cloudinary.com",
   "object-src 'none'",
   "upgrade-insecure-requests",

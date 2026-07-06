@@ -91,3 +91,14 @@ test("legacy URL helpers remain exported (back-compat)", () => {
     assert.match(SOURCE, new RegExp(`export\\s+function\\s+${fn}\\s*\\(`));
   }
 });
+
+test("Intelligence connect-src helper is exported and derived from getAccountUrl", () => {
+  // The strict-CSP apps (hub, staff) splice this into connect-src so the launcher's
+  // cross-subdomain fetch to the account /api/intelligence/* routes is not blocked by the
+  // browser. Deriving it from getAccountUrl keeps the CSP allow-list and the fetch target from
+  // ever drifting apart — the whole point of the helper.
+  assert.match(SOURCE, /export\s+function\s+getIntelligenceConnectSrc\s*\(\s*\)\s*:\s*string\[\]/);
+  const body = SOURCE.slice(SOURCE.indexOf("function getIntelligenceConnectSrc"));
+  assert.match(body, /getAccountUrl\(/);
+  assert.match(body, /\.origin/);
+});
