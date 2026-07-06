@@ -13,4 +13,13 @@
  * them. See docs/superpowers/specs/2026-07-06-interactions-engines-design.md.
  */
 
-export {};
+// Telemetry (doctrine Part VI)
+export type {
+  InteractionEvent,
+  InteractionEventName,
+  InteractionTelemetrySink,
+} from "./telemetry";
+export { noopSink, createConsoleSink, createCollectingSink } from "./telemetry";
+
+// Dependency-injection edge (providers + hooks)
+export { InteractionTelemetryProvider, useInteractionTelemetry } from "./context";
