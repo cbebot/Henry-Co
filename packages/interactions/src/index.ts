@@ -59,6 +59,53 @@ export {
 } from "./engines/trust-reveal";
 export type { TrustStairProps, TrustStage, TrustPosition } from "./engines/trust-reveal";
 
+// Engine 4 — Abandonment Recovery
+export {
+  shouldTriggerRecovery,
+  shouldTriggerExitRecovery,
+  IDLE_MS,
+  RECOVERY_CAP_MS,
+  useAbandonmentRecovery,
+} from "./engines/abandonment-recovery";
+export type {
+  RecoveryTrigger,
+  RecoveryAdapter,
+  UseAbandonmentRecoveryOptions,
+  AbandonmentRecoveryHandle,
+} from "./engines/abandonment-recovery";
+
+// Engine 6 — Earn-With-Us
+export { shouldShowInvite, EarnWithUs } from "./engines/earn-with-us";
+export type { EarnWithUsProps, EarnWithUsLabels } from "./engines/earn-with-us";
+
+// Engine 7 — Newsletter Earn
+export {
+  shouldSurfaceCapture,
+  SCROLL_THRESHOLD_PCT,
+  ASK_COOLDOWN_MS,
+  NewsletterEarn,
+} from "./engines/newsletter-earn";
+export type { NewsletterMoment, NewsletterEarnProps, NewsletterEarnLabels } from "./engines/newsletter-earn";
+
+// Engine 9 — Concierge Handoff
+export {
+  resolveHandoffTrigger,
+  LINGER_MS,
+  BOUNCE_THRESHOLD,
+  ConciergeHandoff,
+} from "./engines/concierge-handoff";
+export type { HandoffTrigger, ConciergeHandoffProps, ConciergeHandoffLabels } from "./engines/concierge-handoff";
+
+// Engine 10 — Local Boost
+export { projectBoost, PromotedLabel, BoostControls } from "./engines/local-boost";
+export type {
+  BoostBaseline,
+  BoostProjection,
+  PromotedLabelProps,
+  BoostControlsProps,
+  BoostControlsLabels,
+} from "./engines/local-boost";
+
 // Engine 2 — Micro-Commitment
 export {
   nextOffer,
