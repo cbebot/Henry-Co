@@ -4,6 +4,14 @@
 **Compiled:** 2026-06-21
 **Companion docs:** [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`PHASED-PLAN.md`](./PHASED-PLAN.md) · cross-references `docs/v3/LEGAL-AND-BUSINESS.md` and `docs/v3/DECISIONS-REQUIRED.md`.
 
+> **LICENCE STATUS UPDATE (2026-07-06, per the owner).** The gaming/betting **licence has been
+> obtained** (`L7` gaming-licence prerequisite is satisfied at the company level). This map was
+> compiled 2026-06-21 when it was still pending, so the "gated until `L7`" rows below are
+> superseded **on the licence itself**. The still-live gates for real-money play are: the money
+> layer must be **built** (designed-only today), and each market is enabled only after its own
+> age-verification (`L5`) + AML (`L15`) + geofence confirmation — plus the responsible-gaming
+> controls. Company-held licence, per-market rollout: both remain true.
+
 > **Not legal advice.** This is an engineering map of *which capabilities are coupled to which legal prerequisites*, so the build ships the un-gated half now and keeps the gated half dormant until counsel clears it. Every legal classification below (especially "free play is not gambling" and "game of skill") is a **design assumption to be confirmed by counsel per market** — the architecture is built so that confirmation, not code, is the thing on the critical path.
 
 ---
