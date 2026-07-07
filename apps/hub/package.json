@@ -22,6 +22,7 @@
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",
+    "@henryco/interactions": "workspace:^",
     "@henryco/media": "workspace:^",
     "@henryco/newsletter": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",

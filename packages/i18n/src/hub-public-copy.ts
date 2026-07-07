@@ -168,6 +168,70 @@ export type HubPublicCopy = {
     ctaSubscribeAgain: string;
     ctaManagePrefs: string;
   };
+  /** V3 showcase surfaces (SP2): /v3 story + /v3/how-we-earn Earning Map. */
+  v3: {
+    story: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      primaryCta: string;
+      earnLink: string;
+      tryLink: string;
+      shippedLink: string;
+      divisionsTitle: string;
+      divisionsLede: string;
+      seeLive: string;
+      /** One honest line per division, keyed by DivisionKey. */
+      divisionBodies: Record<string, string>;
+      /** Quiet, honest roadmap line (V3-60 framing — never vaporware). */
+      roadmapNote: string;
+      spineTitle: string;
+      spineLede: string;
+      spine: { title: string; body: string }[];
+      honestyNote: string;
+    };
+    earn: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      testsTitle: string;
+      tests: { title: string; body: string }[];
+      rowsTitle: string;
+      rowsLede: string;
+      liveTag: string;
+      earlyTag: string;
+      rows: { division: string; mechanism: string; exchange: string; live: boolean }[];
+      feeTitle: string;
+      feeBody: string;
+      closingTitle: string;
+      closingBody: string;
+    };
+    shipped: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      seeLive: string;
+      /** Per-division capability summary + items, keyed by DivisionKey. */
+      divisions: Record<string, { summary: string; items: string[] }>;
+      note: string;
+    };
+    journey: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      noAccountNote: string;
+      steps: { title: string; body: string; linkLabel: string; division: string }[];
+      closing: string;
+    };
+  };
 };
 
 const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
@@ -351,6 +415,254 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     ctaSubscribeAgain: "Subscribe again",
     ctaManagePrefs: "Manage all preferences",
   },
+  v3: {
+    story: {
+      metaTitle: "The ecosystem — {brand}",
+      metaDescription:
+        "One account, one wallet, one conversation spine — across care, marketplace, jobs, learn, logistics, studio, and property. Every claim on this page opens the live product.",
+      eyebrow: "The ecosystem",
+      title: "One account. One wallet. Seven live divisions.",
+      lede:
+        "Henry Onyx is one connected economy: book care, shop verified sellers, get hired, learn a skill, ship a parcel, commission creative work, find a home — on one identity, one wallet, one conversation spine. Nothing on this page is a mockup; every link opens the real thing.",
+      primaryCta: "Browse the ecosystem",
+      earnLink: "How we earn — in plain language",
+      tryLink: "Try the journey",
+      shippedLink: "What's live",
+      divisionsTitle: "The divisions",
+      divisionsLede: "Each one is a full product. Every row opens the live surface — that is the proof.",
+      seeLive: "See it live",
+      divisionBodies: {
+        care: "Home and fabric care, booked with verified providers and honest pricing.",
+        marketplace: "Shop verified sellers, with every order tracked to your door.",
+        jobs: "Apply, interview, and get hired — with real conversations, not black holes.",
+        learn: "Courses with free previews, fair prices, and certificates that mean something.",
+        logistics: "Shipments quoted up front and tracked end to end.",
+        studio: "Commission creative work with a shared client workspace.",
+        property: "Find and inquire about property with verified listings.",
+      },
+      roadmapNote:
+        "Next on the roadmap: the Gaming Arena. It appears here when it's real — not before.",
+      spineTitle: "The spine they share",
+      spineLede: "The parts you feel everywhere, whichever division you use.",
+      spine: [
+        {
+          title: "One identity",
+          body: "One account signs into every division. Your saved items, messages, and history follow you.",
+        },
+        {
+          title: "Honest money",
+          body: "A double-entry ledger behind every payment, tax itemized, receipts that name the legal entity. No hidden fees — the fee line is a feature, not a confession.",
+        },
+        {
+          title: "One conversation spine",
+          body: "Buyer to seller, candidate to employer, client to team — the same messaging engine with the same safety rules everywhere.",
+        },
+        {
+          title: "Your language",
+          body: "Twelve locales, one product. Prices in your currency, not ours.",
+        },
+      ],
+      honestyNote:
+        "If something on this page ever doesn't match the product, that's a bug — tell us and we'll fix the page or the product, whichever is wrong.",
+    },
+    earn: {
+      metaTitle: "How we earn — {brand}",
+      metaDescription:
+        "Every revenue mechanism at Henry Onyx, in plain language: what we charge, what you get in exchange, and the three tests every fee must pass.",
+      eyebrow: "The earning map",
+      title: "How Henry Onyx earns",
+      lede:
+        "Most platforms hide this page. We think that's the tell. Here is every way we make money, what you get in exchange, and the tests a fee must pass before it exists.",
+      testsTitle: "The three tests",
+      tests: [
+        {
+          title: "You know what you're paying for",
+          body: "No hidden fees, no surprise charges. If a fee applies, it's a named line item before you commit.",
+        },
+        {
+          title: "You get more than it costs",
+          body: "Every charge maps to something you value — and we can name it in one sentence.",
+        },
+        {
+          title: "We'd publish the rate",
+          body: "If we'd be uncomfortable seeing a rate in a screenshot on social media, the rate is wrong.",
+        },
+      ],
+      rowsTitle: "Division by division",
+      rowsLede:
+        "Mechanisms, not fine print. Where a division is still early, we say so — no fee turns on before its row appears here.",
+      liveTag: "Live today",
+      earlyTag: "Published before it turns on",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "A commission on completed orders, and promoted placements always labeled as promoted.",
+          exchange: "Verified sellers, payment protection, order tracking, and a real dispute process.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "A platform fee on completed bookings, itemized at checkout.",
+          exchange: "Vetted providers, honest pricing, rebooking with one tap, and support that answers.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "A revenue share with instructors on paid courses.",
+          exchange: "Free previews before you pay, fair prices, and shareable certificates.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "A project fee on commissioned creative work.",
+          exchange: "A shared workspace, milestone clarity, and payment held until delivery.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "Employer-side tools and postings. Candidates never pay to apply.",
+          exchange: "Real conversations with employers, application status you can see, interview scheduling.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "A margin on each shipment, quoted up front — the price you see is the price.",
+          exchange: "Up-front quotes, carrier transparency, and end-to-end tracking.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "Listing and management tools for owners and managers.",
+          exchange: "Verified listings and a documented inquiry trail.",
+          live: false,
+        },
+      ],
+      feeTitle: "The platform fee, named",
+      feeBody:
+        "Where a platform fee applies, it appears as its own line at checkout — never buried in the total. It funds the things that make the ecosystem trustworthy: verification, dispute resolution, and 24/7 support. The same explanation appears in the fee tooltip at every checkout, because you shouldn't need this page to find it.",
+      closingTitle: "See something that fails the tests?",
+      closingBody:
+        "If any fee on Henry Onyx fails any of the three tests, it's misdesigned — tell us and we'll fix it. This page changes before pricing does, not after.",
+    },
+    shipped: {
+      metaTitle: "What's live — {brand}",
+      metaDescription:
+        "The capability inventory: what each Henry Onyx division does today, with a live link for every claim. No roadmap dressed as product.",
+      eyebrow: "The inventory",
+      title: "What's live, division by division",
+      lede:
+        "A tight list of what each division does today. Every block links to the live surface — if it's on this page, you can use it right now. No roadmap dressed as product.",
+      seeLive: "See it live",
+      divisions: {
+        care: {
+          summary: "Home and fabric care with verified providers.",
+          items: [
+            "Browse services and book with verified providers",
+            "Honest pricing shown before you commit",
+            "Track bookings and rebook in one step",
+          ],
+        },
+        marketplace: {
+          summary: "Verified sellers, tracked orders.",
+          items: [
+            "Shop verified sellers with clear product pages",
+            "Cart, checkout, and order tracking to your door",
+            "Buyer-seller messaging with safety rules built in",
+          ],
+        },
+        jobs: {
+          summary: "Applications that talk back.",
+          items: [
+            "Browse and apply with a profile on file",
+            "Candidate-employer conversations in real time",
+            "Application status you can actually see",
+          ],
+        },
+        learn: {
+          summary: "Courses with fair prices.",
+          items: [
+            "Free previews before any payment",
+            "Enroll, learn, and track progress",
+            "Certificates you can share",
+          ],
+        },
+        logistics: {
+          summary: "Quotes up front, tracking throughout.",
+          items: [
+            "Get a shipment quote before you commit",
+            "Book and track deliveries end to end",
+          ],
+        },
+        studio: {
+          summary: "Creative work with a shared workspace.",
+          items: [
+            "Request creative work with a clear brief",
+            "A client workspace with milestones and messaging",
+            "Card and wallet payment on delivery terms",
+          ],
+        },
+        property: {
+          summary: "Verified listings, documented inquiries.",
+          items: [
+            "Browse property listings",
+            "Save listings and send documented inquiries",
+          ],
+        },
+      },
+      note:
+        "Missing something you expected? Then we haven't shipped it — this page tracks the product, not the ambition. The roadmap lives with us until it's real.",
+    },
+    journey: {
+      metaTitle: "Try the journey — {brand}",
+      metaDescription:
+        "A five-minute walk through the live Henry Onyx ecosystem — no account required to start, no sandbox, the real product at every step.",
+      eyebrow: "Try it",
+      title: "Walk the ecosystem in five minutes",
+      lede:
+        "This is not a demo environment. Every step below opens the live product, in your language, with prices in your currency. Start with nothing — no account, no email.",
+      noAccountNote: "No account needed to start. You'll only be asked to identify yourself when you do something that needs identity — that's the rule everywhere on Henry Onyx.",
+      steps: [
+        {
+          title: "Browse without signing in",
+          body: "Open Fabric Care and browse verified providers. Everything is readable as a stranger — value before identification.",
+          linkLabel: "Open Fabric Care",
+          division: "care",
+        },
+        {
+          title: "See a real price",
+          body: "Open any service. The price is shown before you commit, in your currency, with any platform fee itemized and named.",
+          linkLabel: "Browse services",
+          division: "care",
+        },
+        {
+          title: "Cross a division",
+          body: "Same account, same wallet, different economy: shop verified sellers on the marketplace.",
+          linkLabel: "Open the marketplace",
+          division: "marketplace",
+        },
+        {
+          title: "Check the jobs board",
+          body: "Browse live roles. When you apply, the conversation with the employer is real and stays visible.",
+          linkLabel: "Browse jobs",
+          division: "jobs",
+        },
+        {
+          title: "Preview a course free",
+          body: "Open a course on Learn. The preview is free — you pay only when you choose to enroll.",
+          linkLabel: "Open Learn",
+          division: "learn",
+        },
+        {
+          title: "Create your one account",
+          body: "When you're ready, one sign-up works everywhere — your saved items, messages, and wallet follow you across every division.",
+          linkLabel: "Create your account",
+          division: "account",
+        },
+      ],
+      closing:
+        "That's the ecosystem. If any step felt slower, less honest, or less finished than this page promised, tell us — the page and the product are supposed to be the same thing.",
+    },
+  },
 };
 
 const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
@@ -495,6 +807,254 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     ctaSubscribeAgain: "Se réabonner",
     ctaManagePrefs: "Gérer toutes les préférences",
   },
+  v3: {
+    story: {
+      metaTitle: "L'écosystème — {brand}",
+      metaDescription:
+        "Un compte, un portefeuille, une messagerie unifiée — pour l'entretien, le marché, l'emploi, la formation, la logistique, le studio et l'immobilier. Chaque affirmation de cette page ouvre le produit réel.",
+      eyebrow: "L'écosystème",
+      title: "Un compte. Un portefeuille. Sept divisions en service.",
+      lede:
+        "Henry Onyx est une économie connectée : réservez un service, achetez auprès de vendeurs vérifiés, faites-vous recruter, apprenez un métier, expédiez un colis, commandez un travail créatif, trouvez un logement — avec une seule identité, un seul portefeuille, une seule messagerie. Rien ici n'est une maquette ; chaque lien ouvre le vrai produit.",
+      primaryCta: "Parcourir l'écosystème",
+      earnLink: "Comment nous gagnons de l'argent — en clair",
+      tryLink: "Essayer le parcours",
+      shippedLink: "Ce qui est en ligne",
+      divisionsTitle: "Les divisions",
+      divisionsLede: "Chacune est un produit complet. Chaque ligne ouvre la surface réelle — c'est la preuve.",
+      seeLive: "Voir en direct",
+      divisionBodies: {
+        care: "Entretien de la maison et du linge, réservé auprès de prestataires vérifiés, à prix honnête.",
+        marketplace: "Achetez auprès de vendeurs vérifiés, chaque commande suivie jusqu'à votre porte.",
+        jobs: "Postulez, passez l'entretien, soyez recruté — avec de vraies conversations, pas des silences.",
+        learn: "Des cours avec aperçu gratuit, des prix justes et des certificats qui comptent.",
+        logistics: "Des expéditions au tarif annoncé d'avance et suivies de bout en bout.",
+        studio: "Commandez un travail créatif avec un espace client partagé.",
+        property: "Trouvez un bien et renseignez-vous sur des annonces vérifiées.",
+      },
+      roadmapNote:
+        "Prochaine étape : la Gaming Arena. Elle apparaîtra ici quand elle sera réelle — pas avant.",
+      spineTitle: "La colonne vertébrale commune",
+      spineLede: "Ce que vous retrouvez partout, quelle que soit la division.",
+      spine: [
+        {
+          title: "Une identité",
+          body: "Un compte pour toutes les divisions. Vos favoris, messages et historique vous suivent.",
+        },
+        {
+          title: "De l'argent honnête",
+          body: "Une comptabilité en partie double derrière chaque paiement, la taxe détaillée, des reçus au nom de l'entité légale. Pas de frais cachés — la ligne de frais est une fierté, pas un aveu.",
+        },
+        {
+          title: "Une messagerie unifiée",
+          body: "Acheteur-vendeur, candidat-employeur, client-équipe : le même moteur de messagerie, avec les mêmes règles de sécurité partout.",
+        },
+        {
+          title: "Votre langue",
+          body: "Douze langues, un seul produit. Les prix dans votre devise, pas la nôtre.",
+        },
+      ],
+      honestyNote:
+        "Si cette page ne correspond pas au produit, c'est un bug — dites-le-nous et nous corrigerons la page ou le produit, selon ce qui est faux.",
+    },
+    earn: {
+      metaTitle: "Comment nous gagnons de l'argent — {brand}",
+      metaDescription:
+        "Chaque mécanisme de revenu de Henry Onyx, en clair : ce que nous facturons, ce que vous recevez en échange, et les trois tests que chaque frais doit passer.",
+      eyebrow: "La carte des revenus",
+      title: "Comment Henry Onyx gagne de l'argent",
+      lede:
+        "La plupart des plateformes cachent cette page. Nous pensons que c'est révélateur. Voici chaque façon dont nous gagnons de l'argent, ce que vous recevez en échange, et les tests qu'un frais doit passer avant d'exister.",
+      testsTitle: "Les trois tests",
+      tests: [
+        {
+          title: "Vous savez ce que vous payez",
+          body: "Pas de frais cachés, pas de surprise. Tout frais applicable est une ligne nommée avant votre engagement.",
+        },
+        {
+          title: "Vous recevez plus que le prix",
+          body: "Chaque montant correspond à une valeur réelle — que nous savons nommer en une phrase.",
+        },
+        {
+          title: "Nous publierions le taux",
+          body: "Si un taux nous gênerait en capture d'écran sur les réseaux, c'est que le taux est mauvais.",
+        },
+      ],
+      rowsTitle: "Division par division",
+      rowsLede:
+        "Des mécanismes, pas des petites lignes. Quand une division est encore jeune, nous le disons — aucun frais ne s'active avant que sa ligne figure ici.",
+      liveTag: "Actif aujourd'hui",
+      earlyTag: "Publié avant activation",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "Une commission sur les commandes finalisées, et des mises en avant toujours étiquetées comme telles.",
+          exchange: "Vendeurs vérifiés, protection des paiements, suivi des commandes et un vrai processus de litige.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "Des frais de plateforme sur les réservations effectuées, détaillés au paiement.",
+          exchange: "Prestataires vérifiés, prix honnêtes, re-réservation en un geste, et une assistance qui répond.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "Un partage de revenus avec les formateurs sur les cours payants.",
+          exchange: "Aperçus gratuits avant paiement, prix justes, certificats partageables.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "Des frais de projet sur les travaux créatifs commandés.",
+          exchange: "Un espace partagé, des jalons clairs, un paiement retenu jusqu'à la livraison.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "Outils et annonces côté employeur. Les candidats ne paient jamais pour postuler.",
+          exchange: "De vraies conversations avec les employeurs, un statut visible, la planification d'entretiens.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "Une marge sur chaque expédition, annoncée d'avance — le prix affiché est le prix.",
+          exchange: "Devis immédiats, transparence des transporteurs, suivi de bout en bout.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "Outils d'annonce et de gestion pour propriétaires et gestionnaires.",
+          exchange: "Annonces vérifiées et un fil de demandes documenté.",
+          live: false,
+        },
+      ],
+      feeTitle: "Les frais de plateforme, nommés",
+      feeBody:
+        "Quand des frais de plateforme s'appliquent, ils apparaissent comme une ligne distincte au paiement — jamais noyés dans le total. Ils financent ce qui rend l'écosystème digne de confiance : vérification, résolution des litiges et assistance 24h/24. La même explication figure dans l'infobulle des frais à chaque paiement, car vous ne devriez pas avoir besoin de cette page pour la trouver.",
+      closingTitle: "Un frais échoue aux tests ?",
+      closingBody:
+        "Si un frais de Henry Onyx échoue à l'un des trois tests, il est mal conçu — dites-le-nous et nous le corrigerons. Cette page change avant les prix, pas après.",
+    },
+    shipped: {
+      metaTitle: "Ce qui est en ligne — {brand}",
+      metaDescription:
+        "L'inventaire des capacités : ce que chaque division Henry Onyx fait aujourd'hui, avec un lien vers le produit en ligne pour chaque affirmation. Pas de feuille de route déguisée en produit.",
+      eyebrow: "L'inventaire",
+      title: "Ce qui est en ligne, division par division",
+      lede:
+        "Une liste resserrée de ce que chaque division fait aujourd'hui. Chaque bloc renvoie au produit en ligne — si c'est sur cette page, vous pouvez l'utiliser dès maintenant. Pas de feuille de route déguisée en produit.",
+      seeLive: "Voir en ligne",
+      divisions: {
+        care: {
+          summary: "Entretien de la maison et du linge avec des prestataires vérifiés.",
+          items: [
+            "Parcourez les services et réservez auprès de prestataires vérifiés",
+            "Des prix honnêtes affichés avant de vous engager",
+            "Suivez vos réservations et réservez à nouveau en une étape",
+          ],
+        },
+        marketplace: {
+          summary: "Vendeurs vérifiés, commandes suivies.",
+          items: [
+            "Achetez auprès de vendeurs vérifiés avec des fiches produit claires",
+            "Panier, paiement et suivi de commande jusqu'à votre porte",
+            "Messagerie acheteur-vendeur avec des règles de sécurité intégrées",
+          ],
+        },
+        jobs: {
+          summary: "Des candidatures qui obtiennent des réponses.",
+          items: [
+            "Parcourez les offres et candidatez avec un profil enregistré",
+            "Conversations candidat-employeur en temps réel",
+            "Un statut de candidature réellement visible",
+          ],
+        },
+        learn: {
+          summary: "Des cours à prix justes.",
+          items: [
+            "Aperçus gratuits avant tout paiement",
+            "Inscrivez-vous, apprenez et suivez votre progression",
+            "Des certificats que vous pouvez partager",
+          ],
+        },
+        logistics: {
+          summary: "Devis en amont, suivi de bout en bout.",
+          items: [
+            "Obtenez un devis d'expédition avant de vous engager",
+            "Réservez et suivez vos livraisons de bout en bout",
+          ],
+        },
+        studio: {
+          summary: "Travail créatif avec un espace de travail partagé.",
+          items: [
+            "Commandez un travail créatif avec un brief clair",
+            "Un espace client avec jalons et messagerie",
+            "Paiement par carte ou portefeuille selon les conditions de livraison",
+          ],
+        },
+        property: {
+          summary: "Annonces vérifiées, demandes documentées.",
+          items: [
+            "Parcourez les annonces immobilières",
+            "Enregistrez des annonces et envoyez des demandes documentées",
+          ],
+        },
+      },
+      note:
+        "Il manque quelque chose que vous attendiez ? Alors nous ne l'avons pas encore livré — cette page suit le produit, pas l'ambition. La feuille de route reste chez nous jusqu'à ce qu'elle soit réelle.",
+    },
+    journey: {
+      metaTitle: "Essayez le parcours — {brand}",
+      metaDescription:
+        "Une traversée de cinq minutes de l'écosystème Henry Onyx en ligne — aucun compte requis pour commencer, pas de bac à sable, le vrai produit à chaque étape.",
+      eyebrow: "Essayez",
+      title: "Traversez l'écosystème en cinq minutes",
+      lede:
+        "Ce n'est pas un environnement de démonstration. Chaque étape ci-dessous ouvre le produit en ligne, dans votre langue, avec des prix dans votre devise. Commencez sans rien — ni compte, ni e-mail.",
+      noAccountNote: "Aucun compte nécessaire pour commencer. Vous ne serez invité à vous identifier que lorsque vous ferez quelque chose qui exige une identité — c'est la règle partout sur Henry Onyx.",
+      steps: [
+        {
+          title: "Parcourez sans vous connecter",
+          body: "Ouvrez Fabric Care et parcourez les prestataires vérifiés. Tout est lisible sans être identifié — la valeur avant l'identification.",
+          linkLabel: "Ouvrir Fabric Care",
+          division: "care",
+        },
+        {
+          title: "Voyez un vrai prix",
+          body: "Ouvrez n'importe quel service. Le prix est affiché avant que vous vous engagiez, dans votre devise, avec tous frais de plateforme détaillés et nommés.",
+          linkLabel: "Parcourir les services",
+          division: "care",
+        },
+        {
+          title: "Passez d'une division à l'autre",
+          body: "Même compte, même portefeuille, autre économie : achetez auprès de vendeurs vérifiés sur la marketplace.",
+          linkLabel: "Ouvrir la marketplace",
+          division: "marketplace",
+        },
+        {
+          title: "Consultez les offres d'emploi",
+          body: "Parcourez les postes ouverts. Quand vous candidatez, la conversation avec l'employeur est réelle et reste visible.",
+          linkLabel: "Parcourir les offres",
+          division: "jobs",
+        },
+        {
+          title: "Prévisualisez un cours gratuitement",
+          body: "Ouvrez un cours sur Learn. L'aperçu est gratuit — vous ne payez que lorsque vous choisissez de vous inscrire.",
+          linkLabel: "Ouvrir Learn",
+          division: "learn",
+        },
+        {
+          title: "Créez votre compte unique",
+          body: "Quand vous êtes prêt, une seule inscription fonctionne partout — vos articles enregistrés, vos messages et votre portefeuille vous suivent dans chaque division.",
+          linkLabel: "Créer votre compte",
+          division: "account",
+        },
+      ],
+      closing:
+        "Voilà l'écosystème. Si une étape vous a semblé plus lente, moins honnête ou moins aboutie que ce que cette page promettait, dites-le-nous — la page et le produit sont censés être la même chose.",
+    },
+  },
 };
 const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -637,6 +1197,254 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     changedMind: "¿Has cambiado de opinión?",
     ctaSubscribeAgain: "Suscribirse de nuevo",
     ctaManagePrefs: "Gestionar todas las preferencias",
+  },
+  v3: {
+    story: {
+      metaTitle: "El ecosistema — {brand}",
+      metaDescription:
+        "Una cuenta, una billetera, una misma columna de conversación — en cuidado del hogar, marketplace, empleo, formación, logística, estudio y propiedades. Cada afirmación de esta página abre el producto real.",
+      eyebrow: "El ecosistema",
+      title: "Una cuenta. Una billetera. Siete divisiones en funcionamiento.",
+      lede:
+        "Henry Onyx es una economía conectada: reserva servicios de cuidado, compra a vendedores verificados, consigue empleo, aprende una habilidad, envía un paquete, encarga trabajo creativo, encuentra un hogar — con una sola identidad, una sola billetera y una misma columna de conversación. Nada en esta página es una maqueta; cada enlace abre el producto real.",
+      primaryCta: "Explorar el ecosistema",
+      earnLink: "Cómo ganamos dinero — explicado con claridad",
+      tryLink: "Probar el recorrido",
+      shippedLink: "Qué está activo",
+      divisionsTitle: "Las divisiones",
+      divisionsLede: "Cada una es un producto completo. Cada fila abre la superficie real — esa es la prueba.",
+      seeLive: "Verlo en funcionamiento",
+      divisionBodies: {
+        care: "Cuidado del hogar y de tejidos, con proveedores verificados y precios honestos.",
+        marketplace: "Compra a vendedores verificados, con cada pedido rastreado hasta tu puerta.",
+        jobs: "Postúlate, entrevístate y consigue el empleo — con conversaciones reales, no silencios.",
+        learn: "Cursos con vistas previas gratuitas, precios justos y certificados que valen algo.",
+        logistics: "Envíos con precio cotizado por adelantado y rastreo de principio a fin.",
+        studio: "Encarga trabajo creativo con un espacio compartido con el cliente.",
+        property: "Encuentra propiedades y consulta sobre ellas con anuncios verificados.",
+      },
+      roadmapNote:
+        "Lo próximo en el plan: la Gaming Arena. Aparecerá aquí cuando sea real — no antes.",
+      spineTitle: "La columna que comparten",
+      spineLede: "Las partes que sientes en todas partes, uses la división que uses.",
+      spine: [
+        {
+          title: "Una sola identidad",
+          body: "Una cuenta inicia sesión en todas las divisiones. Tus elementos guardados, mensajes e historial te acompañan.",
+        },
+        {
+          title: "Dinero honesto",
+          body: "Un libro contable de partida doble detrás de cada pago, impuestos desglosados y recibos que nombran a la entidad legal. Sin tarifas ocultas — la línea de tarifa es una prestación, no una confesión.",
+        },
+        {
+          title: "Una misma columna de conversación",
+          body: "De comprador a vendedor, de candidato a empleador, de cliente a equipo — el mismo motor de mensajería con las mismas reglas de seguridad en todas partes.",
+        },
+        {
+          title: "Tu idioma",
+          body: "Doce idiomas, un solo producto. Precios en tu moneda, no en la nuestra.",
+        },
+      ],
+      honestyNote:
+        "Si algo en esta página alguna vez no coincide con el producto, es un error — dínoslo y corregiremos la página o el producto, lo que esté mal.",
+    },
+    earn: {
+      metaTitle: "Cómo ganamos dinero — {brand}",
+      metaDescription:
+        "Cada mecanismo de ingresos de Henry Onyx, explicado con claridad: qué cobramos, qué recibes a cambio y las tres pruebas que toda tarifa debe superar.",
+      eyebrow: "El mapa de ingresos",
+      title: "Cómo gana dinero Henry Onyx",
+      lede:
+        "La mayoría de las plataformas ocultan esta página. Creemos que eso lo dice todo. Aquí está cada forma en que ganamos dinero, qué recibes a cambio y las pruebas que una tarifa debe superar antes de existir.",
+      testsTitle: "Las tres pruebas",
+      tests: [
+        {
+          title: "Sabes por qué estás pagando",
+          body: "Sin tarifas ocultas ni cargos sorpresa. Si se aplica una tarifa, aparece como una línea con nombre antes de que te comprometas.",
+        },
+        {
+          title: "Recibes más de lo que cuesta",
+          body: "Cada cargo corresponde a algo que valoras — y podemos nombrarlo en una frase.",
+        },
+        {
+          title: "Publicaríamos la tarifa",
+          body: "Si nos incomodara ver una tarifa en una captura de pantalla en redes sociales, la tarifa está mal.",
+        },
+      ],
+      rowsTitle: "División por división",
+      rowsLede:
+        "Mecanismos, no letra pequeña. Cuando una división aún está en una etapa temprana, lo decimos — ninguna tarifa se activa antes de que su fila aparezca aquí.",
+      liveTag: "Activo hoy",
+      earlyTag: "Publicado antes de activarse",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "Una comisión sobre pedidos completados y ubicaciones promocionadas siempre etiquetadas como promocionadas.",
+          exchange: "Vendedores verificados, protección de pagos, rastreo de pedidos y un proceso de disputas real.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "Una tarifa de plataforma sobre reservas completadas, desglosada al pagar.",
+          exchange: "Proveedores evaluados, precios honestos, reservar de nuevo con un toque y un soporte que responde.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "Una participación en los ingresos con los instructores en los cursos de pago.",
+          exchange: "Vistas previas gratuitas antes de pagar, precios justos y certificados que puedes compartir.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "Una tarifa de proyecto sobre el trabajo creativo por encargo.",
+          exchange: "Un espacio de trabajo compartido, hitos claros y un pago retenido hasta la entrega.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "Herramientas y publicaciones para empleadores. Los candidatos nunca pagan por postularse.",
+          exchange: "Conversaciones reales con empleadores, estado de la postulación siempre visible y programación de entrevistas.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "Un margen sobre cada envío, cotizado por adelantado — el precio que ves es el precio.",
+          exchange: "Cotizaciones por adelantado, transparencia sobre los transportistas y rastreo de principio a fin.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "Herramientas de publicación y gestión para propietarios y administradores.",
+          exchange: "Anuncios verificados y un historial documentado de consultas.",
+          live: false,
+        },
+      ],
+      feeTitle: "La tarifa de plataforma, con nombre",
+      feeBody:
+        "Cuando se aplica una tarifa de plataforma, aparece como su propia línea al pagar — nunca escondida en el total. Financia lo que hace confiable al ecosistema: verificación, resolución de disputas y soporte las 24 horas. La misma explicación aparece en la ayuda de la tarifa en cada pago, porque no deberías necesitar esta página para encontrarla.",
+      closingTitle: "¿Ves algo que no supera las pruebas?",
+      closingBody:
+        "Si alguna tarifa de Henry Onyx no supera cualquiera de las tres pruebas, está mal diseñada — dínoslo y la corregiremos. Esta página cambia antes que los precios, no después.",
+    },
+    shipped: {
+      metaTitle: "Qué está en producción — {brand}",
+      metaDescription:
+        "El inventario de capacidades: lo que hace hoy cada división de Henry Onyx, con un enlace en vivo para cada afirmación. Nada de hojas de ruta disfrazadas de producto.",
+      eyebrow: "El inventario",
+      title: "Qué está en producción, división por división",
+      lede:
+        "Una lista precisa de lo que hace hoy cada división. Cada bloque enlaza a la superficie en vivo — si está en esta página, puedes usarlo ahora mismo. Nada de hojas de ruta disfrazadas de producto.",
+      seeLive: "Verlo en vivo",
+      divisions: {
+        care: {
+          summary: "Cuidado del hogar y de tejidos con proveedores verificados.",
+          items: [
+            "Explora servicios y reserva con proveedores verificados",
+            "Precios honestos mostrados antes de comprometerte",
+            "Sigue tus reservas y vuelve a reservar en un paso",
+          ],
+        },
+        marketplace: {
+          summary: "Vendedores verificados, pedidos con seguimiento.",
+          items: [
+            "Compra a vendedores verificados con páginas de producto claras",
+            "Carrito, pago y seguimiento del pedido hasta tu puerta",
+            "Mensajería entre comprador y vendedor con reglas de seguridad integradas",
+          ],
+        },
+        jobs: {
+          summary: "Candidaturas que responden.",
+          items: [
+            "Explora vacantes y postúlate con un perfil registrado",
+            "Conversaciones entre candidato y empleador en tiempo real",
+            "Estado de tu candidatura que realmente puedes ver",
+          ],
+        },
+        learn: {
+          summary: "Cursos con precios justos.",
+          items: [
+            "Vistas previas gratuitas antes de cualquier pago",
+            "Inscríbete, aprende y sigue tu progreso",
+            "Certificados que puedes compartir",
+          ],
+        },
+        logistics: {
+          summary: "Cotizaciones por adelantado, seguimiento en todo momento.",
+          items: [
+            "Obtén una cotización de envío antes de comprometerte",
+            "Reserva y sigue tus entregas de principio a fin",
+          ],
+        },
+        studio: {
+          summary: "Trabajo creativo con un espacio de trabajo compartido.",
+          items: [
+            "Solicita trabajo creativo con un brief claro",
+            "Un espacio de trabajo para clientes con hitos y mensajería",
+            "Pago con tarjeta y billetera según condiciones de entrega",
+          ],
+        },
+        property: {
+          summary: "Anuncios verificados, consultas documentadas.",
+          items: [
+            "Explora anuncios de propiedades",
+            "Guarda anuncios y envía consultas documentadas",
+          ],
+        },
+      },
+      note:
+        "¿Falta algo que esperabas? Entonces no lo hemos lanzado — esta página refleja el producto, no la ambición. La hoja de ruta se queda con nosotros hasta que sea real.",
+    },
+    journey: {
+      metaTitle: "Prueba el recorrido — {brand}",
+      metaDescription:
+        "Un recorrido de cinco minutos por el ecosistema Henry Onyx en vivo — sin cuenta para empezar, sin entorno de pruebas, el producto real en cada paso.",
+      eyebrow: "Pruébalo",
+      title: "Recorre el ecosistema en cinco minutos",
+      lede:
+        "Esto no es un entorno de demostración. Cada paso a continuación abre el producto en vivo, en tu idioma, con precios en tu moneda. Empieza sin nada — sin cuenta, sin correo.",
+      noAccountNote: "No necesitas cuenta para empezar. Solo se te pedirá identificarte cuando hagas algo que requiera identidad — esa es la regla en todo Henry Onyx.",
+      steps: [
+        {
+          title: "Explora sin iniciar sesión",
+          body: "Abre Fabric Care y explora proveedores verificados. Todo es legible sin identificarte — el valor antes que la identificación.",
+          linkLabel: "Abrir Fabric Care",
+          division: "care",
+        },
+        {
+          title: "Ve un precio real",
+          body: "Abre cualquier servicio. El precio se muestra antes de comprometerte, en tu moneda, con cualquier tarifa de plataforma detallada y con nombre.",
+          linkLabel: "Explorar servicios",
+          division: "care",
+        },
+        {
+          title: "Cruza a otra división",
+          body: "Misma cuenta, misma billetera, distinta economía: compra a vendedores verificados en el marketplace.",
+          linkLabel: "Abrir el marketplace",
+          division: "marketplace",
+        },
+        {
+          title: "Consulta la bolsa de empleo",
+          body: "Explora vacantes activas. Cuando te postulas, la conversación con el empleador es real y permanece visible.",
+          linkLabel: "Explorar empleos",
+          division: "jobs",
+        },
+        {
+          title: "Prueba un curso gratis",
+          body: "Abre un curso en Learn. La vista previa es gratuita — pagas solo cuando decides inscribirte.",
+          linkLabel: "Abrir Learn",
+          division: "learn",
+        },
+        {
+          title: "Crea tu cuenta única",
+          body: "Cuando estés listo, un solo registro funciona en todas partes — tus elementos guardados, mensajes y billetera te acompañan en cada división.",
+          linkLabel: "Crear tu cuenta",
+          division: "account",
+        },
+      ],
+      closing:
+        "Ese es el ecosistema. Si algún paso te pareció más lento, menos honesto o menos terminado de lo que esta página prometía, dínoslo — la página y el producto deben ser la misma cosa.",
+    },
   },
 };
 const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
@@ -781,6 +1589,254 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     ctaSubscribeAgain: "Subscrever novamente",
     ctaManagePrefs: "Gerir todas as preferências",
   },
+  v3: {
+    story: {
+      metaTitle: "O ecossistema — {brand}",
+      metaDescription:
+        "Uma conta, uma carteira, um mesmo eixo de conversas — em care, marketplace, jobs, learn, logistics, studio e property. Cada afirmação desta página abre o produto ao vivo.",
+      eyebrow: "O ecossistema",
+      title: "Uma conta. Uma carteira. Sete divisões no ar.",
+      lede:
+        "A Henry Onyx é uma economia conectada: agende cuidados, compre de vendedores verificados, seja contratado, aprenda uma habilidade, envie uma encomenda, encomende trabalho criativo, encontre um imóvel — com uma identidade, uma carteira e um mesmo eixo de conversas. Nada nesta página é maquete; cada link abre o produto real.",
+      primaryCta: "Explorar o ecossistema",
+      earnLink: "Como ganhamos — em linguagem simples",
+      tryLink: "Experimentar o percurso",
+      shippedLink: "O que está no ar",
+      divisionsTitle: "As divisões",
+      divisionsLede: "Cada uma é um produto completo. Cada linha abre a interface ao vivo — essa é a prova.",
+      seeLive: "Ver ao vivo",
+      divisionBodies: {
+        care: "Cuidados para a casa e para tecidos, agendados com prestadores verificados e preços honestos.",
+        marketplace: "Compre de vendedores verificados, com cada pedido rastreado até a sua porta.",
+        jobs: "Candidate-se, faça entrevistas e seja contratado — com conversas reais, sem silêncio do outro lado.",
+        learn: "Cursos com prévias gratuitas, preços justos e certificados que valem algo.",
+        logistics: "Envios com cotação antecipada e rastreamento de ponta a ponta.",
+        studio: "Encomende trabalho criativo em um espaço compartilhado com o cliente.",
+        property: "Encontre imóveis e faça consultas com anúncios verificados.",
+      },
+      roadmapNote:
+        "Próximo passo do roadmap: a Gaming Arena. Ela aparece aqui quando for real — não antes.",
+      spineTitle: "A espinha que elas compartilham",
+      spineLede: "As partes que você sente em todo lugar, seja qual for a divisão que usa.",
+      spine: [
+        {
+          title: "Uma identidade",
+          body: "Uma conta entra em todas as divisões. Seus itens salvos, mensagens e histórico acompanham você.",
+        },
+        {
+          title: "Dinheiro honesto",
+          body: "Um livro-razão de partidas dobradas por trás de cada pagamento, impostos discriminados, recibos que nomeiam a entidade legal. Sem taxas ocultas — a linha da taxa é um recurso, não uma confissão.",
+        },
+        {
+          title: "Um eixo único de conversas",
+          body: "Comprador com vendedor, candidato com empregador, cliente com equipe — o mesmo mecanismo de mensagens, com as mesmas regras de segurança em todo lugar.",
+        },
+        {
+          title: "O seu idioma",
+          body: "Doze idiomas, um só produto. Preços na sua moeda, não na nossa.",
+        },
+      ],
+      honestyNote:
+        "Se algo nesta página um dia não corresponder ao produto, isso é um bug — avise e vamos corrigir a página ou o produto, o que estiver errado.",
+    },
+    earn: {
+      metaTitle: "Como ganhamos — {brand}",
+      metaDescription:
+        "Todos os mecanismos de receita da Henry Onyx, em linguagem simples: o que cobramos, o que você recebe em troca e os três testes que toda taxa precisa passar.",
+      eyebrow: "O mapa da receita",
+      title: "Como a Henry Onyx ganha",
+      lede:
+        "A maioria das plataformas esconde esta página. Achamos que isso já diz muito. Aqui está cada forma pela qual ganhamos dinheiro, o que você recebe em troca e os testes que uma taxa precisa passar antes de existir.",
+      testsTitle: "Os três testes",
+      tests: [
+        {
+          title: "Você sabe pelo que está pagando",
+          body: "Sem taxas ocultas, sem cobranças surpresa. Se uma taxa se aplica, ela aparece como item nomeado antes de você confirmar.",
+        },
+        {
+          title: "Você recebe mais do que custa",
+          body: "Cada cobrança corresponde a algo que você valoriza — e conseguimos nomear isso em uma frase.",
+        },
+        {
+          title: "Publicaríamos a tarifa",
+          body: "Se nos incomodaria ver uma tarifa em uma captura de tela nas redes sociais, a tarifa está errada.",
+        },
+      ],
+      rowsTitle: "Divisão por divisão",
+      rowsLede:
+        "Mecanismos, não letras miúdas. Onde uma divisão ainda está no início, dizemos isso — nenhuma taxa entra em vigor antes de a sua linha aparecer aqui.",
+      liveTag: "No ar hoje",
+      earlyTag: "Publicada antes de entrar em vigor",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "Uma comissão sobre pedidos concluídos, e posicionamentos promovidos sempre identificados como promovidos.",
+          exchange: "Vendedores verificados, proteção de pagamento, rastreamento de pedidos e um processo real de disputa.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "Uma taxa de plataforma sobre agendamentos concluídos, discriminada no checkout.",
+          exchange: "Prestadores avaliados, preços honestos, reagendamento em um toque e suporte que responde.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "Uma divisão de receita com instrutores nos cursos pagos.",
+          exchange: "Prévias gratuitas antes de pagar, preços justos e certificados compartilháveis.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "Uma taxa de projeto sobre trabalho criativo encomendado.",
+          exchange: "Um espaço de trabalho compartilhado, clareza de etapas e pagamento retido até a entrega.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "Ferramentas e anúncios do lado do empregador. Candidatos nunca pagam para se candidatar.",
+          exchange: "Conversas reais com empregadores, status da candidatura visível e agendamento de entrevistas.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "Uma margem em cada envio, cotada antecipadamente — o preço que você vê é o preço.",
+          exchange: "Cotações antecipadas, transparência sobre as transportadoras e rastreamento de ponta a ponta.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "Ferramentas de anúncio e gestão para proprietários e administradores.",
+          exchange: "Anúncios verificados e um histórico documentado de consultas.",
+          live: false,
+        },
+      ],
+      feeTitle: "A taxa de plataforma, nomeada",
+      feeBody:
+        "Onde uma taxa de plataforma se aplica, ela aparece como uma linha própria no checkout — nunca escondida no total. Ela financia o que torna o ecossistema confiável: verificação, resolução de disputas e suporte 24 horas. A mesma explicação aparece na dica da taxa em todos os checkouts, porque você não deveria precisar desta página para encontrá-la.",
+      closingTitle: "Viu algo que não passa nos testes?",
+      closingBody:
+        "Se qualquer taxa da Henry Onyx falhar em qualquer um dos três testes, ela foi mal desenhada — avise e vamos corrigir. Esta página muda antes dos preços, não depois.",
+    },
+    shipped: {
+      metaTitle: "O que está no ar — {brand}",
+      metaDescription:
+        "O inventário de capacidades: o que cada divisão da Henry Onyx faz hoje, com um link ao vivo para cada afirmação. Nada de roadmap disfarçado de produto.",
+      eyebrow: "O inventário",
+      title: "O que está no ar, divisão a divisão",
+      lede:
+        "Uma lista objetiva do que cada divisão faz hoje. Cada bloco liga à superfície ao vivo — se está nesta página, pode usar agora mesmo. Nada de roadmap disfarçado de produto.",
+      seeLive: "Ver ao vivo",
+      divisions: {
+        care: {
+          summary: "Cuidados para casa e têxteis com prestadores verificados.",
+          items: [
+            "Explore serviços e reserve com prestadores verificados",
+            "Preços honestos mostrados antes de se comprometer",
+            "Acompanhe reservas e volte a reservar num passo",
+          ],
+        },
+        marketplace: {
+          summary: "Vendedores verificados, encomendas rastreadas.",
+          items: [
+            "Compre a vendedores verificados com páginas de produto claras",
+            "Carrinho, checkout e rastreio da encomenda até à sua porta",
+            "Mensagens entre comprador e vendedor com regras de segurança integradas",
+          ],
+        },
+        jobs: {
+          summary: "Candidaturas que respondem.",
+          items: [
+            "Explore e candidate-se com um perfil registado",
+            "Conversas entre candidato e empregador em tempo real",
+            "Estado da candidatura que pode realmente ver",
+          ],
+        },
+        learn: {
+          summary: "Cursos com preços justos.",
+          items: [
+            "Pré-visualizações gratuitas antes de qualquer pagamento",
+            "Inscreva-se, aprenda e acompanhe o progresso",
+            "Certificados que pode partilhar",
+          ],
+        },
+        logistics: {
+          summary: "Cotações à partida, rastreio do início ao fim.",
+          items: [
+            "Obtenha uma cotação de envio antes de se comprometer",
+            "Reserve e acompanhe entregas de ponta a ponta",
+          ],
+        },
+        studio: {
+          summary: "Trabalho criativo com um espaço de trabalho partilhado.",
+          items: [
+            "Solicite trabalho criativo com um briefing claro",
+            "Um espaço de trabalho do cliente com marcos e mensagens",
+            "Pagamento por cartão e carteira nos termos de entrega",
+          ],
+        },
+        property: {
+          summary: "Anúncios verificados, pedidos documentados.",
+          items: [
+            "Explore anúncios de imóveis",
+            "Guarde anúncios e envie pedidos de informação documentados",
+          ],
+        },
+      },
+      note:
+        "Falta algo que esperava? Então ainda não o lançámos — esta página acompanha o produto, não a ambição. O roadmap fica connosco até ser real.",
+    },
+    journey: {
+      metaTitle: "Experimente o percurso — {brand}",
+      metaDescription:
+        "Um passeio de cinco minutos pelo ecossistema Henry Onyx ao vivo — sem conta para começar, sem sandbox, o produto real em cada passo.",
+      eyebrow: "Experimente",
+      title: "Percorra o ecossistema em cinco minutos",
+      lede:
+        "Isto não é um ambiente de demonstração. Cada passo abaixo abre o produto ao vivo, no seu idioma, com preços na sua moeda. Comece sem nada — sem conta, sem email.",
+      noAccountNote: "Não precisa de conta para começar. Só lhe pediremos que se identifique quando fizer algo que exija identidade — essa é a regra em toda a Henry Onyx.",
+      steps: [
+        {
+          title: "Explore sem iniciar sessão",
+          body: "Abra o Fabric Care e explore prestadores verificados. Tudo é legível sem se identificar — valor antes da identificação.",
+          linkLabel: "Abrir o Fabric Care",
+          division: "care",
+        },
+        {
+          title: "Veja um preço real",
+          body: "Abra qualquer serviço. O preço é mostrado antes de se comprometer, na sua moeda, com qualquer taxa de plataforma discriminada e nomeada.",
+          linkLabel: "Explorar serviços",
+          division: "care",
+        },
+        {
+          title: "Atravesse para outra divisão",
+          body: "Mesma conta, mesma carteira, outra economia: compre a vendedores verificados no marketplace.",
+          linkLabel: "Abrir o marketplace",
+          division: "marketplace",
+        },
+        {
+          title: "Consulte o painel de vagas",
+          body: "Explore vagas ativas. Quando se candidata, a conversa com o empregador é real e permanece visível.",
+          linkLabel: "Explorar vagas",
+          division: "jobs",
+        },
+        {
+          title: "Pré-visualize um curso gratuitamente",
+          body: "Abra um curso no Learn. A pré-visualização é gratuita — só paga quando decidir inscrever-se.",
+          linkLabel: "Abrir o Learn",
+          division: "learn",
+        },
+        {
+          title: "Crie a sua conta única",
+          body: "Quando estiver pronto, um único registo funciona em todo o lado — os seus itens guardados, mensagens e carteira acompanham-no em todas as divisões.",
+          linkLabel: "Criar a sua conta",
+          division: "account",
+        },
+      ],
+      closing:
+        "Este é o ecossistema. Se algum passo lhe pareceu mais lento, menos honesto ou menos acabado do que esta página prometeu, diga-nos — a página e o produto devem ser a mesma coisa.",
+    },
+  },
 };
 const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -923,6 +1979,254 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     changedMind: "هل غيّرت رأيك؟",
     ctaSubscribeAgain: "الاشتراك مجدداً",
     ctaManagePrefs: "إدارة كل التفضيلات",
+  },
+  v3: {
+    story: {
+      metaTitle: "المنظومة — {brand}",
+      metaDescription:
+        "حساب واحد، ومحفظة واحدة، وعمود محادثات واحد — عبر العناية والسوق والوظائف والتعلّم والخدمات اللوجستية والاستوديو والعقارات. كل ادعاء في هذه الصفحة يفتح المنتج الحي.",
+      eyebrow: "المنظومة",
+      title: "حساب واحد. محفظة واحدة. سبعة أقسام تعمل فعليًا.",
+      lede:
+        "Henry Onyx اقتصاد واحد مترابط: احجز خدمات العناية، وتسوّق من بائعين موثّقين، واحصل على وظيفة، وتعلّم مهارة، وأرسل طردًا، وكلّف بعمل إبداعي، واعثر على منزل — بهوية واحدة، ومحفظة واحدة، وعمود محادثات واحد. لا شيء في هذه الصفحة نموذج تجريبي؛ كل رابط يفتح المنتج الحقيقي.",
+      primaryCta: "تصفّح المنظومة",
+      earnLink: "كيف نكسب — بلغة واضحة",
+      tryLink: "جرّب الرحلة",
+      shippedLink: "ما هو متاح الآن",
+      divisionsTitle: "الأقسام",
+      divisionsLede: "كل قسم منتج متكامل. كل صف يفتح الواجهة الحية — وهذا هو الدليل.",
+      seeLive: "شاهده مباشرة",
+      divisionBodies: {
+        care: "عناية بالمنزل والأقمشة، تُحجز مع مزوّدين موثّقين وبأسعار صادقة.",
+        marketplace: "تسوّق من بائعين موثّقين، مع تتبّع كل طلب حتى باب منزلك.",
+        jobs: "قدّم، وأجرِ المقابلات، واحصل على الوظيفة — بمحادثات حقيقية، لا صمت بلا ردّ.",
+        learn: "دورات بمعاينات مجانية، وأسعار عادلة، وشهادات ذات قيمة حقيقية.",
+        logistics: "شحنات بأسعار معلنة مسبقًا وتتبّع من البداية إلى النهاية.",
+        studio: "كلّف بأعمال إبداعية ضمن مساحة عمل مشتركة مع العميل.",
+        property: "اعثر على العقارات واستفسر عنها عبر قوائم موثّقة.",
+      },
+      roadmapNote:
+        "التالي في خارطة الطريق: ساحة الألعاب. ستظهر هنا حين تصبح حقيقية — لا قبل ذلك.",
+      spineTitle: "العمود المشترك بينها",
+      spineLede: "الأجزاء التي تلمسها في كل مكان، أيًّا كان القسم الذي تستخدمه.",
+      spine: [
+        {
+          title: "هوية واحدة",
+          body: "حساب واحد يسجّل الدخول إلى كل الأقسام. عناصرك المحفوظة ورسائلك وسجلّك ترافقك أينما ذهبت.",
+        },
+        {
+          title: "مال صادق",
+          body: "دفتر قيد مزدوج خلف كل عملية دفع، وضرائب مفصّلة بندًا بندًا، وإيصالات تذكر اسم الكيان القانوني. لا رسوم خفية — سطر الرسوم ميزة، لا اعتراف.",
+        },
+        {
+          title: "عمود محادثات واحد",
+          body: "من المشتري إلى البائع، ومن المرشّح إلى صاحب العمل، ومن العميل إلى الفريق — محرّك المراسلة نفسه بقواعد الأمان نفسها في كل مكان.",
+        },
+        {
+          title: "لغتك أنت",
+          body: "اثنتا عشرة لغة، ومنتج واحد. الأسعار بعملتك أنت، لا بعملتنا.",
+        },
+      ],
+      honestyNote:
+        "إذا وجدت في هذه الصفحة شيئًا لا يطابق المنتج، فذلك خلل — أخبرنا وسنصلح الصفحة أو المنتج، أيّهما كان على خطأ.",
+    },
+    earn: {
+      metaTitle: "كيف نكسب — {brand}",
+      metaDescription:
+        "كل آلية إيرادات لدى Henry Onyx، بلغة واضحة: ما الذي نتقاضاه، وما الذي تحصل عليه في المقابل، والاختبارات الثلاثة التي يجب أن يجتازها كل رسم.",
+      eyebrow: "خريطة الكسب",
+      title: "كيف يكسب Henry Onyx",
+      lede:
+        "معظم المنصات تخفي هذه الصفحة. ونرى أن ذلك وحده مؤشّر. إليك كل طريقة نكسب بها المال، وما تحصل عليه في المقابل، والاختبارات التي يجب أن يجتازها أي رسم قبل أن يوجد أصلًا.",
+      testsTitle: "الاختبارات الثلاثة",
+      tests: [
+        {
+          title: "تعرف ما الذي تدفع مقابله",
+          body: "لا رسوم خفية ولا مبالغ مفاجئة. إذا انطبق رسم ما، فهو بند مسمّى بوضوح قبل أن تلتزم.",
+        },
+        {
+          title: "تحصل على أكثر مما تدفع",
+          body: "كل مبلغ نتقاضاه يقابل شيئًا له قيمة عندك — ويمكننا تسميته في جملة واحدة.",
+        },
+        {
+          title: "نرضى بنشر السعر",
+          body: "إذا كنا سنشعر بالحرج من رؤية سعرٍ ما في لقطة شاشة على وسائل التواصل، فذلك السعر خاطئ.",
+        },
+      ],
+      rowsTitle: "قسمًا بعد قسم",
+      rowsLede:
+        "آليات، لا بنود بخط صغير. وحيث لا يزال قسم ما في مراحله الأولى، نقول ذلك صراحة — لا يُفعَّل أي رسم قبل أن يظهر صفّه هنا.",
+      liveTag: "يعمل اليوم",
+      earlyTag: "يُنشر قبل تفعيله",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "عمولة على الطلبات المكتملة، ومواضع ترويجية تحمل دائمًا وسم الترويج.",
+          exchange: "بائعون موثّقون، وحماية للمدفوعات، وتتبّع للطلبات، وعملية نزاعات حقيقية.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "رسم منصة على الحجوزات المكتملة، مفصّل عند الدفع.",
+          exchange: "مزوّدون خضعوا للتدقيق، وأسعار صادقة، وإعادة حجز بلمسة واحدة، ودعم يجيب فعلًا.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "حصة من الإيرادات مع المدرّبين على الدورات المدفوعة.",
+          exchange: "معاينات مجانية قبل أن تدفع، وأسعار عادلة، وشهادات قابلة للمشاركة.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "رسم مشروع على الأعمال الإبداعية المكلَّف بها.",
+          exchange: "مساحة عمل مشتركة، ووضوح في مراحل الإنجاز، ودفعة تُحتجز حتى التسليم.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "أدوات وإعلانات لأصحاب العمل. المرشّحون لا يدفعون أبدًا مقابل التقديم.",
+          exchange: "محادثات حقيقية مع أصحاب العمل، وحالة طلب يمكنك متابعتها، وجدولة للمقابلات.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "هامش على كل شحنة، معلن مسبقًا — السعر الذي تراه هو السعر الذي تدفعه.",
+          exchange: "عروض أسعار مسبقة، وشفافية في شركات النقل، وتتبّع من البداية إلى النهاية.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "أدوات إدراج وإدارة للمالكين والمديرين.",
+          exchange: "قوائم موثّقة وسجل استفسارات موثّق.",
+          live: false,
+        },
+      ],
+      feeTitle: "رسم المنصة، بالاسم",
+      feeBody:
+        "حيث ينطبق رسم المنصة، يظهر بندًا مستقلًا عند الدفع — ولا يُدفن أبدًا في الإجمالي. وهو يموّل ما يجعل المنظومة جديرة بالثقة: التوثيق، وحلّ النزاعات، ودعمًا متاحًا على مدار الساعة طوال الأسبوع. والشرح نفسه يظهر في تلميح الرسوم عند كل عملية دفع، لأنه لا ينبغي أن تحتاج إلى هذه الصفحة لتجده.",
+      closingTitle: "هل رأيت ما يخفق في الاختبارات؟",
+      closingBody:
+        "إذا أخفق أي رسم لدى Henry Onyx في أيّ من الاختبارات الثلاثة، فتصميمه خاطئ — أخبرنا وسنصلحه. هذه الصفحة تتغيّر قبل الأسعار، لا بعدها.",
+    },
+    shipped: {
+      metaTitle: "ما هو متاح الآن — {brand}",
+      metaDescription:
+        "جرد القدرات: ما تقدمه كل شعبة من شعب Henry Onyx اليوم، مع رابط مباشر لكل ادعاء. لا خارطة طريق تتنكر في هيئة منتج.",
+      eyebrow: "الجرد",
+      title: "ما هو متاح الآن، شعبة بشعبة",
+      lede:
+        "قائمة دقيقة بما تقدمه كل شعبة اليوم. كل قسم يرتبط بالواجهة الحية — إن كان على هذه الصفحة، فيمكنك استخدامه الآن. لا خارطة طريق تتنكر في هيئة منتج.",
+      seeLive: "شاهده مباشرة",
+      divisions: {
+        care: {
+          summary: "العناية بالمنزل والأقمشة مع مزودين موثقين.",
+          items: [
+            "تصفح الخدمات واحجز مع مزودين موثقين",
+            "أسعار صادقة تظهر قبل أن تلتزم",
+            "تتبع حجوزاتك وأعد الحجز في خطوة واحدة",
+          ],
+        },
+        marketplace: {
+          summary: "بائعون موثقون، وطلبات متتبعة.",
+          items: [
+            "تسوق من بائعين موثقين عبر صفحات منتجات واضحة",
+            "سلة ودفع وتتبع للطلب حتى باب منزلك",
+            "مراسلة بين المشتري والبائع بقواعد أمان مدمجة",
+          ],
+        },
+        jobs: {
+          summary: "طلبات توظيف تلقى ردا.",
+          items: [
+            "تصفح الوظائف وتقدم بملف شخصي محفوظ",
+            "محادثات مباشرة بين المرشح وصاحب العمل",
+            "حالة طلب يمكنك رؤيتها فعلا",
+          ],
+        },
+        learn: {
+          summary: "دورات بأسعار عادلة.",
+          items: [
+            "معاينات مجانية قبل أي دفع",
+            "سجل وتعلم وتابع تقدمك",
+            "شهادات يمكنك مشاركتها",
+          ],
+        },
+        logistics: {
+          summary: "عروض أسعار مسبقة، وتتبع طوال الرحلة.",
+          items: [
+            "احصل على عرض سعر للشحنة قبل أن تلتزم",
+            "احجز وتتبع التوصيل من البداية إلى النهاية",
+          ],
+        },
+        studio: {
+          summary: "أعمال إبداعية في مساحة عمل مشتركة.",
+          items: [
+            "اطلب عملا إبداعيا بموجز واضح",
+            "مساحة عمل للعميل بمراحل إنجاز ومراسلة",
+            "دفع بالبطاقة والمحفظة وفق شروط التسليم",
+          ],
+        },
+        property: {
+          summary: "قوائم عقارية موثقة، واستفسارات موثقة.",
+          items: [
+            "تصفح القوائم العقارية",
+            "احفظ القوائم وأرسل استفسارات موثقة",
+          ],
+        },
+      },
+      note:
+        "تفتقد شيئا كنت تتوقعه؟ إذن لم نطلقه بعد — هذه الصفحة تتتبع المنتج، لا الطموح. خارطة الطريق تبقى عندنا حتى تصبح واقعا.",
+    },
+    journey: {
+      metaTitle: "جرب الرحلة — {brand}",
+      metaDescription:
+        "جولة من خمس دقائق في منظومة Henry Onyx الحية — لا حاجة لحساب للبدء، ولا بيئة تجريبية؛ المنتج الحقيقي في كل خطوة.",
+      eyebrow: "جربها",
+      title: "اقطع المنظومة في خمس دقائق",
+      lede:
+        "هذه ليست بيئة عرض تجريبي. كل خطوة أدناه تفتح المنتج الحي، بلغتك، وبأسعار بعملتك. ابدأ بلا شيء — لا حساب ولا بريد إلكتروني.",
+      noAccountNote: "لا حاجة لحساب للبدء. لن يطلب منك التعريف بنفسك إلا حين تقوم بأمر يتطلب هوية — هذه هي القاعدة في كل مكان على Henry Onyx.",
+      steps: [
+        {
+          title: "تصفح دون تسجيل دخول",
+          body: "افتح خدمة العناية بالأقمشة وتصفح المزودين الموثقين. كل شيء متاح للقراءة دون هوية — القيمة قبل التعريف.",
+          linkLabel: "افتح خدمة العناية بالأقمشة",
+          division: "care",
+        },
+        {
+          title: "شاهد سعرا حقيقيا",
+          body: "افتح أي خدمة. السعر يظهر قبل أن تلتزم، بعملتك، مع أي رسوم منصة مفصلة ومسماة.",
+          linkLabel: "تصفح الخدمات",
+          division: "care",
+        },
+        {
+          title: "انتقل بين الشعب",
+          body: "الحساب نفسه، والمحفظة نفسها، واقتصاد مختلف: تسوق من بائعين موثقين في المتجر.",
+          linkLabel: "افتح المتجر",
+          division: "marketplace",
+        },
+        {
+          title: "اطلع على لوحة الوظائف",
+          body: "تصفح وظائف متاحة الآن. حين تتقدم، تكون المحادثة مع صاحب العمل حقيقية وتبقى ظاهرة.",
+          linkLabel: "تصفح الوظائف",
+          division: "jobs",
+        },
+        {
+          title: "عاين دورة مجانا",
+          body: "افتح دورة على منصة التعلم. المعاينة مجانية — لا تدفع إلا حين تختار التسجيل.",
+          linkLabel: "افتح منصة التعلم",
+          division: "learn",
+        },
+        {
+          title: "أنشئ حسابك الواحد",
+          body: "حين تكون جاهزا، تسجيل واحد يعمل في كل مكان — عناصرك المحفوظة ورسائلك ومحفظتك ترافقك عبر كل الشعب.",
+          linkLabel: "أنشئ حسابك",
+          division: "account",
+        },
+      ],
+      closing:
+        "هذه هي المنظومة. إن بدت أي خطوة أبطأ أو أقل صدقا أو أقل اكتمالا مما وعدت به هذه الصفحة، فأخبرنا — يفترض أن تكون الصفحة والمنتج شيئا واحدا.",
+    },
   },
 };
 const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
@@ -1067,6 +2371,254 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     ctaSubscribeAgain: "Erneut abonnieren",
     ctaManagePrefs: "Alle Einstellungen verwalten",
   },
+  v3: {
+    story: {
+      metaTitle: "Das Ökosystem — {brand}",
+      metaDescription:
+        "Ein Konto, ein Wallet, ein gemeinsamer Gesprächsfaden — über Care, Marketplace, Jobs, Learn, Logistics, Studio und Property hinweg. Jede Aussage auf dieser Seite öffnet das echte Produkt.",
+      eyebrow: "Das Ökosystem",
+      title: "Ein Konto. Ein Wallet. Sieben Divisionen im Live-Betrieb.",
+      lede:
+        "Henry Onyx ist eine zusammenhängende Ökonomie: Pflege buchen, bei geprüften Verkäufern einkaufen, eingestellt werden, eine Fähigkeit erlernen, ein Paket versenden, Kreativarbeit beauftragen, ein Zuhause finden — mit einer Identität, einem Wallet, einem gemeinsamen Gesprächsfaden. Nichts auf dieser Seite ist ein Mockup; jeder Link öffnet das echte Produkt.",
+      primaryCta: "Das Ökosystem entdecken",
+      earnLink: "Wie wir verdienen — in klaren Worten",
+      tryLink: "Den Rundgang ausprobieren",
+      shippedLink: "Was heute live ist",
+      divisionsTitle: "Die Divisionen",
+      divisionsLede: "Jede ist ein vollwertiges Produkt. Jede Zeile öffnet die Live-Oberfläche — das ist der Beweis.",
+      seeLive: "Live ansehen",
+      divisionBodies: {
+        care: "Haushalts- und Textilpflege, gebucht bei geprüften Anbietern zu ehrlichen Preisen.",
+        marketplace: "Einkaufen bei geprüften Verkäufern — jede Bestellung wird bis zu Ihrer Tür verfolgt.",
+        jobs: "Bewerben, Gespräche führen, eingestellt werden — mit echten Antworten statt Funkstille.",
+        learn: "Kurse mit kostenlosen Vorschauen, fairen Preisen und Zertifikaten, die etwas bedeuten.",
+        logistics: "Sendungen mit Preisangabe im Voraus und lückenloser Verfolgung.",
+        studio: "Kreativarbeit beauftragen — mit einem gemeinsamen Arbeitsbereich für Kunden.",
+        property: "Immobilien finden und anfragen, mit geprüften Inseraten.",
+      },
+      roadmapNote:
+        "Als Nächstes auf der Roadmap: die Gaming Arena. Sie erscheint hier, sobald sie real ist — nicht vorher.",
+      spineTitle: "Das gemeinsame Rückgrat",
+      spineLede: "Die Teile, die Sie überall spüren — ganz gleich, welche Division Sie nutzen.",
+      spine: [
+        {
+          title: "Eine Identität",
+          body: "Ein Konto meldet Sie in jeder Division an. Ihre gespeicherten Artikel, Nachrichten und Ihr Verlauf begleiten Sie.",
+        },
+        {
+          title: "Ehrliches Geld",
+          body: "Hinter jeder Zahlung steht eine doppelte Buchführung, Steuern werden einzeln ausgewiesen, Belege nennen die juristische Person. Keine versteckten Gebühren — die Gebührenzeile ist ein Merkmal, kein Geständnis.",
+        },
+        {
+          title: "Ein gemeinsamer Gesprächsfaden",
+          body: "Käufer zu Verkäufer, Bewerber zu Arbeitgeber, Kunde zu Team — überall dieselbe Messaging-Engine mit denselben Schutzregeln.",
+        },
+        {
+          title: "Ihre Sprache",
+          body: "Zwölf Sprachversionen, ein Produkt. Preise in Ihrer Währung, nicht in unserer.",
+        },
+      ],
+      honestyNote:
+        "Sollte etwas auf dieser Seite jemals nicht mit dem Produkt übereinstimmen, ist das ein Fehler — sagen Sie es uns, und wir korrigieren die Seite oder das Produkt, je nachdem, was falsch ist.",
+    },
+    earn: {
+      metaTitle: "Wie wir verdienen — {brand}",
+      metaDescription:
+        "Jeder Umsatzmechanismus bei Henry Onyx, in klaren Worten: was wir berechnen, was Sie dafür bekommen und die drei Prüfungen, die jede Gebühr bestehen muss.",
+      eyebrow: "Die Verdienstkarte",
+      title: "Wie Henry Onyx verdient",
+      lede:
+        "Die meisten Plattformen verstecken diese Seite. Wir halten genau das für das verräterische Zeichen. Hier steht jede Art, wie wir Geld verdienen, was Sie dafür bekommen und welche Prüfungen eine Gebühr bestehen muss, bevor es sie gibt.",
+      testsTitle: "Die drei Prüfungen",
+      tests: [
+        {
+          title: "Sie wissen, wofür Sie zahlen",
+          body: "Keine versteckten Gebühren, keine Überraschungen. Wenn eine Gebühr anfällt, steht sie als benannter Posten da, bevor Sie sich festlegen.",
+        },
+        {
+          title: "Sie bekommen mehr, als es kostet",
+          body: "Jede Berechnung entspricht etwas, das für Sie von Wert ist — und wir können es in einem Satz benennen.",
+        },
+        {
+          title: "Wir würden den Satz veröffentlichen",
+          body: "Wenn uns ein Gebührensatz auf einem Screenshot in den sozialen Medien unangenehm wäre, ist der Satz falsch.",
+        },
+      ],
+      rowsTitle: "Division für Division",
+      rowsLede:
+        "Mechanismen, kein Kleingedrucktes. Wo eine Division noch am Anfang steht, sagen wir das — keine Gebühr wird aktiv, bevor ihre Zeile hier erscheint.",
+      liveTag: "Heute aktiv",
+      earlyTag: "Veröffentlicht, bevor sie aktiv wird",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "Eine Provision auf abgeschlossene Bestellungen sowie beworbene Platzierungen, die stets als Anzeige gekennzeichnet sind.",
+          exchange: "Geprüfte Verkäufer, Zahlungsschutz, Sendungsverfolgung und ein echtes Streitbeilegungsverfahren.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "Eine Plattformgebühr auf abgeschlossene Buchungen, einzeln ausgewiesen an der Kasse.",
+          exchange: "Geprüfte Anbieter, ehrliche Preise, erneutes Buchen mit einem Tippen und ein Support, der antwortet.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "Eine Umsatzbeteiligung mit Kursleitern bei bezahlten Kursen.",
+          exchange: "Kostenlose Vorschauen vor dem Kauf, faire Preise und teilbare Zertifikate.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "Eine Projektgebühr auf beauftragte Kreativarbeit.",
+          exchange: "Ein gemeinsamer Arbeitsbereich, klare Meilensteine und Zahlung, die bis zur Lieferung verwahrt wird.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "Werkzeuge und Stellenanzeigen auf Arbeitgeberseite. Bewerber zahlen nie für eine Bewerbung.",
+          exchange: "Echte Gespräche mit Arbeitgebern, ein einsehbarer Bewerbungsstatus und Terminplanung für Gespräche.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "Eine Marge auf jede Sendung, im Voraus angegeben — der Preis, den Sie sehen, ist der Preis.",
+          exchange: "Preisangaben im Voraus, Transparenz über den Zusteller und lückenlose Verfolgung.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "Inserats- und Verwaltungswerkzeuge für Eigentümer und Verwalter.",
+          exchange: "Geprüfte Inserate und ein dokumentierter Anfrageverlauf.",
+          live: false,
+        },
+      ],
+      feeTitle: "Die Plattformgebühr, beim Namen genannt",
+      feeBody:
+        "Wo eine Plattformgebühr anfällt, erscheint sie an der Kasse als eigene Zeile — nie in der Gesamtsumme verborgen. Sie finanziert das, was das Ökosystem vertrauenswürdig macht: Verifizierung, Streitbeilegung und Support rund um die Uhr. Dieselbe Erklärung steht im Gebühren-Tooltip an jeder Kasse, denn Sie sollten diese Seite nicht brauchen, um sie zu finden.",
+      closingTitle: "Etwas gesehen, das die Prüfungen nicht besteht?",
+      closingBody:
+        "Wenn eine Gebühr bei Henry Onyx auch nur eine der drei Prüfungen nicht besteht, ist sie falsch gestaltet — sagen Sie es uns, und wir korrigieren sie. Diese Seite ändert sich, bevor sich Preise ändern, nicht danach.",
+    },
+    shipped: {
+      metaTitle: "Was live ist — {brand}",
+      metaDescription:
+        "Das Fähigkeitsinventar: was jede Henry Onyx Division heute leistet, mit einem Live-Link für jede Aussage. Keine Roadmap, die als Produkt verkleidet ist.",
+      eyebrow: "Das Inventar",
+      title: "Was live ist, Division für Division",
+      lede:
+        "Eine knappe Liste dessen, was jede Division heute leistet. Jeder Block verlinkt auf die Live-Oberfläche — was auf dieser Seite steht, können Sie sofort nutzen. Keine Roadmap, die als Produkt verkleidet ist.",
+      seeLive: "Live ansehen",
+      divisions: {
+        care: {
+          summary: "Haus- und Textilpflege mit verifizierten Anbietern.",
+          items: [
+            "Leistungen durchsehen und bei verifizierten Anbietern buchen",
+            "Ehrliche Preise, sichtbar bevor Sie sich festlegen",
+            "Buchungen verfolgen und in einem Schritt erneut buchen",
+          ],
+        },
+        marketplace: {
+          summary: "Verifizierte Verkäufer, nachverfolgte Bestellungen.",
+          items: [
+            "Bei verifizierten Verkäufern mit klaren Produktseiten einkaufen",
+            "Warenkorb, Kasse und Sendungsverfolgung bis zur Haustür",
+            "Käufer-Verkäufer-Nachrichten mit eingebauten Sicherheitsregeln",
+          ],
+        },
+        jobs: {
+          summary: "Bewerbungen, die antworten.",
+          items: [
+            "Stellen durchsehen und mit hinterlegtem Profil bewerben",
+            "Gespräche zwischen Kandidaten und Arbeitgebern in Echtzeit",
+            "Bewerbungsstatus, den Sie tatsächlich sehen können",
+          ],
+        },
+        learn: {
+          summary: "Kurse mit fairen Preisen.",
+          items: [
+            "Kostenlose Vorschauen vor jeder Zahlung",
+            "Einschreiben, lernen und Fortschritt verfolgen",
+            "Zertifikate, die Sie teilen können",
+          ],
+        },
+        logistics: {
+          summary: "Preise vorab, Verfolgung durchgehend.",
+          items: [
+            "Ein Versandangebot erhalten, bevor Sie sich festlegen",
+            "Lieferungen buchen und lückenlos verfolgen",
+          ],
+        },
+        studio: {
+          summary: "Kreativarbeit mit einem gemeinsamen Arbeitsbereich.",
+          items: [
+            "Kreativarbeit mit einem klaren Briefing anfragen",
+            "Ein Kunden-Arbeitsbereich mit Meilensteinen und Nachrichten",
+            "Karten- und Wallet-Zahlung zu Lieferbedingungen",
+          ],
+        },
+        property: {
+          summary: "Verifizierte Inserate, dokumentierte Anfragen.",
+          items: [
+            "Immobilieninserate durchsehen",
+            "Inserate speichern und dokumentierte Anfragen senden",
+          ],
+        },
+      },
+      note:
+        "Fehlt etwas, das Sie erwartet haben? Dann haben wir es noch nicht ausgeliefert — diese Seite bildet das Produkt ab, nicht die Ambition. Die Roadmap bleibt bei uns, bis sie Wirklichkeit ist.",
+    },
+    journey: {
+      metaTitle: "Den Weg ausprobieren — {brand}",
+      metaDescription:
+        "Ein fünfminütiger Gang durch das live Henry Onyx Ökosystem — kein Konto nötig, um zu beginnen, keine Sandbox, an jedem Schritt das echte Produkt.",
+      eyebrow: "Ausprobieren",
+      title: "Das Ökosystem in fünf Minuten durchlaufen",
+      lede:
+        "Dies ist keine Demo-Umgebung. Jeder Schritt unten öffnet das Live-Produkt, in Ihrer Sprache, mit Preisen in Ihrer Währung. Beginnen Sie mit nichts — kein Konto, keine E-Mail.",
+      noAccountNote: "Kein Konto nötig, um zu beginnen. Sie werden erst dann gebeten, sich zu identifizieren, wenn Sie etwas tun, das Identität erfordert — das ist die Regel überall bei Henry Onyx.",
+      steps: [
+        {
+          title: "Ohne Anmeldung stöbern",
+          body: "Öffnen Sie Fabric Care und sehen Sie sich verifizierte Anbieter an. Alles ist ohne Anmeldung lesbar — Wert vor Identifikation.",
+          linkLabel: "Fabric Care öffnen",
+          division: "care",
+        },
+        {
+          title: "Einen echten Preis sehen",
+          body: "Öffnen Sie eine beliebige Leistung. Der Preis wird angezeigt, bevor Sie sich festlegen — in Ihrer Währung, mit jeder Plattformgebühr einzeln ausgewiesen und benannt.",
+          linkLabel: "Leistungen durchsehen",
+          division: "care",
+        },
+        {
+          title: "Eine Division wechseln",
+          body: "Gleiches Konto, gleiches Wallet, andere Ökonomie: Kaufen Sie auf dem Marktplatz bei verifizierten Verkäufern ein.",
+          linkLabel: "Den Marktplatz öffnen",
+          division: "marketplace",
+        },
+        {
+          title: "Die Jobbörse ansehen",
+          body: "Sehen Sie sich aktuelle Stellen an. Wenn Sie sich bewerben, ist das Gespräch mit dem Arbeitgeber echt und bleibt sichtbar.",
+          linkLabel: "Stellen durchsehen",
+          division: "jobs",
+        },
+        {
+          title: "Einen Kurs kostenlos vorab ansehen",
+          body: "Öffnen Sie einen Kurs auf Learn. Die Vorschau ist kostenlos — Sie zahlen erst, wenn Sie sich für die Einschreibung entscheiden.",
+          linkLabel: "Learn öffnen",
+          division: "learn",
+        },
+        {
+          title: "Ihr eines Konto erstellen",
+          body: "Wenn Sie so weit sind, gilt eine Anmeldung überall — Ihre gespeicherten Artikel, Nachrichten und Ihr Wallet begleiten Sie durch jede Division.",
+          linkLabel: "Konto erstellen",
+          division: "account",
+        },
+      ],
+      closing:
+        "Das ist das Ökosystem. Wenn sich ein Schritt langsamer, weniger ehrlich oder weniger fertig angefühlt hat, als diese Seite versprochen hat, sagen Sie es uns — die Seite und das Produkt sollen dasselbe sein.",
+    },
+  },
 };
 const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1210,6 +2762,254 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     ctaSubscribeAgain: "Iscriviti di nuovo",
     ctaManagePrefs: "Gestisci tutte le preferenze",
   },
+  v3: {
+    story: {
+      metaTitle: "L'ecosistema — {brand}",
+      metaDescription:
+        "Un account, un portafoglio, un'unica spina dorsale per le conversazioni — tra care, marketplace, jobs, learn, logistics, studio e property. Ogni affermazione di questa pagina apre il prodotto reale.",
+      eyebrow: "L'ecosistema",
+      title: "Un account. Un portafoglio. Sette divisioni attive.",
+      lede:
+        "Henry Onyx è un'unica economia connessa: prenota servizi di cura, acquista da venditori verificati, trova lavoro, impara una competenza, spedisci un pacco, commissiona lavori creativi, trova casa — con una sola identità, un solo portafoglio, un'unica spina dorsale per le conversazioni. Niente in questa pagina è un mockup; ogni link apre il prodotto vero.",
+      primaryCta: "Esplora l'ecosistema",
+      earnLink: "Come guadagniamo — in parole semplici",
+      tryLink: "Prova il percorso",
+      shippedLink: "Cosa è attivo",
+      divisionsTitle: "Le divisioni",
+      divisionsLede: "Ognuna è un prodotto completo. Ogni riga apre la superficie reale — questa è la prova.",
+      seeLive: "Vedilo dal vivo",
+      divisionBodies: {
+        care: "Cura della casa e dei tessuti, prenotata con fornitori verificati e prezzi onesti.",
+        marketplace: "Acquista da venditori verificati, con ogni ordine tracciato fino alla tua porta.",
+        jobs: "Candidati, sostieni il colloquio e fatti assumere — con conversazioni reali, non silenzi.",
+        learn: "Corsi con anteprime gratuite, prezzi equi e certificati che valgono davvero.",
+        logistics: "Spedizioni con preventivo anticipato e tracciamento da un capo all'altro.",
+        studio: "Commissiona lavori creativi in uno spazio di lavoro condiviso con il cliente.",
+        property: "Trova immobili e invia richieste su annunci verificati.",
+      },
+      roadmapNote:
+        "Il prossimo passo della roadmap: la Gaming Arena. Comparirà qui quando sarà reale — non prima.",
+      spineTitle: "La spina dorsale che condividono",
+      spineLede: "Le parti che senti ovunque, qualunque divisione tu usi.",
+      spine: [
+        {
+          title: "Un'unica identità",
+          body: "Un solo account accede a ogni divisione. Gli elementi salvati, i messaggi e la cronologia ti seguono ovunque.",
+        },
+        {
+          title: "Denaro onesto",
+          body: "Un registro in partita doppia dietro ogni pagamento, imposte dettagliate, ricevute che indicano l'entità legale. Nessun costo nascosto — la voce della commissione è una caratteristica, non una confessione.",
+        },
+        {
+          title: "Un'unica spina dorsale per le conversazioni",
+          body: "Dall'acquirente al venditore, dal candidato al datore di lavoro, dal cliente al team — lo stesso motore di messaggistica con le stesse regole di sicurezza ovunque.",
+        },
+        {
+          title: "La tua lingua",
+          body: "Dodici lingue, un solo prodotto. Prezzi nella tua valuta, non nella nostra.",
+        },
+      ],
+      honestyNote:
+        "Se qualcosa in questa pagina non corrisponde al prodotto, è un bug — segnalacelo e correggeremo la pagina o il prodotto, a seconda di dove sta l'errore.",
+    },
+    earn: {
+      metaTitle: "Come guadagniamo — {brand}",
+      metaDescription:
+        "Ogni meccanismo di ricavo di Henry Onyx, in parole semplici: cosa addebitiamo, cosa ricevi in cambio e le tre prove che ogni commissione deve superare.",
+      eyebrow: "La mappa dei ricavi",
+      title: "Come guadagna Henry Onyx",
+      lede:
+        "La maggior parte delle piattaforme nasconde questa pagina. Per noi è proprio questo il segnale. Ecco ogni modo in cui guadagniamo, cosa ricevi in cambio e le prove che una commissione deve superare prima di esistere.",
+      testsTitle: "Le tre prove",
+      tests: [
+        {
+          title: "Sai per cosa stai pagando",
+          body: "Nessun costo nascosto, nessun addebito a sorpresa. Se si applica una commissione, è una voce con un nome, visibile prima della conferma.",
+        },
+        {
+          title: "Ricevi più di quanto costa",
+          body: "Ogni addebito corrisponde a qualcosa che ha valore per te — e sappiamo dirlo in una frase.",
+        },
+        {
+          title: "Pubblicheremmo la tariffa",
+          body: "Se ci metterebbe a disagio vedere una tariffa in uno screenshot sui social, quella tariffa è sbagliata.",
+        },
+      ],
+      rowsTitle: "Divisione per divisione",
+      rowsLede:
+        "Meccanismi, non clausole in piccolo. Dove una divisione è ancora agli inizi, lo diciamo — nessuna commissione si attiva prima che la sua riga compaia qui.",
+      liveTag: "Attivo oggi",
+      earlyTag: "Pubblicato prima dell'attivazione",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "Una commissione sugli ordini completati, e posizionamenti sponsorizzati sempre etichettati come tali.",
+          exchange: "Venditori verificati, protezione dei pagamenti, tracciamento degli ordini e un vero processo di gestione delle controversie.",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "Una commissione di piattaforma sulle prenotazioni completate, dettagliata al pagamento.",
+          exchange: "Fornitori selezionati, prezzi onesti, riprenotazione con un tocco e un'assistenza che risponde.",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "Una quota dei ricavi condivisa con i docenti sui corsi a pagamento.",
+          exchange: "Anteprime gratuite prima di pagare, prezzi equi e certificati condivisibili.",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "Una commissione di progetto sui lavori creativi commissionati.",
+          exchange: "Uno spazio di lavoro condiviso, milestone chiare e pagamento trattenuto fino alla consegna.",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "Strumenti e annunci lato datore di lavoro. I candidati non pagano mai per candidarsi.",
+          exchange: "Conversazioni reali con i datori di lavoro, stato della candidatura sempre visibile, pianificazione dei colloqui.",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "Un margine su ogni spedizione, con preventivo anticipato — il prezzo che vedi è il prezzo.",
+          exchange: "Preventivi anticipati, trasparenza sui corrieri e tracciamento da un capo all'altro.",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "Strumenti di pubblicazione e gestione per proprietari e amministratori.",
+          exchange: "Annunci verificati e una cronologia documentata delle richieste.",
+          live: false,
+        },
+      ],
+      feeTitle: "La commissione di piattaforma, per nome",
+      feeBody:
+        "Dove si applica una commissione di piattaforma, appare come voce separata al pagamento — mai nascosta nel totale. Finanzia ciò che rende l'ecosistema affidabile: verifica, risoluzione delle controversie e assistenza 24 ore su 24, 7 giorni su 7. La stessa spiegazione appare nel tooltip della commissione a ogni pagamento, perché non dovresti aver bisogno di questa pagina per trovarla.",
+      closingTitle: "Vedi qualcosa che non supera le prove?",
+      closingBody:
+        "Se una commissione su Henry Onyx non supera una delle tre prove, è progettata male — segnalacelo e la correggeremo. Questa pagina cambia prima dei prezzi, non dopo.",
+    },
+    shipped: {
+      metaTitle: "Cosa è attivo — {brand}",
+      metaDescription:
+        "L'inventario delle capacità: cosa fa oggi ogni divisione Henry Onyx, con un link al prodotto reale per ogni affermazione. Nessuna roadmap travestita da prodotto.",
+      eyebrow: "L'inventario",
+      title: "Cosa è attivo, divisione per divisione",
+      lede:
+        "Un elenco essenziale di ciò che ogni divisione fa oggi. Ogni blocco rimanda alla superficie live — se è su questa pagina, puoi usarlo subito. Nessuna roadmap travestita da prodotto.",
+      seeLive: "Vedilo dal vivo",
+      divisions: {
+        care: {
+          summary: "Cura della casa e dei tessuti con fornitori verificati.",
+          items: [
+            "Sfoglia i servizi e prenota con fornitori verificati",
+            "Prezzi onesti mostrati prima dell'impegno",
+            "Segui le prenotazioni e prenota di nuovo in un solo passaggio",
+          ],
+        },
+        marketplace: {
+          summary: "Venditori verificati, ordini tracciati.",
+          items: [
+            "Acquista da venditori verificati con schede prodotto chiare",
+            "Carrello, checkout e tracciamento dell'ordine fino alla tua porta",
+            "Messaggistica acquirente-venditore con regole di sicurezza integrate",
+          ],
+        },
+        jobs: {
+          summary: "Candidature che ricevono risposta.",
+          items: [
+            "Sfoglia le offerte e candidati con un profilo salvato",
+            "Conversazioni tra candidato e datore di lavoro in tempo reale",
+            "Stato della candidatura che puoi davvero vedere",
+          ],
+        },
+        learn: {
+          summary: "Corsi a prezzi equi.",
+          items: [
+            "Anteprime gratuite prima di qualsiasi pagamento",
+            "Iscriviti, impara e segui i tuoi progressi",
+            "Certificati che puoi condividere",
+          ],
+        },
+        logistics: {
+          summary: "Preventivi anticipati, tracciamento continuo.",
+          items: [
+            "Ottieni un preventivo di spedizione prima dell'impegno",
+            "Prenota e traccia le consegne dall'inizio alla fine",
+          ],
+        },
+        studio: {
+          summary: "Lavoro creativo con uno spazio di lavoro condiviso.",
+          items: [
+            "Richiedi lavoro creativo con un brief chiaro",
+            "Uno spazio di lavoro cliente con milestone e messaggistica",
+            "Pagamento con carta e wallet secondo i termini di consegna",
+          ],
+        },
+        property: {
+          summary: "Annunci verificati, richieste documentate.",
+          items: [
+            "Sfoglia gli annunci immobiliari",
+            "Salva gli annunci e invia richieste documentate",
+          ],
+        },
+      },
+      note:
+        "Manca qualcosa che ti aspettavi? Allora non l'abbiamo ancora rilasciato — questa pagina descrive il prodotto, non l'ambizione. La roadmap resta con noi finché non diventa reale.",
+    },
+    journey: {
+      metaTitle: "Prova il percorso — {brand}",
+      metaDescription:
+        "Una passeggiata di cinque minuti nell'ecosistema Henry Onyx dal vivo — nessun account richiesto per iniziare, nessuna sandbox, il prodotto reale a ogni passo.",
+      eyebrow: "Provalo",
+      title: "Percorri l'ecosistema in cinque minuti",
+      lede:
+        "Questo non è un ambiente demo. Ogni passo qui sotto apre il prodotto reale, nella tua lingua, con i prezzi nella tua valuta. Inizia senza nulla — niente account, niente email.",
+      noAccountNote: "Non serve un account per iniziare. Ti verrà chiesto di identificarti solo quando fai qualcosa che richiede un'identità — è la regola ovunque su Henry Onyx.",
+      steps: [
+        {
+          title: "Sfoglia senza accedere",
+          body: "Apri Fabric Care e sfoglia i fornitori verificati. Tutto è leggibile anche da sconosciuto — il valore prima dell'identificazione.",
+          linkLabel: "Apri Fabric Care",
+          division: "care",
+        },
+        {
+          title: "Vedi un prezzo reale",
+          body: "Apri un servizio qualsiasi. Il prezzo è mostrato prima dell'impegno, nella tua valuta, con ogni eventuale commissione di piattaforma dettagliata e nominata.",
+          linkLabel: "Sfoglia i servizi",
+          division: "care",
+        },
+        {
+          title: "Attraversa una divisione",
+          body: "Stesso account, stesso wallet, un'altra economia: acquista da venditori verificati sul marketplace.",
+          linkLabel: "Apri il marketplace",
+          division: "marketplace",
+        },
+        {
+          title: "Consulta la bacheca del lavoro",
+          body: "Sfoglia le posizioni aperte. Quando ti candidi, la conversazione con il datore di lavoro è reale e resta visibile.",
+          linkLabel: "Sfoglia le offerte di lavoro",
+          division: "jobs",
+        },
+        {
+          title: "Guarda l'anteprima gratuita di un corso",
+          body: "Apri un corso su Learn. L'anteprima è gratuita — paghi solo quando scegli di iscriverti.",
+          linkLabel: "Apri Learn",
+          division: "learn",
+        },
+        {
+          title: "Crea il tuo account unico",
+          body: "Quando sei pronto, una sola registrazione vale ovunque — i tuoi elementi salvati, i messaggi e il wallet ti seguono in ogni divisione.",
+          linkLabel: "Crea il tuo account",
+          division: "account",
+        },
+      ],
+      closing:
+        "Questo è l'ecosistema. Se un passo ti è sembrato più lento, meno onesto o meno rifinito di quanto questa pagina promettesse, diccelo — la pagina e il prodotto devono essere la stessa cosa.",
+    },
+  },
 };
 const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1352,6 +3152,254 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     changedMind: "改变主意了？",
     ctaSubscribeAgain: "重新订阅",
     ctaManagePrefs: "管理所有偏好",
+  },
+  v3: {
+    story: {
+      metaTitle: "生态全景 — {brand}",
+      metaDescription:
+        "一个账户、一个钱包、一条对话主线——贯通家护、集市、职聘、学院、物流、创作室与房产。本页的每一项陈述，都可直接打开对应的真实产品。",
+      eyebrow: "生态全景",
+      title: "一个账户。一个钱包。七个已上线的业务板块。",
+      lede:
+        "Henry Onyx 是一个互联互通的经济体：预约护理服务、选购认证卖家的商品、求职入职、学习技能、寄送包裹、委托创意项目、寻找住所——共用同一个身份、同一个钱包、同一条对话主线。本页没有任何示意图；每一条链接打开的都是真实产品。",
+      primaryCta: "浏览整个生态",
+      earnLink: "我们如何盈利——直白说明",
+      tryLink: "试走这段旅程",
+      shippedLink: "现已上线",
+      divisionsTitle: "业务板块",
+      divisionsLede: "每一个板块都是完整的产品。每一行都能打开线上的真实页面——这就是证明。",
+      seeLive: "查看实况",
+      divisionBodies: {
+        care: "家居与织物护理，由认证服务者提供，价格坦诚透明。",
+        marketplace: "选购认证卖家的商品，每笔订单全程跟踪，直至送达。",
+        jobs: "投递、面试、入职——有真实的对话往来，不再石沉大海。",
+        learn: "课程提供免费试看，定价公道，证书有分量。",
+        logistics: "运费提前报价，运输全程可追踪。",
+        studio: "委托创意项目，客户与团队共享同一个工作空间。",
+        property: "查找并咨询房源，所有房源均经过核验。",
+      },
+      roadmapNote:
+        "路线图上的下一站：游戏竞技场。等它真正上线，才会出现在这里——绝不提前。",
+      spineTitle: "它们共享的主干",
+      spineLede: "无论使用哪个板块，你在每一处都能感受到的底层能力。",
+      spine: [
+        {
+          title: "一个身份",
+          body: "一个账户，登录所有板块。你的收藏、消息与历史记录随你而行。",
+        },
+        {
+          title: "坦诚的账目",
+          body: "每笔付款背后都有复式记账支撑，税费逐项列示，收据注明法律实体全称。没有隐藏费用——费用明细是一项功能，而非一份认罪书。",
+        },
+        {
+          title: "一条对话主线",
+          body: "买家与卖家、求职者与雇主、客户与团队——同一套消息引擎，同一套安全规则，处处一致。",
+        },
+        {
+          title: "你的语言",
+          body: "十二种语言，同一个产品。价格以你的货币显示，而不是我们的。",
+        },
+      ],
+      honestyNote:
+        "如果本页任何内容与产品不符，那就是一个缺陷——告诉我们，我们会修正页面或修正产品，哪个错了改哪个。",
+    },
+    earn: {
+      metaTitle: "我们如何盈利 — {brand}",
+      metaDescription:
+        "Henry Onyx 的每一项收入机制，直白呈现：我们收取什么，你得到什么，以及每项费用必须通过的三条检验。",
+      eyebrow: "盈利地图",
+      title: "Henry Onyx 如何盈利",
+      lede:
+        "多数平台会把这一页藏起来。我们认为这本身就说明了问题。这里列出我们赚钱的每一种方式、你得到的对应价值，以及一项费用在设立之前必须通过的检验。",
+      testsTitle: "三条检验",
+      tests: [
+        {
+          title: "你清楚自己在为什么付费",
+          body: "没有隐藏费用，没有意外扣款。凡有费用，都会在你确认之前作为具名条目列出。",
+        },
+        {
+          title: "你得到的多于你付出的",
+          body: "每一笔收费都对应你在意的价值——而且我们能用一句话说清它是什么。",
+        },
+        {
+          title: "我们敢公开这个费率",
+          body: "如果某个费率被截图发到社交媒体会让我们不安，那这个费率本身就是错的。",
+        },
+      ],
+      rowsTitle: "逐个板块说明",
+      rowsLede:
+        "讲机制，不玩小字条款。板块尚在早期的，我们如实说明——任何费用在此处列出对应条目之前，都不会开始收取。",
+      liveTag: "已在收取",
+      earlyTag: "先公示，后启用",
+      rows: [
+        {
+          division: "marketplace",
+          mechanism: "对已完成订单收取佣金；推广位始终标注为推广。",
+          exchange: "认证卖家、付款保障、订单跟踪，以及真正有效的争议处理流程。",
+          live: true,
+        },
+        {
+          division: "care",
+          mechanism: "对已完成的预约收取平台费，在结算时逐项列示。",
+          exchange: "经过审核的服务者、坦诚的定价、一键再次预约，以及有回应的客户支持。",
+          live: true,
+        },
+        {
+          division: "learn",
+          mechanism: "对付费课程与讲师进行收入分成。",
+          exchange: "付费前免费试看、公道的价格，以及可分享的证书。",
+          live: true,
+        },
+        {
+          division: "studio",
+          mechanism: "对委托的创意项目收取项目费。",
+          exchange: "共享工作空间、清晰的里程碑，以及交付前托管的款项。",
+          live: true,
+        },
+        {
+          division: "jobs",
+          mechanism: "面向雇主的工具与职位发布服务。求职者投递永远免费。",
+          exchange: "与雇主的真实对话、可随时查看的申请进度、面试日程安排。",
+          live: true,
+        },
+        {
+          division: "logistics",
+          mechanism: "每笔运单包含利润空间，提前报价——你看到的价格就是最终价格。",
+          exchange: "预先报价、承运信息透明，以及端到端的全程跟踪。",
+          live: true,
+        },
+        {
+          division: "property",
+          mechanism: "面向业主与管理方的房源发布与管理工具。",
+          exchange: "经核验的房源，以及有据可查的咨询记录。",
+          live: false,
+        },
+      ],
+      feeTitle: "平台费，明白列出",
+      feeBody:
+        "凡收取平台费之处，它都会在结算页作为独立一行出现——绝不藏进总价。它用于支撑让这个生态值得信赖的事情：身份核验、争议处理，以及全天候客户支持。每个结算页的费用提示中都有同样的说明，因为你本不该靠这一页才能找到它。",
+      closingTitle: "发现有费用通不过检验？",
+      closingBody:
+        "如果 Henry Onyx 的任何费用未能通过这三条检验中的任何一条，那就是设计出了错——告诉我们，我们会改正。本页的更新永远先于定价变动，而不是之后。",
+    },
+    shipped: {
+      metaTitle: "当前已上线 — {brand}",
+      metaDescription:
+        "能力清单：Henry Onyx 各事业部今天能做什么，每一项承诺都附有真实可用的链接。不把路线图包装成产品。",
+      eyebrow: "能力清单",
+      title: "各事业部当前已上线的能力",
+      lede:
+        "一份精炼的清单，列出各事业部今天能做的事。每个板块都链接到真实上线的页面——只要出现在这里，你现在就能使用。不把路线图包装成产品。",
+      seeLive: "查看真实页面",
+      divisions: {
+        care: {
+          summary: "居家与织物护理，由经过认证的服务者提供。",
+          items: [
+            "浏览服务，向经过认证的服务者预约",
+            "下单前即可看到真实透明的价格",
+            "跟踪预约，一步完成再次预约",
+          ],
+        },
+        marketplace: {
+          summary: "认证卖家，全程可追踪的订单。",
+          items: [
+            "在认证卖家处购物，商品页信息清晰",
+            "购物车、结账与订单跟踪，直至送达",
+            "买卖双方消息沟通，内置安全规则",
+          ],
+        },
+        jobs: {
+          summary: "有回音的求职申请。",
+          items: [
+            "使用已存档的个人资料浏览并申请职位",
+            "候选人与雇主实时对话",
+            "申请状态真实可见",
+          ],
+        },
+        learn: {
+          summary: "价格公道的课程。",
+          items: [
+            "付费前可免费试看",
+            "报名、学习并跟踪进度",
+            "可对外分享的证书",
+          ],
+        },
+        logistics: {
+          summary: "报价先行，全程跟踪。",
+          items: [
+            "下单前先获取运费报价",
+            "预约配送并全程跟踪",
+          ],
+        },
+        studio: {
+          summary: "创意工作，配有共享工作区。",
+          items: [
+            "通过清晰的需求简报委托创意工作",
+            "带有里程碑与消息沟通的客户工作区",
+            "按交付条款以银行卡和钱包付款",
+          ],
+        },
+        property: {
+          summary: "认证房源，留痕的咨询记录。",
+          items: [
+            "浏览房源信息",
+            "收藏房源并发送有记录的咨询",
+          ],
+        },
+      },
+      note:
+        "没找到你期待的功能？那就是我们还没上线——这个页面记录的是产品，不是雄心。路线图在成真之前，只留在我们自己手里。",
+    },
+    journey: {
+      metaTitle: "亲自走一遍 — {brand}",
+      metaDescription:
+        "用五分钟走一遍真实运行中的 Henry Onyx 生态——开始无需账户，没有沙盒环境，每一步都是真实产品。",
+      eyebrow: "亲自体验",
+      title: "五分钟走遍整个生态",
+      lede:
+        "这不是演示环境。下面的每一步都会打开真实产品，使用你的语言，以你的货币显示价格。从零开始——不需要账户，也不需要邮箱。",
+      noAccountNote: "开始时无需账户。只有当你的操作确实需要身份时，才会请你表明身份——这是 Henry Onyx 全站通行的规则。",
+      steps: [
+        {
+          title: "无需登录，直接浏览",
+          body: "打开织物护理，浏览经过认证的服务者。以访客身份即可阅读全部内容——先看到价值，再谈身份。",
+          linkLabel: "打开织物护理",
+          division: "care",
+        },
+        {
+          title: "看到真实的价格",
+          body: "打开任意一项服务。价格在你下单前就已显示，以你的货币计价，平台费用逐项列明、名目清晰。",
+          linkLabel: "浏览服务",
+          division: "care",
+        },
+        {
+          title: "跨越事业部",
+          body: "同一个账户，同一个钱包，另一个经济体：在商城向认证卖家购物。",
+          linkLabel: "打开商城",
+          division: "marketplace",
+        },
+        {
+          title: "看看招聘板块",
+          body: "浏览真实在招的职位。当你申请时，与雇主的对话是真实的，并且始终可见。",
+          linkLabel: "浏览职位",
+          division: "jobs",
+        },
+        {
+          title: "免费试看课程",
+          body: "在学习平台打开一门课程。试看免费——只有当你选择报名时才需要付款。",
+          linkLabel: "打开学习平台",
+          division: "learn",
+        },
+        {
+          title: "创建你唯一的账户",
+          body: "当你准备好时，一次注册即可通行全站——你的收藏、消息和钱包会跟随你跨越每一个事业部。",
+          linkLabel: "创建账户",
+          division: "account",
+        },
+      ],
+      closing:
+        "这就是整个生态。如果任何一步让你觉得比这个页面承诺的更慢、更不坦诚或更不完整，请告诉我们——页面与产品本就应该是同一回事。",
+    },
   },
 };
 const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {

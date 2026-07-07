@@ -350,6 +350,22 @@ The minimum telemetry set for every public page:
 
 All events flow into the V3-90 data lake. All A/B experiments declare which of these events they care about in the experiment registry (V3-91). No event is added to the production schema without appearing in this table or a documented extension.
 
+**V3-96 showcase closure events** (documented extension, added with the `@henryco/interactions` build; typed in `packages/observability/src/events.ts`; format `henry.<domain>.<entity>.<verb>`):
+
+| Event | Properties | Purpose |
+|---|---|---|
+| `henry.v3.showcase.viewed` | `surface_id`, `locale`, `currency`, `commitment_tier`, `referrer_class`, `device_class` | Showcase surface baseline |
+| `henry.v3.journey.started` | `entry_surface`, `sandbox: boolean` | S1 journey entry |
+| `henry.v3.journey.step_completed` | `step_index (1–13)`, `time_ms`, `locale`, `currency` | Funnel per step |
+| `henry.v3.journey.completed` | `total_time_ms`, `locale`, `currency`, `sandbox: boolean` | End-to-end conversions |
+| `henry.v3.journey.abandoned` | `step_index`, `time_on_step_ms`, `reason_class` | Recovery candidates |
+| `henry.v3.announcement.delivered` | `channel (email/push/in_app/blog)`, `segment`, `locale` | S3 delivery audit |
+| `henry.v3.announcement.engaged` | `channel`, `time_from_send_s`, `locale` | S3 engagement |
+| `henry.v3.launch_window.metric_breach` | `metric_name`, `observed`, `threshold`, `action_taken` | Launch paging signal |
+| `henry.v3.closure_certificate.signed` | — (fires once) | V3 closure record |
+
+All nine are PII-redacted at ingest (V3-90 default); sandbox journeys carry the `v3_96_sandbox` tag so production metrics stay clean.
+
 The funnel boards that read from this set:
 - **Time-to-first-click on hero CTA** (per locale, per device) — the canonical "is this page working" health metric.
 - **Scroll depth before conversion** — where the page's argument completes.

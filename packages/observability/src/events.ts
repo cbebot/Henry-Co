@@ -311,7 +311,21 @@ export type HenryEventName =
   | "henry.ai.usage.estimated"
   | "henry.ai.usage.metered"
   | "henry.ai.usage.blocked"
-  | "henry.ai.provider.failed";
+  | "henry.ai.provider.failed"
+  // v3 showcase closure (V3-96 S6). Mirrored in the doctrine's Part VI
+  // telemetry table (docs/v3/public-pages-interaction-principles.md) —
+  // additions land in both places in the same PR. All PII-redacted at
+  // ingest; sandbox journeys carry the v3_96_sandbox tag upstream so
+  // production metrics stay clean.
+  | "henry.v3.showcase.viewed"
+  | "henry.v3.journey.started"
+  | "henry.v3.journey.step_completed"
+  | "henry.v3.journey.completed"
+  | "henry.v3.journey.abandoned"
+  | "henry.v3.announcement.delivered"
+  | "henry.v3.announcement.engaged"
+  | "henry.v3.launch_window.metric_breach"
+  | "henry.v3.closure_certificate.signed";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user
