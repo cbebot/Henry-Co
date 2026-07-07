@@ -15,9 +15,20 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
+  BoostControls,
+  ConciergeHandoff,
   CtaButton,
+  EarnWithUs,
   InteractionTelemetryProvider,
   JoyState,
+  NewsletterEarn,
+  PriceReveal,
+  PromotedLabel,
+  TrustOutcome,
+  TrustPaymentMarks,
+  TrustQuote,
+  TrustSafetyNet,
+  TrustStair,
   createConsoleSink,
 } from "@henryco/interactions";
 
@@ -144,6 +155,118 @@ export function GalleryClient() {
             >
               Remove saved provider
             </CtaButton>
+          </Section>
+
+          <Section
+            title="Engine 8 — Pricing Reveal"
+            note="Itemized named fee + explainer tooltip + FX disclosure. Integer minor units; banker's rounding."
+          >
+            <div className="w-full max-w-sm">
+              <PriceReveal
+                surfaceId="dev_gallery"
+                amountMinor={4500000}
+                currency="NGN"
+                feeRateBps={750}
+                labels={{
+                  total: "Total",
+                  fee: "Henry Onyx platform fee",
+                  feeExplainer: "Supports verification, dispute resolution, and 24/7 support.",
+                  net: "Goes to your provider",
+                  convertedFrom: "Converted from",
+                }}
+                fx={{ sourceCurrency: "USD", sourceMinor: 2920, rateLabel: "1 USD = ₦1,540.20", asOf: "2026-07-07 09:00 UTC" }}
+              />
+            </div>
+          </Section>
+
+          <Section
+            title="Engine 3 — Trust Reveal"
+            note="Stages unlock with behavior (scroll + interactions), never dumped on the hero. Scroll this page to advance browse → consider."
+          >
+            <TrustStair surfaceId="dev_gallery" stages={["browse", "consider", "commit", "pay"]} interactions={0} className="flex w-full flex-col gap-3">
+              <TrustOutcome>
+                <p className="text-sm text-zinc-600 dark:text-white/70">Stage 1 · outcome evidence — a real provider, a real number, a real city.</p>
+              </TrustOutcome>
+              <TrustQuote>
+                <p className="text-sm italic text-zinc-600 dark:text-white/70">Stage 2 · one verified quote appears here once you engage.</p>
+              </TrustQuote>
+              <TrustSafetyNet>
+                <p className="text-sm text-zinc-600 dark:text-white/70">Stage 3 · safety net (money-back terms, dispute window).</p>
+              </TrustSafetyNet>
+              <TrustPaymentMarks>
+                <p className="text-sm text-zinc-600 dark:text-white/70">Stage 4 · payment trust marks — only here.</p>
+              </TrustPaymentMarks>
+            </TrustStair>
+          </Section>
+
+          <Section
+            title="Engine 7 — Newsletter Earn"
+            note="Named value, single field, composes the CTA Engine. Only surfaces after a value moment (predicate tested)."
+          >
+            <div className="w-full">
+              <NewsletterEarn
+                surfaceId="dev_gallery"
+                labels={{
+                  valueStatement: "Weekly: the new verified providers in your city, and one short read worth your time.",
+                  placeholder: "you@example.com",
+                  submit: "Get the letter",
+                  cta: { inflight: "Subscribing…", success: "Subscribed", retry: "Try again", confirm: "Confirm", cancel: "Cancel" },
+                }}
+                onSubscribe={async () => {
+                  await wait(800);
+                }}
+              />
+            </div>
+          </Section>
+
+          <Section
+            title="Engine 6 — Earn-With-Us"
+            note="End-of-page invitation + real server-computed proof. Hidden for already-enrolled roles."
+          >
+            <div className="w-full">
+              <EarnWithUs
+                role="care_provider"
+                enrolledRoles={[]}
+                labels={{
+                  invitation: "Are you a verified caregiver?",
+                  proof: "Verified providers earned an average of ₦120,000 last month on Henry Onyx.",
+                  action: "Start earning",
+                }}
+                onboardingHref="#provider-onboarding"
+              />
+            </div>
+          </Section>
+
+          <Section
+            title="Engine 9 — Concierge Handoff"
+            note="Opt-in, never modal. Shown here via the post-success trigger; linger (45s) and bounce (3×) also tested."
+          >
+            <div className="w-full">
+              <ConciergeHandoff
+                postSuccess
+                labels={{
+                  offer: "Want a hand picking? Talk to a Henry Onyx specialist — free for the first message.",
+                  action: "Ask a specialist",
+                }}
+                onOpen={(trigger) => sink.emit({ name: "cta_clicked", props: { cta_id: `concierge_${trigger}`, surface_id: "dev_gallery" } })}
+              />
+            </div>
+          </Section>
+
+          <Section
+            title="Engine 10 — Local Boost"
+            note="Buyer side: clear Promoted label. Seller side: live projection for the bid before paying."
+          >
+            <div className="flex w-full flex-col gap-4">
+              <PromotedLabel text="Promoted by Adaeze's Fabrics" />
+              <BoostControls
+                labels={{ bidLabel: "Your boost budget", impressions: "Projected impressions", clicks: "Projected clicks" }}
+                currency="NGN"
+                locale="en-NG"
+                baseline={{ cpmMinor: 50_000, ctr: 0.02 }}
+                bidStepsMinor={[25_000, 50_000, 100_000]}
+              />
+            </div>
           </Section>
 
           <Section
