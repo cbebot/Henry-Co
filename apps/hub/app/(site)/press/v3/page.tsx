@@ -84,7 +84,7 @@ export default async function PressKitPage() {
           {markDownloads.map((mark) => (
             <Card key={mark.href}>
               <div className="grid min-h-24 place-items-center py-4">
-                <HenryCoLogo size={mark.logoVariant === "tile" ? 56 : 28} variant={mark.logoVariant} label="" />
+                <HenryCoLogo size={mark.logoVariant === "tile" ? 56 : 44} variant={mark.logoVariant} label="" />
               </div>
               <p className="home-body-sm mt-2 text-center text-[color:var(--home-ink-70)]">{mark.label}</p>
               <div className="mt-3 text-center">
