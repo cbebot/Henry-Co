@@ -59,6 +59,15 @@ export {
 } from "./engines/trust-reveal";
 export type { TrustStairProps, TrustStage, TrustPosition } from "./engines/trust-reveal";
 
+// Engine 8 — Pricing Reveal
+export { PriceReveal, PlatformFeeTooltip, breakdownPrice, annualSavingMinor } from "./engines/pricing-reveal";
+export type {
+  PriceRevealProps,
+  PriceRevealLabels,
+  PriceBreakdown,
+  FxDisclosure,
+} from "./engines/pricing-reveal";
+
 // Engine 5 — Joy
 export { JoyState, joyContentFor, JOY_ENVELOPE_MS } from "./engines/joy";
 export type {
