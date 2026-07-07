@@ -63,8 +63,11 @@ export default async function V3StoryPage() {
       <Section rhythm="hero">
         <SectionHeader eyebrow={copy.eyebrow} title={copy.title} lede={copy.lede} level={1} />
         <div className="mt-8 flex flex-wrap items-center gap-4">
-          <PublicCTA href="#divisions" size="lg" trailingIcon={<ArrowRight className="h-4 w-4" aria-hidden />}>
-            {copy.primaryCta}
+          <PublicCTA href="/v3/try" size="lg" trailingIcon={<ArrowRight className="h-4 w-4" aria-hidden />}>
+            {copy.tryLink}
+          </PublicCTA>
+          <PublicCTA href="/v3/what-shipped" variant="ghost">
+            {copy.shippedLink}
           </PublicCTA>
           <PublicCTA href="/v3/how-we-earn" variant="ghost">
             {copy.earnLink}

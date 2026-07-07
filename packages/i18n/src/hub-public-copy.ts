@@ -178,6 +178,8 @@ export type HubPublicCopy = {
       lede: string;
       primaryCta: string;
       earnLink: string;
+      tryLink: string;
+      shippedLink: string;
       divisionsTitle: string;
       divisionsLede: string;
       seeLive: string;
@@ -207,6 +209,27 @@ export type HubPublicCopy = {
       feeBody: string;
       closingTitle: string;
       closingBody: string;
+    };
+    shipped: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      seeLive: string;
+      /** Per-division capability summary + items, keyed by DivisionKey. */
+      divisions: Record<string, { summary: string; items: string[] }>;
+      note: string;
+    };
+    journey: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      noAccountNote: string;
+      steps: { title: string; body: string; linkLabel: string; division: string }[];
+      closing: string;
     };
   };
 };
@@ -403,6 +426,8 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
         "Henry Onyx is one connected economy: book care, shop verified sellers, get hired, learn a skill, ship a parcel, commission creative work, find a home — on one identity, one wallet, one conversation spine. Nothing on this page is a mockup; every link opens the real thing.",
       primaryCta: "Browse the ecosystem",
       earnLink: "How we earn — in plain language",
+      tryLink: "Try the journey",
+      shippedLink: "What's live",
       divisionsTitle: "The divisions",
       divisionsLede: "Each one is a full product. Every row opens the live surface — that is the proof.",
       seeLive: "See it live",
@@ -518,6 +543,124 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
       closingTitle: "See something that fails the tests?",
       closingBody:
         "If any fee on Henry Onyx fails any of the three tests, it's misdesigned — tell us and we'll fix it. This page changes before pricing does, not after.",
+    },
+    shipped: {
+      metaTitle: "What's live — {brand}",
+      metaDescription:
+        "The capability inventory: what each Henry Onyx division does today, with a live link for every claim. No roadmap dressed as product.",
+      eyebrow: "The inventory",
+      title: "What's live, division by division",
+      lede:
+        "A tight list of what each division does today. Every block links to the live surface — if it's on this page, you can use it right now. No roadmap dressed as product.",
+      seeLive: "See it live",
+      divisions: {
+        care: {
+          summary: "Home and fabric care with verified providers.",
+          items: [
+            "Browse services and book with verified providers",
+            "Honest pricing shown before you commit",
+            "Track bookings and rebook in one step",
+          ],
+        },
+        marketplace: {
+          summary: "Verified sellers, tracked orders.",
+          items: [
+            "Shop verified sellers with clear product pages",
+            "Cart, checkout, and order tracking to your door",
+            "Buyer-seller messaging with safety rules built in",
+          ],
+        },
+        jobs: {
+          summary: "Applications that talk back.",
+          items: [
+            "Browse and apply with a profile on file",
+            "Candidate-employer conversations in real time",
+            "Application status you can actually see",
+          ],
+        },
+        learn: {
+          summary: "Courses with fair prices.",
+          items: [
+            "Free previews before any payment",
+            "Enroll, learn, and track progress",
+            "Certificates you can share",
+          ],
+        },
+        logistics: {
+          summary: "Quotes up front, tracking throughout.",
+          items: [
+            "Get a shipment quote before you commit",
+            "Book and track deliveries end to end",
+          ],
+        },
+        studio: {
+          summary: "Creative work with a shared workspace.",
+          items: [
+            "Request creative work with a clear brief",
+            "A client workspace with milestones and messaging",
+            "Card and wallet payment on delivery terms",
+          ],
+        },
+        property: {
+          summary: "Verified listings, documented inquiries.",
+          items: [
+            "Browse property listings",
+            "Save listings and send documented inquiries",
+          ],
+        },
+      },
+      note:
+        "Missing something you expected? Then we haven't shipped it — this page tracks the product, not the ambition. The roadmap lives with us until it's real.",
+    },
+    journey: {
+      metaTitle: "Try the journey — {brand}",
+      metaDescription:
+        "A five-minute walk through the live Henry Onyx ecosystem — no account required to start, no sandbox, the real product at every step.",
+      eyebrow: "Try it",
+      title: "Walk the ecosystem in five minutes",
+      lede:
+        "This is not a demo environment. Every step below opens the live product, in your language, with prices in your currency. Start with nothing — no account, no email.",
+      noAccountNote: "No account needed to start. You'll only be asked to identify yourself when you do something that needs identity — that's the rule everywhere on Henry Onyx.",
+      steps: [
+        {
+          title: "Browse without signing in",
+          body: "Open Fabric Care and browse verified providers. Everything is readable as a stranger — value before identification.",
+          linkLabel: "Open Fabric Care",
+          division: "care",
+        },
+        {
+          title: "See a real price",
+          body: "Open any service. The price is shown before you commit, in your currency, with any platform fee itemized and named.",
+          linkLabel: "Browse services",
+          division: "care",
+        },
+        {
+          title: "Cross a division",
+          body: "Same account, same wallet, different economy: shop verified sellers on the marketplace.",
+          linkLabel: "Open the marketplace",
+          division: "marketplace",
+        },
+        {
+          title: "Check the jobs board",
+          body: "Browse live roles. When you apply, the conversation with the employer is real and stays visible.",
+          linkLabel: "Browse jobs",
+          division: "jobs",
+        },
+        {
+          title: "Preview a course free",
+          body: "Open a course on Learn. The preview is free — you pay only when you choose to enroll.",
+          linkLabel: "Open Learn",
+          division: "learn",
+        },
+        {
+          title: "Create your one account",
+          body: "When you're ready, one sign-up works everywhere — your saved items, messages, and wallet follow you across every division.",
+          linkLabel: "Create your account",
+          division: "account",
+        },
+      ],
+      closing:
+        "That's the ecosystem. If any step felt slower, less honest, or less finished than this page promised, tell us — the page and the product are supposed to be the same thing.",
     },
   },
 };
@@ -675,6 +818,8 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
         "Henry Onyx est une économie connectée : réservez un service, achetez auprès de vendeurs vérifiés, faites-vous recruter, apprenez un métier, expédiez un colis, commandez un travail créatif, trouvez un logement — avec une seule identité, un seul portefeuille, une seule messagerie. Rien ici n'est une maquette ; chaque lien ouvre le vrai produit.",
       primaryCta: "Parcourir l'écosystème",
       earnLink: "Comment nous gagnons de l'argent — en clair",
+      tryLink: "Essayer le parcours",
+      shippedLink: "Ce qui est en ligne",
       divisionsTitle: "Les divisions",
       divisionsLede: "Chacune est un produit complet. Chaque ligne ouvre la surface réelle — c'est la preuve.",
       seeLive: "Voir en direct",
@@ -946,6 +1091,8 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
         "Henry Onyx es una economía conectada: reserva servicios de cuidado, compra a vendedores verificados, consigue empleo, aprende una habilidad, envía un paquete, encarga trabajo creativo, encuentra un hogar — con una sola identidad, una sola billetera y una misma columna de conversación. Nada en esta página es una maqueta; cada enlace abre el producto real.",
       primaryCta: "Explorar el ecosistema",
       earnLink: "Cómo ganamos dinero — explicado con claridad",
+      tryLink: "Probar el recorrido",
+      shippedLink: "Qué está activo",
       divisionsTitle: "Las divisiones",
       divisionsLede: "Cada una es un producto completo. Cada fila abre la superficie real — esa es la prueba.",
       seeLive: "Verlo en funcionamiento",
@@ -1217,6 +1364,8 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
         "A Henry Onyx é uma economia conectada: agende cuidados, compre de vendedores verificados, seja contratado, aprenda uma habilidade, envie uma encomenda, encomende trabalho criativo, encontre um imóvel — com uma identidade, uma carteira e um mesmo eixo de conversas. Nada nesta página é maquete; cada link abre o produto real.",
       primaryCta: "Explorar o ecossistema",
       earnLink: "Como ganhamos — em linguagem simples",
+      tryLink: "Experimentar o percurso",
+      shippedLink: "O que está no ar",
       divisionsTitle: "As divisões",
       divisionsLede: "Cada uma é um produto completo. Cada linha abre a interface ao vivo — essa é a prova.",
       seeLive: "Ver ao vivo",
@@ -1488,6 +1637,8 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
         "Henry Onyx اقتصاد واحد مترابط: احجز خدمات العناية، وتسوّق من بائعين موثّقين، واحصل على وظيفة، وتعلّم مهارة، وأرسل طردًا، وكلّف بعمل إبداعي، واعثر على منزل — بهوية واحدة، ومحفظة واحدة، وعمود محادثات واحد. لا شيء في هذه الصفحة نموذج تجريبي؛ كل رابط يفتح المنتج الحقيقي.",
       primaryCta: "تصفّح المنظومة",
       earnLink: "كيف نكسب — بلغة واضحة",
+      tryLink: "جرّب الرحلة",
+      shippedLink: "ما هو متاح الآن",
       divisionsTitle: "الأقسام",
       divisionsLede: "كل قسم منتج متكامل. كل صف يفتح الواجهة الحية — وهذا هو الدليل.",
       seeLive: "شاهده مباشرة",
@@ -1759,6 +1910,8 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
         "Henry Onyx ist eine zusammenhängende Ökonomie: Pflege buchen, bei geprüften Verkäufern einkaufen, eingestellt werden, eine Fähigkeit erlernen, ein Paket versenden, Kreativarbeit beauftragen, ein Zuhause finden — mit einer Identität, einem Wallet, einem gemeinsamen Gesprächsfaden. Nichts auf dieser Seite ist ein Mockup; jeder Link öffnet das echte Produkt.",
       primaryCta: "Das Ökosystem entdecken",
       earnLink: "Wie wir verdienen — in klaren Worten",
+      tryLink: "Den Rundgang ausprobieren",
+      shippedLink: "Was heute live ist",
       divisionsTitle: "Die Divisionen",
       divisionsLede: "Jede ist ein vollwertiges Produkt. Jede Zeile öffnet die Live-Oberfläche — das ist der Beweis.",
       seeLive: "Live ansehen",
@@ -2030,6 +2183,8 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
         "Henry Onyx è un'unica economia connessa: prenota servizi di cura, acquista da venditori verificati, trova lavoro, impara una competenza, spedisci un pacco, commissiona lavori creativi, trova casa — con una sola identità, un solo portafoglio, un'unica spina dorsale per le conversazioni. Niente in questa pagina è un mockup; ogni link apre il prodotto vero.",
       primaryCta: "Esplora l'ecosistema",
       earnLink: "Come guadagniamo — in parole semplici",
+      tryLink: "Prova il percorso",
+      shippedLink: "Cosa è attivo",
       divisionsTitle: "Le divisioni",
       divisionsLede: "Ognuna è un prodotto completo. Ogni riga apre la superficie reale — questa è la prova.",
       seeLive: "Vedilo dal vivo",
@@ -2301,6 +2456,8 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
         "Henry Onyx 是一个互联互通的经济体：预约护理服务、选购认证卖家的商品、求职入职、学习技能、寄送包裹、委托创意项目、寻找住所——共用同一个身份、同一个钱包、同一条对话主线。本页没有任何示意图；每一条链接打开的都是真实产品。",
       primaryCta: "浏览整个生态",
       earnLink: "我们如何盈利——直白说明",
+      tryLink: "试走这段旅程",
+      shippedLink: "现已上线",
       divisionsTitle: "业务板块",
       divisionsLede: "每一个板块都是完整的产品。每一行都能打开线上的真实页面——这就是证明。",
       seeLive: "查看实况",
