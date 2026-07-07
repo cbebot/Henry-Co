@@ -231,6 +231,36 @@ export type HubPublicCopy = {
       steps: { title: string; body: string; linkLabel: string; division: string }[];
       closing: string;
     };
+    press: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      boilerplateTitle: string;
+      boilerplate: string;
+      factsTitle: string;
+      factLabels: { legalName: string; rc: string; founded: string; hq: string; founder: string; contact: string };
+      marksTitle: string;
+      marksLede: string;
+      download: string;
+      markLabels: { monogram: string; wordmarkFull: string; wordmarkCompact: string };
+      usageTitle: string;
+      usageRules: string[];
+      contactTitle: string;
+      contactBody: string;
+    };
+    announcement: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      paragraphs: string[];
+      ctaStory: string;
+      ctaTry: string;
+      signoffRole: string;
+    };
   };
 };
 
@@ -661,6 +691,63 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
       ],
       closing:
         "That's the ecosystem. If any step felt slower, less honest, or less finished than this page promised, tell us — the page and the product are supposed to be the same thing.",
+    },
+    press: {
+      metaTitle: "Press kit — {brand}",
+      metaDescription:
+        "Brand marks, company facts, and boilerplate for writing about Henry Onyx. Registered facts only — sourced from the company record.",
+      eyebrow: "Press",
+      title: "Writing about Henry Onyx",
+      lede:
+        "Everything on this page is drawn from the company's registered record and brand source files. If you need something that isn't here, ask — we answer.",
+      boilerplateTitle: "Boilerplate",
+      boilerplate:
+        "Henry Onyx is one connected economy: care, marketplace, jobs, learning, logistics, creative studio, and property on a single account, wallet, and conversation spine. It is operated by Henry Onyx Limited, a private company registered in Nigeria, and built on a simple rule — the page and the product are the same thing.",
+      factsTitle: "Company facts",
+      factLabels: {
+        legalName: "Legal entity",
+        rc: "RC number",
+        founded: "Founded",
+        hq: "Headquarters",
+        founder: "Founder",
+        contact: "Press contact",
+      },
+      marksTitle: "Brand marks",
+      marksLede:
+        "The monogram and wordmarks below are the only approved marks. Use them on a calm background, at legible sizes, without alteration.",
+      download: "Download SVG",
+      markLabels: {
+        monogram: "Monogram",
+        wordmarkFull: "Wordmark",
+        wordmarkCompact: "Compact wordmark",
+      },
+      usageTitle: "Usage",
+      usageRules: [
+        "Don't recolor, stretch, outline, or add effects to the marks.",
+        "Write the brand as Henry Onyx; the legal entity is Henry Onyx Limited.",
+        "Screenshots of the live product may be used with attribution.",
+        "Don't imply endorsement or partnership without a written agreement.",
+      ],
+      contactTitle: "Talk to us",
+      contactBody:
+        "For interviews, fact-checking, or assets not on this page, write to us — a person reads it.",
+    },
+    announcement: {
+      metaTitle: "Announcing V3 — {brand}",
+      metaDescription:
+        "Henry Onyx V3: one account, one wallet, one conversation spine across seven live divisions — and the pages that prove it.",
+      eyebrow: "From the founder",
+      title: "V3 is live",
+      lede:
+        "The version of Henry Onyx we set out to build: one connected economy you can walk through in five minutes, with every claim linked to the live product.",
+      paragraphs: [
+        "V3 is not a redesign. It is the point where the divisions stop being separate products and start being one economy — one identity that signs in everywhere, one wallet with honest double-entry money behind it, one conversation spine carrying buyer to seller, candidate to employer, client to team.",
+        "We published the parts most platforms keep private: what's actually live, how we earn and why every fee must pass three public tests, and a journey you can take as a stranger without an account. If a page and the product ever disagree, one of them is wrong and we fix it.",
+        "This is the foundation. What comes next earns its place on these pages the same way everything here did — by being real first.",
+      ],
+      ctaStory: "Read the V3 story",
+      ctaTry: "Walk the journey",
+      signoffRole: "Founder, Henry Onyx",
     },
   },
 };
