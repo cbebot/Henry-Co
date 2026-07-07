@@ -59,6 +59,24 @@ export {
 } from "./engines/trust-reveal";
 export type { TrustStairProps, TrustStage, TrustPosition } from "./engines/trust-reveal";
 
+// Engine 2 — Micro-Commitment
+export {
+  nextOffer,
+  tierIndex,
+  COMMITMENT_TIERS,
+  WEEK_MS,
+  useCommitmentTier,
+  CommitmentGate,
+} from "./engines/micro-commitment";
+export type {
+  CommitmentTier,
+  CommitmentOffer,
+  OfferRecord,
+  CommitmentAdapter,
+  CommitmentState,
+  CommitmentGateProps,
+} from "./engines/micro-commitment";
+
 // Engine 8 — Pricing Reveal
 export { PriceReveal, PlatformFeeTooltip, breakdownPrice, annualSavingMinor } from "./engines/pricing-reveal";
 export type {
