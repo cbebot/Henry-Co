@@ -20,7 +20,6 @@ import {
   Search,
   Settings2,
   ShoppingBag,
-  Sparkles,
   UserRound,
   X,
 } from "lucide-react";
@@ -244,64 +243,76 @@ export function PublicHeaderClient() {
   return (
     <header
       data-marketplace-interactive="true"
-      className="sticky top-0 z-50 px-3 pt-3 sm:px-6 xl:px-8"
+      className="sticky top-0 z-50 box-border h-16 border-b border-[color:var(--home-line)] bg-[color:var(--home-glass)] backdrop-blur-2xl"
     >
       {/* FIX-CHROME-01: the inline `fixed inset-0` backdrop is gone.
        * The drawer below is now a `BottomSheet` portal-mounted at
        * `document.body`, so it renders its own backdrop outside any
        * sticky/transform ancestor and cannot orphan when the page is
        * scrolled. */}
-      <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem] bg-[color:var(--home-glass)] backdrop-blur-2xl">
-        <div className="flex items-center gap-3 border-b border-[color:var(--home-line)] px-4 py-3 sm:px-5">
-          <Link
-            href="/"
-            className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] rounded-2xl"
-            aria-label="Henry Onyx Marketplace home"
+      {/* CHROME-64: one full-bleed 64px bar (was a 194px floating
+       * two-row card — Phase 0 redesign audit). Brand collapses to a
+       * 32px monogram + one-line wordmark; nav pills live inline at
+       * xl+ (below xl the drawer carries them); ONE search affordance
+       * (the local /search form — the hub-search link stays in the
+       * drawer); the decorative LIVE-CATALOG pill is gone. All real
+       * wiring (bell + guest guard, cart + count, vendor capability,
+       * account chip) is preserved verbatim. */}
+      <div className="mx-auto flex h-full max-w-[1480px] items-center gap-2.5 px-4 sm:px-6 xl:px-8">
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-2.5 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)]"
+          aria-label={translateSurfaceLabel(locale, "Henry Onyx Marketplace home")}
+        >
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-accent-text)]">
+            <HenryCoMonogram size={22} accent="#B2863B" />
+          </span>
+          <span className="hidden whitespace-nowrap text-sm font-semibold text-[color:var(--home-ink)] sm:block">
+            Henry Onyx{" "}
+            <span className="text-[color:var(--home-accent-text)]">Marketplace</span>
+          </span>
+        </Link>
+
+        <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Marketplace">
+          {navLinks.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+                  active
+                    ? "bg-[color:var(--home-accent-soft)] text-[color:var(--home-ink)]"
+                    : "text-[color:var(--home-ink-65)] hover:bg-[color:var(--home-surface-04)] hover:text-[color:var(--home-ink)]"
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <form
+          action="/search"
+          method="GET"
+          className="ml-auto hidden h-10 w-full max-w-xs items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] pl-4 pr-1.5 transition-colors focus-within:border-[color:var(--home-accent-ring)] lg:flex"
+        >
+          <input
+            name="q"
+            placeholder={surfaceCopy.marketplaceHeader.longSearchPlaceholder}
+            className="w-full bg-transparent text-sm text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-50)]"
+          />
+          <button
+            aria-label={translateSurfaceLabel(locale, "Search")}
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[color:var(--home-ink-50)] outline-none transition-colors hover:bg-[color:var(--home-surface-07)] hover:text-[color:var(--home-ink)] focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)]"
           >
-            <span
-              className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-accent-text)] shadow-[0_18px_40px_-30px_rgb(var(--home-ink-rgb)/0.4)]"
-            >
-              <HenryCoMonogram size={32} accent="#B2863B" />
-            </span>
-            <div className="hidden min-w-0 sm:block">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[color:var(--home-accent-text)]">
-                Henry Onyx Marketplace
-              </p>
-              <p className="truncate text-sm text-[color:var(--home-ink-65)]">
-                {translateSurfaceLabel(locale, "Refined commerce with one connected Henry Onyx account")}
-              </p>
-            </div>
-          </Link>
+            <Search className="h-4 w-4" />
+          </button>
+        </form>
 
-          <div className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-65)] lg:inline-flex">
-            <Sparkles className="h-3.5 w-3.5 text-[color:var(--home-accent)]" />
-            {surfaceCopy.marketplaceHeader.liveCatalog}
-          </div>
-
-          <Link
-            href={getHubUrl("/search")}
-            className="hidden items-center gap-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition-colors hover:bg-[color:var(--home-surface-07)] xl:inline-flex"
-          >
-            {translateSurfaceLabel(locale, "Search Henry Onyx")}
-          </Link>
-
-          <form
-            action="/search"
-            method="GET"
-            className="hidden flex-1 items-center gap-3 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-4 py-3 lg:flex"
-          >
-            <Search className="h-4 w-4 text-[color:var(--home-ink-50)]" />
-            <input
-              name="q"
-              placeholder={surfaceCopy.marketplaceHeader.longSearchPlaceholder}
-              className="w-full bg-transparent text-sm text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-50)]"
-            />
-            <button className="market-button-primary rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em]">
-              {translateSurfaceLabel(locale, "Search")}
-            </button>
-          </form>
-
-          <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 lg:ml-2">
             {/* Guests see no bell — there is nothing to notify them about until
              * they sign in. CHROME-01A audit caught a "99" badge rendering on
              * an unauthenticated marketplace homepage. */}
@@ -347,14 +358,26 @@ export function PublicHeaderClient() {
               </Link>
             ) : null}
 
-            <div className="hidden sm:block">
+            <div className="hidden items-center gap-2 sm:flex">
+              {/* CHROME-64: the chip's built-in signup renders hardcoded
+               * amber-600 (off the bronze ramp — shared-package
+               * retirement is its own cross-division PR). Omitting
+               * signupHref suppresses it; this tokenized CTA replaces
+               * it, matching the mobile "Join" bronze below. */}
+              {!chipUser ? (
+                <Link
+                  href={signupHref}
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-[color:var(--home-accent)] px-4 text-sm font-bold text-[color:var(--home-accent-ink)] outline-none transition hover:brightness-105 focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)]"
+                  aria-label={surfaceCopy.publicAccount.signUpAria}
+                >
+                  {translateSurfaceLabel(locale, "Get started")}
+                </Link>
+              ) : null}
               <PublicAccountChip
                 {...HenryCoPublicAccountPresets.standard}
                 user={chipUser}
                 loginHref={loginHref}
                 accountHref={getAccountUrl("/")}
-                signupHref={signupHref}
-                signupLabel={translateSurfaceLabel(locale, "Get started")}
                 preferencesHref={getAccountUrl("/settings")}
                 settingsHref={getAccountUrl("/security")}
                 showSignOut
@@ -442,33 +465,6 @@ export function PublicHeaderClient() {
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
           </div>
-        </div>
-
-        <div className="hidden items-center justify-between gap-5 px-5 py-3 lg:flex">
-          <nav className="flex flex-wrap items-center gap-2">
-            {navLinks.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                    active
-                      ? "bg-[color:var(--home-accent-soft)] text-[color:var(--home-ink)]"
-                      : "text-[color:var(--home-ink-65)] hover:bg-[color:var(--home-surface-04)] hover:text-[color:var(--home-ink)]"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <p className="text-sm text-[color:var(--home-ink-65)]">
-            {surfaceCopy.marketplaceHeader.searchSummary}
-          </p>
-        </div>
-
       </div>
       {/* Portal-rendered BottomSheet drawer — replaces the inline
        * `max-height` collapse + body.overflow=hidden pattern. Anchored
