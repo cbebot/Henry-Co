@@ -10,6 +10,7 @@
  */
 import type { ReactNode } from "react";
 import { cn } from "../cn";
+import { CountUp } from "./count-up";
 
 export type ProofItem = {
   /** Real value. null/undefined/"" → the item (and, if all empty, the rail) is suppressed. */
@@ -40,7 +41,10 @@ export function PublicProofRail({
           <div key={i} className="flex flex-col-reverse gap-1">
             <dt className="home-caption">{it.label}</dt>
             <dd className="home-num text-3xl font-semibold text-[color:var(--home-ink)] sm:text-4xl">
-              {it.value}
+              {/* Lagos motion doctrine: real numbers COUNT UP (decelerating,
+                  on first view, reduced-motion-safe). Non-numeric values —
+                  "4.7★", "24/7" — render verbatim, honesty unchanged. */}
+              {Number.isFinite(Number(it.value)) ? <CountUp value={Number(it.value)} /> : it.value}
             </dd>
           </div>
         ))}

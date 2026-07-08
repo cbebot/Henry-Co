@@ -58,7 +58,7 @@ export function LearnSiteHeaderClient({
         href: "/",
         name: COMPANY.group.name,
         eyebrow: learn.shortName,
-        mark: <HenryCoMonogram size={26} accent={learn.accent || "#3C8C7A"} />,
+        mark: <HenryCoMonogram size={22} accent={learn.accent || "#3C8C7A"} />,
       }}
       items={learnNav.primaryNav}
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
@@ -99,20 +99,10 @@ export function LearnSiteHeaderClient({
         ) : null
       }
       primaryCta={learnNav.defaultCtas?.primary}
-      prepend={
-        <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-5 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-8 xl:px-10">
-          <span className="flex items-center gap-2">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
-            {t("Structured courses, fair assessments, and certificates anyone can verify")}
-          </span>
-          <a
-            href={accountHref}
-            className="hidden font-semibold text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)] lg:inline-flex"
-          >
-            {t("Henry Onyx account")}
-          </a>
-        </div>
-      }
+      /* CHROME-64 (redesign 2026-07-08): announcement strip retired (the
+       * account link lives in the chip) and the toolbar rests dense —
+       * 111px -> ~63px, inside the owner's 64px budget. */
+      dense
     />
   );
 }

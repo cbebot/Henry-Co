@@ -86,6 +86,11 @@ export type PublicChromeProps = {
   search?: { href: string; label?: string } | ReactNode;
   /** Optional thin announcement strip above the toolbar. */
   prepend?: ReactNode;
+  /** Redesign 2026-07-08: the ≤64px chrome budget. When set, the toolbar
+   *  RESTS at the scroll-condensed padding (0.55rem) and the brand tile
+   *  drops to 36px, putting the whole bar at ~63px + hairline. Opt-in per
+   *  division so unadopted sites render pixel-identically. */
+  dense?: boolean;
   showThemeToggle?: boolean;
   maxWidth?: string;
   /** Accent/theme CSS vars to re-establish inside the portaled mobile drawer
@@ -224,6 +229,7 @@ export function PublicChrome({
   primaryCta,
   search,
   prepend,
+  dense = false,
   showThemeToggle = true,
   maxWidth = "max-w-7xl",
   accentStyle,
@@ -267,7 +273,12 @@ export function PublicChrome({
       className="group/brand flex shrink-0 items-center gap-3 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--home-accent)]/45"
     >
       {brand.mark ? (
-        <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-07)] text-[color:var(--home-accent-text)] transition group-hover/brand:border-[color:var(--home-line-15)]">
+        <span
+          className={cn(
+            "grid shrink-0 place-items-center overflow-hidden border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-07)] text-[color:var(--home-accent-text)] transition group-hover/brand:border-[color:var(--home-line-15)]",
+            dense ? "h-9 w-9 rounded-xl" : "h-11 w-11 rounded-2xl",
+          )}
+        >
           {brand.mark}
         </span>
       ) : null}
@@ -356,7 +367,7 @@ export function PublicChrome({
 
   const toolbar = (
     <div
-      style={scrolled ? { paddingBlock: "0.55rem" } : undefined}
+      style={dense ? { paddingBlock: "0.4rem" } : scrolled ? { paddingBlock: "0.55rem" } : undefined}
       className="flex items-center justify-between gap-3 px-4 py-3.5 transition-[padding] duration-300 ease-out motion-reduce:transition-none sm:px-6 lg:px-8"
     >
       {brandLockup}

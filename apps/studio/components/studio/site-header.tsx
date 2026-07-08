@@ -1,10 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { COMPANY, getDivisionConfig, getHubUrl } from "@henryco/config";
-import { translateSurfaceLabel } from "@henryco/i18n";
-import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   PublicChrome,
   getSiteNavigationConfig,
@@ -22,21 +19,19 @@ const studioNav = getSiteNavigationConfig("studio");
  * studio's "Speak to Studio" (aux) + "Start a project" (primary, teal); the full
  * account dropdown + sign-out is preserved via the slotted StudioAccountChip
  * (accountMenu). Teal accent resolves from the page's STUDIO_PUBLIC_THEME_STYLE.
+ *
+ * CHROME-64 (redesign 2026-07-08): the ~40px announcement strip is retired —
+ * its support email lives in the footer and the account link in the account
+ * chip — and the toolbar rests `dense`. Total chrome: 111px → ~63px, inside
+ * the owner's 64px budget.
  */
 export function StudioSiteHeader({
-  supportEmail,
-  accountHref,
   account,
   accountMenu,
 }: {
-  supportEmail: string | null;
-  accountHref: string;
   account: PublicChromeAccount;
   accountMenu?: ReactNode;
 }) {
-  const locale = useHenryCoLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
-
   return (
     <PublicChrome
       maxWidth="max-w-[92rem]"
@@ -45,7 +40,7 @@ export function StudioSiteHeader({
         href: "/",
         name: COMPANY.group.name,
         eyebrow: studio.shortName,
-        mark: <HenryCoMonogram size={26} accent={studio.accent} />,
+        mark: <HenryCoMonogram size={22} accent={studio.accent} />,
       }}
       items={studioNav.primaryNav}
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
@@ -53,23 +48,7 @@ export function StudioSiteHeader({
       accountMenu={accountMenu}
       auxLink={studioNav.defaultCtas?.aux}
       primaryCta={studioNav.defaultCtas?.primary}
-      prepend={
-        <div className="mx-auto flex max-w-[92rem] flex-wrap items-center justify-between gap-4 px-5 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-8 lg:px-10">
-          <span className="flex items-center gap-2">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
-            {t("Premium briefs, verified payment guidance, and project history in your Henry Onyx account")}
-          </span>
-          <span className="hidden items-center gap-5 lg:flex">
-            <span>{supportEmail || studio.supportEmail}</span>
-            <Link
-              href={accountHref}
-              className="font-semibold text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)]"
-            >
-              {t("Henry Onyx account")}
-            </Link>
-          </span>
-        </div>
-      }
+      dense
     />
   );
 }
