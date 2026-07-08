@@ -75,8 +75,6 @@ export default async function PublicLayout({ children }: { children: React.React
       style={STUDIO_PUBLIC_THEME_STYLE}
     >
       <StudioSiteHeader
-        supportEmail={catalog.platform.supportEmail}
-        accountHref={accountUrl}
         account={account}
         accountMenu={
           <StudioAccountChip
