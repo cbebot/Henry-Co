@@ -12,6 +12,7 @@ import {
   SectionHeader,
 } from "@henryco/ui/public-design";
 import { getHubPublicLocale } from "../../../lib/locale-server";
+import { StoryNewsletterEarn } from "./story-newsletter";
 
 /**
  * /v3 — the ecosystem story page (V3-96 S2.1, honest present-tense form).
@@ -49,7 +50,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function V3StoryPage() {
   const locale = await getHubPublicLocale();
-  const copy = getHubPublicCopy(locale).v3.story;
+  const hubCopy = getHubPublicCopy(locale);
+  const copy = hubCopy.v3.story;
+  const newsletterCopy = hubCopy.newsletter;
 
   emitEvent({
     name: "henry.v3.showcase.viewed",
@@ -115,7 +118,21 @@ export default async function V3StoryPage() {
       </Section>
 
       <Section rhythm="tight">
-        <p className="home-body-sm max-w-2xl text-[color:var(--home-ink-50)]">{copy.honestyNote}</p>
+        {/* Engine 7 — Newsletter Earn: surfaces via the tested 70%-scroll
+            predicate, wired to the real subscribe API. First production
+            engine adoption; copy reused from the translated newsletter
+            namespace (zero new keys). */}
+        <StoryNewsletterEarn
+          locale={locale}
+          labels={{
+            valueStatement: newsletterCopy.intro,
+            placeholder: newsletterCopy.form.emailPlaceholder,
+            submit: newsletterCopy.form.submit,
+            submitting: newsletterCopy.form.submitting,
+            success: newsletterCopy.form.successCreatedTitle,
+          }}
+        />
+        <p className="home-body-sm mt-8 max-w-2xl text-[color:var(--home-ink-50)]">{copy.honestyNote}</p>
       </Section>
     </>
   );

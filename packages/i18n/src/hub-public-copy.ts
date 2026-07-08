@@ -231,6 +231,36 @@ export type HubPublicCopy = {
       steps: { title: string; body: string; linkLabel: string; division: string }[];
       closing: string;
     };
+    press: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      boilerplateTitle: string;
+      boilerplate: string;
+      factsTitle: string;
+      factLabels: { legalName: string; rc: string; founded: string; hq: string; founder: string; contact: string };
+      marksTitle: string;
+      marksLede: string;
+      download: string;
+      markLabels: { monogram: string; wordmarkFull: string; wordmarkCompact: string };
+      usageTitle: string;
+      usageRules: string[];
+      contactTitle: string;
+      contactBody: string;
+    };
+    announcement: {
+      metaTitle: string;
+      metaDescription: string;
+      eyebrow: string;
+      title: string;
+      lede: string;
+      paragraphs: string[];
+      ctaStory: string;
+      ctaTry: string;
+      signoffRole: string;
+    };
   };
 };
 
@@ -662,6 +692,63 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
       closing:
         "That's the ecosystem. If any step felt slower, less honest, or less finished than this page promised, tell us — the page and the product are supposed to be the same thing.",
     },
+    press: {
+      metaTitle: "Press kit — {brand}",
+      metaDescription:
+        "Brand marks, company facts, and boilerplate for writing about Henry Onyx. Registered facts only — sourced from the company record.",
+      eyebrow: "Press",
+      title: "Writing about Henry Onyx",
+      lede:
+        "Everything on this page is drawn from the company's registered record and brand source files. If you need something that isn't here, ask — we answer.",
+      boilerplateTitle: "Boilerplate",
+      boilerplate:
+        "Henry Onyx is one connected economy: care, marketplace, jobs, learning, logistics, creative studio, and property on a single account, wallet, and conversation spine. It is operated by Henry Onyx Limited, a private company registered in Nigeria, and built on a simple rule — the page and the product are the same thing.",
+      factsTitle: "Company facts",
+      factLabels: {
+        legalName: "Legal entity",
+        rc: "RC number",
+        founded: "Founded",
+        hq: "Headquarters",
+        founder: "Founder",
+        contact: "Press contact",
+      },
+      marksTitle: "Brand marks",
+      marksLede:
+        "The monogram and wordmarks below are the only approved marks. Use them on a calm background, at legible sizes, without alteration.",
+      download: "Download SVG",
+      markLabels: {
+        monogram: "Monogram",
+        wordmarkFull: "Wordmark",
+        wordmarkCompact: "Compact wordmark",
+      },
+      usageTitle: "Usage",
+      usageRules: [
+        "Don't recolor, stretch, outline, or add effects to the marks.",
+        "Write the brand as Henry Onyx; the legal entity is Henry Onyx Limited.",
+        "Screenshots of the live product may be used with attribution.",
+        "Don't imply endorsement or partnership without a written agreement.",
+      ],
+      contactTitle: "Talk to us",
+      contactBody:
+        "For interviews, fact-checking, or assets not on this page, write to us — a person reads it.",
+    },
+    announcement: {
+      metaTitle: "Announcing V3 — {brand}",
+      metaDescription:
+        "Henry Onyx V3: one account, one wallet, one conversation spine across seven live divisions — and the pages that prove it.",
+      eyebrow: "From the founder",
+      title: "V3 is live",
+      lede:
+        "The version of Henry Onyx we set out to build: one connected economy you can walk through in five minutes, with every claim linked to the live product.",
+      paragraphs: [
+        "V3 is not a redesign. It is the point where the divisions stop being separate products and start being one economy — one identity that signs in everywhere, one wallet with honest double-entry money behind it, one conversation spine carrying buyer to seller, candidate to employer, client to team.",
+        "We published the parts most platforms keep private: what's actually live, how we earn and why every fee must pass three public tests, and a journey you can take as a stranger without an account. If a page and the product ever disagree, one of them is wrong and we fix it.",
+        "This is the foundation. What comes next earns its place on these pages the same way everything here did — by being real first.",
+      ],
+      ctaStory: "Read the V3 story",
+      ctaTry: "Walk the journey",
+      signoffRole: "Founder, Henry Onyx",
+    },
   },
 };
 
@@ -1054,6 +1141,63 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
       closing:
         "Voilà l'écosystème. Si une étape vous a semblé plus lente, moins honnête ou moins aboutie que ce que cette page promettait, dites-le-nous — la page et le produit sont censés être la même chose.",
     },
+    press: {
+      metaTitle: "Kit presse — {brand}",
+      metaDescription:
+        "Marques graphiques, faits sur l'entreprise et texte de référence pour écrire sur Henry Onyx. Uniquement des faits enregistrés — issus du registre officiel de l'entreprise.",
+      eyebrow: "Presse",
+      title: "Écrire sur Henry Onyx",
+      lede:
+        "Tout ce qui figure sur cette page provient du registre officiel de l'entreprise et des fichiers sources de la marque. S'il vous manque quelque chose, demandez-le — nous répondons.",
+      boilerplateTitle: "Texte de référence",
+      boilerplate:
+        "Henry Onyx est une économie connectée : soins, marketplace, emplois, formation, logistique, studio créatif et immobilier réunis sur un seul compte, un seul portefeuille et une seule colonne de conversation. Elle est opérée par Henry Onyx Limited, société privée immatriculée au Nigeria, et repose sur une règle simple — la page et le produit sont une seule et même chose.",
+      factsTitle: "Faits sur l'entreprise",
+      factLabels: {
+        legalName: "Entité juridique",
+        rc: "Numéro RC",
+        founded: "Fondation",
+        hq: "Siège social",
+        founder: "Fondateur",
+        contact: "Contact presse",
+      },
+      marksTitle: "Marques graphiques",
+      marksLede:
+        "Le monogramme et les logotypes ci-dessous sont les seules marques approuvées. Utilisez-les sur un fond sobre, à des tailles lisibles, sans altération.",
+      download: "Télécharger le SVG",
+      markLabels: {
+        monogram: "Monogramme",
+        wordmarkFull: "Logotype",
+        wordmarkCompact: "Logotype compact",
+      },
+      usageTitle: "Utilisation",
+      usageRules: [
+        "Ne recolorez pas, n'étirez pas, ne détourez pas les marques et n'y ajoutez aucun effet.",
+        "Écrivez la marque Henry Onyx ; l'entité juridique est Henry Onyx Limited.",
+        "Les captures d'écran du produit en ligne peuvent être utilisées avec attribution.",
+        "Ne suggérez aucun soutien ni partenariat sans accord écrit.",
+      ],
+      contactTitle: "Parlez-nous",
+      contactBody:
+        "Pour les interviews, les vérifications de faits ou les ressources absentes de cette page, écrivez-nous — une personne vous lit.",
+    },
+    announcement: {
+      metaTitle: "Annonce de la V3 — {brand}",
+      metaDescription:
+        "Henry Onyx V3 : un compte, un portefeuille, une colonne de conversation reliant sept divisions en activité — et les pages qui le prouvent.",
+      eyebrow: "Un mot du fondateur",
+      title: "La V3 est en ligne",
+      lede:
+        "La version de Henry Onyx que nous voulions construire : une économie connectée que l'on peut parcourir en cinq minutes, chaque affirmation reliée au produit en ligne.",
+      paragraphs: [
+        "La V3 n'est pas une refonte graphique. C'est le moment où les divisions cessent d'être des produits séparés pour devenir une seule économie — une identité qui se connecte partout, un portefeuille adossé à une comptabilité honnête en partie double, une colonne de conversation qui relie l'acheteur au vendeur, le candidat à l'employeur, le client à l'équipe.",
+        "Nous avons publié ce que la plupart des plateformes gardent privé : ce qui est réellement en service, comment nous gagnons de l'argent et pourquoi chaque frais doit passer trois tests publics, et un parcours que l'on peut suivre en visiteur, sans compte. Si une page et le produit se contredisent, l'un des deux a tort et nous le corrigeons.",
+        "Ceci est la fondation. Ce qui viendra ensuite gagnera sa place sur ces pages comme tout ce qui s'y trouve — en étant réel d'abord.",
+      ],
+      ctaStory: "Lire l'histoire de la V3",
+      ctaTry: "Suivre le parcours",
+      signoffRole: "Fondateur, Henry Onyx",
+    },
   },
 };
 const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
@@ -1444,6 +1588,63 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
       ],
       closing:
         "Ese es el ecosistema. Si algún paso te pareció más lento, menos honesto o menos terminado de lo que esta página prometía, dínoslo — la página y el producto deben ser la misma cosa.",
+    },
+    press: {
+      metaTitle: "Kit de prensa — {brand}",
+      metaDescription:
+        "Marcas gráficas, datos de la empresa y texto estándar para escribir sobre Henry Onyx. Solo hechos registrados — tomados del registro de la empresa.",
+      eyebrow: "Prensa",
+      title: "Escribir sobre Henry Onyx",
+      lede:
+        "Todo lo que aparece en esta página proviene del registro oficial de la empresa y de los archivos fuente de la marca. Si necesita algo que no está aquí, pregunte — respondemos.",
+      boilerplateTitle: "Texto estándar",
+      boilerplate:
+        "Henry Onyx es una economía conectada: cuidado, marketplace, empleo, formación, logística, estudio creativo y propiedad sobre una sola cuenta, una sola cartera y una sola columna de conversación. La opera Henry Onyx Limited, una sociedad privada registrada en Nigeria, y se construye sobre una regla simple: la página y el producto son lo mismo.",
+      factsTitle: "Datos de la empresa",
+      factLabels: {
+        legalName: "Entidad legal",
+        rc: "Número RC",
+        founded: "Fundación",
+        hq: "Sede",
+        founder: "Fundador",
+        contact: "Contacto de prensa",
+      },
+      marksTitle: "Marcas gráficas",
+      marksLede:
+        "El monograma y los logotipos que aparecen abajo son las únicas marcas aprobadas. Úselas sobre un fondo sereno, en tamaños legibles y sin alteraciones.",
+      download: "Descargar SVG",
+      markLabels: {
+        monogram: "Monograma",
+        wordmarkFull: "Logotipo",
+        wordmarkCompact: "Logotipo compacto",
+      },
+      usageTitle: "Uso",
+      usageRules: [
+        "No recoloree, estire, contornee ni añada efectos a las marcas.",
+        "Escriba la marca como Henry Onyx; la entidad legal es Henry Onyx Limited.",
+        "Las capturas de pantalla del producto en vivo pueden usarse con atribución.",
+        "No sugiera respaldo ni asociación sin un acuerdo por escrito.",
+      ],
+      contactTitle: "Hable con nosotros",
+      contactBody:
+        "Para entrevistas, verificación de datos o recursos que no estén en esta página, escríbanos — una persona lo lee.",
+    },
+    announcement: {
+      metaTitle: "Presentamos V3 — {brand}",
+      metaDescription:
+        "Henry Onyx V3: una cuenta, una cartera y una columna de conversación en siete divisiones activas — y las páginas que lo demuestran.",
+      eyebrow: "Del fundador",
+      title: "V3 está en vivo",
+      lede:
+        "La versión de Henry Onyx que nos propusimos construir: una economía conectada que puede recorrerse en cinco minutos, con cada afirmación enlazada al producto en vivo.",
+      paragraphs: [
+        "V3 no es un rediseño. Es el punto en el que las divisiones dejan de ser productos separados y empiezan a ser una economía — una identidad que inicia sesión en todas partes, una cartera con dinero honesto de partida doble detrás, una columna de conversación que conecta comprador con vendedor, candidato con empleador, cliente con equipo.",
+        "Publicamos las partes que la mayoría de las plataformas mantiene en privado: qué está realmente en vivo, cómo ganamos dinero y por qué cada tarifa debe superar tres pruebas públicas, y un recorrido que puede hacerse como desconocido, sin cuenta. Si una página y el producto alguna vez discrepan, uno de los dos está mal y lo corregimos.",
+        "Esta es la base. Lo que venga después se ganará su lugar en estas páginas igual que todo lo que hay aquí — siendo real primero.",
+      ],
+      ctaStory: "Leer la historia de V3",
+      ctaTry: "Recorrer el trayecto",
+      signoffRole: "Fundador, Henry Onyx",
     },
   },
 };
@@ -1836,6 +2037,63 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
       closing:
         "Este é o ecossistema. Se algum passo lhe pareceu mais lento, menos honesto ou menos acabado do que esta página prometeu, diga-nos — a página e o produto devem ser a mesma coisa.",
     },
+    press: {
+      metaTitle: "Kit de imprensa — {brand}",
+      metaDescription:
+        "Marcas gráficas, factos da empresa e texto institucional para escrever sobre a Henry Onyx. Apenas factos registados — extraídos do registo da empresa.",
+      eyebrow: "Imprensa",
+      title: "Escrever sobre a Henry Onyx",
+      lede:
+        "Tudo nesta página provém do registo oficial da empresa e dos ficheiros-fonte da marca. Se precisar de algo que não esteja aqui, pergunte — nós respondemos.",
+      boilerplateTitle: "Texto institucional",
+      boilerplate:
+        "A Henry Onyx é uma economia interligada: cuidados, marketplace, empregos, aprendizagem, logística, estúdio criativo e imobiliário numa única conta, carteira e espinha de conversação. É operada pela Henry Onyx Limited, uma sociedade privada registada na Nigéria, e assenta numa regra simples — a página e o produto são a mesma coisa.",
+      factsTitle: "Factos da empresa",
+      factLabels: {
+        legalName: "Entidade legal",
+        rc: "Número RC",
+        founded: "Fundação",
+        hq: "Sede",
+        founder: "Fundador",
+        contact: "Contacto de imprensa",
+      },
+      marksTitle: "Marcas gráficas",
+      marksLede:
+        "O monograma e os logótipos abaixo são as únicas marcas aprovadas. Use-os sobre um fundo sereno, em tamanhos legíveis, sem alterações.",
+      download: "Descarregar SVG",
+      markLabels: {
+        monogram: "Monograma",
+        wordmarkFull: "Logótipo",
+        wordmarkCompact: "Logótipo compacto",
+      },
+      usageTitle: "Utilização",
+      usageRules: [
+        "Não recolorir, esticar, contornar nem aplicar efeitos às marcas.",
+        "Escreva a marca como Henry Onyx; a entidade legal é Henry Onyx Limited.",
+        "Capturas de ecrã do produto em produção podem ser usadas com atribuição.",
+        "Não sugira aval ou parceria sem um acordo escrito.",
+      ],
+      contactTitle: "Fale connosco",
+      contactBody:
+        "Para entrevistas, verificação de factos ou materiais que não estejam nesta página, escreva-nos — uma pessoa lê a mensagem.",
+    },
+    announcement: {
+      metaTitle: "Anúncio da V3 — {brand}",
+      metaDescription:
+        "Henry Onyx V3: uma conta, uma carteira, uma espinha de conversação em sete divisões ativas — e as páginas que o comprovam.",
+      eyebrow: "Do fundador",
+      title: "A V3 está no ar",
+      lede:
+        "A versão da Henry Onyx que nos propusemos construir: uma economia interligada que pode percorrer em cinco minutos, com cada afirmação ligada ao produto em produção.",
+      paragraphs: [
+        "A V3 não é um redesenho. É o ponto em que as divisões deixam de ser produtos separados e passam a ser uma só economia — uma identidade que inicia sessão em todo o lado, uma carteira com dinheiro honesto em partidas dobradas por trás, uma espinha de conversação que liga comprador a vendedor, candidato a empregador, cliente a equipa.",
+        "Publicámos as partes que a maioria das plataformas mantém privadas: o que está realmente em produção, como ganhamos dinheiro e porque é que cada taxa tem de passar três testes públicos, e um percurso que pode fazer como visitante, sem conta. Se uma página e o produto alguma vez divergirem, um deles está errado e nós corrigimos.",
+        "Esta é a fundação. O que vier a seguir conquista o seu lugar nestas páginas da mesma forma que tudo o que aqui está — sendo real primeiro.",
+      ],
+      ctaStory: "Ler a história da V3",
+      ctaTry: "Percorrer o trajeto",
+      signoffRole: "Fundador, Henry Onyx",
+    },
   },
 };
 const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
@@ -2226,6 +2484,63 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
       ],
       closing:
         "هذه هي المنظومة. إن بدت أي خطوة أبطأ أو أقل صدقا أو أقل اكتمالا مما وعدت به هذه الصفحة، فأخبرنا — يفترض أن تكون الصفحة والمنتج شيئا واحدا.",
+    },
+    press: {
+      metaTitle: "الملف الصحفي — {brand}",
+      metaDescription:
+        "علامات الهوية البصرية، وحقائق الشركة، والنبذة التعريفية للكتابة عن Henry Onyx. حقائق مسجَّلة فقط — مأخوذة من السجل الرسمي للشركة.",
+      eyebrow: "الصحافة",
+      title: "الكتابة عن Henry Onyx",
+      lede:
+        "كل ما في هذه الصفحة مستمد من السجل الرسمي للشركة ومن الملفات المصدرية للعلامة. إن احتجت إلى شيء غير موجود هنا، فاسألنا — نحن نجيب.",
+      boilerplateTitle: "النبذة التعريفية",
+      boilerplate:
+        "Henry Onyx اقتصاد واحد مترابط: الرعاية، والسوق، والوظائف، والتعلم، والخدمات اللوجستية، والاستوديو الإبداعي، والعقارات على حساب واحد ومحفظة واحدة ومحور محادثة واحد. تديره Henry Onyx Limited، وهي شركة خاصة مسجَّلة في نيجيريا، وقد بُني على قاعدة بسيطة — الصفحة والمنتج شيء واحد.",
+      factsTitle: "حقائق الشركة",
+      factLabels: {
+        legalName: "الكيان القانوني",
+        rc: "رقم التسجيل RC",
+        founded: "سنة التأسيس",
+        hq: "المقر الرئيسي",
+        founder: "المؤسس",
+        contact: "جهة التواصل الصحفي",
+      },
+      marksTitle: "علامات الهوية البصرية",
+      marksLede:
+        "الشعار الأحادي وعلامات الاسم أدناه هي العلامات المعتمدة الوحيدة. استخدمها على خلفية هادئة، وبأحجام مقروءة، ودون أي تعديل.",
+      download: "تنزيل SVG",
+      markLabels: {
+        monogram: "الشعار الأحادي",
+        wordmarkFull: "علامة الاسم",
+        wordmarkCompact: "علامة الاسم المدمجة",
+      },
+      usageTitle: "قواعد الاستخدام",
+      usageRules: [
+        "لا تُعِد تلوين العلامات أو تمددها أو تحدد إطارها أو تضيف إليها مؤثرات.",
+        "اكتب اسم العلامة Henry Onyx؛ أما الكيان القانوني فهو Henry Onyx Limited.",
+        "يجوز استخدام لقطات شاشة من المنتج المباشر مع ذكر المصدر.",
+        "لا تُوحِ بوجود تأييد أو شراكة دون اتفاق مكتوب.",
+      ],
+      contactTitle: "تحدث إلينا",
+      contactBody:
+        "للمقابلات، أو التحقق من الحقائق، أو للحصول على مواد غير موجودة في هذه الصفحة، راسلنا — إنسان حقيقي يقرأ رسالتك.",
+    },
+    announcement: {
+      metaTitle: "الإعلان عن الإصدار الثالث V3 — {brand}",
+      metaDescription:
+        "الإصدار الثالث من Henry Onyx: حساب واحد، ومحفظة واحدة، ومحور محادثة واحد عبر سبعة أقسام تعمل فعلياً — والصفحات التي تثبت ذلك.",
+      eyebrow: "من المؤسس",
+      title: "الإصدار الثالث متاح الآن",
+      lede:
+        "هذه هي النسخة من Henry Onyx التي انطلقنا لبنائها: اقتصاد واحد مترابط يمكنك التجول فيه خلال خمس دقائق، وكل ادعاء فيه مرتبط بالمنتج الفعلي.",
+      paragraphs: [
+        "الإصدار الثالث ليس إعادة تصميم. إنه اللحظة التي تتوقف فيها الأقسام عن كونها منتجات منفصلة لتصبح اقتصاداً واحداً — هوية واحدة تسجّل الدخول في كل مكان، ومحفظة واحدة يقف خلفها نظام قيد مزدوج نزيه، ومحور محادثة واحد يصل المشتري بالبائع، والمرشح بصاحب العمل، والعميل بالفريق.",
+        "نشرنا الأجزاء التي تُبقيها معظم المنصات سرية: ما هو متاح فعلياً، وكيف نكسب ولماذا يجب أن يجتاز كل رسم ثلاثة اختبارات علنية، ورحلة يمكنك خوضها كزائر غريب دون حساب. إذا اختلفت صفحة مع المنتج يوماً، فأحدهما مخطئ ونحن نصححه.",
+        "هذا هو الأساس. وما يأتي بعده يكسب مكانه على هذه الصفحات بالطريقة نفسها التي كسب بها كل ما هنا مكانه — بأن يكون حقيقياً أولاً.",
+      ],
+      ctaStory: "اقرأ قصة الإصدار الثالث",
+      ctaTry: "خض الرحلة",
+      signoffRole: "المؤسس، Henry Onyx",
     },
   },
 };
@@ -2618,6 +2933,63 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
       closing:
         "Das ist das Ökosystem. Wenn sich ein Schritt langsamer, weniger ehrlich oder weniger fertig angefühlt hat, als diese Seite versprochen hat, sagen Sie es uns — die Seite und das Produkt sollen dasselbe sein.",
     },
+    press: {
+      metaTitle: "Pressematerial — {brand}",
+      metaDescription:
+        "Markenzeichen, Unternehmensdaten und Boilerplate für Berichte über Henry Onyx. Ausschließlich eingetragene Fakten — direkt aus dem Unternehmensregister.",
+      eyebrow: "Presse",
+      title: "Über Henry Onyx schreiben",
+      lede:
+        "Alles auf dieser Seite stammt aus dem eingetragenen Unternehmensregister und den Quelldateien der Marke. Wenn Sie etwas brauchen, das hier fehlt, fragen Sie uns — wir antworten.",
+      boilerplateTitle: "Boilerplate",
+      boilerplate:
+        "Henry Onyx ist eine verbundene Ökonomie: Pflege, Marktplatz, Jobs, Lernen, Logistik, Kreativstudio und Immobilien auf einem einzigen Konto, einer Wallet und einem gemeinsamen Konversationsstrang. Betrieben wird sie von Henry Onyx Limited, einem in Nigeria eingetragenen Privatunternehmen, und gebaut nach einer einfachen Regel — die Seite und das Produkt sind dasselbe.",
+      factsTitle: "Unternehmensdaten",
+      factLabels: {
+        legalName: "Juristische Person",
+        rc: "RC-Nummer",
+        founded: "Gegründet",
+        hq: "Hauptsitz",
+        founder: "Gründer",
+        contact: "Pressekontakt",
+      },
+      marksTitle: "Markenzeichen",
+      marksLede:
+        "Das Monogramm und die Wortmarken unten sind die einzigen freigegebenen Zeichen. Verwenden Sie sie auf ruhigem Hintergrund, in gut lesbarer Größe und ohne Veränderung.",
+      download: "SVG herunterladen",
+      markLabels: {
+        monogram: "Monogramm",
+        wordmarkFull: "Wortmarke",
+        wordmarkCompact: "Kompakte Wortmarke",
+      },
+      usageTitle: "Verwendung",
+      usageRules: [
+        "Die Zeichen nicht umfärben, verzerren, konturieren oder mit Effekten versehen.",
+        "Die Marke heißt Henry Onyx; die juristische Person ist Henry Onyx Limited.",
+        "Screenshots des Live-Produkts dürfen mit Quellenangabe verwendet werden.",
+        "Ohne schriftliche Vereinbarung keine Empfehlung oder Partnerschaft andeuten.",
+      ],
+      contactTitle: "Sprechen Sie mit uns",
+      contactBody:
+        "Für Interviews, Faktenprüfung oder Material, das auf dieser Seite fehlt, schreiben Sie uns — ein Mensch liest es.",
+    },
+    announcement: {
+      metaTitle: "V3 ist da — {brand}",
+      metaDescription:
+        "Henry Onyx V3: ein Konto, eine Wallet, ein Konversationsstrang über sieben aktive Geschäftsbereiche — und die Seiten, die es belegen.",
+      eyebrow: "Vom Gründer",
+      title: "V3 ist live",
+      lede:
+        "Die Version von Henry Onyx, die wir bauen wollten: eine verbundene Ökonomie, die Sie in fünf Minuten durchlaufen können, mit jeder Aussage verlinkt auf das Live-Produkt.",
+      paragraphs: [
+        "V3 ist kein Redesign. Es ist der Punkt, an dem die Geschäftsbereiche aufhören, getrennte Produkte zu sein, und beginnen, eine Ökonomie zu werden — eine Identität, die sich überall anmeldet, eine Wallet mit ehrlicher doppelter Buchführung dahinter, ein Konversationsstrang, der Käufer mit Verkäufer, Kandidat mit Arbeitgeber, Kunde mit Team verbindet.",
+        "Wir haben veröffentlicht, was die meisten Plattformen für sich behalten: was tatsächlich live ist, wie wir verdienen und warum jede Gebühr drei öffentliche Prüfungen bestehen muss, und einen Rundgang, den Sie ohne Konto als Fremder machen können. Wenn eine Seite und das Produkt jemals nicht übereinstimmen, ist eines von beiden falsch, und wir beheben es.",
+        "Das ist das Fundament. Was als Nächstes kommt, verdient sich seinen Platz auf diesen Seiten auf dieselbe Weise wie alles hier — indem es zuerst real ist.",
+      ],
+      ctaStory: "Die V3-Geschichte lesen",
+      ctaTry: "Den Rundgang machen",
+      signoffRole: "Gründer, Henry Onyx",
+    },
   },
 };
 const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
@@ -3009,6 +3381,63 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
       closing:
         "Questo è l'ecosistema. Se un passo ti è sembrato più lento, meno onesto o meno rifinito di quanto questa pagina promettesse, diccelo — la pagina e il prodotto devono essere la stessa cosa.",
     },
+    press: {
+      metaTitle: "Kit stampa — {brand}",
+      metaDescription:
+        "Marchi, dati aziendali e testo standard per scrivere di Henry Onyx. Solo fatti registrati — tratti dal registro della società.",
+      eyebrow: "Stampa",
+      title: "Scrivere di Henry Onyx",
+      lede:
+        "Tutto ciò che trovi in questa pagina proviene dal registro ufficiale della società e dai file sorgente del brand. Se ti serve qualcosa che non c'è, chiedi — rispondiamo.",
+      boilerplateTitle: "Testo standard",
+      boilerplate:
+        "Henry Onyx è un'unica economia connessa: cura della persona, marketplace, lavoro, formazione, logistica, studio creativo e immobiliare su un solo account, un solo wallet e un'unica spina dorsale di conversazione. È gestita da Henry Onyx Limited, società privata registrata in Nigeria, e costruita su una regola semplice — la pagina e il prodotto sono la stessa cosa.",
+      factsTitle: "Dati aziendali",
+      factLabels: {
+        legalName: "Ragione sociale",
+        rc: "Numero RC",
+        founded: "Fondazione",
+        hq: "Sede centrale",
+        founder: "Fondatore",
+        contact: "Contatto stampa",
+      },
+      marksTitle: "Marchi",
+      marksLede:
+        "Il monogramma e i logotipi qui sotto sono gli unici marchi approvati. Usali su uno sfondo sobrio, a dimensioni leggibili, senza alterazioni.",
+      download: "Scarica SVG",
+      markLabels: {
+        monogram: "Monogramma",
+        wordmarkFull: "Logotipo",
+        wordmarkCompact: "Logotipo compatto",
+      },
+      usageTitle: "Utilizzo",
+      usageRules: [
+        "Non ricolorare, deformare, contornare o aggiungere effetti ai marchi.",
+        "Scrivi il brand come Henry Onyx; la ragione sociale è Henry Onyx Limited.",
+        "Le schermate del prodotto live possono essere usate con attribuzione.",
+        "Non suggerire endorsement o partnership senza un accordo scritto.",
+      ],
+      contactTitle: "Parla con noi",
+      contactBody:
+        "Per interviste, verifica dei fatti o materiali non presenti in questa pagina, scrivici — a leggere è una persona.",
+    },
+    announcement: {
+      metaTitle: "Presentiamo V3 — {brand}",
+      metaDescription:
+        "Henry Onyx V3: un solo account, un solo wallet, un'unica spina dorsale di conversazione attraverso sette divisioni attive — e le pagine che lo dimostrano.",
+      eyebrow: "Dal fondatore",
+      title: "V3 è online",
+      lede:
+        "La versione di Henry Onyx che ci eravamo proposti di costruire: un'unica economia connessa che puoi attraversare in cinque minuti, con ogni affermazione collegata al prodotto live.",
+      paragraphs: [
+        "V3 non è un redesign. È il punto in cui le divisioni smettono di essere prodotti separati e iniziano a essere un'unica economia — una sola identità che accede ovunque, un solo wallet con dietro una contabilità in partita doppia onesta, un'unica spina dorsale di conversazione che collega acquirente e venditore, candidato e datore di lavoro, cliente e team.",
+        "Abbiamo pubblicato le parti che la maggior parte delle piattaforme tiene private: cosa è davvero attivo, come guadagniamo e perché ogni commissione deve superare tre test pubblici, e un percorso che puoi fare da estraneo, senza un account. Se una pagina e il prodotto non coincidono, uno dei due è sbagliato e lo correggiamo.",
+        "Questa è la base. Ciò che verrà dopo si guadagnerà il posto in queste pagine come tutto il resto — essendo reale, prima di tutto.",
+      ],
+      ctaStory: "Leggi la storia di V3",
+      ctaTry: "Percorri il viaggio",
+      signoffRole: "Fondatore, Henry Onyx",
+    },
   },
 };
 const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
@@ -3399,6 +3828,63 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
       ],
       closing:
         "这就是整个生态。如果任何一步让你觉得比这个页面承诺的更慢、更不坦诚或更不完整，请告诉我们——页面与产品本就应该是同一回事。",
+    },
+    press: {
+      metaTitle: "媒体资料 — {brand}",
+      metaDescription:
+        "关于报道 Henry Onyx 的品牌标识、公司信息与标准介绍文。仅含注册在案的事实——均来自公司登记记录。",
+      eyebrow: "媒体",
+      title: "报道 Henry Onyx",
+      lede:
+        "本页所有内容均来自公司登记记录与品牌源文件。如需本页未列出的内容，请与我们联系——我们会答复。",
+      boilerplateTitle: "标准介绍文",
+      boilerplate:
+        "Henry Onyx 是一个互联的经济体：护理、市集、招聘、学习、物流、创意工作室与房产，共用同一个账户、同一个钱包和同一条对话主干。其运营方为 Henry Onyx Limited，一家在尼日利亚注册的私营公司，遵循一条简单的原则——页面与产品是同一件事。",
+      factsTitle: "公司信息",
+      factLabels: {
+        legalName: "法定实体",
+        rc: "RC 注册号",
+        founded: "成立时间",
+        hq: "总部",
+        founder: "创始人",
+        contact: "媒体联系",
+      },
+      marksTitle: "品牌标识",
+      marksLede:
+        "以下字母标与文字标是仅有的获准标识。请在素净的背景上、以清晰可辨的尺寸使用，不得改动。",
+      download: "下载 SVG",
+      markLabels: {
+        monogram: "字母标",
+        wordmarkFull: "文字标",
+        wordmarkCompact: "紧凑文字标",
+      },
+      usageTitle: "使用规范",
+      usageRules: [
+        "不得为标识改色、拉伸、描边或添加效果。",
+        "品牌名写作 Henry Onyx；法定实体为 Henry Onyx Limited。",
+        "线上产品的截图可在注明来源后使用。",
+        "未经书面协议，不得暗示背书或合作关系。",
+      ],
+      contactTitle: "联系我们",
+      contactBody:
+        "如需采访、核实信息，或获取本页未提供的素材，请来信——会有专人阅读。",
+    },
+    announcement: {
+      metaTitle: "V3 发布 — {brand}",
+      metaDescription:
+        "Henry Onyx V3：一个账户、一个钱包、一条对话主干贯通七个已上线的分部——以及能够印证这一切的页面。",
+      eyebrow: "创始人来信",
+      title: "V3 已上线",
+      lede:
+        "这就是我们最初想要打造的 Henry Onyx：一个互联的经济体，五分钟即可走完全程，每一项说明都链接到真实运行的产品。",
+      paragraphs: [
+        "V3 不是一次改版。它是各分部不再是彼此独立的产品、开始成为同一个经济体的节点——一个身份可在各处登录，一个钱包背后是诚实的复式记账，一条对话主干连接买家与卖家、求职者与雇主、客户与团队。",
+        "我们公开了多数平台不愿公开的部分：哪些功能真正上线、我们如何盈利、为何每项收费都必须通过三项公开检验，以及一段无需账户、以访客身份即可走完的体验路径。如果页面与产品出现不一致，其中必有一处是错的，我们会修正。",
+        "这是地基。接下来的每一项，都要以同样的方式在这些页面上赢得位置——先做成真实的。",
+      ],
+      ctaStory: "阅读 V3 的故事",
+      ctaTry: "亲自走一遍",
+      signoffRole: "创始人，Henry Onyx",
     },
   },
 };

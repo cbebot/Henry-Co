@@ -45,6 +45,12 @@ export function buildHubFooter(
           { label: shell.linkAbout, href: "/about" },
           { label: shell.linkContact, href: "/contact" },
           { label: shell.linkSearch, href: "/search" },
+          // V3 showcase surfaces (V3-96 S2.3: the Earning Map is linked from
+          // the footer). Labels reuse the already-translated v3 eyebrows —
+          // zero new i18n keys, consistent with this builder's contract.
+          { label: hubCopy.v3.story.eyebrow, href: "/v3" },
+          { label: hubCopy.v3.earn.eyebrow, href: "/v3/how-we-earn" },
+          { label: hubCopy.v3.press.eyebrow, href: "/press/v3" },
         ],
       },
       {

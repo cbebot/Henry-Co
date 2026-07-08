@@ -39,6 +39,16 @@ divisions without behavior drift.
 9. **Concierge Handoff** — opt-in specialist handoff.
 10. **Local Boost** — transparent promoted placement.
 
+## Adopting in an app
+
+The engines style with Tailwind utilities. Every consuming app MUST add the
+package to its Tailwind v4 source scan (in the app's `globals.css`), or the
+engine chrome silently drops (transparent CTAs, unstyled cards):
+
+```css
+@source "../../../packages/interactions/src";
+```
+
 ## Scripts
 
 ```bash

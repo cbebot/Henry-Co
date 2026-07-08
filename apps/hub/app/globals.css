@@ -6,6 +6,10 @@
    media query — without this, the toggled theme and `dark:` utilities decouple. */
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
+/* The interaction Engines package styles with Tailwind utilities; every app
+   that consumes @henryco/interactions must scan it or the engine chrome
+   silently drops (transparent CTAs). */
+@source "../../../packages/interactions/src";
 
 /* Henry Onyx Hub — shared account surface tokens + HQ command center */
 :root {
