@@ -205,27 +205,6 @@
    import order) and live ONLY in jobs globals — the shared package is never
    touched, so account + other divisions keep their gold tuning. All ratios
    proven in .codex-temp/v3-inner/wcag-jobs-hero.mjs (every pairing ≥ AA). */
-.acct-hero .acct-hero__cta--primary {
-  color: #ffffff;                                                  /* on #0e7c86 → 4.95:1 */
-}
-.acct-hero .acct-hero__cta--primary:hover {
-  background: color-mix(in srgb, var(--jobs-accent) 88%, #000);    /* darken → white stays 6.05:1 */
-}
-.dark .acct-hero .acct-hero__cta--primary {
-  color: var(--jobs-bg);                                           /* deep ink on #49b6bf → 7.83:1 */
-}
-.dark .acct-hero .acct-hero__cta--primary:hover {
-  background: color-mix(in srgb, var(--jobs-accent) 88%, #fff);    /* lighten → ink stays 8.73:1 */
-}
-.dark .acct-hero .acct-hero__eyebrow {
-  color: #18585d;                                                  /* darkened teal on light chip → 5.62:1 */
-}
-.acct-hero .acct-hero__cta:focus-visible {
-  outline-color: #ffffff;                                          /* vs dark card 16.6:1 / fill 4.95:1 */
-}
-.dark .acct-hero .acct-hero__cta:focus-visible {
-  outline-color: var(--jobs-bg);                                   /* vs light card 17.1:1 / fill 7.83:1 */
-}
 
 /* ════════════════════════════════════════════════════════════════════
  * V3-INNER-L-ELEVATE-JOBS — "The Candidate Ledger".
@@ -242,35 +221,11 @@
  * ════════════════════════════════════════════════════════════════════ */
 
 /* The ledger slab — teal/forest radials replace the account gold. */
-[data-workspace-division="jobs-candidate"] .acct-hero {
-  border-color: color-mix(in srgb, var(--jobs-accent) 30%, transparent);
-  background-image:
-    radial-gradient(118% 96% at 0% 0%, color-mix(in srgb, var(--jobs-accent) 26%, transparent) 0%, transparent 56%),
-    radial-gradient(92% 92% at 100% 100%, color-mix(in srgb, var(--jobs-forest) 16%, transparent) 0%, transparent 62%);
-}
 /* Attention warms toward brass — a considered "you're being looked at", not alarm. */
-[data-workspace-division="jobs-candidate"] .acct-hero[data-tone="attention"] {
-  border-color: color-mix(in srgb, var(--jobs-brass) 32%, transparent);
-  background-image:
-    radial-gradient(122% 100% at 0% 0%, color-mix(in srgb, var(--jobs-accent) 26%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--jobs-brass) 22%, transparent) 0%, transparent 60%);
-}
-[data-workspace-division="jobs-candidate"] .acct-hero[data-tone="empty"] {
-  background-image:
-    radial-gradient(118% 92% at 0% 0%, color-mix(in srgb, var(--jobs-accent) 16%, transparent) 0%, transparent 56%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
-}
 
 /* A hairline teal rule under the headline — the ledger baseline. */
-[data-workspace-division="jobs-candidate"] .acct-hero__headline {
-  padding-bottom: 14px;
-  border-bottom: 1px solid color-mix(in srgb, var(--jobs-accent) 26%, transparent);
-}
 
 /* Tiles pick up a faint teal hairline. */
-[data-workspace-division="jobs-candidate"] .acct-hero__tile {
-  border-color: color-mix(in srgb, var(--jobs-accent) 18%, transparent);
-}
 
 /* The next-step row gets a teal-framed icon so it reads as part of the same
    ledger system, not a generic alert. */

@@ -589,66 +589,20 @@ html, body { overflow-x: clip; max-width: 100vw; }
    gold radials to marketplace's brass. The primitive keeps the slab/text
    inversion (dark slab on the light page; light slab on the dark page) so the
    parity grammar is unchanged — only the accent metal becomes brass. */
-.market-workspace-light .acct-hero {
-  border-color: color-mix(in srgb, var(--mkt-brass) 30%, transparent);
-  background-image:
-    radial-gradient(115% 95% at 0% 0%, color-mix(in srgb, var(--mkt-brass) 30%, transparent) 0%, transparent 56%),
-    radial-gradient(90% 92% at 100% 100%, color-mix(in srgb, var(--mkt-brass) 12%, transparent) 0%, transparent 62%);
-}
-.market-workspace-light .acct-hero[data-tone="attention"] {
-  background-image:
-    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--mkt-brass-soft) 34%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-red) 16%, transparent) 0%, transparent 60%);
-  border-color: color-mix(in srgb, var(--mkt-brass-soft) 30%, transparent);
-}
-.market-workspace-light .acct-hero[data-tone="empty"] {
-  background-image:
-    radial-gradient(115% 92% at 0% 0%, color-mix(in srgb, var(--mkt-brass) 16%, transparent) 0%, transparent 56%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
-}
 
 /* Eyebrow kicker reads brass against the slab (light text mixed with brass
    keeps it legible on the dark slab). */
-.market-workspace-light .acct-hero__eyebrow {
-  color: color-mix(in srgb, var(--mkt-brass) 78%, var(--acct-bg-soft));
-  border-color: color-mix(in srgb, var(--mkt-brass) 28%, transparent);
-  background: color-mix(in srgb, var(--mkt-brass) 12%, transparent);
-}
 
 /* A hairline brass rule under the headline anchors the masthead like a
    ledger heading. */
-.market-workspace-light .acct-hero__headline {
-  padding-bottom: 14px;
-  border-bottom: 1px solid color-mix(in srgb, var(--mkt-brass) 22%, transparent);
-}
 
 /* Tile values warm toward brass (still the primitive's light slab text, just
    tilted to the metal). Active/warning tones already lift via the primitive. */
-.market-workspace-light .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 94%, var(--mkt-brass));
-}
-.market-workspace-light .acct-hero__tile {
-  border-color: color-mix(in srgb, var(--mkt-brass) 18%, transparent);
-}
 
 /* Primary CTA on the masthead is a brass fill under DARK ink (AA), matching
    the .market-button-primary metal rather than account's gold. */
-.market-workspace-light .acct-hero__cta--primary {
-  background: var(--mkt-brass);
-  color: var(--hc-ink-on-accent);
-  border-color: color-mix(in srgb, var(--mkt-brass) 80%, transparent);
-}
-.market-workspace-light .acct-hero__cta--primary:hover {
-  background: color-mix(in srgb, var(--mkt-brass) 88%, white);
-}
-.market-workspace-light .acct-hero__cta:focus-visible {
-  outline-color: var(--mkt-brass);
-}
 
 /* Side panel divider + breakdown read on the same warm metal. */
-.market-workspace-light .acct-hero__side {
-  border-color: color-mix(in srgb, var(--mkt-brass) 22%, transparent);
-}
 
 /* The single next-step row picks up a warm brass icon surround so it reads as
    part of the same editorial system, not a generic alert. */

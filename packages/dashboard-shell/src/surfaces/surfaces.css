@@ -35,33 +35,29 @@
  */
 
 /* ────────────────────────────────────────────────────────────────────
- * <HeroCard />
+ * <HeroCard /> — the EDITORIAL OPENER (redesign 2026-07-08).
+ *
+ * The state-driven brain (empty/calm/active/attention per
+ * docs/v3/account-design-language.md) is untouched; the dark rounded
+ * BAND is gone. The opener now sits directly on the page canvas —
+ * eyebrow kicker + serif headline + inline CTAs + an unboxed stat rail
+ * over a single hairline — the public-design "gravity not size,
+ * hairlines not glass" language brought inside the product. Class
+ * names + data attributes are byte-identical to the band era, so all
+ * consumers (account/jobs/studio/marketplace) inherit with zero edits.
+ * Tone semantics move from background tint to the type layer:
+ * attention = gold-strong kicker + a 2px gold rule on the lead.
  * ────────────────────────────────────────────────────────────────────*/
 
 .acct-hero {
   position: relative;
-  border-radius: var(--acct-radius-lg, 24px);
-  overflow: hidden;
-  isolation: isolate;
-  color: var(--acct-bg-soft);
-  background-color: var(--acct-ink);
-  background-image:
-    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 26%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-gold) 10%, transparent) 0%, transparent 60%);
-  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, transparent);
+  color: var(--acct-ink);
+  border-bottom: 1px solid var(--acct-line);
 }
 
-.acct-hero[data-tone="attention"] {
-  background-image:
-    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 36%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-red, #b91c1c) 14%, transparent) 0%, transparent 60%);
-  border-color: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 32%, transparent);
-}
-
-.acct-hero[data-tone="empty"] {
-  background-image:
-    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 14%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
+.acct-hero[data-tone="attention"] .acct-hero__lead {
+  border-left: 2px solid var(--acct-gold-strong, var(--acct-gold));
+  padding-left: 16px;
 }
 
 .acct-hero__inner {
@@ -69,7 +65,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
   gap: 32px;
-  padding: 32px;
+  padding: 4px 0 26px;
   align-items: flex-start;
 }
 
@@ -78,14 +74,14 @@
 }
 
 .acct-hero[data-variant="compact"] .acct-hero__inner {
-  padding: 24px 28px;
+  padding: 4px 0 20px;
   grid-template-columns: 1fr;
 }
 
 @media (max-width: 880px) {
   .acct-hero__inner {
     grid-template-columns: 1fr;
-    padding: 24px;
+    padding: 4px 0 20px;
     gap: 24px;
   }
 }
@@ -98,15 +94,15 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 18%, transparent);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-bg-soft));
+  color: color-mix(in srgb, var(--acct-gold) 55%, var(--acct-ink));
+}
+
+.acct-hero[data-tone="attention"] .acct-hero__eyebrow {
+  color: var(--acct-gold-strong, var(--acct-gold));
 }
 
 .acct-hero__eyebrow-dot {
@@ -114,12 +110,12 @@
   height: 6px;
   border-radius: 999px;
   background: currentColor;
-  animation: acct-hero-pulse 2.6s ease-in-out infinite;
 }
 
+/* The pulse is a STATE signal now — only live states breathe. */
 .acct-hero[data-tone="active"] .acct-hero__eyebrow-dot,
 .acct-hero[data-tone="attention"] .acct-hero__eyebrow-dot {
-  animation-duration: 1.8s;
+  animation: acct-hero-pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes acct-hero-pulse {
@@ -129,18 +125,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .acct-hero__eyebrow-dot {
-    animation: none;
+    animation: none !important;
   }
 }
 
 .acct-hero__headline {
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
-  font-size: clamp(26px, 3.4vw, 38px);
-  line-height: 1.1;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.12;
   letter-spacing: -0.01em;
   font-weight: 600;
-  color: var(--acct-bg-soft);
-  margin: 16px 0 12px;
+  color: var(--acct-ink);
+  margin: 14px 0 10px;
 }
 
 .acct-hero[data-tone="empty"] .acct-hero__headline {
@@ -148,7 +144,7 @@
 }
 
 .acct-hero__blurb {
-  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+  color: var(--acct-muted);
   font-size: 14px;
   line-height: 1.65;
   max-width: 56ch;
@@ -156,7 +152,7 @@
 }
 
 .acct-hero__ctas {
-  margin-top: 20px;
+  margin-top: 18px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -184,19 +180,19 @@
 }
 
 .acct-hero__cta--primary:hover {
-  background: color-mix(in srgb, var(--acct-gold) 90%, white);
+  background: var(--acct-gold-strong, var(--acct-gold));
   transform: translateY(-1px);
 }
 
 .acct-hero__cta--ghost {
-  color: var(--acct-bg-soft);
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 22%, transparent);
+  color: var(--acct-ink);
+  background: transparent;
+  border: 1px solid var(--acct-line);
 }
 
 .acct-hero__cta--ghost:hover {
-  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
-  border-color: color-mix(in srgb, var(--acct-bg-soft) 34%, transparent);
+  background: var(--acct-bg-soft);
+  border-color: color-mix(in srgb, var(--acct-ink) 24%, transparent);
 }
 
 .acct-hero__cta:focus-visible {
@@ -204,11 +200,13 @@
   outline-offset: 2px;
 }
 
+/* Stat rail — unboxed tiles over one hairline; numbers carry the weight. */
 .acct-hero__tiles {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 24px;
+  gap: 0 28px;
+  margin-top: 22px;
+  border-top: 1px solid var(--acct-line);
 }
 
 .acct-hero__tiles:has(.acct-hero__tile:nth-child(3):last-child) {
@@ -222,6 +220,7 @@
 @media (max-width: 640px) {
   .acct-hero__tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
   }
 }
 
@@ -229,10 +228,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  padding: 14px 0 2px;
 }
 
 .acct-hero__tile-label {
@@ -240,7 +236,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 64%, transparent);
+  color: var(--acct-muted);
 }
 
 .acct-hero__tile-value {
@@ -249,43 +245,38 @@
   line-height: 1.05;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink);
   font-variant-numeric: oldstyle-nums proportional-nums;
 }
 
 .acct-hero__tile[data-tone="warning"] .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 92%, var(--acct-gold-strong, var(--acct-gold)));
+  color: color-mix(in srgb, var(--acct-ink) 45%, var(--acct-gold-strong, var(--acct-gold)));
 }
 
 .acct-hero__tile[data-tone="active"] .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 92%, var(--acct-gold));
+  color: color-mix(in srgb, var(--acct-ink) 55%, var(--acct-gold));
 }
 
 .acct-hero__tile-foot {
   font-size: 11px;
   line-height: 1.4;
-  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+  color: var(--acct-muted);
 }
 
-/* Interactive tile (V3-DASHBOARD-TILES-INTERACTIVE) — a tile with an href
-   becomes a focusable deep-link to a (usually pre-filtered) destination instead
-   of a silent read-out: a hover lift + accent border + a "view" arrow that
-   fades in, and an AA focus ring. Selectors are scoped under .acct-hero so they
-   outrank any division's scoped .acct-hero__tile re-tone (specificity), and the
-   accent reads through --acct-gold (each division maps that to its own metal).
-   The arrow is decorative (aria-hidden); the tile text/value are unchanged, so
-   AA is untouched. Motion is dropped under prefers-reduced-motion. */
+/* Interactive tile (V3-DASHBOARD-TILES-INTERACTIVE) — href tiles remain
+   focusable deep-links: gold underline-rule on hover instead of the boxed
+   lift, arrow fades in, AA focus ring. Reduced-motion drops transitions. */
 .acct-hero .acct-hero__tile--link {
   position: relative;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
   padding-right: 34px;
-  transition: border-color 180ms ease-out, background-color 180ms ease-out, transform 120ms ease-out;
+  border-bottom: 2px solid transparent;
+  transition: border-color 180ms ease-out, transform 120ms ease-out;
 }
 .acct-hero .acct-hero__tile--link:hover {
-  border-color: color-mix(in srgb, var(--acct-gold) 55%, transparent);
-  background: color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--acct-gold) 55%, transparent);
   transform: translateY(-1px);
 }
 .acct-hero .acct-hero__tile--link:focus-visible {
@@ -294,9 +285,9 @@
 }
 .acct-hero .acct-hero__tile-go {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  color: color-mix(in srgb, var(--acct-bg-soft) 55%, transparent);
+  top: 14px;
+  right: 6px;
+  color: var(--acct-muted);
   opacity: 0;
   transform: translate(-2px, 2px);
   transition: opacity 180ms ease-out, transform 180ms ease-out, color 180ms ease-out;
@@ -305,7 +296,7 @@
 .acct-hero .acct-hero__tile--link:focus-visible .acct-hero__tile-go {
   opacity: 1;
   transform: translate(0, 0);
-  color: color-mix(in srgb, var(--acct-bg-soft) 85%, var(--acct-gold));
+  color: color-mix(in srgb, var(--acct-ink) 40%, var(--acct-gold));
 }
 @media (prefers-reduced-motion: reduce) {
   .acct-hero .acct-hero__tile--link { transition: none; }
@@ -327,7 +318,7 @@
 .acct-hero__progress-track {
   height: 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  background: color-mix(in srgb, var(--acct-ink) 10%, transparent);
   overflow: hidden;
 }
 
@@ -342,17 +333,24 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 64%, transparent);
+  color: var(--acct-muted);
 }
 
+/* Side panel — unboxed: a hairline-ruled column, not a glass card. */
 .acct-hero__side {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 22px 22px 24px;
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  padding: 4px 0 0 24px;
+  border-left: 1px solid var(--acct-line);
+}
+
+@media (max-width: 880px) {
+  .acct-hero__side {
+    border-left: 0;
+    border-top: 1px solid var(--acct-line);
+    padding: 16px 0 0;
+  }
 }
 
 .acct-hero__side-kicker {
@@ -360,7 +358,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+  color: var(--acct-muted);
   margin: 0;
 }
 
@@ -369,21 +367,21 @@
   font-size: 18px;
   line-height: 1.25;
   letter-spacing: -0.005em;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink);
   margin: 0;
 }
 
 .acct-hero__side-body {
   font-size: 12.5px;
   line-height: 1.55;
-  color: color-mix(in srgb, var(--acct-bg-soft) 72%, transparent);
+  color: var(--acct-muted);
   margin: 0;
 }
 
 .acct-hero__breakdown {
   margin-top: 6px;
   padding-top: 12px;
-  border-top: 1px solid color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  border-top: 1px solid var(--acct-line);
 }
 
 .acct-hero__breakdown-label {
@@ -391,7 +389,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 56%, transparent);
+  color: var(--acct-muted);
   margin: 0 0 8px;
 }
 
@@ -407,7 +405,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: color-mix(in srgb, var(--acct-bg-soft) 86%, transparent);
+  color: color-mix(in srgb, var(--acct-ink) 86%, transparent);
 }
 
 .acct-hero__breakdown-dot {
@@ -421,7 +419,7 @@
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
   font-weight: 500;
   font-feature-settings: "lnum" 0, "onum" 1;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink);
 }
 
 /* ────────────────────────────────────────────────────────────────────

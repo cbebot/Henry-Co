@@ -295,8 +295,11 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
               </ContextDrawer>
             }
           />
-          <AccountLayoutInner>
-            {rail}
+          {/* CHROME-OPENER FIX (redesign 2026-07-08): the @rail slot was
+              spread INTO the content column, stacking ~573px of module
+              nav above every page. It now passes as a prop so the inner
+              shell can seat it in its intended sticky side column. */}
+          <AccountLayoutInner rail={rail}>
             {children}
             {drawer}
           </AccountLayoutInner>
