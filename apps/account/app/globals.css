@@ -1828,12 +1828,6 @@ a.acct-lifecycle__row:hover .acct-lifecycle__cta {
    Account-scoped (this stylesheet is apps/account-only). The shared
    package + its tokens are NOT mutated, so no other consumer's register
    is relit. */
-.dark .acct-hero {
-  /* hero surface (var(--acct-ink)) → deep onyx, elevated above the page
-     bg (#0B0F14); hero ink (var(--acct-bg-soft)) → warm light. */
-  --acct-ink: #141A22;
-  --acct-bg-soft: #F0EDE8;
-}
 
 /* ──────────────────────────────────────────────────────────────────
    Dashboard hero — dark-mode token rebinding.

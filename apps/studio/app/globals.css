@@ -2146,51 +2146,14 @@ html, body { overflow-x: clip; max-width: 100vw; }
  * ════════════════════════════════════════════════════════════════════ */
 
 /* The dossier slab — refined teal "drafting" radials. */
-.studio-workspace-light .acct-hero {
-  border-color: color-mix(in srgb, var(--studio-accent) 30%, transparent);
-  background-image:
-    radial-gradient(118% 96% at 0% 0%, color-mix(in srgb, var(--studio-accent) 28%, transparent) 0%, transparent 56%),
-    radial-gradient(92% 92% at 100% 100%, color-mix(in srgb, var(--studio-accent) 13%, transparent) 0%, transparent 62%);
-}
 /* Attention leans on studio amber — a calm "needs you", not an error red. */
-.studio-workspace-light .acct-hero[data-tone="attention"] {
-  border-color: color-mix(in srgb, var(--studio-amber-ink) 32%, transparent);
-  background-image:
-    radial-gradient(122% 100% at 0% 0%, color-mix(in srgb, var(--studio-accent) 26%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--studio-amber-ink) 20%, transparent) 0%, transparent 60%);
-}
-.studio-workspace-light .acct-hero[data-tone="empty"] {
-  background-image:
-    radial-gradient(118% 92% at 0% 0%, color-mix(in srgb, var(--studio-accent) 16%, transparent) 0%, transparent 56%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
-}
 
 /* A hairline teal rule under the headline — the drafting baseline that signs
    the dossier masthead. */
-.studio-workspace-light .acct-hero__headline {
-  padding-bottom: 14px;
-  border-bottom: 1px solid color-mix(in srgb, var(--studio-accent) 26%, transparent);
-}
 
 /* Tiles pick up a faint teal hairline — quiet drafting-grid precision. */
-.studio-workspace-light .acct-hero__tile {
-  border-color: color-mix(in srgb, var(--studio-accent) 18%, transparent);
-}
 
 /* Primary CTA — teal FILL under theme-stable DARK ink (AA in BOTH themes). */
-.studio-workspace-light .acct-hero__cta--primary {
-  background: var(--studio-accent);
-  color: var(--hc-ink-on-accent);
-  border-color: color-mix(in srgb, var(--studio-accent) 80%, transparent);
-}
-.studio-workspace-light .acct-hero__cta--primary:hover {
-  /* lighten the teal on hover (never darken) so dark ink keeps its AA margin */
-  background: color-mix(in srgb, var(--studio-accent) 88%, white);
-  color: var(--hc-ink-on-accent);
-}
-.studio-workspace-light .acct-hero__cta:focus-visible {
-  outline-color: var(--studio-accent);
-}
 
 /* The single next-step row gets a teal-framed icon so it reads as part of the
    same dossier system, not a generic alert. */
