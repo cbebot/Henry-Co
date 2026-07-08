@@ -227,12 +227,16 @@ function PersonCard({
           ) : null}
 
           {person.phone ? (
+            /* NUMBER-PURGE (owner 2026-07-08): tel: hrefs are crawlable —
+             * masked WhatsApp deep link instead; digits never render. */
             <a
-              href={`tel:${person.phone}`}
+              href={`https://wa.me/${person.phone.replace(/[^\d]/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/82 transition hover:bg-white/10"
             >
               <Phone className="h-4 w-4" />
-              {copy.actionCall}
+              WhatsApp
             </a>
           ) : null}
 
@@ -379,12 +383,17 @@ function ProfileModal({
                   </a>
                 ) : null}
                 {person.phone ? (
+                  /* NUMBER-PURGE (owner 2026-07-08): this rendered the raw
+                   * digits — the exact string Google indexed. Masked
+                   * WhatsApp link now; digits confined to the href. */
                   <a
-                    href={`tel:${person.phone}`}
+                    href={`https://wa.me/${person.phone.replace(/[^\d]/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/86 transition hover:bg-white/10"
                   >
                     <Phone className="h-4 w-4" />
-                    {person.phone}
+                    WhatsApp
                   </a>
                 ) : null}
                 {person.linkedin_url ? (

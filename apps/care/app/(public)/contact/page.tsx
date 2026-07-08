@@ -7,7 +7,6 @@ import {
   Mail,
   MapPin,
   MessageSquare,
-  PhoneCall,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -120,15 +119,11 @@ export default async function ContactPage() {
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.channels.title}
               </h2>
+              {/* NUMBER-PURGE (owner 2026-07-08): the phone row is gone and
+               * the WhatsApp row shows the brand word only — no company
+               * digits ever render; the number lives solely in the wa.me
+               * href. Email is the one visible address. */}
               <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
-                <SupportRow
-                  icon={PhoneCall}
-                  title={copy.channels.phoneTitle}
-                  body={copy.channels.phoneBody}
-                  value={supportPhone}
-                  href={`tel:${supportPhone.replace(/\s+/g, "")}`}
-                  copyLabel={copy.channels.copyLabel}
-                />
                 <SupportRow
                   icon={Mail}
                   title={copy.channels.emailTitle}
@@ -141,7 +136,7 @@ export default async function ContactPage() {
                   icon={MessageSquare}
                   title={copy.channels.whatsappTitle}
                   body={copy.channels.whatsappBody}
-                  value={whatsappNumber}
+                  value="WhatsApp"
                   href={`https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`}
                   copyLabel={copy.channels.copyLabel}
                 />
