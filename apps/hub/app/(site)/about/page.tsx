@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getHubPublicCopy } from "@henryco/i18n/server";
 import AboutHonestBlock from "../../components/AboutHonestBlock";
-import CompanyPageClient from "../../components/CompanyPageClient";
+import CompanyPageEditorial from "../../components/CompanyPageEditorial";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
@@ -103,9 +103,8 @@ export default async function AboutPage() {
 
   return (
     <>
-      <CompanyPageClient
-        pageKey="about"
-        initialData={localizedPage}
+      <CompanyPageEditorial
+        page={localizedPage}
         serverWarning={Boolean(pageData.hasServerError)}
         hideSections={false}
         hideFooter
