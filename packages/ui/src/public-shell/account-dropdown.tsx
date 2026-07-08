@@ -13,7 +13,8 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import Link from "next/link";
-import { ExternalLink, LayoutDashboard, Globe, LogOut, Settings2 } from "lucide-react";
+import { ExternalLink, LayoutDashboard, LayoutGrid, Globe, LogOut, Settings2 } from "lucide-react";
+import { getAccountUrl } from "@henryco/config";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn } from "../lib/cn";
@@ -100,6 +101,7 @@ function isAction(item: PublicAccountMenuItem): item is { label: string; onClick
 export function AccountDropdown({
   user,
   accountHref,
+  workspaceHref,
   preferencesHref,
   settingsHref,
   menuItems = [],
@@ -114,6 +116,14 @@ export function AccountDropdown({
 }: {
   user: PublicAccountUser;
   accountHref: string;
+  /**
+   * Signed-in workspace destination. Defaults to the cross-division account
+   * dashboard so EVERY division's chrome offers a path to the user's
+   * workspace (the ecosystem-wide gap fixed 2026-07-08). Pass a division
+   * workspace URL to point somewhere more specific, or `null` to suppress
+   * (e.g. on the account app itself, where it would duplicate accountHref).
+   */
+  workspaceHref?: string | null;
   preferencesHref?: string;
   settingsHref?: string;
   menuItems?: PublicAccountMenuItem[];
@@ -268,6 +278,17 @@ export function AccountDropdown({
         </div>
       </div>
       <div className="py-1.5">
+        {workspaceHref !== null ? (
+          <Link
+            href={workspaceHref ?? getAccountUrl("/dashboard")}
+            role="menuitem"
+            tabIndex={0}
+            className={rowBase}
+            onClick={close}
+          >
+            <LayoutGrid className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Your workspace")}
+          </Link>
+        ) : null}
         <Link href={accountHref} role="menuitem" tabIndex={0} className={rowBase} onClick={close}>
           <LayoutDashboard className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Profile & account")}
         </Link>
