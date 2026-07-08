@@ -44,26 +44,16 @@ export function PropertySiteHeader({
         // "<DIVISION> / Henry Onyx".
         name: COMPANY.group.name,
         eyebrow: property.shortName,
-        mark: <HenryCoMonogram size={26} accent={property.accent || "#B06C3E"} />,
+        mark: <HenryCoMonogram size={22} accent={property.accent || "#B06C3E"} />,
       }}
       items={propertyNav.primaryNav}
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
       account={account}
       accountMenu={accountMenu}
-      prepend={
-        <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-6 lg:px-8">
-          <span className="flex items-center gap-2">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
-            {t("Curated listings, guided viewings, and managed-property trust rails")}
-          </span>
-          <Link
-            href="/managed"
-            className="hidden font-semibold text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)] lg:inline-flex"
-          >
-            {t("Managed property")}
-          </Link>
-        </div>
-      }
+      /* CHROME-64 (redesign 2026-07-08): announcement strip retired and the
+       * toolbar rests dense — the shared <=64px chrome budget. Strip contents
+       * (taglines, support links) live in the footer / contact surfaces. */
+      dense
     />
   );
 }

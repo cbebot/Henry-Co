@@ -40,7 +40,6 @@ export default async function AboutPage() {
   ]);
 
   const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
-  const supportPhone = settings.support_phone || care.supportPhone;
   const pickupHours = settings.pickup_hours || copy.heroFacts.pickupHoursFallback;
   const [heroTitle, heroBody] = await Promise.all([
     resolveLocalizedDynamicField({
