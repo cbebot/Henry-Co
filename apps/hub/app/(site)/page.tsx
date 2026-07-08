@@ -203,7 +203,6 @@ export default async function HomePage() {
     title: v3Copy.story.title,
     supportLine: v3Copy.story.divisionsLede,
     tryLabel: v3Copy.story.tryLink,
-    shippedLabel: v3Copy.story.shippedLink,
     earnLabel: v3Copy.story.earnLink,
   };
 

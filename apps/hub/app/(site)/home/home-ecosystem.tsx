@@ -18,7 +18,6 @@ export type HomeEcosystemCopy = {
   title: string;
   supportLine: string;
   tryLabel: string;
-  shippedLabel: string;
   earnLabel: string;
 };
 
@@ -43,9 +42,9 @@ export function HomeEcosystem({ copy }: { copy: HomeEcosystemCopy }) {
               {copy.tryLabel}
             </PublicCTA>
           </Magnetic>
-          <PublicCTA href="/v3/what-shipped" variant="ghost">
-            {copy.shippedLabel}
-          </PublicCTA>
+          {/* ONE ghost only: the band sits right after the engine directory,
+              so a "What's live" link here would re-ask what the visitor just
+              saw — /v3/what-shipped is reached from its parent story page. */}
           <PublicCTA href="/v3/how-we-earn" variant="ghost">
             {copy.earnLabel}
           </PublicCTA>
