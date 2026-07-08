@@ -51,17 +51,21 @@ export default async function ContactPage() {
               </a>
             </dd>
           </div>
+          {/* NUMBER-PURGE (owner 2026-07-08): no company digits render —
+           * WhatsApp deep link only, number confined to the href. */}
           <div className="flex items-baseline gap-3 py-4">
             <Phone className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
-              Phone / WhatsApp
+              WhatsApp
             </dt>
             <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
               <a
-                href={`tel:${String(supportPhone).replace(/\s+/g, "")}`}
+                href={`https://wa.me/${String(supportPhone).replace(/[^\d]/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:text-[var(--studio-signal)] hover:underline underline-offset-4"
               >
-                {supportPhone}
+                WhatsApp
               </a>
             </dd>
           </div>

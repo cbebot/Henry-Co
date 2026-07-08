@@ -208,12 +208,20 @@ export function PublicSiteFooter({
                 </a>
               ) : null}
               {support.phone ? (
+                /* NUMBER-PURGE (owner 2026-07-08): raw company numbers are
+                 * never rendered anywhere in the ecosystem — Google indexed
+                 * them and it reads unprofessional. A phone value becomes a
+                 * MASKED WhatsApp deep link: the label is the brand word
+                 * (proper noun — locale-exempt), the digits live only in the
+                 * href, never in visible text. */
                 <a
-                  href={`tel:${support.phone}`}
+                  href={`https://wa.me/${support.phone.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 transition-colors hover:text-[color:var(--home-ink)] home-focus"
                 >
                   <Phone aria-hidden className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-                  {support.phone}
+                  WhatsApp
                 </a>
               ) : null}
             </div>

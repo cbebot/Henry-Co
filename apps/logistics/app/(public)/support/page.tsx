@@ -120,16 +120,20 @@ export default async function SupportPage() {
                     {logistics.supportEmail}
                   </a>
                 </li>
+                {/* NUMBER-PURGE (owner 2026-07-08): no company digits render —
+                 * masked WhatsApp deep link, number confined to the href. */}
                 <li className="flex items-baseline gap-4 py-4">
                   <PhoneCall className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
-                    {copy.channels.phoneLabel}
+                    WhatsApp
                   </span>
                   <a
-                    href={`tel:${logistics.supportPhone}`}
+                    href={`https://wa.me/${String(logistics.supportPhone).replace(/[^\d]/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)] underline-offset-4 hover:underline"
                   >
-                    {logistics.supportPhone}
+                    WhatsApp
                   </a>
                 </li>
                 <li className="flex items-baseline gap-4 py-4">
