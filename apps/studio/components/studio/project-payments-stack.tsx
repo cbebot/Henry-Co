@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSupportWhatsAppHref } from "@henryco/config";
 import { ArrowRight, CheckCircle2, Clock3, FileCheck2, UploadCloud } from "lucide-react";
 import { StudioFileField } from "@/components/studio/studio-file-field";
 import { StudioPaymentGuide } from "@/components/studio/payment-guide";
@@ -36,9 +37,9 @@ type Props = {
 };
 
 function supportWhatsappHref(value: string | null) {
-  if (!value) return null;
-  const digits = value.replace(/[^\d]/g, "");
-  return digits ? `https://wa.me/${digits}` : null;
+  // SINGLE-SOURCE (owner 2026-07-08): the one wa.me builder lives in config.
+  if (!value || !value.replace(/[^0-9]/g, "")) return null;
+  return getSupportWhatsAppHref(value);
 }
 
 function paymentWorkspaceHref(paymentId: string, access: string) {

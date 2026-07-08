@@ -30,6 +30,7 @@ import {
   type PublicDivisionLink,
 } from "@henryco/config";
 import { cn } from "../cn";
+import { getSupportWhatsAppHref } from "@henryco/config";
 import { LaunchInterceptor } from "../public-shell/launch-interceptor";
 
 export type SiteFooterLink = {
@@ -215,7 +216,7 @@ export function PublicSiteFooter({
                  * (proper noun — locale-exempt), the digits live only in the
                  * href, never in visible text. */
                 <a
-                  href={`https://wa.me/${support.phone.replace(/[^0-9]/g, "")}`}
+                  href={getSupportWhatsAppHref(support.phone)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 transition-colors hover:text-[color:var(--home-ink)] home-focus"

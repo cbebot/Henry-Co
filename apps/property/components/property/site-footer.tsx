@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, getSupportWhatsAppHref } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getPropertyOrigin, getSharedAccountLoginUrl, getSharedAccountPropertyUrl } from "@/lib/property/links";
@@ -56,7 +56,17 @@ export async function PropertySiteFooter() {
             </p>
             <div className="space-y-1.5 text-sm text-[var(--property-ink-soft)]">
               <p className="font-medium text-[var(--property-ink)]">{property.supportEmail}</p>
-              <p>{property.supportPhone}</p>
+              {/* NUMBER-PURGE (owner 2026-07-08): masked WhatsApp link. */}
+              <p>
+                <a
+                  href={getSupportWhatsAppHref(property.supportPhone)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-[var(--property-ink)]"
+                >
+                  WhatsApp
+                </a>
+              </p>
             </div>
           </div>
 

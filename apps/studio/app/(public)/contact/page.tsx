@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, FolderKanban, Mail, Phone } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, getSupportWhatsAppHref } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 
 const studioDivision = getDivisionConfig("studio");
@@ -60,7 +60,7 @@ export default async function ContactPage() {
             </dt>
             <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
               <a
-                href={`https://wa.me/${String(supportPhone).replace(/[^\d]/g, "")}`}
+                href={getSupportWhatsAppHref(String(supportPhone))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[var(--studio-signal)] hover:underline underline-offset-4"

@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { unstable_cache } from "next/cache";
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 import { getOptionalEnv } from "@/lib/env";
 import {
   computePayoutBalance,
@@ -280,7 +280,7 @@ function buildPlaceholderVendor(scopeId?: string | null): MarketplaceVendor {
     badges: ["Setup in progress"],
     ownerType: "vendor",
     supportEmail: BRAND_EMAILS.marketplace,
-    supportPhone: "+2349133957084",
+    supportPhone: COMPANY.group.supportPhone,
   };
 }
 
@@ -395,7 +395,7 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
       badges: Array.isArray(row.badges) ? row.badges.map(String) : [],
       ownerType: String(row.owner_type || "vendor") as MarketplaceVendor["ownerType"],
       supportEmail: String(row.support_email || BRAND_EMAILS.marketplace),
-      supportPhone: String(row.support_phone || "+2349133957084"),
+      supportPhone: String(row.support_phone || COMPANY.group.supportPhone),
     }));
 
     const categoryMap = new Map(categories.map((item) => [item.id, item]));

@@ -9,7 +9,7 @@ import {
   PhoneCall,
   ShieldCheck,
 } from "lucide-react";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, getSupportWhatsAppHref } from "@henryco/config";
 import {
   getLogisticsSupportCopy,
   resolveLocalizedDynamicField,
@@ -128,7 +128,7 @@ export default async function SupportPage() {
                     WhatsApp
                   </span>
                   <a
-                    href={`https://wa.me/${String(logistics.supportPhone).replace(/[^\d]/g, "")}`}
+                    href={getSupportWhatsAppHref(String(logistics.supportPhone))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)] underline-offset-4 hover:underline"

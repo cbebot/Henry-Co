@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig, getSupportWhatsAppHref } from "@henryco/config";
 import { getCareContactCopy, type CareContactCopy } from "@henryco/i18n/server";
 import ContactForm from "@/components/care/ContactForm";
 import CopyButton from "@/components/ui/CopyButton";
@@ -137,7 +137,7 @@ export default async function ContactPage() {
                   title={copy.channels.whatsappTitle}
                   body={copy.channels.whatsappBody}
                   value="WhatsApp"
-                  href={`https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`}
+                  href={getSupportWhatsAppHref(whatsappNumber)}
                   copyLabel={copy.channels.copyLabel}
                 />
               </ul>
