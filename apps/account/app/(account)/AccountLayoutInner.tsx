@@ -57,7 +57,9 @@ export default async function AccountLayoutInner({
           {/* CHROME-OPENER FIX (redesign 2026-07-08): the module rail sits
               in its intended sticky side column instead of stacking above
               the page — every inner page regains ~573px of first paint. */}
-          <div className="md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 lg:gap-10">
+          {/* 256px = the WorkspaceRail's intrinsic width — a narrower column
+              gave the rail a horizontal scrollbar (caught live). */}
+          <div className="md:grid md:grid-cols-[256px_minmax(0,1fr)] md:items-start md:gap-8 lg:gap-10">
             {rail ? (
               <div className="hidden md:block md:sticky md:top-6 md:max-h-[calc(100vh-3rem)] md:overflow-y-auto">
                 {rail}

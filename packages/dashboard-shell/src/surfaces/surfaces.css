@@ -851,6 +851,9 @@ a.acct-timeline__row:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  /* Anchor targets clear the sticky identity bar (in-page quick-nav,
+     redesign 2026-07-08). */
+  scroll-margin-top: 96px;
 }
 
 .acct-division-landing__section-head {

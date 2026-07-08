@@ -126,6 +126,29 @@ export default async function SettingsPage() {
           ariaLabel={t("Identity & preferences overview")}
           ariaTilesLabel={t("Identity capability snapshot")}
           tiles={tiles}
+          belowTiles={
+            /* In-page quick-nav (redesign 2026-07-08): the settings spread is
+               ~5,000px — the opener now hands the reader straight to each
+               section. Labels reuse the translated section titles. */
+            <nav
+              aria-label={t("Settings sections")}
+              className="flex flex-wrap gap-2"
+            >
+              {[
+                { href: "#acct-settings-profile", label: t("Profile") },
+                { href: "#acct-settings-notifications", label: t("Notifications") },
+                { href: "#acct-settings-privacy", label: t("Privacy & data") },
+              ].map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex min-h-[36px] items-center rounded-full border border-[var(--acct-line)] px-3.5 text-xs font-semibold text-[var(--acct-muted)] transition-colors hover:border-[var(--acct-gold)] hover:text-[var(--acct-ink)]"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          }
           side={{
             kicker: verificationLabel,
             title: t("By division"),
