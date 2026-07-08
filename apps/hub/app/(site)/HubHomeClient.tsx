@@ -2,13 +2,14 @@ import type { CSSProperties } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import type { PublicAccountUser } from "@henryco/ui";
 import { LaunchTransitionProvider } from "@henryco/ui/public-shell";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { PublicSiteFooter, ScrollProgress } from "@henryco/ui/public-design";
 import type { DivisionRow } from "../lib/divisions";
 import type { DivisionLiveStat } from "../lib/division-stats";
 import type { HubFooterInputs } from "../lib/site-footer";
 import { HomeHeader, HomeSkipLink } from "./home/home-chrome";
 import { HomeStandard } from "./home/home-standard";
 import { HomeIndex } from "./home/home-index";
+import { HomeEcosystem, type HomeEcosystemCopy } from "./home/home-ecosystem";
 import { HomeOperatingStandard } from "./home/home-operating-standard";
 import { HomeProof } from "./home/home-proof";
 import { HomeFaq } from "./home/home-faq";
@@ -37,6 +38,7 @@ export default function HubHomeClient({
   locale,
   accountChip,
   heroWelcome,
+  ecosystemBand,
 }: {
   // Prop contract — mirrors app/(site)/page.tsx; keep the two in lockstep.
   brandTitle?: string | null;
@@ -59,6 +61,8 @@ export default function HubHomeClient({
   };
   /** Subtle signed-in hero line (first name). */
   heroWelcome?: string | null;
+  /** Pre-translated v3 showcase band copy (see home-ecosystem.tsx). */
+  ecosystemBand: HomeEcosystemCopy;
 }) {
   const brandTitleSafe = brandTitle?.trim() || "Henry Onyx";
   const accent = brandAccent?.trim() || "#C9A227";
@@ -73,6 +77,7 @@ export default function HubHomeClient({
       className="relative min-h-screen overflow-x-hidden bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]"
     >
       <HomeSkipLink label={copy.nav.skipToContent} />
+      <ScrollProgress />
 
       <HomeHeader
         brandTitle={brandTitleSafe}
@@ -95,6 +100,7 @@ export default function HubHomeClient({
           divisions={divisions}
           divisionStats={divisionStats ?? {}}
         />
+        <HomeEcosystem copy={ecosystemBand} />
         <HomeOperatingStandard copy={copy} />
         <HomeProof copy={copy} divisions={divisions} divisionStats={divisionStats ?? {}} />
         <HomeFaq copy={copy} faqs={initialFaqs ?? []} />

@@ -6,6 +6,7 @@ import { ArrowDown } from "lucide-react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import type { DivisionRow } from "../../lib/divisions";
 import type { DivisionLiveStat } from "../../lib/division-stats";
+import { CountUp } from "@henryco/ui/public-design";
 import { useHomeMotion } from "./home-motion";
 import { HomeAmbient } from "./home-ambient";
 
@@ -128,7 +129,13 @@ export function HomeStandard({
                       className="text-3xl font-semibold tabular-nums text-[color:var(--home-ink)] sm:text-4xl"
                       style={{ fontFamily: "var(--hc-font-mono)" }}
                     >
-                      {cell.value}
+                      {/* Lagos doctrine: real numbers count up (decelerating)
+                          on first view; non-numeric cells render verbatim. */}
+                      {Number.isFinite(Number(cell.value)) ? (
+                        <CountUp value={Number(cell.value)} />
+                      ) : (
+                        cell.value
+                      )}
                     </dd>
                   </motion.div>
                 ))}

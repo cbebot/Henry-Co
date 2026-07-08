@@ -360,7 +360,7 @@
 @keyframes home-rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -368,9 +368,47 @@
   }
 }
 
+/* One idle breath for ambient surfaces (glow/particles) — barely perceptible,
+ * 12s loop, so no page ever feels frozen. Reduced-motion strips it. */
+@keyframes home-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* Soft skeleton shimmer — intentional loading, never a blank flash. */
+@keyframes home-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.home-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--home-surface-04) 40%,
+    var(--home-surface-07) 50%,
+    var(--home-surface-04) 60%
+  );
+  background-size: 200% 100%;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  /* MOTION SIGNATURE (Lagos doctrine 2026-07-08): fade-up 20px, 400ms,
+   * the one company curve (--home-ease → --hc-ease-standard), staggered
+   * 60ms per element. The SAME signature drives .home-rise, .home-reveal,
+   * CountUp, and every hover — one motion voice across every division. */
   .home-rise {
-    animation: home-rise 0.55s var(--home-ease) both;
+    animation: home-rise 0.4s var(--home-ease) both;
   }
   .home-delay-1 { animation-delay: 0.06s; }
   .home-delay-2 { animation-delay: 0.12s; }
@@ -378,6 +416,14 @@
   .home-delay-4 { animation-delay: 0.24s; }
   .home-delay-5 { animation-delay: 0.3s; }
   .home-delay-6 { animation-delay: 0.36s; }
+
+  .home-breathe {
+    animation: home-breathe 12s var(--home-ease-in-out, ease-in-out) infinite;
+  }
+
+  .home-shimmer {
+    animation: home-shimmer 1.8s var(--home-ease-linear, linear) infinite;
+  }
 
   /* Scroll-driven reveal — only where the browser supports view() timelines. */
   @supports (animation-timeline: view()) {
