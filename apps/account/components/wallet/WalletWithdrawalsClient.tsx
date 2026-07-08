@@ -364,7 +364,7 @@ export default function WalletWithdrawalsClient({
             <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">{verificationGate.detail}</p>
             <Link
               href="/verification"
-              className="mt-3 inline-flex rounded-full bg-[var(--acct-gold)] px-4 py-2 text-xs font-semibold text-white"
+              className="mt-3 inline-flex min-h-[44px] items-center rounded-full bg-[var(--acct-gold)] px-4 py-2 text-xs font-semibold text-[var(--acct-ink)]"
             >
               {t("Open verification")}
             </Link>

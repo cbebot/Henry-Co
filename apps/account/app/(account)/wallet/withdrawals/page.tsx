@@ -31,13 +31,21 @@ export default async function WalletWithdrawalsPage() {
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const user = await requireAccountUser();
-  const [wallet, methods, requests, pinConfigured, verification] = await Promise.all([
+  // Per-read resilience (matches the main wallet page): one slow or failed
+  // read renders its honest empty state instead of taking the whole page.
+  const [walletR, methodsR, requestsR, pinR, verificationR] = await Promise.allSettled([
     getWalletSummary(user.id),
     getPayoutMethods(user.id),
     getWithdrawalRequests(user.id),
     getWithdrawalPinConfigured(user.id),
     getVerificationState(user.id),
   ]);
+  const wallet = walletR.status === "fulfilled" ? walletR.value : {};
+  const methods = methodsR.status === "fulfilled" ? methodsR.value : [];
+  const requests = requestsR.status === "fulfilled" ? requestsR.value : [];
+  const pinConfigured = pinR.status === "fulfilled" ? pinR.value : false;
+  const verification =
+    verificationR.status === "fulfilled" ? verificationR.value : { status: "none" as const };
 
   const balanceKobo = Number((wallet as { balance_kobo?: number }).balance_kobo ?? 0);
   const pendingHoldKobo = getPendingWithdrawalHoldKobo(requests as never);
@@ -90,7 +98,13 @@ export default async function WalletWithdrawalsPage() {
           }}
         />
         <p className="acct-wal__section-foot" aria-live="polite">
-          ₦{formatKoboMajor(availableBalanceKobo)} {t("available · each payout is reviewed by finance before it settles")}
+          {/* Single templated string — no fragment concatenation, so word
+              order survives every locale (the amount slots wherever the
+              translation puts {amount}). */}
+          {t("{amount} available · each payout is reviewed by finance before it settles").replaceAll(
+            "{amount}",
+            `₦${formatKoboMajor(availableBalanceKobo)}`,
+          )}
         </p>
       </section>
     </div>
