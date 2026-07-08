@@ -10,6 +10,11 @@
 export { Eyebrow, DisplayHeading, Lede, Body, type DisplaySize } from "./typography";
 export { Section, SectionHeader, Hairline, Reveal } from "./section";
 export { PublicCTA } from "./cta";
+// Motion doctrine primitives (Lagos study, 2026-07-08) — one motion voice.
+export { CountUp } from "./count-up";
+export { AmbientGlow } from "./ambient";
+export { ScrollProgress } from "./scroll-progress";
+export { Magnetic } from "./magnetic";
 export { PublicProofRail, type ProofItem } from "./proof-rail";
 export { EditorialList, EditorialRow, Card } from "./editorial";
 export {

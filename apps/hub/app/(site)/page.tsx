@@ -195,6 +195,18 @@ export default async function HomePage() {
     support: { email: settings.support_email, phone: settings.support_phone },
   });
 
+  // V3 showcase band on the landing (owner directive 2026-07-08) — labels
+  // reuse the already-translated v3 namespace, zero new i18n keys.
+  const v3Copy = getHubPublicCopy(locale).v3;
+  const ecosystemBand = {
+    eyebrow: v3Copy.story.eyebrow,
+    title: v3Copy.story.title,
+    supportLine: v3Copy.story.divisionsLede,
+    tryLabel: v3Copy.story.tryLink,
+    shippedLabel: v3Copy.story.shippedLink,
+    earnLabel: v3Copy.story.earnLink,
+  };
+
   const translateRowField = async (
     record: Record<string, unknown>,
     field: string,
@@ -328,6 +340,7 @@ export default async function HomePage() {
       locale={locale}
       accountChip={accountChip}
       heroWelcome={heroWelcome}
+      ecosystemBand={ecosystemBand}
     />
     </>
   );
