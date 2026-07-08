@@ -78,7 +78,7 @@ export async function PublicShell({
           // "<DIVISION> / Henry Onyx" — eyebrow = the division, name = the brand.
           name: COMPANY.group.name,
           eyebrow: jobs.shortName,
-          mark: <HenryCoMonogram size={26} accent={jobs.accent || "#0E7C86"} />,
+          mark: <HenryCoMonogram size={22} accent={jobs.accent || "#0E7C86"} />,
         }}
         items={[...getSiteNavigationConfig("jobs").primaryNav]}
         search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
@@ -113,20 +113,10 @@ export async function PublicShell({
         }
         primaryCta={resolvedPrimary}
         auxLink={resolvedSecondary}
-        prepend={
-          <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-6 lg:px-10">
-            <span className="flex items-center gap-2">
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
-              {t("Verified employers, candidate-safe applications, and recruiter pipelines on one record")}
-            </span>
-            <Link
-              href={accountJobsUrl}
-              className="hidden font-semibold text-[color:var(--home-ink)] transition hover:text-[color:var(--home-accent-text)] lg:inline-flex"
-            >
-              {t("Henry Onyx account")}
-            </Link>
-          </div>
-        }
+        /* CHROME-64 (redesign 2026-07-08): announcement strip retired and the
+       * toolbar rests dense — the shared <=64px chrome budget. Strip contents
+       * (taglines, support links) live in the footer / contact surfaces. */
+        dense
       />
 
       <main id="henryco-main" tabIndex={-1} className="jobs-main flex-1">

@@ -63,7 +63,6 @@ export default async function LogisticsPublicLayout({ children }: { children: Re
       <LogisticsSiteHeader
         account={{ user: chipUser, loginHref, signupHref, accountHref }}
         accountMenu={accountMenu}
-        supportPhone={logistics.supportPhone}
       />
       <main id="henryco-main" tabIndex={-1} className="flex-1">
         {children}

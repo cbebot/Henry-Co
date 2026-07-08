@@ -1,9 +1,9 @@
 "use client";
 
-import { PhoneCall } from "lucide-react";
+import { } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
-import { COMPANY, getHubUrl, getSupportWhatsAppHref } from "@henryco/config";
+import { COMPANY, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
@@ -70,7 +70,7 @@ export default function CareNavbar({
         href: "/",
         name: COMPANY.group.name,
         eyebrow: division.shortName || "Fabric Care",
-        mark: <HenryCoMonogram size={26} accent={division.accent || "#6B7CFF"} />,
+        mark: <HenryCoMonogram size={22} accent={division.accent || "#6B7CFF"} />,
       }}
       items={items}
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
@@ -78,27 +78,10 @@ export default function CareNavbar({
       accountMenu={accountMenu}
       primaryCta={careNav.defaultCtas?.primary}
       auxLink={careNav.defaultCtas?.secondary}
-      prepend={
-        <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-2 text-xs text-[color:var(--home-ink-60)] sm:px-6 lg:px-10">
-          <span className="flex items-center gap-2">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--home-accent-text)]" />
-            {t(DEFAULT_TAGLINE)}
-          </span>
-          {division.supportPhone ? (
-            /* NUMBER-PURGE (owner 2026-07-08): masked WhatsApp link — the
-             * digits live only in the wa.me href, never in visible text. */
-            <a
-              href={getSupportWhatsAppHref(division.supportPhone)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden items-center gap-2 font-semibold text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)] lg:inline-flex"
-            >
-              <PhoneCall className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
-              WhatsApp
-            </a>
-          ) : null}
-        </div>
-      }
+      /* CHROME-64 (redesign 2026-07-08): announcement strip retired and the
+       * toolbar rests dense — the shared <=64px chrome budget. Strip contents
+       * (taglines, support links) live in the footer / contact surfaces. */
+      dense
     />
   );
 }
