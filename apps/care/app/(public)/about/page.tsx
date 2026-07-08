@@ -160,9 +160,8 @@ export default async function AboutPage() {
                   {copy.hero.contactCta}
                 </Link>
               </div>
-              <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
-                {supportPhone}
-              </p>
+              {/* NUMBER-PURGE (owner 2026-07-08): the visible support number
+               * is gone — contact routes are the CTA above and /contact. */}
             </div>
             <ul className="grid gap-3 text-sm">
               {heroFacts.map(({ icon: Icon, label, value }) => (

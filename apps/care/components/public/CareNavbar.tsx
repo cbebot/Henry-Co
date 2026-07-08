@@ -3,7 +3,7 @@
 import { PhoneCall } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
-import { COMPANY, getHubUrl } from "@henryco/config";
+import { COMPANY, getHubUrl, getSupportWhatsAppHref } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
@@ -85,10 +85,17 @@ export default function CareNavbar({
             {t(DEFAULT_TAGLINE)}
           </span>
           {division.supportPhone ? (
-            <span className="hidden items-center gap-2 font-semibold text-[color:var(--home-ink)] lg:inline-flex">
+            /* NUMBER-PURGE (owner 2026-07-08): masked WhatsApp link — the
+             * digits live only in the wa.me href, never in visible text. */
+            <a
+              href={getSupportWhatsAppHref(division.supportPhone)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden items-center gap-2 font-semibold text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)] lg:inline-flex"
+            >
               <PhoneCall className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
-              {division.supportPhone}
-            </span>
+              WhatsApp
+            </a>
           ) : null}
         </div>
       }

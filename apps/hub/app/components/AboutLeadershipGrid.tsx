@@ -1,5 +1,6 @@
 "use client";
 
+import { getSupportWhatsAppHref } from "@henryco/config";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
@@ -230,7 +231,7 @@ function PersonCard({
             /* NUMBER-PURGE (owner 2026-07-08): tel: hrefs are crawlable —
              * masked WhatsApp deep link instead; digits never render. */
             <a
-              href={`https://wa.me/${person.phone.replace(/[^\d]/g, "")}`}
+              href={getSupportWhatsAppHref(person.phone)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/82 transition hover:bg-white/10"
@@ -387,7 +388,7 @@ function ProfileModal({
                    * digits — the exact string Google indexed. Masked
                    * WhatsApp link now; digits confined to the href. */
                   <a
-                    href={`https://wa.me/${person.phone.replace(/[^\d]/g, "")}`}
+                    href={getSupportWhatsAppHref(person.phone)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/86 transition hover:bg-white/10"

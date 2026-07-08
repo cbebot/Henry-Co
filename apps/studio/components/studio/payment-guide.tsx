@@ -1,13 +1,13 @@
 import { Mail, ShieldCheck, Smartphone } from "lucide-react";
-import { COMPANY } from "@henryco/config";
+import { COMPANY, getSupportWhatsAppHref } from "@henryco/config";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { formatCurrency } from "@/lib/env";
 import { StudioCopyButton } from "@/components/studio/copy-button";
 
 function supportWhatsappHref(value: string | null) {
-  if (!value) return null;
-  const digits = value.replace(/[^\d]/g, "");
-  return digits ? `https://wa.me/${digits}` : null;
+  // SINGLE-SOURCE (owner 2026-07-08): the one wa.me builder lives in config.
+  if (!value || !value.replace(/[^0-9]/g, "")) return null;
+  return getSupportWhatsAppHref(value);
 }
 
 /**

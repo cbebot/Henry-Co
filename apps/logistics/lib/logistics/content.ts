@@ -1,4 +1,4 @@
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 import type {
   LogisticsDifferentiator,
   LogisticsPublicMetric,
@@ -10,7 +10,7 @@ import type {
 export const DEFAULT_LOGISTICS_SETTINGS: LogisticsSettings = {
   businessName: "Henry Onyx Logistics",
   supportEmail: BRAND_EMAILS.logistics,
-  supportPhone: "+2349133957084",
+  supportPhone: COMPANY.group.supportPhone,
   currency: "NGN",
   timezone: "Africa/Lagos",
   defaultCountry: "Nigeria",
