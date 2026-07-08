@@ -323,7 +323,13 @@ export function PublicAccountChip({
     "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.97]",
     chipSurface === "onDark"
       ? "border-transparent bg-[var(--market-brass,#d4a853)] font-bold text-[var(--market-noir,#0a0a0a)] shadow-[0_10px_36px_rgba(201,162,39,0.42)] ring-2 ring-[rgba(255,255,255,0.18)] hover:brightness-105"
-      : "border-amber-600/20 bg-amber-600 text-white hover:bg-amber-700 dark:border-amber-400/30 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400"
+      : // Accent-governed CTA (redesign 2026-07-08): the old hardcoded
+        // amber-600 sat OFF every division's palette (Phase 0 audit — the
+        // "orange Get started"). --hc-accent is the canonical accent each
+        // app already maps to its division colour, and the token family
+        // flips per theme; fallbacks reproduce brand gold if a token is
+        // somehow absent. AA: --hc-ink-on-accent is designed dark-on-accent.
+        "border-transparent bg-[color:var(--hc-accent,#C9A227)] text-[color:var(--hc-ink-on-accent,#1A1814)] hover:bg-[color:var(--hc-accent-strong,#A88718)]"
   );
 
   /* ── Signed-out state ── */
