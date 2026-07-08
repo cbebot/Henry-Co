@@ -26,7 +26,7 @@ const EASE_OUT: Transition["ease"] = [0.22, 1, 0.36, 1];
 // still observed so the active state clears cleanly there instead of freezing
 // on the previous link. Stable module constant so the IntersectionObserver
 // effect never re-subscribes on re-render.
-const SPY_IDS = ["standard", "engines", "standard-why", "proof", "questions"] as const;
+const SPY_IDS = ["standard", "engines", "ecosystem", "standard-why", "proof", "questions"] as const;
 
 export type HomeAccountChip = {
   user: PublicAccountUser | null;
@@ -44,6 +44,8 @@ type HomeHeaderProps = {
   brandSub: string;
   copy: HubHomeCopy;
   accountChip?: HomeAccountChip;
+  /** Pre-translated label for the #ecosystem section (v3 namespace). */
+  ecosystemLabel?: string;
 };
 
 /**
@@ -247,6 +249,7 @@ export function HomeHeader({
   brandSub,
   copy,
   accountChip,
+  ecosystemLabel,
 }: HomeHeaderProps) {
   const reduce = useReducedMotion() ?? false;
   const menuId = useId();
@@ -307,6 +310,11 @@ export function HomeHeader({
   const targets: NavTarget[] = [
     { kind: "spy", id: "standard", label: copy.nav.overview },
     { kind: "spy", id: "engines", label: copy.nav.engines },
+    // Complete nav (owner 2026-07-08): every homepage section is reachable
+    // from the header — the ecosystem band was a section without an entry.
+    ...(ecosystemLabel
+      ? ([{ kind: "spy", id: "ecosystem", label: ecosystemLabel }] as NavTarget[])
+      : []),
     { kind: "spy", id: "standard-why", label: copy.nav.oneStandard },
     { kind: "spy", id: "questions", label: copy.nav.faq },
     { kind: "route", href: "/about", label: copy.nav.about },

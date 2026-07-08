@@ -84,6 +84,7 @@ export default function HubHomeClient({
         brandSub={brandSub ?? ""}
         copy={copy}
         accountChip={accountChip}
+        ecosystemLabel={ecosystemBand.eyebrow}
       />
 
       <main id="henryco-main" tabIndex={-1}>
