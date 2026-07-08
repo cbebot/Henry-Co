@@ -1016,50 +1016,29 @@
 }
 
 /* The Vault (statement header) --------------------------------------- */
+/* CHROME-OPENER (redesign 2026-07-08): the vault box is gone — the
+ * balance is now the page's editorial statement, sitting directly on
+ * the canvas over a bottom hairline, matching the shared HeroCard
+ * opener language (gravity not size, hairlines not glass). The engrave
+ * and glow overlay layers render nothing. */
 .acct-wal__vault {
   position: relative;
-  border-radius: var(--acct-radius-lg);
-  overflow: hidden;
-  isolation: isolate;
-  --vault-base: var(--acct-bg-soft);
-  --vault-base-2: var(--acct-bg-elevated, var(--acct-bg));
   --vault-ink: var(--acct-ink);
   --vault-ink-soft: var(--acct-muted);
   --vault-ink-faint: color-mix(in srgb, var(--acct-muted) 76%, transparent);
-  --vault-hair: color-mix(in srgb, var(--acct-line) 86%, transparent);
+  --vault-hair: var(--acct-line);
   color: var(--vault-ink);
-  background:
-    radial-gradient(120% 120% at 86% -12%, color-mix(in srgb, var(--acct-gold) 20%, transparent) 0%, transparent 56%),
-    radial-gradient(90% 120% at -10% 115%, color-mix(in srgb, var(--acct-blue, #2563eb) 9%, transparent) 0%, transparent 58%),
-    linear-gradient(150deg, var(--vault-base) 0%, var(--vault-base-2) 100%);
-  border: 1px solid color-mix(in srgb, var(--acct-gold) 24%, var(--acct-line));
-  box-shadow: var(--acct-shadow-lg, 0 22px 54px -34px color-mix(in srgb, var(--acct-ink) 28%, transparent));
+  border-bottom: 1px solid var(--acct-line);
 }
 
-.acct-wal__vault-engrave {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.6;
-  background-image:
-    repeating-linear-gradient(58deg, color-mix(in srgb, var(--acct-gold) 8%, transparent) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(-58deg, color-mix(in srgb, var(--acct-ink) 4%, transparent) 0 1px, transparent 1px 9px);
-  -webkit-mask-image: radial-gradient(125% 125% at 82% -5%, #000 0%, transparent 72%);
-  mask-image: radial-gradient(125% 125% at 82% -5%, #000 0%, transparent 72%);
-}
-
+.acct-wal__vault-engrave,
 .acct-wal__vault-glow {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(42% 64% at 100% 0%, color-mix(in srgb, var(--acct-gold) 18%, transparent), transparent 70%);
+  display: none;
 }
 
 .acct-wal__vault-inner {
   position: relative;
-  padding: 26px 28px 24px;
+  padding: 4px 0 26px;
   display: flex;
   flex-direction: column;
   gap: 18px;
