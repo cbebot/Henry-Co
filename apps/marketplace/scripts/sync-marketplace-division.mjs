@@ -57,13 +57,13 @@ const payload = {
   who_its_for: [
     "Premium buyers",
     "Trusted local sellers",
-    "HenryCo operations teams",
+    "Henry Onyx operations teams",
     "Support and finance operators",
   ],
   how_it_works: [
     "Browse premium products with stronger trust signals",
     "Check out with split-order clarity and payment-state visibility",
-    "Track, review, and dispute from one HenryCo account",
+    "Track, review, and dispute from one Henry Onyx account",
     "Apply to sell and publish only after moderation approval",
   ],
   trust: [

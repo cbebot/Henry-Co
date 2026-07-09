@@ -27,7 +27,7 @@ const rows = [
     summary:
       "Premium dry-cleaning and laundry with pickup, tracking and polished garment care.",
     accent_hex: "#6B7CFF",
-    destination_url: "https://care.henrycogroup.com",
+    destination_url: "https://care.henryonyx.com",
     sectors: ["fabric_care"],
   },
   {
@@ -37,7 +37,7 @@ const rows = [
     featured: true,
     summary: "Websites, mobile apps, UI systems, branding, e-commerce, and custom software.",
     accent_hex: "#C9A227",
-    destination_url: "https://studio.henrycogroup.com",
+    destination_url: "https://studio.henryonyx.com",
     sectors: ["technology", "design"],
   },
   {
@@ -47,7 +47,7 @@ const rows = [
     featured: true,
     summary: "Premium multi-vendor commerce with trust signals and split-order clarity.",
     accent_hex: "#B2863B",
-    destination_url: "https://marketplace.henrycogroup.com",
+    destination_url: "https://marketplace.henryonyx.com",
     sectors: ["commerce", "marketplace", "premium_retail", "vendor_platforms"],
   },
   {
@@ -55,9 +55,9 @@ const rows = [
     name: "Henry Onyx Jobs",
     status: "active",
     featured: true,
-    summary: "Hiring operating system for HenryCo and verified external employers.",
+    summary: "Hiring operating system for Henry Onyx and verified external employers.",
     accent_hex: "#2DD4BF",
-    destination_url: "https://jobs.henrycogroup.com",
+    destination_url: "https://jobs.henryonyx.com",
     sectors: ["general"],
   },
   {
@@ -67,7 +67,7 @@ const rows = [
     featured: true,
     summary: "Listings, viewing coordination, owner submissions, and managed-property services.",
     accent_hex: "#A78BFA",
-    destination_url: "https://property.henrycogroup.com",
+    destination_url: "https://property.henryonyx.com",
     sectors: ["property", "real_estate"],
   },
   {
@@ -77,7 +77,7 @@ const rows = [
     featured: true,
     summary: "Public courses, internal training, certifications, and partner enablement.",
     accent_hex: "#38BDF8",
-    destination_url: "https://learn.henrycogroup.com",
+    destination_url: "https://learn.henryonyx.com",
     sectors: ["education", "academy", "internal_training", "certification"],
   },
   {
@@ -87,7 +87,7 @@ const rows = [
     featured: true,
     summary: "Pickup, dispatch, same-day and scheduled delivery with proof of delivery.",
     accent_hex: "#D06F32",
-    destination_url: "https://logistics.henrycogroup.com",
+    destination_url: "https://logistics.henryonyx.com",
     sectors: ["logistics", "delivery"],
   },
   {
@@ -98,7 +98,7 @@ const rows = [
     summary:
       "Building materials, interior finishes, procurement, and engineering support — launching soon.",
     accent_hex: "#4F46E5",
-    destination_url: "https://building.henrycogroup.com",
+    destination_url: "https://building.henryonyx.com",
     sectors: ["building_materials", "interior_finishes", "construction_supply"],
   },
 ];

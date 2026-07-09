@@ -147,7 +147,7 @@ export function mapJobsRow(
   } else if (senderType === "system") {
     senderRole = "system";
     // Brand name — never translated.
-    senderName = "Henry & Co.";
+    senderName = "Henry Onyx";
   } else {
     senderRole = "team";
     senderName =

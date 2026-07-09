@@ -20,7 +20,7 @@ const url = process.env.SUPABASE_URL ?? process.env.EXPO_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 console.log(`
-HenryCo staging reset checklist
+Henry Onyx staging reset checklist
 ===============================
 1. Confirm project URL is STAGING (not production).
 2. Notify testers; capture a backup if required.

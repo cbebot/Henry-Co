@@ -291,7 +291,7 @@ async function readPropertySavedItems(userId: string) {
         href: property.detailUrl,
         priceKobo: Math.round(asNumber(property.price) * 100),
         currency: property.currency || "NGN",
-        vendorName: property.managedByHenryCo ? "Henry & Co. Property" : null,
+        vendorName: property.managedByHenryCo ? "Henry Onyx Property" : null,
         listingSlug: property.slug,
         source: "property_saved_listing",
       },
@@ -347,7 +347,7 @@ async function readLearnSavedItems(
           priceKobo:
             course.price == null ? null : Math.round(asNumber(course.price) * 100),
           currency: asText(course.currency, "NGN"),
-          vendorName: "Henry & Co. Academy",
+          vendorName: "Henry Onyx Academy",
           courseSlug: slug,
           source: "learn_saved_courses",
         },

@@ -312,7 +312,7 @@ test("listing submission, owner update, and moderation approval stay connected",
     })
   ).toBeVisible();
 
-  await page.getByLabel("Owner or agent name").fill("HenryCo Verification Owner");
+  await page.getByLabel("Owner or agent name").fill("Henry Onyx Verification Owner");
   await page.getByLabel("Email").fill(ownerEmail);
   await page.getByLabel("Phone").fill(ownerPhone);
   await page.getByLabel("Listing title").fill(listingTitle);
@@ -337,7 +337,7 @@ test("listing submission, owner update, and moderation approval stay connected",
     .fill(
       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80"
     );
-  await page.getByLabel("Request HenryCo management").check();
+  await page.getByLabel("Request Henry Onyx management").check();
   await page.getByRole("button", { name: /Submit listing/i }).click();
 
   await expect(page.getByText(/Listing submitted/i)).toBeVisible();

@@ -134,7 +134,7 @@ export function mapMarketplaceRow(
   } else if (senderKind === "system") {
     senderRole = "system";
     // Brand name — never translated.
-    senderName = "Henry & Co.";
+    senderName = "Henry Onyx";
   } else {
     senderRole = "team";
     // Identity-minimized: a buyer is always shown as the generic, localized
