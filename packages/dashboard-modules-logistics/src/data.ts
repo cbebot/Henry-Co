@@ -1,7 +1,11 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient } from "@henryco/data";
+import {
+  createDataAdminClient,
+  loadOperatorMembership,
+  type OperatorMembershipResult,
+} from "@henryco/data";
 import { getDivisionUrl } from "@henryco/config";
 
 /**
@@ -19,6 +23,23 @@ import { getDivisionUrl } from "@henryco/config";
  */
 
 export const LOGISTICS_HOME_HREF = "/logistics";
+
+/**
+ * The dispatch WINDOW (AWARE-SP5). Reads whether the viewer holds a granted
+ * `logistics_role_memberships` seat (rider / dispatch / ops) and, if so,
+ * deep-links into the REAL dispatch console at logistics.henryonyx.com/
+ * dispatcher. The dashboard is the RECORD; the console is the TOOL — this
+ * never re-implements dispatch.
+ */
+export function loadDispatchSnapshot(
+  viewer: UnifiedViewer,
+): Promise<OperatorMembershipResult | null> {
+  return loadOperatorMembership(viewer, {
+    table: "logistics_role_memberships",
+    division: "logistics",
+    workspacePath: "/dispatcher",
+  });
+}
 
 export type QuickActionGroup = "Open" | "Create" | "Search";
 

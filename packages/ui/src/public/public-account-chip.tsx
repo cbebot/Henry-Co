@@ -8,6 +8,7 @@ import {
   ExternalLink,
   Globe,
   LayoutDashboard,
+  LayoutGrid,
   LogIn,
   LogOut,
   Settings2,
@@ -142,6 +143,8 @@ export function PublicAccountChip({
   user,
   loginHref,
   accountHref,
+  workspaceHref,
+  workspaceLabel,
   signupHref,
   signupLabel = "Get started",
   menuItems = [],
@@ -161,6 +164,15 @@ export function PublicAccountChip({
   user: PublicAccountUser | null;
   loginHref: string;
   accountHref: string;
+  /**
+   * AWARE-SP5: role-aware workspace entry, rendered FIRST in the signed-in
+   * menu. Division shells pass the viewer's plan.workspace (e.g. "Your vendor
+   * workspace" → /vendor). Omit to render no workspace entry — the chip's
+   * "Profile & account" already covers the account itself. Mirrors the
+   * standalone AccountDropdown's workspaceHref/workspaceLabel contract.
+   */
+  workspaceHref?: string;
+  workspaceLabel?: string;
   signupHref?: string;
   signupLabel?: string;
   menuItems?: PublicAccountMenuItem[];
@@ -573,6 +585,27 @@ export function PublicAccountChip({
           </div>
 
           <div className="py-1.5">
+            {workspaceHref ? (
+              // AWARE-SP5: the operator's workspace leads the menu — the one
+              // place they most likely mean to go.
+              <Link
+                href={workspaceHref}
+                role="menuitem"
+                tabIndex={0}
+                className={rowBase}
+                onClick={close}
+              >
+                <LayoutGrid
+                  className={cn(
+                    "h-4 w-4 shrink-0",
+                    resolvedTone === "solidDark" ? "text-zinc-500" : "text-zinc-400 dark:text-zinc-500"
+                  )}
+                  aria-hidden
+                />
+                {localize(workspaceLabel || "Your workspace")}
+              </Link>
+            ) : null}
+
             <Link
               href={accountHref}
               role="menuitem"
