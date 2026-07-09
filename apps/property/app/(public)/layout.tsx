@@ -1,6 +1,9 @@
 import { headers } from "next/headers";
+import { PROPERTY_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { getAccountUrl, getPublicDivisions } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { LaunchInterceptor } from "@henryco/ui/public-shell";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { manrope, PROPERTY_PUBLIC_THEME_STYLE } from "@/components/property/property-public-theme";
 import { PropertyAccountChip } from "@/components/property/PropertyAccountChip";
 import { PropertySiteFooter } from "@/components/property/site-footer";
@@ -14,10 +17,25 @@ import {
 } from "@/lib/property/links";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const viewer = await getPropertyViewer();
-  const h = await headers();
+  const [viewer, h, locale] = await Promise.all([
+    getPropertyViewer(),
+    headers(),
+    getPropertyPublicLocale(),
+  ]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const returnPath = h.get("x-property-return-path") || "/";
   const origin = getPropertyOrigin();
+
+  // AWARE-SP3: property chrome had no CTA. Now it follows standing — an agent
+  // opens their workspace; a buyer/visitor browses listings with a
+  // "submit a property" aside. Tested matrix in @henryco/aware.
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    PROPERTY_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("property", standing);
+  const chromePrimary = { label: t(plan.primaryCta.label), href: plan.primaryCta.href };
+  const chromeAux = plan.aside ? { label: t(plan.aside.label), href: plan.aside.href } : undefined;
 
   const account = {
     user: viewer.user
@@ -66,7 +84,12 @@ export default async function PublicLayout({ children }: { children: React.React
           accent: division.accent,
         }))}
       />
-      <PropertySiteHeader account={account} accountMenu={accountMenu} />
+      <PropertySiteHeader
+        account={account}
+        accountMenu={accountMenu}
+        primaryCta={chromePrimary}
+        auxLink={chromeAux}
+      />
       {children}
       <PropertySiteFooter />
     </div>

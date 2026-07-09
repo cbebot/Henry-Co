@@ -68,6 +68,86 @@ const PLANS: Record<AwareDivision, DivisionPlanTable> = {
       recruit: { label: "Open your employer workspace", href: "/employer" },
     },
   },
+  learn: {
+    visitor: {
+      primaryCta: { label: "Explore courses", href: "/courses" },
+      aside: { label: "Teach with Henry Onyx", href: "/teach" },
+      workspace: null,
+      recruit: { label: "Start application", href: "/teach" },
+    },
+    customer: {
+      primaryCta: { label: "Explore courses", href: "/courses" },
+      aside: { label: "Teach with Henry Onyx", href: "/teach" },
+      workspace: null,
+      recruit: { label: "Start application", href: "/teach" },
+    },
+    operator: {
+      primaryCta: { label: "Your instructor console", href: "/instructor" },
+      aside: { label: "Explore courses", href: "/courses" },
+      workspace: { label: "Your instructor console", href: "/instructor" },
+      recruit: { label: "Open your instructor console", href: "/instructor" },
+    },
+  },
+  property: {
+    visitor: {
+      primaryCta: { label: "Browse listings", href: "/search" },
+      aside: { label: "Submit a property", href: "/submit" },
+      workspace: null,
+      recruit: { label: "Submit a property", href: "/submit" },
+    },
+    customer: {
+      primaryCta: { label: "Browse listings", href: "/search" },
+      aside: { label: "Submit a property", href: "/submit" },
+      workspace: null,
+      recruit: { label: "Submit a property", href: "/submit" },
+    },
+    operator: {
+      primaryCta: { label: "Your agent workspace", href: "/agent" },
+      aside: { label: "Browse listings", href: "/search" },
+      workspace: { label: "Your agent workspace", href: "/agent" },
+      recruit: { label: "Open your agent workspace", href: "/agent" },
+    },
+  },
+  studio: {
+    visitor: {
+      primaryCta: { label: "Start a project", href: "/request" },
+      aside: { label: "Speak to Studio", href: "/contact" },
+      workspace: null,
+      recruit: { label: "Start a project", href: "/request" },
+    },
+    customer: {
+      primaryCta: { label: "Start a project", href: "/request" },
+      aside: { label: "Speak to Studio", href: "/contact" },
+      workspace: null,
+      recruit: { label: "Start a project", href: "/request" },
+    },
+    operator: {
+      primaryCta: { label: "Your project console", href: "/pm" },
+      aside: { label: "Start a project", href: "/request" },
+      workspace: { label: "Your project console", href: "/pm" },
+      recruit: { label: "Open your project console", href: "/pm" },
+    },
+  },
+  logistics: {
+    visitor: {
+      primaryCta: { label: "Book a pickup", href: "/book" },
+      aside: { label: "Get a quote", href: "/quote" },
+      workspace: null,
+      recruit: { label: "Book a pickup", href: "/book" },
+    },
+    customer: {
+      primaryCta: { label: "Book a pickup", href: "/book" },
+      aside: { label: "Get a quote", href: "/quote" },
+      workspace: null,
+      recruit: { label: "Book a pickup", href: "/book" },
+    },
+    operator: {
+      primaryCta: { label: "Your dispatch console", href: "/dispatcher" },
+      aside: { label: "Book a pickup", href: "/book" },
+      workspace: { label: "Your dispatch console", href: "/dispatcher" },
+      recruit: { label: "Open your dispatch console", href: "/dispatcher" },
+    },
+  },
 };
 
 /** Fallback chain for standings a division's table omits. Deliberately never

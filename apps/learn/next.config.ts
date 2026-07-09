@@ -8,7 +8,7 @@ const root = resolve(appDir, "../..");
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
-  transpilePackages: ["@henryco/config", "@henryco/media", "@henryco/ui"],
+  transpilePackages: ["@henryco/aware", "@henryco/config", "@henryco/media", "@henryco/ui"],
   images: {
     remotePatterns: [
       {

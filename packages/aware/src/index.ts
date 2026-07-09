@@ -9,6 +9,14 @@ export type {
   DivisionPlanTable,
 } from "./types";
 
-export { standingFromRoles, JOBS_ROLE_VOCAB, MARKETPLACE_ROLE_VOCAB } from "./standing";
+export {
+  standingFromRoles,
+  MARKETPLACE_ROLE_VOCAB,
+  JOBS_ROLE_VOCAB,
+  LEARN_ROLE_VOCAB,
+  PROPERTY_ROLE_VOCAB,
+  STUDIO_ROLE_VOCAB,
+  LOGISTICS_ROLE_VOCAB,
+} from "./standing";
 
 export { resolveChromePlan, AWARE_DIVISIONS } from "./plan";

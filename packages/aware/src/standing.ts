@@ -59,3 +59,64 @@ export const JOBS_ROLE_VOCAB: AwareRoleVocab = {
   operatorRoles: ["employer", "recruiter"],
   staffRoles: ["admin", "owner", "moderator"],
 };
+
+/**
+ * Learn role vocabulary — mirrors LearnRole (apps/learn/lib/learn/types.ts),
+ * granted off `learn_role_memberships` via the shared predicate. Every viewer
+ * carries a base `learner`; instructor/academy roles confer operator standing.
+ */
+export const LEARN_ROLE_VOCAB: AwareRoleVocab = {
+  track: "instructor",
+  operatorRoles: ["instructor", "academy_owner", "academy_admin"],
+};
+
+/**
+ * Property role vocabulary — mirrors PropertyRole
+ * (apps/property/lib/property/auth.ts), granted off `property_role_memberships`.
+ * The `agent` track covers the listing/relationship/managed-ops roles whose
+ * primary console is `/agent`.
+ */
+export const PROPERTY_ROLE_VOCAB: AwareRoleVocab = {
+  track: "agent",
+  operatorRoles: [
+    "relationship_manager",
+    "listing_manager",
+    "property_admin",
+    "managed_ops",
+  ],
+};
+
+/**
+ * Studio role vocabulary — mirrors StudioRole (apps/studio/lib/studio/types.ts),
+ * granted off `studio_role_memberships`. The `team` track is the studio
+ * delivery team (project console `/pm`); clients are customer-standing.
+ */
+export const STUDIO_ROLE_VOCAB: AwareRoleVocab = {
+  track: "team",
+  operatorRoles: [
+    "studio_owner",
+    "sales_consultation",
+    "project_manager",
+    "developer_designer",
+    "client_success",
+    "finance",
+  ],
+};
+
+/**
+ * Logistics role vocabulary — mirrors LogisticsRole
+ * (apps/logistics/lib/logistics/auth.ts), granted off
+ * `logistics_role_memberships`. The `ops` track covers rider/dispatch/ops roles
+ * whose console is `/dispatcher`.
+ */
+export const LOGISTICS_ROLE_VOCAB: AwareRoleVocab = {
+  track: "ops",
+  operatorRoles: [
+    "rider",
+    "dispatch_admin",
+    "dispatch_manager",
+    "logistics_owner",
+    "support",
+    "finance_ops",
+  ],
+};

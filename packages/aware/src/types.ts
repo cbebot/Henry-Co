@@ -11,10 +11,26 @@
  */
 
 /** Divisions the plan tables cover. Extend as division PRs adopt the layer. */
-export type AwareDivision = "marketplace" | "jobs";
+export type AwareDivision =
+  | "marketplace"
+  | "jobs"
+  | "learn"
+  | "property"
+  | "studio"
+  | "logistics";
 
-/** Supply-side tracks a person can hold within a division. */
-export type AwareOperatorTrack = "vendor" | "employer" | "instructor" | "provider";
+/** Supply-side tracks a person can hold within a division. `care` + `hub` are
+ *  intentionally absent from AwareDivision: their public chrome is not
+ *  role-differentiated (everyone books / explores) and their operators use
+ *  cross-domain staff/owner surfaces, so an in-chrome operator flip would be
+ *  dishonest. */
+export type AwareOperatorTrack =
+  | "vendor"
+  | "employer"
+  | "instructor"
+  | "agent"
+  | "team"
+  | "ops";
 
 /**
  * The standing lattice. Precedence (enforced by `standingFromRoles` and

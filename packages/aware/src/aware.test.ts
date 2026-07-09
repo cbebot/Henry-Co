@@ -3,18 +3,26 @@ import assert from "node:assert/strict";
 
 import {
   AWARE_DIVISIONS,
-  JOBS_ROLE_VOCAB,
   MARKETPLACE_ROLE_VOCAB,
+  JOBS_ROLE_VOCAB,
+  LEARN_ROLE_VOCAB,
+  PROPERTY_ROLE_VOCAB,
+  STUDIO_ROLE_VOCAB,
+  LOGISTICS_ROLE_VOCAB,
   resolveChromePlan,
   standingFromRoles,
 } from "./index";
 import { __PLAN_TABLES } from "./plan";
-import type { AwareAction, AwareChromePlan, AwareStanding } from "./types";
+import type { AwareAction, AwareChromePlan, AwareDivision, AwareRoleVocab, AwareStanding } from "./types";
 
-const VOCABS = {
+const VOCABS: Record<AwareDivision, AwareRoleVocab> = {
   marketplace: MARKETPLACE_ROLE_VOCAB,
   jobs: JOBS_ROLE_VOCAB,
-} as const;
+  learn: LEARN_ROLE_VOCAB,
+  property: PROPERTY_ROLE_VOCAB,
+  studio: STUDIO_ROLE_VOCAB,
+  logistics: LOGISTICS_ROLE_VOCAB,
+};
 
 const ALL_STANDINGS: AwareStanding[] = [
   { kind: "visitor" },
@@ -86,6 +94,35 @@ test("vocab sanity: operator, applicant and staff role sets are disjoint", () =>
     for (const role of vocab.staffRoles ?? []) {
       assert.ok(!operator.has(role), `staff role "${role}" collides with operator set`);
     }
+  }
+});
+
+test("every covered division has a role vocab, and its first operator role resolves to operator standing", () => {
+  for (const division of AWARE_DIVISIONS) {
+    const vocab = VOCABS[division];
+    assert.ok(vocab, `no vocab registered for division "${division}"`);
+    const firstOperatorRole = vocab.operatorRoles[0];
+    assert.ok(firstOperatorRole, `division "${division}" has no operator roles`);
+    const standing = standingFromRoles(
+      { signedIn: true, roles: [firstOperatorRole] },
+      vocab,
+    );
+    assert.deepEqual(standing, { kind: "operator", track: vocab.track });
+  }
+});
+
+test("each covered division's operator chrome differs from its customer chrome", () => {
+  for (const division of AWARE_DIVISIONS) {
+    const operator = resolveChromePlan(division, {
+      kind: "operator",
+      track: VOCABS[division].track,
+    });
+    const customer = resolveChromePlan(division, { kind: "customer" });
+    assert.notDeepEqual(
+      operator.primaryCta,
+      customer.primaryCta,
+      `${division}: operator sees the same primary CTA as a customer (no smart flip)`,
+    );
   }
 });
 

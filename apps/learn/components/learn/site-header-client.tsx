@@ -14,6 +14,8 @@ import { logoutEverywhere } from "@henryco/auth/client";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { LEARN_PUBLIC_THEME_STYLE } from "@/components/learn/learn-public-theme";
 
+type AwareCta = { label: string; href: string };
+
 type LearnSiteHeaderClientProps = {
   accountChipUser:
     | {
@@ -27,6 +29,13 @@ type LearnSiteHeaderClientProps = {
   signupHref: string;
   preferencesHref: string;
   settingsHref: string;
+  /** AWARE-SP3: role-aware chrome CTAs resolved server-side (labels
+   *  already localized). Fall back to the static learn nav when absent. */
+  primaryCta?: AwareCta;
+  auxLink?: AwareCta;
+  /** When set (operator standing), leads the account menu with the
+   *  instructor console. */
+  operatorMenuItem?: AwareCta;
 };
 
 const learn = getDivisionConfig("learn");
@@ -46,6 +55,9 @@ export function LearnSiteHeaderClient({
   signupHref,
   preferencesHref,
   settingsHref,
+  primaryCta,
+  auxLink,
+  operatorMenuItem,
 }: LearnSiteHeaderClientProps) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -91,14 +103,22 @@ export function LearnSiteHeaderClient({
               });
             }}
             menuItems={[
+              // AWARE-SP3: an instructor gets their console first; the
+              // "teach with us" recruit link is dropped for people who teach.
+              ...(operatorMenuItem
+                ? [{ label: operatorMenuItem.label, href: operatorMenuItem.href }]
+                : []),
               { label: t("My courses"), href: "/learner/courses" },
               { label: t("Browse catalog"), href: "/courses" },
-              { label: t("Teach with Henry Onyx"), href: "/teach" },
+              ...(operatorMenuItem
+                ? []
+                : [{ label: t("Teach with Henry Onyx"), href: "/teach" }]),
             ]}
           />
         ) : null
       }
-      primaryCta={learnNav.defaultCtas?.primary}
+      auxLink={auxLink}
+      primaryCta={primaryCta ?? learnNav.defaultCtas?.primary}
       /* CHROME-64 (redesign 2026-07-08): announcement strip retired (the
        * account link lives in the chip) and the toolbar rests dense —
        * 111px -> ~63px, inside the owner's 64px budget. */
