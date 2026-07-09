@@ -16,7 +16,11 @@ import {
   SellerStatusCard,
   DealsOfTheMomentCard,
 } from "./widgets";
-import { loadMarketplaceSnapshot, isVendor } from "./data";
+import {
+  loadMarketplaceSnapshot,
+  isVendor,
+  MARKETPLACE_VENDOR_WORKSPACE_HREF,
+} from "./data";
 
 /**
  * The marketplace module — slug `marketplace`.
@@ -101,16 +105,19 @@ export const marketplaceModule: DashboardModule = {
       },
     ];
 
-    // Vendor-only — gated on snapshot.vendorStatus presence.
+    // Vendor WINDOW (dashboard-vs-workspaces decision, 2026-07-09) — gated on
+    // vendor standing. Ranks ABOVE the customer widgets (84 > orders' 80): a
+    // seller's morning question is "any orders to fulfil?", not "what did I
+    // buy?". The card-tap opens the REAL vendor workspace on the marketplace
+    // subdomain (it previously bounced to the account-side summary).
     if (isVendor(snapshot)) {
       widgets.push({
         id: "marketplace.seller-status",
         source: "marketplace",
         title: "Seller status",
         size: "md",
-        weight: 70,
-        // No `/marketplace/vendor` page exists in the account shell yet.
-        href: "/marketplace",
+        weight: 84,
+        href: MARKETPLACE_VENDOR_WORKSPACE_HREF,
         render: async () => (
           <SellerStatusCard vendorStatus={snapshot.vendorStatus} />
         ),
@@ -211,7 +218,8 @@ export const marketplaceModule: DashboardModule = {
         label: "Manage store",
         kicker: "Vendor",
         groupLabel: "Open",
-        href: "/marketplace",
+        // Vendor WINDOW → the REAL workspace on the marketplace subdomain.
+        href: MARKETPLACE_VENDOR_WORKSPACE_HREF,
         keywords: ["vendor", "store", "manage", "products"],
       });
     }

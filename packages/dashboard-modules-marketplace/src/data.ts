@@ -2,8 +2,14 @@ import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
 import { createDataAdminClient } from "@henryco/data";
+import { getDivisionUrl } from "@henryco/config";
 import { listSavedItems } from "@henryco/cart-saved-items/server";
 import type { SavedItemRecord } from "@henryco/cart-saved-items";
+
+/** The REAL vendor workspace — lives on the marketplace subdomain, not the
+ *  account shell (dashboard-vs-workspaces decision, 2026-07-09: the module is
+ *  a window; the workspace is the room). */
+export const MARKETPLACE_VENDOR_WORKSPACE_HREF = `${getDivisionUrl("marketplace").replace(/\/$/, "")}/vendor`;
 
 /**
  * Module-local data layer for the marketplace home widgets. Every
