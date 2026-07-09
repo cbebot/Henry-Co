@@ -256,7 +256,7 @@ export const COMPANY = {
       accentText: "#8A6F00",
       dark: "#07111F",
       supportEmail: BRAND_EMAILS.building,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
@@ -305,7 +305,7 @@ export const COMPANY = {
       accentText: "#7E5E1F",
       dark: "#18120C",
       supportEmail: BRAND_EMAILS.marketplace,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — the brand
       // logo links to `/`. "Track" surfaces the customer's #1 post-purchase
       // intent ("where is my order?") that previously routed through the
@@ -340,7 +340,7 @@ export const COMPANY = {
       accentText: "#7A4924",
       dark: "#130B08",
       supportEmail: BRAND_EMAILS.property,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — the brand
       // logo links to `/`. "FAQ" added — real `(public)/faq` route never
       // exposed in nav, even though pre-decision question funnel matters
@@ -376,7 +376,7 @@ export const COMPANY = {
       accentText: "#9D4F1F",
       dark: "#120B08",
       supportEmail: BRAND_EMAILS.logistics,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — logo handles
       // it. "Quote" and "Book" were both in the nav AND duplicated as the two
       // most-prominent CTAs, eating row space. They now render only as CTAs
@@ -410,7 +410,7 @@ export const COMPANY = {
       accentText: "#1F7375",
       dark: "#081219",
       supportEmail: BRAND_EMAILS.studio,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // NOTE: `apps/studio` chrome reads from `siteNavStudio` in
       // `packages/ui/src/public-shell/navigation/site-nav.studio.ts` (local
       // override of the registry default), not from this array. This array
@@ -445,7 +445,7 @@ export const COMPANY = {
       accentText: "#0E7C86",
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Careers" (internal Henry Onyx hiring)
       // removed from primary because it semantically collides with
       // "Find jobs" — candidates routinely clicked it expecting public
@@ -483,7 +483,7 @@ export const COMPANY = {
       accentText: "#2E6E5F",
       dark: "#081414",
       supportEmail: BRAND_EMAILS.learn,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. Rename "How it works" → "Academy" — the
       // route slug is `/academy`, the new label is terser, and "Academy"
       // matches the brand surface across emails/marketing. No structural
@@ -515,7 +515,7 @@ export const COMPANY = {
       accentText: "#86198F",
       dark: "#0B0510",
       supportEmail: BRAND_EMAILS.gaming,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Play", href: "/play" },
         { label: "Games", href: "/play/games" },

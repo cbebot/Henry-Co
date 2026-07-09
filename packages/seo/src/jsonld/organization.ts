@@ -30,7 +30,9 @@ export function buildOrganizationLd(opts: OrganizationOptions): JsonLdNode {
     url,
     logo,
     email: division.supportEmail,
-    telephone: division.supportPhone,
+    // NUMBER-PURGE (2026-07-10): NO telephone in structured data — Google was
+    // lifting the digits straight into the search snippet (owner screenshot).
+    // Email is the only published contact; WhatsApp rides masked wa.me links.
     sameAs: opts.sameAs,
     parentOrganization:
       opts.key === "hub"

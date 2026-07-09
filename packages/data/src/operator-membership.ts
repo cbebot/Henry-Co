@@ -34,11 +34,16 @@ export type OperatorMembershipResult = {
   isOperator: boolean;
   /** The granted membership roles (deduped), most-relevant order preserved. */
   roles: string[];
+  /** Granted membership scope ids (e.g. the vendor/store id) — deduped. */
+  scopeIds: string[];
   /** The division workspace URL (cross-domain — served by the division app). */
   workspaceHref: string;
 };
 
-type RoleMembershipRow = MembershipGrantRow & { role?: string | null };
+type RoleMembershipRow = MembershipGrantRow & {
+  role?: string | null;
+  scope_id?: string | null;
+};
 
 /**
  * Read whether `viewer` is a granted operator in `table`, and build the
@@ -83,7 +88,7 @@ export async function loadOperatorMembership(
 
   const { data, error } = await client
     .from(opts.table)
-    .select("role, user_id, normalized_email, is_active")
+    .select("role, scope_id, user_id, normalized_email, is_active")
     .eq("is_active", true)
     .or(filter);
 
@@ -99,11 +104,14 @@ export async function loadOperatorMembership(
   const roles = Array.from(
     new Set(granted.map((row) => String(row.role || "").trim()).filter(Boolean)),
   );
+  const scopeIds = Array.from(
+    new Set(granted.map((row) => String(row.scope_id || "").trim()).filter(Boolean)),
+  );
 
   const origin = getDivisionUrl(opts.division).replace(/\/$/, "");
   const path = opts.workspacePath.startsWith("/")
     ? opts.workspacePath
     : `/${opts.workspacePath}`;
 
-  return { isOperator: true, roles, workspaceHref: `${origin}${path}` };
+  return { isOperator: true, roles, scopeIds, workspaceHref: `${origin}${path}` };
 }

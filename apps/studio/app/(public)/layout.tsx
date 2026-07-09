@@ -131,10 +131,7 @@ export default async function PublicLayout({ children }: { children: React.React
           attribution: t("Built in-house by Henry Onyx Studio."),
         }}
         columns={footerColumns}
-        support={{
-          email: catalog.platform.supportEmail || studio.supportEmail,
-          phone: catalog.platform.supportPhone || studio.supportPhone,
-        }}
+        support={{ email: catalog.platform.supportEmail || studio.supportEmail }}
       />
     </div>
   );

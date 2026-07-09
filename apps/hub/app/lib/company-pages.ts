@@ -385,7 +385,6 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               { id: "about-reach-legal", label: "Legal correspondence", value: LEGAL.contacts.legal },
               { id: "about-reach-privacy", label: "Privacy and data-subject rights", value: LEGAL.contacts.privacy },
               { id: "about-reach-dpo", label: "Data Protection Officer", value: LEGAL.contacts.dpo },
-              { id: "about-reach-phone", label: "Phone", value: LEGAL.contacts.supportPhone },
             ],
           },
         ],
@@ -637,7 +636,6 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             items: [
               { id: "privacy-dpo-named", label: "Named DPO", value: LEGAL.entity.dpo },
               { id: "privacy-dpo-email", label: "DPO email", value: LEGAL.contacts.dpo },
-              { id: "privacy-dpo-phone", label: "Group support phone", value: LEGAL.contacts.supportPhone },
             ],
           },
           {
@@ -1021,7 +1019,6 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               { id: "terms-contact-legal", label: "Legal", value: LEGAL.contacts.legal },
               { id: "terms-contact-privacy", label: "Privacy", value: LEGAL.contacts.privacy },
               { id: "terms-contact-hello", label: "General", value: LEGAL.contacts.hello },
-              { id: "terms-contact-phone", label: "Phone", value: LEGAL.contacts.supportPhone },
             ],
           },
           {

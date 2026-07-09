@@ -26,7 +26,8 @@ export function buildLocalBusinessLd(opts: LocalBusinessOptions): JsonLdNode {
     description: division.description,
     url,
     email: division.supportEmail,
-    telephone: division.supportPhone,
+    // NUMBER-PURGE (2026-07-10): NO telephone in structured data — Google was
+    // lifting the digits into the search snippet. Email only.
     priceRange: opts.priceRange,
     address: {
       "@type": "PostalAddress",

@@ -105,7 +105,7 @@ export default async function LogisticsPublicLayout({ children }: { children: Re
             ],
           },
         ]}
-        support={{ email: logistics.supportEmail, phone: logistics.supportPhone }}
+        support={{ email: logistics.supportEmail }}
       />
     </div>
   );

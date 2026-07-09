@@ -426,7 +426,7 @@ async function main() {
 
   const profileForm = new FormData();
   profileForm.set("fullName", candidateActor.fullName);
-  profileForm.set("phone", "+2349133957084");
+  profileForm.set("phone", "+2340000000000");
   profileForm.set("headline", "Operations systems specialist");
   profileForm.set("summary", "I design clean hiring and operations flows with measurable discipline.");
   profileForm.set("location", "Lagos");
@@ -455,7 +455,7 @@ async function main() {
     actor: candidateActor,
     email: candidateActor.email,
     fullName: candidateActor.fullName,
-    phone: "+2349133957084",
+    phone: "+2340000000000",
     avatarUrl: null,
     formData: profileForm,
   });

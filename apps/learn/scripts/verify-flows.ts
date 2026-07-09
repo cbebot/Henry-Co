@@ -412,7 +412,7 @@ async function main() {
   const teacherApplication = await submitTeacherApplication({
     viewer: internalViewer,
     fullName: internalViewer.user?.fullName || "Henry Onyx Academy QA Internal",
-    phone: "+2349133957084",
+    phone: "+2340000000000",
     country: "Nigeria",
     expertiseArea: "Academy QA and operational training systems",
     teachingTopics: [`Academy QA ${runId}`, "Operations readiness", "Internal enablement"],

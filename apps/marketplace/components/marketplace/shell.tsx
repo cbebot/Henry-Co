@@ -15,7 +15,13 @@ import {
   WorkspaceMobileNav,
   type WorkspaceNavGroup,
 } from "@/components/marketplace/workspace-mobile-nav";
-import { BRAND_EMAILS, getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import {
+  BRAND_EMAILS,
+  getAccountUrl,
+  getDivisionConfig,
+  getHubUrl,
+  getSupportWhatsAppHref,
+} from "@henryco/config";
 import { HenryCoWordmark } from "@henryco/ui/brand";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
@@ -83,7 +89,7 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
           attribution: t("Built in-house by Henry Onyx Studio."),
         }}
         columns={footerColumns}
-        support={{ email: BRAND_EMAILS.marketplace, phone: "+234 913 395 7084" }}
+        support={{ email: BRAND_EMAILS.marketplace }}
       />
       <MarketplaceCartDrawer />
     </div>
@@ -111,7 +117,18 @@ export async function PublicFooter() {
             </p>
             <div className="space-y-1.5 text-sm text-[var(--market-muted)]">
               <p className="text-[var(--market-paper-white)]">{BRAND_EMAILS.marketplace}</p>
-              <p>+234 913 395 7084</p>
+              {/* NUMBER-PURGE (2026-07-10): the spaced-digit literal here dodged
+                  every prior sweep and kept the company number crawlable. The
+                  masked WhatsApp link (single company source) replaces it —
+                  digits live only in the href, never in visible text. */}
+              <a
+                href={getSupportWhatsAppHref()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-colors hover:text-[var(--market-paper-white)]"
+              >
+                WhatsApp
+              </a>
             </div>
           </div>
 

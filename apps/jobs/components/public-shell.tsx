@@ -189,7 +189,7 @@ export async function PublicShell({
             ],
           },
         ]}
-        support={{ email: jobs.supportEmail, phone: jobs.supportPhone }}
+        support={{ email: jobs.supportEmail }}
       />
     </div>
   );

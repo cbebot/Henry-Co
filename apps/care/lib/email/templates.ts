@@ -346,18 +346,20 @@ function renderText(layout: EmailLayout, settings: CareSettingsRecord) {
     lines.push(line);
   }
 
+  // NUMBER-PURGE (2026-07-10): raw phone digits never appear in customer
+  // emails either — email is the only published contact address.
   lines.push(
     "",
     `${care.name}`,
-    settings.support_email ? `Support: ${settings.support_email}` : "",
-    settings.support_phone ? `Phone: ${settings.support_phone}` : ""
+    settings.support_email ? `Support: ${settings.support_email}` : ""
   );
 
   return lines.filter(Boolean).join("\n");
 }
 
 function renderHtml(layout: EmailLayout, settings: CareSettingsRecord, locale: string = "en") {
-  const supportLine = [settings.support_email, settings.support_phone].filter(Boolean).join(" • ");
+  // NUMBER-PURGE (2026-07-10): support line carries the email only.
+  const supportLine = settings.support_email || "";
   const t = HENRYCO_EMAIL_TOKENS;
   const brandHeader = renderHenryCoEmailHeader("care", "dark");
   const brandFooter = renderHenryCoEmailFooter({

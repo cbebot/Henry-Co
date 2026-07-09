@@ -54,7 +54,7 @@ export default async function PublicLayout({ children }: { children: React.React
             links: [{ href: accountHref, label: t("Henry Onyx account") }],
           },
         ]}
-        support={{ email: learn.supportEmail, phone: learn.supportPhone }}
+        support={{ email: learn.supportEmail }}
       />
     </div>
   );
