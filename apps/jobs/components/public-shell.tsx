@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { headers } from "next/headers";
+import {
+  JOBS_ROLE_VOCAB,
+  resolveChromePlan,
+  standingFromRoles,
+  type AwareAction,
+} from "@henryco/aware";
 import { COMPANY, getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { getJobsPublicCopy } from "@/lib/public-copy";
@@ -43,16 +49,30 @@ export async function PublicShell({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const copy = getJobsPublicCopy(locale);
   const viewer = await getJobsViewer();
-  const resolvedPrimary =
-    primaryCta ??
-    (viewer.user
-      ? { label: copy.home.candidateHub, href: "/candidate" }
-      : { label: copy.home.browseJobs, href: "/jobs" });
-  const resolvedSecondary =
-    secondaryCta ??
-    (viewer.user
-      ? { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" }
-      : { label: copy.home.hireWithHenryCo, href: "/hire" });
+
+  // AWARE-SP1: chrome follows the viewer's STANDING, not just their session —
+  // an employer's primary action is their workspace, a candidate's is the hub,
+  // a visitor's is the catalog. Policy lives in @henryco/aware (tested matrix),
+  // not in per-page conditionals.
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    JOBS_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("jobs", standing);
+  // Routes that already carry Pattern-A copy keep those localized labels;
+  // aware-only labels ("Your employer workspace") localize via t().
+  const copyLabelByHref: Record<string, string> = {
+    "/jobs": copy.home.browseJobs,
+    "/candidate": copy.home.candidateHub,
+    "/candidate/saved-jobs": copy.shell.savedJobs,
+    "/hire": copy.home.hireWithHenryCo,
+  };
+  const localizeAction = (action: AwareAction) => ({
+    label: copyLabelByHref[action.href] ?? t(action.label),
+    href: action.href,
+  });
+  const resolvedPrimary = primaryCta ?? localizeAction(plan.primaryCta);
+  const resolvedSecondary = secondaryCta ?? (plan.aside ? localizeAction(plan.aside) : undefined);
   const h = await headers();
   const returnPath = h.get("x-jobs-return-path") || "/";
   const loginHref = getSharedAccountLoginUrl(normalizeJobsPath(returnPath));
@@ -102,11 +122,18 @@ export async function PublicShell({
               buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
               dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
               menuItems={[
+                // AWARE-SP1: employers get their workspace first; the recruit
+                // link ("I'm hiring") is dropped for people who already hire.
+                ...(standing.kind === "operator"
+                  ? [{ label: t("Your employer workspace"), href: "/employer" }]
+                  : []),
                 { label: copy.shell.candidateHome, href: "/candidate" },
                 { label: copy.shell.applications, href: "/candidate/applications" },
                 { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" },
                 { label: copy.home.browseJobs, href: "/jobs" },
-                { label: copy.home.hireWithHenryCo, href: "/hire" },
+                ...(standing.kind === "operator"
+                  ? []
+                  : [{ label: copy.home.hireWithHenryCo, href: "/hire" }]),
               ]}
             />
           ) : null

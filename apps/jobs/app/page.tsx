@@ -26,10 +26,10 @@ export default async function HomePage() {
   const home = await getJobsHomeData(locale);
 
   return (
-    <PublicShell
-      primaryCta={{ label: copy.shell.browseOpenJobs, href: "/jobs" }}
-      secondaryCta={{ label: copy.shell.hiring, href: "/hire" }}
-    >
+    // AWARE-SP1: no hardcoded chrome CTAs — the shell resolves them from the
+    // viewer's standing (employer → workspace, candidate → hub, visitor →
+    // browse). Overriding here would pin every role to the visitor chrome.
+    <PublicShell>
       {/* Hero — an editorial search INSTRUMENT. Capability evidence over
           headline size: the live search field + real platform signals sit
           above the fold, wrapped in atmosphere on the theme-aware --home-*

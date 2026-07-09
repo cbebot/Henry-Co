@@ -9,7 +9,9 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { JOBS_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { getJobsCopy } from "@henryco/i18n";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { BRAND_EMAILS } from "@henryco/config";
 import { PublicShell } from "@/components/public-shell";
 import { getSharedAccountLoginUrl, getSharedAccountSignupUrl } from "@/lib/account";
@@ -33,10 +35,23 @@ export default async function HirePage() {
     getJobsPublicLocale(),
   ]);
   const copy = getJobsCopy(locale).hirePage;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  const startUrl = viewer.user
-    ? "/employer/company"
-    : getSharedAccountSignupUrl("/employer/company");
+  // AWARE-SP1: "signed in" is not "is an employer". An EXISTING employer goes
+  // to their workspace (/employer), not back through company onboarding; a
+  // signed-in candidate starts onboarding; a visitor signs up first.
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    JOBS_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("jobs", standing);
+  const isEmployer = standing.kind === "operator";
+  const startUrl = isEmployer
+    ? plan.recruit.href
+    : viewer.user
+      ? "/employer/company"
+      : getSharedAccountSignupUrl("/employer/company");
+  const startLabel = isEmployer ? t(plan.recruit.label) : null;
   const loginUrl = getSharedAccountLoginUrl("/employer/company");
 
   const flow = [
@@ -81,7 +96,7 @@ export default async function HirePage() {
   return (
     <PublicShell
       primaryCta={{
-        label: viewer.user ? "Open employer workspace" : "Create employer account",
+        label: startLabel ?? (viewer.user ? t("Set up your employer profile") : t("Create employer account")),
         href: startUrl,
       }}
       secondaryCta={{ label: copy.ctaBrowseCandidates, href: "/talent" }}
@@ -106,7 +121,7 @@ export default async function HirePage() {
                   href={startUrl}
                   className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                 >
-                  {viewer.user ? copy.ctaSignedIn : copy.ctaSignedOut}
+                  {startLabel ?? (viewer.user ? copy.ctaSignedIn : copy.ctaSignedOut)}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 {!viewer.user ? (
@@ -203,7 +218,7 @@ export default async function HirePage() {
                 href={startUrl}
                 className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
-                {viewer.user ? copy.ctaWorkspace : copy.ctaGetStarted}
+                {startLabel ?? (viewer.user ? copy.ctaWorkspace : copy.ctaGetStarted)}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link

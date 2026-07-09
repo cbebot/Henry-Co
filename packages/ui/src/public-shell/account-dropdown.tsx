@@ -102,6 +102,7 @@ export function AccountDropdown({
   user,
   accountHref,
   workspaceHref,
+  workspaceLabel,
   preferencesHref,
   settingsHref,
   menuItems = [],
@@ -124,6 +125,12 @@ export function AccountDropdown({
    * (e.g. on the account app itself, where it would duplicate accountHref).
    */
   workspaceHref?: string | null;
+  /**
+   * AWARE-SP1: label override for the workspace item — role-aware chrome
+   * passes "Your vendor workspace" / "Your employer workspace" here.
+   * Defaults to the generic "Your workspace".
+   */
+  workspaceLabel?: string;
   preferencesHref?: string;
   settingsHref?: string;
   menuItems?: PublicAccountMenuItem[];
@@ -286,7 +293,7 @@ export function AccountDropdown({
             className={rowBase}
             onClick={close}
           >
-            <LayoutGrid className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Your workspace")}
+            <LayoutGrid className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize(workspaceLabel || "Your workspace")}
           </Link>
         ) : null}
         <Link href={accountHref} role="menuitem" tabIndex={0} className={rowBase} onClick={close}>

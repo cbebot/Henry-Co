@@ -18,6 +18,7 @@
     "@henryco/auth": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
+    "@henryco/aware": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/contact-safety": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",

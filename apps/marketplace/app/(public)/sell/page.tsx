@@ -12,6 +12,12 @@ import {
   Section,
   SectionHeader,
 } from "@henryco/ui/public-design";
+import {
+  MARKETPLACE_ROLE_VOCAB,
+  resolveChromePlan,
+  standingFromRoles,
+} from "@henryco/aware";
+import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { sellerPlanRows, sellerTrustTierRules } from "@/lib/marketplace/policy";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
@@ -48,6 +54,18 @@ export default async function SellPage() {
   const sell = copy.sell;
   const proof = (n: number) => (n > 0 ? String(n) : null);
 
+  // AWARE-SP1: never recruit someone who is already in. A VENDOR's hero action
+  // is their workspace; a VENDOR_APPLICANT tracks their application; only
+  // visitors/customers see the apply CTA (the tested matrix in @henryco/aware).
+  const viewer = await getMarketplaceViewer();
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    MARKETPLACE_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("marketplace", standing);
+  const isBaselineRecruit = standing.kind === "visitor" || standing.kind === "customer";
+  const heroCtaLabel = isBaselineRecruit ? sell.hero.primaryCta : t(plan.recruit.label);
+
   return (
     <>
       {/* ── HOOK — selective by design; the bar, stated plainly ── */}
@@ -64,22 +82,24 @@ export default async function SellPage() {
             <Lede className="mt-6 max-w-xl">{sell.hero.body}</Lede>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <PublicCTA
-                href="/account/seller-application"
+                href={plan.recruit.href}
                 variant="primary"
                 size="lg"
                 trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
               >
-                {sell.hero.primaryCta}
+                {heroCtaLabel}
               </PublicCTA>
               <PublicCTA href="/sell/pricing" variant="secondary" size="lg">
                 {sell.hero.secondaryCta}
               </PublicCTA>
-              <PublicCTA
-                href={buildSharedAccountLoginUrl("/account/seller-application")}
-                variant="ghost"
-              >
-                {sell.hero.signInCta}
-              </PublicCTA>
+              {!viewer.user ? (
+                <PublicCTA
+                  href={buildSharedAccountLoginUrl("/account/seller-application")}
+                  variant="ghost"
+                >
+                  {sell.hero.signInCta}
+                </PublicCTA>
+              ) : null}
             </div>
           </div>
           <PublicProofRail
@@ -181,12 +201,12 @@ export default async function SellPage() {
             <Lede className="mt-2">{sell.closing.body}</Lede>
           </div>
           <PublicCTA
-            href="/account/seller-application"
+            href={plan.recruit.href}
             variant="primary"
             size="lg"
             trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
           >
-            {sell.closing.primaryCta}
+            {isBaselineRecruit ? sell.closing.primaryCta : t(plan.recruit.label)}
           </PublicCTA>
         </div>
       </Section>

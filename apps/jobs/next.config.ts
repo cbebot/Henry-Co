@@ -9,7 +9,7 @@ const root = resolve(appDir, "../..");
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
   allowedDevOrigins: ["127.0.0.1", "localhost"],
-  transpilePackages: ["@henryco/brand", "@henryco/config", "@henryco/media", "@henryco/ui"],
+  transpilePackages: ["@henryco/aware", "@henryco/brand", "@henryco/config", "@henryco/media", "@henryco/ui"],
   images: {
     remotePatterns: [
       {
