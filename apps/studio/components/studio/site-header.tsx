@@ -28,9 +28,15 @@ const studioNav = getSiteNavigationConfig("studio");
 export function StudioSiteHeader({
   account,
   accountMenu,
+  primaryCta,
+  auxLink,
 }: {
   account: PublicChromeAccount;
   accountMenu?: ReactNode;
+  /** AWARE-SP3: role-aware chrome CTAs resolved server-side. Fall back to the
+   *  static studio nav config when not supplied (unadopted call sites). */
+  primaryCta?: { label: string; href: string };
+  auxLink?: { label: string; href: string };
 }) {
   return (
     <PublicChrome
@@ -46,8 +52,8 @@ export function StudioSiteHeader({
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
       account={account}
       accountMenu={accountMenu}
-      auxLink={studioNav.defaultCtas?.aux}
-      primaryCta={studioNav.defaultCtas?.primary}
+      auxLink={auxLink ?? studioNav.defaultCtas?.aux}
+      primaryCta={primaryCta ?? studioNav.defaultCtas?.primary}
       dense
     />
   );

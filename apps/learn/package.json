@@ -20,6 +20,7 @@
     "@henryco/ai-gateway": "workspace:^",
     "@henryco/auth": "workspace:^",
     "@henryco/branded-documents": "workspace:^",
+    "@henryco/aware": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",

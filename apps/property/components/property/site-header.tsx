@@ -26,9 +26,16 @@ const propertyNav = getSiteNavigationConfig("property");
 export function PropertySiteHeader({
   account,
   accountMenu,
+  primaryCta,
+  auxLink,
 }: {
   account: PublicChromeAccount;
   accountMenu?: ReactNode;
+  /** AWARE-SP3: role-aware chrome CTAs resolved server-side (labels already
+   *  localized). Property had no chrome CTA before — this adds a standing-aware
+   *  one (agent → agent workspace; everyone else → browse listings). */
+  primaryCta?: { label: string; href: string };
+  auxLink?: { label: string; href: string };
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -50,6 +57,8 @@ export function PropertySiteHeader({
       search={{ href: getHubUrl("/search"), label: "Search Henry Onyx" }}
       account={account}
       accountMenu={accountMenu}
+      primaryCta={primaryCta}
+      auxLink={auxLink}
       /* CHROME-64 (redesign 2026-07-08): announcement strip retired and the
        * toolbar rests dense — the shared <=64px chrome budget. Strip contents
        * (taglines, support links) live in the footer / contact surfaces. */

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { STUDIO_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
@@ -40,6 +41,17 @@ export default async function PublicLayout({ children }: { children: React.React
     accountHref: accountUrl,
   };
 
+  // AWARE-SP3: the chrome follows the viewer's STANDING — a studio team member
+  // sees their project console, everyone else the "start a project" CTA. Policy
+  // lives in @henryco/aware (tested matrix), not in this layout.
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    STUDIO_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("studio", standing);
+  const chromePrimary = { label: t(plan.primaryCta.label), href: plan.primaryCta.href };
+  const chromeAux = plan.aside ? { label: t(plan.aside.label), href: plan.aside.href } : undefined;
+
   const footerColumns = [
     {
       title: t("Studio"),
@@ -76,6 +88,8 @@ export default async function PublicLayout({ children }: { children: React.React
     >
       <StudioSiteHeader
         account={account}
+        primaryCta={chromePrimary}
+        auxLink={chromeAux}
         accountMenu={
           <StudioAccountChip
             {...HenryCoPublicAccountPresets.standard}
@@ -89,6 +103,10 @@ export default async function PublicLayout({ children }: { children: React.React
             buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
             dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
             menuItems={[
+              // AWARE-SP3: a studio team member gets their project console first.
+              ...(standing.kind === "operator"
+                ? [{ label: t(plan.workspace!.label), href: plan.workspace!.href }]
+                : []),
               { label: t("Start a project"), href: "/request" },
               { label: t("Pick a project type"), href: "/pick" },
               { label: t("Packages"), href: "/pricing" },
