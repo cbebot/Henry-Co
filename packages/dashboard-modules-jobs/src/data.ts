@@ -34,9 +34,15 @@ const JOBS_DIVISION = "jobs";
 const JOBS_ACTIVITY_PROFILE = "jobs_candidate_profile";
 const JOBS_ACTIVITY_APPLICATION = "jobs_application";
 const JOBS_ACTIVITY_SAVED = "jobs_saved_post";
+const JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP = "jobs_employer_membership";
 
 /** Canonical live account-shell route for the jobs surface. */
 export const JOBS_HOME_HREF = "/jobs";
+
+/** The REAL employer workspace — lives on the jobs subdomain, not the
+ *  account shell (dashboard-vs-workspaces decision, 2026-07-09: the module
+ *  is a window; the workspace is the room). */
+export const JOBS_EMPLOYER_WORKSPACE_HREF = `https://${henryDomainHost("jobs")}/employer`;
 
 export type JobsSnapshot = {
   /** Active applications — `applications.length` on the live `/jobs` page. */
@@ -357,4 +363,94 @@ export function getJobsQuickActions(): ReadonlyArray<QuickAction> {
       keywords: ["interview", "schedule", "session", "meeting"],
     },
   ];
+}
+
+// ---------------------------------------------------------------------------
+// Employer window (dashboard-vs-workspaces decision, 2026-07-09).
+//
+// The dashboard is the RECORD; the employer workspace is the TOOL. This is the
+// WINDOW: it reads whether the viewer holds any live employer membership — the
+// EXACT `customer_activity` read the jobs app uses in
+// `getEmployerMembershipsByUser` (division=jobs, activity_type=
+// jobs_employer_membership, status != revoked) — and, if so, surfaces the
+// operator's standing + one deep-link into the real workspace. It never
+// re-implements hiring; that lives at jobs.henryonyx.com/employer.
+// ---------------------------------------------------------------------------
+
+const JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP_TYPE = JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP;
+
+export type EmployerSnapshot = {
+  /** Number of distinct, non-revoked employers this viewer belongs to. */
+  employerCount: number;
+  /** Display name of the primary (most-recent) employer, when resolvable. */
+  primaryEmployerName: string | null;
+};
+
+/**
+ * Load the viewer's employer standing, or `null` when they hold no live
+ * employer membership. Mirrors `getEmployerMembershipsByUser` in
+ * `apps/jobs/lib/jobs/data.ts` (user_id OR verified-email match, minus revoked)
+ * so the window and the jobs app can never disagree on who is an employer.
+ */
+export async function loadEmployerSnapshot(
+  viewer: UnifiedViewer,
+): Promise<EmployerSnapshot | null> {
+  // Employer standing is customer-lane (people run companies from their own
+  // account); staff/owner lanes load their own surfaces.
+  if (viewer.kind !== "customer") return null;
+
+  const client = createDataAdminClient();
+  const userId = viewer.user.id;
+  const email = normalizeMailbox(viewer.user.email);
+  const emailVerified = Boolean(viewer.user.emailVerified);
+
+  const byUserPromise = client
+    .from("customer_activity")
+    .select("reference_id, metadata, status, created_at")
+    .eq("division", JOBS_DIVISION)
+    .eq("activity_type", JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP_TYPE)
+    .eq("user_id", userId)
+    .neq("status", "revoked")
+    .order("created_at", { ascending: false });
+
+  // An unclaimed (email-seeded) membership grants only to a viewer who provably
+  // controls that mailbox — matches the shared grant predicate's posture.
+  const byEmailPromise =
+    email && emailVerified
+      ? client
+          .from("customer_activity")
+          .select("reference_id, metadata, status, created_at")
+          .eq("division", JOBS_DIVISION)
+          .eq("activity_type", JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP_TYPE)
+          .contains("metadata", { normalizedEmail: email })
+          .neq("status", "revoked")
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] as Array<Record<string, unknown>> });
+
+  const [byUser, byEmail] = await Promise.all([byUserPromise, byEmailPromise]);
+  const rows = [
+    ...((byUser.data ?? []) as Array<Record<string, unknown>>),
+    ...((byEmail.data ?? []) as Array<Record<string, unknown>>),
+  ];
+
+  const seen = new Set<string>();
+  let primaryEmployerName: string | null = null;
+  for (const raw of rows) {
+    const row = asObject(raw);
+    const metadata = asObject(row.metadata);
+    const slug = asText(metadata.employerSlug || row.reference_id);
+    if (!slug || seen.has(slug)) continue;
+    if (seen.size === 0) {
+      primaryEmployerName = asNullableText(metadata.employerName) ?? slug;
+    }
+    seen.add(slug);
+  }
+
+  if (seen.size === 0) return null;
+  return { employerCount: seen.size, primaryEmployerName };
+}
+
+function normalizeMailbox(value: string | null): string | null {
+  const text = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return text || null;
 }

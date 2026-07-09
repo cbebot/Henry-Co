@@ -9,3 +9,4 @@
 export { ApplicationsInMotionCard } from "./applications-card";
 export { ProfileReadinessCard } from "./readiness-card";
 export { SavedRolesCard } from "./saved-roles-card";
+export { EmployerOperationsCard } from "./employer-operations-card";

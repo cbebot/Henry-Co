@@ -14,8 +14,15 @@ import {
   ApplicationsInMotionCard,
   ProfileReadinessCard,
   SavedRolesCard,
+  EmployerOperationsCard,
 } from "./widgets";
-import { JOBS_HOME_HREF, getJobsQuickActions, loadJobsSnapshot } from "./data";
+import {
+  JOBS_HOME_HREF,
+  JOBS_EMPLOYER_WORKSPACE_HREF,
+  getJobsQuickActions,
+  loadEmployerSnapshot,
+  loadJobsSnapshot,
+} from "./data";
 import { toPaletteGroup } from "./format";
 
 /**
@@ -56,38 +63,63 @@ export const jobsModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadJobsSnapshot(viewer);
-    if (!snapshot) return [];
+    // The employer WINDOW (dashboard-vs-workspaces decision, 2026-07-09) and
+    // the candidate snapshot load in parallel — a person can be both (run a
+    // company and job-hunt), so both windows can appear, employer first.
+    const [snapshot, employer] = await Promise.all([
+      loadJobsSnapshot(viewer),
+      loadEmployerSnapshot(viewer),
+    ]);
 
-    return [
-      {
-        id: "jobs.applications",
+    const widgets: HomeWidget[] = [];
+
+    // Operator window ranks ABOVE customer windows for operators — a hiring
+    // manager's morning question is "who applied?", not "what did I apply to?".
+    if (employer) {
+      widgets.push({
+        id: "jobs.employer-operations",
         source: "jobs",
-        title: "Applications in motion",
+        title: "Hiring operations",
         size: "lg",
-        weight: 78,
-        href: JOBS_HOME_HREF,
-        render: async () => <ApplicationsInMotionCard snapshot={snapshot} />,
-      },
-      {
-        id: "jobs.readiness",
-        source: "jobs",
-        title: "Profile readiness",
-        size: "md",
-        weight: 64,
-        href: JOBS_HOME_HREF,
-        render: async () => <ProfileReadinessCard snapshot={snapshot} />,
-      },
-      {
-        id: "jobs.saved",
-        source: "jobs",
-        title: "Saved roles",
-        size: "md",
-        weight: 52,
-        href: JOBS_HOME_HREF,
-        render: async () => <SavedRolesCard snapshot={snapshot} />,
-      },
-    ];
+        weight: 84,
+        href: JOBS_EMPLOYER_WORKSPACE_HREF,
+        render: async () => <EmployerOperationsCard snapshot={employer} />,
+      });
+    }
+
+    if (snapshot) {
+      widgets.push(
+        {
+          id: "jobs.applications",
+          source: "jobs",
+          title: "Applications in motion",
+          size: "lg",
+          weight: 78,
+          href: JOBS_HOME_HREF,
+          render: async () => <ApplicationsInMotionCard snapshot={snapshot} />,
+        },
+        {
+          id: "jobs.readiness",
+          source: "jobs",
+          title: "Profile readiness",
+          size: "md",
+          weight: 64,
+          href: JOBS_HOME_HREF,
+          render: async () => <ProfileReadinessCard snapshot={snapshot} />,
+        },
+        {
+          id: "jobs.saved",
+          source: "jobs",
+          title: "Saved roles",
+          size: "md",
+          weight: 52,
+          href: JOBS_HOME_HREF,
+          render: async () => <SavedRolesCard snapshot={snapshot} />,
+        },
+      );
+    }
+
+    return widgets;
   },
 
   getRoutes(): ReadonlyArray<RouteEntry> {
@@ -105,8 +137,8 @@ export const jobsModule: DashboardModule = {
     ];
   },
 
-  async getCommandPaletteEntries(): Promise<ReadonlyArray<PaletteEntry>> {
-    return getJobsQuickActions().map((action) => ({
+  async getCommandPaletteEntries(viewer): Promise<ReadonlyArray<PaletteEntry>> {
+    const entries: PaletteEntry[] = getJobsQuickActions().map((action) => ({
       id: action.id,
       source: "jobs",
       label: action.label,
@@ -115,6 +147,23 @@ export const jobsModule: DashboardModule = {
       href: action.href,
       keywords: action.keywords,
     }));
+
+    // Employer WINDOW palette action — surfaced only for operators (a live
+    // employer membership), deep-linking to the real workspace.
+    const employer = await loadEmployerSnapshot(viewer).catch(() => null);
+    if (employer) {
+      entries.push({
+        id: "jobs.employer-workspace",
+        source: "jobs",
+        label: "Open employer workspace",
+        kicker: "Employer",
+        groupLabel: "Open",
+        href: JOBS_EMPLOYER_WORKSPACE_HREF,
+        keywords: ["employer", "hiring", "workspace", "post job", "applicants", "recruit"],
+      });
+    }
+
+    return entries;
   },
 
   getNotificationCategories(): ReadonlyArray<NotificationCategory> {
