@@ -11,6 +11,8 @@ import {
   type EmptyTeaching,
 } from "@henryco/dashboard-shell";
 
+import { createDataAdminClient, listUserAbandonedTasks } from "@henryco/data";
+
 import {
   WalletBalanceCard,
   UnreadNotificationsCard,
@@ -23,6 +25,7 @@ import {
   WelcomeBackWidget,
 } from "./widgets";
 import { loadCustomerOverviewSnapshot } from "./data";
+import { buildResumeModel } from "./resume";
 
 /**
  * The customer-overview module — slug `customer-overview`.
@@ -62,7 +65,19 @@ export const customerOverviewModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadCustomerOverviewSnapshot(viewer);
+    // SP6: the resume model loads in parallel with the snapshot — the
+    // "continue where you left off" widget now tells the truth (it previously
+    // hardcoded headline={null} href={null}, showing "all caught up" even when
+    // real pending journeys existed).
+    const [snapshot, resume] = await Promise.all([
+      loadCustomerOverviewSnapshot(viewer),
+      listUserAbandonedTasks(createDataAdminClient(), viewer.user.id, {
+        statuses: ["pending"],
+        limit: 6,
+      })
+        .then((tasks) => buildResumeModel(tasks))
+        .catch(() => null),
+    ]);
     if (!snapshot) return [];
 
     const firstName = viewer.user.fullName?.split(" ")[0] ?? null;
@@ -136,10 +151,16 @@ export const customerOverviewModule: DashboardModule = {
         source: "customer-overview",
         title: "Pick up",
         size: "md",
-        weight: 50,
-        href: "/activity",
+        // A real pending journey is a concrete next action — it outranks the
+        // ambient summary cards. With nothing pending the calm state sits low.
+        weight: resume ? 83 : 50,
+        href: resume?.href ?? "/activity",
         render: async () => (
-          <LifecycleContinueWidget headline={null} href={null} />
+          <LifecycleContinueWidget
+            headline={resume?.headline ?? null}
+            href={resume?.href ?? null}
+            count={resume?.count ?? 0}
+          />
         ),
       },
       {
