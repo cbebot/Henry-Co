@@ -20,6 +20,7 @@
     "@henryco/brand": "workspace:^",
     "@henryco/cart-saved-items": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
+    "@henryco/aware": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/contact-safety": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",

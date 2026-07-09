@@ -18,6 +18,12 @@ import {
   ProductCard,
   VendorCard,
 } from "@/components/marketplace/shell";
+import {
+  MARKETPLACE_ROLE_VOCAB,
+  resolveChromePlan,
+  standingFromRoles,
+} from "@henryco/aware";
+import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -50,6 +56,20 @@ export default async function MarketplaceHomePage() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const proof = (n: number) => (n > 0 ? String(n) : null);
+
+  // AWARE-SP1: the hero's seller CTA follows the viewer's standing — a vendor
+  // is shown their workspace, an applicant their application status; only
+  // visitors/customers are invited to sell. Page is already force-dynamic.
+  const viewer = await getMarketplaceViewer();
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    MARKETPLACE_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("marketplace", standing);
+  const sellCta =
+    standing.kind === "operator" || standing.kind === "applicant"
+      ? { href: plan.recruit.href, label: t(plan.recruit.label) }
+      : { href: "/sell", label: t("Sell on Henry Onyx") };
 
   const reviewAverage = data.reviews.length
     ? data.reviews.reduce((sum, review) => sum + review.rating, 0) / data.reviews.length
@@ -93,8 +113,8 @@ export default async function MarketplaceHomePage() {
                 >
                   {t("Explore the catalog")}
                 </PublicCTA>
-                <PublicCTA href="/sell" variant="secondary" size="lg">
-                  {t("Sell on Henry Onyx")}
+                <PublicCTA href={sellCta.href} variant="secondary" size="lg">
+                  {sellCta.label}
                 </PublicCTA>
               </div>
             </div>
