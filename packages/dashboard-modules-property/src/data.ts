@@ -1,7 +1,11 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient } from "@henryco/data";
+import {
+  createDataAdminClient,
+  loadOperatorMembership,
+  type OperatorMembershipResult,
+} from "@henryco/data";
 import { getDivisionUrl } from "@henryco/config";
 
 /**
@@ -67,6 +71,22 @@ export type QuickAction = {
 
 /** The live top-level surface this module routes to. */
 export const PROPERTY_HOME_HREF = "/property";
+
+/**
+ * The agent WINDOW (AWARE-SP4). Reads whether the viewer holds a granted
+ * `property_role_memberships` seat and, if so, deep-links into the REAL agent
+ * workspace at property.henryonyx.com/agent. The dashboard is the RECORD; the
+ * agent console is the TOOL — this never re-implements listing management.
+ */
+export function loadAgentSnapshot(
+  viewer: UnifiedViewer,
+): Promise<OperatorMembershipResult | null> {
+  return loadOperatorMembership(viewer, {
+    table: "property_role_memberships",
+    division: "property",
+    workspacePath: "/agent",
+  });
+}
 
 /** The live saved-shortlist surface in the account shell. */
 export const PROPERTY_SAVED_HREF = "/property/saved";

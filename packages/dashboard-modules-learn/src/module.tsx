@@ -1,4 +1,4 @@
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, PenSquare } from "lucide-react";
 import {
   viewerCanUseCustomerSurface,
   type DashboardModule,
@@ -9,9 +9,15 @@ import {
   type RouteEntry,
   type EmptyTeaching,
 } from "@henryco/dashboard-shell";
+import { OperatorWindowCard } from "@henryco/dashboard-shell/components";
 
 import { LearnCoursesCard, LearnCredentialsCard } from "./widgets";
-import { LEARN_HOME_HREF, getLearnQuickActions, loadLearnSnapshot } from "./data";
+import {
+  LEARN_HOME_HREF,
+  getLearnQuickActions,
+  loadInstructorSnapshot,
+  loadLearnSnapshot,
+} from "./data";
 import { toPaletteGroup } from "./format";
 
 /**
@@ -49,29 +55,62 @@ export const learnModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadLearnSnapshot(viewer);
-    if (!snapshot) return [];
+    // The instructor WINDOW (AWARE-SP4) and the learner snapshot load in
+    // parallel — a person can both teach and learn, so both windows can appear,
+    // the instructor console first.
+    const [snapshot, instructor] = await Promise.all([
+      loadLearnSnapshot(viewer),
+      loadInstructorSnapshot(viewer),
+    ]);
 
-    return [
-      {
-        id: "learn.courses",
+    const widgets: HomeWidget[] = [];
+
+    if (instructor) {
+      widgets.push({
+        id: "learn.instructor-console",
         source: "learn",
-        title: "Academy",
-        size: "lg",
-        weight: 55,
-        href: LEARN_HOME_HREF,
-        render: async () => <LearnCoursesCard snapshot={snapshot} />,
-      },
-      {
-        id: "learn.credentials",
-        source: "learn",
-        title: "Credentials & assigned",
+        title: "Instructor console",
         size: "md",
-        weight: 45,
-        href: LEARN_HOME_HREF,
-        render: async () => <LearnCredentialsCard snapshot={snapshot} />,
-      },
-    ];
+        weight: 84,
+        href: instructor.workspaceHref,
+        render: async () => (
+          <OperatorWindowCard
+            icon={<PenSquare size={14} />}
+            kicker="Instructor"
+            headline="Your instructor console"
+            description="Manage your courses, learners, and reviews in your teaching workspace."
+            ctaLabel="Open instructor console"
+            ctaHref={instructor.workspaceHref}
+            footnote="Courses, learners, and grading live in your console"
+          />
+        ),
+      });
+    }
+
+    if (snapshot) {
+      widgets.push(
+        {
+          id: "learn.courses",
+          source: "learn",
+          title: "Academy",
+          size: "lg",
+          weight: 55,
+          href: LEARN_HOME_HREF,
+          render: async () => <LearnCoursesCard snapshot={snapshot} />,
+        },
+        {
+          id: "learn.credentials",
+          source: "learn",
+          title: "Credentials & assigned",
+          size: "md",
+          weight: 45,
+          href: LEARN_HOME_HREF,
+          render: async () => <LearnCredentialsCard snapshot={snapshot} />,
+        },
+      );
+    }
+
+    return widgets;
   },
 
   getRoutes(): ReadonlyArray<RouteEntry> {
@@ -88,8 +127,8 @@ export const learnModule: DashboardModule = {
     ];
   },
 
-  async getCommandPaletteEntries(): Promise<ReadonlyArray<PaletteEntry>> {
-    return getLearnQuickActions().map((action) => ({
+  async getCommandPaletteEntries(viewer): Promise<ReadonlyArray<PaletteEntry>> {
+    const entries: PaletteEntry[] = getLearnQuickActions().map((action) => ({
       id: action.id,
       source: "learn",
       label: action.label,
@@ -98,6 +137,22 @@ export const learnModule: DashboardModule = {
       href: action.href,
       keywords: action.keywords,
     }));
+
+    // Instructor WINDOW palette action — surfaced only for granted instructors.
+    const instructor = await loadInstructorSnapshot(viewer).catch(() => null);
+    if (instructor) {
+      entries.push({
+        id: "learn.instructor-console",
+        source: "learn",
+        label: "Open instructor console",
+        kicker: "Instructor",
+        groupLabel: "Open",
+        href: instructor.workspaceHref,
+        keywords: ["instructor", "teach", "courses", "console", "academy", "grade"],
+      });
+    }
+
+    return entries;
   },
 
   getNotificationCategories(): ReadonlyArray<NotificationCategory> {

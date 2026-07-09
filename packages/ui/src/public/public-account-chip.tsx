@@ -365,7 +365,8 @@ export function PublicAccountChip({
   }
 
   /* ── Signed-in state ── */
-  const { primaryLabel, emailLine, initialsSource } = resolvePublicAccountIdentity(user);
+  const { primaryLabel, chipLabel, emailLine, initialsSource } =
+    resolvePublicAccountIdentity(user);
 
   const triggerClass = cn(
     "flex max-w-[min(200px,calc(100vw-8rem))] min-h-[40px] items-center gap-2 rounded-full border py-1 pl-1 pr-2.5 text-left shadow-sm transition active:scale-[0.98]",
@@ -488,7 +489,9 @@ export function PublicAccountChip({
               "ring-2 ring-zinc-600/90 dark:from-amber-500 dark:to-teal-600"
           )}
         />
-        <span className={labelClass}>{primaryLabel}</span>
+        {/* Single name part only — a full name overflows the ≤64px mobile
+            chrome; the dropdown identity header carries full name + email. */}
+        <span className={labelClass}>{chipLabel}</span>
         <ChevronDown
           className={cn(chevronClass, open && "rotate-180")}
           aria-hidden

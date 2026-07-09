@@ -21,13 +21,16 @@ describe("resolveModuleHomeHref", () => {
   });
 
   it("falls back to the /modules/<slug> catch-all when no homeHref is set", () => {
+    // Note: every SHIPPING division module now declares a homeHref (marketplace
+    // included, as of AWARE-SP4). This exercises the fallback branch generically
+    // with a slug that has none.
     assert.equal(
-      resolveModuleHomeHref({ slug: "marketplace" }),
-      "/modules/marketplace",
+      resolveModuleHomeHref({ slug: "example-module" }),
+      "/modules/example-module",
     );
     assert.equal(
-      resolveModuleHomeHref({ slug: "marketplace", homeHref: undefined }),
-      "/modules/marketplace",
+      resolveModuleHomeHref({ slug: "example-module", homeHref: undefined }),
+      "/modules/example-module",
     );
   });
 

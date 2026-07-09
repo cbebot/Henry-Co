@@ -11,6 +11,7 @@ import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { BottomSheet, type BottomSheetCloseReason } from "../mobile/bottom-sheet";
 import { suppressSentinelPop } from "../mobile/use-android-back-close";
 import { SkipLink } from "../a11y/skip-link";
+import { shortNameForChip } from "../public/account-identity";
 import { cn } from "../lib/cn";
 
 /**
@@ -170,7 +171,10 @@ function IdentityActions({
     return <>{accountMenu}</>;
   }
   if (account.user) {
-    const name = account.user.displayName || account.user.email || t(account.accountLabel || "Account");
+    // Single name part only — a full name overflows the ≤64px mobile chrome.
+    const name = shortNameForChip(
+      account.user.displayName || account.user.email || t(account.accountLabel || "Account"),
+    );
     return (
       <Link
         href={account.accountHref || "/"}

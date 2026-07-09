@@ -1,7 +1,12 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient, type TypedSupabaseClient } from "@henryco/data";
+import {
+  createDataAdminClient,
+  loadOperatorMembership,
+  type OperatorMembershipResult,
+  type TypedSupabaseClient,
+} from "@henryco/data";
 import { normalizeEmail } from "@henryco/config";
 
 /**
@@ -59,6 +64,23 @@ export type QuickAction = {
 
 /** The live top-level surface this module routes to. */
 export const LEARN_HOME_HREF = "/learn";
+
+/**
+ * The instructor WINDOW (AWARE-SP4). The dashboard is the RECORD; the
+ * instructor console is the TOOL. This reads whether the viewer holds a granted
+ * `learn_role_memberships` seat (via the shared operator-membership helper) and,
+ * if so, the window deep-links into the REAL console at learn.henryonyx.com/
+ * instructor. It never re-implements teaching.
+ */
+export function loadInstructorSnapshot(
+  viewer: UnifiedViewer,
+): Promise<OperatorMembershipResult | null> {
+  return loadOperatorMembership(viewer, {
+    table: "learn_role_memberships",
+    division: "learn",
+    workspacePath: "/instructor",
+  });
+}
 
 export function getLearnQuickActions(): ReadonlyArray<QuickAction> {
   return [

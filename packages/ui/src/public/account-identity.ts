@@ -30,6 +30,22 @@ export function humanizeEmailLocalPart(local: string): string {
 }
 
 /**
+ * One name PART for the compact chip trigger — a full name ("Onah Chukwuemeka
+ * Blessed") overflows the ≤64px mobile chrome. Takes the first
+ * whitespace-separated part of the resolved name; when that part is a bare
+ * initial ("J."), falls back to the longest part so the chip still reads as a
+ * name. The dropdown identity header keeps the FULL name + email — identity
+ * confirmation belongs there, not in the bar.
+ */
+export function shortNameForChip(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return fullName.trim();
+  const first = parts[0].replace(/[.,]+$/, "");
+  if (first.length >= 2) return first;
+  return parts.reduce((a, b) => (b.length > a.length ? b : a), first) || fullName.trim();
+}
+
+/**
  * Primary line: best human-facing name (not a duplicated email).
  * Secondary line: full email when it adds information (never identical to primary).
  */
@@ -37,6 +53,8 @@ export function resolvePublicAccountIdentity(
   user: PublicAccountIdentityInput
 ): {
   primaryLabel: string;
+  /** Single name part for the compact chip trigger (mobile-safe). */
+  chipLabel: string;
   /** Shown under the name in the dropdown; omitted when it would duplicate line 1. */
   emailLine: string | null;
   /** For initials / avatar alt — prefer real name, else email local part. */
@@ -68,5 +86,10 @@ export function resolvePublicAccountIdentity(
       ? rawName
       : humanLocal || localFromEmail || email || "Account";
 
-  return { primaryLabel, emailLine, initialsSource };
+  return {
+    primaryLabel,
+    chipLabel: shortNameForChip(primaryLabel),
+    emailLine,
+    initialsSource,
+  };
 }
