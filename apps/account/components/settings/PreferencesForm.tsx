@@ -233,7 +233,7 @@ export default function PreferencesForm({ preferences }: Props) {
           />
           <Toggle
             label={t("Push notifications")}
-            description={t(toBrandName("Device push alerts — active on mobile when the HenryCo app is available"))}
+            description={t(toBrandName("Device push alerts — active on mobile when the Henry Onyx app is available"))}
             checked={prefs.push_enabled}
             onChange={(value) => updateBoolean("push_enabled", value)}
           />

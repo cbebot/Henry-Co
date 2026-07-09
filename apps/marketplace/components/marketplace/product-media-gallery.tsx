@@ -124,7 +124,7 @@ export function ProductMediaGallery({ title, gallery }: ProductMediaGalleryProps
             <div className="flex items-center justify-between gap-4 border-b border-[rgba(255,255,255,0.08)] px-4 py-4 sm:px-6">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgba(255,255,255,0.56)]">
-                  HenryCo product viewer
+                  Henry Onyx product viewer
                 </p>
                 <h2 className="mt-1 text-lg font-semibold text-[var(--market-paper-white)]">{title}</h2>
               </div>

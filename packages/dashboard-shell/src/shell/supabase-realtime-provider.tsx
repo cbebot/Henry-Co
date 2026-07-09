@@ -337,7 +337,7 @@ function projectHydrationItem(
     source: source
       ? {
           key: typeof source.key === "string" ? source.key : "system",
-          label: typeof source.label === "string" ? source.label : "HenryCo",
+          label: typeof source.label === "string" ? source.label : "Henry Onyx",
           accent: typeof source.accent === "string" ? source.accent : "#111827",
           logoUrl: typeof source.logoUrl === "string" ? source.logoUrl : null,
         }

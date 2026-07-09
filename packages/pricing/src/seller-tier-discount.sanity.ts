@@ -35,7 +35,7 @@ function assert(condition: boolean, message: string) {
   if (!condition) throw new Error(message);
 }
 
-console.log('\n=== HenryCo Seller-Tier Discount Sanity ===\n');
+console.log('\n=== Henry Onyx Seller-Tier Discount Sanity ===\n');
 
 const DIVISIONS = ['marketplace', 'care', 'studio', 'learn', 'logistics', 'property', 'jobs'];
 const TIERS = ['none', 'bronze', 'silver', 'gold'];

@@ -98,7 +98,7 @@ function isSensitiveActionChallenge(response: Response): boolean {
 function extractIntent(response: Response): string {
   return (
     response.headers.get("x-henryco-reauth-intent") ||
-    response.headers.get("X-HenryCo-Reauth-Intent") ||
+    response.headers.get("X-Henry Onyx-Reauth-Intent") ||
     "sensitive_action"
   );
 }

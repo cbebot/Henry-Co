@@ -111,7 +111,7 @@ export function AccountScreen() {
       ) : (
         <>
           <Text variant="subtitle">
-            {mode === "local" ? "Local mock sign-in" : "Sign in with your HenryCo account"}
+            {mode === "local" ? "Local mock sign-in" : "Sign in with your Henry Onyx account"}
           </Text>
           {mode === "local" ? (
             <Text variant="caption" color="textSecondary">

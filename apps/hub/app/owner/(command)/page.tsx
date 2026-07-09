@@ -57,7 +57,7 @@ export default async function OwnerOverviewPage() {
       <OwnerPageHeader
         eyebrow={t("Central Owner Command Center")}
         title={`${data.companyTitle} ${t("company brain")}`}
-        description={t("Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.")}
+        description={t("Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one Henry Onyx HQ surface.")}
         actions={
           <>
             <Link href="/owner/staff/invite" className="acct-button-primary">
@@ -183,7 +183,7 @@ export default async function OwnerOverviewPage() {
         </OwnerPanel>
       </div>
 
-      <OwnerPanel title={t("Division control center")} description={t("One health map for every live or future HenryCo division.")} action={<Link href="/owner/divisions" className="acct-button-ghost">{t("View all divisions")}</Link>}>
+      <OwnerPanel title={t("Division control center")} description={t("One health map for every live or future Henry Onyx division.")} action={<Link href="/owner/divisions" className="acct-button-ghost">{t("View all divisions")}</Link>}>
         <div className="grid gap-4 lg:grid-cols-2">
           {data.divisions.map((division) => (
             <Link key={division.slug} href={`/owner/divisions/${division.slug}`} className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4 transition-all hover:border-[var(--owner-accent)]/30 hover:shadow-[var(--acct-shadow)]">

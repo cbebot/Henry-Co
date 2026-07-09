@@ -181,7 +181,7 @@ export function buildHeroCopy(state: HeroState, stats: StudioStats): HeroCopy {
   if (state === "empty") {
     return {
       headline: "Start a Studio brief.",
-      blurb: "When a proposal or project goes live with your HenryCo identity, the synced Studio room appears here — milestones, payments, deliverables, and the next move all in one place.",
+      blurb: "When a proposal or project goes live with your Henry Onyx identity, the synced Studio room appears here — milestones, payments, deliverables, and the next move all in one place.",
       ctaPrimary: { label: "Start a brief", href: `${STUDIO_ORIGIN}/request` },
       ctaSecondary: { label: "Open Studio", href: STUDIO_ORIGIN },
     };

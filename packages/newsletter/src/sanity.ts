@@ -66,7 +66,7 @@ export function runNewsletterSanity(): SanityCheck[] {
 
   checks.push({
     name: "email.normalize.trim_lowercase",
-    ok: normalizeEmail("  Henry@HenryCo.com  ") === "henry@henryco.com",
+    ok: normalizeEmail("  Henry@Henry Onyx.com  ") === "henry@henryco.com",
   });
 
   checks.push({
@@ -96,7 +96,7 @@ export function runNewsletterSanity(): SanityCheck[] {
 
   const normalized = normalizeSubscriptionInput(
     {
-      email: " Reader@HenryCo.com ",
+      email: " Reader@Henry Onyx.com ",
       topicKeys: ["company_digest", "not_a_topic"],
       locale: "en-NG",
       country: "NG",
@@ -294,7 +294,7 @@ export function runNewsletterSanity(): SanityCheck[] {
     content: {
       subject: "BUY NOW!! Last chance 100% guaranteed",
       previewText: "Limited time offer for our valued customer",
-      headline: "Unlock the power of HenryCo",
+      headline: "Unlock the power of Henry Onyx",
       bodyBlocks: [{ kind: "paragraph", text: "Click here to claim your risk-free bonus." }],
       footerNote: null,
       ctaPrimary: null,
@@ -309,7 +309,7 @@ export function runNewsletterSanity(): SanityCheck[] {
 
   const clean = runVoiceGuard({
     content: {
-      subject: "This week at HenryCo marketplace",
+      subject: "This week at Henry Onyx marketplace",
       previewText: "Three small updates worth your time.",
       headline: "Three small updates",
       bodyBlocks: [

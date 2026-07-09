@@ -138,7 +138,7 @@ export function reauthRedirectFor(
 
   const res = NextResponse.redirect(reauthUrl, 307);
   res.headers.set("WWW-Authenticate", REAUTH_HEADER_VALUE);
-  res.headers.set("X-HenryCo-Session-State", "reauth");
+  res.headers.set("X-Henry Onyx-Session-State", "reauth");
 
   if (options.carryCookiesFrom) {
     for (const cookie of options.carryCookiesFrom.cookies.getAll()) {

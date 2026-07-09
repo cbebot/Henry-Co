@@ -14,7 +14,7 @@ import BusinessContextSwitcher from "@/components/business/BusinessContextSwitch
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: toBrandName("Business · HenryCo"),
+  title: toBrandName("Business · Henry Onyx"),
   description: "Create and manage your business — a verified company identity beside your personal account.",
 };
 
@@ -50,7 +50,7 @@ export default async function BusinessLandingPage() {
         <HeroCard
           variant="paired"
           tone={businesses.length === 0 ? "empty" : "active"}
-          eyebrow={toBrandName("HenryCo · Business")}
+          eyebrow={toBrandName("Henry Onyx · Business")}
           headline={copy.common.business}
           blurb={copy.team.subtitle}
           ariaLabel={copy.common.business}

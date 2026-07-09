@@ -136,9 +136,9 @@ function buildPaymentMethods(
       : []),
     {
       id: "wallet_balance",
-      label: t("HenryCo balance"),
+      label: t("Henry Onyx balance"),
       description: t(
-        "Use cleared HenryCo wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
+        "Use cleared Henry Onyx wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
       ),
       icon: Wallet,
     },
@@ -650,7 +650,7 @@ export function CheckoutExperience({
         </Link>
       </header>
 
-      {/* Stepper — bespoke HenryCo brass-on-noir, motion-aware */}
+      {/* Stepper — bespoke Henry Onyx brass-on-noir, motion-aware */}
       <CheckoutStepper currentStep={step} />
 
       <section className="grid gap-6 lg:grid-cols-[1fr,380px]">
@@ -1212,7 +1212,7 @@ function PaymentStep({
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
         {t(
-          "Use cleared HenryCo balance first when it covers the total, or transfer the exact amount and upload proof before the order enters finance review.",
+          "Use cleared Henry Onyx balance first when it covers the total, or transfer the exact amount and upload proof before the order enters finance review.",
         )}
       </p>
 
@@ -1793,7 +1793,7 @@ function ConfirmStep({
         <span>
           I agree to the{" "}
           <Link href="/policies/buyer-protection" className="font-semibold text-[var(--market-brass)]">
-            HenryCo marketplace policies
+            Henry Onyx marketplace policies
           </Link>{" "}
           and confirm the delivery address and payment method are correct.
         </span>
@@ -1897,5 +1897,5 @@ function OrderSummaryRail({
 }
 
 function countVendors(cart: CartShape) {
-  return new Set(cart.items.map((item) => item.vendorName || "HenryCo")).size;
+  return new Set(cart.items.map((item) => item.vendorName || "Henry Onyx")).size;
 }

@@ -109,7 +109,7 @@ export default async function ChoosePage({
     (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
     (typeof user.user_metadata?.name === "string" && user.user_metadata.name.trim()) ||
     null;
-  const greeting = fullName ? `${t("Signed in as")} ${fullName.split(" ")[0]}.` : t("Signed in to HenryCo.");
+  const greeting = fullName ? `${t("Signed in as")} ${fullName.split(" ")[0]}.` : t("Signed in to Henry Onyx.");
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-[var(--acct-bg)] px-4 py-10 sm:items-center sm:py-16">
@@ -117,7 +117,7 @@ export default async function ChoosePage({
         <div className="mb-8 flex flex-col items-center text-center sm:mb-10">
           <Logo size={44} />
           <p className="mt-5 text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--acct-gold)]">
-            {t("HenryCo Accounts")}
+            {t("Henry Onyx Accounts")}
           </p>
           <h1 className="acct-display mt-3 text-2xl leading-tight text-[var(--acct-ink)] sm:text-[28px]">
             {t("Choose your workspace")}

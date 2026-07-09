@@ -60,13 +60,13 @@ export default async function VerifiedPage({
               </div>
               <div className="min-w-0">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--acct-gold)]">
-                  HenryCo Accounts
+                  Henry Onyx Accounts
                 </p>
                 <h1 className="acct-display mt-2 text-2xl leading-tight text-[var(--acct-ink)] sm:text-3xl">
-                  {fullName ? `You&rsquo;re in, ${fullName.split(" ")[0]}.` : "Your HenryCo account is verified."}
+                  {fullName ? `You’re in, ${fullName.split(" ")[0]}.` : "Your Henry Onyx account is verified."}
                 </h1>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--acct-muted)]">
-                  Your email is confirmed and your customer profile is ready. From here you can move freely across Care, Marketplace, Studio, Jobs, Learn, Logistics, and Property — one HenryCo account, one trusted session.
+                  Your email is confirmed and your customer profile is ready. From here you can move freely across Care, Marketplace, Studio, Jobs, Learn, Logistics, and Property — one Henry Onyx account, one trusted session.
                 </p>
               </div>
             </div>
@@ -74,7 +74,7 @@ export default async function VerifiedPage({
 
           <div className="px-6 py-6 sm:px-8 sm:py-7">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--acct-muted)]">
-              What your HenryCo account unlocks
+              What your Henry Onyx account unlocks
             </p>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
               {[
@@ -98,14 +98,14 @@ export default async function VerifiedPage({
                 href={continueHref}
                 className="acct-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Continue to my HenryCo account
+                Continue to my Henry Onyx account
                 <ArrowRight size={14} />
               </Link>
               <Link
                 href={henryWebRoot()}
                 className="acct-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Explore HenryCo
+                Explore Henry Onyx
               </Link>
             </div>
           </div>

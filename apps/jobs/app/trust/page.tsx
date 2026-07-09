@@ -26,7 +26,7 @@ export default async function TrustPage() {
     {
       icon: UserCheck,
       title: t("Your account & data"),
-      body: t("Saving and applying require a HenryCo account so your shortlist and applications are not floating in a cookie somewhere. You control your profile, documents, and what you send with each application."),
+      body: t("Saving and applying require a Henry Onyx account so your shortlist and applications are not floating in a cookie somewhere. You control your profile, documents, and what you send with each application."),
     },
   ] as const;
 

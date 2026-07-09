@@ -54,9 +54,9 @@ export const DIVISIONS: Division[] = [
     name: "Henry Onyx Jobs",
     tagline: "Verified Talent",
     summary:
-      "Verified hiring for HenryCo and trusted external employers.",
+      "Verified hiring for Henry Onyx and trusted external employers.",
     description:
-      "Henry Onyx Jobs is a verified talent and hiring platform serving both HenryCo divisions and trusted external employers. The platform provides structured applications, transparent role requirements, and accountable recruiting workflows — ensuring candidates receive timely feedback and employers access pre-vetted talent pools with clearer hiring signals throughout the process.",
+      "Henry Onyx Jobs is a verified talent and hiring platform serving both Henry Onyx divisions and trusted external employers. The platform provides structured applications, transparent role requirements, and accountable recruiting workflows — ensuring candidates receive timely feedback and employers access pre-vetted talent pools with clearer hiring signals throughout the process.",
     status: "active",
     featured: true,
     accentHex: "#2DD4BF",
@@ -88,7 +88,7 @@ export const DIVISIONS: Division[] = [
     summary:
       "Public courses, internal training, certifications, and partner enablement.",
     description:
-      "Henry Onyx Learn brings together public courses, internal staff training, professional certifications, and partner enablement programmes on a single coherent platform. Learners progress through structured curricula with progress tracking, assessments, and verifiable credentials — empowering teams across HenryCo and beyond to build skills systematically.",
+      "Henry Onyx Learn brings together public courses, internal staff training, professional certifications, and partner enablement programmes on a single coherent platform. Learners progress through structured curricula with progress tracking, assessments, and verifiable credentials — empowering teams across Henry Onyx and beyond to build skills systematically.",
     status: "active",
     featured: true,
     accentHex: "#38BDF8",

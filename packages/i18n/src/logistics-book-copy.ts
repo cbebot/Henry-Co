@@ -102,7 +102,7 @@ const LOGISTICS_BOOK_COPY_EN: LogisticsBookCopy = {
       "Routing assigns within the operating window; pickup milestone writes live to the timeline.",
     step3Title: "Both sides stay informed",
     step3Body:
-      "Sender and recipient see the same milestones. Updates land via SMS or in your HenryCo account thread.",
+      "Sender and recipient see the same milestones. Updates land via SMS or in your Henry Onyx account thread.",
     step4Title: "Proof of delivery on arrival",
     step4Body:
       "Recipient name, time, and capture method save to the shipment record — visible immediately on the track page.",
@@ -114,7 +114,7 @@ const LOGISTICS_BOOK_COPY_EN: LogisticsBookCopy = {
   trackCta: {
     eyebrow: "Already have a tracking code?",
     title: "Pick up where the last shipment left off.",
-    body: "Status, proof of delivery, and any active exception live on the track page. Account holders also see logistics activity inside their HenryCo support thread.",
+    body: "Status, proof of delivery, and any active exception live on the track page. Account holders also see logistics activity inside their Henry Onyx support thread.",
     trackButton: "Track a shipment",
     quoteButton: "Get a quote first",
   },
@@ -162,7 +162,7 @@ const LOGISTICS_BOOK_COPY_FR: DeepPartial<LogisticsBookCopy> = {
       "L’acheminement est affecté dans la fenêtre opérationnelle ; le jalon d’enlèvement s’écrit en direct sur la chronologie.",
     step3Title: "Les deux parties restent informées",
     step3Body:
-      "Expéditeur et destinataire voient les mêmes jalons. Les mises à jour arrivent par SMS ou dans votre fil d’assistance HenryCo.",
+      "Expéditeur et destinataire voient les mêmes jalons. Les mises à jour arrivent par SMS ou dans votre fil d’assistance Henry Onyx.",
     step4Title: "Preuve de livraison à l’arrivée",
     step4Body:
       "Nom du destinataire, heure et mode de capture sont enregistrés dans le dossier d’expédition — visibles immédiatement sur la page de suivi.",
@@ -174,7 +174,7 @@ const LOGISTICS_BOOK_COPY_FR: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "Vous avez déjà un code de suivi ?",
     title: "Reprenez là où la dernière expédition s’est arrêtée.",
-    body: "Statut, preuve de livraison et toute exception active vivent sur la page de suivi. Les titulaires de compte voient aussi l’activité logistique dans leur fil d’assistance HenryCo.",
+    body: "Statut, preuve de livraison et toute exception active vivent sur la page de suivi. Les titulaires de compte voient aussi l’activité logistique dans leur fil d’assistance Henry Onyx.",
     trackButton: "Suivre une expédition",
     quoteButton: "Obtenir d’abord un devis",
   },
@@ -222,7 +222,7 @@ const LOGISTICS_BOOK_COPY_ES: DeepPartial<LogisticsBookCopy> = {
       "El enrutamiento se asigna dentro de la franja operativa; el hito de recogida se escribe en directo en la línea de tiempo.",
     step3Title: "Ambas partes se mantienen informadas",
     step3Body:
-      "Remitente y destinatario ven los mismos hitos. Las actualizaciones llegan por SMS o en su hilo de cuenta HenryCo.",
+      "Remitente y destinatario ven los mismos hitos. Las actualizaciones llegan por SMS o en su hilo de cuenta Henry Onyx.",
     step4Title: "Prueba de entrega al llegar",
     step4Body:
       "El nombre del destinatario, la hora y el método de captura se guardan en el registro del envío — visibles de inmediato en la página de seguimiento.",
@@ -234,7 +234,7 @@ const LOGISTICS_BOOK_COPY_ES: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "¿Ya tiene un código de seguimiento?",
     title: "Continúe donde se quedó el último envío.",
-    body: "Estado, prueba de entrega y cualquier excepción activa están en la página de seguimiento. Los titulares de cuenta también ven la actividad logística en su hilo de soporte HenryCo.",
+    body: "Estado, prueba de entrega y cualquier excepción activa están en la página de seguimiento. Los titulares de cuenta también ven la actividad logística en su hilo de soporte Henry Onyx.",
     trackButton: "Seguir un envío",
     quoteButton: "Obtener primero un presupuesto",
   },
@@ -282,7 +282,7 @@ const LOGISTICS_BOOK_COPY_PT: DeepPartial<LogisticsBookCopy> = {
       "O encaminhamento é atribuído dentro da janela operacional; o marco de recolha é escrito ao vivo na cronologia.",
     step3Title: "Ambos os lados ficam informados",
     step3Body:
-      "Remetente e destinatário veem os mesmos marcos. As atualizações chegam por SMS ou no seu tópico de conta HenryCo.",
+      "Remetente e destinatário veem os mesmos marcos. As atualizações chegam por SMS ou no seu tópico de conta Henry Onyx.",
     step4Title: "Comprovativo de entrega à chegada",
     step4Body:
       "Nome do destinatário, hora e método de captura ficam guardados no registo do envio — visíveis de imediato na página de rastreamento.",
@@ -294,7 +294,7 @@ const LOGISTICS_BOOK_COPY_PT: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "Já tem um código de rastreamento?",
     title: "Continue de onde o último envio parou.",
-    body: "Estado, comprovativo de entrega e qualquer exceção ativa vivem na página de rastreamento. Os titulares de conta também veem a atividade logística no seu tópico de apoio HenryCo.",
+    body: "Estado, comprovativo de entrega e qualquer exceção ativa vivem na página de rastreamento. Os titulares de conta também veem a atividade logística no seu tópico de apoio Henry Onyx.",
     trackButton: "Rastrear um envio",
     quoteButton: "Obter primeiro um orçamento",
   },
@@ -342,7 +342,7 @@ const LOGISTICS_BOOK_COPY_AR: DeepPartial<LogisticsBookCopy> = {
       "يُسنَد التوجيه ضمن نافذة التشغيل، وتُدوَّن مرحلة الاستلام لحظيًا في الجدول الزمني.",
     step3Title: "الطرفان على اطلاع دائم",
     step3Body:
-      "يرى المُرسِل والمستلِم المراحل نفسها. تصل التحديثات عبر الرسائل النصية أو في مسار حسابك على HenryCo.",
+      "يرى المُرسِل والمستلِم المراحل نفسها. تصل التحديثات عبر الرسائل النصية أو في مسار حسابك على Henry Onyx.",
     step4Title: "إثبات التسليم عند الوصول",
     step4Body:
       "اسم المستلِم والوقت وطريقة الإثبات تُحفَظ في سجل الشحنة — وتظهر فورًا في صفحة التتبع.",
@@ -354,7 +354,7 @@ const LOGISTICS_BOOK_COPY_AR: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "لديك رمز تتبع بالفعل؟",
     title: "تابع من حيث توقفت آخر شحنة.",
-    body: "الحالة وإثبات التسليم وأي استثناء قائم متاحة في صفحة التتبع. كما يرى أصحاب الحسابات نشاط الخدمات اللوجستية ضمن مسار الدعم على HenryCo.",
+    body: "الحالة وإثبات التسليم وأي استثناء قائم متاحة في صفحة التتبع. كما يرى أصحاب الحسابات نشاط الخدمات اللوجستية ضمن مسار الدعم على Henry Onyx.",
     trackButton: "تتبع شحنة",
     quoteButton: "اطلب عرض سعر أولاً",
   },
@@ -402,7 +402,7 @@ const LOGISTICS_BOOK_COPY_DE: DeepPartial<LogisticsBookCopy> = {
       "Die Disposition erfolgt innerhalb des Betriebsfensters; der Abholmeilenstein wird live in den Zeitstrahl geschrieben.",
     step3Title: "Beide Seiten bleiben informiert",
     step3Body:
-      "Absender und Empfänger sehen dieselben Meilensteine. Updates kommen per SMS oder in Ihrem HenryCo-Kontofaden an.",
+      "Absender und Empfänger sehen dieselben Meilensteine. Updates kommen per SMS oder in Ihrem Henry Onyx-Kontofaden an.",
     step4Title: "Zustellnachweis bei Ankunft",
     step4Body:
       "Empfängername, Uhrzeit und Erfassungsmethode werden im Sendungsdatensatz gespeichert — sofort sichtbar auf der Tracking-Seite.",
@@ -414,7 +414,7 @@ const LOGISTICS_BOOK_COPY_DE: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "Sie haben bereits einen Tracking-Code?",
     title: "Setzen Sie dort an, wo die letzte Sendung aufgehört hat.",
-    body: "Status, Zustellnachweis und alle aktiven Ausnahmen liegen auf der Tracking-Seite. Kontoinhaber sehen die Logistikaktivität zudem in ihrem HenryCo-Support-Faden.",
+    body: "Status, Zustellnachweis und alle aktiven Ausnahmen liegen auf der Tracking-Seite. Kontoinhaber sehen die Logistikaktivität zudem in ihrem Henry Onyx-Support-Faden.",
     trackButton: "Sendung verfolgen",
     quoteButton: "Erst ein Angebot einholen",
   },
@@ -462,7 +462,7 @@ const LOGISTICS_BOOK_COPY_IT: DeepPartial<LogisticsBookCopy> = {
       "L’instradamento è assegnato nella finestra operativa; la tappa di ritiro viene scritta in tempo reale nella cronologia.",
     step3Title: "Entrambe le parti restano informate",
     step3Body:
-      "Mittente e destinatario vedono le stesse tappe. Gli aggiornamenti arrivano via SMS o nel thread del tuo account HenryCo.",
+      "Mittente e destinatario vedono le stesse tappe. Gli aggiornamenti arrivano via SMS o nel thread del tuo account Henry Onyx.",
     step4Title: "Prova di consegna all’arrivo",
     step4Body:
       "Nome del destinatario, orario e metodo di acquisizione sono salvati nel record della spedizione — visibili subito nella pagina di tracciamento.",
@@ -474,7 +474,7 @@ const LOGISTICS_BOOK_COPY_IT: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "Hai già un codice di tracciamento?",
     title: "Riprendi da dove si è fermata l’ultima spedizione.",
-    body: "Stato, prova di consegna ed eventuali eccezioni attive vivono nella pagina di tracciamento. I titolari di account vedono anche l’attività logistica nel thread di assistenza HenryCo.",
+    body: "Stato, prova di consegna ed eventuali eccezioni attive vivono nella pagina di tracciamento. I titolari di account vedono anche l’attività logistica nel thread di assistenza Henry Onyx.",
     trackButton: "Traccia una spedizione",
     quoteButton: "Prima ottieni un preventivo",
   },
@@ -519,7 +519,7 @@ const LOGISTICS_BOOK_COPY_ZH: DeepPartial<LogisticsBookCopy> = {
     step2Body: "在运营时段内完成调度;取件里程碑实时写入时间线。",
     step3Title: "双方同步知情",
     step3Body:
-      "寄件人和收件人看到完全一致的里程碑。更新通过短信或你的 HenryCo 账户线程送达。",
+      "寄件人和收件人看到完全一致的里程碑。更新通过短信或你的 Henry Onyx 账户线程送达。",
     step4Title: "到达时留存送达凭证",
     step4Body:
       "收件人姓名、时间与确认方式存入运单记录,在追踪页立即可见。",
@@ -531,7 +531,7 @@ const LOGISTICS_BOOK_COPY_ZH: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "已经有追踪码?",
     title: "从上一次配送停下的地方继续。",
-    body: "状态、送达凭证以及任何待处理的异常都在追踪页中。账户用户还可以在自己的 HenryCo 支持线程中查看物流记录。",
+    body: "状态、送达凭证以及任何待处理的异常都在追踪页中。账户用户还可以在自己的 Henry Onyx 支持线程中查看物流记录。",
     trackButton: "追踪一单",
     quoteButton: "先获取报价",
   },
@@ -579,7 +579,7 @@ const LOGISTICS_BOOK_COPY_HI: DeepPartial<LogisticsBookCopy> = {
       "रूटिंग ऑपरेटिंग विंडो के भीतर तय होती है; पिकअप माइलस्टोन टाइमलाइन पर लाइव दर्ज होता है।",
     step3Title: "दोनों पक्ष जानकारी में रहते हैं",
     step3Body:
-      "भेजने और पाने वाले को एक जैसे माइलस्टोन दिखते हैं। अपडेट SMS पर या आपके HenryCo अकाउंट थ्रेड में आते हैं।",
+      "भेजने और पाने वाले को एक जैसे माइलस्टोन दिखते हैं। अपडेट SMS पर या आपके Henry Onyx अकाउंट थ्रेड में आते हैं।",
     step4Title: "पहुँचने पर डिलीवरी का प्रमाण",
     step4Body:
       "पाने वाले का नाम, समय और कैप्चर का तरीका शिपमेंट रिकॉर्ड में सेव होते हैं — ट्रैक पेज पर तुरंत दिखते हैं।",
@@ -591,7 +591,7 @@ const LOGISTICS_BOOK_COPY_HI: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "पहले से ट्रैकिंग कोड है?",
     title: "जहाँ पिछली शिपमेंट छूटी थी, वहाँ से आगे बढ़ें।",
-    body: "स्थिति, डिलीवरी का प्रमाण और कोई भी सक्रिय अपवाद ट्रैक पेज पर रहते हैं। अकाउंट धारक अपनी HenryCo सपोर्ट थ्रेड में भी लॉजिस्टिक्स गतिविधि देखते हैं।",
+    body: "स्थिति, डिलीवरी का प्रमाण और कोई भी सक्रिय अपवाद ट्रैक पेज पर रहते हैं। अकाउंट धारक अपनी Henry Onyx सपोर्ट थ्रेड में भी लॉजिस्टिक्स गतिविधि देखते हैं।",
     trackButton: "एक शिपमेंट ट्रैक करें",
     quoteButton: "पहले कोटेशन लें",
   },
@@ -639,7 +639,7 @@ const LOGISTICS_BOOK_COPY_IG: DeepPartial<LogisticsBookCopy> = {
       "A na-eke ụzọ n’ime oge ọrụ; nzọụkwụ mbutere na-edebanye onwe ya ozugbo n’oge eserese.",
     step3Title: "Akụkụ abụọ na-aghọta ọnọdụ",
     step3Body:
-      "Onye na-ezipu na onye na-anata na-ahụ otu nzọụkwụ ndị ahụ. Mmelite na-eru site na SMS ma ọ bụ n’ime eriri akaụntụ HenryCo gị.",
+      "Onye na-ezipu na onye na-anata na-ahụ otu nzọụkwụ ndị ahụ. Mmelite na-eru site na SMS ma ọ bụ n’ime eriri akaụntụ Henry Onyx gị.",
     step4Title: "Ihe àmà nnyefe mgbe e rutere",
     step4Body:
       "Aha onye na-anata, oge, na ụzọ e ji wee dekọọ ya, a na-echekwa ha n’ime ndekọ mbufe ahụ — a na-ahụ ha ozugbo na peeji nyocha.",
@@ -651,7 +651,7 @@ const LOGISTICS_BOOK_COPY_IG: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "Ị nweelarị koodu nyocha?",
     title: "Bido n’ebe mbufe gara aga kwụsịrị.",
-    body: "Ọnọdụ, ihe àmà nnyefe, na mfe ọ bụla na-arụ ọrụ na-anọ na peeji nyocha. Ndị nwere akaụntụ na-ahụkwa ọrụ logistics n’ime eriri nkwado HenryCo ha.",
+    body: "Ọnọdụ, ihe àmà nnyefe, na mfe ọ bụla na-arụ ọrụ na-anọ na peeji nyocha. Ndị nwere akaụntụ na-ahụkwa ọrụ logistics n’ime eriri nkwado Henry Onyx ha.",
     trackButton: "Soro mbufe",
     quoteButton: "Buru ụzọ nweta ọnụ ahịa",
   },
@@ -699,7 +699,7 @@ const LOGISTICS_BOOK_COPY_YO: DeepPartial<LogisticsBookCopy> = {
       "A máa ń pín ipa-ọ̀nà nínú àkókò iṣẹ́; ìpele ìgbé máa ń kọ ara rẹ̀ sí àkójọpọ̀ àkókò lójú ẹsẹ̀.",
     step3Title: "Ẹ̀gbẹ́ méjèèjì máa wà nínú ìmọ̀",
     step3Body:
-      "Olùránṣẹ́ àti olùgbà máa rí àwọn ìpele kan náà. Ìmúdájú máa ń dé nípasẹ̀ SMS tàbí nínú òdiẹ̀ akáǹtì HenryCo rẹ.",
+      "Olùránṣẹ́ àti olùgbà máa rí àwọn ìpele kan náà. Ìmúdájú máa ń dé nípasẹ̀ SMS tàbí nínú òdiẹ̀ akáǹtì Henry Onyx rẹ.",
     step4Title: "Ẹ̀rí ìfijiṣẹ́ nígbà tó bá dé",
     step4Body:
       "Orúkọ olùgbà, àkókò, àti ọ̀nà gbígbà gbogbo máa ń wọ inú àkọsílẹ̀ ìránṣẹ́ — yóò hàn lójú ẹsẹ̀ ní ojú-ìwé àtẹ̀lé.",
@@ -711,7 +711,7 @@ const LOGISTICS_BOOK_COPY_YO: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "O ti ní kóòdù àtẹ̀lé tẹ́lẹ̀?",
     title: "Bẹ̀rẹ̀ láti ibi tí ìránṣẹ́ ìkẹyìn ti dúró sí.",
-    body: "Ipò, ẹ̀rí ìfijiṣẹ́, àti ìpèníjà tó wà ní iṣẹ́ kankan máa ń wà ní ojú-ìwé àtẹ̀lé. Àwọn tí wọ́n ní akáǹtì máa rí iṣẹ́ logistics pẹ̀lú nínú òdiẹ̀ àtìlẹ́yìn HenryCo wọn.",
+    body: "Ipò, ẹ̀rí ìfijiṣẹ́, àti ìpèníjà tó wà ní iṣẹ́ kankan máa ń wà ní ojú-ìwé àtẹ̀lé. Àwọn tí wọ́n ní akáǹtì máa rí iṣẹ́ logistics pẹ̀lú nínú òdiẹ̀ àtìlẹ́yìn Henry Onyx wọn.",
     trackButton: "Tẹ̀lé ìránṣẹ́",
     quoteButton: "Kọ́kọ́ gba ìdíyelé",
   },
@@ -759,7 +759,7 @@ const LOGISTICS_BOOK_COPY_HA: DeepPartial<LogisticsBookCopy> = {
       "Ana ba da hanya cikin lokacin aiki; matakin ɗauka yana rubuta kansa nan take a kan layin lokaci.",
     step3Title: "Gefe biyu suna a kan haka",
     step3Body:
-      "Mai aikawa da mai karɓa suna ganin matakai iri ɗaya. Sabuntawa suna zuwa ta SMS ko cikin zaren akwatin HenryCo naka.",
+      "Mai aikawa da mai karɓa suna ganin matakai iri ɗaya. Sabuntawa suna zuwa ta SMS ko cikin zaren akwatin Henry Onyx naka.",
     step4Title: "Tabbacin isar da kaya a isowarsa",
     step4Body:
       "Sunan mai karɓa, lokaci, da hanyar tabbatarwa suna ajiye a cikin rikodin jigilar — suna bayyana nan take a shafin bibiya.",
@@ -771,7 +771,7 @@ const LOGISTICS_BOOK_COPY_HA: DeepPartial<LogisticsBookCopy> = {
   trackCta: {
     eyebrow: "Ka riga ka sami lambar bibiya?",
     title: "Ci gaba daga inda jigilar da ta gabata ta tsaya.",
-    body: "Hali, tabbacin isar da kaya, da kowace matsala mai aiki suna kan shafin bibiya. Masu akwatin kuma suna ganin ayyukan logistics a cikin zaren tallafin HenryCo nasu.",
+    body: "Hali, tabbacin isar da kaya, da kowace matsala mai aiki suna kan shafin bibiya. Masu akwatin kuma suna ganin ayyukan logistics a cikin zaren tallafin Henry Onyx nasu.",
     trackButton: "Bi jigila",
     quoteButton: "Da farko ka samu farashi",
   },

@@ -55,7 +55,7 @@ export async function SettingsHero({ profile, preferences }: Props) {
         <div>
           <span className="acct-settings__eyebrow">
             <span className="acct-settings__eyebrow-dot" aria-hidden />
-            {t("HenryCo · identity & preferences")}
+            {t("Henry Onyx · identity & preferences")}
           </span>
           <h1 className="acct-settings__headline">{t(headline)}</h1>
           <p className="acct-settings__blurb">{t(blurb)}</p>
@@ -91,7 +91,7 @@ export async function SettingsHero({ profile, preferences }: Props) {
               </span>
               <span className="acct-settings__hero-tile-foot">
                 {channels.count === 0
-                  ? t("Pick how HenryCo reaches you")
+                  ? t("Pick how Henry Onyx reaches you")
                   : channels.count === 1
                     ? t("Email only — add a fallback")
                     : t("Email · push · WhatsApp · SMS · in-app")}
@@ -126,7 +126,7 @@ export async function SettingsHero({ profile, preferences }: Props) {
                 : `${divisions.count} ${t("of")} ${divisions.total} ${t("divisions on")}`}
           </p>
           <p className="acct-settings__hero-side-body">
-            {verificationLabel} {t("— preferences sync instantly across HenryCo. Toggle a division below to mute or unmute its alerts.")}
+            {verificationLabel} {t("— preferences sync instantly across Henry Onyx. Toggle a division below to mute or unmute its alerts.")}
           </p>
           <div role="list">
             {DIVISION_ORDER.map((key) => {

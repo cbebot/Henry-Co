@@ -200,7 +200,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
   const identityLabels = {
     accountMenu: t("Account"),
     search: t("Search"),
-    searchAriaLabel: t("Search HenryCo"),
+    searchAriaLabel: t("Search Henry Onyx"),
     switchLane: t("Switch lane"),
     signOut: t("Sign out"),
   };

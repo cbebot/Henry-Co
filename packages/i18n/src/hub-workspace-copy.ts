@@ -29,7 +29,7 @@ const HUB_WORKSPACE_COPY_EN: HubWorkspaceCopy = {
   metadata: {
     title: "Henry Onyx Staff HQ",
     description:
-      "Role-aware HenryCo Staff HQ for managers, operators, finance reviewers, and cross-division teams.",
+      "Role-aware Henry Onyx Staff HQ for managers, operators, finance reviewers, and cross-division teams.",
   },
   loader: {
     title: "Henry Onyx",
@@ -42,7 +42,7 @@ const HUB_WORKSPACE_COPY_FR: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — QG du personnel",
     description:
-      "QG du personnel HenryCo selon le rôle : pour les responsables, opérateurs, contrôleurs financiers et équipes inter-divisions.",
+      "QG du personnel Henry Onyx selon le rôle : pour les responsables, opérateurs, contrôleurs financiers et équipes inter-divisions.",
   },
   loader: {
     title: "Henry Onyx",
@@ -55,7 +55,7 @@ const HUB_WORKSPACE_COPY_ES: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Central del personal",
     description:
-      "Central del personal HenryCo según el rol: para responsables, operadores, revisores financieros y equipos interdivisionales.",
+      "Central del personal Henry Onyx según el rol: para responsables, operadores, revisores financieros y equipos interdivisionales.",
   },
   loader: {
     title: "Henry Onyx",
@@ -68,7 +68,7 @@ const HUB_WORKSPACE_COPY_PT: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Central da equipa",
     description:
-      "Central da equipa HenryCo orientada por função: para responsáveis, operadores, revisores financeiros e equipas entre divisões.",
+      "Central da equipa Henry Onyx orientada por função: para responsáveis, operadores, revisores financeiros e equipas entre divisões.",
   },
   loader: {
     title: "Henry Onyx",
@@ -81,7 +81,7 @@ const HUB_WORKSPACE_COPY_AR: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — مقر فريق العمل",
     description:
-      "مقر فريق العمل في HenryCo بحسب الدور: للمديرين والمشغلين ومراجعي الشؤون المالية والفرق العاملة عبر الأقسام.",
+      "مقر فريق العمل في Henry Onyx بحسب الدور: للمديرين والمشغلين ومراجعي الشؤون المالية والفرق العاملة عبر الأقسام.",
   },
   loader: {
     title: "Henry Onyx",
@@ -94,7 +94,7 @@ const HUB_WORKSPACE_COPY_DE: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Mitarbeiterzentrale",
     description:
-      "Rollenbasierte HenryCo-Mitarbeiterzentrale für Führungskräfte, Operatoren, Finanzprüfer und divisionsübergreifende Teams.",
+      "Rollenbasierte Henry Onyx-Mitarbeiterzentrale für Führungskräfte, Operatoren, Finanzprüfer und divisionsübergreifende Teams.",
   },
   loader: {
     title: "Henry Onyx",
@@ -107,7 +107,7 @@ const HUB_WORKSPACE_COPY_IT: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Quartier generale del personale",
     description:
-      "Quartier generale del personale HenryCo basato sul ruolo: per responsabili, operatori, revisori finanziari e team interdivisionali.",
+      "Quartier generale del personale Henry Onyx basato sul ruolo: per responsabili, operatori, revisori finanziari e team interdivisionali.",
   },
   loader: {
     title: "Henry Onyx",
@@ -120,7 +120,7 @@ const HUB_WORKSPACE_COPY_ZH: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx 员工总部",
     description:
-      "HenryCo 员工总部按角色划分,服务于管理者、运营人员、财务审核人员及跨部门团队。",
+      "Henry Onyx 员工总部按角色划分,服务于管理者、运营人员、财务审核人员及跨部门团队。",
   },
   loader: {
     title: "Henry Onyx",
@@ -133,7 +133,7 @@ const HUB_WORKSPACE_COPY_HI: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — स्टाफ़ मुख्यालय",
     description:
-      "HenryCo स्टाफ़ मुख्यालय भूमिका के अनुसार: प्रबंधकों, संचालकों, वित्तीय समीक्षकों और क्रॉस-डिवीज़न टीमों के लिए।",
+      "Henry Onyx स्टाफ़ मुख्यालय भूमिका के अनुसार: प्रबंधकों, संचालकों, वित्तीय समीक्षकों और क्रॉस-डिवीज़न टीमों के लिए।",
   },
   loader: {
     title: "Henry Onyx",
@@ -146,7 +146,7 @@ const HUB_WORKSPACE_COPY_IG: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Isi Ụlọ Ọrụ Ndị Ọrụ",
     description:
-      "Isi ụlọ ọrụ HenryCo dabere n’ọrụ onye ọ bụla na-arụ — maka ndị nlekọta, ndị na-arụ ọrụ, ndị na-enyocha ego, na otu na-arụkọ ọrụ n’etiti ngalaba.",
+      "Isi ụlọ ọrụ Henry Onyx dabere n’ọrụ onye ọ bụla na-arụ — maka ndị nlekọta, ndị na-arụ ọrụ, ndị na-enyocha ego, na otu na-arụkọ ọrụ n’etiti ngalaba.",
   },
   loader: {
     title: "Henry Onyx",
@@ -159,7 +159,7 @@ const HUB_WORKSPACE_COPY_YO: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Olú-Ọ́fíìsì Òṣìṣẹ́",
     description:
-      "Olú-ọ́fíìsì òṣìṣẹ́ HenryCo tó dá lórí ipa: fún àwọn olùdarí, òṣìṣẹ́ ẹ̀rọ, olùṣàyẹ̀wò ìnáwó àti àwọn ẹgbẹ́ tó ń ṣiṣẹ́ kọjá àwọn ìpín.",
+      "Olú-ọ́fíìsì òṣìṣẹ́ Henry Onyx tó dá lórí ipa: fún àwọn olùdarí, òṣìṣẹ́ ẹ̀rọ, olùṣàyẹ̀wò ìnáwó àti àwọn ẹgbẹ́ tó ń ṣiṣẹ́ kọjá àwọn ìpín.",
   },
   loader: {
     title: "Henry Onyx",
@@ -172,7 +172,7 @@ const HUB_WORKSPACE_COPY_HA: DeepPartial<HubWorkspaceCopy> = {
   metadata: {
     title: "Henry Onyx — Babbar Cibiyar Ma’aikata",
     description:
-      "Babbar cibiyar ma’aikatan HenryCo gwargwadon matsayi — ga manyan masu kula, ma’aikata, masu duba al’amuran kuɗi, da ƙungiyoyin da ke aiki tsakanin rassa.",
+      "Babbar cibiyar ma’aikatan Henry Onyx gwargwadon matsayi — ga manyan masu kula, ma’aikata, masu duba al’amuran kuɗi, da ƙungiyoyin da ke aiki tsakanin rassa.",
   },
   loader: {
     title: "Henry Onyx",

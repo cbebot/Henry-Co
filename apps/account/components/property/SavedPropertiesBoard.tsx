@@ -171,7 +171,7 @@ export default function SavedPropertiesBoard({
                   </span>
                   {property.managedByHenryCo ? (
                     <span className="rounded-full bg-[var(--acct-green-soft)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-green)]">
-                      {t(toBrandName("Managed by HenryCo"))}
+                      {t(toBrandName("Managed by Henry Onyx"))}
                     </span>
                   ) : null}
                 </div>

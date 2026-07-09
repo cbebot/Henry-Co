@@ -215,8 +215,8 @@ export function LearnCertificateDocument({ certificate, verificationUrl, qrDataU
       author="Henry Onyx Limited — Henry Onyx Learn"
       subject={`Certificate of completion for ${certificate.courseTitle}`}
       keywords={`certificate, henryco learn, ${certificate.courseTitle}, ${certificate.certificateNo}`}
-      creator="HenryCo Branded Documents"
-      producer="HenryCo Branded Documents"
+      creator="Henry Onyx Branded Documents"
+      producer="Henry Onyx Branded Documents"
       language="en-NG"
       pdfVersion="1.7"
     >

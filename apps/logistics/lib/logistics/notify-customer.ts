@@ -81,7 +81,7 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   const indicativeTotalLabel = await tx("Indicative total");
   const paymentReferenceLabel = input.mode === "book" ? await tx("Payment reference") : null;
   const invoiceNote = input.mode === "book"
-    ? await tx("A HenryCo account invoice has been opened for this booking; use the tracking code as the transfer reference if paying by bank transfer.")
+    ? await tx("A Henry Onyx account invoice has been opened for this booking; use the tracking code as the transfer reference if paying by bank transfer.")
     : null;
   const typicalWindowPrefix = await tx("Typical window");
   const hoursWord = await tx("hours (estimate, not a guarantee).");

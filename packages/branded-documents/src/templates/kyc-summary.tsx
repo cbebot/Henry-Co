@@ -84,7 +84,7 @@ export function KycSummaryDocument({ user, status, submittedAt, reviewedAt, revi
       <View style={styles.notice}>
         <Text style={styles.noticeKicker}>Privacy posture</Text>
         <Text style={styles.noticeBody}>
-          This summary records what was submitted and how the HenryCo trust team has reviewed it. The underlying ID
+          This summary records what was submitted and how the Henry Onyx trust team has reviewed it. The underlying ID
           documents are never embedded in this PDF — only the metadata you see below.
         </Text>
       </View>

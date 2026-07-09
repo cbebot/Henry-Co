@@ -437,7 +437,7 @@ export function SellerApplicationWizard({
                 <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--market-muted)]">
                   <p>Founder identity and payout proof are mandatory before submission can enter the serious review lane.</p>
                   <p>Business registration is recommended for faster approval and fewer clarification requests.</p>
-                  <p>Uploaded evidence is recorded into HenryCo documents and linked to the seller moderation workflow.</p>
+                  <p>Uploaded evidence is recorded into Henry Onyx documents and linked to the seller moderation workflow.</p>
                 </div>
               </div>
             </div>
@@ -596,7 +596,7 @@ export function SellerApplicationWizard({
             ) : null}
 
             <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-paper-white)]">
-              Submission routes the application into the live moderation queue, records the verification evidence in HenryCo
+              Submission routes the application into the live moderation queue, records the verification evidence in Henry Onyx
               documents, and triggers owner/admin alerts. Publishing access stays locked until approval is complete.
             </div>
           </div>

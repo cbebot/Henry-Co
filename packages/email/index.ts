@@ -14,8 +14,8 @@ export {
   type ResolvedEmailProvider,
 } from "./send";
 
-export { sendBrevoEmail, getBrevoApiKey, getBrevoSender } from "./providers/brevo";
-export { sendResendEmail, getResendApiKey, getResendSender } from "./providers/resend";
+// EMAIL-SES-ONLY (2026-07-09): the Resend/Brevo provider modules are deleted —
+// SES is the only outbound rail. Import sendTransactionalEmail, not a provider.
 export { sendSesEmail, getSesConfig, getSesSender } from "./providers/ses";
 
 export { resolveSenderIdentity, getNoReplyIdentity } from "./sender-identity";

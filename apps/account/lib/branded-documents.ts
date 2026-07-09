@@ -60,7 +60,7 @@ export async function streamPdfResponse({
         ? attachmentDispositionHeader(filename)
         : contentDispositionHeader(filename),
       "Cache-Control": "private, no-store, no-cache, must-revalidate",
-      "X-HenryCo-Document": type,
+      "X-Henry Onyx-Document": type,
     },
   });
 }

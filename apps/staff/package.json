@@ -15,6 +15,7 @@
     "@henryco/dashboard-modules-staff": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/data": "workspace:^",
+    "@henryco/email": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",

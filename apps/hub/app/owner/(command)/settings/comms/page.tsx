@@ -10,7 +10,7 @@ export default function OwnerCommsGovernancePage() {
       <OwnerPageHeader
         eyebrow="Governance"
         title="Internal communication rules"
-        description="HenryCo HQ separates customer-facing channels from owner and staff messaging. These rules define how rooms are created, who can post, and where escalation belongs. Enforcement combines RLS in Supabase, API checks, and the room types you create under Team internal chat."
+        description="Henry Onyx HQ separates customer-facing channels from owner and staff messaging. These rules define how rooms are created, who can post, and where escalation belongs. Enforcement combines RLS in Supabase, API checks, and the room types you create under Team internal chat."
         actions={
           <>
             <Link href="/owner/messaging/team" className="acct-button-primary">

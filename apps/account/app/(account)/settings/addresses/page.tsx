@@ -23,7 +23,7 @@ export default async function SettingsAddressesPage() {
       : {
           title: "Addresses",
           description: toBrandName(
-            "One address per type (home, office, shop, warehouse, alternative). Verified against your KYC and reused across every HenryCo division.",
+            "One address per type (home, office, shop, warehouse, alternative). Verified against your KYC and reused across every Henry Onyx division.",
           ),
         };
 

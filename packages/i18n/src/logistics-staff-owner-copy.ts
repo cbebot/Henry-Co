@@ -207,7 +207,7 @@ const LOGISTICS_STAFF_OWNER_COPY_DE: DeepPartial<LogisticsStaffOwnerCopy> = {
   metadata: {
     title: "Eigentümer-Suite — Strategische Monatsübersicht | Henry Onyx Logistics",
     description:
-      "Die monatliche Übersicht. Wachstum, Marge, wichtigste Korridore, Kundenvertrauen und Reklamationsquote für HenryCo-Logistics-Eigentümer.",
+      "Die monatliche Übersicht. Wachstum, Marge, wichtigste Korridore, Kundenvertrauen und Reklamationsquote für Henry Onyx-Logistics-Eigentümer.",
   },
   hero: {
     eyebrow: "Eigentümer-Suite",

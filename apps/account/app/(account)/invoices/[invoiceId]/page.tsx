@@ -58,14 +58,14 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
       <div className="flex flex-wrap items-center gap-2">
         <DownloadDocumentButton
           endpoint={`/api/documents/invoice/${invoiceId}`}
-          suggestedFilename={`HenryCo-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
-          shareTitle={`HenryCo Invoice ${String(invoice.invoice_no || invoiceId)}`}
+          suggestedFilename={`Henry Onyx-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
+          shareTitle={`Henry Onyx Invoice ${String(invoice.invoice_no || invoiceId)}`}
           label={t("Download invoice")}
         />
         <DownloadDocumentButton
           endpoint={`/api/documents/receipt/${invoiceId}`}
-          suggestedFilename={`HenryCo-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
-          shareTitle={`HenryCo Receipt ${String(invoice.invoice_no || invoiceId)}`}
+          suggestedFilename={`Henry Onyx-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
+          shareTitle={`Henry Onyx Receipt ${String(invoice.invoice_no || invoiceId)}`}
           variant="secondary"
           label={t("Download receipt")}
         />

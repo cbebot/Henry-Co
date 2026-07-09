@@ -47,7 +47,7 @@ export default async function AccountOrderDetailPage({
       <section className="grid gap-4 lg:grid-cols-2">
         {order.groups.map((group) => (
           <article key={group.id} className="market-paper rounded-[1.75rem] p-5">
-            <p className="market-kicker">{group.ownerType === "company" ? "HenryCo segment" : group.vendorSlug}</p>
+            <p className="market-kicker">{group.ownerType === "company" ? "Henry Onyx segment" : group.vendorSlug}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Fulfillment</p>
@@ -79,7 +79,7 @@ export default async function AccountOrderDetailPage({
         <section className="market-paper rounded-[1.75rem] p-6">
           <p className="market-kicker">Buyer protection control</p>
           <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-            Confirm completion when the delivered order is satisfactory. HenryCo keeps seller payout in escrow until confirmation or timeout logic clears the segment.
+            Confirm completion when the delivered order is satisfactory. Henry Onyx keeps seller payout in escrow until confirmation or timeout logic clears the segment.
           </p>
           <form action="/api/marketplace" method="POST" className="mt-5 flex flex-wrap gap-3">
             <input type="hidden" name="intent" value="order_confirm_completion" />

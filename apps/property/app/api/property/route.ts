@@ -942,7 +942,7 @@ export async function POST(request: Request) {
         ];
 
         if (!ownerPhone) {
-          validationErrors.push("Phone is required so HenryCo can coordinate trust review and inspection.");
+          validationErrors.push("Phone is required so Henry Onyx can coordinate trust review and inspection.");
         }
         if (!title) validationErrors.push("Listing title is required.");
         if (!summary) validationErrors.push("Short summary is required.");
@@ -1544,7 +1544,7 @@ export async function POST(request: Request) {
           agentId: text(formData, "agent_id") || listing.agentId,
           trustBadges:
             status === "published" || status === "approved"
-              ? dedupe([...listing.trustBadges, "HenryCo reviewed", "Publication cleared"])
+              ? dedupe([...listing.trustBadges, "Henry Onyx reviewed", "Publication cleared"])
               : listing.trustBadges,
           verificationNotes: note
             ? dedupe([note, ...listing.verificationNotes]).slice(0, 6)

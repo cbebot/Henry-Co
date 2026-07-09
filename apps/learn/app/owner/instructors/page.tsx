@@ -63,7 +63,7 @@ export default async function OwnerInstructorsPage({
       {applications.length === 0 ? (
         <LearnEmptyState
           title={t("No instructor applications yet")}
-          body={t("Public teaching applications will appear here once candidates apply through Teach with HenryCo.")}
+          body={t("Public teaching applications will appear here once candidates apply through Teach with Henry Onyx.")}
         />
       ) : (
         <div className="space-y-5">

@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       parent_id: parentId,
       user_id: viewer.user.id,
       normalized_email: viewer.normalizedEmail,
-      author_display_name: viewer.user.fullName || viewer.user.email || "HenryCo learner",
+      author_display_name: viewer.user.fullName || viewer.user.email || "Henry Onyx learner",
       body,
       is_instructor_reply: isInstructorReply,
     },

@@ -65,7 +65,7 @@ async function main() {
   const result = await submitStudioBrief({
     userId: verificationUserId,
     customerName: "Studio QA Verification",
-    companyName: "HenryCo QA",
+    companyName: "Henry Onyx QA",
     email: verificationEmail,
     phone: "",
     serviceKind: "custom_software",

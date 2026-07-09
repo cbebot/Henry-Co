@@ -30,7 +30,7 @@ export default async function InstructorPayoutsPage() {
       kicker={t("Payouts")}
       title={t("Track earnings and request a payout.")}
       description={t(
-        "Each completed enrollment under your courses contributes to the gross figure. Net payout reflects HenryCo's platform fee per your payout model.",
+        "Each completed enrollment under your courses contributes to the gross figure. Net payout reflects Henry Onyx's platform fee per your payout model.",
       )}
       nav={instructorNav("/instructor/payouts", t)}
     >

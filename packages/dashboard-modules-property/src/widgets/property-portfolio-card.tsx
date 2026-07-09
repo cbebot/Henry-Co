@@ -39,7 +39,7 @@ export function PropertyPortfolioCard({ snapshot }: { snapshot: PropertySnapshot
         stats.saved === 0
           ? "Nothing saved yet"
           : stats.managed > 0
-            ? `${stats.managed} managed by Henry & Co.`
+            ? `${stats.managed} managed by Henry Onyx`
             : "On your shortlist",
     },
     {

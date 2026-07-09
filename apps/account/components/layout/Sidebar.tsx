@@ -79,8 +79,8 @@ export default function Sidebar({ user }: SidebarProps) {
         <Link
           href="/search"
           className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
-          aria-label={t(toBrandName("Search account and HenryCo routes"))}
-          title={t(toBrandName("Search account and HenryCo routes"))}
+          aria-label={t(toBrandName("Search account and Henry Onyx routes"))}
+          title={t(toBrandName("Search account and Henry Onyx routes"))}
         >
           <Search size={17} />
         </Link>

@@ -111,7 +111,7 @@ export default function AddressManagerClient({ addresses, countryHint }: Props) 
         <div className="acct-card p-6 text-center">
           <MapPin className="mx-auto mb-3 text-[var(--acct-muted)]" size={28} />
           <p className="text-sm text-[var(--acct-muted)]">
-            {t(toBrandName("You haven't added any addresses yet. Add your first one to enable faster checkout across HenryCo."))}
+            {t(toBrandName("You haven't added any addresses yet. Add your first one to enable faster checkout across Henry Onyx."))}
           </p>
         </div>
       )}

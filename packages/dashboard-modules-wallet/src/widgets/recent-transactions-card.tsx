@@ -35,7 +35,7 @@ export function RecentTransactionsCard({
         <EmptyState
           kicker="Transaction history"
           headline="Nothing to show yet."
-          body="Your wallet activity surfaces here once you fund the wallet or pay across HenryCo."
+          body="Your wallet activity surfaces here once you fund the wallet or pay across Henry Onyx."
           action={
             <ActionButton href="/wallet/funding" tone="primary">
               Add money

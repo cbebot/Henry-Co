@@ -23,7 +23,7 @@ export function ReferralsCard() {
       context={{
         kind: "trend",
         direction: "flat",
-        magnitude: "Share HenryCo with friends",
+        magnitude: "Share Henry Onyx with friends",
       }}
     />
   );

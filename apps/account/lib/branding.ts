@@ -15,14 +15,14 @@ export type DivisionBrand = {
 const STATIC_BRANDS: Record<string, DivisionBrand> = {
   account: {
     key: "account",
-    label: "HenryCo Account",
+    label: "Henry Onyx Account",
     accent: divisionColor("account"),
     logoUrl: process.env.NEXT_PUBLIC_LOGO_URL || null,
     primaryUrl: "/",
   },
   wallet: {
     key: "wallet",
-    label: "HenryCo Wallet",
+    label: "Henry Onyx Wallet",
     accent: divisionColor("wallet"),
     logoUrl: process.env.NEXT_PUBLIC_LOGO_URL || null,
     primaryUrl: "/wallet",
@@ -43,7 +43,7 @@ const STATIC_BRANDS: Record<string, DivisionBrand> = {
   },
   general: {
     key: "general",
-    label: "HenryCo",
+    label: "Henry Onyx",
     accent: "#6B7280",
     logoUrl: process.env.NEXT_PUBLIC_LOGO_URL || null,
     primaryUrl: "/notifications",

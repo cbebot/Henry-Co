@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: toBrandName(`Team · ${slug} · HenryCo`) };
+  return { title: toBrandName(`Team · ${slug} · Henry Onyx`) };
 }
 
 export default async function BusinessTeamPage({ params }: { params: Promise<{ slug: string }> }) {

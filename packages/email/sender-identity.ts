@@ -24,9 +24,13 @@ function readFirst(...names: string[]): string | null {
  * unrelated mail going out as "Henry Onyx Care" damages trust.
  */
 function noreplyIdentity(): ResolvedSender {
+  // EMAIL-SES-ONLY (2026-07-09): the from-address falls back to the SES sender
+  // env, never a retired-vendor alias (BREVO_SENDER_EMAIL / RESEND_* removed) —
+  // a stale @henrycogroup.com value in a retired-vendor var can no longer poison
+  // the sender identity.
   return {
-    email: readFirst("HENRYCO_NOREPLY_EMAIL", "BREVO_SENDER_EMAIL") || NOREPLY_FALLBACK_EMAIL,
-    name: readFirst("HENRYCO_NOREPLY_FROM_NAME", "BREVO_SENDER_NAME") || NOREPLY_FALLBACK_NAME,
+    email: readFirst("HENRYCO_NOREPLY_EMAIL", "AWS_SES_FROM_EMAIL") || NOREPLY_FALLBACK_EMAIL,
+    name: readFirst("HENRYCO_NOREPLY_FROM_NAME") || NOREPLY_FALLBACK_NAME,
   };
 }
 
@@ -43,8 +47,9 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
     defaultName: "Henry Onyx Accounts",
   },
   support: {
-    emailVars: ["HENRYCO_SUPPORT_EMAIL", "RESEND_SUPPORT_FROM_EMAIL"],
-    nameVars: ["HENRYCO_SUPPORT_FROM_NAME", "RESEND_SUPPORT_FROM_NAME"],
+    // EMAIL-SES-ONLY (2026-07-09): legacy RESEND_SUPPORT_* aliases removed.
+    emailVars: ["HENRYCO_SUPPORT_EMAIL"],
+    nameVars: ["HENRYCO_SUPPORT_FROM_NAME"],
     defaultName: "Henry Onyx Support",
   },
   care: {

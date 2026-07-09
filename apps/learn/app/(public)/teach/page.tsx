@@ -14,7 +14,7 @@ export async function generateMetadata() {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("Teach with HenryCo") };
+  return { title: t("Teach with Henry Onyx") };
 }
 
 const COUNTRY_OPTIONS = [
@@ -77,7 +77,7 @@ export default async function TeachPage({
       icon: Sparkles,
       title: t("Quality expectations"),
       body: t(
-        "Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with HenryCo audiences.",
+        "Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with Henry Onyx audiences.",
       ),
     },
     {
@@ -106,13 +106,13 @@ export default async function TeachPage({
     {
       label: t("Verification & review"),
       body: t(
-        "We validate your identity against your HenryCo profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.",
+        "We validate your identity against your Henry Onyx profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.",
       ),
     },
     {
       label: t("Revenue & contracts"),
       body: t(
-        "Where a program is paid, HenryCo may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.",
+        "Where a program is paid, Henry Onyx may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.",
       ),
     },
   ];
@@ -122,7 +122,7 @@ export default async function TeachPage({
       step: "01",
       label: t("Submitted"),
       body: t(
-        "We store your answers, files, and proposal against your HenryCo identity so nothing is lost between systems.",
+        "We store your answers, files, and proposal against your Henry Onyx identity so nothing is lost between systems.",
       ),
     },
     {
@@ -161,7 +161,7 @@ export default async function TeachPage({
         </h1>
         <p className="mt-5 max-w-3xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
           {t(
-            "Henry Onyx Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.",
+            "Henry Onyx Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one Henry Onyx account so review, onboarding, and any future commercial relationship stay coherent.",
           )}
         </p>
       </section>
@@ -176,7 +176,7 @@ export default async function TeachPage({
             {t("Apply at no cost")}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            {t("HenryCo never charges instructors to submit, review, or appeal an application. We earn when learners pay — not before.")}
+            {t("Henry Onyx never charges instructors to submit, review, or appeal an application. We earn when learners pay — not before.")}
           </p>
         </div>
         <div>
@@ -288,7 +288,7 @@ export default async function TeachPage({
               </h3>
               <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
-                  "We keep your teaching application attached to the same HenryCo identity used across courses, certificates, and future academy operations.",
+                  "We keep your teaching application attached to the same Henry Onyx identity used across courses, certificates, and future academy operations.",
                 )}
               </p>
               <dl className="mt-5 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
@@ -394,11 +394,11 @@ export default async function TeachPage({
                 {t("Apply")}
               </p>
               <h3 className="mt-3 text-balance text-[1.35rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.55rem]">
-                {t("Sign in with your HenryCo account first.")}
+                {t("Sign in with your Henry Onyx account first.")}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
-                  "We only accept teaching applications from verified account holders. That protects applicants, learners, and HenryCo from impersonation—and keeps your status visible in one dashboard.",
+                  "We only accept teaching applications from verified account holders. That protects applicants, learners, and Henry Onyx from impersonation—and keeps your status visible in one dashboard.",
                 )}
               </p>
               <a
@@ -416,7 +416,7 @@ export default async function TeachPage({
               <h3 className="mt-3 text-balance text-[1.35rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.55rem]">
                 {application
                   ? t("Update your teaching application")
-                  : t("Apply to teach with HenryCo")}
+                  : t("Apply to teach with Henry Onyx")}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
@@ -545,7 +545,7 @@ export default async function TeachPage({
                     rows={6}
                     className="learn-textarea mt-2 w-full rounded-2xl px-4 py-3"
                     placeholder={t(
-                      "Describe the course or topic you would teach, who it is for, what transformation it creates, and why HenryCo should trust you to lead it.",
+                      "Describe the course or topic you would teach, who it is for, what transformation it creates, and why Henry Onyx should trust you to lead it.",
                     )}
                   />
                 </div>
@@ -576,7 +576,7 @@ export default async function TeachPage({
                     />
                     <span className="leading-7 text-[var(--learn-ink-soft)]">
                       {t(
-                        "I confirm that the information is accurate, that I can deliver the subject matter professionally, and that HenryCo may review the application for instructor onboarding, internal enablement, or future academy partnerships.",
+                        "I confirm that the information is accurate, that I can deliver the subject matter professionally, and that Henry Onyx may review the application for instructor onboarding, internal enablement, or future academy partnerships.",
                       )}
                     </span>
                   </label>

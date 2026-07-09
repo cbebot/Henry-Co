@@ -80,7 +80,7 @@ const LOGISTICS_SUPPORT_COPY_EN: LogisticsSupportCopy = {
   metadata: {
     title: "Support | Henry Onyx Logistics",
     description:
-      "Contact Henry Onyx Logistics support or continue a conversation from your HenryCo account.",
+      "Contact Henry Onyx Logistics support or continue a conversation from your Henry Onyx account.",
   },
   hero: {
     eyebrow: "One desk · One thread",
@@ -121,7 +121,7 @@ const LOGISTICS_SUPPORT_COPY_EN: LogisticsSupportCopy = {
     account: {
       label: "Account",
       title: "Threaded history",
-      body: "Tickets land in the HenryCo support center with full lane and milestone context. Replies show up the same way emails would, but with the right shipments attached.",
+      body: "Tickets land in the Henry Onyx support center with full lane and milestone context. Replies show up the same way emails would, but with the right shipments attached.",
     },
     guest: {
       label: "Guest",
@@ -144,7 +144,7 @@ const LOGISTICS_SUPPORT_COPY_FR: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Assistance | Henry Onyx Logistics",
     description:
-      "Contactez l’assistance Henry Onyx Logistics ou poursuivez une conversation depuis votre compte HenryCo.",
+      "Contactez l’assistance Henry Onyx Logistics ou poursuivez une conversation depuis votre compte Henry Onyx.",
   },
   hero: {
     eyebrow: "Un bureau · Un fil",
@@ -185,7 +185,7 @@ const LOGISTICS_SUPPORT_COPY_FR: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Compte",
       title: "Historique en fil",
-      body: "Les tickets arrivent dans le centre d’assistance HenryCo avec tout le contexte de ligne et de jalon. Les réponses apparaissent comme des e-mails, mais avec les bonnes expéditions associées.",
+      body: "Les tickets arrivent dans le centre d’assistance Henry Onyx avec tout le contexte de ligne et de jalon. Les réponses apparaissent comme des e-mails, mais avec les bonnes expéditions associées.",
     },
     guest: {
       label: "Invité",
@@ -208,7 +208,7 @@ const LOGISTICS_SUPPORT_COPY_ES: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Soporte | Henry Onyx Logistics",
     description:
-      "Contacta con el soporte de Henry Onyx Logistics o continúa una conversación desde tu cuenta HenryCo.",
+      "Contacta con el soporte de Henry Onyx Logistics o continúa una conversación desde tu cuenta Henry Onyx.",
   },
   hero: {
     eyebrow: "Un mostrador · Un hilo",
@@ -249,7 +249,7 @@ const LOGISTICS_SUPPORT_COPY_ES: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Cuenta",
       title: "Historial en hilo",
-      body: "Los tickets llegan al centro de soporte de HenryCo con todo el contexto de ruta e hitos. Las respuestas aparecen igual que un correo, pero con los envíos correctos adjuntos.",
+      body: "Los tickets llegan al centro de soporte de Henry Onyx con todo el contexto de ruta e hitos. Las respuestas aparecen igual que un correo, pero con los envíos correctos adjuntos.",
     },
     guest: {
       label: "Invitado",
@@ -272,7 +272,7 @@ const LOGISTICS_SUPPORT_COPY_PT: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Suporte | Henry Onyx Logistics",
     description:
-      "Contacte o suporte Henry Onyx Logistics ou continue uma conversa a partir da sua conta HenryCo.",
+      "Contacte o suporte Henry Onyx Logistics ou continue uma conversa a partir da sua conta Henry Onyx.",
   },
   hero: {
     eyebrow: "Um balcão · Um fio",
@@ -313,7 +313,7 @@ const LOGISTICS_SUPPORT_COPY_PT: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Conta",
       title: "Histórico em fio",
-      body: "Os tickets chegam ao centro de suporte HenryCo com todo o contexto de rota e marcos. As respostas aparecem como e-mails, mas com os envios certos anexados.",
+      body: "Os tickets chegam ao centro de suporte Henry Onyx com todo o contexto de rota e marcos. As respostas aparecem como e-mails, mas com os envios certos anexados.",
     },
     guest: {
       label: "Convidado",
@@ -336,7 +336,7 @@ const LOGISTICS_SUPPORT_COPY_AR: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "الدعم | Henry Onyx Logistics",
     description:
-      "تواصل مع دعم Henry Onyx Logistics أو تابع محادثة من حسابك في HenryCo.",
+      "تواصل مع دعم Henry Onyx Logistics أو تابع محادثة من حسابك في Henry Onyx.",
   },
   hero: {
     eyebrow: "مكتب واحد · محادثة واحدة",
@@ -377,7 +377,7 @@ const LOGISTICS_SUPPORT_COPY_AR: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "حساب",
       title: "سجل في محادثة",
-      body: "تصل التذاكر إلى مركز دعم HenryCo بسياق كامل للخط والمعالم. تظهر الردود مثل رسائل البريد، ولكن مع إرفاق الشحنات المناسبة.",
+      body: "تصل التذاكر إلى مركز دعم Henry Onyx بسياق كامل للخط والمعالم. تظهر الردود مثل رسائل البريد، ولكن مع إرفاق الشحنات المناسبة.",
     },
     guest: {
       label: "ضيف",
@@ -400,7 +400,7 @@ const LOGISTICS_SUPPORT_COPY_DE: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Support | Henry Onyx Logistics",
     description:
-      "Kontaktieren Sie den HenryCo-Logistics-Support oder setzen Sie ein Gespräch aus Ihrem HenryCo-Konto fort.",
+      "Kontaktieren Sie den Henry Onyx-Logistics-Support oder setzen Sie ein Gespräch aus Ihrem Henry Onyx-Konto fort.",
   },
   hero: {
     eyebrow: "Ein Schalter · Ein Thread",
@@ -441,7 +441,7 @@ const LOGISTICS_SUPPORT_COPY_DE: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Konto",
       title: "Verlauf im Thread",
-      body: "Tickets landen im HenryCo-Supportcenter mit vollständigem Linien- und Meilenstein-Kontext. Antworten erscheinen wie E-Mails, jedoch mit den passenden Sendungen verknüpft.",
+      body: "Tickets landen im Henry Onyx-Supportcenter mit vollständigem Linien- und Meilenstein-Kontext. Antworten erscheinen wie E-Mails, jedoch mit den passenden Sendungen verknüpft.",
     },
     guest: {
       label: "Gast",
@@ -464,7 +464,7 @@ const LOGISTICS_SUPPORT_COPY_IT: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Assistenza | Henry Onyx Logistics",
     description:
-      "Contatta l’assistenza Henry Onyx Logistics o prosegui una conversazione dal tuo account HenryCo.",
+      "Contatta l’assistenza Henry Onyx Logistics o prosegui una conversazione dal tuo account Henry Onyx.",
   },
   hero: {
     eyebrow: "Uno sportello · Un thread",
@@ -505,7 +505,7 @@ const LOGISTICS_SUPPORT_COPY_IT: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Account",
       title: "Cronologia in thread",
-      body: "I ticket arrivano al centro assistenza HenryCo con tutto il contesto della tratta e delle milestone. Le risposte appaiono come e-mail, ma con le spedizioni corrette allegate.",
+      body: "I ticket arrivano al centro assistenza Henry Onyx con tutto il contesto della tratta e delle milestone. Le risposte appaiono come e-mail, ma con le spedizioni corrette allegate.",
     },
     guest: {
       label: "Ospite",
@@ -527,7 +527,7 @@ const LOGISTICS_SUPPORT_COPY_IT: DeepPartial<LogisticsSupportCopy> = {
 const LOGISTICS_SUPPORT_COPY_ZH: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "支持 | Henry Onyx Logistics",
-    description: "联系 Henry Onyx Logistics 支持，或从您的 HenryCo 账户继续一条会话。",
+    description: "联系 Henry Onyx Logistics 支持，或从您的 Henry Onyx 账户继续一条会话。",
   },
   hero: {
     eyebrow: "一个档口 · 一条会话",
@@ -568,7 +568,7 @@ const LOGISTICS_SUPPORT_COPY_ZH: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "账户",
       title: "会话式历史",
-      body: "工单将附带完整的路线与里程碑上下文送达 HenryCo 支持中心。回复以邮件的方式出现，但会附上正确的货件。",
+      body: "工单将附带完整的路线与里程碑上下文送达 Henry Onyx 支持中心。回复以邮件的方式出现，但会附上正确的货件。",
     },
     guest: {
       label: "访客",
@@ -591,7 +591,7 @@ const LOGISTICS_SUPPORT_COPY_HI: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "सहायता | Henry Onyx Logistics",
     description:
-      "Henry Onyx Logistics सहायता से संपर्क करें या अपने HenryCo खाते से बातचीत जारी रखें।",
+      "Henry Onyx Logistics सहायता से संपर्क करें या अपने Henry Onyx खाते से बातचीत जारी रखें।",
   },
   hero: {
     eyebrow: "एक डेस्क · एक थ्रेड",
@@ -632,7 +632,7 @@ const LOGISTICS_SUPPORT_COPY_HI: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "खाता",
       title: "थ्रेड इतिहास",
-      body: "टिकट HenryCo सहायता केंद्र में पूर्ण लेन और मीलपत्थर संदर्भ के साथ पहुंचते हैं। उत्तर ईमेल जैसे दिखाई देते हैं, लेकिन सही शिपमेंट संलग्न होते हैं।",
+      body: "टिकट Henry Onyx सहायता केंद्र में पूर्ण लेन और मीलपत्थर संदर्भ के साथ पहुंचते हैं। उत्तर ईमेल जैसे दिखाई देते हैं, लेकिन सही शिपमेंट संलग्न होते हैं।",
     },
     guest: {
       label: "अतिथि",
@@ -655,7 +655,7 @@ const LOGISTICS_SUPPORT_COPY_IG: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Nkwado | Henry Onyx Logistics",
     description:
-      "Kpọtụrụ nkwado Henry Onyx Logistics ma ọ bụ gaa n’ihu na mkparịta ụka sitere n’akaụntụ HenryCo gị.",
+      "Kpọtụrụ nkwado Henry Onyx Logistics ma ọ bụ gaa n’ihu na mkparịta ụka sitere n’akaụntụ Henry Onyx gị.",
   },
   hero: {
     eyebrow: "Otu ebe · Otu mkparịta ụka",
@@ -696,7 +696,7 @@ const LOGISTICS_SUPPORT_COPY_IG: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Akaụntụ",
       title: "Akụkọ mkparịta ụka",
-      body: "Tiketi na-erute ebe nkwado HenryCo nwere ihe ọmụma zuru oke gbasara ụzọ na nke ngalaba. Aza na-apụta dị ka email, mana ya na mbupu ndị kwesịrị ekwesị etinyere.",
+      body: "Tiketi na-erute ebe nkwado Henry Onyx nwere ihe ọmụma zuru oke gbasara ụzọ na nke ngalaba. Aza na-apụta dị ka email, mana ya na mbupu ndị kwesịrị ekwesị etinyere.",
     },
     guest: {
       label: "Ọbịa",
@@ -719,7 +719,7 @@ const LOGISTICS_SUPPORT_COPY_YO: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Ìrànlọ́wọ́ | Henry Onyx Logistics",
     description:
-      "Kàn sí ìrànlọ́wọ́ Henry Onyx Logistics tàbí tẹ̀síwájú ìjíròrò láti àkáǹtì HenryCo rẹ.",
+      "Kàn sí ìrànlọ́wọ́ Henry Onyx Logistics tàbí tẹ̀síwájú ìjíròrò láti àkáǹtì Henry Onyx rẹ.",
   },
   hero: {
     eyebrow: "Tábìlì kan · Ìjíròrò kan",
@@ -760,7 +760,7 @@ const LOGISTICS_SUPPORT_COPY_YO: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Àkáǹtì",
       title: "Ìtàn nínú ìjíròrò",
-      body: "Àwọn tikẹ́tì máa wọnú àárín ìrànlọ́wọ́ HenryCo pẹ̀lú gbogbo ọ̀rọ̀ ọ̀nà àti àmì ìṣẹ̀lẹ̀. Àwọn ìdáhùn máa hàn bí ímeèlì, ṣùgbọ́n pẹ̀lú àwọn ọjà tó tọ́ tó ti so mọ́.",
+      body: "Àwọn tikẹ́tì máa wọnú àárín ìrànlọ́wọ́ Henry Onyx pẹ̀lú gbogbo ọ̀rọ̀ ọ̀nà àti àmì ìṣẹ̀lẹ̀. Àwọn ìdáhùn máa hàn bí ímeèlì, ṣùgbọ́n pẹ̀lú àwọn ọjà tó tọ́ tó ti so mọ́.",
     },
     guest: {
       label: "Àlejò",
@@ -783,7 +783,7 @@ const LOGISTICS_SUPPORT_COPY_HA: DeepPartial<LogisticsSupportCopy> = {
   metadata: {
     title: "Taimako | Henry Onyx Logistics",
     description:
-      "Tuntuɓi taimakon Henry Onyx Logistics ko ci gaba da tattaunawa daga asusunka na HenryCo.",
+      "Tuntuɓi taimakon Henry Onyx Logistics ko ci gaba da tattaunawa daga asusunka na Henry Onyx.",
   },
   hero: {
     eyebrow: "Teburi ɗaya · Tattaunawa ɗaya",
@@ -824,7 +824,7 @@ const LOGISTICS_SUPPORT_COPY_HA: DeepPartial<LogisticsSupportCopy> = {
     account: {
       label: "Asusu",
       title: "Tarihi a tattaunawa",
-      body: "Tikiti na zuwa cibiyar taimakon HenryCo tare da cikakken bayanin hanya da matakai. Amsoshi suna bayyana kamar imel, amma tare da abubuwan aikawa daidai.",
+      body: "Tikiti na zuwa cibiyar taimakon Henry Onyx tare da cikakken bayanin hanya da matakai. Amsoshi suna bayyana kamar imel, amma tare da abubuwan aikawa daidai.",
     },
     guest: {
       label: "Baƙo",

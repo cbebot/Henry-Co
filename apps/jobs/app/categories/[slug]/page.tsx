@@ -75,7 +75,7 @@ export default async function CategoryPage({
               {[
                 { label: t("Open roles"), value: String(items.length) },
                 { label: t("Verified employers"), value: String(verifiedInCat) },
-                { label: t("Apply with"), value: t("One HenryCo account") },
+                { label: t("Apply with"), value: t("One Henry Onyx account") },
               ].map((item) => (
                 <li
                   key={item.label}

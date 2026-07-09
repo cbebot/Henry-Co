@@ -485,7 +485,7 @@ function ModulesList({ modules, activeHref, t }: ModulesListProps) {
             >
               {/* DASH-7 — left accent stripe in the module's division
                   color. Closes anti-pattern #15 at a per-entry level
-                  while preserving HenryCo gold as the active state. */}
+                  while preserving Henry Onyx gold as the active state. */}
               {accentHex ? (
                 <span
                   aria-hidden

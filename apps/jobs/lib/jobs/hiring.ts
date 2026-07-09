@@ -361,7 +361,7 @@ export async function sendMessage(
   // regardless of which guard rejected it.
   const blockReason =
     "This message could not be sent because it contains content that violates platform policy. " +
-    "Keep all communication, contact details, and payment arrangements inside Henry & Co.";
+    "Keep all communication, contact details, and payment arrangements inside Henry Onyx";
 
   // Repeat-offender escalation: look up unresolved trust flags for this sender
   // over the past 30 days and escalate the base severity before the block decision.

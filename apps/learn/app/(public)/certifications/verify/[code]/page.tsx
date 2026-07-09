@@ -17,7 +17,7 @@ function formatDateLabel(locale: string, value?: string | null, fallback = "Not 
   }).format(new Date(value));
 }
 
-function displayName(value?: string | null, fallback = "HenryCo learner") {
+function displayName(value?: string | null, fallback = "Henry Onyx learner") {
   const text = String(value || "").trim();
   return text || fallback;
 }
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
     userId: data.enrollment?.userId || data.certificate.userId,
     normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
   });
-  const learnerName = (learnerProfile?.fullName || t("HenryCo learner")).trim();
+  const learnerName = (learnerProfile?.fullName || t("Henry Onyx learner")).trim();
   const courseTitle = data.course
     ? await resolveLocalizedDynamicField({
         record: data.course as unknown as Record<string, unknown>,
@@ -95,7 +95,7 @@ export default async function CertificateVerifyPage({
     userId: data.enrollment?.userId || data.certificate.userId,
     normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
   });
-  const learnerName = displayName(learnerProfile?.fullName, t("HenryCo learner"));
+  const learnerName = displayName(learnerProfile?.fullName, t("Henry Onyx learner"));
 
   // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
   const machineTranslate = locale !== "en";

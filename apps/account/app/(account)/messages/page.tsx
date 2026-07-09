@@ -31,7 +31,7 @@ export const dynamic = "force-dynamic";
 // `metadata` export). Localised title/description are surfaced through
 // the page UI; the metadata object remains the EN default for SEO.
 export const metadata = {
-  title: toBrandName("Messages · HenryCo"),
+  title: toBrandName("Messages · Henry Onyx"),
   description:
     "One inbox across support, marketplace, jobs, studio, care, property, logistics and learn.",
 };

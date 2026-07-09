@@ -23,7 +23,7 @@ export default async function AccountAddressesPage() {
   return (
     <WorkspaceShell
       title="Addresses"
-      description="Saved addresses stay tied to the shared account so future HenryCo services can reuse the same customer context."
+      description="Saved addresses stay tied to the shared account so future Henry Onyx services can reuse the same customer context."
       {...accountWorkspaceNav("/account/addresses", locale)}
     >
       {/* V2-ADDR-01 — canonical address book moved to the central account app. */}

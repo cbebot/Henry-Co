@@ -192,7 +192,7 @@ export function nextAccountSteps(ctx: UserContext): Recommendation[] {
       id: "trust-next",
       division: "account",
       title: "Complete your trust verification",
-      description: "Unlock more actions across HenryCo.",
+      description: "Unlock more actions across Henry Onyx.",
       reasonCodes: ["trust_pending"],
       confidence: "high",
       ctaHref: "/security",

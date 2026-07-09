@@ -44,7 +44,7 @@ export default async function AccountPaymentsPage() {
                 </div>
                 <div>
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                    HenryCo reference
+                    Henry Onyx reference
                   </dt>
                   <dd className="mt-1 font-semibold text-[var(--market-ink)]">{payment.reference}</dd>
                 </div>

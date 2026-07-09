@@ -42,7 +42,7 @@ export function ModuleDetail({ division }: { division: Division }) {
       <View style={{ gap: spacing.md }}>
         <Text variant="subtitle">Roles &amp; applications</Text>
         <Text variant="body" color="textSecondary">
-          Browse verified employers, save roles to your HenryCo account, and submit structured
+          Browse verified employers, save roles to your Henry Onyx account, and submit structured
           applications with trust signals surfaced before you apply.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
@@ -94,7 +94,7 @@ export function ModuleDetail({ division }: { division: Division }) {
       <View style={{ gap: spacing.md }}>
         <Text variant="subtitle">Products &amp; vendors</Text>
         <Text variant="body" color="textSecondary">
-          Verified seller passports, split-order clarity, and wishlists stay tied to your HenryCo
+          Verified seller passports, split-order clarity, and wishlists stay tied to your Henry Onyx
           account. Checkout integrations should remain in staging until payments are approved.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
@@ -108,7 +108,7 @@ export function ModuleDetail({ division }: { division: Division }) {
         <Text variant="subtitle">Studio inquiry</Text>
         <Text variant="body" color="textSecondary">
           Capture package-fit or bespoke briefs, route to the right delivery team, and track
-          milestones, invoices, and files inside your HenryCo account.
+          milestones, invoices, and files inside your Henry Onyx account.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
       </View>

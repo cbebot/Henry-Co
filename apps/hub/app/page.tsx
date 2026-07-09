@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: "Henry Onyx Staff Workspace",
       description:
-        "Role-aware internal workspace for HenryCo staff, managers, operators, and shared division teams.",
+        "Role-aware internal workspace for Henry Onyx staff, managers, operators, and shared division teams.",
     };
   }
 

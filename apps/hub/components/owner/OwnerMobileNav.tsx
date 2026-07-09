@@ -120,7 +120,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
               className="mx-3 mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)]"
             >
               <ArrowLeft size={14} />
-              {t("Back to HenryCo Account")}
+              {t("Back to Henry Onyx Account")}
             </Link>
 
             {/* Nav sections */}

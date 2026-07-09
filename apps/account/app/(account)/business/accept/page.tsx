@@ -9,7 +9,7 @@ import AcceptInvitationButton from "@/components/business/AcceptInvitationButton
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: toBrandName("Join a business · HenryCo") };
+export const metadata = { title: toBrandName("Join a business · Henry Onyx") };
 
 export default async function AcceptInvitationPage({
   searchParams,
@@ -31,7 +31,7 @@ export default async function AcceptInvitationPage({
         <HeroCard
           variant="paired"
           tone="active"
-          eyebrow={toBrandName("HenryCo · Business")}
+          eyebrow={toBrandName("Henry Onyx · Business")}
           headline={copy.team.accept.title}
           blurb={copy.team.subtitle}
           ariaLabel={copy.team.accept.title}

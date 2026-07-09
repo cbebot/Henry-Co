@@ -73,7 +73,7 @@ export function HenryCoLogo({
   accent,
   background,
   variant = "tile",
-  label = "HenryCo",
+  label = "Henry Onyx",
   className,
   style,
   ...rest

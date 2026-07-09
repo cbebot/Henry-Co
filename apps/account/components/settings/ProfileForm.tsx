@@ -164,16 +164,16 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
       : selectedAvailability === "limited"
         ? [
             t("Services may vary by region."),
-            t(toBrandName("Some HenryCo divisions are not yet available in this country.")),
+            t(toBrandName("Some Henry Onyx divisions are not yet available in this country.")),
           ]
         : selectedAvailability === "coming_soon"
           ? [
-              t(toBrandName("Some HenryCo divisions are not yet available in this country.")),
+              t(toBrandName("Some Henry Onyx divisions are not yet available in this country.")),
               t("Language preference does not guarantee local service availability."),
             ]
           : [
               t("Language preference does not guarantee local service availability."),
-              t(toBrandName("Some HenryCo divisions are not yet available in this country.")),
+              t(toBrandName("Some Henry Onyx divisions are not yet available in this country.")),
             ];
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -331,7 +331,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
               t("Email change request"),
             )}&message=${encodeURIComponent(
               [
-                t("Hi HenryCo Support,"),
+                t("Hi Henry Onyx Support,"),
                 "",
                 t("I'd like to change the email on my account."),
                 "",

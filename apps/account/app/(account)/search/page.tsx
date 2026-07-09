@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Search Account",
   description: toBrandName(
-    "Search HenryCo account workflows and connected division routes.",
+    "Search Henry Onyx account workflows and connected division routes.",
   ),
 };
 
@@ -22,7 +22,7 @@ export default async function AccountSearchPage({
   return (
     <CrossDivisionSearchExperience
       context="account"
-      title={toBrandName("Search your HenryCo workflows.")}
+      title={toBrandName("Search your Henry Onyx workflows.")}
       description="Jump directly to exact account actions and connected division routes without falling back to generic dashboards."
       placeholder="Search account: notifications, wallet, invoices, support, jobs applications..."
       initialQuery={query}

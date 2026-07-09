@@ -129,7 +129,7 @@ function buildDashboardOptions(access: AccessSnapshot): DashboardOption[] {
       description:
         staffRole === "division_operator"
           ? "Your division operations workspace — queues, approvals, and customer support."
-          : "Cross-division staff hub — operations, support, and approvals across HenryCo.",
+          : "Cross-division staff hub — operations, support, and approvals across Henry Onyx.",
       href: getStaffHqUrl("/"),
     });
   }

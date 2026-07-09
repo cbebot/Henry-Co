@@ -119,7 +119,7 @@ export default async function TalentPage() {
                 {t("Start your profile, then apply when you’re ready.")}
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--jobs-muted)]">
-                {t("Browsing is free. Saving and applying require one HenryCo account so your shortlist and applications stay attached to the right person.")}
+                {t("Browsing is free. Saving and applying require one Henry Onyx account so your shortlist and applications stay attached to the right person.")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">

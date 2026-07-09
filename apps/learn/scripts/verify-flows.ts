@@ -94,7 +94,7 @@ async function main() {
     user: {
       id: learnerUser.id,
       email: learnerEmail,
-      fullName: "HenryCo Academy QA Learner",
+      fullName: "Henry Onyx Academy QA Learner",
       avatarUrl: null,
     },
     normalizedEmail: learnerEmail.toLowerCase(),
@@ -106,7 +106,7 @@ async function main() {
     user: {
       id: ownerUser.id,
       email: ownerEmail,
-      fullName: "HenryCo Academy QA Owner",
+      fullName: "Henry Onyx Academy QA Owner",
       avatarUrl: null,
     },
     normalizedEmail: ownerEmail.toLowerCase(),
@@ -118,7 +118,7 @@ async function main() {
     user: {
       id: internalUser.id,
       email: internalEmail,
-      fullName: "HenryCo Academy QA Internal",
+      fullName: "Henry Onyx Academy QA Internal",
       avatarUrl: null,
     },
     normalizedEmail: internalEmail.toLowerCase(),
@@ -411,13 +411,13 @@ async function main() {
 
   const teacherApplication = await submitTeacherApplication({
     viewer: internalViewer,
-    fullName: internalViewer.user?.fullName || "HenryCo Academy QA Internal",
+    fullName: internalViewer.user?.fullName || "Henry Onyx Academy QA Internal",
     phone: "+2349133957084",
     country: "Nigeria",
     expertiseArea: "Academy QA and operational training systems",
     teachingTopics: [`Academy QA ${runId}`, "Operations readiness", "Internal enablement"],
     credentials:
-      "Operational QA lead for HenryCo academy verification with practical experience in structured learning flows, publishing checks, and readiness reviews.",
+      "Operational QA lead for Henry Onyx academy verification with practical experience in structured learning flows, publishing checks, and readiness reviews.",
     portfolioLinks: ["https://learn.henrycogroup.com/academy", "https://henrycogroup.com"],
     courseProposal:
       "A practical academy operations course that teaches staff and partners how to structure learning experiences, validate readiness, and deliver premium instructional quality inside Henry Onyx Learn.",
@@ -672,7 +672,10 @@ async function main() {
     "Teacher application notifications were not stored."
   );
 
-  const resendConfigured = Boolean(cleanText(process.env.RESEND_API_KEY));
+  // EMAIL-SES-ONLY (2026-07-09): SES is the only outbound rail.
+  const emailConfigured = Boolean(
+    cleanText(process.env.AWS_SES_ACCESS_KEY_ID) || cleanText(process.env.AWS_ACCESS_KEY_ID)
+  );
   const whatsappConfigured = Boolean(
     cleanText(process.env.TWILIO_ACCOUNT_SID) ||
       cleanText(process.env.WHATSAPP_PHONE_NUMBER_ID)
@@ -715,7 +718,7 @@ async function main() {
           customerNotificationCount,
         },
         messaging: {
-          resendConfigured,
+          emailConfigured,
           whatsappConfigured,
           emailNotificationCount: snapshot.notifications.filter((item) => item.channel === "email").length,
           whatsappNotificationCount: snapshot.notifications.filter((item) => item.channel === "whatsapp").length,

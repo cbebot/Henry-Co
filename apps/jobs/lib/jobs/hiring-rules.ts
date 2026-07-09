@@ -86,7 +86,7 @@ export function alreadyAppliedReason(): string {
 /** Friendly conflict-of-interest reason. Intentionally neutral — we
  * don't want to imply wrongdoing. */
 export function conflictOfInterestReason(): string {
-  return "This role belongs to a team you're a member of. Internal moves go through your HenryCo account, not the public application flow.";
+  return "This role belongs to a team you're a member of. Internal moves go through your Henry Onyx account, not the public application flow.";
 }
 
 /** Friendly daily-cap reason. */

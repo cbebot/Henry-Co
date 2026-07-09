@@ -3,10 +3,10 @@ import { toBrandName } from "@henryco/config";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: toBrandName("HenryCo Account"),
-    short_name: toBrandName("HenryCo"),
+    name: toBrandName("Henry Onyx Account"),
+    short_name: toBrandName("Henry Onyx"),
     description: toBrandName(
-      "Your HenryCo account — single sign-on across all Henry Onyx divisions, with activity, payments, and notifications in one place.",
+      "Your Henry Onyx account — single sign-on across all Henry Onyx divisions, with activity, payments, and notifications in one place.",
     ),
     start_url: "/",
     display: "standalone",

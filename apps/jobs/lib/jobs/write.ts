@@ -1139,7 +1139,7 @@ export async function createJobPost(input: {
     throw new Error(
       `A live Henry Onyx Jobs employer subscription is required to post roles. ` +
         `The current subscription status for ${employerSlug} is "${subscription.status}". ` +
-        `Renew or talk to the HenryCo team before publishing this role.`
+        `Renew or talk to the Henry Onyx team before publishing this role.`
     );
   }
   const internal = asText(input.formData.get("internal")) === "1" && isPrivileged;
@@ -1288,12 +1288,12 @@ export async function createJobPost(input: {
   } else if (internal) {
     await notifyInternalTeam({
       title: "Internal role published",
-      body: `${title} is live in the HenryCo internal hiring lane.`,
+      body: `${title} is live in the Henry Onyx internal hiring lane.`,
       actionUrl: `/employer/jobs/${slug}`,
       actionLabel: "Open role",
       emailKey: "internal_hiring_alert",
       emailHeading: "Internal hiring role published",
-      emailSummary: `${title} is now live for HenryCo internal hiring inside Jobs.`,
+      emailSummary: `${title} is now live for Henry Onyx internal hiring inside Jobs.`,
       emailDetailLines: [
         `Employer: ${employerName}`,
         `Location: ${location}`,

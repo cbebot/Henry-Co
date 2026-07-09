@@ -576,7 +576,7 @@ export async function POST(request: Request) {
         const proofFile = formData.get("proof");
         const shippingCity = text(formData, "shipping_city");
         const shippingRegion = text(formData, "shipping_region");
-        const buyerName = text(formData, "buyer_name") || viewer.user.fullName || "HenryCo Buyer";
+        const buyerName = text(formData, "buyer_name") || viewer.user.fullName || "Henry Onyx Buyer";
         const buyerPhone = text(formData, "buyer_phone");
 
         const subtotal = cartItems.reduce(
@@ -784,13 +784,13 @@ export async function POST(request: Request) {
             timeline: [
               "Order placed",
               isWalletPayment
-                ? "Paid from HenryCo wallet balance"
+                ? "Paid from Henry Onyx wallet balance"
                 : isCardPayment
                   ? "Awaiting secure card payment"
                   : paymentMethod === "cod"
                     ? "Awaiting vendor acceptance"
                     : "Payment proof submitted for finance verification",
-              "HenryCo will hold seller funds in escrow until fulfillment and trust checks are complete.",
+              "Henry Onyx will hold seller funds in escrow until fulfillment and trust checks are complete.",
             ],
           } as never)
           .select("id")
@@ -995,7 +995,7 @@ export async function POST(request: Request) {
           verified_at: isWalletPayment ? new Date().toISOString() : null,
           wallet_transaction_id: walletTransactionId,
           evidence_note: isWalletPayment
-            ? `Paid from HenryCo wallet balance with reference ${paymentReference}.`
+            ? `Paid from Henry Onyx wallet balance with reference ${paymentReference}.`
             : isBankTransfer
               ? `Bank reference: ${bankReference}. Proof uploaded at checkout.`
               : null,
@@ -1494,7 +1494,7 @@ export async function POST(request: Request) {
           product_id: product.id,
           vendor_id: vendorId,
           user_id: viewer.user.id,
-          buyer_name: viewer.user.fullName || "HenryCo Buyer",
+          buyer_name: viewer.user.fullName || "Henry Onyx Buyer",
           rating,
           title: reviewTitle,
           body: reviewBody,
@@ -1566,7 +1566,7 @@ export async function POST(request: Request) {
               createdReview as Record<string, unknown>,
               product.slug,
               product.vendorSlug,
-              viewer.user.fullName || "HenryCo Buyer"
+              viewer.user.fullName || "Henry Onyx Buyer"
             ),
             mode: reviewStatus,
           });
@@ -2085,7 +2085,7 @@ export async function POST(request: Request) {
           .eq("order_no", orderNo);
 
         await appendOrderTimeline(admin, orderNo, [
-          "Payment verified by HenryCo finance.",
+          "Payment verified by Henry Onyx finance.",
           "Seller funds are now held in escrow pending fulfillment, delivery proof, and trust review.",
         ]);
 
@@ -2173,7 +2173,7 @@ export async function POST(request: Request) {
 
         await appendOrderTimeline(admin, orderNo, [
           "Buyer confirmed completion.",
-          "HenryCo marked eligible seller funds as releasable.",
+          "Henry Onyx marked eligible seller funds as releasable.",
         ]);
 
         await writeMarketplaceEvent(admin, {
@@ -2254,7 +2254,7 @@ export async function POST(request: Request) {
 
         await appendOrderTimeline(admin, orderNo, [
           `Dispute opened: ${titleCaseMarketplaceValue(reason || "issue reported")}.`,
-          "HenryCo froze seller payout release while support and moderation review evidence.",
+          "Henry Onyx froze seller payout release while support and moderation review evidence.",
         ]);
 
         await createModerationCase(admin, {
@@ -2350,8 +2350,8 @@ export async function POST(request: Request) {
           await appendOrderTimeline(admin, dispute.order_no, [
             `Dispute ${dispute.dispute_no} resolved.`,
             resolutionType === "refund_to_buyer"
-              ? "HenryCo marked the affected payout segment as refunded."
-              : "HenryCo returned the payout segment to controlled release monitoring.",
+              ? "Henry Onyx marked the affected payout segment as refunded."
+              : "Henry Onyx returned the payout segment to controlled release monitoring.",
           ]);
 
           // Sync vendor trust score on dispute resolution — dispute rate changes
@@ -2631,7 +2631,7 @@ export async function POST(request: Request) {
             fulfillmentStatus === "shipped"
               ? `Shipment dispatched with ${shipmentCarrier || "assigned carrier"}.`
               : fulfillmentStatus === "delivered"
-                ? `Delivery verified. HenryCo will auto-release seller funds after ${sellerProfile.autoReleaseDays} day(s) unless a dispute or risk hold is triggered.`
+                ? `Delivery verified. Henry Onyx will auto-release seller funds after ${sellerProfile.autoReleaseDays} day(s) unless a dispute or risk hold is triggered.`
                 : `Order updated to ${titleCaseMarketplaceValue(fulfillmentStatus)}.`,
           ]);
 

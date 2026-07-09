@@ -288,7 +288,7 @@ export function evaluatePropertySubmissionPolicy(
   ].join(" · ");
 
   const bullets: string[] = [];
-  bullets.push("Your submission is private until HenryCo approves it for publication.");
+  bullets.push("Your submission is private until Henry Onyx approves it for publication.");
   if (requiresIdentityApproval && !identityGateSatisfied) {
     bullets.push(
       `${verificationGate.detail} Open account verification before expecting publication review to continue.`
@@ -301,16 +301,16 @@ export function evaluatePropertySubmissionPolicy(
   }
   if (requiresAuthorityProof && ctx.submission.authorityProofCount === 0) {
     bullets.push(
-      "Authority proof: broker or agent-led submissions stay held until HenryCo can see a mandate or equivalent approval."
+      "Authority proof: broker or agent-led submissions stay held until Henry Onyx can see a mandate or equivalent approval."
     );
   }
   if (requiresManagementAuthorization && ctx.submission.managementAuthorizationCount === 0) {
     bullets.push(
-      "Managed listing authorization: HenryCo needs a management instruction or equivalent written authority before this can move as a managed listing."
+      "Managed listing authorization: Henry Onyx needs a management instruction or equivalent written authority before this can move as a managed listing."
     );
   }
   if (requiresInspection) {
-    bullets.push("Inspection: HenryCo may send an agent to verify the property and location before it goes live.");
+    bullets.push("Inspection: Henry Onyx may send an agent to verify the property and location before it goes live.");
   }
   if (ctx.trust.signals.duplicateEmailMatches > 0 || ctx.trust.signals.duplicatePhoneMatches > 0) {
     bullets.push("Contact review: shared contact details keep the submission in manual review until ownership is confirmed.");
@@ -319,7 +319,7 @@ export function evaluatePropertySubmissionPolicy(
     bullets.push("Enhanced verification: higher-risk listings may require extra identity or ownership proof.");
   }
   if (ctx.submission.serviceType === "managed_property") {
-    bullets.push("Managed vs non-managed: managed listings only move forward when HenryCo can support the operating handoff, not just publish the listing.");
+    bullets.push("Managed vs non-managed: managed listings only move forward when Henry Onyx can support the operating handoff, not just publish the listing.");
   }
 
   const headline =

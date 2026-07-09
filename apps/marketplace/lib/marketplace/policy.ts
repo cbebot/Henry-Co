@@ -23,7 +23,7 @@ export const sellerTrustTierRules = [
     payoutWindow: "2-day payout reserve, 2-day auto-release after verified delivery.",
   },
   {
-    tier: "HenryCo verified partner",
+    tier: "Henry Onyx verified partner",
     privileges: "Partner inventory terms, direct placement controls, lowest payout friction, top trust passport treatment.",
     payoutWindow: "1-day payout reserve, 1-day auto-release after verified delivery.",
   },
@@ -47,12 +47,12 @@ export const ecosystemOffers = [
   },
   {
     title: "HQ operator controls",
-    body: "Moderation, finance, payout review, and trust operations can escalate into HenryCo HQ and Workspace operating surfaces.",
+    body: "Moderation, finance, payout review, and trust operations can escalate into Henry Onyx HQ and Workspace operating surfaces.",
     href: getHqUrl("/"),
   },
   {
     title: "Shared account continuity",
-    body: "Orders, disputes, seller application state, and marketplace notifications follow the shared HenryCo account instead of a competing auth silo.",
+    body: "Orders, disputes, seller application state, and marketplace notifications follow the shared Henry Onyx account instead of a competing auth silo.",
     href: getAccountUrl("/marketplace"),
   },
 ];
@@ -62,9 +62,9 @@ export const policyPages = [
     slug: "buyer-protection",
     title: "Buyer Protection Policy",
     kicker: "Protected commerce",
-    summary: "HenryCo receives buyer payment first, holds funds through fulfillment, and can freeze seller payout when delivery proof or dispute posture is weak.",
+    summary: "Henry Onyx receives buyer payment first, holds funds through fulfillment, and can freeze seller payout when delivery proof or dispute posture is weak.",
     bullets: [
-      "Buyer payment is held by HenryCo until verified delivery and completion logic clears the payout segment.",
+      "Buyer payment is held by Henry Onyx until verified delivery and completion logic clears the payout segment.",
       "Open disputes freeze payout release on affected order groups.",
       "Verified delivery plus timeout can trigger payout release when buyers do not confirm promptly and no dispute exists.",
     ],
@@ -98,7 +98,7 @@ export const policyPages = [
     summary: "Counterfeit goods, unsafe products, deceptive services, and content designed to route payments off-platform are not allowed.",
     bullets: [
       "Counterfeit, stolen, deceptive, or unsafe products are prohibited.",
-      "Listings asking buyers to pay directly on WhatsApp, Telegram, crypto, or outside HenryCo checkout can be blocked automatically.",
+      "Listings asking buyers to pay directly on WhatsApp, Telegram, crypto, or outside Henry Onyx checkout can be blocked automatically.",
       "Higher-risk categories require stronger seller trust before listing access opens.",
     ],
   },
