@@ -1,7 +1,12 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient, type TypedSupabaseClient } from "@henryco/data";
+import {
+  createDataAdminClient,
+  loadOperatorMembership,
+  type OperatorMembershipResult,
+  type TypedSupabaseClient,
+} from "@henryco/data";
 import { normalizeEmail } from "@henryco/config";
 
 /**
@@ -46,6 +51,22 @@ import { normalizeEmail } from "@henryco/config";
 
 /** The studio surface inside the account shell. A real, live route. */
 export const STUDIO_HOME_HREF = "/studio";
+
+/**
+ * The studio-team WINDOW (AWARE-SP4). Reads whether the viewer holds a granted
+ * `studio_role_memberships` seat and, if so, deep-links into the REAL project
+ * console at studio.henryonyx.com/pm. The dashboard is the RECORD; the project
+ * console is the TOOL — this never re-implements project delivery.
+ */
+export function loadStudioTeamSnapshot(
+  viewer: UnifiedViewer,
+): Promise<OperatorMembershipResult | null> {
+  return loadOperatorMembership(viewer, {
+    table: "studio_role_memberships",
+    division: "studio",
+    workspacePath: "/pm",
+  });
+}
 
 export type StudioMetricsSnapshot = {
   /** Visible projects whose status is not delivered / archived. */

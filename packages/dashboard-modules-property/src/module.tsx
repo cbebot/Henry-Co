@@ -1,4 +1,4 @@
-import { Building2 } from "lucide-react";
+import { Building2, KeyRound } from "lucide-react";
 import {
   viewerCanUseCustomerSurface,
   type DashboardModule,
@@ -9,6 +9,7 @@ import {
   type RouteEntry,
   type EmptyTeaching,
 } from "@henryco/dashboard-shell";
+import { OperatorWindowCard } from "@henryco/dashboard-shell/components";
 
 import {
   PropertyPortfolioCard,
@@ -19,6 +20,7 @@ import {
   PROPERTY_HOME_HREF,
   PROPERTY_SAVED_HREF,
   getPropertyQuickActions,
+  loadAgentSnapshot,
   loadPropertySnapshot,
 } from "./data";
 import { toPaletteGroup } from "./format";
@@ -62,10 +64,41 @@ export const propertyModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadPropertySnapshot(viewer);
-    if (!snapshot) return [];
+    // The agent WINDOW (AWARE-SP4) loads in parallel with the customer
+    // snapshot — a property agent can also be a buyer, so both windows can
+    // appear, the agent workspace ranked first.
+    const [snapshot, agent] = await Promise.all([
+      loadPropertySnapshot(viewer),
+      loadAgentSnapshot(viewer),
+    ]);
 
-    const widgets: HomeWidget[] = [
+    const widgets: HomeWidget[] = [];
+
+    if (agent) {
+      widgets.push({
+        id: "property.agent-workspace",
+        source: "property",
+        title: "Agent workspace",
+        size: "md",
+        weight: 84,
+        href: agent.workspaceHref,
+        render: async () => (
+          <OperatorWindowCard
+            icon={<KeyRound size={14} />}
+            kicker="Agent"
+            headline="Your agent workspace"
+            description="Manage listings, viewings, and client relationships in your workspace."
+            ctaLabel="Open agent workspace"
+            ctaHref={agent.workspaceHref}
+            footnote="Listings, viewings, and clients live in your workspace"
+          />
+        ),
+      });
+    }
+
+    if (!snapshot) return widgets;
+
+    widgets.push(
       {
         id: "property.portfolio",
         source: "property",
@@ -84,7 +117,7 @@ export const propertyModule: DashboardModule = {
         href: PROPERTY_SAVED_HREF,
         render: async () => <SavedShortlistCard snapshot={snapshot} />,
       },
-    ];
+    );
 
     // The viewing-request metric only earns a home slot when there is
     // genuine in-progress activity (an inquiry or a viewing), so the feed
@@ -113,8 +146,8 @@ export const propertyModule: DashboardModule = {
     ];
   },
 
-  async getCommandPaletteEntries(): Promise<ReadonlyArray<PaletteEntry>> {
-    return getPropertyQuickActions().map((action) => ({
+  async getCommandPaletteEntries(viewer): Promise<ReadonlyArray<PaletteEntry>> {
+    const entries: PaletteEntry[] = getPropertyQuickActions().map((action) => ({
       id: action.id,
       source: "property",
       label: action.label,
@@ -123,6 +156,22 @@ export const propertyModule: DashboardModule = {
       href: action.href,
       keywords: action.keywords,
     }));
+
+    // Agent WINDOW palette action — surfaced only for granted agents.
+    const agent = await loadAgentSnapshot(viewer).catch(() => null);
+    if (agent) {
+      entries.push({
+        id: "property.agent-workspace",
+        source: "property",
+        label: "Open agent workspace",
+        kicker: "Agent",
+        groupLabel: "Open",
+        href: agent.workspaceHref,
+        keywords: ["agent", "listings", "viewings", "workspace", "clients", "manage"],
+      });
+    }
+
+    return entries;
   },
 
   getNotificationCategories(): ReadonlyArray<NotificationCategory> {

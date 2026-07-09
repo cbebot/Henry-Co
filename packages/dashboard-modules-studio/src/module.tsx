@@ -1,4 +1,4 @@
-import { Palette } from "lucide-react";
+import { Palette, LayoutList } from "lucide-react";
 import {
   viewerCanUseCustomerSurface,
   type DashboardModule,
@@ -9,11 +9,13 @@ import {
   type RouteEntry,
   type EmptyTeaching,
 } from "@henryco/dashboard-shell";
+import { OperatorWindowCard } from "@henryco/dashboard-shell/components";
 
 import { ProjectsPulseCard, PaymentsDueCard } from "./widgets";
 import {
   STUDIO_HOME_HREF,
   loadStudioSnapshot,
+  loadStudioTeamSnapshot,
   hasStudioFootprint,
 } from "./data";
 
@@ -58,31 +60,64 @@ export const studioModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadStudioSnapshot(viewer);
-    if (!snapshot) return [];
+    // The studio-team WINDOW (AWARE-SP4) loads in parallel with the client
+    // snapshot — a team member can also be a client on another project, so
+    // both windows can appear, the project console ranked first.
+    const [snapshot, team] = await Promise.all([
+      loadStudioSnapshot(viewer),
+      loadStudioTeamSnapshot(viewer),
+    ]);
 
-    return [
-      {
-        id: "studio.projects-pulse",
+    const widgets: HomeWidget[] = [];
+
+    if (team) {
+      widgets.push({
+        id: "studio.project-console",
         source: "studio",
-        title: "Studio projects",
-        size: "lg",
-        weight: 70,
-        href: STUDIO_PROJECTS_HREF,
-        render: async () => <ProjectsPulseCard snapshot={snapshot} />,
-      },
-      {
-        id: "studio.payments-due",
-        source: "studio",
-        title: "Studio payments",
+        title: "Project console",
         size: "md",
-        // Slightly heavier than the projects pulse — an open payment is a
-        // concrete next action for the viewer.
-        weight: 75,
-        href: STUDIO_PAYMENTS_HREF,
-        render: async () => <PaymentsDueCard snapshot={snapshot} />,
-      },
-    ];
+        weight: 84,
+        href: team.workspaceHref,
+        render: async () => (
+          <OperatorWindowCard
+            icon={<LayoutList size={14} />}
+            kicker="Studio team"
+            headline="Your project console"
+            description="Manage briefs, milestones, and delivery across your studio projects."
+            ctaLabel="Open project console"
+            ctaHref={team.workspaceHref}
+            footnote="Briefs, milestones, and delivery live in your console"
+          />
+        ),
+      });
+    }
+
+    if (snapshot) {
+      widgets.push(
+        {
+          id: "studio.projects-pulse",
+          source: "studio",
+          title: "Studio projects",
+          size: "lg",
+          weight: 70,
+          href: STUDIO_PROJECTS_HREF,
+          render: async () => <ProjectsPulseCard snapshot={snapshot} />,
+        },
+        {
+          id: "studio.payments-due",
+          source: "studio",
+          title: "Studio payments",
+          size: "md",
+          // Slightly heavier than the projects pulse — an open payment is a
+          // concrete next action for the viewer.
+          weight: 75,
+          href: STUDIO_PAYMENTS_HREF,
+          render: async () => <PaymentsDueCard snapshot={snapshot} />,
+        },
+      );
+    }
+
+    return widgets;
   },
 
   getRoutes(): ReadonlyArray<RouteEntry> {
@@ -105,11 +140,11 @@ export const studioModule: DashboardModule = {
     ];
   },
 
-  async getCommandPaletteEntries(): Promise<ReadonlyArray<PaletteEntry>> {
+  async getCommandPaletteEntries(viewer): Promise<ReadonlyArray<PaletteEntry>> {
     // Every entry lands on a live surface: the `/studio` landing renders
     // both the projects and payments sections (anchors), so no entry can
     // 404 before the per-feature `/modules/studio/*` pages ship.
-    return [
+    const entries: PaletteEntry[] = [
       {
         id: "studio.projects",
         source: "studio",
@@ -138,6 +173,22 @@ export const studioModule: DashboardModule = {
         keywords: ["studio", "henry onyx studio", "deliverables", "brief"],
       },
     ];
+
+    // Studio-team WINDOW palette action — surfaced only for granted team members.
+    const team = await loadStudioTeamSnapshot(viewer).catch(() => null);
+    if (team) {
+      entries.push({
+        id: "studio.project-console",
+        source: "studio",
+        label: "Open project console",
+        kicker: "Studio team",
+        groupLabel: "Open",
+        href: team.workspaceHref,
+        keywords: ["console", "pm", "team", "brief", "milestone", "delivery", "manage"],
+      });
+    }
+
+    return entries;
   },
 
   getNotificationCategories(): ReadonlyArray<NotificationCategory> {

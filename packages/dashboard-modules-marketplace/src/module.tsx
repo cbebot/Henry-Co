@@ -52,6 +52,13 @@ export const marketplaceModule: DashboardModule = {
   description: "Orders in flight, saved items, curated deals, vendor controls.",
   icon: () => <ShoppingBag size={18} aria-hidden />,
   railSlot: "primary",
+  // The REAL surface is the live top-level `/marketplace` route (the same
+  // rich page the desktop sidebar opens). Without this, the rail / mobile
+  // Modules drawer / Cmd-jump sent marketplace to the sparse
+  // `/modules/marketplace` catch-all — the "module not opening" report.
+  // Every other division module declares its homeHref; marketplace was the
+  // lone omission.
+  homeHref: "/marketplace",
 
   getEligibleViewer(viewer) {
     return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";

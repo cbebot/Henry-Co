@@ -18,6 +18,12 @@ export type { SignalFeedRow } from "./signal-feed";
 export { createDataAdminClient, type TypedSupabaseClient } from "./client";
 
 export {
+  loadOperatorMembership,
+  type OperatorMembershipViewer,
+  type OperatorMembershipResult,
+} from "./operator-membership";
+
+export {
   getDashboardSummary,
   type DashboardSummary,
   type CustomerSummary,
