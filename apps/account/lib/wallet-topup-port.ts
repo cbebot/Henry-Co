@@ -1,7 +1,10 @@
 import "server-only";
 
+import { normalizeAppLocaleSafe } from "@henryco/email";
 import { publishNotification } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+import { sendAccountEmail } from "@/lib/email/send";
+import { walletFundedEmail } from "@/lib/email/templates";
 import { callPaymentRpc } from "@/lib/payments/db";
 import {
   reconcileWalletTopups,
@@ -239,6 +242,50 @@ export async function reconcileWalletTopupsForUser(
       });
     } catch {
       /* notification is best-effort */
+    }
+
+    // EMAIL-TPL-02: the deposit email. walletFundedEmail existed but NOTHING
+    // ever published the `wallet.funded` webhook event, so customers were
+    // never emailed when money landed. Dispatch here — AFTER the guarded
+    // credit RPC committed — best-effort by construction (an email failure
+    // must never surface into the money path). Mirrors the wallet.funded
+    // handler's preference gate + locale resolution.
+    try {
+      const admin = createAdminSupabase();
+      const [{ data: profile }, { data: prefs }] = await Promise.all([
+        admin
+          .from("customer_profiles")
+          .select("full_name, email, language")
+          .eq("id", userId)
+          .maybeSingle(),
+        admin
+          .from("customer_preferences")
+          .select("email_transactional")
+          .eq("user_id", userId)
+          .maybeSingle(),
+      ]);
+      const email = (profile as { email?: string | null } | null)?.email;
+      const emailTransactional =
+        (prefs as { email_transactional?: boolean | null } | null)?.email_transactional !== false;
+      if (email && emailTransactional) {
+        const name = (profile as { full_name?: string | null } | null)?.full_name || "";
+        const locale = normalizeAppLocaleSafe(
+          (profile as { language?: string | null } | null)?.language,
+        );
+        // The last credit carries the final balance after all credits applied.
+        const lastCredit = outcome.credited[outcome.credited.length - 1];
+        await sendAccountEmail(
+          email,
+          walletFundedEmail(
+            name,
+            Math.round(creditedKobo / 100),
+            Math.round(lastCredit.balanceAfterKobo / 100),
+            locale,
+          ),
+        );
+      }
+    } catch {
+      /* email is best-effort — never blocks or fails the credit */
     }
   }
 

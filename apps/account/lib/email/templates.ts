@@ -70,6 +70,12 @@ function getEmailCopy(locale: AppLocale) {
       withdrawalPaidIntro: (name: string) => `Bonjour ${name || "vous"}, votre retrait a ete verse sur votre compte bancaire.`,
       withdrawalPaidAmount: "Montant paye",
       withdrawalButton: "Voir les retraits",
+      refundSubject: (amount: number) => `Remboursement effectue — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Remboursement effectue",
+      refundIntro: (name: string) => `Bonjour ${name || "vous"}, votre remboursement a ete traite.`,
+      refundAmount: "Montant rembourse",
+      refundNote: "Les remboursements arrivent generalement sur le moyen de paiement d'origine sous quelques jours ouvres, selon votre banque.",
+      refundButton: "Voir les paiements",
     };
   }
 
@@ -110,6 +116,12 @@ function getEmailCopy(locale: AppLocale) {
       withdrawalPaidIntro: (name: string) => `Hola ${name || "alli"}, tu retiro fue pagado a tu cuenta bancaria.`,
       withdrawalPaidAmount: "Monto pagado",
       withdrawalButton: "Ver retiros",
+      refundSubject: (amount: number) => `Reembolso procesado — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Reembolso procesado",
+      refundIntro: (name: string) => `Hola ${name || "alli"}, tu reembolso fue procesado.`,
+      refundAmount: "Monto reembolsado",
+      refundNote: "Los reembolsos suelen llegar al metodo de pago original en unos dias habiles, segun tu banco.",
+      refundButton: "Ver pagos",
     };
   }
 
@@ -144,6 +156,12 @@ function getEmailCopy(locale: AppLocale) {
       withdrawalPaidIntro: (name: string) => `Ola ${name || "voce"}, o seu levantamento foi pago na sua conta bancaria.`,
       withdrawalPaidAmount: "Montante pago",
       withdrawalButton: "Ver levantamentos",
+      refundSubject: (amount: number) => `Reembolso processado — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Reembolso processado",
+      refundIntro: (name: string) => `Ola ${name || "voce"}, o seu reembolso foi processado.`,
+      refundAmount: "Montante reembolsado",
+      refundNote: "Os reembolsos costumam chegar ao metodo de pagamento original em poucos dias uteis, consoante o seu banco.",
+      refundButton: "Ver pagamentos",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} adicionados a sua carteira`,
       walletTitle: "Carteira carregada",
       walletIntro: (name: string) => `Ola ${name || "voce"}, foi adicionado dinheiro a sua carteira Henry Onyx.`,
@@ -184,6 +202,12 @@ function getEmailCopy(locale: AppLocale) {
       withdrawalPaidIntro: (name: string) => `مرحبًا ${name || "هناك"}، تم تحويل مبلغ السحب إلى حسابك البنكي.`,
       withdrawalPaidAmount: "المبلغ المدفوع",
       withdrawalButton: "عرض السحوبات",
+      refundSubject: (amount: number) => `تمت معالجة الاسترداد — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "تمت معالجة الاسترداد",
+      refundIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت معالجة استرداد أموالك.`,
+      refundAmount: "المبلغ المسترد",
+      refundNote: "عادةً ما يصل المبلغ المسترد إلى وسيلة الدفع الأصلية خلال أيام عمل قليلة حسب البنك.",
+      refundButton: "عرض المدفوعات",
       walletSubject: (amount: number) => `تمت إضافة NGN ${formatNaira(amount, locale)} إلى محفظتك`,
       walletTitle: "تم تمويل المحفظة",
       walletIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت إضافة أموال إلى محفظة Henry Onyx الخاصة بك.`,
@@ -224,6 +248,12 @@ function getEmailCopy(locale: AppLocale) {
       withdrawalPaidIntro: (name: string) => `Hallo ${name || "da"}, Ihre Auszahlung wurde auf Ihr Bankkonto ueberwiesen.`,
       withdrawalPaidAmount: "Ausgezahlter Betrag",
       withdrawalButton: "Auszahlungen ansehen",
+      refundSubject: (amount: number) => `Rueckerstattung verarbeitet — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Rueckerstattung verarbeitet",
+      refundIntro: (name: string) => `Hallo ${name || "da"}, Ihre Rueckerstattung wurde verarbeitet.`,
+      refundAmount: "Erstatteter Betrag",
+      refundNote: "Rueckerstattungen erreichen die urspruengliche Zahlungsmethode in der Regel innerhalb weniger Werktage, abhaengig von Ihrer Bank.",
+      refundButton: "Zahlungen ansehen",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} wurden Ihrer Wallet gutgeschrieben`,
       walletTitle: "Wallet aufgeladen",
       walletIntro: (name: string) => `Hallo ${name || "da"}, Ihrem Henry Onyx Wallet wurden Mittel gutgeschrieben.`,
@@ -264,6 +294,12 @@ function getEmailCopy(locale: AppLocale) {
       withdrawalPaidIntro: (name: string) => `Ciao ${name || "li"}, il tuo prelievo e stato versato sul tuo conto bancario.`,
       withdrawalPaidAmount: "Importo pagato",
       withdrawalButton: "Vedi prelievi",
+      refundSubject: (amount: number) => `Rimborso elaborato — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Rimborso elaborato",
+      refundIntro: (name: string) => `Ciao ${name || "li"}, il tuo rimborso e stato elaborato.`,
+      refundAmount: "Importo rimborsato",
+      refundNote: "I rimborsi arrivano di solito sul metodo di pagamento originale entro pochi giorni lavorativi, a seconda della banca.",
+      refundButton: "Vedi pagamenti",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} aggiunti al tuo wallet`,
       walletTitle: "Wallet ricaricato",
       walletIntro: (name: string) => `Ciao ${name || "li"}, del denaro e stato aggiunto al tuo Henry Onyx Wallet.`,
@@ -309,6 +345,12 @@ function getEmailCopy(locale: AppLocale) {
     withdrawalPaidIntro: (name: string) => `${name ? `${name}, your` : "Your"} withdrawal has been paid to your bank account.`,
     withdrawalPaidAmount: "Amount paid",
     withdrawalButton: "View withdrawals",
+      refundSubject: (amount: number) => `Refund processed — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Refund processed",
+      refundIntro: (name: string) => `${name ? `${name}, your` : "Your"} refund has been processed.`,
+      refundAmount: "Amount refunded",
+      refundNote: "Refunds usually arrive back on the original payment method within a few business days, depending on your bank.",
+      refundButton: "View payments",
   };
 }
 
@@ -455,6 +497,34 @@ export function withdrawalRequestedEmail(
       <p>${copy.withdrawalRequestedNote}</p>
       <p style="text-align:center;margin-top:24px;">
         <a href="${ACCOUNT_ORIGIN}/wallet/withdrawals" class="btn">${copy.withdrawalButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
+/**
+ * EMAIL-TPL-02 — refund receipt. Dispatched by the payment webhook AFTER
+ * `apply_refund_webhook` commits the reversing entries and reports
+ * outcome=processed — best-effort, never inside the money path.
+ */
+export function refundProcessedEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.refundSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.refundTitle}</h1>
+      <p>${copy.refundIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.refundAmount}</div>
+        <div class="metric-value" style="color:#10B981;">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p>${copy.refundNote}</p>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/payments" class="btn">${copy.refundButton}</a>
       </p>
     `, locale),
   };
