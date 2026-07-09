@@ -271,7 +271,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
                 : null,
               accountAgeDays < 90 ? "Maintain a longer clean account history." : null,
               settledTransactions < 3 ? "Build a stronger verified transaction record." : null,
-              completedActivityCount < 8 ? "Use more HenryCo divisions with clean outcomes." : null,
+              completedActivityCount < 8 ? "Use more Henry Onyx divisions with clean outcomes." : null,
               overlaps.reviewRequired
                 ? "Keep duplicate-contact review clear before premium trust can be granted."
                 : null,

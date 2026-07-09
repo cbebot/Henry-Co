@@ -27,9 +27,9 @@ export const ACCOUNT_COPY_ES = {
   },
   "overview": {
     "welcomeBack": "Bienvenido de nuevo",
-    "description": "Su centro de mando HenryCo: todo en todas las divisiones, en un solo lugar.",
+    "description": "Su centro de mando Henry Onyx: todo en todas las divisiones, en un solo lugar.",
     "walletBalance": "Saldo de billetera",
-    "walletHint": "Cartera compartida · Uso en todos los servicios HenryCo",
+    "walletHint": "Cartera compartida · Uso en todos los servicios Henry Onyx",
     "notifications": "Notificaciones",
     "allCaughtUp": "Todo al día",
     "unreadMessages": "Mensajes no leídos",
@@ -49,7 +49,7 @@ export const ACCOUNT_COPY_ES = {
     "noOpenRequests": "No hay solicitudes abiertas",
     "referrals": "Referencias",
     "inviteAndEarn": "Invita y gana",
-    "shareHenryCo": "Comparte HenryCo con otros",
+    "shareHenryCo": "Comparte Henry Onyx con otros",
     "transactions": "Transacciones",
     "viewHistory": "Ver historial",
     "walletActivity": "Actividad y pagos de la billetera",
@@ -76,7 +76,7 @@ export const ACCOUNT_COPY_ES = {
     "noUrgentTasks": "No hay tareas de cuenta urgentes en este momento. Usted se encuentra en un estado operativo saludable.",
     "viewTaskQueue": "Ver cola de tareas completa",
     "smartRecommendations": "Recomendaciones",
-    "smartRecommendationsEmpty": "Sigue utilizando los servicios de HenryCo y las recomendaciones se adaptarán a tu actividad.",
+    "smartRecommendationsEmpty": "Sigue utilizando los servicios de Henry Onyx y las recomendaciones se adaptarán a tu actividad.",
     "smartHomeEmptyFallback": "Te damos la bienvenida — empieza con un pequeño primer paso. Tus señales en vivo aparecerán aquí en cuanto haya actividad.",
     "recommendationReason": "Sugerido a partir de la actividad de tu cuenta y tu estado de confianza ({confidence} de confianza)",
     "recentActivity": "Actividad reciente",
@@ -98,10 +98,10 @@ export const ACCOUNT_COPY_ES = {
       "jobsSaved": "Seguimiento de roles guardados"
     },
     "recommendationDescriptions": {
-      "trustNext": "Desbloquea más acciones en HenryCo.",
+      "trustNext": "Desbloquea más acciones en Henry Onyx.",
       "profileNext": "Un perfil completo mejora el soporte y la continuidad del servicio.",
       "jobsSaved": "Revise los roles que ya guardó y actúe en consecuencia.",
-      "fallback": "Sigue utilizando los servicios de HenryCo y las recomendaciones se adaptarán a tu actividad."
+      "fallback": "Sigue utilizando los servicios de Henry Onyx y las recomendaciones se adaptarán a tu actividad."
     }
   },
   "tasks": {
@@ -159,14 +159,14 @@ export const ACCOUNT_COPY_ES = {
     "headlineCalmSingular": "{count} elemento en tu cola.",
     "headlineCalmPlural": "{count} elementos en tu cola.",
     "blurbEmpty": "Tu cuenta está en orden — la verificación, los pagos y las vías sensibles a revisión están despejados. Te mostraremos automáticamente el siguiente paso aquí cuando aparezca.",
-    "blurbRisk": "Estos elementos bloquean las acciones de alta confianza en HenryCo — retiros de billetera, aprobación de vendedor en Marketplace, verificación de empleador. Resolverlos desbloquea cada vía.",
-    "blurbActive": "Cada fila te lleva al siguiente paso con un toque. Los filtros, etiquetas de prioridad y enlaces directos se mantienen coherentes en todas las divisiones HenryCo.",
+    "blurbRisk": "Estos elementos bloquean las acciones de alta confianza en Henry Onyx — retiros de billetera, aprobación de vendedor en Marketplace, verificación de empleador. Resolverlos desbloquea cada vía.",
+    "blurbActive": "Cada fila te lleva al siguiente paso con un toque. Los filtros, etiquetas de prioridad y enlaces directos se mantienen coherentes en todas las divisiones Henry Onyx.",
     "metaEmpty": "Todo está despejado. Cualquier novedad aparecerá aquí cuando llegue.",
     "metaCount": "{count} abiertos · ordenados por prioridad y estado de bloqueo."
   },
   "security": {
     "title": "Seguridad",
-    "description": "Revise la actividad de seguridad reciente, cambie su contraseña y finalice las sesiones de HenryCo cuando sea necesario.",
+    "description": "Revise la actividad de seguridad reciente, cambie su contraseña y finalice las sesiones de Henry Onyx cuando sea necesario.",
     "heroAriaLabel": "Resumen de seguridad",
     "hero": {
       "trustScoreLabel": "Puntuación de confianza",
@@ -187,7 +187,7 @@ export const ACCOUNT_COPY_ES = {
         "risk": "Hemos detectado actividad que necesita tu atención."
       },
       "statusBlurb": {
-        "secure": "Sin eventos sospechosos, la verificación está en buen estado y todas las acciones de mayor confianza de HenryCo están disponibles para ti.",
+        "secure": "Sin eventos sospechosos, la verificación está en buen estado y todas las acciones de mayor confianza de Henry Onyx están disponibles para ti.",
         "watch": "Nada está roto — pero algunas señales (confirmación de correo electrónico, revisión de identidad, coincidencia de contacto duplicado) elevarían tu puntuación de confianza y desbloquearían más vías.",
         "risk": "Eventos recientes fueron clasificados como de alto riesgo. Revisa el flujo de actividad a continuación y cambia tu contraseña si algo te resulta desconocido."
       }
@@ -206,7 +206,7 @@ export const ACCOUNT_COPY_ES = {
     "noSuspiciousEventFoot": "Nada marcado en la última ventana de revisión.",
     "activityAriaLabel": "Eventos de seguridad recientes",
     "trustProfile": "Perfil de confianza",
-    "trustDescription": "La confianza está operativa en toda la cuenta. Ahora controla las acciones comerciales de mayor valor, la postura de moderación y una elegibilidad más sólida en todos los módulos HenryCo.",
+    "trustDescription": "La confianza está operativa en toda la cuenta. Ahora controla las acciones comerciales de mayor valor, la postura de moderación y una elegibilidad más sólida en todos los módulos Henry Onyx.",
     "trustScore": "Puntuación de confianza de la cuenta",
     "signalLabels": {
       "emailVerified": "Correo electrónico verificado",
@@ -245,7 +245,7 @@ export const ACCOUNT_COPY_ES = {
     "moreVerificationNeeded": "Se necesita más verificación",
     "trustGuide": "Guía del estado de confianza",
     "whatCurrentStateMeans": "Qué significa tu estado actual",
-    "whatCurrentStateBody": "Este estado determina el acceso a flujos de trabajo y acciones comerciales de mayor valor en HenryCo.",
+    "whatCurrentStateBody": "Este estado determina el acceso a flujos de trabajo y acciones comerciales de mayor valor en Henry Onyx.",
     "whatToDoNext": "¿Qué hacer a continuación?",
     "whatToDoNextBody": "Complete los requisitos enumerados para desbloquear el siguiente carril de confianza.",
     "currentRestrictions": "Acciones actualmente restringidas",
@@ -299,7 +299,7 @@ export const ACCOUNT_COPY_ES = {
         "verification": "La confianza premium está reservada para cuentas que ya pasaron la verificación de identidad.",
         "age": "Mantenga un historial de cuenta limpio por más tiempo.",
         "transactions": "Cree un registro de transacciones verificadas más sólido.",
-        "activity": "Utilice más divisiones HenryCo con resultados limpios.",
+        "activity": "Utilice más divisiones Henry Onyx con resultados limpios.",
         "overlap": "Mantenga clara la revisión de contactos duplicados antes de que se pueda otorgar la confianza premium."
       }
     }
@@ -317,12 +317,12 @@ export const ACCOUNT_COPY_ES = {
     "updatePassword": "Actualizar contraseña"
   },
   "globalSignOut": {
-    "title": "Cerrar todas las sesiones de HenryCo",
-    "description": "Esto cierra la sesión de la cuenta actual en todas las divisiones y dispositivos de HenryCo y luego te devuelve al acceso de la cuenta.",
+    "title": "Cerrar todas las sesiones de Henry Onyx",
+    "description": "Esto cierra la sesión de la cuenta actual en todas las divisiones y dispositivos de Henry Onyx y luego te devuelve al acceso de la cuenta.",
     "note": "La actividad reciente del dispositivo y de la sesión permanece visible a continuación, aunque la revocación en vivo por dispositivo aún no se expone como un control separado.",
-    "unavailable": "No pudimos cerrar todas las sesiones de HenryCo en este momento. Inténtalo de nuevo en un momento.",
+    "unavailable": "No pudimos cerrar todas las sesiones de Henry Onyx en este momento. Inténtalo de nuevo en un momento.",
     "ending": "Terminando todas las sesiones...",
-    "endAllSessions": "Cerrar sesión en todas las sesiones de HenryCo"
+    "endAllSessions": "Cerrar sesión en todas las sesiones de Henry Onyx"
   },
   "errorBoundary": {
     "kicker": "Tiempo de ejecución de la cuenta",
@@ -333,9 +333,9 @@ export const ACCOUNT_COPY_ES = {
   },
   "activity": {
     "title": "Actividad",
-    "description": "Todo lo que has hecho en todas las divisiones de HenryCo.",
+    "description": "Todo lo que has hecho en todas las divisiones de Henry Onyx.",
     "emptyTitle": "Aún no hay actividad",
-    "emptyDescription": "Tu actividad entre divisiones aparecerá aquí a medida que uses los servicios de HenryCo.",
+    "emptyDescription": "Tu actividad entre divisiones aparecerá aquí a medida que uses los servicios de Henry Onyx.",
     "statusLabels": {
       "pending": "Pendiente",
       "open": "Abierto",
@@ -359,8 +359,8 @@ export const ACCOUNT_COPY_ES = {
       "statusEyebrow": "Estado",
       "pdfNote": "El PDF lleva cada filtro que has fijado arriba como parte del encabezado del documento — lo que ves es lo que descargas.",
       "downloadLabel": "Descargar extracto",
-      "downloadFilename": "HenryCo-Historial-Transacciones.pdf",
-      "shareTitle": "Historial de transacciones HenryCo",
+      "downloadFilename": "Henry Onyx-Historial-Transacciones.pdf",
+      "shareTitle": "Historial de transacciones Henry Onyx",
       "typeLabels": {
         "payment": "pago",
         "wallet_credit": "abono a billetera",
@@ -372,11 +372,11 @@ export const ACCOUNT_COPY_ES = {
     }
   },
   "calendar": {
-    "metaTitle": "Calendario · HenryCo",
+    "metaTitle": "Calendario · Henry Onyx",
     "metaDescription":
       "Agenda multiportal — reservas Care, visitas a propiedades, entrevistas Jobs, hitos Studio, clases Learn, ventanas Logistics.",
     "heroAriaLabel": "Resumen del calendario",
-    "heroEyebrow": "HenryCo · calendario multiportal",
+    "heroEyebrow": "Henry Onyx · calendario multiportal",
     "tileVolumeAriaLabel": "Volumen del calendario",
     "tileEventsLabel": "Eventos",
     "tileEventsFoot": "Próximos 28 días",
@@ -447,18 +447,18 @@ export const ACCOUNT_COPY_ES = {
   "notifications": {
     "metadata": {
       "title": "Notificaciones",
-      "description": "Cada actualización de HenryCo —cartera, soporte, empleos, marketplace, care y más— en una bandeja de entrada en vivo."
+      "description": "Cada actualización de Henry Onyx —cartera, soporte, empleos, marketplace, care y más— en una bandeja de entrada en vivo."
     },
     "hero": {
-      "eyebrow": "HenryCo · notificaciones en vivo",
+      "eyebrow": "Henry Onyx · notificaciones en vivo",
       "ariaOverview": "Resumen de notificaciones",
       "ariaVolume": "Volumen de notificaciones",
       "ariaByDivision": "Por división",
-      "headlineZero": "Bandeja en cero en todo HenryCo.",
+      "headlineZero": "Bandeja en cero en todo Henry Onyx.",
       "headlineOne": "Una cosa quiere tu atención.",
       "headlineFew": "{count} notificaciones para clasificar.",
       "headlineMany": "{count} actualizaciones entre tus divisiones.",
-      "blurbZero": "Todo lo que HenryCo envía llega aquí en tiempo real: cartera, soporte, empleos, marketplace, care y más.",
+      "blurbZero": "Todo lo que Henry Onyx envía llega aquí en tiempo real: cartera, soporte, empleos, marketplace, care y más.",
       "blurbStale": "Se acumularon elementos antiguos. Desliza para archivar, toca para abrir o salta directo a un hilo.",
       "blurbToday": "Hoy llegaron {count}. Usa los filtros para concentrarte en una sola división o revisa solo las no leídas.",
       "tileUnreadLabel": "No leídas",
@@ -501,7 +501,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "emptyState": {
       "inboxTitle": "Todo al día.",
-      "inboxBody": "La actividad de todo HenryCo aparece aquí en tiempo real.",
+      "inboxBody": "La actividad de todo Henry Onyx aparece aquí en tiempo real.",
       "filterTitle": "Sin actividad en esta vista.",
       "filterBody": "Prueba con otro filtro."
     },
@@ -526,7 +526,7 @@ export const ACCOUNT_COPY_ES = {
       "ariaByDivision": "Por división",
       "headlineEmpty": "Tus recibos aparecerán aquí.",
       "headlineWithReceipts": "Cada recibo, un solo lugar.",
-      "blurb": "Cada pago a través de HenryCo llega aquí como un PDF de marca descargable — reservas Care, pedidos Marketplace, facturas Studio, envíos Logistics, certificados Learn.",
+      "blurb": "Cada pago a través de Henry Onyx llega aquí como un PDF de marca descargable — reservas Care, pedidos Marketplace, facturas Studio, envíos Logistics, certificados Learn.",
       "totalPaidLabel": "Total pagado · de por vida",
       "thisMonthLabel": "Pagado · este mes",
       "thisMonthFoot": "Recibos fechados en este mes calendario",
@@ -544,7 +544,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "empty": {
       "title": "Aún no hay facturas",
-      "description": "Tus facturas y recibos aparecerán aquí después de que realices pagos en los servicios HenryCo."
+      "description": "Tus facturas y recibos aparecerán aquí después de que realices pagos en los servicios Henry Onyx."
     },
     "statuses": {
       "paid": "Pagada",
@@ -576,11 +576,11 @@ export const ACCOUNT_COPY_ES = {
   },
   "messages": {
     "metadata": {
-      "title": "Mensajes · HenryCo",
+      "title": "Mensajes · Henry Onyx",
       "description": "Una sola bandeja de entrada para soporte, marketplace, empleos, estudio, cuidado, propiedad, logística y aprendizaje."
     },
     "hero": {
-      "eyebrow": "HenryCo · bandeja de entrada unificada",
+      "eyebrow": "Henry Onyx · bandeja de entrada unificada",
       "ariaLabel": "Vista general de la bandeja de entrada",
       "ariaTiles": "Volumen de la bandeja de entrada",
       "ariaSide": "Por portal",
@@ -588,7 +588,7 @@ export const ACCOUNT_COPY_ES = {
       "sideBody": "Cada portal alimenta esta bandeja única. Soporte, pedidos de marketplace, entrevistas de empleo, proyectos de estudio y reservas de cuidado aparecen aquí en orden cronológico."
     },
     "headlines": {
-      "zero": "Bandeja de entrada vacía en todo HenryCo.",
+      "zero": "Bandeja de entrada vacía en todo Henry Onyx.",
       "calmOne": "Un hilo está esperando tu respuesta.",
       "calmMany": "{count} hilos están abiertos.",
       "busy": "{unread} sin leer · {open} abiertos en tus portales.",
@@ -653,14 +653,14 @@ export const ACCOUNT_COPY_ES = {
   "wallet": {
     "hero": {
       "ariaLabel": "Saldo de la cartera",
-      "eyebrow": "Cartera HenryCo · en vivo",
+      "eyebrow": "Cartera Henry Onyx · en vivo",
       "availableLabel": "Saldo disponible",
       "balanceAriaTemplate": "Saldo disponible {amount} {currency}",
-      "settlementFallback": "Liquidado en tu moneda local al tipo de cambio HenryCo del día.",
+      "settlementFallback": "Liquidado en tu moneda local al tipo de cambio Henry Onyx del día.",
       "ctas": { "fund": "Recargar cartera", "withdraw": "Retirar" },
       "tiles": {
         "verifiedLabel": "Saldo verificado",
-        "verifiedFoot": "Utilizable en todos los servicios HenryCo",
+        "verifiedFoot": "Utilizable en todos los servicios Henry Onyx",
         "pendingFundingLabel": "Recarga pendiente",
         "pendingFundingFoot": "Permanece aparte hasta que finanzas confirme",
         "pendingWithdrawalLabel": "Retenido para retiro",
@@ -739,7 +739,7 @@ export const ACCOUNT_COPY_ES = {
     "activity": {
       "ariaLabel": "Transacciones de la cartera",
       "emptyTitle": "Aún no hay transacciones",
-      "emptyBody": "Recarga tu cartera y tu feed de actividad se llenará aquí con cada crédito, débito, reembolso y bono en los servicios HenryCo.",
+      "emptyBody": "Recarga tu cartera y tu feed de actividad se llenará aquí con cada crédito, débito, reembolso y bono en los servicios Henry Onyx.",
       "fallbackTitle": "Transacción de la cartera"
     },
     "funding": {
@@ -764,11 +764,11 @@ export const ACCOUNT_COPY_ES = {
   "support": {
     "metadata": {
       "title": "Soporte",
-      "description": "Obtén ayuda con cualquier servicio HenryCo."
+      "description": "Obtén ayuda con cualquier servicio Henry Onyx."
     },
     "hero": {
       "title": "Soporte",
-      "description": "Obtén ayuda con cualquier servicio HenryCo.",
+      "description": "Obtén ayuda con cualquier servicio Henry Onyx.",
       "newRequestCta": "Nueva solicitud"
     },
     "summary": {
@@ -820,19 +820,19 @@ export const ACCOUNT_COPY_ES = {
       "cardLastFourTemplate": "•••• {last4}"
     },
     "wallet": {
-      "eyebrow": "Cartera HenryCo",
-      "body": "Tu Cartera HenryCo siempre está disponible como opción de pago.",
+      "eyebrow": "Cartera Henry Onyx",
+      "body": "Tu Cartera Henry Onyx siempre está disponible como opción de pago.",
       "manageCta": "Gestionar cartera"
     }
   },
   "savedItems": {
     "metadata": {
       "title": "Guardado para más tarde",
-      "description": "Artículos que apartaste desde cualquier carrito de HenryCo: los conservamos 90 días y te avisamos una semana antes de que caduquen."
+      "description": "Artículos que apartaste desde cualquier carrito de Henry Onyx: los conservamos 90 días y te avisamos una semana antes de que caduquen."
     },
     "hero": {
       "title": "Guardado para más tarde",
-      "description": "Artículos que apartaste desde cualquier carrito de HenryCo. Los conservamos 90 días y te avisamos una semana antes de que caduquen."
+      "description": "Artículos que apartaste desde cualquier carrito de Henry Onyx. Los conservamos 90 días y te avisamos una semana antes de que caduquen."
     },
     "summary": {
       "activeTemplate": "{count} activo(s)",
@@ -880,7 +880,7 @@ export const ACCOUNT_COPY_ES = {
   "documents": {
     "metadata": {
       "title": "Documentos",
-      "description": "Tus recibos, certificados, contratos y archivos importantes — guardados de forma privada y accesibles en todas las divisiones de HenryCo."
+      "description": "Tus recibos, certificados, contratos y archivos importantes — guardados de forma privada y accesibles en todas las divisiones de Henry Onyx."
     },
     "hero": {
       "eyebrow": "Caja personal",
@@ -921,7 +921,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "empty": {
       "title": "Aún no hay documentos",
-      "description": "Tus documentos, recibos y certificados de los servicios HenryCo se guardarán aquí."
+      "description": "Tus documentos, recibos y certificados de los servicios Henry Onyx se guardarán aquí."
     },
     "summary": {
       "countTemplate": "{count} documento{plural}",
@@ -930,13 +930,13 @@ export const ACCOUNT_COPY_ES = {
     "retention": {
       "eyebrow": "Privacidad y conservación",
       "title": "Tus archivos siguen siendo privados",
-      "body": "Los documentos se cifran en reposo, solo tú los ves y se conservan durante toda la vida de tu cuenta HenryCo a menos que los elimines."
+      "body": "Los documentos se cifran en reposo, solo tú los ves y se conservan durante toda la vida de tu cuenta Henry Onyx a menos que los elimines."
     }
   },
   "subscriptions": {
     "metadata": {
       "title": "Suscripciones",
-      "description": "Resumen en solo lectura de los planes activos sincronizados desde las divisiones HenryCo."
+      "description": "Resumen en solo lectura de los planes activos sincronizados desde las divisiones Henry Onyx."
     },
     "hero": {
       "eyebrow": "Planes activos",
@@ -1000,11 +1000,11 @@ export const ACCOUNT_COPY_ES = {
   "referrals": {
     "metadata": {
       "title": "Referidos",
-      "description": "Invita a clientes calificados a HenryCo y rastrea las recompensas a través de los estados pendiente, revisado y acreditado."
+      "description": "Invita a clientes calificados a Henry Onyx y rastrea las recompensas a través de los estados pendiente, revisado y acreditado."
     },
     "hero": {
       "title": "Referidos",
-      "description": "Invita a clientes calificados a HenryCo y rastrea las recompensas a través de los estados pendiente, revisado y acreditado."
+      "description": "Invita a clientes calificados a Henry Onyx y rastrea las recompensas a través de los estados pendiente, revisado y acreditado."
     },
     "code": {
       "eyebrow": "Tu código de referido",
@@ -1026,16 +1026,16 @@ export const ACCOUNT_COPY_ES = {
     "howItWorks": {
       "eyebrow": "Cómo funciona",
       "step1Title": "Comparte tu código",
-      "step1Body": "Comparte tu código o enlace único. Los amigos que visiten cualquier subdominio de HenryCo con tu enlace serán rastreados automáticamente.",
+      "step1Body": "Comparte tu código o enlace único. Los amigos que visiten cualquier subdominio de Henry Onyx con tu enlace serán rastreados automáticamente.",
       "step2Title": "Realizan una transacción",
       "step2Body": "Después del registro, el referido entra en una ventana de retención de {days} días. Solo rastreamos la cuenta referida una vez — las auto-referencias, los duplicados de hogar y los registros reciclados no califican.",
       "step3Title": "Las recompensas se liberan tras calificar",
-      "step3Body": "Los referidos calificados acreditan {amount} a tu billetera HenryCo tras la revisión financiera. Las recompensas pendientes no son gastables hasta su liberación."
+      "step3Body": "Los referidos calificados acreditan {amount} a tu billetera Henry Onyx tras la revisión financiera. Las recompensas pendientes no son gastables hasta su liberación."
     },
     "policy": {
       "eyebrow": "Política de referidos",
-      "qualifying": "Una conversión calificada significa que la cuenta referida completó una acción elegible de HenryCo que pasó la verificación de pago y confianza.",
-      "enforcement": "HenryCo puede retener, revertir o cancelar recompensas por auto-referencias, bucles de conversión duplicados, reversiones, reembolsos o patrones sospechosos de recompensas.",
+      "qualifying": "Una conversión calificada significa que la cuenta referida completó una acción elegible de Henry Onyx que pasó la verificación de pago y confianza.",
+      "enforcement": "Henry Onyx puede retener, revertir o cancelar recompensas por auto-referencias, bucles de conversión duplicados, reversiones, reembolsos o patrones sospechosos de recompensas.",
       "separation": "Tu panel muestra los referidos y el historial de recompensas por separado para que los registros rastreados no se confundan con ganancias acreditadas a la billetera."
     },
     "referralsList": {
@@ -1268,7 +1268,7 @@ export const ACCOUNT_COPY_ES = {
         "listings": "Anuncios"
       },
       "tileFoot": {
-        "savedManagedTemplate": "{count} gestionadas por HenryCo",
+        "savedManagedTemplate": "{count} gestionadas por Henry Onyx",
         "savedEmpty": "Guarda anuncios para construir una selección",
         "savedWith": "Compara y vuelve cuando quieras",
         "inquiriesEmpty": "Aún no hay conversaciones abiertas",
@@ -1282,7 +1282,7 @@ export const ACCOUNT_COPY_ES = {
       "sideKicker": "Cómo funciona esta sala",
       "sideTitle": "Descubre en Property, sigue aquí.",
       "sideBody": "Guarda un anuncio, solicita una visita o abre una consulta en Henry Onyx Property — cada acción se refleja en esta sala de la cuenta para que puedas retomar donde lo dejaste en cualquier dispositivo.",
-      "sideBodyMuted": "Los anuncios gestionados por HenryCo llevan un distintivo Gestionado — la revisión, inspección y seguimiento del contrato los coordina el equipo de Property.",
+      "sideBodyMuted": "Los anuncios gestionados por Henry Onyx llevan un distintivo Gestionado — la revisión, inspección y seguimiento del contrato los coordina el equipo de Property.",
       "breakdownAriaLabel": "Desglose de actividad",
       "breakdownLabel": "Por actividad",
       "breakdownLabels": {
@@ -1294,7 +1294,7 @@ export const ACCOUNT_COPY_ES = {
       "state": {
         "empty": {
           "headline": "Empieza a explorar Henry Onyx Property.",
-          "blurb": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por HenryCo. Guarda tus favoritos y cada consulta, visita o seguimiento de anuncio llega aquí automáticamente."
+          "blurb": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por Henry Onyx. Guarda tus favoritos y cada consulta, visita o seguimiento de anuncio llega aquí automáticamente."
         },
         "discover": {
           "headlineTemplateSingular": "{count} vivienda en la selección.",
@@ -1313,7 +1313,7 @@ export const ACCOUNT_COPY_ES = {
     "sections": {
       "saved": "Selección guardada",
       "savedMetaEmpty": "Guarda anuncios en Henry Onyx Property para construir tu selección.",
-      "savedMetaTemplate": "{saved} guardados · {managed} gestionadas por HenryCo",
+      "savedMetaTemplate": "{saved} guardados · {managed} gestionadas por Henry Onyx",
       "activity": "Actividad reciente",
       "activityMetaEmpty": "Consultas, visitas y revisiones de anuncios se reflejan aquí en tiempo real.",
       "activityMetaTemplateSingular": "{count} actualización · más reciente primero",
@@ -1321,7 +1321,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "empty": {
       "savedTitle": "Aún no hay propiedades guardadas",
-      "savedBody": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por HenryCo en Property. Todo lo que guardes llega aquí automáticamente.",
+      "savedBody": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por Henry Onyx en Property. Todo lo que guardes llega aquí automáticamente.",
       "activityTitle": "Aún no hay actividad en Property",
       "activityBody": "Abre un anuncio en Henry Onyx Property para solicitar una visita o enviar una consulta — cada paso, desde tu primer mensaje hasta la revisión, aparecerá aquí."
     },
@@ -1364,7 +1364,7 @@ export const ACCOUNT_COPY_ES = {
     "hero": {
       "eyebrow": "Tu cuenta",
       "headline": "Tu actividad de empleos, todo en un mismo lugar.",
-      "body": "Solicitudes, puestos guardados, actualizaciones de reclutadores y preparación de perfil están vinculados a tu cuenta HenryCo.",
+      "body": "Solicitudes, puestos guardados, actualizaciones de reclutadores y preparación de perfil están vinculados a tu cuenta Henry Onyx.",
       "statsAriaLabel": "Resumen de actividad de empleos",
       "statLabels": {
         "applications": "Solicitudes activas",
@@ -1492,7 +1492,7 @@ export const ACCOUNT_COPY_ES = {
         "storyLabel": "Relato del rol",
         "storyDetail": "Titular y resumen explican lo que haces más allá de un registro vacío.",
         "verificationLabel": "Verificación de identidad",
-        "verificationDetail": "La confianza de Jobs queda limitada hasta que tu cuenta HenryCo supere la verificación de identidad.",
+        "verificationDetail": "La confianza de Jobs queda limitada hasta que tu cuenta Henry Onyx supere la verificación de identidad.",
         "proofLabel": "Pruebas de trabajo",
         "proofDetail": "CV más pruebas de portfolio facilitan el avance en la preselección.",
         "skillsLabel": "Habilidades mapeadas",
@@ -1639,7 +1639,7 @@ export const ACCOUNT_COPY_ES = {
       "application": {
         "kicker": "Solicitud de vendedor",
         "bodyWithStoreTemplate": "Tienda: {name}",
-        "bodyDefault": "Solicitud en la cola de revisión de HenryCo.",
+        "bodyDefault": "Solicitud en la cola de revisión de Henry Onyx.",
         "bodyReviewSuffixTemplate": " · {note}",
         "cta": "Ver estado",
         "defaultStatus": "enviada"
@@ -1768,7 +1768,7 @@ export const ACCOUNT_COPY_ES = {
       "certificatesTitle": "Certificados",
       "assignmentsTitle": "Aprendizaje asignado",
       "savedTitle": "Cursos guardados",
-      "teachingTitle": "Enseña con HenryCo",
+      "teachingTitle": "Enseña con Henry Onyx",
       "statusLabel": "Estado",
       "expertiseLabel": "Especialidad",
       "topicsLabel": "Temas",
@@ -1793,7 +1793,7 @@ export const ACCOUNT_COPY_ES = {
       "sideAriaLabel": "Cómo funciona esta sala",
       "sideLabel": "Cómo funciona esta sala",
       "sideTitle": "Una sala de proyecto, estado real.",
-      "sideBody": "Las propuestas, hitos, comprobantes de pago, entregables y señales de comunicación siguen conectados a la misma identidad HenryCo que usas en todas partes. El panel inferior refleja el avance real del equipo Studio, no una lista de estados.",
+      "sideBody": "Las propuestas, hitos, comprobantes de pago, entregables y señales de comunicación siguen conectados a la misma identidad Henry Onyx que usas en todas partes. El panel inferior refleja el avance real del equipo Studio, no una lista de estados.",
       "breakdownAriaLabel": "Desglose de actividad",
       "breakdownLabel": "Por estado",
       "tiles": {
@@ -1819,7 +1819,7 @@ export const ACCOUNT_COPY_ES = {
       "state": {
         "empty": {
           "headline": "Inicia un brief de Studio.",
-          "blurb": "Cuando una propuesta o proyecto se active con tu identidad HenryCo, la sala Studio sincronizada aparecerá aquí — hitos, pagos, entregables y siguiente movimiento juntos.",
+          "blurb": "Cuando una propuesta o proyecto se active con tu identidad Henry Onyx, la sala Studio sincronizada aparecerá aquí — hitos, pagos, entregables y siguiente movimiento juntos.",
           "ctaPrimary": "Iniciar un brief",
           "ctaSecondary": "Abrir Studio"
         },
@@ -1872,7 +1872,7 @@ export const ACCOUNT_COPY_ES = {
     },
     "empty": {
       "projectsTitle": "Aún no hay salas Studio vinculadas",
-      "projectsBody": "En cuanto se cree una propuesta o proyecto con tu identidad HenryCo, la sala Studio sincronizada aparecerá aquí — hitos, pagos, entregables y siguiente movimiento.",
+      "projectsBody": "En cuanto se cree una propuesta o proyecto con tu identidad Henry Onyx, la sala Studio sincronizada aparecerá aquí — hitos, pagos, entregables y siguiente movimiento.",
       "paymentsTitle": "Aún no hay puntos de pago",
       "paymentsBody": "Los hitos comerciales — anticipo, mitad de proyecto y entrega — surgen aquí cuando una propuesta se activa contigo.",
       "activityTitle": "Aún no hay actividad Studio",
@@ -1929,8 +1929,8 @@ export const ACCOUNT_COPY_ES = {
     },
     "hero": {
       "ariaLabel": "Resumen de logística",
-      "eyebrow": "HenryCo Logística",
-      "brand": "HenryCo Logística",
+      "eyebrow": "Henry Onyx Logística",
+      "brand": "Henry Onyx Logística",
       "title": "Cada paquete, una sola sala.",
       "body": "Recogidas, entregas, ETA y pruebas de entrega: todo reflejado desde la red logística en tu cuenta. Reserva una vez en",
       "bodyDomain": " logistics.henryonyx.com",
@@ -2069,7 +2069,7 @@ export const ACCOUNT_COPY_ES = {
       "cancelCta": "Cancelar"
     },
     "empty": {
-      "body": "Aún no has añadido ninguna dirección. Añade una para agilizar el pago en HenryCo."
+      "body": "Aún no has añadido ninguna dirección. Añade una para agilizar el pago en Henry Onyx."
     },
     "add": {
       "cta": "Añadir dirección",
@@ -2081,10 +2081,10 @@ export const ACCOUNT_COPY_ES = {
   "search": {
     "metadata": {
       "title": "Búsqueda de cuenta",
-      "description": "Busca en los flujos de tu cuenta HenryCo y en las rutas de las divisiones conectadas."
+      "description": "Busca en los flujos de tu cuenta Henry Onyx y en las rutas de las divisiones conectadas."
     },
     "hero": {
-      "title": "Busca en tus flujos HenryCo.",
+      "title": "Busca en tus flujos Henry Onyx.",
       "description": "Accede directamente a las acciones precisas de cuenta y a las rutas de las divisiones conectadas sin pasar por paneles genéricos."
     },
     "placeholder": "Buscar: notificaciones, cartera, facturas, soporte, solicitudes..."
@@ -2125,9 +2125,9 @@ export const ACCOUNT_COPY_PT = {
   },
   "overview": {
     "welcomeBack": "Bem-vindo de volta",
-    "description": "Seu centro de comando HenryCo — tudo em todas as divisões, em um só lugar.",
+    "description": "Seu centro de comando Henry Onyx — tudo em todas as divisões, em um só lugar.",
     "walletBalance": "Saldo da Carteira",
-    "walletHint": "Carteira compartilhada · Use em todos os serviços HenryCo",
+    "walletHint": "Carteira compartilhada · Use em todos os serviços Henry Onyx",
     "notifications": "Notificações",
     "allCaughtUp": "Tudo em dia",
     "unreadMessages": "Mensagens não lidas",
@@ -2147,7 +2147,7 @@ export const ACCOUNT_COPY_PT = {
     "noOpenRequests": "Nenhuma solicitação aberta",
     "referrals": "Referências",
     "inviteAndEarn": "Convide e ganhe",
-    "shareHenryCo": "Compartilhe HenryCo com outras pessoas",
+    "shareHenryCo": "Compartilhe Henry Onyx com outras pessoas",
     "transactions": "Transações",
     "viewHistory": "Ver histórico",
     "walletActivity": "Atividade e pagamentos da carteira",
@@ -2174,7 +2174,7 @@ export const ACCOUNT_COPY_PT = {
     "noUrgentTasks": "Nenhuma tarefa urgente na conta no momento. Você está em um estado operacional saudável.",
     "viewTaskQueue": "Ver fila de tarefas completa",
     "smartRecommendations": "Recomendações",
-    "smartRecommendationsEmpty": "Continue a utilizar os serviços HenryCo e as recomendações adaptar-se-ão à sua atividade.",
+    "smartRecommendationsEmpty": "Continue a utilizar os serviços Henry Onyx e as recomendações adaptar-se-ão à sua atividade.",
     "smartHomeEmptyFallback": "Boas-vindas — comece com um pequeno primeiro passo. Os seus sinais ao vivo aparecerão aqui assim que houver atividade.",
     "recommendationReason": "Sugerido a partir da atividade da sua conta e estado de confiança (confiança {confidence})",
     "recentActivity": "Atividade recente",
@@ -2196,10 +2196,10 @@ export const ACCOUNT_COPY_PT = {
       "jobsSaved": "Acompanhar as funções salvas"
     },
     "recommendationDescriptions": {
-      "trustNext": "Desbloqueie mais ações no HenryCo.",
+      "trustNext": "Desbloqueie mais ações no Henry Onyx.",
       "profileNext": "Um perfil completo melhora o suporte e a continuidade do serviço.",
       "jobsSaved": "Revisite as funções que você já salvou e aja de acordo com elas.",
-      "fallback": "Continue a utilizar os serviços HenryCo e as recomendações adaptar-se-ão à sua atividade."
+      "fallback": "Continue a utilizar os serviços Henry Onyx e as recomendações adaptar-se-ão à sua atividade."
     }
   },
   "tasks": {
@@ -2257,14 +2257,14 @@ export const ACCOUNT_COPY_PT = {
     "headlineCalmSingular": "{count} item na sua fila.",
     "headlineCalmPlural": "{count} itens na sua fila.",
     "blurbEmpty": "A sua conta está em ordem — verificação, pagamentos e vias sensíveis a revisão estão desimpedidas. Mostraremos automaticamente o próximo passo aqui quando aparecer.",
-    "blurbRisk": "Esses itens bloqueiam ações de alta confiança no HenryCo — saques de carteira, aprovação de vendedor no Marketplace, verificação de empregador. Resolvê-los desbloqueia cada via.",
-    "blurbActive": "Cada linha leva você ao próximo passo com um toque. Filtros, rótulos de prioridade e links diretos permanecem consistentes em todas as divisões HenryCo.",
+    "blurbRisk": "Esses itens bloqueiam ações de alta confiança no Henry Onyx — saques de carteira, aprovação de vendedor no Marketplace, verificação de empregador. Resolvê-los desbloqueia cada via.",
+    "blurbActive": "Cada linha leva você ao próximo passo com um toque. Filtros, rótulos de prioridade e links diretos permanecem consistentes em todas as divisões Henry Onyx.",
     "metaEmpty": "Tudo limpo. Qualquer novidade aparecerá aqui quando chegar.",
     "metaCount": "{count} abertos · ordenados por prioridade e status de bloqueio."
   },
   "security": {
     "title": "Segurança",
-    "description": "Revise as atividades de segurança recentes, altere sua senha e encerre as sessões HenryCo quando necessário.",
+    "description": "Revise as atividades de segurança recentes, altere sua senha e encerre as sessões Henry Onyx quando necessário.",
     "heroAriaLabel": "Resumo de segurança",
     "hero": {
       "trustScoreLabel": "Pontuação de confiança",
@@ -2285,7 +2285,7 @@ export const ACCOUNT_COPY_PT = {
         "risk": "Detetamos atividade que necessita da sua atenção."
       },
       "statusBlurb": {
-        "secure": "Sem eventos suspeitos, a verificação está em bom estado e todas as ações de maior confiança do HenryCo estão disponíveis para si.",
+        "secure": "Sem eventos suspeitos, a verificação está em bom estado e todas as ações de maior confiança do Henry Onyx estão disponíveis para si.",
         "watch": "Nada está quebrado — mas alguns sinais (confirmação de e-mail, revisão de identidade, correspondência de contacto duplicado) elevariam a sua pontuação de confiança e desbloqueariam mais vias.",
         "risk": "Eventos recentes foram classificados como de alto risco. Revise o fluxo de atividade abaixo e altere a sua senha se algo lhe parecer desconhecido."
       }
@@ -2304,7 +2304,7 @@ export const ACCOUNT_COPY_PT = {
     "noSuspiciousEventFoot": "Nada assinalado na última janela de revisão.",
     "activityAriaLabel": "Eventos de segurança recentes",
     "trustProfile": "Perfil de confiança",
-    "trustDescription": "A confiança está operacional em toda a conta. Agora controla ações de negócios de maior valor, postura de moderação e elegibilidade mais forte em todos os módulos HenryCo.",
+    "trustDescription": "A confiança está operacional em toda a conta. Agora controla ações de negócios de maior valor, postura de moderação e elegibilidade mais forte em todos os módulos Henry Onyx.",
     "trustScore": "Pontuação de confiança da conta",
     "signalLabels": {
       "emailVerified": "E-mail verificado",
@@ -2343,7 +2343,7 @@ export const ACCOUNT_COPY_PT = {
     "moreVerificationNeeded": "Mais verificação necessária",
     "trustGuide": "Guia do estado de confiança",
     "whatCurrentStateMeans": "O que seu estado atual significa",
-    "whatCurrentStateBody": "Este estado determina o acesso a fluxos de trabalho e ações de negócios de maior valor em HenryCo.",
+    "whatCurrentStateBody": "Este estado determina o acesso a fluxos de trabalho e ações de negócios de maior valor em Henry Onyx.",
     "whatToDoNext": "O que fazer a seguir",
     "whatToDoNextBody": "Conclua os requisitos listados para desbloquear a próxima via de confiança.",
     "currentRestrictions": "Ações atualmente restritas",
@@ -2397,7 +2397,7 @@ export const ACCOUNT_COPY_PT = {
         "verification": "A confiança premium é reservada para contas que já passaram na verificação de identidade.",
         "age": "Mantenha um histórico de conta mais limpo e mais longo.",
         "transactions": "Crie um registro de transação verificado mais forte.",
-        "activity": "Use mais divisões HenryCo com resultados limpos.",
+        "activity": "Use mais divisões Henry Onyx com resultados limpos.",
         "overlap": "Mantenha a revisão de contatos duplicados clara antes que a confiança premium possa ser concedida."
       }
     }
@@ -2415,12 +2415,12 @@ export const ACCOUNT_COPY_PT = {
     "updatePassword": "Atualizar senha"
   },
   "globalSignOut": {
-    "title": "Encerrar todas as sessões HenryCo",
-    "description": "Isso encerra a sessão da conta atual em todas as divisões e dispositivos HenryCo e depois retorna você à superfície de login da conta.",
+    "title": "Encerrar todas as sessões Henry Onyx",
+    "description": "Isso encerra a sessão da conta atual em todas as divisões e dispositivos Henry Onyx e depois retorna você à superfície de login da conta.",
     "note": "A atividade recente do dispositivo e da sessão permanece visível abaixo, mesmo que a revogação ativa por dispositivo ainda não esteja exposta como um controle separado.",
-    "unavailable": "Não foi possível encerrar todas as sessões HenryCo agora. Tente novamente em instantes.",
+    "unavailable": "Não foi possível encerrar todas as sessões Henry Onyx agora. Tente novamente em instantes.",
     "ending": "Terminando todas as sessões...",
-    "endAllSessions": "Sair de todas as sessões do HenryCo"
+    "endAllSessions": "Sair de todas as sessões do Henry Onyx"
   },
   "errorBoundary": {
     "kicker": "Tempo de execução da conta",
@@ -2431,9 +2431,9 @@ export const ACCOUNT_COPY_PT = {
   },
   "activity": {
     "title": "Atividade",
-    "description": "Tudo o que você fez em todas as divisões HenryCo.",
+    "description": "Tudo o que você fez em todas as divisões Henry Onyx.",
     "emptyTitle": "Ainda não há atividade",
-    "emptyDescription": "Sua atividade entre divisões aparecerá aqui à medida que usar os serviços HenryCo.",
+    "emptyDescription": "Sua atividade entre divisões aparecerá aqui à medida que usar os serviços Henry Onyx.",
     "statusLabels": {
       "pending": "Pendente",
       "open": "Aberto",
@@ -2457,8 +2457,8 @@ export const ACCOUNT_COPY_PT = {
       "statusEyebrow": "Status",
       "pdfNote": "O PDF carrega cada filtro que você definiu acima como parte do cabeçalho do documento — o que você vê é o que baixa.",
       "downloadLabel": "Baixar extrato",
-      "downloadFilename": "HenryCo-Historico-Transacoes.pdf",
-      "shareTitle": "Histórico de Transações HenryCo",
+      "downloadFilename": "Henry Onyx-Historico-Transacoes.pdf",
+      "shareTitle": "Histórico de Transações Henry Onyx",
       "typeLabels": {
         "payment": "pagamento",
         "wallet_credit": "crédito na carteira",
@@ -2470,11 +2470,11 @@ export const ACCOUNT_COPY_PT = {
     }
   },
   "calendar": {
-    "metaTitle": "Calendário · HenryCo",
+    "metaTitle": "Calendário · Henry Onyx",
     "metaDescription":
       "Agenda multi-portal — reservas Care, visitas a imóveis, entrevistas Jobs, marcos Studio, aulas Learn, janelas Logistics.",
     "heroAriaLabel": "Visão geral do calendário",
-    "heroEyebrow": "HenryCo · calendário multi-portal",
+    "heroEyebrow": "Henry Onyx · calendário multi-portal",
     "tileVolumeAriaLabel": "Volume do calendário",
     "tileEventsLabel": "Eventos",
     "tileEventsFoot": "Próximos 28 dias",
@@ -2545,18 +2545,18 @@ export const ACCOUNT_COPY_PT = {
   "notifications": {
     "metadata": {
       "title": "Notificações",
-      "description": "Cada atualização do HenryCo — carteira, suporte, vagas, marketplace, care e mais — em uma caixa de entrada ao vivo."
+      "description": "Cada atualização do Henry Onyx — carteira, suporte, vagas, marketplace, care e mais — em uma caixa de entrada ao vivo."
     },
     "hero": {
-      "eyebrow": "HenryCo · notificações ao vivo",
+      "eyebrow": "Henry Onyx · notificações ao vivo",
       "ariaOverview": "Visão geral das notificações",
       "ariaVolume": "Volume de notificações",
       "ariaByDivision": "Por divisão",
-      "headlineZero": "Caixa de entrada zerada em todo o HenryCo.",
+      "headlineZero": "Caixa de entrada zerada em todo o Henry Onyx.",
       "headlineOne": "Uma coisa precisa da sua atenção.",
       "headlineFew": "{count} notificações para classificar.",
       "headlineMany": "{count} atualizações entre as suas divisões.",
-      "blurbZero": "Tudo o que o HenryCo envia chega aqui em tempo real — carteira, suporte, vagas, marketplace, care e mais.",
+      "blurbZero": "Tudo o que o Henry Onyx envia chega aqui em tempo real — carteira, suporte, vagas, marketplace, care e mais.",
       "blurbStale": "Itens mais antigos se acumularam. Deslize para arquivar, toque para abrir ou vá direto para uma conversa.",
       "blurbToday": "{count} chegaram hoje. Use os filtros para focar em uma única divisão ou percorra apenas as não lidas.",
       "tileUnreadLabel": "Não lidas",
@@ -2599,7 +2599,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "emptyState": {
       "inboxTitle": "Tudo em dia.",
-      "inboxBody": "A atividade de todo o HenryCo aparece aqui em tempo real.",
+      "inboxBody": "A atividade de todo o Henry Onyx aparece aqui em tempo real.",
       "filterTitle": "Sem atividade nesta visão.",
       "filterBody": "Tente um filtro diferente."
     },
@@ -2624,7 +2624,7 @@ export const ACCOUNT_COPY_PT = {
       "ariaByDivision": "Por divisão",
       "headlineEmpty": "Os seus recibos aparecerão aqui.",
       "headlineWithReceipts": "Cada recibo, num só lugar.",
-      "blurb": "Cada pagamento na HenryCo chega aqui como um PDF de marca transferível — reservas Care, encomendas Marketplace, faturas Studio, envios Logistics, certificados Learn.",
+      "blurb": "Cada pagamento na Henry Onyx chega aqui como um PDF de marca transferível — reservas Care, encomendas Marketplace, faturas Studio, envios Logistics, certificados Learn.",
       "totalPaidLabel": "Total pago · vitalício",
       "thisMonthLabel": "Pago · este mês",
       "thisMonthFoot": "Recibos datados deste mês de calendário",
@@ -2642,7 +2642,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "empty": {
       "title": "Ainda sem faturas",
-      "description": "As suas faturas e recibos aparecerão aqui após efetuar pagamentos nos serviços HenryCo."
+      "description": "As suas faturas e recibos aparecerão aqui após efetuar pagamentos nos serviços Henry Onyx."
     },
     "statuses": {
       "paid": "Paga",
@@ -2674,11 +2674,11 @@ export const ACCOUNT_COPY_PT = {
   },
   "messages": {
     "metadata": {
-      "title": "Mensagens · HenryCo",
+      "title": "Mensagens · Henry Onyx",
       "description": "Uma única caixa de entrada para suporte, marketplace, empregos, estúdio, cuidados, propriedade, logística e aprendizagem."
     },
     "hero": {
-      "eyebrow": "HenryCo · caixa de entrada unificada",
+      "eyebrow": "Henry Onyx · caixa de entrada unificada",
       "ariaLabel": "Visão geral da caixa de entrada",
       "ariaTiles": "Volume da caixa de entrada",
       "ariaSide": "Por portal",
@@ -2686,7 +2686,7 @@ export const ACCOUNT_COPY_PT = {
       "sideBody": "Cada portal alimenta esta única caixa de entrada. Suporte, encomendas do marketplace, entrevistas de emprego, projetos do estúdio e marcações de cuidados aparecem aqui por ordem cronológica."
     },
     "headlines": {
-      "zero": "Caixa de entrada vazia em todo o HenryCo.",
+      "zero": "Caixa de entrada vazia em todo o Henry Onyx.",
       "calmOne": "Há um fio à espera de si.",
       "calmMany": "{count} fios estão abertos.",
       "busy": "{unread} por ler · {open} abertos nos seus portais.",
@@ -2751,14 +2751,14 @@ export const ACCOUNT_COPY_PT = {
   "wallet": {
     "hero": {
       "ariaLabel": "Saldo da carteira",
-      "eyebrow": "Carteira HenryCo · ao vivo",
+      "eyebrow": "Carteira Henry Onyx · ao vivo",
       "availableLabel": "Saldo disponível",
       "balanceAriaTemplate": "Saldo disponível {amount} {currency}",
-      "settlementFallback": "Liquidado na sua moeda local à taxa HenryCo do dia.",
+      "settlementFallback": "Liquidado na sua moeda local à taxa Henry Onyx do dia.",
       "ctas": { "fund": "Carregar carteira", "withdraw": "Levantar" },
       "tiles": {
         "verifiedLabel": "Saldo verificado",
-        "verifiedFoot": "Utilizável em todos os serviços HenryCo",
+        "verifiedFoot": "Utilizável em todos os serviços Henry Onyx",
         "pendingFundingLabel": "Carregamento pendente",
         "pendingFundingFoot": "Permanece à parte até a área financeira confirmar",
         "pendingWithdrawalLabel": "Retido para levantamento",
@@ -2837,7 +2837,7 @@ export const ACCOUNT_COPY_PT = {
     "activity": {
       "ariaLabel": "Transações da carteira",
       "emptyTitle": "Ainda sem transações",
-      "emptyBody": "Carregue a sua carteira e o feed de atividade aparecerá aqui com cada crédito, débito, reembolso e bónus nos serviços HenryCo.",
+      "emptyBody": "Carregue a sua carteira e o feed de atividade aparecerá aqui com cada crédito, débito, reembolso e bónus nos serviços Henry Onyx.",
       "fallbackTitle": "Transação da carteira"
     },
     "funding": {
@@ -2862,11 +2862,11 @@ export const ACCOUNT_COPY_PT = {
   "support": {
     "metadata": {
       "title": "Suporte",
-      "description": "Obtenha ajuda com qualquer serviço HenryCo."
+      "description": "Obtenha ajuda com qualquer serviço Henry Onyx."
     },
     "hero": {
       "title": "Suporte",
-      "description": "Obtenha ajuda com qualquer serviço HenryCo.",
+      "description": "Obtenha ajuda com qualquer serviço Henry Onyx.",
       "newRequestCta": "Novo pedido"
     },
     "summary": {
@@ -2918,19 +2918,19 @@ export const ACCOUNT_COPY_PT = {
       "cardLastFourTemplate": "•••• {last4}"
     },
     "wallet": {
-      "eyebrow": "Carteira HenryCo",
-      "body": "Sua Carteira HenryCo está sempre disponível como opção de pagamento.",
+      "eyebrow": "Carteira Henry Onyx",
+      "body": "Sua Carteira Henry Onyx está sempre disponível como opção de pagamento.",
       "manageCta": "Gerenciar carteira"
     }
   },
   "savedItems": {
     "metadata": {
       "title": "Guardados para depois",
-      "description": "Itens que você reservou de qualquer carrinho HenryCo, guardados por 90 dias com aviso uma semana antes do vencimento."
+      "description": "Itens que você reservou de qualquer carrinho Henry Onyx, guardados por 90 dias com aviso uma semana antes do vencimento."
     },
     "hero": {
       "title": "Guardados para depois",
-      "description": "Itens que você reservou de qualquer carrinho HenryCo. Vamos guardá-los por 90 dias e avisaremos uma semana antes de expirarem."
+      "description": "Itens que você reservou de qualquer carrinho Henry Onyx. Vamos guardá-los por 90 dias e avisaremos uma semana antes de expirarem."
     },
     "summary": {
       "activeTemplate": "{count} ativo(s)",
@@ -2978,7 +2978,7 @@ export const ACCOUNT_COPY_PT = {
   "documents": {
     "metadata": {
       "title": "Documentos",
-      "description": "Seus recibos, certificados, contratos e arquivos importantes — guardados em privacidade e acessíveis em todas as divisões da HenryCo."
+      "description": "Seus recibos, certificados, contratos e arquivos importantes — guardados em privacidade e acessíveis em todas as divisões da Henry Onyx."
     },
     "hero": {
       "eyebrow": "Cofre pessoal",
@@ -3019,7 +3019,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "empty": {
       "title": "Ainda não há documentos",
-      "description": "Seus documentos, recibos e certificados dos serviços da HenryCo ficarão armazenados aqui."
+      "description": "Seus documentos, recibos e certificados dos serviços da Henry Onyx ficarão armazenados aqui."
     },
     "summary": {
       "countTemplate": "{count} documento{plural}",
@@ -3028,13 +3028,13 @@ export const ACCOUNT_COPY_PT = {
     "retention": {
       "eyebrow": "Privacidade e retenção",
       "title": "Seus arquivos permanecem privados",
-      "body": "Os documentos são criptografados em repouso, visíveis apenas para você e mantidos por toda a vida útil da sua conta HenryCo, a menos que você os remova."
+      "body": "Os documentos são criptografados em repouso, visíveis apenas para você e mantidos por toda a vida útil da sua conta Henry Onyx, a menos que você os remova."
     }
   },
   "subscriptions": {
     "metadata": {
       "title": "Assinaturas",
-      "description": "Resumo somente leitura dos planos ativos sincronizados a partir das divisões HenryCo."
+      "description": "Resumo somente leitura dos planos ativos sincronizados a partir das divisões Henry Onyx."
     },
     "hero": {
       "eyebrow": "Planos ativos",
@@ -3098,11 +3098,11 @@ export const ACCOUNT_COPY_PT = {
   "referrals": {
     "metadata": {
       "title": "Indicações",
-      "description": "Convide clientes qualificados para a HenryCo e acompanhe recompensas pelos estados pendente, revisado e creditado."
+      "description": "Convide clientes qualificados para a Henry Onyx e acompanhe recompensas pelos estados pendente, revisado e creditado."
     },
     "hero": {
       "title": "Indicações",
-      "description": "Convide clientes qualificados para a HenryCo e acompanhe recompensas pelos estados pendente, revisado e creditado."
+      "description": "Convide clientes qualificados para a Henry Onyx e acompanhe recompensas pelos estados pendente, revisado e creditado."
     },
     "code": {
       "eyebrow": "Seu código de indicação",
@@ -3124,16 +3124,16 @@ export const ACCOUNT_COPY_PT = {
     "howItWorks": {
       "eyebrow": "Como funciona",
       "step1Title": "Compartilhe seu código",
-      "step1Body": "Compartilhe seu código ou link exclusivo. Amigos que visitarem qualquer subdomínio da HenryCo com seu link serão rastreados automaticamente.",
+      "step1Body": "Compartilhe seu código ou link exclusivo. Amigos que visitarem qualquer subdomínio da Henry Onyx com seu link serão rastreados automaticamente.",
       "step2Title": "Eles realizam uma transação",
       "step2Body": "Após o cadastro, a indicação entra em uma janela de retenção de {days} dias. Rastreamos a conta indicada apenas uma vez — autoindicações, domicílios duplicados e cadastros reciclados não se qualificam.",
       "step3Title": "Recompensas liberadas após qualificação",
-      "step3Body": "Indicações qualificadas creditam {amount} na sua carteira HenryCo após análise financeira. Recompensas pendentes não são gastáveis até serem liberadas."
+      "step3Body": "Indicações qualificadas creditam {amount} na sua carteira Henry Onyx após análise financeira. Recompensas pendentes não são gastáveis até serem liberadas."
     },
     "policy": {
       "eyebrow": "Política de indicações",
-      "qualifying": "Uma conversão qualificada significa que a conta indicada concluiu uma ação elegível da HenryCo que passou na verificação de pagamento e confiança.",
-      "enforcement": "A HenryCo pode reter, reverter ou cancelar recompensas em casos de autoindicações, ciclos de conversão duplicados, estornos, reembolsos ou padrões suspeitos de recompensa.",
+      "qualifying": "Uma conversão qualificada significa que a conta indicada concluiu uma ação elegível da Henry Onyx que passou na verificação de pagamento e confiança.",
+      "enforcement": "A Henry Onyx pode reter, reverter ou cancelar recompensas em casos de autoindicações, ciclos de conversão duplicados, estornos, reembolsos ou padrões suspeitos de recompensa.",
       "separation": "Seu painel mostra indicações e histórico de recompensas separadamente para que cadastros rastreados não sejam confundidos com ganhos creditados na carteira."
     },
     "referralsList": {
@@ -3366,7 +3366,7 @@ export const ACCOUNT_COPY_PT = {
         "listings": "Anúncios"
       },
       "tileFoot": {
-        "savedManagedTemplate": "{count} gerenciados pela HenryCo",
+        "savedManagedTemplate": "{count} gerenciados pela Henry Onyx",
         "savedEmpty": "Salve anúncios para montar uma seleção",
         "savedWith": "Compare e revise quando quiser",
         "inquiriesEmpty": "Nenhuma conversa em aberto",
@@ -3380,7 +3380,7 @@ export const ACCOUNT_COPY_PT = {
       "sideKicker": "Como esta sala funciona",
       "sideTitle": "Descubra no Property, acompanhe aqui.",
       "sideBody": "Salve um anúncio, solicite uma visita ou abra uma consulta no Henry Onyx Property — cada ação é espelhada nesta sala da conta para você retomar de onde parou em qualquer dispositivo.",
-      "sideBodyMuted": "Os anúncios gerenciados pela HenryCo trazem um selo Gerenciado — revisão, inspeção e acompanhamento do contrato ficam a cargo da equipe Property.",
+      "sideBodyMuted": "Os anúncios gerenciados pela Henry Onyx trazem um selo Gerenciado — revisão, inspeção e acompanhamento do contrato ficam a cargo da equipe Property.",
       "breakdownAriaLabel": "Detalhamento da atividade",
       "breakdownLabel": "Por atividade",
       "breakdownLabels": {
@@ -3392,7 +3392,7 @@ export const ACCOUNT_COPY_PT = {
       "state": {
         "empty": {
           "headline": "Comece a explorar o Henry Onyx Property.",
-          "blurb": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela HenryCo. Salve seus favoritos e cada consulta, visita ou acompanhamento de anúncio chega aqui automaticamente."
+          "blurb": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela Henry Onyx. Salve seus favoritos e cada consulta, visita ou acompanhamento de anúncio chega aqui automaticamente."
         },
         "discover": {
           "headlineTemplateSingular": "{count} imóvel na seleção.",
@@ -3411,7 +3411,7 @@ export const ACCOUNT_COPY_PT = {
     "sections": {
       "saved": "Seleção salva",
       "savedMetaEmpty": "Salve anúncios no Henry Onyx Property para montar sua seleção.",
-      "savedMetaTemplate": "{saved} salvos · {managed} gerenciados pela HenryCo",
+      "savedMetaTemplate": "{saved} salvos · {managed} gerenciados pela Henry Onyx",
       "activity": "Atividade recente",
       "activityMetaEmpty": "Consultas, visitas e revisões de anúncios são espelhadas aqui em tempo real.",
       "activityMetaTemplateSingular": "{count} atualização · mais recente primeiro",
@@ -3419,7 +3419,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "empty": {
       "savedTitle": "Ainda não há imóveis salvos",
-      "savedBody": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela HenryCo no Property. Tudo o que você salvar chega aqui automaticamente.",
+      "savedBody": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela Henry Onyx no Property. Tudo o que você salvar chega aqui automaticamente.",
       "activityTitle": "Ainda não há atividade em Property",
       "activityBody": "Abra um anúncio no Henry Onyx Property para solicitar uma visita ou enviar uma consulta — cada passo, da primeira mensagem à revisão, aparecerá aqui."
     },
@@ -3462,7 +3462,7 @@ export const ACCOUNT_COPY_PT = {
     "hero": {
       "eyebrow": "Sua conta",
       "headline": "Sua atividade de vagas, tudo em um só lugar.",
-      "body": "Candidaturas, vagas salvas, atualizações de recrutadores e prontidão de perfil estão vinculados à sua conta HenryCo.",
+      "body": "Candidaturas, vagas salvas, atualizações de recrutadores e prontidão de perfil estão vinculados à sua conta Henry Onyx.",
       "statsAriaLabel": "Resumo da atividade de vagas",
       "statLabels": {
         "applications": "Candidaturas ativas",
@@ -3590,7 +3590,7 @@ export const ACCOUNT_COPY_PT = {
         "storyLabel": "História do papel",
         "storyDetail": "Headline e resumo explicam o que você faz, além de um registro vazio.",
         "verificationLabel": "Verificação de identidade",
-        "verificationDetail": "A confiança em Jobs fica limitada até sua conta HenryCo passar pela revisão de identidade.",
+        "verificationDetail": "A confiança em Jobs fica limitada até sua conta Henry Onyx passar pela revisão de identidade.",
         "proofLabel": "Provas de trabalho",
         "proofDetail": "CV mais provas de portfólio facilitam o avanço na pré-seleção.",
         "skillsLabel": "Competências mapeadas",
@@ -3737,7 +3737,7 @@ export const ACCOUNT_COPY_PT = {
       "application": {
         "kicker": "Solicitação de vendedor",
         "bodyWithStoreTemplate": "Loja: {name}",
-        "bodyDefault": "Solicitação na fila de análise do HenryCo.",
+        "bodyDefault": "Solicitação na fila de análise do Henry Onyx.",
         "bodyReviewSuffixTemplate": " · {note}",
         "cta": "Ver status",
         "defaultStatus": "enviada"
@@ -3866,7 +3866,7 @@ export const ACCOUNT_COPY_PT = {
       "certificatesTitle": "Certificados",
       "assignmentsTitle": "Aprendizagem atribuída",
       "savedTitle": "Cursos salvos",
-      "teachingTitle": "Ensine com a HenryCo",
+      "teachingTitle": "Ensine com a Henry Onyx",
       "statusLabel": "Status",
       "expertiseLabel": "Especialidade",
       "topicsLabel": "Tópicos",
@@ -3891,7 +3891,7 @@ export const ACCOUNT_COPY_PT = {
       "sideAriaLabel": "Como funciona esta sala",
       "sideLabel": "Como funciona esta sala",
       "sideTitle": "Uma sala de projeto, estado real.",
-      "sideBody": "Propostas, marcos, comprovativos de pagamento, entregáveis e sinais de comunicação permanecem ligados à mesma identidade HenryCo que utiliza em todo o lado. O painel abaixo reflete o progresso real da equipa Studio, não uma lista de estados.",
+      "sideBody": "Propostas, marcos, comprovativos de pagamento, entregáveis e sinais de comunicação permanecem ligados à mesma identidade Henry Onyx que utiliza em todo o lado. O painel abaixo reflete o progresso real da equipa Studio, não uma lista de estados.",
       "breakdownAriaLabel": "Detalhe da atividade",
       "breakdownLabel": "Por estado",
       "tiles": {
@@ -3917,7 +3917,7 @@ export const ACCOUNT_COPY_PT = {
       "state": {
         "empty": {
           "headline": "Inicie um brief Studio.",
-          "blurb": "Quando uma proposta ou projeto avançar com a sua identidade HenryCo, a sala Studio sincronizada surge aqui — marcos, pagamentos, entregáveis e próximo passo juntos.",
+          "blurb": "Quando uma proposta ou projeto avançar com a sua identidade Henry Onyx, a sala Studio sincronizada surge aqui — marcos, pagamentos, entregáveis e próximo passo juntos.",
           "ctaPrimary": "Iniciar um brief",
           "ctaSecondary": "Abrir Studio"
         },
@@ -3970,7 +3970,7 @@ export const ACCOUNT_COPY_PT = {
     },
     "empty": {
       "projectsTitle": "Ainda sem salas Studio ligadas",
-      "projectsBody": "Logo que uma proposta ou projeto seja criado com a sua identidade HenryCo, a sala Studio sincronizada surge aqui — marcos, pagamentos, entregáveis e próximo passo.",
+      "projectsBody": "Logo que uma proposta ou projeto seja criado com a sua identidade Henry Onyx, a sala Studio sincronizada surge aqui — marcos, pagamentos, entregáveis e próximo passo.",
       "paymentsTitle": "Ainda sem pontos de pagamento",
       "paymentsBody": "Os marcos comerciais — sinal, meio de projeto e entrega — surgem aqui assim que uma proposta avança consigo.",
       "activityTitle": "Ainda sem atividade Studio",
@@ -4027,8 +4027,8 @@ export const ACCOUNT_COPY_PT = {
     },
     "hero": {
       "ariaLabel": "Visão geral de logística",
-      "eyebrow": "HenryCo Logística",
-      "brand": "HenryCo Logística",
+      "eyebrow": "Henry Onyx Logística",
+      "brand": "Henry Onyx Logística",
       "title": "Cada encomenda, uma sala.",
       "body": "Recolhas, entregas, ETA e provas de entrega — tudo espelhado da rede logística para a sua conta. Reserve uma vez em",
       "bodyDomain": " logistics.henryonyx.com",
@@ -4167,7 +4167,7 @@ export const ACCOUNT_COPY_PT = {
       "cancelCta": "Cancelar"
     },
     "empty": {
-      "body": "Ainda não adicionou nenhum endereço. Adicione um para acelerar o pagamento no HenryCo."
+      "body": "Ainda não adicionou nenhum endereço. Adicione um para acelerar o pagamento no Henry Onyx."
     },
     "add": {
       "cta": "Adicionar endereço",
@@ -4179,10 +4179,10 @@ export const ACCOUNT_COPY_PT = {
   "search": {
     "metadata": {
       "title": "Pesquisa de conta",
-      "description": "Pesquise os fluxos da sua conta HenryCo e as rotas das divisões conectadas."
+      "description": "Pesquise os fluxos da sua conta Henry Onyx e as rotas das divisões conectadas."
     },
     "hero": {
-      "title": "Pesquise os seus fluxos HenryCo.",
+      "title": "Pesquise os seus fluxos Henry Onyx.",
       "description": "Aceda diretamente às ações precisas de conta e às rotas das divisões conectadas sem passar por painéis genéricos."
     },
     "placeholder": "Pesquisar: notificações, carteira, faturas, suporte, candidaturas..."
@@ -4223,9 +4223,9 @@ export const ACCOUNT_COPY_AR = {
   },
   "overview": {
     "welcomeBack": "مرحبًا بعودتك",
-    "description": "مركز قيادة HenryCo الخاص بك - كل شيء في جميع الأقسام، في مكان واحد.",
+    "description": "مركز قيادة Henry Onyx الخاص بك - كل شيء في جميع الأقسام، في مكان واحد.",
     "walletBalance": "رصيد المحفظة",
-    "walletHint": "المحفظة المشتركة · استخدمها عبر خدمات HenryCo",
+    "walletHint": "المحفظة المشتركة · استخدمها عبر خدمات Henry Onyx",
     "notifications": "إشعارات",
     "allCaughtUp": "كل شيء تحت السيطرة",
     "unreadMessages": "رسائل غير مقروءة",
@@ -4245,7 +4245,7 @@ export const ACCOUNT_COPY_AR = {
     "noOpenRequests": "لا توجد طلبات مفتوحة",
     "referrals": "الإحالات",
     "inviteAndEarn": "دعوة وكسب",
-    "shareHenryCo": "شارك HenryCo مع الآخرين",
+    "shareHenryCo": "شارك Henry Onyx مع الآخرين",
     "transactions": "المعاملات",
     "viewHistory": "عرض التاريخ",
     "walletActivity": "نشاط المحفظة والمدفوعات",
@@ -4272,7 +4272,7 @@ export const ACCOUNT_COPY_AR = {
     "noUrgentTasks": "لا توجد مهام حساب عاجلة في الوقت الحالي. أنت في حالة تشغيل صحية.",
     "viewTaskQueue": "عرض قائمة انتظار المهام الكاملة",
     "smartRecommendations": "التوصيات",
-    "smartRecommendationsEmpty": "استمر في استخدام خدمات HenryCo وستتكيّف التوصيات مع نشاطك.",
+    "smartRecommendationsEmpty": "استمر في استخدام خدمات Henry Onyx وستتكيّف التوصيات مع نشاطك.",
     "smartHomeEmptyFallback": "أهلاً بك — ابدأ بخطوة أولى صغيرة. ستظهر إشاراتك المباشرة هنا بمجرد حدوث أي نشاط.",
     "recommendationReason": "اقتراح مبني على نشاط حسابك وحالة الثقة ({confidence} ثقة)",
     "recentActivity": "النشاط الأخير",
@@ -4294,10 +4294,10 @@ export const ACCOUNT_COPY_AR = {
       "jobsSaved": "متابعة الأدوار المحفوظة"
     },
     "recommendationDescriptions": {
-      "trustNext": "فتح المزيد من الإجراءات عبر HenryCo.",
+      "trustNext": "فتح المزيد من الإجراءات عبر Henry Onyx.",
       "profileNext": "يعمل الملف التعريفي الكامل على تحسين الدعم واستمرارية الخدمة.",
       "jobsSaved": "قم بإعادة النظر في الأدوار التي قمت بحفظها بالفعل والتصرف بناءً عليها.",
-      "fallback": "استمر في استخدام خدمات وتوصيات HenryCo التي ستتكيف مع نشاطك."
+      "fallback": "استمر في استخدام خدمات وتوصيات Henry Onyx التي ستتكيف مع نشاطك."
     }
   },
   "tasks": {
@@ -4355,14 +4355,14 @@ export const ACCOUNT_COPY_AR = {
     "headlineCalmSingular": "{count} عنصر في قائمتك.",
     "headlineCalmPlural": "{count} عناصر في قائمتك.",
     "blurbEmpty": "حسابك في حالة جيدة — التحقق والمدفوعات والمسارات الخاضعة للمراجعة كلها مفتوحة. سنُظهر لك الخطوة التالية هنا تلقائياً عند ظهورها.",
-    "blurbRisk": "هذه العناصر تحجب الإجراءات عالية الثقة في HenryCo — سحب المحفظة وموافقة البائع في المتجر وتحقق صاحب العمل. حلّها يفتح كل مسار.",
-    "blurbActive": "كل صف يأخذك إلى الخطوة التالية بنقرة واحدة. الفلاتر ومستويات الأولوية والروابط المباشرة تبقى متسقة عبر جميع أقسام HenryCo.",
+    "blurbRisk": "هذه العناصر تحجب الإجراءات عالية الثقة في Henry Onyx — سحب المحفظة وموافقة البائع في المتجر وتحقق صاحب العمل. حلّها يفتح كل مسار.",
+    "blurbActive": "كل صف يأخذك إلى الخطوة التالية بنقرة واحدة. الفلاتر ومستويات الأولوية والروابط المباشرة تبقى متسقة عبر جميع أقسام Henry Onyx.",
     "metaEmpty": "كل شيء واضح. أي جديد سيظهر هنا عند وصوله.",
     "metaCount": "{count} مفتوح · مرتبة حسب الأولوية وحالة الحجب."
   },
   "security": {
     "title": "الأمان",
-    "description": "قم بمراجعة النشاط الأمني ​​الأخير، وتغيير كلمة المرور الخاصة بك، وإنهاء جلسات HenryCo عند الحاجة.",
+    "description": "قم بمراجعة النشاط الأمني ​​الأخير، وتغيير كلمة المرور الخاصة بك، وإنهاء جلسات Henry Onyx عند الحاجة.",
     "heroAriaLabel": "نظرة عامة على الأمان",
     "hero": {
       "trustScoreLabel": "درجة الثقة",
@@ -4383,7 +4383,7 @@ export const ACCOUNT_COPY_AR = {
         "risk": "اكتشفنا نشاطاً يستدعي انتباهك."
       },
       "statusBlurb": {
-        "secure": "لا أحداث مشبوهة، والتحقق في حالة جيدة، وجميع إجراءات الثقة العالية في HenryCo متاحة لك.",
+        "secure": "لا أحداث مشبوهة، والتحقق في حالة جيدة، وجميع إجراءات الثقة العالية في Henry Onyx متاحة لك.",
         "watch": "لا شيء معطوب — لكن بعض الإشارات (تأكيد البريد الإلكتروني، مراجعة الهوية، تطابق جهة الاتصال المكررة) سترفع درجة ثقتك وتفتح مسارات إضافية.",
         "risk": "الأحداث الأخيرة صُنِّفت على أنها عالية الخطورة. راجع تدفق النشاط أدناه وغيّر كلمة مرورك إذا كان هناك ما يبدو غريباً."
       }
@@ -4402,7 +4402,7 @@ export const ACCOUNT_COPY_AR = {
     "noSuspiciousEventFoot": "لا شيء مُبلَّغ في نافذة المراجعة الأخيرة.",
     "activityAriaLabel": "الأحداث الأمنية الأخيرة",
     "trustProfile": "ملف الثقة",
-    "trustDescription": "الثقة تعمل عبر الحساب. وهو يتحكم الآن في إجراءات الأعمال ذات القيمة الأعلى، ووضعية الإشراف، والأهلية الأقوى عبر وحدات HenryCo.",
+    "trustDescription": "الثقة تعمل عبر الحساب. وهو يتحكم الآن في إجراءات الأعمال ذات القيمة الأعلى، ووضعية الإشراف، والأهلية الأقوى عبر وحدات Henry Onyx.",
     "trustScore": "درجة ثقة الحساب",
     "signalLabels": {
       "emailVerified": "بريد إلكتروني تم التحقق منه",
@@ -4441,7 +4441,7 @@ export const ACCOUNT_COPY_AR = {
     "moreVerificationNeeded": "هناك حاجة لمزيد من التحقق",
     "trustGuide": "دليل حالة الثقة",
     "whatCurrentStateMeans": "ماذا تعني حالتك الحالية",
-    "whatCurrentStateBody": "تحدد هذه الحالة الوصول إلى مهام سير العمل وإجراءات الأعمال ذات القيمة الأعلى عبر HenryCo.",
+    "whatCurrentStateBody": "تحدد هذه الحالة الوصول إلى مهام سير العمل وإجراءات الأعمال ذات القيمة الأعلى عبر Henry Onyx.",
     "whatToDoNext": "ماذا تفعل بعد ذلك",
     "whatToDoNextBody": "أكمل المتطلبات المذكورة لفتح مسار الثقة التالي.",
     "currentRestrictions": "الإجراءات المقيدة حاليا",
@@ -4495,7 +4495,7 @@ export const ACCOUNT_COPY_AR = {
         "verification": "الثقة المميزة محجوزة للحسابات التي اجتازت التحقق من الهوية بالفعل.",
         "age": "الحفاظ على سجل حساب نظيف أطول.",
         "transactions": "بناء سجل معاملات أقوى تم التحقق منه.",
-        "activity": "استخدم المزيد من أقسام HenryCo بنتائج نظيفة.",
+        "activity": "استخدم المزيد من أقسام Henry Onyx بنتائج نظيفة.",
         "overlap": "احتفظ بمراجعة جهات الاتصال المكررة واضحة قبل منح الثقة المميزة."
       }
     }
@@ -4513,12 +4513,12 @@ export const ACCOUNT_COPY_AR = {
     "updatePassword": "تحديث كلمة المرور"
   },
   "globalSignOut": {
-    "title": "إنهاء كل جلسات HenryCo",
-    "description": "يؤدي هذا إلى تسجيل خروج الحساب الحالي عبر أقسام وأجهزة HenryCo، ثم يعيدك إلى سطح تسجيل الدخول إلى الحساب.",
+    "title": "إنهاء كل جلسات Henry Onyx",
+    "description": "يؤدي هذا إلى تسجيل خروج الحساب الحالي عبر أقسام وأجهزة Henry Onyx، ثم يعيدك إلى سطح تسجيل الدخول إلى الحساب.",
     "note": "يظل نشاط الجهاز والجلسة الأخير مرئيًا أدناه على الرغم من أن الإلغاء المباشر لكل جهاز لم يتم عرضه بعد كعنصر تحكم منفصل.",
-    "unavailable": "لا يمكننا إنهاء كل جلسة HenryCo الآن. حاول مرة أخرى بعد قليل.",
+    "unavailable": "لا يمكننا إنهاء كل جلسة Henry Onyx الآن. حاول مرة أخرى بعد قليل.",
     "ending": "إنهاء كافة الجلسات...",
-    "endAllSessions": "قم بتسجيل الخروج من جميع جلسات HenryCo"
+    "endAllSessions": "قم بتسجيل الخروج من جميع جلسات Henry Onyx"
   },
   "errorBoundary": {
     "kicker": "وقت تشغيل الحساب",
@@ -4529,9 +4529,9 @@ export const ACCOUNT_COPY_AR = {
   },
   "activity": {
     "title": "النشاط",
-    "description": "كل ما قمت به عبر جميع أقسام HenryCo.",
+    "description": "كل ما قمت به عبر جميع أقسام Henry Onyx.",
     "emptyTitle": "لا يوجد نشاط بعد",
-    "emptyDescription": "سيظهر نشاطك بين الأقسام هنا أثناء استخدامك لخدمات HenryCo.",
+    "emptyDescription": "سيظهر نشاطك بين الأقسام هنا أثناء استخدامك لخدمات Henry Onyx.",
     "statusLabels": {
       "pending": "قيد الانتظار",
       "open": "مفتوح",
@@ -4555,8 +4555,8 @@ export const ACCOUNT_COPY_AR = {
       "statusEyebrow": "الحالة",
       "pdfNote": "يحمل ملف PDF كل عامل تصفية قمت بضبطه أعلاه كجزء من رأس المستند — ما تراه هو ما تنزله.",
       "downloadLabel": "تنزيل كشف الحساب",
-      "downloadFilename": "HenryCo-سجل-المعاملات.pdf",
-      "shareTitle": "سجل معاملات HenryCo",
+      "downloadFilename": "Henry Onyx-سجل-المعاملات.pdf",
+      "shareTitle": "سجل معاملات Henry Onyx",
       "typeLabels": {
         "payment": "دفع",
         "wallet_credit": "إيداع في المحفظة",
@@ -4568,11 +4568,11 @@ export const ACCOUNT_COPY_AR = {
     }
   },
   "calendar": {
-    "metaTitle": "التقويم · HenryCo",
+    "metaTitle": "التقويم · Henry Onyx",
     "metaDescription":
       "جدول أعمال متعدد البوابات — حجوزات Care، معاينات العقارات، مقابلات Jobs، معالم Studio، فصول Learn، نوافذ Logistics.",
     "heroAriaLabel": "نظرة عامة على التقويم",
-    "heroEyebrow": "HenryCo · تقويم متعدد البوابات",
+    "heroEyebrow": "Henry Onyx · تقويم متعدد البوابات",
     "tileVolumeAriaLabel": "حجم التقويم",
     "tileEventsLabel": "الأحداث",
     "tileEventsFoot": "الـ 28 يومًا القادمة",
@@ -4643,18 +4643,18 @@ export const ACCOUNT_COPY_AR = {
   "notifications": {
     "metadata": {
       "title": "الإشعارات",
-      "description": "كل تحديثات HenryCo — المحفظة والدعم والوظائف والسوق والرعاية والمزيد — في صندوق وارد مباشر واحد."
+      "description": "كل تحديثات Henry Onyx — المحفظة والدعم والوظائف والسوق والرعاية والمزيد — في صندوق وارد مباشر واحد."
     },
     "hero": {
-      "eyebrow": "HenryCo · إشعارات مباشرة",
+      "eyebrow": "Henry Onyx · إشعارات مباشرة",
       "ariaOverview": "نظرة عامة على الإشعارات",
       "ariaVolume": "حجم الإشعارات",
       "ariaByDivision": "حسب القسم",
-      "headlineZero": "صندوق الوارد فارغ عبر HenryCo.",
+      "headlineZero": "صندوق الوارد فارغ عبر Henry Onyx.",
       "headlineOne": "هناك شيء واحد يحتاج اهتمامك.",
       "headlineFew": "{count} إشعارات للفرز.",
       "headlineMany": "{count} تحديثات عبر أقسامك.",
-      "blurbZero": "كل ما يرسله HenryCo يصل هنا في الوقت الفعلي — المحفظة والدعم والوظائف والسوق والرعاية والمزيد.",
+      "blurbZero": "كل ما يرسله Henry Onyx يصل هنا في الوقت الفعلي — المحفظة والدعم والوظائف والسوق والرعاية والمزيد.",
       "blurbStale": "تراكمت عناصر قديمة. اسحب للأرشفة، انقر للفتح، أو انتقل مباشرة إلى محادثة.",
       "blurbToday": "وصلت {count} اليوم. استخدم الفلاتر للتركيز على قسم واحد، أو تصفّح غير المقروء فقط.",
       "tileUnreadLabel": "غير مقروء",
@@ -4697,7 +4697,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "emptyState": {
       "inboxTitle": "كل شيء على ما يرام.",
-      "inboxBody": "يظهر نشاط HenryCo هنا فور وقوعه.",
+      "inboxBody": "يظهر نشاط Henry Onyx هنا فور وقوعه.",
       "filterTitle": "لا يوجد نشاط في هذا العرض.",
       "filterBody": "جرّب فلترًا مختلفًا."
     },
@@ -4722,7 +4722,7 @@ export const ACCOUNT_COPY_AR = {
       "ariaByDivision": "حسب القسم",
       "headlineEmpty": "ستصل إيصالاتك إلى هنا.",
       "headlineWithReceipts": "كل إيصال، في مكان واحد.",
-      "blurb": "كل دفعة عبر HenryCo تصل هنا كملف PDF يحمل العلامة وقابل للتنزيل — حجوزات Care، طلبات Marketplace، فواتير Studio، شحنات Logistics، شهادات Learn.",
+      "blurb": "كل دفعة عبر Henry Onyx تصل هنا كملف PDF يحمل العلامة وقابل للتنزيل — حجوزات Care، طلبات Marketplace، فواتير Studio، شحنات Logistics، شهادات Learn.",
       "totalPaidLabel": "الإجمالي المدفوع · مدى الحياة",
       "thisMonthLabel": "المدفوع · هذا الشهر",
       "thisMonthFoot": "إيصالات هذا الشهر التقويمي",
@@ -4740,7 +4740,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "empty": {
       "title": "لا توجد فواتير بعد",
-      "description": "ستظهر فواتيرك وإيصالاتك هنا بعد إجراء مدفوعات في خدمات HenryCo."
+      "description": "ستظهر فواتيرك وإيصالاتك هنا بعد إجراء مدفوعات في خدمات Henry Onyx."
     },
     "statuses": {
       "paid": "مدفوعة",
@@ -4772,11 +4772,11 @@ export const ACCOUNT_COPY_AR = {
   },
   "messages": {
     "metadata": {
-      "title": "الرسائل · HenryCo",
+      "title": "الرسائل · Henry Onyx",
       "description": "صندوق وارد واحد للدعم والسوق والوظائف والاستوديو والرعاية والعقارات واللوجستيات والتعلم."
     },
     "hero": {
-      "eyebrow": "HenryCo · صندوق وارد موحَّد",
+      "eyebrow": "Henry Onyx · صندوق وارد موحَّد",
       "ariaLabel": "نظرة عامة على صندوق الوارد",
       "ariaTiles": "حجم صندوق الوارد",
       "ariaSide": "حسب البوابة",
@@ -4784,7 +4784,7 @@ export const ACCOUNT_COPY_AR = {
       "sideBody": "كل بوابة تغذِّي هذا الصندوق الواحد. الدعم وطلبات السوق ومقابلات العمل ومشاريع الاستوديو وحجوزات الرعاية تظهر هنا بترتيب زمني."
     },
     "headlines": {
-      "zero": "صندوق الوارد فارغ في كل HenryCo.",
+      "zero": "صندوق الوارد فارغ في كل Henry Onyx.",
       "calmOne": "محادثة واحدة بانتظار ردِّك.",
       "calmMany": "{count} محادثات مفتوحة.",
       "busy": "{unread} غير مقروءة · {open} مفتوحة في بواباتك.",
@@ -4849,14 +4849,14 @@ export const ACCOUNT_COPY_AR = {
   "wallet": {
     "hero": {
       "ariaLabel": "رصيد المحفظة",
-      "eyebrow": "محفظة HenryCo · مباشر",
+      "eyebrow": "محفظة Henry Onyx · مباشر",
       "availableLabel": "الرصيد المتاح",
       "balanceAriaTemplate": "الرصيد المتاح {amount} {currency}",
-      "settlementFallback": "تتم التسوية بعملتك المحلية وفقًا لسعر HenryCo اليومي.",
+      "settlementFallback": "تتم التسوية بعملتك المحلية وفقًا لسعر Henry Onyx اليومي.",
       "ctas": { "fund": "تعبئة المحفظة", "withdraw": "سحب" },
       "tiles": {
         "verifiedLabel": "الرصيد الموثق",
-        "verifiedFoot": "قابل للإنفاق عبر خدمات HenryCo",
+        "verifiedFoot": "قابل للإنفاق عبر خدمات Henry Onyx",
         "pendingFundingLabel": "تعبئة معلّقة",
         "pendingFundingFoot": "تبقى منفصلة حتى تؤكد الإدارة المالية",
         "pendingWithdrawalLabel": "محجوز للسحب",
@@ -4935,7 +4935,7 @@ export const ACCOUNT_COPY_AR = {
     "activity": {
       "ariaLabel": "معاملات المحفظة",
       "emptyTitle": "لا توجد معاملات بعد",
-      "emptyBody": "اشحن محفظتك وستظهر هنا جميع المعاملات من إيداعات وخصومات واستردادات ومكافآت عبر خدمات HenryCo.",
+      "emptyBody": "اشحن محفظتك وستظهر هنا جميع المعاملات من إيداعات وخصومات واستردادات ومكافآت عبر خدمات Henry Onyx.",
       "fallbackTitle": "معاملة المحفظة"
     },
     "funding": {
@@ -4960,11 +4960,11 @@ export const ACCOUNT_COPY_AR = {
   "support": {
     "metadata": {
       "title": "الدعم",
-      "description": "احصل على مساعدة لأي خدمة من خدمات HenryCo."
+      "description": "احصل على مساعدة لأي خدمة من خدمات Henry Onyx."
     },
     "hero": {
       "title": "الدعم",
-      "description": "احصل على مساعدة لأي خدمة من خدمات HenryCo.",
+      "description": "احصل على مساعدة لأي خدمة من خدمات Henry Onyx.",
       "newRequestCta": "طلب جديد"
     },
     "summary": {
@@ -5016,19 +5016,19 @@ export const ACCOUNT_COPY_AR = {
       "cardLastFourTemplate": "•••• {last4}"
     },
     "wallet": {
-      "eyebrow": "محفظة HenryCo",
-      "body": "محفظتك في HenryCo متاحة دائمًا كخيار للدفع.",
+      "eyebrow": "محفظة Henry Onyx",
+      "body": "محفظتك في Henry Onyx متاحة دائمًا كخيار للدفع.",
       "manageCta": "إدارة المحفظة"
     }
   },
   "savedItems": {
     "metadata": {
       "title": "محفوظ للاحقًا",
-      "description": "عناصر وضعتها جانبًا من أي سلة HenryCo، نحتفظ بها لمدة 90 يومًا وننبهك قبل أسبوع من انتهاء صلاحيتها."
+      "description": "عناصر وضعتها جانبًا من أي سلة Henry Onyx، نحتفظ بها لمدة 90 يومًا وننبهك قبل أسبوع من انتهاء صلاحيتها."
     },
     "hero": {
       "title": "محفوظ للاحقًا",
-      "description": "عناصر وضعتها جانبًا من أي سلة HenryCo. سنحتفظ بها لمدة 90 يومًا وننبهك قبل أسبوع من انتهاء صلاحيتها."
+      "description": "عناصر وضعتها جانبًا من أي سلة Henry Onyx. سنحتفظ بها لمدة 90 يومًا وننبهك قبل أسبوع من انتهاء صلاحيتها."
     },
     "summary": {
       "activeTemplate": "{count} نشط",
@@ -5076,7 +5076,7 @@ export const ACCOUNT_COPY_AR = {
   "documents": {
     "metadata": {
       "title": "المستندات",
-      "description": "إيصالاتك وشهاداتك وعقودك وملفاتك المهمة — محفوظة بسرية ومتاحة في جميع أقسام HenryCo."
+      "description": "إيصالاتك وشهاداتك وعقودك وملفاتك المهمة — محفوظة بسرية ومتاحة في جميع أقسام Henry Onyx."
     },
     "hero": {
       "eyebrow": "خزينتك الشخصية",
@@ -5117,7 +5117,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "empty": {
       "title": "لا توجد مستندات بعد",
-      "description": "ستُحفظ هنا مستنداتك وإيصالاتك وشهاداتك الصادرة عن خدمات HenryCo."
+      "description": "ستُحفظ هنا مستنداتك وإيصالاتك وشهاداتك الصادرة عن خدمات Henry Onyx."
     },
     "summary": {
       "countTemplate": "{count} مستند{plural}",
@@ -5126,13 +5126,13 @@ export const ACCOUNT_COPY_AR = {
     "retention": {
       "eyebrow": "الخصوصية والاحتفاظ",
       "title": "تبقى ملفاتك خاصة",
-      "body": "تُشفَّر المستندات أثناء التخزين، ولا يراها سواك، وتُحفظ طوال مدة حسابك في HenryCo ما لم تقم بإزالتها."
+      "body": "تُشفَّر المستندات أثناء التخزين، ولا يراها سواك، وتُحفظ طوال مدة حسابك في Henry Onyx ما لم تقم بإزالتها."
     }
   },
   "subscriptions": {
     "metadata": {
       "title": "الاشتراكات",
-      "description": "ملخّص للقراءة فقط للخطط النشطة التي تُزامَن من مختلف أقسام HenryCo."
+      "description": "ملخّص للقراءة فقط للخطط النشطة التي تُزامَن من مختلف أقسام Henry Onyx."
     },
     "hero": {
       "eyebrow": "الخطط النشطة",
@@ -5196,11 +5196,11 @@ export const ACCOUNT_COPY_AR = {
   "referrals": {
     "metadata": {
       "title": "الإحالات",
-      "description": "ادعُ العملاء المؤهَّلين إلى HenryCo وتتبَّع المكافآت عبر حالات الانتظار والمراجعة والإيداع."
+      "description": "ادعُ العملاء المؤهَّلين إلى Henry Onyx وتتبَّع المكافآت عبر حالات الانتظار والمراجعة والإيداع."
     },
     "hero": {
       "title": "الإحالات",
-      "description": "ادعُ العملاء المؤهَّلين إلى HenryCo وتتبَّع المكافآت عبر حالات الانتظار والمراجعة والإيداع."
+      "description": "ادعُ العملاء المؤهَّلين إلى Henry Onyx وتتبَّع المكافآت عبر حالات الانتظار والمراجعة والإيداع."
     },
     "code": {
       "eyebrow": "رمز الإحالة الخاص بك",
@@ -5222,16 +5222,16 @@ export const ACCOUNT_COPY_AR = {
     "howItWorks": {
       "eyebrow": "كيف تعمل",
       "step1Title": "شارك رمزك",
-      "step1Body": "شارك رمزك أو رابطك الفريد. يتم تتبُّع الأصدقاء الذين يزورون أي نطاق فرعي لـ HenryCo بواسطة رابطك تلقائيًا.",
+      "step1Body": "شارك رمزك أو رابطك الفريد. يتم تتبُّع الأصدقاء الذين يزورون أي نطاق فرعي لـ Henry Onyx بواسطة رابطك تلقائيًا.",
       "step2Title": "يجرون معاملة",
       "step2Body": "بعد التسجيل، تدخل الإحالة في نافذة انتظار مدتها {days} يومًا. نتتبَّع الحساب المحال إليه مرة واحدة فقط — الإحالات الذاتية، والتكرارات المنزلية، وعمليات التسجيل المعاد استخدامها لا تتأهَّل.",
       "step3Title": "تُفرج المكافآت بعد التأهُّل",
-      "step3Body": "تُضاف إحالات التأهُّل {amount} إلى محفظتك في HenryCo بعد مراجعة المالية. لا يمكن إنفاق المكافآت المعلَّقة حتى يتم الإفراج عنها."
+      "step3Body": "تُضاف إحالات التأهُّل {amount} إلى محفظتك في Henry Onyx بعد مراجعة المالية. لا يمكن إنفاق المكافآت المعلَّقة حتى يتم الإفراج عنها."
     },
     "policy": {
       "eyebrow": "سياسة الإحالة",
-      "qualifying": "التحويل المؤهَّل يعني أن الحساب المحال إليه أتمَّ إجراء HenryCo مؤهَّلاً اجتاز التحقق من الدفع والثقة.",
-      "enforcement": "يحقُّ لـ HenryCo حجز أو عكس أو إلغاء المكافآت في حالات الإحالات الذاتية، أو حلقات التحويل المكرَّرة، أو الانعكاسات، أو المبالغ المُعادة، أو أنماط المكافآت المشبوهة.",
+      "qualifying": "التحويل المؤهَّل يعني أن الحساب المحال إليه أتمَّ إجراء Henry Onyx مؤهَّلاً اجتاز التحقق من الدفع والثقة.",
+      "enforcement": "يحقُّ لـ Henry Onyx حجز أو عكس أو إلغاء المكافآت في حالات الإحالات الذاتية، أو حلقات التحويل المكرَّرة، أو الانعكاسات، أو المبالغ المُعادة، أو أنماط المكافآت المشبوهة.",
       "separation": "تُظهر لوحتك تطابقات الإحالة وسجل المكافآت بشكل منفصل حتى لا تُخلط عمليات التسجيل المتتبَّعة بمكاسب المحفظة المضافة."
     },
     "referralsList": {
@@ -5464,7 +5464,7 @@ export const ACCOUNT_COPY_AR = {
         "listings": "الإعلانات"
       },
       "tileFoot": {
-        "savedManagedTemplate": "{count} تديرها HenryCo",
+        "savedManagedTemplate": "{count} تديرها Henry Onyx",
         "savedEmpty": "احفظ الإعلانات لبناء قائمة مختصرة",
         "savedWith": "قارن وأعد الزيارة في أي وقت",
         "inquiriesEmpty": "لا توجد محادثات مفتوحة بعد",
@@ -5478,7 +5478,7 @@ export const ACCOUNT_COPY_AR = {
       "sideKicker": "كيف تعمل هذه الغرفة",
       "sideTitle": "اكتشف على Property، وتابع هنا.",
       "sideBody": "احفظ إعلانًا، أو اطلب معاينة، أو افتح استفسارًا على Henry Onyx Property — كل إجراء يُعكس في غرفة الحساب هذه لتتمكن من المتابعة من حيث توقفت عبر جميع أجهزتك.",
-      "sideBodyMuted": "الإعلانات التي تديرها HenryCo تحمل شارة مُدارة — تتولى المراجعة والمعاينة ومتابعة العقد فرقُ Property.",
+      "sideBodyMuted": "الإعلانات التي تديرها Henry Onyx تحمل شارة مُدارة — تتولى المراجعة والمعاينة ومتابعة العقد فرقُ Property.",
       "breakdownAriaLabel": "تفصيل النشاط",
       "breakdownLabel": "حسب النشاط",
       "breakdownLabels": {
@@ -5490,7 +5490,7 @@ export const ACCOUNT_COPY_AR = {
       "state": {
         "empty": {
           "headline": "ابدأ استكشاف Henry Onyx Property.",
-          "blurb": "اكتشف الإيجارات السكنية وإعلانات البيع والمنازل التي تديرها HenryCo. احفظ ما يعجبك، وستصل كل استفسار أو معاينة أو متابعة إعلان إلى هنا تلقائيًا."
+          "blurb": "اكتشف الإيجارات السكنية وإعلانات البيع والمنازل التي تديرها Henry Onyx. احفظ ما يعجبك، وستصل كل استفسار أو معاينة أو متابعة إعلان إلى هنا تلقائيًا."
         },
         "discover": {
           "headlineTemplateSingular": "{count} منزل في القائمة المختصرة.",
@@ -5509,7 +5509,7 @@ export const ACCOUNT_COPY_AR = {
     "sections": {
       "saved": "القائمة المختصرة المحفوظة",
       "savedMetaEmpty": "احفظ إعلانات على Henry Onyx Property لبناء قائمتك المختصرة.",
-      "savedMetaTemplate": "{saved} محفوظة · {managed} تديرها HenryCo",
+      "savedMetaTemplate": "{saved} محفوظة · {managed} تديرها Henry Onyx",
       "activity": "النشاط الأخير",
       "activityMetaEmpty": "تُعرض الاستفسارات والمعاينات ومراجعات الإعلانات هنا فور حدوثها.",
       "activityMetaTemplateSingular": "{count} تحديث · الأحدث أولًا",
@@ -5517,7 +5517,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "empty": {
       "savedTitle": "لا توجد عقارات محفوظة بعد",
-      "savedBody": "اكتشف الإيجارات السكنية وإعلانات البيع والعقارات التي تديرها HenryCo على Property. كل ما تحفظه يصل إلى هنا تلقائيًا.",
+      "savedBody": "اكتشف الإيجارات السكنية وإعلانات البيع والعقارات التي تديرها Henry Onyx على Property. كل ما تحفظه يصل إلى هنا تلقائيًا.",
       "activityTitle": "لا يوجد نشاط Property بعد",
       "activityBody": "افتح إعلانًا على Henry Onyx Property لطلب معاينة أو إرسال استفسار — ستظهر هنا كل خطوة، من رسالتك الأولى وحتى المراجعة."
     },
@@ -5560,7 +5560,7 @@ export const ACCOUNT_COPY_AR = {
     "hero": {
       "eyebrow": "حسابك",
       "headline": "نشاطك الوظيفي، كله في مكان واحد.",
-      "body": "الطلبات والوظائف المحفوظة وتحديثات المسؤولين عن التوظيف وجاهزية الملف مرتبطة بحسابك في HenryCo.",
+      "body": "الطلبات والوظائف المحفوظة وتحديثات المسؤولين عن التوظيف وجاهزية الملف مرتبطة بحسابك في Henry Onyx.",
       "statsAriaLabel": "ملخص نشاط الوظائف",
       "statLabels": {
         "applications": "الطلبات النشطة",
@@ -5688,7 +5688,7 @@ export const ACCOUNT_COPY_AR = {
         "storyLabel": "قصة الدور",
         "storyDetail": "العنوان والملخص يوضحان ما تفعله أبعد من سجل فارغ.",
         "verificationLabel": "التحقق من الهوية",
-        "verificationDetail": "تبقى ثقة Jobs محدودة إلى أن يجتاز حساب HenryCo مراجعة الهوية.",
+        "verificationDetail": "تبقى ثقة Jobs محدودة إلى أن يجتاز حساب Henry Onyx مراجعة الهوية.",
         "proofLabel": "أدلة العمل",
         "proofDetail": "السيرة الذاتية مع أدلة ملف الأعمال تسهّل التقدم في الاختيار للقائمة القصيرة.",
         "skillsLabel": "المهارات المُرسَّمة",
@@ -5835,7 +5835,7 @@ export const ACCOUNT_COPY_AR = {
       "application": {
         "kicker": "طلب البائع",
         "bodyWithStoreTemplate": "المتجر: {name}",
-        "bodyDefault": "الطلب في طابور مراجعة HenryCo.",
+        "bodyDefault": "الطلب في طابور مراجعة Henry Onyx.",
         "bodyReviewSuffixTemplate": " · {note}",
         "cta": "عرض الحالة",
         "defaultStatus": "مُقدَّم"
@@ -5964,7 +5964,7 @@ export const ACCOUNT_COPY_AR = {
       "certificatesTitle": "الشهادات",
       "assignmentsTitle": "التعلّم المُسنَد",
       "savedTitle": "الدورات المحفوظة",
-      "teachingTitle": "درِّس مع HenryCo",
+      "teachingTitle": "درِّس مع Henry Onyx",
       "statusLabel": "الحالة",
       "expertiseLabel": "التخصّص",
       "topicsLabel": "الموضوعات",
@@ -5989,7 +5989,7 @@ export const ACCOUNT_COPY_AR = {
       "sideAriaLabel": "كيف تعمل هذه الغرفة",
       "sideLabel": "كيف تعمل هذه الغرفة",
       "sideTitle": "غرفة مشروع واحدة، حالة حقيقية.",
-      "sideBody": "تبقى العروض والمراحل وإثباتات الدفع والتسليمات وإشارات التواصل مرتبطة بنفس هوية HenryCo التي تستخدمها في كل مكان. تعكس لوحة المعلومات أدناه التقدّم الفعلي لفريق Studio، لا قائمة حالات.",
+      "sideBody": "تبقى العروض والمراحل وإثباتات الدفع والتسليمات وإشارات التواصل مرتبطة بنفس هوية Henry Onyx التي تستخدمها في كل مكان. تعكس لوحة المعلومات أدناه التقدّم الفعلي لفريق Studio، لا قائمة حالات.",
       "breakdownAriaLabel": "تفصيل النشاط",
       "breakdownLabel": "حسب الحالة",
       "tiles": {
@@ -6015,7 +6015,7 @@ export const ACCOUNT_COPY_AR = {
       "state": {
         "empty": {
           "headline": "ابدأ بريف Studio.",
-          "blurb": "عندما ينطلق عرض أو مشروع بهويتك في HenryCo، تظهر غرفة Studio المتزامنة هنا — المراحل والمدفوعات والتسليمات والخطوة التالية مجمَّعة.",
+          "blurb": "عندما ينطلق عرض أو مشروع بهويتك في Henry Onyx، تظهر غرفة Studio المتزامنة هنا — المراحل والمدفوعات والتسليمات والخطوة التالية مجمَّعة.",
           "ctaPrimary": "ابدأ بريف",
           "ctaSecondary": "افتح Studio"
         },
@@ -6068,7 +6068,7 @@ export const ACCOUNT_COPY_AR = {
     },
     "empty": {
       "projectsTitle": "لا توجد غرف Studio مرتبطة بعد",
-      "projectsBody": "بمجرّد إنشاء عرض أو مشروع بهويتك في HenryCo، تظهر غرفة Studio المتزامنة هنا — مراحل ومدفوعات وتسليمات والخطوة التالية.",
+      "projectsBody": "بمجرّد إنشاء عرض أو مشروع بهويتك في Henry Onyx، تظهر غرفة Studio المتزامنة هنا — مراحل ومدفوعات وتسليمات والخطوة التالية.",
       "paymentsTitle": "لا توجد نقاط دفع بعد",
       "paymentsBody": "تظهر المراحل التجارية — الدفعة المقدّمة ومنتصف المشروع والتسليم — هنا فور انطلاق عرض معك.",
       "activityTitle": "لا يوجد نشاط Studio بعد",
@@ -6125,8 +6125,8 @@ export const ACCOUNT_COPY_AR = {
     },
     "hero": {
       "ariaLabel": "نظرة عامة على الخدمات اللوجستية",
-      "eyebrow": "HenryCo اللوجستية",
-      "brand": "HenryCo اللوجستية",
+      "eyebrow": "Henry Onyx اللوجستية",
+      "brand": "Henry Onyx اللوجستية",
       "title": "كل طرد، غرفة واحدة.",
       "body": "عمليات الاستلام والتسليم وأوقات الوصول المتوقعة وإثباتات التسليم — كلها منعكسة من شبكة الخدمات اللوجستية إلى حسابك. احجز مرة واحدة على",
       "bodyDomain": " logistics.henryonyx.com",
@@ -6265,7 +6265,7 @@ export const ACCOUNT_COPY_AR = {
       "cancelCta": "إلغاء"
     },
     "empty": {
-      "body": "لم تُضف أي عنوان حتى الآن. أضف عنواناً لتسريع الدفع في HenryCo."
+      "body": "لم تُضف أي عنوان حتى الآن. أضف عنواناً لتسريع الدفع في Henry Onyx."
     },
     "add": {
       "cta": "إضافة عنوان",
@@ -6277,10 +6277,10 @@ export const ACCOUNT_COPY_AR = {
   "search": {
     "metadata": {
       "title": "بحث في الحساب",
-      "description": "ابحث في تدفقات حسابك في HenryCo ومسارات الأقسام المتصلة."
+      "description": "ابحث في تدفقات حسابك في Henry Onyx ومسارات الأقسام المتصلة."
     },
     "hero": {
-      "title": "ابحث في تدفقات HenryCo الخاصة بك.",
+      "title": "ابحث في تدفقات Henry Onyx الخاصة بك.",
       "description": "صِل مباشرة إلى إجراءات الحساب الدقيقة ومسارات الأقسام المتصلة دون المرور بلوحات عامة."
     },
     "placeholder": "ابحث: الإشعارات، المحفظة، الفواتير، الدعم، الطلبات..."

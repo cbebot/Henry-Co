@@ -208,7 +208,7 @@ export const walletModule: DashboardModule = {
       return {
         kicker: "Money that moves with you",
         headline: "Fund your wallet to start.",
-        body: "Use one wallet to pay across Care, Marketplace, Studio, and the rest of HenryCo.",
+        body: "Use one wallet to pay across Care, Marketplace, Studio, and the rest of Henry Onyx.",
         action: { label: "Fund wallet", href: "/wallet/funding" },
       };
     }
@@ -220,7 +220,7 @@ export const walletModule: DashboardModule = {
       return {
         kicker: "Money that moves with you",
         headline: "Fund your wallet to start.",
-        body: "Add money once and pay everywhere across HenryCo without re-entering card details.",
+        body: "Add money once and pay everywhere across Henry Onyx without re-entering card details.",
         action: { label: "Fund wallet", href: "/wallet/funding" },
       };
     }

@@ -2169,9 +2169,9 @@ const EN: AccountCopy = {
   },
   overview: {
     welcomeBack: "Welcome back",
-    description: "Your HenryCo command center — everything across all divisions, one place.",
+    description: "Your Henry Onyx command center — everything across all divisions, one place.",
     walletBalance: "Wallet Balance",
-    walletHint: "Shared wallet · Use across HenryCo services",
+    walletHint: "Shared wallet · Use across Henry Onyx services",
     notifications: "Notifications",
     allCaughtUp: "All caught up",
     unreadMessages: "Unread messages",
@@ -2191,7 +2191,7 @@ const EN: AccountCopy = {
     noOpenRequests: "No open requests",
     referrals: "Referrals",
     inviteAndEarn: "Invite & earn",
-    shareHenryCo: "Share HenryCo with others",
+    shareHenryCo: "Share Henry Onyx with others",
     transactions: "Transactions",
     viewHistory: "View history",
     walletActivity: "Wallet activity & payments",
@@ -2224,7 +2224,7 @@ const EN: AccountCopy = {
     viewTaskQueue: "View full task queue",
     smartRecommendations: "Recommendations",
     smartRecommendationsEmpty:
-      "Keep using HenryCo services and recommendations will adapt to your activity.",
+      "Keep using Henry Onyx services and recommendations will adapt to your activity.",
     smartHomeEmptyFallback:
       "Welcome — start with a small first step. Your live signals will appear here as soon as activity lands.",
     recommendationReason:
@@ -2248,12 +2248,12 @@ const EN: AccountCopy = {
       jobsSaved: "Follow up on saved roles",
     },
     recommendationDescriptions: {
-      trustNext: "Unlock more actions across HenryCo.",
+      trustNext: "Unlock more actions across Henry Onyx.",
       profileNext:
         "A complete profile improves support and service continuity.",
       jobsSaved: "Revisit the roles you already saved and act on them.",
       fallback:
-        "Keep using HenryCo services and recommendations will adapt to your activity.",
+        "Keep using Henry Onyx services and recommendations will adapt to your activity.",
     },
   },
   tasks: {
@@ -2315,16 +2315,16 @@ const EN: AccountCopy = {
     blurbEmpty:
       "Your account is in order — verification, payouts, and review-sensitive lanes are all clear. We'll surface the next move here automatically when it shows up.",
     blurbRisk:
-      "These items gate higher-trust actions across HenryCo — wallet withdrawals, marketplace seller approval, employer verification. Clearing them unblocks each lane.",
+      "These items gate higher-trust actions across Henry Onyx — wallet withdrawals, marketplace seller approval, employer verification. Clearing them unblocks each lane.",
     blurbActive:
-      "Each row routes you to the next action with one tap. Filters, priority chips, and deeplinks are kept consistent across every HenryCo division.",
+      "Each row routes you to the next action with one tap. Filters, priority chips, and deeplinks are kept consistent across every Henry Onyx division.",
     metaEmpty: "You're clear. Anything new will appear here as it arrives.",
     metaCount: "{count} open · sorted by priority and blocking state.",
   },
   security: {
     title: "Security",
     description:
-      "Review recent security activity, change your password, and end HenryCo sessions when needed.",
+      "Review recent security activity, change your password, and end Henry Onyx sessions when needed.",
     heroAriaLabel: "Security overview",
     hero: {
       trustScoreLabel: "Trust score",
@@ -2348,7 +2348,7 @@ const EN: AccountCopy = {
       },
       statusBlurb: {
         secure:
-          "No suspicious events, verification is healthy, and every higher-trust action HenryCo offers is open to you.",
+          "No suspicious events, verification is healthy, and every higher-trust action Henry Onyx offers is open to you.",
         watch:
           "Nothing is broken — but a few signals (email confirmation, identity review, duplicate contact match) would lift your trust score and unlock more lanes.",
         risk:
@@ -2371,7 +2371,7 @@ const EN: AccountCopy = {
     activityAriaLabel: "Recent security events",
     trustProfile: "Trust Profile",
     trustDescription:
-      "Trust is operational across the account. It now controls higher-value business actions, moderation posture, and stronger eligibility across HenryCo modules.",
+      "Trust is operational across the account. It now controls higher-value business actions, moderation posture, and stronger eligibility across Henry Onyx modules.",
     trustScore: "Account trust score",
     signalLabels: {
       emailVerified: "Verified email",
@@ -2413,7 +2413,7 @@ const EN: AccountCopy = {
     trustGuide: "Trust state guide",
     whatCurrentStateMeans: "What your current state means",
     whatCurrentStateBody:
-      "This state determines access to higher-value workflows and business actions across HenryCo.",
+      "This state determines access to higher-value workflows and business actions across Henry Onyx.",
     whatToDoNext: "What to do next",
     whatToDoNextBody:
       "Complete the listed requirements to unlock the next trust lane.",
@@ -2491,7 +2491,7 @@ const EN: AccountCopy = {
           "Premium trust is reserved for accounts that have already passed identity verification.",
         age: "Maintain a longer clean account history.",
         transactions: "Build a stronger verified transaction record.",
-        activity: "Use more HenryCo divisions with clean outcomes.",
+        activity: "Use more Henry Onyx divisions with clean outcomes.",
         overlap:
           "Keep duplicate-contact review clear before premium trust can be granted.",
       },
@@ -2511,15 +2511,15 @@ const EN: AccountCopy = {
     updatePassword: "Update password",
   },
   globalSignOut: {
-    title: "End every HenryCo session",
+    title: "End every Henry Onyx session",
     description:
-      "This signs the current account out across HenryCo divisions and devices, then returns you to the account login surface.",
+      "This signs the current account out across Henry Onyx divisions and devices, then returns you to the account login surface.",
     note:
       "Recent device and session activity stays visible below even though live per-device revocation is not yet exposed as a separate control.",
     unavailable:
-      "We couldn’t end every HenryCo session right now. Try again in a moment.",
+      "We couldn’t end every Henry Onyx session right now. Try again in a moment.",
     ending: "Ending all sessions...",
-    endAllSessions: "Sign out all HenryCo sessions",
+    endAllSessions: "Sign out all Henry Onyx sessions",
   },
   errorBoundary: {
     kicker: "Account runtime",
@@ -2531,10 +2531,10 @@ const EN: AccountCopy = {
   },
   activity: {
     title: "Activity",
-    description: "Everything you’ve done across all HenryCo divisions.",
+    description: "Everything you’ve done across all Henry Onyx divisions.",
     emptyTitle: "No activity yet",
     emptyDescription:
-      "Your cross-division activity will appear here as you use HenryCo services.",
+      "Your cross-division activity will appear here as you use Henry Onyx services.",
     statusLabels: {
       pending: "Pending",
       open: "Open",
@@ -2559,8 +2559,8 @@ const EN: AccountCopy = {
       pdfNote:
         "The PDF carries every filter you set above as part of the document header — what you see is what you download.",
       downloadLabel: "Download statement",
-      downloadFilename: "HenryCo-Transaction-History.pdf",
-      shareTitle: "HenryCo Transaction History",
+      downloadFilename: "Henry Onyx-Transaction-History.pdf",
+      shareTitle: "Henry Onyx Transaction History",
       typeLabels: {
         payment: "payment",
         wallet_credit: "wallet credit",
@@ -2574,18 +2574,18 @@ const EN: AccountCopy = {
   notifications: {
     metadata: {
       title: "Notifications",
-      description: "Every HenryCo update — wallet, support, jobs, marketplace, care, and more — in one live inbox.",
+      description: "Every Henry Onyx update — wallet, support, jobs, marketplace, care, and more — in one live inbox.",
     },
     hero: {
-      eyebrow: "HenryCo · live notifications",
+      eyebrow: "Henry Onyx · live notifications",
       ariaOverview: "Notifications overview",
       ariaVolume: "Notification volume",
       ariaByDivision: "By division",
-      headlineZero: "Inbox zero across HenryCo.",
+      headlineZero: "Inbox zero across Henry Onyx.",
       headlineOne: "One thing wants your attention.",
       headlineFew: "{count} notifications to triage.",
       headlineMany: "{count} updates across your divisions.",
-      blurbZero: "Anything HenryCo sends arrives here in real time — wallet, support, jobs, marketplace, care, and more.",
+      blurbZero: "Anything Henry Onyx sends arrives here in real time — wallet, support, jobs, marketplace, care, and more.",
       blurbStale: "Older items have stacked up. Swipe to archive, tap to open, or jump straight to a thread.",
       blurbToday: "{count} arrived today. Use the filters to focus on a single division, or sweep through unread only.",
       tileUnreadLabel: "Unread",
@@ -2628,7 +2628,7 @@ const EN: AccountCopy = {
     },
     emptyState: {
       inboxTitle: "All caught up.",
-      inboxBody: "Activity from across HenryCo surfaces here as it happens.",
+      inboxBody: "Activity from across Henry Onyx surfaces here as it happens.",
       filterTitle: "No activity in this view.",
       filterBody: "Try a different filter.",
     },
@@ -2642,11 +2642,11 @@ const EN: AccountCopy = {
     },
   },
   calendar: {
-    metaTitle: "Calendar · HenryCo",
+    metaTitle: "Calendar · Henry Onyx",
     metaDescription:
       "Cross-portal agenda — care bookings, property viewings, jobs interviews, studio milestones, learn classes, logistics windows.",
     heroAriaLabel: "Calendar overview",
-    heroEyebrow: "HenryCo · cross-portal calendar",
+    heroEyebrow: "Henry Onyx · cross-portal calendar",
     tileVolumeAriaLabel: "Calendar volume",
     tileEventsLabel: "Events",
     tileEventsFoot: "Next 28 days",
@@ -2727,7 +2727,7 @@ const EN: AccountCopy = {
       headlineEmpty: "Receipts will land here.",
       headlineWithReceipts: "Every receipt, one place.",
       blurb:
-        "Every payment across HenryCo arrives here as a branded, downloadable PDF — care bookings, marketplace orders, studio invoices, logistics shipments, learn certificates.",
+        "Every payment across Henry Onyx arrives here as a branded, downloadable PDF — care bookings, marketplace orders, studio invoices, logistics shipments, learn certificates.",
       totalPaidLabel: "Total paid · lifetime",
       thisMonthLabel: "Paid · this month",
       thisMonthFoot: "Receipts dated this calendar month",
@@ -2746,7 +2746,7 @@ const EN: AccountCopy = {
     empty: {
       title: "No invoices yet",
       description:
-        "Your invoices and receipts will appear here after making payments across HenryCo services.",
+        "Your invoices and receipts will appear here after making payments across Henry Onyx services.",
     },
     statuses: {
       paid: "Paid",
@@ -2778,12 +2778,12 @@ const EN: AccountCopy = {
   },
   messages: {
     metadata: {
-      title: "Messages · HenryCo",
+      title: "Messages · Henry Onyx",
       description:
         "One inbox across support, marketplace, jobs, studio, care, property, logistics and learn.",
     },
     hero: {
-      eyebrow: "HenryCo · unified inbox",
+      eyebrow: "Henry Onyx · unified inbox",
       ariaLabel: "Inbox overview",
       ariaTiles: "Inbox volume",
       ariaSide: "By portal",
@@ -2792,7 +2792,7 @@ const EN: AccountCopy = {
         "Every portal feeds this one inbox. Support, marketplace orders, jobs interviews, studio projects and care bookings all surface here in chronological order.",
     },
     headlines: {
-      zero: "Inbox zero across HenryCo.",
+      zero: "Inbox zero across Henry Onyx.",
       calmOne: "One thread is waiting on you.",
       calmMany: "{count} threads are open.",
       busy: "{unread} unread · {open} open across your portals.",
@@ -2866,7 +2866,7 @@ const EN: AccountCopy = {
       ctas: { fund: "Fund wallet", withdraw: "Withdraw" },
       tiles: {
         verifiedLabel: "Verified balance",
-        verifiedFoot: "Spendable across HenryCo services",
+        verifiedFoot: "Spendable across Henry Onyx services",
         pendingFundingLabel: "Pending funding",
         pendingFundingFoot: "Sits separately until finance confirms",
         pendingWithdrawalLabel: "Held for withdrawal",
@@ -2945,7 +2945,7 @@ const EN: AccountCopy = {
     activity: {
       ariaLabel: "Wallet transactions",
       emptyTitle: "No transactions yet",
-      emptyBody: "Top up your wallet and your activity feed will populate here with every credit, debit, refund and bonus across HenryCo services.",
+      emptyBody: "Top up your wallet and your activity feed will populate here with every credit, debit, refund and bonus across Henry Onyx services.",
       fallbackTitle: "Wallet transaction",
     },
     funding: {
@@ -3029,11 +3029,11 @@ const EN: AccountCopy = {
   support: {
     metadata: {
       title: "Support",
-      description: "Get help with any HenryCo service.",
+      description: "Get help with any Henry Onyx service.",
     },
     hero: {
       title: "Support",
-      description: "Get help with any HenryCo service.",
+      description: "Get help with any Henry Onyx service.",
       newRequestCta: "New request",
     },
     summary: {
@@ -3088,8 +3088,8 @@ const EN: AccountCopy = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "HenryCo Wallet",
-      body: "Your HenryCo Wallet is always available as a payment option.",
+      eyebrow: "Henry Onyx Wallet",
+      body: "Your Henry Onyx Wallet is always available as a payment option.",
       manageCta: "Manage wallet",
     },
   },
@@ -3097,12 +3097,12 @@ const EN: AccountCopy = {
     metadata: {
       title: "Saved for later",
       description:
-        "Items you set aside from any HenryCo cart, kept for 90 days with an expiry warning a week early.",
+        "Items you set aside from any Henry Onyx cart, kept for 90 days with an expiry warning a week early.",
     },
     hero: {
       title: "Saved for later",
       description:
-        "Items you set aside from any HenryCo cart. We'll keep them for 90 days and warn you a week before they expire.",
+        "Items you set aside from any Henry Onyx cart. We'll keep them for 90 days and warn you a week before they expire.",
     },
     summary: {
       activeTemplate: "{count} active",
@@ -3153,7 +3153,7 @@ const EN: AccountCopy = {
     metadata: {
       title: "Documents",
       description:
-        "Your receipts, certificates, contracts, and important files — kept private and accessible across every HenryCo division.",
+        "Your receipts, certificates, contracts, and important files — kept private and accessible across every Henry Onyx division.",
     },
     hero: {
       eyebrow: "Personal Vault",
@@ -3195,7 +3195,7 @@ const EN: AccountCopy = {
     empty: {
       title: "No documents yet",
       description:
-        "Your documents, receipts, and certificates from HenryCo services will be stored here.",
+        "Your documents, receipts, and certificates from Henry Onyx services will be stored here.",
     },
     summary: {
       countTemplate: "{count} document{plural}",
@@ -3204,14 +3204,14 @@ const EN: AccountCopy = {
     retention: {
       eyebrow: "Privacy & retention",
       title: "Your files stay private",
-      body: "Documents are encrypted at rest, visible only to you, and retained for the lifetime of your HenryCo account unless you remove them.",
+      body: "Documents are encrypted at rest, visible only to you, and retained for the lifetime of your Henry Onyx account unless you remove them.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Subscriptions",
       description:
-        "Read-only summary of active plans synced from divisions across HenryCo.",
+        "Read-only summary of active plans synced from divisions across Henry Onyx.",
     },
     hero: {
       eyebrow: "Active plans",
@@ -3280,12 +3280,12 @@ const EN: AccountCopy = {
     metadata: {
       title: "Referrals",
       description:
-        "Invite qualified customers to HenryCo and track rewards through pending, reviewed, and credited states.",
+        "Invite qualified customers to Henry Onyx and track rewards through pending, reviewed, and credited states.",
     },
     hero: {
       title: "Referrals",
       description:
-        "Invite qualified customers to HenryCo and track rewards through pending, reviewed, and credited states.",
+        "Invite qualified customers to Henry Onyx and track rewards through pending, reviewed, and credited states.",
     },
     code: {
       eyebrow: "Your Referral Code",
@@ -3309,20 +3309,20 @@ const EN: AccountCopy = {
       eyebrow: "How It Works",
       step1Title: "Share your code",
       step1Body:
-        "Share your unique code or link. Friends who visit any HenryCo subdomain with your link get tracked automatically.",
+        "Share your unique code or link. Friends who visit any Henry Onyx subdomain with your link get tracked automatically.",
       step2Title: "They transact",
       step2Body:
         "After signup, the referral enters a {days}-day hold window. We track the referred account only once — self-referrals, duplicate households, and recycled signups do not qualify.",
       step3Title: "Rewards clear after qualification",
       step3Body:
-        "Qualified referrals credit {amount} to your HenryCo wallet after finance review. Pending rewards are not spendable until cleared.",
+        "Qualified referrals credit {amount} to your Henry Onyx wallet after finance review. Pending rewards are not spendable until cleared.",
     },
     policy: {
       eyebrow: "Referral Policy",
       qualifying:
-        "A qualifying conversion means the referred account completed an eligible HenryCo action that passed payment and trust verification.",
+        "A qualifying conversion means the referred account completed an eligible Henry Onyx action that passed payment and trust verification.",
       enforcement:
-        "HenryCo can hold, reverse, or cancel rewards for self-referrals, duplicate conversion loops, reversals, refunds, or suspicious reward patterns.",
+        "Henry Onyx can hold, reverse, or cancel rewards for self-referrals, duplicate conversion loops, reversals, refunds, or suspicious reward patterns.",
       separation:
         "Your dashboard shows referral matches and reward history separately so tracked signups are not mistaken for credited wallet earnings.",
     },
@@ -3558,7 +3558,7 @@ const EN: AccountCopy = {
         listings: "Listings",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} HenryCo-managed",
+        savedManagedTemplate: "{count} Henry Onyx-managed",
         savedEmpty: "Save listings to build a shortlist",
         savedWith: "Compare and revisit anytime",
         inquiriesEmpty: "No conversations open yet",
@@ -3574,7 +3574,7 @@ const EN: AccountCopy = {
       sideBody:
         "Save a listing, request a viewing, or open an inquiry on Henry Onyx Property — every action mirrors into this account room so you can pick up where you left off across devices.",
       sideBodyMuted:
-        "HenryCo-managed listings flag with a Managed badge — review, inspection, and lease follow-ups are coordinated by the Property team.",
+        "Henry Onyx-managed listings flag with a Managed badge — review, inspection, and lease follow-ups are coordinated by the Property team.",
       breakdownAriaLabel: "Activity breakdown",
       breakdownLabel: "By activity",
       breakdownLabels: {
@@ -3587,7 +3587,7 @@ const EN: AccountCopy = {
         empty: {
           headline: "Start exploring Henry Onyx Property.",
           blurb:
-            "Discover residential rentals, sale listings, and HenryCo-managed homes. Save your favourites and every inquiry, viewing, or listing follow-up lands here automatically.",
+            "Discover residential rentals, sale listings, and Henry Onyx-managed homes. Save your favourites and every inquiry, viewing, or listing follow-up lands here automatically.",
         },
         discover: {
           headlineTemplateSingular: "{count} shortlisted home.",
@@ -3608,7 +3608,7 @@ const EN: AccountCopy = {
     sections: {
       saved: "Saved shortlist",
       savedMetaEmpty: "Save listings on Henry Onyx Property to build your shortlist.",
-      savedMetaTemplate: "{saved} saved · {managed} managed by HenryCo",
+      savedMetaTemplate: "{saved} saved · {managed} managed by Henry Onyx",
       activity: "Recent activity",
       activityMetaEmpty: "Inquiries, viewings, and listing reviews mirror here as they happen.",
       activityMetaTemplateSingular: "{count} update · most recent first",
@@ -3617,7 +3617,7 @@ const EN: AccountCopy = {
     empty: {
       savedTitle: "No saved properties yet",
       savedBody:
-        "Discover residential rentals, sale listings, and HenryCo-managed homes on Property. Anything you save lands here automatically.",
+        "Discover residential rentals, sale listings, and Henry Onyx-managed homes on Property. Anything you save lands here automatically.",
       activityTitle: "No property activity yet",
       activityBody:
         "Open a listing on Henry Onyx Property to request a viewing or send an inquiry — every step from your first message through review will appear here.",
@@ -3770,7 +3770,7 @@ const EN: AccountCopy = {
       application: {
         kicker: "Seller application",
         bodyWithStoreTemplate: "Store: {name}",
-        bodyDefault: "Application in HenryCo review queue.",
+        bodyDefault: "Application in Henry Onyx review queue.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "View status",
         defaultStatus: "submitted",
@@ -3831,7 +3831,7 @@ const EN: AccountCopy = {
     hero: {
       eyebrow: "Your account",
       headline: "Your jobs activity, all in one place.",
-      body: "Applications, saved roles, recruiter updates, and profile readiness are linked to your HenryCo account.",
+      body: "Applications, saved roles, recruiter updates, and profile readiness are linked to your Henry Onyx account.",
       statsAriaLabel: "Jobs activity summary",
       statLabels: {
         applications: "Active applications",
@@ -3959,7 +3959,7 @@ const EN: AccountCopy = {
         storyLabel: "Role story",
         storyDetail: "Headline and summary explain what you do beyond a blank record.",
         verificationLabel: "Identity verification",
-        verificationDetail: "Jobs trust stays capped until your HenryCo account has cleared identity review.",
+        verificationDetail: "Jobs trust stays capped until your Henry Onyx account has cleared identity review.",
         proofLabel: "Proof of work",
         proofDetail: "Resume plus portfolio evidence makes shortlist movement easier.",
         skillsLabel: "Skills mapped",
@@ -4118,7 +4118,7 @@ const EN: AccountCopy = {
       sideAriaLabel: "How this room works",
       sideLabel: "How this room works",
       sideTitle: "One project room, real state.",
-      sideBody: "Proposals, milestones, payment proofs, deliverables, and communication signals stay connected to the same HenryCo identity you use everywhere else. The dashboard below reflects the Studio team's actual progress, not a status list.",
+      sideBody: "Proposals, milestones, payment proofs, deliverables, and communication signals stay connected to the same Henry Onyx identity you use everywhere else. The dashboard below reflects the Studio team's actual progress, not a status list.",
       breakdownAriaLabel: "Activity breakdown",
       breakdownLabel: "By state",
       tiles: {
@@ -4144,7 +4144,7 @@ const EN: AccountCopy = {
       state: {
         empty: {
           headline: "Start a Studio brief.",
-          blurb: "When a proposal or project goes live with your HenryCo identity, the synced Studio room appears here — milestones, payments, deliverables, and the next move all in one place.",
+          blurb: "When a proposal or project goes live with your Henry Onyx identity, the synced Studio room appears here — milestones, payments, deliverables, and the next move all in one place.",
           ctaPrimary: "Start a brief",
           ctaSecondary: "Open Studio",
         },
@@ -4197,7 +4197,7 @@ const EN: AccountCopy = {
     },
     empty: {
       projectsTitle: "No Studio workspaces linked yet",
-      projectsBody: "As soon as a proposal or project is created with your HenryCo identity, the synced Studio room will appear here — milestones, payments, deliverables, and the next move.",
+      projectsBody: "As soon as a proposal or project is created with your Henry Onyx identity, the synced Studio room will appear here — milestones, payments, deliverables, and the next move.",
       paymentsTitle: "No payment checkpoints yet",
       paymentsBody: "Commercial milestones — deposit, mid-project, and delivery — surface here once a proposal goes live with you.",
       activityTitle: "No Studio activity yet",
@@ -4330,7 +4330,7 @@ const EN: AccountCopy = {
       certificatesTitle: "Certificates",
       assignmentsTitle: "Assigned learning",
       savedTitle: "Saved courses",
-      teachingTitle: "Teach with HenryCo",
+      teachingTitle: "Teach with Henry Onyx",
       statusLabel: "Status",
       expertiseLabel: "Expertise",
       topicsLabel: "Topics",
@@ -4376,7 +4376,7 @@ const EN: AccountCopy = {
     },
     empty: {
       body:
-        "You haven't added any addresses yet. Add your first one to enable faster checkout across HenryCo.",
+        "You haven't added any addresses yet. Add your first one to enable faster checkout across Henry Onyx.",
     },
     add: {
       cta: "Add address",
@@ -4389,10 +4389,10 @@ const EN: AccountCopy = {
   search: {
     metadata: {
       title: "Search Account",
-      description: "Search HenryCo account workflows and connected division routes.",
+      description: "Search Henry Onyx account workflows and connected division routes.",
     },
     hero: {
-      title: "Search your HenryCo workflows.",
+      title: "Search your Henry Onyx workflows.",
       description:
         "Jump directly to exact account actions and connected division routes without falling back to generic dashboards.",
     },
@@ -4427,9 +4427,9 @@ const FR: DeepPartial<AccountCopy> = {
   overview: {
     welcomeBack: "Bon retour",
     description:
-      "Votre centre de commande HenryCo — tout, dans toutes les divisions, au même endroit.",
+      "Votre centre de commande Henry Onyx — tout, dans toutes les divisions, au même endroit.",
     walletBalance: "Solde du portefeuille",
-    walletHint: "Portefeuille partagé · Utilisable dans tous les services HenryCo",
+    walletHint: "Portefeuille partagé · Utilisable dans tous les services Henry Onyx",
     notifications: "Notifications",
     allCaughtUp: "Tout est à jour",
     unreadMessages: "Messages non lus",
@@ -4449,7 +4449,7 @@ const FR: DeepPartial<AccountCopy> = {
     noOpenRequests: "Aucune demande ouverte",
     referrals: "Parrainages",
     inviteAndEarn: "Inviter et gagner",
-    shareHenryCo: "Partager HenryCo avec d’autres",
+    shareHenryCo: "Partager Henry Onyx avec d’autres",
     transactions: "Transactions",
     viewHistory: "Voir l’historique",
     walletActivity: "Activité du portefeuille et paiements",
@@ -4484,7 +4484,7 @@ const FR: DeepPartial<AccountCopy> = {
     viewTaskQueue: "Voir la file complète",
     smartRecommendations: "Recommandations",
     smartRecommendationsEmpty:
-      "Continuez à utiliser les services HenryCo et les recommandations s’adapteront à votre activité.",
+      "Continuez à utiliser les services Henry Onyx et les recommandations s’adapteront à votre activité.",
     smartHomeEmptyFallback:
       "Bienvenue — commencez par un petit premier pas. Vos signaux en direct apparaîtront ici dès qu’une activité sera enregistrée.",
     recommendationReason:
@@ -4509,13 +4509,13 @@ const FR: DeepPartial<AccountCopy> = {
       jobsSaved: "Revenez sur vos rôles sauvegardés",
     },
     recommendationDescriptions: {
-      trustNext: "Débloquez davantage d’actions sur HenryCo.",
+      trustNext: "Débloquez davantage d’actions sur Henry Onyx.",
       profileNext:
         "Un profil complet améliore la continuité du support et des services.",
       jobsSaved:
         "Reprenez les rôles que vous avez déjà sauvegardés et passez à l’action.",
       fallback:
-        "Continuez à utiliser HenryCo et les recommandations s’adapteront à votre activité.",
+        "Continuez à utiliser Henry Onyx et les recommandations s’adapteront à votre activité.",
     },
   },
   tasks: {
@@ -4575,15 +4575,15 @@ const FR: DeepPartial<AccountCopy> = {
     headlineCalmSingular: "{count} élément dans votre file.",
     headlineCalmPlural: "{count} éléments dans votre file.",
     blurbEmpty: "Votre compte est en ordre — vérification, paiements et voies sensibles aux revues sont tous clairs. Nous afficherons automatiquement la prochaine action ici dès qu’elle se présentera.",
-    blurbRisk: "Ces éléments verrouillent les actions à haute confiance sur HenryCo — retraits du portefeuille, validation vendeur marketplace, vérification employeur. Les résoudre débloque chaque voie.",
-    blurbActive: "Chaque ligne vous mène à la prochaine action en un seul geste. Filtres, étiquettes de priorité et liens profonds restent cohérents dans toutes les divisions HenryCo.",
+    blurbRisk: "Ces éléments verrouillent les actions à haute confiance sur Henry Onyx — retraits du portefeuille, validation vendeur marketplace, vérification employeur. Les résoudre débloque chaque voie.",
+    blurbActive: "Chaque ligne vous mène à la prochaine action en un seul geste. Filtres, étiquettes de priorité et liens profonds restent cohérents dans toutes les divisions Henry Onyx.",
     metaEmpty: "Tout est clair. Toute nouveauté apparaîtra ici dès son arrivée.",
     metaCount: "{count} en cours · triés par priorité et état bloquant.",
   },
   security: {
     title: "Sécurité",
     description:
-      "Examinez l’activité de sécurité récente, modifiez votre mot de passe et terminez les sessions HenryCo si nécessaire.",
+      "Examinez l’activité de sécurité récente, modifiez votre mot de passe et terminez les sessions Henry Onyx si nécessaire.",
     heroAriaLabel: "Aperçu de la sécurité",
     hero: {
       trustScoreLabel: "Score de confiance",
@@ -4609,7 +4609,7 @@ const FR: DeepPartial<AccountCopy> = {
       },
       statusBlurb: {
         secure:
-          "Aucun événement suspect, la vérification est saine, et chaque action à plus forte confiance proposée par HenryCo vous est ouverte.",
+          "Aucun événement suspect, la vérification est saine, et chaque action à plus forte confiance proposée par Henry Onyx vous est ouverte.",
         watch:
           "Rien n’est cassé — mais quelques signaux (confirmation d’e-mail, revue d’identité, contact en doublon) augmenteraient votre score de confiance et débloqueraient plus de voies.",
         risk:
@@ -4635,7 +4635,7 @@ const FR: DeepPartial<AccountCopy> = {
     activityAriaLabel: "Événements de sécurité récents",
     trustProfile: "Profil de confiance",
     trustDescription:
-      "La confiance est opérationnelle sur tout le compte. Elle contrôle maintenant des actions business à plus forte valeur, la posture de modération et l’éligibilité renforcée dans les modules HenryCo.",
+      "La confiance est opérationnelle sur tout le compte. Elle contrôle maintenant des actions business à plus forte valeur, la posture de modération et l’éligibilité renforcée dans les modules Henry Onyx.",
     trustScore: "Score de confiance du compte",
     signalLabels: {
       emailVerified: "E-mail vérifié",
@@ -4677,7 +4677,7 @@ const FR: DeepPartial<AccountCopy> = {
     trustGuide: "Guide d’état de confiance",
     whatCurrentStateMeans: "Ce que signifie votre état actuel",
     whatCurrentStateBody:
-      "Cet état détermine l’accès aux flux à plus forte valeur et aux actions business dans HenryCo.",
+      "Cet état détermine l’accès aux flux à plus forte valeur et aux actions business dans Henry Onyx.",
     whatToDoNext: "Que faire ensuite",
     whatToDoNextBody:
       "Complétez les exigences listées pour débloquer la prochaine voie de confiance.",
@@ -4761,7 +4761,7 @@ const FR: DeepPartial<AccountCopy> = {
         transactions:
           "Construisez un historique de transactions vérifiées plus solide.",
         activity:
-          "Utilisez davantage de divisions HenryCo avec des résultats propres.",
+          "Utilisez davantage de divisions Henry Onyx avec des résultats propres.",
         overlap:
           "Gardez la revue des doublons de contact claire avant l’attribution de la confiance premium.",
       },
@@ -4782,15 +4782,15 @@ const FR: DeepPartial<AccountCopy> = {
     updatePassword: "Mettre à jour le mot de passe",
   },
   globalSignOut: {
-    title: "Terminer toutes les sessions HenryCo",
+    title: "Terminer toutes les sessions Henry Onyx",
     description:
-      "Cela déconnecte le compte actuel sur toutes les divisions et tous les appareils HenryCo, puis vous renvoie vers l’écran de connexion du compte.",
+      "Cela déconnecte le compte actuel sur toutes les divisions et tous les appareils Henry Onyx, puis vous renvoie vers l’écran de connexion du compte.",
     note:
       "L’activité récente des appareils et des sessions reste visible ci-dessous, même si la révocation appareil par appareil n’est pas encore exposée séparément.",
     unavailable:
-      "Impossible de terminer toutes les sessions HenryCo pour le moment. Réessayez dans un instant.",
+      "Impossible de terminer toutes les sessions Henry Onyx pour le moment. Réessayez dans un instant.",
     ending: "Fin de toutes les sessions...",
-    endAllSessions: "Déconnecter toutes les sessions HenryCo",
+    endAllSessions: "Déconnecter toutes les sessions Henry Onyx",
   },
   errorBoundary: {
     kicker: "Exécution du compte",
@@ -4803,10 +4803,10 @@ const FR: DeepPartial<AccountCopy> = {
   },
   activity: {
     title: "Activité",
-    description: "Tout ce que vous avez fait dans les divisions HenryCo.",
+    description: "Tout ce que vous avez fait dans les divisions Henry Onyx.",
     emptyTitle: "Aucune activité pour le moment",
     emptyDescription:
-      "Votre activité inter-division apparaîtra ici au fur et à mesure de votre utilisation des services HenryCo.",
+      "Votre activité inter-division apparaîtra ici au fur et à mesure de votre utilisation des services Henry Onyx.",
     statusLabels: {
       pending: "En attente",
       open: "Ouvert",
@@ -4831,8 +4831,8 @@ const FR: DeepPartial<AccountCopy> = {
       pdfNote:
         "Le PDF intègre tous les filtres définis ci-dessus dans l’en-tête du document — ce que vous voyez est ce que vous téléchargez.",
       downloadLabel: "Télécharger le relevé",
-      downloadFilename: "HenryCo-Historique-Transactions.pdf",
-      shareTitle: "Historique des transactions HenryCo",
+      downloadFilename: "Henry Onyx-Historique-Transactions.pdf",
+      shareTitle: "Historique des transactions Henry Onyx",
       typeLabels: {
         payment: "paiement",
         wallet_credit: "crédit portefeuille",
@@ -4844,11 +4844,11 @@ const FR: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "Calendrier · HenryCo",
+    metaTitle: "Calendrier · Henry Onyx",
     metaDescription:
       "Agenda multi-portails — rendez-vous Care, visites de biens, entretiens Jobs, jalons Studio, cours Learn, créneaux logistiques.",
     heroAriaLabel: "Aperçu du calendrier",
-    heroEyebrow: "HenryCo · calendrier multi-portails",
+    heroEyebrow: "Henry Onyx · calendrier multi-portails",
     tileVolumeAriaLabel: "Volume du calendrier",
     tileEventsLabel: "Événements",
     tileEventsFoot: "28 prochains jours",
@@ -4919,18 +4919,18 @@ const FR: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "Notifications",
-      description: "Toutes les mises à jour HenryCo — portefeuille, support, jobs, marketplace, care, et plus — dans une boîte de réception en direct.",
+      description: "Toutes les mises à jour Henry Onyx — portefeuille, support, jobs, marketplace, care, et plus — dans une boîte de réception en direct.",
     },
     hero: {
-      eyebrow: "HenryCo · notifications en direct",
+      eyebrow: "Henry Onyx · notifications en direct",
       ariaOverview: "Aperçu des notifications",
       ariaVolume: "Volume des notifications",
       ariaByDivision: "Par division",
-      headlineZero: "Boîte vide à travers HenryCo.",
+      headlineZero: "Boîte vide à travers Henry Onyx.",
       headlineOne: "Un élément attend votre attention.",
       headlineFew: "{count} notifications à trier.",
       headlineMany: "{count} mises à jour à travers vos divisions.",
-      blurbZero: "Tout ce que HenryCo envoie arrive ici en temps réel — portefeuille, support, jobs, marketplace, care, et plus.",
+      blurbZero: "Tout ce que Henry Onyx envoie arrive ici en temps réel — portefeuille, support, jobs, marketplace, care, et plus.",
       blurbStale: "Des éléments plus anciens se sont accumulés. Glissez pour archiver, touchez pour ouvrir, ou sautez directement vers un fil.",
       blurbToday: "{count} sont arrivées aujourd’hui. Utilisez les filtres pour vous concentrer sur une seule division, ou balayez uniquement les non lues.",
       tileUnreadLabel: "Non lues",
@@ -4973,7 +4973,7 @@ const FR: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "Tout est à jour.",
-      inboxBody: "L’activité de l’ensemble de HenryCo apparaît ici en temps réel.",
+      inboxBody: "L’activité de l’ensemble de Henry Onyx apparaît ici en temps réel.",
       filterTitle: "Aucune activité dans cette vue.",
       filterBody: "Essayez un filtre différent.",
     },
@@ -4999,7 +4999,7 @@ const FR: DeepPartial<AccountCopy> = {
       headlineEmpty: "Vos reçus apparaîtront ici.",
       headlineWithReceipts: "Tous vos reçus, au même endroit.",
       blurb:
-        "Chaque paiement effectué sur HenryCo arrive ici sous forme de PDF de marque téléchargeable — réservations Care, commandes Marketplace, factures Studio, expéditions Logistics, certificats Learn.",
+        "Chaque paiement effectué sur Henry Onyx arrive ici sous forme de PDF de marque téléchargeable — réservations Care, commandes Marketplace, factures Studio, expéditions Logistics, certificats Learn.",
       totalPaidLabel: "Payé · à vie",
       thisMonthLabel: "Payé · ce mois",
       thisMonthFoot: "Reçus datés du mois en cours",
@@ -5018,7 +5018,7 @@ const FR: DeepPartial<AccountCopy> = {
     empty: {
       title: "Aucune facture pour le moment",
       description:
-        "Vos factures et reçus apparaîtront ici après vos paiements dans les services HenryCo.",
+        "Vos factures et reçus apparaîtront ici après vos paiements dans les services Henry Onyx.",
     },
     statuses: {
       paid: "Payée",
@@ -5050,12 +5050,12 @@ const FR: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "Messages · HenryCo",
+      title: "Messages · Henry Onyx",
       description:
         "Une seule boîte de réception pour le support, le marketplace, les emplois, le studio, le care, l’immobilier, la logistique et l’apprentissage.",
     },
     hero: {
-      eyebrow: "HenryCo · boîte de réception unifiée",
+      eyebrow: "Henry Onyx · boîte de réception unifiée",
       ariaLabel: "Aperçu de la boîte de réception",
       ariaTiles: "Volume de la boîte de réception",
       ariaSide: "Par portail",
@@ -5064,7 +5064,7 @@ const FR: DeepPartial<AccountCopy> = {
         "Chaque portail alimente cette boîte de réception unique. Support, commandes du marketplace, entretiens d’embauche, projets studio et réservations care apparaissent ici dans l’ordre chronologique.",
     },
     headlines: {
-      zero: "Boîte de réception vide à travers HenryCo.",
+      zero: "Boîte de réception vide à travers Henry Onyx.",
       calmOne: "Un fil attend votre réponse.",
       calmMany: "{count} fils sont ouverts.",
       busy: "{unread} non lus · {open} ouverts dans vos portails.",
@@ -5131,14 +5131,14 @@ const FR: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "Solde du portefeuille",
-      eyebrow: "Portefeuille HenryCo · en direct",
+      eyebrow: "Portefeuille Henry Onyx · en direct",
       availableLabel: "Solde disponible",
       balanceAriaTemplate: "Solde disponible {amount} {currency}",
-      settlementFallback: "Réglé dans votre devise locale au taux HenryCo du jour.",
+      settlementFallback: "Réglé dans votre devise locale au taux Henry Onyx du jour.",
       ctas: { fund: "Approvisionner", withdraw: "Retirer" },
       tiles: {
         verifiedLabel: "Solde vérifié",
-        verifiedFoot: "Utilisable dans tous les services HenryCo",
+        verifiedFoot: "Utilisable dans tous les services Henry Onyx",
         pendingFundingLabel: "Approvisionnement en attente",
         pendingFundingFoot: "Reste isolé jusqu’à confirmation par la finance",
         pendingWithdrawalLabel: "Retenu pour retrait",
@@ -5217,7 +5217,7 @@ const FR: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "Transactions du portefeuille",
       emptyTitle: "Aucune transaction pour l’instant",
-      emptyBody: "Approvisionnez votre portefeuille et votre flux affichera ici chaque crédit, débit, remboursement et bonus dans les services HenryCo.",
+      emptyBody: "Approvisionnez votre portefeuille et votre flux affichera ici chaque crédit, débit, remboursement et bonus dans les services Henry Onyx.",
       fallbackTitle: "Transaction du portefeuille",
     },
     funding: {
@@ -5242,11 +5242,11 @@ const FR: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "Assistance",
-      description: "Obtenez de l’aide pour n’importe quel service HenryCo.",
+      description: "Obtenez de l’aide pour n’importe quel service Henry Onyx.",
     },
     hero: {
       title: "Assistance",
-      description: "Obtenez de l’aide pour n’importe quel service HenryCo.",
+      description: "Obtenez de l’aide pour n’importe quel service Henry Onyx.",
       newRequestCta: "Nouvelle demande",
     },
     summary: {
@@ -5301,8 +5301,8 @@ const FR: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "Portefeuille HenryCo",
-      body: "Votre portefeuille HenryCo est toujours disponible comme moyen de paiement.",
+      eyebrow: "Portefeuille Henry Onyx",
+      body: "Votre portefeuille Henry Onyx est toujours disponible comme moyen de paiement.",
       manageCta: "Gérer le portefeuille",
     },
   },
@@ -5310,12 +5310,12 @@ const FR: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Articles enregistrés",
       description:
-        "Articles mis de côté depuis n’importe quel panier HenryCo, conservés 90 jours avec un avertissement une semaine avant l’expiration.",
+        "Articles mis de côté depuis n’importe quel panier Henry Onyx, conservés 90 jours avec un avertissement une semaine avant l’expiration.",
     },
     hero: {
       title: "Enregistrés pour plus tard",
       description:
-        "Les articles que vous avez mis de côté depuis vos paniers HenryCo. Nous les gardons 90 jours et vous prévenons une semaine avant leur expiration.",
+        "Les articles que vous avez mis de côté depuis vos paniers Henry Onyx. Nous les gardons 90 jours et vous prévenons une semaine avant leur expiration.",
     },
     summary: {
       activeTemplate: "{count} actif·s",
@@ -5366,7 +5366,7 @@ const FR: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Documents",
       description:
-        "Vos reçus, certificats, contrats et fichiers importants — conservés en privé et accessibles dans toutes les divisions HenryCo.",
+        "Vos reçus, certificats, contrats et fichiers importants — conservés en privé et accessibles dans toutes les divisions Henry Onyx.",
     },
     hero: {
       eyebrow: "Coffre personnel",
@@ -5408,7 +5408,7 @@ const FR: DeepPartial<AccountCopy> = {
     empty: {
       title: "Aucun document pour le moment",
       description:
-        "Vos documents, reçus et certificats issus des services HenryCo seront stockés ici.",
+        "Vos documents, reçus et certificats issus des services Henry Onyx seront stockés ici.",
     },
     summary: {
       countTemplate: "{count} document{plural}",
@@ -5417,14 +5417,14 @@ const FR: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "Confidentialité et conservation",
       title: "Vos fichiers restent privés",
-      body: "Les documents sont chiffrés au repos, visibles uniquement par vous et conservés pendant toute la durée de vie de votre compte HenryCo sauf si vous les supprimez.",
+      body: "Les documents sont chiffrés au repos, visibles uniquement par vous et conservés pendant toute la durée de vie de votre compte Henry Onyx sauf si vous les supprimez.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Abonnements",
       description:
-        "Récapitulatif en lecture seule des forfaits actifs synchronisés depuis les divisions HenryCo.",
+        "Récapitulatif en lecture seule des forfaits actifs synchronisés depuis les divisions Henry Onyx.",
     },
     hero: {
       eyebrow: "Forfaits actifs",
@@ -5493,12 +5493,12 @@ const FR: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Parrainages",
       description:
-        "Invitez des clients qualifiés sur HenryCo et suivez les récompenses à travers les états en attente, vérifiés et crédités.",
+        "Invitez des clients qualifiés sur Henry Onyx et suivez les récompenses à travers les états en attente, vérifiés et crédités.",
     },
     hero: {
       title: "Parrainages",
       description:
-        "Invitez des clients qualifiés sur HenryCo et suivez les récompenses à travers les états en attente, vérifiés et crédités.",
+        "Invitez des clients qualifiés sur Henry Onyx et suivez les récompenses à travers les états en attente, vérifiés et crédités.",
     },
     code: {
       eyebrow: "Votre code de parrainage",
@@ -5522,20 +5522,20 @@ const FR: DeepPartial<AccountCopy> = {
       eyebrow: "Comment ça marche",
       step1Title: "Partagez votre code",
       step1Body:
-        "Partagez votre code ou lien unique. Les amis qui visitent un sous-domaine HenryCo avec votre lien sont suivis automatiquement.",
+        "Partagez votre code ou lien unique. Les amis qui visitent un sous-domaine Henry Onyx avec votre lien sont suivis automatiquement.",
       step2Title: "Ils effectuent une transaction",
       step2Body:
         "Après inscription, le parrainage entre dans une fenêtre de blocage de {days} jours. Nous suivons le compte parrainé une seule fois — les auto-parrainages, doublons de foyer et inscriptions recyclées ne se qualifient pas.",
       step3Title: "Les récompenses se libèrent après qualification",
       step3Body:
-        "Les parrainages qualifiés créditent {amount} sur votre portefeuille HenryCo après contrôle financier. Les récompenses en attente ne sont pas dépensables avant validation.",
+        "Les parrainages qualifiés créditent {amount} sur votre portefeuille Henry Onyx après contrôle financier. Les récompenses en attente ne sont pas dépensables avant validation.",
     },
     policy: {
       eyebrow: "Politique de parrainage",
       qualifying:
-        "Une conversion qualifiante signifie que le compte parrainé a réalisé une action HenryCo éligible qui a passé la vérification de paiement et de confiance.",
+        "Une conversion qualifiante signifie que le compte parrainé a réalisé une action Henry Onyx éligible qui a passé la vérification de paiement et de confiance.",
       enforcement:
-        "HenryCo peut suspendre, annuler ou révoquer les récompenses en cas d’auto-parrainages, de boucles de conversion en doublon, d’annulations, de remboursements ou de schémas de récompenses suspects.",
+        "Henry Onyx peut suspendre, annuler ou révoquer les récompenses en cas d’auto-parrainages, de boucles de conversion en doublon, d’annulations, de remboursements ou de schémas de récompenses suspects.",
       separation:
         "Votre tableau de bord présente les parrainages et l’historique des récompenses séparément afin que les inscriptions suivies ne soient pas confondues avec les gains crédités au portefeuille.",
     },
@@ -5771,7 +5771,7 @@ const FR: DeepPartial<AccountCopy> = {
         listings: "Annonces",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} gérée·s par HenryCo",
+        savedManagedTemplate: "{count} gérée·s par Henry Onyx",
         savedEmpty: "Enregistrez des annonces pour bâtir une sélection",
         savedWith: "Comparez et revenez quand vous voulez",
         inquiriesEmpty: "Aucune conversation en cours",
@@ -5787,7 +5787,7 @@ const FR: DeepPartial<AccountCopy> = {
       sideBody:
         "Enregistrez une annonce, demandez une visite ou ouvrez une demande sur Henry Onyx Property — chaque action se reflète dans cette pièce du compte pour reprendre là où vous en étiez, sur tous vos appareils.",
       sideBodyMuted:
-        "Les annonces gérées par HenryCo portent un badge Géré — vérifications, inspections et suivis de bail sont coordonnés par l’équipe Property.",
+        "Les annonces gérées par Henry Onyx portent un badge Géré — vérifications, inspections et suivis de bail sont coordonnés par l’équipe Property.",
       breakdownAriaLabel: "Détail d’activité",
       breakdownLabel: "Par activité",
       breakdownLabels: {
@@ -5800,7 +5800,7 @@ const FR: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Commencez à explorer Henry Onyx Property.",
           blurb:
-            "Découvrez les locations résidentielles, les ventes et les biens gérés par HenryCo. Enregistrez vos favoris et chaque demande, visite ou suivi d’annonce arrive ici automatiquement.",
+            "Découvrez les locations résidentielles, les ventes et les biens gérés par Henry Onyx. Enregistrez vos favoris et chaque demande, visite ou suivi d’annonce arrive ici automatiquement.",
         },
         discover: {
           headlineTemplateSingular: "{count} bien dans la sélection.",
@@ -5821,7 +5821,7 @@ const FR: DeepPartial<AccountCopy> = {
     sections: {
       saved: "Sélection enregistrée",
       savedMetaEmpty: "Enregistrez des annonces sur Henry Onyx Property pour bâtir votre sélection.",
-      savedMetaTemplate: "{saved} enregistré·s · {managed} géré·s par HenryCo",
+      savedMetaTemplate: "{saved} enregistré·s · {managed} géré·s par Henry Onyx",
       activity: "Activité récente",
       activityMetaEmpty: "Demandes, visites et examens d’annonces se reflètent ici en temps réel.",
       activityMetaTemplateSingular: "{count} mise à jour · plus récente en premier",
@@ -5830,7 +5830,7 @@ const FR: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "Aucun bien enregistré pour le moment",
       savedBody:
-        "Découvrez les locations résidentielles, les ventes et les biens gérés par HenryCo sur Property. Tout ce que vous enregistrez arrive ici automatiquement.",
+        "Découvrez les locations résidentielles, les ventes et les biens gérés par Henry Onyx sur Property. Tout ce que vous enregistrez arrive ici automatiquement.",
       activityTitle: "Aucune activité Property pour le moment",
       activityBody:
         "Ouvrez une annonce sur Henry Onyx Property pour demander une visite ou envoyer une demande — chaque étape, du premier message à la revue, apparaîtra ici.",
@@ -5983,7 +5983,7 @@ const FR: DeepPartial<AccountCopy> = {
       application: {
         kicker: "Candidature vendeur",
         bodyWithStoreTemplate: "Boutique : {name}",
-        bodyDefault: "Candidature dans la file de revue HenryCo.",
+        bodyDefault: "Candidature dans la file de revue Henry Onyx.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "Voir le statut",
         defaultStatus: "soumise",
@@ -6044,7 +6044,7 @@ const FR: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "Votre compte",
       headline: "Votre activité emploi, tout au même endroit.",
-      body: "Candidatures, postes sauvegardés, mises à jour recruteurs et préparation de profil sont liés à votre compte HenryCo.",
+      body: "Candidatures, postes sauvegardés, mises à jour recruteurs et préparation de profil sont liés à votre compte Henry Onyx.",
       statsAriaLabel: "Résumé d’activité emploi",
       statLabels: {
         applications: "Candidatures actives",
@@ -6172,7 +6172,7 @@ const FR: DeepPartial<AccountCopy> = {
         storyLabel: "Récit professionnel",
         storyDetail: "Titre et résumé expliquent ce que vous faites au-delà d’une simple fiche.",
         verificationLabel: "Vérification d’identité",
-        verificationDetail: "La confiance Jobs reste plafonnée tant que votre identité HenryCo n’est pas validée.",
+        verificationDetail: "La confiance Jobs reste plafonnée tant que votre identité Henry Onyx n’est pas validée.",
         proofLabel: "Preuves de travail",
         proofDetail: "CV plus preuves du portfolio facilitent les mouvements en présélection.",
         skillsLabel: "Compétences cartographiées",
@@ -6202,8 +6202,8 @@ const FR: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "Vue d’ensemble logistique",
-      eyebrow: "HenryCo Logistique",
-      brand: "HenryCo Logistique",
+      eyebrow: "Henry Onyx Logistique",
+      brand: "Henry Onyx Logistique",
       title: "Chaque colis, une seule pièce.",
       body: "Enlèvements, dépôts, ETA et preuves de livraison — tout est reflété depuis le réseau logistique dans votre compte. Réservez une fois sur",
       bodyDomain: " logistics.henryonyx.com",
@@ -6402,7 +6402,7 @@ const FR: DeepPartial<AccountCopy> = {
       certificatesTitle: "Certificats",
       assignmentsTitle: "Formations assignées",
       savedTitle: "Cours enregistrés",
-      teachingTitle: "Enseigner avec HenryCo",
+      teachingTitle: "Enseigner avec Henry Onyx",
       statusLabel: "Statut",
       expertiseLabel: "Expertise",
       topicsLabel: "Sujets",
@@ -6428,7 +6428,7 @@ const FR: DeepPartial<AccountCopy> = {
       sideAriaLabel: "Comment fonctionne cette salle",
       sideLabel: "Comment fonctionne cette salle",
       sideTitle: "Une seule salle de projet, l’état réel.",
-      sideBody: "Les propositions, jalons, justificatifs de paiement, livrables et signaux d’échange restent rattachés à l’identité HenryCo que vous utilisez partout. Le tableau ci-dessous reflète la progression réelle de l’équipe Studio, pas une simple liste d’états.",
+      sideBody: "Les propositions, jalons, justificatifs de paiement, livrables et signaux d’échange restent rattachés à l’identité Henry Onyx que vous utilisez partout. Le tableau ci-dessous reflète la progression réelle de l’équipe Studio, pas une simple liste d’états.",
       breakdownAriaLabel: "Répartition de l’activité",
       breakdownLabel: "Par état",
       tiles: {
@@ -6454,7 +6454,7 @@ const FR: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "Lancez un brief Studio.",
-          blurb: "Quand une proposition ou un projet démarre avec votre identité HenryCo, la salle Studio synchronisée apparaît ici — jalons, paiements, livrables et prochaine étape regroupés.",
+          blurb: "Quand une proposition ou un projet démarre avec votre identité Henry Onyx, la salle Studio synchronisée apparaît ici — jalons, paiements, livrables et prochaine étape regroupés.",
           ctaPrimary: "Lancer un brief",
           ctaSecondary: "Ouvrir Studio",
         },
@@ -6507,7 +6507,7 @@ const FR: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "Aucune salle Studio reliée pour l’instant",
-      projectsBody: "Dès qu’une proposition ou un projet est créé avec votre identité HenryCo, la salle Studio synchronisée apparaîtra ici — jalons, paiements, livrables et prochaine étape.",
+      projectsBody: "Dès qu’une proposition ou un projet est créé avec votre identité Henry Onyx, la salle Studio synchronisée apparaîtra ici — jalons, paiements, livrables et prochaine étape.",
       paymentsTitle: "Aucun point de paiement pour l’instant",
       paymentsBody: "Les jalons commerciaux — acompte, mi-projet, livraison — apparaissent ici dès qu’une proposition démarre avec vous.",
       activityTitle: "Aucune activité Studio pour l’instant",
@@ -6590,7 +6590,7 @@ const FR: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "Vous n'avez encore ajouté aucune adresse. Ajoutez-en une pour accélérer le paiement dans HenryCo.",
+        "Vous n'avez encore ajouté aucune adresse. Ajoutez-en une pour accélérer le paiement dans Henry Onyx.",
     },
     add: {
       cta: "Ajouter une adresse",
@@ -6603,10 +6603,10 @@ const FR: DeepPartial<AccountCopy> = {
   search: {
     metadata: {
       title: "Recherche du compte",
-      description: "Recherchez les flux de votre compte HenryCo et les routes des divisions connectées.",
+      description: "Recherchez les flux de votre compte Henry Onyx et les routes des divisions connectées.",
     },
     hero: {
-      title: "Recherchez vos flux HenryCo.",
+      title: "Recherchez vos flux Henry Onyx.",
       description:
         "Accédez directement aux actions précises du compte et aux routes des divisions connectées sans passer par des tableaux de bord génériques.",
     },
@@ -6640,9 +6640,9 @@ const DE: DeepPartial<AccountCopy> = {
   },
   "overview": {
     "welcomeBack": "Willkommen zurück",
-    "description": "Ihre HenryCo-Kommandozentrale – alles über alle Abteilungen hinweg an einem Ort.",
+    "description": "Ihre Henry Onyx-Kommandozentrale – alles über alle Abteilungen hinweg an einem Ort.",
     "walletBalance": "Wallet-Guthaben",
-    "walletHint": "Gemeinsame Geldbörse · Verwendung für alle HenryCo-Dienste",
+    "walletHint": "Gemeinsame Geldbörse · Verwendung für alle Henry Onyx-Dienste",
     "notifications": "Benachrichtigungen",
     "allCaughtUp": "Alles eingeholt",
     "unreadMessages": "Ungelesene Nachrichten",
@@ -6662,7 +6662,7 @@ const DE: DeepPartial<AccountCopy> = {
     "noOpenRequests": "Keine offenen Anfragen",
     "referrals": "Empfehlungen",
     "inviteAndEarn": "Einladen und verdienen",
-    "shareHenryCo": "Teilen Sie HenryCo mit anderen",
+    "shareHenryCo": "Teilen Sie Henry Onyx mit anderen",
     "transactions": "Transaktionen",
     "viewHistory": "Verlauf anzeigen",
     "walletActivity": "Wallet-Aktivität und Zahlungen",
@@ -6689,7 +6689,7 @@ const DE: DeepPartial<AccountCopy> = {
     "noUrgentTasks": "Im Moment gibt es keine dringenden Kontoaufgaben. Sie befinden sich in einem gesunden Betriebszustand.",
     "viewTaskQueue": "Vollständige Aufgabenwarteschlange anzeigen",
     "smartRecommendations": "Empfehlungen",
-    "smartRecommendationsEmpty": "Nutzen Sie weiterhin die Dienste von HenryCo und die Empfehlungen passen sich Ihrer Aktivität an.",
+    "smartRecommendationsEmpty": "Nutzen Sie weiterhin die Dienste von Henry Onyx und die Empfehlungen passen sich Ihrer Aktivität an.",
     "smartHomeEmptyFallback": "Willkommen — beginnen Sie mit einem kleinen ersten Schritt. Ihre Live-Signale erscheinen hier, sobald Aktivität eingeht.",
     "recommendationReason": "Empfohlen aus Ihrer Kontoaktivität und Ihrem Vertrauensstatus ({confidence} Vertrauen)",
     "recentActivity": "Letzte Aktivität",
@@ -6711,10 +6711,10 @@ const DE: DeepPartial<AccountCopy> = {
       "jobsSaved": "Verfolgen Sie gespeicherte Rollen"
     },
     "recommendationDescriptions": {
-      "trustNext": "Schalten Sie weitere Aktionen über HenryCo frei.",
+      "trustNext": "Schalten Sie weitere Aktionen über Henry Onyx frei.",
       "profileNext": "Ein vollständiges Profil verbessert den Support und die Servicekontinuität.",
       "jobsSaved": "Besuchen Sie die bereits gespeicherten Rollen noch einmal und handeln Sie danach.",
-      "fallback": "Nutzen Sie weiterhin die Dienste von HenryCo und die Empfehlungen passen sich Ihrer Aktivität an."
+      "fallback": "Nutzen Sie weiterhin die Dienste von Henry Onyx und die Empfehlungen passen sich Ihrer Aktivität an."
     }
   },
   "tasks": {
@@ -6772,14 +6772,14 @@ const DE: DeepPartial<AccountCopy> = {
     "headlineCalmSingular": "{count} Eintrag in Ihrer Warteschlange.",
     "headlineCalmPlural": "{count} Einträge in Ihrer Warteschlange.",
     "blurbEmpty": "Ihr Konto ist in Ordnung — Verifizierung, Auszahlungen und prüfungssensible Spuren sind alle frei. Wir zeigen Ihnen den nächsten Schritt hier automatisch an, sobald er anfällt.",
-    "blurbRisk": "Diese Elemente blockieren Aktionen mit höherem Vertrauen über HenryCo hinweg — Wallet-Auszahlungen, Marketplace-Verkäufergenehmigung, Arbeitgeberverifizierung. Sie zu klären gibt jede Spur frei.",
-    "blurbActive": "Jede Zeile führt Sie mit einem Tipp zur nächsten Aktion. Filter, Prioritäts-Chips und Deeplinks bleiben in allen HenryCo-Abteilungen konsistent.",
+    "blurbRisk": "Diese Elemente blockieren Aktionen mit höherem Vertrauen über Henry Onyx hinweg — Wallet-Auszahlungen, Marketplace-Verkäufergenehmigung, Arbeitgeberverifizierung. Sie zu klären gibt jede Spur frei.",
+    "blurbActive": "Jede Zeile führt Sie mit einem Tipp zur nächsten Aktion. Filter, Prioritäts-Chips und Deeplinks bleiben in allen Henry Onyx-Abteilungen konsistent.",
     "metaEmpty": "Bei Ihnen ist alles klar. Alles Neue erscheint hier, sobald es eintrifft.",
     "metaCount": "{count} offen · sortiert nach Priorität und Blockierungsstatus."
   },
   "security": {
     "title": "Sicherheit",
-    "description": "Überprüfen Sie die letzten Sicherheitsaktivitäten, ändern Sie Ihr Passwort und beenden Sie bei Bedarf HenryCo-Sitzungen.",
+    "description": "Überprüfen Sie die letzten Sicherheitsaktivitäten, ändern Sie Ihr Passwort und beenden Sie bei Bedarf Henry Onyx-Sitzungen.",
     "heroAriaLabel": "Sicherheitsübersicht",
     "hero": {
       "trustScoreLabel": "Vertrauensbewertung",
@@ -6800,7 +6800,7 @@ const DE: DeepPartial<AccountCopy> = {
         "risk": "Wir haben Aktivitäten markiert, die Ihre Aufmerksamkeit erfordern."
       },
       "statusBlurb": {
-        "secure": "Keine verdächtigen Ereignisse, die Verifizierung ist gesund, und jede Aktion mit höherem Vertrauen, die HenryCo anbietet, steht Ihnen offen.",
+        "secure": "Keine verdächtigen Ereignisse, die Verifizierung ist gesund, und jede Aktion mit höherem Vertrauen, die Henry Onyx anbietet, steht Ihnen offen.",
         "watch": "Nichts ist defekt — aber ein paar Signale (E-Mail-Bestätigung, Identitätsprüfung, doppelter Kontaktabgleich) würden Ihre Vertrauensbewertung anheben und weitere Spuren freischalten.",
         "risk": "Aktuelle Ereignisse wurden als erhöhtes Risiko eingestuft. Prüfen Sie den Aktivitätsstrom unten und wechseln Sie Ihr Passwort, falls Ihnen etwas unbekannt vorkommt."
       }
@@ -6819,7 +6819,7 @@ const DE: DeepPartial<AccountCopy> = {
     "noSuspiciousEventFoot": "Nichts im letzten Prüffenster markiert.",
     "activityAriaLabel": "Aktuelle Sicherheitsereignisse",
     "trustProfile": "Vertrauensprofil",
-    "trustDescription": "Vertrauen ist im gesamten Konto wirksam. Es steuert jetzt höherwertige Geschäftsaktionen, die Moderationshaltung und eine stärkere Berechtigung für alle HenryCo-Module.",
+    "trustDescription": "Vertrauen ist im gesamten Konto wirksam. Es steuert jetzt höherwertige Geschäftsaktionen, die Moderationshaltung und eine stärkere Berechtigung für alle Henry Onyx-Module.",
     "trustScore": "Vertrauensbewertung des Kontos",
     "signalLabels": {
       "emailVerified": "Bestätigte E-Mail",
@@ -6858,7 +6858,7 @@ const DE: DeepPartial<AccountCopy> = {
     "moreVerificationNeeded": "Weitere Überprüfung erforderlich",
     "trustGuide": "Vertrauen Sie dem Staatsführer",
     "whatCurrentStateMeans": "Was Ihr aktueller Zustand bedeutet",
-    "whatCurrentStateBody": "Dieser Status bestimmt den Zugriff auf höherwertige Workflows und Geschäftsaktionen in HenryCo.",
+    "whatCurrentStateBody": "Dieser Status bestimmt den Zugriff auf höherwertige Workflows und Geschäftsaktionen in Henry Onyx.",
     "whatToDoNext": "Was als nächstes zu tun ist",
     "whatToDoNextBody": "Erfüllen Sie die aufgeführten Anforderungen, um die nächste Vertrauensspur freizuschalten.",
     "currentRestrictions": "Derzeit eingeschränkte Aktionen",
@@ -6912,7 +6912,7 @@ const DE: DeepPartial<AccountCopy> = {
         "verification": "Premium Trust ist Konten vorbehalten, die die Identitätsprüfung bereits bestanden haben.",
         "age": "Sorgen Sie für einen längeren, sauberen Kontoverlauf.",
         "transactions": "Erstellen Sie einen stärker verifizierten Transaktionsdatensatz.",
-        "activity": "Verwenden Sie mehr HenryCo-Divisionen mit sauberen Ergebnissen.",
+        "activity": "Verwenden Sie mehr Henry Onyx-Divisionen mit sauberen Ergebnissen.",
         "overlap": "Halten Sie die Überprüfung doppelter Kontakte frei, bevor Premium-Vertrauen gewährt werden kann."
       }
     }
@@ -6930,12 +6930,12 @@ const DE: DeepPartial<AccountCopy> = {
     "updatePassword": "Passwort aktualisieren"
   },
   "globalSignOut": {
-    "title": "Beenden Sie jede HenryCo-Sitzung",
-    "description": "Dadurch wird das aktuelle Konto über HenryCo Abteilungen und Geräte hinweg abgemeldet und Sie kehren dann zur Konto-Anmeldeoberfläche zurück.",
+    "title": "Beenden Sie jede Henry Onyx-Sitzung",
+    "description": "Dadurch wird das aktuelle Konto über Henry Onyx Abteilungen und Geräte hinweg abgemeldet und Sie kehren dann zur Konto-Anmeldeoberfläche zurück.",
     "note": "Aktuelle Geräte- und Sitzungsaktivitäten bleiben unten sichtbar, auch wenn der Live-Widerruf pro Gerät noch nicht als separates Steuerelement angezeigt wird.",
-    "unavailable": "Wir konnten derzeit nicht jede HenryCo-Sitzung beenden. Versuchen Sie es gleich noch einmal.",
+    "unavailable": "Wir konnten derzeit nicht jede Henry Onyx-Sitzung beenden. Versuchen Sie es gleich noch einmal.",
     "ending": "Alle Sitzungen werden beendet...",
-    "endAllSessions": "Melden Sie alle HenryCo Sitzungen ab"
+    "endAllSessions": "Melden Sie alle Henry Onyx Sitzungen ab"
   },
   "errorBoundary": {
     "kicker": "Kontolaufzeit",
@@ -6946,9 +6946,9 @@ const DE: DeepPartial<AccountCopy> = {
   },
   "activity": {
     "title": "Aktivität",
-    "description": "Alles, was Sie über alle HenryCo-Bereiche hinweg getan haben.",
+    "description": "Alles, was Sie über alle Henry Onyx-Bereiche hinweg getan haben.",
     "emptyTitle": "Noch keine Aktivität",
-    "emptyDescription": "Ihre bereichsübergreifende Aktivität erscheint hier, sobald Sie HenryCo-Dienste nutzen.",
+    "emptyDescription": "Ihre bereichsübergreifende Aktivität erscheint hier, sobald Sie Henry Onyx-Dienste nutzen.",
     "statusLabels": {
       "pending": "Ausstehend",
       "open": "Offen",
@@ -6972,8 +6972,8 @@ const DE: DeepPartial<AccountCopy> = {
       "statusEyebrow": "Status",
       "pdfNote": "Das PDF übernimmt jeden Filter aus dem Dokumentkopf — was Sie sehen, laden Sie herunter.",
       "downloadLabel": "Auszug herunterladen",
-      "downloadFilename": "HenryCo-Transaktionsverlauf.pdf",
-      "shareTitle": "HenryCo Transaktionsverlauf",
+      "downloadFilename": "Henry Onyx-Transaktionsverlauf.pdf",
+      "shareTitle": "Henry Onyx Transaktionsverlauf",
       "typeLabels": {
         "payment": "Zahlung",
         "wallet_credit": "Wallet-Gutschrift",
@@ -6985,11 +6985,11 @@ const DE: DeepPartial<AccountCopy> = {
     }
   },
   calendar: {
-    metaTitle: "Kalender · HenryCo",
+    metaTitle: "Kalender · Henry Onyx",
     metaDescription:
       "Portalübergreifende Agenda — Care-Buchungen, Besichtigungen, Bewerbungsgespräche, Studio-Meilensteine, Learn-Kurse, Logistikfenster.",
     heroAriaLabel: "Kalenderübersicht",
-    heroEyebrow: "HenryCo · portalübergreifender Kalender",
+    heroEyebrow: "Henry Onyx · portalübergreifender Kalender",
     tileVolumeAriaLabel: "Kalendervolumen",
     tileEventsLabel: "Termine",
     tileEventsFoot: "Nächste 28 Tage",
@@ -7060,18 +7060,18 @@ const DE: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "Benachrichtigungen",
-      description: "Jedes HenryCo-Update – Wallet, Support, Jobs, Marktplatz, Care und mehr – in einem Live-Posteingang.",
+      description: "Jedes Henry Onyx-Update – Wallet, Support, Jobs, Marktplatz, Care und mehr – in einem Live-Posteingang.",
     },
     hero: {
-      eyebrow: "HenryCo · Live-Benachrichtigungen",
+      eyebrow: "Henry Onyx · Live-Benachrichtigungen",
       ariaOverview: "Benachrichtigungsübersicht",
       ariaVolume: "Benachrichtigungsvolumen",
       ariaByDivision: "Nach Bereich",
-      headlineZero: "Posteingang null bei HenryCo.",
+      headlineZero: "Posteingang null bei Henry Onyx.",
       headlineOne: "Eine Sache braucht Ihre Aufmerksamkeit.",
       headlineFew: "{count} Benachrichtigungen zu sortieren.",
       headlineMany: "{count} Updates aus Ihren Bereichen.",
-      blurbZero: "Alles, was HenryCo sendet, kommt hier in Echtzeit an – Wallet, Support, Jobs, Marktplatz, Care und mehr.",
+      blurbZero: "Alles, was Henry Onyx sendet, kommt hier in Echtzeit an – Wallet, Support, Jobs, Marktplatz, Care und mehr.",
       blurbStale: "Ältere Einträge haben sich angesammelt. Wischen zum Archivieren, tippen zum Öffnen oder direkt zu einem Thread springen.",
       blurbToday: "Heute sind {count} eingetroffen. Nutzen Sie die Filter, um sich auf einen einzelnen Bereich zu konzentrieren, oder durchlaufen Sie nur Ungelesenes.",
       tileUnreadLabel: "Ungelesen",
@@ -7114,7 +7114,7 @@ const DE: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "Alles erledigt.",
-      inboxBody: "Aktivitäten aus ganz HenryCo erscheinen hier, sobald sie eintreffen.",
+      inboxBody: "Aktivitäten aus ganz Henry Onyx erscheinen hier, sobald sie eintreffen.",
       filterTitle: "Keine Aktivität in dieser Ansicht.",
       filterBody: "Versuchen Sie einen anderen Filter.",
     },
@@ -7139,7 +7139,7 @@ const DE: DeepPartial<AccountCopy> = {
       "ariaByDivision": "Nach Division",
       "headlineEmpty": "Belege landen hier.",
       "headlineWithReceipts": "Jeder Beleg, ein Ort.",
-      "blurb": "Jede Zahlung in HenryCo erscheint hier als markenbezogene, herunterladbare PDF — Care-Buchungen, Marketplace-Bestellungen, Studio-Rechnungen, Logistics-Sendungen, Learn-Zertifikate.",
+      "blurb": "Jede Zahlung in Henry Onyx erscheint hier als markenbezogene, herunterladbare PDF — Care-Buchungen, Marketplace-Bestellungen, Studio-Rechnungen, Logistics-Sendungen, Learn-Zertifikate.",
       "totalPaidLabel": "Gesamt bezahlt · lebenslang",
       "thisMonthLabel": "Bezahlt · diesen Monat",
       "thisMonthFoot": "Belege aus diesem Kalendermonat",
@@ -7157,7 +7157,7 @@ const DE: DeepPartial<AccountCopy> = {
     },
     "empty": {
       "title": "Noch keine Rechnungen",
-      "description": "Ihre Rechnungen und Belege erscheinen hier, sobald Sie Zahlungen in HenryCo-Diensten tätigen."
+      "description": "Ihre Rechnungen und Belege erscheinen hier, sobald Sie Zahlungen in Henry Onyx-Diensten tätigen."
     },
     "statuses": {
       "paid": "Bezahlt",
@@ -7189,12 +7189,12 @@ const DE: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "Nachrichten · HenryCo",
+      title: "Nachrichten · Henry Onyx",
       description:
         "Ein Posteingang für Support, Marketplace, Jobs, Studio, Care, Immobilien, Logistik und Lernen.",
     },
     hero: {
-      eyebrow: "HenryCo · vereinheitlichter Posteingang",
+      eyebrow: "Henry Onyx · vereinheitlichter Posteingang",
       ariaLabel: "Posteingangsübersicht",
       ariaTiles: "Posteingangsvolumen",
       ariaSide: "Nach Portal",
@@ -7203,7 +7203,7 @@ const DE: DeepPartial<AccountCopy> = {
         "Jedes Portal speist diesen einen Posteingang. Support, Marketplace-Bestellungen, Vorstellungsgespräche, Studio-Projekte und Care-Buchungen erscheinen hier in chronologischer Reihenfolge.",
     },
     headlines: {
-      zero: "Posteingang leer in ganz HenryCo.",
+      zero: "Posteingang leer in ganz Henry Onyx.",
       calmOne: "Ein Thread wartet auf Sie.",
       calmMany: "{count} Threads sind offen.",
       busy: "{unread} ungelesen · {open} offen in Ihren Portalen.",
@@ -7270,14 +7270,14 @@ const DE: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "Wallet-Saldo",
-      eyebrow: "HenryCo Wallet · live",
+      eyebrow: "Henry Onyx Wallet · live",
       availableLabel: "Verfügbarer Saldo",
       balanceAriaTemplate: "Verfügbarer Saldo {amount} {currency}",
-      settlementFallback: "Wird zum HenryCo-Tageskurs in Ihre Lokalwährung abgerechnet.",
+      settlementFallback: "Wird zum Henry Onyx-Tageskurs in Ihre Lokalwährung abgerechnet.",
       ctas: { fund: "Wallet aufladen", withdraw: "Auszahlen" },
       tiles: {
         verifiedLabel: "Verifizierter Saldo",
-        verifiedFoot: "Übergreifend in HenryCo-Diensten nutzbar",
+        verifiedFoot: "Übergreifend in Henry Onyx-Diensten nutzbar",
         pendingFundingLabel: "Ausstehende Einzahlung",
         pendingFundingFoot: "Bleibt separat, bis Finance bestätigt",
         pendingWithdrawalLabel: "Für Auszahlung reserviert",
@@ -7356,7 +7356,7 @@ const DE: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "Wallet-Transaktionen",
       emptyTitle: "Noch keine Transaktionen",
-      emptyBody: "Laden Sie Ihre Wallet auf, und Ihr Aktivitätsfeed zeigt hier jede Gutschrift, Belastung, Rückerstattung und jeden Bonus über alle HenryCo-Dienste.",
+      emptyBody: "Laden Sie Ihre Wallet auf, und Ihr Aktivitätsfeed zeigt hier jede Gutschrift, Belastung, Rückerstattung und jeden Bonus über alle Henry Onyx-Dienste.",
       fallbackTitle: "Wallet-Transaktion",
     },
     funding: {
@@ -7381,11 +7381,11 @@ const DE: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "Support",
-      description: "Erhalten Sie Unterstützung für jeden HenryCo-Dienst.",
+      description: "Erhalten Sie Unterstützung für jeden Henry Onyx-Dienst.",
     },
     hero: {
       title: "Support",
-      description: "Erhalten Sie Unterstützung für jeden HenryCo-Dienst.",
+      description: "Erhalten Sie Unterstützung für jeden Henry Onyx-Dienst.",
       newRequestCta: "Neue Anfrage",
     },
     summary: {
@@ -7440,8 +7440,8 @@ const DE: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "HenryCo Wallet",
-      body: "Ihre HenryCo Wallet steht jederzeit als Zahlungsoption zur Verfügung.",
+      eyebrow: "Henry Onyx Wallet",
+      body: "Ihre Henry Onyx Wallet steht jederzeit als Zahlungsoption zur Verfügung.",
       manageCta: "Wallet verwalten",
     },
   },
@@ -7449,12 +7449,12 @@ const DE: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Gespeicherte Artikel",
       description:
-        "Artikel, die Sie aus einem HenryCo-Warenkorb beiseitegelegt haben — 90 Tage aufbewahrt, mit Hinweis eine Woche vor Ablauf.",
+        "Artikel, die Sie aus einem Henry Onyx-Warenkorb beiseitegelegt haben — 90 Tage aufbewahrt, mit Hinweis eine Woche vor Ablauf.",
     },
     hero: {
       title: "Für später gespeichert",
       description:
-        "Artikel, die Sie aus einem HenryCo-Warenkorb beiseitegelegt haben. Wir bewahren sie 90 Tage auf und warnen Sie eine Woche vor Ablauf.",
+        "Artikel, die Sie aus einem Henry Onyx-Warenkorb beiseitegelegt haben. Wir bewahren sie 90 Tage auf und warnen Sie eine Woche vor Ablauf.",
     },
     summary: {
       activeTemplate: "{count} aktiv",
@@ -7505,7 +7505,7 @@ const DE: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Dokumente",
       description:
-        "Ihre Quittungen, Zertifikate, Verträge und wichtigen Dateien — privat aufbewahrt und in jedem HenryCo-Bereich abrufbar.",
+        "Ihre Quittungen, Zertifikate, Verträge und wichtigen Dateien — privat aufbewahrt und in jedem Henry Onyx-Bereich abrufbar.",
     },
     hero: {
       eyebrow: "Persönlicher Tresor",
@@ -7547,7 +7547,7 @@ const DE: DeepPartial<AccountCopy> = {
     empty: {
       title: "Noch keine Dokumente",
       description:
-        "Ihre Dokumente, Quittungen und Zertifikate aus HenryCo-Diensten werden hier gespeichert.",
+        "Ihre Dokumente, Quittungen und Zertifikate aus Henry Onyx-Diensten werden hier gespeichert.",
     },
     summary: {
       countTemplate: "{count} Dokument{plural}",
@@ -7556,14 +7556,14 @@ const DE: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "Datenschutz & Aufbewahrung",
       title: "Ihre Dateien bleiben privat",
-      body: "Dokumente werden ruhend verschlüsselt, sind nur für Sie sichtbar und bleiben für die Laufzeit Ihres HenryCo-Kontos erhalten, sofern Sie sie nicht entfernen.",
+      body: "Dokumente werden ruhend verschlüsselt, sind nur für Sie sichtbar und bleiben für die Laufzeit Ihres Henry Onyx-Kontos erhalten, sofern Sie sie nicht entfernen.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Abonnements",
       description:
-        "Schreibgeschützte Übersicht aller aktiven Pläne, synchronisiert aus den HenryCo-Bereichen.",
+        "Schreibgeschützte Übersicht aller aktiven Pläne, synchronisiert aus den Henry Onyx-Bereichen.",
     },
     hero: {
       eyebrow: "Aktive Pläne",
@@ -7632,12 +7632,12 @@ const DE: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Empfehlungen",
       description:
-        "Laden Sie qualifizierte Kunden zu HenryCo ein und verfolgen Sie Prämien von ausstehend über geprüft bis gutgeschrieben.",
+        "Laden Sie qualifizierte Kunden zu Henry Onyx ein und verfolgen Sie Prämien von ausstehend über geprüft bis gutgeschrieben.",
     },
     hero: {
       title: "Empfehlungen",
       description:
-        "Laden Sie qualifizierte Kunden zu HenryCo ein und verfolgen Sie Prämien von ausstehend über geprüft bis gutgeschrieben.",
+        "Laden Sie qualifizierte Kunden zu Henry Onyx ein und verfolgen Sie Prämien von ausstehend über geprüft bis gutgeschrieben.",
     },
     code: {
       eyebrow: "Ihr Empfehlungscode",
@@ -7661,20 +7661,20 @@ const DE: DeepPartial<AccountCopy> = {
       eyebrow: "So funktioniert es",
       step1Title: "Teilen Sie Ihren Code",
       step1Body:
-        "Teilen Sie Ihren einzigartigen Code oder Link. Freunde, die mit Ihrem Link eine HenryCo-Subdomain besuchen, werden automatisch erfasst.",
+        "Teilen Sie Ihren einzigartigen Code oder Link. Freunde, die mit Ihrem Link eine Henry Onyx-Subdomain besuchen, werden automatisch erfasst.",
       step2Title: "Sie tätigen einen Umsatz",
       step2Body:
         "Nach der Anmeldung beginnt für die Empfehlung ein Sperrfenster von {days} Tagen. Das geworbene Konto wird nur einmal gezählt — Selbstempfehlungen, Haushaltsduplikate und wiederverwendete Anmeldungen qualifizieren nicht.",
       step3Title: "Prämien werden nach Qualifizierung freigegeben",
       step3Body:
-        "Qualifizierte Empfehlungen schreiben nach Finanzprüfung {amount} Ihrer HenryCo-Wallet gut. Ausstehende Prämien sind erst nach Freigabe ausgabefähig.",
+        "Qualifizierte Empfehlungen schreiben nach Finanzprüfung {amount} Ihrer Henry Onyx-Wallet gut. Ausstehende Prämien sind erst nach Freigabe ausgabefähig.",
     },
     policy: {
       eyebrow: "Empfehlungsrichtlinie",
       qualifying:
-        "Eine qualifizierende Conversion bedeutet, dass das geworbene Konto eine berechtigte HenryCo-Aktion abgeschlossen hat, die die Zahlungs- und Vertrauensprüfung bestanden hat.",
+        "Eine qualifizierende Conversion bedeutet, dass das geworbene Konto eine berechtigte Henry Onyx-Aktion abgeschlossen hat, die die Zahlungs- und Vertrauensprüfung bestanden hat.",
       enforcement:
-        "HenryCo kann Prämien für Selbstempfehlungen, doppelte Conversion-Schleifen, Stornos, Rückerstattungen oder verdächtige Prämienmuster zurückhalten, rückgängig machen oder stornieren.",
+        "Henry Onyx kann Prämien für Selbstempfehlungen, doppelte Conversion-Schleifen, Stornos, Rückerstattungen oder verdächtige Prämienmuster zurückhalten, rückgängig machen oder stornieren.",
       separation:
         "Ihr Dashboard zeigt Empfehlungen und Prämienverlauf getrennt an, damit erfasste Anmeldungen nicht mit gutgeschriebenen Wallet-Einnahmen verwechselt werden.",
     },
@@ -7718,7 +7718,7 @@ const DE: DeepPartial<AccountCopy> = {
   divisionCare: {
     metadata: {
       title: "Care · verknüpfte Buchungen",
-      description: "Verfolgen Sie jede HenryCo-Care-Buchung, die mit diesem Konto verknüpft ist – Status, Zahlungsprüfung und der nächste betriebliche Schritt an einem Ort.",
+      description: "Verfolgen Sie jede Henry Onyx-Care-Buchung, die mit diesem Konto verknüpft ist – Status, Zahlungsprüfung und der nächste betriebliche Schritt an einem Ort.",
     },
     hero: {
       eyebrow: "Care · live",
@@ -7910,7 +7910,7 @@ const DE: DeepPartial<AccountCopy> = {
         listings: "Inserate",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} von HenryCo verwaltet",
+        savedManagedTemplate: "{count} von Henry Onyx verwaltet",
         savedEmpty: "Angebote merken, um eine Liste aufzubauen",
         savedWith: "Jederzeit vergleichen und erneut ansehen",
         inquiriesEmpty: "Noch keine offenen Gespräche",
@@ -7926,7 +7926,7 @@ const DE: DeepPartial<AccountCopy> = {
       sideBody:
         "Inserat merken, Besichtigung anfragen oder Anfrage öffnen auf Henry Onyx Property — jede Aktion wird in diesen Kontoraum gespiegelt, damit Sie geräteübergreifend dort weitermachen, wo Sie aufgehört haben.",
       sideBodyMuted:
-        "Von HenryCo verwaltete Inserate tragen einen Verwaltet-Badge — Prüfung, Inspektion und Mietabwicklung werden vom Property-Team koordiniert.",
+        "Von Henry Onyx verwaltete Inserate tragen einen Verwaltet-Badge — Prüfung, Inspektion und Mietabwicklung werden vom Property-Team koordiniert.",
       breakdownAriaLabel: "Aktivitätsaufschlüsselung",
       breakdownLabel: "Nach Aktivität",
       breakdownLabels: {
@@ -7939,7 +7939,7 @@ const DE: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Starten Sie auf Henry Onyx Property.",
           blurb:
-            "Entdecken Sie Mietwohnungen, Verkaufsangebote und von HenryCo verwaltete Objekte. Merken Sie Ihre Favoriten — jede Anfrage, Besichtigung oder Inseratsmeldung landet automatisch hier.",
+            "Entdecken Sie Mietwohnungen, Verkaufsangebote und von Henry Onyx verwaltete Objekte. Merken Sie Ihre Favoriten — jede Anfrage, Besichtigung oder Inseratsmeldung landet automatisch hier.",
         },
         discover: {
           headlineTemplateSingular: "{count} gemerktes Zuhause.",
@@ -7960,7 +7960,7 @@ const DE: DeepPartial<AccountCopy> = {
     sections: {
       saved: "Gemerkte Auswahl",
       savedMetaEmpty: "Inserate auf Henry Onyx Property merken, um Ihre Liste aufzubauen.",
-      savedMetaTemplate: "{saved} gemerkt · {managed} von HenryCo verwaltet",
+      savedMetaTemplate: "{saved} gemerkt · {managed} von Henry Onyx verwaltet",
       activity: "Letzte Aktivität",
       activityMetaEmpty: "Anfragen, Besichtigungen und Inseratsprüfungen erscheinen hier in Echtzeit.",
       activityMetaTemplateSingular: "{count} Aktualisierung · neueste zuerst",
@@ -7969,7 +7969,7 @@ const DE: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "Noch keine gemerkten Objekte",
       savedBody:
-        "Entdecken Sie Mietwohnungen, Verkaufsangebote und von HenryCo verwaltete Objekte auf Property. Alles, was Sie merken, landet automatisch hier.",
+        "Entdecken Sie Mietwohnungen, Verkaufsangebote und von Henry Onyx verwaltete Objekte auf Property. Alles, was Sie merken, landet automatisch hier.",
       activityTitle: "Noch keine Property-Aktivität",
       activityBody:
         "Öffnen Sie ein Inserat auf Henry Onyx Property, um eine Besichtigung anzufragen oder eine Anfrage zu senden — jeder Schritt, von der ersten Nachricht bis zur Prüfung, erscheint hier.",
@@ -8001,7 +8001,7 @@ const DE: DeepPartial<AccountCopy> = {
   divisionJobs: {
     metadata: {
       title: "Jobs · Kandidaten-Dashboard",
-      description: "Verfolgen Sie jede mit diesem Konto verknüpfte HenryCo-Jobs-Bewerbung, gemerkte Stelle, Recruiter-Aktualisierung und Profilbereitschaft.",
+      description: "Verfolgen Sie jede mit diesem Konto verknüpfte Henry Onyx-Jobs-Bewerbung, gemerkte Stelle, Recruiter-Aktualisierung und Profilbereitschaft.",
     },
     header: {
       title: "Jobs",
@@ -8013,7 +8013,7 @@ const DE: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "Ihr Konto",
       headline: "Ihre Jobs-Aktivität, alles an einem Ort.",
-      body: "Bewerbungen, gemerkte Stellen, Recruiter-Updates und Profilbereitschaft sind mit Ihrem HenryCo-Konto verknüpft.",
+      body: "Bewerbungen, gemerkte Stellen, Recruiter-Updates und Profilbereitschaft sind mit Ihrem Henry Onyx-Konto verknüpft.",
       statsAriaLabel: "Jobs-Aktivitätsübersicht",
       statLabels: {
         applications: "Aktive Bewerbungen",
@@ -8141,7 +8141,7 @@ const DE: DeepPartial<AccountCopy> = {
         storyLabel: "Rollengeschichte",
         storyDetail: "Headline und Zusammenfassung erklären, was Sie tun, über einen leeren Eintrag hinaus.",
         verificationLabel: "Identitätsprüfung",
-        verificationDetail: "Das Jobs-Vertrauen bleibt begrenzt, bis Ihr HenryCo-Konto die Identitätsprüfung bestanden hat.",
+        verificationDetail: "Das Jobs-Vertrauen bleibt begrenzt, bis Ihr Henry Onyx-Konto die Identitätsprüfung bestanden hat.",
         proofLabel: "Arbeitsnachweise",
         proofDetail: "Lebenslauf plus Portfolio-Nachweise erleichtern den Sprung in die Vorauswahl.",
         skillsLabel: "Erfasste Fähigkeiten",
@@ -8167,7 +8167,7 @@ const DE: DeepPartial<AccountCopy> = {
   divisionMarketplace: {
     metadata: {
       title: "Marketplace · Bestellungen & Verkaufsaktivität",
-      description: "Verfolgen Sie jede HenryCo-Marketplace-Bestellung, jeden Streitfall und jede Verkäuferauszahlung, die mit diesem Konto verknüpft ist – Käuferaktivität und Verkäufer-Workspace gespiegelt in einem Raum, in Echtzeit.",
+      description: "Verfolgen Sie jede Henry Onyx-Marketplace-Bestellung, jeden Streitfall und jede Verkäuferauszahlung, die mit diesem Konto verknüpft ist – Käuferaktivität und Verkäufer-Workspace gespiegelt in einem Raum, in Echtzeit.",
     },
     hero: {
       eyebrow: "Marketplace · live",
@@ -8288,7 +8288,7 @@ const DE: DeepPartial<AccountCopy> = {
       application: {
         kicker: "Verkäuferbewerbung",
         bodyWithStoreTemplate: "Shop: {name}",
-        bodyDefault: "Bewerbung in der HenryCo-Prüfwarteschlange.",
+        bodyDefault: "Bewerbung in der Henry Onyx-Prüfwarteschlange.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "Status ansehen",
         defaultStatus: "eingereicht",
@@ -8337,12 +8337,12 @@ const DE: DeepPartial<AccountCopy> = {
   "divisionLogistics": {
     "metadata": {
       "title": "Logistik · Lieferungen und Sendungen",
-      "description": "Jede Abholung, Zustellung, ETA und Liefernachweis von HenryCo Logistik, die mit diesem Konto verknüpft sind — vom Logistiknetz in einen ruhigen Raum gespiegelt."
+      "description": "Jede Abholung, Zustellung, ETA und Liefernachweis von Henry Onyx Logistik, die mit diesem Konto verknüpft sind — vom Logistiknetz in einen ruhigen Raum gespiegelt."
     },
     "hero": {
       "ariaLabel": "Logistik-Überblick",
-      "eyebrow": "HenryCo Logistik",
-      "brand": "HenryCo Logistik",
+      "eyebrow": "Henry Onyx Logistik",
+      "brand": "Henry Onyx Logistik",
       "title": "Jedes Paket, ein Raum.",
       "body": "Abholungen, Zustellungen, ETAs und Liefernachweise — alles aus dem Logistiknetz in Ihr Konto gespiegelt. Buchen Sie einmal auf",
       "bodyDomain": " logistics.henryonyx.com",
@@ -8461,7 +8461,7 @@ const DE: DeepPartial<AccountCopy> = {
   "divisionLearn": {
     "metadata": {
       "title": "Learn · Lern-Dashboard",
-      "description": "Verfolgen Sie jede HenryCo-Learn-Einschreibung, Lektion, Quizergebnis, Zertifizierung, zugewiesene Schulung und Lehrbewerbung, die mit diesem Konto verknüpft ist – Katalog auf Learn, Fortschritt hier gespiegelt."
+      "description": "Verfolgen Sie jede Henry Onyx-Learn-Einschreibung, Lektion, Quizergebnis, Zertifizierung, zugewiesene Schulung und Lehrbewerbung, die mit diesem Konto verknüpft ist – Katalog auf Learn, Fortschritt hier gespiegelt."
     },
     "hero": {
       "ariaLabel": "Learn-Übersicht",
@@ -8498,7 +8498,7 @@ const DE: DeepPartial<AccountCopy> = {
       "applyToTeachCta": "Als Lehrkraft bewerben",
       "state": {
         "empty": {
-          "headline": "Starten Sie Ihre HenryCo-Learn-Reise.",
+          "headline": "Starten Sie Ihre Henry Onyx-Learn-Reise.",
           "blurb": "Durchsuchen Sie den Katalog, schreiben Sie sich in einen Kurs ein, und jede Lektion, jedes Quiz und jedes Zertifikat synchronisieren sich automatisch in diesen Bereich."
         },
         "active": {
@@ -8515,7 +8515,7 @@ const DE: DeepPartial<AccountCopy> = {
     },
     "sections": {
       "coursesTitle": "Lernen fortsetzen",
-      "coursesMetaEmpty": "Durchsuchen Sie den HenryCo-Learn-Katalog und schreiben Sie sich in Ihren ersten Kurs ein.",
+      "coursesMetaEmpty": "Durchsuchen Sie den Henry Onyx-Learn-Katalog und schreiben Sie sich in Ihren ersten Kurs ein.",
       "coursesMetaTemplate": "{active} aktiv · {completed} abgeschlossen",
       "extrasTitle": "Nachweise, Zuweisungen und Lehre",
       "extrasMeta": "Zertifikate, zugewiesene Schulungen, gemerkte Kurse und Lehrbewerbung leben hier.",
@@ -8541,7 +8541,7 @@ const DE: DeepPartial<AccountCopy> = {
       "certificatesTitle": "Zertifikate",
       "assignmentsTitle": "Zugewiesene Lerninhalte",
       "savedTitle": "Gemerkte Kurse",
-      "teachingTitle": "Mit HenryCo unterrichten",
+      "teachingTitle": "Mit Henry Onyx unterrichten",
       "statusLabel": "Status",
       "expertiseLabel": "Fachgebiet",
       "topicsLabel": "Themen",
@@ -8557,7 +8557,7 @@ const DE: DeepPartial<AccountCopy> = {
   divisionStudio: {
     metadata: {
       title: "Studio · Projekträume",
-      description: "Verfolgen Sie jede HenryCo-Studio-Zusammenarbeit, die mit diesem Konto verknüpft ist — Angebote, Meilensteine, Zahlungen, Lieferobjekte und Aktivitäten in einem Raum.",
+      description: "Verfolgen Sie jede Henry Onyx-Studio-Zusammenarbeit, die mit diesem Konto verknüpft ist — Angebote, Meilensteine, Zahlungen, Lieferobjekte und Aktivitäten in einem Raum.",
     },
     hero: {
       eyebrowLive: "Studio · live",
@@ -8566,7 +8566,7 @@ const DE: DeepPartial<AccountCopy> = {
       sideAriaLabel: "So funktioniert dieser Raum",
       sideLabel: "So funktioniert dieser Raum",
       sideTitle: "Ein Projektraum, echter Stand.",
-      sideBody: "Angebote, Meilensteine, Zahlungsnachweise, Lieferobjekte und Kommunikationssignale bleiben mit derselben HenryCo-Identität verbunden, die Sie überall verwenden. Das Dashboard unten zeigt den tatsächlichen Fortschritt des Studio-Teams – keine Statusliste.",
+      sideBody: "Angebote, Meilensteine, Zahlungsnachweise, Lieferobjekte und Kommunikationssignale bleiben mit derselben Henry Onyx-Identität verbunden, die Sie überall verwenden. Das Dashboard unten zeigt den tatsächlichen Fortschritt des Studio-Teams – keine Statusliste.",
       breakdownAriaLabel: "Aktivitätsaufschlüsselung",
       breakdownLabel: "Nach Status",
       tiles: {
@@ -8592,7 +8592,7 @@ const DE: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "Starten Sie ein Studio-Briefing.",
-          blurb: "Wenn ein Angebot oder Projekt mit Ihrer HenryCo-Identität live geht, erscheint hier der synchronisierte Studio-Raum — Meilensteine, Zahlungen, Lieferobjekte und der nächste Schritt zusammen.",
+          blurb: "Wenn ein Angebot oder Projekt mit Ihrer Henry Onyx-Identität live geht, erscheint hier der synchronisierte Studio-Raum — Meilensteine, Zahlungen, Lieferobjekte und der nächste Schritt zusammen.",
           ctaPrimary: "Briefing starten",
           ctaSecondary: "Studio öffnen",
         },
@@ -8645,7 +8645,7 @@ const DE: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "Noch keine Studio-Arbeitsräume verknüpft",
-      projectsBody: "Sobald ein Angebot oder Projekt mit Ihrer HenryCo-Identität erstellt wird, erscheint hier der synchronisierte Studio-Raum — Meilensteine, Zahlungen, Lieferobjekte und der nächste Schritt.",
+      projectsBody: "Sobald ein Angebot oder Projekt mit Ihrer Henry Onyx-Identität erstellt wird, erscheint hier der synchronisierte Studio-Raum — Meilensteine, Zahlungen, Lieferobjekte und der nächste Schritt.",
       paymentsTitle: "Noch keine Zahlungscheckpoints",
       paymentsBody: "Kommerzielle Meilensteine — Anzahlung, Zwischenstand und Lieferung — erscheinen hier, sobald ein Angebot mit Ihnen live geht.",
       activityTitle: "Noch keine Studio-Aktivität",
@@ -8727,7 +8727,7 @@ const DE: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "Sie haben noch keine Adressen hinzugefügt. Fügen Sie Ihre erste hinzu, um den Checkout über HenryCo zu beschleunigen.",
+        "Sie haben noch keine Adressen hinzugefügt. Fügen Sie Ihre erste hinzu, um den Checkout über Henry Onyx zu beschleunigen.",
     },
     add: {
       cta: "Adresse hinzufügen",
@@ -8741,10 +8741,10 @@ const DE: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Konto durchsuchen",
       description:
-        "Durchsuchen Sie HenryCo-Konto-Workflows und verbundene Abteilungs-Routen.",
+        "Durchsuchen Sie Henry Onyx-Konto-Workflows und verbundene Abteilungs-Routen.",
     },
     hero: {
-      title: "Durchsuchen Sie Ihre HenryCo-Workflows.",
+      title: "Durchsuchen Sie Ihre Henry Onyx-Workflows.",
       description:
         "Springen Sie direkt zu bestimmten Kontoaktionen und verbundenen Abteilungs-Routen, ohne auf generische Dashboards zurückzufallen.",
     },
@@ -8779,9 +8779,9 @@ const IT: DeepPartial<AccountCopy> = {
   },
   "overview": {
     "welcomeBack": "Bentornato",
-    "description": "Il tuo centro di comando HenryCo: tutto in tutte le divisioni, in un unico posto.",
+    "description": "Il tuo centro di comando Henry Onyx: tutto in tutte le divisioni, in un unico posto.",
     "walletBalance": "Saldo del portafoglio",
-    "walletHint": "Portafoglio condiviso · Utilizzo tra i servizi HenryCo",
+    "walletHint": "Portafoglio condiviso · Utilizzo tra i servizi Henry Onyx",
     "notifications": "Notifiche",
     "allCaughtUp": "Tutto preso",
     "unreadMessages": "Messaggi non letti",
@@ -8801,7 +8801,7 @@ const IT: DeepPartial<AccountCopy> = {
     "noOpenRequests": "Nessuna richiesta aperta",
     "referrals": "Referral",
     "inviteAndEarn": "Invita e guadagna",
-    "shareHenryCo": "Condividi HenryCo con altri",
+    "shareHenryCo": "Condividi Henry Onyx con altri",
     "transactions": "Transazioni",
     "viewHistory": "Visualizza la cronologia",
     "walletActivity": "Attività e pagamenti del portafoglio",
@@ -8828,7 +8828,7 @@ const IT: DeepPartial<AccountCopy> = {
     "noUrgentTasks": "Nessuna attività urgente sull'account in questo momento. Ti trovi in ​​uno stato operativo sano.",
     "viewTaskQueue": "Visualizza la coda completa delle attività",
     "smartRecommendations": "Raccomandazioni",
-    "smartRecommendationsEmpty": "Continua a utilizzare i servizi HenryCo e i consigli si adatteranno alla tua attività.",
+    "smartRecommendationsEmpty": "Continua a utilizzare i servizi Henry Onyx e i consigli si adatteranno alla tua attività.",
     "smartHomeEmptyFallback": "Benvenuto — inizia con un piccolo primo passo. I tuoi segnali dal vivo appariranno qui non appena ci sarà attività.",
     "recommendationReason": "Suggerito dall'attività del tuo account e dallo stato di attendibilità ({confidence} confidenza)",
     "recentActivity": "Attività recente",
@@ -8850,10 +8850,10 @@ const IT: DeepPartial<AccountCopy> = {
       "jobsSaved": "Segui i ruoli salvati"
     },
     "recommendationDescriptions": {
-      "trustNext": "Sblocca più azioni su HenryCo.",
+      "trustNext": "Sblocca più azioni su Henry Onyx.",
       "profileNext": "Un profilo completo migliora il supporto e la continuità del servizio.",
       "jobsSaved": "Rivisita i ruoli che hai già salvato e agisci di conseguenza.",
-      "fallback": "Continua a utilizzare i servizi HenryCo e i consigli si adatteranno alla tua attività."
+      "fallback": "Continua a utilizzare i servizi Henry Onyx e i consigli si adatteranno alla tua attività."
     }
   },
   "tasks": {
@@ -8911,14 +8911,14 @@ const IT: DeepPartial<AccountCopy> = {
     "headlineCalmSingular": "{count} elemento nella tua coda.",
     "headlineCalmPlural": "{count} elementi nella tua coda.",
     "blurbEmpty": "Il tuo account è in ordine — verifica, pagamenti e corsie sensibili alle revisioni sono tutti puliti. Ti mostreremo automaticamente qui la prossima mossa appena si presenta.",
-    "blurbRisk": "Questi elementi bloccano le azioni a maggiore fiducia in HenryCo — prelievi dal portafoglio, approvazione venditore marketplace, verifica datore di lavoro. Risolverli sblocca ciascuna corsia.",
-    "blurbActive": "Ogni riga ti porta alla prossima azione con un solo tocco. Filtri, etichette di priorità e collegamenti restano coerenti in tutte le divisioni HenryCo.",
+    "blurbRisk": "Questi elementi bloccano le azioni a maggiore fiducia in Henry Onyx — prelievi dal portafoglio, approvazione venditore marketplace, verifica datore di lavoro. Risolverli sblocca ciascuna corsia.",
+    "blurbActive": "Ogni riga ti porta alla prossima azione con un solo tocco. Filtri, etichette di priorità e collegamenti restano coerenti in tutte le divisioni Henry Onyx.",
     "metaEmpty": "Sei a posto. Qualsiasi novità apparirà qui appena arriva.",
     "metaCount": "{count} aperti · ordinati per priorità e stato bloccante."
   },
   "security": {
     "title": "Sicurezza",
-    "description": "Controlla l'attività di sicurezza recente, modifica la password e termina le sessioni HenryCo quando necessario.",
+    "description": "Controlla l'attività di sicurezza recente, modifica la password e termina le sessioni Henry Onyx quando necessario.",
     "heroAriaLabel": "Panoramica della sicurezza",
     "hero": {
       "trustScoreLabel": "Punteggio di fiducia",
@@ -8939,7 +8939,7 @@ const IT: DeepPartial<AccountCopy> = {
         "risk": "Abbiamo segnalato un'attività che richiede la tua attenzione."
       },
       "statusBlurb": {
-        "secure": "Nessun evento sospetto, la verifica è solida e ogni azione a maggiore fiducia offerta da HenryCo è aperta per te.",
+        "secure": "Nessun evento sospetto, la verifica è solida e ogni azione a maggiore fiducia offerta da Henry Onyx è aperta per te.",
         "watch": "Nulla è rotto — ma alcuni segnali (conferma email, revisione identità, contatti duplicati) farebbero salire il tuo punteggio di fiducia e sbloccherebbero più corsie.",
         "risk": "Eventi recenti sono stati classificati come rischio elevato. Esamina il flusso di attività qui sotto e cambia la password se qualcosa ti sembra estraneo."
       }
@@ -8958,7 +8958,7 @@ const IT: DeepPartial<AccountCopy> = {
     "noSuspiciousEventFoot": "Nulla segnalato nell'ultima finestra di revisione.",
     "activityAriaLabel": "Eventi di sicurezza recenti",
     "trustProfile": "Profilo di fiducia",
-    "trustDescription": "La fiducia è operativa in tutto l'account. Ora controlla le azioni aziendali di valore più elevato, la postura di moderazione e un'idoneità più forte per i moduli HenryCo.",
+    "trustDescription": "La fiducia è operativa in tutto l'account. Ora controlla le azioni aziendali di valore più elevato, la postura di moderazione e un'idoneità più forte per i moduli Henry Onyx.",
     "trustScore": "Punteggio di affidabilità dell'account",
     "signalLabels": {
       "emailVerified": "E-mail verificata",
@@ -8997,7 +8997,7 @@ const IT: DeepPartial<AccountCopy> = {
     "moreVerificationNeeded": "Sono necessarie ulteriori verifiche",
     "trustGuide": "Guida allo stato di fiducia",
     "whatCurrentStateMeans": "Cosa significa il tuo stato attuale",
-    "whatCurrentStateBody": "Questo stato determina l'accesso a flussi di lavoro e azioni aziendali di valore superiore in HenryCo.",
+    "whatCurrentStateBody": "Questo stato determina l'accesso a flussi di lavoro e azioni aziendali di valore superiore in Henry Onyx.",
     "whatToDoNext": "Cosa fare dopo",
     "whatToDoNextBody": "Completa i requisiti elencati per sbloccare la corsia di fiducia successiva.",
     "currentRestrictions": "Azioni attualmente limitate",
@@ -9051,7 +9051,7 @@ const IT: DeepPartial<AccountCopy> = {
         "verification": "La fiducia Premium è riservata agli account che hanno già superato la verifica dell'identità.",
         "age": "Mantieni una cronologia dell'account pulita più a lungo.",
         "transactions": "Crea un record di transazioni verificato più forte.",
-        "activity": "Utilizza più divisioni HenryCo con risultati puliti.",
+        "activity": "Utilizza più divisioni Henry Onyx con risultati puliti.",
         "overlap": "Mantieni chiara la revisione dei contatti duplicati prima che possa essere concessa la fiducia premium."
       }
     }
@@ -9069,12 +9069,12 @@ const IT: DeepPartial<AccountCopy> = {
     "updatePassword": "Aggiorna password"
   },
   "globalSignOut": {
-    "title": "Termina ogni HenryCo sessione",
-    "description": "In questo modo l'account corrente verrà disconnesso da tutte le divisioni e dispositivi HenryCo, quindi verrai riportato alla superficie di accesso dell'account.",
+    "title": "Termina ogni Henry Onyx sessione",
+    "description": "In questo modo l'account corrente verrà disconnesso da tutte le divisioni e dispositivi Henry Onyx, quindi verrai riportato alla superficie di accesso dell'account.",
     "note": "L'attività recente del dispositivo e della sessione rimane visibile di seguito anche se la revoca in tempo reale per dispositivo non è ancora esposta come controllo separato.",
-    "unavailable": "Non è possibile terminare ogni sessione di HenryCo in questo momento. Riprova tra un attimo.",
+    "unavailable": "Non è possibile terminare ogni sessione di Henry Onyx in questo momento. Riprova tra un attimo.",
     "ending": "Fine di tutte le sessioni...",
-    "endAllSessions": "Esci da tutte le sessioni HenryCo"
+    "endAllSessions": "Esci da tutte le sessioni Henry Onyx"
   },
   "errorBoundary": {
     "kicker": "Durata dell'account",
@@ -9085,9 +9085,9 @@ const IT: DeepPartial<AccountCopy> = {
   },
   "activity": {
     "title": "Attività",
-    "description": "Tutto ciò che hai fatto in tutte le divisioni HenryCo.",
+    "description": "Tutto ciò che hai fatto in tutte le divisioni Henry Onyx.",
     "emptyTitle": "Nessuna attività al momento",
-    "emptyDescription": "La tua attività tra le divisioni apparirà qui man mano che usi i servizi HenryCo.",
+    "emptyDescription": "La tua attività tra le divisioni apparirà qui man mano che usi i servizi Henry Onyx.",
     "statusLabels": {
       "pending": "In attesa",
       "open": "Aperto",
@@ -9111,8 +9111,8 @@ const IT: DeepPartial<AccountCopy> = {
       "statusEyebrow": "Stato",
       "pdfNote": "Il PDF riporta ogni filtro impostato sopra nell'intestazione del documento — ciò che vedi è ciò che scarichi.",
       "downloadLabel": "Scarica l'estratto",
-      "downloadFilename": "HenryCo-Storico-Transazioni.pdf",
-      "shareTitle": "Storico transazioni HenryCo",
+      "downloadFilename": "Henry Onyx-Storico-Transazioni.pdf",
+      "shareTitle": "Storico transazioni Henry Onyx",
       "typeLabels": {
         "payment": "pagamento",
         "wallet_credit": "accredito portafoglio",
@@ -9126,18 +9126,18 @@ const IT: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "Notifiche",
-      description: "Ogni aggiornamento HenryCo — wallet, supporto, lavori, marketplace, care e altro — in una casella in tempo reale.",
+      description: "Ogni aggiornamento Henry Onyx — wallet, supporto, lavori, marketplace, care e altro — in una casella in tempo reale.",
     },
     hero: {
-      eyebrow: "HenryCo · notifiche in tempo reale",
+      eyebrow: "Henry Onyx · notifiche in tempo reale",
       ariaOverview: "Panoramica notifiche",
       ariaVolume: "Volume notifiche",
       ariaByDivision: "Per divisione",
-      headlineZero: "Casella azzerata su HenryCo.",
+      headlineZero: "Casella azzerata su Henry Onyx.",
       headlineOne: "Una cosa attende la tua attenzione.",
       headlineFew: "{count} notifiche da gestire.",
       headlineMany: "{count} aggiornamenti tra le tue divisioni.",
-      blurbZero: "Tutto ciò che HenryCo invia arriva qui in tempo reale — wallet, supporto, lavori, marketplace, care e altro.",
+      blurbZero: "Tutto ciò che Henry Onyx invia arriva qui in tempo reale — wallet, supporto, lavori, marketplace, care e altro.",
       blurbStale: "Elementi più vecchi si sono accumulati. Scorri per archiviare, tocca per aprire o vai direttamente a un thread.",
       blurbToday: "Oggi sono arrivate {count}. Usa i filtri per concentrarti su una singola divisione o sfoglia solo i non letti.",
       tileUnreadLabel: "Non lette",
@@ -9180,7 +9180,7 @@ const IT: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "Tutto sotto controllo.",
-      inboxBody: "L’attività di tutto HenryCo appare qui non appena accade.",
+      inboxBody: "L’attività di tutto Henry Onyx appare qui non appena accade.",
       filterTitle: "Nessuna attività in questa vista.",
       filterBody: "Prova un filtro diverso.",
     },
@@ -9194,11 +9194,11 @@ const IT: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "Calendario · HenryCo",
+    metaTitle: "Calendario · Henry Onyx",
     metaDescription:
       "Agenda multi-portale — prenotazioni Care, visite immobiliari, colloqui Jobs, traguardi Studio, lezioni Learn, finestre logistiche.",
     heroAriaLabel: "Panoramica del calendario",
-    heroEyebrow: "HenryCo · calendario multi-portale",
+    heroEyebrow: "Henry Onyx · calendario multi-portale",
     tileVolumeAriaLabel: "Volume del calendario",
     tileEventsLabel: "Eventi",
     tileEventsFoot: "Prossimi 28 giorni",
@@ -9279,7 +9279,7 @@ const IT: DeepPartial<AccountCopy> = {
       headlineEmpty: "Le ricevute appariranno qui.",
       headlineWithReceipts: "Ogni ricevuta, in un solo posto.",
       blurb:
-        "Ogni pagamento su HenryCo atterra qui come PDF di marca scaricabile — prenotazioni Care, ordini Marketplace, fatture Studio, spedizioni Logistics, certificati Learn.",
+        "Ogni pagamento su Henry Onyx atterra qui come PDF di marca scaricabile — prenotazioni Care, ordini Marketplace, fatture Studio, spedizioni Logistics, certificati Learn.",
       totalPaidLabel: "Pagato · a vita",
       thisMonthLabel: "Pagato · questo mese",
       thisMonthFoot: "Ricevute datate in questo mese di calendario",
@@ -9298,7 +9298,7 @@ const IT: DeepPartial<AccountCopy> = {
     empty: {
       title: "Ancora nessuna fattura",
       description:
-        "Le tue fatture e ricevute appariranno qui dopo aver effettuato pagamenti nei servizi HenryCo.",
+        "Le tue fatture e ricevute appariranno qui dopo aver effettuato pagamenti nei servizi Henry Onyx.",
     },
     statuses: {
       paid: "Pagata",
@@ -9330,12 +9330,12 @@ const IT: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "Messaggi · HenryCo",
+      title: "Messaggi · Henry Onyx",
       description:
         "Un’unica casella per supporto, marketplace, lavoro, studio, care, immobili, logistica e formazione.",
     },
     hero: {
-      eyebrow: "HenryCo · casella unificata",
+      eyebrow: "Henry Onyx · casella unificata",
       ariaLabel: "Panoramica della casella",
       ariaTiles: "Volume della casella",
       ariaSide: "Per portale",
@@ -9344,7 +9344,7 @@ const IT: DeepPartial<AccountCopy> = {
         "Ogni portale alimenta questa unica casella. Supporto, ordini marketplace, colloqui di lavoro, progetti studio e prenotazioni care compaiono qui in ordine cronologico.",
     },
     headlines: {
-      zero: "Casella vuota in tutta HenryCo.",
+      zero: "Casella vuota in tutta Henry Onyx.",
       calmOne: "Un thread aspetta una tua risposta.",
       calmMany: "{count} thread aperti.",
       busy: "{unread} non letti · {open} aperti nei tuoi portali.",
@@ -9411,14 +9411,14 @@ const IT: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "Saldo del portafoglio",
-      eyebrow: "Portafoglio HenryCo · live",
+      eyebrow: "Portafoglio Henry Onyx · live",
       availableLabel: "Saldo disponibile",
       balanceAriaTemplate: "Saldo disponibile {amount} {currency}",
-      settlementFallback: "Liquidato nella tua valuta locale al tasso HenryCo del giorno.",
+      settlementFallback: "Liquidato nella tua valuta locale al tasso Henry Onyx del giorno.",
       ctas: { fund: "Ricarica portafoglio", withdraw: "Preleva" },
       tiles: {
         verifiedLabel: "Saldo verificato",
-        verifiedFoot: "Spendibile in tutti i servizi HenryCo",
+        verifiedFoot: "Spendibile in tutti i servizi Henry Onyx",
         pendingFundingLabel: "Ricarica in attesa",
         pendingFundingFoot: "Resta separata fino alla conferma di Finance",
         pendingWithdrawalLabel: "Trattenuto per prelievo",
@@ -9497,7 +9497,7 @@ const IT: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "Transazioni del portafoglio",
       emptyTitle: "Ancora nessuna transazione",
-      emptyBody: "Ricarica il tuo portafoglio e il flusso di attività mostrerà ogni accredito, addebito, rimborso e bonus tra i servizi HenryCo.",
+      emptyBody: "Ricarica il tuo portafoglio e il flusso di attività mostrerà ogni accredito, addebito, rimborso e bonus tra i servizi Henry Onyx.",
       fallbackTitle: "Transazione del portafoglio",
     },
     funding: {
@@ -9522,11 +9522,11 @@ const IT: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "Assistenza",
-      description: "Ricevi aiuto per qualsiasi servizio HenryCo.",
+      description: "Ricevi aiuto per qualsiasi servizio Henry Onyx.",
     },
     hero: {
       title: "Assistenza",
-      description: "Ricevi aiuto per qualsiasi servizio HenryCo.",
+      description: "Ricevi aiuto per qualsiasi servizio Henry Onyx.",
       newRequestCta: "Nuova richiesta",
     },
     summary: {
@@ -9581,8 +9581,8 @@ const IT: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "Portafoglio HenryCo",
-      body: "Il tuo portafoglio HenryCo è sempre disponibile come opzione di pagamento.",
+      eyebrow: "Portafoglio Henry Onyx",
+      body: "Il tuo portafoglio Henry Onyx è sempre disponibile come opzione di pagamento.",
       manageCta: "Gestisci portafoglio",
     },
   },
@@ -9590,12 +9590,12 @@ const IT: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Articoli salvati",
       description:
-        "Articoli messi da parte da un carrello HenryCo, conservati per 90 giorni con un avviso una settimana prima della scadenza.",
+        "Articoli messi da parte da un carrello Henry Onyx, conservati per 90 giorni con un avviso una settimana prima della scadenza.",
     },
     hero: {
       title: "Salvati per dopo",
       description:
-        "Articoli messi da parte da un carrello HenryCo. Li conserviamo per 90 giorni e ti avvisiamo una settimana prima della scadenza.",
+        "Articoli messi da parte da un carrello Henry Onyx. Li conserviamo per 90 giorni e ti avvisiamo una settimana prima della scadenza.",
     },
     summary: {
       activeTemplate: "{count} attivo/i",
@@ -9646,7 +9646,7 @@ const IT: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Documenti",
       description:
-        "Le tue ricevute, certificati, contratti e file importanti — custoditi privatamente e accessibili in ogni divisione HenryCo.",
+        "Le tue ricevute, certificati, contratti e file importanti — custoditi privatamente e accessibili in ogni divisione Henry Onyx.",
     },
     hero: {
       eyebrow: "Cassaforte personale",
@@ -9688,7 +9688,7 @@ const IT: DeepPartial<AccountCopy> = {
     empty: {
       title: "Ancora nessun documento",
       description:
-        "I tuoi documenti, ricevute e certificati dei servizi HenryCo saranno conservati qui.",
+        "I tuoi documenti, ricevute e certificati dei servizi Henry Onyx saranno conservati qui.",
     },
     summary: {
       countTemplate: "{count} documento{plural}",
@@ -9697,14 +9697,14 @@ const IT: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "Privacy e conservazione",
       title: "I tuoi file restano privati",
-      body: "I documenti sono cifrati a riposo, visibili solo a te e conservati per tutta la durata del tuo account HenryCo, salvo eliminazione.",
+      body: "I documenti sono cifrati a riposo, visibili solo a te e conservati per tutta la durata del tuo account Henry Onyx, salvo eliminazione.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Abbonamenti",
       description:
-        "Riepilogo in sola lettura dei piani attivi sincronizzati dalle divisioni HenryCo.",
+        "Riepilogo in sola lettura dei piani attivi sincronizzati dalle divisioni Henry Onyx.",
     },
     hero: {
       eyebrow: "Piani attivi",
@@ -9773,12 +9773,12 @@ const IT: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Referenze",
       description:
-        "Invita clienti qualificati su HenryCo e segui i premi attraverso gli stati in sospeso, verificati e accreditati.",
+        "Invita clienti qualificati su Henry Onyx e segui i premi attraverso gli stati in sospeso, verificati e accreditati.",
     },
     hero: {
       title: "Referenze",
       description:
-        "Invita clienti qualificati su HenryCo e segui i premi attraverso gli stati in sospeso, verificati e accreditati.",
+        "Invita clienti qualificati su Henry Onyx e segui i premi attraverso gli stati in sospeso, verificati e accreditati.",
     },
     code: {
       eyebrow: "Il tuo codice referenza",
@@ -9802,20 +9802,20 @@ const IT: DeepPartial<AccountCopy> = {
       eyebrow: "Come funziona",
       step1Title: "Condividi il tuo codice",
       step1Body:
-        "Condividi il tuo codice o link unico. Gli amici che visitano un sottodominio HenryCo con il tuo link vengono tracciati automaticamente.",
+        "Condividi il tuo codice o link unico. Gli amici che visitano un sottodominio Henry Onyx con il tuo link vengono tracciati automaticamente.",
       step2Title: "Effettuano una transazione",
       step2Body:
         "Dopo l’iscrizione, la referenza entra in una finestra di blocco di {days} giorni. Tracciamo l’account segnalato una sola volta — le auto-referenze, i duplicati di nucleo familiare e le iscrizioni riciclate non si qualificano.",
       step3Title: "I premi si sbloccano dopo la qualifica",
       step3Body:
-        "Le referenze qualificate accreditano {amount} sul tuo portafoglio HenryCo dopo la revisione finanziaria. I premi in sospeso non sono spendibili finché non vengono autorizzati.",
+        "Le referenze qualificate accreditano {amount} sul tuo portafoglio Henry Onyx dopo la revisione finanziaria. I premi in sospeso non sono spendibili finché non vengono autorizzati.",
     },
     policy: {
       eyebrow: "Politica delle referenze",
       qualifying:
-        "Una conversione qualificante significa che l’account segnalato ha completato un’azione HenryCo idonea che ha superato la verifica di pagamento e di affidabilità.",
+        "Una conversione qualificante significa che l’account segnalato ha completato un’azione Henry Onyx idonea che ha superato la verifica di pagamento e di affidabilità.",
       enforcement:
-        "HenryCo può sospendere, annullare o cancellare i premi in caso di auto-referenze, cicli di conversione duplicati, storni, rimborsi o schemi di premi sospetti.",
+        "Henry Onyx può sospendere, annullare o cancellare i premi in caso di auto-referenze, cicli di conversione duplicati, storni, rimborsi o schemi di premi sospetti.",
       separation:
         "La tua dashboard mostra separatamente le referenze e la cronologia dei premi affinché le iscrizioni tracciate non vengano confuse con guadagni accreditati al portafoglio.",
     },
@@ -10051,7 +10051,7 @@ const IT: DeepPartial<AccountCopy> = {
         listings: "Annunci",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} gestiti da HenryCo",
+        savedManagedTemplate: "{count} gestiti da Henry Onyx",
         savedEmpty: "Salva annunci per costruire una selezione",
         savedWith: "Confronta e rivedi quando vuoi",
         inquiriesEmpty: "Nessuna conversazione aperta",
@@ -10067,7 +10067,7 @@ const IT: DeepPartial<AccountCopy> = {
       sideBody:
         "Salva un annuncio, richiedi una visita o apri una richiesta su Henry Onyx Property — ogni azione si riflette in questa stanza del conto per riprendere da dove avevi lasciato, su tutti i dispositivi.",
       sideBodyMuted:
-        "Gli annunci gestiti da HenryCo riportano un badge Gestito — verifiche, ispezioni e seguiti di locazione sono coordinati dal team Property.",
+        "Gli annunci gestiti da Henry Onyx riportano un badge Gestito — verifiche, ispezioni e seguiti di locazione sono coordinati dal team Property.",
       breakdownAriaLabel: "Ripartizione attività",
       breakdownLabel: "Per attività",
       breakdownLabels: {
@@ -10080,7 +10080,7 @@ const IT: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Inizia a esplorare Henry Onyx Property.",
           blurb:
-            "Scopri locazioni residenziali, annunci di vendita e immobili gestiti da HenryCo. Salva i tuoi preferiti e ogni richiesta, visita o seguito di annuncio arriva qui automaticamente.",
+            "Scopri locazioni residenziali, annunci di vendita e immobili gestiti da Henry Onyx. Salva i tuoi preferiti e ogni richiesta, visita o seguito di annuncio arriva qui automaticamente.",
         },
         discover: {
           headlineTemplateSingular: "{count} casa in selezione.",
@@ -10101,7 +10101,7 @@ const IT: DeepPartial<AccountCopy> = {
     sections: {
       saved: "Selezione salvata",
       savedMetaEmpty: "Salva annunci su Henry Onyx Property per costruire la tua selezione.",
-      savedMetaTemplate: "{saved} salvati · {managed} gestiti da HenryCo",
+      savedMetaTemplate: "{saved} salvati · {managed} gestiti da Henry Onyx",
       activity: "Attività recente",
       activityMetaEmpty: "Richieste, visite e revisioni degli annunci si riflettono qui in tempo reale.",
       activityMetaTemplateSingular: "{count} aggiornamento · prima il più recente",
@@ -10110,7 +10110,7 @@ const IT: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "Ancora nessun immobile salvato",
       savedBody:
-        "Scopri locazioni residenziali, annunci di vendita e immobili gestiti da HenryCo su Property. Tutto ciò che salvi arriva qui automaticamente.",
+        "Scopri locazioni residenziali, annunci di vendita e immobili gestiti da Henry Onyx su Property. Tutto ciò che salvi arriva qui automaticamente.",
       activityTitle: "Ancora nessuna attività Property",
       activityBody:
         "Apri un annuncio su Henry Onyx Property per richiedere una visita o inviare una richiesta — ogni passaggio, dal primo messaggio alla revisione, comparirà qui.",
@@ -10154,7 +10154,7 @@ const IT: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "Il tuo account",
       headline: "La tua attività lavoro, tutto in un solo posto.",
-      body: "Candidature, ruoli salvati, aggiornamenti dei recruiter e prontezza del profilo sono collegati al tuo account HenryCo.",
+      body: "Candidature, ruoli salvati, aggiornamenti dei recruiter e prontezza del profilo sono collegati al tuo account Henry Onyx.",
       statsAriaLabel: "Riepilogo attività lavoro",
       statLabels: {
         applications: "Candidature attive",
@@ -10282,7 +10282,7 @@ const IT: DeepPartial<AccountCopy> = {
         storyLabel: "Storia del ruolo",
         storyDetail: "Headline e sintesi spiegano cosa fai oltre una scheda vuota.",
         verificationLabel: "Verifica dell’identità",
-        verificationDetail: "La fiducia Jobs resta limitata finché il tuo account HenryCo non supera la verifica di identità.",
+        verificationDetail: "La fiducia Jobs resta limitata finché il tuo account Henry Onyx non supera la verifica di identità.",
         proofLabel: "Prove di lavoro",
         proofDetail: "Curriculum più prove di portfolio facilitano i movimenti in selezione.",
         skillsLabel: "Competenze mappate",
@@ -10429,7 +10429,7 @@ const IT: DeepPartial<AccountCopy> = {
       application: {
         kicker: "Candidatura venditore",
         bodyWithStoreTemplate: "Negozio: {name}",
-        bodyDefault: "Candidatura nella coda di revisione HenryCo.",
+        bodyDefault: "Candidatura nella coda di revisione Henry Onyx.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "Vedi stato",
         defaultStatus: "inviata",
@@ -10558,7 +10558,7 @@ const IT: DeepPartial<AccountCopy> = {
       certificatesTitle: "Certificati",
       assignmentsTitle: "Formazione assegnata",
       savedTitle: "Corsi salvati",
-      teachingTitle: "Insegna con HenryCo",
+      teachingTitle: "Insegna con Henry Onyx",
       statusLabel: "Stato",
       expertiseLabel: "Competenza",
       topicsLabel: "Argomenti",
@@ -10578,8 +10578,8 @@ const IT: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "Panoramica logistica",
-      eyebrow: "HenryCo Logistica",
-      brand: "HenryCo Logistica",
+      eyebrow: "Henry Onyx Logistica",
+      brand: "Henry Onyx Logistica",
       title: "Ogni pacco, un'unica stanza.",
       body: "Ritiri, consegne, ETA e prove di consegna — tutto riflesso dalla rete logistica nel tuo account. Prenota una volta su",
       bodyDomain: " logistics.henryonyx.com",
@@ -10708,7 +10708,7 @@ const IT: DeepPartial<AccountCopy> = {
       sideAriaLabel: "Come funziona questa sala",
       sideLabel: "Come funziona questa sala",
       sideTitle: "Una sala di progetto, stato reale.",
-      sideBody: "Proposte, milestone, prove di pagamento, deliverable e segnali di comunicazione restano collegati alla stessa identità HenryCo che usi ovunque. La dashboard sotto riflette l’avanzamento reale del team Studio, non una semplice lista di stati.",
+      sideBody: "Proposte, milestone, prove di pagamento, deliverable e segnali di comunicazione restano collegati alla stessa identità Henry Onyx che usi ovunque. La dashboard sotto riflette l’avanzamento reale del team Studio, non una semplice lista di stati.",
       breakdownAriaLabel: "Suddivisione attività",
       breakdownLabel: "Per stato",
       tiles: {
@@ -10734,7 +10734,7 @@ const IT: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "Avvia un brief Studio.",
-          blurb: "Quando una proposta o un progetto parte con la tua identità HenryCo, la sala Studio sincronizzata appare qui — milestone, pagamenti, deliverable e prossima mossa insieme.",
+          blurb: "Quando una proposta o un progetto parte con la tua identità Henry Onyx, la sala Studio sincronizzata appare qui — milestone, pagamenti, deliverable e prossima mossa insieme.",
           ctaPrimary: "Avvia un brief",
           ctaSecondary: "Apri Studio",
         },
@@ -10787,7 +10787,7 @@ const IT: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "Nessuna sala Studio collegata per ora",
-      projectsBody: "Appena una proposta o un progetto viene creato con la tua identità HenryCo, la sala Studio sincronizzata apparirà qui — milestone, pagamenti, deliverable e prossima mossa.",
+      projectsBody: "Appena una proposta o un progetto viene creato con la tua identità Henry Onyx, la sala Studio sincronizzata apparirà qui — milestone, pagamenti, deliverable e prossima mossa.",
       paymentsTitle: "Nessun checkpoint di pagamento per ora",
       paymentsBody: "I milestone commerciali — anticipo, metà progetto e consegna — emergono qui quando una proposta diventa attiva con te.",
       activityTitle: "Nessuna attività Studio per ora",
@@ -10869,7 +10869,7 @@ const IT: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "Non hai ancora aggiunto indirizzi. Aggiungine uno per velocizzare il checkout in tutto HenryCo.",
+        "Non hai ancora aggiunto indirizzi. Aggiungine uno per velocizzare il checkout in tutto Henry Onyx.",
     },
     add: {
       cta: "Aggiungi indirizzo",
@@ -10883,10 +10883,10 @@ const IT: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Cerca nell'account",
       description:
-        "Cerca flussi di lavoro dell'account HenryCo e percorsi collegati delle divisioni.",
+        "Cerca flussi di lavoro dell'account Henry Onyx e percorsi collegati delle divisioni.",
     },
     hero: {
-      title: "Cerca nei tuoi flussi HenryCo.",
+      title: "Cerca nei tuoi flussi Henry Onyx.",
       description:
         "Vai direttamente alle azioni esatte dell'account e ai percorsi collegati delle divisioni, senza ripiegare su dashboard generiche.",
     },
@@ -10920,9 +10920,9 @@ const IG: DeepPartial<AccountCopy> = {
   },
   overview: {
     welcomeBack: "Nnọọ ọzọ",
-    description: "Ọdụ ọchịchọ HenryCo gị — ihe niile n'ịdị ìhè niile, otu ebe.",
+    description: "Ọdụ ọchịchọ Henry Onyx gị — ihe niile n'ịdị ìhè niile, otu ebe.",
     walletBalance: "Ego nọ n'akpa gị",
-    walletHint: "Akpa ego nkekọrịta · Jiri n'ọrụ HenryCo",
+    walletHint: "Akpa ego nkekọrịta · Jiri n'ọrụ Henry Onyx",
     notifications: "Ọkwa",
     allCaughtUp: "Niile dị mma",
     unreadMessages: "Ozi aghọtaghị",
@@ -10942,7 +10942,7 @@ const IG: DeepPartial<AccountCopy> = {
     noOpenRequests: "Ọ dịghị arịọ mepere emepe",
     referrals: "Ndu",
     inviteAndEarn: "Kpọọ ndị ọzọ ma rite",
-    shareHenryCo: "Kekọrịta HenryCo na ndị ọzọ",
+    shareHenryCo: "Kekọrịta Henry Onyx na ndị ọzọ",
     transactions: "Azụmahịa",
     viewHistory: "Lelee akụkọ ihe mere eme",
     walletActivity: "Arụmọrụ akpa ego & ọnụọgụ",
@@ -10969,7 +10969,7 @@ const IG: DeepPartial<AccountCopy> = {
     noUrgentTasks: "Ọ dịghị ọrụ akaụntụ ndị na-achọ ngwa ngwa ugbu a. Ị nọ n'ọnọdụ arụ ọrụ dị mma.",
     viewTaskQueue: "Lelee ahịrị ọrụ zuru oke",
     smartRecommendations: "Ndụmọdụ",
-    smartRecommendationsEmpty: "Nọgide na-eji ọrụ HenryCo ma ndụmọdụ ga-atọ dị na arụmọrụ gị.",
+    smartRecommendationsEmpty: "Nọgide na-eji ọrụ Henry Onyx ma ndụmọdụ ga-atọ dị na arụmọrụ gị.",
     smartHomeEmptyFallback:
       "Nnọọ — bido site na obere nzọụkwụ mbụ. Ihe ịrịba ama ndụ gị ga-apụta ebe a ozugbo arụmọrụ rutere.",
     recommendationReason: "A tụrụ aro site na arụmọrụ akaụntụ gị na ọnọdụ ntụkwasị obi ({confidence} ntụkwasị obi)",
@@ -10992,10 +10992,10 @@ const IG: DeepPartial<AccountCopy> = {
       jobsSaved: "Sochie ọrụ i chekwabara",
     },
     recommendationDescriptions: {
-      trustNext: "Mepe omume ọzọ na HenryCo.",
+      trustNext: "Mepe omume ọzọ na Henry Onyx.",
       profileNext: "Profaịlụ zuru oke na-emezi nkwado na-aga n'ihu ọrụ.",
       jobsSaved: "Laghachi na ọrụ i chekwabara ma mee ihe.",
-      fallback: "Nọgide na-eji ọrụ HenryCo ma ndụmọdụ ga-atọ dị na arụmọrụ gị.",
+      fallback: "Nọgide na-eji ọrụ Henry Onyx ma ndụmọdụ ga-atọ dị na arụmọrụ gị.",
     },
   },
   tasks: {
@@ -11053,14 +11053,14 @@ const IG: DeepPartial<AccountCopy> = {
     headlineCalmSingular: "{count} ihe nọ n'ahịrị gị.",
     headlineCalmPlural: "{count} ihe nọ n'ahịrị gị.",
     blurbEmpty: "Akaụntụ gị nọ n'usoro — nyocha, ụgwọ, na ụzọ ndị siri ike nyocha niile dị ọcha. Anyị ga-ezipụta omume na-esote ebe a n'onwe ya mgbe ọ pụtara.",
-    blurbRisk: "Ihe ndị a na-egbochi omume ntụkwasị obi dị elu na HenryCo — mwepụ akpa ego, nkwado onye na-ere ahịa Marketplace, nyocha onye na-ewe ọrụ. Idozi ha na-emeghe ụzọ ọ bụla.",
-    blurbActive: "Ahịrị ọ bụla na-eduga gị na omume na-esote n'otu otu. Nzacha, mkpado isi mkpa, na njikọ na-anọgide kwekọrịtara na ngalaba HenryCo niile.",
+    blurbRisk: "Ihe ndị a na-egbochi omume ntụkwasị obi dị elu na Henry Onyx — mwepụ akpa ego, nkwado onye na-ere ahịa Marketplace, nyocha onye na-ewe ọrụ. Idozi ha na-emeghe ụzọ ọ bụla.",
+    blurbActive: "Ahịrị ọ bụla na-eduga gị na omume na-esote n'otu otu. Nzacha, mkpado isi mkpa, na njikọ na-anọgide kwekọrịtara na ngalaba Henry Onyx niile.",
     metaEmpty: "I dị ọcha. Ihe ọhụrụ ọ bụla ga-apụta ebe a mgbe ọ rutere.",
     metaCount: "{count} meghere · ahaziri site na isi mkpa na ọnọdụ mgbochi.",
   },
   security: {
     title: "Nchedo",
-    description: "Nyochaa omume nchedo ọgbọ ọhụrụ, gbanwee paswọọdụ gị, wee kwụsị nnọkọ HenryCo mgbe achọrọ.",
+    description: "Nyochaa omume nchedo ọgbọ ọhụrụ, gbanwee paswọọdụ gị, wee kwụsị nnọkọ Henry Onyx mgbe achọrọ.",
     heroAriaLabel: "Nlebanya nchedo",
     hero: {
       trustScoreLabel: "Akara ntụkwasị obi",
@@ -11081,7 +11081,7 @@ const IG: DeepPartial<AccountCopy> = {
         risk: "Anyị akarala omume nke chọrọ anya gị.",
       },
       statusBlurb: {
-        secure: "Ọ dịghị ihe omume na-enyo enyo, nyocha nọ n'ezi ọnọdụ, omume ntụkwasị obi ọ bụla HenryCo na-enye meghere gị.",
+        secure: "Ọ dịghị ihe omume na-enyo enyo, nyocha nọ n'ezi ọnọdụ, omume ntụkwasị obi ọ bụla Henry Onyx na-enye meghere gị.",
         watch: "Ọ dịghị ihe gbajiri — mana akara ole na ole (nkwenye email, nyocha njirimara, mkpakọrịta onye kwekọrọ) ga-ebuli akara ntụkwasị obi gị ma meghee ụzọ ndị ọzọ.",
         risk: "Ihe omume na-adịbeghị anya ka echeko dị ka ihe ize ndụ dị elu. Nyochaa ihe ndekọ omume n'okpuru ma gbanwee paswọọdụ ma ọ bụrụ na ihe ọ bụla yiri ihe ọhụrụ.",
       },
@@ -11100,7 +11100,7 @@ const IG: DeepPartial<AccountCopy> = {
     noSuspiciousEventFoot: "Ọ dịghị ihe akara na nyocha ikpeazụ.",
     activityAriaLabel: "Ihe omume nchedo na-adịbeghị anya",
     trustProfile: "Profaịlụ Ntụkwasị Obi",
-    trustDescription: "Ntụkwasị obi na-arụ ọrụ n'akaụntụ. Ugbu a na-achịkwa omume azụmahịa nwere ọnụahịa dị elu, ọnọdụ nlekọta, na ikike siri ike n'ọcha HenryCo niile.",
+    trustDescription: "Ntụkwasị obi na-arụ ọrụ n'akaụntụ. Ugbu a na-achịkwa omume azụmahịa nwere ọnụahịa dị elu, ọnọdụ nlekọta, na ikike siri ike n'ọcha Henry Onyx niile.",
     trustScore: "Ọnụ ọgụgụ ntụkwasị obi akaụntụ",
     signalLabels: {
       emailVerified: "Email emechara nyocha",
@@ -11139,7 +11139,7 @@ const IG: DeepPartial<AccountCopy> = {
     moreVerificationNeeded: "Achọrọ nyocha ọzọ",
     trustGuide: "Nduzi ọnọdụ ntụkwasị obi",
     whatCurrentStateMeans: "Ihe ọnọdụ gị ugbu a pụtara",
-    whatCurrentStateBody: "Ọnọdụ a na-ekpebi nnabata ihe arụ ọrụ dị elu na omume azụmahịa n'HenryCo.",
+    whatCurrentStateBody: "Ọnọdụ a na-ekpebi nnabata ihe arụ ọrụ dị elu na omume azụmahịa n'Henry Onyx.",
     whatToDoNext: "Ihe ị ga-emee ọzọ",
     whatToDoNextBody: "Mezuo ihe ndị e depụtara iji mepe ụzọ ntụkwasị obi ọzọ.",
     currentRestrictions: "Omume e gbochiri ugbu a",
@@ -11193,7 +11193,7 @@ const IG: DeepPartial<AccountCopy> = {
         verification: "A echekwabara ntụkwasị obi premium maka akaụntụ ndị eruola nyocha nnabata.",
         age: "Jide akụkọ ihe mere eme akaụntụ dị ọcha ogologo oge.",
         transactions: "Wuo ndekọ azụmahịa emechara nyocha siri ike.",
-        activity: "Jiri ịdị ìhè HenryCo ndị ọzọ na nsonaazụ dị ọcha.",
+        activity: "Jiri ịdị ìhè Henry Onyx ndị ọzọ na nsonaazụ dị ọcha.",
         overlap: "Jide nyocha kpọtụrụ ọnụ nkekọrịta dị ọcha tupu emesi ntụkwasị obi premium.",
       },
     },
@@ -11211,12 +11211,12 @@ const IG: DeepPartial<AccountCopy> = {
     updatePassword: "Melite paswọọdụ",
   },
   globalSignOut: {
-    title: "Kwụsị nnọkọ HenryCo niile",
-    description: "Nke a na-apụ akaụntụ ugbu a n'ịdị ìhè HenryCo niile na ngwaọrụ, wee laghachi gị n'ebe ịbanye akaụntụ.",
+    title: "Kwụsị nnọkọ Henry Onyx niile",
+    description: "Nke a na-apụ akaụntụ ugbu a n'ịdị ìhè Henry Onyx niile na ngwaọrụ, wee laghachi gị n'ebe ịbanye akaụntụ.",
     note: "Omume ngwaọrụ na nnọkọ ọgbọ ọhụrụ ka na-apụta n'okpuru n'agbanyeghị na a naweghị imepe nkwụsị ndị ọ bụ onye isi n'ngwaọrụ ọ bụla dị ka ihe njikwa dị iche.",
-    unavailable: "Enweghị ike ikwụsị nnọkọ HenryCo niile ugbu a. Nwalee ọzọ n'oge na-adịghị anya.",
+    unavailable: "Enweghị ike ikwụsị nnọkọ Henry Onyx niile ugbu a. Nwalee ọzọ n'oge na-adịghị anya.",
     ending: "Na-akwụsị nnọkọ niile...",
-    endAllSessions: "Pụọ n'nnọkọ HenryCo niile",
+    endAllSessions: "Pụọ n'nnọkọ Henry Onyx niile",
   },
   errorBoundary: {
     kicker: "Oge arụmọrụ akaụntụ",
@@ -11227,10 +11227,10 @@ const IG: DeepPartial<AccountCopy> = {
   },
   activity: {
     title: "Mmemme",
-    description: "Ihe niile ị mere n'ime ngalaba HenryCo niile.",
+    description: "Ihe niile ị mere n'ime ngalaba Henry Onyx niile.",
     emptyTitle: "Enwebeghị mmemme",
     emptyDescription:
-      "Mmemme gị n'etiti ngalaba ga-apụta ebe a ka ị na-eji ọrụ HenryCo.",
+      "Mmemme gị n'etiti ngalaba ga-apụta ebe a ka ị na-eji ọrụ Henry Onyx.",
     statusLabels: {
       pending: "Na-eche",
       open: "Mepere emepe",
@@ -11255,8 +11255,8 @@ const IG: DeepPartial<AccountCopy> = {
       pdfNote:
         "PDF ahụ na-eburu nyocha ọ bụla ị tọrọ n'elu dị ka akụkụ nke isi okwu — ihe ị na-ahụ bụ ihe ị na-ebudata.",
       downloadLabel: "Budata akwụkwọ",
-      downloadFilename: "HenryCo-Akụkọ-Azụmahịa.pdf",
-      shareTitle: "Akụkọ Azụmahịa HenryCo",
+      downloadFilename: "Henry Onyx-Akụkọ-Azụmahịa.pdf",
+      shareTitle: "Akụkọ Azụmahịa Henry Onyx",
       typeLabels: {
         payment: "ịkwụ ụgwọ",
         wallet_credit: "kredit obere akpa ego",
@@ -11270,18 +11270,18 @@ const IG: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "Ọkwa",
-      description: "Mmelite HenryCo ọ bụla — obere akpa ego, nkwado, ọrụ, ahịa, nlekọta, na ihe ndị ọzọ — n’otu igbe ozi nke na-eru ugbu a.",
+      description: "Mmelite Henry Onyx ọ bụla — obere akpa ego, nkwado, ọrụ, ahịa, nlekọta, na ihe ndị ọzọ — n’otu igbe ozi nke na-eru ugbu a.",
     },
     hero: {
-      eyebrow: "HenryCo · ọkwa dị ndụ",
+      eyebrow: "Henry Onyx · ọkwa dị ndụ",
       ariaOverview: "Nlebanya ọkwa",
       ariaVolume: "Olu ọkwa",
       ariaByDivision: "Site na ngalaba",
-      headlineZero: "Igbe ozi efu n’ofe HenryCo.",
+      headlineZero: "Igbe ozi efu n’ofe Henry Onyx.",
       headlineOne: "Otu ihe chọrọ nlebara anya gị.",
       headlineFew: "{count} ọkwa ka a ga-elebanụ.",
       headlineMany: "{count} mmelite n’ofe ngalaba gị niile.",
-      blurbZero: "Ihe ọ bụla HenryCo zigara na-aba ebe a n’oge ozugbo — obere akpa ego, nkwado, ọrụ, ahịa, nlekọta, na ihe ndị ọzọ.",
+      blurbZero: "Ihe ọ bụla Henry Onyx zigara na-aba ebe a n’oge ozugbo — obere akpa ego, nkwado, ọrụ, ahịa, nlekọta, na ihe ndị ọzọ.",
       blurbStale: "Ihe ndị ochie achịkọtawo onwe ha. Sụa iji chekwaa, pịa iji mepee, ma ọ bụ jegharịa ozugbo n’eriri.",
       blurbToday: "{count} batara taa. Jiri nzacha lekwasị anya n’otu ngalaba, ma ọ bụ gafee naanị ndị a na-agụghị agụ.",
       tileUnreadLabel: "A gụghị agụ",
@@ -11324,7 +11324,7 @@ const IG: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "Ihe niile dị mma.",
-      inboxBody: "Mmemme sitere n’ofe HenryCo na-apụta ebe a ozugbo ọ na-eme.",
+      inboxBody: "Mmemme sitere n’ofe Henry Onyx na-apụta ebe a ozugbo ọ na-eme.",
       filterTitle: "Enweghị mmemme n’ọnọdụ a.",
       filterBody: "Nwaa nzacha ọzọ.",
     },
@@ -11338,11 +11338,11 @@ const IG: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "Kalịnda · HenryCo",
+    metaTitle: "Kalịnda · Henry Onyx",
     metaDescription:
       "Eserese ihe omume ụlọ ọrụ niile — ndokwa Care, nleta ụlọ, ajụjụ ọnụ Jobs, akara Studio, klas Learn, oge mbufe Logistics.",
     heroAriaLabel: "Nchịkọta kalịnda",
-    heroEyebrow: "HenryCo · kalịnda ụlọ ọrụ niile",
+    heroEyebrow: "Henry Onyx · kalịnda ụlọ ọrụ niile",
     tileVolumeAriaLabel: "Olu kalịnda",
     tileEventsLabel: "Ihe omume",
     tileEventsFoot: "Ụbọchị 28 na-abịa",
@@ -11423,7 +11423,7 @@ const IG: DeepPartial<AccountCopy> = {
       headlineEmpty: "Akwụkwọ nnata ga-eru ebe a.",
       headlineWithReceipts: "Akwụkwọ nnata ọ bụla, otu ebe.",
       blurb:
-        "Ịkwụ ụgwọ ọ bụla na HenryCo na-arute ebe a dị ka PDF nwere akara nke a ga-ebudata — ndokwa Care, iwu Marketplace, ụgwọ Studio, mbupu Logistics, akwụkwọ Learn.",
+        "Ịkwụ ụgwọ ọ bụla na Henry Onyx na-arute ebe a dị ka PDF nwere akara nke a ga-ebudata — ndokwa Care, iwu Marketplace, ụgwọ Studio, mbupu Logistics, akwụkwọ Learn.",
       totalPaidLabel: "Ego e kwụrụ · ndụ niile",
       thisMonthLabel: "Kwụrụ · ọnwa a",
       thisMonthFoot: "Akwụkwọ nnata nke ọnwa a",
@@ -11442,7 +11442,7 @@ const IG: DeepPartial<AccountCopy> = {
     empty: {
       title: "Enwebeghị ụgwọ ọrụ",
       description:
-        "Ụgwọ ọrụ na akwụkwọ nnata gị ga-apụta ebe a mgbe ị kwụchara ụgwọ na ọrụ HenryCo.",
+        "Ụgwọ ọrụ na akwụkwọ nnata gị ga-apụta ebe a mgbe ị kwụchara ụgwọ na ọrụ Henry Onyx.",
     },
     statuses: {
       paid: "Akwụgoro",
@@ -11474,12 +11474,12 @@ const IG: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "Ozi · HenryCo",
+      title: "Ozi · Henry Onyx",
       description:
         "Otu igbe ozi maka nkwado, ahịa, ọrụ, studio, nlekọta, ụlọ, mbufe na mmụta.",
     },
     hero: {
-      eyebrow: "HenryCo · igbe ozi jikọtara",
+      eyebrow: "Henry Onyx · igbe ozi jikọtara",
       ariaLabel: "Nlerughari igbe ozi",
       ariaTiles: "Olu igbe ozi",
       ariaSide: "Site na portal",
@@ -11488,7 +11488,7 @@ const IG: DeepPartial<AccountCopy> = {
         "Portal nke ọ bụla na-eweta n’otu igbe ozi a. Nkwado, iwu ahịa, ajụjụ ọnụ ọrụ, ọrụ studio na ndokwa nlekọta niile na-egosi ebe a n’usoro oge.",
     },
     headlines: {
-      zero: "Igbe ozi ọcha n’ofe HenryCo niile.",
+      zero: "Igbe ozi ọcha n’ofe Henry Onyx niile.",
       calmOne: "Otu eriri na-eche gị.",
       calmMany: "Eriri {count} ka mepere emepe.",
       busy: "{unread} agụghị agụ · {open} mepere emepe n’ofe portal gị.",
@@ -11555,14 +11555,14 @@ const IG: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "Ego dị n'obere akpa",
-      eyebrow: "Obere akpa ego HenryCo · na-aga",
+      eyebrow: "Obere akpa ego Henry Onyx · na-aga",
       availableLabel: "Ego dị nri",
       balanceAriaTemplate: "Ego dị nri {amount} {currency}",
-      settlementFallback: "A na-akwụ ya na ego obodo gị site na ọnụego HenryCo ụbọchị.",
+      settlementFallback: "A na-akwụ ya na ego obodo gị site na ọnụego Henry Onyx ụbọchị.",
       ctas: { fund: "Tinye ego", withdraw: "Wepụ" },
       tiles: {
         verifiedLabel: "Ego enyochara",
-        verifiedFoot: "Enwere ike iji ya na ọrụ HenryCo niile",
+        verifiedFoot: "Enwere ike iji ya na ọrụ Henry Onyx niile",
         pendingFundingLabel: "Ego ana-eche",
         pendingFundingFoot: "Ọ na-anọ iche ruo mgbe ego kwado",
         pendingWithdrawalLabel: "Edebere maka mpụta",
@@ -11641,7 +11641,7 @@ const IG: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "Azụmahịa obere akpa ego",
       emptyTitle: "Enwebeghị azụmahịa",
-      emptyBody: "Tinye ego n'obere akpa gị, ndepụta mmemme gị ga-egosi ebe a kredit, debit, nlọghachi azụ na bonus ọ bụla n'ofe ọrụ HenryCo.",
+      emptyBody: "Tinye ego n'obere akpa gị, ndepụta mmemme gị ga-egosi ebe a kredit, debit, nlọghachi azụ na bonus ọ bụla n'ofe ọrụ Henry Onyx.",
       fallbackTitle: "Azụmahịa obere akpa ego",
     },
     funding: {
@@ -11666,11 +11666,11 @@ const IG: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "Nkwado",
-      description: "Nweta enyemaka maka ọrụ HenryCo ọ bụla.",
+      description: "Nweta enyemaka maka ọrụ Henry Onyx ọ bụla.",
     },
     hero: {
       title: "Nkwado",
-      description: "Nweta enyemaka maka ọrụ HenryCo ọ bụla.",
+      description: "Nweta enyemaka maka ọrụ Henry Onyx ọ bụla.",
       newRequestCta: "Arịrịọ ọhụrụ",
     },
     summary: {
@@ -11725,8 +11725,8 @@ const IG: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "Akpa ego HenryCo",
-      body: "Akpa ego HenryCo gị dị mgbe niile dị ka nhọrọ ịkwụ ụgwọ.",
+      eyebrow: "Akpa ego Henry Onyx",
+      body: "Akpa ego Henry Onyx gị dị mgbe niile dị ka nhọrọ ịkwụ ụgwọ.",
       manageCta: "Jikwaa akpa ego",
     },
   },
@@ -11734,12 +11734,12 @@ const IG: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Ihe echekwara",
       description:
-        "Ihe ndị i wepụrụ na nkata HenryCo ọ bụla, anyị na-edobere gị ụbọchị iri itoolu ma na-adọ aka na ntị otu izu tupu ha agwụ.",
+        "Ihe ndị i wepụrụ na nkata Henry Onyx ọ bụla, anyị na-edobere gị ụbọchị iri itoolu ma na-adọ aka na ntị otu izu tupu ha agwụ.",
     },
     hero: {
       title: "Chekwa maka mgbe ọzọ",
       description:
-        "Ihe ndị i wepụrụ na nkata HenryCo ọ bụla. Anyị ga-edobere gị ha ụbọchị iri itoolu ma dọọ gị aka na ntị otu izu tupu ha agwụ.",
+        "Ihe ndị i wepụrụ na nkata Henry Onyx ọ bụla. Anyị ga-edobere gị ha ụbọchị iri itoolu ma dọọ gị aka na ntị otu izu tupu ha agwụ.",
     },
     summary: {
       activeTemplate: "{count} na-arụ ọrụ",
@@ -11790,7 +11790,7 @@ const IG: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Akwụkwọ",
       description:
-        "Akwụkwọ nnata gị, asambodo, nkwekọrịta na faịlụ ndị dị mkpa — e debere ha na nzuzo ma na-enweta ha n’ime ngalaba HenryCo niile.",
+        "Akwụkwọ nnata gị, asambodo, nkwekọrịta na faịlụ ndị dị mkpa — e debere ha na nzuzo ma na-enweta ha n’ime ngalaba Henry Onyx niile.",
     },
     hero: {
       eyebrow: "Igbe nchekwa onwe gị",
@@ -11832,7 +11832,7 @@ const IG: DeepPartial<AccountCopy> = {
     empty: {
       title: "Enwebeghị akwụkwọ",
       description:
-        "Akwụkwọ gị, akwụkwọ nnata na asambodo sitere na ọrụ HenryCo ga-anọ ebe a.",
+        "Akwụkwọ gị, akwụkwọ nnata na asambodo sitere na ọrụ Henry Onyx ga-anọ ebe a.",
     },
     summary: {
       countTemplate: "{count} akwụkwọ{plural}",
@@ -11841,14 +11841,14 @@ const IG: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "Nzuzo na nchekwa",
       title: "Faịlụ gị ga-anọ na nzuzo",
-      body: "A na-ezo akwụkwọ niile mgbe ezubeghị ọrụ, naanị gị ka ọ na-egosi, anyị na-edebe ha ruo mgbe akaụntụ HenryCo gị dị ndụ ma ọ bụrụ na i wepụghị ha.",
+      body: "A na-ezo akwụkwọ niile mgbe ezubeghị ọrụ, naanị gị ka ọ na-egosi, anyị na-edebe ha ruo mgbe akaụntụ Henry Onyx gị dị ndụ ma ọ bụrụ na i wepụghị ha.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Ndenye aha",
       description:
-        "Nchịkọta naanị-agụ nke atụmatụ na-arụ ọrụ, ndị si na ngalaba HenryCo dị iche iche bịa.",
+        "Nchịkọta naanị-agụ nke atụmatụ na-arụ ọrụ, ndị si na ngalaba Henry Onyx dị iche iche bịa.",
     },
     hero: {
       eyebrow: "Atụmatụ na-arụ ọrụ",
@@ -11917,12 +11917,12 @@ const IG: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Ndị Ezịgara",
       description:
-        "Kpọọ ndị ahịa ruru eru gaa HenryCo ma soro ụgwọ ọrụ site na ọnọdụ na-eche, enyochara, na akwụnyere.",
+        "Kpọọ ndị ahịa ruru eru gaa Henry Onyx ma soro ụgwọ ọrụ site na ọnọdụ na-eche, enyochara, na akwụnyere.",
     },
     hero: {
       title: "Ndị Ezịgara",
       description:
-        "Kpọọ ndị ahịa ruru eru gaa HenryCo ma soro ụgwọ ọrụ site na ọnọdụ na-eche, enyochara, na akwụnyere.",
+        "Kpọọ ndị ahịa ruru eru gaa Henry Onyx ma soro ụgwọ ọrụ site na ọnọdụ na-eche, enyochara, na akwụnyere.",
     },
     code: {
       eyebrow: "Koodu nzipu gị",
@@ -11946,20 +11946,20 @@ const IG: DeepPartial<AccountCopy> = {
       eyebrow: "Otú Ọ Si Arụ Ọrụ",
       step1Title: "Kekọrịta koodu gị",
       step1Body:
-        "Kekọrịta koodu pụrụ iche gị ma ọ bụ njikọ. Ndị enyi na-eji njikọ gị aga ngalaba ọ bụla nke HenryCo ka a na-esoso ozugbo.",
+        "Kekọrịta koodu pụrụ iche gị ma ọ bụ njikọ. Ndị enyi na-eji njikọ gị aga ngalaba ọ bụla nke Henry Onyx ka a na-esoso ozugbo.",
       step2Title: "Ha na-azụ ahịa",
       step2Body:
         "Mgbe ha debanyere aha, nzipu ahụ na-abanye n'ime windo njide nke ụbọchị {days}. Anyị na-eso akaụntụ a kpọrọ naanị otu ugboro — nzipu onwe, ndị ezinụlọ ndabara, na ndebanye aha emejiri arụghị ọrụ ruo eru.",
       step3Title: "Ụgwọ ọrụ na-edebanye mgbe ọ ruru eru",
       step3Body:
-        "Nzipu ndị ruru eru na-akwụnye {amount} na obere akpa HenryCo gị mgbe nyochaa ego. Ụgwọ ọrụ na-eche enweghị ike imefu tutu eweputara.",
+        "Nzipu ndị ruru eru na-akwụnye {amount} na obere akpa Henry Onyx gị mgbe nyochaa ego. Ụgwọ ọrụ na-eche enweghị ike imefu tutu eweputara.",
     },
     policy: {
       eyebrow: "Iwu Nzipu",
       qualifying:
-        "Mgbanwe ruru eru pụtara na akaụntụ ezigara mechara omume HenryCo kwesịrị ekwesị nke gabigara ịkwụ ụgwọ na nyocha ntụkwasị obi.",
+        "Mgbanwe ruru eru pụtara na akaụntụ ezigara mechara omume Henry Onyx kwesịrị ekwesị nke gabigara ịkwụ ụgwọ na nyocha ntụkwasị obi.",
       enforcement:
-        "HenryCo nwere ike ijigide, gbanwee, ma ọ bụ kagbuo ụgwọ ọrụ maka nzipu onwe, akagharị mgbanwe ndabara, mgbagharị, nkwụghachi, ma ọ bụ usoro ụgwọ ọrụ enyo.",
+        "Henry Onyx nwere ike ijigide, gbanwee, ma ọ bụ kagbuo ụgwọ ọrụ maka nzipu onwe, akagharị mgbanwe ndabara, mgbagharị, nkwụghachi, ma ọ bụ usoro ụgwọ ọrụ enyo.",
       separation:
         "Dashboard gị na-egosi nzipu na akụkọ ụgwọ ọrụ iche ka a ghara iji ndebanye aha esochiri kwekọọ na ego e debanyere n'obere akpa.",
     },
@@ -12195,7 +12195,7 @@ const IG: DeepPartial<AccountCopy> = {
         listings: "Ndepụta",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} HenryCo na-elekọta",
+        savedManagedTemplate: "{count} Henry Onyx na-elekọta",
         savedEmpty: "Dobe ndepụta iji wuo ndepụta ụfọdụ",
         savedWith: "Tụlee ma laghachi mgbe ọ bụla",
         inquiriesEmpty: "Enweghị mkparịta ụka mepere emepe",
@@ -12211,7 +12211,7 @@ const IG: DeepPartial<AccountCopy> = {
       sideBody:
         "Dobe ndepụta, rịọ nleta, ma ọ bụ mepee ajụjụ na Henry Onyx Property — ihe ọ bụla i mere na-egosipụta n’ụlọ akaụntụ a ka i nwee ike ịmaliteghachi ebe i kwụsịrị, n’elu ngwaọrụ niile.",
       sideBodyMuted:
-        "Ndepụta HenryCo na-elekọta na-egosi akara Elekọta — nleba anya, nyocha, na nsogharị mgbazinye na-anabata site n’òtù Property.",
+        "Ndepụta Henry Onyx na-elekọta na-egosi akara Elekọta — nleba anya, nyocha, na nsogharị mgbazinye na-anabata site n’òtù Property.",
       breakdownAriaLabel: "Nkewa mmegharị",
       breakdownLabel: "Site n’mmegharị",
       breakdownLabels: {
@@ -12224,7 +12224,7 @@ const IG: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Bido ịchọgharị Henry Onyx Property.",
           blurb:
-            "Chọpụta ụlọ obibi, ndepụta ire ahịa, na ụlọ ndị HenryCo na-elekọta. Dobe ndị ị masịrị, ajụjụ ọ bụla, nleta, ma ọ bụ nsogharị ndepụta na-arute ebe a n’onwe ya.",
+            "Chọpụta ụlọ obibi, ndepụta ire ahịa, na ụlọ ndị Henry Onyx na-elekọta. Dobe ndị ị masịrị, ajụjụ ọ bụla, nleta, ma ọ bụ nsogharị ndepụta na-arute ebe a n’onwe ya.",
         },
         discover: {
           headlineTemplateSingular: "{count} ụlọ n’ndepụta.",
@@ -12245,7 +12245,7 @@ const IG: DeepPartial<AccountCopy> = {
     sections: {
       saved: "Ndepụta edobere",
       savedMetaEmpty: "Dobe ndepụta na Henry Onyx Property iji wuo ndepụta gị.",
-      savedMetaTemplate: "{saved} edobere · {managed} HenryCo na-elekọta",
+      savedMetaTemplate: "{saved} edobere · {managed} Henry Onyx na-elekọta",
       activity: "Mmegharị ọhụrụ",
       activityMetaEmpty: "Ajụjụ, nleta, na nyocha ndepụta na-egosipụta ebe a mgbe ha na-eme.",
       activityMetaTemplateSingular: "{count} mmelite · ọhụrụ mbụ",
@@ -12254,7 +12254,7 @@ const IG: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "Enweghị ụlọ edobere",
       savedBody:
-        "Chọpụta ụlọ obibi, ndepụta ire ahịa, na ụlọ ndị HenryCo na-elekọta na Property. Ihe ọ bụla i dobere na-arute ebe a n’onwe ya.",
+        "Chọpụta ụlọ obibi, ndepụta ire ahịa, na ụlọ ndị Henry Onyx na-elekọta na Property. Ihe ọ bụla i dobere na-arute ebe a n’onwe ya.",
       activityTitle: "Enweghị mmegharị Property",
       activityBody:
         "Mepee ndepụta na Henry Onyx Property iji rịọ nleta ma ọ bụ zipu ajụjụ — nzọụkwụ ọ bụla, site na ozi mbụ ruo nyocha, ga-apụta ebe a.",
@@ -12407,7 +12407,7 @@ const IG: DeepPartial<AccountCopy> = {
       application: {
         kicker: "Akwụkwọ onye na-ere",
         bodyWithStoreTemplate: "Ụlọ ahịa: {name}",
-        bodyDefault: "Akwụkwọ n’ahịrị nyocha HenryCo.",
+        bodyDefault: "Akwụkwọ n’ahịrị nyocha Henry Onyx.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "Lelee ọnọdụ",
         defaultStatus: "ezigara",
@@ -12468,7 +12468,7 @@ const IG: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "Akaụntụ gị",
       headline: "Ihe omume ọrụ gị, ihe niile n’otu ebe.",
-      body: "Aplikeshọn, ọrụ edobere, nleba anya nke ndị na-achọ ndị ọrụ, na njikere profaịlụ ejikọtara na akaụntụ HenryCo gị.",
+      body: "Aplikeshọn, ọrụ edobere, nleba anya nke ndị na-achọ ndị ọrụ, na njikere profaịlụ ejikọtara na akaụntụ Henry Onyx gị.",
       statsAriaLabel: "Nchịkọta ọrụ ọrụ",
       statLabels: {
         applications: "Aplikeshọn na-aga",
@@ -12596,7 +12596,7 @@ const IG: DeepPartial<AccountCopy> = {
         storyLabel: "Akụkọ ọrụ",
         storyDetail: "Aha akara na nchịkọta na-akọwa ihe ị na-eme karịa ngosi efu.",
         verificationLabel: "Nyochaa njirimara",
-        verificationDetail: "Ntụkwasị obi Jobs ga-akwụsị ruo mgbe akaụntụ HenryCo gị wepụrụ nyocha njirimara.",
+        verificationDetail: "Ntụkwasị obi Jobs ga-akwụsị ruo mgbe akaụntụ Henry Onyx gị wepụrụ nyocha njirimara.",
         proofLabel: "Ihe akaebe ọrụ",
         proofDetail: "CV gbakwunyere ihe akaebe portfolio na-eme ka mmegharị họpụta dị mfe.",
         skillsLabel: "Nkà depụtara",
@@ -12702,7 +12702,7 @@ const IG: DeepPartial<AccountCopy> = {
       certificatesTitle: "Asambodo",
       assignmentsTitle: "Mmụta enyere",
       savedTitle: "Kọsụ edobere",
-      teachingTitle: "Kụzie ya HenryCo",
+      teachingTitle: "Kụzie ya Henry Onyx",
       statusLabel: "Ọnọdụ",
       expertiseLabel: "Ọkachamara",
       topicsLabel: "Isiokwu",
@@ -12722,8 +12722,8 @@ const IG: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "Nlebanya mbufe",
-      eyebrow: "HenryCo Mbufe",
-      brand: "HenryCo Mbufe",
+      eyebrow: "Henry Onyx Mbufe",
+      brand: "Henry Onyx Mbufe",
       title: "Akpa ọ bụla, otu ụlọ.",
       body: "Nbubata, nnyefe, ETA na ihe akaebe nnyefe — niile ka egosi site na netwọkụ mbufe n’ime akaụntụ gị. Debe otu ugboro na",
       bodyDomain: " logistics.henryonyx.com",
@@ -12843,7 +12843,7 @@ const IG: DeepPartial<AccountCopy> = {
   divisionStudio: {
     metadata: {
       title: "Studio · ọnụ ụlọ ọrụ",
-      description: "Soro ọrụ Studio HenryCo ọ bụla ejikọtara na akaụntụ a — atụmatụ, isi ihe, ụgwọ, akụrụngwa nweere, na ọrụ na otu ụlọ.",
+      description: "Soro ọrụ Studio Henry Onyx ọ bụla ejikọtara na akaụntụ a — atụmatụ, isi ihe, ụgwọ, akụrụngwa nweere, na ọrụ na otu ụlọ.",
     },
     hero: {
       eyebrowLive: "Studio · ndị bi",
@@ -12852,7 +12852,7 @@ const IG: DeepPartial<AccountCopy> = {
       sideAriaLabel: "Otu ụlọ a si arụ ọrụ",
       sideLabel: "Otu ụlọ a si arụ ọrụ",
       sideTitle: "Otu ụlọ ọrụ, ọnọdụ ezi okwu.",
-      sideBody: "Atụmatụ, isi ihe, akwụkwọ akaebe ụgwọ, akụrụngwa nweere na ngosipụta nkwekọrịta na-anọgide ejikọtara na njirimara HenryCo ahụ ị na-eji n’ebe ọ bụla. Dashboard dị n’okpuru na-egosi ihe ndị otu Studio na-eme n’ezie, ọ bụghị ndepụta ọnọdụ.",
+      sideBody: "Atụmatụ, isi ihe, akwụkwọ akaebe ụgwọ, akụrụngwa nweere na ngosipụta nkwekọrịta na-anọgide ejikọtara na njirimara Henry Onyx ahụ ị na-eji n’ebe ọ bụla. Dashboard dị n’okpuru na-egosi ihe ndị otu Studio na-eme n’ezie, ọ bụghị ndepụta ọnọdụ.",
       breakdownAriaLabel: "Nkewa ọrụ",
       breakdownLabel: "Site n’ọnọdụ",
       tiles: {
@@ -12878,7 +12878,7 @@ const IG: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "Bido brief Studio.",
-          blurb: "Mgbe atụmatụ ma ọ bụ ọrụ malitere site na njirimara HenryCo gị, ụlọ Studio ahụ ejikọtara ga-apụta ebe a — isi ihe, ụgwọ, akụrụngwa na nzọụkwụ ọzọ na otu ebe.",
+          blurb: "Mgbe atụmatụ ma ọ bụ ọrụ malitere site na njirimara Henry Onyx gị, ụlọ Studio ahụ ejikọtara ga-apụta ebe a — isi ihe, ụgwọ, akụrụngwa na nzọụkwụ ọzọ na otu ebe.",
           ctaPrimary: "Bido brief",
           ctaSecondary: "Mepee Studio",
         },
@@ -12931,7 +12931,7 @@ const IG: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "Onweghi ụlọ Studio ejikọtara",
-      projectsBody: "Mgbe e mepụtara atụmatụ ma ọ bụ ọrụ site na njirimara HenryCo gị, ụlọ Studio ejikọtara ga-apụta ebe a — isi ihe, ụgwọ, akụrụngwa na nzọụkwụ ọzọ.",
+      projectsBody: "Mgbe e mepụtara atụmatụ ma ọ bụ ọrụ site na njirimara Henry Onyx gị, ụlọ Studio ejikọtara ga-apụta ebe a — isi ihe, ụgwọ, akụrụngwa na nzọụkwụ ọzọ.",
       paymentsTitle: "Onweghi isi ihe ụgwọ",
       paymentsBody: "Isi ihe azụmaahịa — ego nkwụnye, ọkara ọrụ, na nnyefe — na-apụta ebe a mgbe atụmatụ malitere ya na gị.",
       activityTitle: "Onweghi ọrụ Studio",
@@ -13013,7 +13013,7 @@ const IG: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "I tinyebeghị adreesị ọ bụla. Tinye nke mbụ gị ka i nwee mmechi ngwa ngwa na HenryCo.",
+        "I tinyebeghị adreesị ọ bụla. Tinye nke mbụ gị ka i nwee mmechi ngwa ngwa na Henry Onyx.",
     },
     add: {
       cta: "Tinye adreesị",
@@ -13026,10 +13026,10 @@ const IG: DeepPartial<AccountCopy> = {
   search: {
     metadata: {
       title: "Chọọ Akaụntụ",
-      description: "Chọọ ọrụ akaụntụ HenryCo na ụzọ ngalaba ejikọtara.",
+      description: "Chọọ ọrụ akaụntụ Henry Onyx na ụzọ ngalaba ejikọtara.",
     },
     hero: {
-      title: "Chọọ ọrụ HenryCo gị.",
+      title: "Chọọ ọrụ Henry Onyx gị.",
       description:
         "Gaa ozugbo na omume akaụntụ kpọmkwem na ụzọ ngalaba ejikọtara, na-elaghachighị na dashboard izugbe.",
     },
@@ -13063,9 +13063,9 @@ const YO: DeepPartial<AccountCopy> = {
   },
   overview: {
     welcomeBack: "Kaabo pada",
-    description: "Ile-iṣẹ aṣẹ HenryCo rẹ — ohun gbogbo kọja gbogbo awọn ẹka, ibi kan.",
+    description: "Ile-iṣẹ aṣẹ Henry Onyx rẹ — ohun gbogbo kọja gbogbo awọn ẹka, ibi kan.",
     walletBalance: "Iwọntunwọnsi apamọ",
-    walletHint: "Apamọ ti a pin · Lo kọja awọn iṣẹ HenryCo",
+    walletHint: "Apamọ ti a pin · Lo kọja awọn iṣẹ Henry Onyx",
     notifications: "Awọn iwifunni",
     allCaughtUp: "Gbogbo ohun dara",
     unreadMessages: "Awọn ifiranṣẹ ti a ko ka",
@@ -13085,7 +13085,7 @@ const YO: DeepPartial<AccountCopy> = {
     noOpenRequests: "Ko si awọn ibeere ti ṣii",
     referrals: "Awọn itọkasi",
     inviteAndEarn: "Pe ati gba ere",
-    shareHenryCo: "Pin HenryCo pẹlu awọn omiiran",
+    shareHenryCo: "Pin Henry Onyx pẹlu awọn omiiran",
     transactions: "Awọn iṣowo",
     viewHistory: "Wo itan",
     walletActivity: "Iṣẹ apamọ & awọn isanwo",
@@ -13112,7 +13112,7 @@ const YO: DeepPartial<AccountCopy> = {
     noUrgentTasks: "Ko si awọn iṣẹ akọọlẹ ti o yara ni bayi. O wa ni ipo iṣẹ ti o ni ilera.",
     viewTaskQueue: "Wo ila-duro iṣẹ ni kikun",
     smartRecommendations: "Awọn iṣeduro",
-    smartRecommendationsEmpty: "Tẹsiwaju lilo awọn iṣẹ HenryCo ati awọn iṣeduro yoo ṣe deede si iṣẹ rẹ.",
+    smartRecommendationsEmpty: "Tẹsiwaju lilo awọn iṣẹ Henry Onyx ati awọn iṣeduro yoo ṣe deede si iṣẹ rẹ.",
     smartHomeEmptyFallback:
       "Káàbọ̀ — bẹ̀rẹ̀ pẹ̀lú ìgbésẹ̀ kékeré àkọ́kọ́. Àwọn àmì ìfìhàn rẹ̀ tààrà yóò farahàn níbí gan-an tí iṣẹ́ kankan bá wáyé.",
     recommendationReason: "Ti daba lati iṣẹ akọọlẹ rẹ ati ipo igbẹkẹle ({confidence} igbẹkẹle)",
@@ -13135,10 +13135,10 @@ const YO: DeepPartial<AccountCopy> = {
       jobsSaved: "Tẹle awọn ipa ti a fi pamọ",
     },
     recommendationDescriptions: {
-      trustNext: "Ṣii awọn iṣe diẹ sii kọja HenryCo.",
+      trustNext: "Ṣii awọn iṣe diẹ sii kọja Henry Onyx.",
       profileNext: "Profaili pipe mu atilẹyin dara ati itesiwaju iṣẹ.",
       jobsSaved: "Pada wo awọn ipa ti o ti fi pamọ tẹlẹ ki o si ṣe lori wọn.",
-      fallback: "Tẹsiwaju lilo awọn iṣẹ HenryCo ati awọn iṣeduro yoo ṣe deede si iṣẹ rẹ.",
+      fallback: "Tẹsiwaju lilo awọn iṣẹ Henry Onyx ati awọn iṣeduro yoo ṣe deede si iṣẹ rẹ.",
     },
   },
   tasks: {
@@ -13196,14 +13196,14 @@ const YO: DeepPartial<AccountCopy> = {
     headlineCalmSingular: "{count} nkan ní ila rẹ.",
     headlineCalmPlural: "{count} àwọn nkan ní ila rẹ.",
     blurbEmpty: "Akọọlẹ rẹ wà nínú ètò — ìjẹ́rìí, ìsanwó, àti àwọn ọ̀nà tó ṣe pàtàkì fún àyẹ̀wò ti yá. A óò fi iṣẹ́ tó ń bọ̀ hàn níbí ní ara rẹ̀ ní gbàrà tó bá hàn.",
-    blurbRisk: "Àwọn nkan wọ̀nyí ń dí àwọn iṣẹ́ tó ní ìgbẹ́kẹ̀lé gíga ní HenryCo — ìyọrí láti inú àpamọ́, ìfọwọ́sí olùtà Marketplace, ìjẹ́rìí agbanisíṣẹ́. Yíyanjú wọn ń ṣí ọ̀nà kọ̀ọ̀kan.",
-    blurbActive: "Ila kọ̀ọ̀kan ń darí rẹ sí iṣẹ́ tó ń bọ̀ pẹ̀lú àfọwọ́kàn kan. Àwọn àyàn, àmì pàtàkì, àti àwọn ọ̀nà yíyára ó dúró bákan náà ní gbogbo ìpín HenryCo.",
+    blurbRisk: "Àwọn nkan wọ̀nyí ń dí àwọn iṣẹ́ tó ní ìgbẹ́kẹ̀lé gíga ní Henry Onyx — ìyọrí láti inú àpamọ́, ìfọwọ́sí olùtà Marketplace, ìjẹ́rìí agbanisíṣẹ́. Yíyanjú wọn ń ṣí ọ̀nà kọ̀ọ̀kan.",
+    blurbActive: "Ila kọ̀ọ̀kan ń darí rẹ sí iṣẹ́ tó ń bọ̀ pẹ̀lú àfọwọ́kàn kan. Àwọn àyàn, àmì pàtàkì, àti àwọn ọ̀nà yíyára ó dúró bákan náà ní gbogbo ìpín Henry Onyx.",
     metaEmpty: "O ti yá. Ohunkóhun tuntun yóò hàn níbí ní gbàrà tó bá dé.",
     metaCount: "{count} ṣí · tí a tò sí ìbámu pàtàkì àti ipò ìdíwọ́.",
   },
   security: {
     title: "Aabo",
-    description: "Ṣayẹwo iṣẹ aabo aipẹ, yi ọrọ igbaniwọle rẹ pada, ki o si pari awọn igba HenryCo nigbati o ba nilo.",
+    description: "Ṣayẹwo iṣẹ aabo aipẹ, yi ọrọ igbaniwọle rẹ pada, ki o si pari awọn igba Henry Onyx nigbati o ba nilo.",
     heroAriaLabel: "Àwòkọ aabo",
     hero: {
       trustScoreLabel: "Ikun igbẹkẹle",
@@ -13224,7 +13224,7 @@ const YO: DeepPartial<AccountCopy> = {
         risk: "A ti fi àmì sí iṣẹ́ tó nílò ìtọ́jú rẹ.",
       },
       statusBlurb: {
-        secure: "Kò sí ìṣẹ̀lẹ̀ tó sọ̀rọ̀, ìjẹ́rìí dára, àti gbogbo iṣẹ́ tó ní ìgbẹ́kẹ̀lé gíga ti HenryCo ṣí fún ọ.",
+        secure: "Kò sí ìṣẹ̀lẹ̀ tó sọ̀rọ̀, ìjẹ́rìí dára, àti gbogbo iṣẹ́ tó ní ìgbẹ́kẹ̀lé gíga ti Henry Onyx ṣí fún ọ.",
         watch: "Kò sí nkan tó bàjẹ́ — ṣùgbọ́n àwọn àmì díẹ̀ (ìfọwọ́sí imeeli, àtúnyẹ̀wò ìdánimọ̀, àwọn olùbáṣèpọ̀ tó pẹ̀ wọn) yóò mú ikun ìgbẹ́kẹ̀lé rẹ pọ̀ sí i kí ó sì ṣí àwọn ọ̀nà mìíràn.",
         risk: "Àwọn ìṣẹ̀lẹ̀ àìpẹ́ ni a ti kà gẹ́gẹ́ bí ewu gíga. Ṣàyẹ̀wò ìṣàn iṣẹ́ ní ìsàlẹ̀ kí o sì yí ọ̀rọ̀ ìgbaniwọlé rẹ padà tí ohunkóhun bá rí àjèjì.",
       },
@@ -13243,7 +13243,7 @@ const YO: DeepPartial<AccountCopy> = {
     noSuspiciousEventFoot: "Kò sí ohun tí a fi àmì sí nínú àkókò àyẹ̀wò tó kọjá.",
     activityAriaLabel: "Àwọn ìṣẹ̀lẹ̀ aabo àìpẹ́",
     trustProfile: "Profaili Igbẹkẹle",
-    trustDescription: "Igbẹkẹle n ṣiṣẹ kọja akọọlẹ. O n ṣakoso awọn iṣe iṣowo iye giga, iduro ilana, ati ẹtọ to lagbara kọja awọn modulu HenryCo.",
+    trustDescription: "Igbẹkẹle n ṣiṣẹ kọja akọọlẹ. O n ṣakoso awọn iṣe iṣowo iye giga, iduro ilana, ati ẹtọ to lagbara kọja awọn modulu Henry Onyx.",
     trustScore: "Ikun igbẹkẹle akọọlẹ",
     signalLabels: {
       emailVerified: "Imeeli ti jẹrisi",
@@ -13282,7 +13282,7 @@ const YO: DeepPartial<AccountCopy> = {
     moreVerificationNeeded: "Ijẹrisi diẹ sii ni a nilo",
     trustGuide: "Itọsọna ipo igbẹkẹle",
     whatCurrentStateMeans: "Ohun ti ipo rẹ lọwọlọwọ tumọ si",
-    whatCurrentStateBody: "Ipo yii pinnu iraye si awọn ṣiṣẹ iye giga ati awọn iṣe iṣowo kọja HenryCo.",
+    whatCurrentStateBody: "Ipo yii pinnu iraye si awọn ṣiṣẹ iye giga ati awọn iṣe iṣowo kọja Henry Onyx.",
     whatToDoNext: "Ohun ti o yẹ ki o ṣe nigbamii",
     whatToDoNextBody: "Pari awọn ibeere ti a ṣe akojọ lati ṣii ọna igbẹkẹle ti n bọ.",
     currentRestrictions: "Awọn iṣe ti ni ihamọ lọwọlọwọ",
@@ -13336,7 +13336,7 @@ const YO: DeepPartial<AccountCopy> = {
         verification: "Igbẹkẹle premium ti wa ni ipamọ fun awọn akọọlẹ ti o ti kọja ijẹrisi idanimo.",
         age: "Ṣetọju itan akọọlẹ mọ to gun.",
         transactions: "Kọ igbasilẹ iṣowo ti jẹrisi to lagbara.",
-        activity: "Lo awọn ẹka HenryCo diẹ sii pẹlu awọn abajade mọ.",
+        activity: "Lo awọn ẹka Henry Onyx diẹ sii pẹlu awọn abajade mọ.",
         overlap: "Jẹ ki atunyẹwo olubasọrọ ẹlẹgbẹ ki o mọ ṣaaju ki igbẹkẹle premium le fun.",
       },
     },
@@ -13354,12 +13354,12 @@ const YO: DeepPartial<AccountCopy> = {
     updatePassword: "Ṣe imudojuiwọn ọrọ igbaniwọle",
   },
   globalSignOut: {
-    title: "Pari gbogbo igba HenryCo",
-    description: "Eyi fọwọsi akọọlẹ lọwọlọwọ jade kọja awọn ẹka ati ẹrọ HenryCo, lẹhinna pada si dada iwọle akọọlẹ.",
+    title: "Pari gbogbo igba Henry Onyx",
+    description: "Eyi fọwọsi akọọlẹ lọwọlọwọ jade kọja awọn ẹka ati ẹrọ Henry Onyx, lẹhinna pada si dada iwọle akọọlẹ.",
     note: "Iṣẹ ẹrọ ati igba aipẹ wa han ni isalẹ botilẹjẹpe ipadabọ ẹrọ kọọkan laaye ko ti han bi iṣakoso ọtọ.",
-    unavailable: "A ko le pari gbogbo igba HenryCo ni bayi. Tún gbiyanju ni iṣẹju kan.",
+    unavailable: "A ko le pari gbogbo igba Henry Onyx ni bayi. Tún gbiyanju ni iṣẹju kan.",
     ending: "Ipari gbogbo awọn igba...",
-    endAllSessions: "Jade kuro ninu gbogbo awọn igba HenryCo",
+    endAllSessions: "Jade kuro ninu gbogbo awọn igba Henry Onyx",
   },
   errorBoundary: {
     kicker: "Akoko ṣiṣẹ akọọlẹ",
@@ -13370,10 +13370,10 @@ const YO: DeepPartial<AccountCopy> = {
   },
   activity: {
     title: "Iṣẹ",
-    description: "Gbogbo ohun ti o ti ṣe kọja gbogbo awọn ẹka HenryCo.",
+    description: "Gbogbo ohun ti o ti ṣe kọja gbogbo awọn ẹka Henry Onyx.",
     emptyTitle: "Ko si iṣẹ kankan sibẹsibẹ",
     emptyDescription:
-      "Iṣẹ rẹ kọja awọn ẹka yoo han nibi bi o ṣe nlo awọn iṣẹ HenryCo.",
+      "Iṣẹ rẹ kọja awọn ẹka yoo han nibi bi o ṣe nlo awọn iṣẹ Henry Onyx.",
     statusLabels: {
       pending: "Ti n duro",
       open: "Ṣii",
@@ -13398,8 +13398,8 @@ const YO: DeepPartial<AccountCopy> = {
       pdfNote:
         "PDF naa gbe gbogbo sẹsẹ ti o ṣeto lókè gẹgẹ bi apakan ti ori iwe-irohin — ohun ti o ri ni ohun ti o gba.",
       downloadLabel: "Gba akọsilẹ lori awo",
-      downloadFilename: "HenryCo-Itan-Idunadura.pdf",
-      shareTitle: "Itan Idunadura HenryCo",
+      downloadFilename: "Henry Onyx-Itan-Idunadura.pdf",
+      shareTitle: "Itan Idunadura Henry Onyx",
       typeLabels: {
         payment: "isanwo",
         wallet_credit: "kirẹditi apo owo",
@@ -13411,11 +13411,11 @@ const YO: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "Kàlẹ́ńdà · HenryCo",
+    metaTitle: "Kàlẹ́ńdà · Henry Onyx",
     metaDescription:
       "Ìṣètò gbogbo ìpín — ìwé ìṣètò Care, àbẹ̀wò ohun ìní, ìfọ̀rọ̀wánilẹ́nuwò Jobs, àmì ìlọsíwájú Studio, kíláàsì Learn, àkókò ìfijíṣẹ́ Logistics.",
     heroAriaLabel: "Àkọtán kàlẹ́ńdà",
-    heroEyebrow: "HenryCo · kàlẹ́ńdà gbogbo ìpín",
+    heroEyebrow: "Henry Onyx · kàlẹ́ńdà gbogbo ìpín",
     tileVolumeAriaLabel: "Iye kàlẹ́ńdà",
     tileEventsLabel: "Àwọn ìṣẹ̀lẹ̀",
     tileEventsFoot: "Ọjọ́ 28 tó ńbọ̀",
@@ -13486,18 +13486,18 @@ const YO: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "Awọn ìfìtónilétí",
-      description: "Gbogbo ìmúdójúìwọ̀n HenryCo — àpò owó, àtìlẹyìn, iṣẹ́, ọjà, ìtọ́jú àti púpọ̀ sí i — ní àpótí ìfìtónilétí kan ṣàṣàn.",
+      description: "Gbogbo ìmúdójúìwọ̀n Henry Onyx — àpò owó, àtìlẹyìn, iṣẹ́, ọjà, ìtọ́jú àti púpọ̀ sí i — ní àpótí ìfìtónilétí kan ṣàṣàn.",
     },
     hero: {
-      eyebrow: "HenryCo · ìfìtónilétí olówó-ìlàyé",
+      eyebrow: "Henry Onyx · ìfìtónilétí olówó-ìlàyé",
       ariaOverview: "Àkójọpọ̀ ìfìtónilétí",
       ariaVolume: "Ìwọ̀n ìfìtónilétí",
       ariaByDivision: "Nípa ẹ̀ka",
-      headlineZero: "Àpótí ìfìtónilétí ófẹ́ ní gbogbo HenryCo.",
+      headlineZero: "Àpótí ìfìtónilétí ófẹ́ ní gbogbo Henry Onyx.",
       headlineOne: "Ohun kan ń wá ìfetísílẹ̀ rẹ.",
       headlineFew: "Ìfìtónilétí {count} láti yàmọ́.",
       headlineMany: "Ìmúdójúìwọ̀n {count} ní àwọn ẹ̀ka rẹ.",
-      blurbZero: "Ohunkóhun tí HenryCo bá fi ránṣẹ́ ń dé síbí ní àkókò gidi — àpò owó, àtìlẹyìn, iṣẹ́, ọjà, ìtọ́jú àti púpọ̀ sí i.",
+      blurbZero: "Ohunkóhun tí Henry Onyx bá fi ránṣẹ́ ń dé síbí ní àkókò gidi — àpò owó, àtìlẹyìn, iṣẹ́, ọjà, ìtọ́jú àti púpọ̀ sí i.",
       blurbStale: "Àwọn ohun atijọ́ ti kọ́ra. Fà láti gbalé, tẹ̀ láti ṣílẹ̀, tàbí lọ tààrà sí òdòdó kan.",
       blurbToday: "{count} dé lónìí. Lo àwọn àyẹ̀wò láti dojúkọ ẹ̀ka kan ṣoṣo, tàbí gba inú àwọn tí a kò ka nìkan.",
       tileUnreadLabel: "Aìka",
@@ -13540,7 +13540,7 @@ const YO: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "Gbogbo rẹ̀ ti pé.",
-      inboxBody: "Iṣẹ́-òyè láti gbogbo HenryCo yóò fi ara rẹ̀ hàn níhìn-ín bí ó ṣe ń ṣẹlẹ̀.",
+      inboxBody: "Iṣẹ́-òyè láti gbogbo Henry Onyx yóò fi ara rẹ̀ hàn níhìn-ín bí ó ṣe ń ṣẹlẹ̀.",
       filterTitle: "Kò sí iṣẹ́-òyè nínú ìwò yìí.",
       filterBody: "Gbìyànjú àyẹ̀wò mìíràn.",
     },
@@ -13566,7 +13566,7 @@ const YO: DeepPartial<AccountCopy> = {
       headlineEmpty: "Àwọn risiti rẹ yóò han níhìn-ín.",
       headlineWithReceipts: "Gbogbo risiti, ní ibìkan.",
       blurb:
-        "Gbogbo ìsanwó nínú HenryCo ń dé sí ibí gẹ́gẹ́ bí PDF tí ó ní àmì-iṣòwò àti tí ó ṣeé gbasilẹ — ìwé Care, àṣẹ Marketplace, owó Studio, ìfijiṣẹ́ Logistics, ìjẹ́rìí Learn.",
+        "Gbogbo ìsanwó nínú Henry Onyx ń dé sí ibí gẹ́gẹ́ bí PDF tí ó ní àmì-iṣòwò àti tí ó ṣeé gbasilẹ — ìwé Care, àṣẹ Marketplace, owó Studio, ìfijiṣẹ́ Logistics, ìjẹ́rìí Learn.",
       totalPaidLabel: "Àpapọ̀ tí a sanwó · ní ìgbà ayé",
       thisMonthLabel: "Sanwó · oṣù yìí",
       thisMonthFoot: "Àwọn risiti ti oṣù kálẹ́ńdà yìí",
@@ -13585,7 +13585,7 @@ const YO: DeepPartial<AccountCopy> = {
     empty: {
       title: "Kò sí iwe-ẹri síbẹ̀",
       description:
-        "Awọn iwe-ẹri àti risiti rẹ yóò han níhìn-ín lẹ́yìn tí o bá ṣe ìsanwó nínú àwọn iṣẹ́ HenryCo.",
+        "Awọn iwe-ẹri àti risiti rẹ yóò han níhìn-ín lẹ́yìn tí o bá ṣe ìsanwó nínú àwọn iṣẹ́ Henry Onyx.",
     },
     statuses: {
       paid: "Tí a sanwó",
@@ -13617,12 +13617,12 @@ const YO: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "Àwọn ìránṣẹ́ · HenryCo",
+      title: "Àwọn ìránṣẹ́ · Henry Onyx",
       description:
         "Àpótí ìránṣẹ́ kan ṣoṣo fún ìrànlọ́wọ́, ọjà, iṣẹ́, studio, ìtọ́jú, ohun-ìní, ìfijíṣẹ́ àti ẹ̀kọ́.",
     },
     hero: {
-      eyebrow: "HenryCo · àpótí ìránṣẹ́ ìṣọ̀kan",
+      eyebrow: "Henry Onyx · àpótí ìránṣẹ́ ìṣọ̀kan",
       ariaLabel: "Àkópọ̀ àpótí ìránṣẹ́",
       ariaTiles: "Ìwọ̀n àpótí ìránṣẹ́",
       ariaSide: "Nípasẹ̀ pọ́tà",
@@ -13631,7 +13631,7 @@ const YO: DeepPartial<AccountCopy> = {
         "Pọ́tà kọ̀ọ̀kan ń jẹ àpótí ìránṣẹ́ kan ṣoṣo yìí. Ìrànlọ́wọ́, àṣẹ ọjà, ìfọ̀rọ̀wánilẹ́nuwò iṣẹ́, àwọn iṣẹ́ studio àti àwọn ìpàdé ìtọ́jú gbogbo wọn fara hàn níbí lẹ́ẹ́sẹ̀ akoko.",
     },
     headlines: {
-      zero: "Àpótí ìránṣẹ́ ti ṣofo kárí HenryCo.",
+      zero: "Àpótí ìránṣẹ́ ti ṣofo kárí Henry Onyx.",
       calmOne: "Òkun kan ń dúró dè ọ́.",
       calmMany: "Òkun {count} ti ṣí.",
       busy: "{unread} àìkàrí · {open} ti ṣí kárí àwọn pọ́tà rẹ.",
@@ -13698,14 +13698,14 @@ const YO: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "Iwọntunwọnsi àpamọ́wọ́",
-      eyebrow: "Àpamọ́wọ́ HenryCo · taara",
+      eyebrow: "Àpamọ́wọ́ Henry Onyx · taara",
       availableLabel: "Iwọntunwọnsi tó wà",
       balanceAriaTemplate: "Iwọntunwọnsi tó wà {amount} {currency}",
-      settlementFallback: "A ti yanjú ní owó ilẹ̀ rẹ ní oṣuwọn HenryCo lójú ọjọ́.",
+      settlementFallback: "A ti yanjú ní owó ilẹ̀ rẹ ní oṣuwọn Henry Onyx lójú ọjọ́.",
       ctas: { fund: "Fi owó kún", withdraw: "Yọ owó kúrò" },
       tiles: {
         verifiedLabel: "Iwọntunwọnsi tí a ti jẹrisi",
-        verifiedFoot: "Lè lò ní gbogbo ọrọ̀ iṣẹ́ HenryCo",
+        verifiedFoot: "Lè lò ní gbogbo ọrọ̀ iṣẹ́ Henry Onyx",
         pendingFundingLabel: "Ìfowóran tí ó dúró",
         pendingFundingFoot: "Ó dúró sípá títí ìṣúná-ìnáwó yóò fi jẹrisi",
         pendingWithdrawalLabel: "A pamọ́ fún yíyọ kúrò",
@@ -13784,7 +13784,7 @@ const YO: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "Owó-iṣẹ́ àpamọ́wọ́",
       emptyTitle: "Kò sí owó-iṣẹ́ síbẹ̀",
-      emptyBody: "Fi owó kún àpamọ́wọ́ rẹ, ìfunni-iṣẹ́ rẹ yóò fi gbogbo gbígba, gbígbé, ìpadàbọ̀ àti ẹ̀bùn hàn níbí ní ọrọ̀ iṣẹ́ HenryCo.",
+      emptyBody: "Fi owó kún àpamọ́wọ́ rẹ, ìfunni-iṣẹ́ rẹ yóò fi gbogbo gbígba, gbígbé, ìpadàbọ̀ àti ẹ̀bùn hàn níbí ní ọrọ̀ iṣẹ́ Henry Onyx.",
       fallbackTitle: "Owó-iṣẹ́ àpamọ́wọ́",
     },
     funding: {
@@ -13809,11 +13809,11 @@ const YO: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "Ìrànlọ́wọ́",
-      description: "Gba ìrànlọ́wọ́ pẹ̀lú iṣẹ́ HenryCo èyíkéyìí.",
+      description: "Gba ìrànlọ́wọ́ pẹ̀lú iṣẹ́ Henry Onyx èyíkéyìí.",
     },
     hero: {
       title: "Ìrànlọ́wọ́",
-      description: "Gba ìrànlọ́wọ́ pẹ̀lú iṣẹ́ HenryCo èyíkéyìí.",
+      description: "Gba ìrànlọ́wọ́ pẹ̀lú iṣẹ́ Henry Onyx èyíkéyìí.",
       newRequestCta: "Ìbéèrè tuntun",
     },
     summary: {
@@ -13868,8 +13868,8 @@ const YO: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "Àpamọ́wọ́ HenryCo",
-      body: "Àpamọ́wọ́ HenryCo rẹ wà nígbà gbogbo gẹ́gẹ́ bí àṣàyàn ìsanwó.",
+      eyebrow: "Àpamọ́wọ́ Henry Onyx",
+      body: "Àpamọ́wọ́ Henry Onyx rẹ wà nígbà gbogbo gẹ́gẹ́ bí àṣàyàn ìsanwó.",
       manageCta: "Ṣàkóso àpamọ́wọ́",
     },
   },
@@ -13877,12 +13877,12 @@ const YO: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Ohun tí a tọ́jú",
       description:
-        "Àwọn ohun tí o yà sọ́tọ̀ kúrò nínú apò ọjà HenryCo èyíkéyìí, a máa tọ́jú wọn fún ọjọ́ àádọ́rùnún (90) pẹ̀lú ìmọ̀ràn ọ̀sẹ̀ kan ṣáájú parí.",
+        "Àwọn ohun tí o yà sọ́tọ̀ kúrò nínú apò ọjà Henry Onyx èyíkéyìí, a máa tọ́jú wọn fún ọjọ́ àádọ́rùnún (90) pẹ̀lú ìmọ̀ràn ọ̀sẹ̀ kan ṣáájú parí.",
     },
     hero: {
       title: "Tọ́jú fún àkókò mìíràn",
       description:
-        "Àwọn ohun tí o yà sọ́tọ̀ kúrò nínú apò ọjà HenryCo èyíkéyìí. A máa tọ́jú wọn fún ọjọ́ àádọ́rùnún (90) tí a ó sì kìlọ̀ fún ọ ní ọ̀sẹ̀ kan kí wọ́n tó parí.",
+        "Àwọn ohun tí o yà sọ́tọ̀ kúrò nínú apò ọjà Henry Onyx èyíkéyìí. A máa tọ́jú wọn fún ọjọ́ àádọ́rùnún (90) tí a ó sì kìlọ̀ fún ọ ní ọ̀sẹ̀ kan kí wọ́n tó parí.",
     },
     summary: {
       activeTemplate: "{count} tó ń ṣiṣẹ́",
@@ -13933,7 +13933,7 @@ const YO: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Àwọn Àkọsílẹ̀",
       description:
-        "Àwọn risiisi rẹ, ìjẹ́rìí, àdéhùn àti fáìlì pàtàkì — a fi pamọ́ ní ìkọ̀kọ̀ tí ó sì wà fún ọ ní gbogbo ẹ̀ka HenryCo.",
+        "Àwọn risiisi rẹ, ìjẹ́rìí, àdéhùn àti fáìlì pàtàkì — a fi pamọ́ ní ìkọ̀kọ̀ tí ó sì wà fún ọ ní gbogbo ẹ̀ka Henry Onyx.",
     },
     hero: {
       eyebrow: "Àpótí ìpamọ́ ti ara ẹni",
@@ -13975,7 +13975,7 @@ const YO: DeepPartial<AccountCopy> = {
     empty: {
       title: "Kò sí àkọsílẹ̀ síbẹ̀",
       description:
-        "Àwọn àkọsílẹ̀ rẹ, risiisi àti ìjẹ́rìí láti ọ̀dọ̀ àwọn ìpèsè HenryCo ni a ó tọ́jú síbí.",
+        "Àwọn àkọsílẹ̀ rẹ, risiisi àti ìjẹ́rìí láti ọ̀dọ̀ àwọn ìpèsè Henry Onyx ni a ó tọ́jú síbí.",
     },
     summary: {
       countTemplate: "{count} àkọsílẹ̀{plural}",
@@ -13984,14 +13984,14 @@ const YO: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "Ìkọ̀kọ̀ àti ìtọ́jú",
       title: "Fáìlì rẹ wà ní ìkọ̀kọ̀",
-      body: "A fi àwọn àkọsílẹ̀ pamọ́ pẹ̀lú ààbò, ìwọ nìkan ló lè rí wọn, a ó sì tọ́jú wọn ní gbogbo àkókò tí àkáǹtì HenryCo rẹ bá wà, àyàfi tí o bá yọ wọn kúrò.",
+      body: "A fi àwọn àkọsílẹ̀ pamọ́ pẹ̀lú ààbò, ìwọ nìkan ló lè rí wọn, a ó sì tọ́jú wọn ní gbogbo àkókò tí àkáǹtì Henry Onyx rẹ bá wà, àyàfi tí o bá yọ wọn kúrò.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Àwọn ìforúkọsílẹ̀",
       description:
-        "Àkójọpọ̀ kíkà-nìkan ti àwọn ètò tí ó ń ṣiṣẹ́, tí a kó wá láti àwọn ìpín HenryCo.",
+        "Àkójọpọ̀ kíkà-nìkan ti àwọn ètò tí ó ń ṣiṣẹ́, tí a kó wá láti àwọn ìpín Henry Onyx.",
     },
     hero: {
       eyebrow: "Àwọn ètò tí ó ń ṣiṣẹ́",
@@ -14060,12 +14060,12 @@ const YO: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Ìfilọ̀ Ẹnìkejì",
       description:
-        "Pe àwọn oníbàárà tí ó dára sí HenryCo, kí o sì máa tọpinpin ẹ̀san láti ipo dídúró, sí ìwádìí, sí gbígba.",
+        "Pe àwọn oníbàárà tí ó dára sí Henry Onyx, kí o sì máa tọpinpin ẹ̀san láti ipo dídúró, sí ìwádìí, sí gbígba.",
     },
     hero: {
       title: "Ìfilọ̀ Ẹnìkejì",
       description:
-        "Pe àwọn oníbàárà tí ó dára sí HenryCo, kí o sì máa tọpinpin ẹ̀san láti ipo dídúró, sí ìwádìí, sí gbígba.",
+        "Pe àwọn oníbàárà tí ó dára sí Henry Onyx, kí o sì máa tọpinpin ẹ̀san láti ipo dídúró, sí ìwádìí, sí gbígba.",
     },
     code: {
       eyebrow: "Kóòdù ìfilọ̀ rẹ",
@@ -14089,20 +14089,20 @@ const YO: DeepPartial<AccountCopy> = {
       eyebrow: "Bí Ó Ti Ń Ṣiṣẹ́",
       step1Title: "Pín kóòdù rẹ",
       step1Body:
-        "Pín kóòdù tàbí líńkì alaiẹ̀dà rẹ. A o tọpinpin àwọn ọ̀rẹ́ tí ó bẹ̀rù subdomain HenryCo èyíkéyìí pẹ̀lú líńkì rẹ lójijì.",
+        "Pín kóòdù tàbí líńkì alaiẹ̀dà rẹ. A o tọpinpin àwọn ọ̀rẹ́ tí ó bẹ̀rù subdomain Henry Onyx èyíkéyìí pẹ̀lú líńkì rẹ lójijì.",
       step2Title: "Wọn ń ṣe ìfowópamọ́",
       step2Body:
         "Lẹ́yìn ìforúkọsílẹ̀, ìfilọ̀ náà yóò wọnú àkókò ìpamọ́ ọjọ́ {days}. À ń tọ́jú ìbáṣepọ̀ ẹni tí a fi ránṣẹ́ sí lẹ́ẹ̀kanṣoṣo — ìfilọ̀ ara-ẹni, ẹbí olùpíbarbar, àti àwọn ìforúkọsílẹ̀ tí a yí padà kò tó.",
       step3Title: "Ẹ̀san yóò gba wọlé lẹ́yìn ìjẹrísí",
       step3Body:
-        "Ìfilọ̀ tí ó dára yóò fi {amount} sí àpamọ́wọ́ HenryCo rẹ lẹ́yìn àyẹ̀wò ètò ìnáwó. Ẹ̀san dídúró kò ṣeé ná àyàfi tí a bá tu sílẹ̀.",
+        "Ìfilọ̀ tí ó dára yóò fi {amount} sí àpamọ́wọ́ Henry Onyx rẹ lẹ́yìn àyẹ̀wò ètò ìnáwó. Ẹ̀san dídúró kò ṣeé ná àyàfi tí a bá tu sílẹ̀.",
     },
     policy: {
       eyebrow: "Òfin Ìfilọ̀",
       qualifying:
-        "Ìyípadà tí ó dára túmọ̀ sí pé àkáǹtì ẹni tí a fi ránṣẹ́ sí parí iṣẹ́ HenryCo tí ó yẹ tí ó gba ìmúdájú ìsanwó àti ìfọkàntán.",
+        "Ìyípadà tí ó dára túmọ̀ sí pé àkáǹtì ẹni tí a fi ránṣẹ́ sí parí iṣẹ́ Henry Onyx tí ó yẹ tí ó gba ìmúdájú ìsanwó àti ìfọkàntán.",
       enforcement:
-        "HenryCo lè dá, yí padà, tàbí kọsílẹ̀ ẹ̀san fún àwọn ìfilọ̀ ara-ẹni, àyípo ìyípadà àdàkọ, àyípadà tó padà, àpadàbọ̀, tàbí àwọn àpẹẹrẹ ẹ̀san tí ó fún ìfura.",
+        "Henry Onyx lè dá, yí padà, tàbí kọsílẹ̀ ẹ̀san fún àwọn ìfilọ̀ ara-ẹni, àyípo ìyípadà àdàkọ, àyípadà tó padà, àpadàbọ̀, tàbí àwọn àpẹẹrẹ ẹ̀san tí ó fún ìfura.",
       separation:
         "Dásíbọ̀ọ̀dù rẹ fi àwọn ìfilọ̀ àti ìtàn ẹ̀san hàn lọ́tọ̀ọ̀tọ̀ kí a má ba à dárúkọ àwọn ìforúkọsílẹ̀ tí a tọpinpin gẹ́gẹ́ bí èrè àpamọ́wọ́ tí a ti gba wọlé.",
     },
@@ -14338,7 +14338,7 @@ const YO: DeepPartial<AccountCopy> = {
         listings: "Ìpolówó",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} tí HenryCo ń darí",
+        savedManagedTemplate: "{count} tí Henry Onyx ń darí",
         savedEmpty: "Fipamọ́ àwọn ìpolówó láti kọ́ àkójọpọ̀",
         savedWith: "Ṣe àfojúsùn àti yípadà nígbà gbogbo",
         inquiriesEmpty: "Kò sí ìjíròrò tí ó ṣí",
@@ -14354,7 +14354,7 @@ const YO: DeepPartial<AccountCopy> = {
       sideBody:
         "Fipamọ́ ìpolówó, béèrè ìbẹ̀wò, tàbí ṣí ìbéèrè lórí Henry Onyx Property — gbogbo ìṣe ń farahàn nínú yàrá àkáùntì yìí kí o lè bẹ̀rẹ̀ lẹ́yìn ibi tí o dúró sí láti orí gbogbo ẹ̀rọ rẹ.",
       sideBodyMuted:
-        "Àwọn ìpolówó tí HenryCo ń darí ní àmì Tí ń darí — àtúnyẹ̀wò, àyẹ̀wò, àti ìtẹ̀síwájú àdéhùn ìyálò ni ẹgbẹ́ Property ń ṣe àkójọpọ̀.",
+        "Àwọn ìpolówó tí Henry Onyx ń darí ní àmì Tí ń darí — àtúnyẹ̀wò, àyẹ̀wò, àti ìtẹ̀síwájú àdéhùn ìyálò ni ẹgbẹ́ Property ń ṣe àkójọpọ̀.",
       breakdownAriaLabel: "Ìpín ìṣẹ̀lẹ̀",
       breakdownLabel: "Nípa ìṣẹ̀lẹ̀",
       breakdownLabels: {
@@ -14367,7 +14367,7 @@ const YO: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Bẹ̀rẹ̀ àtikẹ́kọ̀ọ́ Henry Onyx Property.",
           blurb:
-            "Ṣàwárí àwọn ilé ìyálò, àwọn ìpolówó títà, àti àwọn ilé tí HenryCo ń darí. Fipamọ́ àwọn ti ó wù ọ́, gbogbo ìbéèrè, ìbẹ̀wò, tàbí ìtẹ̀síwájú ìpolówó yóò dé níbí lóòòrè.",
+            "Ṣàwárí àwọn ilé ìyálò, àwọn ìpolówó títà, àti àwọn ilé tí Henry Onyx ń darí. Fipamọ́ àwọn ti ó wù ọ́, gbogbo ìbéèrè, ìbẹ̀wò, tàbí ìtẹ̀síwájú ìpolówó yóò dé níbí lóòòrè.",
         },
         discover: {
           headlineTemplateSingular: "{count} ilé nínú àkójọpọ̀.",
@@ -14388,7 +14388,7 @@ const YO: DeepPartial<AccountCopy> = {
     sections: {
       saved: "Àkójọpọ̀ tí a fipamọ́",
       savedMetaEmpty: "Fipamọ́ àwọn ìpolówó lórí Henry Onyx Property láti kọ́ àkójọpọ̀ rẹ.",
-      savedMetaTemplate: "{saved} tí a fipamọ́ · {managed} tí HenryCo ń darí",
+      savedMetaTemplate: "{saved} tí a fipamọ́ · {managed} tí Henry Onyx ń darí",
       activity: "Ìṣẹ̀lẹ̀ tuntun",
       activityMetaEmpty: "Àwọn ìbéèrè, ìbẹ̀wò, àti àtúnyẹ̀wò ìpolówó ń ṣàfihàn níbí bí wọ́n ti ń ṣẹlẹ̀.",
       activityMetaTemplateSingular: "{count} ìmúdójúìwọ̀n · tuntun jùlọ ní àkọ́kọ́",
@@ -14397,7 +14397,7 @@ const YO: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "Kò sí ilé tí a fipamọ́ síbẹ̀",
       savedBody:
-        "Ṣàwárí àwọn ilé ìyálò, àwọn ìpolówó títà, àti àwọn ilé tí HenryCo ń darí lórí Property. Ohunkóhun tí o bá fipamọ́ yóò dé níbí lóòòrè.",
+        "Ṣàwárí àwọn ilé ìyálò, àwọn ìpolówó títà, àti àwọn ilé tí Henry Onyx ń darí lórí Property. Ohunkóhun tí o bá fipamọ́ yóò dé níbí lóòòrè.",
       activityTitle: "Kò sí ìṣẹ̀lẹ̀ Property síbẹ̀",
       activityBody:
         "Ṣí ìpolówó lórí Henry Onyx Property láti béèrè ìbẹ̀wò tàbí fi ìbéèrè ránṣẹ́ — ipele kọ̀ọ̀kan, láti ọ̀rọ̀ àkọ́kọ́ rẹ títí dé àtúnyẹ̀wò, yóò farahàn níbí.",
@@ -14441,7 +14441,7 @@ const YO: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "Àkáǹtì rẹ",
       headline: "Iṣẹ́ ìgbòkègbódò rẹ, gbogbo rẹ̀ ní ibìkan.",
-      body: "Àwọn ìbéèrè, iṣẹ́ tí a fipamọ́, ìròyìn aṣàrokin, àti ìmúrasílẹ̀ profáìlì ni a ti so mọ́ àkáǹtì HenryCo rẹ.",
+      body: "Àwọn ìbéèrè, iṣẹ́ tí a fipamọ́, ìròyìn aṣàrokin, àti ìmúrasílẹ̀ profáìlì ni a ti so mọ́ àkáǹtì Henry Onyx rẹ.",
       statsAriaLabel: "Ìsọ̀rọ̀ kúkurú nípa ìgbòkègbódò iṣẹ́",
       statLabels: {
         applications: "Àwọn ìbéèrè tí ń ṣiṣẹ́",
@@ -14569,7 +14569,7 @@ const YO: DeepPartial<AccountCopy> = {
         storyLabel: "Ìtàn ipa",
         storyDetail: "Akọlé àti ìsọnísókí ṣàlàyé ohun tí o ṣe ju àkọsílẹ̀ òfo lọ.",
         verificationLabel: "Ìfọwọ́sí ìdánimọ̀",
-        verificationDetail: "Ìgbẹ́kẹ̀lé Jobs ṣì wà ní ààlà títí àkáǹtì HenryCo rẹ yóò ti kọjá àyẹ̀wò ìdánimọ̀.",
+        verificationDetail: "Ìgbẹ́kẹ̀lé Jobs ṣì wà ní ààlà títí àkáǹtì Henry Onyx rẹ yóò ti kọjá àyẹ̀wò ìdánimọ̀.",
         proofLabel: "Ẹ̀rí iṣẹ́",
         proofDetail: "CV pẹ̀lú ẹ̀rí portfolio ń jẹ́ kí ìṣípayá yíyàn rọrùn.",
         skillsLabel: "Àwọn ìmọ̀ tí a fi sípò",
@@ -14716,7 +14716,7 @@ const YO: DeepPartial<AccountCopy> = {
       application: {
         kicker: "Ìbéèrè olùtà",
         bodyWithStoreTemplate: "Ilé-ìtajà: {name}",
-        bodyDefault: "Ìbéèrè wà ní ìlà àyẹ̀wò HenryCo.",
+        bodyDefault: "Ìbéèrè wà ní ìlà àyẹ̀wò Henry Onyx.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "Wo ipò",
         defaultStatus: "fi sílẹ̀",
@@ -14845,7 +14845,7 @@ const YO: DeepPartial<AccountCopy> = {
       certificatesTitle: "Àwọn ìwé ẹ̀rí",
       assignmentsTitle: "Ìkẹ́kọ̀ọ́ tí a yàn",
       savedTitle: "Àwọn ìdánilẹ́kọ̀ọ́ tí a fipamọ́",
-      teachingTitle: "Kọ́ni pẹ̀lú HenryCo",
+      teachingTitle: "Kọ́ni pẹ̀lú Henry Onyx",
       statusLabel: "Ipò",
       expertiseLabel: "Ìmọ̀ pàtàkì",
       topicsLabel: "Àwọn àkọlé",
@@ -14862,7 +14862,7 @@ const YO: DeepPartial<AccountCopy> = {
   divisionStudio: {
     metadata: {
       title: "Studio · yara iṣẹ akanṣe",
-      description: "Tọpa gbogbo ifowosowopo Studio HenryCo ti o so mọ akọọlẹ yii — awọn idamọran, awọn ami iyege, awọn isanwo, awọn ohun ifijiṣẹ, ati iṣẹ ni yara kanna.",
+      description: "Tọpa gbogbo ifowosowopo Studio Henry Onyx ti o so mọ akọọlẹ yii — awọn idamọran, awọn ami iyege, awọn isanwo, awọn ohun ifijiṣẹ, ati iṣẹ ni yara kanna.",
     },
     hero: {
       eyebrowLive: "Studio · n ṣiṣẹ",
@@ -14871,7 +14871,7 @@ const YO: DeepPartial<AccountCopy> = {
       sideAriaLabel: "Bawo ni yara yii ṣe n ṣiṣẹ",
       sideLabel: "Bawo ni yara yii ṣe n ṣiṣẹ",
       sideTitle: "Yara akanṣe kan, ipo gidi.",
-      sideBody: "Awọn idamọran, awọn ami iyege, awọn ẹri isanwo, awọn ohun ifijiṣẹ, ati awọn ami ibaraẹnisọrọ duro pẹlu idanimọ HenryCo kanna ti o n lo nibi gbogbo. Dasibodu ti o wa nisalẹ n ṣe afihan ilọsiwaju gidi ti ẹgbẹ Studio, kii ṣe akojọ ipo.",
+      sideBody: "Awọn idamọran, awọn ami iyege, awọn ẹri isanwo, awọn ohun ifijiṣẹ, ati awọn ami ibaraẹnisọrọ duro pẹlu idanimọ Henry Onyx kanna ti o n lo nibi gbogbo. Dasibodu ti o wa nisalẹ n ṣe afihan ilọsiwaju gidi ti ẹgbẹ Studio, kii ṣe akojọ ipo.",
       breakdownAriaLabel: "Pinpin iṣẹ",
       breakdownLabel: "Nipa ipo",
       tiles: {
@@ -14897,7 +14897,7 @@ const YO: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "Bẹrẹ brief Studio kan.",
-          blurb: "Nigbati idamọran tabi iṣẹ akanṣe ba bẹrẹ pẹlu idanimọ HenryCo rẹ, yara Studio ti a muṣiṣẹpọ yoo han nibi — awọn ami iyege, isanwo, awọn ohun ifijiṣẹ, ati igbesẹ atẹle papọ.",
+          blurb: "Nigbati idamọran tabi iṣẹ akanṣe ba bẹrẹ pẹlu idanimọ Henry Onyx rẹ, yara Studio ti a muṣiṣẹpọ yoo han nibi — awọn ami iyege, isanwo, awọn ohun ifijiṣẹ, ati igbesẹ atẹle papọ.",
           ctaPrimary: "Bẹrẹ brief",
           ctaSecondary: "Ṣii Studio",
         },
@@ -14950,7 +14950,7 @@ const YO: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "Ko si yara Studio ti a so mọ sibẹsibẹ",
-      projectsBody: "Ni kete ti a ba ṣẹda idamọran tabi iṣẹ akanṣe pẹlu idanimọ HenryCo rẹ, yara Studio ti a muṣiṣẹpọ yoo han nibi — awọn ami iyege, isanwo, awọn ohun ifijiṣẹ, ati igbesẹ atẹle.",
+      projectsBody: "Ni kete ti a ba ṣẹda idamọran tabi iṣẹ akanṣe pẹlu idanimọ Henry Onyx rẹ, yara Studio ti a muṣiṣẹpọ yoo han nibi — awọn ami iyege, isanwo, awọn ohun ifijiṣẹ, ati igbesẹ atẹle.",
       paymentsTitle: "Ko si aaye iṣayẹwo isanwo sibẹsibẹ",
       paymentsBody: "Awọn ami iyege iṣowo — ifiranṣẹ, agbedemeji iṣẹ akanṣe, ati ifijiṣẹ — n han nibi ni kete ti idamọran ba bẹrẹ pẹlu rẹ.",
       activityTitle: "Ko si iṣẹ Studio sibẹsibẹ",
@@ -15007,8 +15007,8 @@ const YO: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "Àkópọ̀ èro̩ ọkọ̀",
-      eyebrow: "HenryCo Èro̩ ọkọ̀",
-      brand: "HenryCo Èro̩ ọkọ̀",
+      eyebrow: "Henry Onyx Èro̩ ọkọ̀",
+      brand: "Henry Onyx Èro̩ ọkọ̀",
       title: "Gbogbo ìpamọ́, yàrá kan ṣoṣo.",
       body: "Gbígbé, ìfijíṣẹ́, ETA àti ẹ̀rí ìfijíṣẹ́ — gbogbo wọn ń farahàn láti orí nẹ́tíwọ́ọ̀kì èro̩ ọkọ̀ sínú àkántì rẹ. Búkù lẹ́ẹ̀kan ní",
       bodyDomain: " logistics.henryonyx.com",
@@ -15156,7 +15156,7 @@ const YO: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "O kò tíì fi àdírẹ́sì kankan kún. Fi àkọ́kọ́ rẹ kún kí ìpari rírà yá ní gbogbo HenryCo.",
+        "O kò tíì fi àdírẹ́sì kankan kún. Fi àkọ́kọ́ rẹ kún kí ìpari rírà yá ní gbogbo Henry Onyx.",
     },
     add: {
       cta: "Fi àdírẹ́sì kún",
@@ -15169,10 +15169,10 @@ const YO: DeepPartial<AccountCopy> = {
   search: {
     metadata: {
       title: "Wá Akọọlẹ",
-      description: "Wá àwọn ọ̀nà iṣẹ́ akọọlẹ HenryCo àti àwọn ọ̀nà ìpín tí a so pọ̀.",
+      description: "Wá àwọn ọ̀nà iṣẹ́ akọọlẹ Henry Onyx àti àwọn ọ̀nà ìpín tí a so pọ̀.",
     },
     hero: {
-      title: "Wá àwọn ọ̀nà iṣẹ́ HenryCo rẹ.",
+      title: "Wá àwọn ọ̀nà iṣẹ́ Henry Onyx rẹ.",
       description:
         "Lọ tààrà sí àwọn iṣẹ́ akọọlẹ tó pé àti àwọn ọ̀nà ìpín tí a so pọ̀, láìpadà sí àwọn ìbẹ̀tẹ̀ gbogbogbò.",
     },
@@ -15206,9 +15206,9 @@ const HA: DeepPartial<AccountCopy> = {
   },
   overview: {
     welcomeBack: "Barka da dawowa",
-    description: "Cibiyar umarni ta HenryCo — komai a cikin dukkan sassan, wuri guda.",
+    description: "Cibiyar umarni ta Henry Onyx — komai a cikin dukkan sassan, wuri guda.",
     walletBalance: "Ma'auni na Jakar",
-    walletHint: "Jakar da aka raba · Yi amfani a duk sabis na HenryCo",
+    walletHint: "Jakar da aka raba · Yi amfani a duk sabis na Henry Onyx",
     notifications: "Sanarwa",
     allCaughtUp: "Komai yana da kyau",
     unreadMessages: "Saƙonni da ba a karanta ba",
@@ -15228,7 +15228,7 @@ const HA: DeepPartial<AccountCopy> = {
     noOpenRequests: "Babu buƙatun buɗaɗɗe",
     referrals: "Jagororin",
     inviteAndEarn: "Gayyata da kuma samu",
-    shareHenryCo: "Raba HenryCo da wasu",
+    shareHenryCo: "Raba Henry Onyx da wasu",
     transactions: "Ma'amaloli",
     viewHistory: "Duba tarihi",
     walletActivity: "Ayyukan jakar & biyan kuɗi",
@@ -15255,7 +15255,7 @@ const HA: DeepPartial<AccountCopy> = {
     noUrgentTasks: "Babu ayyukan asusun masu gaggawa yanzu. Kuna cikin ƙoshin lafiya na aiki.",
     viewTaskQueue: "Duba layin jiran aikin cikakke",
     smartRecommendations: "Shawarwari",
-    smartRecommendationsEmpty: "Ci gaba da amfani da sabis na HenryCo kuma shawarwari za su daidaita da ayyukanku.",
+    smartRecommendationsEmpty: "Ci gaba da amfani da sabis na Henry Onyx kuma shawarwari za su daidaita da ayyukanku.",
     smartHomeEmptyFallback:
       "Barka da zuwa — fara da ƙaramin mataki na farko. Sigina kai tsaye naka za su bayyana a nan da zarar wani aiki ya zo.",
     recommendationReason: "An ba da shawarar daga ayyukan asusunka da yanayin amana ({confidence} amana)",
@@ -15278,10 +15278,10 @@ const HA: DeepPartial<AccountCopy> = {
       jobsSaved: "Bi sawun rawar da aka ajiye",
     },
     recommendationDescriptions: {
-      trustNext: "Buɗe ƙarin ayyuka a cikin HenryCo.",
+      trustNext: "Buɗe ƙarin ayyuka a cikin Henry Onyx.",
       profileNext: "Cikakken bayanan martaba yana inganta tallafi da ci gaban sabis.",
       jobsSaved: "Dawo ka duba rawar da ka riga ka ajiye ka yi aiki a kansu.",
-      fallback: "Ci gaba da amfani da sabis na HenryCo kuma shawarwari za su daidaita da ayyukanku.",
+      fallback: "Ci gaba da amfani da sabis na Henry Onyx kuma shawarwari za su daidaita da ayyukanku.",
     },
   },
   tasks: {
@@ -15339,14 +15339,14 @@ const HA: DeepPartial<AccountCopy> = {
     headlineCalmSingular: "Abu {count} a layinka.",
     headlineCalmPlural: "Abubuwa {count} a layinka.",
     blurbEmpty: "Asusunka yana cikin tsari — tabbatarwa, biyan kuɗi, da hanyoyi masu mahimmancin sake duba duk sun share. Za mu nuna mataki na gaba a nan kai tsaye lokacin da ya bayyana.",
-    blurbRisk: "Wadannan abubuwa suna toshe ayyukan amana mafi girma a HenryCo — fitar da kuɗi daga jakar, amincewar mai siyarwa na Marketplace, tabbatar da mai aiki. Warware su yana buɗe kowace hanya.",
-    blurbActive: "Kowane layi yana kai ka zuwa aiki na gaba da taɓawa ɗaya. Tace, alamomin fifiko, da hanyoyin haɗi sun kasance daidai a duk sassan HenryCo.",
+    blurbRisk: "Wadannan abubuwa suna toshe ayyukan amana mafi girma a Henry Onyx — fitar da kuɗi daga jakar, amincewar mai siyarwa na Marketplace, tabbatar da mai aiki. Warware su yana buɗe kowace hanya.",
+    blurbActive: "Kowane layi yana kai ka zuwa aiki na gaba da taɓawa ɗaya. Tace, alamomin fifiko, da hanyoyin haɗi sun kasance daidai a duk sassan Henry Onyx.",
     metaEmpty: "Ka share. Duk wani sabon abu zai bayyana a nan da zarar ya iso.",
     metaCount: "{count} buɗe · an tsara su bisa fifiko da yanayin toshewa.",
   },
   security: {
     title: "Tsaro",
-    description: "Duba ayyukan tsaro na kwanan nan, canza kalmar sirri, kuma ƙare zaman HenryCo idan ya zama dole.",
+    description: "Duba ayyukan tsaro na kwanan nan, canza kalmar sirri, kuma ƙare zaman Henry Onyx idan ya zama dole.",
     heroAriaLabel: "Kallon tsaro",
     hero: {
       trustScoreLabel: "Makin amana",
@@ -15367,7 +15367,7 @@ const HA: DeepPartial<AccountCopy> = {
         risk: "Mun yi wa wani aiki alama da yake buƙatar idanunka.",
       },
       statusBlurb: {
-        secure: "Babu lamuran da ake tuhuma, tabbatarwa tana cikin koshin lafiya, kuma kowane aikin amana mafi girma da HenryCo ke bayarwa yana buɗe a gare ka.",
+        secure: "Babu lamuran da ake tuhuma, tabbatarwa tana cikin koshin lafiya, kuma kowane aikin amana mafi girma da Henry Onyx ke bayarwa yana buɗe a gare ka.",
         watch: "Babu abin da ya karye — amma 'yan alamomi (tabbatar da imel, sake duba shaida, daidaita lambar tuntuɓa) za su ɗaga makin amanarka kuma su buɗe ƙarin hanyoyi.",
         risk: "An rarraba lamuran kwanan nan a matsayin haɗari mai girma. Duba rafin ayyukan da ke ƙasa kuma canza kalmar sirri idan wani abu ya yi maka kamar baƙo.",
       },
@@ -15386,7 +15386,7 @@ const HA: DeepPartial<AccountCopy> = {
     noSuspiciousEventFoot: "Babu abin da aka yi wa alama a cikin taga sake duba na ƙarshe.",
     activityAriaLabel: "Lamuran tsaro na kwanan nan",
     trustProfile: "Bayanan Martaba na Amana",
-    trustDescription: "Amana tana aiki a duk asusun. Yanzu tana sarrafa ayyukan kasuwanci masu ƙimar sama, matsayin kulawa, da cancantar ƙarfi a duk modules na HenryCo.",
+    trustDescription: "Amana tana aiki a duk asusun. Yanzu tana sarrafa ayyukan kasuwanci masu ƙimar sama, matsayin kulawa, da cancantar ƙarfi a duk modules na Henry Onyx.",
     trustScore: "Iya maki amana na asusun",
     signalLabels: {
       emailVerified: "Imel da aka tabbatar",
@@ -15425,7 +15425,7 @@ const HA: DeepPartial<AccountCopy> = {
     moreVerificationNeeded: "Ana buƙatar ƙarin tabbatarwa",
     trustGuide: "Jagorar yanayin amana",
     whatCurrentStateMeans: "Abin da yanayin ku na yanzu ke nufi",
-    whatCurrentStateBody: "Wannan yanayi yana ƙayyade samun damar workflows masu ƙima mai girma da ayyukan kasuwanci a HenryCo.",
+    whatCurrentStateBody: "Wannan yanayi yana ƙayyade samun damar workflows masu ƙima mai girma da ayyukan kasuwanci a Henry Onyx.",
     whatToDoNext: "Abin da za ku yi na gaba",
     whatToDoNextBody: "Kammala buƙatun da aka jera don buɗe tashar amana ta gaba.",
     currentRestrictions: "Ayyuka da aka iyakance a halin yanzu",
@@ -15479,7 +15479,7 @@ const HA: DeepPartial<AccountCopy> = {
         verification: "Amana na premium an tanadin ta ne ga asusukan da sun riga sun wuce tabbatarwar shaida.",
         age: "Kiyaye tarihin asusun mai tsafta na tsawon lokaci.",
         transactions: "Gina ƙarin tarihin ma'amaloli da aka tabbatar.",
-        activity: "Yi amfani da ƙarin sassan HenryCo tare da sakamakon tsafta.",
+        activity: "Yi amfani da ƙarin sassan Henry Onyx tare da sakamakon tsafta.",
         overlap: "Kiyaye dubawan hulɗar da aka raba ta kasance sarari kafin a ba da amana na premium.",
       },
     },
@@ -15497,12 +15497,12 @@ const HA: DeepPartial<AccountCopy> = {
     updatePassword: "Sabunta kalmar sirri",
   },
   globalSignOut: {
-    title: "Ƙare kowane zaman HenryCo",
-    description: "Wannan yana fitar da asusun yanzu a duk sassan HenryCo da na'urorin, sannan ya mayar da ku zuwa ɓangaren shiga asusun.",
+    title: "Ƙare kowane zaman Henry Onyx",
+    description: "Wannan yana fitar da asusun yanzu a duk sassan Henry Onyx da na'urorin, sannan ya mayar da ku zuwa ɓangaren shiga asusun.",
     note: "Ayyukan na'ura da zama na kwanan nan suna bayyane a ƙasa ko da an fitar da sarrafa guda ɗaya ta kowane na'ura tukuna.",
-    unavailable: "Ba za mu iya ƙare kowane zaman HenryCo yanzu ba. Da fatan za a sake gwadawa nan ba da jimawa ba.",
+    unavailable: "Ba za mu iya ƙare kowane zaman Henry Onyx yanzu ba. Da fatan za a sake gwadawa nan ba da jimawa ba.",
     ending: "Ana ƙarewa duk zaman...",
-    endAllSessions: "Fita daga duk zaman HenryCo",
+    endAllSessions: "Fita daga duk zaman Henry Onyx",
   },
   errorBoundary: {
     kicker: "Lokacin aiki na asusun",
@@ -15513,10 +15513,10 @@ const HA: DeepPartial<AccountCopy> = {
   },
   activity: {
     title: "Aiki",
-    description: "Duk abin da kuka yi a sassan HenryCo gaba ɗaya.",
+    description: "Duk abin da kuka yi a sassan Henry Onyx gaba ɗaya.",
     emptyTitle: "Babu aiki tukuna",
     emptyDescription:
-      "Aikinku tsakanin sassa zai bayyana a nan yayin da kuke amfani da ayyukan HenryCo.",
+      "Aikinku tsakanin sassa zai bayyana a nan yayin da kuke amfani da ayyukan Henry Onyx.",
     statusLabels: {
       pending: "Ana jira",
       open: "A bayyane",
@@ -15541,8 +15541,8 @@ const HA: DeepPartial<AccountCopy> = {
       pdfNote:
         "PDF ɗin yana ɗauke da kowane tacewa da kuka saita a sama a matsayin sashen kan takarda — abin da kuke gani shi ne kuke saukewa.",
       downloadLabel: "Sauke bayanin asusu",
-      downloadFilename: "HenryCo-Tarihin-Mu'amaloli.pdf",
-      shareTitle: "Tarihin Mu'amaloli na HenryCo",
+      downloadFilename: "Henry Onyx-Tarihin-Mu'amaloli.pdf",
+      shareTitle: "Tarihin Mu'amaloli na Henry Onyx",
       typeLabels: {
         payment: "biyan kuɗi",
         wallet_credit: "ƙarin walat",
@@ -15554,11 +15554,11 @@ const HA: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "Kalanda · HenryCo",
+    metaTitle: "Kalanda · Henry Onyx",
     metaDescription:
       "Tsarin rana na duk rabe-raben — ajiyar Care, ziyarar gida, hira da Jobs, mahimman lokutan Studio, azuzuwan Learn, taga isar Logistics.",
     heroAriaLabel: "Bayyani na kalanda",
-    heroEyebrow: "HenryCo · kalanda na duk rabe-raben",
+    heroEyebrow: "Henry Onyx · kalanda na duk rabe-raben",
     tileVolumeAriaLabel: "Adadin kalanda",
     tileEventsLabel: "Abubuwan da suka faru",
     tileEventsFoot: "Kwana 28 masu zuwa",
@@ -15629,18 +15629,18 @@ const HA: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "Sanarwa",
-      description: "Kowane sabunta na HenryCo — walat, tallafi, ayyuka, kasuwa, kulawa, da ƙari — a cikin akwatin sako kai tsaye.",
+      description: "Kowane sabunta na Henry Onyx — walat, tallafi, ayyuka, kasuwa, kulawa, da ƙari — a cikin akwatin sako kai tsaye.",
     },
     hero: {
-      eyebrow: "HenryCo · sanarwa kai tsaye",
+      eyebrow: "Henry Onyx · sanarwa kai tsaye",
       ariaOverview: "Bayyani na sanarwa",
       ariaVolume: "Yawan sanarwa",
       ariaByDivision: "Ta sashe",
-      headlineZero: "Akwatin sako babu kome a HenryCo.",
+      headlineZero: "Akwatin sako babu kome a Henry Onyx.",
       headlineOne: "Akwai abu ɗaya da ke buƙatar hankalin ka.",
       headlineFew: "Sanarwa {count} su jira hankalin ka.",
       headlineMany: "Sabunta {count} a sassan ka.",
-      blurbZero: "Duk abin da HenryCo ke aikawa yana isa nan kai tsaye — walat, tallafi, ayyuka, kasuwa, kulawa, da ƙari.",
+      blurbZero: "Duk abin da Henry Onyx ke aikawa yana isa nan kai tsaye — walat, tallafi, ayyuka, kasuwa, kulawa, da ƙari.",
       blurbStale: "Tsofaffin abubuwa sun haɗu. Yi shafa don adanawa, danna don buɗewa, ko tafi kai tsaye zuwa tattaunawa.",
       blurbToday: "{count} sun isa yau. Yi amfani da masu tace don mai da hankali kan sashe ɗaya kawai, ko ka bi waɗanda ba a karanta ba kawai.",
       tileUnreadLabel: "Ba a karanta ba",
@@ -15683,7 +15683,7 @@ const HA: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "Duk an gama.",
-      inboxBody: "Ayyuka daga duk faɗin HenryCo suna bayyana nan yayin da suke faruwa.",
+      inboxBody: "Ayyuka daga duk faɗin Henry Onyx suna bayyana nan yayin da suke faruwa.",
       filterTitle: "Babu aiki a wannan kallo.",
       filterBody: "Gwada matace daban.",
     },
@@ -15709,7 +15709,7 @@ const HA: DeepPartial<AccountCopy> = {
       headlineEmpty: "Rasidojin ku za su sauka nan.",
       headlineWithReceipts: "Kowane rasidi, wuri ɗaya.",
       blurb:
-        "Kowane biya a cikin HenryCo yana zuwa nan a matsayin PDF mai alama mai saukarwa — ajiyar Care, oda na Marketplace, lissafin Studio, jigilar Logistics, takaddun Learn.",
+        "Kowane biya a cikin Henry Onyx yana zuwa nan a matsayin PDF mai alama mai saukarwa — ajiyar Care, oda na Marketplace, lissafin Studio, jigilar Logistics, takaddun Learn.",
       totalPaidLabel: "Jimillar da aka biya · rayuwa",
       thisMonthLabel: "An biya · wannan watan",
       thisMonthFoot: "Rasidoji daga wannan watan kalandar",
@@ -15728,7 +15728,7 @@ const HA: DeepPartial<AccountCopy> = {
     empty: {
       title: "Babu lissafi tukuna",
       description:
-        "Lissafin kuɗin ku da rasidoji za su bayyana nan bayan biyan kuɗi a ayyukan HenryCo.",
+        "Lissafin kuɗin ku da rasidoji za su bayyana nan bayan biyan kuɗi a ayyukan Henry Onyx.",
     },
     statuses: {
       paid: "An biya",
@@ -15760,12 +15760,12 @@ const HA: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "Saƙonni · HenryCo",
+      title: "Saƙonni · Henry Onyx",
       description:
         "Akwati ɗaya na saƙonni don tallafi, kasuwa, ayyuka, studio, kulawa, kadara, kayan aiki da koyo.",
     },
     hero: {
-      eyebrow: "HenryCo · akwati ɗaya na saƙonni",
+      eyebrow: "Henry Onyx · akwati ɗaya na saƙonni",
       ariaLabel: "Bayyani na akwatin saƙonni",
       ariaTiles: "Yawan saƙonnin akwati",
       ariaSide: "Ta portal",
@@ -15774,7 +15774,7 @@ const HA: DeepPartial<AccountCopy> = {
         "Kowane portal yana ciyar da wannan akwati guda. Tallafi, umarnin kasuwa, hira ta aiki, ayyukan studio da rajistar kulawa duka suna bayyana a nan a tsarin lokaci.",
     },
     headlines: {
-      zero: "Akwatin saƙonni babu kome a duk HenryCo.",
+      zero: "Akwatin saƙonni babu kome a duk Henry Onyx.",
       calmOne: "Zare ɗaya yana jiranka.",
       calmMany: "Zare {count} suna a buɗe.",
       busy: "{unread} ba a karanta ba · {open} a buɗe a portal ɗinka.",
@@ -15841,14 +15841,14 @@ const HA: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "Ma'aunin walat",
-      eyebrow: "Walat HenryCo · kai tsaye",
+      eyebrow: "Walat Henry Onyx · kai tsaye",
       availableLabel: "Ma'aunin da yake samuwa",
       balanceAriaTemplate: "Ma'aunin da yake samuwa {amount} {currency}",
-      settlementFallback: "An sasanta shi cikin kuɗin gida a farashin HenryCo na yini.",
+      settlementFallback: "An sasanta shi cikin kuɗin gida a farashin Henry Onyx na yini.",
       ctas: { fund: "Ƙara kuɗi", withdraw: "Cire kuɗi" },
       tiles: {
         verifiedLabel: "Ma'aunin da aka tabbatar",
-        verifiedFoot: "Ana iya amfani da shi a duk ayyukan HenryCo",
+        verifiedFoot: "Ana iya amfani da shi a duk ayyukan Henry Onyx",
         pendingFundingLabel: "Kuɗin shigarwa da yake jiran",
         pendingFundingFoot: "Yana zama keɓe har sai sashin kuɗi ya tabbatar",
         pendingWithdrawalLabel: "An riƙe don cirewa",
@@ -15927,7 +15927,7 @@ const HA: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "Cinikayya ta walat",
       emptyTitle: "Babu cinikayya tukuna",
-      emptyBody: "Cika walat ɗinka, mai cin abinci na aiki zai nuna a nan kowane kuɗi, cire, mai dawowa da kyauta a duk ayyukan HenryCo.",
+      emptyBody: "Cika walat ɗinka, mai cin abinci na aiki zai nuna a nan kowane kuɗi, cire, mai dawowa da kyauta a duk ayyukan Henry Onyx.",
       fallbackTitle: "Cinikayyar walat",
     },
     funding: {
@@ -15952,11 +15952,11 @@ const HA: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "Tallafi",
-      description: "Sami taimako don kowane sabis na HenryCo.",
+      description: "Sami taimako don kowane sabis na Henry Onyx.",
     },
     hero: {
       title: "Tallafi",
-      description: "Sami taimako don kowane sabis na HenryCo.",
+      description: "Sami taimako don kowane sabis na Henry Onyx.",
       newRequestCta: "Sabuwar buƙata",
     },
     summary: {
@@ -16011,8 +16011,8 @@ const HA: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "Walat HenryCo",
-      body: "Walat HenryCo naka koyaushe yana akwai a matsayin zaɓin biya.",
+      eyebrow: "Walat Henry Onyx",
+      body: "Walat Henry Onyx naka koyaushe yana akwai a matsayin zaɓin biya.",
       manageCta: "Sarrafa walat",
     },
   },
@@ -16020,12 +16020,12 @@ const HA: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Abubuwan da aka adana",
       description:
-        "Abubuwan da ka ajiye daga kowace kwandon HenryCo, ana adana su na kwana 90 tare da gargaɗi mako guda kafin su ƙare.",
+        "Abubuwan da ka ajiye daga kowace kwandon Henry Onyx, ana adana su na kwana 90 tare da gargaɗi mako guda kafin su ƙare.",
     },
     hero: {
       title: "An adana don baya",
       description:
-        "Abubuwan da ka ajiye daga kowace kwandon HenryCo. Za mu ajiye su na kwana 90 kuma za mu gargaɗe ka mako guda kafin su ƙare.",
+        "Abubuwan da ka ajiye daga kowace kwandon Henry Onyx. Za mu ajiye su na kwana 90 kuma za mu gargaɗe ka mako guda kafin su ƙare.",
     },
     summary: {
       activeTemplate: "{count} masu aiki",
@@ -16076,7 +16076,7 @@ const HA: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Takardu",
       description:
-        "Rasit ɗinka, takaddun shaida, kwangiloli da fayilolin muhimmai — ana ajiyewa cikin sirri kuma ana iya samun su a kowace ɓangare ta HenryCo.",
+        "Rasit ɗinka, takaddun shaida, kwangiloli da fayilolin muhimmai — ana ajiyewa cikin sirri kuma ana iya samun su a kowace ɓangare ta Henry Onyx.",
     },
     hero: {
       eyebrow: "Ma’ajin kanka",
@@ -16118,7 +16118,7 @@ const HA: DeepPartial<AccountCopy> = {
     empty: {
       title: "Babu takardu tukuna",
       description:
-        "Takarduka, rasit da takaddun shaida daga sabis ɗin HenryCo za a adana su a nan.",
+        "Takarduka, rasit da takaddun shaida daga sabis ɗin Henry Onyx za a adana su a nan.",
     },
     summary: {
       countTemplate: "{count} takarda{plural}",
@@ -16127,14 +16127,14 @@ const HA: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "Sirri da ajiya",
       title: "Fayilolinka sun zauna a sirri",
-      body: "Ana ɓoye takardu yayin da suke ajiye, kai kaɗai za ka iya ganinsu, kuma za mu ajiye su yayin da asusunka na HenryCo yake aiki sai dai idan ka cire su.",
+      body: "Ana ɓoye takardu yayin da suke ajiye, kai kaɗai za ka iya ganinsu, kuma za mu ajiye su yayin da asusunka na Henry Onyx yake aiki sai dai idan ka cire su.",
     },
   },
   subscriptions: {
     metadata: {
       title: "Rajistar biyan kuɗi",
       description:
-        "Taƙaitaccen karatu-kawai na tsare-tsaren da ke aiki, da aka kawo daga sassan HenryCo.",
+        "Taƙaitaccen karatu-kawai na tsare-tsaren da ke aiki, da aka kawo daga sassan Henry Onyx.",
     },
     hero: {
       eyebrow: "Tsare-tsaren da ke aiki",
@@ -16203,12 +16203,12 @@ const HA: DeepPartial<AccountCopy> = {
     metadata: {
       title: "Tura Wasu",
       description:
-        "Gayyaci abokan ciniki masu cancanta zuwa HenryCo, kuma ka bi diddigin kyaututtuka ta hanyar dakatarwa, sake nazari, da matakan da aka biya.",
+        "Gayyaci abokan ciniki masu cancanta zuwa Henry Onyx, kuma ka bi diddigin kyaututtuka ta hanyar dakatarwa, sake nazari, da matakan da aka biya.",
     },
     hero: {
       title: "Tura Wasu",
       description:
-        "Gayyaci abokan ciniki masu cancanta zuwa HenryCo, kuma ka bi diddigin kyaututtuka ta hanyar dakatarwa, sake nazari, da matakan da aka biya.",
+        "Gayyaci abokan ciniki masu cancanta zuwa Henry Onyx, kuma ka bi diddigin kyaututtuka ta hanyar dakatarwa, sake nazari, da matakan da aka biya.",
     },
     code: {
       eyebrow: "Lambar tura ka",
@@ -16232,20 +16232,20 @@ const HA: DeepPartial<AccountCopy> = {
       eyebrow: "Yadda Yake Aiki",
       step1Title: "Raba lambarka",
       step1Body:
-        "Raba lambarka ko hanyar haɗinka ta musamman. Ana bi diddigin abokan da ke ziyartar duk wani sashin HenryCo ta hanyar haɗinka ta atomatik.",
+        "Raba lambarka ko hanyar haɗinka ta musamman. Ana bi diddigin abokan da ke ziyartar duk wani sashin Henry Onyx ta hanyar haɗinka ta atomatik.",
       step2Title: "Sun yi mu'amala",
       step2Body:
         "Bayan rajista, turawar tana shiga cikin tagar riƙe na kwanaki {days}. Muna bin diddigin asusun da aka tura sau ɗaya kawai — tura kai, kwafin gida, da sake rajistar da aka sake amfani ba su cancanta ba.",
       step3Title: "Lada na fitowa bayan cancanta",
       step3Body:
-        "Turawar da ta cancanta tana ɗora {amount} a walat ɗin HenryCo ka bayan nazarin kuɗi. Ladan da ke tafe ba a iya kashe shi har sai an tabbatar da shi.",
+        "Turawar da ta cancanta tana ɗora {amount} a walat ɗin Henry Onyx ka bayan nazarin kuɗi. Ladan da ke tafe ba a iya kashe shi har sai an tabbatar da shi.",
     },
     policy: {
       eyebrow: "Manufar Tura",
       qualifying:
-        "Juyawar da ta cancanta na nufin asusun da aka tura ya kammala aikin HenryCo da ya cancanta wanda ya wuce tabbatar da biyan kuɗi da amincewa.",
+        "Juyawar da ta cancanta na nufin asusun da aka tura ya kammala aikin Henry Onyx da ya cancanta wanda ya wuce tabbatar da biyan kuɗi da amincewa.",
       enforcement:
-        "HenryCo na iya riƙewa, mayar da baya, ko soke lada don tura kai, ƙididdigar juyawa biyu, mayar da baya, mayar da kuɗi, ko alamomin lada na zato.",
+        "Henry Onyx na iya riƙewa, mayar da baya, ko soke lada don tura kai, ƙididdigar juyawa biyu, mayar da baya, mayar da kuɗi, ko alamomin lada na zato.",
       separation:
         "Allon bayanan ka yana nuna turawa da tarihin lada daban don kada a yi kuskuren tantance rajistar da aka bi diddiginsu a matsayin kuɗin walat da aka biya.",
     },
@@ -16481,7 +16481,7 @@ const HA: DeepPartial<AccountCopy> = {
         listings: "Tallace-tallace",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} HenryCo na kula da su",
+        savedManagedTemplate: "{count} Henry Onyx na kula da su",
         savedEmpty: "Ajiye tallace-tallace don gina jeri",
         savedWith: "Kwatanta kuma sake bita a kowane lokaci",
         inquiriesEmpty: "Babu tattaunawa a yanzu",
@@ -16497,7 +16497,7 @@ const HA: DeepPartial<AccountCopy> = {
       sideBody:
         "Ajiye talla, nemi ziyara, ko buɗe tambaya a Henry Onyx Property — kowane aiki yana bayyana a wannan dakin asusu domin ka iya ci gaba daga inda ka tsaya a kowane na'ura.",
       sideBodyMuted:
-        "Tallace-tallacen da HenryCo ke kulawa suna ɗauke da alamar Mai kulawa — bitar, dubawa, da biyo bayan haya na'urar gudanarwar Property ne ke daidaita.",
+        "Tallace-tallacen da Henry Onyx ke kulawa suna ɗauke da alamar Mai kulawa — bitar, dubawa, da biyo bayan haya na'urar gudanarwar Property ne ke daidaita.",
       breakdownAriaLabel: "Rabuwar aiki",
       breakdownLabel: "Bisa aiki",
       breakdownLabels: {
@@ -16510,7 +16510,7 @@ const HA: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Fara binciken Henry Onyx Property.",
           blurb:
-            "Gano gidaje don haya, tallace-tallacen sayarwa, da gidajen da HenryCo ke kulawa. Ajiye abubuwan da kake so, kuma duk tambaya, ziyara, ko biyo bayan talla zai sauka a nan kai tsaye.",
+            "Gano gidaje don haya, tallace-tallacen sayarwa, da gidajen da Henry Onyx ke kulawa. Ajiye abubuwan da kake so, kuma duk tambaya, ziyara, ko biyo bayan talla zai sauka a nan kai tsaye.",
         },
         discover: {
           headlineTemplateSingular: "{count} gida a jeri.",
@@ -16531,7 +16531,7 @@ const HA: DeepPartial<AccountCopy> = {
     sections: {
       saved: "Jerin da aka ajiye",
       savedMetaEmpty: "Ajiye tallace-tallace a Henry Onyx Property don gina jerin ku.",
-      savedMetaTemplate: "{saved} an ajiye · {managed} HenryCo na kula",
+      savedMetaTemplate: "{saved} an ajiye · {managed} Henry Onyx na kula",
       activity: "Aikin baya-bayan nan",
       activityMetaEmpty: "Tambayoyi, ziyarce-ziyarce, da bitar tallace-tallace suna bayyana a nan kamar yadda suke faruwa.",
       activityMetaTemplateSingular: "{count} sabuntawa · sabuwar farko",
@@ -16540,7 +16540,7 @@ const HA: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "Babu gidaje da aka ajiye tukuna",
       savedBody:
-        "Gano gidaje don haya, tallace-tallacen sayarwa, da gidajen da HenryCo ke kulawa a Property. Duk abin da ka ajiye yana sauka a nan kai tsaye.",
+        "Gano gidaje don haya, tallace-tallacen sayarwa, da gidajen da Henry Onyx ke kulawa a Property. Duk abin da ka ajiye yana sauka a nan kai tsaye.",
       activityTitle: "Babu aikin Property tukuna",
       activityBody:
         "Buɗe talla a Henry Onyx Property don nemi ziyara ko aika tambaya — kowace mataki, daga saƙon farko har bitar, za ta bayyana a nan.",
@@ -16584,7 +16584,7 @@ const HA: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "Asusunka",
       headline: "Ayyukanka, duka a wuri ɗaya.",
-      body: "Neman ayyuka, ayyukan ajiye, sabuntawa daga masu daukar ma'aikata, da shirye-shiryen bayanin martaba an haɗa su da asusunka na HenryCo.",
+      body: "Neman ayyuka, ayyukan ajiye, sabuntawa daga masu daukar ma'aikata, da shirye-shiryen bayanin martaba an haɗa su da asusunka na Henry Onyx.",
       statsAriaLabel: "Taƙaitaccen ayyukan aiki",
       statLabels: {
         applications: "Neman ayyuka masu rai",
@@ -16712,7 +16712,7 @@ const HA: DeepPartial<AccountCopy> = {
         storyLabel: "Labarin aiki",
         storyDetail: "Taken da taƙaitawa suna bayyana abin da kake yi fiye da rikodi mara komai.",
         verificationLabel: "Tabbatar da shaidar",
-        verificationDetail: "Amincewar Jobs ta dakata har sai asusunka na HenryCo ya wuce binciken shaidar.",
+        verificationDetail: "Amincewar Jobs ta dakata har sai asusunka na Henry Onyx ya wuce binciken shaidar.",
         proofLabel: "Hujjar aiki",
         proofDetail: "CV tare da hujjar portfolio na sa motsi cikin jerin ya yi sauƙi.",
         skillsLabel: "Ƙwarewar da aka tsara",
@@ -16859,7 +16859,7 @@ const HA: DeepPartial<AccountCopy> = {
       application: {
         kicker: "Aikace-aikacen mai sayarwa",
         bodyWithStoreTemplate: "Shago: {name}",
-        bodyDefault: "Aikace-aikace a jerin bita na HenryCo.",
+        bodyDefault: "Aikace-aikace a jerin bita na Henry Onyx.",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "Duba matsayi",
         defaultStatus: "an gabatar",
@@ -16988,7 +16988,7 @@ const HA: DeepPartial<AccountCopy> = {
       certificatesTitle: "Takardun shaida",
       assignmentsTitle: "Koyon da aka ba da",
       savedTitle: "Darussan da aka adana",
-      teachingTitle: "Koyar da HenryCo",
+      teachingTitle: "Koyar da Henry Onyx",
       statusLabel: "Yanayi",
       expertiseLabel: "Ƙwarewa",
       topicsLabel: "Batutuwa",
@@ -17014,7 +17014,7 @@ const HA: DeepPartial<AccountCopy> = {
       sideAriaLabel: "Yadda wannan ɗaki ke aiki",
       sideLabel: "Yadda wannan ɗaki ke aiki",
       sideTitle: "Ɗakin ayyuka guda, ainihin matsayi.",
-      sideBody: "Shawarwari, maƙasudai, hujjojin biyan kuɗi, abubuwan da za a kawo, da alamomin sadarwa suna ci gaba da haɗuwa da wannan asalin HenryCo da kake amfani da shi a ko’ina. Dashboard ɗin da ke ƙasa yana nuna ainihin ci gaban ƙungiyar Studio, ba jerin matsayi ba.",
+      sideBody: "Shawarwari, maƙasudai, hujjojin biyan kuɗi, abubuwan da za a kawo, da alamomin sadarwa suna ci gaba da haɗuwa da wannan asalin Henry Onyx da kake amfani da shi a ko’ina. Dashboard ɗin da ke ƙasa yana nuna ainihin ci gaban ƙungiyar Studio, ba jerin matsayi ba.",
       breakdownAriaLabel: "Rabe-raben ayyuka",
       breakdownLabel: "Ta matsayi",
       tiles: {
@@ -17040,7 +17040,7 @@ const HA: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "Fara brief na Studio.",
-          blurb: "Lokacin da shawarwari ko aiki ya fara da asalin HenryCo na ka, ɗakin Studio da aka haɗa zai bayyana anan — maƙasudai, biyan kuɗi, abubuwan da za a kawo, da matakin gaba duka.",
+          blurb: "Lokacin da shawarwari ko aiki ya fara da asalin Henry Onyx na ka, ɗakin Studio da aka haɗa zai bayyana anan — maƙasudai, biyan kuɗi, abubuwan da za a kawo, da matakin gaba duka.",
           ctaPrimary: "Fara brief",
           ctaSecondary: "Buɗe Studio",
         },
@@ -17093,7 +17093,7 @@ const HA: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "Babu ɗakunan Studio da aka haɗa har yanzu",
-      projectsBody: "Da zaran an ƙirƙira shawarwari ko aiki da asalin HenryCo na ka, ɗakin Studio da aka haɗa zai bayyana anan — maƙasudai, biyan kuɗi, abubuwan da za a kawo, da matakin gaba.",
+      projectsBody: "Da zaran an ƙirƙira shawarwari ko aiki da asalin Henry Onyx na ka, ɗakin Studio da aka haɗa zai bayyana anan — maƙasudai, biyan kuɗi, abubuwan da za a kawo, da matakin gaba.",
       paymentsTitle: "Babu ƙarshen biyan kuɗi har yanzu",
       paymentsBody: "Maƙasudai na kasuwanci — adibas, tsakanin aiki, da bayarwa — suna fitowa anan idan shawarwari ya fara tare da kai.",
       activityTitle: "Babu ayyukan Studio har yanzu",
@@ -17150,8 +17150,8 @@ const HA: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "Bayyani na sufuri",
-      eyebrow: "HenryCo Sufuri",
-      brand: "HenryCo Sufuri",
+      eyebrow: "Henry Onyx Sufuri",
+      brand: "Henry Onyx Sufuri",
       title: "Kowane kunshi, daki ɗaya.",
       body: "Karbar kaya, isarwa, ETA da hujjojin isarwa — duka ana nuna su daga tashar sufuri zuwa cikin asusunka. Yi rajista sau ɗaya a",
       bodyDomain: " logistics.henryonyx.com",
@@ -17299,7 +17299,7 @@ const HA: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "Ba ka ƙara wani adireshi ba tukuna. Ƙara naka na farko don saurin biyan kuɗi a duk HenryCo.",
+        "Ba ka ƙara wani adireshi ba tukuna. Ƙara naka na farko don saurin biyan kuɗi a duk Henry Onyx.",
     },
     add: {
       cta: "Ƙara adireshi",
@@ -17312,10 +17312,10 @@ const HA: DeepPartial<AccountCopy> = {
   search: {
     metadata: {
       title: "Bincika Asusu",
-      description: "Bincika tafiyar aikin asusun HenryCo da hanyoyin sashe da aka haɗa.",
+      description: "Bincika tafiyar aikin asusun Henry Onyx da hanyoyin sashe da aka haɗa.",
     },
     hero: {
-      title: "Bincika tafiyar aikin HenryCo ɗinka.",
+      title: "Bincika tafiyar aikin Henry Onyx ɗinka.",
       description:
         "Tafi kai tsaye zuwa daidaitattun ayyukan asusu da hanyoyin sashe da aka haɗa, ba tare da koma kan dashboards na gama-gari ba.",
     },
@@ -17349,9 +17349,9 @@ const ZH: DeepPartial<AccountCopy> = {
   },
   overview: {
     welcomeBack: "欢迎回来",
-    description: "您的 HenryCo 指挥中心 — 所有部门的一切，尽在一处。",
+    description: "您的 Henry Onyx 指挥中心 — 所有部门的一切，尽在一处。",
     walletBalance: "钱包余额",
-    walletHint: "共享钱包 · 可在 HenryCo 所有服务中使用",
+    walletHint: "共享钱包 · 可在 Henry Onyx 所有服务中使用",
     notifications: "通知",
     allCaughtUp: "全部已处理",
     unreadMessages: "未读消息",
@@ -17371,7 +17371,7 @@ const ZH: DeepPartial<AccountCopy> = {
     noOpenRequests: "没有未解决请求",
     referrals: "推荐",
     inviteAndEarn: "邀请即赚取",
-    shareHenryCo: "与他人分享 HenryCo",
+    shareHenryCo: "与他人分享 Henry Onyx",
     transactions: "交易",
     viewHistory: "查看历史",
     walletActivity: "钱包活动及付款",
@@ -17398,7 +17398,7 @@ const ZH: DeepPartial<AccountCopy> = {
     noUrgentTasks: "目前没有紧急账户任务。您处于健康运营状态。",
     viewTaskQueue: "查看完整任务队列",
     smartRecommendations: "推荐",
-    smartRecommendationsEmpty: "继续使用 HenryCo 服务，推荐将根据您的活动进行调整。",
+    smartRecommendationsEmpty: "继续使用 Henry Onyx 服务，推荐将根据您的活动进行调整。",
     smartHomeEmptyFallback: "欢迎 — 从一个小小的第一步开始。一旦有动态，您的实时信号就会显示在这里。",
     recommendationReason: "根据您的账户活动和信任状态建议（{confidence} 置信度）",
     recentActivity: "最近活动",
@@ -17420,10 +17420,10 @@ const ZH: DeepPartial<AccountCopy> = {
       jobsSaved: "跟进已保存的职位",
     },
     recommendationDescriptions: {
-      trustNext: "解锁 HenryCo 中的更多操作。",
+      trustNext: "解锁 Henry Onyx 中的更多操作。",
       profileNext: "完整的个人资料可提升支持和服务连续性。",
       jobsSaved: "重新查看您已保存的职位并采取行动。",
-      fallback: "继续使用 HenryCo 服务，推荐将根据您的活动进行调整。",
+      fallback: "继续使用 Henry Onyx 服务，推荐将根据您的活动进行调整。",
     },
   },
   tasks: {
@@ -17481,14 +17481,14 @@ const ZH: DeepPartial<AccountCopy> = {
     headlineCalmSingular: "队列中有 {count} 个事项。",
     headlineCalmPlural: "队列中有 {count} 个事项。",
     blurbEmpty: "您的账户一切就绪 — 验证、付款和敏感审核通道都已畅通。一旦有新动作，我们会自动在这里显示。",
-    blurbRisk: "这些事项会阻止 HenryCo 中更高信任等级的操作 — 钱包提现、Marketplace 卖家审批、雇主验证。清理后即可打通各条通道。",
-    blurbActive: "每一行都能让您一键直达下一步操作。筛选器、优先级标签和深链接在所有 HenryCo 业务板块中保持一致。",
+    blurbRisk: "这些事项会阻止 Henry Onyx 中更高信任等级的操作 — 钱包提现、Marketplace 卖家审批、雇主验证。清理后即可打通各条通道。",
+    blurbActive: "每一行都能让您一键直达下一步操作。筛选器、优先级标签和深链接在所有 Henry Onyx 业务板块中保持一致。",
     metaEmpty: "您已清空。任何新事项到达后会出现在这里。",
     metaCount: "{count} 个未结 · 按优先级和阻塞状态排序。",
   },
   security: {
     title: "安全",
-    description: "查看最近的安全活动、更改密码，并在需要时结束 HenryCo 会话。",
+    description: "查看最近的安全活动、更改密码，并在需要时结束 Henry Onyx 会话。",
     heroAriaLabel: "安全概览",
     hero: {
       trustScoreLabel: "信任评分",
@@ -17509,7 +17509,7 @@ const ZH: DeepPartial<AccountCopy> = {
         risk: "我们标记了一项需要您关注的活动。",
       },
       statusBlurb: {
-        secure: "没有可疑事件，验证状态良好，HenryCo 提供的所有高信任操作都对您开放。",
+        secure: "没有可疑事件，验证状态良好，Henry Onyx 提供的所有高信任操作都对您开放。",
         watch: "没有出错 — 但少数信号（邮箱确认、身份审核、重复联系人匹配）能提升您的信任评分并打通更多通道。",
         risk: "近期事件被归类为高风险。请查看下方的活动记录，如有异常请更换密码。",
       },
@@ -17528,7 +17528,7 @@ const ZH: DeepPartial<AccountCopy> = {
     noSuspiciousEventFoot: "最近的审核窗口内没有任何标记。",
     activityAriaLabel: "近期安全事件",
     trustProfile: "信任档案",
-    trustDescription: "信任在整个账户中正常运行。它现在控制更高价值的商业操作、内容审核立场以及在所有 HenryCo 模块中更强的资格。",
+    trustDescription: "信任在整个账户中正常运行。它现在控制更高价值的商业操作、内容审核立场以及在所有 Henry Onyx 模块中更强的资格。",
     trustScore: "账户信任评分",
     signalLabels: {
       emailVerified: "已验证邮箱",
@@ -17567,7 +17567,7 @@ const ZH: DeepPartial<AccountCopy> = {
     moreVerificationNeeded: "需要更多验证",
     trustGuide: "信任状态指南",
     whatCurrentStateMeans: "您当前状态的含义",
-    whatCurrentStateBody: "此状态决定了对 HenryCo 中更高价值工作流程和商业操作的访问权限。",
+    whatCurrentStateBody: "此状态决定了对 Henry Onyx 中更高价值工作流程和商业操作的访问权限。",
     whatToDoNext: "下一步该怎么做",
     whatToDoNextBody: "完成列出的要求以解锁下一个信任通道。",
     currentRestrictions: "当前受限操作",
@@ -17621,7 +17621,7 @@ const ZH: DeepPartial<AccountCopy> = {
         verification: "高级信任专为已通过身份验证的账户保留。",
         age: "保持更长的清洁账户历史记录。",
         transactions: "建立更强的已验证交易记录。",
-        activity: "使用更多 HenryCo 部门并获得干净的结果。",
+        activity: "使用更多 Henry Onyx 部门并获得干净的结果。",
         overlap: "在授予高级信任之前，保持重复联系人审核清晰。",
       },
     },
@@ -17639,12 +17639,12 @@ const ZH: DeepPartial<AccountCopy> = {
     updatePassword: "更新密码",
   },
   globalSignOut: {
-    title: "结束所有 HenryCo 会话",
-    description: "这将在所有 HenryCo 部门和设备上注销当前账户，然后将您返回到账户登录界面。",
+    title: "结束所有 Henry Onyx 会话",
+    description: "这将在所有 Henry Onyx 部门和设备上注销当前账户，然后将您返回到账户登录界面。",
     note: "近期设备和会话活动仍然在下方可见，尽管实时按设备撤销尚未作为单独控件公开。",
-    unavailable: "我们目前无法结束所有 HenryCo 会话。请稍后重试。",
+    unavailable: "我们目前无法结束所有 Henry Onyx 会话。请稍后重试。",
     ending: "正在结束所有会话...",
-    endAllSessions: "退出所有 HenryCo 会话",
+    endAllSessions: "退出所有 Henry Onyx 会话",
   },
   errorBoundary: {
     kicker: "账户运行时",
@@ -17655,10 +17655,10 @@ const ZH: DeepPartial<AccountCopy> = {
   },
   activity: {
     title: "活动",
-    description: "您在所有 HenryCo 部门所做的一切。",
+    description: "您在所有 Henry Onyx 部门所做的一切。",
     emptyTitle: "暂无活动",
     emptyDescription:
-      "当您使用 HenryCo 服务时,您跨部门的活动将显示在此处。",
+      "当您使用 Henry Onyx 服务时,您跨部门的活动将显示在此处。",
     statusLabels: {
       pending: "待处理",
       open: "未结",
@@ -17683,8 +17683,8 @@ const ZH: DeepPartial<AccountCopy> = {
       pdfNote:
         "PDF 将您在上方设置的每一项筛选作为文档头的一部分一并携带 — 所见即所得。",
       downloadLabel: "下载对账单",
-      downloadFilename: "HenryCo-交易历史.pdf",
-      shareTitle: "HenryCo 交易历史",
+      downloadFilename: "Henry Onyx-交易历史.pdf",
+      shareTitle: "Henry Onyx 交易历史",
       typeLabels: {
         payment: "支付",
         wallet_credit: "钱包入账",
@@ -17696,11 +17696,11 @@ const ZH: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "日历 · HenryCo",
+    metaTitle: "日历 · Henry Onyx",
     metaDescription:
       "跨门户日程 — Care 预约、房产看房、Jobs 面试、Studio 里程碑、Learn 课程、Logistics 窗口。",
     heroAriaLabel: "日历概览",
-    heroEyebrow: "HenryCo · 跨门户日历",
+    heroEyebrow: "Henry Onyx · 跨门户日历",
     tileVolumeAriaLabel: "日历容量",
     tileEventsLabel: "事件",
     tileEventsFoot: "未来 28 天",
@@ -17771,18 +17771,18 @@ const ZH: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "通知",
-      description: "HenryCo 的每一次更新——钱包、支持、招聘、市场、护理及更多——尽在一个实时收件箱中。",
+      description: "Henry Onyx 的每一次更新——钱包、支持、招聘、市场、护理及更多——尽在一个实时收件箱中。",
     },
     hero: {
-      eyebrow: "HenryCo · 实时通知",
+      eyebrow: "Henry Onyx · 实时通知",
       ariaOverview: "通知概览",
       ariaVolume: "通知数量",
       ariaByDivision: "按部门",
-      headlineZero: "HenryCo 收件箱已清零。",
+      headlineZero: "Henry Onyx 收件箱已清零。",
       headlineOne: "有一件事需要您的关注。",
       headlineFew: "{count} 条通知待处理。",
       headlineMany: "您的各部门有 {count} 条更新。",
-      blurbZero: "HenryCo 发送的任何内容都会实时到达此处——钱包、支持、招聘、市场、护理及更多。",
+      blurbZero: "Henry Onyx 发送的任何内容都会实时到达此处——钱包、支持、招聘、市场、护理及更多。",
       blurbStale: "旧条目已堆积。滑动以归档,点击以打开,或直接跳转到某个会话。",
       blurbToday: "今天到达 {count} 条。使用筛选器专注于单个部门,或仅快速浏览未读。",
       tileUnreadLabel: "未读",
@@ -17825,7 +17825,7 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "全部处理完毕。",
-      inboxBody: "整个 HenryCo 的活动将在发生时显示在此处。",
+      inboxBody: "整个 Henry Onyx 的活动将在发生时显示在此处。",
       filterTitle: "此视图中无活动。",
       filterBody: "请尝试其他筛选条件。",
     },
@@ -17851,7 +17851,7 @@ const ZH: DeepPartial<AccountCopy> = {
       headlineEmpty: "收据将到达此处。",
       headlineWithReceipts: "每张收据，集中一处。",
       blurb:
-        "HenryCo 中的每一笔付款都会以带品牌、可下载的 PDF 形式到达此处 — Care 预订、Marketplace 订单、Studio 发票、Logistics 货运、Learn 证书。",
+        "Henry Onyx 中的每一笔付款都会以带品牌、可下载的 PDF 形式到达此处 — Care 预订、Marketplace 订单、Studio 发票、Logistics 货运、Learn 证书。",
       totalPaidLabel: "总支付 · 终身",
       thisMonthLabel: "已支付 · 本月",
       thisMonthFoot: "本日历月内的收据",
@@ -17869,7 +17869,7 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     empty: {
       title: "暂无发票",
-      description: "您在 HenryCo 服务中完成付款后，发票和收据将出现在此。",
+      description: "您在 Henry Onyx 服务中完成付款后，发票和收据将出现在此。",
     },
     statuses: {
       paid: "已支付",
@@ -17901,12 +17901,12 @@ const ZH: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "消息 · HenryCo",
+      title: "消息 · Henry Onyx",
       description:
         "支持、市场、招聘、工作室、护理、房产、物流和学习的统一收件箱。",
     },
     hero: {
-      eyebrow: "HenryCo · 统一收件箱",
+      eyebrow: "Henry Onyx · 统一收件箱",
       ariaLabel: "收件箱概览",
       ariaTiles: "收件箱数量",
       ariaSide: "按门户",
@@ -17915,7 +17915,7 @@ const ZH: DeepPartial<AccountCopy> = {
         "每个门户都汇聚到这一个收件箱。支持、市场订单、面试、工作室项目和护理预约都按时间顺序在此呈现。",
     },
     headlines: {
-      zero: "整个 HenryCo 收件箱已清空。",
+      zero: "整个 Henry Onyx 收件箱已清空。",
       calmOne: "有一条会话在等你回复。",
       calmMany: "有 {count} 条会话处于打开状态。",
       busy: "{unread} 条未读 · 你的门户中有 {open} 条打开。",
@@ -17982,14 +17982,14 @@ const ZH: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "钱包余额",
-      eyebrow: "HenryCo 钱包 · 实时",
+      eyebrow: "Henry Onyx 钱包 · 实时",
       availableLabel: "可用余额",
       balanceAriaTemplate: "可用余额 {amount} {currency}",
-      settlementFallback: "按当日 HenryCo 汇率结算为您的本地货币。",
+      settlementFallback: "按当日 Henry Onyx 汇率结算为您的本地货币。",
       ctas: { fund: "充值钱包", withdraw: "提现" },
       tiles: {
         verifiedLabel: "已核实余额",
-        verifiedFoot: "可在所有 HenryCo 服务中使用",
+        verifiedFoot: "可在所有 Henry Onyx 服务中使用",
         pendingFundingLabel: "待入账",
         pendingFundingFoot: "在财务确认前单独保留",
         pendingWithdrawalLabel: "已为提现保留",
@@ -18068,7 +18068,7 @@ const ZH: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "钱包交易",
       emptyTitle: "暂无交易",
-      emptyBody: "为钱包充值后,您的活动流将在此显示 HenryCo 各项服务的每笔入账、出账、退款和奖励。",
+      emptyBody: "为钱包充值后,您的活动流将在此显示 Henry Onyx 各项服务的每笔入账、出账、退款和奖励。",
       fallbackTitle: "钱包交易",
     },
     funding: {
@@ -18093,11 +18093,11 @@ const ZH: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "支持",
-      description: "获取任何 HenryCo 服务的帮助。",
+      description: "获取任何 Henry Onyx 服务的帮助。",
     },
     hero: {
       title: "支持",
-      description: "获取任何 HenryCo 服务的帮助。",
+      description: "获取任何 Henry Onyx 服务的帮助。",
       newRequestCta: "新建请求",
     },
     summary: {
@@ -18151,19 +18151,19 @@ const ZH: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "HenryCo 钱包",
-      body: "您的 HenryCo 钱包始终可作为支付选项使用。",
+      eyebrow: "Henry Onyx 钱包",
+      body: "您的 Henry Onyx 钱包始终可作为支付选项使用。",
       manageCta: "管理钱包",
     },
   },
   savedItems: {
     metadata: {
       title: "稍后保存",
-      description: "您从任何 HenryCo 购物车中暂存的商品,我们会为您保留 90 天,并在到期前一周提醒。",
+      description: "您从任何 Henry Onyx 购物车中暂存的商品,我们会为您保留 90 天,并在到期前一周提醒。",
     },
     hero: {
       title: "稍后保存",
-      description: "您从任何 HenryCo 购物车中暂存的商品。我们会为您保留 90 天,并在到期前一周提醒您。",
+      description: "您从任何 Henry Onyx 购物车中暂存的商品。我们会为您保留 90 天,并在到期前一周提醒您。",
     },
     summary: {
       activeTemplate: "{count} 件有效",
@@ -18211,7 +18211,7 @@ const ZH: DeepPartial<AccountCopy> = {
   documents: {
     metadata: {
       title: "文档",
-      description: "您的收据、证书、合同和重要文件——私密保存,可在所有 HenryCo 板块中访问。",
+      description: "您的收据、证书、合同和重要文件——私密保存,可在所有 Henry Onyx 板块中访问。",
     },
     hero: {
       eyebrow: "个人保险库",
@@ -18252,7 +18252,7 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     empty: {
       title: "暂无文档",
-      description: "来自 HenryCo 服务的文档、收据和证书将保存在此处。",
+      description: "来自 Henry Onyx 服务的文档、收据和证书将保存在此处。",
     },
     summary: {
       countTemplate: "{count} 份文档{plural}",
@@ -18261,14 +18261,14 @@ const ZH: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "隐私与保留",
       title: "您的文件保持私密",
-      body: "文档在静态时加密,仅您可见,且在 HenryCo 账户存续期间一直保留,除非您将其删除。",
+      body: "文档在静态时加密,仅您可见,且在 Henry Onyx 账户存续期间一直保留,除非您将其删除。",
     },
   },
   subscriptions: {
     metadata: {
       title: "订阅",
       description:
-        "来自各 HenryCo 部门、已同步至共享账户中心的活动订阅的只读摘要。",
+        "来自各 Henry Onyx 部门、已同步至共享账户中心的活动订阅的只读摘要。",
     },
     hero: {
       eyebrow: "活动订阅",
@@ -18336,11 +18336,11 @@ const ZH: DeepPartial<AccountCopy> = {
   referrals: {
     metadata: {
       title: "推荐",
-      description: "邀请符合条件的客户加入 HenryCo,并跟踪奖励从待处理、审核到记入帐户的全过程。",
+      description: "邀请符合条件的客户加入 Henry Onyx,并跟踪奖励从待处理、审核到记入帐户的全过程。",
     },
     hero: {
       title: "推荐",
-      description: "邀请符合条件的客户加入 HenryCo,并跟踪奖励从待处理、审核到记入帐户的全过程。",
+      description: "邀请符合条件的客户加入 Henry Onyx,并跟踪奖励从待处理、审核到记入帐户的全过程。",
     },
     code: {
       eyebrow: "您的推荐代码",
@@ -18363,18 +18363,18 @@ const ZH: DeepPartial<AccountCopy> = {
     howItWorks: {
       eyebrow: "工作原理",
       step1Title: "分享您的代码",
-      step1Body: "分享您的独特代码或链接。通过您的链接访问任何 HenryCo 子域名的朋友都将被自动追踪。",
+      step1Body: "分享您的独特代码或链接。通过您的链接访问任何 Henry Onyx 子域名的朋友都将被自动追踪。",
       step2Title: "他们进行交易",
       step2Body:
         "注册后,该推荐进入 {days} 天保留期。我们仅追踪被推荐帐户一次——自我推荐、家庭重复和重复注册均不符合资格。",
       step3Title: "合格后奖励到账",
-      step3Body: "合格推荐在财务审核后将 {amount} 记入您的 HenryCo 钱包。待处理奖励在审核前不可支出。",
+      step3Body: "合格推荐在财务审核后将 {amount} 记入您的 Henry Onyx 钱包。待处理奖励在审核前不可支出。",
     },
     policy: {
       eyebrow: "推荐政策",
-      qualifying: "合格转化指被推荐帐户完成了通过支付和信任验证的合格 HenryCo 操作。",
+      qualifying: "合格转化指被推荐帐户完成了通过支付和信任验证的合格 Henry Onyx 操作。",
       enforcement:
-        "对于自我推荐、重复转化循环、退单、退款或可疑奖励模式,HenryCo 可保留、撤销或取消奖励。",
+        "对于自我推荐、重复转化循环、退单、退款或可疑奖励模式,Henry Onyx 可保留、撤销或取消奖励。",
       separation: "您的仪表板分别显示推荐匹配和奖励历史,以便追踪的注册不会与已记入钱包的收益混淆。",
     },
     referralsList: {
@@ -18608,7 +18608,7 @@ const ZH: DeepPartial<AccountCopy> = {
         listings: "房源",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} 套由 HenryCo 托管",
+        savedManagedTemplate: "{count} 套由 Henry Onyx 托管",
         savedEmpty: "收藏房源以建立清单",
         savedWith: "随时对比与回访",
         inquiriesEmpty: "暂无对话",
@@ -18624,7 +18624,7 @@ const ZH: DeepPartial<AccountCopy> = {
       sideBody:
         "在 Henry Onyx Property 收藏房源、申请看房或发起询盘 — 每一项操作都会同步到此账户房间,让您可以跨设备从停下的地方继续。",
       sideBodyMuted:
-        "HenryCo 托管的房源带有“托管”标识 — 审核、勘察与租约跟进均由 Property 团队协调。",
+        "Henry Onyx 托管的房源带有“托管”标识 — 审核、勘察与租约跟进均由 Property 团队协调。",
       breakdownAriaLabel: "活动明细",
       breakdownLabel: "按活动分类",
       breakdownLabels: {
@@ -18637,7 +18637,7 @@ const ZH: DeepPartial<AccountCopy> = {
         empty: {
           headline: "开始探索 Henry Onyx Property。",
           blurb:
-            "发现住宅租赁、出售房源以及由 HenryCo 托管的住宅。收藏您的喜爱,每一项询盘、看房或房源跟进都会自动同步到这里。",
+            "发现住宅租赁、出售房源以及由 Henry Onyx 托管的住宅。收藏您的喜爱,每一项询盘、看房或房源跟进都会自动同步到这里。",
         },
         discover: {
           headlineTemplateSingular: "{count} 套已入清单的住宅。",
@@ -18658,7 +18658,7 @@ const ZH: DeepPartial<AccountCopy> = {
     sections: {
       saved: "已收藏清单",
       savedMetaEmpty: "在 Henry Onyx Property 收藏房源以建立您的清单。",
-      savedMetaTemplate: "已收藏 {saved} 套 · 其中 {managed} 套由 HenryCo 托管",
+      savedMetaTemplate: "已收藏 {saved} 套 · 其中 {managed} 套由 Henry Onyx 托管",
       activity: "近期活动",
       activityMetaEmpty: "询盘、看房与房源审核会实时在此呈现。",
       activityMetaTemplateSingular: "{count} 条更新 · 最新优先",
@@ -18667,7 +18667,7 @@ const ZH: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "尚未收藏任何房源",
       savedBody:
-        "在 Property 发现住宅租赁、出售房源以及由 HenryCo 托管的住宅。您收藏的内容会自动同步到这里。",
+        "在 Property 发现住宅租赁、出售房源以及由 Henry Onyx 托管的住宅。您收藏的内容会自动同步到这里。",
       activityTitle: "尚无 Property 活动",
       activityBody:
         "在 Henry Onyx Property 打开房源以申请看房或发送询盘 — 从第一条消息到审核的每一步都会出现在这里。",
@@ -18711,7 +18711,7 @@ const ZH: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "您的账户",
       headline: "您的求职动态,一站汇总。",
-      body: "申请、收藏职位、招聘方动态和个人资料准备度均已关联到您的 HenryCo 账户。",
+      body: "申请、收藏职位、招聘方动态和个人资料准备度均已关联到您的 Henry Onyx 账户。",
       statsAriaLabel: "求职活动摘要",
       statLabels: {
         applications: "进行中的申请",
@@ -18839,7 +18839,7 @@ const ZH: DeepPartial<AccountCopy> = {
         storyLabel: "职业叙述",
         storyDetail: "标题与摘要说明您的工作内容,超越一条空白记录。",
         verificationLabel: "身份验证",
-        verificationDetail: "在 HenryCo 账户完成身份审核前,Jobs 信任度保持封顶。",
+        verificationDetail: "在 Henry Onyx 账户完成身份审核前,Jobs 信任度保持封顶。",
         proofLabel: "工作证明",
         proofDetail: "简历加作品证据让入围更顺畅。",
         skillsLabel: "已映射技能",
@@ -18986,7 +18986,7 @@ const ZH: DeepPartial<AccountCopy> = {
       application: {
         kicker: "卖家申请",
         bodyWithStoreTemplate: "店铺:{name}",
-        bodyDefault: "申请正在 HenryCo 审核队列中。",
+        bodyDefault: "申请正在 Henry Onyx 审核队列中。",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "查看状态",
         defaultStatus: "已提交",
@@ -19115,7 +19115,7 @@ const ZH: DeepPartial<AccountCopy> = {
       certificatesTitle: "证书",
       assignmentsTitle: "指派学习",
       savedTitle: "收藏课程",
-      teachingTitle: "在 HenryCo 教学",
+      teachingTitle: "在 Henry Onyx 教学",
       statusLabel: "状态",
       expertiseLabel: "专长",
       topicsLabel: "主题",
@@ -19141,7 +19141,7 @@ const ZH: DeepPartial<AccountCopy> = {
       sideAriaLabel: "这个房间如何运作",
       sideLabel: "这个房间如何运作",
       sideTitle: "一个项目房间,真实状态。",
-      sideBody: "提案、里程碑、付款凭证、交付物和沟通信号都与你在各处使用的同一个 HenryCo 身份相连。下方仪表盘反映 Studio 团队的实际进展,而不是一份状态清单。",
+      sideBody: "提案、里程碑、付款凭证、交付物和沟通信号都与你在各处使用的同一个 Henry Onyx 身份相连。下方仪表盘反映 Studio 团队的实际进展,而不是一份状态清单。",
       breakdownAriaLabel: "活动细分",
       breakdownLabel: "按状态",
       tiles: {
@@ -19167,7 +19167,7 @@ const ZH: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "启动一个 Studio 简报。",
-          blurb: "当一个提案或项目以你的 HenryCo 身份上线时,同步的 Studio 房间会出现在这里 — 里程碑、付款、交付物和下一步行动汇于一处。",
+          blurb: "当一个提案或项目以你的 Henry Onyx 身份上线时,同步的 Studio 房间会出现在这里 — 里程碑、付款、交付物和下一步行动汇于一处。",
           ctaPrimary: "启动简报",
           ctaSecondary: "打开 Studio",
         },
@@ -19220,7 +19220,7 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "尚无关联的 Studio 工作室",
-      projectsBody: "一旦以你的 HenryCo 身份创建提案或项目,同步的 Studio 房间就会出现在这里 — 里程碑、付款、交付物和下一步行动。",
+      projectsBody: "一旦以你的 Henry Onyx 身份创建提案或项目,同步的 Studio 房间就会出现在这里 — 里程碑、付款、交付物和下一步行动。",
       paymentsTitle: "尚无付款节点",
       paymentsBody: "商务里程碑 — 定金、中期与交付 — 会在提案与你上线后出现在这里。",
       activityTitle: "尚无 Studio 活动",
@@ -19277,8 +19277,8 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "物流概览",
-      eyebrow: "HenryCo 物流",
-      brand: "HenryCo 物流",
+      eyebrow: "Henry Onyx 物流",
+      brand: "Henry Onyx 物流",
       title: "每一个包裹,一个工作间。",
       body: "取件、送达、ETA 与签收凭证——全部从物流网络镜像同步到您的账户。只需一次在",
       bodyDomain: " logistics.henryonyx.com",
@@ -19422,7 +19422,7 @@ const ZH: DeepPartial<AccountCopy> = {
       cancelCta: "取消",
     },
     empty: {
-      body: "您还未添加任何地址。添加第一个地址，在 HenryCo 各处更快完成结算。",
+      body: "您还未添加任何地址。添加第一个地址，在 Henry Onyx 各处更快完成结算。",
     },
     add: {
       cta: "添加地址",
@@ -19434,10 +19434,10 @@ const ZH: DeepPartial<AccountCopy> = {
   search: {
     metadata: {
       title: "搜索账户",
-      description: "搜索 HenryCo 账户工作流程以及关联的业务板块路径。",
+      description: "搜索 Henry Onyx 账户工作流程以及关联的业务板块路径。",
     },
     hero: {
-      title: "搜索您的 HenryCo 工作流程。",
+      title: "搜索您的 Henry Onyx 工作流程。",
       description: "直接跳转到账户的精确操作和关联的业务板块路径，无需依赖通用仪表板。",
     },
     placeholder: "搜索账户：通知、钱包、发票、支持、Jobs 应聘记录……",
@@ -19470,9 +19470,9 @@ const HI: DeepPartial<AccountCopy> = {
   },
   overview: {
     welcomeBack: "वापस स्वागत है",
-    description: "आपका HenryCo कमांड सेंटर — सभी डिवीजनों में सब कुछ, एक जगह।",
+    description: "आपका Henry Onyx कमांड सेंटर — सभी डिवीजनों में सब कुछ, एक जगह।",
     walletBalance: "वॉलेट शेष",
-    walletHint: "साझा वॉलेट · HenryCo सेवाओं में उपयोग करें",
+    walletHint: "साझा वॉलेट · Henry Onyx सेवाओं में उपयोग करें",
     notifications: "सूचनाएं",
     allCaughtUp: "सब कुछ ठीक है",
     unreadMessages: "अपठित संदेश",
@@ -19492,7 +19492,7 @@ const HI: DeepPartial<AccountCopy> = {
     noOpenRequests: "कोई खुला अनुरोध नहीं",
     referrals: "रेफरल",
     inviteAndEarn: "आमंत्रित करें और कमाएं",
-    shareHenryCo: "HenryCo को दूसरों के साथ साझा करें",
+    shareHenryCo: "Henry Onyx को दूसरों के साथ साझा करें",
     transactions: "लेनदेन",
     viewHistory: "इतिहास देखें",
     walletActivity: "वॉलेट गतिविधि और भुगतान",
@@ -19519,7 +19519,7 @@ const HI: DeepPartial<AccountCopy> = {
     noUrgentTasks: "अभी कोई अत्यावश्यक खाता कार्य नहीं है। आप एक स्वस्थ परिचालन स्थिति में हैं।",
     viewTaskQueue: "पूर्ण कार्य कतार देखें",
     smartRecommendations: "अनुशंसाएं",
-    smartRecommendationsEmpty: "HenryCo सेवाओं का उपयोग करते रहें और अनुशंसाएं आपकी गतिविधि के अनुसार अनुकूलित होंगी।",
+    smartRecommendationsEmpty: "Henry Onyx सेवाओं का उपयोग करते रहें और अनुशंसाएं आपकी गतिविधि के अनुसार अनुकूलित होंगी।",
     smartHomeEmptyFallback:
       "स्वागत है — एक छोटे पहले कदम से शुरुआत करें। गतिविधि आते ही आपके लाइव संकेत यहाँ दिखाई देंगे।",
     recommendationReason: "आपकी खाता गतिविधि और विश्वास स्थिति ({confidence} विश्वास) से सुझाया गया",
@@ -19542,10 +19542,10 @@ const HI: DeepPartial<AccountCopy> = {
       jobsSaved: "सहेजे गए रोल का अनुसरण करें",
     },
     recommendationDescriptions: {
-      trustNext: "HenryCo में अधिक क्रियाएं अनलॉक करें।",
+      trustNext: "Henry Onyx में अधिक क्रियाएं अनलॉक करें।",
       profileNext: "एक पूर्ण प्रोफाइल समर्थन और सेवा निरंतरता में सुधार करती है।",
       jobsSaved: "उन रोल पर वापस जाएं जो आपने पहले ही सहेजे हैं और उन पर कार्य करें।",
-      fallback: "HenryCo सेवाओं का उपयोग करते रहें और अनुशंसाएं आपकी गतिविधि के अनुसार अनुकूलित होंगी।",
+      fallback: "Henry Onyx सेवाओं का उपयोग करते रहें और अनुशंसाएं आपकी गतिविधि के अनुसार अनुकूलित होंगी।",
     },
   },
   tasks: {
@@ -19603,14 +19603,14 @@ const HI: DeepPartial<AccountCopy> = {
     headlineCalmSingular: "आपकी कतार में {count} आइटम।",
     headlineCalmPlural: "आपकी कतार में {count} आइटम।",
     blurbEmpty: "आपका खाता ठीक-ठाक है — सत्यापन, भुगतान, और समीक्षा-संवेदनशील लेन सब साफ हैं। अगला कदम सामने आते ही हम यहाँ अपने आप दिखा देंगे।",
-    blurbRisk: "ये आइटम HenryCo में उच्च-विश्वास क्रियाओं को रोकते हैं — वॉलेट निकासी, Marketplace विक्रेता अनुमोदन, नियोक्ता सत्यापन। इन्हें हटाने पर हर लेन खुल जाती है।",
-    blurbActive: "हर पंक्ति आपको एक टैप में अगली क्रिया तक ले जाती है। फ़िल्टर, प्राथमिकता चिप्स और डीपलिंक हर HenryCo विभाग में एक जैसे रहते हैं।",
+    blurbRisk: "ये आइटम Henry Onyx में उच्च-विश्वास क्रियाओं को रोकते हैं — वॉलेट निकासी, Marketplace विक्रेता अनुमोदन, नियोक्ता सत्यापन। इन्हें हटाने पर हर लेन खुल जाती है।",
+    blurbActive: "हर पंक्ति आपको एक टैप में अगली क्रिया तक ले जाती है। फ़िल्टर, प्राथमिकता चिप्स और डीपलिंक हर Henry Onyx विभाग में एक जैसे रहते हैं।",
     metaEmpty: "आप साफ हैं। कोई नई चीज आते ही यहाँ दिखेगी।",
     metaCount: "{count} खुले · प्राथमिकता और ब्लॉकिंग स्थिति के अनुसार क्रमबद्ध।",
   },
   security: {
     title: "सुरक्षा",
-    description: "हाल की सुरक्षा गतिविधि की समीक्षा करें, अपना पासवर्ड बदलें, और जरूरत होने पर HenryCo सत्र समाप्त करें।",
+    description: "हाल की सुरक्षा गतिविधि की समीक्षा करें, अपना पासवर्ड बदलें, और जरूरत होने पर Henry Onyx सत्र समाप्त करें।",
     heroAriaLabel: "सुरक्षा अवलोकन",
     hero: {
       trustScoreLabel: "विश्वास स्कोर",
@@ -19631,7 +19631,7 @@ const HI: DeepPartial<AccountCopy> = {
         risk: "हमने एक गतिविधि चिह्नित की है जिस पर आपकी नज़र चाहिए।",
       },
       statusBlurb: {
-        secure: "कोई संदिग्ध घटना नहीं, सत्यापन स्वस्थ है, और HenryCo की हर उच्च-विश्वास क्रिया आपके लिए खुली है।",
+        secure: "कोई संदिग्ध घटना नहीं, सत्यापन स्वस्थ है, और Henry Onyx की हर उच्च-विश्वास क्रिया आपके लिए खुली है।",
         watch: "कुछ टूटा नहीं है — पर कुछ संकेत (ईमेल पुष्टि, पहचान समीक्षा, डुप्लिकेट संपर्क मैच) आपके विश्वास स्कोर को बढ़ाएंगे और और लेन खोलेंगे।",
         risk: "हाल की घटनाओं को उच्च जोखिम के रूप में वर्गीकृत किया गया है। नीचे की गतिविधि स्ट्रीम देखें और कुछ अजीब लगे तो पासवर्ड बदल लें।",
       },
@@ -19650,7 +19650,7 @@ const HI: DeepPartial<AccountCopy> = {
     noSuspiciousEventFoot: "पिछली समीक्षा अवधि में कुछ भी चिह्नित नहीं।",
     activityAriaLabel: "हाल की सुरक्षा घटनाएँ",
     trustProfile: "विश्वास प्रोफाइल",
-    trustDescription: "विश्वास पूरे खाते में चालू है। यह अब उच्च-मूल्य व्यावसायिक क्रियाओं, मॉडरेशन स्थिति और HenryCo मॉड्यूल में मजबूत पात्रता को नियंत्रित करता है।",
+    trustDescription: "विश्वास पूरे खाते में चालू है। यह अब उच्च-मूल्य व्यावसायिक क्रियाओं, मॉडरेशन स्थिति और Henry Onyx मॉड्यूल में मजबूत पात्रता को नियंत्रित करता है।",
     trustScore: "खाता विश्वास स्कोर",
     signalLabels: {
       emailVerified: "सत्यापित ईमेल",
@@ -19689,7 +19689,7 @@ const HI: DeepPartial<AccountCopy> = {
     moreVerificationNeeded: "अधिक सत्यापन की आवश्यकता है",
     trustGuide: "विश्वास स्थिति मार्गदर्शिका",
     whatCurrentStateMeans: "आपकी वर्तमान स्थिति का अर्थ",
-    whatCurrentStateBody: "यह स्थिति HenryCo में उच्च-मूल्य वर्कफ़्लो और व्यावसायिक क्रियाओं तक पहुंच निर्धारित करती है।",
+    whatCurrentStateBody: "यह स्थिति Henry Onyx में उच्च-मूल्य वर्कफ़्लो और व्यावसायिक क्रियाओं तक पहुंच निर्धारित करती है।",
     whatToDoNext: "आगे क्या करना है",
     whatToDoNextBody: "अगली विश्वास लेन को अनलॉक करने के लिए सूचीबद्ध आवश्यकताएं पूरी करें।",
     currentRestrictions: "वर्तमान में प्रतिबंधित क्रियाएं",
@@ -19743,7 +19743,7 @@ const HI: DeepPartial<AccountCopy> = {
         verification: "प्रीमियम विश्वास उन खातों के लिए आरक्षित है जो पहले से ही पहचान सत्यापन पास कर चुके हैं।",
         age: "लंबे समय तक साफ खाता इतिहास बनाए रखें।",
         transactions: "एक मजबूत सत्यापित लेनदेन रिकॉर्ड बनाएं।",
-        activity: "स्वच्छ परिणामों के साथ अधिक HenryCo डिवीजनों का उपयोग करें।",
+        activity: "स्वच्छ परिणामों के साथ अधिक Henry Onyx डिवीजनों का उपयोग करें।",
         overlap: "प्रीमियम विश्वास दिए जाने से पहले डुप्लिकेट-संपर्क समीक्षा स्पष्ट रखें।",
       },
     },
@@ -19761,12 +19761,12 @@ const HI: DeepPartial<AccountCopy> = {
     updatePassword: "पासवर्ड अपडेट करें",
   },
   globalSignOut: {
-    title: "सभी HenryCo सत्र समाप्त करें",
-    description: "यह वर्तमान खाते को सभी HenryCo डिवीजनों और उपकरणों पर साइन आउट करता है, फिर आपको खाता लॉगिन सतह पर वापस करता है।",
+    title: "सभी Henry Onyx सत्र समाप्त करें",
+    description: "यह वर्तमान खाते को सभी Henry Onyx डिवीजनों और उपकरणों पर साइन आउट करता है, फिर आपको खाता लॉगिन सतह पर वापस करता है।",
     note: "हाल की डिवाइस और सत्र गतिविधि नीचे दिखती रहती है, हालांकि लाइव प्रति-डिवाइस रद्दीकरण अभी तक एक अलग नियंत्रण के रूप में उजागर नहीं किया गया है।",
-    unavailable: "हम अभी सभी HenryCo सत्र समाप्त नहीं कर सके। कुछ देर बाद पुनः प्रयास करें।",
+    unavailable: "हम अभी सभी Henry Onyx सत्र समाप्त नहीं कर सके। कुछ देर बाद पुनः प्रयास करें।",
     ending: "सभी सत्र समाप्त हो रहे हैं...",
-    endAllSessions: "सभी HenryCo सत्रों से साइन आउट करें",
+    endAllSessions: "सभी Henry Onyx सत्रों से साइन आउट करें",
   },
   errorBoundary: {
     kicker: "खाता रनटाइम",
@@ -19777,10 +19777,10 @@ const HI: DeepPartial<AccountCopy> = {
   },
   activity: {
     title: "गतिविधि",
-    description: "HenryCo के सभी डिवीजनों में आपने जो कुछ भी किया है।",
+    description: "Henry Onyx के सभी डिवीजनों में आपने जो कुछ भी किया है।",
     emptyTitle: "अभी तक कोई गतिविधि नहीं",
     emptyDescription:
-      "जैसे ही आप HenryCo सेवाओं का उपयोग करेंगे, आपकी क्रॉस-डिवीजन गतिविधि यहाँ दिखाई देगी।",
+      "जैसे ही आप Henry Onyx सेवाओं का उपयोग करेंगे, आपकी क्रॉस-डिवीजन गतिविधि यहाँ दिखाई देगी।",
     statusLabels: {
       pending: "लंबित",
       open: "खुला",
@@ -19805,8 +19805,8 @@ const HI: DeepPartial<AccountCopy> = {
       pdfNote:
         "PDF आपके द्वारा ऊपर सेट किए गए हर फ़िल्टर को दस्तावेज़ शीर्षलेख के हिस्से के रूप में रखता है — जो आप देखते हैं वही डाउनलोड करते हैं।",
       downloadLabel: "विवरण डाउनलोड करें",
-      downloadFilename: "HenryCo-लेन-देन-इतिहास.pdf",
-      shareTitle: "HenryCo लेन-देन इतिहास",
+      downloadFilename: "Henry Onyx-लेन-देन-इतिहास.pdf",
+      shareTitle: "Henry Onyx लेन-देन इतिहास",
       typeLabels: {
         payment: "भुगतान",
         wallet_credit: "वॉलेट क्रेडिट",
@@ -19818,11 +19818,11 @@ const HI: DeepPartial<AccountCopy> = {
     },
   },
   calendar: {
-    metaTitle: "कैलेंडर · HenryCo",
+    metaTitle: "कैलेंडर · Henry Onyx",
     metaDescription:
       "क्रॉस-पोर्टल एजेंडा — Care बुकिंग, संपत्ति देखना, Jobs साक्षात्कार, Studio मील के पत्थर, Learn कक्षाएं, Logistics विंडो।",
     heroAriaLabel: "कैलेंडर अवलोकन",
-    heroEyebrow: "HenryCo · क्रॉस-पोर्टल कैलेंडर",
+    heroEyebrow: "Henry Onyx · क्रॉस-पोर्टल कैलेंडर",
     tileVolumeAriaLabel: "कैलेंडर मात्रा",
     tileEventsLabel: "घटनाएं",
     tileEventsFoot: "अगले 28 दिन",
@@ -19893,18 +19893,18 @@ const HI: DeepPartial<AccountCopy> = {
   notifications: {
     metadata: {
       title: "सूचनाएँ",
-      description: "HenryCo का हर अपडेट — वॉलेट, सहायता, नौकरियाँ, मार्केटप्लेस, केयर और अधिक — एक लाइव इनबॉक्स में।",
+      description: "Henry Onyx का हर अपडेट — वॉलेट, सहायता, नौकरियाँ, मार्केटप्लेस, केयर और अधिक — एक लाइव इनबॉक्स में।",
     },
     hero: {
-      eyebrow: "HenryCo · लाइव सूचनाएँ",
+      eyebrow: "Henry Onyx · लाइव सूचनाएँ",
       ariaOverview: "सूचनाओं का अवलोकन",
       ariaVolume: "सूचनाओं की मात्रा",
       ariaByDivision: "विभाग के अनुसार",
-      headlineZero: "HenryCo में इनबॉक्स ज़ीरो।",
+      headlineZero: "Henry Onyx में इनबॉक्स ज़ीरो।",
       headlineOne: "एक बात आपका ध्यान चाहती है।",
       headlineFew: "{count} सूचनाएँ निपटाने के लिए।",
       headlineMany: "आपके विभागों में {count} अपडेट।",
-      blurbZero: "HenryCo जो कुछ भी भेजता है वह यहाँ रीयल-टाइम में आता है — वॉलेट, सहायता, नौकरियाँ, मार्केटप्लेस, केयर और अधिक।",
+      blurbZero: "Henry Onyx जो कुछ भी भेजता है वह यहाँ रीयल-टाइम में आता है — वॉलेट, सहायता, नौकरियाँ, मार्केटप्लेस, केयर और अधिक।",
       blurbStale: "पुरानी प्रविष्टियाँ जमा हो गई हैं। आर्काइव करने के लिए स्वाइप करें, खोलने के लिए टैप करें, या सीधे किसी थ्रेड पर जाएँ।",
       blurbToday: "आज {count} आईं। एकल विभाग पर ध्यान केंद्रित करने के लिए फ़िल्टर का उपयोग करें, या केवल अनरीड को देखें।",
       tileUnreadLabel: "अनरीड",
@@ -19947,7 +19947,7 @@ const HI: DeepPartial<AccountCopy> = {
     },
     emptyState: {
       inboxTitle: "सब निपटा लिया।",
-      inboxBody: "HenryCo की गतिविधि यहाँ रीयल-टाइम में दिखेगी।",
+      inboxBody: "Henry Onyx की गतिविधि यहाँ रीयल-टाइम में दिखेगी।",
       filterTitle: "इस दृश्य में कोई गतिविधि नहीं।",
       filterBody: "कोई अलग फ़िल्टर आज़माएँ।",
     },
@@ -19973,7 +19973,7 @@ const HI: DeepPartial<AccountCopy> = {
       headlineEmpty: "आपकी रसीदें यहाँ पहुँचेंगी।",
       headlineWithReceipts: "हर रसीद, एक ही जगह।",
       blurb:
-        "HenryCo में हर भुगतान यहाँ ब्रांडेड, डाउनलोड करने योग्य PDF के रूप में पहुँचता है — Care बुकिंग, Marketplace ऑर्डर, Studio चालान, Logistics शिपमेंट, Learn प्रमाणपत्र।",
+        "Henry Onyx में हर भुगतान यहाँ ब्रांडेड, डाउनलोड करने योग्य PDF के रूप में पहुँचता है — Care बुकिंग, Marketplace ऑर्डर, Studio चालान, Logistics शिपमेंट, Learn प्रमाणपत्र।",
       totalPaidLabel: "कुल भुगतान · आजीवन",
       thisMonthLabel: "भुगतान · इस माह",
       thisMonthFoot: "इस कैलेंडर माह की रसीदें",
@@ -19992,7 +19992,7 @@ const HI: DeepPartial<AccountCopy> = {
     empty: {
       title: "अभी तक कोई चालान नहीं",
       description:
-        "HenryCo सेवाओं में भुगतान करने के बाद आपके चालान और रसीदें यहाँ दिखेंगी।",
+        "Henry Onyx सेवाओं में भुगतान करने के बाद आपके चालान और रसीदें यहाँ दिखेंगी।",
     },
     statuses: {
       paid: "भुगतान हुआ",
@@ -20024,12 +20024,12 @@ const HI: DeepPartial<AccountCopy> = {
   },
   messages: {
     metadata: {
-      title: "संदेश · HenryCo",
+      title: "संदेश · Henry Onyx",
       description:
         "समर्थन, मार्केटप्लेस, नौकरियाँ, स्टूडियो, केयर, संपत्ति, लॉजिस्टिक्स और सीखने के लिए एक साझा इनबॉक्स।",
     },
     hero: {
-      eyebrow: "HenryCo · एकीकृत इनबॉक्स",
+      eyebrow: "Henry Onyx · एकीकृत इनबॉक्स",
       ariaLabel: "इनबॉक्स अवलोकन",
       ariaTiles: "इनबॉक्स मात्रा",
       ariaSide: "पोर्टल के अनुसार",
@@ -20038,7 +20038,7 @@ const HI: DeepPartial<AccountCopy> = {
         "हर पोर्टल इसी एक इनबॉक्स में आता है। समर्थन, मार्केटप्लेस ऑर्डर, साक्षात्कार, स्टूडियो प्रोजेक्ट और केयर बुकिंग सभी यहाँ क्रमवार दिखते हैं।",
     },
     headlines: {
-      zero: "पूरे HenryCo में इनबॉक्स खाली है।",
+      zero: "पूरे Henry Onyx में इनबॉक्स खाली है।",
       calmOne: "एक थ्रेड आपका इंतज़ार कर रहा है।",
       calmMany: "{count} थ्रेड खुले हैं।",
       busy: "{unread} अपठित · आपके पोर्टलों में {open} खुले।",
@@ -20105,14 +20105,14 @@ const HI: DeepPartial<AccountCopy> = {
   wallet: {
     hero: {
       ariaLabel: "वॉलेट शेष",
-      eyebrow: "HenryCo वॉलेट · लाइव",
+      eyebrow: "Henry Onyx वॉलेट · लाइव",
       availableLabel: "उपलब्ध शेष",
       balanceAriaTemplate: "उपलब्ध शेष {amount} {currency}",
-      settlementFallback: "उस दिन की HenryCo दर पर आपकी स्थानीय मुद्रा में निपटाया गया।",
+      settlementFallback: "उस दिन की Henry Onyx दर पर आपकी स्थानीय मुद्रा में निपटाया गया।",
       ctas: { fund: "वॉलेट में जोड़ें", withdraw: "निकालें" },
       tiles: {
         verifiedLabel: "सत्यापित शेष",
-        verifiedFoot: "सभी HenryCo सेवाओं में खर्च योग्य",
+        verifiedFoot: "सभी Henry Onyx सेवाओं में खर्च योग्य",
         pendingFundingLabel: "लंबित जमा",
         pendingFundingFoot: "वित्त की पुष्टि तक अलग रखा गया",
         pendingWithdrawalLabel: "निकासी के लिए होल्ड",
@@ -20191,7 +20191,7 @@ const HI: DeepPartial<AccountCopy> = {
     activity: {
       ariaLabel: "वॉलेट लेनदेन",
       emptyTitle: "अभी तक कोई लेनदेन नहीं",
-      emptyBody: "अपने वॉलेट में राशि जोड़ें, और आपकी गतिविधि फ़ीड यहाँ HenryCo सेवाओं में हर क्रेडिट, डेबिट, रिफ़ंड और बोनस के साथ भर जाएगी।",
+      emptyBody: "अपने वॉलेट में राशि जोड़ें, और आपकी गतिविधि फ़ीड यहाँ Henry Onyx सेवाओं में हर क्रेडिट, डेबिट, रिफ़ंड और बोनस के साथ भर जाएगी।",
       fallbackTitle: "वॉलेट लेनदेन",
     },
     funding: {
@@ -20216,11 +20216,11 @@ const HI: DeepPartial<AccountCopy> = {
   support: {
     metadata: {
       title: "सहायता",
-      description: "किसी भी HenryCo सेवा के लिए सहायता प्राप्त करें।",
+      description: "किसी भी Henry Onyx सेवा के लिए सहायता प्राप्त करें।",
     },
     hero: {
       title: "सहायता",
-      description: "किसी भी HenryCo सेवा के लिए सहायता प्राप्त करें।",
+      description: "किसी भी Henry Onyx सेवा के लिए सहायता प्राप्त करें।",
       newRequestCta: "नया अनुरोध",
     },
     summary: {
@@ -20275,8 +20275,8 @@ const HI: DeepPartial<AccountCopy> = {
       cardLastFourTemplate: "•••• {last4}",
     },
     wallet: {
-      eyebrow: "HenryCo वॉलेट",
-      body: "आपका HenryCo वॉलेट हमेशा भुगतान विकल्प के रूप में उपलब्ध है।",
+      eyebrow: "Henry Onyx वॉलेट",
+      body: "आपका Henry Onyx वॉलेट हमेशा भुगतान विकल्प के रूप में उपलब्ध है।",
       manageCta: "वॉलेट प्रबंधित करें",
     },
   },
@@ -20284,12 +20284,12 @@ const HI: DeepPartial<AccountCopy> = {
     metadata: {
       title: "बाद के लिए सहेजे गए",
       description:
-        "जो वस्तुएँ आपने किसी भी HenryCo कार्ट से अलग रखी हैं — हम उन्हें 90 दिन तक रखते हैं और समाप्ति से एक सप्ताह पहले सूचित करते हैं।",
+        "जो वस्तुएँ आपने किसी भी Henry Onyx कार्ट से अलग रखी हैं — हम उन्हें 90 दिन तक रखते हैं और समाप्ति से एक सप्ताह पहले सूचित करते हैं।",
     },
     hero: {
       title: "बाद के लिए सहेजें",
       description:
-        "जो वस्तुएँ आपने किसी भी HenryCo कार्ट से अलग रखी हैं। हम उन्हें 90 दिन तक रखेंगे और समाप्ति से एक सप्ताह पहले आपको चेताएँगे।",
+        "जो वस्तुएँ आपने किसी भी Henry Onyx कार्ट से अलग रखी हैं। हम उन्हें 90 दिन तक रखेंगे और समाप्ति से एक सप्ताह पहले आपको चेताएँगे।",
     },
     summary: {
       activeTemplate: "{count} सक्रिय",
@@ -20339,7 +20339,7 @@ const HI: DeepPartial<AccountCopy> = {
     metadata: {
       title: "दस्तावेज़",
       description:
-        "आपकी रसीदें, प्रमाणपत्र, अनुबंध और महत्वपूर्ण फ़ाइलें — निजी रूप से सुरक्षित और हर HenryCo डिवीज़न में उपलब्ध।",
+        "आपकी रसीदें, प्रमाणपत्र, अनुबंध और महत्वपूर्ण फ़ाइलें — निजी रूप से सुरक्षित और हर Henry Onyx डिवीज़न में उपलब्ध।",
     },
     hero: {
       eyebrow: "व्यक्तिगत तिजोरी",
@@ -20381,7 +20381,7 @@ const HI: DeepPartial<AccountCopy> = {
     empty: {
       title: "अभी कोई दस्तावेज़ नहीं",
       description:
-        "HenryCo सेवाओं के आपके दस्तावेज़, रसीदें और प्रमाणपत्र यहाँ संग्रहीत होंगे।",
+        "Henry Onyx सेवाओं के आपके दस्तावेज़, रसीदें और प्रमाणपत्र यहाँ संग्रहीत होंगे।",
     },
     summary: {
       countTemplate: "{count} दस्तावेज़{plural}",
@@ -20390,14 +20390,14 @@ const HI: DeepPartial<AccountCopy> = {
     retention: {
       eyebrow: "गोपनीयता और प्रतिधारण",
       title: "आपकी फ़ाइलें निजी रहती हैं",
-      body: "दस्तावेज़ विश्राम में एन्क्रिप्ट किए जाते हैं, केवल आपको दिखाई देते हैं और जब तक आप उन्हें न हटाएँ, आपके HenryCo खाते के पूरे जीवनकाल तक संग्रहीत रहते हैं।",
+      body: "दस्तावेज़ विश्राम में एन्क्रिप्ट किए जाते हैं, केवल आपको दिखाई देते हैं और जब तक आप उन्हें न हटाएँ, आपके Henry Onyx खाते के पूरे जीवनकाल तक संग्रहीत रहते हैं।",
     },
   },
   subscriptions: {
     metadata: {
       title: "सदस्यताएँ",
       description:
-        "साझा खाता हब में सिंक की गई सक्रिय योजनाओं का केवल-पठन सारांश, HenryCo की विभिन्न डिवीज़न से।",
+        "साझा खाता हब में सिंक की गई सक्रिय योजनाओं का केवल-पठन सारांश, Henry Onyx की विभिन्न डिवीज़न से।",
     },
     hero: {
       eyebrow: "सक्रिय योजनाएँ",
@@ -20466,12 +20466,12 @@ const HI: DeepPartial<AccountCopy> = {
     metadata: {
       title: "रेफरल",
       description:
-        "HenryCo में योग्य ग्राहकों को आमंत्रित करें और लंबित, समीक्षाधीन, और जमा की गई स्थितियों के माध्यम से पुरस्कारों को ट्रैक करें।",
+        "Henry Onyx में योग्य ग्राहकों को आमंत्रित करें और लंबित, समीक्षाधीन, और जमा की गई स्थितियों के माध्यम से पुरस्कारों को ट्रैक करें।",
     },
     hero: {
       title: "रेफरल",
       description:
-        "HenryCo में योग्य ग्राहकों को आमंत्रित करें और लंबित, समीक्षाधीन, और जमा की गई स्थितियों के माध्यम से पुरस्कारों को ट्रैक करें।",
+        "Henry Onyx में योग्य ग्राहकों को आमंत्रित करें और लंबित, समीक्षाधीन, और जमा की गई स्थितियों के माध्यम से पुरस्कारों को ट्रैक करें।",
     },
     code: {
       eyebrow: "आपका रेफरल कोड",
@@ -20495,20 +20495,20 @@ const HI: DeepPartial<AccountCopy> = {
       eyebrow: "यह कैसे काम करता है",
       step1Title: "अपना कोड साझा करें",
       step1Body:
-        "अपना विशिष्ट कोड या लिंक साझा करें। आपके लिंक के साथ किसी भी HenryCo सबडोमेन पर जाने वाले मित्र स्वचालित रूप से ट्रैक हो जाते हैं।",
+        "अपना विशिष्ट कोड या लिंक साझा करें। आपके लिंक के साथ किसी भी Henry Onyx सबडोमेन पर जाने वाले मित्र स्वचालित रूप से ट्रैक हो जाते हैं।",
       step2Title: "वे लेन-देन करते हैं",
       step2Body:
         "साइन अप के बाद, रेफरल {days}-दिवसीय होल्ड विंडो में प्रवेश करता है। हम रेफर किए गए खाते को केवल एक बार ट्रैक करते हैं — स्व-रेफरल, डुप्लिकेट परिवार, और पुनर्नवीनीकरण साइनअप योग्य नहीं हैं।",
       step3Title: "योग्यता के बाद पुरस्कार जारी होते हैं",
       step3Body:
-        "योग्य रेफरल वित्त समीक्षा के बाद {amount} आपके HenryCo वॉलेट में जमा करते हैं। लंबित पुरस्कार जारी होने तक खर्च करने योग्य नहीं हैं।",
+        "योग्य रेफरल वित्त समीक्षा के बाद {amount} आपके Henry Onyx वॉलेट में जमा करते हैं। लंबित पुरस्कार जारी होने तक खर्च करने योग्य नहीं हैं।",
     },
     policy: {
       eyebrow: "रेफरल नीति",
       qualifying:
-        "एक योग्यता रूपांतरण का अर्थ है कि रेफर किए गए खाते ने एक योग्य HenryCo कार्रवाई पूरी की जो भुगतान और विश्वास सत्यापन में उत्तीर्ण हुई।",
+        "एक योग्यता रूपांतरण का अर्थ है कि रेफर किए गए खाते ने एक योग्य Henry Onyx कार्रवाई पूरी की जो भुगतान और विश्वास सत्यापन में उत्तीर्ण हुई।",
       enforcement:
-        "HenryCo स्व-रेफरल, डुप्लिकेट रूपांतरण लूप, उलट, धनवापसी, या संदिग्ध पुरस्कार पैटर्न के लिए पुरस्कार रोक सकता है, उलट सकता है, या रद्द कर सकता है।",
+        "Henry Onyx स्व-रेफरल, डुप्लिकेट रूपांतरण लूप, उलट, धनवापसी, या संदिग्ध पुरस्कार पैटर्न के लिए पुरस्कार रोक सकता है, उलट सकता है, या रद्द कर सकता है।",
       separation:
         "आपका डैशबोर्ड रेफरल मिलान और पुरस्कार इतिहास अलग से दिखाता है ताकि ट्रैक किए गए साइनअप को जमा वॉलेट कमाई के साथ गलत न समझा जाए।",
     },
@@ -20744,7 +20744,7 @@ const HI: DeepPartial<AccountCopy> = {
         listings: "लिस्टिंग",
       },
       tileFoot: {
-        savedManagedTemplate: "{count} HenryCo द्वारा प्रबंधित",
+        savedManagedTemplate: "{count} Henry Onyx द्वारा प्रबंधित",
         savedEmpty: "शॉर्टलिस्ट बनाने के लिए लिस्टिंग सहेजें",
         savedWith: "कभी भी तुलना और पुनर्विचार",
         inquiriesEmpty: "अभी कोई बातचीत खुली नहीं",
@@ -20760,7 +20760,7 @@ const HI: DeepPartial<AccountCopy> = {
       sideBody:
         "Henry Onyx Property पर लिस्टिंग सहेजें, अवलोकन का अनुरोध करें या पूछताछ खोलें — हर क्रिया इस खाते के कक्ष में दिखती है ताकि आप सभी डिवाइसों पर वहीं से जारी रख सकें जहाँ छोड़ा था।",
       sideBodyMuted:
-        "HenryCo द्वारा प्रबंधित लिस्टिंग पर “प्रबंधित” बैज दिखता है — समीक्षा, निरीक्षण और लीज फॉलो-अप का समन्वय Property टीम करती है।",
+        "Henry Onyx द्वारा प्रबंधित लिस्टिंग पर “प्रबंधित” बैज दिखता है — समीक्षा, निरीक्षण और लीज फॉलो-अप का समन्वय Property टीम करती है।",
       breakdownAriaLabel: "गतिविधि विभाजन",
       breakdownLabel: "गतिविधि के अनुसार",
       breakdownLabels: {
@@ -20773,7 +20773,7 @@ const HI: DeepPartial<AccountCopy> = {
         empty: {
           headline: "Henry Onyx Property खोजना शुरू करें।",
           blurb:
-            "आवासीय किराये, बिक्री लिस्टिंग और HenryCo-प्रबंधित घर खोजें। अपने पसंदीदा सहेजें, और हर पूछताछ, अवलोकन या लिस्टिंग फॉलो-अप यहाँ स्वतः आ जाता है।",
+            "आवासीय किराये, बिक्री लिस्टिंग और Henry Onyx-प्रबंधित घर खोजें। अपने पसंदीदा सहेजें, और हर पूछताछ, अवलोकन या लिस्टिंग फॉलो-अप यहाँ स्वतः आ जाता है।",
         },
         discover: {
           headlineTemplateSingular: "{count} शॉर्टलिस्टेड घर।",
@@ -20794,7 +20794,7 @@ const HI: DeepPartial<AccountCopy> = {
     sections: {
       saved: "सहेजी शॉर्टलिस्ट",
       savedMetaEmpty: "अपनी शॉर्टलिस्ट बनाने के लिए Henry Onyx Property पर लिस्टिंग सहेजें।",
-      savedMetaTemplate: "{saved} सहेजे · {managed} HenryCo द्वारा प्रबंधित",
+      savedMetaTemplate: "{saved} सहेजे · {managed} Henry Onyx द्वारा प्रबंधित",
       activity: "हाल की गतिविधि",
       activityMetaEmpty: "पूछताछ, अवलोकन और लिस्टिंग समीक्षाएँ जब घटित होती हैं तब यहाँ मिरर होती हैं।",
       activityMetaTemplateSingular: "{count} अद्यतन · सबसे नया पहले",
@@ -20803,7 +20803,7 @@ const HI: DeepPartial<AccountCopy> = {
     empty: {
       savedTitle: "अभी कोई सहेजी संपत्ति नहीं",
       savedBody:
-        "Property पर आवासीय किराये, बिक्री लिस्टिंग और HenryCo-प्रबंधित घर खोजें। जो भी आप सहेजेंगे वह यहाँ स्वतः आ जाएगा।",
+        "Property पर आवासीय किराये, बिक्री लिस्टिंग और Henry Onyx-प्रबंधित घर खोजें। जो भी आप सहेजेंगे वह यहाँ स्वतः आ जाएगा।",
       activityTitle: "अभी कोई Property गतिविधि नहीं",
       activityBody:
         "Henry Onyx Property पर लिस्टिंग खोलें, अवलोकन का अनुरोध करें या पूछताछ भेजें — आपके पहले संदेश से लेकर समीक्षा तक का हर कदम यहाँ दिखेगा।",
@@ -20847,7 +20847,7 @@ const HI: DeepPartial<AccountCopy> = {
     hero: {
       eyebrow: "आपका खाता",
       headline: "आपकी जॉब्स गतिविधि, सब एक जगह।",
-      body: "आवेदन, सहेजी भूमिकाएँ, भर्तीकर्ता अपडेट और प्रोफ़ाइल तत्परता आपके HenryCo खाते से जुड़े हैं।",
+      body: "आवेदन, सहेजी भूमिकाएँ, भर्तीकर्ता अपडेट और प्रोफ़ाइल तत्परता आपके Henry Onyx खाते से जुड़े हैं।",
       statsAriaLabel: "जॉब्स गतिविधि सारांश",
       statLabels: {
         applications: "सक्रिय आवेदन",
@@ -20975,7 +20975,7 @@ const HI: DeepPartial<AccountCopy> = {
         storyLabel: "भूमिका कहानी",
         storyDetail: "शीर्षक और सारांश यह बताते हैं कि आप क्या करते हैं, खाली रिकॉर्ड से आगे।",
         verificationLabel: "पहचान सत्यापन",
-        verificationDetail: "जब तक आपका HenryCo खाता पहचान समीक्षा पास नहीं करता, जॉब्स विश्वास सीमित रहेगा।",
+        verificationDetail: "जब तक आपका Henry Onyx खाता पहचान समीक्षा पास नहीं करता, जॉब्स विश्वास सीमित रहेगा।",
         proofLabel: "कार्य का प्रमाण",
         proofDetail: "रिज़्यूमे और पोर्टफ़ोलियो प्रमाण शॉर्टलिस्ट गति आसान बनाते हैं।",
         skillsLabel: "मैप किए कौशल",
@@ -21122,7 +21122,7 @@ const HI: DeepPartial<AccountCopy> = {
       application: {
         kicker: "विक्रेता आवेदन",
         bodyWithStoreTemplate: "स्टोर: {name}",
-        bodyDefault: "आवेदन HenryCo समीक्षा कतार में है।",
+        bodyDefault: "आवेदन Henry Onyx समीक्षा कतार में है।",
         bodyReviewSuffixTemplate: " · {note}",
         cta: "स्थिति देखें",
         defaultStatus: "जमा किया गया",
@@ -21251,7 +21251,7 @@ const HI: DeepPartial<AccountCopy> = {
       certificatesTitle: "प्रमाणपत्र",
       assignmentsTitle: "सौंपी गई पढ़ाई",
       savedTitle: "सहेजे गए कोर्स",
-      teachingTitle: "HenryCo के साथ पढ़ाएँ",
+      teachingTitle: "Henry Onyx के साथ पढ़ाएँ",
       statusLabel: "स्थिति",
       expertiseLabel: "विशेषज्ञता",
       topicsLabel: "विषय",
@@ -21276,7 +21276,7 @@ const HI: DeepPartial<AccountCopy> = {
       sideAriaLabel: "यह कक्ष कैसे काम करता है",
       sideLabel: "यह कक्ष कैसे काम करता है",
       sideTitle: "एक प्रोजेक्ट कक्ष, असली स्थिति।",
-      sideBody: "प्रस्ताव, माइलस्टोन, भुगतान प्रमाण, डिलिवरेबल और संवाद संकेत उसी HenryCo पहचान से जुड़े रहते हैं जिसका उपयोग आप हर जगह करते हैं। नीचे का डैशबोर्ड Studio टीम की वास्तविक प्रगति दिखाता है, स्थिति सूची नहीं।",
+      sideBody: "प्रस्ताव, माइलस्टोन, भुगतान प्रमाण, डिलिवरेबल और संवाद संकेत उसी Henry Onyx पहचान से जुड़े रहते हैं जिसका उपयोग आप हर जगह करते हैं। नीचे का डैशबोर्ड Studio टीम की वास्तविक प्रगति दिखाता है, स्थिति सूची नहीं।",
       breakdownAriaLabel: "गतिविधि विभाजन",
       breakdownLabel: "स्थिति अनुसार",
       tiles: {
@@ -21302,7 +21302,7 @@ const HI: DeepPartial<AccountCopy> = {
       state: {
         empty: {
           headline: "एक Studio ब्रीफ़ शुरू करें।",
-          blurb: "जब आपकी HenryCo पहचान के साथ कोई प्रस्ताव या प्रोजेक्ट सक्रिय होगा, सिंक की हुई Studio कक्ष यहाँ दिखेगी — माइलस्टोन, भुगतान, डिलिवरेबल और अगला कदम एक साथ।",
+          blurb: "जब आपकी Henry Onyx पहचान के साथ कोई प्रस्ताव या प्रोजेक्ट सक्रिय होगा, सिंक की हुई Studio कक्ष यहाँ दिखेगी — माइलस्टोन, भुगतान, डिलिवरेबल और अगला कदम एक साथ।",
           ctaPrimary: "ब्रीफ़ शुरू करें",
           ctaSecondary: "Studio खोलें",
         },
@@ -21355,7 +21355,7 @@ const HI: DeepPartial<AccountCopy> = {
     },
     empty: {
       projectsTitle: "अभी कोई Studio कार्यस्थल जुड़ा नहीं",
-      projectsBody: "जैसे ही आपकी HenryCo पहचान के साथ प्रस्ताव या प्रोजेक्ट बनेगा, सिंक की हुई Studio कक्ष यहाँ दिखेगी — माइलस्टोन, भुगतान, डिलिवरेबल और अगला कदम।",
+      projectsBody: "जैसे ही आपकी Henry Onyx पहचान के साथ प्रस्ताव या प्रोजेक्ट बनेगा, सिंक की हुई Studio कक्ष यहाँ दिखेगी — माइलस्टोन, भुगतान, डिलिवरेबल और अगला कदम।",
       paymentsTitle: "अभी कोई भुगतान चेकपॉइंट नहीं",
       paymentsBody: "व्यावसायिक माइलस्टोन — जमा राशि, मध्य-प्रोजेक्ट और डिलिवरी — जब आपके साथ प्रस्ताव सक्रिय होगा तब यहाँ आएँगे।",
       activityTitle: "अभी कोई Studio गतिविधि नहीं",
@@ -21412,8 +21412,8 @@ const HI: DeepPartial<AccountCopy> = {
     },
     hero: {
       ariaLabel: "लॉजिस्टिक्स अवलोकन",
-      eyebrow: "HenryCo लॉजिस्टिक्स",
-      brand: "HenryCo लॉजिस्टिक्स",
+      eyebrow: "Henry Onyx लॉजिस्टिक्स",
+      brand: "Henry Onyx लॉजिस्टिक्स",
       title: "हर पार्सल, एक कमरा।",
       body: "पिकअप, ड्रॉप-ऑफ, ETA और डिलीवरी प्रमाण — सब लॉजिस्टिक्स नेटवर्क से आपके खाते में दर्पण-समान। एक बार बुक करें",
       bodyDomain: " logistics.henryonyx.com",
@@ -21561,7 +21561,7 @@ const HI: DeepPartial<AccountCopy> = {
     },
     empty: {
       body:
-        "आपने अभी तक कोई पता नहीं जोड़ा है। HenryCo में तेज़ चेकआउट के लिए अपना पहला पता जोड़ें।",
+        "आपने अभी तक कोई पता नहीं जोड़ा है। Henry Onyx में तेज़ चेकआउट के लिए अपना पहला पता जोड़ें।",
     },
     add: {
       cta: "पता जोड़ें",
@@ -21574,10 +21574,10 @@ const HI: DeepPartial<AccountCopy> = {
   search: {
     metadata: {
       title: "खाता खोजें",
-      description: "HenryCo खाता वर्कफ़्लो और जुड़े विभाग मार्ग खोजें।",
+      description: "Henry Onyx खाता वर्कफ़्लो और जुड़े विभाग मार्ग खोजें।",
     },
     hero: {
-      title: "अपने HenryCo वर्कफ़्लो खोजें।",
+      title: "अपने Henry Onyx वर्कफ़्लो खोजें।",
       description:
         "सामान्य डैशबोर्ड पर लौटे बिना सीधे खाते की सटीक क्रियाओं और जुड़े विभाग मार्गों पर जाएँ।",
     },

@@ -30,7 +30,7 @@ export default async function StaffNoAccessPage() {
           No staff access on this account
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--staff-muted)]">
-          You&apos;re signed in, but this HenryCo account doesn&apos;t have an active staff membership yet.
+          You&apos;re signed in, but this Henry Onyx account doesn&apos;t have an active staff membership yet.
           If you believe this is a mistake, contact your administrator or use your customer account home below.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">

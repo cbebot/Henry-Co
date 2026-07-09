@@ -15,7 +15,7 @@ export default async function WorkforceCenterPage() {
       <OwnerPageHeader
         eyebrow="Staff & Workforce Center"
         title="Central workforce control"
-        description="Executive-grade visibility across HenryCo people: scan the overview, drill into the directory or org tree, then open a full intelligence profile for any member."
+        description="Executive-grade visibility across Henry Onyx people: scan the overview, drill into the directory or org tree, then open a full intelligence profile for any member."
         actions={
           <div className="flex flex-wrap gap-2">
             <Link href="/owner/staff/directory" className="acct-button-secondary rounded-xl text-sm">
@@ -31,7 +31,7 @@ export default async function WorkforceCenterPage() {
       <OwnerNotice tone="info" title="How updates are saved" body={data.dataHealthNote} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-        <MetricCard label="Total members" value={data.metrics.total} subtitle="Accounts linked to HenryCo" icon={Users} />
+        <MetricCard label="Total members" value={data.metrics.total} subtitle="Accounts linked to Henry Onyx" icon={Users} />
         <MetricCard label="Active" value={data.metrics.active} subtitle="Recently active staff" icon={Users} />
         <MetricCard label="Pending" value={data.metrics.pending} subtitle="Invited or unactivated" icon={Users} />
         <MetricCard label="Suspended" value={data.metrics.suspended} subtitle="Access currently blocked" icon={Users} />

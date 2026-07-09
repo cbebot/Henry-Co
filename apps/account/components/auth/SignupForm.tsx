@@ -151,14 +151,14 @@ export default function SignupForm() {
             <span>
               <strong className="font-semibold">Check your inbox.</strong>{" "}
               <span className="text-[var(--acct-muted)]">
-                The email is from <span className="font-medium text-[var(--acct-ink)]">HenryCo Accounts</span>. If it&rsquo;s not in your inbox after a minute, look in spam or promotions.
+                The email is from <span className="font-medium text-[var(--acct-ink)]">Henry Onyx Accounts</span>. If it&rsquo;s not in your inbox after a minute, look in spam or promotions.
               </span>
             </span>
           </li>
           <li className="flex gap-3">
             <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">2</span>
             <span>
-              <strong className="font-semibold">Tap &ldquo;Verify my HenryCo account.&rdquo;</strong>{" "}
+              <strong className="font-semibold">Tap &ldquo;Verify my Henry Onyx account.&rdquo;</strong>{" "}
               <span className="text-[var(--acct-muted)]">
                 The link is single-use and expires after a short window for your security.
               </span>
@@ -167,7 +167,7 @@ export default function SignupForm() {
           <li className="flex gap-3">
             <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">3</span>
             <span>
-              <strong className="font-semibold">Continue to your HenryCo workspace.</strong>{" "}
+              <strong className="font-semibold">Continue to your Henry Onyx workspace.</strong>{" "}
               <span className="text-[var(--acct-muted)]">
                 We&rsquo;ll route you to the right place across Care, Marketplace, Studio and more.
               </span>
@@ -206,7 +206,7 @@ export default function SignupForm() {
 
         <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-1.5 text-[11px] font-medium text-[var(--acct-muted)]">
           <ShieldCheck size={12} className="text-[var(--acct-gold)]" />
-          Your HenryCo account is end-to-end encrypted across the ecosystem.
+          One secure Henry Onyx account works across every service.
         </div>
       </div>
     );

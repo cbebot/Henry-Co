@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionConfig, henryDomain } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig, henryDomain } from "@henryco/config";
 import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import { normalizeEmail } from "@/lib/env";
 import { autoTranslateMany } from "@/lib/i18n/auto-translate";
@@ -49,13 +49,15 @@ const marketplaceBaseUrl =
     : "http://localhost:3000";
 
 function getMarketplaceSenderAddress() {
-  const fallback = "onboarding@resend.dev";
-  const candidate = cleanText(process.env.RESEND_FROM_EMAIL || process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail)
+  // EMAIL-SES-ONLY (2026-07-09): AWS_SES_FROM_EMAIL replaces the retired
+  // RESEND_* sender envs, and the resend.dev sandbox fallback is gone —
+  // an unconfigured deployment sends from the brand no-reply address.
+  const candidate = cleanText(process.env.AWS_SES_FROM_EMAIL || marketplace.supportEmail)
     .replace(/[\r\n]+/g, "")
     .trim();
 
   if (!candidate || !candidate.includes("@")) {
-    return fallback;
+    return BRAND_EMAILS.noreply;
   }
 
   return candidate;
@@ -92,7 +94,6 @@ const cooldownByEvent: Partial<Record<MarketplaceTemplateKey, number>> = {
 function ownerAlertEmail() {
   return (
     cleanText(process.env.MARKETPLACE_OWNER_ALERT_EMAIL) ||
-    cleanText(process.env.RESEND_SUPPORT_INBOX) ||
     marketplace.supportEmail
   );
 }
@@ -247,7 +248,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           eyebrow: "Buyer onboarding",
           headline: "Your marketplace account is ready.",
           summary:
-            "Save products, follow verified stores, track split orders, and manage disputes — and move into seller onboarding later from the same HenryCo identity.",
+            "Save products, follow verified stores, track split orders, and manage disputes — and move into seller onboarding later from the same Henry Onyx identity.",
           bullets: [
             "Track orders and payments from one account",
             "Follow stores and save products for later",
@@ -272,7 +273,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             note ||
             "We saved the products you were considering so you can return without rebuilding the basket or losing trust and delivery context.",
           bullets: [
-            "Items remain tied to your HenryCo account",
+            "Items remain tied to your Henry Onyx account",
             "Split-order and delivery notes stay visible at checkout",
           ],
           ctaLabel: "Return to cart",
@@ -294,7 +295,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             "Your delivery details and selected products are still waiting, so you can complete the order without starting over.",
           bullets: [
             "Payment instructions remain visible before confirmation",
-            "Order tracking will attach to the same HenryCo identity",
+            "Order tracking will attach to the same Henry Onyx identity",
           ],
           ctaLabel: "Resume checkout",
           ctaHref: "/checkout",
@@ -704,7 +705,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           summary:
             note ||
             "Your Henry Onyx Marketplace cart is still active. If you were comparing trust signals, delivery notes, or split-order timing, you can continue where you stopped.",
-          bullets: ["Your cart stays linked to your HenryCo identity", "Checkout still shows split-order clarity before confirmation"],
+          bullets: ["Your cart stays linked to your Henry Onyx identity", "Checkout still shows split-order clarity before confirmation"],
           ctaLabel: "Return to cart",
           ctaHref: "/cart",
         },
@@ -717,7 +718,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
         email: {
           templateKey: event,
           eyebrow: "Campaign spotlight",
-          headline: "A new HenryCo campaign is live.",
+          headline: "A new Henry Onyx campaign is live.",
           summary:
             note || "Curated products, premium trust signals, and cleaner merchandising are now live in this new campaign edit.",
           bullets: [statusLabel || "Curated launch rail", productTitle !== "your product" ? `Featured: ${productTitle}` : null].filter(Boolean) as string[],
@@ -805,7 +806,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           summary:
             note ||
             "We recorded an important marketplace account event. Review the details and continue with any recommended action.",
-          bullets: ["This notice is part of your HenryCo account trail"],
+          bullets: ["This notice is part of your Henry Onyx account trail"],
           ctaLabel: "Open account",
           ctaHref: "/account",
         },

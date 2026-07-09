@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: toBrandName(`${slug} · Business · HenryCo`) };
+  return { title: toBrandName(`${slug} · Business · Henry Onyx`) };
 }
 
 export default async function PublicBusinessProfilePage({
@@ -32,7 +32,7 @@ export default async function PublicBusinessProfilePage({
     <div className="mx-auto max-w-[1480px] space-y-14 px-4 py-10 sm:px-6 xl:px-8">
       <section className="grid gap-12 xl:grid-cols-[1.1fr,0.9fr]">
         <article>
-          <p className="market-kicker">{toBrandName("HenryCo · Business")}</p>
+          <p className="market-kicker">{toBrandName("Henry Onyx · Business")}</p>
           <h1 className="market-display mt-5">{business.tradingName}</h1>
           <p className="mt-5 text-[var(--market-muted)]">{business.legalName}</p>
           <dl className="mt-8 grid grid-cols-2 gap-6 border-y border-[var(--market-line)] py-6 sm:grid-cols-3">

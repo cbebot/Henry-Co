@@ -102,7 +102,7 @@ export const PROPERTY_INSPECTION_RULES: PropertyInspectionRule[] = [
     key: "rule.managed_property",
     name: "Managed-property always inspects",
     description:
-      "Managed listings require a HenryCo agent on site before HenryCo accepts the operating handoff.",
+      "Managed listings require a Henry Onyx agent on site before Henry Onyx accepts the operating handoff.",
     criteria: { service_type: ["managed_property"] },
     requireInspection: true,
     blockPublication: false,
@@ -112,7 +112,7 @@ export const PROPERTY_INSPECTION_RULES: PropertyInspectionRule[] = [
     key: "rule.verified_property",
     name: "Verified-property listings require inspection",
     description:
-      "Verified-property is a premium trust tier; HenryCo confirms in person before applying the badge.",
+      "Verified-property is a premium trust tier; Henry Onyx confirms in person before applying the badge.",
     criteria: { service_type: ["verified_property"] },
     requireInspection: true,
     blockPublication: false,

@@ -532,7 +532,7 @@ export default function WorkspaceScreen({
       return (
         <EmptyState
           title="Workspace access is pending"
-          description="This internal workspace only opens for recognized HenryCo staff memberships or division role assignments. Shared authentication is working, but there is no staff scope attached to this account yet."
+          description="This internal workspace only opens for recognized Henry Onyx staff memberships or division role assignments. Shared authentication is working, but there is no staff scope attached to this account yet."
         />
       );
     }
@@ -559,7 +559,7 @@ export default function WorkspaceScreen({
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
                     The helper layer is ranking real backlog, stale work, unread alerts, and approval
-                    pressure pulled from the live HenryCo signal stream.
+                    pressure pulled from the live Henry Onyx signal stream.
                   </p>
                   <div className="mt-6 grid gap-4 md:grid-cols-2">
                     {priorityTasks.slice(0, 4).map((task) => (
@@ -921,7 +921,7 @@ export default function WorkspaceScreen({
               <div>
                 <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/60">
                   <Route className="h-4 w-4" />
-                  HenryCo Staff Workspace
+                  Henry Onyx Staff Workspace
                 </div>
                 <h1 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">
                   {getWorkspaceSectionTitle(currentKey, currentDivision)}

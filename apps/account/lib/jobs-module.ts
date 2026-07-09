@@ -430,7 +430,7 @@ export async function getJobsModuleData(userId: string) {
     {
       id: "verification",
       label: "Identity verification",
-      detail: "Jobs trust stays capped until your HenryCo account has cleared identity review.",
+      detail: "Jobs trust stays capped until your Henry Onyx account has cleared identity review.",
       complete: verificationStatus === "verified",
       href: "/verification",
     },

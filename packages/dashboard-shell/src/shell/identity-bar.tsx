@@ -124,12 +124,12 @@ export function IdentityBar({
   const switcherRef = useRef<HTMLDivElement>(null);
   const showSwitcher = (options?.length ?? 0) > 1;
 
-  const displayName = viewer.user.fullName || viewer.user.email || "HenryCo viewer";
+  const displayName = viewer.user.fullName || viewer.user.email || "Henry Onyx viewer";
   const email = viewer.user.email && viewer.user.email !== displayName ? viewer.user.email : null;
   const copy = {
     accountMenu: labels?.accountMenu ?? "Account",
     search: labels?.search ?? "Search",
-    searchAriaLabel: labels?.searchAriaLabel ?? "Search HenryCo",
+    searchAriaLabel: labels?.searchAriaLabel ?? "Search Henry Onyx",
     switchLane: labels?.switchLane ?? "Switch lane",
     signOut: labels?.signOut ?? "Sign out",
   };

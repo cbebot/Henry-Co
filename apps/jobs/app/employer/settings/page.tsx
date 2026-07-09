@@ -87,7 +87,7 @@ export default async function EmployerSettingsPage() {
 
       <SectionCard
         title={t("Conversations & alerts")}
-        body={t("Inbound applicant messages, interview reminders and hiring nudges all route through the unified HenryCo notification rail. Manage channels in your account preferences.")}
+        body={t("Inbound applicant messages, interview reminders and hiring nudges all route through the unified Henry Onyx notification rail. Manage channels in your account preferences.")}
         actions={
           <Link
             href={getAccountUrl("/settings/notifications")}
@@ -103,7 +103,7 @@ export default async function EmployerSettingsPage() {
               <MessageSquare size={14} aria-hidden /> {t("Applicant messages")}
             </div>
             <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-              {t("Every applicant thread surfaces in your candidate inbox and in the unified /messages view across HenryCo.")}
+              {t("Every applicant thread surfaces in your candidate inbox and in the unified /messages view across Henry Onyx.")}
             </p>
           </div>
           <div className="jobs-soft-panel rounded-[1.5rem] p-4">
@@ -119,7 +119,7 @@ export default async function EmployerSettingsPage() {
 
       <SectionCard
         title={t("Plan & billing")}
-        body={t("Posting credits, featured-listing add-ons and team-seat billing are part of the unified HenryCo wallet — same balance, same payout history, same KYC tier.")}
+        body={t("Posting credits, featured-listing add-ons and team-seat billing are part of the unified Henry Onyx wallet — same balance, same payout history, same KYC tier.")}
         actions={
           <Link
             href={getAccountUrl("/wallet")}
@@ -141,7 +141,7 @@ export default async function EmployerSettingsPage() {
 
       <SectionCard
         title={t("Identity & access")}
-        body={t("Account-level identity, password, session security and the unified HenryCo trust score sit at the account-hub level — every division (Jobs, Care, Studio, Marketplace, Learn, Property, Logistics) reads from the same record.")}
+        body={t("Account-level identity, password, session security and the unified Henry Onyx trust score sit at the account-hub level — every division (Jobs, Care, Studio, Marketplace, Learn, Property, Logistics) reads from the same record.")}
         actions={
           <Link
             href={getAccountUrl("/security")}
@@ -153,10 +153,10 @@ export default async function EmployerSettingsPage() {
       >
         <div className="jobs-soft-panel rounded-[1.5rem] p-4">
           <div className="jobs-kicker flex items-center gap-2">
-            <ShieldCheck size={14} aria-hidden /> {t("Single identity across HenryCo")}
+            <ShieldCheck size={14} aria-hidden /> {t("Single identity across Henry Onyx")}
           </div>
           <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-            {t("Sign in once at HenryCo and access Jobs as employer, Care as a customer, Studio as a buyer — all from the same identity. Security settings (password, MFA, signed-out sessions) live at the account hub.")}
+            {t("Sign in once at Henry Onyx and access Jobs as employer, Care as a customer, Studio as a buyer — all from the same identity. Security settings (password, MFA, signed-out sessions) live at the account hub.")}
           </p>
         </div>
       </SectionCard>

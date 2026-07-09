@@ -54,7 +54,7 @@ function withFallbackSource(signal: RealtimeSignal): BellNotification {
     ...signal,
     source: {
       key: signal.division ?? "system",
-      label: signal.division ?? toBrandName("HenryCo"),
+      label: signal.division ?? toBrandName("Henry Onyx"),
       accent: "#111827",
       logoUrl: null,
     },

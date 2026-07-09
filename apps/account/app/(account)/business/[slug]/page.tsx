@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: toBrandName(`${slug} · Business · HenryCo`) };
+  return { title: toBrandName(`${slug} · Business · Henry Onyx`) };
 }
 
 export default async function BusinessProfilePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -64,7 +64,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         <HeroCard
           variant="paired"
           tone={business.status === "active" ? "active" : "calm"}
-          eyebrow={toBrandName("HenryCo · Business")}
+          eyebrow={toBrandName("Henry Onyx · Business")}
           headline={business.tradingName || business.legalName}
           blurb={business.legalName}
           ariaLabel={business.tradingName || business.legalName}

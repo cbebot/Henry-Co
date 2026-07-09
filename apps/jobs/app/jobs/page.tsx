@@ -79,9 +79,9 @@ export default async function JobsPage({
     },
     {
       icon: Sparkles,
-      label: t("Internal HenryCo"),
+      label: t("Internal Henry Onyx"),
       value: internalRoles,
-      detail: t("Openings inside HenryCo, same process as external roles."),
+      detail: t("Openings inside Henry Onyx, same process as external roles."),
     },
     {
       icon: Timer,
@@ -102,7 +102,7 @@ export default async function JobsPage({
                 {t("A calmer place to discover work that respects your time.")}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
-                {t("Search by what you actually care about — where you work, how you work, and whether the employer has earned a little trust on the platform. Save roles while you think; apply when you are ready with one HenryCo profile.")}
+                {t("Search by what you actually care about — where you work, how you work, and whether the employer has earned a little trust on the platform. Save roles while you think; apply when you are ready with one Henry Onyx profile.")}
               </p>
 
               <div className="mt-8">

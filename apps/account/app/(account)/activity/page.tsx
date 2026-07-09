@@ -78,7 +78,7 @@ export default async function ActivityPage() {
     {
       label: t("Today"),
       value: todayCount,
-      foot: t(toBrandName("Across HenryCo")),
+      foot: t(toBrandName("Across Henry Onyx")),
       tone: todayCount > 0 ? "active" : "default",
     },
     {

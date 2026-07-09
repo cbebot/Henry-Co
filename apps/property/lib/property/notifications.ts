@@ -105,7 +105,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           headline: "Your viewing request is logged.",
           summary: "Henry Onyx Property captured the request and placed it in the scheduling queue.",
           bullets: [listingTitle, viewingTime || "Timing will be confirmed shortly"].filter(Boolean) as string[],
-          ctaLabel: "Open your HenryCo account",
+          ctaLabel: "Open your Henry Onyx account",
           ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
         whatsapp: `Henry Onyx Property: your viewing request for ${listingTitle} is logged.`,

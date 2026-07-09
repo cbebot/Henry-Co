@@ -61,13 +61,13 @@ export async function getContactOverlapSummary(input: {
 
   if (emailMatches > 0 && email) {
     reasons.push(
-      `${maskEmail(email)} appears on ${emailMatches + 1} HenryCo account${emailMatches === 1 ? "" : "s"} and needs review before higher-trust actions unlock.`
+      `${maskEmail(email)} appears on ${emailMatches + 1} Henry Onyx account${emailMatches === 1 ? "" : "s"} and needs review before higher-trust actions unlock.`
     );
   }
 
   if (phoneMatches > 0 && phone) {
     reasons.push(
-      `${maskPhone(phone)} appears on ${phoneMatches + 1} HenryCo account${phoneMatches === 1 ? "" : "s"} and stays under manual trust review for higher-risk workflows.`
+      `${maskPhone(phone)} appears on ${phoneMatches + 1} Henry Onyx account${phoneMatches === 1 ? "" : "s"} and stays under manual trust review for higher-risk workflows.`
     );
   }
 

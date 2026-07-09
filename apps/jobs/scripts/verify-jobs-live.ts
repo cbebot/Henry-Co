@@ -397,20 +397,20 @@ async function main() {
     userId: ownerUser.id,
     email: ownerUser.email.toLowerCase(),
     fullName:
-      String(ownerProfileRes.data?.full_name || ownerUser.user_metadata?.full_name || ownerUser.user_metadata?.name || "HenryCo Owner"),
+      String(ownerProfileRes.data?.full_name || ownerUser.user_metadata?.full_name || ownerUser.user_metadata?.name || "Henry Onyx Owner"),
     role: "owner",
   };
   const managerActor: Actor = {
     userId: managerUser.id,
     email: managerUser.email.toLowerCase(),
     fullName:
-      String(managerProfileRes.data?.full_name || managerUser.user_metadata?.full_name || managerUser.user_metadata?.name || "HenryCo Recruiter"),
+      String(managerProfileRes.data?.full_name || managerUser.user_metadata?.full_name || managerUser.user_metadata?.name || "Henry Onyx Recruiter"),
     role: "manager",
   };
   const candidateActor: Actor = {
     userId: candidateUser.id,
     email: candidateUser.email.toLowerCase(),
-    fullName: String(candidateUser.user_metadata?.full_name || candidateUser.user_metadata?.name || "HenryCo Candidate"),
+    fullName: String(candidateUser.user_metadata?.full_name || candidateUser.user_metadata?.name || "Henry Onyx Candidate"),
     role: null,
   };
 
@@ -440,7 +440,7 @@ async function main() {
   profileForm.set("availability", "2 weeks");
   profileForm.set(
     "workHistory",
-    JSON.stringify([{ company: "HenryCo", title: "Operations Lead", years: "2024-2026" }])
+    JSON.stringify([{ company: "Henry Onyx", title: "Operations Lead", years: "2024-2026" }])
   );
   profileForm.set(
     "education",

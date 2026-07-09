@@ -184,9 +184,9 @@ export function mapRowToMessage(
     (isOwn
       ? "You"
       : senderType === "agent"
-        ? "HenryCo Support"
+        ? "Henry Onyx Support"
         : senderType === "system"
-          ? "HenryCo"
+          ? "Henry Onyx"
           : "Customer");
 
   const attachments = Array.isArray(row.attachments)

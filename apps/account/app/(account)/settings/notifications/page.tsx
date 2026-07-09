@@ -24,7 +24,7 @@ export default async function NotificationsSettingsPage() {
       <PageHeader
         title="Notifications"
         description={toBrandName(
-          "Choose how HenryCo reaches you. Mute the noise, keep the signal — preferences sync instantly across every division.",
+          "Choose how Henry Onyx reaches you. Mute the noise, keep the signal — preferences sync instantly across every division.",
         )}
         icon={BellRing}
       />

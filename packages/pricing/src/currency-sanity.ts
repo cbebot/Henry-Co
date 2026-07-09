@@ -40,7 +40,7 @@ function assert(condition: boolean, message: string) {
   if (!condition) throw new Error(message);
 }
 
-console.log('\n=== HenryCo Currency Sanity ===\n');
+console.log('\n=== Henry Onyx Currency Sanity ===\n');
 
 // -- Currency map completeness --
 console.log('1. Currency map covers all country currencies');

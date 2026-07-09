@@ -433,7 +433,7 @@ export function deriveJobTrustHighlights(input: {
   const highlights: string[] = [];
 
   if (input.employerType === "internal") {
-    highlights.push("HenryCo internal role");
+    highlights.push("Henry Onyx internal role");
   }
 
   if (input.employerVerificationStatus === "verified") {

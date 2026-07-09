@@ -144,9 +144,9 @@ export async function evaluateSensitiveActionGuard<TUser>(
       "WWW-Authenticate",
       `SensitiveActionReauth intent="${options.action}", reauth_url="/auth/reauth"`,
     );
-    response.headers.set("X-HenryCo-Reauth-Intent", options.action);
+    response.headers.set("X-Henry Onyx-Reauth-Intent", options.action);
     response.headers.set(
-      "X-HenryCo-Rate-Remaining",
+      "X-Henry Onyx-Rate-Remaining",
       String(rate.ok ? rate.remaining : 0),
     );
     return { ok: false, response };
@@ -236,7 +236,7 @@ function rateLimitedResponse(
     { status: 429 },
   );
   response.headers.set("Retry-After", String(rate.retryAfterSeconds));
-  response.headers.set("X-HenryCo-Reauth-Intent", action);
+  response.headers.set("X-Henry Onyx-Reauth-Intent", action);
   return response;
 }
 

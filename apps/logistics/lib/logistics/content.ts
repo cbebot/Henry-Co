@@ -70,7 +70,7 @@ export const LOGISTICS_SERVICES: LogisticsServiceCard[] = [
   {
     slug: "dispatch-operations",
     name: "Internal dispatch operations",
-    summary: "Operational dispatch lanes for HenryCo teams and partner businesses that need control, not noise.",
+    summary: "Operational dispatch lanes for Henry Onyx teams and partner businesses that need control, not noise.",
     promise: "Queue ownership, rider workflows, and issue playbooks.",
     badge: "Ops core",
     serviceType: "dispatch",
@@ -181,7 +181,7 @@ export const LOGISTICS_DIFFERENTIATORS: LogisticsDifferentiator[] = [
     id: "dual-surface",
     name: "Dual-surface customer visibility",
     description:
-      "Keep shipments visible in public tracking and in the shared HenryCo account with documents, notifications, and support continuity.",
+      "Keep shipments visible in public tracking and in the shared Henry Onyx account with documents, notifications, and support continuity.",
     pros: ["Future-proof account strategy", "Better customer memory"],
     cons: ["Requires disciplined mirroring"],
     difficulty: "high",

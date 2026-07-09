@@ -152,7 +152,7 @@ export function createJitsiDriver(config: JitsiDriverConfig): ProviderDriver {
  * list).
  */
 function roomNameForSession(sessionId: string, kind: RoomKind): string {
-  return `HenryCo-${kind}-${sessionId.replace(/-/g, "")}`;
+  return `Henry Onyx-${kind}-${sessionId.replace(/-/g, "")}`;
 }
 
 /**

@@ -19,7 +19,7 @@ function copyForMethod(method: PaymentMethod | null): {
   if (method === "wallet_balance") {
     return {
       kicker: "Order placed · paid",
-      headline: "Paid from your HenryCo balance. Held in escrow.",
+      headline: "Paid from your Henry Onyx balance. Held in escrow.",
       lead:
         "Your wallet was debited and the order moved into escrow control. Funds release to the seller after delivery confirms — neither side carries the risk in between.",
       steps: [
@@ -47,7 +47,7 @@ function copyForMethod(method: PaymentMethod | null): {
       kicker: "Order placed · awaiting verification",
       headline: "Proof submitted. Finance is reviewing.",
       lead:
-        "Your transfer evidence is now with HenryCo finance. Verification typically lands within working hours; the timeline below updates the moment it does. We'll email and notify the second the order moves into fulfillment.",
+        "Your transfer evidence is now with Henry Onyx finance. Verification typically lands within working hours; the timeline below updates the moment it does. We'll email and notify the second the order moves into fulfillment.",
       steps: [
         {
           icon: Clock3,
@@ -186,7 +186,7 @@ export function PlacementAcknowledgement({
                 Confirmation to
               </dt>
               <dd className="mt-1 truncate text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                {buyerEmail || "Your HenryCo account"}
+                {buyerEmail || "Your Henry Onyx account"}
               </dd>
             </div>
           </dl>

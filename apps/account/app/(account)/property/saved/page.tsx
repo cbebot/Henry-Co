@@ -51,7 +51,7 @@ export default async function SavedPropertiesPage() {
           </p>
         </div>
         <div className="acct-card p-5">
-          <p className="acct-kicker">{t(toBrandName("HenryCo managed"))}</p>
+          <p className="acct-kicker">{t(toBrandName("Henry Onyx managed"))}</p>
           <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{managedCount}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
             {t("Listings with clearer operational support and more accountable follow-through.")}

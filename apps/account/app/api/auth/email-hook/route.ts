@@ -4,11 +4,8 @@ import {
   renderLocalizedAuthEmail,
   resolveRecipientLocale,
   resolveSenderIdentity,
-  sendBrevoEmail,
-  sendResendEmail,
+  sendTransactionalEmail,
   type AuthHookEmailData,
-  type EmailDispatchResult,
-  type SendTransactionalEmailInput,
 } from "@henryco/email";
 import { autoTranslateMany } from "@/lib/i18n/auto-translate";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -150,30 +147,6 @@ function parsePayload(raw: string): { user_email: string; data: AuthHookEmailDat
   };
 }
 
-async function dispatchWithFallback(input: SendTransactionalEmailInput): Promise<EmailDispatchResult> {
-  const primary = await sendResendEmail(input);
-  if (primary.status === "sent") return primary;
-
-  // Resend failed (error or skipped). Log and try Brevo as fallback.
-  console.error("[auth-hook] resend failed", {
-    status: primary.status,
-    safeError: primary.safeError,
-    skippedReason: primary.skippedReason,
-  });
-
-  const fallback = await sendBrevoEmail(input);
-  if (fallback.status === "sent") {
-    console.warn("[auth-hook] brevo fallback succeeded after resend failure");
-    return fallback;
-  }
-  console.error("[auth-hook] brevo fallback also failed", {
-    status: fallback.status,
-    safeError: fallback.safeError,
-    skippedReason: fallback.skippedReason,
-  });
-  return fallback;
-}
-
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   if (!rateLimit(ip)) return safe429();
@@ -238,7 +211,9 @@ export async function POST(req: NextRequest) {
   );
   const sender = resolveSenderIdentity("auth");
 
-  const result = await dispatchWithFallback({
+  // EMAIL-SES-ONLY (2026-07-09): the shared router IS the dispatch policy —
+  // Amazon SES only, no vendor fallback (Resend/Brevo retired).
+  const result = await sendTransactionalEmail({
     to: parsed.user_email,
     subject: rendered.subject,
     html: rendered.html,
@@ -248,7 +223,15 @@ export async function POST(req: NextRequest) {
     purpose: "auth",
   });
 
-  if (result.status !== "sent") return safe5xx();
+  if (result.status !== "sent") {
+    console.error("[auth-hook] email dispatch failed", {
+      provider: result.provider,
+      status: result.status,
+      safeError: result.safeError,
+      skippedReason: result.skippedReason,
+    });
+    return safe5xx();
+  }
   return safe200();
 }
 

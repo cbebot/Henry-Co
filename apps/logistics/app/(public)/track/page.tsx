@@ -288,8 +288,8 @@ export default async function TrackPage({ searchParams }: Props) {
               ? `${zoneLabelLocalized ?? t("Lane pending")} · ${detail.shipment.serviceType.replaceAll(
                   "_",
                   " ",
-                )} · ${detail.shipment.urgency}. ${t("Milestones update as dispatch progresses; signed-in customers see logistics activity inside their shared HenryCo account.")}`
-              : `${trackingLookupHelpLocalized} ${t("Signed-in customers also see logistics activity inside their shared HenryCo account.")}`
+                )} · ${detail.shipment.urgency}. ${t("Milestones update as dispatch progresses; signed-in customers see logistics activity inside their shared Henry Onyx account.")}`
+              : `${trackingLookupHelpLocalized} ${t("Signed-in customers also see logistics activity inside their shared Henry Onyx account.")}`
           }
           capabilityMetrics={heroCapability}
           ctas={

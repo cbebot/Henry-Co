@@ -24,7 +24,7 @@ export function CartExperience() {
 
   const grouped = Object.entries(
     cart.items.reduce<Record<string, typeof cart.items>>((accumulator, item) => {
-      const key = item.vendorName || item.vendorSlug || "HenryCo";
+      const key = item.vendorName || item.vendorSlug || "Henry Onyx";
       accumulator[key] = accumulator[key] ? [...accumulator[key], item] : [item];
       return accumulator;
     }, {})
@@ -48,7 +48,7 @@ export function CartExperience() {
                 </h2>
               </div>
               <p className="rounded-full border border-[var(--market-line)] bg-[color:var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
-                {items[0]?.inventoryOwnerType === "company" ? "HenryCo stocked" : "Verified vendor"}
+                {items[0]?.inventoryOwnerType === "company" ? "Henry Onyx stocked" : "Verified vendor"}
               </p>
             </div>
 

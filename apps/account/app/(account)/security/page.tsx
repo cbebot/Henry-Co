@@ -154,8 +154,8 @@ export default async function SecurityPage({
       value: trust.signals.accountAgeDays,
       foot:
         trust.signals.accountAgeDays === 1
-          ? t(toBrandName("day on HenryCo"))
-          : t(toBrandName("days on HenryCo")),
+          ? t(toBrandName("day on Henry Onyx"))
+          : t(toBrandName("days on Henry Onyx")),
     },
   ];
 

@@ -181,7 +181,7 @@ export function getRiderBrand(locale: AppLocale) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
     shortName: t("Rider workspace"),
-    kicker: "HenryCo · Logistics",
+    kicker: "Henry Onyx · Logistics",
     href: "/rider",
     icon: Compass,
   };
@@ -191,7 +191,7 @@ export function getDispatcherBrand(locale: AppLocale) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
     shortName: t("Dispatch board"),
-    kicker: "HenryCo · Logistics",
+    kicker: "Henry Onyx · Logistics",
     href: "/dispatcher",
     icon: Map,
   };
@@ -201,7 +201,7 @@ export function getManagerBrand(locale: AppLocale) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
     shortName: t("Operations"),
-    kicker: "HenryCo · Logistics",
+    kicker: "Henry Onyx · Logistics",
     href: "/manager",
     icon: LayoutDashboard,
   };
@@ -211,7 +211,7 @@ export function getOwnerBrand(locale: AppLocale) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
     shortName: t("Owner suite"),
-    kicker: "HenryCo · Logistics",
+    kicker: "Henry Onyx · Logistics",
     href: "/owner",
     icon: LineChart,
   };

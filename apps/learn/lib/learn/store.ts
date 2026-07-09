@@ -300,7 +300,7 @@ export async function syncLearnDivision() {
       ],
       who_its_for: [
         "Public learners",
-        "HenryCo internal teams",
+        "Henry Onyx internal teams",
         "Partners and vendors",
         "Business operators and service teams"
       ],
@@ -321,7 +321,7 @@ export async function syncLearnDivision() {
       is_featured: true,
       sort_order: 6,
       categories: ["Education", "Academy", "Internal Training", "Certification"],
-      lead_name: "HenryCo Academy Operations",
+      lead_name: "Henry Onyx Academy Operations",
       lead_title: "Academy Director",
     } as never,
     { onConflict: "slug" }

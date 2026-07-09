@@ -144,8 +144,8 @@ export default async function SupportThreadPage({ params }: Props) {
         initialMuted={initialMuted}
         download={{
           endpoint: `/api/documents/support-thread/${threadId}`,
-          filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
-          shareTitle: `HenryCo Support Thread — ${subject}`,
+          filename: `Henry Onyx-SupportThread-${threadId.slice(0, 8)}.pdf`,
+          shareTitle: `Henry Onyx Support Thread — ${subject}`,
           label: t("Download thread"),
         }}
         viewer={{

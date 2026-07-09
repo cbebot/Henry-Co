@@ -1,3 +1,4 @@
+import { getSesConfig } from "@henryco/email";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyMetricCard, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
@@ -32,7 +33,8 @@ export default async function AdminPage() {
   const messagingFailures = snapshot.notifications.filter((item) => item.status === "failed").length;
   const awaitingDocuments = governance.queue.filter((item) => item.status === "awaiting_documents").length;
   const awaitingEligibility = governance.queue.filter((item) => item.status === "awaiting_eligibility").length;
-  const emailConfigured = Boolean(process.env.RESEND_API_KEY);
+  // EMAIL-SES-ONLY (2026-07-09): SES is the only outbound rail.
+  const emailConfigured = Boolean(getSesConfig());
   const whatsappConfigured = Boolean(
     process.env.TWILIO_ACCOUNT_SID ||
       (process.env.WHATSAPP_PHONE_NUMBER_ID && process.env.WHATSAPP_ACCESS_TOKEN)

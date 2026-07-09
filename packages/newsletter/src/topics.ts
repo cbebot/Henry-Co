@@ -6,7 +6,7 @@ export const NEWSLETTER_TOPICS: NewsletterTopicDefinition[] = [
     division: "hub",
     label: "Henry Onyx Digest",
     description:
-      "Flagship monthly update from HenryCo — new capabilities, trust updates, and selected cross-division highlights.",
+      "Flagship monthly update from Henry Onyx — new capabilities, trust updates, and selected cross-division highlights.",
     defaultFrequency: "monthly",
     editorialOnly: true,
     lifecycleOnly: false,

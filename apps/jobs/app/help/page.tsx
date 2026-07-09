@@ -14,7 +14,7 @@ const sections: { id: string; question: string; answer: string }[] = [
     id: "apply",
     question: "How does applying work?",
     answer:
-      "Open any role, read the full description, then sign in with your HenryCo account when you are ready. You will send one application from your candidate profile—cover note, availability, and pay expectations if you choose. After you submit, the role moves into your Applications list with a visible stage (reviewing, shortlisted, interview, and so on). You can always see whether you already applied.",
+      "Open any role, read the full description, then sign in with your Henry Onyx account when you are ready. You will send one application from your candidate profile—cover note, availability, and pay expectations if you choose. After you submit, the role moves into your Applications list with a visible stage (reviewing, shortlisted, interview, and so on). You can always see whether you already applied.",
   },
   {
     id: "shortlist",
@@ -42,9 +42,9 @@ const sections: { id: string; question: string; answer: string }[] = [
   },
   {
     id: "sync",
-    question: "Where do my jobs show up in HenryCo?",
+    question: "Where do my jobs show up in Henry Onyx?",
     answer:
-      "Applications, saved roles, and updates all appear in your HenryCo account. Jobs is the best place to track your hiring activity, and the account dashboard shows your activity across all HenryCo services.",
+      "Applications, saved roles, and updates all appear in your Henry Onyx account. Jobs is the best place to track your hiring activity, and the account dashboard shows your activity across all Henry Onyx services.",
   },
   {
     id: "whatsapp",
@@ -131,13 +131,13 @@ export default async function HelpPage() {
         <section className="border-t border-[var(--jobs-line)] pt-10">
           <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
             <div>
-              <p className="jobs-kicker">{t("HenryCo account")}</p>
+              <p className="jobs-kicker">{t("Henry Onyx account")}</p>
               <h2 className="mt-3 jobs-heading max-w-xl text-balance">
                 {t("Jobs activity lives alongside the rest of your account.")}
               </h2>
               {/* READING-02: section intro in the serif reading face. */}
               <p className="hc-font-reading text-pretty mt-3 max-w-xl text-sm leading-7 text-[var(--jobs-muted)]">
-                {t("Wallet, documents, and other services may live under the same HenryCo account. The hub gives you the full picture without bouncing between sites.")}
+                {t("Wallet, documents, and other services may live under the same Henry Onyx account. The hub gives you the full picture without bouncing between sites.")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">

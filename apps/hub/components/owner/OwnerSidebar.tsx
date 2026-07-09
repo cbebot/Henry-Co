@@ -170,7 +170,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
           className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"
         >
           <ArrowLeft size={14} />
-          {t("Back to HenryCo Account")}
+          {t("Back to Henry Onyx Account")}
         </Link>
         <a
           href={getStaffHqUrl("/")}

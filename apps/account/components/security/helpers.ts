@@ -30,7 +30,7 @@ const STATUS_HEADLINE: Record<SecurityHeroState, string> = {
 
 const STATUS_BLURB: Record<SecurityHeroState, string> = {
   secure:
-    "No suspicious events, verification is healthy, and every higher-trust action HenryCo offers is open to you.",
+    "No suspicious events, verification is healthy, and every higher-trust action Henry Onyx offers is open to you.",
   watch:
     "Nothing is broken — but a few signals (email confirmation, identity review, duplicate contact match) would lift your trust score and unlock more lanes.",
   risk:

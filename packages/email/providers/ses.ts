@@ -10,14 +10,13 @@ import type {
  * Amazon SES (v2 SendEmail) transactional provider.
  *
  * Dependency-free by design — it speaks the SES HTTPS API directly with AWS
- * Signature V4 signing built on Web Crypto, mirroring the Resend/Brevo fetch
- * providers. No `@aws-sdk/*` dependency, so it adds zero install weight and runs
- * in both the Node and Edge runtimes.
+ * Signature V4 signing built on Web Crypto. No `@aws-sdk/*` dependency, so it
+ * adds zero install weight and runs in both the Node and Edge runtimes.
  *
- * Activation is purely env-gated: with no AWS credentials present `getSesConfig()`
- * returns null and `sendSesEmail()` reports `skipped`, so the router transparently
- * falls through to Resend/Brevo. Set the AWS_SES_* env to make SES the primary
- * transactional rail (cost: ~$0.10 / 1,000 emails vs. a vendor markup).
+ * EMAIL-SES-ONLY (2026-07-09): SES is the ONLY outbound rail — Resend and
+ * Brevo are permanently retired. With no AWS credentials present
+ * `getSesConfig()` returns null and the router reports `skipped`; there is no
+ * fallback vendor by design. (Cost: ~$0.10 / 1,000 emails, no vendor markup.)
  */
 
 type SesConfig = {
@@ -42,7 +41,7 @@ export function getSesConfig(): SesConfig | null {
 }
 
 export function getSesSender(input: SendTransactionalEmailInput): ResolvedSender {
-  const envFromRaw = (process.env.AWS_SES_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || "").trim();
+  const envFromRaw = (process.env.AWS_SES_FROM_EMAIL || "").trim();
   const angle = envFromRaw.match(/^(.*?)<([^<>]+)>\s*$/);
   const envEmail = angle ? angle[2].trim() : envFromRaw;
   const envName = angle ? angle[1].replace(/^["']|["']$/g, "").trim() : "";

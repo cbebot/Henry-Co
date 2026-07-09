@@ -16,20 +16,20 @@ export default async function CareersPage() {
 
   return (
     <PublicShell
-      primaryCta={{ label: t("Open HenryCo Roles"), href: "/careers" }}
+      primaryCta={{ label: t("Open Henry Onyx Roles"), href: "/careers" }}
       secondaryCta={{ label: t("All jobs"), href: "/jobs" }}
     >
       <div className="mx-auto max-w-7xl space-y-12 px-4 py-12 sm:px-6 lg:px-8">
         <section>
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
-              <p className="jobs-kicker">{t("Careers at HenryCo")}</p>
+              <p className="jobs-kicker">{t("Careers at Henry Onyx")}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
-                {t("Join the team building HenryCo.")}
+                {t("Join the team building Henry Onyx.")}
               </h1>
               {/* READING-02: hero body in the editorial serif reading face. */}
               <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
-                {t("Internal openings go through the same clear, structured hiring process as every role on the platform. Apply with your HenryCo account and track progress in your candidate hub.")}
+                {t("Internal openings go through the same clear, structured hiring process as every role on the platform. Apply with your Henry Onyx account and track progress in your candidate hub.")}
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3 text-sm">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
@@ -40,7 +40,7 @@ export default async function CareersPage() {
                   href="/trust"
                   className="font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
                 >
-                  {t("How HenryCo hires")}
+                  {t("How Henry Onyx hires")}
                 </Link>
                 <span className="text-[var(--jobs-line)]">·</span>
                 <Link
@@ -55,7 +55,7 @@ export default async function CareersPage() {
               {[
                 { label: t("Process"), value: t("Same stages as external roles") },
                 { label: t("Communication"), value: t("Visible stages, no silent dropoffs") },
-                { label: t("Account"), value: t("One HenryCo profile across services") },
+                { label: t("Account"), value: t("One Henry Onyx profile across services") },
               ].map((item) => (
                 <li
                   key={item.label}

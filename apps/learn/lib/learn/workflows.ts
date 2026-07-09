@@ -122,7 +122,7 @@ function teacherApplicationStatusLabel(status: LearnTeacherApplication["status"]
 function teacherApplicationStatusDescription(status: LearnTeacherApplication["status"]) {
   switch (status) {
     case "submitted":
-      return "Your teaching application is now with the HenryCo academy team.";
+      return "Your teaching application is now with the Henry Onyx academy team.";
     case "under_review":
       return "Your teaching application is now being reviewed by the academy team.";
     case "changes_requested":
@@ -1126,7 +1126,7 @@ export async function submitTeacherApplication(input: {
     ) || null;
 
   if (existing?.status === "approved") {
-    throw new Error("This HenryCo account already has an approved teaching application.");
+    throw new Error("This Henry Onyx account already has an approved teaching application.");
   }
 
   const uploadedFiles = [...(existing?.supportingFiles || [])];
@@ -1160,7 +1160,7 @@ export async function submitTeacherApplication(input: {
     id: applicationId,
     userId: identity.userId,
     normalizedEmail: identity.normalizedEmail,
-    fullName: cleanText(input.fullName) || identity.fullName || "HenryCo instructor applicant",
+    fullName: cleanText(input.fullName) || identity.fullName || "Henry Onyx instructor applicant",
     phone: cleanText(input.phone) || null,
     country: cleanText(input.country) || null,
     expertiseArea: cleanText(input.expertiseArea),
@@ -1894,7 +1894,7 @@ export async function assignTraining(input: {
   await appendCustomerNotification({
     email: normalizedEmail,
     title: `${course?.title || path?.title || "Training"} assigned`,
-    body: cleanText(input.note) || "A HenryCo training assignment is waiting in your academy queue.",
+    body: cleanText(input.note) || "A Henry Onyx training assignment is waiting in your academy queue.",
     category: "learn",
     actionUrl: getAccountLearnUrl("assignments"),
     actionLabel: "Open account",

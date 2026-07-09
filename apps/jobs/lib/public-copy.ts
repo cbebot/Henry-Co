@@ -112,7 +112,7 @@ const EN: JobsPublicCopy = {
   shell: {
     browseOpenJobs: "Browse open jobs",
     hiring: "I'm hiring",
-    account: "HenryCo account",
+    account: "Henry Onyx account",
     candidateHome: "Candidate home",
     applications: "Applications",
     savedJobs: "Saved jobs",
@@ -121,7 +121,7 @@ const EN: JobsPublicCopy = {
     careers: "Careers",
     discover: "Discover",
     forTeams: "For teams",
-    henryCo: "HenryCo",
+    henryCo: "Henry Onyx",
     jobs: "Jobs",
     talent: "Talent",
     trust: "Trust",
@@ -144,9 +144,9 @@ const EN: JobsPublicCopy = {
     browseAllJobs: "Browse jobs",
     hiringHowItWorks: "I'm hiring - how it works",
     browseJobs: "Browse jobs",
-    myAccount: "My HenryCo account",
+    myAccount: "My Henry Onyx account",
     candidateHub: "Candidate hub",
-    hireWithHenryCo: "Hire with HenryCo",
+    hireWithHenryCo: "Hire with Henry Onyx",
     safetyTrust: "Safety & trust",
     pathsTitle: "Pick the one that fits today.",
   },
@@ -163,7 +163,7 @@ const EN: JobsPublicCopy = {
       anyMode: "Any mode",
       anyType: "Any type",
       verifiedOnly: "Verified employers only",
-      internalOnly: "Internal HenryCo roles only",
+      internalOnly: "Internal Henry Onyx roles only",
       filters: "Filters",
       tapToExpand: "Tap to expand",
     },
@@ -173,7 +173,7 @@ const EN: JobsPublicCopy = {
       verifiedOnly: "Verified only",
       fullTime: "Full-time",
       lagos: "Lagos",
-      internalHenryCo: "Internal HenryCo",
+      internalHenryCo: "Internal Henry Onyx",
     },
   },
   card: {
@@ -196,7 +196,7 @@ const EN: JobsPublicCopy = {
     safetyBody:
       "Employer verification and post review cut down scam listings before they waste anyone's week.",
     hiringBody:
-      "Post with context, pass review, and run shortlist + interviews in one workspace tied to your HenryCo account.",
+      "Post with context, pass review, and run shortlist + interviews in one workspace tied to your Henry Onyx account.",
   },
   landingHow: {
     sectionLink: "How hiring works",
@@ -206,7 +206,7 @@ const EN: JobsPublicCopy = {
       "Search by title, category, place, and how you want to work. Save anything interesting — there is no clock.",
     signInTitle: "Sign in when you apply",
     signInBody:
-      "We ask for your HenryCo account so applications and saves stay private and tied to you — not a throwaway email.",
+      "We ask for your Henry Onyx account so applications and saves stay private and tied to you — not a throwaway email.",
     followTitle: "Follow what happens next",
     followBody:
       "Shortlisted, interview, offer — stages show up in your candidate area with guidance on what to do next.",
@@ -219,7 +219,7 @@ const EN: JobsPublicCopy = {
   },
   landingClosing: {
     title: "Browse for free. Sign in when you want to save or apply.",
-    body: "Employers start with a short walkthrough so expectations stay clear. Candidates keep saves, applications, and stages in one HenryCo profile.",
+    body: "Employers start with a short walkthrough so expectations stay clear. Candidates keep saves, applications, and stages in one Henry Onyx profile.",
   },
 };
 
@@ -227,7 +227,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
   shell: {
     browseOpenJobs: "Voir les offres",
     hiring: "Je recrute",
-    account: "Compte HenryCo",
+    account: "Compte Henry Onyx",
     candidateHome: "Accueil candidat",
     applications: "Candidatures",
     savedJobs: "Offres enregistrées",
@@ -236,7 +236,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
     careers: "Carrières",
     discover: "Découvrir",
     forTeams: "Pour les équipes",
-    henryCo: "HenryCo",
+    henryCo: "Henry Onyx",
     jobs: "Offres",
     talent: "Talents",
     trust: "Confiance",
@@ -259,9 +259,9 @@ const FR: DeepPartial<JobsPublicCopy> = {
     browseAllJobs: "Voir les offres",
     hiringHowItWorks: "Je recrute - comment ça marche",
     browseJobs: "Voir les offres",
-    myAccount: "Mon compte HenryCo",
+    myAccount: "Mon compte Henry Onyx",
     candidateHub: "Espace candidat",
-    hireWithHenryCo: "Recruter avec HenryCo",
+    hireWithHenryCo: "Recruter avec Henry Onyx",
     safetyTrust: "Sécurité et confiance",
     pathsTitle: "Choisissez ce qui vous convient aujourd'hui.",
   },
@@ -278,7 +278,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
       anyMode: "Tous les modes",
       anyType: "Tous les types",
       verifiedOnly: "Employeurs vérifiés uniquement",
-      internalOnly: "Postes internes HenryCo uniquement",
+      internalOnly: "Postes internes Henry Onyx uniquement",
       filters: "Filtres",
       tapToExpand: "Appuyez pour ouvrir",
     },
@@ -288,7 +288,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
       verifiedOnly: "Vérifiés uniquement",
       fullTime: "Temps plein",
       lagos: "Lagos",
-      internalHenryCo: "HenryCo interne",
+      internalHenryCo: "Henry Onyx interne",
     },
   },
   card: {
@@ -311,7 +311,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "La vérification des employeurs et la relecture des annonces écartent les fausses offres avant qu'elles ne gâchent votre semaine.",
     hiringBody:
-      "Publiez avec du contexte, passez la relecture, et menez présélection et entretiens dans un seul espace lié à votre compte HenryCo.",
+      "Publiez avec du contexte, passez la relecture, et menez présélection et entretiens dans un seul espace lié à votre compte Henry Onyx.",
   },
   landingHow: {
     sectionLink: "Comment fonctionne le recrutement",
@@ -321,7 +321,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
       "Cherchez par intitulé, catégorie, lieu, et la manière dont vous voulez travailler. Enregistrez tout ce qui vous intéresse — sans horloge.",
     signInTitle: "Connectez-vous au moment de postuler",
     signInBody:
-      "Nous vous demandons votre compte HenryCo pour que candidatures et favoris restent privés et liés à vous — pas à une adresse jetable.",
+      "Nous vous demandons votre compte Henry Onyx pour que candidatures et favoris restent privés et liés à vous — pas à une adresse jetable.",
     followTitle: "Suivez la suite des étapes",
     followBody:
       "Présélection, entretien, offre — les étapes apparaissent dans votre espace candidat, avec des indications sur la suite.",
@@ -334,7 +334,7 @@ const FR: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Parcourez librement. Connectez-vous quand vous voulez enregistrer ou postuler.",
-    body: "Les employeurs commencent par un court parcours guidé pour cadrer les attentes. Les candidats gardent favoris, candidatures et étapes dans un seul profil HenryCo.",
+    body: "Les employeurs commencent par un court parcours guidé pour cadrer les attentes. Les candidats gardent favoris, candidatures et étapes dans un seul profil Henry Onyx.",
   },
 };
 
@@ -342,7 +342,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
   shell: {
     browseOpenJobs: "Explorar vacantes",
     hiring: "Estoy contratando",
-    account: "Cuenta HenryCo",
+    account: "Cuenta Henry Onyx",
     candidateHome: "Inicio del candidato",
     applications: "Postulaciones",
     savedJobs: "Vacantes guardadas",
@@ -351,7 +351,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
     careers: "Carreras",
     discover: "Descubrir",
     forTeams: "Para equipos",
-    henryCo: "HenryCo",
+    henryCo: "Henry Onyx",
     jobs: "Vacantes",
     talent: "Talento",
     trust: "Confianza",
@@ -374,9 +374,9 @@ const ES: DeepPartial<JobsPublicCopy> = {
     browseAllJobs: "Explorar vacantes",
     hiringHowItWorks: "Estoy contratando - cómo funciona",
     browseJobs: "Explorar vacantes",
-    myAccount: "Mi cuenta HenryCo",
+    myAccount: "Mi cuenta Henry Onyx",
     candidateHub: "Panel del candidato",
-    hireWithHenryCo: "Contrata con HenryCo",
+    hireWithHenryCo: "Contrata con Henry Onyx",
     safetyTrust: "Seguridad y confianza",
     pathsTitle: "Elige la opción que encaja hoy.",
   },
@@ -393,7 +393,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
       anyMode: "Cualquier modalidad",
       anyType: "Cualquier tipo",
       verifiedOnly: "Solo empleadores verificados",
-      internalOnly: "Solo puestos internos de HenryCo",
+      internalOnly: "Solo puestos internos de Henry Onyx",
       filters: "Filtros",
       tapToExpand: "Toca para expandir",
     },
@@ -403,7 +403,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
       verifiedOnly: "Solo verificados",
       fullTime: "Tiempo completo",
       lagos: "Lagos",
-      internalHenryCo: "HenryCo interno",
+      internalHenryCo: "Henry Onyx interno",
     },
   },
   card: {
@@ -426,7 +426,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "La verificación de empleadores y la revisión de publicaciones recortan los anuncios falsos antes de que arruinen tu semana.",
     hiringBody:
-      "Publica con contexto, supera la revisión y maneja preselección y entrevistas en un solo espacio vinculado a tu cuenta HenryCo.",
+      "Publica con contexto, supera la revisión y maneja preselección y entrevistas en un solo espacio vinculado a tu cuenta Henry Onyx.",
   },
   landingHow: {
     sectionLink: "Cómo funciona la contratación",
@@ -436,7 +436,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
       "Busca por cargo, categoría, lugar y forma de trabajo. Guarda lo que te interese — no hay reloj.",
     signInTitle: "Inicia sesión cuando postules",
     signInBody:
-      "Pedimos tu cuenta HenryCo para que postulaciones y guardados queden privados y vinculados a ti — no a un correo desechable.",
+      "Pedimos tu cuenta Henry Onyx para que postulaciones y guardados queden privados y vinculados a ti — no a un correo desechable.",
     followTitle: "Sigue lo que pasa después",
     followBody:
       "Preseleccionado, entrevista, oferta — las etapas aparecen en tu panel de candidato con guía sobre el siguiente paso.",
@@ -449,7 +449,7 @@ const ES: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Explora gratis. Inicia sesión cuando quieras guardar o postular.",
-    body: "Los empleadores empiezan con un recorrido breve para alinear expectativas. Los candidatos guardan favoritos, postulaciones y etapas en un solo perfil HenryCo.",
+    body: "Los empleadores empiezan con un recorrido breve para alinear expectativas. Los candidatos guardan favoritos, postulaciones y etapas en un solo perfil Henry Onyx.",
   },
 };
 
@@ -457,7 +457,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
   shell: {
     browseOpenJobs: "Ver vagas",
     hiring: "Estou contratando",
-    account: "Conta HenryCo",
+    account: "Conta Henry Onyx",
     candidateHome: "Início do candidato",
     applications: "Candidaturas",
     savedJobs: "Vagas salvas",
@@ -466,7 +466,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
     careers: "Carreiras",
     discover: "Descobrir",
     forTeams: "Para equipes",
-    henryCo: "HenryCo",
+    henryCo: "Henry Onyx",
     jobs: "Vagas",
     talent: "Talentos",
     trust: "Confiança",
@@ -489,9 +489,9 @@ const PT: DeepPartial<JobsPublicCopy> = {
     browseAllJobs: "Ver vagas",
     hiringHowItWorks: "Estou contratando - como funciona",
     browseJobs: "Ver vagas",
-    myAccount: "Minha conta HenryCo",
+    myAccount: "Minha conta Henry Onyx",
     candidateHub: "Área do candidato",
-    hireWithHenryCo: "Contrate com HenryCo",
+    hireWithHenryCo: "Contrate com Henry Onyx",
     safetyTrust: "Segurança e confiança",
     pathsTitle: "Escolha o que faz sentido hoje.",
   },
@@ -508,7 +508,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
       anyMode: "Qualquer modo",
       anyType: "Qualquer tipo",
       verifiedOnly: "Somente empregadores verificados",
-      internalOnly: "Somente vagas internas da HenryCo",
+      internalOnly: "Somente vagas internas da Henry Onyx",
       filters: "Filtros",
       tapToExpand: "Toque para expandir",
     },
@@ -518,7 +518,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
       verifiedOnly: "Somente verificados",
       fullTime: "Tempo integral",
       lagos: "Lagos",
-      internalHenryCo: "HenryCo interno",
+      internalHenryCo: "Henry Onyx interno",
     },
   },
   card: {
@@ -541,7 +541,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "A verificação de empregadores e a revisão de anúncios reduzem golpes antes que arruínem a sua semana.",
     hiringBody:
-      "Publique com contexto, passe na revisão e conduza seleção e entrevistas em um único espaço ligado à sua conta HenryCo.",
+      "Publique com contexto, passe na revisão e conduza seleção e entrevistas em um único espaço ligado à sua conta Henry Onyx.",
   },
   landingHow: {
     sectionLink: "Como funciona a contratação",
@@ -551,7 +551,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
       "Busque por cargo, categoria, lugar e modo de trabalho. Salve o que interessar — sem relógio correndo.",
     signInTitle: "Entre quando for se candidatar",
     signInBody:
-      "Pedimos a sua conta HenryCo para que candidaturas e salvos fiquem privados e ligados a você — não a um e-mail descartável.",
+      "Pedimos a sua conta Henry Onyx para que candidaturas e salvos fiquem privados e ligados a você — não a um e-mail descartável.",
     followTitle: "Acompanhe o que vem depois",
     followBody:
       "Pré-selecionado, entrevista, oferta — as etapas aparecem na sua área do candidato com orientação sobre o próximo passo.",
@@ -564,7 +564,7 @@ const PT: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Navegue de graça. Entre quando quiser salvar ou se candidatar.",
-    body: "Empregadores começam com um curto passo a passo para alinhar expectativas. Candidatos guardam salvos, candidaturas e etapas em um único perfil HenryCo.",
+    body: "Empregadores começam com um curto passo a passo para alinhar expectativas. Candidatos guardam salvos, candidaturas e etapas em um único perfil Henry Onyx.",
   },
 };
 
@@ -572,7 +572,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
   shell: {
     browseOpenJobs: "تصفح الوظائف",
     hiring: "أبحث عن توظيف",
-    account: "حساب HenryCo",
+    account: "حساب Henry Onyx",
     candidateHome: "الصفحة الرئيسية للمرشح",
     applications: "الطلبات",
     savedJobs: "الوظائف المحفوظة",
@@ -581,7 +581,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
     careers: "الوظائف",
     discover: "استكشاف",
     forTeams: "للفرق",
-    henryCo: "HenryCo",
+    henryCo: "Henry Onyx",
     jobs: "الوظائف",
     talent: "المواهب",
     trust: "الثقة",
@@ -604,9 +604,9 @@ const AR: DeepPartial<JobsPublicCopy> = {
     browseAllJobs: "تصفح الوظائف",
     hiringHowItWorks: "أبحث عن توظيف - كيف يعمل",
     browseJobs: "تصفح الوظائف",
-    myAccount: "حسابي في HenryCo",
+    myAccount: "حسابي في Henry Onyx",
     candidateHub: "لوحة المرشح",
-    hireWithHenryCo: "التوظيف مع HenryCo",
+    hireWithHenryCo: "التوظيف مع Henry Onyx",
     safetyTrust: "الأمان والثقة",
     pathsTitle: "اختر ما يناسبك اليوم.",
   },
@@ -623,7 +623,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
       anyMode: "أي نمط",
       anyType: "أي نوع",
       verifiedOnly: "أصحاب العمل الموثقون فقط",
-      internalOnly: "وظائف HenryCo الداخلية فقط",
+      internalOnly: "وظائف Henry Onyx الداخلية فقط",
       filters: "المرشحات",
       tapToExpand: "اضغط للتوسيع",
     },
@@ -633,7 +633,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
       verifiedOnly: "الموثق فقط",
       fullTime: "دوام كامل",
       lagos: "لاغوس",
-      internalHenryCo: "HenryCo الداخلي",
+      internalHenryCo: "Henry Onyx الداخلي",
     },
   },
   card: {
@@ -656,7 +656,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "توثيق أصحاب العمل ومراجعة الإعلانات يقلّلان من الإعلانات الاحتيالية قبل أن تُضيع أسبوع أي شخص.",
     hiringBody:
-      "انشر مع السياق، اجتز المراجعة، وأدر القائمة المختصرة والمقابلات في مساحة عمل واحدة مرتبطة بحساب HenryCo.",
+      "انشر مع السياق، اجتز المراجعة، وأدر القائمة المختصرة والمقابلات في مساحة عمل واحدة مرتبطة بحساب Henry Onyx.",
   },
   landingHow: {
     sectionLink: "كيف يعمل التوظيف",
@@ -666,7 +666,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
       "ابحث حسب المسمى والفئة والمكان وطريقة العمل التي تناسبك. احفظ كل ما يهمّك — لا ساعة تجري.",
     signInTitle: "سجّل الدخول عند التقديم",
     signInBody:
-      "نطلب حساب HenryCo حتى تبقى طلباتك ومحفوظاتك خاصة ومرتبطة بك — لا ببريد عابر.",
+      "نطلب حساب Henry Onyx حتى تبقى طلباتك ومحفوظاتك خاصة ومرتبطة بك — لا ببريد عابر.",
     followTitle: "تابع ما يأتي بعد ذلك",
     followBody:
       "قائمة مختصرة، مقابلة، عرض — تظهر المراحل في منطقة المرشح لديك مع إرشاد للخطوة التالية.",
@@ -679,7 +679,7 @@ const AR: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "تصفّح مجانًا. سجّل الدخول حين تريد الحفظ أو التقديم.",
-    body: "يبدأ أصحاب العمل بجولة قصيرة لتوضيح التوقعات. ويحتفظ المرشحون بالمحفوظات والطلبات والمراحل في ملف HenryCo واحد.",
+    body: "يبدأ أصحاب العمل بجولة قصيرة لتوضيح التوقعات. ويحتفظ المرشحون بالمحفوظات والطلبات والمراحل في ملف Henry Onyx واحد.",
   },
 };
 
@@ -690,7 +690,7 @@ const DE: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "Arbeitgeber-Verifizierung und Anzeigenprüfung sortieren Fake-Stellen aus, bevor sie jemandem die Woche kosten.",
     hiringBody:
-      "Veröffentlichen Sie mit Kontext, bestehen Sie die Prüfung und führen Sie Shortlist plus Gespräche in einem Arbeitsbereich, der mit Ihrem HenryCo-Konto verknüpft ist.",
+      "Veröffentlichen Sie mit Kontext, bestehen Sie die Prüfung und führen Sie Shortlist plus Gespräche in einem Arbeitsbereich, der mit Ihrem Henry Onyx-Konto verknüpft ist.",
   },
   landingHow: {
     sectionLink: "So funktioniert das Einstellen",
@@ -700,7 +700,7 @@ const DE: DeepPartial<JobsPublicCopy> = {
       "Suchen Sie nach Titel, Kategorie, Ort und Arbeitsweise. Merken Sie sich alles Interessante — keine Uhr läuft.",
     signInTitle: "Beim Bewerben anmelden",
     signInBody:
-      "Wir fragen nach Ihrem HenryCo-Konto, damit Bewerbungen und Merklisten privat bleiben und Ihnen zugeordnet sind — nicht einer Wegwerf-Adresse.",
+      "Wir fragen nach Ihrem Henry Onyx-Konto, damit Bewerbungen und Merklisten privat bleiben und Ihnen zugeordnet sind — nicht einer Wegwerf-Adresse.",
     followTitle: "Verfolgen Sie, wie es weitergeht",
     followBody:
       "Engere Wahl, Gespräch, Angebot — die Phasen erscheinen in Ihrem Kandidatenbereich mit Hinweisen zum nächsten Schritt.",
@@ -713,7 +713,7 @@ const DE: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Kostenlos stöbern. Anmelden, wenn Sie speichern oder sich bewerben wollen.",
-    body: "Arbeitgeber starten mit einer kurzen Einführung, damit die Erwartungen klar bleiben. Kandidaten halten Merklisten, Bewerbungen und Phasen in einem einzigen HenryCo-Profil zusammen.",
+    body: "Arbeitgeber starten mit einer kurzen Einführung, damit die Erwartungen klar bleiben. Kandidaten halten Merklisten, Bewerbungen und Phasen in einem einzigen Henry Onyx-Profil zusammen.",
   },
 };
 
@@ -724,7 +724,7 @@ const IT: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "La verifica dei datori di lavoro e la revisione degli annunci tagliano le truffe prima che rovinino la settimana a qualcuno.",
     hiringBody:
-      "Pubblica con contesto, supera la revisione e gestisci shortlist e colloqui in un unico spazio collegato al tuo account HenryCo.",
+      "Pubblica con contesto, supera la revisione e gestisci shortlist e colloqui in un unico spazio collegato al tuo account Henry Onyx.",
   },
   landingHow: {
     sectionLink: "Come funziona l'assunzione",
@@ -734,7 +734,7 @@ const IT: DeepPartial<JobsPublicCopy> = {
       "Cerca per titolo, categoria, luogo e modalità di lavoro. Salva tutto ciò che ti interessa — nessun orologio.",
     signInTitle: "Accedi quando ti candidi",
     signInBody:
-      "Ti chiediamo il tuo account HenryCo così candidature e salvataggi restano privati e legati a te — non a una mail usa e getta.",
+      "Ti chiediamo il tuo account Henry Onyx così candidature e salvataggi restano privati e legati a te — non a una mail usa e getta.",
     followTitle: "Segui ciò che succede dopo",
     followBody:
       "Selezionato, colloquio, offerta — le fasi compaiono nella tua area candidato con indicazioni sul prossimo passo.",
@@ -747,7 +747,7 @@ const IT: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Naviga gratis. Accedi quando vuoi salvare o candidarti.",
-    body: "I datori di lavoro iniziano con una breve guida per chiarire le aspettative. I candidati tengono salvataggi, candidature e fasi in un unico profilo HenryCo.",
+    body: "I datori di lavoro iniziano con una breve guida per chiarire le aspettative. I candidati tengono salvataggi, candidature e fasi in un unico profilo Henry Onyx.",
   },
 };
 
@@ -758,7 +758,7 @@ const ZH: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "雇主验证与岗位审核会在虚假招聘浪费任何人时间之前将其拦下。",
     hiringBody:
-      "带上下文发布、通过审核,并在与你的 HenryCo 账户绑定的同一工作区里完成入围与面试。",
+      "带上下文发布、通过审核,并在与你的 Henry Onyx 账户绑定的同一工作区里完成入围与面试。",
   },
   landingHow: {
     sectionLink: "招聘如何运作",
@@ -768,7 +768,7 @@ const ZH: DeepPartial<JobsPublicCopy> = {
       "按职位、类别、地点和工作方式搜索。任何感兴趣的都可以收藏——没有倒计时。",
     signInTitle: "申请时再登录",
     signInBody:
-      "我们需要你的 HenryCo 账户,这样申请和收藏才能保持私密、绑定到你本人——而不是一个临时邮箱。",
+      "我们需要你的 Henry Onyx 账户,这样申请和收藏才能保持私密、绑定到你本人——而不是一个临时邮箱。",
     followTitle: "跟进后续进展",
     followBody:
       "入围、面试、录用——各阶段都会出现在你的候选人区,并提示下一步该做什么。",
@@ -781,7 +781,7 @@ const ZH: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "免费浏览。需要收藏或申请时再登录。",
-    body: "雇主会先经过简短引导,确保期望清晰。候选人将收藏、申请与进度都集中在同一个 HenryCo 个人档案里。",
+    body: "雇主会先经过简短引导,确保期望清晰。候选人将收藏、申请与进度都集中在同一个 Henry Onyx 个人档案里。",
   },
 };
 
@@ -792,7 +792,7 @@ const HI: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "नियोक्ता सत्यापन और पोस्ट समीक्षा फर्जी विज्ञापनों को किसी का सप्ताह बिगाड़ने से पहले छाँट देती है।",
     hiringBody:
-      "संदर्भ के साथ पोस्ट करें, समीक्षा पार करें, और शॉर्टलिस्ट व इंटरव्यू एक ही वर्कस्पेस में चलाएँ जो आपके HenryCo खाते से जुड़ा हो।",
+      "संदर्भ के साथ पोस्ट करें, समीक्षा पार करें, और शॉर्टलिस्ट व इंटरव्यू एक ही वर्कस्पेस में चलाएँ जो आपके Henry Onyx खाते से जुड़ा हो।",
   },
   landingHow: {
     sectionLink: "भर्ती कैसे काम करती है",
@@ -802,7 +802,7 @@ const HI: DeepPartial<JobsPublicCopy> = {
       "शीर्षक, श्रेणी, स्थान और काम करने के तरीके से खोजें। जो भी रोचक लगे सहेज लें — कोई घड़ी नहीं चल रही।",
     signInTitle: "आवेदन करते समय साइन-इन करें",
     signInBody:
-      "हम आपका HenryCo खाता माँगते हैं ताकि आवेदन और सहेजी गई भूमिकाएँ निजी और आपसे जुड़ी रहें — किसी थ्रोअवे ईमेल से नहीं।",
+      "हम आपका Henry Onyx खाता माँगते हैं ताकि आवेदन और सहेजी गई भूमिकाएँ निजी और आपसे जुड़ी रहें — किसी थ्रोअवे ईमेल से नहीं।",
     followTitle: "आगे क्या होता है, उस पर नज़र रखें",
     followBody:
       "शॉर्टलिस्ट, इंटरव्यू, ऑफर — चरण आपके कैंडिडेट क्षेत्र में अगले कदम के मार्गदर्शन के साथ दिखते हैं।",
@@ -815,7 +815,7 @@ const HI: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "मुफ्त में देखें। जब सहेजना या आवेदन करना हो तब साइन-इन करें।",
-    body: "नियोक्ता एक छोटे से वॉकथ्रू से शुरू करते हैं ताकि अपेक्षाएँ साफ़ रहें। उम्मीदवार अपनी सहेजी, आवेदन और चरण एक ही HenryCo प्रोफ़ाइल में रखते हैं।",
+    body: "नियोक्ता एक छोटे से वॉकथ्रू से शुरू करते हैं ताकि अपेक्षाएँ साफ़ रहें। उम्मीदवार अपनी सहेजी, आवेदन और चरण एक ही Henry Onyx प्रोफ़ाइल में रखते हैं।",
   },
 };
 
@@ -826,7 +826,7 @@ const IG: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "Nkwado ndị ọchịchị na nyocha mbipụta na-egbochi mkpọsa wayo tupu ha emefuo izu mmadụ.",
     hiringBody:
-      "Bipụta na mkpụrụokwu kwesịrị ekwesị, gafee nyocha, ma duzie ndepụta mkpirisi na ajụjụ ọnụ n'otu ebe ọrụ jikọrọ na akaụntụ HenryCo gị.",
+      "Bipụta na mkpụrụokwu kwesịrị ekwesị, gafee nyocha, ma duzie ndepụta mkpirisi na ajụjụ ọnụ n'otu ebe ọrụ jikọrọ na akaụntụ Henry Onyx gị.",
   },
   landingHow: {
     sectionLink: "Otu nlere ọrụ si arụ ọrụ",
@@ -836,7 +836,7 @@ const IG: DeepPartial<JobsPublicCopy> = {
       "Chọọ site n'aha, ụdị, ebe, na ka ị chọrọ isi rụọ ọrụ. Chekwaa ihe ọ bụla na-amasị gị — ọ dịghị elekere.",
     signInTitle: "Banye mgbe ị na-arịọ",
     signInBody:
-      "Anyị na-arịọ akaụntụ HenryCo gị ka arịrịọ na nchekwa gị nọrọ nzuzo ma jikọta gị — ọ bụghị ozi-e mberede.",
+      "Anyị na-arịọ akaụntụ Henry Onyx gị ka arịrịọ na nchekwa gị nọrọ nzuzo ma jikọta gị — ọ bụghị ozi-e mberede.",
     followTitle: "Soro ihe na-eso",
     followBody:
       "Ndepụta mkpirisi, ajụjụ ọnụ, onyinye — usoro ndị ahụ na-egosi na mpaghara onye nchọta gị site na nduzi maka ihe ga-eso.",
@@ -849,7 +849,7 @@ const IG: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Lelee n'efu. Banye mgbe ịchọrọ ichekwa ma ọ bụ ịrịọ.",
-    body: "Ndị ọchịchị na-amalite na nduzi dị mkpụmkpụ ka atụmanya doo anya. Ndị nchọta na-ejide ihe a chekwaara, arịrịọ, na usoro niile n'otu profaịlụ HenryCo.",
+    body: "Ndị ọchịchị na-amalite na nduzi dị mkpụmkpụ ka atụmanya doo anya. Ndị nchọta na-ejide ihe a chekwaara, arịrịọ, na usoro niile n'otu profaịlụ Henry Onyx.",
   },
 };
 
@@ -860,7 +860,7 @@ const YO: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "Ìmúdájú agbanisiṣẹ ati àtúnyẹ̀wò àkọsílẹ̀ máa ń ge àwọn ìpolówó ìtànjẹ kúrò ṣáájú kí wọ́n tó fi ìṣẹ́jú ẹnikẹ́ni ṣòfò.",
     hiringBody:
-      "Tẹjáde pẹ̀lú àyíká ọ̀rọ̀, kọjá àtúnyẹ̀wò, kí o sì rí àyẹ̀wò ìpinnu àti ìfọ̀rọ̀wánilẹ́nuwò ní ibi iṣẹ́ kan tí ó so mọ́ àkọọ́lẹ̀ HenryCo rẹ.",
+      "Tẹjáde pẹ̀lú àyíká ọ̀rọ̀, kọjá àtúnyẹ̀wò, kí o sì rí àyẹ̀wò ìpinnu àti ìfọ̀rọ̀wánilẹ́nuwò ní ibi iṣẹ́ kan tí ó so mọ́ àkọọ́lẹ̀ Henry Onyx rẹ.",
   },
   landingHow: {
     sectionLink: "Bí gbígba iṣẹ́ ṣe ń ṣiṣẹ́",
@@ -870,7 +870,7 @@ const YO: DeepPartial<JobsPublicCopy> = {
       "Ṣàwárí nípa àkọlé, ẹ̀ka, ibi, àti bí o ṣe fẹ́ ṣiṣẹ́. Fipamọ́ ohunkóhun tó wúlò — kò sí aago kankan.",
     signInTitle: "Wọlé nígbà tí o bá ń béèrè",
     signInBody:
-      "A ń béèrè àkọọ́lẹ̀ HenryCo rẹ kí àwọn ìbéèrè àti ìfipamọ́ wà ní ìpamọ́ tí ó sì so mọ́ ọ — kì í ṣe sí ímeèlì àtilẹyìn.",
+      "A ń béèrè àkọọ́lẹ̀ Henry Onyx rẹ kí àwọn ìbéèrè àti ìfipamọ́ wà ní ìpamọ́ tí ó sì so mọ́ ọ — kì í ṣe sí ímeèlì àtilẹyìn.",
     followTitle: "Tẹ̀lé ohun tí ó ń ṣẹlẹ̀ tókàn",
     followBody:
       "Tí a yàn, ìfọ̀rọ̀wánilẹ́nuwò, ìfunni — àwọn ìpele yóò hàn ní agbègbè olùdíje rẹ pẹ̀lú ìtọ́nisọ́nà fún ohun tí ó tẹ̀lé.",
@@ -883,7 +883,7 @@ const YO: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Ṣàwárí lọ́fẹ̀ẹ́. Wọlé nígbà tí o bá fẹ́ fipamọ́ tàbí béèrè.",
-    body: "Àwọn agbanisiṣẹ máa ń bẹ̀rẹ̀ pẹ̀lú ìtọ́sọ́nà kúkúrú kí ìfojúsọ́nà má fi ṣòro. Àwọn olùdíje sì máa ń tọ́jú ohun tí wọ́n fipamọ́, àwọn ìbéèrè, àti àwọn ìpele nínú profaìlì HenryCo kan ṣoṣo.",
+    body: "Àwọn agbanisiṣẹ máa ń bẹ̀rẹ̀ pẹ̀lú ìtọ́sọ́nà kúkúrú kí ìfojúsọ́nà má fi ṣòro. Àwọn olùdíje sì máa ń tọ́jú ohun tí wọ́n fipamọ́, àwọn ìbéèrè, àti àwọn ìpele nínú profaìlì Henry Onyx kan ṣoṣo.",
   },
 };
 
@@ -894,7 +894,7 @@ const HA: DeepPartial<JobsPublicCopy> = {
     safetyBody:
       "Tabbatar da masu daukar ma'aikata da bita na sanarwa suna yanke jerin sunaye na zamba kafin su lalata mako na kowa.",
     hiringBody:
-      "Buga tare da ma'ana, ka wuce bita, kuma ka gudanar da gajeren jeri da hira a wuri daya da aka haɗa da asusunka na HenryCo.",
+      "Buga tare da ma'ana, ka wuce bita, kuma ka gudanar da gajeren jeri da hira a wuri daya da aka haɗa da asusunka na Henry Onyx.",
   },
   landingHow: {
     sectionLink: "Yadda ɗaukar ma'aikata ke aiki",
@@ -904,7 +904,7 @@ const HA: DeepPartial<JobsPublicCopy> = {
       "Nemi ta hanyar take, rukuni, wuri, da yadda kake son yin aiki. Ajiye duk abin da ya burge ka — ba lokaci yake gudana.",
     signInTitle: "Shiga lokacin da kake nema",
     signInBody:
-      "Muna neman asusunka na HenryCo don tambayoyi da ajiya su kasance na sirri kuma a haɗa su da kai — ba imel na ɗan lokaci ba.",
+      "Muna neman asusunka na Henry Onyx don tambayoyi da ajiya su kasance na sirri kuma a haɗa su da kai — ba imel na ɗan lokaci ba.",
     followTitle: "Bi abin da zai biyo baya",
     followBody:
       "An zaba, hira, tayi — matakai suna bayyana a yankin ɗan takarar ku tare da jagora kan abin da za a yi na gaba.",
@@ -917,7 +917,7 @@ const HA: DeepPartial<JobsPublicCopy> = {
   },
   landingClosing: {
     title: "Bincika kyauta. Shiga lokacin da kake son ajiyewa ko nema.",
-    body: "Masu daukar ma'aikata suna farawa da gajeren jagora don kiyaye fata. 'Yan takara suna riƙe da ajiya, nema, da matakai a cikin bayanin HenryCo guda ɗaya.",
+    body: "Masu daukar ma'aikata suna farawa da gajeren jagora don kiyaye fata. 'Yan takara suna riƙe da ajiya, nema, da matakai a cikin bayanin Henry Onyx guda ɗaya.",
   },
 };
 

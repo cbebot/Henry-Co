@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: toBrandName(`Insights · ${slug} · HenryCo`) };
+  return { title: toBrandName(`Insights · ${slug} · Henry Onyx`) };
 }
 
 export default async function BusinessInsightsPage({ params }: { params: Promise<{ slug: string }> }) {

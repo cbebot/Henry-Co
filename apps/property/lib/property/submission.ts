@@ -108,7 +108,7 @@ const selectOptions = {
     { value: "exclusive", label: "Exclusive marketing authority" },
     { value: "non_exclusive", label: "Non-exclusive authority" },
     { value: "caretaker", label: "Caretaker / family representative" },
-    { value: "broker_assist", label: "Broker-assisted by HenryCo" },
+    { value: "broker_assist", label: "Broker-assisted by Henry Onyx" },
   ] satisfies PropertySubmissionOption[],
   commercialUse: [
     { value: "office", label: "Office / HQ" },
@@ -297,7 +297,7 @@ export function getPropertySubmissionBlueprint(
       {
         name: "authority_scope",
         label: "Authority scope",
-        description: "Tell HenryCo what authority you actually have.",
+        description: "Tell Henry Onyx what authority you actually have.",
         kind: "select",
         required: true,
         options: selectOptions.authorityScope,
@@ -305,7 +305,7 @@ export function getPropertySubmissionBlueprint(
       {
         name: "owner_contact_name",
         label: "Owner or principal contact",
-        description: "The person HenryCo can call if authority needs to be confirmed.",
+        description: "The person Henry Onyx can call if authority needs to be confirmed.",
         kind: "text",
         required: true,
         placeholder: "Amina Yusuf",
@@ -379,7 +379,7 @@ export function getPropertySubmissionBlueprint(
       {
         name: "management_scope",
         label: "Managed scope requested",
-        description: "Tell HenryCo what level of management you want.",
+        description: "Tell Henry Onyx what level of management you want.",
         kind: "select",
         required: true,
         options: selectOptions.managementScope,
@@ -399,7 +399,7 @@ export function getPropertySubmissionBlueprint(
         "management_docs",
         "Management authorization",
         "management_authorization",
-        "Upload a management instruction, signed authorization, or board approval if HenryCo will operate the listing.",
+        "Upload a management instruction, signed authorization, or board approval if Henry Onyx will operate the listing.",
         true
       )
     );
@@ -411,7 +411,7 @@ export function getPropertySubmissionBlueprint(
         "identity_docs",
         "Identity or KYC support",
         "identity_evidence",
-        "Optional supporting identity evidence for trust review. Your HenryCo account verification status is still the main identity gate.",
+        "Optional supporting identity evidence for trust review. Your Henry Onyx account verification status is still the main identity gate.",
         false
       )
     );
@@ -422,7 +422,7 @@ export function getPropertySubmissionBlueprint(
       {
         name: "inspection_window",
         label: "Inspection timing",
-        description: "How soon can HenryCo realistically verify the property?",
+        description: "How soon can Henry Onyx realistically verify the property?",
         kind: "select",
         required: isInspectionTrack,
         options: selectOptions.inspectionWindow,
@@ -430,7 +430,7 @@ export function getPropertySubmissionBlueprint(
       {
         name: "inspection_notes",
         label: "Inspection and access notes",
-        description: "Gate code, caretaker reality, current occupancy, site constraints, or what HenryCo should verify.",
+        description: "Gate code, caretaker reality, current occupancy, site constraints, or what Henry Onyx should verify.",
         kind: "textarea",
         required: isInspectionTrack || isManagedTrack,
         placeholder: "Access via estate gate 3, caretaker onsite from 10am, current tenant vacates next month...",
@@ -466,13 +466,13 @@ export function getPropertySubmissionBlueprint(
   ];
 
   const userChecklist = [
-    "Public publication never happens instantly. HenryCo holds the submission privately first.",
+    "Public publication never happens instantly. Henry Onyx holds the submission privately first.",
     isManagedTrack
       ? "Managed listings need stronger operational context before they can move into publication."
-      : "Non-managed listings can still be published, but HenryCo expects clean authority and readiness proof.",
+      : "Non-managed listings can still be published, but Henry Onyx expects clean authority and readiness proof.",
     requiresVerifiedIdentity
       ? "This path relies on verified identity, authority proof, or both before publication can clear."
-      : "If trust evidence is weak, HenryCo can still pause the listing and request stronger proof.",
+      : "If trust evidence is weak, Henry Onyx can still pause the listing and request stronger proof.",
     minimums.requiresInspection
       ? "Inspection-sensitive listings can stay off-market until the inspection rail is complete."
       : "Inspection may still be required if the listing looks higher-risk than the initial path suggests.",
@@ -491,16 +491,16 @@ export function getPropertySubmissionBlueprint(
     showBathrooms: !["land", "inspection_request"].includes(serviceType),
     showLandFields: serviceType === "land",
     reviewHeadline: isManagedTrack
-      ? "HenryCo will check authority, operating readiness, and whether the listing can enter managed operations."
+      ? "Henry Onyx will check authority, operating readiness, and whether the listing can enter managed operations."
       : isInspectionTrack
-        ? "HenryCo will review the inspection request before deciding whether the property can move toward publication."
-        : "HenryCo will review authority, copy, media, and readiness before any public release.",
+        ? "Henry Onyx will review the inspection request before deciding whether the property can move toward publication."
+        : "Henry Onyx will review authority, copy, media, and readiness before any public release.",
     eligibilityCopy: requiresVerifiedIdentity
       ? "Eligibility is decided by verified identity, authority proof, document strength, and inspection readiness where needed."
       : "Eligibility is decided by authority proof, document strength, and inspection readiness where the listing warrants it.",
     managedTrackCopy: isManagedTrack
-      ? "Managed listings imply HenryCo operational involvement after acceptance."
-      : "Non-managed listings remain owner or agent run even if HenryCo clears them for publication.",
+      ? "Managed listings imply Henry Onyx operational involvement after acceptance."
+      : "Non-managed listings remain owner or agent run even if Henry Onyx clears them for publication.",
     moderationChecks,
     userChecklist,
     contextFields,

@@ -59,7 +59,7 @@ const LEARN_CATEGORIES_COPY_EN: LearnCategoriesCopy = {
   stats: {
     activeCoursesLabel: "Active courses",
     enrollmentLabel: "Enrollment",
-    enrollmentValue: "One HenryCo account",
+    enrollmentValue: "One Henry Onyx account",
     recordsLabel: "Records",
     recordsValue: "Server-side, verifiable",
   },
@@ -85,7 +85,7 @@ const LEARN_CATEGORIES_COPY_FR: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Cours actifs",
     enrollmentLabel: "Inscription",
-    enrollmentValue: "Un seul compte HenryCo",
+    enrollmentValue: "Un seul compte Henry Onyx",
     recordsLabel: "Dossiers",
     recordsValue: "Côté serveur, vérifiables",
   },
@@ -111,7 +111,7 @@ const LEARN_CATEGORIES_COPY_ES: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Cursos activos",
     enrollmentLabel: "Inscripción",
-    enrollmentValue: "Una sola cuenta HenryCo",
+    enrollmentValue: "Una sola cuenta Henry Onyx",
     recordsLabel: "Registros",
     recordsValue: "En el servidor, verificables",
   },
@@ -137,7 +137,7 @@ const LEARN_CATEGORIES_COPY_PT: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Cursos ativos",
     enrollmentLabel: "Inscrição",
-    enrollmentValue: "Uma única conta HenryCo",
+    enrollmentValue: "Uma única conta Henry Onyx",
     recordsLabel: "Registos",
     recordsValue: "No servidor, verificáveis",
   },
@@ -163,7 +163,7 @@ const LEARN_CATEGORIES_COPY_AR: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "الدورات النشطة",
     enrollmentLabel: "التسجيل",
-    enrollmentValue: "حساب HenryCo واحد",
+    enrollmentValue: "حساب Henry Onyx واحد",
     recordsLabel: "السجلّات",
     recordsValue: "على الخادم، قابلة للتحقُّق",
   },
@@ -189,7 +189,7 @@ const LEARN_CATEGORIES_COPY_DE: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Aktive Kurse",
     enrollmentLabel: "Anmeldung",
-    enrollmentValue: "Ein HenryCo-Konto",
+    enrollmentValue: "Ein Henry Onyx-Konto",
     recordsLabel: "Nachweise",
     recordsValue: "Serverseitig, prüfbar",
   },
@@ -215,7 +215,7 @@ const LEARN_CATEGORIES_COPY_IT: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Corsi attivi",
     enrollmentLabel: "Iscrizione",
-    enrollmentValue: "Un solo account HenryCo",
+    enrollmentValue: "Un solo account Henry Onyx",
     recordsLabel: "Registri",
     recordsValue: "Lato server, verificabili",
   },
@@ -241,7 +241,7 @@ const LEARN_CATEGORIES_COPY_ZH: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "在售课程",
     enrollmentLabel: "报名方式",
-    enrollmentValue: "一个 HenryCo 账户",
+    enrollmentValue: "一个 Henry Onyx 账户",
     recordsLabel: "记录",
     recordsValue: "服务器端,可核验",
   },
@@ -267,7 +267,7 @@ const LEARN_CATEGORIES_COPY_HI: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "सक्रिय कोर्स",
     enrollmentLabel: "नामांकन",
-    enrollmentValue: "एक HenryCo खाता",
+    enrollmentValue: "एक Henry Onyx खाता",
     recordsLabel: "रिकॉर्ड",
     recordsValue: "सर्वर पर, सत्यापन योग्य",
   },
@@ -293,7 +293,7 @@ const LEARN_CATEGORIES_COPY_IG: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Nkuzi na-arụ ọrụ",
     enrollmentLabel: "Ndebanye aha",
-    enrollmentValue: "Otu akaụntụ HenryCo",
+    enrollmentValue: "Otu akaụntụ Henry Onyx",
     recordsLabel: "Akwụkwọ ndekọ",
     recordsValue: "Na sava, enwere ike inyocha ya",
   },
@@ -319,7 +319,7 @@ const LEARN_CATEGORIES_COPY_YO: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Àwọn ẹ̀kọ́ tó ń lọ lọ́wọ́",
     enrollmentLabel: "Ìforúkọsílẹ̀",
-    enrollmentValue: "Àkáǹtì HenryCo kan",
+    enrollmentValue: "Àkáǹtì Henry Onyx kan",
     recordsLabel: "Àkọsílẹ̀",
     recordsValue: "Ní sáfà, ó ṣeé yẹ̀wò",
   },
@@ -345,7 +345,7 @@ const LEARN_CATEGORIES_COPY_HA: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Kwasa-kwasai masu aiki",
     enrollmentLabel: "Rajista",
-    enrollmentValue: "Asusun HenryCo guda ɗaya",
+    enrollmentValue: "Asusun Henry Onyx guda ɗaya",
     recordsLabel: "Bayanai",
     recordsValue: "A kan sabar, za a iya tabbatarwa",
   },

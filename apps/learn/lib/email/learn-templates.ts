@@ -461,7 +461,7 @@ export async function sendAcademyWelcomeNotification(input: {
         "Keep certificates and training assignments tied to one identity.",
         "Pick up where you stopped without losing progress.",
       ],
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl(),
     },
   });
@@ -541,7 +541,7 @@ export async function sendPaymentConfirmedNotification(input: {
         { label: "Course", value: input.courseTitle },
         { label: "Reference", value: input.reference },
       ],
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl("payments"),
     },
   });
@@ -675,7 +675,7 @@ export async function sendInternalAssignmentNotification(input: {
     layout: {
       subject: `Internal training assigned • ${input.title}`,
       eyebrow: "Internal assignment",
-      title: "A HenryCo training assignment was added to your queue.",
+      title: "A Henry Onyx training assignment was added to your queue.",
       intro:
         "The assignment is now visible in Henry Onyx Learn with progress tracking, due date visibility, and certificate readiness when applicable.",
       sections: [
@@ -684,7 +684,7 @@ export async function sendInternalAssignmentNotification(input: {
         ...(input.dueAt ? [{ label: "Due", value: new Date(input.dueAt).toLocaleDateString("en-NG") }] : []),
       ],
       bullets: input.note ? [input.note] : [],
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl("assignments"),
     },
   });
@@ -723,7 +723,7 @@ export async function sendAcademyAnnouncementNotification(input: {
       eyebrow: "Academy announcement",
       title: input.title,
       intro: input.body,
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl("notifications"),
     },
   });
@@ -745,10 +745,10 @@ export async function sendTeacherApplicationSubmittedNotification(input: {
     entityId: input.applicationId,
     layout: {
       subject: "Teaching application received • Henry Onyx Learn",
-      eyebrow: "Teach with HenryCo",
+      eyebrow: "Teach with Henry Onyx",
       title: "Your teaching application is with the academy team.",
       intro:
-        "Henry Onyx Learn has recorded your application and attached it to your HenryCo identity so review, onboarding, and future instructor operations stay connected.",
+        "Henry Onyx Learn has recorded your application and attached it to your Henry Onyx identity so review, onboarding, and future instructor operations stay connected.",
       sections: [
         { label: "Applicant", value: input.fullName },
         { label: "Expertise", value: input.expertiseArea },
@@ -768,7 +768,7 @@ export async function sendTeacherApplicationSubmittedNotification(input: {
     entityType: "teacher_application",
     entityId: input.applicationId,
     body: [
-      "Henry Onyx Learn • Teach with HenryCo",
+      "Henry Onyx Learn • Teach with Henry Onyx",
       "Your teaching application has been received.",
       `Review it here: ${input.manageUrl}`,
     ].join("\n"),
@@ -820,7 +820,7 @@ export async function sendTeacherApplicationStatusNotification(input: {
     entityId: input.applicationId,
     layout: {
       subject: `Teaching application ${statusLabel} • Henry Onyx Learn`,
-      eyebrow: "Teach with HenryCo",
+      eyebrow: "Teach with Henry Onyx",
       title: `Application ${statusLabel.toLowerCase()}.`,
       intro,
       sections: [{ label: "Applicant", value: input.fullName }],
@@ -842,7 +842,7 @@ export async function sendTeacherApplicationStatusNotification(input: {
     entityType: "teacher_application",
     entityId: input.applicationId,
     body: [
-      "Henry Onyx Learn • Teach with HenryCo",
+      "Henry Onyx Learn • Teach with Henry Onyx",
       `Application status: ${statusLabel}.`,
       input.reviewNotes ? `Notes: ${input.reviewNotes}` : null,
       `Open application: ${input.manageUrl}`,

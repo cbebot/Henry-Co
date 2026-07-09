@@ -16,7 +16,7 @@ export default function OwnerNoAccessPage() {
           This account does not have owner access
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--acct-muted)]">
-          You&apos;re signed in, but this HenryCo account is not active in the owner access list.
+          You&apos;re signed in, but this Henry Onyx account is not active in the owner access list.
           If you expected owner access, ask an existing owner or administrator to verify your
           `owner_profiles` record.
         </p>

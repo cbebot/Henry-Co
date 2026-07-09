@@ -122,7 +122,7 @@ export const NDPA_LAWFUL_BASES = [
   },
   {
     key: "legitimate-interests",
-    label: "Legitimate interests pursued by HenryCo or a third party",
+    label: "Legitimate interests pursued by Henry Onyx or a third party",
     statute: "NDPA 2023 §25(1)(f)",
     examples: "Trust scoring, device-risk signals, abuse prevention, service security — each balanced against the data subject's rights.",
   },
@@ -159,7 +159,7 @@ export const DATA_CATEGORIES = [
   {
     key: "financial",
     label: "Financial",
-    items: "Bank account, payment-method token (processed by our PCI-compliant payment processor; HenryCo does not store full card numbers), payout history, wallet balance, invoices",
+    items: "Bank account, payment-method token (processed by our PCI-compliant payment processor; Henry Onyx does not store full card numbers), payout history, wallet balance, invoices",
     purpose: "Order settlement, vendor payout, refund processing, tax reporting.",
     basis: "Contract (§25(1)(b)); legal obligation for tax records (§25(1)(c)).",
   },

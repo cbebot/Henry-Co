@@ -12,7 +12,7 @@ export default async function StaffDirectoryPage() {
       <OwnerPageHeader
         eyebrow="Staff intelligence"
         title="Directory"
-        description="Search and filter every HenryCo workforce member by name, email, division, or status. Click through to the intelligence profile for deep context."
+        description="Search and filter every Henry Onyx workforce member by name, email, division, or status. Click through to the intelligence profile for deep context."
       />
 
       <OwnerPanel title="Filters & list" description="Live data from your connected account directory.">

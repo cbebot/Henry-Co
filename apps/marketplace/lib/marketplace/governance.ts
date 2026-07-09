@@ -140,7 +140,7 @@ export const sellerPlans: SellerPlanDefinition[] = [
     commissionRate: 0,
     payoutFeeRate: 0,
     payoutFeeFlat: 0,
-    summary: "HenryCo-managed or strategic partner inventory.",
+    summary: "Henry Onyx-managed or strategic partner inventory.",
     benefits: ["Custom terms", "Direct placement control", "Lowest reserve pressure"],
   },
 ];
@@ -207,7 +207,7 @@ export function deriveSellerTrustProfile(input: {
   const planId: SellerPlanId =
     tier === "henryco_verified_partner" ? "partner" : tier === "trusted_seller" || tier === "premium_verified_business" ? "scale" : tier === "basic_verified" ? "growth" : "launch";
   const badge =
-    tier === "henryco_verified_partner" ? "HenryCo verified partner" : tier === "premium_verified_business" ? "Premium verified business" : tier === "trusted_seller" ? "Trusted seller" : tier === "basic_verified" ? "Basic verified" : "Verification pending";
+    tier === "henryco_verified_partner" ? "Henry Onyx verified partner" : tier === "premium_verified_business" ? "Premium verified business" : tier === "trusted_seller" ? "Trusted seller" : tier === "basic_verified" ? "Basic verified" : "Verification pending";
 
   return {
     tier,

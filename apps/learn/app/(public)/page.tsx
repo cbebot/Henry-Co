@@ -153,7 +153,7 @@ export default async function HomePage() {
               <li className="border-l border-white/15 pl-4">
                 <p className="text-sm font-semibold text-white">{t("Teams & assignments")}</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/75">
-                  {t("Some courses are assigned inside HenryCo. Team programs appear in your account alongside anything you chose yourself.")}
+                  {t("Some courses are assigned inside Henry Onyx. Team programs appear in your account alongside anything you chose yourself.")}
                 </p>
               </li>
               <li className="border-l border-white/15 pl-4">

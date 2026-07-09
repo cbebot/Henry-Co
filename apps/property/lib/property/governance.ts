@@ -33,7 +33,7 @@ export function getPropertyListingStatusSummary(status: PropertyListingStatus) {
     case "awaiting_eligibility":
       return "Identity, authority, or trust prerequisites are still incomplete.";
     case "inspection_requested":
-      return "HenryCo needs an inspection workflow before publication can continue.";
+      return "Henry Onyx needs an inspection workflow before publication can continue.";
     case "inspection_scheduled":
       return "An inspection is already booked or being locked in.";
     case "under_review":

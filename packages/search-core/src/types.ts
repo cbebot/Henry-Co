@@ -54,7 +54,7 @@ export type SearchRoleVisibility =
   | "owner" // the user who owns the entity (filter by owner_user_id)
   | "staff" // any staff in the entity's division
   | "staff_owner" // staff with owner-tier access
-  | "platform_owner"; // HenryCo HQ
+  | "platform_owner"; // Henry Onyx HQ
 
 export type SearchUrgency = "none" | "low" | "normal" | "high" | "critical";
 

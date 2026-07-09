@@ -53,7 +53,7 @@ export default async function LinkAccountPage({
         <div className="mb-6 flex flex-col items-center text-center">
           <Logo size={40} />
           <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--acct-gold)]">
-            {t("HenryCo Accounts")}
+            {t("Henry Onyx Accounts")}
           </p>
           <h1 className="acct-display mt-3 text-xl text-[var(--acct-ink)]">
             {t("Confirm to link")} {providerLabel}

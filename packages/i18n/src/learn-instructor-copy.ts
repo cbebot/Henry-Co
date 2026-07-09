@@ -187,7 +187,7 @@ const LEARN_INSTRUCTOR_COPY_DE: DeepPartial<LearnInstructorCopy> = {
     kicker: "Lehrkraft",
     title: "Kurse erstellen, Arbeiten bewerten und den Fortschritt Ihrer Lernenden begleiten.",
     description:
-      "Erstellen Sie den Lehrplan, fügen Sie Lektionen und Quizze hinzu, prüfen Sie Abgaben und behalten Sie Auszahlungen im Blick. Das ist Ihr vollständiger Arbeitsbereich als autorisierte HenryCo-Learn-Lehrkraft.",
+      "Erstellen Sie den Lehrplan, fügen Sie Lektionen und Quizze hinzu, prüfen Sie Abgaben und behalten Sie Auszahlungen im Blick. Das ist Ihr vollständiger Arbeitsbereich als autorisierte Henry Onyx-Learn-Lehrkraft.",
   },
   stats: {
     activeEnrollments: "Aktive Anmeldungen",

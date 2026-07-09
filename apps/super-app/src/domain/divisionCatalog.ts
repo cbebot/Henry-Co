@@ -45,7 +45,7 @@ export const DIVISION_CATALOG: Division[] = [
     shortName: "Jobs",
     status: "active",
     featured: true,
-    summary: "Hiring operating system for HenryCo and verified external employers.",
+    summary: "Hiring operating system for Henry Onyx and verified external employers.",
     highlights: ["Verified talent layer", "Employer moderation", "Structured applications"],
     destinationUrl: "https://jobs.henryonyx.com",
     sectors: ["general"],

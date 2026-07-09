@@ -130,7 +130,7 @@ export default async function SupportThreadPage({
           canTransfer={canTransfer}
           download={{
             endpoint: `/api/documents/support-thread/${thread.id}`,
-            filename: `HenryCo-SupportThread-${thread.id.slice(0, 8)}.pdf`,
+            filename: `Henry Onyx-SupportThread-${thread.id.slice(0, 8)}.pdf`,
             shareTitle: `Henry Onyx Studio — ${subject}`,
             label: "Download",
           }}

@@ -1502,7 +1502,7 @@ export default function BookPickupForm({
                     {SUPPLIES_OPTIONS.map((item) => (
                       <option key={item} value={item}>
                         {item === "included"
-                          ? t("HenryCo supplies the visit")
+                          ? t("Henry Onyx supplies the visit")
                           : t("Supplies already on site")}
                       </option>
                     ))}

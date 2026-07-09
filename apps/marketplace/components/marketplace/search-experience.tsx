@@ -476,7 +476,7 @@ export function SearchExperience({
                 Nothing matched that exact combination.
               </p>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-                Ease one trust filter or widen the keyword. HenryCo search is meant to keep buyers
+                Ease one trust filter or widen the keyword. Henry Onyx search is meant to keep buyers
                 moving, not trap them in dead-end clutter.
               </p>
               <Link

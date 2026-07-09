@@ -45,7 +45,7 @@ export default async function HelpPage({
             {t("Sent")}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            {t("Message received. We’ll reply using the contact details on your HenryCo account.")}
+            {t("Message received. We’ll reply using the contact details on your Henry Onyx account.")}
           </p>
         </section>
       ) : null}
@@ -107,7 +107,7 @@ export default async function HelpPage({
                   {t("Learn → Active")}
                 </a>{" "}
                 {t(
-                  "in your HenryCo account, or go back to the course page and open your learning room.",
+                  "in your Henry Onyx account, or go back to the course page and open your learning room.",
                 )}
               </p>
             </li>

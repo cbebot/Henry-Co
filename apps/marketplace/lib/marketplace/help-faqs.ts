@@ -61,7 +61,7 @@ export const MARKETPLACE_FAQS: MarketplaceFaqCategory[] = [
         id: "payment-methods",
         question: "What payment methods are accepted?",
         answer:
-          "Card, bank transfer, and HenryCo wallet. Cash on delivery is supported only on listings that explicitly opt in — look for the COD-eligible badge on the product page.",
+          "Card, bank transfer, and Henry Onyx wallet. Cash on delivery is supported only on listings that explicitly opt in — look for the COD-eligible badge on the product page.",
       },
       {
         id: "payment-protection",
@@ -170,7 +170,7 @@ export const MARKETPLACE_FAQS: MarketplaceFaqCategory[] = [
     items: [
       {
         id: "create-account",
-        question: "How do I create a HenryCo account?",
+        question: "How do I create a Henry Onyx account?",
         answer:
           "Tap Sign up and use your email or phone number. The account works across Henry Onyx — Marketplace, Care, Property, Logistics, Studio, Jobs, and Learn — so you only ever sign in once.",
       },

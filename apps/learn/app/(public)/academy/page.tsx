@@ -144,7 +144,7 @@ export default async function AcademyPage() {
           {/* READING-02: section intro in the serif reading face. */}
           <p className="hc-font-reading text-pretty mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t(
-              "The course room on Henry Onyx Learn is where you read lessons, submit quizzes, and download certificates. Your HenryCo account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
+              "The course room on Henry Onyx Learn is where you read lessons, submit quizzes, and download certificates. Your Henry Onyx account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
             )}
           </p>
           <a

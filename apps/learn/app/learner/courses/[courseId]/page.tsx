@@ -52,7 +52,7 @@ function formatRelativeTime(value: string | null | undefined, t: LearnTranslator
 
 function displayName(value: string | null | undefined, t: LearnTranslator) {
   const text = String(value || "").trim();
-  if (!text) return t("HenryCo learner");
+  if (!text) return t("Henry Onyx learner");
   return text.split(/\s+/).slice(0, 2).join(" ");
 }
 
@@ -241,7 +241,7 @@ export default async function LearnerCoursePage({
       return {
         id: item.id,
         fullName:
-          profile?.fullName || (item.userId === viewer.user?.id ? viewer.user?.fullName : null) || t("HenryCo learner"),
+          profile?.fullName || (item.userId === viewer.user?.id ? viewer.user?.fullName : null) || t("Henry Onyx learner"),
         avatarUrl: profile?.avatarUrl || null,
         status: item.status,
         percentComplete: item.percentComplete,
@@ -270,7 +270,7 @@ export default async function LearnerCoursePage({
       kicker={t("Learning room")}
       title={courseTitle || course.title}
       description={t(
-        "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your HenryCo account under Learn.",
+        "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your Henry Onyx account under Learn.",
       )}
       nav={courseRoomNav(`/learner/courses/${course.id}`, t)}
       actions={
@@ -279,7 +279,7 @@ export default async function LearnerCoursePage({
             href={getAccountLearnUrl()}
             className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold"
           >
-            {t("HenryCo account")}
+            {t("Henry Onyx account")}
           </a>
           {certificate ? (
             <CertificateDownloadButton

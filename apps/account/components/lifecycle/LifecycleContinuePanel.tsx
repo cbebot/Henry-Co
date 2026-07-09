@@ -66,7 +66,7 @@ export default function LifecycleContinuePanel({ snapshot }: Props) {
         <p className="acct-lifecycle__kicker">Lifecycle</p>
         <h2 className="acct-lifecycle__title">Pick up where you left off</h2>
         <p className="acct-lifecycle__sub">
-          Your open journeys across {toBrandName("HenryCo")} divisions, ranked by what needs you first.
+          Your open journeys across {toBrandName("Henry Onyx")} divisions, ranked by what needs you first.
         </p>
       </header>
 

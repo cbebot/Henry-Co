@@ -23,7 +23,7 @@ export default async function StaffTreePage() {
       <OwnerPageHeader
         eyebrow="Staff intelligence"
         title="Organization tree"
-        description="HenryCo at the root, divisions as branches, people grouped underneath. Expand mentally by division — optimized for fast scanning on desktop and stacked cards on mobile."
+        description="Henry Onyx at the root, divisions as branches, people grouped underneath. Expand mentally by division — optimized for fast scanning on desktop and stacked cards on mobile."
       />
 
       <div className="acct-card relative overflow-hidden p-6 sm:p-8">

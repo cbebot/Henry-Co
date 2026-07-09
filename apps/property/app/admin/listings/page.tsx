@@ -357,7 +357,7 @@ export default async function AdminListingsPage() {
                               rows={3}
                               defaultValue={inspection?.outcomeNotes || ""}
                               className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                              placeholder={t("What HenryCo verified, what failed, or why the inspection was waived.")}
+                              placeholder={t("What Henry Onyx verified, what failed, or why the inspection was waived.")}
                             />
                           </label>
 

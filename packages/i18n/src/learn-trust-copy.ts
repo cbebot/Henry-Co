@@ -78,7 +78,7 @@ const LEARN_TRUST_COPY_EN: LearnTrustCopy = {
     eyebrow: "Where to next",
     title: "Verify a credential, or start a program built to be checkable.",
     body:
-      "Anyone can verify a HenryCo certificate from its code — no account required. Learners get the same standard of proof whether the program is public, assigned, or partner-only.",
+      "Anyone can verify a Henry Onyx certificate from its code — no account required. Learners get the same standard of proof whether the program is public, assigned, or partner-only.",
     ctaPrimary: "Verify a certificate",
     ctaSecondary: "Certificate programs",
   },
@@ -118,7 +118,7 @@ const LEARN_TRUST_COPY_FR: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Et maintenant",
     title: "Vérifiez un titre, ou démarrez un programme conçu pour être contrôlable.",
     body:
-      "Tout le monde peut vérifier un certificat HenryCo à partir de son code — sans compte requis. Les apprenants bénéficient du même niveau de preuve, que le programme soit public, assigné ou réservé à un partenaire.",
+      "Tout le monde peut vérifier un certificat Henry Onyx à partir de son code — sans compte requis. Les apprenants bénéficient du même niveau de preuve, que le programme soit public, assigné ou réservé à un partenaire.",
     ctaPrimary: "Vérifier un certificat",
     ctaSecondary: "Programmes certifiants",
   },
@@ -158,7 +158,7 @@ const LEARN_TRUST_COPY_ES: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Próximos pasos",
     title: "Verifica una credencial o comienza un programa pensado para ser comprobable.",
     body:
-      "Cualquiera puede verificar un certificado de HenryCo a partir de su código, sin necesidad de cuenta. Los alumnos reciben el mismo nivel de prueba, sea el programa público, asignado o exclusivo de un socio.",
+      "Cualquiera puede verificar un certificado de Henry Onyx a partir de su código, sin necesidad de cuenta. Los alumnos reciben el mismo nivel de prueba, sea el programa público, asignado o exclusivo de un socio.",
     ctaPrimary: "Verificar un certificado",
     ctaSecondary: "Programas certificados",
   },
@@ -198,7 +198,7 @@ const LEARN_TRUST_COPY_PT: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Próximos passos",
     title: "Verifique uma credencial ou comece um programa feito para ser comprovado.",
     body:
-      "Qualquer pessoa pode verificar um certificado HenryCo a partir do seu código — sem precisar de conta. Os alunos recebem o mesmo padrão de prova, seja o programa público, atribuído ou exclusivo de parceiro.",
+      "Qualquer pessoa pode verificar um certificado Henry Onyx a partir do seu código — sem precisar de conta. Os alunos recebem o mesmo padrão de prova, seja o programa público, atribuído ou exclusivo de parceiro.",
     ctaPrimary: "Verificar um certificado",
     ctaSecondary: "Programas com certificado",
   },
@@ -238,7 +238,7 @@ const LEARN_TRUST_COPY_AR: DeepPartial<LearnTrustCopy> = {
     eyebrow: "إلى أين بعد",
     title: "تحقَّق من شهادة، أو ابدأ برنامجًا مصمَّمًا ليكون قابلاً للتحقّق.",
     body:
-      "بإمكان أيّ شخص التحقُّق من شهادة HenryCo عبر رمزها — دون الحاجة إلى حساب. ينال المتعلّمون المستوى نفسه من البرهان سواء كان البرنامج عامًّا أو مُكلَّفًا أو محصورًا بشركاء.",
+      "بإمكان أيّ شخص التحقُّق من شهادة Henry Onyx عبر رمزها — دون الحاجة إلى حساب. ينال المتعلّمون المستوى نفسه من البرهان سواء كان البرنامج عامًّا أو مُكلَّفًا أو محصورًا بشركاء.",
     ctaPrimary: "التحقُّق من شهادة",
     ctaSecondary: "برامج الشهادات",
   },
@@ -278,7 +278,7 @@ const LEARN_TRUST_COPY_DE: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Wie geht es weiter",
     title: "Verifizieren Sie einen Nachweis oder starten Sie ein Programm, das geprüft werden kann.",
     body:
-      "Jede Person kann ein HenryCo-Zertifikat über seinen Code verifizieren — ganz ohne Konto. Lernende erhalten denselben Beweisstandard, ob das Programm öffentlich, zugewiesen oder partnerexklusiv ist.",
+      "Jede Person kann ein Henry Onyx-Zertifikat über seinen Code verifizieren — ganz ohne Konto. Lernende erhalten denselben Beweisstandard, ob das Programm öffentlich, zugewiesen oder partnerexklusiv ist.",
     ctaPrimary: "Zertifikat verifizieren",
     ctaSecondary: "Zertifikatsprogramme",
   },
@@ -318,7 +318,7 @@ const LEARN_TRUST_COPY_IT: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Dove andare ora",
     title: "Verifica una credenziale o avvia un programma pensato per essere verificabile.",
     body:
-      "Chiunque può verificare un certificato HenryCo dal suo codice — senza bisogno di un account. Gli studenti ricevono lo stesso livello di prova, che il programma sia pubblico, assegnato o riservato ai partner.",
+      "Chiunque può verificare un certificato Henry Onyx dal suo codice — senza bisogno di un account. Gli studenti ricevono lo stesso livello di prova, che il programma sia pubblico, assegnato o riservato ai partner.",
     ctaPrimary: "Verifica un certificato",
     ctaSecondary: "Programmi con certificato",
   },
@@ -358,7 +358,7 @@ const LEARN_TRUST_COPY_ZH: DeepPartial<LearnTrustCopy> = {
     eyebrow: "接下来",
     title: "验证一项资质,或开启一个生而可被核查的项目。",
     body:
-      "任何人都能通过 HenryCo 证书的代码进行验证 — 无需注册账号。无论项目是公开、指派还是合作方专属,学习者都享有同等水平的可证明性。",
+      "任何人都能通过 Henry Onyx 证书的代码进行验证 — 无需注册账号。无论项目是公开、指派还是合作方专属,学习者都享有同等水平的可证明性。",
     ctaPrimary: "验证证书",
     ctaSecondary: "证书项目",
   },
@@ -398,7 +398,7 @@ const LEARN_TRUST_COPY_HI: DeepPartial<LearnTrustCopy> = {
     eyebrow: "आगे क्या",
     title: "एक क्रेडेंशियल सत्यापित करें, या जाँच के लिए बना कार्यक्रम शुरू करें।",
     body:
-      "कोई भी HenryCo प्रमाणपत्र को उसके कोड से सत्यापित कर सकता है — खाते की ज़रूरत नहीं। शिक्षार्थियों को वही प्रमाण-स्तर मिलता है, चाहे कार्यक्रम सार्वजनिक हो, सौंपा गया हो या केवल साझेदार के लिए हो।",
+      "कोई भी Henry Onyx प्रमाणपत्र को उसके कोड से सत्यापित कर सकता है — खाते की ज़रूरत नहीं। शिक्षार्थियों को वही प्रमाण-स्तर मिलता है, चाहे कार्यक्रम सार्वजनिक हो, सौंपा गया हो या केवल साझेदार के लिए हो।",
     ctaPrimary: "प्रमाणपत्र सत्यापित करें",
     ctaSecondary: "प्रमाणपत्र कार्यक्रम",
   },
@@ -438,7 +438,7 @@ const LEARN_TRUST_COPY_IG: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Ebe ọzọ",
     title: "Nyochaa ihe akaebe, ma ọ bụ malite mmemme e mere ka enwee ike inyocha ya.",
     body:
-      "Onye ọ bụla nwere ike nyochaa akwụkwọ ikike HenryCo site na koodu ya — achọghị akaụntụ. Ndị mmụta na-enweta otu ụkpụrụ ihe akaebe ma mmemme ọ bụ ọha, e kenyere ya, ma ọ bụ naanị maka onye mmekọ.",
+      "Onye ọ bụla nwere ike nyochaa akwụkwọ ikike Henry Onyx site na koodu ya — achọghị akaụntụ. Ndị mmụta na-enweta otu ụkpụrụ ihe akaebe ma mmemme ọ bụ ọha, e kenyere ya, ma ọ bụ naanị maka onye mmekọ.",
     ctaPrimary: "Nyochaa akwụkwọ ikike",
     ctaSecondary: "Mmemme akwụkwọ ikike",
   },
@@ -478,7 +478,7 @@ const LEARN_TRUST_COPY_YO: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Ibo lẹhìnnà",
     title: "Yẹ ẹ̀rí kan wò, tàbí bẹ̀rẹ̀ ètò tí a kọ́ kí ó ṣeé yẹ̀wò.",
     body:
-      "Ẹnikẹ́ni lè yẹ ẹ̀rí HenryCo láti inú kóòdù rẹ̀ — láìjẹ́ pé akáyángá nilò. Àwọn akẹ́kọ̀ọ́ ń gba ìpele ẹ̀rí kan náà, bóyá ètò náà jẹ́ ti gbogbogbò, tí a yàn, tàbí ti alábàákẹ́gbẹ́.",
+      "Ẹnikẹ́ni lè yẹ ẹ̀rí Henry Onyx láti inú kóòdù rẹ̀ — láìjẹ́ pé akáyángá nilò. Àwọn akẹ́kọ̀ọ́ ń gba ìpele ẹ̀rí kan náà, bóyá ètò náà jẹ́ ti gbogbogbò, tí a yàn, tàbí ti alábàákẹ́gbẹ́.",
     ctaPrimary: "Ṣàyẹ̀wò ẹ̀rí",
     ctaSecondary: "Àwọn ètò ẹ̀rí",
   },
@@ -518,7 +518,7 @@ const LEARN_TRUST_COPY_HA: DeepPartial<LearnTrustCopy> = {
     eyebrow: "Inda za a tafi gaba",
     title: "Tabbatar da takarda, ko fara shirin da aka tsara don a iya duba shi.",
     body:
-      "Duk wani mutum zai iya tabbatar da takaddar shaida ta HenryCo daga lambar ta — ba a buƙatar asusu. Ɗaliban suna samun ma’aunin hujja iri ɗaya, ko shirin jama’a ne, ko aiki ne, ko na abokan haɗin gwiwa ne kawai.",
+      "Duk wani mutum zai iya tabbatar da takaddar shaida ta Henry Onyx daga lambar ta — ba a buƙatar asusu. Ɗaliban suna samun ma’aunin hujja iri ɗaya, ko shirin jama’a ne, ko aiki ne, ko na abokan haɗin gwiwa ne kawai.",
     ctaPrimary: "Tabbatar da takarda",
     ctaSecondary: "Shirye-shiryen takaddun shaida",
   },

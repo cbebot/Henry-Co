@@ -68,7 +68,7 @@ export const buildingModule: DashboardModule = {
     return {
       kicker: "Building",
       headline: "Construction and project delivery, coming soon.",
-      body: "Modern construction, delivery, and project confidence under the HenryCo standard.",
+      body: "Modern construction, delivery, and project confidence under the Henry Onyx standard.",
       action: { label: "Learn more", href: henryDomain("building") },
     };
   },

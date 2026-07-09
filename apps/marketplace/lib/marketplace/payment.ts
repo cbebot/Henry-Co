@@ -133,7 +133,7 @@ export function makeMarketplacePaymentReference() {
 
 export const getMarketplacePaymentRail = cache(async (): Promise<MarketplacePaymentRail> => {
   const fallbackInstructions =
-    "Transfer the exact checkout total with the displayed payment reference, then upload proof so HenryCo finance can verify the order.";
+    "Transfer the exact checkout total with the displayed payment reference, then upload proof so Henry Onyx finance can verify the order.";
 
   try {
     const admin = createAdminSupabase();

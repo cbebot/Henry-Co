@@ -487,13 +487,13 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
   metadata: {
     title: "Owner command center · Henry Onyx",
     description:
-      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.",
+      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one Henry Onyx HQ surface.",
   },
   hero: {
     eyebrow: "Central Owner Command Center",
     titleTemplate: "{company} company brain",
     description:
-      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.",
+      "Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one Henry Onyx HQ surface.",
     inviteStaff: "Invite staff",
     updateBrand: "Update brand settings",
   },
@@ -540,7 +540,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
   },
   divisionsPanel: {
     title: "Division control center",
-    description: "One health map for every live or future HenryCo division.",
+    description: "One health map for every live or future Henry Onyx division.",
     viewAll: "View all divisions",
     healthLabelTemplate: "{label} health · {alerts} alerts · {open} open items",
     revenueLabel: "Revenue",
@@ -662,7 +662,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     subdomains: {
       metadataTitle: "Division branding · Henry Onyx",
       metadataDescription:
-        "Subdomains, logos, and identity rows for every HenryCo division, edited centrally from the owner command center.",
+        "Subdomains, logos, and identity rows for every Henry Onyx division, edited centrally from the owner command center.",
       eyebrow: "Division Branding",
       title: "Subdomains, logos, and identity rows",
       description: "Each division row can now be updated centrally from the owner command center.",
@@ -993,13 +993,13 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centre de commande propriétaire · Henry Onyx",
     description:
-      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface HenryCo HQ.",
+      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "Centre de commande propriétaire central",
     titleTemplate: "Cerveau d’entreprise de {company}",
     description:
-      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface HenryCo HQ.",
+      "Opérations, finance, ressources humaines, marque, santé de livraison et conseils propriétaire à l’échelle de l’entreprise, réunis dans une seule surface Henry Onyx HQ.",
     inviteStaff: "Inviter du personnel",
     updateBrand: "Mettre à jour la marque",
   },
@@ -1044,7 +1044,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centre de contrôle des divisions",
-    description: "Une carte de santé pour chaque division HenryCo, actuelle ou future.",
+    description: "Une carte de santé pour chaque division Henry Onyx, actuelle ou future.",
     viewAll: "Voir toutes les divisions",
     healthLabelTemplate: "Santé {label} · {alerts} alertes · {open} dossiers ouverts",
     revenueLabel: "Revenu",
@@ -1167,7 +1167,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Marque des divisions · Henry Onyx",
       metadataDescription:
-        "Sous-domaines, logos et fiches d’identité pour chaque division HenryCo, modifiables depuis le centre de commande propriétaire.",
+        "Sous-domaines, logos et fiches d’identité pour chaque division Henry Onyx, modifiables depuis le centre de commande propriétaire.",
       eyebrow: "Marque des divisions",
       title: "Sous-domaines, logos et fiches d’identité",
       description:
@@ -1490,13 +1490,13 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centro de mando del propietario · Henry Onyx",
     description:
-      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie HenryCo HQ.",
+      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "Centro de mando central del propietario",
     titleTemplate: "Cerebro corporativo de {company}",
     description:
-      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie HenryCo HQ.",
+      "Operaciones, finanzas, plantilla, marca, salud de entrega y orientación al propietario en una sola superficie Henry Onyx HQ.",
     inviteStaff: "Invitar al personal",
     updateBrand: "Actualizar la marca",
   },
@@ -1541,7 +1541,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centro de control de divisiones",
-    description: "Un mapa de salud para cada división HenryCo, actual o futura.",
+    description: "Un mapa de salud para cada división Henry Onyx, actual o futura.",
     viewAll: "Ver todas las divisiones",
     healthLabelTemplate: "Salud {label} · {alerts} alertas · {open} pendientes",
     revenueLabel: "Ingresos",
@@ -1663,7 +1663,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Marca por división · Henry Onyx",
       metadataDescription:
-        "Subdominios, logos y filas de identidad de cada división HenryCo, editables desde el centro de mando del propietario.",
+        "Subdominios, logos y filas de identidad de cada división Henry Onyx, editables desde el centro de mando del propietario.",
       eyebrow: "Marca por división",
       title: "Subdominios, logos y filas de identidad",
       description:
@@ -1986,13 +1986,13 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centro de comando do proprietário · Henry Onyx",
     description:
-      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície HenryCo HQ.",
+      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "Centro de comando central do proprietário",
     titleTemplate: "Cérebro empresarial de {company}",
     description:
-      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície HenryCo HQ.",
+      "Operações, finanças, equipa, marca, saúde de entrega e orientação do proprietário numa só superfície Henry Onyx HQ.",
     inviteStaff: "Convidar pessoal",
     updateBrand: "Actualizar marca",
   },
@@ -2037,7 +2037,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centro de controlo de divisões",
-    description: "Um mapa de saúde para cada divisão HenryCo, actual ou futura.",
+    description: "Um mapa de saúde para cada divisão Henry Onyx, actual ou futura.",
     viewAll: "Ver todas as divisões",
     healthLabelTemplate: "Saúde {label} · {alerts} alertas · {open} pendentes",
     revenueLabel: "Receita",
@@ -2160,7 +2160,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Marca de divisão · Henry Onyx",
       metadataDescription:
-        "Subdomínios, logótipos e linhas de identidade de cada divisão HenryCo, editáveis no centro de comando do proprietário.",
+        "Subdomínios, logótipos e linhas de identidade de cada divisão Henry Onyx, editáveis no centro de comando do proprietário.",
       eyebrow: "Marca de divisão",
       title: "Subdomínios, logótipos e linhas de identidade",
       description:
@@ -2483,13 +2483,13 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "مركز قيادة المالك · Henry Onyx",
     description:
-      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من HenryCo HQ.",
+      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "مركز قيادة المالك المركزي",
     titleTemplate: "العقل المؤسسي لشركة {company}",
     description:
-      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من HenryCo HQ.",
+      "العمليات والمالية والموظفون والعلامة وصحة التسليم وإرشاد المالك على نطاق الشركة، كل ذلك في واجهة واحدة من Henry Onyx HQ.",
     inviteStaff: "دعوة موظفين",
     updateBrand: "تحديث إعدادات العلامة",
   },
@@ -2534,7 +2534,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "مركز التحكم بالأقسام",
-    description: "خريطة صحية لكل قسم من أقسام HenryCo حاليًا ومستقبلًا.",
+    description: "خريطة صحية لكل قسم من أقسام Henry Onyx حاليًا ومستقبلًا.",
     viewAll: "عرض كل الأقسام",
     healthLabelTemplate: "صحة {label} · {alerts} تنبيهات · {open} عناصر مفتوحة",
     revenueLabel: "الإيرادات",
@@ -2656,7 +2656,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "علامات الأقسام · Henry Onyx",
       metadataDescription:
-        "النطاقات الفرعية والشعارات وصفوف الهوية لكل أقسام HenryCo، قابلة للتحرير مركزيًا من مركز قيادة المالك.",
+        "النطاقات الفرعية والشعارات وصفوف الهوية لكل أقسام Henry Onyx، قابلة للتحرير مركزيًا من مركز قيادة المالك.",
       eyebrow: "علامة القسم",
       title: "النطاقات الفرعية والشعارات وصفوف الهوية",
       description: "يمكن الآن تحديث كل صف قسم مركزيًا من مركز قيادة المالك.",
@@ -2978,13 +2978,13 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Eigentümer-Kommandozentrale · Henry Onyx",
     description:
-      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen HenryCo-HQ-Oberfläche.",
+      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen Henry Onyx-HQ-Oberfläche.",
   },
   hero: {
     eyebrow: "Zentrale Eigentümer-Kommandozentrale",
     titleTemplate: "Unternehmensgehirn von {company}",
     description:
-      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen HenryCo-HQ-Oberfläche.",
+      "Unternehmensweite Operationen, Finanzen, Personal, Marke, Liefergesundheit und Eigentümer-Führung auf einer einzigen Henry Onyx-HQ-Oberfläche.",
     inviteStaff: "Mitarbeitende einladen",
     updateBrand: "Markeneinstellungen aktualisieren",
   },
@@ -3029,7 +3029,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Geschäftsbereichs-Kontrollzentrum",
-    description: "Eine Gesundheitskarte für jeden aktuellen oder künftigen HenryCo-Bereich.",
+    description: "Eine Gesundheitskarte für jeden aktuellen oder künftigen Henry Onyx-Bereich.",
     viewAll: "Alle Bereiche anzeigen",
     healthLabelTemplate: "{label}-Zustand · {alerts} Warnungen · {open} offene Punkte",
     revenueLabel: "Umsatz",
@@ -3153,7 +3153,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Bereichsbranding · Henry Onyx",
       metadataDescription:
-        "Subdomains, Logos und Identitätszeilen jedes HenryCo-Bereichs, zentral aus dem Eigentümer-Command-Center editierbar.",
+        "Subdomains, Logos und Identitätszeilen jedes Henry Onyx-Bereichs, zentral aus dem Eigentümer-Command-Center editierbar.",
       eyebrow: "Bereichsbranding",
       title: "Subdomains, Logos und Identitätszeilen",
       description:
@@ -3476,13 +3476,13 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Centro di comando del proprietario · Henry Onyx",
     description:
-      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie HenryCo HQ.",
+      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "Centro di comando centrale del proprietario",
     titleTemplate: "Cervello aziendale di {company}",
     description:
-      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie HenryCo HQ.",
+      "Operazioni, finanza, personale, brand, salute delle consegne e guida del proprietario a livello aziendale, riuniti in un’unica superficie Henry Onyx HQ.",
     inviteStaff: "Invita personale",
     updateBrand: "Aggiorna impostazioni brand",
   },
@@ -3527,7 +3527,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Centro di controllo delle divisioni",
-    description: "Una mappa di salute per ogni divisione HenryCo, attuale o futura.",
+    description: "Una mappa di salute per ogni divisione Henry Onyx, attuale o futura.",
     viewAll: "Vedi tutte le divisioni",
     healthLabelTemplate: "Salute {label} · {alerts} avvisi · {open} in sospeso",
     revenueLabel: "Ricavi",
@@ -3649,7 +3649,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Branding di divisione · Henry Onyx",
       metadataDescription:
-        "Sottodomini, loghi e righe identitarie di ogni divisione HenryCo, modificabili centralmente dal centro di comando del proprietario.",
+        "Sottodomini, loghi e righe identitarie di ogni divisione Henry Onyx, modificabili centralmente dal centro di comando del proprietario.",
       eyebrow: "Branding di divisione",
       title: "Sottodomini, loghi e righe identitarie",
       description:
@@ -3971,12 +3971,12 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
 const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "业主指挥中心 · Henry Onyx",
-    description: "在一个 HenryCo HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
+    description: "在一个 Henry Onyx HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
   },
   hero: {
     eyebrow: "中央业主指挥中心",
     titleTemplate: "{company} 公司大脑",
-    description: "在一个 HenryCo HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
+    description: "在一个 Henry Onyx HQ 界面中,统一掌握全公司的运营、财务、人员、品牌、交付健康以及业主指引。",
     inviteStaff: "邀请员工",
     updateBrand: "更新品牌设置",
   },
@@ -4021,7 +4021,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "业务部门控制中心",
-    description: "为每个当前或未来的 HenryCo 业务部门提供一张健康地图。",
+    description: "为每个当前或未来的 Henry Onyx 业务部门提供一张健康地图。",
     viewAll: "查看所有业务部门",
     healthLabelTemplate: "{label} 健康 · {alerts} 个告警 · {open} 个待处理",
     revenueLabel: "收入",
@@ -4134,7 +4134,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     },
     subdomains: {
       metadataTitle: "业务部门品牌 · Henry Onyx",
-      metadataDescription: "每个 HenryCo 业务部门的子域、Logo 与身份行,可在业主指挥中心集中编辑。",
+      metadataDescription: "每个 Henry Onyx 业务部门的子域、Logo 与身份行,可在业主指挥中心集中编辑。",
       eyebrow: "业务部门品牌",
       title: "子域、Logo 与身份行",
       description: "每条业务部门行现在均可在业主指挥中心集中更新。",
@@ -4454,13 +4454,13 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "मालिक कमांड सेंटर · Henry Onyx",
     description:
-      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही HenryCo HQ सतह पर।",
+      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही Henry Onyx HQ सतह पर।",
   },
   hero: {
     eyebrow: "केंद्रीय मालिक कमांड सेंटर",
     titleTemplate: "{company} कंपनी का दिमाग",
     description:
-      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही HenryCo HQ सतह पर।",
+      "कंपनी-व्यापी संचालन, वित्त, स्टाफिंग, ब्रांड, डिलीवरी स्वास्थ्य और मालिक मार्गदर्शन एक ही Henry Onyx HQ सतह पर।",
     inviteStaff: "स्टाफ़ आमंत्रित करें",
     updateBrand: "ब्रांड सेटिंग्स अपडेट करें",
   },
@@ -4505,7 +4505,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "डिवीज़न नियंत्रण केंद्र",
-    description: "हर वर्तमान या भविष्य के HenryCo डिवीज़न के लिए एक स्वास्थ्य मानचित्र।",
+    description: "हर वर्तमान या भविष्य के Henry Onyx डिवीज़न के लिए एक स्वास्थ्य मानचित्र।",
     viewAll: "सभी डिवीज़न देखें",
     healthLabelTemplate: "{label} स्वास्थ्य · {alerts} अलर्ट · {open} खुले कार्य",
     revenueLabel: "राजस्व",
@@ -4628,7 +4628,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "डिवीज़न ब्रांडिंग · Henry Onyx",
       metadataDescription:
-        "प्रत्येक HenryCo डिवीज़न के सबडोमेन, लोगो और पहचान पंक्तियाँ — मालिक कमांड सेंटर से केंद्रीय रूप से संपादन योग्य।",
+        "प्रत्येक Henry Onyx डिवीज़न के सबडोमेन, लोगो और पहचान पंक्तियाँ — मालिक कमांड सेंटर से केंद्रीय रूप से संपादन योग्य।",
       eyebrow: "डिवीज़न ब्रांडिंग",
       title: "सबडोमेन, लोगो और पहचान पंक्तियाँ",
       description:
@@ -4951,13 +4951,13 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Ebe nchịkwa onye nwe · Henry Onyx",
     description:
-      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu HenryCo HQ.",
+      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "Ebe nchịkwa etiti onye nwe",
     titleTemplate: "Ụbụrụ ụlọ ọrụ {company}",
     description:
-      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu HenryCo HQ.",
+      "Ọrụ ụlọ ọrụ niile, ego, ndị ọrụ, akara, ahụike nnyefe, na nduzi onye nwe n'otu elu Henry Onyx HQ.",
     inviteStaff: "Kpọọ ndị ọrụ",
     updateBrand: "Melite ntọala akara",
   },
@@ -5002,7 +5002,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Ebe nchịkwa ngalaba",
-    description: "Otu map ahụike maka ngalaba HenryCo ọ bụla, ugbu a ma ọ bụ n'ọdịnihu.",
+    description: "Otu map ahụike maka ngalaba Henry Onyx ọ bụla, ugbu a ma ọ bụ n'ọdịnihu.",
     viewAll: "Lelee ngalaba niile",
     healthLabelTemplate: "Ahụike {label} · {alerts} mkpọsa · {open} ihe emeghe",
     revenueLabel: "Ego batara",
@@ -5125,7 +5125,7 @@ const HUB_OWNER_COPY_IG: DeepPartial<HubOwnerCopy> = {
     subdomains: {
       metadataTitle: "Akara ngalaba · Henry Onyx",
       metadataDescription:
-        "Subdomain, akara ngosi, na ahịrị njirimara maka ngalaba HenryCo ọ bụla, enwere ike idezi n'etiti site na ebe nchịkwa onye nwe.",
+        "Subdomain, akara ngosi, na ahịrị njirimara maka ngalaba Henry Onyx ọ bụla, enwere ike idezi n'etiti site na ebe nchịkwa onye nwe.",
       eyebrow: "Akara ngalaba",
       title: "Subdomain, akara ngosi, na ahịrị njirimara",
       description:
@@ -5244,13 +5244,13 @@ const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Ibùdó àṣẹ onílé · Henry Onyx",
     description:
-      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ HenryCo HQ kan ṣoṣo.",
+      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ Henry Onyx HQ kan ṣoṣo.",
   },
   hero: {
     eyebrow: "Ibùdó àṣẹ àárín onílé",
     titleTemplate: "Ọpọlọ ilé-iṣẹ́ {company}",
     description:
-      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ HenryCo HQ kan ṣoṣo.",
+      "Ìṣiṣẹ́ gbogbo ilé-iṣẹ́, ìnáwó, òṣìṣẹ́, àmì-ẹ̀rí, ìlera ìfijíṣẹ́, àti ìtọ́sọ́nà onílé ní orí ojú-òṣẹ́ Henry Onyx HQ kan ṣoṣo.",
     inviteStaff: "Pe òṣìṣẹ́",
     updateBrand: "Tún ètò àmì-ẹ̀rí ṣe",
   },
@@ -5295,7 +5295,7 @@ const HUB_OWNER_COPY_YO: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Ibùdó ìṣàkóso ìpín",
-    description: "Aworan ìlera kan fún gbogbo ìpín HenryCo, lọ́wọ́lọ́wọ́ tàbí ọjọ́ ọ̀la.",
+    description: "Aworan ìlera kan fún gbogbo ìpín Henry Onyx, lọ́wọ́lọ́wọ́ tàbí ọjọ́ ọ̀la.",
     viewAll: "Wo gbogbo ìpín",
     healthLabelTemplate: "Ìlera {label} · {alerts} ìkìlọ̀ · {open} àwọn iṣẹ́ tó ṣí sílẹ̀",
     revenueLabel: "Owó",
@@ -5396,13 +5396,13 @@ const HUB_OWNER_COPY_HA: DeepPartial<HubOwnerCopy> = {
   metadata: {
     title: "Cibiyar umarni ta mai kamfani · Henry Onyx",
     description:
-      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na HenryCo HQ.",
+      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na Henry Onyx HQ.",
   },
   hero: {
     eyebrow: "Cibiyar umarni ta tsakiya ta mai kamfani",
     titleTemplate: "Kwakwalwar kamfanin {company}",
     description:
-      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na HenryCo HQ.",
+      "Aiyukan kamfani gabaki ɗaya, kuɗi, ma’aikata, alama, lafiyar bayarwa, da jagorancin mai kamfani a fuska guda na Henry Onyx HQ.",
     inviteStaff: "Gayyaci ma’aikata",
     updateBrand: "Sabunta saitin alama",
   },
@@ -5447,7 +5447,7 @@ const HUB_OWNER_COPY_HA: DeepPartial<HubOwnerCopy> = {
   },
   divisionsPanel: {
     title: "Cibiyar sarrafa sashe",
-    description: "Taswirar lafiya guda ga kowane sashe na HenryCo, na yanzu ko na gaba.",
+    description: "Taswirar lafiya guda ga kowane sashe na Henry Onyx, na yanzu ko na gaba.",
     viewAll: "Duba dukkan sashe",
     healthLabelTemplate: "Lafiyar {label} · {alerts} faɗakarwa · {open} buɗaɗɗun abubuwa",
     revenueLabel: "Kuɗi",
