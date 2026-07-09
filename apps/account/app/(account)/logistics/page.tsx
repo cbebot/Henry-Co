@@ -10,6 +10,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   getLogisticsSnapshotForAccountUser,
@@ -252,7 +253,13 @@ export default async function LogisticsPage() {
           }}
         />
       }
-      nextStep={nextStep}
+      nextStep={
+        <>
+          {/* SP6: division-scoped resume chip — renders only when a REAL pending journey exists here. */}
+          <DivisionResumeChip division="logistics" userId={user.id} />
+          {nextStep}
+        </>
+      }
       sections={[
         {
           id: "acct-log-map",

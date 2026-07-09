@@ -10,6 +10,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import {
   getCareBookings,
   getDivisionActivity,
@@ -292,6 +293,9 @@ export default async function CarePage({
   return (
     <DivisionLanding
       className="acct-care acct-fade-in"
+      /* SP6: division-scoped resume chip — renders only when a REAL pending
+         care journey exists for this viewer. */
+      nextStep={<DivisionResumeChip division="care" userId={user.id} />}
       hero={
         <HeroCard
           variant="paired"

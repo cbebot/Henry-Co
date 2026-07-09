@@ -14,6 +14,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import { getDivisionActivity } from "@/lib/division-data";
 import { getLearnAccountSummary } from "@/lib/learn-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -364,7 +365,13 @@ export default async function LearnPage() {
           }
         />
       }
-      nextStep={nextStep}
+      nextStep={
+        <>
+          {/* SP6: division-scoped resume chip — renders only when a REAL pending journey exists here. */}
+          <DivisionResumeChip division="learn" userId={user.id} />
+          {nextStep}
+        </>
+      }
       sections={[
         {
           id: "acct-lrn-courses",
