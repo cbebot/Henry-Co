@@ -13,6 +13,8 @@ import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyListingCard } from "@/components/property/ui";
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { PropertySearchBar } from "@/components/property/property-search-bar";
+import { PROPERTY_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { getPropertyHomeData } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getPropertyPublicCopy } from "@/lib/public-copy";
@@ -65,6 +67,21 @@ export default async function PropertyHomePage() {
     getPropertyViewer(),
   ]);
   const copy = getPropertyPublicCopy(locale);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // AWARE-SP5: never recruit someone who already lists — an agent's "submit a
+  // property" CTA becomes their workspace (the same tested matrix the chrome
+  // uses).
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    PROPERTY_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("property", standing);
+  const isAgent = standing.kind === "operator";
+  const submitCta = (fallbackLabel: string) =>
+    isAgent
+      ? { href: plan.recruit.href, label: t(plan.recruit.label) }
+      : { href: "/submit", label: fallbackLabel };
 
   const approvedListings = snapshot.listings.filter(
     (listing) => listing.status === "approved" || listing.status === "published"
@@ -453,10 +470,10 @@ export default async function PropertyHomePage() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
               <Link
-                href="/submit"
+                href={submitCta(copy.home.featuredEmpty.submitCta).href}
                 className="inline-flex items-center gap-1.5 px-1 text-[13px] font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
               >
-                {copy.home.featuredEmpty.submitCta}
+                {submitCta(copy.home.featuredEmpty.submitCta).label}
               </Link>
             </div>
           </div>
@@ -774,10 +791,10 @@ export default async function PropertyHomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/submit"
+                href={submitCta(copy.home.closingCta.submitCta).href}
                 className="property-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-semibold sm:w-auto"
               >
-                {copy.home.closingCta.submitCta}
+                {submitCta(copy.home.closingCta.submitCta).label}
               </Link>
             </div>
           </div>

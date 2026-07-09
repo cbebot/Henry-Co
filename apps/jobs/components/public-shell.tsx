@@ -121,12 +121,14 @@ export async function PublicShell({
               showSignOut
               buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
               dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
+              // AWARE-SP5: the workspace rides the chip's unified
+              // workspaceHref contract (leads the menu); the recruit link
+              // ("I'm hiring") is still dropped for people who already hire.
+              workspaceHref={standing.kind === "operator" ? plan.workspace?.href : undefined}
+              workspaceLabel={
+                standing.kind === "operator" && plan.workspace ? t(plan.workspace.label) : undefined
+              }
               menuItems={[
-                // AWARE-SP1: employers get their workspace first; the recruit
-                // link ("I'm hiring") is dropped for people who already hire.
-                ...(standing.kind === "operator"
-                  ? [{ label: t("Your employer workspace"), href: "/employer" }]
-                  : []),
                 { label: copy.shell.candidateHome, href: "/candidate" },
                 { label: copy.shell.applications, href: "/candidate/applications" },
                 { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" },

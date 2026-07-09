@@ -102,12 +102,12 @@ export function LearnSiteHeaderClient({
                 redirectTo: "/",
               });
             }}
+            // AWARE-SP5: the instructor console rides the chip's unified
+            // workspaceHref contract (leads the menu); the "teach with us"
+            // recruit link stays dropped for people who already teach.
+            workspaceHref={operatorMenuItem?.href}
+            workspaceLabel={operatorMenuItem?.label}
             menuItems={[
-              // AWARE-SP3: an instructor gets their console first; the
-              // "teach with us" recruit link is dropped for people who teach.
-              ...(operatorMenuItem
-                ? [{ label: operatorMenuItem.label, href: operatorMenuItem.href }]
-                : []),
               { label: t("My courses"), href: "/learner/courses" },
               { label: t("Browse catalog"), href: "/courses" },
               ...(operatorMenuItem

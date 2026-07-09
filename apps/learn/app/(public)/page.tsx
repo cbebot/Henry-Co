@@ -12,6 +12,7 @@ import {
   Section,
   SectionHeader,
 } from "@henryco/ui/public-design";
+import { LEARN_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { CourseCard, PathCard } from "@/components/learn/ui";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getPublicAcademyData } from "@/lib/learn/data";
@@ -34,6 +35,16 @@ export default async function HomePage() {
   ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const heroFirstName = learnHeroFirstName(viewer);
+
+  // AWARE-SP5: never recruit someone who already teaches — an instructor's
+  // "teach with us" CTA becomes their console (same tested matrix the chrome
+  // uses).
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    LEARN_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("learn", standing);
+  const isInstructor = standing.kind === "operator";
   const featuredCourses = academy.courses.filter((item) => item.featured).slice(0, 4);
   const featuredPaths = academy.paths.filter((item) => item.featured).slice(0, 3);
   const pathItemCounts = new Map(
@@ -205,8 +216,12 @@ export default async function HomePage() {
               {t("We review every application by hand. Approval is not automatic. Strong candidates move through identity checks, quality expectations, and onboarding—not a self-serve creator rush.")}
             </Lede>
             <div className="mt-8 flex flex-wrap gap-3">
-              <PublicCTA href="/teach" variant="primary" trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}>
-                {t("Start application")}
+              <PublicCTA
+                href={isInstructor ? plan.recruit.href : "/teach"}
+                variant="primary"
+                trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
+              >
+                {isInstructor ? t(plan.recruit.label) : t("Start application")}
               </PublicCTA>
               <PublicCTA href="/trust" variant="secondary">
                 {t("Standards & trust")}

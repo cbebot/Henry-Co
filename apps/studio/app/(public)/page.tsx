@@ -12,7 +12,9 @@ import {
   Section,
   SectionHeader,
 } from "@henryco/ui/public-design";
+import { STUDIO_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { getStudioCatalog } from "@/lib/studio/catalog";
+import { getStudioViewer } from "@/lib/studio/auth";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 
 /**
@@ -29,9 +31,22 @@ import { getStudioPublicLocale } from "@/lib/locale-server";
  * strings; no hardcoded domains.
  */
 export default async function StudioHomePage() {
-  const catalog = await getStudioCatalog();
-  const locale = await getStudioPublicLocale();
+  const [catalog, locale, viewer] = await Promise.all([
+    getStudioCatalog(),
+    getStudioPublicLocale(),
+    getStudioViewer(),
+  ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // AWARE-SP5: never recruit someone who already delivers — a studio team
+  // member's "start a brief" CTA becomes their project console (the same
+  // tested matrix the chrome uses).
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    STUDIO_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("studio", standing);
+  const isTeam = standing.kind === "operator";
 
   const proof = (n: number) => (n > 0 ? String(n) : null);
   const featuredCases = catalog.caseStudies.slice(0, 3);
@@ -65,12 +80,12 @@ export default async function StudioHomePage() {
               </Lede>
               <div className="mt-9 flex flex-wrap items-center gap-3 home-rise home-delay-3">
                 <PublicCTA
-                  href="/request"
+                  href={isTeam ? plan.recruit.href : "/request"}
                   variant="primary"
                   size="lg"
                   trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
                 >
-                  {t("Start a brief")}
+                  {isTeam ? t(plan.recruit.label) : t("Start a brief")}
                 </PublicCTA>
                 <PublicCTA href="/work" variant="secondary" size="lg">
                   {t("See our work")}
@@ -248,12 +263,12 @@ export default async function StudioHomePage() {
             </Body>
           </div>
           <PublicCTA
-            href="/request"
+            href={isTeam ? plan.recruit.href : "/request"}
             variant="primary"
             size="lg"
             trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
           >
-            {t("Start a brief")}
+            {isTeam ? t(plan.recruit.label) : t("Start a brief")}
           </PublicCTA>
         </div>
       </Section>

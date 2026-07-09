@@ -102,12 +102,17 @@ export default async function PublicLayout({ children }: { children: React.React
             showSignOut
             buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
             dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
+            // AWARE-SP5: the project console rides the chip's unified
+            // workspaceHref contract (leads the menu); the recruit link is
+            // dropped for team members — they don't start briefs, they run them.
+            workspaceHref={standing.kind === "operator" ? plan.workspace?.href : undefined}
+            workspaceLabel={
+              standing.kind === "operator" && plan.workspace ? t(plan.workspace.label) : undefined
+            }
             menuItems={[
-              // AWARE-SP3: a studio team member gets their project console first.
               ...(standing.kind === "operator"
-                ? [{ label: t(plan.workspace!.label), href: plan.workspace!.href }]
-                : []),
-              { label: t("Start a project"), href: "/request" },
+                ? []
+                : [{ label: t("Start a project"), href: "/request" }]),
               { label: t("Pick a project type"), href: "/pick" },
               { label: t("Packages"), href: "/pricing" },
               { label: t("Studio in your account"), href: `${accountUrl}?ref=studio-nav` },
