@@ -89,14 +89,18 @@ export function mapCareSupportStatusToAccountStatus(status: string | null | unde
 }
 
 /**
- * NUMBER-PURGE + SINGLE-SOURCE (owner 2026-07-08): raw company numbers never
- * render anywhere; every chat affordance builds its ONE masked wa.me href
- * HERE. Precedence: an owner-editable CMS value (company/division settings)
- * when the surface has one wired, falling back to the single code constant
- * COMPANY.group.supportPhone. Change the CMS value (or that one constant)
- * and every WhatsApp link in the ecosystem follows.
+ * NUMBER-PURGE + SINGLE-SOURCE (owner 2026-07-08, HARDENED 2026-07-10): raw
+ * company numbers never render anywhere; every chat affordance builds its ONE
+ * masked wa.me href HERE — and there is exactly ONE source: the code constant
+ * `COMPANY.group.supportPhone` (packages/config/company.ts). The owner found
+ * divisions showing DIFFERENT WhatsApp numbers because callers threaded
+ * per-division CMS values (care payment_support_whatsapp / payment_whatsapp /
+ * support_phone, studio platform settings, …) through the old `override`
+ * param. The param is now ACCEPTED-BUT-IGNORED (kept so legacy call sites
+ * compile) — no CMS row or division config can fragment the number again.
+ * Changing the company number is a single edit to that one constant.
  */
-export function getSupportWhatsAppHref(override?: string | null): string {
-  const digits = String(override || COMPANY.group.supportPhone).replace(/[^0-9]/g, "");
+export function getSupportWhatsAppHref(_ignoredLegacyOverride?: string | null): string {
+  const digits = String(COMPANY.group.supportPhone).replace(/[^0-9]/g, "");
   return `https://wa.me/${digits}`;
 }

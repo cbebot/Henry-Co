@@ -83,9 +83,12 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   const trackingCodeLabel = await tx("Tracking code");
   const laneLabel = await tx("Lane");
   const indicativeTotalLabel = await tx("Indicative total");
-  const paymentReferenceLabel = input.mode === "book" ? await tx("Payment reference") : null;
+  // NO-PROOF (owner 2026-07-10): manual bank transfer is retired ecosystem-wide
+  // — payment rides the automated account rail, so the email no longer
+  // instructs a transfer reference.
+  const paymentReferenceLabel = null;
   const invoiceNote = input.mode === "book"
-    ? await tx("A Henry Onyx account invoice has been opened for this booking; use the tracking code as the transfer reference if paying by bank transfer.")
+    ? await tx("An invoice for this booking has been opened in your Henry Onyx account — settle it there in one step.")
     : null;
   const typicalWindowPrefix = await tx("Typical window");
   const hoursWord = await tx("hours (estimate, not a guarantee).");

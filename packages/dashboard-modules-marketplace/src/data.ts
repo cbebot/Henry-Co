@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient } from "@henryco/data";
+import { createDataAdminClient, loadOperatorMembership } from "@henryco/data";
 import { getDivisionUrl } from "@henryco/config";
 import { listSavedItems } from "@henryco/cart-saved-items/server";
 import type { SavedItemRecord } from "@henryco/cart-saved-items";
@@ -123,7 +123,7 @@ export async function loadMarketplaceSnapshot(
     (item) => item.division === "marketplace",
   );
 
-  const vendorStatus = await readVendorStatus(client, userId).catch(() => null);
+  const vendorStatus = await readVendorStatus(client, viewer).catch(() => null);
 
   return {
     ordersInFlight,
@@ -135,11 +135,36 @@ export async function loadMarketplaceSnapshot(
   };
 }
 
+/**
+ * Vendor standing, resolvable INDEPENDENTLY of the customer snapshot — a
+ * membership vendor is viewer.kind="staff", which nulls the snapshot, so the
+ * seller window must never depend on it.
+ */
+export async function loadVendorStatus(
+  viewer: UnifiedViewer,
+): Promise<MarketplaceVendorStatus | null> {
+  if (!viewer.user?.id) return null;
+  const client = createDataAdminClient();
+  return readVendorStatus(client, viewer).catch(() => null);
+}
+
 async function readVendorStatus(
   client: ReturnType<typeof createDataAdminClient>,
-  userId: string,
+  viewer: UnifiedViewer,
 ): Promise<MarketplaceVendorStatus | null> {
-  const [applicationRes, storeRes] = await Promise.all([
+  const userId = viewer.user.id;
+
+  // AWARE-FIX (owner report 2026-07-10): vendor TRUTH is the granted
+  // `marketplace_role_memberships` row — the SAME shared predicate the
+  // marketplace app and the aware chrome use. The previous check looked only
+  // at `marketplace_vendors.owner_user_id`, so a REAL vendor whose seat is a
+  // membership (team member / email-claimed) was shown "Become a seller".
+  const [membership, applicationRes, ownedStoreRes] = await Promise.all([
+    loadOperatorMembership(viewer, {
+      table: "marketplace_role_memberships",
+      division: "marketplace",
+      workspacePath: "/vendor",
+    }).catch(() => null),
     client
       .from("marketplace_vendor_applications")
       .select("status")
@@ -156,19 +181,36 @@ async function readVendorStatus(
       .maybeSingle(),
   ]);
 
-  const hasApplication = Boolean(applicationRes.data);
-  const store = storeRes.data;
+  const vendorMembership = membership?.roles.includes("vendor") ? membership : null;
 
-  if (!hasApplication && !store) {
+  // Enrich with the store the membership actually scopes to (scope_id = the
+  // vendor id) — falls back to the legacy owner_user_id lookup.
+  let store = ownedStoreRes.data as { slug: string; name: string; status: string } | null;
+  if (!store && vendorMembership && vendorMembership.scopeIds.length > 0) {
+    const scoped = await client
+      .from("marketplace_vendors")
+      .select("slug, name, status")
+      .in("id", vendorMembership.scopeIds)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    store = (scoped.data as { slug: string; name: string; status: string } | null) ?? null;
+  }
+
+  const hasApplication = Boolean(applicationRes.data);
+
+  if (!vendorMembership && !hasApplication && !store) {
     return null;
   }
 
   return {
-    hasApplication,
-    applicationStatus: applicationRes.data?.status ?? null,
+    hasApplication: hasApplication || Boolean(vendorMembership),
+    applicationStatus: applicationRes.data?.status ?? (vendorMembership ? "approved" : null),
     storeSlug: store?.slug ?? null,
     storeName: store?.name ?? null,
-    storeIsActive: store?.status === "active",
+    // A granted, active vendor membership IS active standing — even when the
+    // store row is keyed to a different owner (team seats, email claims).
+    storeIsActive: store?.status === "active" || Boolean(vendorMembership),
   };
 }
 

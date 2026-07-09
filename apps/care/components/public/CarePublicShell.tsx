@@ -118,7 +118,7 @@ export default async function CarePublicShell({ children }: { children: ReactNod
             ],
           },
         ]}
-        support={{ email: publicCare.supportEmail, phone: publicCare.supportPhone }}
+        support={{ email: publicCare.supportEmail }}
       />
     </div>
   );

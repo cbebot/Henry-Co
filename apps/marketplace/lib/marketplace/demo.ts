@@ -101,7 +101,7 @@ export const demoVendors: MarketplaceVendor[] = [
     badges: ["Henry Onyx verified", "Fast dispatch", "Concierge support"],
     ownerType: "company",
     supportEmail: "marketplace@henryonyx.com",
-    supportPhone: "+2349133957084",
+    supportPhone: "+2340000000000",
   },
   {
     id: "vendor-luminous",
@@ -318,7 +318,7 @@ export const demoBuyerAddresses: MarketplaceAddress[] = [
     id: "addr-1",
     label: "Home",
     recipient: "Henry Buyer",
-    phone: "+2349133957084",
+    phone: "+2340000000000",
     line1: "14 Admiralty Way",
     line2: "Lekki Phase 1",
     city: "Lagos",

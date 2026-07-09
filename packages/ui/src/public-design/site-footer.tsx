@@ -155,7 +155,11 @@ export function PublicSiteFooter({
 }: {
   copy: PublicSiteFooterCopy;
   columns: SiteFooterColumn[];
-  support?: { email?: string | null; phone?: string | null };
+  /** NUMBER-PURGE (2026-07-10): no `phone` field — passing a per-division
+   *  number here serialized the raw digits into every page's RSC payload
+   *  (crawlable) AND violated the one-source rule. The WhatsApp link below
+   *  always rides `getSupportWhatsAppHref()` — the single company source. */
+  support?: { email?: string | null };
   divisions?: PublicDivisionLink[];
   brandName?: string;
   legalName?: string;
@@ -197,34 +201,31 @@ export function PublicSiteFooter({
           <span aria-hidden className="h-px w-16 bg-[color:var(--home-accent)]" />
           {copy.statement ? <p className="home-lede max-w-xl">{copy.statement}</p> : null}
 
-          {support?.email || support?.phone ? (
+          {support?.email ? (
             <div className="mt-1 flex flex-col gap-2 text-sm text-[color:var(--home-ink-65)] sm:flex-row sm:gap-6">
-              {support.email ? (
-                <a
-                  href={`mailto:${support.email}`}
-                  className="inline-flex items-center gap-2 font-medium text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)] home-focus"
-                >
-                  <Mail aria-hidden className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-                  {support.email}
-                </a>
-              ) : null}
-              {support.phone ? (
-                /* NUMBER-PURGE (owner 2026-07-08): raw company numbers are
-                 * never rendered anywhere in the ecosystem — Google indexed
-                 * them and it reads unprofessional. A phone value becomes a
-                 * MASKED WhatsApp deep link: the label is the brand word
-                 * (proper noun — locale-exempt), the digits live only in the
-                 * href, never in visible text. */
-                <a
-                  href={getSupportWhatsAppHref(support.phone)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 transition-colors hover:text-[color:var(--home-ink)] home-focus"
-                >
-                  <Phone aria-hidden className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-                  WhatsApp
-                </a>
-              ) : null}
+              <a
+                href={`mailto:${support.email}`}
+                className="inline-flex items-center gap-2 font-medium text-[color:var(--home-ink)] transition-colors hover:text-[color:var(--home-accent-text)] home-focus"
+              >
+                <Mail aria-hidden className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
+                {support.email}
+              </a>
+              {/* NUMBER-PURGE (owner 2026-07-08/10): raw company numbers are
+               * never rendered anywhere in the ecosystem — Google indexed
+               * them and it reads unprofessional. The WhatsApp deep link is
+               * MASKED (digits live only in the href, label is the brand
+               * word — proper noun, locale-exempt) and always rides the ONE
+               * company source (getSupportWhatsAppHref with no override), so
+               * updating the number is a single config edit. */}
+              <a
+                href={getSupportWhatsAppHref()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 transition-colors hover:text-[color:var(--home-ink)] home-focus"
+              >
+                <Phone aria-hidden className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
+                WhatsApp
+              </a>
             </div>
           ) : null}
 
