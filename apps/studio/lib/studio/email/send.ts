@@ -596,6 +596,38 @@ export async function sendDepositReceivedNotifications(input: {
   });
 }
 
+/**
+ * EMAIL-TPL-02 — the generic payment receipt for NON-deposit payments
+ * (milestone / balance / card-rail settlements). The deposit has its own
+ * richer email above; before this, a client paying a milestone heard nothing.
+ */
+export async function sendPaymentReceivedNotifications(input: {
+  lead: StudioLead;
+  project: StudioProject;
+  payment: StudioPayment;
+}) {
+  await renderAndSendEmail({
+    to: input.lead.normalizedEmail,
+    entityId: input.payment.id,
+    templateKey: "payment_received",
+    layout: {
+      subject: `Payment received • ${input.project.title}`,
+      eyebrow: "Payment received",
+      title: "Your payment has been recorded.",
+      intro:
+        "Henry Onyx Studio has confirmed this payment against your project and updated the payment record.",
+      highlightLabel: "Amount received",
+      highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
+      sections: [
+        { label: "Project", value: input.project.title },
+        { label: "Payment", value: input.payment.label },
+      ],
+      actionLabel: "Open project workspace",
+      actionHref: `${baseUrl()}/project/${input.project.id}?access=${input.project.accessKey}`,
+    },
+  });
+}
+
 export async function sendMilestoneReadyNotifications(input: {
   lead: StudioLead;
   proposal: StudioProposal;

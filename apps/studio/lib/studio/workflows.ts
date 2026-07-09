@@ -6,6 +6,7 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 import {
   addStudioNotificationRecord,
   sendDepositReceivedNotifications,
+  sendPaymentReceivedNotifications,
   sendFinalDeliveryNotifications,
   sendInquiryNotifications,
   sendMilestoneReadyNotifications,
@@ -782,6 +783,18 @@ export async function setPaymentStatus(input: {
         lead,
         proposal,
         project: updatedProject,
+        payment: updatedPayment,
+      });
+    }
+  } else if (input.status === "paid") {
+    // EMAIL-TPL-02: non-deposit payments (milestones / balances) previously
+    // flipped to paid in SILENCE — only the first deposit emailed the client.
+    // Every confirmed payment now sends the generic receipt.
+    const lead = snapshot.leads.find((item) => item.id === project.leadId);
+    if (lead) {
+      await sendPaymentReceivedNotifications({
+        lead,
+        project,
         payment: updatedPayment,
       });
     }

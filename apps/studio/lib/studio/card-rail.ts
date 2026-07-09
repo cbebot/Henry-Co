@@ -6,7 +6,8 @@ import type { PaymentProviderKey } from "@henryco/payment-router/types";
 import { getAccountUrl } from "@henryco/config";
 import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
-import { writeStudioLog } from "@/lib/studio/store";
+import { getStudioSnapshot, writeStudioLog } from "@/lib/studio/store";
+import { sendPaymentReceivedNotifications } from "@/lib/studio/email/send";
 import { studioChargeMinor } from "@/lib/studio/card-math";
 
 /**
@@ -201,5 +202,24 @@ export async function reconcileStudioCardPayment(payment: {
     success: true,
     details: { paymentId: payment.id, intentId: matched.id },
   });
+
+  // EMAIL-TPL-02: the card-rail settle previously flipped the payment to paid
+  // in SILENCE. Send the same payment-received receipt the manual finance path
+  // sends — AFTER the CAS committed, best-effort by construction (an email
+  // problem must never surface into the money path or the pay-page load).
+  try {
+    const snapshot = await getStudioSnapshot();
+    const paidPayment = snapshot.payments.find((item) => item.id === payment.id);
+    const project = paidPayment
+      ? snapshot.projects.find((item) => item.id === paidPayment.projectId)
+      : null;
+    const lead = project ? snapshot.leads.find((item) => item.id === project.leadId) : null;
+    if (paidPayment && project && lead) {
+      await sendPaymentReceivedNotifications({ lead, project, payment: paidPayment });
+    }
+  } catch {
+    /* best-effort — the settle already committed and is logged above */
+  }
+
   return "paid";
 }

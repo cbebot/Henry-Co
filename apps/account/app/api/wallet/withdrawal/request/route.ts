@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { normalizeAppLocaleSafe } from "@henryco/email";
 import { publishNotification } from "@henryco/notifications";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { createAdminSupabase } from "@/lib/supabase";
+import { sendAccountEmail } from "@/lib/email/send";
+import { withdrawalRequestedEmail } from "@/lib/email/templates";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { getPendingWithdrawalHoldKobo, getWalletSummary, getWithdrawalRequests } from "@/lib/account-data";
@@ -15,6 +18,45 @@ import {
   isMissingPostgrestResourceError,
   mapLegacyPayoutMethod,
 } from "@/lib/wallet-storage";
+
+/**
+ * EMAIL-TPL-01 — withdrawal-requested acknowledgement, dispatched AFTER the
+ * request row + activity log are committed. Best-effort by construction: any
+ * failure here is swallowed — an email problem must never fail a money
+ * request. Mirrors the wallet.funded webhook's preference gate
+ * (email_transactional !== false) and locale resolution.
+ */
+async function sendWithdrawalRequestedEmailBestEffort(
+  admin: ReturnType<typeof createAdminSupabase>,
+  userId: string,
+  amountNaira: number,
+) {
+  try {
+    const [{ data: profile }, { data: prefs }] = await Promise.all([
+      admin
+        .from("customer_profiles")
+        .select("full_name, email, language")
+        .eq("id", userId)
+        .maybeSingle(),
+      admin
+        .from("customer_preferences")
+        .select("email_transactional")
+        .eq("user_id", userId)
+        .maybeSingle(),
+    ]);
+    const email = (profile as { email?: string | null } | null)?.email;
+    const emailTransactional =
+      (prefs as { email_transactional?: boolean | null } | null)?.email_transactional !== false;
+    if (!email || !emailTransactional) return;
+    const name = (profile as { full_name?: string | null } | null)?.full_name || "";
+    const locale = normalizeAppLocaleSafe(
+      (profile as { language?: string | null } | null)?.language,
+    );
+    await sendAccountEmail(email, withdrawalRequestedEmail(name, amountNaira, locale));
+  } catch {
+    // best-effort — never let an email failure surface into the money path
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -223,6 +265,8 @@ export async function POST(request: Request) {
         publisher: "bridge:apps/account/app/api/wallet/withdrawal/request",
       });
 
+      await sendWithdrawalRequestedEmailBestEffort(admin, user.id, amountNaira);
+
       return NextResponse.json({ success: true, id: String((legacyRow as { id: string }).id) });
     }
 
@@ -255,6 +299,8 @@ export async function POST(request: Request) {
       relatedType: "wallet_withdrawal_request",
       publisher: "bridge:apps/account/app/api/wallet/withdrawal/request",
     });
+
+    await sendWithdrawalRequestedEmailBestEffort(admin, user.id, amountNaira);
 
     return NextResponse.json({ success: true, id: (row as { id: string }).id });
   } catch (error) {

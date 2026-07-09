@@ -60,6 +60,22 @@ function getEmailCopy(locale: AppLocale) {
       walletAmount: "Montant ajoute",
       walletBalance: "Nouveau solde",
       walletButton: "Voir le portefeuille",
+      withdrawalRequestedSubject: (amount: number) => `Demande de retrait recue — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Demande de retrait recue",
+      withdrawalRequestedIntro: (name: string) => `Bonjour ${name || "vous"}, votre demande de retrait est enregistree. Chaque paiement est verifie par la finance avant d'etre regle.`,
+      withdrawalAmount: "Montant demande",
+      withdrawalRequestedNote: "Aucune action n'est requise — vous recevrez un autre e-mail une fois le paiement effectue.",
+      withdrawalPaidSubject: (amount: number) => `Retrait paye — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Retrait paye",
+      withdrawalPaidIntro: (name: string) => `Bonjour ${name || "vous"}, votre retrait a ete verse sur votre compte bancaire.`,
+      withdrawalPaidAmount: "Montant paye",
+      withdrawalButton: "Voir les retraits",
+      refundSubject: (amount: number) => `Remboursement effectue — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Remboursement effectue",
+      refundIntro: (name: string) => `Bonjour ${name || "vous"}, votre remboursement a ete traite.`,
+      refundAmount: "Montant rembourse",
+      refundNote: "Les remboursements arrivent generalement sur le moyen de paiement d'origine sous quelques jours ouvres, selon votre banque.",
+      refundButton: "Voir les paiements",
     };
   }
 
@@ -90,6 +106,22 @@ function getEmailCopy(locale: AppLocale) {
       walletAmount: "Monto agregado",
       walletBalance: "Nuevo saldo",
       walletButton: "Ver billetera",
+      withdrawalRequestedSubject: (amount: number) => `Solicitud de retiro recibida — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Solicitud de retiro recibida",
+      withdrawalRequestedIntro: (name: string) => `Hola ${name || "alli"}, recibimos tu solicitud de retiro. Finanzas revisa cada pago antes de liquidarlo.`,
+      withdrawalAmount: "Monto solicitado",
+      withdrawalRequestedNote: "No necesitas hacer nada mas — recibiras otro correo cuando se pague.",
+      withdrawalPaidSubject: (amount: number) => `Retiro pagado — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Retiro pagado",
+      withdrawalPaidIntro: (name: string) => `Hola ${name || "alli"}, tu retiro fue pagado a tu cuenta bancaria.`,
+      withdrawalPaidAmount: "Monto pagado",
+      withdrawalButton: "Ver retiros",
+      refundSubject: (amount: number) => `Reembolso procesado — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Reembolso procesado",
+      refundIntro: (name: string) => `Hola ${name || "alli"}, tu reembolso fue procesado.`,
+      refundAmount: "Monto reembolsado",
+      refundNote: "Los reembolsos suelen llegar al metodo de pago original en unos dias habiles, segun tu banco.",
+      refundButton: "Ver pagos",
     };
   }
 
@@ -114,6 +146,22 @@ function getEmailCopy(locale: AppLocale) {
       securityEvent: "Evento",
       securityAction: "Se nao foi voce, altere a sua palavra-passe imediatamente e contacte o suporte.",
       securityButton: "Rever seguranca",
+      withdrawalRequestedSubject: (amount: number) => `Pedido de levantamento recebido — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Pedido de levantamento recebido",
+      withdrawalRequestedIntro: (name: string) => `Ola ${name || "voce"}, recebemos o seu pedido de levantamento. A equipa financeira reve cada pagamento antes de o liquidar.`,
+      withdrawalAmount: "Montante solicitado",
+      withdrawalRequestedNote: "Nao precisa de fazer mais nada — recebera outro e-mail quando for pago.",
+      withdrawalPaidSubject: (amount: number) => `Levantamento pago — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Levantamento pago",
+      withdrawalPaidIntro: (name: string) => `Ola ${name || "voce"}, o seu levantamento foi pago na sua conta bancaria.`,
+      withdrawalPaidAmount: "Montante pago",
+      withdrawalButton: "Ver levantamentos",
+      refundSubject: (amount: number) => `Reembolso processado — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Reembolso processado",
+      refundIntro: (name: string) => `Ola ${name || "voce"}, o seu reembolso foi processado.`,
+      refundAmount: "Montante reembolsado",
+      refundNote: "Os reembolsos costumam chegar ao metodo de pagamento original em poucos dias uteis, consoante o seu banco.",
+      refundButton: "Ver pagamentos",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} adicionados a sua carteira`,
       walletTitle: "Carteira carregada",
       walletIntro: (name: string) => `Ola ${name || "voce"}, foi adicionado dinheiro a sua carteira Henry Onyx.`,
@@ -144,6 +192,22 @@ function getEmailCopy(locale: AppLocale) {
       securityEvent: "الحدث",
       securityAction: "إذا لم تكن أنت، فغيّر كلمة المرور فورًا وتواصل مع الدعم.",
       securityButton: "مراجعة الأمان",
+      withdrawalRequestedSubject: (amount: number) => `تم استلام طلب السحب — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "تم استلام طلب السحب",
+      withdrawalRequestedIntro: (name: string) => `مرحبًا ${name || "هناك"}، استلمنا طلب السحب الخاص بك. تراجع الإدارة المالية كل عملية دفع قبل تسويتها.`,
+      withdrawalAmount: "المبلغ المطلوب",
+      withdrawalRequestedNote: "لا حاجة لأي إجراء إضافي — ستصلك رسالة أخرى عند إتمام الدفع.",
+      withdrawalPaidSubject: (amount: number) => `تم دفع السحب — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "تم دفع السحب",
+      withdrawalPaidIntro: (name: string) => `مرحبًا ${name || "هناك"}، تم تحويل مبلغ السحب إلى حسابك البنكي.`,
+      withdrawalPaidAmount: "المبلغ المدفوع",
+      withdrawalButton: "عرض السحوبات",
+      refundSubject: (amount: number) => `تمت معالجة الاسترداد — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "تمت معالجة الاسترداد",
+      refundIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت معالجة استرداد أموالك.`,
+      refundAmount: "المبلغ المسترد",
+      refundNote: "عادةً ما يصل المبلغ المسترد إلى وسيلة الدفع الأصلية خلال أيام عمل قليلة حسب البنك.",
+      refundButton: "عرض المدفوعات",
       walletSubject: (amount: number) => `تمت إضافة NGN ${formatNaira(amount, locale)} إلى محفظتك`,
       walletTitle: "تم تمويل المحفظة",
       walletIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت إضافة أموال إلى محفظة Henry Onyx الخاصة بك.`,
@@ -174,6 +238,22 @@ function getEmailCopy(locale: AppLocale) {
       securityEvent: "Ereignis",
       securityAction: "Wenn Sie das nicht waren, aendern Sie sofort Ihr Passwort und kontaktieren Sie den Support.",
       securityButton: "Sicherheit pruefen",
+      withdrawalRequestedSubject: (amount: number) => `Auszahlungsanfrage erhalten — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Auszahlungsanfrage erhalten",
+      withdrawalRequestedIntro: (name: string) => `Hallo ${name || "da"}, Ihre Auszahlungsanfrage ist eingegangen. Die Finanzabteilung prueft jede Auszahlung vor der Abwicklung.`,
+      withdrawalAmount: "Angeforderter Betrag",
+      withdrawalRequestedNote: "Es ist nichts weiter zu tun — Sie erhalten eine weitere E-Mail, sobald die Auszahlung erfolgt ist.",
+      withdrawalPaidSubject: (amount: number) => `Auszahlung erfolgt — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Auszahlung erfolgt",
+      withdrawalPaidIntro: (name: string) => `Hallo ${name || "da"}, Ihre Auszahlung wurde auf Ihr Bankkonto ueberwiesen.`,
+      withdrawalPaidAmount: "Ausgezahlter Betrag",
+      withdrawalButton: "Auszahlungen ansehen",
+      refundSubject: (amount: number) => `Rueckerstattung verarbeitet — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Rueckerstattung verarbeitet",
+      refundIntro: (name: string) => `Hallo ${name || "da"}, Ihre Rueckerstattung wurde verarbeitet.`,
+      refundAmount: "Erstatteter Betrag",
+      refundNote: "Rueckerstattungen erreichen die urspruengliche Zahlungsmethode in der Regel innerhalb weniger Werktage, abhaengig von Ihrer Bank.",
+      refundButton: "Zahlungen ansehen",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} wurden Ihrer Wallet gutgeschrieben`,
       walletTitle: "Wallet aufgeladen",
       walletIntro: (name: string) => `Hallo ${name || "da"}, Ihrem Henry Onyx Wallet wurden Mittel gutgeschrieben.`,
@@ -204,6 +284,22 @@ function getEmailCopy(locale: AppLocale) {
       securityEvent: "Evento",
       securityAction: "Se non eri tu, cambia subito la password e contatta il supporto.",
       securityButton: "Controlla sicurezza",
+      withdrawalRequestedSubject: (amount: number) => `Richiesta di prelievo ricevuta — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Richiesta di prelievo ricevuta",
+      withdrawalRequestedIntro: (name: string) => `Ciao ${name || "li"}, abbiamo ricevuto la tua richiesta di prelievo. La finanza verifica ogni pagamento prima della liquidazione.`,
+      withdrawalAmount: "Importo richiesto",
+      withdrawalRequestedNote: "Non devi fare altro — riceverai un'altra e-mail quando sara pagato.",
+      withdrawalPaidSubject: (amount: number) => `Prelievo pagato — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Prelievo pagato",
+      withdrawalPaidIntro: (name: string) => `Ciao ${name || "li"}, il tuo prelievo e stato versato sul tuo conto bancario.`,
+      withdrawalPaidAmount: "Importo pagato",
+      withdrawalButton: "Vedi prelievi",
+      refundSubject: (amount: number) => `Rimborso elaborato — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Rimborso elaborato",
+      refundIntro: (name: string) => `Ciao ${name || "li"}, il tuo rimborso e stato elaborato.`,
+      refundAmount: "Importo rimborsato",
+      refundNote: "I rimborsi arrivano di solito sul metodo di pagamento originale entro pochi giorni lavorativi, a seconda della banca.",
+      refundButton: "Vedi pagamenti",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} aggiunti al tuo wallet`,
       walletTitle: "Wallet ricaricato",
       walletIntro: (name: string) => `Ciao ${name || "li"}, del denaro e stato aggiunto al tuo Henry Onyx Wallet.`,
@@ -239,6 +335,22 @@ function getEmailCopy(locale: AppLocale) {
     walletAmount: "Amount added",
     walletBalance: "New balance",
     walletButton: "View wallet",
+    withdrawalRequestedSubject: (amount: number) => `Withdrawal request received — NGN ${formatNaira(amount, locale)}`,
+    withdrawalRequestedTitle: "Withdrawal request received",
+    withdrawalRequestedIntro: (name: string) => `${name ? `${name}, your` : "Your"} withdrawal request is in. Finance reviews every payout before it settles.`,
+    withdrawalAmount: "Amount requested",
+    withdrawalRequestedNote: "No further action is needed — you will get another email once it is paid.",
+    withdrawalPaidSubject: (amount: number) => `Withdrawal paid — NGN ${formatNaira(amount, locale)}`,
+    withdrawalPaidTitle: "Withdrawal paid",
+    withdrawalPaidIntro: (name: string) => `${name ? `${name}, your` : "Your"} withdrawal has been paid to your bank account.`,
+    withdrawalPaidAmount: "Amount paid",
+    withdrawalButton: "View withdrawals",
+      refundSubject: (amount: number) => `Refund processed — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Refund processed",
+      refundIntro: (name: string) => `${name ? `${name}, your` : "Your"} refund has been processed.`,
+      refundAmount: "Amount refunded",
+      refundNote: "Refunds usually arrive back on the original payment method within a few business days, depending on your bank.",
+      refundButton: "View payments",
   };
 }
 
@@ -356,6 +468,93 @@ export function walletFundedEmail(
       </div>
       <p style="text-align:center;margin-top:24px;">
         <a href="${ACCOUNT_ORIGIN}/wallet" class="btn">${copy.walletButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
+/**
+ * EMAIL-TPL-01 — withdrawal request acknowledgement. Sent best-effort AFTER
+ * the withdrawal request row is committed (never inside the money path); the
+ * amount shown is the requested figure, and the copy states plainly that
+ * finance reviews every payout before it settles.
+ */
+export function withdrawalRequestedEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.withdrawalRequestedSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.withdrawalRequestedTitle}</h1>
+      <p>${copy.withdrawalRequestedIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.withdrawalAmount}</div>
+        <div class="metric-value">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p>${copy.withdrawalRequestedNote}</p>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/wallet/withdrawals" class="btn">${copy.withdrawalButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
+/**
+ * EMAIL-TPL-02 — refund receipt. Dispatched by the payment webhook AFTER
+ * `apply_refund_webhook` commits the reversing entries and reports
+ * outcome=processed — best-effort, never inside the money path.
+ */
+export function refundProcessedEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.refundSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.refundTitle}</h1>
+      <p>${copy.refundIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.refundAmount}</div>
+        <div class="metric-value" style="color:#10B981;">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p>${copy.refundNote}</p>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/payments" class="btn">${copy.refundButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
+/**
+ * EMAIL-TPL-01 — withdrawal settlement receipt. NOT yet dispatched anywhere:
+ * the automatic payout rail (docs/v3/money/2026-07-06-automatic-withdrawal-
+ * payout-rail-design.md, stage W3) is design-stage, so there is no settlement
+ * transition to hook today. The template ships ready so the rail's webhook
+ * (after `post_withdrawal_settlement` commits and status flips to `paid`)
+ * only has to call it — mirroring the wallet.funded webhook pattern.
+ */
+export function withdrawalPaidEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.withdrawalPaidSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.withdrawalPaidTitle}</h1>
+      <p>${copy.withdrawalPaidIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.withdrawalPaidAmount}</div>
+        <div class="metric-value">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/wallet/withdrawals" class="btn">${copy.withdrawalButton}</a>
       </p>
     `, locale),
   };

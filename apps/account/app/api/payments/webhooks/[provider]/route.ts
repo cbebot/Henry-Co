@@ -1,9 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { normalizeAppLocaleSafe } from "@henryco/email";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createPaymentRouter } from "@henryco/payment-router";
 import type { PaymentProviderKey } from "@henryco/payment-router/types";
 import { emitPaymentEvent, intentEventForStatus } from "@/lib/payments/telemetry";
 import { callPaymentRpc } from "@/lib/payments/db";
+import { sendAccountEmail } from "@/lib/email/send";
+import { refundProcessedEmail } from "@/lib/email/templates";
 
 export const runtime = "nodejs";
 
@@ -56,12 +59,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const admin = createAdminSupabase();
   // Resolve the intent by provider_reference (recorded server-side at route time).
+  // user_id/amount are read-only context for the refund receipt email below —
+  // they change nothing about the money application itself.
   const intent = await admin
     .from("payment_intents")
-    .select("id")
+    .select("id, user_id, amount_minor")
     .eq("provider_reference", verified.value.providerReference)
     .single();
-  const intentRow = intent.data as { id: string } | null;
+  const intentRow = intent.data as {
+    id: string;
+    user_id?: string | null;
+    amount_minor?: number | null;
+  } | null;
   if (intent.error || !intentRow) {
     return NextResponse.json({ received: true }, { status: 200 }); // unknown reference — ack, do not leak
   }
@@ -97,6 +106,48 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
       if (result.intent_status === "refunded") {
         emitPaymentEvent("henry.payment.intent.refunded", { payload: { provider } });
+      }
+
+      // EMAIL-TPL-02: the refund receipt. Money was reversed and the customer
+      // previously heard NOTHING. Dispatched only on the delivery that applied
+      // (the RPC's idempotency means a redelivery never re-emails), AFTER the
+      // reversing entries committed, best-effort by construction — an email
+      // failure never changes the webhook's response.
+      if (refundEvent.outcome === "processed" && intentRow.user_id) {
+        try {
+          const [{ data: profile }, { data: prefs }] = await Promise.all([
+            admin
+              .from("customer_profiles")
+              .select("full_name, email, language")
+              .eq("id", intentRow.user_id)
+              .maybeSingle(),
+            admin
+              .from("customer_preferences")
+              .select("email_transactional")
+              .eq("user_id", intentRow.user_id)
+              .maybeSingle(),
+          ]);
+          const email = (profile as { email?: string | null } | null)?.email;
+          const emailTransactional =
+            (prefs as { email_transactional?: boolean | null } | null)?.email_transactional !==
+            false;
+          if (email && emailTransactional) {
+            const refundedMinor =
+              refundEvent.amountMinor ?? Number(intentRow.amount_minor ?? 0);
+            if (refundedMinor > 0) {
+              const name = (profile as { full_name?: string | null } | null)?.full_name || "";
+              const locale = normalizeAppLocaleSafe(
+                (profile as { language?: string | null } | null)?.language,
+              );
+              await sendAccountEmail(
+                email,
+                refundProcessedEmail(name, Math.round(refundedMinor / 100), locale),
+              );
+            }
+          }
+        } catch {
+          // best-effort — never let an email failure surface into the money path
+        }
       }
       return NextResponse.json({ received: true }, { status: 200 });
     }
