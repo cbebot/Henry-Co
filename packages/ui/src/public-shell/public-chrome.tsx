@@ -397,6 +397,13 @@ export function PublicChrome({
 
       {/* Mobile cluster */}
       <div className="flex items-center gap-1.5 lg:hidden">
+        {/* MOBILE IDENTITY (redesign 2026-07-08): identity and navigation
+            are different jobs — signed-in identity lives HERE in the bar
+            as the avatar chip (its own menu carries account / workspace /
+            settings / SIGN OUT), never inside the nav sheet, where the
+            sheet's close-on-tap wrapper made the menu — and logout —
+            unreachable. */}
+        {account?.user && accountMenu ? accountMenu : null}
         {extras}
         {showThemeToggle ? <ChromeThemeToggle t={t} /> : null}
         <button
@@ -482,7 +489,11 @@ export function PublicChrome({
 
         {account || auxLink || primaryCta ? (
           <div className="mt-4 flex flex-col gap-2 border-t border-[color:var(--home-line)] pt-4" onClick={closeDrawerAfterNav}>
-            {account ? (
+            {/* Signed-in identity lives in the BAR (avatar chip), not here —
+                this wrapper closes the sheet on any tap, which swallowed the
+                chip's menu (and made sign-out unreachable). The sheet keeps
+                only signed-OUT identity links, which SHOULD close it. */}
+            {account && !account.user ? (
               <IdentityActions
                 account={account}
                 accountMenu={accountMenu}
