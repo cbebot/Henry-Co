@@ -509,7 +509,7 @@ export const DashboardCommandPalette = forwardRef<
             open={open}
             onClose={() => close("backdrop")}
             tall
-            kicker="Search HenryCo"
+            kicker="Search Henry Onyx"
             title="Find anything"
           >
             {body}
@@ -571,7 +571,7 @@ function DesktopDialog({
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="HenryCo command palette"
+        aria-label="Henry Onyx command palette"
         onClick={(event) => event.stopPropagation()}
         style={{
           position: "relative",
@@ -839,7 +839,7 @@ function PaletteSearchInput({
         aria-expanded
         aria-controls={listboxId}
         aria-activedescendant={activeRowId || undefined}
-        aria-label="Search HenryCo"
+        aria-label="Search Henry Onyx"
         style={{
           flex: 1,
           minWidth: 0,

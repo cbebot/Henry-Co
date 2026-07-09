@@ -184,10 +184,10 @@ export function SearchResultsPage({
         >
           <input
             type="search"
-            placeholder="Search HenryCo: orders, listings, jobs, courses…"
+            placeholder="Search Henry Onyx: orders, listings, jobs, courses…"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            aria-label="Search HenryCo"
+            aria-label="Search Henry Onyx"
             style={{
               flex: 1,
               padding: "10px 12px",

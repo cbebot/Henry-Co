@@ -168,7 +168,7 @@ export function CommandPalette({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Search HenryCo"
+      aria-label="Search Henry Onyx"
       ref={dialogRef}
       className={className}
       style={{
@@ -264,7 +264,7 @@ function PaletteHeader({
         type="search"
         autoComplete="off"
         spellCheck={false}
-        placeholder="Type to search across HenryCo"
+        placeholder="Type to search across Henry Onyx"
         value={query}
         onChange={(event) => onQuery(event.target.value)}
         style={{
@@ -276,7 +276,7 @@ function PaletteHeader({
           fontSize: 16,
           color: "inherit",
         }}
-        aria-label="Search HenryCo"
+        aria-label="Search Henry Onyx"
       />
       <button
         type="button"
@@ -384,7 +384,7 @@ function PaletteBody({
     if (recent.length === 0) {
       return (
         <EmptyState
-          title="Type to search across HenryCo"
+          title="Type to search across Henry Onyx"
           examples={[
             "Resume cart",
             "Care booking confirm",
