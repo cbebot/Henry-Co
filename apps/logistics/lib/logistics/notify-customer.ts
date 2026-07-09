@@ -1,7 +1,11 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import {
+  renderHenryCoEmail,
+  sendTransactionalEmail,
+  type HenryCoEmailLayout,
+} from "@henryco/email";
 import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendLogisticsWhatsAppText } from "@/lib/logistics/whatsapp";
@@ -111,11 +115,44 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   const email = cleanText(input.senderEmail);
   const templateKey = input.mode === "quote" ? "quote_created" : "booking_created";
 
+  // EMAIL-TPL-01: logistics was the last division sending PLAIN-TEXT-ONLY
+  // customer email. The branded shared layout (renderHenryCoEmail) now carries
+  // the same translated strings; `bodyText` stays as the text alternative and
+  // the WhatsApp body, so no channel loses content.
+  const emailTitle =
+    input.mode === "quote"
+      ? await tx("Your quote is ready.")
+      : await tx("Your booking is confirmed.");
+  const layout: HenryCoEmailLayout = {
+    purpose: "logistics",
+    subject,
+    title: emailTitle,
+    intro: `${greeting} ${input.senderName} — ${intro}`,
+    highlightLabel: trackingCodeLabel,
+    highlightValue: input.trackingCode,
+    sections: [
+      { label: laneLabel, value: input.zoneLabel },
+      { label: indicativeTotalLabel, value: `${input.currency} ${amountFormatted}` },
+      ...(paymentReferenceLabel
+        ? [{ label: paymentReferenceLabel, value: input.trackingCode }]
+        : []),
+      {
+        label: typicalWindowPrefix,
+        value: `${input.promiseWindowHours[0]}–${input.promiseWindowHours[1]} ${hoursWord}`,
+      },
+    ],
+    ...(invoiceNote ? { body: invoiceNote } : {}),
+    actionLabel: trackPrefix,
+    actionHref: input.trackingUrl,
+    locale,
+  };
+
   if (email) {
     const dispatch = await sendTransactionalEmail({
       to: email,
       purpose: "logistics",
       subject,
+      html: renderHenryCoEmail(layout),
       text: bodyText,
     });
 

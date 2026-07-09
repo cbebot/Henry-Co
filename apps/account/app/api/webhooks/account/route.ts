@@ -151,7 +151,9 @@ export async function POST(request: Request) {
     const name = profile?.full_name || "";
     const preferredLocale = normalizeLocale(clean(payload.locale) || profile?.language || "en");
     const emailTransactional = prefs?.email_transactional !== false;
-    const emailProvider = clean(process.env.EMAIL_PROVIDER) || "resend";
+    // EMAIL-SES-ONLY (2026-07-09): SES is the only outbound rail; this string
+    // only labels delivery-log rows.
+    const emailProvider = "ses";
 
     async function logEmailDelivery(templateKey: string, sent: boolean, category: string) {
       try {
