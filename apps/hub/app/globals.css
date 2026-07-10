@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/theme/account-tokens.css";
 @import "../../../packages/ui/src/styles/public-design.css";
 
 /* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
@@ -13,36 +14,11 @@
 
 /* Henry Onyx Hub — shared account surface tokens + HQ command center */
 :root {
-  --acct-bg: #fafaf8;
-  --acct-bg-soft: #ffffff;
-  --acct-bg-elevated: #ffffff;
-  --acct-surface: #f5f3ef;
-  --acct-line: #e8e4dd;
-  --acct-ink: #1a1814;
-  --acct-muted: #6b6560;
-  --acct-gold: #c9a227;
-  --acct-gold-soft: #f7f0d8;
-  --acct-green: #10b981;
-  --acct-green-soft: #d1fae5;
-  --acct-red: #ef4444;
-  --acct-red-soft: #fee2e2;
-  --acct-blue: #3b82f6;
-  --acct-blue-soft: #dbeafe;
-  --acct-purple: #8b5cf6;
-  --acct-purple-soft: #ede9fe;
-  --acct-orange: #f59e0b;
-  --acct-orange-soft: #fef3c7;
-  --acct-radius: 1.25rem;
-  --acct-radius-lg: 1.75rem;
-  --acct-radius-sm: 0.75rem;
-  --acct-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --acct-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06);
-  /* Owned type — route the owner console's display/sans THROUGH the shared family
-     tokens so the flip reaches hub (its dashboard-shell surfaces consume --acct-font-*).
-     Brand at reveal; system fallback pre-reveal (identical to before). */
-  --acct-font-display: var(--hc-font-serif);
-  --acct-font-sans: var(--hc-font-sans);
-  --acct-sidebar-width: 260px;
+  /* Slice B (2026-07-10): the --acct-* tree now comes from the canonical
+     packages/ui/src/theme/account-tokens.css import above. Hub also GAINS
+     --acct-gold-strong/--acct-gold-text (it never defined them; the PASS 20
+     remap below hardcodes those hexes — values identical). This block keeps
+     hub-local chrome only. */
   --owner-sidebar-width: 288px;
   --owner-accent: #d4af37;
   --owner-accent-soft: rgba(212, 175, 55, 0.12);
@@ -74,27 +50,10 @@
 
 /* next-themes applies `class="dark"` on <html> — mirror account tokens for readable dark surfaces */
 .dark {
-  --acct-bg: #0b0f14;
-  --acct-bg-soft: #141920;
-  --acct-bg-elevated: #1a2028;
-  --acct-surface: #1e252e;
-  --acct-line: #2a3140;
-  --acct-ink: #f0ede8;
-  --acct-muted: #8e8a84;
-  --acct-gold: #d4af37;
+  /* Slice B: dark --acct-* values come from the canonical file. Hub keeps
+     its historical gold-soft alpha (0.12; canonical is 0.16) so the owner
+     chrome tint is pixel-identical — fold into canon in its own visual pass. */
   --acct-gold-soft: rgba(212, 175, 55, 0.12);
-  --acct-green: #34d399;
-  --acct-green-soft: rgba(52, 211, 153, 0.12);
-  --acct-red: #f87171;
-  --acct-red-soft: rgba(248, 113, 113, 0.12);
-  --acct-blue: #60a5fa;
-  --acct-blue-soft: rgba(96, 165, 250, 0.12);
-  --acct-purple: #a78bfa;
-  --acct-purple-soft: rgba(167, 139, 250, 0.12);
-  --acct-orange: #fbbf24;
-  --acct-orange-soft: rgba(251, 191, 36, 0.12);
-  --acct-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --acct-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   /* PASS 20 — dark mapping (owner / hub). */
   --hc-bg: var(--acct-bg);
