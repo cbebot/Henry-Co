@@ -53,7 +53,12 @@ export type PaymentRpc =
   | "set_refund_provider_reference"
   | "fail_payment_refund"
   | "apply_refund_webhook"
-  | "record_customer_credit_note";
+  | "record_customer_credit_note"
+  // V3-MONEY-PAYOUT — the automatic withdrawal (payout) RPCs (payments_private; same pooled-pg
+  // path). reserve holds the balance at request time; settle/release run on the transfer webhook.
+  | "reserve_withdrawal"
+  | "post_withdrawal_settlement"
+  | "release_withdrawal";
 
 /**
  * Invoke a `payments_private` money RPC over the pooled direct-pg connection.

@@ -53,8 +53,35 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     payload: { provider, eventType: verified.value.eventType },
   });
 
-  if (!verified.value.impliedStatus && !verified.value.refundEvent) {
+  if (!verified.value.impliedStatus && !verified.value.refundEvent && !verified.value.transferEvent) {
     return NextResponse.json({ received: true }, { status: 200 }); // informational event
+  }
+
+  // V3-MONEY-PAYOUT: an OUTBOUND transfer (withdrawal payout) outcome. A withdrawal is NOT a
+  // payment_intent — it resolves by OUR reference (the withdrawal request id the adapter echoed
+  // back and already re-verified), so it settles or releases via the guarded payout RPCs directly,
+  // never through the intent path below. The RPCs are idempotent, so a redelivery is a safe no-op.
+  if (verified.value.transferEvent) {
+    const t = verified.value.transferEvent;
+    const applied =
+      t.outcome === "completed"
+        ? await callPaymentRpc<{ posted?: boolean; reason?: string }>("post_withdrawal_settlement", [
+            t.reference,
+            t.providerReference,
+            t.feeMinor != null ? String(t.feeMinor) : "0",
+          ])
+        : await callPaymentRpc<{ released?: boolean; reason?: string }>("release_withdrawal", [
+            t.reference,
+            "transfer_failed",
+          ]);
+    if (applied.error) {
+      // 500 → the provider redelivers; the payout RPCs are idempotent so a retry is safe.
+      return NextResponse.json({ error: "Apply failed" }, { status: 500 });
+    }
+    emitPaymentEvent("henry.payment.webhook.verified", {
+      payload: { provider, eventType: t.outcome === "completed" ? "withdrawal.paid" : "withdrawal.failed" },
+    });
+    return NextResponse.json({ received: true }, { status: 200 });
   }
 
   const admin = createAdminSupabase();

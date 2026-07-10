@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { normalizeAppLocaleSafe } from "@henryco/email";
 import { publishNotification } from "@henryco/notifications";
+import { evaluateWithdrawal, DEFAULT_WITHDRAWAL_LIMITS } from "@henryco/payment-router";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
@@ -11,11 +12,13 @@ import { getPendingWithdrawalHoldKobo, getWalletSummary, getWithdrawalRequests }
 import { requireVerification } from "@/lib/verification";
 import { verifyWithdrawalPin } from "@/lib/wallet-pin";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
+import { getWindowWithdrawnKobo, isWalletAutoPayoutEnabled, startAutomaticPayout } from "@/lib/wallet-payout";
 import {
   buildLegacyWithdrawalRequestInsert,
   extractLegacyWithdrawalPinHash,
   isLegacyPayoutMethodRow,
   isMissingPostgrestResourceError,
+  isPendingWithdrawalStatus,
   mapLegacyPayoutMethod,
 } from "@/lib/wallet-storage";
 
@@ -192,11 +195,49 @@ export async function POST(request: Request) {
     const pendingHoldKobo = getPendingWithdrawalHoldKobo(existingRequests);
     const availableBalance = Math.max(0, balance - pendingHoldKobo);
 
+    // One withdrawal at a time: a second request while one is pending or in flight is almost
+    // always a double-submit (and the daily-cap window is check-then-insert, so concurrency
+    // could stack past it). One-at-a-time closes both; the next request opens when this one
+    // settles or is released.
+    const hasInFlight = existingRequests.some((request) => {
+      const status = String((request as { status?: string }).status || "").toLowerCase();
+      return isPendingWithdrawalStatus(status) || status === "processing";
+    });
+    if (hasInFlight) {
+      return NextResponse.json(
+        { error: "You already have a withdrawal in progress. It completes before a new one starts." },
+        { status: 400 }
+      );
+    }
+
     if (amountKobo > availableBalance) {
       return NextResponse.json(
         { error: "Amount exceeds your available balance after pending withdrawals." },
         { status: 400 }
       );
+    }
+
+    // V3-MONEY-PAYOUT policy gate (owner-approved limits): KYC-tiered, per-currency, fail-closed.
+    // requireVerification above already passed, so this account is the "verified" tier; the rolling
+    // 24h window counts pending + in-flight + paid (a released failure returned the money).
+    const dailyCapKobo = DEFAULT_WITHDRAWAL_LIMITS.NGN?.verified?.dailyCapMinor ?? 0;
+    const windowWithdrawnMinor = await getWindowWithdrawnKobo(admin, user.id, dailyCapKobo);
+    const policy = evaluateWithdrawal({
+      amountMinor: amountKobo,
+      currency: "NGN",
+      kycTier: "verified",
+      windowWithdrawnMinor,
+    });
+    if (!policy.ok) {
+      const message =
+        policy.reason === "above_max_single"
+          ? "That amount is above the single-withdrawal limit. Split it into smaller withdrawals."
+          : policy.reason === "daily_cap_exceeded"
+            ? "You have reached the daily withdrawal limit. Please try again tomorrow."
+            : policy.reason === "below_min"
+              ? "Minimum withdrawal is NGN 100."
+              : "Withdrawals are not available for this account yet.";
+      return NextResponse.json({ error: message }, { status: 400 });
     }
 
     const { data: row, error: insertError } = await admin
@@ -275,14 +316,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
 
+    // V3-MONEY-PAYOUT (flag-dark): run the automatic payout — reserve the balance, resolve the
+    // bank account, create the Flutterwave transfer. "manual" falls through to today's review
+    // flow untouched; "rejected" already closed the request (nothing held, or safely released).
+    // The transfer webhook (settle/release) is the money truth — nothing here marks it paid.
+    let autoMode: "auto" | "manual" = "manual";
+    let autoConfirmed = false;
+    if (isWalletAutoPayoutEnabled()) {
+      const auto = await startAutomaticPayout({
+        admin,
+        requestId: String((row as { id: string }).id),
+        userId: user.id,
+        amountKobo,
+      });
+      if (auto.mode === "rejected") {
+        return NextResponse.json({ error: auto.error }, { status: 400 });
+      }
+      autoMode = auto.mode;
+      autoConfirmed = auto.mode === "auto" && auto.confirmed;
+    }
+    const isAuto = autoMode === "auto";
+
     await admin.from("customer_activity").insert({
       user_id: user.id,
       division: "wallet",
       activity_type: "wallet_withdrawal_requested",
       title: `Wallet withdrawal request — NGN ${amountNaira.toLocaleString()}`,
-      description: "Finance will review this withdrawal request before payout.",
+      description: isAuto
+        ? autoConfirmed
+          ? "Your payout has started. It is confirmed automatically once the bank transfer completes."
+          : "Your payout is being processed. We will confirm it shortly."
+        : "Finance will review this withdrawal request before payout.",
       amount_kobo: amountKobo,
-      status: "pending_review",
+      status: isAuto ? "processing" : "pending_review",
       reference_type: "wallet_withdrawal_request",
       reference_id: String((row as { id: string }).id),
       action_url: "/wallet/withdrawals",
@@ -293,8 +359,12 @@ export async function POST(request: Request) {
       division: "account",
       eventType: "wallet.transaction.update",
       severity: "info",
-      title: "Withdrawal requested",
-      body: `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
+      title: isAuto ? (autoConfirmed ? "Withdrawal on its way" : "Withdrawal processing") : "Withdrawal requested",
+      body: isAuto
+        ? autoConfirmed
+          ? `Your withdrawal of NGN ${amountNaira.toLocaleString()} is on its way to your bank. We will confirm the moment it lands.`
+          : `Your withdrawal of NGN ${amountNaira.toLocaleString()} is being processed. We will confirm it shortly.`
+        : `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
       deepLink: "/wallet/withdrawals",
       relatedType: "wallet_withdrawal_request",
       publisher: "bridge:apps/account/app/api/wallet/withdrawal/request",
@@ -302,7 +372,11 @@ export async function POST(request: Request) {
 
     await sendWithdrawalRequestedEmailBestEffort(admin, user.id, amountNaira);
 
-    return NextResponse.json({ success: true, id: (row as { id: string }).id });
+    return NextResponse.json({
+      success: true,
+      id: (row as { id: string }).id,
+      status: isAuto ? "processing" : "pending_review",
+    });
   } catch (error) {
     logApiError("wallet/withdrawal/request", error);
     return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
