@@ -26,6 +26,7 @@ export type { AiUsageReceipt, AiTask } from "./src/contracts";
 export type {
   FounderAssistAction,
   FounderAssistEnvelope,
+  FounderProposedAction,
   FounderAssistTurn,
   ResolvedFounderAction,
 } from "./src/founder-assist";

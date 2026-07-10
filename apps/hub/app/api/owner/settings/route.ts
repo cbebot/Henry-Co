@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/app/lib/owner-auth";
+import { applyCompanySettingsWrite } from "@/lib/company-settings-write";
 import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
-import { normalizeCompanySettings } from "@/app/lib/company-settings-shared";
-import { writeOwnerAudit } from "@/lib/owner-audit-log";
 import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
 
 export const runtime = "nodejs";
@@ -45,47 +43,16 @@ export async function POST(request: Request) {
     },
     async () => {
       const body = await request.json();
-      const admin = createAdminSupabase();
-      const normalized = normalizeCompanySettings(body);
+      // F3 (2026-07-10): the write sequence lives in applyCompanySettingsWrite —
+      // ONE path shared with the founder action rail. Behavior unchanged.
+      const result = await applyCompanySettingsWrite(body);
 
-      const payload = {
-        ...normalized,
-        updated_at: new Date().toISOString(),
-      };
-
-      const { data: existing } = await admin
-        .from("company_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-
-      const result = existing?.id
-        ? await admin.from("company_settings").update(payload).eq("id", existing.id)
-        : await admin.from("company_settings").insert(payload);
-
-      if (result.error) {
-        console.error("[owner/settings][POST]", result.error);
+      if (!result.ok) {
         return {
           outcome: "server_error" as const,
-          value: NextResponse.json({ error: "Could not save company settings right now." }, { status: 400 }),
+          value: NextResponse.json({ error: result.error }, { status: 400 }),
         };
       }
-
-      await writeOwnerAudit({
-        action: "owner.brand.settings.update",
-        entityType: "company_settings",
-        entityId: existing?.id ? String(existing.id) : null,
-        oldValues: existing ?? null,
-        newValues: payload,
-        division: "hub",
-      });
-
-      revalidatePath("/");
-      revalidatePath("/about");
-      revalidatePath("/contact");
-      revalidatePath("/privacy");
-      revalidatePath("/terms");
-      revalidatePath("/owner");
 
       return {
         outcome: "ok" as const,

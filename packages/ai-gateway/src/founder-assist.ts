@@ -5,9 +5,10 @@
 // without giving the model the keys. It may only NAME a destination from the closed
 // catalog below; the server renders the href and silently drops anything unknown. The
 // catalog is owner-console routes ONLY — this assistant navigates the founder around
-// his own command center, never off it. Write ACTIONS are deliberately absent from
-// this envelope: they arrive in F3 as a separate proposeAction catalog with server
-// re-authorization and an explicit owner confirmation step.
+// his own command center, never off it. F3 adds proposeAction: the assistant may NAME
+// a write action from the hub's closed FOUNDER_ACTION_CATALOG — the server validates,
+// shows the owner a true-state confirmation card, and only an explicit owner confirm
+// (separately re-authorized) executes it through the existing guarded path.
 
 import { humanizeAssistantText } from "./doctrine";
 
@@ -17,10 +18,26 @@ export interface FounderAssistAction {
   label: string;
 }
 
-/** The `{reply, navigate}` output envelope of `hub.founder.assist`. */
+/**
+ * F3 — a write action the assistant PROPOSES (never executes). Pure naming:
+ * `key` must match the hub's closed FOUNDER_ACTION_CATALOG and `params` are
+ * validated server-side against that entry's strict schema; anything else is
+ * dropped before the owner ever sees a card. The AI cannot fill an amount —
+ * money-relevant values are server-fetched true state by construction.
+ */
+export interface FounderProposedAction {
+  key: string;
+  params: Record<string, string | number | boolean>;
+  /** One short sentence of the assistant's reasoning, shown on the card. */
+  rationale?: string;
+}
+
+/** The `{reply, navigate, proposeAction?}` output envelope of `hub.founder.assist`. */
 export interface FounderAssistEnvelope {
   reply: string;
   navigate: FounderAssistAction[];
+  /** F3, optional and additive — absent in every F2-only turn. */
+  proposeAction: FounderProposedAction | null;
 }
 
 // 2, not 3: IntelligenceLauncher renders navigate.slice(0, 2) — a third button
@@ -28,6 +45,49 @@ export interface FounderAssistEnvelope {
 const MAX_ACTIONS = 2;
 const MAX_LABEL_CHARS = 60;
 const MAX_TARGET_CHARS = 64;
+const MAX_ACTION_PARAMS = 12;
+const MAX_PARAM_STRING_CHARS = 500;
+const MAX_RATIONALE_CHARS = 240;
+
+/**
+ * Sanitize the AI-proposed action into a flat, bounded shape. This is only the
+ * TRANSPORT guard — the hub server re-validates key + params against the
+ * closed catalog's strict schema before anything is shown or persisted.
+ */
+function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const record = raw as Record<string, unknown>;
+  const key = String(record.key ?? "").trim().slice(0, MAX_TARGET_CHARS);
+  if (!key) return null;
+
+  const params: Record<string, string | number | boolean> = {};
+  const rawParams = record.params;
+  if (rawParams && typeof rawParams === "object" && !Array.isArray(rawParams)) {
+    let count = 0;
+    for (const [name, value] of Object.entries(rawParams as Record<string, unknown>)) {
+      if (count >= MAX_ACTION_PARAMS) break;
+      const cleanName = name.trim().slice(0, 64);
+      if (!cleanName) continue;
+      if (typeof value === "string") {
+        params[cleanName] = value.slice(0, MAX_PARAM_STRING_CHARS);
+      } else if (typeof value === "number" && Number.isFinite(value)) {
+        params[cleanName] = value;
+      } else if (typeof value === "boolean") {
+        params[cleanName] = value;
+      } else {
+        continue;
+      }
+      count += 1;
+    }
+  }
+
+  const rationale =
+    typeof record.rationale === "string" && record.rationale.trim()
+      ? record.rationale.trim().slice(0, MAX_RATIONALE_CHARS)
+      : undefined;
+
+  return { key, params, ...(rationale ? { rationale } : {}) };
+}
 
 /**
  * The owner-console catalog. Every href is a RELATIVE hub route that exists today
@@ -145,7 +205,11 @@ export function parseFounderAssistEnvelope(text: string): FounderAssistEnvelope 
         }
       }
 
-      return { reply, navigate };
+      return {
+        reply,
+        navigate,
+        proposeAction: sanitizeProposedAction(record.proposeAction),
+      };
     } catch {
       return null;
     }
@@ -186,7 +250,7 @@ export function salvageFounderAssistEnvelope(rawText: string): string | null {
   const reply = humanizeAssistantText(candidate);
   if (!reply || /^[[{]/.test(reply.trim())) return null;
 
-  return JSON.stringify({ reply, navigate: [] });
+  return JSON.stringify({ reply, navigate: [], proposeAction: null });
 }
 
 /** A resolved, render-ready navigation button (relative hub href). */
@@ -211,10 +275,13 @@ export function resolveFounderAssistActions(actions: FounderAssistAction[]): Res
   return resolved;
 }
 
-/** A fully interpreted founder turn: the reply and the render-ready buttons. */
+/** A fully interpreted founder turn: the reply, the render-ready buttons, and
+ *  the RAW proposed action (validated by the hub against the closed catalog —
+ *  never rendered or executed from this value directly). */
 export interface FounderAssistTurn {
   reply: string;
   navigate: ResolvedFounderAction[];
+  proposeAction: FounderProposedAction | null;
 }
 
 /** The one call the hub route makes on the raw model output. */
@@ -224,6 +291,7 @@ export function interpretFounderAssistOutput(rawText: string): FounderAssistTurn
   return {
     reply: envelope.reply,
     navigate: resolveFounderAssistActions(envelope.navigate),
+    proposeAction: envelope.proposeAction,
   };
 }
 

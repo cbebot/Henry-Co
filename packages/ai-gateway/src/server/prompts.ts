@@ -363,6 +363,9 @@ function buildContentDraftPrompt(task: AiTask, policy: AiSurfacePolicy): AiPromp
 // until F3 ships the re-authorized, owner-confirmed action envelope.
 function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
   const company = str(task.input.company, 6000);
+  // F3 — the hub route passes the rendered action catalog ONLY when the action
+  // layer is live (FOUNDER_ACTIONS_LIVE). Absent, the prompt is F2-identical.
+  const actions = str(task.input.actions, 3000);
 
   const companyBlock = company
     ? [
@@ -407,12 +410,37 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
     "destinations (use the exact target id):",
     listFounderAssistDestinations(),
     "",
-    "You cannot execute changes yet — approvals, refunds, staff changes and every other",
-    "write still happen on their console surfaces. When the founder asks you to DO one of",
-    "those, say so honestly in one sentence and offer the button to the surface that does it.",
-    "",
+    ...(actions
+      ? [
+          "You may PROPOSE a governed action when the founder clearly asks you to change something",
+          "you have an action for. You NEVER execute anything: a proposal only prepares a",
+          "confirmation card the founder reviews and explicitly confirms on his Actions page —",
+          "the server re-checks everything and shows him the real current values from the",
+          "database, not your numbers. Propose ONLY actions from this catalog (exact key, and",
+          "only the parameters each one lists):",
+          actions,
+          "",
+          "Rules for proposing: at most ONE action per turn, only when he genuinely asked for",
+          "the change (never volunteer an action he did not ask for), fill only the listed",
+          "parameters, and in the reply say plainly what you prepared and that it waits for his",
+          "confirmation. For anything NOT in the catalog — refunds, payouts, anything moving",
+          "money — say honestly that it stays on its console surface and offer the button.",
+          "",
+        ]
+      : [
+          "You cannot execute changes yet — approvals, refunds, staff changes and every other",
+          "write still happen on their console surfaces. When the founder asks you to DO one of",
+          "those, say so honestly in one sentence and offer the button to the surface that does it.",
+          "",
+        ]),
     "OUTPUT FORMAT: respond with ONLY a JSON object, no prose, no code fence:",
-    String.raw`{"reply": string, "navigate": [{"target": string, "label": string}]}`,
+    ...(actions
+      ? [
+          String.raw`{"reply": string, "navigate": [{"target": string, "label": string}], "proposeAction": {"key": string, "params": object, "rationale": string} or null}`,
+          String.raw`"proposeAction" is null unless you are proposing exactly one catalog action this turn;`,
+          String.raw`"rationale" is one short sentence of why. `,
+        ]
+      : [String.raw`{"reply": string, "navigate": [{"target": string, "label": string}]}`]),
     String.raw`"reply" is the message shown to the founder. "navigate" is 0-2 buttons whose "target" is one`,
     String.raw`of the destination ids above and whose "label" is short button text (never a raw id). Use []`,
     "when nothing fits.",
