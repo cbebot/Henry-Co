@@ -64,15 +64,39 @@ type Quote = {
   approximate: boolean;
 };
 
+/**
+ * F3 — a governed write action the founder assistant proposed. Server-built and
+ * server-authored (title/body/confirmLabel are already company-voice from the
+ * true state), so they render as data, not client literals. Present ONLY on the
+ * owner founder surface; every customer intelligence surface omits it, so the
+ * card is inert there.
+ */
+type ProposedAction = {
+  token: string;
+  key: string;
+  title: string;
+  body: string;
+  confirmLabel: string;
+  division: string;
+  reversibility: "reversible" | "hard-to-reverse" | "irreversible";
+  requiresReauth: boolean;
+  rationale?: string | null;
+  expiresAt: string;
+};
+
 type ChatApiResponse = {
   reply?: string;
   navigate?: NavAction[];
   handoff?: boolean;
   offer?: Offer | null;
+  proposedAction?: ProposedAction | null;
   conversationId?: string | null;
   messageId?: string | null;
   error?: string;
 };
+
+/** The disposition of a confirmed action, shown in place of the card. */
+type ActionOutcome = { kind: "executed" | "conflict" | "expired" | "failed"; message: string };
 
 const nowIso = () => new Date().toISOString();
 const newId = () =>
@@ -119,6 +143,13 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [deepBusy, setDeepBusy] = useState(false);
   const [deepError, setDeepError] = useState<string | null>(null);
+  // F3 governed actions: the proposed action, whether the owner expanded it to
+  // review (fix #7 — viewing is a deliberate click, never auto-opened), the
+  // confirm-in-flight flag, and the disposition once resolved.
+  const [proposedAction, setProposedAction] = useState<ProposedAction | null>(null);
+  const [actionExpanded, setActionExpanded] = useState(false);
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionOutcome, setActionOutcome] = useState<ActionOutcome | null>(null);
 
   const sessionId = useSessionId(division);
   // The conversation of record for building each request + the server's returned id.
@@ -144,6 +175,60 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   // The quote/run endpoints sit beside the chat endpoint (same account origin).
   const quoteEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/quote"), [endpoint]);
   const runEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/run"), [endpoint]);
+  // F3 — the governed-action confirm endpoint sits beside the founder chat
+  // endpoint (same owner origin): /api/owner/intelligence/chat → /actions/confirm.
+  const confirmEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/actions/confirm"), [endpoint]);
+
+  // The SECOND deliberate click (the first being "Review"): confirm the action.
+  // The AI is entirely absent here — this posts only the opaque token; the server
+  // re-authorizes, re-reads true state, and executes through the guarded path.
+  const confirmAction = useCallback(async () => {
+    if (!proposedAction || actionBusy) return;
+    setActionBusy(true);
+    try {
+      const res = await fetch(confirmEndpoint, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: proposedAction.token }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { outcome?: string; reason?: string; error?: string }
+        | null;
+      const outcome = data?.outcome;
+      if (res.ok && outcome === "executed") {
+        setActionOutcome({ kind: "executed", message: t("Done. The change is live.") });
+      } else if (outcome === "conflict" || outcome === "already_resolved") {
+        setActionOutcome({
+          kind: "conflict",
+          message: t("The details changed since I prepared this. Ask me again for a fresh version."),
+        });
+      } else if (outcome === "expired") {
+        setActionOutcome({
+          kind: "expired",
+          message: t("This action expired. Ask me again and I'll prepare a fresh one."),
+        });
+      } else {
+        setActionOutcome({
+          kind: "failed",
+          message: data?.error || t("That didn't go through. Nothing was changed."),
+        });
+      }
+      setProposedAction(null);
+      setActionExpanded(false);
+    } catch {
+      setActionOutcome({ kind: "failed", message: t("That didn't go through. Nothing was changed.") });
+      setProposedAction(null);
+      setActionExpanded(false);
+    } finally {
+      setActionBusy(false);
+    }
+  }, [proposedAction, actionBusy, confirmEndpoint, t]);
+
+  const dismissAction = useCallback(() => {
+    setProposedAction(null);
+    setActionExpanded(false);
+  }, []);
   const lastUserText = () => [...historyRef.current].reverse().find((m) => m.role === "user")?.content ?? "";
 
   const send = useCallback(
@@ -159,6 +244,10 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
       setOffer(null);
       setQuote(null);
       setDeepError(null);
+      // A new turn also supersedes an un-acted proposed action + its outcome.
+      setProposedAction(null);
+      setActionExpanded(false);
+      setActionOutcome(null);
       try {
         const res = await fetch(endpoint, {
           method: "POST",
@@ -195,6 +284,10 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
         setActions(Array.isArray(data.navigate) ? data.navigate.slice(0, 2) : []);
         setHandoff(Boolean(data.handoff));
         setOffer(data.offer ?? null);
+        // F3 — surface the proposed action as a compact chip; the owner reviews
+        // and confirms with deliberate clicks. Inert on every non-founder surface
+        // (those responses never carry proposedAction).
+        setProposedAction(data.proposedAction ?? null);
         setTyping(false);
 
         // Reconcile the composer's optimistic user bubble by returning the sent message.
@@ -302,9 +395,72 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
 
   const extras = useCallback(() => {
     const hasOffer = Boolean(offer);
-    if (actions.length === 0 && !handoff && !hasOffer) return null;
+    const hasAction = Boolean(proposedAction) || Boolean(actionOutcome);
+    if (actions.length === 0 && !handoff && !hasOffer && !hasAction) return null;
+    const reversibilityLabel = proposedAction
+      ? proposedAction.reversibility === "reversible"
+        ? t("Reversible")
+        : proposedAction.reversibility === "hard-to-reverse"
+          ? t("Hard to reverse")
+          : t("Cannot be undone")
+      : "";
     return (
       <div className="hc-il-extras">
+        {/* F3 governed action — a compact chip first (fix #7: viewing is a
+            deliberate click), expanding to the full true-state card, then the
+            confirm click. */}
+        {actionOutcome ? (
+          <div className={`hc-il-action-outcome hc-il-action-outcome--${actionOutcome.kind}`} role="status">
+            <span>{actionOutcome.message}</span>
+            <button type="button" className="hc-il-action-dismiss" onClick={() => setActionOutcome(null)}>
+              {t("Dismiss")}
+            </button>
+          </div>
+        ) : null}
+        {proposedAction && !actionExpanded ? (
+          <div className="hc-il-action-chip">
+            <span className="hc-il-action-chip-label">
+              {t("Action ready")}: {proposedAction.title}
+            </span>
+            <button type="button" className="hc-il-action-review" onClick={() => setActionExpanded(true)}>
+              {t("Review")}
+            </button>
+          </div>
+        ) : null}
+        {proposedAction && actionExpanded ? (
+          <div className="hc-il-action-card" role="group" aria-label={t("Confirm action")}>
+            <div className="hc-il-action-card-head">
+              <span className="hc-il-action-card-title">{proposedAction.title}</span>
+              <span
+                className={`hc-il-action-tag hc-il-action-tag--${proposedAction.reversibility}`}
+              >
+                {reversibilityLabel}
+              </span>
+            </div>
+            <p className="hc-il-action-card-body">{proposedAction.body}</p>
+            {proposedAction.rationale ? (
+              <p className="hc-il-action-card-why">{proposedAction.rationale}</p>
+            ) : null}
+            <div className="hc-il-action-card-buttons">
+              <button
+                type="button"
+                className="hc-il-action-confirm"
+                onClick={() => void confirmAction()}
+                disabled={actionBusy}
+              >
+                {actionBusy ? t("Working…") : proposedAction.confirmLabel}
+              </button>
+              <button
+                type="button"
+                className="hc-il-action-cancel"
+                onClick={dismissAction}
+                disabled={actionBusy}
+              >
+                {t("Cancel")}
+              </button>
+            </div>
+          </div>
+        ) : null}
         {offer ? (
           <div className="hc-il-offer">
             <div className="hc-il-offer-head">
@@ -357,7 +513,24 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
         ) : null}
       </div>
     );
-  }, [actions, handoff, offer, quote, deepBusy, deepError, supportHref, getQuote, runDeep, t]);
+  }, [
+    actions,
+    handoff,
+    offer,
+    quote,
+    deepBusy,
+    deepError,
+    supportHref,
+    getQuote,
+    runDeep,
+    proposedAction,
+    actionExpanded,
+    actionBusy,
+    actionOutcome,
+    confirmAction,
+    dismissAction,
+    t,
+  ]);
 
   const panelStyle = useMemo(
     () =>
@@ -511,6 +684,27 @@ function IntelligenceLauncherStyles() {
 .hc-il-offer-see:disabled,.hc-il-offer-run:disabled{opacity:.6;cursor:default}
 .hc-il-offer-cancel{border:1px solid var(--hc-il-line);border-radius:999px;padding:.48rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:var(--hc-il-ink-soft)}
 .hc-il-offer-error{margin:.5rem 0 0;font-size:.75rem;color:var(--hc-il-danger,#b3261e)}
+/* F3 governed-action card — every colour flows from the --hc-il-* seam tokens,
+   so light + dark are correct by construction (no hardcoded surface/ink). */
+.hc-il-action-chip{display:flex;align-items:center;gap:.5rem;justify-content:space-between;border:1px solid color-mix(in srgb,var(--hc-il-accent,#C9A227) 42%,transparent);background:color-mix(in srgb,var(--hc-il-accent,#C9A227) 10%,var(--hc-il-surface));border-radius:999px;padding:.4rem .5rem .4rem .85rem}
+.hc-il-action-chip-label{font-size:.78rem;font-weight:600;color:var(--hc-il-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hc-il-action-review{flex:none;border:none;border-radius:999px;padding:.4rem .85rem;font-size:.76rem;font-weight:700;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:var(--hc-il-on-accent)}
+.hc-il-action-card{border:1px solid color-mix(in srgb,var(--hc-il-accent,#C9A227) 40%,transparent);background:color-mix(in srgb,var(--hc-il-accent,#C9A227) 8%,var(--hc-il-surface));border-radius:1rem;padding:.8rem .85rem}
+.hc-il-action-card-head{display:flex;align-items:center;gap:.5rem;justify-content:space-between}
+.hc-il-action-card-title{font-size:.86rem;font-weight:700;color:var(--hc-il-ink)}
+.hc-il-action-tag{flex:none;font-size:.66rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:.16rem .5rem;border-radius:999px;border:1px solid var(--hc-il-line);color:var(--hc-il-ink-soft)}
+.hc-il-action-tag--irreversible{color:var(--hc-il-danger,#b3261e);border-color:color-mix(in srgb,var(--hc-il-danger,#b3261e) 45%,transparent)}
+.hc-il-action-card-body{margin:.45rem 0 0;font-size:.8rem;line-height:1.5;color:var(--hc-il-ink)}
+.hc-il-action-card-why{margin:.4rem 0 0;font-size:.74rem;line-height:1.45;color:var(--hc-il-ink-soft);font-style:italic}
+.hc-il-action-card-buttons{display:flex;gap:.5rem;margin-top:.65rem}
+.hc-il-action-confirm{border:none;border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:var(--hc-il-on-accent)}
+.hc-il-action-confirm:disabled{opacity:.6;cursor:default}
+.hc-il-action-cancel{border:1px solid var(--hc-il-line);border-radius:999px;padding:.5rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:var(--hc-il-ink-soft)}
+.hc-il-action-outcome{display:flex;align-items:center;gap:.5rem;justify-content:space-between;border:1px solid var(--hc-il-line);background:color-mix(in srgb,var(--hc-il-ink) 5%,var(--hc-il-surface));border-radius:1rem;padding:.6rem .8rem;font-size:.8rem;line-height:1.4;color:var(--hc-il-ink)}
+.hc-il-action-outcome--executed{border-color:color-mix(in srgb,var(--hc-il-accent,#C9A227) 42%,transparent)}
+.hc-il-action-outcome--failed{border-color:color-mix(in srgb,var(--hc-il-danger,#b3261e) 45%,transparent)}
+.hc-il-action-dismiss{flex:none;border:none;background:transparent;color:var(--hc-il-ink-soft);font-size:.74rem;font-weight:600;cursor:pointer;text-decoration:underline}
+.hc-il-action-review:focus-visible,.hc-il-action-confirm:focus-visible,.hc-il-action-cancel:focus-visible,.hc-il-action-dismiss:focus-visible{outline:2px solid var(--hc-il-accent,#C9A227);outline-offset:2px}
 .hc-il-prose{font-size:.92rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
 .hc-il-prose p{margin:0 0 .55rem}
 .hc-il-prose p:last-child{margin-bottom:0}
