@@ -54,6 +54,9 @@ export async function requireOwner(): Promise<OwnerAuthResult> {
   }
 
   const email = user.email?.trim().toLowerCase() || null;
+  // HUB-4: honor an owner_profiles email match only for a confirmed-email
+  // session; the direct user_id match is unaffected.
+  const emailVerified = Boolean(user.email_confirmed_at);
 
   const { data: directProfile, error: directProfileError } = await supabase
     .from("owner_profiles")
@@ -62,7 +65,7 @@ export async function requireOwner(): Promise<OwnerAuthResult> {
     .maybeSingle();
 
   const { data: emailProfile, error: emailProfileError } =
-    !directProfile && email
+    !directProfile && email && emailVerified
       ? await supabase
           .from("owner_profiles")
           .select("user_id, email, role, is_active")
