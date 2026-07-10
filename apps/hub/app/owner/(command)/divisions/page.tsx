@@ -15,7 +15,7 @@ export default async function DivisionCenterPage() {
       <OwnerPageHeader
         eyebrow="Division Control Center"
         title="Every division, one map"
-        description="All divisions — care, marketplace, studio, jobs, property, learn, and logistics — with health, workload, staffing, and financial visibility."
+        description="Every live division with pressure, workload, staffing, and financial visibility — the roster below is data-driven, not a fixed list."
         actions={<Link href="/owner/divisions/performance" className="acct-button-secondary">Performance ranking</Link>}
       />
 

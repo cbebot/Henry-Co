@@ -959,6 +959,10 @@ function buildDivisionSnapshots(
       .slice(0, 6);
 
     const livePressure = workOpen + divisionSignals.length * 2 + divisionSupport.length;
+    // F1 truth pass: this is a STATED HEURISTIC (hand-tuned weights over live
+    // rows), surfaced everywhere as "Stability index" — never as a measured
+    // "health score". Weights: critical signal -24, warning -12, support drag
+    // capped -18, live pressure overflow capped -14; no-data floor 34.
     const healthScore = clamp(
       recentActivity.length || revenueNaira || workOpen
         ? 88 - divisionSignals.filter((signal) => signal.severity === "critical").length * 24
@@ -1082,6 +1086,9 @@ function buildOwnerBriefing(
   };
 }
 
+// F1 truth pass: these are FIVE standing runbooks (fixed title+body strings)
+// whose INCLUSION is data-driven — a signal fires, its playbook surfaces.
+// Nothing here is generated; the honest "AI" story is Founder Intelligence F2.
 function buildHelperInsights(signals: OwnerSignal[]) {
   const insights: {
     id: string;
@@ -1161,8 +1168,9 @@ export async function getOwnerOverviewData() {
   return {
     companyTitle,
     companyName: toText(dataset.companySettings?.company_name) || companyTitle,
-    dataHealthNote:
-      "Workforce profiles, audit history, and sign-in activity are synchronized from your live Henry Onyx account records. If a metric looks stale, refresh after the person completes their latest sign-in.",
+    // F1: the freshness note states WHEN this dataset was actually assembled
+    // (per-request cache) instead of fixed reassurance prose.
+    dataHealthNote: `Assembled live from workforce, audit, and sign-in records at ${new Date().toISOString().slice(11, 16)} UTC. Refresh the page to rebuild it.`,
     metrics: {
       divisionsLive: divisions.filter((division) => division.status !== "building").length,
       totalRevenueNaira,

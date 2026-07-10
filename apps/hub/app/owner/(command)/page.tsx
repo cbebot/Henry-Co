@@ -190,7 +190,7 @@ export default async function OwnerOverviewPage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold text-[var(--acct-ink)]">{division.displayName}</div>
-                  <p className="mt-1 text-xs text-[var(--acct-muted)]">{division.healthLabel} {t("health")} · {division.alertCount} {t("alerts")} · {division.workOpen} {t("open items")}</p>
+                  <p className="mt-1 text-xs text-[var(--acct-muted)]">{division.healthLabel} {t("stability")} · {division.alertCount} {t("alerts")} · {division.workOpen} {t("open items")}</p>
                 </div>
                 <DivisionBadge division={division.slug} />
               </div>

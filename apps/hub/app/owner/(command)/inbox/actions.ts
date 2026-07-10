@@ -15,7 +15,8 @@ import {
 /**
  * Owner-inbox mutations. Every action re-asserts requireOwner() (defense in
  * depth — the writes use the service-role client, which bypasses RLS). Reply
- * uses the existing transactional SENDING path (Resend), untouched.
+ * uses the existing transactional SENDING path (Amazon SES — the only
+ * outbound rail, EMAIL-SES-ONLY 2026-07-09), untouched.
  */
 
 export async function markUnreadAction(formData: FormData): Promise<void> {
@@ -59,7 +60,7 @@ export async function sendReplyAction(
   const toAddress = message.replyTo || message.fromAddress;
   if (!toAddress) return { ok: false, message: "The original message has no reply address." };
 
-  // Send FROM the brand address the mail arrived at (Resend is authorized for
+  // Send FROM the brand address the mail arrived at (SES is authorized for
   // henryonyx.com). If it isn't a brand address, fall back to the support sender.
   const fromBrand = message.toAddress.endsWith(`@${BRAND_EMAIL_DOMAIN}`)
     ? message.toAddress

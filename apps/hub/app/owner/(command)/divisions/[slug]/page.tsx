@@ -71,7 +71,7 @@ export default async function DivisionDetailPage({
       <div className="grid gap-6 xl:grid-cols-2">
         <OwnerPanel title="Division health" description="Current state from the central command center.">
           <div className="grid gap-3 text-sm text-[var(--acct-muted)] sm:grid-cols-2">
-            <div>Health: {data.division.healthScore} / 100</div>
+            <div>Stability index: {data.division.healthScore} / 100</div>
             <div>Revenue: {formatCurrencyAmount(data.finance.revenueNaira)}</div>
             <div>Open work: {data.division.workOpen}</div>
             <div>Support pressure: {data.division.supportOpen}</div>

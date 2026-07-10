@@ -84,15 +84,15 @@ export type HubOwnerAiCopy = {
 const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
   overview: {
     metadata: {
-      title: "AI & helper layer · Henry Onyx",
+      title: "Signals & insights · Henry Onyx",
       description:
-        "Evidence-based executive assistance for the Henry Onyx owner — briefings, action cards, and division pressure built from live Supabase signals.",
+        "Evidence-based executive briefing for the Henry Onyx owner — briefings, action cards, and division pressure built from live company signals.",
     },
     hero: {
-      eyebrow: "AI & Helper Layer",
-      title: "Evidence-based executive assistance",
+      eyebrow: "Signals & Insights",
+      title: "Evidence-based executive briefing",
       description:
-        "Briefings and action cards are generated only from live Supabase-backed signals — not generic spam. Use team chat to coordinate; use this layer to prioritize.",
+        "Briefings and action cards are built only from live company signals — not generic spam. Use team chat to coordinate; use this layer to prioritize.",
       signals: "Signals",
       insights: "Insights",
     },
@@ -112,13 +112,13 @@ const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
     divisionPressure: {
       title: "Division pressure",
       description: "Divisions with lower health scores or thin telemetry.",
-      healthTemplate: "Health {score}",
+      healthTemplate: "Stability index {score}",
       divisionDetail: "Division detail →",
     },
     scorecards: {
       title: "Current signal cards",
       description: "Cross-division health scoring from the same dataset as briefings.",
-      healthScoreTemplate: "Health score {score}",
+      healthScoreTemplate: "Stability index {score}",
     },
   },
   insights: {
@@ -160,15 +160,15 @@ const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
 const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA et couche assistante · Henry Onyx",
+      title: "Signaux et recommandations · Henry Onyx",
       description:
-        "Assistance exécutive fondée sur les preuves pour le propriétaire Henry Onyx — synthèses, fiches d’action et pression par division issues des signaux Supabase en direct.",
+        "Synthèse exécutive fondée sur les preuves pour le propriétaire Henry Onyx — synthèses, fiches d’action et pression par division issues des signaux en direct de l’entreprise.",
     },
     hero: {
-      eyebrow: "IA et couche assistante",
-      title: "Assistance exécutive fondée sur les preuves",
+      eyebrow: "Signaux et recommandations",
+      title: "Synthèse exécutive fondée sur les preuves",
       description:
-        "Les synthèses et fiches d’action sont générées uniquement à partir de signaux Supabase en direct — pas de spam générique. Utilisez le chat d’équipe pour coordonner ; utilisez cette couche pour prioriser.",
+        "Les synthèses et fiches d’action sont construites uniquement à partir des signaux en direct de l’entreprise — pas de spam générique. Utilisez le chat d’équipe pour coordonner ; utilisez cette couche pour prioriser.",
       signals: "Signaux",
       insights: "Recommandations",
     },
@@ -188,13 +188,13 @@ const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Pression par division",
       description: "Divisions au score de santé plus faible ou à la télémétrie limitée.",
-      healthTemplate: "Santé {score}",
+      healthTemplate: "Indice de stabilité {score}",
       divisionDetail: "Détail de la division →",
     },
     scorecards: {
       title: "Cartes de signaux actuels",
       description: "Notation de santé inter-divisions à partir du même jeu de données que les synthèses.",
-      healthScoreTemplate: "Score de santé {score}",
+      healthScoreTemplate: "Indice de stabilité {score}",
     },
   },
   insights: {
@@ -236,15 +236,15 @@ const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA y capa asistente · Henry Onyx",
+      title: "Señales y recomendaciones · Henry Onyx",
       description:
-        "Asistencia ejecutiva basada en evidencia para el propietario de Henry Onyx: resúmenes, tarjetas de acción y presión por división construidas a partir de señales en vivo de Supabase.",
+        "Resúmenes ejecutivos basados en evidencia para el propietario de Henry Onyx: resúmenes, tarjetas de acción y presión por división construidas a partir de señales en vivo de la empresa.",
     },
     hero: {
-      eyebrow: "IA y capa asistente",
-      title: "Asistencia ejecutiva basada en evidencia",
+      eyebrow: "Señales y recomendaciones",
+      title: "Resúmenes ejecutivos basados en evidencia",
       description:
-        "Los resúmenes y tarjetas de acción se generan únicamente a partir de señales en vivo de Supabase, no de spam genérico. Use el chat de equipo para coordinar; use esta capa para priorizar.",
+        "Los resúmenes y tarjetas de acción se construyen únicamente a partir de señales en vivo de la empresa, no de spam genérico. Use el chat de equipo para coordinar; use esta capa para priorizar.",
       signals: "Señales",
       insights: "Recomendaciones",
     },
@@ -264,13 +264,13 @@ const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Presión por división",
       description: "Divisiones con menor puntuación de salud o telemetría escasa.",
-      healthTemplate: "Salud {score}",
+      healthTemplate: "Índice de estabilidad {score}",
       divisionDetail: "Detalle de la división →",
     },
     scorecards: {
       title: "Tarjetas de señales actuales",
       description: "Puntuación de salud interdivisional desde el mismo conjunto de datos que los resúmenes.",
-      healthScoreTemplate: "Puntuación de salud {score}",
+      healthScoreTemplate: "Índice de estabilidad {score}",
     },
   },
   insights: {
@@ -312,15 +312,15 @@ const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA e camada assistente · Henry Onyx",
+      title: "Sinais e recomendações · Henry Onyx",
       description:
-        "Assistência executiva baseada em evidências para o proprietário Henry Onyx — resumos, cartões de acção e pressão por divisão construídos a partir de sinais ao vivo do Supabase.",
+        "Resumos executivos baseados em evidências para o proprietário Henry Onyx — resumos, cartões de acção e pressão por divisão construídos a partir de sinais ao vivo da empresa.",
     },
     hero: {
-      eyebrow: "IA e camada assistente",
-      title: "Assistência executiva baseada em evidências",
+      eyebrow: "Sinais e recomendações",
+      title: "Resumos executivos baseados em evidências",
       description:
-        "Os resumos e cartões de acção são gerados apenas a partir de sinais ao vivo do Supabase — não de spam genérico. Use o chat da equipa para coordenar; use esta camada para priorizar.",
+        "Os resumos e cartões de acção são construídos apenas a partir de sinais ao vivo da empresa — não de spam genérico. Use o chat da equipa para coordenar; use esta camada para priorizar.",
       signals: "Sinais",
       insights: "Recomendações",
     },
@@ -340,13 +340,13 @@ const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Pressão por divisão",
       description: "Divisões com menor pontuação de saúde ou telemetria escassa.",
-      healthTemplate: "Saúde {score}",
+      healthTemplate: "Índice de estabilidade {score}",
       divisionDetail: "Detalhe da divisão →",
     },
     scorecards: {
       title: "Cartões de sinais actuais",
       description: "Pontuação de saúde interdivisional a partir do mesmo conjunto de dados dos resumos.",
-      healthScoreTemplate: "Pontuação de saúde {score}",
+      healthScoreTemplate: "Índice de estabilidade {score}",
     },
   },
   insights: {
@@ -388,15 +388,15 @@ const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "الذكاء الاصطناعي وطبقة المساعد · Henry Onyx",
+      title: "الإشارات والتوصيات · Henry Onyx",
       description:
-        "مساعدة تنفيذية مبنية على الأدلة لمالك Henry Onyx — موجزات وبطاقات إجراء وضغط الأقسام تُبنى من إشارات Supabase الحية.",
+        "موجزات تنفيذية مبنية على الأدلة لمالك Henry Onyx — موجزات وبطاقات إجراء وضغط الأقسام تُبنى من إشارات الشركة الحية.",
     },
     hero: {
-      eyebrow: "الذكاء الاصطناعي وطبقة المساعد",
-      title: "مساعدة تنفيذية مبنية على الأدلة",
+      eyebrow: "الإشارات والتوصيات",
+      title: "موجزات تنفيذية مبنية على الأدلة",
       description:
-        "تُنشأ الموجزات وبطاقات الإجراء فقط من إشارات Supabase الحية — وليس من رسائل عامة. استخدم دردشة الفريق للتنسيق، واستخدم هذه الطبقة لتحديد الأولويات.",
+        "تُبنى الموجزات وبطاقات الإجراء فقط من إشارات الشركة الحية — وليس من رسائل عامة. استخدم دردشة الفريق للتنسيق، واستخدم هذه الطبقة لتحديد الأولويات.",
       signals: "الإشارات",
       insights: "التوصيات",
     },
@@ -416,13 +416,13 @@ const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "ضغط الأقسام",
       description: "الأقسام ذات درجات الصحة الأدنى أو القياس عن بُعد المحدود.",
-      healthTemplate: "الصحة {score}",
+      healthTemplate: "مؤشر الاستقرار {score}",
       divisionDetail: "تفاصيل القسم ←",
     },
     scorecards: {
       title: "بطاقات الإشارات الحالية",
       description: "تقييم صحي عبر الأقسام من نفس مجموعة البيانات المستخدمة للموجزات.",
-      healthScoreTemplate: "درجة الصحة {score}",
+      healthScoreTemplate: "مؤشر الاستقرار {score}",
     },
   },
   insights: {
@@ -464,15 +464,15 @@ const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "KI- und Assistenten-Ebene · Henry Onyx",
+      title: "Signale & Empfehlungen · Henry Onyx",
       description:
-        "Evidenzbasierte Executive-Unterstützung für den Henry Onyx-Eigentümer — Briefings, Aktionskarten und Bereichsdruck, gebaut aus Live-Supabase-Signalen.",
+        "Evidenzbasiertes Executive-Briefing für den Henry Onyx-Eigentümer — Briefings, Aktionskarten und Bereichsdruck, gebaut aus Live-Signalen des Unternehmens.",
     },
     hero: {
-      eyebrow: "KI- und Assistenten-Ebene",
-      title: "Evidenzbasierte Executive-Unterstützung",
+      eyebrow: "Signale & Empfehlungen",
+      title: "Evidenzbasiertes Executive-Briefing",
       description:
-        "Briefings und Aktionskarten entstehen ausschließlich aus Live-Signalen via Supabase — kein generischer Spam. Nutzen Sie den Team-Chat zur Abstimmung, diese Ebene zum Priorisieren.",
+        "Briefings und Aktionskarten entstehen ausschließlich aus Live-Signalen des Unternehmens — kein generischer Spam. Nutzen Sie den Team-Chat zur Abstimmung, diese Ebene zum Priorisieren.",
       signals: "Signale",
       insights: "Empfehlungen",
     },
@@ -492,13 +492,13 @@ const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Bereichsdruck",
       description: "Geschäftsbereiche mit niedrigerer Gesundheitsbewertung oder dünner Telemetrie.",
-      healthTemplate: "Zustand {score}",
+      healthTemplate: "Stabilitätsindex {score}",
       divisionDetail: "Bereichs-Detail →",
     },
     scorecards: {
       title: "Aktuelle Signal-Karten",
       description: "Bereichsübergreifende Gesundheitsbewertung aus demselben Datensatz wie die Briefings.",
-      healthScoreTemplate: "Gesundheitswert {score}",
+      healthScoreTemplate: "Stabilitätsindex {score}",
     },
   },
   insights: {
@@ -540,15 +540,15 @@ const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "IA e livello assistente · Henry Onyx",
+      title: "Segnali e raccomandazioni · Henry Onyx",
       description:
-        "Assistenza esecutiva basata sulle evidenze per il proprietario Henry Onyx: sintesi, schede d’azione e pressione per divisione costruite da segnali Supabase in tempo reale.",
+        "Sintesi esecutive basate sulle evidenze per il proprietario Henry Onyx: sintesi, schede d’azione e pressione per divisione costruite da segnali aziendali in tempo reale.",
     },
     hero: {
-      eyebrow: "IA e livello assistente",
-      title: "Assistenza esecutiva basata sulle evidenze",
+      eyebrow: "Segnali e raccomandazioni",
+      title: "Sintesi esecutive basate sulle evidenze",
       description:
-        "Sintesi e schede d’azione sono generate solo da segnali Supabase in tempo reale — non da spam generico. Usa la chat di team per coordinare; usa questo livello per dare priorità.",
+        "Sintesi e schede d’azione sono costruite solo da segnali aziendali in tempo reale — non da spam generico. Usa la chat di team per coordinare; usa questo livello per dare priorità.",
       signals: "Segnali",
       insights: "Raccomandazioni",
     },
@@ -568,13 +568,13 @@ const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Pressione per divisione",
       description: "Divisioni con punteggi di salute più bassi o telemetria scarsa.",
-      healthTemplate: "Salute {score}",
+      healthTemplate: "Indice di stabilità {score}",
       divisionDetail: "Dettaglio divisione →",
     },
     scorecards: {
       title: "Schede di segnale attuali",
       description: "Punteggio di salute interdivisionale dallo stesso dataset delle sintesi.",
-      healthScoreTemplate: "Punteggio di salute {score}",
+      healthScoreTemplate: "Indice di stabilità {score}",
     },
   },
   insights: {
@@ -616,13 +616,13 @@ const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
 const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
   overview: {
     metadata: {
-      title: "AI 与助手层 · Henry Onyx",
-      description: "面向 Henry Onyx 业主的循证高管协助 — 简报、行动卡和业务部门压力均基于 Supabase 实时信号生成。",
+      title: "信号与洞察 · Henry Onyx",
+      description: "面向 Henry Onyx 业主的循证高管简报 — 简报、行动卡和业务部门压力均基于公司实时信号构建。",
     },
     hero: {
-      eyebrow: "AI 与助手层",
-      title: "基于证据的高管协助",
-      description: "简报与行动卡仅由 Supabase 实时信号生成,而非通用垃圾信息。请使用团队聊天进行协调,使用本层进行优先级排序。",
+      eyebrow: "信号与洞察",
+      title: "基于证据的高管简报",
+      description: "简报与行动卡仅由公司实时信号构建,而非通用垃圾信息。请使用团队聊天进行协调,使用本层进行优先级排序。",
       signals: "信号",
       insights: "洞察",
     },
@@ -642,13 +642,13 @@ const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "业务部门压力",
       description: "健康分较低或遥测数据稀疏的业务部门。",
-      healthTemplate: "健康 {score}",
+      healthTemplate: "稳定指数 {score}",
       divisionDetail: "业务部门详情 →",
     },
     scorecards: {
       title: "当前信号卡",
       description: "与简报使用同一数据集的跨部门健康评分。",
-      healthScoreTemplate: "健康分 {score}",
+      healthScoreTemplate: "稳定指数 {score}",
     },
   },
   insights: {
@@ -686,16 +686,9 @@ const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
 
 const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
   overview: {
-    metadata: {
-      title: "AI और सहायक परत · Henry Onyx",
-      description:
-        "Henry Onyx मालिक के लिए साक्ष्य-आधारित कार्यकारी सहायता — ब्रीफिंग, एक्शन कार्ड और डिवीज़न दबाव लाइव Supabase संकेतों से तैयार।",
-    },
+    // AI-claim strings removed (F1 truth pass) — these keys fall back to the
+    // honest EN values; never machine-translate for this locale set.
     hero: {
-      eyebrow: "AI और सहायक परत",
-      title: "साक्ष्य-आधारित कार्यकारी सहायता",
-      description:
-        "ब्रीफिंग और एक्शन कार्ड केवल लाइव Supabase संकेतों से बनते हैं — सामान्य स्पैम नहीं। समन्वय के लिए टीम चैट का उपयोग करें; प्राथमिकता तय करने के लिए इस परत का उपयोग करें।",
       signals: "संकेत",
       insights: "सिफ़ारिशें",
     },
@@ -715,13 +708,11 @@ const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "डिवीज़न दबाव",
       description: "कम स्वास्थ्य स्कोर या कम टेलीमेट्री वाले डिवीज़न।",
-      healthTemplate: "स्वास्थ्य {score}",
       divisionDetail: "डिवीज़न विवरण →",
     },
     scorecards: {
       title: "वर्तमान संकेत कार्ड",
       description: "ब्रीफिंग के समान डेटासेट से क्रॉस-डिवीज़न स्वास्थ्य स्कोरिंग।",
-      healthScoreTemplate: "स्वास्थ्य स्कोर {score}",
     },
   },
   insights: {
@@ -762,16 +753,9 @@ const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
 
 const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
   overview: {
-    metadata: {
-      title: "AI na ọkwa enyemaka · Henry Onyx",
-      description:
-        "Enyemaka nke ndị isi dabere n'ihe àmà maka onye nwe Henry Onyx — nchịkọta, kaadị omume na mpịkọta ngalaba sitere na mgbaàmà Supabase dị ndụ.",
-    },
+    // AI-claim strings removed (F1 truth pass) — these keys fall back to the
+    // honest EN values; never machine-translate for this locale set.
     hero: {
-      eyebrow: "AI na ọkwa enyemaka",
-      title: "Enyemaka ndị isi dabere n'ihe àmà",
-      description:
-        "A na-eme nchịkọta na kaadị omume naanị site na mgbaàmà Supabase dị ndụ — ọ bụghị spam izugbe. Jiri mkparịta ụka otu maka nhazi; jiri ọkwa a kee ihe ndị dị mkpa.",
       signals: "Mgbaàmà",
       insights: "Ndụmọdụ",
     },
@@ -791,13 +775,11 @@ const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Mpịkọta ngalaba",
       description: "Ngalaba ndị nwere akara ahụike dị ala ma ọ bụ telemetry na-ekpe ekpe.",
-      healthTemplate: "Ahụike {score}",
       divisionDetail: "Nkọwa ngalaba →",
     },
     scorecards: {
       title: "Kaadị mgbaàmà ugbu a",
       description: "Akara ahụike n'ofe ngalaba sitere n'otu data ahụ dị ka nchịkọta.",
-      healthScoreTemplate: "Akara ahụike {score}",
     },
   },
   insights: {
@@ -838,16 +820,9 @@ const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
 
 const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
   overview: {
-    metadata: {
-      title: "AI àti ìpele olùrànlọ́wọ́ · Henry Onyx",
-      description:
-        "Ìrànlọ́wọ́ olórí tó dá lórí ẹ̀rí fún onílé Henry Onyx — àkójọpọ̀, káàdì ìṣe, àti ìpá ìpín tí a kọ́ láti ara àmì Supabase aláàyè.",
-    },
+    // AI-claim strings removed (F1 truth pass) — these keys fall back to the
+    // honest EN values; never machine-translate for this locale set.
     hero: {
-      eyebrow: "AI àti ìpele olùrànlọ́wọ́",
-      title: "Ìrànlọ́wọ́ olórí tó dá lórí ẹ̀rí",
-      description:
-        "A ń ṣẹ̀dá àkójọpọ̀ àti káàdì ìṣe láti ara àwọn àmì Supabase aláàyè nìkan — kì í ṣe ìfiránṣẹ́ àmúlùmálà. Lo ìfọ̀rọ̀wánilẹ́nuwò ẹgbẹ́ láti ṣe àjọṣe; lo ìpele yìí láti yan ohun tó ṣe pàtàkì.",
       signals: "Àmì",
       insights: "Àbá",
     },
@@ -867,13 +842,11 @@ const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Ìpá ìpín",
       description: "Àwọn ìpín tó ní iye ìlera kéréje tàbí telemetri tó kéré.",
-      healthTemplate: "Ìlera {score}",
       divisionDetail: "Àlàyé ìpín →",
     },
     scorecards: {
       title: "Káàdì àmì lọ́wọ́lọ́wọ́",
       description: "Iye ìlera oríṣiríṣi ìpín láti ara ẹ̀ka dátà kanna gẹ́gẹ́ bí àkójọpọ̀.",
-      healthScoreTemplate: "Iye ìlera {score}",
     },
   },
   insights: {
@@ -914,16 +887,9 @@ const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
 
 const HUB_OWNER_AI_COPY_HA: DeepPartial<HubOwnerAiCopy> = {
   overview: {
-    metadata: {
-      title: "AI da kuma sashin mai taimako · Henry Onyx",
-      description:
-        "Taimakon shugabanci wanda ya dogara da hujja ga mai kamfanin Henry Onyx — taƙaitawa, katuna na aiki, da matsi na sashe da aka gina daga alamomin Supabase masu rai.",
-    },
+    // AI-claim strings removed (F1 truth pass) — these keys fall back to the
+    // honest EN values; never machine-translate for this locale set.
     hero: {
-      eyebrow: "AI da kuma sashin mai taimako",
-      title: "Taimakon shugabanci wanda ya dogara da hujja",
-      description:
-        "Ana ƙirƙirar taƙaitawa da katunan aiki ne kawai daga alamomin Supabase masu rai — ba spam na gama gari ba. Yi amfani da hira da ƙungiya don daidaitawa; yi amfani da wannan sashe don ba da fifiko.",
       signals: "Alamomi",
       insights: "Shawarwari",
     },
@@ -943,13 +909,11 @@ const HUB_OWNER_AI_COPY_HA: DeepPartial<HubOwnerAiCopy> = {
     divisionPressure: {
       title: "Matsin sashe",
       description: "Sashe da ke da ƙarancin maki na lafiya ko ƙarancin telemetiry.",
-      healthTemplate: "Lafiya {score}",
       divisionDetail: "Bayanin sashe →",
     },
     scorecards: {
       title: "Katunan alamomi na yanzu",
       description: "Makin lafiya na tsakanin sashe daga teburin bayanan iri ɗaya da taƙaitattu.",
-      healthScoreTemplate: "Makin lafiya {score}",
     },
   },
   insights: {

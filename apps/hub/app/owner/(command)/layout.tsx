@@ -107,11 +107,14 @@ export default async function OwnerCommandLayout({ children }: { children: React
               {children}
             </div>
           </main>
+          {/* F1 truth pass: this button is a LINK to the signals briefing, not an
+              assistant — it stops claiming to be one. The REAL founder assistant
+              (F2) replaces this with a live chat launcher behind its own flag. */}
           <Link
             href="/owner/ai"
             className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--acct-gold)] text-[var(--acct-ink)] shadow-[0_12px_40px_rgba(201,162,39,0.45)] ring-2 ring-white/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)] lg:bottom-8 lg:right-8"
-            aria-label={t("Open owner assistant")}
-            title={t("Owner assistant — summaries, signals, and safe guidance")}
+            aria-label={t("Open signals and insights")}
+            title={t("Signals and insights — evidence-based briefings from live company data")}
           >
             <Bot className="h-6 w-6" aria-hidden />
           </Link>
