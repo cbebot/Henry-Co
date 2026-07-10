@@ -151,16 +151,21 @@ export const ownerNavItems: OwnerNavItem[] = [
   },
 
   // ── Intelligence ──
+  // F1 truth pass (2026-07-10): this section stops claiming AI — the pages
+  // behind it are deterministic signal rules and evidence-triggered playbooks
+  // (lib/owner-data.ts). The name comes back when the REAL founder assistant
+  // ships (Founder Intelligence F2, its own gated surface).
   {
     href: "/owner/ai",
-    label: "AI & Helpers",
+    label: "Signals & Insights",
     icon: Bot,
     section: "Intelligence",
     children: [
-      { href: "/owner/ai", label: "Helper Dashboard", icon: CircuitBoard },
+      { href: "/owner/ai", label: "Executive Briefing", icon: CircuitBoard },
       { href: "/owner/ai/conversations", label: "Conversations", icon: MessagesSquare },
       { href: "/owner/ai/signals", label: "Signals", icon: Network },
       { href: "/owner/ai/insights", label: "Insights", icon: Sparkles },
+      { href: "/owner/v3-launch/dashboard", label: "V3 Launch", icon: Network },
     ],
   },
 
