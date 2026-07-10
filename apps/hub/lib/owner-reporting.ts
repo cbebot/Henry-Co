@@ -3,6 +3,7 @@ import "server-only";
 import React from "react";
 import { getHqUrl } from "@henryco/config";
 import { sendTransactionalEmail } from "@henryco/email";
+import { composeMorningBriefNarrative } from "@/lib/founder-intelligence/morning-brief-narrative";
 import {
   OwnerReportDocument,
   renderDocumentToBuffer,
@@ -20,7 +21,7 @@ const OWNER_REPORT_ENTITY_TYPE = "owner_report";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LAGOS_OFFSET_MS = 60 * 60 * 1000;
 
-export type OwnerReportKind = "weekly" | "monthly";
+export type OwnerReportKind = "daily" | "weekly" | "monthly";
 
 type OwnerRecipient = {
   email: string;
@@ -124,7 +125,18 @@ function buildMonthlyPeriod(now: Date) {
   };
 }
 
+function buildDailyPeriod(now: Date) {
+  const lagosNow = toLagosDate(now);
+  return {
+    key: formatDateKey(lagosNow),
+    label: formatShortDate(lagosNow),
+  };
+}
+
 function shouldRunReport(kind: OwnerReportKind, now: Date) {
+  // Daily = the morning brief: the cron fires once a day and the per-recipient
+  // audit dedupe (kind:periodKey:email) makes retries idempotent.
+  if (kind === "daily") return true;
   const lagosNow = toLagosDate(now);
   if (kind === "weekly") {
     return lagosNow.getUTCDay() === 1;
@@ -310,15 +322,21 @@ function renderOwnerReportEmail(input: {
   finance: Awaited<ReturnType<typeof getFinanceCenterData>>;
   operations: Awaited<ReturnType<typeof getOperationsCenterData>>;
   messaging: Awaited<ReturnType<typeof getMessagingCenterData>>;
+  /** F2b: the AI-composed executive opening (daily brief, flag-gated) — null ships the deterministic brief. */
+  narrative?: string | null;
 }) {
   const title =
     input.kind === "monthly"
       ? `Henry Onyx owner monthly report • ${input.periodLabel}`
-      : `Henry Onyx owner weekly report • ${input.periodLabel}`;
+      : input.kind === "weekly"
+        ? `Henry Onyx owner weekly report • ${input.periodLabel}`
+        : `Henry Onyx morning brief • ${input.periodLabel}`;
   const intro =
     input.kind === "monthly"
       ? "This report is the richer monthly owner snapshot: money movement, pressure points, delivery health, and the next sensible executive actions."
-      : "This weekly owner report keeps the most important operational and financial truths visible without making you parse raw tables.";
+      : input.kind === "weekly"
+        ? "This weekly owner report keeps the most important operational and financial truths visible without making you parse raw tables."
+        : "Where the company stands this morning — the numbers that matter, what changed overnight, and what needs your attention first.";
   const topSignals = input.overview.signals.slice(0, 5).map((signal) => `${signal.title}: ${signal.body}`);
   const divisionPressure = [...input.overview.divisions]
     .sort((left, right) => left.healthScore - right.healthScore)
@@ -370,6 +388,18 @@ function renderOwnerReportEmail(input: {
         <div style="padding:28px 34px;">
           <p style="margin:0 0 18px;font-size:15px;line-height:1.75;color:#5d5b55;">Hello ${escapeHtml(input.recipientName || "Owner")},</p>
           <p style="margin:0 0 22px;font-size:15px;line-height:1.85;color:#5d5b55;">${escapeHtml(input.overview.executiveDigest)}</p>
+
+          ${
+            input.narrative
+              ? `
+          <div style="margin:0 0 24px;padding:20px 22px;border:1px solid rgba(201,162,39,0.35);border-radius:18px;background:#fbf7ec;">
+            <p style="margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#8a6f00;">This morning, in brief</p>
+            <p style="margin:0;font-size:15px;line-height:1.85;color:#17120f;">${escapeHtml(input.narrative)}</p>
+            <p style="margin:10px 0 0;font-size:12px;color:#867f74;">Composed by Henry Onyx Intelligence from the same live records as the numbers below.</p>
+          </div>
+          `
+              : ""
+          }
 
           <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px;">
             ${renderMetricCard(
@@ -461,6 +491,7 @@ function renderOwnerReportEmail(input: {
     "",
     intro,
     "",
+    ...(input.narrative ? ["This morning, in brief:", input.narrative, ""] : []),
     `Recognized revenue: ${formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira)}`,
     `Recorded outflow: ${formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira)}`,
     `Critical signals: ${input.overview.metrics.criticalSignals}`,
@@ -496,7 +527,9 @@ function renderOwnerReportEmail(input: {
  * canonical overview/finance/operations/messaging snapshot.
  */
 function buildOwnerReportProps(input: {
-  kind: OwnerReportKind;
+  // The branded-documents PDF template exists for weekly|monthly only; the
+  // daily morning brief never builds a PDF.
+  kind: Exclude<OwnerReportKind, "daily">;
   periodKey: string;
   periodLabel: string;
   recipientName: string;
@@ -654,7 +687,8 @@ export async function runOwnerReport(
   }
 ) {
   const now = options?.now ?? new Date();
-  const period = kind === "monthly" ? buildMonthlyPeriod(now) : buildWeeklyPeriod(now);
+  const period =
+    kind === "monthly" ? buildMonthlyPeriod(now) : kind === "weekly" ? buildWeeklyPeriod(now) : buildDailyPeriod(now);
 
   if (!options?.force && !shouldRunReport(kind, now)) {
     return {
@@ -691,6 +725,10 @@ export async function runOwnerReport(
     };
   }
 
+  // F2b: the AI opening for the DAILY brief — composed once per run (not per
+  // recipient), flag-gated + best-effort inside.
+  const narrative = kind === "daily" ? await composeMorningBriefNarrative() : null;
+
   const deliveries: DispatchResult[] = [];
   const sentAction = `owner_report_${kind}_sent`;
   const failedAction = `owner_report_${kind}_failed`;
@@ -709,21 +747,26 @@ export async function runOwnerReport(
       continue;
     }
 
-    const pdfProps = buildOwnerReportProps({
-      kind,
-      periodKey: period.key,
-      periodLabel: period.label,
-      recipientName: recipient.fullName,
-      overview,
-      finance,
-      operations,
-      messaging,
-      generatedAt: now,
-    });
-
     // V3 PASS 21 / H6 — render the premium PDF and upload to storage.
-    // Falls back gracefully if the bucket is missing or fonts fail.
-    const pdfUpload = await uploadOwnerReportPdf(pdfProps);
+    // Falls back gracefully if the bucket is missing or fonts fail. The daily
+    // morning brief is deliberately lean (email only, no PDF), and the
+    // branded-documents template only knows weekly|monthly.
+    const pdfUpload =
+      kind === "daily"
+        ? null
+        : await uploadOwnerReportPdf(
+            buildOwnerReportProps({
+              kind,
+              periodKey: period.key,
+              periodLabel: period.label,
+              recipientName: recipient.fullName,
+              overview,
+              finance,
+              operations,
+              messaging,
+              generatedAt: now,
+            }),
+          );
 
     const emailTemplate = renderOwnerReportEmail({
       kind,
@@ -733,6 +776,7 @@ export async function runOwnerReport(
       finance,
       operations,
       messaging,
+      narrative,
     });
     const pdfHtml = pdfUpload?.signedUrl
       ? `\n<div style="margin-top:24px;padding:18px;border:1px solid rgba(23,18,15,0.08);border-radius:18px;background:#fffdfa;">
