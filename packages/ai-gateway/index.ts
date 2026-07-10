@@ -23,6 +23,21 @@ export { AI_SURFACES, getSurfacePolicy } from "./src/surfaces";
 
 export type { AiUsageReceipt, AiTask } from "./src/contracts";
 
+export type {
+  FounderAssistAction,
+  FounderAssistEnvelope,
+  FounderAssistTurn,
+  ResolvedFounderAction,
+} from "./src/founder-assist";
+export {
+  parseFounderAssistEnvelope,
+  salvageFounderAssistEnvelope,
+  interpretFounderAssistOutput,
+  resolveFounderAssistActions,
+  listFounderAssistDestinations,
+  isFounderAssistDestination,
+} from "./src/founder-assist";
+
 export { estimateInputTokens, estimateUsageUpperBound } from "./src/metering";
 export { redactReceipt, assertClientSafe, AI_LOG_REDACT_KEYS } from "./src/redaction";
 export { mapSignalToTelemetry, type AiTelemetryRecord } from "./src/telemetry-map";

@@ -16,6 +16,7 @@ import { createAiTelemetry, type AiTelemetryDeps } from "./telemetry";
 import { parseVerdict } from "../verify";
 import { parseCoachEnvelope } from "../studio-prompts";
 import { parseSupportAssistEnvelope, salvageSupportAssistEnvelope } from "../support-assist";
+import { parseFounderAssistEnvelope, salvageFounderAssistEnvelope } from "../founder-assist";
 import { assistantReplyLeaksProvider } from "../doctrine";
 import { InMemoryRateLimiter, type AiRateLimitPort } from "../rate-limit";
 
@@ -115,6 +116,11 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
           const env = parseSupportAssistEnvelope(raw);
           return env != null && !assistantReplyLeaksProvider(env.reply);
         }
+        // Founder assist returns the {reply,navigate} envelope — same guard + opacity scan.
+        if (t.surface === "hub.founder.assist") {
+          const env = parseFounderAssistEnvelope(raw);
+          return env != null && !assistantReplyLeaksProvider(env.reply);
+        }
         // The Intelligence chat + the deep-work capabilities return free prose; scan directly
         // for an opacity leak (the person paid for these, so a leaked provider name is worse).
         if (t.surface === "intelligence.chat" || t.surface.startsWith("intelligence.deep."))
@@ -127,6 +133,13 @@ export async function runAiTask(task: AiTask, opts: RunAiTaskOptions): Promise<R
       // stays absolute on this degraded path: a salvaged reply that leaks a provider/model name
       // is refused (returns null → the orchestrator fails closed) rather than shown.
       salvageOutput: (raw, t) => {
+        if (t.surface === "hub.founder.assist") {
+          const salvaged = salvageFounderAssistEnvelope(raw);
+          if (!salvaged) return null;
+          const env = parseFounderAssistEnvelope(salvaged);
+          if (!env || assistantReplyLeaksProvider(env.reply)) return null;
+          return salvaged;
+        }
         if (t.surface !== "support.message.assist") return null;
         const salvaged = salvageSupportAssistEnvelope(raw);
         if (!salvaged) return null;
