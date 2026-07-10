@@ -209,9 +209,11 @@ export default async function SiteLayout({
   );
   const footer = buildHubFooter(hubCopy, {
     statement: footerSettings.footer_blurb || footerSettings.brand_description,
+    // NUMBER-PURGE (2026-07-10): email only — support_phone (a DB-defaulted
+    // number) must not reach the footer object; it serializes into the RSC/HTML
+    // payload and Google indexes it even though nothing prints it.
     support: {
       email: footerSettings.support_email,
-      phone: footerSettings.support_phone,
     },
   });
   const returnPath = headerReader.get("x-hub-return-path") || "/";
