@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { Bot } from "lucide-react";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { ModuleJumpEntry } from "@henryco/search-ui";
@@ -107,6 +108,17 @@ export default async function OwnerCommandLayout({ children }: { children: React
               {children}
             </div>
           </main>
+          {/* Founder Intelligence F2: when the flag is live, the corner hosts the REAL
+              owner-gated assistant (its own endpoint, its own access model). Dark, the
+              honest signals link from F1 remains. */}
+          {process.env.NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE === "1" ? (
+            <IntelligenceLauncher
+              division="hub"
+              endpoint="/api/owner/intelligence/chat"
+              accent="#C9A227"
+            />
+          ) : (
+          <>
           {/* F1 truth pass: this button is a LINK to the signals briefing, not an
               assistant — it stops claiming to be one. The REAL founder assistant
               (F2) replaces this with a live chat launcher behind its own flag. */}
@@ -118,6 +130,8 @@ export default async function OwnerCommandLayout({ children }: { children: React
           >
             <Bot className="h-6 w-6" aria-hidden />
           </Link>
+          </>
+          )}
           <OwnerNotificationsToastViewport />
         </div>
       </OwnerPaletteHost>

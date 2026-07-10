@@ -25,7 +25,14 @@ export type AiSurfaceKey =
   // confirms a price for before it runs. Deep tier (the premium the rate card already prices).
   | "intelligence.deep.growth" // METERED, deep — a tailored growth plan for their business
   | "intelligence.deep.marketing" // METERED, deep — a deep marketing analysis of their own store/listings
-  | "intelligence.deep.listing"; // METERED, deep — a conversion review of their own listings/products
+  | "intelligence.deep.listing" // METERED, deep — a conversion review of their own listings/products
+  // Founder Intelligence F2 — the owner-only executive assistant inside the hub command
+  // center. FREE (the founder IS the company; no wallet interaction), deep tier (the
+  // strongest model — this is the one seat where quality beats cost by definition).
+  // Access model is INDEPENDENT of the customer support brain: the hub route gates on
+  // requireOwner BEFORE runAiTask, and its own flag (NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE)
+  // keeps it dark until activation.
+  | "hub.founder.assist";
 
 export interface AiSurfacePolicy {
   surface: AiSurfaceKey;
@@ -219,6 +226,17 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     modelTier: "deep",
     maxOutputTokens: 2000,
     maxCalls: 1,
+  },
+  "hub.founder.assist": {
+    surface: "hub.founder.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1600,
+    maxCalls: 1,
+    // One person holds this surface, but the anti-abuse lesson still applies —
+    // a leaked owner session must not be able to burn unbounded provider spend.
+    freeAllowancePerDay: 400,
   },
 };
 
