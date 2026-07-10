@@ -93,6 +93,10 @@ export async function POST(request: Request) {
     const bankName = String(body.bank_name || "").trim();
     const accountName = String(body.account_name || "").trim();
     const accountNumber = normalizeAccountNumber(body.account_number);
+    // V3-MONEY-PAYOUT: the provider (NIP) bank code — what addresses the bank on an automatic
+    // payout transfer. Optional and additive: a method without it simply stays on the manual
+    // review flow. Digits only (Flutterwave bank codes are numeric strings, e.g. "044").
+    const bankCode = String(body.bank_code || "").trim().replace(/\D/g, "").slice(0, 6);
 
     if (!bankName || !accountName || !accountNumber || accountNumber.length < 8) {
       return NextResponse.json(
@@ -220,6 +224,8 @@ export async function POST(request: Request) {
         currency: "NGN",
         is_default: isDefault,
         is_active: true,
+        // bank_code enables the automatic payout rail for this method; absent → manual review.
+        metadata: bankCode ? { bank_code: bankCode } : {},
       } as never)
       .select("id, bank_name, account_name, account_number, is_default")
       .single();
