@@ -134,7 +134,13 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
   /**
    * One transport for every call. Normalises failure onto the router's
    * retryable/fatal axis: network throw / 5xx / 408 / 429 → retryable (failover);
-   * other non-2xx → fatal; 2xx with envelope `status:"error"` → fatal.
+   * other non-2xx → fatal; 2xx with a PARSED envelope `status:"error"` → fatal.
+   *
+   * A 2xx whose body cannot be parsed is OUTCOME-UNKNOWN, not a rejection: the provider
+   * accepted the request and may have acted on it (for POST /transfers, the transfer may
+   * exist). It is classified as a distinct RETRYABLE code so no caller ever mistakes it for
+   * "the action provably did not happen" — the payout rail's release decision depends on
+   * exactly this distinction (double-payout if confused).
    */
   private async call(
     method: "GET" | "POST",
@@ -153,14 +159,17 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
     } catch {
       return this.err("flutterwave_network_error", true); // transient → failover
     }
-    let envelope: FlwEnvelope = {};
+    let envelope: FlwEnvelope | null = null;
     try {
       envelope = ((await res.json()) as FlwEnvelope) ?? {};
     } catch {
-      envelope = {};
+      envelope = null; // body unreadable — outcome unknown when the status was 2xx
     }
     if (res.status < 200 || res.status >= 300) {
-      return this.err(`flutterwave_http_${res.status}`, isRetryableStatus(res.status), envelope.message);
+      return this.err(`flutterwave_http_${res.status}`, isRetryableStatus(res.status), envelope?.message);
+    }
+    if (envelope === null) {
+      return this.err("flutterwave_bad_envelope", true); // 2xx, unparseable body → unknown, never "rejected"
     }
     if (envelope.status !== "success") {
       return this.err("flutterwave_rejected", false, envelope.message);
@@ -533,7 +542,11 @@ export class FlutterwaveProvider implements PaymentProviderAdapter {
     const res = await this.call("POST", "/transfers", body);
     if (!res.ok) return res;
     const data = (res.value.data ?? {}) as FlwTransferData;
-    if (data.id == null) return this.err("flutterwave_bad_transfer_response", false);
+    // A SUCCESS envelope missing the id means the transfer WAS created but we cannot read its
+    // handle — outcome-known, reference usable. RETRYABLE so the caller keeps any hold and lets
+    // the webhook/verify resolve it; marking this fatal would license a release for a transfer
+    // that exists (double-payout).
+    if (data.id == null) return this.err("flutterwave_bad_transfer_response", true);
     return {
       ok: true,
       value: { providerReference: String(data.id), status: typeof data.status === "string" ? data.status : "NEW" },

@@ -18,6 +18,7 @@ import {
   extractLegacyWithdrawalPinHash,
   isLegacyPayoutMethodRow,
   isMissingPostgrestResourceError,
+  isPendingWithdrawalStatus,
   mapLegacyPayoutMethod,
 } from "@/lib/wallet-storage";
 
@@ -194,6 +195,21 @@ export async function POST(request: Request) {
     const pendingHoldKobo = getPendingWithdrawalHoldKobo(existingRequests);
     const availableBalance = Math.max(0, balance - pendingHoldKobo);
 
+    // One withdrawal at a time: a second request while one is pending or in flight is almost
+    // always a double-submit (and the daily-cap window is check-then-insert, so concurrency
+    // could stack past it). One-at-a-time closes both; the next request opens when this one
+    // settles or is released.
+    const hasInFlight = existingRequests.some((request) => {
+      const status = String((request as { status?: string }).status || "").toLowerCase();
+      return isPendingWithdrawalStatus(status) || status === "processing";
+    });
+    if (hasInFlight) {
+      return NextResponse.json(
+        { error: "You already have a withdrawal in progress. It completes before a new one starts." },
+        { status: 400 }
+      );
+    }
+
     if (amountKobo > availableBalance) {
       return NextResponse.json(
         { error: "Amount exceeds your available balance after pending withdrawals." },
@@ -305,6 +321,7 @@ export async function POST(request: Request) {
     // flow untouched; "rejected" already closed the request (nothing held, or safely released).
     // The transfer webhook (settle/release) is the money truth — nothing here marks it paid.
     let autoMode: "auto" | "manual" = "manual";
+    let autoConfirmed = false;
     if (isWalletAutoPayoutEnabled()) {
       const auto = await startAutomaticPayout({
         admin,
@@ -316,6 +333,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: auto.error }, { status: 400 });
       }
       autoMode = auto.mode;
+      autoConfirmed = auto.mode === "auto" && auto.confirmed;
     }
     const isAuto = autoMode === "auto";
 
@@ -325,7 +343,9 @@ export async function POST(request: Request) {
       activity_type: "wallet_withdrawal_requested",
       title: `Wallet withdrawal request — NGN ${amountNaira.toLocaleString()}`,
       description: isAuto
-        ? "Your payout has started. It is confirmed automatically once the bank transfer completes."
+        ? autoConfirmed
+          ? "Your payout has started. It is confirmed automatically once the bank transfer completes."
+          : "Your payout is being processed. We will confirm it shortly."
         : "Finance will review this withdrawal request before payout.",
       amount_kobo: amountKobo,
       status: isAuto ? "processing" : "pending_review",
@@ -339,9 +359,11 @@ export async function POST(request: Request) {
       division: "account",
       eventType: "wallet.transaction.update",
       severity: "info",
-      title: isAuto ? "Withdrawal on its way" : "Withdrawal requested",
+      title: isAuto ? (autoConfirmed ? "Withdrawal on its way" : "Withdrawal processing") : "Withdrawal requested",
       body: isAuto
-        ? `Your withdrawal of NGN ${amountNaira.toLocaleString()} is on its way to your bank. We will confirm the moment it lands.`
+        ? autoConfirmed
+          ? `Your withdrawal of NGN ${amountNaira.toLocaleString()} is on its way to your bank. We will confirm the moment it lands.`
+          : `Your withdrawal of NGN ${amountNaira.toLocaleString()} is being processed. We will confirm it shortly.`
         : `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
       deepLink: "/wallet/withdrawals",
       relatedType: "wallet_withdrawal_request",

@@ -2,6 +2,7 @@ import "server-only";
 
 import { createPaymentRouter } from "@henryco/payment-router";
 import { callPaymentRpc } from "@/lib/payments/db";
+import { isMissingPostgrestResourceError } from "@/lib/wallet-storage";
 import type { createAdminSupabase } from "@/lib/supabase";
 
 /**
@@ -35,7 +36,11 @@ export async function getWindowWithdrawnKobo(admin: Admin, userId: string, capKo
     .select("amount_kobo, status, created_at")
     .eq("user_id", userId)
     .gte("created_at", since);
-  if (error) return capKobo; // fail closed — never assume headroom on a broken read
+  // A legacy environment without the modern table is NOT a broken read — the legacy insert path
+  // (customer_wallet_transactions) is about to handle this request; blocking it here would brick
+  // legacy withdrawals with a false "daily limit" message. Window = 0 there.
+  if (error && isMissingPostgrestResourceError(error)) return 0;
+  if (error) return capKobo; // genuine read failure — fail closed, never assume headroom
   return (data ?? []).reduce((sum, row) => {
     const status = String((row as { status?: string }).status || "").toLowerCase();
     if (["rejected", "cancelled", "failed"].includes(status)) return sum;
@@ -63,12 +68,47 @@ async function mergeRequestMetadata(
 }
 
 export type AutoPayoutOutcome =
-  /** The transfer is on its way (or reserved and resolving) — status is `processing`. */
-  | { mode: "auto" }
+  /** The rail took the request. `confirmed` = the transfer create was positively acknowledged;
+   *  false = outcome unknown (hold kept, webhook/ops resolve) — the copy must hedge. */
+  | { mode: "auto"; confirmed: boolean }
   /** Auto-payout not possible for this method/env — the request stays in the manual review flow. */
   | { mode: "manual" }
   /** The request was refused and closed (nothing moved, or the hold was safely released). */
   | { mode: "rejected"; error: string };
+
+/**
+ * Release is allowed ONLY on outcomes that PROVE the transfer was never created. Never derived
+ * from `retryable` (retryability says "safe to repeat", not "never happened"): a 2xx with an
+ * unreadable body or a missing id is non-retryable-looking yet the transfer may exist.
+ *
+ * Valid ONLY for this single-shot flow (a FRESH reference, first create attempt). A future
+ * re-drive/sweep MUST NOT reuse this set: on a re-used reference, a `flutterwave_rejected`
+ * envelope can mean "duplicate reference" — i.e. the transfer EXISTS — so a sweep must verify
+ * by reference and never release on a rejection.
+ */
+const PROVEN_NOT_CREATED = new Set([
+  "flutterwave_rejected", // parsed 2xx envelope error on a fresh reference (declined before creation)
+  "flutterwave_transfer_missing_account", // local validation — no API call was made
+  "flutterwave_unsupported_currency", // local validation — no API call was made
+  "flutterwave_http_400",
+  "flutterwave_http_401",
+  "flutterwave_http_403",
+  "flutterwave_http_404",
+  "flutterwave_http_422",
+]);
+
+/** Loose holder-name check: shares at least one substantive (3+ letter) name token. Tolerates
+ *  ordering/middle names ("ONAH HENRY CHUKWUEMEKA" vs "Henry Onah"); catches a total stranger. */
+function namesLooselyMatch(expected: string, resolved: string): boolean {
+  const tokens = (value: string) =>
+    value
+      .toUpperCase()
+      .replace(/[^A-Z\s]/g, " ")
+      .split(/\s+/)
+      .filter((token) => token.length >= 3);
+  const expectedTokens = new Set(tokens(expected));
+  return tokens(resolved).some((token) => expectedTokens.has(token));
+}
 
 /**
  * Run the automatic payout for a just-inserted withdrawal request. Order is deliberate:
@@ -116,13 +156,41 @@ export async function startAutomaticPayout(input: {
     return { mode: "manual" };
   }
 
+  // 2b) The bank's holder name must loosely match the name on the payout method — a mistyped
+  //     account number that resolves to a valid STRANGER must never be paid automatically.
+  //     Mismatch → human review (the resolved name is recorded for the reviewer).
+  const expectedName = String((method as { account_name?: string } | null)?.account_name || "").trim();
+  if (expectedName && !namesLooselyMatch(expectedName, resolved.value.accountName)) {
+    await mergeRequestMetadata(admin, requestId, {
+      auto_payout: "resolve_name_mismatch",
+      resolved_account_name: resolved.value.accountName,
+    });
+    return { mode: "manual" };
+  }
+
   // 3) Reserve — the single-winner atomic hold (balance -= amount; DR wallet-liability /
-  //    CR withdrawals_payable). Insufficient balance closes the request; nothing moved.
-  const reserved = await callPaymentRpc<{ reserved?: boolean; reason?: string }>("reserve_withdrawal", [requestId]);
-  if (reserved.error) return { mode: "manual" }; // RPC unreachable → stay manual, nothing moved
+  //    CR withdrawals_payable). The RPC is idempotent, so an RPC transport error (which can
+  //    strike AFTER the commit) is retried once — a committed reserve answers `duplicate`.
+  let reserved = await callPaymentRpc<{ reserved?: boolean; reason?: string }>("reserve_withdrawal", [requestId]);
+  if (reserved.error) {
+    reserved = await callPaymentRpc<{ reserved?: boolean; reason?: string }>("reserve_withdrawal", [requestId]);
+  }
+  if (reserved.error) {
+    // Twice unreachable: the reserve MAY have committed (hold live, status processing) or not
+    // (still pending_review). Both states are visible to ops via this marker; never assume.
+    await mergeRequestMetadata(admin, requestId, { auto_payout: "reserve_unknown" });
+    return { mode: "auto", confirmed: false };
+  }
   if (reserved.data?.reserved !== true) {
-    await mergeRequestMetadata(admin, requestId, { auto_payout: reserved.data?.reason || "not_reservable" }, "cancelled");
-    return { mode: "rejected", error: "Your available balance no longer covers this withdrawal." };
+    if (reserved.data?.reason === "insufficient_funds") {
+      // Nothing moved (the SQL left it pending_review); close the request cleanly.
+      await mergeRequestMetadata(admin, requestId, { auto_payout: "insufficient_funds" }, "cancelled");
+      return { mode: "rejected", error: "Your available balance no longer covers this withdrawal." };
+    }
+    // not_reservable: the row is not in a fresh state (another actor touched it). Never rewrite
+    // its status from the app layer — record the observation and leave it to review.
+    await mergeRequestMetadata(admin, requestId, { auto_payout: reserved.data?.reason || "not_reservable" });
+    return { mode: "manual" };
   }
 
   // 4) Create the transfer. reference = the request id, so the provider dedups any retry and the
@@ -142,17 +210,18 @@ export async function startAutomaticPayout(input: {
       provider_reference: transfer.value.providerReference,
       resolved_account_name: resolved.value.accountName,
     });
-    return { mode: "auto" };
+    return { mode: "auto", confirmed: true };
   }
 
-  // 5) Create failed. ONLY a definitive (non-retryable) rejection proves the transfer does not
-  //    exist — release the hold and close the request. A retryable/unknown failure (network,
-  //    5xx) keeps the hold and stays `processing`: the transfer may have been accepted, and the
-  //    webhook (or a verify sweep) is the only safe resolver. Never release on unknown.
-  if (!transfer.error.retryable) {
+  // 5) Create failed. Release the hold ONLY on an outcome that PROVES the transfer was never
+  //    created (the whitelist above) — never on "not retryable", which includes created-but-
+  //    unreadable responses. Anything else keeps the hold as `processing`: the transfer may
+  //    have been accepted, and the webhook (or ops via the provider dashboard) is the only
+  //    safe resolver. Never release on unknown.
+  if (PROVEN_NOT_CREATED.has(transfer.error.code)) {
     await callPaymentRpc("release_withdrawal", [requestId, "transfer_rejected"]);
     return { mode: "rejected", error: "We couldn't start this payout. Nothing left your wallet — please try again." };
   }
   await mergeRequestMetadata(admin, requestId, { auto_payout: "transfer_unconfirmed" });
-  return { mode: "auto" };
+  return { mode: "auto", confirmed: false };
 }

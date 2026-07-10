@@ -743,3 +743,49 @@ describe("FlutterwaveProvider — outbound transfers (automatic withdrawal payou
     assert.equal(calls.length, 0);
   });
 });
+
+// ── V3-MONEY-PAYOUT review fixes — outcome-unknown is NEVER classified as a rejection ──
+describe("FlutterwaveProvider — outcome-unknown classification (release-safety)", () => {
+  const provider = (fetchImpl: FlutterwaveFetch) => new FlutterwaveProvider({ secretKey: SECRET_KEY, fetchImpl });
+
+  it("a 2xx with an unparseable body is RETRYABLE flutterwave_bad_envelope, never 'rejected'", async () => {
+    const fetchImpl: FlutterwaveFetch = async () => ({
+      status: 200,
+      json: async () => {
+        throw new Error("truncated body");
+      },
+    });
+    const res = await provider(fetchImpl).createTransfer({
+      reference: "wd-1", amountMinor: 1000, currency: "NGN", accountNumber: "0690000031", bankCode: "044",
+    });
+    assert.equal(res.ok, false);
+    if (!res.ok) {
+      assert.equal(res.error.code, "flutterwave_bad_envelope");
+      assert.equal(res.error.retryable, true, "unknown outcome must be retryable — the transfer may exist");
+    }
+  });
+
+  it("a SUCCESS envelope missing the transfer id is RETRYABLE (created-but-unreadable)", async () => {
+    const { fetchImpl } = fakeFetch(() => ({ status: 200, body: { status: "success", data: {} } }));
+    const res = await provider(fetchImpl).createTransfer({
+      reference: "wd-2", amountMinor: 1000, currency: "NGN", accountNumber: "0690000031", bankCode: "044",
+    });
+    assert.equal(res.ok, false);
+    if (!res.ok) {
+      assert.equal(res.error.code, "flutterwave_bad_transfer_response");
+      assert.equal(res.error.retryable, true, "the transfer WAS created — a caller must keep any hold");
+    }
+  });
+
+  it("a parsed 2xx envelope error stays a FATAL flutterwave_rejected (a genuine decline)", async () => {
+    const { fetchImpl } = fakeFetch(() => ({ status: 200, body: { status: "error", message: "Insufficient balance" } }));
+    const res = await provider(fetchImpl).createTransfer({
+      reference: "wd-3", amountMinor: 1000, currency: "NGN", accountNumber: "0690000031", bankCode: "044",
+    });
+    assert.equal(res.ok, false);
+    if (!res.ok) {
+      assert.equal(res.error.code, "flutterwave_rejected");
+      assert.equal(res.error.retryable, false);
+    }
+  });
+});
