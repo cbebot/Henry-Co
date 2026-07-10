@@ -213,6 +213,20 @@ jobs:
       - name: Prove multi-currency ledger invariants (post · reject-bad · settle-usd · no-NG-VAT · NGN-split · per-currency)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/multicurrency_ledger_invariants.sql
 
+      # V3-MONEY-PAYOUT: the automatic withdrawal (payout) rail. Seed the minimal wallet tables the
+      # RPCs touch, apply the rail migration on the same fresh DB, then prove reserve/settle/release
+      # end to end: single-winner hold (no double-spend), idempotent, no overdraw, cash only on the
+      # confirmed transfer, failed transfer restores the balance, and the wallet reconciles to the
+      # ledger liability throughout.
+      - name: Seed payout-rail prerequisites (minimal customer_wallets + withdrawal_requests)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payout_rail_min.sql
+
+      - name: Apply V3-MONEY-PAYOUT rail migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260706130000_v3_money_payout_rail.sql
+
+      - name: Prove payout-rail invariants (reserve · idempotent · settle+fee · no-overdraw · release · reconcile)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payout_ledger_invariants.sql
+
       # SEC-HARDEN-01: lock down the SECURITY DEFINER audit writers (same revoke
       # discipline as the money RPCs). The two writers + is_staff_in_any live on
       # prod out-of-band (not created by any FL2 migration), so create faithful

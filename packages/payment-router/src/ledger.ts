@@ -57,6 +57,10 @@ export const LEDGER_ACCOUNTS = {
   // VAT on the processor fee the owner absorbs is a recoverable asset.
   vat_output_payable: { type: "liability", normalBalance: "credit", label: "VAT output payable (collected on sales, owed to FIRS)" },
   fee_vat_recoverable: { type: "asset", normalBalance: "debit", label: "Input VAT recoverable (on processor fees)" },
+  // V3-MONEY-PAYOUT — a withdrawal in flight: the user's money is reclassified out of their wallet
+  // balance into "payable to their bank", still owed to them, until the provider transfer confirms
+  // and the cash actually leaves. Keeps balance == wallet-liability true at every step.
+  withdrawals_payable: { type: "liability", normalBalance: "credit", label: "Withdrawals payable (requested, transfer in flight)" },
 } as const satisfies Record<string, LedgerAccount>;
 
 export type LedgerAccountCode = keyof typeof LEDGER_ACCOUNTS;
@@ -182,6 +186,57 @@ export function buildWalletTopupLines(amountKobo: number): JournalLine[] {
 export function buildRefundLines(amountKobo: number): JournalLine[] {
   requirePositiveKobo(amountKobo);
   return [debit("payments_clearing", amountKobo), credit("cash_settlement", amountKobo)];
+}
+
+// ---------------------------------------------------------------------------
+// V3-MONEY-PAYOUT — automatic withdrawal (payout) rail.
+//
+// A withdrawal is the wallet top-up in reverse, in three provider-confirmed steps that keep the
+// wallet a projection of the ledger AND only move cash on a confirmed transfer:
+//   reserve  → DR customer_wallet_liability / CR withdrawals_payable   (reclassify; balance -= amount; no cash moves)
+//   settle   → DR withdrawals_payable (+ DR processor_fees fee) / CR cash_settlement (amount + fee)   (cash leaves, on the webhook)
+//   release  → DR withdrawals_payable / CR customer_wallet_liability   (reverse the reserve; balance += amount)
+// A successful payout posts reserve + settle; a failed one posts reserve + release (net zero). The
+// company absorbs the transfer fee (the user withdraws and receives the full amount) — feeKobo is
+// the REAL provider fee from the confirmed transfer, 0 when none is reported.
+// ---------------------------------------------------------------------------
+
+/**
+ * Reserve a withdrawal: reclassify the amount from the user's wallet balance into "withdrawals
+ * payable" (in flight). Posted in the SAME txn as the atomic `balance_kobo -= amount`, so the
+ * balance stays equal to the ledger wallet-liability and the money cannot be double-spent. No cash
+ * moves yet — that waits for the confirmed transfer.
+ */
+export function buildWithdrawalReserveLines(amountKobo: number): JournalLine[] {
+  requirePositiveKobo(amountKobo);
+  return [debit("customer_wallet_liability", amountKobo), credit("withdrawals_payable", amountKobo)];
+}
+
+/**
+ * Settle a withdrawal on the CONFIRMED transfer: the in-flight payable clears and the cash actually
+ * leaves. The company absorbs the transfer fee, so the debit side is amount (payable) + fee
+ * (expense) and the credit is the full cash out (amount + fee); the debit total equals the cash
+ * that left. `feeKobo` is the real provider fee (0 when none) — never invented.
+ */
+export function buildWithdrawalSettlementLines(input: { amountKobo: number; feeKobo: number }): JournalLine[] {
+  const { amountKobo, feeKobo } = input;
+  requirePositiveKobo(amountKobo);
+  requireWholeKoboNamed(feeKobo, "feeKobo");
+  const cashOut = amountKobo + feeKobo;
+  const lines: JournalLine[] = [debit("withdrawals_payable", amountKobo)];
+  if (feeKobo > 0) lines.push(debit("processor_fees", feeKobo));
+  lines.push(credit("cash_settlement", cashOut));
+  return lines;
+}
+
+/**
+ * Release a FAILED withdrawal: reverse the reserve exactly — the in-flight payable returns to the
+ * user's wallet liability. Posted in the SAME txn as restoring `balance_kobo += amount`. No cash
+ * moved, so nothing on the cash side is touched.
+ */
+export function buildWithdrawalReleaseLines(amountKobo: number): JournalLine[] {
+  requirePositiveKobo(amountKobo);
+  return [debit("withdrawals_payable", amountKobo), credit("customer_wallet_liability", amountKobo)];
 }
 
 // ---------------------------------------------------------------------------
