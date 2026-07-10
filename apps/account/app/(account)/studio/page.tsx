@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import type { Metadata } from "next";
 
 import { requireAccountUser } from "@/lib/auth";
@@ -319,6 +320,9 @@ export default async function StudioPage() {
           {nextStep}
         </>
       }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "studio-projects",

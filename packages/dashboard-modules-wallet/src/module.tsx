@@ -15,8 +15,9 @@ import {
   PendingFundingCard,
   RecentTransactionsCard,
   PayoutMethodsCard,
+  VerificationNudgeCard,
 } from "./widgets";
-import { loadWalletSnapshot } from "./data";
+import { loadWalletSnapshot, loadNeedsVerificationNudge } from "./data";
 
 /**
  * The wallet module — slug `wallet`. Audit anchor §B.account-8.
@@ -69,12 +70,28 @@ export const walletModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadWalletSnapshot(viewer);
+    const [snapshot, needsVerification] = await Promise.all([
+      loadWalletSnapshot(viewer),
+      loadNeedsVerificationNudge(viewer),
+    ]);
     if (!snapshot) return [];
 
     const userId = viewer.user.id;
 
     return [
+      // SMART (2026-07-10): trust-aware nudge — only for unverified viewers,
+      // stating the exact step that unlocks withdrawals. Real state, no theater.
+      ...(needsVerification
+        ? [{
+            id: "wallet.verification-nudge",
+            source: "wallet" as const,
+            title: "Enable withdrawals",
+            size: "sm" as const,
+            weight: 78,
+            href: "/security",
+            render: async () => <VerificationNudgeCard />,
+          }]
+        : []),
       {
         id: "wallet.balance",
         source: "wallet",

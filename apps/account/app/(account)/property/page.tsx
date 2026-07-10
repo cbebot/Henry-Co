@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { redirect } from "next/navigation";
 import { getDivisionUrl } from "@henryco/config";
 import { getAccountCopy } from "@henryco/i18n/server";
@@ -291,6 +292,9 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
           {nextStep}
         </>
       }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "acct-prop-saved",

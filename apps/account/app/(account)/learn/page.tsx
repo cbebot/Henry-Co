@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { getDivisionUrl } from "@henryco/config";
 import {
   formatAccountTemplate,
@@ -372,6 +373,9 @@ export default async function LearnPage() {
           {nextStep}
         </>
       }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "acct-lrn-courses",

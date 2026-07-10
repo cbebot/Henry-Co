@@ -166,7 +166,13 @@ export const marketplaceModule: DashboardModule = {
   async getCommandPaletteEntries(viewer): Promise<ReadonlyArray<PaletteEntry>> {
     // AWARE-FIX (2026-07-10): vendor standing resolves via the shared grant
     // predicate, independent of the customer snapshot (staff-kind vendors).
-    const vendor = Boolean(await loadVendorStatus(viewer));
+    // SMART (2026-07-10): the palette also proposes the viewer's OWN in-flight
+    // orders — real rows, freshest first — not just generic actions.
+    const [vendorStatus, snapshot] = await Promise.all([
+      loadVendorStatus(viewer),
+      loadMarketplaceSnapshot(viewer).catch(() => null),
+    ]);
+    const vendor = Boolean(vendorStatus);
 
     // PASS 22 issue #1 — every `/marketplace/<sub>` palette entry below
     // pointed at routes the account shell never implemented. We collapse
@@ -239,6 +245,21 @@ export const marketplaceModule: DashboardModule = {
         // Vendor WINDOW → the REAL workspace on the marketplace subdomain.
         href: MARKETPLACE_VENDOR_WORKSPACE_HREF,
         keywords: ["vendor", "store", "manage", "products"],
+      });
+    }
+
+    // The viewer's OWN in-flight orders, freshest first (capped at 3) — typing
+    // an order number in the palette jumps straight to it. Real rows only;
+    // no orders → no entries.
+    for (const order of (snapshot?.ordersInFlight ?? []).slice(0, 3)) {
+      entries.push({
+        id: `marketplace.order.${order.id}`,
+        source: "marketplace",
+        label: `Track ${order.orderNo}`,
+        kicker: "Your orders",
+        groupLabel: "Open",
+        href: "/marketplace",
+        keywords: [order.orderNo, "order", "track", order.status],
       });
     }
 

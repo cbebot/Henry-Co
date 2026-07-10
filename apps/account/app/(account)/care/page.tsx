@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { getAccountCopy } from "@henryco/i18n/server";
 import { formatAccountTemplate } from "@henryco/i18n";
 import { henryDomain } from "@henryco/config";
@@ -321,6 +322,9 @@ export default async function CarePage({
           }}
         />
       }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={sections}
     />
   );

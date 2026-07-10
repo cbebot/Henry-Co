@@ -25,6 +25,7 @@ localized via the recipient's stored language.
 | Care payment request created | `apps/care/lib/payments/verification.ts:404` | `payment_request` ✅ |
 | Care receipt submitted | `verification.ts:654` | `payment_receipt_received` ✅ |
 | Care payment approved | `verification.ts:889` (after `care_record_manual_payment` RPC) | `payment_received` ✅ |
+| **Care card-rail settle** | `apps/care/lib/payments/card-rail.ts` `reconcileCareCardPayment` after the `care_record_manual_payment` RPC commits | `payment_received` ✅ (EMAIL-TPL-02 — was silent; deduped `payment-received:{code}:{amount}`) |
 | Care proof rejected / needs revision | `verification.ts:1023` | `payment_proof_update` ✅ |
 | Care payment reminders (1/3/7d) | `care-automation.ts:550` cron, deduped | `payment_reminder` ✅ |
 | Studio deposit paid | `apps/studio/lib/studio/workflows.ts:742` | `deposit_received` + `project_started` ✅ |
