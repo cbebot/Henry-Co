@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
-import { getDivisionConfig } from "@henryco/config";
-import { onyxTypeAttr } from "@henryco/ui/fonts";
+import { createDivisionPublicThemeStyle } from "@henryco/ui/public-shell";
 
 /**
  * Public-surface theme wiring for Henry Onyx Jobs (V3-PUBLIC-REBUILD-jobs).
@@ -17,6 +16,11 @@ import { onyxTypeAttr } from "@henryco/ui/fonts";
  * Fraunces is the shared editorial display face (next/font dedupes the file
  * across importers). We point both --home-font-display AND --font-jobs-display
  * at it, so .jobs-display / .jobs-heading adopt the serif too.
+ *
+ * Token consolidation (2026-07-10): core comes from
+ * `createDivisionPublicThemeStyle`. Jobs keeps `accentTextOverride` — its
+ * hand-tuned AA accent-as-text on warm paper deliberately sits below the
+ * config value (config accentText #0E7C86 equals the fill accent).
  */
 export const fraunces = Fraunces({
   subsets: ["latin", "latin-ext"],
@@ -49,57 +53,28 @@ export const manrope = Manrope({
   adjustFontFallback: true,
 });
 
-const jobs = getDivisionConfig("jobs");
-
-const SERIF_STACK =
-  'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
-
-// Owned type — when the flag is live at build, the public marketing subtree routes
-// through the shared brand family tokens instead of the interim Fraunces/Manrope
-// next/font handles. Pre-reveal keeps the interim faces (identical to before). The
-// --hc-font-display/body/reading entries below reference --home-font-*, so they flip
-// automatically.
-const live = onyxTypeAttr() === "live";
-const HOME_DISPLAY = live ? "var(--hc-font-serif)" : SERIF_STACK;
-const HOME_SANS = live
-  ? "var(--hc-font-sans)"
-  : 'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-
-export const JOBS_PUBLIC_THEME_STYLE: CSSProperties = {
-  fontFamily: "var(--home-font-sans)",
-  // Manrope is the shared public BODY sans (next/font dedupes the file across
-  // importers); point --home-font-sans at it so all UI/body copy reads Manrope
-  // while Fraunces keeps the display heads + the .hc-prose reading face.
-  ["--home-font-sans" as string]: HOME_SANS,
-  // Teal soul. --accent-text is AA on the warm-paper light canvas; the
-  // dark variant lifts the teal so it stays AA on the near-black canvas.
-  ["--accent" as string]: jobs.accent, // #0E7C86
-  ["--accent-text" as string]: "#0B6B74",
-  ["--accent-text-dark" as string]: "#5CC9D0",
-  ["--home-font-display" as string]: HOME_DISPLAY,
-  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
-  // inner var() freezes there), so the canonical seam must be re-declared on
-  // THIS element — where the next/font .variable classes live — for .hc-prose /
-  // .hc-font-display / .hc-font-reading to render the loaded faces.
-  ["--hc-font-display" as string]: "var(--home-font-display)",
-  ["--hc-font-body" as string]: "var(--home-font-sans)",
-  ["--hc-font-reading" as string]: "var(--home-font-display)",
-  ["--font-jobs-display" as string]: HOME_DISPLAY,
-  // Alias the legacy --jobs-* tokens onto theme-aware --home-* equivalents so
-  // every jobs-* class (.jobs-panel, .jobs-input, .jobs-kicker, .jobs-table…)
-  // re-tones with the page instead of staying on the standalone jobs palette.
-  ["--jobs-bg" as string]: "var(--home-canvas)",
-  ["--jobs-paper" as string]: "var(--home-sheet)",
-  ["--jobs-paper-soft" as string]: "var(--home-surface-04)",
-  ["--jobs-surface" as string]: "var(--home-surface-04)",
-  ["--jobs-ink" as string]: "var(--home-ink)",
-  ["--jobs-muted" as string]: "var(--home-ink-70)",
-  ["--jobs-line" as string]: "var(--home-line)",
-  ["--jobs-accent" as string]: "var(--home-accent)",
-  ["--jobs-accent-soft" as string]: "var(--home-accent-soft)",
-  ["--jobs-forest" as string]: "var(--home-accent-text)",
-  ["--jobs-brass" as string]: "var(--home-accent-text)",
-  ["--jobs-brass-soft" as string]: "var(--home-accent-soft)",
-  ["--jobs-shadow" as string]: "0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18)",
-  ["--jobs-shadow-strong" as string]: "0 44px 130px -50px rgb(var(--home-ink-rgb) / 0.24)",
-};
+export const JOBS_PUBLIC_THEME_STYLE: CSSProperties =
+  createDivisionPublicThemeStyle({
+    division: "jobs",
+    displayAliasVars: ["--font-jobs-display"],
+    accentTextOverride: "#0B6B74",
+    extra: {
+      // Alias the legacy --jobs-* tokens onto theme-aware --home-* equivalents so
+      // every jobs-* class (.jobs-panel, .jobs-input, .jobs-kicker, .jobs-table…)
+      // re-tones with the page instead of staying on the standalone jobs palette.
+      "--jobs-bg": "var(--home-canvas)",
+      "--jobs-paper": "var(--home-sheet)",
+      "--jobs-paper-soft": "var(--home-surface-04)",
+      "--jobs-surface": "var(--home-surface-04)",
+      "--jobs-ink": "var(--home-ink)",
+      "--jobs-muted": "var(--home-ink-70)",
+      "--jobs-line": "var(--home-line)",
+      "--jobs-accent": "var(--home-accent)",
+      "--jobs-accent-soft": "var(--home-accent-soft)",
+      "--jobs-forest": "var(--home-accent-text)",
+      "--jobs-brass": "var(--home-accent-text)",
+      "--jobs-brass-soft": "var(--home-accent-soft)",
+      "--jobs-shadow": "0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18)",
+      "--jobs-shadow-strong": "0 44px 130px -50px rgb(var(--home-ink-rgb) / 0.24)",
+    },
+  });

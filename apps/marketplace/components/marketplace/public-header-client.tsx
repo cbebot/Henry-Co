@@ -243,7 +243,9 @@ export function PublicHeaderClient() {
   return (
     <header
       data-marketplace-interactive="true"
-      className="sticky top-0 z-50 box-border h-16 border-b border-[color:var(--home-line)] bg-[color:var(--home-glass)] backdrop-blur-2xl"
+      // CHROME-64 contract: the bar is sized by the shared budget token
+      // (--hc-shell-topbar-height, 64px) — the chrome consumes only tokens.
+      className="sticky top-0 z-50 box-border h-[var(--hc-shell-topbar-height,4rem)] border-b border-[color:var(--home-line)] bg-[color:var(--home-glass)] backdrop-blur-2xl"
     >
       {/* FIX-CHROME-01: the inline `fixed inset-0` backdrop is gone.
        * The drawer below is now a `BottomSheet` portal-mounted at
