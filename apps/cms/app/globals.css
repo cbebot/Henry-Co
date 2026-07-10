@@ -1,17 +1,13 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/theme/account-tokens.css";
 @source "../../../packages/ui/src";
 
 /* Henry Onyx Owner CMS — command chrome tokens (gold on navy), mirroring the
    hub owner surface so the standalone CMS reads as the same premium system. */
 :root {
-  --acct-bg: #fafaf8;
-  --acct-bg-soft: #ffffff;
-  --acct-bg-elevated: #ffffff;
-  --acct-surface: #f5f3ef;
-  --acct-line: #e8e4dd;
-  --acct-ink: #1a1814;
-  --acct-muted: #6b6560;
+  /* Slice B (2026-07-10): --acct-* comes from the canonical
+     packages/ui/src/theme/account-tokens.css import above. */
 
   --hc-bg: var(--acct-bg);
   --hc-bg-soft: var(--acct-bg-soft);
@@ -37,14 +33,6 @@
 }
 
 .dark {
-  --acct-bg: #0b0f14;
-  --acct-bg-soft: #141920;
-  --acct-bg-elevated: #1a2028;
-  --acct-surface: #1e252e;
-  --acct-line: #2a3140;
-  --acct-ink: #f0ede8;
-  --acct-muted: #8e8a84;
-
   --hc-accent: #d4af37;
   --hc-accent-soft: rgba(212, 175, 55, 0.12);
   --hc-accent-text: #e8cf7a;

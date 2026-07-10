@@ -52,9 +52,34 @@ token layers were still five layers with three duplication sites.
   (`h-[var(--hc-shell-topbar-height,4rem)]`). The shared PublicChrome is
   padding-derived and rests under the budget.
 
+## Slice B — SHIPPED (2026-07-10)
+
+`packages/ui/src/theme/account-tokens.css` is THE canonical `--acct-*` source
+(account superset: core + gold family + status colors + motion curves +
+severity matrix + 13 division accents, light + dark). Imported by the three
+`:root` definers — account, hub, and **cms** (a fourth definition site the
+original map missed) — whose duplicated blocks are deleted. App-local files
+keep what is genuinely theirs: the `--hc-*` remaps, `--owner-*` chrome, and
+hub's documented dark `--acct-gold-soft: 0.12` override (canonical is 0.16 —
+the ONE real value drift found; folding it into canon is a visual decision).
+Marketplace's `.market-workspace-light` scoped block is intentionally NOT
+migrated (different selector/register — its own pass).
+
+Proof: script-parsed parity — effective `--acct-*` values in all three apps
+are byte-equivalent to main (whitespace-normalized); cms production build
+compiles the import and the tokens land in the emitted chunk.
+
+**NEW FINDING → slice B2 (visual pass, do NOT fold into B):** shared
+dashboard-shell code has ~90 NO-FALLBACK `var(--acct-gold/ink/muted/line)`
+reads and is consumed by 8 apps — in care/jobs/logistics/staff/studio those
+tokens are UNDEFINED today, so those spots render off the unset value.
+Loading account-tokens.css ecosystem-wide would fix them but IS a visual
+change in five apps; it needs its own both-themes verification. Alternative:
+give dashboard-shell reads explicit fallbacks.
+
 ## Remaining slices (in redesign order)
 
-- **B — `--acct-*` extraction:** shared `packages/ui/src/theme/account-tokens.css`
+- ~~B~~ SHIPPED above. Was: **`--acct-*` extraction:** shared `packages/ui/src/theme/account-tokens.css`
   (superset from apps/account incl. severity + division accents), imported by
   the shared layer; delete app-local duplicates app-by-app (hub first,
   account, then marketplace's scoped block). Inert by cascade: app-local
