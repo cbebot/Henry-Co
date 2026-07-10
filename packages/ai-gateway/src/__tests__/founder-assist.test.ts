@@ -113,3 +113,49 @@ test("the surface policy is FREE, deep tier, and rate-limited", () => {
   assert.equal(policy.modelTier, "deep");
   assert.ok((policy.freeAllowancePerDay ?? 0) > 0, "a leaked owner session must still hit a daily cap");
 });
+
+test("F3: proposeAction parses with flat bounded params; rationale optional", () => {
+  const env = parseFounderAssistEnvelope(
+    JSON.stringify({
+      reply: "Prepared the suspension for your confirmation.",
+      navigate: [],
+      proposeAction: {
+        key: "owner.staff.status.toggle",
+        params: { userId: "u-1", intent: "suspend", nested: { drop: true }, arr: [1] },
+        rationale: "Repeated failed sign-ins from a new device.",
+      },
+    }),
+  );
+  assert.ok(env);
+  assert.ok(env.proposeAction);
+  assert.equal(env.proposeAction.key, "owner.staff.status.toggle");
+  assert.equal(env.proposeAction.params.userId, "u-1");
+  assert.equal(env.proposeAction.params.intent, "suspend");
+  assert.ok(!("nested" in env.proposeAction.params), "non-primitive params are dropped");
+  assert.ok(!("arr" in env.proposeAction.params), "array params are dropped");
+  assert.ok(env.proposeAction.rationale?.includes("sign-ins"));
+});
+
+test("F3: absent or malformed proposeAction is null (F2 turns unchanged)", () => {
+  const plain = parseFounderAssistEnvelope(JSON.stringify({ reply: "Hello.", navigate: [] }));
+  assert.ok(plain);
+  assert.equal(plain.proposeAction, null);
+  const junk = parseFounderAssistEnvelope(
+    JSON.stringify({ reply: "Hi.", navigate: [], proposeAction: "run everything" }),
+  );
+  assert.ok(junk);
+  assert.equal(junk.proposeAction, null);
+  const noKey = parseFounderAssistEnvelope(
+    JSON.stringify({ reply: "Hi.", navigate: [], proposeAction: { params: { a: 1 } } }),
+  );
+  assert.ok(noKey);
+  assert.equal(noKey.proposeAction, null);
+});
+
+test("F3: salvage never carries a proposed action", () => {
+  const salvaged = salvageFounderAssistEnvelope("Suspend the account now.");
+  assert.ok(salvaged);
+  const env = parseFounderAssistEnvelope(salvaged);
+  assert.ok(env);
+  assert.equal(env.proposeAction, null);
+});

@@ -6,6 +6,8 @@ import { interpretFounderAssistOutput, type ChatMessage } from "@henryco/ai-gate
 import { requireOwner } from "@/app/lib/owner-auth";
 import { buildCompanyFactsForFounderAI } from "@/lib/founder-intelligence/company-facts";
 import { persistFounderTurn } from "@/lib/founder-intelligence/persist";
+import { listFounderActionsForPrompt } from "@/lib/founder-intelligence/action-catalog";
+import { resolveProposedAction } from "@/lib/founder-intelligence/propose";
 
 export const runtime = "nodejs";
 
@@ -55,11 +57,22 @@ export async function POST(request: NextRequest) {
   // failure degrades to conversation-only, never to an error.
   const company = await buildCompanyFactsForFounderAI().catch(() => undefined);
 
+  // F3 — the action catalog is passed to the prompt ONLY when the action layer
+  // is live. Absent, the prompt is F2-identical and no proposal is ever formed.
+  const actionsLive = process.env.FOUNDER_ACTIONS_LIVE === "1";
+  const actions = actionsLive
+    ? listFounderActionsForPrompt(
+        Number.isFinite(Number(process.env.FOUNDER_ACTIONS_TRANCHE))
+          ? Math.max(1, Math.floor(Number(process.env.FOUNDER_ACTIONS_TRANCHE)))
+          : 1,
+      )
+    : undefined;
+
   const result = await runAiTask(
     {
       surface: "hub.founder.assist",
       actorId: auth.user.id,
-      input: { messages, company },
+      input: { messages, company, actions },
       idempotencyKey: randomUUID(),
     },
     // The audit option is what makes "every call is audited" TRUE — without it the
@@ -79,6 +92,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Please try that again." }, { status: 502 });
   }
 
+  // F3 — resolve any proposed action into a server-built confirmation card.
+  // Read-only + one INSERT; executes nothing. Null when the layer is dark or
+  // the proposal is invalid, so F2 turns are untouched.
+  const proposedAction = await resolveProposedAction({
+    ownerId: auth.user.id,
+    ownerScopedSupabase: auth.supabase as never,
+    proposal: turn.proposeAction,
+  }).catch(() => null);
+
   // Persist the turn (best-effort; ownership-checked inside).
   const persisted = await persistFounderTurn({
     conversationId,
@@ -94,6 +116,7 @@ export async function POST(request: NextRequest) {
     navigate: turn.navigate,
     handoff: false,
     offer: null,
+    proposedAction,
     conversationId: persisted.conversationId,
     messageId: persisted.assistantMessageId,
   });

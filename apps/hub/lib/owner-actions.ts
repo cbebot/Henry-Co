@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAccountUrl } from "@henryco/config";
 import { requireOwner } from "@/lib/owner-auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import { applyStaffStatusToggle } from "@/lib/staff-status-write";
 import { normalizeEmail } from "@/lib/env";
 import type { OwnerFormState } from "@/lib/owner-form-state";
 import { rethrowIfRedirect, toOwnerFacingError } from "@/lib/owner-form-state";
@@ -361,8 +362,7 @@ export async function toggleStaffMemberStatusAction(
   formData: FormData
 ): Promise<OwnerFormState> {
   try {
-    await requireOwner();
-    const admin = createAdminSupabase();
+    const owner = await requireOwner();
     const userId = toText(formData.get("userId"));
     const intent = toText(formData.get("intent")).toLowerCase();
 
@@ -370,16 +370,17 @@ export async function toggleStaffMemberStatusAction(
       return { ok: false, message: "Invalid staff status change request." };
     }
 
-    const result = await admin.auth.admin.updateUserById(userId, {
-      ban_duration: intent === "suspend" ? "876000h" : "none",
+    // F3 (2026-07-10): the write sequence lives in applyStaffStatusToggle —
+    // ONE path shared with the founder action rail. Behavior unchanged.
+    const applied = await applyStaffStatusToggle({
+      userId,
+      intent: intent as "suspend" | "reactivate",
+      actorId: owner.id,
+      actorRole: owner.ownerRole || "owner",
     });
-    if (result.error) throw result.error;
-
-    await writeStaffAudit({
-      action: intent === "suspend" ? "staff.suspend" : "staff.reactivate",
-      entityId: userId,
-      meta: {},
-    });
+    if (!applied.ok) {
+      return { ok: false, message: applied.error };
+    }
 
     await revalidateOwnerSurfaces();
     return {
