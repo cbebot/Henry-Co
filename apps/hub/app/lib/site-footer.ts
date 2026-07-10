@@ -18,14 +18,19 @@ import type {
 export type HubFooterInputs = {
   copy: PublicSiteFooterCopy;
   columns: SiteFooterColumn[];
-  support: { email: string | null; phone: string | null };
+  // NUMBER-PURGE (2026-07-10): support carries EMAIL only. The phone digits
+  // must never enter this object — even unrendered, they serialize into the
+  // RSC/HTML payload and Google indexes them (the exact leak the shared-footer
+  // sweep in PR #463 closed elsewhere but missed here). WhatsApp is reached via
+  // getSupportWhatsAppHref() (masked wa.me), never a printed number.
+  support: { email: string | null };
 };
 
 export function buildHubFooter(
   hubCopy: HubPublicCopy,
   opts?: {
     statement?: string | null;
-    support?: { email?: string | null; phone?: string | null };
+    support?: { email?: string | null };
   },
 ): HubFooterInputs {
   const shell = hubCopy.publicSiteShell;
@@ -63,7 +68,6 @@ export function buildHubFooter(
     ],
     support: {
       email: opts?.support?.email ?? COMPANY.group.supportEmail,
-      phone: opts?.support?.phone ?? COMPANY.group.supportPhone,
     },
   };
 }

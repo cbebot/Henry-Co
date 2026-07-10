@@ -192,7 +192,8 @@ export default async function HomePage() {
   // brand statement; division links + legal entity come from @henryco/config.
   const footer = buildHubFooter(getHubPublicCopy(locale), {
     statement: footerBlurbI18n,
-    support: { email: settings.support_email, phone: settings.support_phone },
+    // NUMBER-PURGE: email only — never the DB support_phone (serializes to RSC).
+    support: { email: settings.support_email },
   });
 
   // V3 showcase band on the landing (owner directive 2026-07-08) — labels
