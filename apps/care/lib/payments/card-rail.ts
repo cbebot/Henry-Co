@@ -5,6 +5,7 @@ import { createPaymentRouter } from "@henryco/payment-router";
 import type { PaymentProviderKey } from "@henryco/payment-router/types";
 import { getAccountUrl } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
+import { buildTrackingUrl, sendPaymentReceivedEmail } from "@/lib/email/send";
 import { careChargeMinor } from "@/lib/payments/card-math";
 
 /**
@@ -205,5 +206,42 @@ export async function reconcileCareCardPayment(input: {
     console.error("[care][card] settle RPC failed", { code: rpcError.code, requestId: input.requestId });
     return "unchanged";
   }
+
+  // EMAIL-TPL-02 / money-email matrix: the card settle previously paid in
+  // SILENCE while the manual-approval path emailed. Send the SAME receipt —
+  // AFTER the guarded RPC committed, best-effort by construction (an email
+  // failure never surfaces into the money path). Deduped inside sendCareEmail
+  // (`payment-received:{trackingCode}:{amount}`), so a repeat page load after
+  // the RPC's idempotent no-op cannot re-email.
+  try {
+    const { data: booking } = await admin
+      .from("care_bookings")
+      .select("id, email, customer_name, tracking_code, balance_due, phone")
+      .eq("id", input.bookingId)
+      .maybeSingle();
+    const row = booking as {
+      id: string;
+      email: string | null;
+      customer_name: string | null;
+      tracking_code: string;
+      balance_due: number | null;
+      phone: string | null;
+    } | null;
+    if (row?.email) {
+      const trackUrl = await buildTrackingUrl(row.tracking_code, row.phone);
+      await sendPaymentReceivedEmail(row.email, row.id, {
+        customerName: row.customer_name || "Customer",
+        trackingCode: row.tracking_code,
+        amountPaid: `₦${input.amountMajor.toLocaleString()}`,
+        balanceDue: `₦${Number(row.balance_due ?? 0).toLocaleString()}`,
+        paymentMethod: "card",
+        reference: matched.id,
+        trackUrl,
+      });
+    }
+  } catch {
+    /* best-effort — the settle already committed via the guarded RPC */
+  }
+
   return "paid";
 }

@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { henryDomainHost } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import {
@@ -301,6 +302,9 @@ export default async function JobsPage() {
         },
       ]}
       footer={
+        <>
+        {/* SMART (2026-07-10): statuses tick without manual refresh. */}
+        <RouteLiveRefresh />
         <p
           style={{
             fontSize: 11,
@@ -313,6 +317,7 @@ export default async function JobsPage() {
             "Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox.",
           )}
         </p>
+        </>
       }
     />
   );

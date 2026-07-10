@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { Truck } from "lucide-react";
 
 import { formatAccountTemplate, getAccountCopy } from "@henryco/i18n/server";
@@ -260,6 +261,9 @@ export default async function LogisticsPage() {
           {nextStep}
         </>
       }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "acct-log-map",
