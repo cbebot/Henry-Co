@@ -441,6 +441,13 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
             {proposedAction.rationale ? (
               <p className="hc-il-action-card-why">{proposedAction.rationale}</p>
             ) : null}
+            {proposedAction.requiresReauth ? (
+              // Pre-warn before the confirm click (money-tranche actions, F3c) so
+              // the owner knows the step-up is coming rather than meeting a 403.
+              <p className="hc-il-action-card-reauth">
+                {t("You'll be asked to re-verify your identity to confirm this.")}
+              </p>
+            ) : null}
             <div className="hc-il-action-card-buttons">
               <button
                 type="button"
@@ -639,6 +646,9 @@ function IntelligenceLauncherStyles() {
 /* --- the four seam tokens (light default) + everything bridged from them --- */
 .hc-il-panel{
   --hc-il-surface:#ffffff;--hc-il-ink:#0b1220;--hc-il-ink-soft:rgba(11,18,32,.62);--hc-il-line:rgba(11,18,32,.1);
+  /* on-accent stays fixed dark-on-gold in BOTH themes — the accent comes from
+     the accent prop and does not theme-flip, so this is the documented house
+     AA pattern (never white-on-gold). If accent ever flips, add a dark override. */
   --hc-il-on-accent:#0b1220;
   /* Danger flips per theme (chat-thread's --ct-danger defaults to a LIGHT red tuned for a dark bg,
      which fails AA on the light panel): deep red on light, lighter red on dark. Drives the
@@ -692,7 +702,8 @@ function IntelligenceLauncherStyles() {
 .hc-il-action-card{border:1px solid color-mix(in srgb,var(--hc-il-accent,#C9A227) 40%,transparent);background:color-mix(in srgb,var(--hc-il-accent,#C9A227) 8%,var(--hc-il-surface));border-radius:1rem;padding:.8rem .85rem}
 .hc-il-action-card-head{display:flex;align-items:center;gap:.5rem;justify-content:space-between}
 .hc-il-action-card-title{font-size:.86rem;font-weight:700;color:var(--hc-il-ink)}
-.hc-il-action-tag{flex:none;font-size:.66rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:.16rem .5rem;border-radius:999px;border:1px solid var(--hc-il-line);color:var(--hc-il-ink-soft)}
+.hc-il-action-tag{flex:none;font-size:.66rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:.16rem .5rem;border-radius:999px;border:1px solid var(--hc-il-line);color:var(--hc-il-ink)}
+.hc-il-action-card-reauth{margin:.4rem 0 0;font-size:.74rem;line-height:1.4;color:var(--hc-il-ink-soft)}
 .hc-il-action-tag--irreversible{color:var(--hc-il-danger,#b3261e);border-color:color-mix(in srgb,var(--hc-il-danger,#b3261e) 45%,transparent)}
 .hc-il-action-card-body{margin:.45rem 0 0;font-size:.8rem;line-height:1.5;color:var(--hc-il-ink)}
 .hc-il-action-card-why{margin:.4rem 0 0;font-size:.74rem;line-height:1.45;color:var(--hc-il-ink-soft);font-style:italic}
