@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
-import { getDivisionConfig } from "@henryco/config";
-import { onyxTypeAttr } from "@henryco/ui/fonts";
+import { createDivisionPublicThemeStyle } from "@henryco/ui/public-shell";
 
 /**
  * Public-surface theme wiring for Henry Onyx Learn (V3-PUBLIC-REBUILD-learn).
@@ -18,6 +17,10 @@ import { onyxTypeAttr } from "@henryco/ui/fonts";
  *
  * Fraunces is the shared editorial display face (learn referenced the name in
  * its font stack but never loaded the file — next/font loads + dedupes it here).
+ *
+ * Token consolidation (2026-07-10): core comes from
+ * `createDivisionPublicThemeStyle` (accent truth = company.ts). Only learn's
+ * alias and remap blocks stay local.
  */
 export const fraunces = Fraunces({
   subsets: ["latin", "latin-ext"],
@@ -42,81 +45,54 @@ export const manrope = Manrope({
   adjustFontFallback: true,
 });
 
-const learn = getDivisionConfig("learn");
+export const LEARN_PUBLIC_THEME_STYLE: CSSProperties =
+  createDivisionPublicThemeStyle({
+    division: "learn",
+    displayAliasVars: ["--font-learn-display"],
+    extra: {
+      // Public components read var(--learn-accent, <gold/mint fallback>) (BrandMark
+      // monogram, CTA focus rings). Define it on the public scope so it tracks the
+      // theme-aware page accent instead of leaking the dashboard gold; dashboards
+      // (outside this scope) keep their gold/mint fallback unchanged.
+      "--learn-accent": "var(--home-accent)",
 
-const SERIF_STACK =
-  'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif';
+      // Alias the legacy --learn-* soul onto theme-aware --home-* equivalents so
+      // every .learn-* class re-tones with the page instead of staying dark.
+      "--learn-bg": "var(--home-canvas)",
+      "--learn-bg-soft": "var(--home-canvas-deep)",
+      "--learn-surface": "var(--home-sheet)",
+      "--learn-surface-strong": "var(--home-sheet)",
+      "--learn-ink": "var(--home-ink)",
+      "--learn-ink-soft": "var(--home-ink-70)",
+      "--learn-line": "var(--home-line)",
+      "--learn-line-strong": "var(--home-line-15)",
+      "--learn-mint": "var(--home-accent)",
+      "--learn-mint-soft": "var(--home-accent-text)",
+      "--learn-copper": "var(--home-accent-text)",
+      "--learn-shadow": "0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18)",
+      "--learn-shadow-soft": "0 16px 42px -28px rgb(var(--home-ink-rgb) / 0.14)",
 
-// Owned type — when the flag is live at build, the public marketing subtree routes
-// through the shared brand family tokens instead of the interim Fraunces/Manrope
-// next/font handles. Pre-reveal keeps the interim faces (identical to before). The
-// --hc-font-display/body/reading entries below reference --home-font-*, so they flip
-// automatically.
-const live = onyxTypeAttr() === "live";
-const HOME_DISPLAY = live ? "var(--hc-font-serif)" : SERIF_STACK;
-const HOME_SANS = live
-  ? "var(--hc-font-sans)"
-  : 'var(--font-manrope-public), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-
-export const LEARN_PUBLIC_THEME_STYLE: CSSProperties = {
-  fontFamily: "var(--home-font-sans)",
-  ["--home-font-sans" as string]: HOME_SANS,
-  // Viridian-green soul. --accent-text is AA on warm paper; the dark variant
-  // lifts to mint so it stays AA on the near-black canvas.
-  ["--accent" as string]: learn.accent, // #3C8C7A
-  ["--accent-text" as string]: learn.accentText || "#2E6E5F",
-  ["--accent-text-dark" as string]: "#6FD0B6",
-  // Public components read var(--learn-accent, <gold/mint fallback>) (BrandMark
-  // monogram, CTA focus rings). Define it on the public scope so it tracks the
-  // theme-aware page accent instead of leaking the dashboard gold; dashboards
-  // (outside this scope) keep their gold/mint fallback unchanged.
-  ["--learn-accent" as string]: "var(--home-accent)",
-  ["--home-font-display" as string]: HOME_DISPLAY,
-  ["--font-learn-display" as string]: HOME_DISPLAY,
-  // READING-01 seam bridge: the --hc-font-* tokens compute at :root (their
-  // inner var() freezes there), so the canonical seam must be re-declared on
-  // THIS element — where the font .variable classes resolve — for .hc-prose /
-  // .hc-font-display / .hc-font-reading to render the loaded faces.
-  ["--hc-font-display" as string]: "var(--home-font-display)",
-  ["--hc-font-body" as string]: "var(--home-font-sans)",
-  ["--hc-font-reading" as string]: "var(--home-font-display)",
-
-  // Alias the legacy --learn-* soul onto theme-aware --home-* equivalents so
-  // every .learn-* class re-tones with the page instead of staying dark.
-  ["--learn-bg" as string]: "var(--home-canvas)",
-  ["--learn-bg-soft" as string]: "var(--home-canvas-deep)",
-  ["--learn-surface" as string]: "var(--home-sheet)",
-  ["--learn-surface-strong" as string]: "var(--home-sheet)",
-  ["--learn-ink" as string]: "var(--home-ink)",
-  ["--learn-ink-soft" as string]: "var(--home-ink-70)",
-  ["--learn-line" as string]: "var(--home-line)",
-  ["--learn-line-strong" as string]: "var(--home-line-15)",
-  ["--learn-mint" as string]: "var(--home-accent)",
-  ["--learn-mint-soft" as string]: "var(--home-accent-text)",
-  ["--learn-copper" as string]: "var(--home-accent-text)",
-  ["--learn-shadow" as string]: "0 30px 90px -45px rgb(var(--home-ink-rgb) / 0.18)",
-  ["--learn-shadow-soft" as string]: "0 16px 42px -28px rgb(var(--home-ink-rgb) / 0.14)",
-
-  // The PASS-20 --hc-* aliases are gold at :root (for dashboard chrome). On the
-  // public surface, re-point them at --home-* so any --hc-*-styled card/control
-  // wears the page canvas + the green accent (no gold leak).
-  ["--hc-bg" as string]: "var(--home-canvas)",
-  ["--hc-bg-soft" as string]: "var(--home-canvas-deep)",
-  ["--hc-surface" as string]: "var(--home-sheet)",
-  ["--hc-surface-strong" as string]: "var(--home-sheet)",
-  ["--hc-surface-elevated" as string]: "var(--home-sheet)",
-  ["--hc-paper" as string]: "var(--home-surface-04)",
-  ["--hc-ink" as string]: "var(--home-ink)",
-  ["--hc-ink-soft" as string]: "var(--home-ink-70)",
-  ["--hc-ink-muted" as string]: "var(--home-ink-50)",
-  ["--hc-line" as string]: "var(--home-line)",
-  ["--hc-line-strong" as string]: "var(--home-line-15)",
-  ["--hc-hairline" as string]: "var(--home-line)",
-  ["--hc-accent" as string]: "var(--home-accent)",
-  ["--hc-accent-strong" as string]: "var(--home-accent-strong)",
-  ["--hc-accent-soft" as string]: "var(--home-accent-soft)",
-  ["--hc-accent-text" as string]: "var(--home-accent-text)",
-  ["--hc-accent-on-surface" as string]: "var(--home-accent-text)",
-  ["--hc-ink-on-accent" as string]: "var(--home-accent-ink)",
-  ["--hc-focus-ring" as string]: "var(--home-accent)",
-};
+      // The PASS-20 --hc-* aliases are gold at :root (for dashboard chrome). On the
+      // public surface, re-point them at --home-* so any --hc-*-styled card/control
+      // wears the page canvas + the green accent (no gold leak).
+      "--hc-bg": "var(--home-canvas)",
+      "--hc-bg-soft": "var(--home-canvas-deep)",
+      "--hc-surface": "var(--home-sheet)",
+      "--hc-surface-strong": "var(--home-sheet)",
+      "--hc-surface-elevated": "var(--home-sheet)",
+      "--hc-paper": "var(--home-surface-04)",
+      "--hc-ink": "var(--home-ink)",
+      "--hc-ink-soft": "var(--home-ink-70)",
+      "--hc-ink-muted": "var(--home-ink-50)",
+      "--hc-line": "var(--home-line)",
+      "--hc-line-strong": "var(--home-line-15)",
+      "--hc-hairline": "var(--home-line)",
+      "--hc-accent": "var(--home-accent)",
+      "--hc-accent-strong": "var(--home-accent-strong)",
+      "--hc-accent-soft": "var(--home-accent-soft)",
+      "--hc-accent-text": "var(--home-accent-text)",
+      "--hc-accent-on-surface": "var(--home-accent-text)",
+      "--hc-ink-on-accent": "var(--home-accent-ink)",
+      "--hc-focus-ring": "var(--home-accent)",
+    },
+  });

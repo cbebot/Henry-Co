@@ -38,6 +38,15 @@ export type DivisionConfig = {
    * `accent` to clear WCAG 1.4.3 on white/near-white surfaces.
    */
   accentText: string;
+  /**
+   * WCAG-AA-safe LIFTED sibling of `accent`, for accent-as-text on the
+   * near-black dark public canvas. These were hand-tuned per division inside
+   * each app's `*_PUBLIC_THEME_STYLE` object and moved here by the token
+   * consolidation (2026-07-10) so accent truth has ONE source. Optional:
+   * divisions without a public marketing surface omit it;
+   * `createDivisionPublicThemeStyle` falls back to `accentText`.
+   */
+  accentTextOnDark?: string;
   dark: string;
   supportEmail: string;
   supportPhone: string;
@@ -218,6 +227,7 @@ export const COMPANY = {
       accent: "#6B7CFF",
       accentStrong: "#E8EBFF",
       accentText: "#4F5BD0",
+      accentTextOnDark: "#AAB4FF",
       dark: "#09112B",
       supportEmail: BRAND_EMAILS.care,
       supportPhone: GROUP_SUPPORT_PHONE,
@@ -303,6 +313,7 @@ export const COMPANY = {
       accent: "#B2863B",
       accentStrong: "#F7E8CA",
       accentText: "#7E5E1F",
+      accentTextOnDark: "#E3C088",
       dark: "#18120C",
       supportEmail: BRAND_EMAILS.marketplace,
       supportPhone: GROUP_SUPPORT_PHONE,
@@ -338,6 +349,7 @@ export const COMPANY = {
       accent: "#B06C3E",
       accentStrong: "#F8DDCB",
       accentText: "#7A4924",
+      accentTextOnDark: "#E8B894",
       dark: "#130B08",
       supportEmail: BRAND_EMAILS.property,
       supportPhone: GROUP_SUPPORT_PHONE,
@@ -374,6 +386,7 @@ export const COMPANY = {
       accent: "#D06F32",
       accentStrong: "#FFE4D3",
       accentText: "#9D4F1F",
+      accentTextOnDark: "#F3A877",
       dark: "#120B08",
       supportEmail: BRAND_EMAILS.logistics,
       supportPhone: GROUP_SUPPORT_PHONE,
@@ -408,6 +421,7 @@ export const COMPANY = {
       accent: "#4AC1C5",
       accentStrong: "#D3FBFC",
       accentText: "#1F7375",
+      accentTextOnDark: "#63D2D5",
       dark: "#081219",
       supportEmail: BRAND_EMAILS.studio,
       supportPhone: GROUP_SUPPORT_PHONE,
@@ -443,6 +457,7 @@ export const COMPANY = {
       accent: "#0E7C86",
       accentStrong: "#D7F4F3",
       accentText: "#0E7C86",
+      accentTextOnDark: "#5CC9D0",
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
       supportPhone: GROUP_SUPPORT_PHONE,
@@ -481,6 +496,7 @@ export const COMPANY = {
       accent: "#3C8C7A",
       accentStrong: "#D8F4EB",
       accentText: "#2E6E5F",
+      accentTextOnDark: "#6FD0B6",
       dark: "#081414",
       supportEmail: BRAND_EMAILS.learn,
       supportPhone: GROUP_SUPPORT_PHONE,

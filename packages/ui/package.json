@@ -25,7 +25,7 @@
     "./share": "./src/share/index.ts"
   },
   "scripts": {
-    "test": "tsx --test src/__tests__/feedback.test.ts src/__tests__/account-identity.test.ts"
+    "test": "tsx --test src/__tests__/feedback.test.ts src/__tests__/account-identity.test.ts src/__tests__/division-public-theme.test.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",
