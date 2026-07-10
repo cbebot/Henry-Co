@@ -96,7 +96,9 @@ const brandSettingsUpdate: FounderActionEntry = {
       currentRow: row,
     };
   },
-  driftKeys: ["currentValue"],
+  // driftKeys is single-sourced from the governance descriptor (spread above);
+  // never re-declare it here or the confirm-route drift check can silently use
+  // a stale value (review finding, 2026-07-10).
   confirmationCopy: (trueState) => ({
     title: "Update brand text",
     body: `Change ${String(trueState.field)} from "${trueState.currentValue ?? "(empty)"}" to "${trueState.newValue}". This updates the public site.`,
@@ -123,13 +125,16 @@ const staffStatusToggle: FounderActionEntry = {
     const status = await readStaffStatus(params.userId as string);
     if (!status) return null;
     const intent = params.intent as "suspend" | "reactivate";
-    // No-op guard: proposing the state the account is already in.
+    // No-op guard at PROPOSE: proposing the state the account is already in
+    // returns null, so no misleading confirmation card is ever shown for a
+    // redundant toggle (review finding, 2026-07-10). The execute binding keeps
+    // its own guard as defense-in-depth.
     if ((intent === "suspend") === status.suspended) {
-      return { ...status, intent, alreadyInTargetState: true };
+      return null;
     }
     return { ...status, intent, alreadyInTargetState: false };
   },
-  driftKeys: ["suspended"],
+  // driftKeys single-sourced from the governance spread (see above).
   confirmationCopy: (trueState) => {
     const intent = String(trueState.intent);
     const email = String(trueState.email ?? "this account");

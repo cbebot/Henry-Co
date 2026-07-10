@@ -42,11 +42,18 @@ function liveTranche(): number {
 }
 
 function fingerprint(key: string, params: Record<string, unknown>): string {
-  const sorted = Object.keys(params)
-    .sort()
-    .map((k) => `${k}=${String(params[k])}`)
-    .join("&");
-  return createHash("md5").update(`${key}::${sorted}`).digest("hex");
+  // Canonical, order-independent serialization → sha256. This is a dedupe key,
+  // not a security token, but sha256 removes even the theoretical ambiguity
+  // (review note, 2026-07-10).
+  const canonical = JSON.stringify(
+    Object.keys(params)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, k) => {
+        acc[k] = params[k];
+        return acc;
+      }, {}),
+  );
+  return createHash("sha256").update(`${key}::${canonical}`).digest("hex");
 }
 
 export async function resolveProposedAction(input: {

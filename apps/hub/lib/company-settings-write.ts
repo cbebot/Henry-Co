@@ -46,21 +46,25 @@ export async function applyCompanySettingsWrite(body: unknown): Promise<
     return { ok: false, error: "Could not save company settings right now." };
   }
 
-  await writeOwnerAudit({
-    action: "owner.brand.settings.update",
-    entityType: "company_settings",
-    entityId: existing?.id ? String(existing.id) : null,
-    oldValues: existing ?? null,
-    newValues: payload,
-    division: "hub",
-  });
-
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/contact");
-  revalidatePath("/privacy");
-  revalidatePath("/terms");
-  revalidatePath("/owner");
+  // The DB write is the point of no return. Everything below is best-effort —
+  // a revalidate or audit hiccup must NEVER flip a landed write to a failure
+  // (review finding, 2026-07-10: a "failed" outcome on a committed write left
+  // the F3 proposal ledger misreporting reality).
+  try {
+    await writeOwnerAudit({
+      action: "owner.brand.settings.update",
+      entityType: "company_settings",
+      entityId: existing?.id ? String(existing.id) : null,
+      oldValues: existing ?? null,
+      newValues: payload,
+      division: "hub",
+    });
+    for (const path of ["/", "/about", "/contact", "/privacy", "/terms", "/owner"]) {
+      revalidatePath(path);
+    }
+  } catch (postWrite) {
+    console.error("[company-settings-write] post-write step failed (write landed)", postWrite);
+  }
 
   return { ok: true, oldValues: existing ?? null, newValues: payload };
 }

@@ -84,6 +84,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unknown action." }, { status: 400 });
   }
 
+  // The real owner role for audit fidelity — the app-gate returns only
+  // {id, email}, so an admin acting via F3 must not be logged as "owner"
+  // (review finding, 2026-07-10). Falls back to "owner" if unreadable.
+  const { data: ownerProfile } = await admin
+    .from("owner_profiles")
+    .select("role")
+    .eq("user_id", auth.user.id)
+    .maybeSingle();
+  const ownerRole = String((ownerProfile as { role?: string } | null)?.role || "owner")
+    .trim()
+    .toLowerCase() || "owner";
+
   // 4. Money-tranche step-up (no first-tranche action sets this, but the rail
   //    honors it). requireSensitiveAction lives on the account origin; the hub
   //    money actions arrive in F3c, which wires the concrete guard. Until then,
@@ -127,8 +139,11 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // 6. Execute through the existing guarded path. The token is the deterministic
-  //    idempotency anchor the underlying RPCs will key on (money tranche).
+  // 6. Execute through the existing guarded path. For tranche-1 (settings =
+  //    last-write-wins, staff toggle = naturally idempotent) the CAS claim is
+  //    the double-execute guard. The token is passed as the idempotency ANCHOR
+  //    the money-tranche RPCs (F3c) will key on so the claim is not the sole
+  //    guard once real cash moves.
   let executionRef: string | null = null;
   let executionError: string | null = null;
   try {
@@ -136,7 +151,7 @@ export async function POST(request: NextRequest) {
       params: proposal.params,
       trueState: freshState,
       ownerId: auth.user.id,
-      ownerRole: "owner",
+      ownerRole,
       token,
     });
     if (result.ok) {

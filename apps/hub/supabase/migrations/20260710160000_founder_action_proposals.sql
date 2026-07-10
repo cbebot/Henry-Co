@@ -31,8 +31,11 @@ create table if not exists public.founder_action_proposals (
   created_at timestamptz not null default now(),
   claimed_at timestamptz,
   resolved_at timestamptz,
-  -- Viewing TTL (15 min) is decoupled from the confirm-time reauth window
-  -- (5 min, enforced independently in the route) — audit fix #7.
+  -- Viewing TTL (15 min) is decoupled from the confirm-time reauth window by
+  -- design (audit fix #7). The 5-minute identity step-up itself is enforced in
+  -- the confirm route only for requiresReauth (money-tranche) actions, which
+  -- arrive in F3c — no first-tranche action sets requiresReauth, so the route
+  -- fails those closed until then.
   expires_at timestamptz not null default (now() + interval '15 minutes')
 );
 

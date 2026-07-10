@@ -62,6 +62,18 @@ test("action keys are unique", () => {
   assert.equal(new Set(keys).size, keys.length, "duplicate action key");
 });
 
+test("the forbidden-money-param list covers the obvious money words", () => {
+  // These invariant fields are single-sourced: the runtime FOUNDER_ACTION_CATALOG
+  // spreads each governance descriptor, so asserting them here asserts them for
+  // the catalog too (a catalog entry cannot exist without a governance spread).
+  for (const word of ["amount", "fee", "cost", "charge", "balance", "payout", "price", "value"]) {
+    assert.ok(
+      FORBIDDEN_MONEY_PARAM_KEYS.includes(word),
+      `"${word}" should be a forbidden money param`,
+    );
+  }
+});
+
 function sampleFor(key: string): Record<string, unknown> {
   switch (key) {
     case "owner.brand.settings.update":

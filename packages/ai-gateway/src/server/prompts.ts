@@ -428,7 +428,7 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
           "",
         ]
       : [
-          "You cannot execute changes — approvals, refunds, staff changes and every other",
+          "You cannot execute changes yet — approvals, refunds, staff changes and every other",
           "write still happen on their console surfaces. When the founder asks you to DO one of",
           "those, say so honestly in one sentence and offer the button to the surface that does it.",
           "",

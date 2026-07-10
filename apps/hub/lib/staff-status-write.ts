@@ -28,6 +28,8 @@ export async function applyStaffStatusToggle(input: {
     return { ok: false, error: "Could not change this account's status right now." };
   }
 
+  // The ban flip above is the point of no return. Audit + revalidate are
+  // best-effort and must never flip a landed change to a failure.
   try {
     const { error } = await admin.from("staff_audit_logs").insert({
       actor_id: input.actorId,
@@ -40,13 +42,12 @@ export async function applyStaffStatusToggle(input: {
     if (error) {
       console.error("[staff-status-write] staff_audit_logs insert failed", error.message);
     }
+    revalidatePath("/owner/staff");
+    revalidatePath("/owner/staff/directory");
+    revalidatePath("/owner");
   } catch (e) {
-    console.error("[staff-status-write] staff_audit_logs threw", e);
+    console.error("[staff-status-write] post-write step failed (status change landed)", e);
   }
-
-  revalidatePath("/owner/staff");
-  revalidatePath("/owner/staff/directory");
-  revalidatePath("/owner");
 
   return { ok: true };
 }

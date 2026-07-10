@@ -84,6 +84,14 @@ export const FORBIDDEN_MONEY_PARAM_KEYS = [
   "refund_amount",
   "refundamount",
   "total",
+  "fee",
+  "cost",
+  "charge",
+  "balance",
+  "payout",
+  "sum",
+  "naira",
+  "minor",
 ];
 
 export function governanceParamKeys(g: FounderActionGovernance): string[] {
