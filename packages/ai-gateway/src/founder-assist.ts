@@ -23,7 +23,9 @@ export interface FounderAssistEnvelope {
   navigate: FounderAssistAction[];
 }
 
-const MAX_ACTIONS = 3;
+// 2, not 3: IntelligenceLauncher renders navigate.slice(0, 2) — a third button
+// would be silently dropped (review finding, 2026-07-10).
+const MAX_ACTIONS = 2;
 const MAX_LABEL_CHARS = 60;
 const MAX_TARGET_CHARS = 64;
 

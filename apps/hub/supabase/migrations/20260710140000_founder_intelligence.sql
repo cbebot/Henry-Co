@@ -30,6 +30,9 @@ as $$
   );
 $$;
 
+-- Postgres grants EXECUTE to PUBLIC on new functions by default — revoke from
+-- PUBLIC (not just anon) or the revoke is a no-op (the owner_inbox idiom).
+revoke all on function public.founder_intelligence_is_owner() from public;
 revoke all on function public.founder_intelligence_is_owner() from anon;
 grant execute on function public.founder_intelligence_is_owner() to authenticated;
 
@@ -56,18 +59,29 @@ create index if not exists founder_intelligence_messages_conversation_idx
 alter table public.founder_intelligence_conversations enable row level security;
 alter table public.founder_intelligence_messages enable row level security;
 
--- Owner-only reads; NO insert/update/delete policies (service-role writes only).
+-- Owner-only AND row-owner-only reads; NO insert/update/delete policies
+-- (service-role writes only). The user_id conjunct matters: owner_profiles can
+-- hold multiple active owner/admin rows, and a second admin must NOT read the
+-- founder's private strategic conversations (review finding, 2026-07-10).
 create policy founder_intel_conversations_owner_read
   on public.founder_intelligence_conversations
   for select
   to authenticated
-  using (public.founder_intelligence_is_owner());
+  using (public.founder_intelligence_is_owner() and user_id = auth.uid());
 
 create policy founder_intel_messages_owner_read
   on public.founder_intelligence_messages
   for select
   to authenticated
-  using (public.founder_intelligence_is_owner());
+  using (
+    public.founder_intelligence_is_owner()
+    and exists (
+      select 1
+      from public.founder_intelligence_conversations c
+      where c.id = conversation_id
+        and c.user_id = auth.uid()
+    )
+  );
 
 -- The latent-grant lockdown lesson (sec_harden_08): revoke write grants so a
 -- future permissive policy cannot silently open a write path.

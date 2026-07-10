@@ -19,6 +19,22 @@ import { getFinanceLedgerSnapshot } from "@/lib/finance-ledger";
 
 const NAIRA = new Intl.NumberFormat("en-NG", { maximumFractionDigits: 0 });
 
+/**
+ * Fence defense (review finding, 2026-07-10): several interpolated strings are
+ * owner/staff-writable (company name, division registry names/status) — collapse
+ * control chars + whitespace runs and strip the fence marker token so no stored
+ * string can put COMPANY_FACTS>>> on its own line inside the system prompt.
+ * Same defense prompts.ts applies to client-supplied support-assist context.
+ */
+function fenceSafe(value: unknown, max = 120): string {
+  return String(value ?? "")
+    .replace(/\p{Cc}+/gu, " ")
+    .replace(/\s+/g, " ")
+    .replace(/COMPANY_FACTS/gi, "COMPANY-FACTS")
+    .slice(0, max)
+    .trim();
+}
+
 function naira(amount: number): string {
   return `₦${NAIRA.format(Math.round(amount))}`;
 }
@@ -36,7 +52,7 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
   const lines: string[] = [];
   const m = overview.metrics;
   lines.push(
-    `Company: ${overview.companyName}. Divisions live: ${m.divisionsLive}. Active staff: ${m.activeStaff}.`,
+    `Company: ${fenceSafe(overview.companyName, 80)}. Divisions live: ${m.divisionsLive}. Active staff: ${m.activeStaff}.`,
     `Recognized revenue (console rollup): ${naira(m.totalRevenueNaira)}. Expenses: ${naira(m.totalExpenseNaira)}.`,
     `Open support threads: ${m.openSupport}. Queued notifications: ${m.queuedNotifications}. Critical signals: ${m.criticalSignals}.`,
   );
@@ -57,14 +73,14 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
   lines.push("", "Per division (revenue is the console rollup; unwired divisions show 0 by design):");
   for (const division of overview.divisions) {
     lines.push(
-      `- ${division.displayName}: status ${division.status}, stability index ${division.healthScore} (${division.healthLabel}), revenue ${naira(division.revenueNaira)}, open work ${division.workOpen}, open support ${division.supportOpen}, alerts ${division.alertCount}, staff ${division.staffingCount}.`,
+      `- ${fenceSafe(division.displayName, 60)}: status ${fenceSafe(division.status, 24)}, stability index ${division.healthScore} (${division.healthLabel}), revenue ${naira(division.revenueNaira)}, open work ${division.workOpen}, open support ${division.supportOpen}, alerts ${division.alertCount}, staff ${division.staffingCount}.`,
     );
   }
 
   if (overview.signals.length > 0) {
     lines.push("", "Current signals (evidence-backed, freshest first):");
     for (const signal of overview.signals.slice(0, 6)) {
-      lines.push(`- [${signal.severity}] ${signal.title} — ${String(signal.body ?? "").slice(0, 160)}`);
+      lines.push(`- [${signal.severity}] ${fenceSafe(signal.title, 120)} — ${fenceSafe(signal.body, 160)}`);
     }
   }
 

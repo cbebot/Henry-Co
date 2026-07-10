@@ -57,11 +57,14 @@ export async function persistFounderTurn(input: {
         .eq("id", conversationId);
     }
 
-    await admin.from("founder_intelligence_messages").insert({
+    const { error: userInsertError } = await admin.from("founder_intelligence_messages").insert({
       conversation_id: conversationId,
       role: "user",
       content: input.lastUserText.slice(0, 8000),
     } as never);
+    // A failed user-message write must not leave an assistant reply dangling
+    // without its question (review robustness note).
+    if (userInsertError) return { conversationId, assistantMessageId: null };
 
     const { data: assistantRow } = await admin
       .from("founder_intelligence_messages")

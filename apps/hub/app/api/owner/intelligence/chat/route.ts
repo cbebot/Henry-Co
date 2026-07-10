@@ -62,7 +62,11 @@ export async function POST(request: NextRequest) {
       input: { messages, company },
       idempotencyKey: randomUUID(),
     },
-    { billing: noBillingPort },
+    // The audit option is what makes "every call is audited" TRUE — without it the
+    // gateway writes no henry_events/audit rows (review finding, 2026-07-10). The
+    // most privileged AI surface is exactly where a leaked-session investigation
+    // needs a durable trail.
+    { billing: noBillingPort, audit: { supabase: auth.supabase as never } },
   );
 
   if (!result.ok) {

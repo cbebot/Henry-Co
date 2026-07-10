@@ -32,7 +32,7 @@ test("tolerates a code fence and surrounding prose", () => {
   assert.equal(env.reply, "Here.");
 });
 
-test("caps navigation at three buttons", () => {
+test("caps navigation at two buttons (what the launcher renders)", () => {
   const env = parseFounderAssistEnvelope(
     JSON.stringify({
       reply: "Lots to see.",
@@ -45,7 +45,7 @@ test("caps navigation at three buttons", () => {
     }),
   );
   assert.ok(env);
-  assert.equal(env.navigate.length, 3);
+  assert.equal(env.navigate.length, 2);
 });
 
 test("resolver drops unknown and prototype-key targets silently", () => {
