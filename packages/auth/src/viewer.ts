@@ -140,7 +140,11 @@ async function readAccessSnapshot(user: {
 
   const ownerProfile =
     directOwnerProfile ||
-    (normalizedEmailAddress
+    // HUB-4: an owner_profiles row matched by EMAIL (not user_id) grants owner
+    // access only when the auth email is verified — the same rule the staff
+    // membership grant already applies (filterGrantedMemberships above). An
+    // unclaimed seed row must never grant owner to an unverified mailbox.
+    (normalizedEmailAddress && emailVerified
       ? (
           await admin
             .from("owner_profiles")
