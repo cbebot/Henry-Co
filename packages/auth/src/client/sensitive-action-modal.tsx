@@ -96,11 +96,10 @@ function isSensitiveActionChallenge(response: Response): boolean {
 }
 
 function extractIntent(response: Response): string {
-  return (
-    response.headers.get("x-henryco-reauth-intent") ||
-    response.headers.get("X-Henry Onyx-Reauth-Intent") ||
-    "sensitive_action"
-  );
+  // ONE canonical header name (X-HenryCo-Reauth-Intent, matching the guard). The old spaced
+  // "X-Henry Onyx-..." variant is an invalid HTTP token — even READING it throws in
+  // spec-compliant Headers implementations, so it must never be referenced again.
+  return response.headers.get("x-henryco-reauth-intent") || "sensitive_action";
 }
 
 /**

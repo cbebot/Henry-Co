@@ -153,6 +153,10 @@ export async function POST(request: Request) {
       .eq("is_active", true)
       .maybeSingle();
 
+    // Track WHERE the method row lives: customer_wallet_withdrawal_requests.payout_method_id is
+    // an FK to the MODERN customer_payout_methods table, so a legacy id must never be written
+    // there (it 500s on the FK). A legacy method rides in metadata instead.
+    let methodIsModern = Boolean(method && !methodError);
     let payoutMethod =
       method && !methodError
         ? {
@@ -179,6 +183,7 @@ export async function POST(request: Request) {
 
       if (legacyMethods && isLegacyPayoutMethodRow(legacyMethods as Record<string, unknown>)) {
         payoutMethod = mapLegacyPayoutMethod(legacyMethods as Record<string, unknown>);
+        methodIsModern = false;
       }
     } else if (methodError) {
       logApiError("wallet/withdrawal/request payout", methodError);
@@ -244,11 +249,15 @@ export async function POST(request: Request) {
       .from("customer_wallet_withdrawal_requests")
       .insert({
         user_id: user.id,
-        payout_method_id: payoutMethodId,
+        // The FK targets the MODERN payout-methods table only; a legacy method id would violate
+        // it (a 500). Legacy methods ride in metadata and stay on the manual review flow.
+        payout_method_id: methodIsModern ? payoutMethodId : null,
         amount_kobo: amountKobo,
         currency: "NGN",
         status: "pending_review",
-        metadata: { requested_from: "account_wallet" },
+        metadata: methodIsModern
+          ? { requested_from: "account_wallet" }
+          : { requested_from: "account_wallet", legacy_payout_method_id: payoutMethodId },
       } as never)
       .select("id")
       .single();
