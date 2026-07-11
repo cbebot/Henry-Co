@@ -100,20 +100,44 @@ function amzDates(now: Date): { amzDate: string; dateStamp: string } {
   return { amzDate, dateStamp: amzDate.slice(0, 8) };
 }
 
-function safeProviderError(payload: unknown, status: number): string {
+function safeProviderError(payload: unknown, status: number, region: string): string {
+  let msg = "";
+  let type = "";
   if (payload && typeof payload === "object") {
     const obj = payload as { message?: unknown; Message?: unknown; __type?: unknown };
-    const msg =
+    msg =
       typeof obj.message === "string"
         ? obj.message
         : typeof obj.Message === "string"
           ? obj.Message
           : "";
-    if (msg.trim()) return msg.trim().slice(0, 280);
-    if (typeof obj.__type === "string" && obj.__type.trim()) {
-      return `ses:${obj.__type.trim()}`.slice(0, 280);
-    }
+    type = typeof obj.__type === "string" ? obj.__type : "";
   }
+
+  // Turn SES's cryptic sandbox rejection into a self-explaining, actionable
+  // error. "Email address is not verified" / "identities failed the check" is
+  // ONLY returned when the SES account is in SANDBOX in `region` — in that mode
+  // every recipient must be a verified identity, so real customer inboxes fail
+  // while an own-domain address passes. SES production access + domain
+  // verification are PER-REGION; the app sends through AWS_SES_REGION (falling
+  // back to us-east-1). If production lives in another region (e.g. eu-west-1),
+  // the app is hitting the wrong, still-sandboxed region.
+  const lower = `${msg} ${type}`.toLowerCase();
+  const looksSandbox =
+    lower.includes("not verified") ||
+    lower.includes("failed the check") ||
+    lower.includes("identities failed");
+  if (looksSandbox) {
+    return (
+      `SES is in SANDBOX in region ${region}, so only verified addresses receive mail. ` +
+      `Enable SES production access IN region ${region}, or set AWS_SES_REGION to the region ` +
+      `where you have production + your henryonyx.com domain verified (your stack is EU — likely eu-west-1). ` +
+      `[raw: ${(msg || type || `http ${status}`).slice(0, 120)}]`
+    ).slice(0, 400);
+  }
+
+  if (msg.trim()) return msg.trim().slice(0, 280);
+  if (type.trim()) return `ses:${type.trim()}`.slice(0, 280);
   return `ses http ${status}`;
 }
 
@@ -205,7 +229,7 @@ export async function sendSesEmail(
     return {
       provider: "ses",
       status: "error",
-      safeError: safeProviderError(out, response.status),
+      safeError: safeProviderError(out, response.status, config.region),
     };
   }
 
