@@ -52,7 +52,10 @@ export function SendButton({
       className={cn(
         "group relative inline-flex items-center justify-center gap-2",
         "rounded-full font-semibold tracking-[0.01em]",
-        "text-white",
+        // Label ink is a seam token: white holds AA on the default teal accent,
+        // but hosts that re-accent the composer (the gold Intelligence panels)
+        // must supply a dark ink — white-on-gold is ~2.2:1.
+        "text-[color:var(--composer-accent-ink,#ffffff)]",
         "transition-[transform,box-shadow,filter,background-color]",
         "shadow-[0_10px_24px_-10px_rgba(15,23,42,0.45),inset_0_1px_0_rgba(255,255,255,0.18)]",
         "hover:enabled:shadow-[0_14px_30px_-10px_rgba(15,23,42,0.55),inset_0_1px_0_rgba(255,255,255,0.22)]",

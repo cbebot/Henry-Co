@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { Bot } from "lucide-react";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { ModuleJumpEntry } from "@henryco/search-ui";
@@ -15,6 +14,7 @@ import OwnerPaletteHost from "@/components/owner/OwnerPaletteHost";
 import OwnerNotificationsLauncher from "@/components/owner/OwnerNotificationsLauncher";
 import OwnerNotificationsToastViewport from "@/components/owner/OwnerNotificationsToastViewport";
 import OwnerSearchButton from "@/components/owner/OwnerSearchButton";
+import FounderIntelligenceMount from "@/components/owner/FounderIntelligenceMount";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export default async function OwnerCommandLayout({ children }: { children: ReactNode }) {
@@ -108,15 +108,13 @@ export default async function OwnerCommandLayout({ children }: { children: React
               {children}
             </div>
           </main>
-          {/* Founder Intelligence F2: when the flag is live, the corner hosts the REAL
-              owner-gated assistant (its own endpoint, its own access model). Dark, the
-              honest signals link from F1 remains. */}
+          {/* Founder Intelligence F2/OCC-2: when the flag is live, desktop gets the
+              persistent command dock (briefing + restored conversation + F3 cards,
+              ⌘J) and smaller screens keep the floating launcher — one shell at a
+              time, gated in FounderIntelligenceMount. Dark, the honest signals
+              link from F1 remains. */}
           {process.env.NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE === "1" ? (
-            <IntelligenceLauncher
-              division="hub"
-              endpoint="/api/owner/intelligence/chat"
-              accent="#C9A227"
-            />
+            <FounderIntelligenceMount />
           ) : (
           <>
           {/* F1 truth pass: this button is a LINK to the signals briefing, not an

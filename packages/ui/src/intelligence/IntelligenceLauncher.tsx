@@ -8,33 +8,26 @@
  * navigation buttons, and the human-handoff signal come back opaque (no provider/model ever
  * named). The panel embeds @henryco/chat-thread (fillViewport off — the panel owns the
  * height), and renders navigation + the Onyx Line handoff through the composer's extras slot.
+ *
+ * OCC-2: the chat/turn state machine lives in useIntelligenceChat and the extras block in
+ * IntelligenceExtras — shared with the founder desktop dock (FounderCommandDock) so the two
+ * shells cannot drift. This file keeps ONLY the mobile-FAB shell.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { MessageCircle, X, ArrowUpRight, LifeBuoy, Sparkles as Sparkle } from "lucide-react";
+import { MessageCircle, X, Sparkles as Sparkle } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
-import { translateSurfaceLabel } from "@henryco/i18n";
-import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
-import type { AppLocale } from "@henryco/i18n";
 import { ChatThread } from "@henryco/chat-thread";
-import type { ChatSendPayload, ChatSendResult, ChatThreadMessage } from "@henryco/chat-thread";
 // Bundle the chat-thread layout with the launcher itself. The panel embeds <ChatThread>, whose
 // styles live in this stylesheet; without it, any host app that doesn't already import it (the
 // hub, marketplace, …) renders the panel UNSTYLED — oversized, a floating composer, and
 // system-font bubbles. Importing it here makes the launcher self-contained on every subdomain.
 import "@henryco/chat-thread/styles";
+import { useIntelligenceChat, type IntelligenceDivision } from "./use-intelligence-chat";
+import { IntelligenceExtras } from "./IntelligenceExtras";
 
-export type IntelligenceDivision =
-  | "marketplace"
-  | "care"
-  | "jobs"
-  | "learn"
-  | "logistics"
-  | "property"
-  | "studio"
-  | "account"
-  | "hub";
+export type { IntelligenceDivision };
 
 export interface IntelligenceLauncherProps {
   division: IntelligenceDivision;
@@ -51,110 +44,11 @@ export interface IntelligenceLauncherProps {
   bottomOffset?: string;
 }
 
-type ChatTurn = { role: "user" | "assistant"; content: string };
-type NavAction = { label: string; href: string };
-/** A chargeable deep-work capability the brain proposed (L4). */
-type Offer = { key: string; title: string; blurb: string };
-/** A price to show before running: the real NGN charge + a payer-currency display (approximate). */
-type Quote = {
-  chargeKobo: number;
-  chargeCurrency: string;
-  displayAmountMinor: number;
-  displayCurrency: string;
-  approximate: boolean;
-};
-
-/**
- * F3 — a governed write action the founder assistant proposed. Server-built and
- * server-authored (title/body/confirmLabel are already company-voice from the
- * true state), so they render as data, not client literals. Present ONLY on the
- * owner founder surface; every customer intelligence surface omits it, so the
- * card is inert there.
- */
-type ProposedAction = {
-  token: string;
-  key: string;
-  title: string;
-  body: string;
-  confirmLabel: string;
-  division: string;
-  reversibility: "reversible" | "hard-to-reverse" | "irreversible";
-  requiresReauth: boolean;
-  rationale?: string | null;
-  expiresAt: string;
-};
-
-type ChatApiResponse = {
-  reply?: string;
-  navigate?: NavAction[];
-  handoff?: boolean;
-  offer?: Offer | null;
-  proposedAction?: ProposedAction | null;
-  conversationId?: string | null;
-  messageId?: string | null;
-  error?: string;
-};
-
-/** The disposition of a confirmed action, shown in place of the card. */
-type ActionOutcome = { kind: "executed" | "conflict" | "expired" | "failed"; message: string };
-
-const nowIso = () => new Date().toISOString();
-const newId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `id-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-
-/** Kobo -> a currency string. NGN today; the currency travels with the quote for the seam. */
-function formatMoney(kobo: number, currency: string): string {
-  const major = Math.round(kobo) / 100;
-  try {
-    return new Intl.NumberFormat(undefined, { style: "currency", currency: currency || "NGN", maximumFractionDigits: 2 }).format(major);
-  } catch {
-    return `${currency || "NGN"} ${major.toFixed(2)}`;
-  }
-}
-
-/** A stable per-division session id (groups anonymous turns + rate-limits per visitor). */
-function useSessionId(division: string): string {
-  return useMemo(() => {
-    const key = `hc-intelligence-session:${division}`;
-    if (typeof window === "undefined") return newId();
-    try {
-      const existing = window.sessionStorage.getItem(key);
-      if (existing) return existing;
-      const fresh = newId();
-      window.sessionStorage.setItem(key, fresh);
-      return fresh;
-    } catch {
-      return newId();
-    }
-  }, [division]);
-}
-
 export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = "/api/intelligence/chat", bottomOffset }: IntelligenceLauncherProps) {
-  const locale = useOptionalHenryCoLocale() ?? "en";
-  const t = useCallback((text: string) => translateSurfaceLabel(locale as AppLocale, text), [locale]);
+  const chat = useIntelligenceChat({ division, endpoint });
+  const { t, sessionId, messages, typing, send } = chat;
 
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatThreadMessage[]>([]);
-  const [typing, setTyping] = useState(false);
-  const [actions, setActions] = useState<NavAction[]>([]);
-  const [handoff, setHandoff] = useState(false);
-  // L4 paid deep-work: the current offer, its quote once fetched, and the run state.
-  const [offer, setOffer] = useState<Offer | null>(null);
-  const [quote, setQuote] = useState<Quote | null>(null);
-  const [deepBusy, setDeepBusy] = useState(false);
-  const [deepError, setDeepError] = useState<string | null>(null);
-  // F3 governed actions: the proposed action, whether the owner expanded it to
-  // review (fix #7 — viewing is a deliberate click, never auto-opened), the
-  // confirm-in-flight flag, and the disposition once resolved.
-  const [proposedAction, setProposedAction] = useState<ProposedAction | null>(null);
-  const [actionExpanded, setActionExpanded] = useState(false);
-  const [actionBusy, setActionBusy] = useState(false);
-  const [actionOutcome, setActionOutcome] = useState<ActionOutcome | null>(null);
-
-  const sessionId = useSessionId(division);
-  // The conversation of record for building each request + the server's returned id.
-  const historyRef = useRef<ChatTurn[]>([]);
-  const conversationRef = useRef<string | null>(null);
 
   // Dialog behaviour: closing returns focus to the launcher, and Escape dismisses the panel.
   const fabRef = useRef<HTMLButtonElement | null>(null);
@@ -172,372 +66,10 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   }, [open, closePanel]);
 
   const supportHref = getAccountUrl("/support");
-  // The quote/run endpoints sit beside the chat endpoint (same account origin).
-  const quoteEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/quote"), [endpoint]);
-  const runEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/run"), [endpoint]);
-  // F3 — the governed-action confirm endpoint sits beside the founder chat
-  // endpoint (same owner origin): /api/owner/intelligence/chat → /actions/confirm.
-  const confirmEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/actions/confirm"), [endpoint]);
-
-  // The SECOND deliberate click (the first being "Review"): confirm the action.
-  // The AI is entirely absent here — this posts only the opaque token; the server
-  // re-authorizes, re-reads true state, and executes through the guarded path.
-  const confirmAction = useCallback(async () => {
-    if (!proposedAction || actionBusy) return;
-    setActionBusy(true);
-    try {
-      const res = await fetch(confirmEndpoint, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: proposedAction.token }),
-      });
-      const data = (await res.json().catch(() => null)) as
-        | { outcome?: string; reason?: string; error?: string }
-        | null;
-      const outcome = data?.outcome;
-      if (res.ok && outcome === "executed") {
-        setActionOutcome({ kind: "executed", message: t("Done. The change is live.") });
-      } else if (outcome === "conflict" || outcome === "already_resolved") {
-        setActionOutcome({
-          kind: "conflict",
-          message: t("The details changed since I prepared this. Ask me again for a fresh version."),
-        });
-      } else if (outcome === "expired") {
-        setActionOutcome({
-          kind: "expired",
-          message: t("This action expired. Ask me again and I'll prepare a fresh one."),
-        });
-      } else {
-        setActionOutcome({
-          kind: "failed",
-          message: data?.error || t("That didn't go through. Nothing was changed."),
-        });
-      }
-      setProposedAction(null);
-      setActionExpanded(false);
-    } catch {
-      setActionOutcome({ kind: "failed", message: t("That didn't go through. Nothing was changed.") });
-      setProposedAction(null);
-      setActionExpanded(false);
-    } finally {
-      setActionBusy(false);
-    }
-  }, [proposedAction, actionBusy, confirmEndpoint, t]);
-
-  const dismissAction = useCallback(() => {
-    setProposedAction(null);
-    setActionExpanded(false);
-  }, []);
-  const lastUserText = () => [...historyRef.current].reverse().find((m) => m.role === "user")?.content ?? "";
-
-  const send = useCallback(
-    async (payload: ChatSendPayload): Promise<ChatSendResult> => {
-      const body = payload.body.trim();
-      if (!body) return { ok: false, reason: t("Type a message first.") };
-
-      const outbound = [...historyRef.current, { role: "user" as const, content: body }];
-      setTyping(true);
-      // A new turn supersedes the previous turn's buttons + any pending offer.
-      setActions([]);
-      setHandoff(false);
-      setOffer(null);
-      setQuote(null);
-      setDeepError(null);
-      // A new turn also supersedes an un-acted proposed action + its outcome.
-      setProposedAction(null);
-      setActionExpanded(false);
-      setActionOutcome(null);
-      try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          // Cross-subdomain to the account endpoint — send the platform session cookie so a
-          // signed-in person is recognised (the server still derives identity from the cookie).
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: outbound,
-            division,
-            page: typeof window !== "undefined" ? window.location.pathname : undefined,
-            sessionId,
-            conversationId: conversationRef.current,
-          }),
-        });
-        const data = (await res.json().catch(() => null)) as ChatApiResponse | null;
-        if (!res.ok || !data?.reply) {
-          setTyping(false);
-          return { ok: false, reason: data?.error || t("We couldn't reach Henry Onyx Intelligence. Please try again.") };
-        }
-
-        // Commit to the conversation of record only on success (retry-safe).
-        historyRef.current = [...outbound, { role: "assistant", content: data.reply }];
-        conversationRef.current = data.conversationId ?? conversationRef.current;
-
-        const assistantMessage: ChatThreadMessage = {
-          id: data.messageId || newId(),
-          authorId: null,
-          authorRole: "other",
-          body: data.reply,
-          createdAt: nowIso(),
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-        setActions(Array.isArray(data.navigate) ? data.navigate.slice(0, 2) : []);
-        setHandoff(Boolean(data.handoff));
-        setOffer(data.offer ?? null);
-        // F3 — surface the proposed action as a compact chip; the owner reviews
-        // and confirms with deliberate clicks. Inert on every non-founder surface
-        // (those responses never carry proposedAction).
-        setProposedAction(data.proposedAction ?? null);
-        setTyping(false);
-
-        // Reconcile the composer's optimistic user bubble by returning the sent message.
-        return {
-          ok: true,
-          message: {
-            id: newId(),
-            authorId: "you",
-            authorRole: "viewer",
-            body,
-            createdAt: nowIso(),
-          },
-        };
-      } catch {
-        setTyping(false);
-        return { ok: false, reason: t("We couldn't reach the service. Check your connection and try again.") };
-      }
-    },
-    [division, endpoint, sessionId, t],
+  const extras = useCallback(
+    () => <IntelligenceExtras chat={chat} supportHref={supportHref} />,
+    [chat, supportHref],
   );
-
-  // L4 — fetch the price for the current offer (no wallet touch). Signed-in only.
-  const getQuote = useCallback(async () => {
-    if (!offer) return;
-    setDeepBusy(true);
-    setDeepError(null);
-    try {
-      const res = await fetch(quoteEndpoint, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ capabilityKey: offer.key, input: lastUserText() }),
-      });
-      const data = (await res.json().catch(() => null)) as {
-        charge?: { amountKobo: number; currency: string };
-        display?: { amountMinor: number; currency: string; approximate: boolean };
-        error?: string;
-        needsSignIn?: boolean;
-      } | null;
-      if (!res.ok || !data?.charge || !data?.display) {
-        setDeepError(data?.error || t("We couldn't price that right now. Please try again."));
-        setDeepBusy(false);
-        return;
-      }
-      setQuote({
-        chargeKobo: data.charge.amountKobo,
-        chargeCurrency: data.charge.currency,
-        displayAmountMinor: data.display.amountMinor,
-        displayCurrency: data.display.currency,
-        approximate: Boolean(data.display.approximate),
-      });
-    } catch {
-      setDeepError(t("We couldn't reach the service. Please try again."));
-    }
-    setDeepBusy(false);
-  }, [offer, quoteEndpoint, t]);
-
-  // L4 — run the confirmed deep work. Charges the wallet through the metered rail; the result
-  // lands as an assistant message rendered in the reading face.
-  const runDeep = useCallback(async () => {
-    if (!offer) return;
-    setDeepBusy(true);
-    setDeepError(null);
-    try {
-      const res = await fetch(runEndpoint, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          capabilityKey: offer.key,
-          input: lastUserText(),
-          idempotencyKey: newId(),
-          conversationId: conversationRef.current,
-          division,
-        }),
-      });
-      const data = (await res.json().catch(() => null)) as {
-        output?: string;
-        receipt?: { totalKobo: number; vatKobo: number; billed: boolean };
-        error?: string;
-        code?: string;
-      } | null;
-      if (!res.ok || !data?.output) {
-        setDeepError(
-          data?.code === "insufficient_funds"
-            ? t("Your wallet needs a top-up to run this.")
-            : data?.error || t("We couldn't run that right now. Please try again."),
-        );
-        setDeepBusy(false);
-        return;
-      }
-      historyRef.current = [...historyRef.current, { role: "assistant", content: data.output }];
-      setMessages((prev) => [
-        ...prev,
-        { id: newId(), authorId: null, authorRole: "other", body: data.output as string, createdAt: nowIso() },
-      ]);
-      // Clear the offer once delivered; the receipt total is on the wallet.
-      setOffer(null);
-      setQuote(null);
-    } catch {
-      setDeepError(t("We couldn't reach the service. Please try again."));
-    }
-    setDeepBusy(false);
-  }, [offer, runEndpoint, division, t]);
-
-  const extras = useCallback(() => {
-    const hasOffer = Boolean(offer);
-    const hasAction = Boolean(proposedAction) || Boolean(actionOutcome);
-    if (actions.length === 0 && !handoff && !hasOffer && !hasAction) return null;
-    const reversibilityLabel = proposedAction
-      ? proposedAction.reversibility === "reversible"
-        ? t("Reversible")
-        : proposedAction.reversibility === "hard-to-reverse"
-          ? t("Hard to reverse")
-          : t("Cannot be undone")
-      : "";
-    return (
-      <div className="hc-il-extras">
-        {/* F3 governed action — a compact chip first (fix #7: viewing is a
-            deliberate click), expanding to the full true-state card, then the
-            confirm click. */}
-        {actionOutcome ? (
-          <div className={`hc-il-action-outcome hc-il-action-outcome--${actionOutcome.kind}`} role="status">
-            <span>{actionOutcome.message}</span>
-            <button type="button" className="hc-il-action-dismiss" onClick={() => setActionOutcome(null)}>
-              {t("Dismiss")}
-            </button>
-          </div>
-        ) : null}
-        {proposedAction && !actionExpanded ? (
-          <div className="hc-il-action-chip">
-            <span className="hc-il-action-chip-label">
-              {t("Action ready")}: {proposedAction.title}
-            </span>
-            <button type="button" className="hc-il-action-review" onClick={() => setActionExpanded(true)}>
-              {t("Review")}
-            </button>
-          </div>
-        ) : null}
-        {proposedAction && actionExpanded ? (
-          <div className="hc-il-action-card" role="group" aria-label={t("Confirm action")}>
-            <div className="hc-il-action-card-head">
-              <span className="hc-il-action-card-title">{proposedAction.title}</span>
-              <span
-                className={`hc-il-action-tag hc-il-action-tag--${proposedAction.reversibility}`}
-              >
-                {reversibilityLabel}
-              </span>
-            </div>
-            <p className="hc-il-action-card-body">{proposedAction.body}</p>
-            {proposedAction.rationale ? (
-              <p className="hc-il-action-card-why">{proposedAction.rationale}</p>
-            ) : null}
-            {proposedAction.requiresReauth ? (
-              // Pre-warn before the confirm click (money-tranche actions, F3c) so
-              // the owner knows the step-up is coming rather than meeting a 403.
-              <p className="hc-il-action-card-reauth">
-                {t("You'll be asked to re-verify your identity to confirm this.")}
-              </p>
-            ) : null}
-            <div className="hc-il-action-card-buttons">
-              <button
-                type="button"
-                className="hc-il-action-confirm"
-                onClick={() => void confirmAction()}
-                disabled={actionBusy}
-              >
-                {actionBusy ? t("Working…") : proposedAction.confirmLabel}
-              </button>
-              <button
-                type="button"
-                className="hc-il-action-cancel"
-                onClick={dismissAction}
-                disabled={actionBusy}
-              >
-                {t("Cancel")}
-              </button>
-            </div>
-          </div>
-        ) : null}
-        {offer ? (
-          <div className="hc-il-offer">
-            <div className="hc-il-offer-head">
-              <Sparkle className="hc-il-offer-icon" aria-hidden />
-              <span className="hc-il-offer-title">{offer.title}</span>
-            </div>
-            <p className="hc-il-offer-blurb">{offer.blurb}</p>
-            {quote ? (
-              <>
-                <p className="hc-il-offer-price">
-                  {formatMoney(quote.displayAmountMinor, quote.displayCurrency)}
-                  {quote.approximate ? (
-                    <span className="hc-il-offer-approx">
-                      {t("approx. charged in")} {quote.chargeCurrency} {formatMoney(quote.chargeKobo, quote.chargeCurrency)}
-                    </span>
-                  ) : null}
-                </p>
-                <div className="hc-il-offer-actions">
-                  <button type="button" className="hc-il-offer-run" onClick={() => void runDeep()} disabled={deepBusy}>
-                    {deepBusy ? t("Running…") : t("Run it")}
-                  </button>
-                  <button type="button" className="hc-il-offer-cancel" onClick={() => setQuote(null)} disabled={deepBusy}>
-                    {t("Not now")}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <button type="button" className="hc-il-offer-see" onClick={() => void getQuote()} disabled={deepBusy}>
-                {deepBusy ? t("Checking the price…") : t("See the price")}
-              </button>
-            )}
-            {deepError ? <p className="hc-il-offer-error">{deepError}</p> : null}
-          </div>
-        ) : null}
-        {actions.length || handoff ? (
-          <div className="hc-il-actions">
-            {actions.map((action) => (
-              <a key={action.href} href={action.href} className="hc-il-chip">
-                {action.label}
-                <ArrowUpRight className="hc-il-chip-icon" aria-hidden />
-              </a>
-            ))}
-            {handoff ? (
-              <a href={supportHref} className="hc-il-chip hc-il-chip-human">
-                <LifeBuoy className="hc-il-chip-icon" aria-hidden />
-                {t("Talk to the team")}
-              </a>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-    );
-  }, [
-    actions,
-    handoff,
-    offer,
-    quote,
-    deepBusy,
-    deepError,
-    supportHref,
-    getQuote,
-    runDeep,
-    proposedAction,
-    actionExpanded,
-    actionBusy,
-    actionOutcome,
-    confirmAction,
-    dismissAction,
-    t,
-  ]);
 
   const panelStyle = useMemo(
     () =>
@@ -622,7 +154,7 @@ export function IntelligenceLauncher({ division, accent = "#C9A227", endpoint = 
   );
 }
 
-function IntelligenceLauncherStyles() {
+export function IntelligenceLauncherStyles() {
   return (
     <style>{`
 /* Henry Onyx Intelligence launcher — a premium floating chat panel that tracks the HOST
@@ -663,7 +195,10 @@ function IntelligenceLauncherStyles() {
   --ct-surface-own:color-mix(in srgb,var(--hc-il-accent,#C9A227) 16%,var(--hc-il-surface));
   --ct-header-bg:var(--hc-il-surface);--ct-composer-bg:var(--hc-il-surface);
   --ct-ink:var(--hc-il-ink);--ct-ink-soft:var(--hc-il-ink-soft);--ct-line:var(--hc-il-line);
-  --ct-accent:var(--hc-il-accent,#C9A227);--ct-accent-ink:var(--hc-il-ink);--ct-accent-contrast:var(--hc-il-on-accent)}
+  --ct-accent:var(--hc-il-accent,#C9A227);--ct-accent-ink:var(--hc-il-ink);--ct-accent-contrast:var(--hc-il-on-accent);
+  /* The composer's Send label defaults to white (AA on its teal default) — on the
+     gold Intelligence accent it must be the dark on-accent ink. */
+  --composer-accent-ink:var(--hc-il-on-accent)}
 :where(html.dark,html[data-theme="dark"],.dark) .hc-il-panel{
   --hc-il-surface:#0f1a2c;--hc-il-ink:#F5F1E8;--hc-il-ink-soft:rgba(245,241,232,.64);--hc-il-line:rgba(245,241,232,.14);
   --hc-il-danger:#f4a48f;--ct-danger:#f87171;
