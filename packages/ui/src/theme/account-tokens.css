@@ -42,6 +42,16 @@
   --acct-purple-soft: #EDE9FE;
   --acct-orange: #F59E0B;
   --acct-orange-soft: #FEF3C7;
+  /* Tone-as-text (OCC-1): the strong tone colours hold AA on the dark canvas
+     but not as SMALL TEXT on the pale light tints (green 2.5:1, orange 1.9:1
+     on their softs). These are the text-safe counterparts — mixed toward ink
+     in light, the plain tone in dark. Use them whenever a tone colour is the
+     ink of text ≤18px. */
+  --acct-red-text: color-mix(in srgb, var(--acct-red) 55%, var(--acct-ink));
+  --acct-green-text: color-mix(in srgb, var(--acct-green) 55%, var(--acct-ink));
+  --acct-blue-text: color-mix(in srgb, var(--acct-blue) 55%, var(--acct-ink));
+  --acct-orange-text: color-mix(in srgb, var(--acct-orange) 55%, var(--acct-ink));
+  --acct-purple-text: color-mix(in srgb, var(--acct-purple) 55%, var(--acct-ink));
   --acct-radius: 1.25rem;
   --acct-radius-lg: 1.75rem;
   --acct-radius-sm: 0.75rem;
@@ -121,6 +131,12 @@
   --acct-purple-soft: rgba(167,139,250,0.12);
   --acct-orange: #FBBF24;
   --acct-orange-soft: rgba(251,191,36,0.12);
+  /* On the dark canvas the bright tones ARE the text-safe values. */
+  --acct-red-text: var(--acct-red);
+  --acct-green-text: var(--acct-green);
+  --acct-blue-text: var(--acct-blue);
+  --acct-orange-text: var(--acct-orange);
+  --acct-purple-text: var(--acct-purple);
   --acct-shadow: 0 1px 3px rgba(0,0,0,0.2);
   --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.3);
 

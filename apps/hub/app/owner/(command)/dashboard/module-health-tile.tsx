@@ -73,7 +73,7 @@ export default function ModuleHealthTile({ metrics, locale }: ModuleHealthTilePr
           subtitle={t("Rendered but never showed data — review candidates")}
           color={
             metrics.alwaysEmpty7d.length > 0
-              ? "var(--acct-amber)"
+              ? "var(--acct-orange)"
               : "var(--owner-accent)"
           }
         />

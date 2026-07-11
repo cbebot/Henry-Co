@@ -31,7 +31,7 @@ export default function ReplyForm({ id, to }: { id: string; to: string }) {
         {state.message ? (
           <span
             className={`text-sm ${
-              state.ok ? "text-[var(--acct-green)]" : "text-[var(--acct-red)]"
+              state.ok ? "text-[var(--acct-green-text)]" : "text-[var(--acct-red-text)]"
             }`}
           >
             {state.message}

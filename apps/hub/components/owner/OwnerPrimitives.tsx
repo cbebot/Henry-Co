@@ -15,7 +15,7 @@ export function OwnerPageHeader({
 }) {
   return (
     <section className="acct-card relative overflow-hidden p-6 sm:p-8">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--owner-accent)_0%,rgba(201,162,39,0.2)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--acct-gold)_0%,color-mix(in_srgb,var(--acct-gold)_20%,transparent)_100%)]" />
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-4xl">
           <p className="acct-kicker text-[var(--owner-accent)]">{eyebrow}</p>
@@ -72,17 +72,17 @@ export function OwnerNotice({
 }) {
   const toneClass =
     tone === "critical"
-      ? "border-[var(--acct-red)]/20 bg-[var(--acct-red-soft)] text-[var(--acct-red)]"
+      ? "border-[var(--acct-red)]/20 bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]"
       : tone === "warning"
-        ? "border-[var(--acct-orange)]/20 bg-[var(--acct-orange-soft)] text-[var(--acct-orange)]"
+        ? "border-[var(--acct-orange)]/20 bg-[var(--acct-orange-soft)] text-[var(--acct-orange-text)]"
         : tone === "good"
-          ? "border-[var(--acct-green)]/20 bg-[var(--acct-green-soft)] text-[var(--acct-green)]"
-          : "border-[var(--acct-blue)]/20 bg-[var(--acct-blue-soft)] text-[var(--acct-blue)]";
+          ? "border-[var(--acct-green)]/20 bg-[var(--acct-green-soft)] text-[var(--acct-green-text)]"
+          : "border-[var(--acct-blue)]/20 bg-[var(--acct-blue-soft)] text-[var(--acct-blue-text)]";
 
   return (
     <div className={`rounded-[1.35rem] border px-4 py-3 ${toneClass}`.trim()}>
       <div className="text-sm font-semibold">{title}</div>
-      <p className="mt-1 text-sm leading-6 opacity-90">{body}</p>
+      <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">{body}</p>
     </div>
   );
 }

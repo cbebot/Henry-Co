@@ -151,7 +151,7 @@ export default function MetricTraceDrawer({
               {error ? (
                 <div
                   role="alert"
-                  className="rounded-xl border border-[var(--acct-red)]/30 bg-[var(--acct-red-soft)] px-3 py-2 text-xs text-[var(--acct-red)]"
+                  className="rounded-xl border border-[var(--acct-red)]/30 bg-[var(--acct-red-soft)] px-3 py-2 text-xs text-[var(--acct-red-text)]"
                 >
                   {error}
                 </div>

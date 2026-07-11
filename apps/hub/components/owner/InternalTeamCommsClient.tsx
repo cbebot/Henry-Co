@@ -119,7 +119,7 @@ function AttachmentPreview({ att, downloadFileFallback }: { att: AttachmentRow; 
 
   if (err) {
     return (
-      <p className="mt-2 rounded-lg border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-2 text-xs text-[var(--acct-red)]">
+      <p className="mt-2 rounded-lg border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-2 text-xs text-[var(--acct-red-text)]">
         {err}
       </p>
     );
@@ -876,7 +876,7 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
               <div
                 className={`rounded-xl border px-3 py-2 text-xs leading-5 ${
                   health.ok
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                    ? "border-[color-mix(in_srgb,var(--acct-green)_30%,transparent)] bg-[var(--acct-green-soft)] text-[var(--acct-ink)]"
                     : "border-[var(--acct-gold)]/30 bg-[var(--acct-gold-soft)] text-[var(--acct-ink)]"
                 }`}
               >
@@ -918,12 +918,12 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
               type="button"
               onClick={() => void handleCreateRoom()}
               disabled={creatingRoom || !roomTitle.trim()}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--acct-gold)] px-4 py-2.5 text-sm font-semibold text-[var(--market-noir,#1a1814)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--acct-gold)] px-4 py-2.5 text-sm font-semibold text-[var(--hc-ink-on-accent,#1a1814)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {creatingRoom ? (
                 <HenryCoActivityIndicator
                   size="sm"
-                  className="text-[var(--market-noir,#1a1814)]"
+                  className="text-[var(--hc-ink-on-accent,#1a1814)]"
                   label={copy.creatingRoomLabel}
                 />
               ) : (
@@ -974,7 +974,7 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
                     <span className="truncate">{t.title}</span>
                   </span>
                   {t.unread_count > 0 ? (
-                    <span className="mt-1 inline-flex rounded-full bg-[var(--acct-gold)] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-[var(--market-noir,#1a1814)]">
+                    <span className="mt-1 inline-flex rounded-full bg-[var(--acct-gold)] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-[var(--hc-ink-on-accent,#1a1814)]">
                       {t.unread_count > 99 ? "99+" : t.unread_count} {copy.unreadBadgeSuffix}
                     </span>
                   ) : null}
@@ -1002,7 +1002,7 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
             {copy.threadDescription}
           </p>
           {realtimeDegraded ? (
-            <p className="mt-2 text-xs font-medium text-[var(--acct-gold)]">
+            <p className="mt-2 text-xs font-medium text-[var(--owner-accent)]">
               {copy.realtimeDegraded}
             </p>
           ) : null}
@@ -1046,7 +1046,7 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
 
         <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4" style={{ maxHeight: "min(52vh, 520px)" }}>
           {error ? (
-            <div className="rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]">{error}</div>
+            <div className="rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red-text)]">{error}</div>
           ) : null}
           {loadingMessages ? (
             <div className="flex justify-center py-12">
@@ -1176,7 +1176,7 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
               onClick={() => void toggleRecording()}
               className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold disabled:opacity-50 ${
                 isRecording
-                  ? "border-[var(--acct-red)] bg-[var(--acct-red-soft)] text-[var(--acct-red)]"
+                  ? "border-[var(--acct-red)] bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]"
                   : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-ink)]"
               }`}
             >
@@ -1202,10 +1202,10 @@ export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["
               type="button"
               disabled={sending || !draft.trim() || !activeId}
               onClick={() => void handleSend()}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--acct-gold)] px-6 text-sm font-semibold text-[var(--market-noir,#1a1814)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--acct-gold)] px-6 text-sm font-semibold text-[var(--hc-ink-on-accent,#1a1814)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {sending ? (
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir,#1a1814)]" label={copy.sendLabel} />
+                <HenryCoActivityIndicator size="sm" className="text-[var(--hc-ink-on-accent,#1a1814)]" label={copy.sendLabel} />
               ) : (
                 <Send className="h-4 w-4" aria-hidden />
               )}

@@ -34,9 +34,9 @@ function AuthBadge({ label, verdict }: { label: string; verdict: string | null }
   const pass = v === "pass";
   const fail = v === "fail";
   const tone = pass
-    ? "text-[var(--acct-green)] bg-[var(--acct-green-soft)]"
+    ? "text-[var(--acct-green-text)] bg-[var(--acct-green-soft)]"
     : fail
-      ? "text-[var(--acct-red)] bg-[var(--acct-red-soft)]"
+      ? "text-[var(--acct-red-text)] bg-[var(--acct-red-soft)]"
       : "text-[var(--acct-muted)] bg-[var(--acct-bg-soft)]";
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${tone}`}>
@@ -112,11 +112,11 @@ export default async function OwnerInboxMessagePage({
           <AuthBadge label="DKIM" verdict={message.dkim} />
           <AuthBadge label="DMARC" verdict={message.dmarc} />
           {message.isSpam ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-red-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-red)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-red-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-red-text)]">
               <ShieldAlert size={11} /> {t("Failed authentication — possible spoof")}
             </span>
           ) : !message.spf && !message.dkim && !message.dmarc ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-orange-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-orange)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-orange-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-orange-text)]">
               <ShieldAlert size={11} /> {t("Authentication not verified")}
             </span>
           ) : null}

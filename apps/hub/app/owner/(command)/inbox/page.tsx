@@ -156,7 +156,7 @@ export default async function OwnerInboxPage({
                         <Paperclip size={13} className="shrink-0 text-[var(--acct-muted)]" />
                       ) : null}
                       {m.isSpam ? (
-                        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--acct-red-soft)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--acct-red)]">
+                        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--acct-red-soft)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--acct-red-text)]">
                           <ShieldAlert size={11} /> {t("Spoof?")}
                         </span>
                       ) : null}
@@ -212,7 +212,7 @@ function FilterChip({
       <span>{label}</span>
       <span className="tabular-nums opacity-70">{count}</span>
       {unread > 0 ? (
-        <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--owner-accent)] px-1 text-[10px] font-bold text-[#06080d]">
+        <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--acct-gold)] px-1 text-[10px] font-bold text-[var(--hc-ink-on-accent,#1A1814)]">
           {unread}
         </span>
       ) : null}

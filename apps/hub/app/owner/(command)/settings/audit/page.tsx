@@ -42,7 +42,7 @@ export default async function OwnerAuditPage({
           <div className="flex flex-wrap gap-2">
             <button
               type="submit"
-              className="rounded-xl bg-[var(--acct-gold)] px-4 py-2 text-sm font-semibold text-[var(--market-noir,#1a1814)]"
+              className="rounded-xl bg-[var(--acct-gold)] px-4 py-2 text-sm font-semibold text-[var(--hc-ink-on-accent,#1a1814)]"
             >
               Apply
             </button>

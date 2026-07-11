@@ -78,7 +78,7 @@ export default function CardClickThroughTile({
           subtitle={t("Cards demoted or removed by an audit recently")}
           color={
             metrics.cardsDemoted7d > 0
-              ? "var(--acct-amber)"
+              ? "var(--acct-orange)"
               : "var(--owner-accent)"
           }
         />
@@ -106,7 +106,7 @@ export default function CardClickThroughTile({
             ))}
           </ul>
           <div className="mt-3 flex items-center gap-2 text-xs text-[var(--acct-muted)]">
-            <TrendingDown className="h-3.5 w-3.5 text-[var(--acct-amber)]" aria-hidden="true" />
+            <TrendingDown className="h-3.5 w-3.5 text-[var(--acct-orange-text)]" aria-hidden="true" />
             <span>
               {t(
                 "Low click-through at high render counts signals a weak next step — review or demote.",

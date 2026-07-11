@@ -8,7 +8,7 @@ export default function OwnerNoAccessPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4 py-16">
       <div className="acct-card w-full max-w-lg p-8 text-center">
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--acct-red-soft)] text-[var(--acct-red)]">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]">
           <ShieldOff size={28} strokeWidth={1.75} />
         </div>
         <p className="acct-kicker mb-2">Owner HQ</p>
