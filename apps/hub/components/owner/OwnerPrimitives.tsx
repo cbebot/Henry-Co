@@ -65,10 +65,12 @@ export function OwnerNotice({
   tone = "info",
   title,
   body,
+  action,
 }: {
   tone?: "info" | "warning" | "critical" | "good";
   title: string;
   body: string;
+  action?: ReactNode;
 }) {
   const toneClass =
     tone === "critical"
@@ -83,6 +85,7 @@ export function OwnerNotice({
     <div className={`rounded-[1.35rem] border px-4 py-3 ${toneClass}`.trim()}>
       <div className="text-sm font-semibold">{title}</div>
       <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">{body}</p>
+      {action ? <div className="mt-2">{action}</div> : null}
     </div>
   );
 }

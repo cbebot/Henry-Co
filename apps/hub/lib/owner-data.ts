@@ -1737,6 +1737,39 @@ export async function getAuditHistoryPageData(options?: {
   };
 }
 
+export async function getAuditEntry(source: string, id: string): Promise<JsonRecord | null> {
+  const admin = createAdminSupabase();
+  const table =
+    source === "staff"
+      ? "staff_audit_logs"
+      : source === "platform"
+        ? "audit_logs"
+        : null;
+  if (!table) return null;
+  try {
+    const { data, error } = await admin.from(table).select("*").eq("id", id).maybeSingle();
+    if (error || !data) return null;
+    return { ...(data as JsonRecord), _source: source };
+  } catch {
+    return null;
+  }
+}
+
+export async function getInvoiceDetail(id: string): Promise<JsonRecord | null> {
+  const admin = createAdminSupabase();
+  try {
+    const { data, error } = await admin
+      .from("customer_invoices")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as JsonRecord;
+  } catch {
+    return null;
+  }
+}
+
 export async function getWorkforceMemberById(userId: string): Promise<WorkforceMember | null> {
   const dataset = await getOwnerBaseDataset();
   const workforce = buildWorkforceMembers(dataset);
