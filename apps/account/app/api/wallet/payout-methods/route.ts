@@ -58,8 +58,17 @@ export async function GET() {
       return NextResponse.json({ methods: legacyMethods });
     }
 
+    // Dedupe by ACCOUNT, not just id: a legacy method migrated into the modern table would
+    // otherwise list twice (same bank + account under two ids). Modern rows win — they carry
+    // the bank_code that powers the automatic payout rail.
+    const accountKey = (m: { bank_name?: string | null; account_number?: string | null }) =>
+      `${String(m.bank_name || "").trim().toLowerCase()}::${normalizeAccountNumber(m.account_number)}`;
+    const modern = data ?? [];
+    const modernKeys = new Set(modern.map(accountKey));
+    const uniqueLegacy = legacyMethods.filter((m) => !modernKeys.has(accountKey(m)));
+
     return NextResponse.json({
-      methods: [...(data ?? []), ...legacyMethods].filter(
+      methods: [...modern, ...uniqueLegacy].filter(
         (item, index, list) => list.findIndex((entry) => String(entry.id) === String(item.id)) === index
       ),
     });

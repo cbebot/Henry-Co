@@ -46,7 +46,7 @@ export async function streamPdfResponse({
       // verification clicks don't repeat-render the same PDF, but not so long
       // that a revocation would linger.
       "Cache-Control": "public, max-age=300, s-maxage=1800",
-      "X-Henry Onyx-Document": type,
+      "X-HenryCo-Document": type,
     },
   });
 }

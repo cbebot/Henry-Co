@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { formatMoney, formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { shellToast } from "@henryco/dashboard-shell";
+// Sensitive wallet actions (save payout account, update PIN, withdraw) answer a 401
+// SensitiveActionReauth challenge when the 5-minute re-credential window has lapsed;
+// this fetch pops the re-auth modal and replays the request instead of surfacing a dead error.
+import { fetchWithSensitiveAction } from "@henryco/auth/client/sensitive-action-modal";
 
 type PayoutMethod = {
   id: string;
@@ -139,7 +143,7 @@ export default function WalletWithdrawalsClient({
     setBusy("payout");
     setMessage(null);
     try {
-      const res = await fetch("/api/wallet/payout-methods", {
+      const res = await fetchWithSensitiveAction("/api/wallet/payout-methods", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -167,7 +171,7 @@ export default function WalletWithdrawalsClient({
     setBusy("pin");
     setMessage(null);
     try {
-      const res = await fetch("/api/wallet/withdrawal/pin", {
+      const res = await fetchWithSensitiveAction("/api/wallet/withdrawal/pin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -201,7 +205,7 @@ export default function WalletWithdrawalsClient({
       return;
     }
     try {
-      const res = await fetch("/api/wallet/withdrawal/request", {
+      const res = await fetchWithSensitiveAction("/api/wallet/withdrawal/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

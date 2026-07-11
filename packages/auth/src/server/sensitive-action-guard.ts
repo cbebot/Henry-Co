@@ -144,9 +144,13 @@ export async function evaluateSensitiveActionGuard<TUser>(
       "WWW-Authenticate",
       `SensitiveActionReauth intent="${options.action}", reauth_url="/auth/reauth"`,
     );
-    response.headers.set("X-Henry Onyx-Reauth-Intent", options.action);
+    // HTTP header names are protocol tokens — a space is INVALID and makes Headers.set() THROW,
+    // turning this calm 401 challenge into a 500 for every sensitive action (the wallet outage).
+    // Protocol identifiers keep the HenryCo code name, per the brand rule; the client reader
+    // (sensitive-action-modal extractIntent) checks exactly this name.
+    response.headers.set("X-HenryCo-Reauth-Intent", options.action);
     response.headers.set(
-      "X-Henry Onyx-Rate-Remaining",
+      "X-HenryCo-Rate-Remaining",
       String(rate.ok ? rate.remaining : 0),
     );
     return { ok: false, response };
@@ -236,7 +240,7 @@ function rateLimitedResponse(
     { status: 429 },
   );
   response.headers.set("Retry-After", String(rate.retryAfterSeconds));
-  response.headers.set("X-Henry Onyx-Reauth-Intent", action);
+  response.headers.set("X-HenryCo-Reauth-Intent", action); // valid token — a spaced name throws (see above)
   return response;
 }
 
