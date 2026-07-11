@@ -1,28 +1,93 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, ExternalLink } from "lucide-react";
+import { AlertCircle, AlertTriangle, ArrowRight, CheckCircle, ClipboardCheck, ExternalLink, Info } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice } from "@/components/owner/OwnerPrimitives";
+import DivisionBadge from "@/components/owner/DivisionBadge";
 import { isOwnerDivisionExternalHref, OWNER_APPROVAL_CENTER_LINKS } from "@/lib/owner-division-external";
+import { getApprovalQueueData } from "@/lib/owner-data";
+import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export default function OwnerApprovalsPage() {
+export default async function OwnerApprovalsPage() {
+  const [queue, locale] = await Promise.all([getApprovalQueueData(), getHubPublicLocale()]);
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+
   return (
     <div className="space-y-6 acct-fade-in">
       <OwnerPageHeader
-        eyebrow="Operations"
-        title="Approval center"
-        description="Cross-division gates that should not ship without owner or delegated staff review. Subdomain links only go to live consoles; Property, Jobs, and Studio owner/moderation routes on those subdomains are retired — those flows stay in HQ until rebuilt."
+        eyebrow={t("Operations")}
+        title={t("Approval center")}
+        description={t("Live owner decision queue — items that need a human judgement call before they proceed. Sensitive payouts, vendor reviews, disputes, and access decisions route here.")}
       />
 
-      <OwnerNotice
-        tone="info"
-        title="Governance"
-        body="Sensitive payouts, automation overrides, and irreversible account actions should route through documented approval paths. This page links the primary review surfaces; deeper workflow automation can attach here later."
-      />
+      {queue.total === 0 ? (
+        <OwnerNotice
+          tone="good"
+          title={t("Queue is clear")}
+          body={t("No pending approvals, disputes, or urgent actions at this time. The live queue updates on every page load.")}
+        />
+      ) : (
+        <OwnerPanel
+          title={`${queue.total} ${t("items need a decision")}`}
+          description={t("Critical and warning items first. Each card shows the count, context, and the fastest path to resolve it.")}
+        >
+          <div className="space-y-3">
+            {queue.items.map((item) => (
+              <div
+                key={item.id}
+                className={`rounded-[1.25rem] border p-4 ${
+                  item.severity === "critical"
+                    ? "border-[var(--acct-red-text)]/20 bg-[var(--acct-red-soft)]"
+                    : item.severity === "warning"
+                      ? "border-[var(--acct-orange-text)]/20 bg-[var(--acct-bg-soft)]"
+                      : "border-[var(--acct-line)] bg-[var(--acct-bg-soft)]"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5">
+                    <SeverityIcon severity={item.severity} />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-[var(--acct-ink)]">{item.label}</span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                            item.severity === "critical"
+                              ? "bg-[var(--acct-red-text)] text-white"
+                              : item.severity === "warning"
+                                ? "bg-[var(--acct-orange-text)] text-white"
+                                : "bg-[var(--acct-line)] text-[var(--acct-muted)]"
+                          }`}
+                        >
+                          {item.count}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm text-[var(--acct-muted)]">{item.description}</p>
+                    </div>
+                  </div>
+                  <DivisionBadge division={item.division} />
+                </div>
+                <div className="mt-3 flex items-center gap-4">
+                  <Link
+                    href={item.href}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--owner-accent)]"
+                  >
+                    {t("Review now")}
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                  </Link>
+                  <span className="text-[10px] uppercase tracking-wider text-[var(--acct-muted)]">
+                    {item.category}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </OwnerPanel>
+      )}
 
       <OwnerPanel
-        title="Review surfaces"
-        description="External links open the live subdomain app in a new tab. HQ paths stay in this command center — used where the division subdomain still shows a retired staff placeholder."
+        title={t("Review surfaces")}
+        description={t("All primary oversight destinations — HQ paths stay here, subdomain paths open the live app.")}
       >
         <ul className="grid gap-3 md:grid-cols-2">
           {OWNER_APPROVAL_CENTER_LINKS.map((item) => {
@@ -48,12 +113,12 @@ export default function OwnerApprovalsPage() {
                     >
                       {offSite ? (
                         <>
-                          Open live division app
+                          {t("Open live division app")}
                           <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                         </>
                       ) : (
                         <>
-                          Open in HQ
+                          {t("Open in HQ")}
                           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                         </>
                       )}
@@ -66,19 +131,29 @@ export default function OwnerApprovalsPage() {
         </ul>
       </OwnerPanel>
 
-      <OwnerPanel title="HQ follow-ups" description="Stay inside HQ for coordination.">
+      <OwnerPanel title={t("HQ follow-ups")} description={t("Stay inside HQ for coordination.")}>
         <div className="flex flex-wrap gap-3">
           <Link href="/owner/messaging/team" className="acct-button-primary">
-            Internal team chat
+            {t("Internal team chat")}
           </Link>
           <Link href="/owner/operations/alerts" className="acct-button-secondary">
-            Operational alerts
+            {t("Operational alerts")}
           </Link>
           <Link href="/owner/finance" className="acct-button-secondary">
-            Finance center
+            {t("Finance center")}
           </Link>
         </div>
       </OwnerPanel>
     </div>
   );
+}
+
+function SeverityIcon({ severity }: { severity: string }) {
+  if (severity === "critical")
+    return <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--acct-red-text)]" aria-hidden />;
+  if (severity === "warning")
+    return <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--acct-orange-text)]" aria-hidden />;
+  if (severity === "good")
+    return <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--acct-green-text)]" aria-hidden />;
+  return <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--acct-muted)]" aria-hidden />;
 }
