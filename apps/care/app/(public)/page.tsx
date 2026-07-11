@@ -173,7 +173,11 @@ export default async function CareHomePage() {
     })),
   );
   const supportEmail = settings.support_email || care.supportEmail;
-  const supportPhone = settings.support_phone || care.supportPhone;
+  // NUMBER-PURGE (2026-07-11): the company phone is never rendered as text on a
+  // public, crawlable surface — Google was still indexing it from the care
+  // landing's "Talk to the desk" row. Email is the one visible contact; the
+  // masked WhatsApp deep link lives on the contact page. support_phone is no
+  // longer read here.
   const heroImageUrl = settings.hero_image_url?.trim() || null;
   const hasReviews = reviews.length > 0;
 
@@ -444,7 +448,7 @@ export default async function CareHomePage() {
                         key: "desk",
                         icon: <PhoneCall className="h-4 w-4" />,
                         label: t("Talk to the desk"),
-                        value: supportPhone || supportEmail || BRAND_EMAILS.care,
+                        value: supportEmail || BRAND_EMAILS.care,
                       },
                       {
                         key: "recurring",
