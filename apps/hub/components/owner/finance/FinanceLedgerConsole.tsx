@@ -105,13 +105,13 @@ export default function FinanceLedgerConsole({
   const flowSucceeded = flow.reduce((acc, p) => acc + p.succeeded, 0);
 
   const tiles: Array<{ code?: string; label: string; value: number; icon: LucideIcon; tint: string; traceId: string }> = [
-    { code: "cash_settlement", label: "Cash settled", value: balance(r.accounts, "cash_settlement"), icon: Banknote, tint: "var(--acct-green)", traceId: "finance.reconciliation" },
-    { code: "platform_revenue", label: "Platform revenue", value: balance(r.accounts, "platform_revenue"), icon: TrendingUp, tint: "var(--acct-green)", traceId: "finance.reconciliation" },
-    { code: "processor_fees", label: "Processor fees", value: balance(r.accounts, "processor_fees"), icon: Receipt, tint: "var(--acct-orange)", traceId: "finance.reconciliation" },
-    { code: "fee_vat_recoverable", label: "Input VAT recoverable", value: balance(r.accounts, "fee_vat_recoverable"), icon: Coins, tint: "var(--acct-blue)", traceId: "finance.reconciliation" },
-    { label: "Net VAT payable (YTD)", value: vat.netVatPayableMinor, icon: Scale, tint: "var(--acct-purple)", traceId: "finance.vat" },
-    { code: "vat_output_payable", label: "Output VAT payable", value: balance(r.accounts, "vat_output_payable"), icon: Landmark, tint: "var(--acct-purple)", traceId: "finance.reconciliation" },
-    { code: "customer_wallet_liability", label: "Wallet liability", value: balance(r.accounts, "customer_wallet_liability"), icon: Wallet, tint: "var(--acct-blue)", traceId: "finance.reconciliation" },
+    { code: "cash_settlement", label: "Cash settled", value: balance(r.accounts, "cash_settlement"), icon: Banknote, tint: "var(--acct-green-text)", traceId: "finance.reconciliation" },
+    { code: "platform_revenue", label: "Platform revenue", value: balance(r.accounts, "platform_revenue"), icon: TrendingUp, tint: "var(--acct-green-text)", traceId: "finance.reconciliation" },
+    { code: "processor_fees", label: "Processor fees", value: balance(r.accounts, "processor_fees"), icon: Receipt, tint: "var(--acct-orange-text)", traceId: "finance.reconciliation" },
+    { code: "fee_vat_recoverable", label: "Input VAT recoverable", value: balance(r.accounts, "fee_vat_recoverable"), icon: Coins, tint: "var(--acct-blue-text)", traceId: "finance.reconciliation" },
+    { label: "Net VAT payable (YTD)", value: vat.netVatPayableMinor, icon: Scale, tint: "var(--acct-purple-text)", traceId: "finance.vat" },
+    { code: "vat_output_payable", label: "Output VAT payable", value: balance(r.accounts, "vat_output_payable"), icon: Landmark, tint: "var(--acct-purple-text)", traceId: "finance.reconciliation" },
+    { code: "customer_wallet_liability", label: "Wallet liability", value: balance(r.accounts, "customer_wallet_liability"), icon: Wallet, tint: "var(--acct-blue-text)", traceId: "finance.reconciliation" },
     { code: "payments_clearing", label: "Clearing (unallocated)", value: balance(r.accounts, "payments_clearing"), icon: ArrowDownUp, tint: "var(--owner-accent)", traceId: "finance.reconciliation" },
   ];
 
@@ -134,7 +134,7 @@ export default function FinanceLedgerConsole({
             </div>
             <p
               className="acct-display mt-4 text-4xl font-semibold tracking-[-0.03em]"
-              style={{ color: balanced ? "var(--acct-ink)" : "var(--acct-red)" }}
+              style={{ color: balanced ? "var(--acct-ink)" : "var(--acct-red-text)" }}
             >
               {t("Δ")} {money(r.deltaMinor)}
             </p>
@@ -170,7 +170,7 @@ export default function FinanceLedgerConsole({
               <span className="font-semibold text-[var(--acct-ink)]">{money(wallet.ledgerWalletLiabilityKobo)}</span>
             </p>
             {!walletReconciled ? (
-              <p className="mt-2 text-sm font-semibold text-[var(--acct-red)]">
+              <p className="mt-2 text-sm font-semibold text-[var(--acct-red-text)]">
                 {t("Δ")} {money(wallet.deltaKobo)}
               </p>
             ) : null}
@@ -310,7 +310,7 @@ export default function FinanceLedgerConsole({
                       </td>
                       <td
                         className="text-right font-semibold tabular-nums"
-                        style={{ color: reclaim ? "var(--acct-green)" : "var(--acct-ink)" }}
+                        style={{ color: reclaim ? "var(--acct-green-text)" : "var(--acct-ink)" }}
                         title={reclaim ? t("Input VAT exceeds output — net reclaimable this month") : undefined}
                       >
                         {money(m.netVatPayableMinor)}
@@ -358,7 +358,7 @@ export default function FinanceLedgerConsole({
                       <StatusBadge status={s.status} />
                     </td>
                     <td className="text-right tabular-nums">{money(s.amountMinor)}</td>
-                    <td className="text-right font-semibold text-[var(--acct-orange)]">{ageLabel(s.ageMinutes, t)}</td>
+                    <td className="text-right font-semibold text-[var(--acct-orange-text)]">{ageLabel(s.ageMinutes, t)}</td>
                     <td className="text-[var(--acct-muted)]">{formatDateTime(s.createdAt)}</td>
                   </tr>
                 ))}
@@ -417,7 +417,7 @@ export default function FinanceLedgerConsole({
                     </td>
                     <td className="font-mono text-xs">
                       {tx.creditNoteNo ? (
-                        <span className="text-[var(--acct-purple)]">{tx.creditNoteNo}</span>
+                        <span className="text-[var(--acct-purple-text)]">{tx.creditNoteNo}</span>
                       ) : tx.receiptNo ? (
                         <span className="text-[var(--acct-muted)]">{tx.receiptNo}</span>
                       ) : (
@@ -452,11 +452,11 @@ function ActivityStat({
 }) {
   const color =
     tone === "good"
-      ? "var(--acct-green)"
+      ? "var(--acct-green-text)"
       : tone === "warning"
-        ? "var(--acct-orange)"
+        ? "var(--acct-orange-text)"
         : tone === "critical"
-          ? "var(--acct-red)"
+          ? "var(--acct-red-text)"
           : "var(--acct-ink)";
   return (
     <div className="rounded-[var(--acct-radius-lg)] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">

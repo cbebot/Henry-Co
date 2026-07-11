@@ -224,7 +224,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
             void handleSignOut();
           }}
           disabled={signingOut}
-          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--acct-red)] transition-colors hover:bg-[var(--acct-red-soft)]"
+          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--acct-red-text)] transition-colors hover:bg-[var(--acct-red-soft)]"
         >
           <ButtonPendingContent
             pending={signingOut}
@@ -238,7 +238,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
           </ButtonPendingContent>
         </button>
         {signOutError ? (
-          <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red)]" role="status">
+          <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red-text)]" role="status">
             {signOutError}
           </p>
         ) : null}

@@ -98,10 +98,10 @@ export default async function HelperDashboardPage() {
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                     step.severity === "critical"
-                      ? "bg-[var(--acct-red-soft)] text-[var(--acct-red)]"
+                      ? "bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]"
                       : step.severity === "warning"
-                        ? "bg-[var(--acct-orange-soft)] text-[var(--acct-orange)]"
-                        : "bg-[var(--acct-blue-soft)] text-[var(--acct-blue)]"
+                        ? "bg-[var(--acct-orange-soft)] text-[var(--acct-orange-text)]"
+                        : "bg-[var(--acct-blue-soft)] text-[var(--acct-blue-text)]"
                   }`}
                 >
                   {step.severity}

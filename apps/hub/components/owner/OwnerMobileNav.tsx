@@ -182,7 +182,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                   void handleSignOut();
                 }}
                 disabled={signingOut}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--acct-red)] hover:bg-[var(--acct-red-soft)]"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--acct-red-text)] hover:bg-[var(--acct-red-soft)]"
               >
                 <ButtonPendingContent
                   pending={signingOut}
@@ -196,7 +196,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                 </ButtonPendingContent>
               </button>
               {signOutError ? (
-                <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red)]" role="status">
+                <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red-text)]" role="status">
                   {signOutError}
                 </p>
               ) : null}

@@ -104,7 +104,7 @@ export default function SessionHealthTile({
       {metrics.refreshFailedToday > 0 ? (
         <div className="mt-3 flex items-center gap-2 rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-4 py-2 text-xs text-[var(--acct-muted)]">
           <AlertTriangle
-            className="h-4 w-4 text-[var(--acct-amber)]"
+            className="h-4 w-4 text-[var(--acct-orange-text)]"
             aria-hidden="true"
           />
           <span>

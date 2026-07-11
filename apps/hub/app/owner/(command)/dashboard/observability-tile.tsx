@@ -92,7 +92,7 @@ export default function ObservabilityTile({
           subtitle={t("Fallback events: external service unavailable, retried, or skipped")}
           color={
             metrics.degradedSideEffects24h > 0
-              ? "var(--acct-amber)"
+              ? "var(--acct-orange)"
               : "var(--owner-accent)"
           }
         />

@@ -72,7 +72,7 @@ export default async function IntelligenceConversationsPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <DivisionBadge division={c.division} />
                     {c.escalated ? (
-                      <span className="rounded-full bg-red-500/12 px-2 py-0.5 text-[11px] font-semibold text-red-600 dark:text-red-300">
+                      <span className="rounded-full bg-[var(--acct-red-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-red-text)]">
                         {t("Escalated")}
                       </span>
                     ) : null}
@@ -104,7 +104,7 @@ function Stat({ label, value, tone }: { label: string; value: number | string; t
       <p
         className={
           tone === "alert" && typeof value === "number" && value > 0
-            ? "mt-1 text-2xl font-semibold text-red-600 dark:text-red-300"
+            ? "mt-1 text-2xl font-semibold text-[var(--acct-red-text)]"
             : "mt-1 text-2xl font-semibold text-[var(--acct-ink)]"
         }
       >
