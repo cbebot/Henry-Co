@@ -8,12 +8,15 @@ import {
   MessageSquare,
   MessagesSquare,
   Shield,
+  UserPlus,
   Users,
 } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
+import OwnerMoneyStrip from "@/components/owner/OwnerMoneyStrip";
+import SinceLastLooked from "@/components/owner/SinceLastLooked";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/components/owner/OwnerPrimitives";
 import SessionHealthTile from "@/components/owner/SessionHealthTile";
 import ObservabilityTile from "./dashboard/observability-tile";
@@ -21,6 +24,7 @@ import CardClickThroughTile from "./dashboard/card-clickthrough-tile";
 import ModuleHealthTile from "./dashboard/module-health-tile";
 import DeepLinkHealthTile from "./dashboard/deep-link-health-tile";
 import { getOwnerOverviewData } from "@/lib/owner-data";
+import { getSignupsSnapshot } from "@/lib/owner-command/signups";
 import { getSessionHealthMetrics } from "@/lib/owner-session-health";
 import { getObservabilityMetrics } from "@/lib/owner-observability";
 import { getCardClickThroughMetrics } from "@/lib/owner-card-clickthrough";
@@ -34,6 +38,7 @@ export const dynamic = "force-dynamic";
 export default async function OwnerOverviewPage() {
   const [
     data,
+    signups,
     sessionHealth,
     observability,
     cardClickThrough,
@@ -42,6 +47,7 @@ export default async function OwnerOverviewPage() {
     locale,
   ] = await Promise.all([
     getOwnerOverviewData(),
+    getSignupsSnapshot(),
     getSessionHealthMetrics(),
     getObservabilityMetrics(),
     getCardClickThroughMetrics(),
@@ -69,6 +75,10 @@ export default async function OwnerOverviewPage() {
           </>
         }
       />
+
+      <SinceLastLooked locale={locale} />
+
+      <OwnerMoneyStrip locale={locale} />
 
       <OwnerNotice tone="info" title={t("Data freshness")} body={data.dataHealthNote} />
       <OwnerPanel title={t("Executive situation room")} description={t("Fast owner read for what matters now.")}>
@@ -114,11 +124,14 @@ export default async function OwnerOverviewPage() {
           traceId="overview.divisions-live"
         />
         <MetricCard
-          label={t("Recognized revenue")}
-          value={formatCurrencyAmount(data.metrics.totalRevenueNaira)}
-          subtitle={t("Care, marketplace, and paid shared invoices")}
-          icon={DollarSign}
-          traceId="overview.recognized-revenue"
+          label={t("New signups this week")}
+          value={signups.ok ? formatCompactNumber(signups.last7d) : "—"}
+          subtitle={
+            signups.ok
+              ? `${formatCompactNumber(signups.totalProfiles)} ${t("total accounts")}`
+              : t("Signup count unavailable this load")
+          }
+          icon={UserPlus}
         />
         <MetricCard
           label={t("Open support pressure")}
