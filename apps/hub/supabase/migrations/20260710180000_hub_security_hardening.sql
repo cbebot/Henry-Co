@@ -41,22 +41,32 @@ $function$;
 -- WITH CHECK that pins only auth.uid()=user_id — NOT role or is_active. Since
 -- owner_profiles_role_check admits ('owner','editor','viewer'), an editor/viewer
 -- row-owner could self-escalate to 'owner' (→ is_owner()=true) or reactivate a
--- deactivated row. Revoke UPDATE on exactly those two columns from the
--- Data-API roles: a self-update can still touch its other fields, but role and
--- is_active become service-role-only (the app already writes them that way).
-revoke update (role, is_active) on public.owner_profiles from anon, authenticated;
+-- deactivated row. Make role + is_active service-role write-only.
+--
+-- CRITICAL (verified on prod 2026-07-11): a plain `revoke update (role, ...)`
+-- is a NO-OP here because `authenticated` holds a TABLE-level UPDATE grant that
+-- implicitly covers every column. The correct pattern is: revoke the
+-- table-level grant, then re-grant UPDATE on the non-privileged columns only.
+-- service_role keeps its own full grant, so the app (which writes owner_profiles
+-- via service-role) is unaffected.
+revoke update on public.owner_profiles from anon, authenticated;
+grant update (email, full_name, updated_at) on public.owner_profiles to authenticated;
 
 -- ── HUB-3 — hq internal-comms self-elevation ────────────────────────────────
 -- `hq_ic_members_insert`/`_update` let a user who can read a thread self-insert
 -- or self-update their membership with an unconstrained `role` — so an active
 -- owner/admin could self-join an all_owners thread as role='owner'/'admin' and
--- gain write/pin rights they were not granted. Make `role` service-role-write
--- only: a self-insert takes the safe column default ('member'); a self-update
--- cannot change role at all. Legitimate privileged members are created by the
--- app via service-role, which is unaffected.
-revoke insert (role), update (role)
-  on public.hq_internal_comm_thread_members
-  from anon, authenticated;
+-- gain write/pin rights they were not granted. Same table-grant caveat as
+-- HUB-2: revoke the table INSERT/UPDATE, re-grant the non-`role` columns. A
+-- self-insert then takes the safe 'member' column default; a self-update
+-- touches only participant-preference columns. App writes (service-role) are
+-- unaffected.
+revoke insert on public.hq_internal_comm_thread_members from anon, authenticated;
+grant insert (thread_id, user_id, last_read_at, pinned, muted, joined_at)
+  on public.hq_internal_comm_thread_members to authenticated;
+revoke update on public.hq_internal_comm_thread_members from anon, authenticated;
+grant update (last_read_at, pinned, muted)
+  on public.hq_internal_comm_thread_members to authenticated;
 
 -- HUB-4 (the requireOwner email-fallback) is a code-layer fix in the four owner
 -- gates (email match honored only when the auth email is verified) — see the
