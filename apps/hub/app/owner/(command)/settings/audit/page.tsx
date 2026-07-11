@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import { getAuditHistoryPageData } from "@/lib/owner-data";
 
@@ -80,13 +81,18 @@ export default async function OwnerAuditPage({
                 <th>Entity</th>
                 <th>Actor</th>
                 <th>When</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {data.rows.map((row) => (
-                <tr key={`${String(row._source)}-${String(row.id)}-${String(row.created_at)}`}>
+              {data.rows.map((row) => {
+                const rowId = String(row.id || "");
+                const rowSource = String(row._source || "");
+                const canDrill = Boolean(rowId && (rowSource === "staff" || rowSource === "platform"));
+                return (
+                <tr key={`${rowSource}-${rowId}-${String(row.created_at)}`}>
                   <td className="whitespace-nowrap text-xs uppercase tracking-wide text-[var(--acct-muted)]">
-                    {String(row._source || "")}
+                    {rowSource}
                   </td>
                   <td>{String(row.action || row.event_type || "event")}</td>
                   <td className="max-w-[min(280px,28vw)]">
@@ -107,8 +113,22 @@ export default async function OwnerAuditPage({
                   <td className="whitespace-nowrap text-sm text-[var(--acct-muted)]">
                     {String(row.created_at || "")}
                   </td>
+                  {canDrill ? (
+                    <td>
+                      <Link
+                        href={`/owner/settings/audit/${rowSource}/${rowId}`}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--owner-accent)]"
+                      >
+                        Detail
+                        <ExternalLink className="h-3 w-3" aria-hidden />
+                      </Link>
+                    </td>
+                  ) : (
+                    <td />
+                  )}
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>

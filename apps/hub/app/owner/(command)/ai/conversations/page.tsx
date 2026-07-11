@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import DivisionBadge from "@/components/owner/DivisionBadge";
@@ -64,30 +65,32 @@ export default async function IntelligenceConversationsPage() {
         ) : (
           <ul className="space-y-2">
             {data.conversations.map((c) => (
-              <li
-                key={c.id}
-                className="flex items-start gap-3 rounded-[1.2rem] border border-[var(--acct-line)] bg-[var(--acct-bg)] p-4"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <DivisionBadge division={c.division} />
-                    {c.escalated ? (
-                      <span className="rounded-full bg-[var(--acct-red-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-red-text)]">
-                        {t("Escalated")}
+              <li key={c.id}>
+                <Link
+                  href={`/owner/ai/conversations/${c.id}`}
+                  className="flex items-start gap-3 rounded-[1.2rem] border border-[var(--acct-line)] bg-[var(--acct-bg)] p-4 transition-all hover:border-[var(--owner-accent)]/30 hover:shadow-[var(--acct-shadow)]"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <DivisionBadge division={c.division} />
+                      {c.escalated ? (
+                        <span className="rounded-full bg-[var(--acct-red-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--acct-red-text)]">
+                          {t("Escalated")}
+                        </span>
+                      ) : null}
+                      <span className="rounded-full border border-[var(--acct-line)] px-2 py-0.5 text-[11px] font-medium text-[var(--acct-muted)]">
+                        {c.signedIn ? t("Signed in") : t("Guest")}
                       </span>
-                    ) : null}
-                    <span className="rounded-full border border-[var(--acct-line)] px-2 py-0.5 text-[11px] font-medium text-[var(--acct-muted)]">
-                      {c.signedIn ? t("Signed in") : t("Guest")}
-                    </span>
-                    <span className="text-[11px] text-[var(--acct-muted)]">
-                      {c.messageCount} {t("messages")}
-                    </span>
+                      <span className="text-[11px] text-[var(--acct-muted)]">
+                        {c.messageCount} {t("messages")}
+                      </span>
+                    </div>
+                    <p className="mt-2 truncate text-sm text-[var(--acct-ink)]">{c.preview || t("(no messages)")}</p>
                   </div>
-                  <p className="mt-2 truncate text-sm text-[var(--acct-ink)]">{c.preview || t("(no messages)")}</p>
-                </div>
-                <span className="shrink-0 text-[11px] tabular-nums text-[var(--acct-muted)]">
-                  {timeAgo(c.lastMessageAt, locale)}
-                </span>
+                  <span className="shrink-0 text-[11px] tabular-nums text-[var(--acct-muted)]">
+                    {timeAgo(c.lastMessageAt, locale)}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>
