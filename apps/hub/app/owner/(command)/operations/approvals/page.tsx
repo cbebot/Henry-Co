@@ -51,12 +51,12 @@ export default async function OwnerApprovalsPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-[var(--acct-ink)]">{item.label}</span>
                         <span
-                          className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                          className={`rounded-full bg-[var(--acct-bg-elevated)] px-2 py-0.5 text-[11px] font-bold tabular-nums ${
                             item.severity === "critical"
-                              ? "bg-[var(--acct-red-text)] text-white"
+                              ? "text-[var(--acct-red-text)]"
                               : item.severity === "warning"
-                                ? "bg-[var(--acct-orange-text)] text-white"
-                                : "bg-[var(--acct-line)] text-[var(--acct-muted)]"
+                                ? "text-[var(--acct-orange-text)]"
+                                : "text-[var(--acct-muted)]"
                           }`}
                         >
                           {item.count}
