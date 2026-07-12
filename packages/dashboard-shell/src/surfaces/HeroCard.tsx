@@ -83,7 +83,7 @@ export type HeroCardBreakdownRow = {
   label: string;
   /** Count — never null; rows with count 0 should be filtered by the caller. */
   count: number;
-  /** Dot color — must come from a CSS variable expression (e.g. `var(--acct-gold)`). */
+  /** Dot color — must come from a CSS variable expression (e.g. `var(--acct-gold, #C9A227)`). */
   color: string;
 };
 
