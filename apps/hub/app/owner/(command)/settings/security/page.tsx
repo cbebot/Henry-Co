@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, CheckCircle, Shield, UserCheck, Users, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, Shield, UserCheck, XCircle } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice } from "@/components/owner/OwnerPrimitives";
 import { getSecurityCenterData } from "@/lib/owner-data";
