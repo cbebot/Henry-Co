@@ -1737,11 +1737,161 @@ export async function getAuditHistoryPageData(options?: {
   };
 }
 
+export type ApprovalQueueItem = {
+  id: string;
+  category: string;
+  label: string;
+  description: string;
+  division: string;
+  severity: "critical" | "warning" | "info";
+  href: string;
+  count: number;
+};
+
+export async function getApprovalQueueData(): Promise<{
+  total: number;
+  items: ApprovalQueueItem[];
+}> {
+  const dataset = await getOwnerBaseDataset();
+  const workforce = buildWorkforceMembers(dataset);
+
+  const items: ApprovalQueueItem[] = [];
+
+  const pendingVendors = dataset.marketplaceVendorApplications.filter((r) => {
+    const s = toText(r.status).toLowerCase();
+    return s === "pending" || s === "submitted" || s === "under_review";
+  });
+  if (pendingVendors.length) {
+    items.push({
+      id: "vendor-applications",
+      category: "Marketplace",
+      label: "Vendor applications pending review",
+      description: `${pendingVendors.length} seller applications are waiting for trust and onboarding approval.`,
+      division: "marketplace",
+      severity: "warning",
+      href: "/owner/divisions/marketplace",
+      count: pendingVendors.length,
+    });
+  }
+
+  const openDisputes = dataset.marketplaceDisputes.filter((r) => isOpenStatus(r.status));
+  if (openDisputes.length) {
+    items.push({
+      id: "marketplace-disputes",
+      category: "Marketplace",
+      label: "Open disputes awaiting resolution",
+      description: `${openDisputes.length} buyer-seller dispute${openDisputes.length === 1 ? "" : "s"} still need owner or staff adjudication.`,
+      division: "marketplace",
+      severity: openDisputes.length >= 3 ? "critical" : "warning",
+      href: "/owner/divisions/marketplace",
+      count: openDisputes.length,
+    });
+  }
+
+  const pendingPayouts = dataset.marketplacePayoutRequests?.filter((r) => {
+    const s = toText(r.status).toLowerCase();
+    return s === "pending" || s === "requested";
+  }) ?? [];
+  if (pendingPayouts.length) {
+    items.push({
+      id: "payout-requests",
+      category: "Finance",
+      label: "Payout requests pending approval",
+      description: `${pendingPayouts.length} seller payout request${pendingPayouts.length === 1 ? "" : "s"} waiting for approval and disbursement.`,
+      division: "marketplace",
+      severity: "warning",
+      href: "/owner/finance/revenue",
+      count: pendingPayouts.length,
+    });
+  }
+
+  const urgentSupport = dataset.supportThreads.filter((t) => {
+    const priority = toText(t.priority).toLowerCase();
+    return isOpenStatus(t.status) && (priority === "urgent" || priority === "high");
+  });
+  if (urgentSupport.length) {
+    items.push({
+      id: "urgent-support",
+      category: "Support",
+      label: "Urgent support threads",
+      description: `${urgentSupport.length} high or urgent priority thread${urgentSupport.length === 1 ? "" : "s"} need immediate attention.`,
+      division: "hub",
+      severity: urgentSupport.length >= 2 ? "critical" : "warning",
+      href: "/owner/operations/alerts",
+      count: urgentSupport.length,
+    });
+  }
+
+  const pendingInvites = workforce.filter((m) => m.status === "pending");
+  if (pendingInvites.length) {
+    items.push({
+      id: "staff-invites",
+      category: "Workforce",
+      label: "Pending staff invitations",
+      description: `${pendingInvites.length} staff member${pendingInvites.length === 1 ? "" : "s"} haven't yet accepted their invitation.`,
+      division: "hub",
+      severity: "info",
+      href: "/owner/staff",
+      count: pendingInvites.length,
+    });
+  }
+
+  items.sort((a, b) => {
+    const order = { critical: 0, warning: 1, info: 2 } as Record<string, number>;
+    return (order[a.severity] ?? 3) - (order[b.severity] ?? 3);
+  });
+
+  return { total: items.reduce((s, i) => s + i.count, 0), items };
+}
+
+export async function getAuditEntry(source: string, id: string): Promise<JsonRecord | null> {
+  const admin = createAdminSupabase();
+  const table =
+    source === "staff"
+      ? "staff_audit_logs"
+      : source === "platform"
+        ? "audit_logs"
+        : null;
+  if (!table) return null;
+  try {
+    const { data, error } = await admin.from(table).select("*").eq("id", id).maybeSingle();
+    if (error || !data) return null;
+    return { ...(data as JsonRecord), _source: source };
+  } catch {
+    return null;
+  }
+}
+
+export async function getInvoiceDetail(id: string): Promise<JsonRecord | null> {
+  const admin = createAdminSupabase();
+  try {
+    const { data, error } = await admin
+      .from("customer_invoices")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as JsonRecord;
+  } catch {
+    return null;
+  }
+}
+
 export async function getWorkforceMemberById(userId: string): Promise<WorkforceMember | null> {
   const dataset = await getOwnerBaseDataset();
   const workforce = buildWorkforceMembers(dataset);
   return workforce.find((m) => m.id === userId) ?? null;
 }
+
+export type OwnerProfileRow = {
+  id: string;
+  userId: string;
+  email: string | null;
+  fullName: string | null;
+  role: string;
+  isActive: boolean;
+  createdAt: string | null;
+};
 
 export async function getSecurityCenterData() {
   const dataset = await getOwnerBaseDataset();
@@ -1756,14 +1906,48 @@ export async function getSecurityCenterData() {
     );
   });
 
+  // Enrich owner_profiles with human-readable identity from customer_profiles.
+  const admin = createAdminSupabase();
+  const ownerUserIds = dataset.ownerProfiles
+    .map((p) => toText(p.user_id))
+    .filter(Boolean);
+
+  const profilesRes =
+    ownerUserIds.length > 0
+      ? await admin
+          .from("customer_profiles")
+          .select("id, full_name, email")
+          .in("id", ownerUserIds)
+      : { data: null };
+
+  const profileMap = new Map<string, { fullName: string | null; email: string | null }>();
+  for (const p of (profilesRes.data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+    profileMap.set(p.id, { fullName: p.full_name, email: p.email });
+  }
+
+  const ownerProfiles: OwnerProfileRow[] = dataset.ownerProfiles.map((row) => {
+    const userId = toText(row.user_id);
+    const profile = profileMap.get(userId);
+    return {
+      id: toText(row.id),
+      userId,
+      email: profile?.email ?? toText(row.email) ?? null,
+      fullName: profile?.fullName ?? null,
+      role: toText(row.role) || "owner",
+      isActive: Boolean(row.is_active ?? true),
+      createdAt: toNullableText(row.created_at),
+    };
+  });
+
   return {
     metrics: {
-      owners: dataset.ownerProfiles.length,
+      owners: ownerProfiles.length,
+      activeOwners: ownerProfiles.filter((p) => p.isActive).length,
       suspendedUsers: workforce.filter((member) => member.status === "suspended").length,
       pendingInvites: workforce.filter((member) => member.status === "pending").length,
       riskyEvents: riskyAuditEvents.length,
     },
-    ownerProfiles: dataset.ownerProfiles,
+    ownerProfiles,
     riskyAuditEvents: riskyAuditEvents.slice(0, 24),
     staffAudit: dataset.staffAuditLogs.slice(0, 24),
   };

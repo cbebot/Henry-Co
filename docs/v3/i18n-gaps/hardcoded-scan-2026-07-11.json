@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-07-11T09:34:03.209Z",
+  "generatedAt": "2026-07-11T20:36:42.233Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1542,
-    "entries": 1246,
+    "scannedFiles": 1551,
+    "entries": 1237,
     "counts": {
       "OK": 3,
-      "GAP": 1068,
+      "GAP": 1059,
       "EXEMPT": 122,
       "AMBIGUOUS": 53
     },
-    "durationMs": 5953
+    "durationMs": 6772
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -4573,24 +4573,6 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       }
     ],
-    "apps/hub/app/owner/(command)/finance/revenue/page.tsx": [
-      {
-        "line": 15,
-        "col": 9,
-        "kind": "attr:title",
-        "text": "Revenue snapshot by division",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 19,
-        "col": 19,
-        "kind": "attr:title",
-        "text": "Revenue lines",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      }
-    ],
     "apps/hub/app/owner/(command)/inbox/[id]/page.tsx": [
       {
         "line": 43,
@@ -4669,56 +4651,12 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       }
     ],
-    "apps/hub/app/owner/(command)/messaging/queues/page.tsx": [
-      {
-        "line": 16,
-        "col": 9,
-        "kind": "attr:title",
-        "text": "Email and WhatsApp queue diagnostics",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 20,
-        "col": 19,
-        "kind": "attr:title",
-        "text": "Queue rows",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      }
-    ],
     "apps/hub/app/owner/(command)/operations/alerts/page.tsx": [
       {
         "line": 17,
         "col": 9,
         "kind": "attr:title",
         "text": "Operational alerts requiring owner action",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      }
-    ],
-    "apps/hub/app/owner/(command)/operations/approvals/page.tsx": [
-      {
-        "line": 13,
-        "col": 9,
-        "kind": "attr:title",
-        "text": "Approval center",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 24,
-        "col": 9,
-        "kind": "attr:title",
-        "text": "Review surfaces",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 69,
-        "col": 19,
-        "kind": "attr:title",
-        "text": "HQ follow-ups",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
       }
@@ -4791,7 +4729,7 @@
     ],
     "apps/hub/app/owner/(command)/settings/audit/page.tsx": [
       {
-        "line": 23,
+        "line": 24,
         "col": 9,
         "kind": "attr:title",
         "text": "Sensitive activity history",
@@ -4799,7 +4737,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 38,
+        "line": 39,
         "col": 15,
         "kind": "attr:placeholder",
         "text": "Action, entity, actor…",
@@ -4807,7 +4745,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 73,
+        "line": 74,
         "col": 19,
         "kind": "attr:title",
         "text": "Audit stream",
@@ -4815,7 +4753,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 119,
+        "line": 139,
         "col": 11,
         "kind": "attr:title",
         "text": "Navigation audit (preview)",
@@ -4919,24 +4857,6 @@
         "col": 19,
         "kind": "attr:title",
         "text": "System summary",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      }
-    ],
-    "apps/hub/app/owner/(command)/settings/security/page.tsx": [
-      {
-        "line": 13,
-        "col": 9,
-        "kind": "attr:title",
-        "text": "Security and privilege health",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 17,
-        "col": 19,
-        "kind": "attr:title",
-        "text": "Owner profiles",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
       }

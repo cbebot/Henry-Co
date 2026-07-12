@@ -2,6 +2,79 @@ import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
 
+export type IntelligenceMessage = {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  createdAt: string | null;
+};
+
+export type IntelligenceConversationDetail = {
+  id: string;
+  division: string;
+  status: string;
+  signedIn: boolean;
+  escalated: boolean;
+  escalatedThreadId: string | null;
+  createdAt: string | null;
+  lastMessageAt: string | null;
+  messages: IntelligenceMessage[];
+  available: boolean;
+};
+
+export async function getIntelligenceConversationDetail(id: string): Promise<IntelligenceConversationDetail | null> {
+  try {
+    const admin = createAdminSupabase();
+    const { data: conv, error: convError } = await admin
+      .from("intelligence_conversations")
+      .select("id, user_id, division, status, escalated_thread_id, created_at, last_message_at")
+      .eq("id", id)
+      .maybeSingle();
+    if (convError) {
+      if (isMissingRelation(convError)) return null;
+      throw convError;
+    }
+    if (!conv) return null;
+
+    const row = conv as {
+      id: string;
+      user_id: string | null;
+      division: string;
+      status: string;
+      escalated_thread_id: string | null;
+      created_at: string | null;
+      last_message_at: string | null;
+    };
+
+    const { data: msgData } = await admin
+      .from("intelligence_messages")
+      .select("id, role, content, created_at")
+      .eq("conversation_id", id)
+      .order("created_at", { ascending: true });
+    const msgs = (msgData ?? []) as Array<{ id: string; role: string; content: string; created_at: string | null }>;
+
+    return {
+      id: row.id,
+      division: row.division,
+      status: row.status,
+      signedIn: Boolean(row.user_id),
+      escalated: row.status === "escalated" || Boolean(row.escalated_thread_id),
+      escalatedThreadId: row.escalated_thread_id,
+      createdAt: row.created_at,
+      lastMessageAt: row.last_message_at,
+      messages: msgs.map((m) => ({
+        id: m.id,
+        role: (m.role === "assistant" || m.role === "system" ? m.role : "user") as IntelligenceMessage["role"],
+        content: m.content,
+        createdAt: m.created_at,
+      })),
+      available: true,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Intelligence Live L2 — the owner's window. Reads every Henry Onyx Intelligence conversation
  * across the ecosystem via the service role (like the support queue), so the owner can see all

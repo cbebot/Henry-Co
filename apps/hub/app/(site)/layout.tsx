@@ -9,6 +9,8 @@ import {
   resolveLocalizedDynamicField,
 } from "@henryco/i18n/server";
 import { EcosystemPreferences } from "@henryco/ui/public";
+import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { getAccountUrl } from "@henryco/config";
 import { onyxTypeAttr } from "@henryco/ui/fonts";
 import PublicSiteShell from "../components/PublicSiteShell";
@@ -274,6 +276,11 @@ export default async function SiteLayout({
             {children}
           </PublicSiteShell>
           <EcosystemPreferences copy={consentCopy} initialLocale={locale} />
+          {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+            <IntelligenceLauncher division="hub" endpoint={getAccountUrl("/api/intelligence/chat")} />
+          ) : (
+            <SupportAssist division="hub" />
+          )}
         </LocaleProvider>
       </HubPublicProviders>
     </div>
