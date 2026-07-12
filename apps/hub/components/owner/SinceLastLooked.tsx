@@ -22,6 +22,9 @@ export default async function SinceLastLooked({ locale }: { locale: AppLocale })
   const store = await cookies();
   const heartbeat = store.get("hc-owner-heartbeat")?.value ?? null;
   const parsed = heartbeat ? Date.parse(heartbeat) : NaN;
+  // Server component — Date.now() is the request timestamp, deterministic for
+  // the duration of this render.
+  // eslint-disable-next-line react-hooks/purity
   const away = Number.isFinite(parsed) && Date.now() - parsed > GAP_MS;
 
   const delta = away ? await getSinceLastLooked(new Date(parsed).toISOString()) : null;
