@@ -127,7 +127,7 @@ export default async function IntelligenceConversationDetailPage({
         ) : (
           <div className="space-y-3">
             {detail.messages.map((msg) => (
-              <MessageBubble key={msg.id} msg={msg} locale={locale} t={t} />
+              <MessageBubble key={msg.id} msg={msg} locale={locale} />
             ))}
           </div>
         )}
@@ -167,11 +167,9 @@ function MetaCard({ label, value }: { label: string; value: React.ReactNode }) {
 function MessageBubble({
   msg,
   locale,
-  t,
 }: {
   msg: { id: string; role: string; content: string; createdAt: string | null };
   locale: string;
-  t: (s: string) => string;
 }) {
   const isAssistant = msg.role === "assistant";
   const isSystem = msg.role === "system";
