@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { HenryCoLockup } from "@henryco/ui/brand";
 import "./auth.css";
 
 /**
@@ -58,10 +59,7 @@ export default function AuthShell({
     <div className="auth-scene">
       <aside className="auth-brand">
         <Link href={homeHref} className="auth-brand-mark" aria-label={wordmark}>
-          <span className="auth-brand-glyph" aria-hidden>
-            H
-          </span>
-          <span>{wordmark}</span>
+          <HenryCoLockup height={30} accent="var(--gold)" />
         </Link>
 
         <div className="auth-brand-lede">

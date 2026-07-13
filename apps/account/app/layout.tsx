@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 // ACCOUNT-PREMIUM-01 — mount the surface-primitives stylesheet once at
 // the layout root so any page that renders <HeroCard /> et al. picks up
@@ -24,6 +24,18 @@ const reading = Fraunces({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-reading",
+});
+
+// The company body sans. The account app previously loaded no sans, so
+// --acct-font-sans fell through to system-ui — bodies + inputs rendered in a
+// system font, breaking the company-type rule. Manrope is the interim company
+// sans already paired with Fraunces across the public sites; when the owned
+// Onyx type flips live, --acct-font-sans routes to the bespoke sans instead
+// (see auth.css [data-onyx-type=live]).
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
 });
 
 /**
@@ -78,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning className={brandFontVariables} data-onyx-type={onyxTypeAttr()}>
       <body
-        className={`${reading.variable} min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased`}
+        className={`${reading.variable} ${manrope.variable} min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased`}
         data-hc-tod={todBucket}
       >
         <HenryCoThemeBlocking />
