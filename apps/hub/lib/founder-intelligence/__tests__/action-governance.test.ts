@@ -80,6 +80,10 @@ function sampleFor(key: string): Record<string, unknown> {
       return { field: "brand_title", text: "Henry Onyx" };
     case "owner.staff.status.toggle":
       return { userId: "3f1a9c7e-2b4d-4e6a-9c8b-1d2e3f4a5b6c", intent: "suspend" };
+    case "owner.kyc.review":
+      return { submissionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", decision: "approved" };
+    case "owner.marketplace.seller.decision":
+      return { applicationId: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", decision: "approved" };
     default:
       return {};
   }

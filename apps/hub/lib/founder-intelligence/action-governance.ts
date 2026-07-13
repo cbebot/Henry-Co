@@ -66,9 +66,51 @@ export const staffStatusGovernance: FounderActionGovernance = {
   driftKeys: ["suspended"],
 };
 
+// ── Tranche 2 — real ecosystem operations, owner-invokable from HQ ───────────
+// Each delegates to a hub-local core that mirrors the existing guarded staff
+// write path (no money field; the model can only name a record + a decision).
+
+export const kycReviewGovernance: FounderActionGovernance = {
+  key: "owner.kyc.review",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  reversibility: "reversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      submissionId: z.string().uuid(),
+      decision: z.enum(["approved", "rejected"]),
+      note: z.string().max(1000).optional().default(""),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
+export const sellerDecisionGovernance: FounderActionGovernance = {
+  key: "owner.marketplace.seller.decision",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  reversibility: "reversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      applicationId: z.string().uuid(),
+      decision: z.enum(["approved", "changes_requested", "rejected"]),
+      note: z.string().max(1000).optional().default(""),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
+  kycReviewGovernance,
+  sellerDecisionGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */
