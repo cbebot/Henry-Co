@@ -84,6 +84,17 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
     }
   }
 
+  // Recent activity — the real audit trail (owner/staff writes, sign-ins) so the
+  // assistant can answer "what changed recently / who did what" from record, not
+  // guesswork. Actor + action only, fenced; the owner already sees this feed.
+  if (overview.recentAudit.length > 0) {
+    lines.push("", "Recent activity (newest first, from the audit trail):");
+    for (const entry of overview.recentAudit.slice(0, 6)) {
+      const when = entry.createdAt ? ` (${fenceSafe(entry.createdAt, 32)})` : "";
+      lines.push(`- ${fenceSafe(entry.action, 60)} by ${fenceSafe(entry.actor, 60)}${when}`);
+    }
+  }
+
   lines.push(
     "",
     "Known coverage gaps (answer honestly about these): studio, jobs, property, and logistics revenue are not yet wired into the rollup; there is no signups time-series yet; refund amounts are not aggregated.",

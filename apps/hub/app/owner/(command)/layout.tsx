@@ -108,11 +108,11 @@ export default async function OwnerCommandLayout({ children }: { children: React
               {children}
             </div>
           </main>
-          {/* Founder Intelligence F2/OCC-2: when the flag is live, desktop gets the
-              persistent command dock (briefing + restored conversation + F3 cards,
-              ⌘J) and smaller screens keep the floating launcher — one shell at a
-              time, gated in FounderIntelligenceMount. Dark, the honest signals
-              link from F1 remains. */}
+          {/* Founder Intelligence F2/OCC-2: when the flag is live, the founder gets
+              the full-screen command portal (arc-reactor HUD + live briefing +
+              restored conversation + F3 governed-action cards + text/voice modes,
+              Ctrl+Shift+A) — one responsive shell, no breakpoint split. Dark, the
+              honest F1 signals-briefing link remains. */}
           {process.env.NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE === "1" ? (
             <FounderIntelligenceMount />
           ) : (

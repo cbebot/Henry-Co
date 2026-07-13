@@ -1,39 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FounderCommandDock, IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { FounderCommandPortal } from "@henryco/ui/intelligence";
 
 /**
- * FounderIntelligenceMount — exactly ONE founder shell at a time (OCC-2).
+ * FounderIntelligenceMount — the single founder shell (OCC-2).
  *
- * Desktop (≥1280px) gets the persistent command dock; smaller screens keep the
- * floating launcher. This is a JS breakpoint gate, not CSS hiding, because two
- * MOUNTED shells would each hold their own client history against the same
- * conversation store and drift. Renders nothing until the breakpoint is known
- * (first client frame) — both shells are client-interactive anyway.
+ * One full-screen command portal, responsive from phone to command desk. There
+ * is exactly ONE mounted shell so the client history never forks against the
+ * shared conversation store; the portal itself handles its own open/closed
+ * state (FAB when closed, cockpit when open) so there is no breakpoint gate to
+ * flash. The brain (useIntelligenceChat) and the F3 governed actions are shared
+ * with every other division — only this shell is bespoke to the owner.
  */
 export default function FounderIntelligenceMount() {
-  const [desktop, setDesktop] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const query = window.matchMedia("(min-width: 1280px)");
-    const apply = () => setDesktop(query.matches);
-    apply();
-    query.addEventListener("change", apply);
-    return () => query.removeEventListener("change", apply);
-  }, []);
-
-  if (desktop === null) return null;
-
-  return desktop ? (
-    <FounderCommandDock
+  return (
+    <FounderCommandPortal
       division="hub"
       endpoint="/api/owner/intelligence/chat"
       briefingEndpoint="/api/owner/intelligence/briefing"
       conversationsEndpoint="/api/owner/intelligence/conversations"
       accent="#C9A227"
     />
-  ) : (
-    <IntelligenceLauncher division="hub" endpoint="/api/owner/intelligence/chat" accent="#C9A227" />
   );
 }
