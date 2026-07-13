@@ -37,8 +37,18 @@
   grid-template-columns: 1fr;
   background: var(--acct-bg);
   color: var(--acct-ink);
-  font-family: var(--acct-font-sans, var(--font-manrope, system-ui, sans-serif));
+  /* Company body sans — the account default fell through to system-ui, which
+     broke the company-type rule for inputs/labels/buttons. Route through
+     Manrope (loaded by the account layout); when the owned Onyx type flips live
+     the override below swaps to the bespoke sans. Display stays --acct-font-
+     display (Fraunces / Onyx serif). */
+  --acct-font-sans: var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--acct-font-sans);
   isolation: isolate;
+}
+
+[data-onyx-type="live"] .auth-scene {
+  --acct-font-sans: var(--hc-font-sans);
 }
 
 @media (min-width: 1024px) {
@@ -105,28 +115,20 @@
   z-index: 1;
 }
 
+/* Wraps the canonical HenryCoLockup (real inline-SVG monogram + "Henry Onyx"
+   wordmark, currentColor). The light onyx-ink keeps it legible on the dark
+   panel; the gold accent rule is passed to the lockup in the component. */
 .auth-brand-mark {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  font-family: var(--acct-font-display, var(--font-reading, Georgia, serif));
-  font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
   color: var(--onyx-ink);
+  text-decoration: none;
 }
 
-.auth-brand-mark .auth-brand-glyph {
-  display: inline-grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 999px;
-  background: radial-gradient(circle at 32% 28%, #f6e4a6, var(--gold) 62%, var(--gold-strong));
-  color: #201700;
-  box-shadow: 0 0 0 1px rgba(240, 212, 136, 0.35), 0 8px 24px rgba(201, 162, 39, 0.28);
-  font-weight: 800;
-  font-size: 0.95rem;
+.auth-brand-mark:focus-visible {
+  outline: 2px solid var(--seam-core);
+  outline-offset: 4px;
+  border-radius: 6px;
 }
 
 .auth-brand-lede {
@@ -212,19 +214,22 @@
   animation: auth-seam-draw 820ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
 }
 
-/* A slow highlight that travels the seam — the lamp moving across the stone. */
+/* A slow highlight that travels the seam — the lamp moving across the stone.
+   The gold glow (box-shadow) is what makes the moving light READ on the light
+   theme too: a bright core alone washes out against the pale form, but a gold
+   halo carries against both the onyx panel and the light surface. */
 .auth-seam::after {
   content: "";
   position: absolute;
   left: 50%;
   top: 0;
-  width: 3px;
-  height: 22%;
+  width: 5px;
+  height: 26%;
   transform: translateX(-50%);
   border-radius: 999px;
-  background: linear-gradient(180deg, transparent, #fff6dc, transparent);
-  filter: blur(0.5px);
-  animation: auth-seam-travel 7s ease-in-out 1s infinite;
+  background: linear-gradient(180deg, transparent, #fff6dc 42%, #ffffff 50%, #fff6dc 58%, transparent);
+  box-shadow: 0 0 16px 4px rgba(240, 212, 136, 0.75), 0 0 34px 8px rgba(201, 162, 39, 0.4);
+  animation: auth-seam-travel 6s ease-in-out 0.8s infinite;
 }
 
 @media (max-width: 1023px) {
@@ -260,9 +265,29 @@
   justify-content: center;
   padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 5vw, 3rem);
   background: var(--acct-bg);
+  overflow: hidden;
+}
+
+/* Living gold light on the form side — so the LIGHT theme carries moving light
+   of its own, not only the onyx panel. A soft radial off the seam edge that
+   breathes; barely-there on the pale surface, a touch warmer in the dark. */
+.auth-form-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(46% 60% at 1% 40%, rgba(201, 162, 39, 0.12) 0%, transparent 62%);
+  animation: auth-glow-breathe 15s ease-in-out infinite;
+}
+
+.dark .auth-form-panel::before {
+  background: radial-gradient(46% 60% at 1% 40%, rgba(240, 212, 136, 0.1) 0%, transparent 62%);
 }
 
 .auth-form-inner {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 25.5rem;
 }
@@ -659,6 +684,7 @@
   .auth-seam,
   .auth-seam::after,
   .auth-brand::after,
+  .auth-form-panel::before,
   .auth-rise,
   .auth-stagger > *,
   .auth-error,
