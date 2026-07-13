@@ -18,12 +18,12 @@ type Row = {
 };
 
 const UNLOCKS: Row[] = [
-  { label: "Wallet withdrawals & payout release", icon: Banknote },
-  { label: "Marketplace seller approval & trust uplift", icon: Store },
-  { label: "Jobs employer verification & higher posting lanes", icon: Briefcase },
-  { label: "Higher-risk property submission & ownership review", icon: Building2 },
+  { label: "Wallet withdrawals & payouts", icon: Banknote },
+  { label: "Sell on the marketplace", icon: Store },
+  { label: "Post jobs as a verified employer", icon: Briefcase },
+  { label: "List and manage property", icon: Building2 },
   { label: "Verified instructor & learner credentials on Learn", icon: GraduationCap },
-  { label: "Honest trust scoring that can reach premium tiers", icon: ShieldCheck },
+  { label: "Reach higher trust tiers", icon: ShieldCheck },
 ];
 
 export function UnlocksRail({ approved }: Props) {

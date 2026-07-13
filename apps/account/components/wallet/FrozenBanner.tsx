@@ -16,8 +16,12 @@ type FrozenBannerProps = {
   copy: FrozenBannerCopy;
 };
 
-export function FrozenBanner({ reason, copy }: FrozenBannerProps) {
-  const trimmed = typeof reason === "string" ? reason.trim() : "";
+export function FrozenBanner({ copy }: FrozenBannerProps) {
+  // Security: never echo the raw customer_wallets.frozen_reason free-text — it
+  // can carry internal back-office notes, case references, or ops jargon. The
+  // localized title + body already convey the honest "on hold, balance safe"
+  // message; users are directed to support for specifics. (reason prop kept for
+  // call-site compatibility; intentionally not rendered.)
   return (
     <div className="acct-wal__frozen" role="status">
       <span className="acct-wal__frozen-icon" aria-hidden="true">
@@ -29,11 +33,6 @@ export function FrozenBanner({ reason, copy }: FrozenBannerProps) {
       <div className="acct-wal__frozen-meta">
         <p className="acct-wal__frozen-title">{copy.title}</p>
         <p className="acct-wal__frozen-body">{copy.body}</p>
-        {trimmed ? (
-          <p className="acct-wal__frozen-reason">
-            {copy.reasonTemplate.replaceAll("{reason}", trimmed)}
-          </p>
-        ) : null}
       </div>
     </div>
   );

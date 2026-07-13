@@ -161,25 +161,13 @@ export function ReceiptDocument({ receipt, issuer, customer, items, labels }: Re
   settlementRows.push({ label: labels.total, value: formatKobo(receipt.totalKobo, receipt.currency), mono: true });
   settlementRows.push({ label: labels.metaStatus, value: labels.statusPaid });
 
-  // Audit tie: the real payment_intent + posted ledger entry this receipt evidences.
-  const auditParts = [
-    receipt.paymentIntentId ? `intent ${receipt.paymentIntentId}` : null,
-    receipt.ledgerEntryId ? `ledger ${receipt.ledgerEntryId}` : null,
-  ].filter(Boolean);
-
   return (
     <BrandedDocument
       metadata={{
         title: `${labels.receiptType} ${receipt.receiptNo}`,
         author: issuer.name,
         subject: labels.receiptType,
-        keywords: [
-          "receipt",
-          receipt.division,
-          receipt.receiptNo,
-          receipt.paymentIntentId ? `intent:${receipt.paymentIntentId}` : "",
-          receipt.ledgerEntryId ? `ledger:${receipt.ledgerEntryId}` : "",
-        ].filter(Boolean),
+        keywords: ["receipt", receipt.division, receipt.receiptNo].filter(Boolean),
       }}
       header={{
         documentType: labels.receiptType,
@@ -238,10 +226,6 @@ export function ReceiptDocument({ receipt, issuer, customer, items, labels }: Re
         <DocumentSection kicker={labels.notes} tone="elevated">
           <Text style={{ fontSize: typeScale.body, color: palette.inkSoft, fontFamily: "HenryCoSans" }}>{receipt.notes}</Text>
         </DocumentSection>
-      ) : null}
-
-      {auditParts.length ? (
-        <Text style={styles.audit}>{`${labels.auditReference} · ${auditParts.join(" · ")}`}</Text>
       ) : null}
 
       <LegalFooter

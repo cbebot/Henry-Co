@@ -41,8 +41,8 @@ export function resolveAccountRegionalContext(input: {
     timezone,
     settlementNote:
       currencyCode === "NGN"
-        ? "Wallet settlement is in NGN."
-        : `Display defaults can follow ${currencyCode}. Wallet settlement is in NGN.`,
+        ? "Your wallet is in Nigerian Naira (NGN)."
+        : `Prices can display in ${currencyCode}. Your wallet is in Nigerian Naira (NGN).`,
   };
 }
 

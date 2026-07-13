@@ -287,7 +287,7 @@ function buildWalletEntry(input: {
     next = { label: "Complete trust requirements", href: url(ACCOUNT_ORIGIN, "/verification") };
   } else if (!hasWallet) {
     stage = "new";
-    status = "Wallet not yet provisioned";
+    status = "Wallet not set up yet";
   } else if (isDormantSignal(input.lastActivityAt)) {
     stage = "dormant";
     status = "Wallet idle";

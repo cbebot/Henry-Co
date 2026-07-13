@@ -373,7 +373,7 @@ export async function POST(request: Request) {
         ? autoConfirmed
           ? `Your withdrawal of NGN ${amountNaira.toLocaleString()} is on its way to your bank. We will confirm the moment it lands.`
           : `Your withdrawal of NGN ${amountNaira.toLocaleString()} is being processed. We will confirm it shortly.`
-        : `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
+        : `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. We're reviewing it and will confirm shortly.`,
       deepLink: "/wallet/withdrawals",
       relatedType: "wallet_withdrawal_request",
       publisher: "bridge:apps/account/app/api/wallet/withdrawal/request",

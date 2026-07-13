@@ -109,7 +109,7 @@ export async function IdentityHero({ verification, trust, downloadHref }: Props)
             <p className="acct-ver__hero-score-foot">
               {trust.nextTierLabel
                 ? `${t("Complete the next move below to advance to")} ${t(trust.nextTierLabel)}.`
-                : t("You are at the highest tier our verification surface currently issues.")}
+                : t("You've reached the highest trust tier.")}
             </p>
           </div>
           <div className="acct-ver__hero-side-queue" role="list" aria-label={t("Submission queue summary")}>

@@ -18,13 +18,13 @@ const STATUS_HEADLINE: Record<VerificationStatus, string> = {
 
 const STATUS_BLURB: Record<VerificationStatus, string> = {
   verified:
-    "Higher-trust lanes — wallet withdrawals, marketplace seller approval, employer verification — now run against real document review.",
+    "Wallet withdrawals, marketplace seller approval, and employer verification are now unlocked.",
   pending:
     "Your documents are in the queue. Review-sensitive actions stay paused until approval is complete. Most reviews finish within 24 hours.",
   rejected:
     "The last submission was not approved. Review the note, replace the affected file, and resubmit — you stay on this page the whole time.",
   none:
-    "Wallet withdrawals, seller approval, employer verification, and higher-trust actions stay gated until your identity is reviewed against real documents.",
+    "Wallet withdrawals, seller approval, and employer verification stay locked until we verify your identity.",
 };
 
 const STATUS_EYEBROW: Record<VerificationStatus, string> = {
