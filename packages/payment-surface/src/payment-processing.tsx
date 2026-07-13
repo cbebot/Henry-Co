@@ -47,7 +47,7 @@ export function PaymentProcessing({ payment, statusLabel, theme }: PaymentProces
               theme?.inkTextClassName,
             )}
           >
-            Finance is verifying this transfer
+            We're verifying your transfer
           </h2>
           <p
             className={cn(
@@ -72,7 +72,7 @@ export function PaymentProcessing({ payment, statusLabel, theme }: PaymentProces
             {[
               { key: "status", label: "Status", value: statusLabel },
               { key: "submitted", label: "Submitted", value: submittedLabel },
-              { key: "next", label: "Next", value: "Finance confirmation" },
+              { key: "next", label: "Next", value: "Payment confirmation" },
             ].map((tile) => (
               <div
                 key={tile.key}

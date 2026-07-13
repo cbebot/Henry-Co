@@ -50,7 +50,7 @@ export default async function VendorPayoutsPage({
     <WorkspaceShell
       title={t("Payouts")}
       description={t(
-        "Payout requests only draw from releasable balances. Held, frozen, requested, approved, and released funds stay separated for audit and finance review.",
+        "You can request a payout from your releasable balance. Funds still held for pending deliveries or open disputes stay separate until they clear.",
       )}
       {...vendorWorkspaceNav("/vendor/payouts", locale)}
     >
@@ -69,7 +69,7 @@ export default async function VendorPayoutsPage({
           submit: t("Request payout"),
           pending: t("Requesting payout"),
           successTitle: t("Payout request submitted."),
-          successBody: t("Finance reviews the request before funds move to your settlement account."),
+          successBody: t("We received your payout request. We'll review it and pay out to your registered account."),
           errorTitle: t("Payout could not be requested."),
         }}
         className="market-paper rounded-[1.75rem] p-5"
@@ -89,7 +89,7 @@ export default async function VendorPayoutsPage({
         </div>
         <p className="mt-4 text-sm leading-7 text-[var(--market-muted)]">
           {t(
-            "Trust tier: {tier}. Reserve window: {reserve} days. Auto-release after delivery: {auto} days unless disputes or risk holds intervene.",
+            "Your plan: {tier}. Funds settle {reserve} days after payout, and orders auto-clear {auto} days after delivery. An open dispute can pause a payout until it's resolved.",
           )
             .replace("{tier}", data.trustProfile.label)
             .replace("{reserve}", String(data.trustProfile.payoutDelayDays))

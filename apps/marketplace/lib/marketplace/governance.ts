@@ -312,7 +312,7 @@ export function evaluateListingSubmission(input: {
   }
   if (Number(input.recentSubmissionCount || 0) > Math.max(3, Math.floor(trust.listingLimit / 10))) {
     riskScore += 18;
-    moderationReasons.push("Listing velocity is unusually high for this seller trust tier.");
+    moderationReasons.push("You're publishing new listings faster than your account currently allows. Please wait a bit before adding more, or contact support if you think this is a mistake.");
   }
   if (Number(input.currentProductCount || 0) >= trust.listingLimit) {
     riskScore += 40;

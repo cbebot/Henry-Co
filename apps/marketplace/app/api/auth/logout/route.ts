@@ -8,7 +8,11 @@ export async function POST() {
   const { error } = await supabase.auth.signOut({ scope: "global" });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[marketplace auth] sign-out failed:", error);
+    return NextResponse.json(
+      { error: "Could not sign you out. Please try again." },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json(

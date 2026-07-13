@@ -16,7 +16,7 @@ export default async function AccountDisputesPage() {
   return (
     <WorkspaceShell
       title="Disputes"
-      description="Open an issue with context, keep the order linked, and see support-stage updates without losing the trail."
+      description="Raise an issue with an order and follow every update in one place."
       {...accountWorkspaceNav("/account/disputes", locale)}
     >
       <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-5">
@@ -34,7 +34,7 @@ export default async function AccountDisputesPage() {
       {data.disputes.length === 0 ? (
         <EmptyState
           title="No open disputes."
-          body="When you raise an issue with an order, the thread lives here with status updates from the support stage — nothing falls off the trail."
+          body="When you raise an issue with an order, it lives here with every status update, start to finish."
         />
       ) : (
         <div className="space-y-4">

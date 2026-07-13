@@ -120,7 +120,10 @@ export async function POST(request: Request) {
       document,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to upload that document.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[marketplace] seller document upload failed:", error);
+    return NextResponse.json(
+      { error: "We couldn't upload that document. Try a smaller file or a different format." },
+      { status: 500 },
+    );
   }
 }

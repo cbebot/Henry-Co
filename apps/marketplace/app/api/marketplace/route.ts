@@ -789,8 +789,8 @@ export async function POST(request: Request) {
                   ? "Awaiting secure card payment"
                   : paymentMethod === "cod"
                     ? "Awaiting vendor acceptance"
-                    : "Payment proof submitted for finance verification",
-              "Henry Onyx will hold seller funds in escrow until fulfillment and trust checks are complete.",
+                    : "Payment proof submitted - we're confirming your payment.",
+              "Your payment is protected until your order is delivered and confirmed.",
             ],
           } as never)
           .select("id")
@@ -1072,7 +1072,7 @@ export async function POST(request: Request) {
             entityId: orderId,
             payload: {
               orderNo,
-              statusLabel: "payment proof submitted for finance review",
+              statusLabel: "payment proof received — confirming now",
             },
           });
         }
@@ -1311,9 +1311,10 @@ export async function POST(request: Request) {
 
         const { data: address, error: addressError } = await mutation;
         if (addressError || !address) {
+          console.error("[marketplace] address save failed:", addressError);
           if (json) {
             return NextResponse.json(
-              { error: addressError?.message || "Address save failed." },
+              { error: "Address save failed. Please check the details and try again." },
               { status: 400 }
             );
           }
@@ -1389,9 +1390,10 @@ export async function POST(request: Request) {
           .maybeSingle();
 
         if (addressError || !address) {
+          console.error("[marketplace] default address update failed:", addressError);
           if (json) {
             return NextResponse.json(
-              { error: addressError?.message || "Default address update failed." },
+              { error: "Address save failed. Please check the details and try again." },
               { status: 400 }
             );
           }
@@ -1509,9 +1511,10 @@ export async function POST(request: Request) {
           .maybeSingle();
 
         if (reviewError || !createdReview) {
+          console.error("[marketplace] review submission failed:", reviewError);
           if (json) {
             return NextResponse.json(
-              { error: reviewError?.message || "Review submission failed." },
+              { error: "Review submission failed. Please check the details and try again." },
               { status: 400 }
             );
           }
@@ -2085,8 +2088,8 @@ export async function POST(request: Request) {
           .eq("order_no", orderNo);
 
         await appendOrderTimeline(admin, orderNo, [
-          "Payment verified by Henry Onyx finance.",
-          "Seller funds are now held in escrow pending fulfillment, delivery proof, and trust review.",
+          "Payment confirmed.",
+          "Your payment is protected and held until your order is delivered and confirmed.",
         ]);
 
         const { data: order } = await admin
@@ -2172,8 +2175,8 @@ export async function POST(request: Request) {
           .in("payout_status", ["awaiting_auto_release", "paid_held"]);
 
         await appendOrderTimeline(admin, orderNo, [
-          "Buyer confirmed completion.",
-          "Henry Onyx marked eligible seller funds as releasable.",
+          "Order confirmed complete.",
+          "Thanks — your order is now complete.",
         ]);
 
         await writeMarketplaceEvent(admin, {
@@ -2254,7 +2257,7 @@ export async function POST(request: Request) {
 
         await appendOrderTimeline(admin, orderNo, [
           `Dispute opened: ${titleCaseMarketplaceValue(reason || "issue reported")}.`,
-          "Henry Onyx froze seller payout release while support and moderation review evidence.",
+          "We've paused this order's payment release while our team reviews your case.",
         ]);
 
         await createModerationCase(admin, {
@@ -2350,8 +2353,8 @@ export async function POST(request: Request) {
           await appendOrderTimeline(admin, dispute.order_no, [
             `Dispute ${dispute.dispute_no} resolved.`,
             resolutionType === "refund_to_buyer"
-              ? "Henry Onyx marked the affected payout segment as refunded."
-              : "Henry Onyx returned the payout segment to controlled release monitoring.",
+              ? "Your dispute is resolved — a refund has been issued."
+              : "Your dispute is resolved. This order's payout has resumed normal processing.",
           ]);
 
           // Sync vendor trust score on dispute resolution — dispute rate changes
@@ -2631,7 +2634,7 @@ export async function POST(request: Request) {
             fulfillmentStatus === "shipped"
               ? `Shipment dispatched with ${shipmentCarrier || "assigned carrier"}.`
               : fulfillmentStatus === "delivered"
-                ? `Delivery verified. Henry Onyx will auto-release seller funds after ${sellerProfile.autoReleaseDays} day(s) unless a dispute or risk hold is triggered.`
+                ? `Delivered. You have ${sellerProfile.autoReleaseDays} day(s) to confirm or raise an issue before this order completes automatically.`
                 : `Order updated to ${titleCaseMarketplaceValue(fulfillmentStatus)}.`,
           ]);
 
@@ -3207,12 +3210,13 @@ export async function POST(request: Request) {
         error: error instanceof Error ? error.message : "Unknown error",
       },
     });
+    console.error("[marketplace] mutation failed:", error);
     return respondError(
       json,
       request,
       `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=mutation-failed`,
       {
-        message: error instanceof Error ? error.message : "The action could not be completed.",
+        message: "We couldn't complete that action. Please try again.",
         code: "mutation-failed",
         status: 500,
       }

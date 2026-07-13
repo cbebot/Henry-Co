@@ -311,26 +311,26 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           headline: "Your payment instructions are ready.",
           summary:
             note ||
-            "Use the referenced transfer details, then upload or send proof so finance can verify the payment and release the order to fulfillment.",
-          bullets: [`Order: ${orderNo}`, "Manual verification keeps payment and dispute trails accountable."],
+            "Transfer the exact total using the reference shown, then upload your payment proof. Once your payment is confirmed, your order moves straight into processing.",
+          bullets: [`Order: ${orderNo}`, "Your payment and order are tracked together, so you always have a clear record if anything needs review."],
           ctaLabel: "Track this order",
           ctaHref: `/track/${orderNo}`,
         },
-        whatsappText: `Payment instructions are ready for ${orderNo}. Submit transfer proof after payment so finance can verify it.`,
+        whatsappText: `Payment instructions are ready for ${orderNo}. Upload your transfer proof after paying and we'll confirm your order.`,
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_PAYMENT_REMINDER",
         whatsappTemplateValues: [orderNo, "payment instructions ready"],
       };
     case "order_confirmed":
       return {
         inAppTitle: "Order confirmed",
-        inAppBody: `${orderNo} has moved into the confirmed order queue.`,
+        inAppBody: `Your order ${orderNo} is confirmed and being prepared.`,
         email: {
           templateKey: event,
           eyebrow: "Order lifecycle",
           headline: "Your order is confirmed.",
           summary:
             note ||
-            `${orderNo} has cleared the first operational checkpoint and is now in the confirmed processing queue.`,
+            `${orderNo} is confirmed. The seller is preparing it for dispatch — we'll notify you at each step.`,
           bullets: [`Order: ${orderNo}`, statusLabel ? `Status: ${statusLabel}` : "Status: confirmed"],
           ctaLabel: "Track order",
           ctaHref: `/track/${orderNo}`,
@@ -452,7 +452,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
     case "product_submitted_for_review":
       return {
         inAppTitle: "Product submitted for review",
-        inAppBody: `${productTitle} is now in the moderation queue.`,
+        inAppBody: `${productTitle} has been submitted and is now under review.`,
         email: {
           templateKey: event,
           eyebrow: "Catalog moderation",
@@ -530,7 +530,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             : event === "payment_reminder"
             ? `We are still waiting for payment evidence on ${orderNo}.`
             : event === "payment_verified"
-            ? `${orderNo} has been verified by finance.`
+            ? `Payment confirmed for ${orderNo}.`
             : event === "order_shipped"
             ? `${orderNo} is now in transit.`
             : event === "order_delivered"
@@ -584,7 +584,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             : event === "dispute_updated"
             ? "Dispute updated"
             : "Dispute resolved",
-        inAppBody: `${disputeNo} now reflects the latest operations note.`,
+        inAppBody: `There's an update on your dispute ${disputeNo}.`,
         email: {
           templateKey: event,
           eyebrow: "Issue resolution",
@@ -592,7 +592,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             event === "dispute_resolved"
               ? "Your dispute has a resolution."
               : "Your dispute has been updated.",
-          summary: note || `${disputeNo} is moving through the marketplace support workflow.`,
+          summary: note || `We're reviewing your dispute ${disputeNo} and will update you as soon as there's news.`,
           bullets: [`Dispute: ${disputeNo}`, orderNo ? `Order: ${orderNo}` : null].filter(Boolean) as string[],
           ctaLabel: "Open disputes",
           ctaHref: "/account/disputes",
@@ -609,7 +609,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           templateKey: event,
           eyebrow: "Returns",
           headline: "A return request is now active.",
-          summary: note || `${orderNo} has entered the return workflow and is waiting for the next resolution step.`,
+          summary: note || `We've logged your return request for order ${orderNo}. The seller will review it shortly.`,
           bullets: [`Order: ${orderNo}`, statusLabel ? `Status: ${statusLabel}` : "Status: return requested"],
           ctaLabel: "Open support",
           ctaHref: "/account/disputes",
@@ -630,8 +630,8 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           summary:
             note ||
             (event === "refund_approved"
-              ? `${orderNo} now has an approved refund path.`
-              : `${orderNo} received a refund rejection or alternate resolution.`),
+              ? `Good news — your refund for order ${orderNo} is approved.`
+              : `We've reviewed order ${orderNo} and a refund wasn't approved this time. Reply to this email if you'd like us to take another look.`),
           bullets: [`Order: ${orderNo}`, disputeNo ? `Dispute: ${disputeNo}` : null].filter(Boolean) as string[],
           ctaLabel: "View order support",
           ctaHref: "/account/disputes",
@@ -647,17 +647,17 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             : event === "payout_approved"
             ? "Payout approved"
             : "Payout update",
-        inAppBody: `${payoutReference} has a finance update.`,
+        inAppBody: `There's an update on your payout ${payoutReference}.`,
         email: {
           templateKey: event,
-          eyebrow: "Vendor finance",
+          eyebrow: "Payouts",
           headline:
             event === "payout_requested"
               ? "A vendor payout needs review."
               : event === "payout_approved"
               ? "Your payout is approved."
               : "Your payout was rejected.",
-          summary: note || `${payoutReference} has progressed through the marketplace finance workflow.`,
+          summary: note || `There's an update on your payout ${payoutReference}.`,
           bullets: [`Reference: ${payoutReference}`, note || null].filter(Boolean) as string[],
           ctaLabel: "Open payouts",
           ctaHref: event === "payout_requested" ? "/finance" : "/vendor/payouts",
