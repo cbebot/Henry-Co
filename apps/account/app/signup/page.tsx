@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { COMPANY } from "@henryco/config";
 import { getAuthCopy } from "@henryco/i18n";
 import SignupForm from "@/components/auth/SignupForm";
-import Logo from "@/components/brand/Logo";
+import AuthShell from "@/components/auth/AuthShell";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 export async function generateMetadata() {
@@ -21,27 +22,20 @@ export default async function SignupPage({
   const copy = getAuthCopy(locale);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4 py-8">
-      <div className="w-full max-w-lg acct-fade-in">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center">
-            <Logo size={48} />
-          </div>
-          <h1 className="acct-display text-2xl">{copy.signup.heading}</h1>
-          <p className="mt-1.5 text-sm text-[var(--acct-muted)]">
-            {copy.signup.subheading}
-          </p>
-        </div>
-
-        <SignupForm />
-
-        <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
+    <AuthShell
+      wordmark={COMPANY.group.name}
+      brandEyebrow={copy.scene.eyebrow}
+      brandLine={copy.scene.line}
+      title={copy.signup.heading}
+      subtitle={copy.signup.subheading}
+      altAction={
+        <>
           {copy.signup.loginPrompt}{" "}
-          <Link href={loginHref} className="font-medium text-[var(--acct-gold)] hover:underline">
-            {copy.signup.loginCta}
-          </Link>
-        </p>
-      </div>
-    </div>
+          <Link href={loginHref}>{copy.signup.loginCta}</Link>
+        </>
+      }
+    >
+      <SignupForm />
+    </AuthShell>
   );
 }

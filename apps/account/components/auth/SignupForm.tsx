@@ -2,12 +2,39 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ButtonPendingContent } from "@henryco/ui";
-import { formatSurfaceTemplate, getActiveCountries, getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
+import {
+  formatSurfaceTemplate,
+  getActiveCountries,
+  getAuthCopy,
+  getSurfaceCopy,
+  translateSurfaceLabel,
+} from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { henryWebRoot, normalizeTrustedRedirect } from "@henryco/config";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Eye, EyeOff, CheckCircle2, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import AuthField from "./AuthField";
+import PasswordField from "./PasswordField";
+import AuthSubmit from "./AuthSubmit";
+import AuthErrorNotice from "./AuthErrorNotice";
+
+/**
+ * SignupForm — create-a-Henry-Onyx-account.
+ *
+ * Presentation runs through the shared auth primitives (AuthField /
+ * PasswordField ×2 / AuthSubmit / AuthErrorNotice) and the auth.css register;
+ * the bespoke fields (country / phone / contact preference / terms) are styled
+ * with utilities keyed to the same --acct-* / gold tokens so they sit in the
+ * same visual world as the primitives.
+ *
+ * The security spine is verbatim from the prior form: submission POSTs the
+ * server route `/api/auth/signup` (which enforces the IP rate-limit — never a
+ * client Supabase call); the `next` param is laundered through
+ * normalizeTrustedRedirect (open-redirect guard) both for the login hand-off
+ * and for the value handed to the server route; resend POSTs `/api/auth/resend`.
+ * All field logic and every input attribute are unchanged. Errors go through
+ * the stable mapAccountAuthMessage vocabulary.
+ */
 
 const COUNTRIES = getActiveCountries().map((country) => ({
   code: country.code,
@@ -38,7 +65,6 @@ export default function SignupForm() {
   const [phone, setPhone] = useState("");
   const [contactPref, setContactPref] = useState("email");
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -55,6 +81,31 @@ export default function SignupForm() {
     { value: "phone", label: surfaceCopy.accountForms.contactPhone },
     { value: "in_app", label: surfaceCopy.accountForms.contactInApp },
   ];
+
+  // Success-panel copy — these strings were hardcoded EN in the prior form and
+  // are now localized through the sanctioned one-off path (translateSurfaceLabel).
+  const stepInboxTitle = translateSurfaceLabel(locale, "Check your inbox.");
+  const stepInboxBody = translateSurfaceLabel(
+    locale,
+    "The email is from Henry Onyx Accounts. If it isn’t in your inbox after a minute, look in spam or promotions.",
+  );
+  const stepVerifyTitle = translateSurfaceLabel(locale, "Tap “Verify my Henry Onyx account.”");
+  const stepVerifyBody = translateSurfaceLabel(
+    locale,
+    "The link is single-use and expires after a short window for your security.",
+  );
+  const stepContinueTitle = translateSurfaceLabel(locale, "Continue to your Henry Onyx workspace.");
+  const stepContinueBody = translateSurfaceLabel(
+    locale,
+    "We’ll route you to the right place across Care, Marketplace, Studio and more.",
+  );
+  const resendSentLabel = translateSurfaceLabel(locale, "Verification email sent again");
+  const resendSendingLabel = translateSurfaceLabel(locale, "Sending verification email…");
+  const resendLabel = translateSurfaceLabel(locale, "Resend verification email");
+  const trustPill = translateSurfaceLabel(
+    locale,
+    "One secure Henry Onyx account works across every service.",
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,183 +180,154 @@ export default function SignupForm() {
   };
 
   if (success) {
+    const steps = [
+      { title: stepInboxTitle, body: stepInboxBody },
+      { title: stepVerifyTitle, body: stepVerifyBody },
+      { title: stepContinueTitle, body: stepContinueBody },
+    ];
+
     return (
-      <div className="acct-card p-6 sm:p-8 acct-fade-in">
-        <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--acct-green-soft)]">
-            <Mail size={20} className="text-[var(--acct-green)]" />
-          </div>
+      <div className="auth-rise">
+        <div className="auth-success">
+          <span className="auth-success-icon" aria-hidden>
+            <Mail size={20} />
+          </span>
           <div className="min-w-0">
-            <h2 className="text-lg font-semibold leading-tight text-[var(--acct-ink)]">
+            <p className="text-base font-semibold leading-tight">
               {surfaceCopy.accountForms.checkEmailTitle}
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--acct-muted)]">
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed">
               {formatSurfaceTemplate(surfaceCopy.accountForms.verificationSent, { email })}
             </p>
           </div>
         </div>
 
         <ol className="mt-6 space-y-4 border-l border-[var(--acct-line)] pl-5 text-sm leading-relaxed text-[var(--acct-ink)]">
-          <li className="flex gap-3">
-            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">1</span>
-            <span>
-              <strong className="font-semibold">Check your inbox.</strong>{" "}
-              <span className="text-[var(--acct-muted)]">
-                The email is from <span className="font-medium text-[var(--acct-ink)]">Henry Onyx Accounts</span>. If it&rsquo;s not in your inbox after a minute, look in spam or promotions.
+          {steps.map((step, index) => (
+            <li key={step.title} className="flex gap-3">
+              <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--gold-strong,#a88718)]">
+                {index + 1}
               </span>
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">2</span>
-            <span>
-              <strong className="font-semibold">Tap &ldquo;Verify my Henry Onyx account.&rdquo;</strong>{" "}
-              <span className="text-[var(--acct-muted)]">
-                The link is single-use and expires after a short window for your security.
+              <span>
+                <strong className="font-semibold text-[var(--acct-ink)]">{step.title}</strong>{" "}
+                <span className="text-[var(--acct-muted)]">{step.body}</span>
               </span>
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">3</span>
-            <span>
-              <strong className="font-semibold">Continue to your Henry Onyx workspace.</strong>{" "}
-              <span className="text-[var(--acct-muted)]">
-                We&rsquo;ll route you to the right place across Care, Marketplace, Studio and more.
-              </span>
-            </span>
-          </li>
+            </li>
+          ))}
         </ol>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-[var(--acct-line)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row-reverse sm:items-center">
+          <button
+            type="button"
+            onClick={() => router.push(buildLoginHref(next))}
+            className="auth-submit sm:flex-1"
+            style={{ marginTop: 0 }}
+          >
+            {surfaceCopy.accountForms.backToSignIn}
+          </button>
           <button
             type="button"
             onClick={handleResend}
             disabled={resendStatus === "sending" || resendStatus === "sent"}
-            className="acct-button-secondary inline-flex items-center justify-center gap-2 text-sm"
+            className="auth-provider sm:flex-1"
           >
             {resendStatus === "sent" ? (
               <>
-                <CheckCircle2 size={14} className="text-[var(--acct-green)]" />
-                Verification email sent again
+                <CheckCircle2 size={15} aria-hidden />
+                {resendSentLabel}
               </>
             ) : resendStatus === "sending" ? (
-              "Sending verification email…"
+              resendSendingLabel
             ) : (
               <>
-                <Sparkles size={14} />
-                Resend verification email
+                <Sparkles size={15} aria-hidden />
+                {resendLabel}
               </>
             )}
           </button>
-          <button onClick={() => router.push(buildLoginHref(next))} className="acct-button-primary text-sm">
-            {surfaceCopy.accountForms.backToSignIn}
-          </button>
         </div>
         {resendError ? (
-          <p className="mt-3 text-xs text-[var(--acct-red)]">{resendError}</p>
+          <p className="mt-3 text-xs text-[var(--acct-red-text,#b42318)]">{resendError}</p>
         ) : null}
 
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-1.5 text-[11px] font-medium text-[var(--acct-muted)]">
-          <ShieldCheck size={12} className="text-[var(--acct-gold)]" />
-          One secure Henry Onyx account works across every service.
+        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--acct-line)] bg-[var(--acct-bg-soft,var(--acct-bg))] px-3 py-1.5 text-[11px] font-medium text-[var(--acct-muted)]">
+          <ShieldCheck size={13} className="text-[var(--gold-strong,#a88718)]" aria-hidden />
+          {trustPill}
         </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="acct-card p-6 sm:p-8 acct-fade-in">
-      {error && (
-        <div className="mb-4 rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]">
-          {error}
-        </div>
-      )}
+    <form onSubmit={handleSubmit} className="auth-stagger" noValidate>
+      <AuthErrorNotice message={error} />
 
-      <div className="space-y-4">
-        <div>
-          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.fullNameLabel}</label>
-          <input
-            type="text"
-            name="fullName"
-            autoComplete="name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="acct-input"
-            placeholder={surfaceCopy.accountForms.fullNamePlaceholder}
-            required
-          />
-        </div>
+      <div className="auth-fieldset">
+        <AuthField
+          label={authCopy.signup.fullNameLabel}
+          name="fullName"
+          type="text"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder={surfaceCopy.accountForms.fullNamePlaceholder}
+          autoComplete="name"
+          required
+          invalid={Boolean(error)}
+        />
 
-        <div>
-          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.emailLabel}</label>
-          <input
-            type="email"
-            name="email"
-            inputMode="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="acct-input"
-            placeholder={surfaceCopy.accountForms.emailPlaceholder}
-            required
-            autoComplete="email"
-          />
-        </div>
+        <AuthField
+          label={authCopy.signup.emailLabel}
+          name="email"
+          type="email"
+          inputMode="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={surfaceCopy.accountForms.emailPlaceholder}
+          autoComplete="email"
+          required
+          invalid={Boolean(error)}
+        />
 
-        <div>
-          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.passwordLabel}</label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="acct-input pr-10"
-              placeholder={surfaceCopy.accountForms.minPasswordPlaceholder}
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
-            >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-        </div>
+        <PasswordField
+          label={authCopy.signup.passwordLabel}
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={surfaceCopy.accountForms.minPasswordPlaceholder}
+          autoComplete="new-password"
+          minLength={8}
+          required
+          invalid={Boolean(error)}
+          showLabel={authCopy.scene.showPassword}
+          hideLabel={authCopy.scene.hidePassword}
+        />
 
-        <div>
-          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.confirmPasswordLabel}</label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="acct-input pr-10"
-              placeholder={surfaceCopy.accountForms.confirmPasswordPlaceholder}
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
-              aria-label={showPassword ? surfaceCopy.accountForms.hidePasswords : surfaceCopy.accountForms.showPasswords}
-            >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-        </div>
+        <PasswordField
+          label={authCopy.signup.confirmPasswordLabel}
+          name="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder={surfaceCopy.accountForms.confirmPasswordPlaceholder}
+          autoComplete="new-password"
+          minLength={8}
+          required
+          invalid={Boolean(error)}
+          showLabel={authCopy.scene.showPassword}
+          hideLabel={authCopy.scene.hidePassword}
+        />
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.countryLabel}</label>
+        <div className="grid gap-[1.05rem] sm:grid-cols-2">
+          <div className="auth-field">
+            <div className="auth-field-row">
+              <label className="auth-label" htmlFor="country">
+                {surfaceCopy.accountForms.countryLabel}
+              </label>
+            </div>
             <select
+              id="country"
+              className="auth-input"
               value={country}
               onChange={(e) => setCountry(e.target.value)}
-              className="acct-select"
             >
               {COUNTRIES.map((c) => (
                 <option key={c.code} value={c.code}>
@@ -314,83 +336,95 @@ export default function SignupForm() {
               ))}
             </select>
           </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.phoneLabel}</label>
-            <div className="flex gap-2">
-              <span className="flex items-center rounded-l-[var(--acct-radius)] border border-r-0 border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 text-sm text-[var(--acct-muted)]">
+
+          <div className="auth-field">
+            <div className="auth-field-row">
+              <label className="auth-label" htmlFor="phone">
+                {surfaceCopy.accountForms.phoneLabel}
+              </label>
+            </div>
+            <div className="flex">
+              <span className="inline-flex items-center rounded-l-[0.9rem] border border-r-0 border-[var(--acct-line)] bg-[var(--acct-surface,var(--acct-bg-soft,var(--acct-bg)))] px-3 text-sm text-[var(--acct-muted)]">
                 {selectedCountry?.dial}
               </span>
               <input
+                id="phone"
                 type="tel"
                 name="phone"
                 inputMode="tel"
                 autoComplete="tel-national"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-                className="acct-input rounded-l-none"
+                className="auth-input rounded-l-none"
                 placeholder={surfaceCopy.accountForms.phonePlaceholder}
               />
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
+        <p className="rounded-[0.9rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft,var(--acct-bg))] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
           {selectedCountry?.currency === "NGN"
             ? surfaceCopy.accountForms.regionalDefaultsLocal
             : formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
                 currency: selectedCountry?.currency || "NGN",
               })}
-        </div>
+        </p>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium">{surfaceCopy.accountForms.preferredContactLabel}</label>
-          <div className="grid grid-cols-2 gap-2">
-            {CONTACT_PREFS.map((pref) => (
-              <button
-                key={pref.value}
-                type="button"
-                onClick={() => setContactPref(pref.value)}
-                className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
-                  contactPref === pref.value
-                    ? "border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] text-[var(--acct-gold)]"
-                    : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)] hover:border-[var(--acct-gold)]/40"
-                }`}
-              >
-                {pref.label}
-              </button>
-            ))}
+        <div className="auth-field">
+          <div className="auth-field-row">
+            <span className="auth-label">{surfaceCopy.accountForms.preferredContactLabel}</span>
+          </div>
+          <div
+            className="grid grid-cols-2 gap-2"
+            role="group"
+            aria-label={surfaceCopy.accountForms.preferredContactLabel}
+          >
+            {CONTACT_PREFS.map((pref) => {
+              const active = contactPref === pref.value;
+              return (
+                <button
+                  key={pref.value}
+                  type="button"
+                  onClick={() => setContactPref(pref.value)}
+                  aria-pressed={active}
+                  className={`rounded-[0.9rem] border px-3 py-2.5 text-sm font-medium transition-all ${
+                    active
+                      ? "border-[var(--gold,#c9a227)] bg-[var(--acct-gold-soft)] text-[var(--gold-strong,#a88718)]"
+                      : "border-[var(--acct-line)] bg-[var(--acct-bg-soft,var(--acct-bg))] text-[var(--acct-muted)] hover:border-[color-mix(in_srgb,var(--acct-line)_40%,var(--acct-muted))]"
+                  }`}
+                >
+                  {pref.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <label className="flex items-start gap-3 cursor-pointer">
+        <label className="flex cursor-pointer items-start gap-3">
           <input
             type="checkbox"
             checked={termsAccepted}
             onChange={(e) => setTermsAccepted(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-[var(--acct-line)] accent-[var(--acct-gold)]"
+            className="mt-0.5 h-4 w-4 rounded border-[var(--acct-line)] accent-[var(--gold,#c9a227)]"
           />
           <span className="text-xs leading-relaxed text-[var(--acct-muted)]">
             {surfaceCopy.accountForms.termsAgreementStart}{" "}
-            <a href={henryWebRoot("/terms")} className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
+            <a href={henryWebRoot("/terms")} className="auth-field-link" target="_blank" rel="noopener">
               {surfaceCopy.accountForms.termsLink}
             </a>{" "}
             {surfaceCopy.accountForms.termsAgreementMiddle}{" "}
-            <a href={henryWebRoot("/privacy")} className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
+            <a href={henryWebRoot("/privacy")} className="auth-field-link" target="_blank" rel="noopener">
               {surfaceCopy.accountForms.privacyLink}
             </a>
           </span>
         </label>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="acct-button-primary mt-6 w-full rounded-xl py-3"
-      >
-        <ButtonPendingContent pending={loading} pendingLabel={surfaceCopy.accountForms.createAccountBusy} spinnerLabel={authCopy.signup.submitButton}>
-          {authCopy.signup.submitButton}
-        </ButtonPendingContent>
-      </button>
+      <AuthSubmit
+        label={authCopy.signup.submitButton}
+        pendingLabel={surfaceCopy.accountForms.createAccountBusy}
+        pending={loading}
+      />
     </form>
   );
 }

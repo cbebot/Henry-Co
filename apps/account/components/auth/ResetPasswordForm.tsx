@@ -2,13 +2,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle } from "lucide-react";
 import { getAuthCopy, getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
-import { ButtonPendingContent } from "@henryco/ui";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Eye, EyeOff } from "lucide-react";
+import PasswordField from "./PasswordField";
+import AuthSubmit from "./AuthSubmit";
+import AuthErrorNotice from "./AuthErrorNotice";
 
+/**
+ * ResetPasswordForm — set a new password after following the reset link.
+ *
+ * Presentation runs through the shared auth primitives; the security spine is
+ * verbatim from the prior form: the match + length>=8 checks, then client
+ * updateUser({ password }) and router.push("/"). Both password inputs are now
+ * the ONE canonical PasswordField (the confirm field previously lacked a reveal
+ * toggle). Errors go through mapAccountAuthMessage (never the raw provider
+ * string); one-off strings stay on translateSurfaceLabel, consistent with the
+ * prior form.
+ */
 export default function ResetPasswordForm() {
   const locale = useHenryCoLocale();
   const authCopy = getAuthCopy(locale);
@@ -16,7 +29,6 @@ export default function ResetPasswordForm() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -45,45 +57,56 @@ export default function ResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="acct-card p-6 text-center sm:p-8">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--acct-green-soft)]">
-          <svg className="h-6 w-6 text-[var(--acct-green)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+      <div className="auth-success" role="status">
+        <span className="auth-success-icon">
+          <CheckCircle size={22} aria-hidden />
+        </span>
+        <div>
+          <h2 className="text-lg font-semibold">{t("Password updated")}</h2>
+          <p className="mt-1.5 text-sm">{t("Redirecting to your account...")}</p>
         </div>
-        <h2 className="text-lg font-semibold">{t("Password updated")}</h2>
-        <p className="mt-2 text-sm text-[var(--acct-muted)]">{t("Redirecting to your account...")}</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="acct-card p-6 sm:p-8">
-      {error && (
-        <div className="mb-4 rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]">{error}</div>
-      )}
-      <div className="space-y-4">
-        <div>
-          <label className="mb-1.5 block text-sm font-medium">{t("New password")}</label>
-          <div className="relative">
-            <input type={show ? "text" : "password"} name="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="acct-input pr-10" placeholder={surfaceCopy.accountForms.minPasswordPlaceholder} required minLength={8} />
-            <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]">
-              {show ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-        </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.confirmPasswordLabel}</label>
-          <input type="password" name="confirm" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
-            className="acct-input" placeholder={t("Repeat new password")} required />
-        </div>
+    <form onSubmit={handleSubmit} className="auth-stagger" noValidate>
+      <AuthErrorNotice message={error} />
+
+      <div className="auth-fieldset">
+        <PasswordField
+          label={t("New password")}
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={surfaceCopy.accountForms.minPasswordPlaceholder}
+          autoComplete="new-password"
+          required
+          minLength={8}
+          invalid={Boolean(error)}
+          showLabel={authCopy.scene.showPassword}
+          hideLabel={authCopy.scene.hidePassword}
+        />
+
+        <PasswordField
+          label={authCopy.signup.confirmPasswordLabel}
+          name="confirm"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder={t("Repeat new password")}
+          autoComplete="new-password"
+          required
+          invalid={Boolean(error)}
+          showLabel={authCopy.scene.showPassword}
+          hideLabel={authCopy.scene.hidePassword}
+        />
       </div>
-      <button type="submit" disabled={loading} className="acct-button-primary mt-6 w-full rounded-xl py-3">
-        <ButtonPendingContent pending={loading} pendingLabel={t("Updating password...")} spinnerLabel={t("Updating password...")}>
-          {t("Set new password")}
-        </ButtonPendingContent>
-      </button>
+
+      <AuthSubmit
+        label={t("Set new password")}
+        pendingLabel={t("Updating password...")}
+        pending={loading}
+      />
     </form>
   );
 }
