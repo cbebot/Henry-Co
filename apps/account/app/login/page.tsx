@@ -2,11 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { henrySubdomain, isRecoverableSupabaseAuthError } from "@henryco/config";
+import { COMPANY, henrySubdomain, isRecoverableSupabaseAuthError } from "@henryco/config";
 import { getAuthCopy } from "@henryco/i18n";
 import LoginForm from "@/components/auth/LoginForm";
 import LoginLanguageAccess from "@/components/auth/LoginLanguageAccess";
-import Logo from "@/components/brand/Logo";
+import AuthShell from "@/components/auth/AuthShell";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -35,6 +35,8 @@ export default async function LoginPage({
     }
   }
 
+  // Already signed in → route through the live-access resolver (never trust the
+  // requested `next` alone; resolveUserDashboard re-validates the snapshot).
   if (user) {
     const headerStore = await headers();
     const cookieStore = await cookies();
@@ -58,31 +60,23 @@ export default async function LoginPage({
   const copy = getAuthCopy(locale);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4">
-      <div className="w-full max-w-md acct-fade-in">
-        <LoginLanguageAccess initialLocale={locale} />
-
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center">
-            <Logo size={48} />
-          </div>
-          <h1 className="acct-display text-2xl">{copy.login.heading}</h1>
-          <p className="mt-1.5 text-sm text-[var(--acct-muted)]">
-            {copy.login.subheading}
-          </p>
-        </div>
-
-        <Suspense fallback={null}>
-          <LoginForm />
-        </Suspense>
-
-        <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
+    <AuthShell
+      wordmark={COMPANY.group.name}
+      brandEyebrow={copy.scene.eyebrow}
+      brandLine={copy.scene.line}
+      title={copy.login.heading}
+      subtitle={copy.login.subheading}
+      headerSlot={<LoginLanguageAccess initialLocale={locale} />}
+      altAction={
+        <>
           {copy.login.signupPrompt}{" "}
-          <Link href={signupHref} className="font-medium text-[var(--acct-gold)] hover:underline">
-            {copy.login.signupCta}
-          </Link>
-        </p>
-      </div>
-    </div>
+          <Link href={signupHref}>{copy.login.signupCta}</Link>
+        </>
+      }
+    >
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
+    </AuthShell>
   );
 }

@@ -2,9 +2,15 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { detectAuthMethod } from "@henryco/auth";
 import { readReauthContext } from "@henryco/auth/server/reauth-context";
-import { getAuthSessionCopy } from "@henryco/i18n";
-import { henrySubdomain, isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
+import { getAuthCopy, getAuthSessionCopy, translateSurfaceLabel } from "@henryco/i18n";
+import {
+  COMPANY,
+  henrySubdomain,
+  isRecoverableSupabaseAuthError,
+  normalizeTrustedRedirect,
+} from "@henryco/config";
 
+import AuthShell from "@/components/auth/AuthShell";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
@@ -83,6 +89,7 @@ export default async function ReauthPage({
 
   const locale = await getAccountAppLocale();
   const copy = getAuthSessionCopy(locale);
+  const scene = getAuthCopy(locale).scene;
   const authMethod = detectAuthMethod(viewerSubject);
 
   const userMetadata = (viewerSubject.user_metadata ?? {}) as Record<string, unknown>;
@@ -105,8 +112,23 @@ export default async function ReauthPage({
   const intent: "form" | "page" = params.intent === "form" ? "form" : "page";
   const draftKey = params.drafts && params.drafts.length > 0 ? params.drafts : null;
 
+  // Localized shell heading: "Welcome back, {name}" when we know the first
+  // name, else the fallback. The reauth copy leaves route through Pattern B
+  // runtime translation (`translateSurfaceLabel`), matching auth-session-copy.
+  const firstName = displayName?.trim().match(/^([^\s]+)/)?.[1] ?? null;
+  const shellTitle = firstName
+    ? translateSurfaceLabel(locale, copy.reauth.headingWithName).replace("{name}", firstName)
+    : translateSurfaceLabel(locale, copy.reauth.headingFallback);
+  const shellSubtitle = translateSurfaceLabel(locale, copy.reauth.subheading);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4 py-12">
+    <AuthShell
+      wordmark={COMPANY.group.name}
+      brandEyebrow={scene.eyebrow}
+      brandLine={scene.line}
+      title={shellTitle}
+      subtitle={shellSubtitle}
+    >
       <ReauthClient
         viewer={{
           email: viewerSubject.email,
@@ -120,6 +142,6 @@ export default async function ReauthPage({
         draftKey={draftKey}
         copy={copy}
       />
-    </div>
+    </AuthShell>
   );
 }

@@ -1,0 +1,669 @@
+/* ============================================================================
+   Henry Onyx — Auth surfaces (ACCOUNT-PREMIUM-AUTH)
+
+   The design thesis: an account is a gemstone split by a seam of light. The
+   left panel is ONYX — deep, warm-black, constant across themes; the right
+   panel is the form in the active register. Between them runs the SIGNATURE:
+   a hairline "seam" of gold light that draws on load and slowly catches a
+   travelling highlight, the way polished onyx catches a lamp.
+
+   Boldness is spent entirely on the seam + the onyx panel's quiet gold field.
+   Everything else is disciplined precision: type, spacing, focus states.
+
+   Type: --acct-font-display (Fraunces / owned Onyx serif) for the wordline and
+   title; --acct-font-sans (Manrope / owned sans) for everything operable.
+   Motion: signature easing, page-load orchestration, all gated on
+   prefers-reduced-motion. Dual-theme by construction (the onyx panel is a
+   constant; the form panel follows --acct-*).
+   ========================================================================== */
+
+.auth-scene {
+  /* Onyx is a constant — a hair deeper + warmer than the dark canvas so the
+     panel reads as "material", not just "dark mode". */
+  --onyx: #090c11;
+  --onyx-2: #0d1219;
+  --onyx-ink: #f4efe6;
+  --onyx-muted: rgba(244, 239, 230, 0.58);
+  --onyx-faint: rgba(244, 239, 230, 0.34);
+  --seam-core: #f0d488;      /* the bright centre of the seam */
+  --seam-gold: var(--acct-gold, #c9a227);
+  --gold: var(--acct-gold, #c9a227);
+  --gold-strong: var(--acct-gold-strong, #a88718);
+
+  position: relative;
+  min-height: 100svh;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--acct-bg);
+  color: var(--acct-ink);
+  font-family: var(--acct-font-sans, var(--font-manrope, system-ui, sans-serif));
+  isolation: isolate;
+}
+
+@media (min-width: 1024px) {
+  .auth-scene {
+    /* brand | seam | form — the seam is a real column, not a border */
+    grid-template-columns: minmax(0, 0.86fr) 1px minmax(0, 1fr);
+  }
+}
+
+/* ─── Onyx brand panel ───────────────────────────────────────────────────── */
+.auth-brand {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 18% 0%, rgba(201, 162, 39, 0.14) 0%, transparent 55%),
+    linear-gradient(155deg, var(--onyx-2) 0%, var(--onyx) 58%, #06080c 100%);
+  color: var(--onyx-ink);
+  padding: clamp(1.75rem, 4vw, 3.75rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 8.5rem;
+}
+
+@media (min-width: 1024px) {
+  .auth-brand {
+    padding: clamp(2.75rem, 3.4vw, 4.5rem);
+  }
+}
+
+/* Barely-there banded-agate texture — the onyx has grain. Held at a whisper so
+   it's felt, not seen; disabled where the GPU/user would rather it not be. */
+.auth-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    112deg,
+    rgba(255, 255, 255, 0.016) 0px,
+    rgba(255, 255, 255, 0.016) 1px,
+    transparent 1px,
+    transparent 7px
+  );
+  opacity: 0.9;
+  pointer-events: none;
+  mask-image: radial-gradient(140% 120% at 20% 10%, #000 0%, transparent 78%);
+}
+
+/* Ambient gold breathe — a slow radial that lifts the panel; quiet by design.
+   The React AmbientGlow can layer cursor-parallax on top; this is the floor. */
+.auth-brand::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(38% 42% at 30% 22%, rgba(240, 212, 136, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: auth-glow-breathe 14s ease-in-out infinite;
+}
+
+.auth-brand > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--acct-font-display, var(--font-reading, Georgia, serif));
+  font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--onyx-ink);
+}
+
+.auth-brand-mark .auth-brand-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 28%, #f6e4a6, var(--gold) 62%, var(--gold-strong));
+  color: #201700;
+  box-shadow: 0 0 0 1px rgba(240, 212, 136, 0.35), 0 8px 24px rgba(201, 162, 39, 0.28);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.auth-brand-lede {
+  max-width: 22ch;
+}
+
+.auth-brand-eyebrow {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--seam-core);
+}
+
+.auth-brand-line {
+  margin-top: 0.85rem;
+  font-family: var(--acct-font-display, var(--font-reading, Georgia, serif));
+  font-size: clamp(1.9rem, 3vw, 2.9rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.auth-brand-line em {
+  font-style: italic;
+  color: var(--seam-core);
+}
+
+/* The ecosystem, stated plainly — "one account, every service" made literal.
+   Not a decorative constellation; the actual rooms this key opens. */
+.auth-brand-eco {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  font-size: 0.78rem;
+  color: var(--onyx-muted);
+}
+
+.auth-brand-eco span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.auth-brand-eco span::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--gold);
+  opacity: 0.85;
+}
+
+@media (max-width: 1023px) {
+  .auth-brand-lede,
+  .auth-brand-eco {
+    display: none;
+  }
+  .auth-brand {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 0;
+    gap: 0.75rem;
+    padding: 1.15rem 1.4rem;
+  }
+}
+
+/* ─── The seam ───────────────────────────────────────────────────────────── */
+.auth-seam {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(201, 162, 39, 0.5) 22%,
+    var(--seam-core) 50%,
+    rgba(201, 162, 39, 0.5) 78%,
+    transparent 100%
+  );
+  box-shadow: 0 0 22px 1px rgba(201, 162, 39, 0.35);
+  transform-origin: center;
+  animation: auth-seam-draw 820ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+/* A slow highlight that travels the seam — the lamp moving across the stone. */
+.auth-seam::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 3px;
+  height: 22%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, #fff6dc, transparent);
+  filter: blur(0.5px);
+  animation: auth-seam-travel 7s ease-in-out 1s infinite;
+}
+
+@media (max-width: 1023px) {
+  .auth-seam {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(201, 162, 39, 0.5) 22%,
+      var(--seam-core) 50%,
+      rgba(201, 162, 39, 0.5) 78%,
+      transparent 100%
+    );
+    animation: auth-seam-draw-h 820ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+  }
+  .auth-seam::after {
+    left: 0;
+    top: 50%;
+    width: 22%;
+    height: 3px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, transparent, #fff6dc, transparent);
+    animation: auth-seam-travel-h 7s ease-in-out 1s infinite;
+  }
+}
+
+/* ─── Form panel ─────────────────────────────────────────────────────────── */
+.auth-form-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 5vw, 3rem);
+  background: var(--acct-bg);
+}
+
+.auth-form-inner {
+  width: 100%;
+  max-width: 25.5rem;
+}
+
+.auth-eyebrow {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-strong);
+}
+
+.dark .auth-eyebrow {
+  color: var(--seam-core);
+}
+
+.auth-title {
+  margin-top: 0.5rem;
+  font-family: var(--acct-font-display, var(--font-reading, Georgia, serif));
+  font-size: clamp(1.7rem, 3.4vw, 2.15rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 560;
+  color: var(--acct-ink);
+}
+
+.auth-subtitle {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--acct-muted);
+}
+
+/* ─── Fields — elevate, don't replace, .acct-input ───────────────────────── */
+.auth-fieldset {
+  margin-top: 1.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.05rem;
+}
+
+.auth-field {
+  position: relative;
+}
+
+/* Wraps only the input + reveal toggle so the absolutely-positioned toggle
+   anchors to the input box, not the whole field (which includes the label row). */
+.auth-field-affix {
+  position: relative;
+}
+
+.auth-field-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.auth-label {
+  font-size: 0.8rem;
+  font-weight: 550;
+  letter-spacing: -0.006em;
+  color: var(--acct-ink);
+}
+
+.auth-input {
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.95rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft, var(--acct-bg));
+  color: var(--acct-ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  outline: none;
+}
+
+.auth-input::placeholder {
+  color: var(--acct-muted);
+  opacity: 0.7;
+}
+
+.auth-input:hover {
+  border-color: color-mix(in srgb, var(--acct-line) 40%, var(--acct-muted));
+}
+
+.auth-input:focus {
+  border-color: var(--gold);
+  background: var(--acct-bg-soft, var(--acct-bg));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--acct-gold, #c9a227) 22%, transparent);
+}
+
+.auth-input.has-error {
+  border-color: var(--acct-red, #ef4444);
+}
+
+.auth-input.has-error:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--acct-red, #ef4444) 20%, transparent);
+}
+
+.auth-input-affix {
+  padding-right: 2.9rem;
+}
+
+.auth-field-toggle {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.35rem;
+  display: inline-grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.7rem;
+  color: var(--acct-muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.auth-field-toggle:hover {
+  color: var(--acct-ink);
+  background: color-mix(in srgb, var(--acct-line) 40%, transparent);
+}
+
+.auth-field-toggle:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.auth-field-link {
+  font-size: 0.78rem;
+  font-weight: 550;
+  color: var(--gold-strong);
+  text-decoration: none;
+  background-image: linear-gradient(var(--gold), var(--gold));
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms ease, color 160ms ease;
+  padding-bottom: 1px;
+}
+
+.dark .auth-field-link {
+  color: var(--seam-core);
+}
+
+.auth-field-link:hover {
+  background-size: 100% 1px;
+}
+
+.auth-field-hint {
+  margin-top: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--acct-muted);
+}
+
+/* ─── Error notice — AA-safe; errors state the fix, they don't apologise ──── */
+.auth-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1.15rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--acct-red, #ef4444) 22%, transparent);
+  background: var(--acct-red-soft, #fee2e2);
+  color: var(--acct-red-text, #b42318);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  animation: auth-rise 320ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+.auth-error svg {
+  flex: none;
+  margin-top: 0.08rem;
+  color: var(--acct-red-text, #b42318);
+}
+
+/* ─── Primary submit — ink on gold, magnetic (React adds the pull) ───────── */
+/* The Magnetic wrapper is inline-flex by default; force full width so the
+   button fills the column (width wins regardless of the display value). */
+.auth-submit-magnet {
+  display: block;
+  width: 100%;
+}
+
+.auth-submit {
+  position: relative;
+  width: 100%;
+  height: 3.15rem;
+  margin-top: 1.6rem;
+  border: 0;
+  border-radius: 0.95rem;
+  background: linear-gradient(180deg, #e0bf4e 0%, var(--gold) 46%, var(--gold-strong) 100%);
+  color: var(--acct-ink-on-gold, #1a1408);
+  font-size: 0.95rem;
+  font-weight: 650;
+  font-family: inherit;
+  letter-spacing: -0.006em;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 12px 30px -10px rgba(201, 162, 39, 0.5);
+  transition: transform 140ms ease, box-shadow 200ms ease, filter 160ms ease;
+  will-change: transform;
+}
+
+.auth-submit:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 16px 38px -10px rgba(201, 162, 39, 0.62);
+}
+
+.auth-submit:active {
+  transform: translateY(1px);
+}
+
+.auth-submit:focus-visible {
+  outline: 2px solid var(--acct-ink);
+  outline-offset: 2px;
+}
+
+.auth-submit:disabled {
+  cursor: progress;
+  filter: saturate(0.72) brightness(0.98);
+}
+
+/* Sheen that crosses the button once on hover — the lamp again, smaller. */
+.auth-submit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.45) 48%, transparent 66%);
+  transform: translateX(-120%);
+  transition: transform 620ms ease;
+  pointer-events: none;
+}
+
+.auth-submit:hover::after {
+  transform: translateX(120%);
+}
+
+/* ─── Divider + provider (OAuth) ─────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1.5rem 0;
+  color: var(--acct-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--acct-line);
+}
+
+.auth-provider {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  height: 3rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft, var(--acct-bg));
+  color: var(--acct-ink);
+  font-size: 0.9rem;
+  font-weight: 550;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 140ms ease;
+}
+
+.auth-provider:hover {
+  border-color: color-mix(in srgb, var(--acct-line) 30%, var(--acct-muted));
+  background: var(--acct-surface, var(--acct-bg-soft));
+}
+
+.auth-provider:active {
+  transform: translateY(1px);
+}
+
+.auth-provider:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ─── Footer alt-action ──────────────────────────────────────────────────── */
+.auth-alt {
+  margin-top: 1.75rem;
+  font-size: 0.86rem;
+  color: var(--acct-muted);
+  text-align: center;
+}
+
+.auth-alt a {
+  font-weight: 600;
+  color: var(--gold-strong);
+  text-decoration: none;
+  background-image: linear-gradient(var(--gold), var(--gold));
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms ease;
+  padding-bottom: 1px;
+}
+
+.dark .auth-alt a {
+  color: var(--seam-core);
+}
+
+.auth-alt a:hover {
+  background-size: 100% 1px;
+}
+
+/* ─── Success panel (email-sent, verified) ───────────────────────────────── */
+.auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1.4rem;
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--acct-green, #10b981) 26%, transparent);
+  background: var(--acct-green-soft, #d1fae5);
+  color: var(--acct-green-text, #05603a);
+  animation: auth-rise 380ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+.auth-success-icon {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--acct-green, #10b981) 18%, transparent);
+  color: var(--acct-green-text, #05603a);
+}
+
+/* ─── Page-load orchestration — seam draws, then content rises in sequence ── */
+.auth-rise {
+  animation: auth-rise 560ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+.auth-stagger > * {
+  animation: auth-rise 520ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+.auth-stagger > *:nth-child(1) { animation-delay: 160ms; }
+.auth-stagger > *:nth-child(2) { animation-delay: 230ms; }
+.auth-stagger > *:nth-child(3) { animation-delay: 300ms; }
+.auth-stagger > *:nth-child(4) { animation-delay: 370ms; }
+.auth-stagger > *:nth-child(5) { animation-delay: 440ms; }
+.auth-stagger > *:nth-child(6) { animation-delay: 510ms; }
+
+@keyframes auth-seam-draw {
+  from { transform: scaleY(0); opacity: 0; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+@keyframes auth-seam-draw-h {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+@keyframes auth-seam-travel {
+  0% { top: -22%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+@keyframes auth-seam-travel-h {
+  0% { left: -22%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+@keyframes auth-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes auth-glow-breathe {
+  0%, 100% { opacity: 0.7; transform: translate(0, 0) scale(1); }
+  50% { opacity: 1; transform: translate(2%, 1.5%) scale(1.08); }
+}
+
+/* ─── Quality floor — motion off, focus visible, RTL ─────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .auth-seam,
+  .auth-seam::after,
+  .auth-brand::after,
+  .auth-rise,
+  .auth-stagger > *,
+  .auth-error,
+  .auth-success {
+    animation: none !important;
+  }
+  .auth-submit::after { transition: none; }
+}
