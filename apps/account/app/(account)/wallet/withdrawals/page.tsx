@@ -63,7 +63,7 @@ export default async function WalletWithdrawalsPage() {
         eyebrow={t("Wallet · Withdrawals")}
         title={t("Withdraw funds")}
         blurb={t(
-          "Your available balance funds the next withdrawal. Pending withdrawals stay held until finance approves the payout.",
+          "Your available balance funds the next withdrawal. Pending withdrawals stay held until they're approved.",
         )}
         figure={{
           label: t("Available balance"),
@@ -101,7 +101,7 @@ export default async function WalletWithdrawalsPage() {
           {/* Single templated string — no fragment concatenation, so word
               order survives every locale (the amount slots wherever the
               translation puts {amount}). */}
-          {t("{amount} available · each payout is reviewed by finance before it settles").replaceAll(
+          {t("{amount} available · each withdrawal is reviewed before it's sent").replaceAll(
             "{amount}",
             `₦${formatKoboMajor(availableBalanceKobo)}`,
           )}

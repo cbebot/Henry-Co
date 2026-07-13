@@ -75,7 +75,7 @@ export default function RefundButton({ intentId, amountMinor, currency }: Refund
       case "Only succeeded payments can be refunded":
         return t("This payment can't be refunded in its current state.");
       case "This payment predates the ledger and needs manual review":
-        return t("This payment predates the ledger and needs manual review.");
+        return t("This payment needs manual review before it can be refunded.");
       default:
         return fallback;
     }

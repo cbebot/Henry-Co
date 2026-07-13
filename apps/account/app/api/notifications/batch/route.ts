@@ -78,7 +78,11 @@ export async function POST(request: Request) {
 
     const { error } = await query;
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error("[notifications/batch] update failed:", error);
+      return NextResponse.json(
+        { error: "We couldn't update your notifications. Please try again." },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json({ success: true, updated: ids.length || "all" });

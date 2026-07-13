@@ -32,7 +32,7 @@ const STATUS_BLURB: Record<SecurityHeroState, string> = {
   secure:
     "No suspicious events, verification is healthy, and every higher-trust action Henry Onyx offers is open to you.",
   watch:
-    "Nothing is broken — but a few signals (email confirmation, identity review, duplicate contact match) would lift your trust score and unlock more lanes.",
+    "Nothing is broken — a few quick steps (confirm your email, complete identity verification) will strengthen your account and unlock more of what Henry & Co. offers.",
   risk:
     "Recent events were classified as elevated risk. Review the activity stream below and rotate your password if anything looks unfamiliar.",
 };

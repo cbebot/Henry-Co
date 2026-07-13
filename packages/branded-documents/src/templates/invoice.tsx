@@ -156,24 +156,13 @@ export function InvoiceDocument({ invoice, customer, issuer, labels }: InvoicePr
     { key: "amount", header: labels.colAmount, flex: 1.3, align: "right", mono: true, render: (r) => formatKobo(r.amountKobo, invoice.currency) },
   ];
 
-  const auditParts = [
-    invoice.paymentIntentId ? `intent ${invoice.paymentIntentId}` : null,
-    invoice.ledgerEntryId ? `ledger ${invoice.ledgerEntryId}` : null,
-  ].filter(Boolean);
-
   return (
     <BrandedDocument
       metadata={{
         title: `${labels.invoiceType} ${invoice.invoiceNo}`,
         author: issuer.name,
         subject: invoice.description || `${labels.invoiceType} ${invoice.invoiceNo}`,
-        keywords: [
-          "invoice",
-          invoice.division ?? "",
-          invoice.invoiceNo,
-          invoice.paymentIntentId ? `intent:${invoice.paymentIntentId}` : "",
-          invoice.ledgerEntryId ? `ledger:${invoice.ledgerEntryId}` : "",
-        ].filter(Boolean),
+        keywords: ["invoice", invoice.division ?? "", invoice.invoiceNo].filter(Boolean),
       }}
       header={{
         documentType: labels.invoiceType,
@@ -258,10 +247,6 @@ export function InvoiceDocument({ invoice, customer, issuer, labels }: InvoicePr
           </View>
         </View>
       </View>
-
-      {auditParts.length ? (
-        <Text style={styles.audit}>{`${labels.auditReference} · ${auditParts.join(" · ")}`}</Text>
-      ) : null}
 
       <LegalFooter
         lines={[

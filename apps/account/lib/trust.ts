@@ -240,7 +240,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     nextTier === "verified"
       ? [
           verificationStatus !== "verified"
-            ? "Complete identity verification so trust-based lanes stop relying on optimistic profile signals."
+            ? "Complete identity verification to unlock trust-gated actions across Henry Onyx."
             : null,
           !emailVerified ? "Verify your email address." : null,
           !identityVerified

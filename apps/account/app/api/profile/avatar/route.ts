@@ -43,7 +43,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ avatar_url: secureUrl });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Upload failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[profile/avatar] Upload error:", err);
+    return NextResponse.json(
+      { error: "We couldn't update your photo. Please try again." },
+      { status: 500 },
+    );
   }
 }

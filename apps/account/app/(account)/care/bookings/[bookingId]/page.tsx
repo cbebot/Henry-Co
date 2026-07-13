@@ -94,11 +94,11 @@ export default async function CareBookingDetailPage({
           reviewLink: "Lien d’avis",
           unavailable: "Pas encore disponible",
           linkageBody:
-            "Ce lien profond efface les notifications de réservation Care lorsque le registre partagé les a taguées avec la référence de réservation ou l’ancienne URL `?booking=`.",
+            "L’ouverture de cette réservation marque ses notifications associées comme lues.",
           linkedInvoices: "Factures liées",
           allInvoices: "Toutes les factures",
           noInvoices:
-            "Aucune ligne de facture n’est encore rattachée à cette réservation dans le registre partagé.",
+            "Aucune facture n’est encore associée à cette réservation.",
           invoiceFallback: "Facture",
           statusPending: "Statut en attente",
           supportThreads: "Fils de support",
@@ -140,10 +140,10 @@ export default async function CareBookingDetailPage({
           reviewLink: "Review link",
           unavailable: "Not available yet",
           linkageBody:
-            "This deep link clears care booking notifications when the shared ledger has tagged them with the booking reference or the historical `?booking=` URL.",
+            "Opening this booking marks its related notifications as read.",
           linkedInvoices: "Linked invoices",
           allInvoices: "All invoices",
-          noInvoices: "No invoice row is attached to this booking in the shared ledger yet.",
+          noInvoices: "No invoice is linked to this booking yet.",
           invoiceFallback: "Invoice",
           statusPending: "Status pending",
           supportThreads: "Support threads",

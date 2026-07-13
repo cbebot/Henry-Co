@@ -323,7 +323,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         >
           <p className="text-xs leading-5 text-[var(--acct-muted)] sm:flex-1">
             {t(
-              "Email changes go through identity-verified support so trust, KYC and wallet records stay aligned.",
+              "For your security, email changes are handled by our support team after we verify your identity.",
             )}
           </p>
           <Link
@@ -392,7 +392,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         <span className="font-semibold text-[var(--acct-ink)]">{t("Regional defaults")}:</span>{" "}
         {selectedCountry.name} · {selectedCountry.currencyCode} display · {selectedCountry.timezone}.
         {selectedCountry.currencyCode === "NGN"
-          ? ` ${t("Wallet settlement also runs in NGN.")}`
+          ? ` ${t("You'll be paid out in Nigerian Naira (NGN).")}`
           : ` ${formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
               currency: selectedCountry.currencyCode,
             })}`}

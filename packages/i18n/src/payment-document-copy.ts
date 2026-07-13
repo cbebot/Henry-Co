@@ -153,7 +153,7 @@ const EN: PaymentDocumentCopy = {
   receiptItemsEmpty: "No items recorded.",
   invoiceItemsEmpty: "No structured line items recorded.",
 
-  settlement: "Settlement",
+  settlement: "Payment summary",
   subtotal: "Subtotal",
   discount: "Discount",
   fees: "Fees",
@@ -189,9 +189,9 @@ const EN: PaymentDocumentCopy = {
   receiptLegal2:
     "Questions about this receipt? Contact {email} within 7 days for the quickest resolution.",
   invoiceLegal1:
-    "This invoice is issued by {issuer} under unified billing. The originating division remains the source of truth for delivery, dispute, and refund terms.",
+    "This invoice is issued by {issuer}. For delivery, dispute, or refund questions, contact us at {email} — the team that fulfilled your order will handle it.",
   invoiceLegal2:
-    "Payment is recognised once settlement is confirmed; the status above reflects the latest reconciliation.",
+    "Payment is recognised once confirmed. The status shown above is current.",
 
   defaultInvoiceDescription: "Payment summary",
 
@@ -235,7 +235,7 @@ const FR: Partial<PaymentDocumentCopy> = {
   colAmount: "Montant",
   receiptItemsEmpty: "Aucun article enregistré.",
   invoiceItemsEmpty: "Aucune ligne structurée enregistrée.",
-  settlement: "Règlement",
+  settlement: "Récapitulatif du paiement",
   subtotal: "Sous-total",
   discount: "Remise",
   fees: "Frais",
@@ -267,9 +267,9 @@ const FR: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Une question sur ce reçu ? Contactez {email} sous 7 jours pour une résolution rapide.",
   invoiceLegal1:
-    "Cette facture est émise par {issuer} dans le cadre d'une facturation unifiée. La division d'origine reste la source de référence pour les conditions de livraison, de litige et de remboursement.",
+    "Cette facture est émise par {issuer}. Pour toute question de livraison, de litige ou de remboursement, contactez-nous à {email} — l'équipe qui a traité votre commande s'en chargera.",
   invoiceLegal2:
-    "Le paiement est reconnu une fois le règlement confirmé ; le statut ci-dessus reflète le dernier rapprochement.",
+    "Le paiement est reconnu une fois confirmé. Le statut affiché ci-dessus est à jour.",
   defaultInvoiceDescription: "Récapitulatif de paiement",
 
   creditNoteType: "Avoir",
@@ -312,7 +312,7 @@ const ES: Partial<PaymentDocumentCopy> = {
   colAmount: "Importe",
   receiptItemsEmpty: "No se registraron conceptos.",
   invoiceItemsEmpty: "No se registraron conceptos estructurados.",
-  settlement: "Liquidación",
+  settlement: "Resumen del pago",
   subtotal: "Subtotal",
   discount: "Descuento",
   fees: "Comisiones",
@@ -344,9 +344,9 @@ const ES: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "¿Dudas sobre este recibo? Escribe a {email} en un plazo de 7 días para una resolución más rápida.",
   invoiceLegal1:
-    "Esta factura es emitida por {issuer} bajo facturación unificada. La división de origen sigue siendo la fuente de referencia para las condiciones de entrega, disputa y reembolso.",
+    "Esta factura es emitida por {issuer}. Para cualquier consulta sobre entrega, disputa o reembolso, escríbenos a {email} — el equipo que gestionó tu pedido se encargará.",
   invoiceLegal2:
-    "El pago se reconoce una vez confirmada la liquidación; el estado anterior refleja la última conciliación.",
+    "El pago se reconoce una vez confirmado. El estado mostrado arriba está actualizado.",
   defaultInvoiceDescription: "Resumen de pago",
 
   creditNoteType: "Nota de crédito",
@@ -389,7 +389,7 @@ const PT: Partial<PaymentDocumentCopy> = {
   colAmount: "Valor",
   receiptItemsEmpty: "Nenhum item registrado.",
   invoiceItemsEmpty: "Nenhum item estruturado registrado.",
-  settlement: "Liquidação",
+  settlement: "Resumo do pagamento",
   subtotal: "Subtotal",
   discount: "Desconto",
   fees: "Taxas",
@@ -421,9 +421,9 @@ const PT: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Dúvidas sobre este recibo? Contacte {email} em até 7 dias para a resolução mais rápida.",
   invoiceLegal1:
-    "Esta fatura é emitida por {issuer} sob faturação unificada. A divisão de origem permanece a fonte de referência para as condições de entrega, disputa e reembolso.",
+    "Esta fatura é emitida por {issuer}. Para qualquer questão de entrega, disputa ou reembolso, contacte-nos em {email} — a equipa que tratou do seu pedido resolverá.",
   invoiceLegal2:
-    "O pagamento é reconhecido após a confirmação da liquidação; o estado acima reflete a conciliação mais recente.",
+    "O pagamento é reconhecido assim que confirmado. O estado apresentado acima está atualizado.",
   defaultInvoiceDescription: "Resumo de pagamento",
 
   creditNoteType: "Nota de crédito",
@@ -466,7 +466,7 @@ const DE: Partial<PaymentDocumentCopy> = {
   colAmount: "Betrag",
   receiptItemsEmpty: "Keine Positionen erfasst.",
   invoiceItemsEmpty: "Keine strukturierten Positionen erfasst.",
-  settlement: "Abrechnung",
+  settlement: "Zahlungsübersicht",
   subtotal: "Zwischensumme",
   discount: "Rabatt",
   fees: "Gebühren",
@@ -498,9 +498,9 @@ const DE: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Fragen zu diesem Beleg? Kontaktieren Sie {email} innerhalb von 7 Tagen für die schnellste Klärung.",
   invoiceLegal1:
-    "Diese Rechnung wird von {issuer} im Rahmen der einheitlichen Abrechnung ausgestellt. Der ursprüngliche Geschäftsbereich bleibt maßgeblich für Liefer-, Streit- und Erstattungsbedingungen.",
+    "Diese Rechnung wird von {issuer} ausgestellt. Bei Fragen zu Lieferung, Streitfall oder Erstattung kontaktieren Sie uns unter {email} — das Team, das Ihre Bestellung bearbeitet hat, kümmert sich darum.",
   invoiceLegal2:
-    "Die Zahlung gilt als anerkannt, sobald die Abrechnung bestätigt ist; der obige Status spiegelt den letzten Abgleich wider.",
+    "Die Zahlung gilt als anerkannt, sobald sie bestätigt ist. Der oben angezeigte Status ist aktuell.",
   defaultInvoiceDescription: "Zahlungsübersicht",
 
   creditNoteType: "Gutschrift",
@@ -543,7 +543,7 @@ const IT: Partial<PaymentDocumentCopy> = {
   colAmount: "Importo",
   receiptItemsEmpty: "Nessuna voce registrata.",
   invoiceItemsEmpty: "Nessuna voce strutturata registrata.",
-  settlement: "Liquidazione",
+  settlement: "Riepilogo del pagamento",
   subtotal: "Subtotale",
   discount: "Sconto",
   fees: "Commissioni",
@@ -575,9 +575,9 @@ const IT: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Domande su questa ricevuta? Contatta {email} entro 7 giorni per la risoluzione più rapida.",
   invoiceLegal1:
-    "Questa fattura è emessa da {issuer} nell'ambito della fatturazione unificata. La divisione di origine resta la fonte di riferimento per le condizioni di consegna, contestazione e rimborso.",
+    "Questa fattura è emessa da {issuer}. Per qualsiasi domanda su consegna, contestazione o rimborso, contattaci all'indirizzo {email} — se ne occuperà il team che ha gestito il tuo ordine.",
   invoiceLegal2:
-    "Il pagamento è riconosciuto una volta confermata la liquidazione; lo stato sopra riflette l'ultima riconciliazione.",
+    "Il pagamento è riconosciuto una volta confermato. Lo stato mostrato sopra è aggiornato.",
   defaultInvoiceDescription: "Riepilogo del pagamento",
 
   creditNoteType: "Nota di credito",
@@ -620,7 +620,7 @@ const AR: Partial<PaymentDocumentCopy> = {
   colAmount: "المبلغ",
   receiptItemsEmpty: "لا توجد بنود مسجلة.",
   invoiceItemsEmpty: "لا توجد بنود منظمة مسجلة.",
-  settlement: "التسوية",
+  settlement: "ملخص الدفع",
   subtotal: "المجموع الفرعي",
   discount: "الخصم",
   fees: "الرسوم",
@@ -652,9 +652,9 @@ const AR: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "أسئلة حول هذا الإيصال؟ تواصل مع {email} خلال 7 أيام للحصول على أسرع حل.",
   invoiceLegal1:
-    "صدرت هذه الفاتورة عن {issuer} ضمن الفوترة الموحدة. يظل القسم المصدر هو المرجع لشروط التسليم والنزاع والاسترداد.",
+    "صدرت هذه الفاتورة عن {issuer}. لأي استفسار حول التسليم أو النزاع أو الاسترداد، تواصل معنا على {email} — سيتولى ذلك الفريق الذي نفّذ طلبك.",
   invoiceLegal2:
-    "يُعترف بالدفع بمجرد تأكيد التسوية؛ تعكس الحالة أعلاه أحدث تسوية حسابية.",
+    "يُعترف بالدفع بمجرد تأكيده. الحالة المعروضة أعلاه محدّثة.",
   defaultInvoiceDescription: "ملخص الدفع",
 
   creditNoteType: "إشعار دائن",
@@ -697,7 +697,7 @@ const ZH: Partial<PaymentDocumentCopy> = {
   colAmount: "金额",
   receiptItemsEmpty: "未记录任何项目。",
   invoiceItemsEmpty: "未记录结构化项目。",
-  settlement: "结算",
+  settlement: "付款摘要",
   subtotal: "小计",
   discount: "折扣",
   fees: "费用",
@@ -728,8 +728,8 @@ const ZH: Partial<PaymentDocumentCopy> = {
     "本收据证明 {issuer} 已收到一笔付款。所示任何税费均按上述付款日期适用的税率计算。",
   receiptLegal2: "对本收据有疑问？请在 7 天内联系 {email} 以获得最快的处理。",
   invoiceLegal1:
-    "本发票由 {issuer} 在统一开票下开具。原始业务部门仍是交付、争议和退款条款的依据。",
-  invoiceLegal2: "付款在结算确认后确认；上述状态反映最新对账结果。",
+    "本发票由 {issuer} 开具。如有交付、争议或退款方面的问题，请通过 {email} 联系我们——处理您订单的团队将为您解决。",
+  invoiceLegal2: "付款一经确认即予以确认。上方所示状态为最新状态。",
   defaultInvoiceDescription: "付款摘要",
 
   creditNoteType: "贷记单",
@@ -772,7 +772,7 @@ const HI: Partial<PaymentDocumentCopy> = {
   colAmount: "राशि",
   receiptItemsEmpty: "कोई मद दर्ज नहीं।",
   invoiceItemsEmpty: "कोई संरचित मद दर्ज नहीं।",
-  settlement: "निपटान",
+  settlement: "भुगतान सारांश",
   subtotal: "उप-योग",
   discount: "छूट",
   fees: "शुल्क",
@@ -804,9 +804,9 @@ const HI: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "इस रसीद के बारे में प्रश्न? सबसे तेज़ समाधान के लिए 7 दिनों के भीतर {email} से संपर्क करें।",
   invoiceLegal1:
-    "यह चालान {issuer} द्वारा एकीकृत बिलिंग के अंतर्गत जारी किया गया है। मूल प्रभाग डिलीवरी, विवाद और वापसी शर्तों का आधार बना रहता है।",
+    "यह चालान {issuer} द्वारा जारी किया गया है। डिलीवरी, विवाद या वापसी से जुड़े किसी भी प्रश्न के लिए हमें {email} पर संपर्क करें — आपका ऑर्डर पूरा करने वाली टीम इसे संभालेगी।",
   invoiceLegal2:
-    "निपटान की पुष्टि होते ही भुगतान मान्य होता है; ऊपर की स्थिति नवीनतम मिलान दर्शाती है।",
+    "पुष्टि होते ही भुगतान मान्य हो जाता है। ऊपर दर्शाई गई स्थिति वर्तमान है।",
   defaultInvoiceDescription: "भुगतान सारांश",
 
   creditNoteType: "क्रेडिट नोट",
@@ -849,7 +849,7 @@ const IG: Partial<PaymentDocumentCopy> = {
   colAmount: "Ego",
   receiptItemsEmpty: "Edeghị ihe ọ bụla.",
   invoiceItemsEmpty: "Edeghị ihe ahaziri ahazi.",
-  settlement: "Nkwụ ụgwọ",
+  settlement: "Nchịkọta ịkwụ ụgwọ",
   subtotal: "Mkpụkọ nta",
   discount: "Mbelata",
   fees: "Ụgwọ ọrụ",
@@ -881,9 +881,9 @@ const IG: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Ajụjụ gbasara akwụkwọ a? Kpọtụrụ {email} n'ime ụbọchị 7 maka ngwa ngwa edozi.",
   invoiceLegal1:
-    "Akwụkwọ ụgwọ a sitere n'aka {issuer} n'okpuru ịgba ụgwọ jikọrọ ọnụ. Ngalaba mmalite ka bụ isi iyi maka usoro nnyefe, esemokwu, na nkwụghachi.",
+    "Akwụkwọ ụgwọ a sitere n'aka {issuer}. Maka ajụjụ ọ bụla gbasara nnyefe, esemokwu, ma ọ bụ nkwụghachi, kpọtụrụ anyị na {email} — ndị lụchara order gị ga-elekọta ya.",
   invoiceLegal2:
-    "A na-anabata ịkwụ ụgwọ ozugbo akwadoro nkwụ ụgwọ; ọnọdụ dị n'elu na-egosi nhazi ọhụrụ.",
+    "A na-anabata ịkwụ ụgwọ ozugbo akwadoro ya. Ọnọdụ egosiri n'elu bụ nke ọhụrụ.",
   defaultInvoiceDescription: "Nchịkọta ịkwụ ụgwọ",
 
   creditNoteType: "Akwụkwọ nkwụghachi ego",
@@ -926,7 +926,7 @@ const YO: Partial<PaymentDocumentCopy> = {
   colAmount: "Iye owó",
   receiptItemsEmpty: "Kò sí ohun tí a kọ sílẹ̀.",
   invoiceItemsEmpty: "Kò sí ohun tí a ṣètò tí a kọ sílẹ̀.",
-  settlement: "Ìsanwó",
+  settlement: "Àkótán ìsanwó",
   subtotal: "Àpapọ̀ kékeré",
   discount: "Ẹ̀dínwó",
   fees: "Owó iṣẹ́",
@@ -958,9 +958,9 @@ const YO: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Ìbéèrè nípa risíìtì yìí? Kàn sí {email} láàrin ọjọ́ 7 fún ìpinnu kíákíá.",
   invoiceLegal1:
-    "{issuer} ni ó tú ìwé owó yìí jáde lábẹ́ ìsanwó ìṣọ̀kan. Ẹ̀ka tó pilẹ̀ ṣì jẹ́ orísun òtítọ́ fún àwọn òfin ìfijíṣẹ́, àríyànjiyàn, àti ìdá-owó-padà.",
+    "{issuer} ni ó tú ìwé owó yìí jáde. Fún ìbéèrè èyíkéyìí nípa ìfijíṣẹ́, àríyànjiyàn, tàbí ìdá-owó-padà, kàn sí wa ní {email} — ẹgbẹ́ tó ṣe àṣẹ rẹ yóò bójú tó o.",
   invoiceLegal2:
-    "A gba ìsanwó nígbà tí a bá ti jẹ́rìí ìsanwó; ipò tó wà lókè ń ṣàfihàn ìfìwéwé tuntun.",
+    "A gba ìsanwó nígbà tí a bá ti jẹ́rìí i. Ipò tó hàn lókè jẹ́ ti ìsinsìnyí.",
   defaultInvoiceDescription: "Àkótán ìsanwó",
 
   creditNoteType: "Ìwé krẹ́dítì",
@@ -1003,7 +1003,7 @@ const HA: Partial<PaymentDocumentCopy> = {
   colAmount: "Kuɗi",
   receiptItemsEmpty: "Babu abin da aka rubuta.",
   invoiceItemsEmpty: "Babu tsararrun abubuwan da aka rubuta.",
-  settlement: "Sasantawa",
+  settlement: "Taƙaitaccen biya",
   subtotal: "Ƙananan jimilla",
   discount: "Rangwame",
   fees: "Kuɗaɗen aiki",
@@ -1035,9 +1035,9 @@ const HA: Partial<PaymentDocumentCopy> = {
   receiptLegal2:
     "Tambayoyi game da wannan rasit? Tuntuɓi {email} cikin kwana 7 don warware matsala da sauri.",
   invoiceLegal1:
-    "{issuer} ne ya bayar da wannan takardar biya ƙarƙashin haɗaɗɗiyar lissafi. Sashen asali ya kasance tushen gaskiya don sharuɗɗan isarwa, takaddama, da mayar da kuɗi.",
+    "{issuer} ne ya bayar da wannan takardar biya. Don kowace tambaya game da isarwa, takaddama, ko mayar da kuɗi, tuntuɓe mu a {email} — ƙungiyar da ta cika odar ku za ta kula da shi.",
   invoiceLegal2:
-    "Ana karɓar biya da zarar an tabbatar da sasantawa; matsayin da ke sama yana nuna sabuwar daidaitawa.",
+    "Ana karɓar biya da zarar an tabbatar da shi. Matsayin da ke sama shi ne na yanzu.",
   defaultInvoiceDescription: "Taƙaitaccen biya",
 
   creditNoteType: "Takardar maido da kuɗi",

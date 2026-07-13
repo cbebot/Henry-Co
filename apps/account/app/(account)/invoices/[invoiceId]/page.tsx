@@ -53,7 +53,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         tone={String(invoice.status || "") === "overdue" ? "attention" : String(invoice.status || "") === "paid" ? "calm" : "active"}
         eyebrow={`${t("Invoices")} · ${divisionLabel(String(invoice.division || "service"))}`}
         headline={String(invoice.description || invoice.invoice_no || t("Invoice"))}
-        blurb={t("Shared invoice record with status, payment references, and whatever structured receipt data is currently available.")}
+        blurb={t("Your invoice — status, payment details, and any itemized breakdown we have on file.")}
       />
       <div className="flex flex-wrap items-center gap-2">
         <DownloadDocumentButton
@@ -85,13 +85,13 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="acct-card p-5"><p className="acct-kicker">{t("Payment truth")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><div><span className="font-semibold">{t("Created")}:</span> {invoice.created_at ? formatDateTime(String(invoice.created_at)) : "—"}</div><div><span className="font-semibold">{t("Paid at")}:</span> {invoice.paid_at ? formatDateTime(String(invoice.paid_at)) : "—"}</div><div><span className="font-semibold">{t("Payment method")}:</span> {String(invoice.payment_method || "—")}</div><div><span className="font-semibold">{t("Payment reference")}:</span> {String(invoice.payment_reference || "—")}</div></div></div>
-        <div className="acct-card p-5"><p className="acct-kicker">{t("Reference linkage")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><div><span className="font-semibold">{t("Reference type")}:</span> {String(invoice.reference_type || "—")}</div><div><span className="font-semibold">{t("Reference ID")}:</span> {String(invoice.reference_id || "—")}</div><p className="pt-2 text-sm leading-7 text-[var(--acct-muted)]">{t("Downloadable receipt files are not attached in the shared ledger yet unless a division publishes them explicitly. When none is attached here, the remaining work is division-side receipt publishing rather than account rendering.")}</p></div></div>
+        <div className="acct-card p-5"><p className="acct-kicker">{t("Payment details")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><div><span className="font-semibold">{t("Created")}:</span> {invoice.created_at ? formatDateTime(String(invoice.created_at)) : "—"}</div><div><span className="font-semibold">{t("Paid at")}:</span> {invoice.paid_at ? formatDateTime(String(invoice.paid_at)) : "—"}</div><div><span className="font-semibold">{t("Payment method")}:</span> {String(invoice.payment_method || "—")}</div><div><span className="font-semibold">{t("Payment reference")}:</span> {String(invoice.payment_reference || "—")}</div></div></div>
+        <div className="acct-card p-5"><p className="acct-kicker">{t("Receipt")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><p className="text-sm leading-7 text-[var(--acct-muted)]">{t("No downloadable receipt is available for this invoice yet. If you need one, contact support and we'll help.")}</p></div></div>
       </div>
       <div className="acct-card p-5">
         <p className="acct-kicker">{t("Line items")}</p>
         {lineItems.length === 0 ? (
-          <p className="mt-4 text-sm text-[var(--acct-muted)]">{t("No structured line items were published into the shared ledger for this invoice.")}</p>
+          <p className="mt-4 text-sm text-[var(--acct-muted)]">{t("This invoice doesn't have an itemized breakdown.")}</p>
         ) : (
           <div className="mt-4 space-y-3">
             {lineItems.map((item) => (
