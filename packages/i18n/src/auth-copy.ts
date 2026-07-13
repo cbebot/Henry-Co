@@ -2,6 +2,13 @@ import type { AppLocale } from "./locales";
 import { deepMergeMessages } from "./merge-messages";
 
 export type AuthCopy = {
+  /** Shared onyx brand-panel copy for the auth scene (AuthShell). */
+  scene: {
+    eyebrow: string;
+    line: string;
+    showPassword: string;
+    hidePassword: string;
+  };
   login: {
     heading: string;
     subheading: string;
@@ -42,6 +49,12 @@ export type AuthCopy = {
 };
 
 const EN: AuthCopy = {
+  scene: {
+    eyebrow: "One account, every service",
+    line: "One sign-in for care, commerce, studio, learning — and everything we build next.",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+  },
   login: {
     heading: "Welcome back",
     subheading: "Sign in to continue with your Henry Onyx account.",
