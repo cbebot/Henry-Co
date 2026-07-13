@@ -92,13 +92,13 @@ export function FounderCommandDock({
     }
   }, []);
 
-  // Ctrl+Shift+V (owner-chosen, Windows-first; Cmd+Shift+V on Mac) summons the
+  // Ctrl+Shift+A (owner-chosen, Windows-first; Cmd+Shift+A on Mac) summons the
   // dock from anywhere in the console; Escape closes. Inside an editable field
-  // the combo stays the browser's paste-without-formatting — never hijacked.
+  // the combo is left alone — never hijacked while the owner is typing.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const isToggle =
-        (event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === "v" || event.key === "V");
+        (event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === "a" || event.key === "A");
       if (isToggle) {
         const target = event.target as HTMLElement | null;
         const editable =
@@ -297,7 +297,7 @@ export function FounderCommandDock({
             aria-expanded={false}
             aria-haspopup="dialog"
             aria-label={t("Open Founder Intelligence")}
-            title={`${t("Founder Intelligence")} (Ctrl+Shift+V)`}
+            title={`${t("Founder Intelligence")} (Ctrl+Shift+A)`}
             onClick={() => setOpenPersisted(true)}
           >
             <Sparkle aria-hidden />

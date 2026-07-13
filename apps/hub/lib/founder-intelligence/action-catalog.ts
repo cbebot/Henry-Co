@@ -7,9 +7,17 @@ import {
   readCompanySettingsRow,
 } from "@/lib/company-settings-write";
 import { applyStaffStatusToggle, readStaffStatus } from "@/lib/staff-status-write";
+import { applyKycReview, readKycSubmission, type KycDecision } from "@/lib/kyc-review-write";
+import {
+  applySellerDecision,
+  readSellerApplication,
+  type SellerDecision,
+} from "@/lib/seller-decision-write";
 import {
   brandSettingsGovernance,
   staffStatusGovernance,
+  kycReviewGovernance,
+  sellerDecisionGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
 
@@ -164,9 +172,117 @@ const staffStatusToggle: FounderActionEntry = {
   entityType: "staff",
 };
 
+// ── Entry 3: identity-verification (KYC) review — tranche 2, no money ────────
+//
+// The owner can clear or reject a customer's identity submission from HQ. The
+// binding runs the EXACT hub-local core that mirrors apps/staff /api/kyc/review
+// (audit-first-abort → submission update → verified/pending/rejected profile
+// derivation → activity + notification). The model can only name a submission
+// and a decision; the value/effect is server-derived.
+
+const kycReview: FounderActionEntry = {
+  ...kycReviewGovernance,
+  title: "Approve or reject an identity verification",
+  trueStateReader: async ({ params }) => {
+    const state = await readKycSubmission(params.submissionId as string);
+    if (!state) return null;
+    const decision = params.decision as string;
+    // No-op guard at PROPOSE: proposing the state the submission is already in
+    // shows no misleading card (the binding keeps its own guard too).
+    if (state.status === decision) return null;
+    return { ...state, decision, note: (params.note as string) ?? "" };
+  },
+  // driftKeys single-sourced from the governance spread (["status"]).
+  confirmationCopy: (trueState) => {
+    const decision = String(trueState.decision);
+    const who = String(trueState.userEmail || "this customer");
+    const doc = String(trueState.documentType) || "identity";
+    return {
+      title: decision === "approved" ? "Approve identity verification" : "Reject identity verification",
+      body:
+        decision === "approved"
+          ? `Approve the ${doc} submission for ${who}. If a government ID or selfie is now approved, their account becomes Verified and they are notified.`
+          : `Reject the ${doc} submission for ${who} and ask for more information. They are notified.`,
+      confirmLabel: decision === "approved" ? "Approve verification" : "Reject verification",
+    };
+  },
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const applied = await applyKycReview({
+      submissionId: String(trueState.submissionId),
+      decision: trueState.decision as KycDecision,
+      note: String(trueState.note ?? ""),
+      actorId: ownerId,
+      actorRole: ownerRole,
+    });
+    if (!applied.ok) return { ok: false, error: applied.error };
+    return { ok: true, executionRef: applied.executionRef };
+  },
+  auditAction: "founder.owner.kyc.review",
+  entityType: "customer_verification_submission",
+};
+
+// ── Entry 4: marketplace seller (vendor) application decision — tranche 2 ────
+//
+// The owner can approve / request changes / reject a seller application from HQ.
+// The binding runs the hub-local core mirroring the marketplace staff console:
+// on approval it activates the vendor store + grants the vendor role. No money
+// field — the model names an application + a decision only.
+
+const sellerDecision: FounderActionEntry = {
+  ...sellerDecisionGovernance,
+  title: "Approve, reject, or request changes on a seller application",
+  trueStateReader: async ({ params }) => {
+    const state = await readSellerApplication(params.applicationId as string);
+    if (!state) return null;
+    const decision = params.decision as string;
+    if (state.status === decision) return null;
+    return { ...state, decision, note: (params.note as string) ?? "" };
+  },
+  // driftKeys single-sourced from the governance spread (["status"]).
+  confirmationCopy: (trueState) => {
+    const decision = String(trueState.decision);
+    const store = String(trueState.storeName || "this store");
+    const who = String(trueState.userEmail || "the applicant");
+    if (decision === "approved") {
+      return {
+        title: "Approve seller application",
+        body: `Approve ${store} (${who}) to sell on the marketplace — this activates their vendor store and grants the seller role. They are notified.`,
+        confirmLabel: "Approve seller",
+      };
+    }
+    if (decision === "changes_requested") {
+      return {
+        title: "Request changes to seller application",
+        body: `Ask ${store} (${who}) for changes before approval. They are notified with your note.`,
+        confirmLabel: "Request changes",
+      };
+    }
+    return {
+      title: "Reject seller application",
+      body: `Reject the seller application for ${store} (${who}). They are notified.`,
+      confirmLabel: "Reject seller",
+    };
+  },
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const applied = await applySellerDecision({
+      applicationId: String(trueState.applicationId),
+      decision: trueState.decision as SellerDecision,
+      note: String(trueState.note ?? ""),
+      actorId: ownerId,
+      actorRole: ownerRole,
+    });
+    if (!applied.ok) return { ok: false, error: applied.error };
+    return { ok: true, executionRef: applied.executionRef };
+  },
+  auditAction: "founder.owner.marketplace.seller.decision",
+  entityType: "marketplace_vendor_application",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
+  [kycReview.key]: kycReview,
+  [sellerDecision.key]: sellerDecision,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */

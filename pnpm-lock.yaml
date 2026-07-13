@@ -683,6 +683,9 @@ importers:
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
+      '@henryco/notifications':
+        specifier: workspace:^
+        version: link:../../packages/notifications
       '@henryco/notifications-ui':
         specifier: workspace:^
         version: link:../../packages/notifications-ui
