@@ -1,13 +1,44 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, MapPin, MonitorSmartphone } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
-import { getAuditHistoryPageData } from "@/lib/owner-data";
+import {
+  getAuditHistoryPageData,
+  getSecurityActivityData,
+  type OwnerKnownDevice,
+} from "@/lib/owner-data";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 type SearchParams = { view?: string; q?: string };
+
+const PILL = "inline-flex items-center rounded-full px-2 py-0.5 text-[0.68rem] font-semibold capitalize";
+
+/** Map a stored risk_level to a dual-theme tone (defaults to calm). */
+function riskTone(level: string): string {
+  const l = level.toLowerCase();
+  if (l.includes("critical") || l.includes("high"))
+    return `${PILL} bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]`;
+  if (l.includes("medium") || l.includes("elevated"))
+    return `${PILL} bg-[var(--acct-orange-soft)] text-[var(--acct-orange-text)]`;
+  return `${PILL} bg-[var(--acct-gold-soft)] text-[var(--acct-muted)]`;
+}
+
+/** Device trust state → dual-theme tone. */
+function deviceTone(state: OwnerKnownDevice["state"]): string {
+  if (state === "revoked") return `${PILL} bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]`;
+  if (state === "trusted") return `${PILL} bg-[var(--acct-gold-soft)] text-[var(--acct-gold-text)]`;
+  return `${PILL} bg-[var(--acct-green-soft)] text-[var(--acct-green-text)]`;
+}
+
+/** Compact, locale-stable timestamp (UTC, minute precision). Empty → em dash. */
+function formatWhen(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return d.toISOString().slice(0, 16).replace("T", " ") + " UTC";
+}
 
 export default async function OwnerAuditPage({
   searchParams,
@@ -17,8 +48,9 @@ export default async function OwnerAuditPage({
   const sp = (await searchParams) || {};
   const view = sp.view === "all" ? "all" : "risk";
   const q = typeof sp.q === "string" ? sp.q : "";
-  const [data, locale] = await Promise.all([
+  const [data, security, locale] = await Promise.all([
     getAuditHistoryPageData({ view, q, limit: 220 }),
+    getSecurityActivityData({ limit: 60 }),
     getHubPublicLocale(),
   ]);
   const t = (s: string) => translateSurfaceLabel(locale, s);
@@ -141,6 +173,150 @@ export default async function OwnerAuditPage({
             </tbody>
           </table>
         </div>
+      </OwnerPanel>
+
+      {/* Sessions & devices — Smartsupp-tier visibility over WHO signed in, from
+          WHERE, on WHAT device, sourced live from customer_security_log +
+          account_known_devices (the account app writes these on every sign-in). */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { label: t("Sign-in events"), value: security.metrics.eventCount },
+          { label: t("People seen"), value: security.metrics.distinctUsers },
+          { label: t("High-risk events"), value: security.metrics.highRisk, danger: security.metrics.highRisk > 0 },
+          { label: t("Known devices"), value: security.metrics.deviceCount, sub: security.metrics.revokedDevices > 0 ? `${security.metrics.revokedDevices} ${t("revoked")}` : undefined },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="acct-card px-4 py-3"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--acct-muted)]">{stat.label}</p>
+            <p className={`mt-1 text-2xl font-bold ${stat.danger ? "text-[var(--acct-red-text)]" : "text-[var(--acct-ink)]"}`}>
+              {stat.value}
+            </p>
+            {stat.sub ? <p className="text-[0.7rem] text-[var(--acct-red-text)]">{stat.sub}</p> : null}
+          </div>
+        ))}
+      </div>
+
+      <OwnerPanel
+        title={t("Sessions & sign-in security")}
+        description={t("Live sign-in and security events — who, from where, on what device. Read from the account security log; the owner console is the one place this platform-wide trail is visible.")}
+        action={
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--acct-muted)]">
+            <MapPin className="h-3.5 w-3.5" aria-hidden />
+            {security.metrics.eventCount} {t("events")}
+          </span>
+        }
+      >
+        {security.events.length === 0 ? (
+          <p className="text-sm text-[var(--acct-muted)]">
+            {t("No sign-in or security events recorded yet. They appear here the moment the account app logs one.")}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="owner-table">
+              <thead>
+                <tr>
+                  <th>{t("Person")}</th>
+                  <th>{t("Event")}</th>
+                  <th>{t("Risk")}</th>
+                  <th>{t("Device")}</th>
+                  <th>{t("Location")}</th>
+                  <th>{t("IP")}</th>
+                  <th>{t("When")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {security.events.map((event) => (
+                  <tr key={event.id}>
+                    <td className="max-w-[min(220px,24vw)]">
+                      <div className="truncate font-medium text-[var(--acct-ink)]" title={event.userLabel}>
+                        {event.userLabel}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap text-sm text-[var(--acct-ink)]">
+                      {event.eventType.replace(/_/g, " ")}
+                    </td>
+                    <td>
+                      {event.riskLevel ? (
+                        <span className={riskTone(event.riskLevel)}>{event.riskLevel}</span>
+                      ) : (
+                        <span className="text-[var(--acct-muted)]">—</span>
+                      )}
+                    </td>
+                    <td className="max-w-[min(220px,22vw)]">
+                      <div className="truncate text-sm text-[var(--acct-muted)]" title={event.device}>
+                        {event.device || "—"}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap text-sm text-[var(--acct-muted)]">
+                      {event.location || event.country || "—"}
+                      {event.country && event.location ? (
+                        <span className="ml-1 font-mono text-[0.6rem] uppercase text-[var(--acct-muted)]">{event.country}</span>
+                      ) : null}
+                    </td>
+                    <td className="whitespace-nowrap font-mono text-xs text-[var(--acct-muted)]">{event.ip || "—"}</td>
+                    <td className="whitespace-nowrap text-sm text-[var(--acct-muted)]">{formatWhen(event.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </OwnerPanel>
+
+      <OwnerPanel
+        title={t("Known devices")}
+        description={t("The persistent device registry — first country seen, last activity, and trust state. Revoked devices can no longer complete a trusted sign-in.")}
+        action={
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--acct-muted)]">
+            <MonitorSmartphone className="h-3.5 w-3.5" aria-hidden />
+            {security.metrics.deviceCount} {t("devices")}
+          </span>
+        }
+      >
+        {security.devices.length === 0 ? (
+          <p className="text-sm text-[var(--acct-muted)]">
+            {t("No devices registered yet. Each new sign-in device is recorded here with its first-seen country.")}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="owner-table">
+              <thead>
+                <tr>
+                  <th>{t("Person")}</th>
+                  <th>{t("Device")}</th>
+                  <th>{t("First country")}</th>
+                  <th>{t("Last seen")}</th>
+                  <th>{t("State")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {security.devices.map((device) => (
+                  <tr key={device.id}>
+                    <td className="max-w-[min(220px,24vw)]">
+                      <div className="truncate font-medium text-[var(--acct-ink)]" title={device.userLabel}>
+                        {device.userLabel}
+                      </div>
+                    </td>
+                    <td className="max-w-[min(260px,26vw)]">
+                      <div className="truncate text-sm text-[var(--acct-muted)]" title={device.device}>
+                        {device.device}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap font-mono text-xs uppercase text-[var(--acct-muted)]">
+                      {device.firstCountry || "—"}
+                    </td>
+                    <td className="whitespace-nowrap text-sm text-[var(--acct-muted)]">{formatWhen(device.lastSeenAt)}</td>
+                    <td>
+                      <span className={deviceTone(device.state)}>{t(device.state)}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </OwnerPanel>
 
       {data.navigationTail.length > 0 ? (

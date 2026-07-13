@@ -1737,6 +1737,134 @@ export async function getAuditHistoryPageData(options?: {
   };
 }
 
+export type OwnerSecurityEvent = {
+  id: string;
+  userId: string;
+  userLabel: string;
+  eventType: string;
+  category: string;
+  riskLevel: string;
+  device: string;
+  location: string;
+  country: string;
+  ip: string;
+  createdAt: string | null;
+};
+
+export type OwnerKnownDevice = {
+  id: string;
+  userId: string;
+  userLabel: string;
+  device: string;
+  firstCountry: string;
+  firstSeenAt: string | null;
+  lastSeenAt: string | null;
+  state: "trusted" | "revoked" | "active";
+};
+
+/**
+ * getSecurityActivityData — the sessions/devices telemetry for the owner audit
+ * console (Smartsupp-tier "who signed in, from where, on what device").
+ *
+ * Reads the two live telemetry tables the account app already writes on every
+ * sign-in: `customer_security_log` (event + ip + user_agent + a `metadata`
+ * jsonb carrying device_summary / location_summary / country / risk_level /
+ * event_category — there are NO dedicated columns for those, see
+ * account/lib/security-events.ts) and `account_known_devices` (the persistent
+ * per-device registry with first_country / last_seen / trusted / revoked).
+ *
+ * Service-role read (owner-legitimate: this is the requireOwner security
+ * console). Identity is resolved in ONE batched customer_profiles lookup across
+ * both feeds. Best-effort by construction — safeSelect swallows a missing table
+ * to [], so the panels simply stay empty rather than erroring the page.
+ */
+export async function getSecurityActivityData(options?: { limit?: number }) {
+  const limit = Math.min(120, Math.max(20, options?.limit ?? 60));
+  const [securityLog, knownDevices] = await Promise.all([
+    safeSelect("customer_security_log", "*", { orderBy: "created_at", ascending: false, limit }),
+    safeSelect("account_known_devices", "*", { orderBy: "last_seen_at", ascending: false, limit }),
+  ]);
+
+  const userIds = Array.from(
+    new Set([...securityLog, ...knownDevices].map((row) => toText(row.user_id)).filter(Boolean)),
+  );
+
+  const identity = new Map<string, { fullName: string | null; email: string | null }>();
+  if (userIds.length > 0) {
+    try {
+      const admin = createAdminSupabase();
+      const { data } = await admin
+        .from("customer_profiles")
+        .select("id, full_name, email")
+        .in("id", userIds);
+      for (const p of (data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+        identity.set(p.id, { fullName: p.full_name, email: p.email });
+      }
+    } catch (error) {
+      logOwnerSurfaceError("lib/owner-data.getSecurityActivityData.identity", error, {});
+    }
+  }
+
+  const labelFor = (userId: string): string => {
+    const profile = identity.get(userId);
+    if (profile?.fullName) return profile.fullName;
+    if (profile?.email) return profile.email;
+    return userId ? `${userId.slice(0, 8)}…` : "Unknown";
+  };
+
+  const metaText = (meta: unknown, key: string): string => {
+    if (!meta || typeof meta !== "object") return "";
+    const value = (meta as Record<string, unknown>)[key];
+    return typeof value === "string" ? value : "";
+  };
+
+  const events: OwnerSecurityEvent[] = securityLog.map((row) => {
+    const meta = row.metadata;
+    const userId = toText(row.user_id);
+    return {
+      id: toText(row.id),
+      userId,
+      userLabel: labelFor(userId),
+      eventType: toText(row.event_type) || "event",
+      category: metaText(meta, "event_category"),
+      riskLevel: metaText(meta, "risk_level"),
+      device: metaText(meta, "device_summary"),
+      location: metaText(meta, "location_summary"),
+      country: metaText(meta, "country"),
+      ip: toText(row.ip_address),
+      createdAt: toNullableText(row.created_at),
+    };
+  });
+
+  const devices: OwnerKnownDevice[] = knownDevices.map((row) => {
+    const revoked = Boolean(row.revoked_at);
+    const trusted = Boolean(row.trusted_at);
+    const userId = toText(row.user_id);
+    return {
+      id: toText(row.id),
+      userId,
+      userLabel: labelFor(userId),
+      device: toText(row.ua_summary) || "Unknown device",
+      firstCountry: toText(row.first_country),
+      firstSeenAt: toNullableText(row.first_seen_at),
+      lastSeenAt: toNullableText(row.last_seen_at),
+      state: revoked ? "revoked" : trusted ? "trusted" : "active",
+    };
+  });
+
+  return {
+    events,
+    devices,
+    metrics: {
+      eventCount: events.length,
+      deviceCount: devices.length,
+      highRisk: events.filter((event) => /high|critical/i.test(event.riskLevel)).length,
+      distinctUsers: new Set(events.map((event) => event.userId).filter(Boolean)).size,
+      revokedDevices: devices.filter((device) => device.state === "revoked").length,
+    },
+  };
+}
+
 export type ApprovalQueueItem = {
   id: string;
   category: string;
