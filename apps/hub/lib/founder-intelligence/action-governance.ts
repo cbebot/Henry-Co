@@ -106,11 +106,51 @@ export const sellerDecisionGovernance: FounderActionGovernance = {
   driftKeys: ["status"],
 };
 
+export const divisionStatusGovernance: FounderActionGovernance = {
+  key: "owner.division.status.set",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  // Deep action — pausing a division removes it from every public surface
+  // within a minute. The founder's "print" (fresh password step-up) is
+  // demanded at confirm even though no money moves.
+  requiresReauth: true,
+  reversibility: "reversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      slug: z.string().min(1).max(60),
+      intent: z.enum(["pause", "resume"]),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
+export const supportReplyGovernance: FounderActionGovernance = {
+  key: "owner.support.reply",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  // A sent message cannot be unsent — the card says so before the click.
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      threadId: z.string().uuid(),
+      body: z.string().min(1).max(2000),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
   kycReviewGovernance,
   sellerDecisionGovernance,
+  divisionStatusGovernance,
+  supportReplyGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */
