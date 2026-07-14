@@ -27,6 +27,7 @@
     "@henryco/interactions": "workspace:^",
     "@henryco/media": "workspace:^",
     "@henryco/newsletter": "workspace:^",
+    "@henryco/notifications": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@henryco/search-core": "workspace:^",

@@ -144,6 +144,11 @@ const DESTINATIONS: Record<string, { description: string; href: string }> = {
     description: "The owner email inbox — all mail to the company addresses",
     href: "/owner/inbox",
   },
+  "owner.support": {
+    description:
+      "Support Command — every AI conversation (named or anonymous), live-person handoffs, and open support threads with an owner reply box",
+    href: "/owner/support",
+  },
   "owner.team": {
     description: "HQ internal team chat",
     href: "/owner/messaging/team",
