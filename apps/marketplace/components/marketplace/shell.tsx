@@ -27,7 +27,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import type { SellerTier } from "@henryco/ui";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
 import { manrope, MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -79,7 +79,7 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
       <main id="henryco-main" tabIndex={-1} className="flex-1">
         {children}
       </main>
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={{
           statement: t(
             "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",

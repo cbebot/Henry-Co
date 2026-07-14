@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
 import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { LogisticsAccountChip } from "@/components/layout/LogisticsAccountChip";
@@ -67,7 +67,7 @@ export default async function LogisticsPublicLayout({ children }: { children: Re
       <main id="henryco-main" tabIndex={-1} className="flex-1">
         {children}
       </main>
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={{
           statement: t(
             "Reliable pickup, delivery, and fulfilment — clear quotes, live tracking, and proof of delivery from request to doorstep.",

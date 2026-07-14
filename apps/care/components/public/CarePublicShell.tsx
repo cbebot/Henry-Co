@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
 import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { CareAccountChip } from "@/components/public/CareAccountChip";
@@ -80,7 +80,7 @@ export default async function CarePublicShell({ children }: { children: ReactNod
 
       <div className="flex-1">{children}</div>
 
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={{
           statement: t(
             "Garment care, home cleaning, office cleaning, and pickup delivery — clear booking, careful handling, and responsive support from request to finish.",
