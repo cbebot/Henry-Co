@@ -3,9 +3,10 @@
 **Canonical source of truth:** `packages/config/brand-emails.ts` (typed export `BRAND_EMAILS`).
 **Domain:** `henryonyx.com` (all divisions sit on the parent group domain; the division
 split is by local-part, not subdomain).
-**Transport:** Amazon **SES only** (`packages/email/providers/ses.ts`). Resend and Brevo are
-permanently retired — see `packages/email/send.ts` (`resolveProviderChain` is structurally
-`["ses"]`).
+**Transport:** **Postmark only** (`packages/email/providers/postmark.ts`). Amazon SES, Resend
+and Brevo are permanently retired — see `packages/email/send.ts` (`resolveProviderChain` is
+structurally `["postmark"]`). Per-division Postmark **Message Streams** isolate sender
+reputation (see `resolvePostmarkStream`).
 
 Every visible email address rendered on a Henry Onyx surface — public page, dashboard,
 footer, email template, transactional notification, PDF, error page, support thread — must
@@ -62,7 +63,7 @@ account-system messaging.
 | Automation actor   | `automation@henryonyx.com`   | Synthetic actor for system-initiated audit log entries (no inbox; logs only).  |
 | Noreply            | `noreply@henryonyx.com`      | Outbound `From:` fallback for transactional mail when a division alias isn't set. |
 
-## Outbound sender configuration (SES)
+## Outbound sender configuration (Postmark)
 
 `packages/email/sender-identity.ts` resolves the `From:` address **per division/purpose**,
 so each subdomain sends under its own sender identity. The fallback chain is
@@ -70,9 +71,10 @@ so each subdomain sends under its own sender identity. The fallback chain is
 name (e.g. "Henry Onyx Studio") attached so the sender label stays correct even when only the
 noreply alias is set.
 
-The from-addresses are verified in the **Amazon SES console**. To route division-branded mail
-from the matching alias, set the per-purpose env vars (per `apps/<division>/.env` or the
-Vercel project env). The values are `<local>@henryonyx.com` from the map above:
+The from-addresses are verified as a **Postmark verified sending domain** (DKIM + Return-Path
+on `henryonyx.com`). To route division-branded mail from the matching alias, set the
+per-purpose env vars in the shared environment (one set, auto-synced to every subdomain). The
+values are `<local>@henryonyx.com` from the map above:
 
 ```
 HENRYCO_ACCOUNTS_EMAIL=accounts@henryonyx.com      # "Henry Onyx Accounts"
@@ -88,15 +90,18 @@ HENRYCO_NEWSLETTER_EMAIL=editorial@henryonyx.com   # "Henry Onyx Editorial"
 HENRYCO_SECURITY_EMAIL=security@henryonyx.com      # "Henry Onyx Security"
 HENRYCO_GENERIC_EMAIL=hello@henryonyx.com          # "Henry Onyx"
 HENRYCO_NOREPLY_EMAIL=noreply@henryonyx.com        # noreply fallback
-AWS_SES_FROM_EMAIL=noreply@henryonyx.com           # SES-level default From (when no purpose var)
+POSTMARK_FROM_EMAIL=noreply@henryonyx.com          # Postmark default From (when no purpose var)
 ```
 
 > The `HENRYCO_*` env-var **names** keep the internal code shorthand — they are identifiers,
 > never rendered. The display names and addresses are all "Henry Onyx" / `@henryonyx.com`.
 
-Set `AWS_SES_ACCESS_KEY_ID` / `AWS_SES_SECRET_ACCESS_KEY` / `AWS_SES_REGION` (or the standard
-`AWS_*` equivalents) to activate SES. With no SES credentials the router reports `skipped`
-(no vendor fallback — Resend/Brevo are gone).
+Set a single `POSTMARK_SERVER_TOKEN` in the shared environment to activate Postmark — one
+Server token covers every Message Stream and every subdomain. With no token the router reports
+`skipped` (no vendor fallback — SES/Resend/Brevo are gone). Message Stream mapping:
+transactional purposes ride the built-in `outbound` stream; `care`→`fabric-care`,
+`studio`→`studio-notifications`, `property`→`property-inquiries`, `security`→`software-alerts`,
+`newsletter`→`marketing-broadcast`.
 
 ## Pending confirmations
 

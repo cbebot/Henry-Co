@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "test": "tsx --test providers/*.test.ts"
+  },
   "exports": {
     ".": "./index.ts",
-    "./providers/ses": "./providers/ses.ts"
+    "./providers/postmark": "./providers/postmark.ts"
   },
   "dependencies": {
     "@henryco/config": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
   }
 }

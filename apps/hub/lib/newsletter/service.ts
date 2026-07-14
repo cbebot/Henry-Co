@@ -56,9 +56,9 @@ function getHubPublicBase(): string {
   return henryWebRoot();
 }
 
-// ─── Newsletter dispatch (EMAIL-SES-ONLY, 2026-07-09) ───────────────────────
+// ─── Newsletter dispatch (EMAIL-POSTMARK, 2026-07-14) ───────────────────────
 //
-// Campaign + test sends ride the shared @henryco/email router (Amazon SES) —
+// Campaign + test sends ride the shared @henryco/email router (Postmark) —
 // Brevo transactional send is permanently retired. The Brevo contact/blocklist
 // sync calls elsewhere in this service stay as guarded no-ops until the
 // local-suppression-store replacement lands (they skip without BREVO_API_KEY).

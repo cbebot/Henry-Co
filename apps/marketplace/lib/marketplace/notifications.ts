@@ -49,10 +49,10 @@ const marketplaceBaseUrl =
     : "http://localhost:3000";
 
 function getMarketplaceSenderAddress() {
-  // EMAIL-SES-ONLY (2026-07-09): AWS_SES_FROM_EMAIL replaces the retired
+  // EMAIL-POSTMARK (2026-07-14): POSTMARK_FROM_EMAIL replaces the retired
   // RESEND_* sender envs, and the resend.dev sandbox fallback is gone —
   // an unconfigured deployment sends from the brand no-reply address.
-  const candidate = cleanText(process.env.AWS_SES_FROM_EMAIL || marketplace.supportEmail)
+  const candidate = cleanText(process.env.POSTMARK_FROM_EMAIL || marketplace.supportEmail)
     .replace(/[\r\n]+/g, "")
     .trim();
 

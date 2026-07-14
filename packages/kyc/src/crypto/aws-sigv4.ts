@@ -1,7 +1,7 @@
 /**
  * @henryco/kyc — dependency-free AWS Signature V4 signer for JSON ("Trent")
- * services, built on Web Crypto. Mirrors the established pattern in
- * `packages/email/providers/ses.ts` so we add ZERO `@aws-sdk/*` install weight.
+ * services, built on Web Crypto. Hand-rolls the signature (no `@aws-sdk/*`
+ * dependency) so it adds ZERO install weight.
  *
  * Used only by the KMS master-key provider; isolated here so the SigV4 surface
  * is small, testable, and reusable.
