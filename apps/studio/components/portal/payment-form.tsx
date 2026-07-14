@@ -139,8 +139,8 @@ export function PaymentForm({
           <span className="font-semibold text-[var(--studio-ink)]">{invoiceNumber}</span>{" "}
           ({amountLabel}). Your reference{" "}
           <span className="font-semibold text-[var(--studio-ink)]">{state.reference}</span>{" "}
-          is on file. You will see this invoice flip to verified inside your client portal as soon
-          as finance confirms — usually within one business day.
+          is on file. You will see this invoice update to verified inside your client portal as soon
+          as we confirm your payment — usually within one business day.
         </p>
         <div className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-fill-faint)] px-4 py-2 text-[12px] font-semibold text-[var(--studio-ink-soft)]">
           <CheckCircle2 className="h-3.5 w-3.5 text-[var(--studio-green-ink)]" />

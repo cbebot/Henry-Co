@@ -393,9 +393,9 @@ export async function generateStudioBriefDraftAction(
     });
     const message =
       tripped === "system"
-        ? "The co-pilot has hit today's safety ceiling. Studio is paused while staff review usage — please fill the brief manually below; we read every submission."
+        ? "The brief co-pilot is taking a short break right now. Please fill in the brief below — we read every submission personally."
         : tripped === "ip"
-          ? "Too many co-pilot drafts from this network today. Try again tomorrow, or fill the brief manually below — Studio reads every brief."
+          ? "You've reached today's co-pilot limit. Please try again tomorrow, or fill in the brief below — we read every brief."
           : isAuthenticated
             ? `You've hit the daily co-pilot limit (${AUTH_LIMIT_PER_DAY}/day). It resets at midnight Lagos time.`
             : `You've used all ${ANON_LIMIT_PER_SESSION} free co-pilot generations for this session. Sign in for a higher limit, or fill the brief manually below.`;

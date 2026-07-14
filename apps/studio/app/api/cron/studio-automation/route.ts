@@ -23,10 +23,11 @@ export async function GET(request: Request) {
       executedAt: new Date().toISOString(),
     });
   } catch (error) {
+    console.error("[studio] automation sweep failed:", error);
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "Studio automation sweep failed.",
+        error: "Studio automation sweep failed.",
       },
       { status: 500 }
     );

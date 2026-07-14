@@ -14,14 +14,14 @@ export function studioPaymentCheckpointCopy(payment: StudioPayment): {
     return {
       phase: "Verification in progress",
       detail: payment.proofName
-        ? `We received your proof (${payment.proofName}). Our finance team is matching it to the transfer — your workspace will update automatically once confirmed.`
-        : "Your proof has been received. Our finance team is reviewing it and will confirm shortly.",
+        ? `We received your proof (${payment.proofName}). We're verifying it against your transfer now — your workspace updates automatically once it's confirmed, usually within one business day.`
+        : "Your proof has been received. We're reviewing it now and will confirm shortly, usually within one business day.",
     };
   }
   if (payment.status === "overdue") {
     return {
       phase: "Payment overdue",
-      detail: "This checkpoint is past due. Please complete the transfer or reach out to our finance team if you need to discuss timing.",
+      detail: "This checkpoint is past due. Please complete the transfer or reach out to us if you need to discuss timing.",
     };
   }
   return {

@@ -104,7 +104,7 @@ export function StudioPaymentGuide({
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
                 <span className="min-w-0 flex-1 truncate font-mono text-sm font-semibold text-[var(--studio-ink)] sm:flex-initial sm:text-right">
-                  {item.value || "Awaiting finance configuration"}
+                  {item.value || "We'll share these details with you shortly."}
                 </span>
                 {item.value ? (
                   <StudioCopyButton value={item.value} label={item.copyLabel} />
@@ -125,7 +125,7 @@ export function StudioPaymentGuide({
           {[
             "Copy the amount and account details from the section above.",
             "Transfer from your bank or company account using your project name as reference.",
-            "Upload your receipt or proof below — finance reviews and confirms within one business day.",
+            "Upload your receipt or proof below — we review and confirm it within one business day.",
             "Once confirmed, your project moves forward and you receive an update by email.",
           ].map((step, index) => (
             <li key={step} className="flex items-start gap-3 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">

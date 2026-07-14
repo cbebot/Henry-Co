@@ -333,12 +333,12 @@ export async function sendInquiryNotifications(input: {
     eyebrow: "Inquiry received",
     title: "Your studio brief is now inside Henry Onyx Studio.",
     intro:
-      "We captured the project requirements, generated the first proposal frame, and routed the brief into the right delivery lane.",
-    highlightLabel: "Readiness score",
-    highlightValue: `${input.lead.readinessScore}/100`,
+      "We've received your project brief and prepared your first proposal. Our team is reviewing the details now.",
+    highlightLabel: "Next step",
+    highlightValue: "Review your proposal",
     sections: [
       { label: "Service", value: input.lead.serviceKind.replaceAll("_", " ") },
-      { label: "Budget lane", value: input.lead.budgetBand },
+      { label: "Budget range", value: input.lead.budgetBand },
       { label: "Urgency", value: input.lead.urgency },
     ],
     bullets: [
@@ -468,15 +468,15 @@ export async function sendPaymentInstructionsNotifications(input: {
     { label: "Transfer amount", value: formatCurrency(input.payment.amount, input.payment.currency) },
     {
       label: "Bank",
-      value: platform.paymentBankName || "Finance configuration pending",
+      value: platform.paymentBankName || "Details will be sent shortly",
     },
     {
       label: "Account name",
-      value: platform.paymentAccountName || "Finance configuration pending",
+      value: platform.paymentAccountName || "Details will be sent shortly",
     },
     {
       label: "Account number",
-      value: platform.paymentAccountNumber || "Finance configuration pending",
+      value: platform.paymentAccountNumber || "Details will be sent shortly",
     },
     {
       label: "Due date",
@@ -498,9 +498,9 @@ export async function sendPaymentInstructionsNotifications(input: {
     layout: {
       subject: `Payment instructions • ${input.project.title}`,
       eyebrow: "Payment instructions",
-      title: "Your deposit rail is ready for transfer.",
+      title: "Your deposit is ready for payment.",
       intro:
-        "Use the exact account details below, then upload proof inside the Studio workspace so finance can confirm the transfer and move the project into onboarding.",
+        "Use the exact account details below, then upload proof inside the Studio workspace so we can confirm your transfer and move the project into onboarding.",
       highlightLabel: "Amount due",
       highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
       sections,
@@ -508,7 +508,7 @@ export async function sendPaymentInstructionsNotifications(input: {
         platform.paymentInstructions,
         "Copy the account number and amount exactly as shown.",
         "Upload proof in the payment section immediately after transfer.",
-        "Henry Onyx finance confirms the payment before delivery moves into the next milestone.",
+        "Your payment is confirmed before your project moves to the next milestone.",
       ],
       actionLabel: "Open payment workspace",
       actionHref: projectUrl,
@@ -552,7 +552,7 @@ export async function sendProposalDecisionNotifications(input: {
         : "The proposal was marked as not moving forward right now.",
       intro: accepted
         ? "Henry Onyx Studio has recorded acceptance against this proposal. The next step is activating or reviewing the project workspace and deposit lane."
-        : "Henry Onyx Studio has recorded this proposal as rejected so the commercial record stays accurate. The proposal history remains available if the scope needs to reopen later.",
+        : "We've noted that this proposal isn't moving forward for now. Your proposal history stays available if you'd like to revisit the scope later.",
       highlightLabel: "Proposal status",
       highlightValue: input.proposal.status.replaceAll("_", " "),
       sections: [
@@ -583,7 +583,7 @@ export async function sendDepositReceivedNotifications(input: {
       eyebrow: "Deposit received",
       title: "Your deposit has been recorded.",
       intro:
-        "Henry Onyx Studio has recorded the payment against the active project lane and updated the execution state accordingly.",
+        "We've received your deposit. Your project is now active and work will begin — you can track everything in your workspace.",
       highlightLabel: "Amount received",
       highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
       sections: [
@@ -829,9 +829,9 @@ export async function sendPaymentReminderNotification(input: {
       sections: [
         { label: "Payment label", value: input.payment.label },
         { label: "Due date", value: input.payment.dueDate ? new Date(input.payment.dueDate).toLocaleDateString("en-NG") : "Pending" },
-        { label: "Bank", value: platform.paymentBankName || "Finance configuration pending" },
-        { label: "Account name", value: platform.paymentAccountName || "Finance configuration pending" },
-        { label: "Account number", value: platform.paymentAccountNumber || "Finance configuration pending" },
+        { label: "Bank", value: platform.paymentBankName || "Details will be sent shortly" },
+        { label: "Account name", value: platform.paymentAccountName || "Details will be sent shortly" },
+        { label: "Account number", value: platform.paymentAccountNumber || "Details will be sent shortly" },
       ],
       bullets: [
         platform.paymentInstructions,

@@ -83,32 +83,32 @@ function localizeToken(token: StatusTokenStyle, locale?: AppLocale): StatusToken
 }
 
 export function revisionStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = revisionStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = revisionStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function projectStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = projectStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = projectStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function milestoneStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = milestoneStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = milestoneStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function invoiceStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = invoiceStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = invoiceStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function paymentStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = paymentStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = paymentStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function deliverableStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = deliverableStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = deliverableStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 

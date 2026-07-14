@@ -296,11 +296,15 @@ function SuccessSummary({
                     : "bg-[#f3d28a]"
               }`}
             />
-            Confidence {confidencePct}%
+            {confidencePct >= 80
+              ? "Ready to review"
+              : confidencePct >= 60
+                ? "Good start — a few fields to confirm"
+                : "Rough draft — please check the details"}
           </span>
           {meta.cached ? (
             <span className="text-[10.5px] uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-              Cache hit · faster &amp; cheaper
+              Instant draft
             </span>
           ) : null}
         </div>
@@ -357,10 +361,9 @@ function SuccessSummary({
 
       <NextActionsRail structured={structured} confidence={confidencePct} />
 
-      {meta.callsRemaining !== null ? (
+      {meta.callsRemaining !== null && meta.callsRemaining <= 2 ? (
         <p className="mt-3 text-[11px] text-[var(--studio-ink-soft)]">
-          {meta.callsRemaining} co-pilot {meta.callsRemaining === 1 ? "draft" : "drafts"} left in
-          this window.
+          You have a couple of drafts left for now — try again shortly if you run out.
         </p>
       ) : null}
     </div>

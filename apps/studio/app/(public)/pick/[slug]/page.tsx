@@ -214,8 +214,8 @@ export default async function StudioTemplateDetailPage({
               </div>
             </dl>
             <p className="mt-4 text-[12.5px] leading-relaxed text-[var(--studio-ink-soft)]">
-              Bank transfer or card. Branded receipt issued the
-              moment finance confirms.
+              Bank transfer or card. A branded receipt is issued the moment
+              your payment is confirmed.
             </p>
           </div>
         </aside>

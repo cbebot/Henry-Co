@@ -20,7 +20,7 @@ export default async function FinanceInvoicesPage() {
     <StudioWorkspaceShell
       kicker="Invoice mirror"
       title="Invoice-ready references derived from Studio payment records."
-      description="This keeps finance aligned even before a dedicated invoice composer is added."
+      description="Invoice-ready references derived from Studio payment records, so finance can reconcile quickly."
       nav={financeNav("/finance/invoices")}
     >
       {/* TODO(wave1): multi-row invoice mirror (staff). payment.label is a

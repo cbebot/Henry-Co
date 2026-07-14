@@ -283,6 +283,8 @@ export async function POST(request: NextRequest) {
     status: finalStatus,
     archive_url: archiveUrl,
     expires_at: expiresAt.toISOString(),
-    failure_reason: failureReason,
+    // Bounded client code only — the detailed reason (raw Cloudinary/upstream
+    // error, env state) stays in the DB row + audit log + server logs.
+    failure_reason: archiveUrl ? null : "pack_generation_failed",
   });
 }

@@ -125,9 +125,6 @@ export default async function ClientFilesPage() {
                       <div className="mt-0.5 truncate text-[13.5px] font-semibold text-[var(--studio-ink)]">
                         {file.label}
                       </div>
-                      <div className="mt-0.5 truncate text-[11.5px] text-[var(--studio-ink-soft)]">
-                        {file.path}
-                      </div>
                     </div>
                   </li>
                 );

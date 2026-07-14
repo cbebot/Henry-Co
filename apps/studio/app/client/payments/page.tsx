@@ -164,7 +164,7 @@ export default async function ClientPaymentsPage() {
                     </div>
                     {payment.status === "rejected" && payment.rejectionReason ? (
                       <div className="mt-2 rounded-xl border border-[var(--studio-red-line)] bg-[var(--studio-red-soft)] px-3 py-2 text-[12px] text-[var(--studio-red-ink)]">
-                        Rejected: {payment.rejectionReason}
+                        {rejectionMessage(payment.rejectionReason)}
                       </div>
                     ) : null}
                   </div>
@@ -187,6 +187,18 @@ export default async function ClientPaymentsPage() {
       ) : null}
     </div>
   );
+}
+
+function rejectionMessage(rejectionReason: string): string {
+  const code = rejectionReason.trim().toLowerCase();
+  switch (code) {
+    case "reference_mismatch":
+      return "The reference did not match a transfer we could find. Please re-check and resubmit.";
+    case "amount_mismatch":
+      return "The amount did not match this invoice. Please resubmit with the correct transfer.";
+    default:
+      return "We could not verify this payment. Please resubmit your proof or contact us.";
+  }
 }
 
 function Stat({

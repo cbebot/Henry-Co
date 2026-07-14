@@ -191,7 +191,7 @@ const EN: PaymentDocumentCopy = {
   invoiceLegal1:
     "This invoice is issued by {issuer} under unified billing. The originating division remains the source of truth for delivery, dispute, and refund terms.",
   invoiceLegal2:
-    "Payment is recognised once settlement is confirmed; the status above reflects the latest reconciliation.",
+    "Payment is marked confirmed once we have verified it. The status shown reflects the most recent update.",
 
   defaultInvoiceDescription: "Payment summary",
 
@@ -269,7 +269,7 @@ const FR: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "Cette facture est émise par {issuer} dans le cadre d'une facturation unifiée. La division d'origine reste la source de référence pour les conditions de livraison, de litige et de remboursement.",
   invoiceLegal2:
-    "Le paiement est reconnu une fois le règlement confirmé ; le statut ci-dessus reflète le dernier rapprochement.",
+    "Le paiement est marqué comme confirmé une fois que nous l'avons vérifié. Le statut indiqué reflète la mise à jour la plus récente.",
   defaultInvoiceDescription: "Récapitulatif de paiement",
 
   creditNoteType: "Avoir",
@@ -346,7 +346,7 @@ const ES: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "Esta factura es emitida por {issuer} bajo facturación unificada. La división de origen sigue siendo la fuente de referencia para las condiciones de entrega, disputa y reembolso.",
   invoiceLegal2:
-    "El pago se reconoce una vez confirmada la liquidación; el estado anterior refleja la última conciliación.",
+    "El pago se marca como confirmado una vez que lo hemos verificado. El estado mostrado refleja la actualización más reciente.",
   defaultInvoiceDescription: "Resumen de pago",
 
   creditNoteType: "Nota de crédito",
@@ -423,7 +423,7 @@ const PT: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "Esta fatura é emitida por {issuer} sob faturação unificada. A divisão de origem permanece a fonte de referência para as condições de entrega, disputa e reembolso.",
   invoiceLegal2:
-    "O pagamento é reconhecido após a confirmação da liquidação; o estado acima reflete a conciliação mais recente.",
+    "O pagamento é marcado como confirmado assim que o verificamos. O estado apresentado reflete a atualização mais recente.",
   defaultInvoiceDescription: "Resumo de pagamento",
 
   creditNoteType: "Nota de crédito",
@@ -500,7 +500,7 @@ const DE: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "Diese Rechnung wird von {issuer} im Rahmen der einheitlichen Abrechnung ausgestellt. Der ursprüngliche Geschäftsbereich bleibt maßgeblich für Liefer-, Streit- und Erstattungsbedingungen.",
   invoiceLegal2:
-    "Die Zahlung gilt als anerkannt, sobald die Abrechnung bestätigt ist; der obige Status spiegelt den letzten Abgleich wider.",
+    "Die Zahlung gilt als bestätigt, sobald wir sie geprüft haben. Der angezeigte Status spiegelt die aktuellste Aktualisierung wider.",
   defaultInvoiceDescription: "Zahlungsübersicht",
 
   creditNoteType: "Gutschrift",
@@ -577,7 +577,7 @@ const IT: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "Questa fattura è emessa da {issuer} nell'ambito della fatturazione unificata. La divisione di origine resta la fonte di riferimento per le condizioni di consegna, contestazione e rimborso.",
   invoiceLegal2:
-    "Il pagamento è riconosciuto una volta confermata la liquidazione; lo stato sopra riflette l'ultima riconciliazione.",
+    "Il pagamento è contrassegnato come confermato una volta che lo abbiamo verificato. Lo stato mostrato riflette l'aggiornamento più recente.",
   defaultInvoiceDescription: "Riepilogo del pagamento",
 
   creditNoteType: "Nota di credito",
@@ -654,7 +654,7 @@ const AR: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "صدرت هذه الفاتورة عن {issuer} ضمن الفوترة الموحدة. يظل القسم المصدر هو المرجع لشروط التسليم والنزاع والاسترداد.",
   invoiceLegal2:
-    "يُعترف بالدفع بمجرد تأكيد التسوية؛ تعكس الحالة أعلاه أحدث تسوية حسابية.",
+    "يُوضع الدفع كمؤكَّد بمجرد أن نتحقق منه. تعكس الحالة المعروضة أحدث تحديث.",
   defaultInvoiceDescription: "ملخص الدفع",
 
   creditNoteType: "إشعار دائن",
@@ -729,7 +729,7 @@ const ZH: Partial<PaymentDocumentCopy> = {
   receiptLegal2: "对本收据有疑问？请在 7 天内联系 {email} 以获得最快的处理。",
   invoiceLegal1:
     "本发票由 {issuer} 在统一开票下开具。原始业务部门仍是交付、争议和退款条款的依据。",
-  invoiceLegal2: "付款在结算确认后确认；上述状态反映最新对账结果。",
+  invoiceLegal2: "付款经我们核实后即标记为已确认；所示状态反映最新更新。",
   defaultInvoiceDescription: "付款摘要",
 
   creditNoteType: "贷记单",
@@ -806,7 +806,7 @@ const HI: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "यह चालान {issuer} द्वारा एकीकृत बिलिंग के अंतर्गत जारी किया गया है। मूल प्रभाग डिलीवरी, विवाद और वापसी शर्तों का आधार बना रहता है।",
   invoiceLegal2:
-    "निपटान की पुष्टि होते ही भुगतान मान्य होता है; ऊपर की स्थिति नवीनतम मिलान दर्शाती है।",
+    "सत्यापन के बाद भुगतान को पुष्ट के रूप में चिह्नित किया जाता है। दिखाई गई स्थिति नवीनतम अपडेट दर्शाती है।",
   defaultInvoiceDescription: "भुगतान सारांश",
 
   creditNoteType: "क्रेडिट नोट",
@@ -883,7 +883,7 @@ const IG: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "Akwụkwọ ụgwọ a sitere n'aka {issuer} n'okpuru ịgba ụgwọ jikọrọ ọnụ. Ngalaba mmalite ka bụ isi iyi maka usoro nnyefe, esemokwu, na nkwụghachi.",
   invoiceLegal2:
-    "A na-anabata ịkwụ ụgwọ ozugbo akwadoro nkwụ ụgwọ; ọnọdụ dị n'elu na-egosi nhazi ọhụrụ.",
+    "A na-akara ịkwụ ụgwọ dị ka nke akwadoro ozugbo anyị nyochachara ya. Ọnọdụ egosiri na-egosi mmelite kachasị ọhụrụ.",
   defaultInvoiceDescription: "Nchịkọta ịkwụ ụgwọ",
 
   creditNoteType: "Akwụkwọ nkwụghachi ego",
@@ -960,7 +960,7 @@ const YO: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "{issuer} ni ó tú ìwé owó yìí jáde lábẹ́ ìsanwó ìṣọ̀kan. Ẹ̀ka tó pilẹ̀ ṣì jẹ́ orísun òtítọ́ fún àwọn òfin ìfijíṣẹ́, àríyànjiyàn, àti ìdá-owó-padà.",
   invoiceLegal2:
-    "A gba ìsanwó nígbà tí a bá ti jẹ́rìí ìsanwó; ipò tó wà lókè ń ṣàfihàn ìfìwéwé tuntun.",
+    "A máa fi àmì ìsanwó sí i pé a ti jẹ́rìí i lẹ́yìn tí a bá ti ṣàyẹ̀wò rẹ̀. Ipò tí a fihàn ń ṣàfihàn ìmúdójúìwọ̀n tuntun.",
   defaultInvoiceDescription: "Àkótán ìsanwó",
 
   creditNoteType: "Ìwé krẹ́dítì",
@@ -1037,7 +1037,7 @@ const HA: Partial<PaymentDocumentCopy> = {
   invoiceLegal1:
     "{issuer} ne ya bayar da wannan takardar biya ƙarƙashin haɗaɗɗiyar lissafi. Sashen asali ya kasance tushen gaskiya don sharuɗɗan isarwa, takaddama, da mayar da kuɗi.",
   invoiceLegal2:
-    "Ana karɓar biya da zarar an tabbatar da sasantawa; matsayin da ke sama yana nuna sabuwar daidaitawa.",
+    "Ana yiwa biya alama a matsayin an tabbatar da shi da zarar mun tantance shi. Matsayin da aka nuna yana nuna sabuntawa mafi kwanciya.",
   defaultInvoiceDescription: "Taƙaitaccen biya",
 
   creditNoteType: "Takardar maido da kuɗi",

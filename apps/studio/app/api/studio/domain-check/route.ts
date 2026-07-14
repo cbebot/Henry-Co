@@ -26,7 +26,6 @@ export async function POST(request: Request) {
 
   if (sld && isBlockedBrandishSlug(sld)) {
     return NextResponse.json({
-      mode: getDomainLookupMode(),
       status: "blocked",
       message:
         "That name sits too close to a well-known brand for us to suggest as a new identity. Try a more distinctive name.",
@@ -40,10 +39,9 @@ export async function POST(request: Request) {
 
   if (mode === "off" || !fqdnGuess?.endsWith(".com")) {
     return NextResponse.json({
-      mode,
       status: "unconfigured",
       message:
-        "Live registry lookup is not turned on for this environment yet. These names are ideas only—Henry Onyx will confirm availability with you before anything is purchased.",
+        "These names are suggestions to explore. Henry Onyx will confirm live availability with you before anything is registered.",
       fqdn: fqdnGuess || (sld ? `${sld}.com` : null),
       suggestions,
     });
@@ -52,7 +50,6 @@ export async function POST(request: Request) {
   const available = await lookupComDomainAvailability(fqdnGuess);
   if (available === true) {
     return NextResponse.json({
-      mode,
       status: "available",
       message:
         "This .com name does not appear in the public registry directory we checked. Final availability still depends on your registrar at purchase time.",
@@ -62,7 +59,6 @@ export async function POST(request: Request) {
   }
   if (available === false) {
     return NextResponse.json({
-      mode,
       status: "unavailable",
       message:
         "This .com name already appears registered. Try another name or pick one of the alternatives below.",
@@ -72,7 +68,6 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({
-    mode,
     status: "unknown",
     message:
       "We could not complete a live check right now. Share the name anyway—Henry Onyx will verify it with you.",

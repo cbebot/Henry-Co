@@ -161,14 +161,9 @@ export async function POST(request: Request) {
       size: file.size,
     });
   } catch (error) {
+    console.error("[studio/support/upload] upload error:", error);
     return NextResponse.json(
-      {
-        ok: false,
-        reason:
-          error instanceof Error
-            ? error.message
-            : "We couldn't upload that file.",
-      },
+      { ok: false, reason: "We couldn't upload that file. Please try again." },
       { status: 500 },
     );
   }

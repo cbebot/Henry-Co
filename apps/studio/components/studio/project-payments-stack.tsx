@@ -79,8 +79,8 @@ function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
             <div className="text-sm font-semibold text-[var(--studio-ink)]">Payment proof on file</div>
             <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
               {proofName
-                ? `${proofName} is attached. Finance is matching it to the transfer and will mark this checkpoint confirmed once it clears.`
-                : "A proof file is attached. Finance is matching it to the transfer and will mark this checkpoint confirmed once it clears."}
+                ? `${proofName} is attached. We're verifying your transfer — this checkpoint is confirmed once verification completes.`
+                : "A proof file is attached. We're verifying your transfer — this checkpoint is confirmed once verification completes."}
             </p>
           </div>
         </div>
@@ -142,7 +142,7 @@ export function ProjectPaymentsStack({
           {isPriority ? (
             <div className="mt-4 rounded-[1.25rem] border border-[var(--studio-accent-ring)] bg-[var(--studio-fill-soft)] px-4 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
               <span className="font-semibold text-[var(--studio-ink)]">What happens next: </span>
-              Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your Henry Onyx account Studio hub while finance confirms privately.
+              Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your Henry Onyx account Studio hub while we confirm your payment.
             </div>
           ) : null}
         </div>
