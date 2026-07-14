@@ -33,6 +33,8 @@
     "Copy amount",
     "Amount paid",
     "Reference your record name on the transfer.",
+    "Founder identity and payout proof are required before we can complete your verification review.",
+    "Your uploaded documents are stored securely and used only to verify your store during review.",
     "(r.ok ? (r.json() as Promise",
     "): Promise",
     "Clear search",
