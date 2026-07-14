@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireOwner } from "@/app/lib/owner-auth";
 import { getOwnerOverviewData } from "@/lib/owner-data";
+import { getSignupsSnapshot } from "@/lib/owner-command/signups";
 
 export const runtime = "nodejs";
 
@@ -28,8 +29,20 @@ export async function GET() {
   }
 
   try {
-    const overview = await getOwnerOverviewData();
+    const [overview, signups] = await Promise.all([
+      getOwnerOverviewData(),
+      getSignupsSnapshot().catch(() => null),
+    ]);
     const briefing = overview.briefing;
+    const naira = new Intl.NumberFormat("en-NG", { maximumFractionDigits: 0 });
+    // The portal's live pulse — four real numbers under the reactor. Values are
+    // pre-formatted strings so the client renders data, not client literals.
+    const pulse = [
+      { label: "REVENUE", value: `₦${naira.format(Math.round(overview.metrics.totalRevenueNaira))}` },
+      { label: "SIGNUPS 7D", value: signups?.ok ? String(signups.last7d) : "—" },
+      { label: "OPEN SUPPORT", value: String(overview.metrics.openSupport) },
+      { label: "CRITICAL", value: String(overview.metrics.criticalSignals) },
+    ];
     return NextResponse.json({
       headline: briefing.headline,
       focus: briefing.focus,
@@ -38,6 +51,7 @@ export async function GET() {
         href: step.href,
         severity: step.severity,
       })),
+      pulse,
       generatedAt: new Date().toISOString(),
     });
   } catch {

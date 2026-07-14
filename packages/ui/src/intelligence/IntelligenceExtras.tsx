@@ -44,6 +44,10 @@ export function IntelligenceExtras({ chat, supportHref }: { chat: IntelligenceCh
     runDeep,
     confirmAction,
     dismissAction,
+    reauthNeeded,
+    reauthBusy,
+    reauthError,
+    submitReauth,
   } = chat;
 
   const hasOffer = Boolean(offer);
@@ -98,19 +102,62 @@ export function IntelligenceExtras({ chat, supportHref }: { chat: IntelligenceCh
               {t("You'll be asked to re-verify your identity to confirm this.")}
             </p>
           ) : null}
-          <div className="hc-il-action-card-buttons">
-            <button
-              type="button"
-              className="hc-il-action-confirm"
-              onClick={() => void confirmAction()}
-              disabled={actionBusy}
+          {reauthNeeded ? (
+            /* Deep-action step-up — the owner's "print". The confirm route
+               challenged; the password is verified against this origin's
+               /api/auth/reauth (never the AI pipeline) and the confirm
+               retries automatically on success. */
+            <form
+              className="hc-il-reauth"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const input = event.currentTarget.elements.namedItem("reauth-password");
+                void submitReauth(input instanceof HTMLInputElement ? input.value : "");
+              }}
             >
-              {actionBusy ? t("Working…") : proposedAction.confirmLabel}
-            </button>
-            <button type="button" className="hc-il-action-cancel" onClick={dismissAction} disabled={actionBusy}>
-              {t("Cancel")}
-            </button>
-          </div>
+              <p className="hc-il-reauth-title">{t("Verify it's you")}</p>
+              <p className="hc-il-reauth-body">
+                {t("This is a protected action. Enter your password and I'll execute it.")}
+              </p>
+              <div className="hc-il-reauth-row">
+                <input
+                  name="reauth-password"
+                  type="password"
+                  autoComplete="current-password"
+                  className="hc-il-reauth-input"
+                  placeholder={t("Your password")}
+                  disabled={reauthBusy}
+                  autoFocus
+                />
+                <button type="submit" className="hc-il-action-confirm" disabled={reauthBusy}>
+                  {reauthBusy ? t("Verifying…") : t("Verify & execute")}
+                </button>
+                <button
+                  type="button"
+                  className="hc-il-action-cancel"
+                  onClick={dismissAction}
+                  disabled={reauthBusy}
+                >
+                  {t("Cancel")}
+                </button>
+              </div>
+              {reauthError ? <p className="hc-il-reauth-error" role="alert">{reauthError}</p> : null}
+            </form>
+          ) : (
+            <div className="hc-il-action-card-buttons">
+              <button
+                type="button"
+                className="hc-il-action-confirm"
+                onClick={() => void confirmAction()}
+                disabled={actionBusy}
+              >
+                {actionBusy ? t("Working…") : proposedAction.confirmLabel}
+              </button>
+              <button type="button" className="hc-il-action-cancel" onClick={dismissAction} disabled={actionBusy}>
+                {t("Cancel")}
+              </button>
+            </div>
+          )}
         </div>
       ) : null}
       {offer ? (

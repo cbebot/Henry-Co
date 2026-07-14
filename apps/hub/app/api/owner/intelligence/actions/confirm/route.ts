@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { writeAuditLog } from "@henryco/observability/audit-log";
+import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getFounderAction } from "@/lib/founder-intelligence/action-catalog";
@@ -96,15 +97,22 @@ export async function POST(request: NextRequest) {
     .trim()
     .toLowerCase() || "owner";
 
-  // 4. Money-tranche step-up (no first-tranche action sets this, but the rail
-  //    honors it). requireSensitiveAction lives on the account origin; the hub
-  //    money actions arrive in F3c, which wires the concrete guard. Until then,
-  //    a requiresReauth action cannot be confirmed here — fail closed.
+  // 4. Deep-action step-up — the founder's "print". requiresReauth entries
+  //    demand a fresh identity proof: the platform sensitive-action guard
+  //    verifies the signed hc_last_reauth cookie (5-minute window, HMAC-bound
+  //    to this user) and rate-limits attempts. Absent/stale → the standard
+  //    401 challenge {code: "sensitive_action_reauth_required"}; the client
+  //    collects the owner's password inline (POST /api/auth/reauth on this
+  //    origin writes the marker) and retries the confirm. Runs BEFORE the CAS
+  //    claim so a challenged proposal stays pending and confirmable.
   if (entry.requiresReauth) {
-    return NextResponse.json(
-      { error: "This action needs identity re-verification, which is not enabled yet." },
-      { status: 403 },
-    );
+    const guard = await requireSensitiveAction(request, {
+      action: entry.auditAction,
+      entityType: entry.entityType,
+      resolveUser: async () => auth.user,
+      userId: (user) => user.id,
+    });
+    if (!guard.ok) return guard.response;
   }
 
   // 3. CAS claim — single-winner. owner_id in WHERE so a race cannot let anyone

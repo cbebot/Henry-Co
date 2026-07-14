@@ -19,7 +19,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { ChatThreadMessage } from "@henryco/chat-thread";
-import { Mic, MicOff, Send, Volume2, Type, X, PenLine, ArrowUpRight, Radio } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  Send,
+  Volume2,
+  Type,
+  X,
+  PenLine,
+  ArrowUpRight,
+  Radio,
+  History,
+  Trash2,
+  Navigation,
+} from "lucide-react";
 import { HenryCoLockup } from "../brand";
 import {
   useIntelligenceChat,
@@ -45,6 +58,8 @@ type Briefing = {
   headline: string;
   focus: string;
   nextSteps: Array<{ title: string; href: string; severity?: string }>;
+  /** Live company pulse — pre-formatted metric chips rendered under the reactor. */
+  pulse?: Array<{ label: string; value: string }>;
   generatedAt?: string;
 };
 type ConversationSummary = { id: string; title: string | null; updatedAt: string | null };
@@ -142,12 +157,88 @@ export function FounderCommandPortal({
 
   // New conversation — the hook's reset() clears chat.messages; also drop the
   // locally-owned user turns so the thread starts truly empty.
+  const activeConvIdRef = useRef<string | null>(null);
   const newConversation = useCallback(() => {
     reset();
     setSentTurns([]);
     spokenRef.current = null;
+    activeConvIdRef.current = null;
     pushLog("SYS: New session.");
   }, [reset, pushLog]);
+
+  // ── Recent conversations (history / open / delete) ────────────────────────
+  const [recentOpen, setRecentOpen] = useState(false);
+  const [recent, setRecent] = useState<ConversationSummary[]>([]);
+  const [recentBusy, setRecentBusy] = useState<string | null>(null);
+
+  const loadRecent = useCallback(async () => {
+    try {
+      const res = await fetch(conversationsEndpoint, { credentials: "include" });
+      if (!res.ok) return;
+      const data = (await res.json().catch(() => null)) as { conversations?: ConversationSummary[] } | null;
+      setRecent(data?.conversations ?? []);
+    } catch {
+      /* panel simply shows what it has */
+    }
+  }, [conversationsEndpoint]);
+
+  const openConversation = useCallback(
+    async (id: string) => {
+      setRecentBusy(id);
+      try {
+        const res = await fetch(`${conversationsEndpoint}?id=${encodeURIComponent(id)}`, {
+          credentials: "include",
+        });
+        if (!res.ok) return;
+        const detail = (await res.json().catch(() => null)) as { messages?: StoredIntelligenceMessage[] } | null;
+        if (!detail?.messages?.length) return;
+        setSentTurns([]);
+        spokenRef.current = null;
+        hydrate(id, detail.messages);
+        activeConvIdRef.current = id;
+        setRecentOpen(false);
+        pushLog("SYS: Session restored.");
+      } finally {
+        setRecentBusy(null);
+      }
+    },
+    [conversationsEndpoint, hydrate, pushLog],
+  );
+
+  const deleteConversation = useCallback(
+    async (id: string) => {
+      setRecentBusy(id);
+      try {
+        const res = await fetch(`${conversationsEndpoint}?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        if (!res.ok) return;
+        setRecent((prev) => prev.filter((c) => c.id !== id));
+        pushLog("SYS: Conversation erased.");
+        if (activeConvIdRef.current === id) newConversation();
+      } finally {
+        setRecentBusy(null);
+      }
+    },
+    [conversationsEndpoint, newConversation, pushLog],
+  );
+
+  // ── Autopilot — voice-driven console control ──────────────────────────────
+  // When the assistant's reply carries a navigation target and autopilot is
+  // engaged, the portal flies the console there itself after speaking (voice
+  // mode only — in text mode the buttons stay manual). The portal reopens on
+  // the destination page and restores the conversation, so the thread follows
+  // the owner across the console.
+  const [autopilot, setAutopilot] = useState(true);
+  const autopilotRef = useRef(true);
+  useEffect(() => {
+    autopilotRef.current = autopilot;
+  }, [autopilot]);
+  const actionsRef = useRef<typeof chat.actions>([]);
+  useEffect(() => {
+    actionsRef.current = chat.actions;
+  }, [chat.actions]);
 
   // ── Voice Mark II — the conversation loop ─────────────────────────────────
   // Voice mode is a real turn loop: the owner speaks → the reply is spoken →
@@ -292,6 +383,7 @@ export function FounderCommandPortal({
         const detail = (await res.json().catch(() => null)) as { messages?: StoredIntelligenceMessage[] } | null;
         if (cancelled || !detail?.messages?.length) return;
         hydrate(latest.id, detail.messages);
+        activeConvIdRef.current = latest.id;
         pushLog("SYS: Prior session restored.");
       })
       .catch(() => undefined);
@@ -317,27 +409,37 @@ export function FounderCommandPortal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionOutcome]);
 
-  // Speak each new assistant reply aloud, then — in voice mode — reopen the
-  // mic. This is the Jarvis turn loop: you speak, it answers, it listens again.
-  // The post-speech continuation reads refs (not captured state) because the
-  // owner may have closed the portal or switched to text while it was talking.
+  // Speak each new assistant reply aloud, then — in voice mode — either FLY
+  // the console to the reply's destination (autopilot) or reopen the mic (the
+  // Jarvis turn loop: you speak, it answers, it listens again). Continuations
+  // read refs, not captured state, because the owner may have closed the
+  // portal or switched modes while it was talking.
   useEffect(() => {
     if (!open || muted) return;
     const last = messages[messages.length - 1];
     if (last && last.authorRole === "other" && last.id !== spokenRef.current) {
       spokenRef.current = last.id;
       void speak(last.body).then(() => {
+        if (!openRef.current || typeof document === "undefined") return;
+        // Autopilot: hub-relative catalog destinations only, voice mode only.
+        const destination = actionsRef.current[0];
         if (
+          autopilotRef.current &&
           voiceModeRef.current &&
-          openRef.current &&
-          typeof document !== "undefined" &&
-          document.visibilityState === "visible"
+          destination &&
+          destination.href.startsWith("/") &&
+          !destination.href.startsWith("//")
         ) {
+          pushLog(`SYS: Autopilot — opening ${destination.label}.`);
+          window.location.assign(destination.href);
+          return;
+        }
+        if (voiceModeRef.current && document.visibilityState === "visible") {
           startListeningRef.current();
         }
       });
     }
-  }, [messages, open, muted, speak]);
+  }, [messages, open, muted, speak, pushLog]);
 
   // The visible thread = the hook's messages (assistant replies + any hydrated
   // history, which already carries its own user turns) merged with the locally
@@ -410,6 +512,31 @@ export function FounderCommandPortal({
                   <Type aria-hidden /> {t("Text")}
                 </button>
               </span>
+              <button
+                type="button"
+                className={`fcp-auto${autopilot ? " fcp-auto--on" : ""}`}
+                onClick={() => setAutopilot((v) => !v)}
+                aria-pressed={autopilot}
+                title={t("Autopilot — I open the right console page for you after answering")}
+              >
+                <Navigation aria-hidden /> {t("Auto")}
+              </button>
+              <button
+                type="button"
+                className={`fcp-icon-btn${recentOpen ? " fcp-icon-btn--on" : ""}`}
+                onClick={() => {
+                  setRecentOpen((v) => {
+                    const next = !v;
+                    if (next) void loadRecent();
+                    return next;
+                  });
+                }}
+                aria-expanded={recentOpen}
+                aria-label={t("Recent conversations")}
+                title={t("Recent conversations")}
+              >
+                <History aria-hidden />
+              </button>
               <button type="button" className="fcp-icon-btn" onClick={newConversation}
                 aria-label={t("New conversation")} title={t("New conversation")}>
                 <PenLine aria-hidden />
@@ -420,6 +547,43 @@ export function FounderCommandPortal({
               </button>
             </span>
           </header>
+
+          {recentOpen ? (
+            <div className="fcp-recent" role="region" aria-label={t("Recent conversations")}>
+              <p className="fcp-recent-title">{t("Recent conversations")}</p>
+              {recent.length === 0 ? (
+                <p className="fcp-recent-empty">{t("Nothing here yet — your conversations will appear as you talk.")}</p>
+              ) : (
+                <ul className="fcp-recent-list">
+                  {recent.map((conversation) => (
+                    <li key={conversation.id} className="fcp-recent-row">
+                      <button
+                        type="button"
+                        className="fcp-recent-open"
+                        onClick={() => void openConversation(conversation.id)}
+                        disabled={recentBusy === conversation.id}
+                      >
+                        <span className="fcp-recent-name">{conversation.title || t("Conversation")}</span>
+                        {conversation.updatedAt ? (
+                          <span className="fcp-recent-when">{conversation.updatedAt.slice(0, 16).replace("T", " ")}</span>
+                        ) : null}
+                      </button>
+                      <button
+                        type="button"
+                        className="fcp-recent-del"
+                        onClick={() => void deleteConversation(conversation.id)}
+                        disabled={recentBusy === conversation.id}
+                        aria-label={t("Delete conversation")}
+                        title={t("Delete conversation")}
+                      >
+                        <Trash2 aria-hidden />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : null}
 
           <div className="fcp-stage">
             <div className={`fcp-reactor${hasConversation ? " fcp-reactor--compact" : ""}`}>
@@ -439,6 +603,19 @@ export function FounderCommandPortal({
                 <p className="fcp-eyebrow">{t("Henry Onyx Intelligence")}</p>
                 <h1 className="fcp-headline">{briefing?.headline || t("What do you want to do?")}</h1>
                 {briefing?.focus ? <p className="fcp-focus">{briefing.focus}</p> : null}
+
+                {/* Live company pulse — real numbers, straight from the same
+                    dataset the console renders. The machine is alive. */}
+                {briefing?.pulse?.length ? (
+                  <div className="fcp-pulse" aria-label={t("Live company pulse")}>
+                    {briefing.pulse.map((metric) => (
+                      <span key={metric.label} className="fcp-pulse-chip">
+                        <span className="fcp-pulse-label">{metric.label}</span>
+                        <span className="fcp-pulse-value">{metric.value}</span>
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
 
                 {/* Command seeds — tap to ask. The active heart of the idle state:
                     this is a command surface, so it leads with what you can say. */}
