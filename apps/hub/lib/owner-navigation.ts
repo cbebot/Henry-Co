@@ -82,6 +82,12 @@ export const ownerNavItems: OwnerNavItem[] = [
       { href: "/owner/divisions/performance", label: "Division Ranking", icon: BarChart3 },
     ],
   },
+  {
+    href: "/owner/support",
+    label: "Support Command",
+    icon: MessageSquare,
+    section: "Operations",
+  },
 
   // ── Finance ──
   {
