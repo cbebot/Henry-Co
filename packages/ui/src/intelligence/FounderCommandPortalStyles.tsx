@@ -155,6 +155,7 @@ export function FounderCommandPortalStyles() {
 
 .fcp-composer { padding: .9rem clamp(1rem, 4vw, 2rem) .5rem; border-top: 1px solid rgba(201,162,39,.12); }
 .fcp-error { max-width: 46rem; margin: 0 auto .6rem; color: #ffc9c9; font-size: .85rem; text-align: center; }
+.fcp-voice-notice { max-width: 46rem; margin: 0 auto .6rem; color: #ffe6a1; font-size: .82rem; text-align: center; }
 .fcp-composer-row { max-width: 46rem; margin: 0 auto; display: flex; align-items: center; gap: .6rem; }
 .fcp-live { display: inline-flex; align-items: center; gap: .4rem; padding: 0 .6rem; height: 3rem; font-family: var(--fcp-mono); font-size: .68rem; letter-spacing: .18em; color: rgba(243,237,225,.4); }
 .fcp-live-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(243,237,225,.3); }

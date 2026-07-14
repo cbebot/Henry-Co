@@ -149,16 +149,77 @@ export function FounderCommandPortal({
     pushLog("SYS: New session.");
   }, [reset, pushLog]);
 
-  const voice = useFounderVoice({ onFinal: (text) => void doSend(text) });
+  // ── Voice Mark II — the conversation loop ─────────────────────────────────
+  // Voice mode is a real turn loop: the owner speaks → the reply is spoken →
+  // the mic re-opens by itself. Refs mirror open/voiceMode so continuations
+  // that run after an await read CURRENT state, and a silent-turn counter
+  // stands the loop down after repeated silence instead of holding the mic
+  // open forever.
+  const voiceModeRef = useRef(true);
+  const openRef = useRef(false);
+  const silentTurnsRef = useRef(0);
+  const startListeningRef = useRef<() => void>(() => {});
+  const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
+
+  const voice = useFounderVoice({
+    onFinal: (text) => {
+      silentTurnsRef.current = 0;
+      setVoiceNotice(null);
+      if (voiceModeRef.current) {
+        // Voice mode: a finished utterance IS the command — send it.
+        void doSend(text);
+      } else {
+        // Text mode: the mic is dictation — drop the words into the composer
+        // for editing, never auto-send.
+        setDraft((prev) => (prev ? `${prev.trimEnd()} ${text}` : text));
+      }
+    },
+    onError: (kind) => {
+      if (kind === "mic-denied") {
+        setVoiceNotice(
+          t("Microphone blocked. Allow microphone access for this site in your browser, then try again."),
+        );
+        pushLog("SYS: Microphone access denied by the browser.");
+        return;
+      }
+      if (kind === "unavailable") {
+        setVoiceNotice(t("Voice input isn't available in this browser. You can still type."));
+        pushLog("SYS: Voice input unavailable here.");
+        return;
+      }
+      if (kind === "network") {
+        pushLog("SYS: Speech service unreachable.");
+        return;
+      }
+      // no-speech — conversation loop: one quiet retry, then stand down.
+      if (voiceModeRef.current && openRef.current && silentTurnsRef.current < 1) {
+        silentTurnsRef.current += 1;
+        startListeningRef.current();
+      } else {
+        silentTurnsRef.current = 0;
+        pushLog("SYS: Standing by.");
+      }
+    },
+  });
   const { listening, speaking, transcript, muted, setMuted, canListen, canSpeak, startListening, stopListening, speak } =
     voice;
+  useEffect(() => {
+    startListeningRef.current = startListening;
+  }, [startListening]);
 
   // Text / voice mode. Voice mode speaks replies aloud and leads with the mic;
-  // text mode is silent and keyboard-first. The mode drives the mute state.
+  // text mode is silent and keyboard-first. The mode drives the mute state,
+  // and leaving voice mode releases the mic immediately.
   const [voiceMode, setVoiceMode] = useState(true);
   useEffect(() => {
+    voiceModeRef.current = voiceMode;
     setMuted(!voiceMode);
-  }, [voiceMode, setMuted]);
+    if (!voiceMode) stopListening();
+  }, [voiceMode, setMuted, stopListening]);
+  useEffect(() => {
+    openRef.current = open;
+    if (!open) stopListening();
+  }, [open, stopListening]);
 
   useEffect(() => {
     try {
@@ -256,13 +317,25 @@ export function FounderCommandPortal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionOutcome]);
 
-  // Speak each new assistant reply aloud (owner can mute).
+  // Speak each new assistant reply aloud, then — in voice mode — reopen the
+  // mic. This is the Jarvis turn loop: you speak, it answers, it listens again.
+  // The post-speech continuation reads refs (not captured state) because the
+  // owner may have closed the portal or switched to text while it was talking.
   useEffect(() => {
     if (!open || muted) return;
     const last = messages[messages.length - 1];
     if (last && last.authorRole === "other" && last.id !== spokenRef.current) {
       spokenRef.current = last.id;
-      speak(last.body);
+      void speak(last.body).then(() => {
+        if (
+          voiceModeRef.current &&
+          openRef.current &&
+          typeof document !== "undefined" &&
+          document.visibilityState === "visible"
+        ) {
+          startListeningRef.current();
+        }
+      });
     }
   }, [messages, open, muted, speak]);
 
@@ -424,6 +497,7 @@ export function FounderCommandPortal({
 
           <form className="fcp-composer" onSubmit={(e) => { e.preventDefault(); void doSend(draft); }}>
             {error ? <p className="fcp-error" role="alert">{error}</p> : null}
+            {voiceNotice ? <p className="fcp-voice-notice" role="status">{voiceNotice}</p> : null}
             <div className="fcp-composer-row">
               <span className={`fcp-live${listening ? " fcp-live--on" : ""}`} aria-hidden>
                 <span className="fcp-live-dot" /> LIVE
