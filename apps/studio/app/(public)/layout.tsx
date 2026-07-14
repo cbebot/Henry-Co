@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { STUDIO_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { StudioAccountChip } from "@/components/studio/StudioAccountChip";
@@ -121,7 +121,7 @@ export default async function PublicLayout({ children }: { children: React.React
         }
       />
       <div className="flex-1">{children}</div>
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={{
           statement: t(
             "Serious software, delivered with sharper process — every brief to launch on one record.",
