@@ -19,9 +19,24 @@ import { createAdminSupabase } from "@/lib/supabase";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   const baseHealth = await buildHealthResponse();
   const status = healthStatusCode(baseHealth);
+
+  // Extended marketplace fields (notification-queue depth, automation runs) are
+  // operational internals — only an ops-authenticated caller receives them.
+  // Public callers get the canonical V3-10 health envelope (ok/checks/version),
+  // which is what the smoke test reads for its 200/503 signal.
+  const opsSecret = String(process.env.CRON_SECRET || "").trim();
+  const isOps =
+    opsSecret.length > 0 &&
+    request.headers.get("authorization") === `Bearer ${opsSecret}`;
+  if (!isOps) {
+    return NextResponse.json(baseHealth, {
+      status,
+      headers: { "Cache-Control": "no-store" },
+    });
+  }
 
   // Best-effort marketplace-specific status. Failures here are surfaced
   // as null fields, not as health failures — the canonical V3-10

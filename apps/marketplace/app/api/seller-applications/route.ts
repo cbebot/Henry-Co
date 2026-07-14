@@ -112,7 +112,11 @@ export async function GET() {
     .maybeSingle();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[seller-applications] Failed to load vendor application:", error);
+    return NextResponse.json(
+      { error: "We couldn't load your application right now. Please try again." },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({
@@ -277,7 +281,11 @@ export async function POST(request: Request) {
 
   const { data: application, error } = await mutation;
   if (error || !application) {
-    return NextResponse.json({ error: error?.message || "Application save failed." }, { status: 500 });
+    console.error("[seller-applications] Failed to save vendor application:", error);
+    return NextResponse.json(
+      { error: "We couldn't save your application. Please try again." },
+      { status: 500 }
+    );
   }
 
   if (mode === "submit") {

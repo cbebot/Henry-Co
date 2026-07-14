@@ -7,11 +7,6 @@ export async function GET() {
     {
       app: "henryco-marketplace",
       version: process.env.npm_package_version || "0.1.0",
-      commitSha:
-        process.env.VERCEL_GIT_COMMIT_SHA ||
-        process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ||
-        "development",
-      environment: process.env.VERCEL_ENV || process.env.NODE_ENV || "development",
       generatedAt: new Date().toISOString(),
     },
     {

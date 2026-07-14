@@ -25,8 +25,8 @@ function copyForMethod(method: PaymentMethod | null): {
       steps: [
         {
           icon: ShieldCheck,
-          title: "Escrow protection on by default",
-          body: "Seller payout is gated on fulfillment plus the cooling-off window. Open a dispute any time before then and the funds stay held.",
+          title: "Buyer protection on by default",
+          body: "Your payment stays protected until delivery is confirmed. Raise an issue any time before then and it stays held.",
         },
         {
           icon: Truck,
@@ -36,7 +36,7 @@ function copyForMethod(method: PaymentMethod | null): {
         {
           icon: Mail,
           title: "Receipts and updates land in your inbox",
-          body: "Email and in-app notifications fire on every status change. The full audit trail also lives under Account → Orders.",
+          body: "Email and in-app notifications fire on every status change. Your full order history lives under Account → Orders.",
         },
       ],
     };
@@ -44,10 +44,10 @@ function copyForMethod(method: PaymentMethod | null): {
 
   if (method === "bank_transfer") {
     return {
-      kicker: "Order placed · awaiting verification",
-      headline: "Proof submitted. Finance is reviewing.",
+      kicker: "Order placed · confirming payment",
+      headline: "Payment proof received — we're confirming it.",
       lead:
-        "Your transfer evidence is now with Henry Onyx finance. Verification typically lands within working hours; the timeline below updates the moment it does. We'll email and notify the second the order moves into fulfillment.",
+        "Your transfer proof has been submitted for review. Verification typically completes within working hours; the timeline below updates the moment it does. We'll email and notify you the second the order moves into fulfillment.",
       steps: [
         {
           icon: Clock3,
@@ -62,7 +62,7 @@ function copyForMethod(method: PaymentMethod | null): {
         {
           icon: Mail,
           title: "We'll reach out if anything's off",
-          body: "If the amount or reference doesn't match, the payment team contacts you on file before any status change.",
+          body: "If the amount or reference doesn't match, we'll reach out using the contact details on your account before any status changes.",
         },
       ],
     };
