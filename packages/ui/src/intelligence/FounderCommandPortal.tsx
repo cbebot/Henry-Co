@@ -122,6 +122,17 @@ export function FounderCommandPortal({
     }
   }, []);
 
+  // Visible work stages — the owner SEES what the machine is doing while a
+  // turn is in flight, like the great assistants do. The narration is honest:
+  // the server really does assemble the live company facts, then reasons,
+  // then writes — the timers only pace how that pipeline is announced.
+  const [workStage, setWorkStage] = useState<null | "reading" | "reasoning" | "composing">(null);
+  const stageTimersRef = useRef<number[]>([]);
+  const clearStageTimers = useCallback(() => {
+    for (const id of stageTimersRef.current) window.clearTimeout(id);
+    stageTimersRef.current = [];
+  }, []);
+
   const doSend = useCallback(
     async (text: string) => {
       const body = text.trim();
@@ -142,7 +153,22 @@ export function FounderCommandPortal({
       };
       setSentTurns((prev) => [...prev, userTurn]);
       pushLog("SYS: Query transmitted.");
+      clearStageTimers();
+      setWorkStage("reading");
+      pushLog("SYS: Reading live company data…");
+      stageTimersRef.current.push(
+        window.setTimeout(() => {
+          setWorkStage("reasoning");
+          pushLog("SYS: Reasoning…");
+        }, 2200),
+        window.setTimeout(() => {
+          setWorkStage("composing");
+          pushLog("SYS: Composing the reply…");
+        }, 6500),
+      );
       const result = await send({ body });
+      clearStageTimers();
+      setWorkStage(null);
       if (!result.ok) {
         setError(result.reason || t("That didn't go through."));
         setSentTurns((prev) => prev.filter((turn) => turn.id !== turnId));
@@ -152,7 +178,7 @@ export function FounderCommandPortal({
       }
       setSending(false);
     },
-    [send, sending, t, pushLog],
+    [send, sending, t, pushLog, clearStageTimers],
   );
 
   // New conversation — the hook's reset() clears chat.messages; also drop the
@@ -459,13 +485,34 @@ export function FounderCommandPortal({
   const supportHref = getAccountUrl("/support");
   const portalStyle = useMemo(() => ({ ["--fcp-accent" as string]: accent }) as CSSProperties, [accent]);
 
-  const statusLabel = listening
-    ? t("Listening")
-    : speaking
-      ? t("Speaking")
-      : typing || sending
-        ? t("Processing")
-        : t("Ready");
+  // The status line narrates the actual work: reading records → reasoning →
+  // composing while a turn is in flight; verifying / executing around a
+  // governed action; the voice states otherwise.
+  const statusLabel = chat.reauthNeeded
+    ? t("Verifying identity")
+    : chat.actionBusy
+      ? t("Executing")
+      : listening
+        ? t("Listening")
+        : speaking
+          ? t("Speaking")
+          : typing || sending
+            ? workStage === "reading"
+              ? t("Reading records")
+              : workStage === "composing"
+                ? t("Composing")
+                : t("Reasoning")
+            : t("Ready");
+
+  // Action lifecycle in the SYS feed: executing → (verify) → outcome.
+  useEffect(() => {
+    if (open && chat.actionBusy) pushLog("SYS: Executing through the guarded path…");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chat.actionBusy]);
+  useEffect(() => {
+    if (open && chat.reauthNeeded) pushLog("SYS: Identity verification required.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chat.reauthNeeded]);
 
   return (
     <>
