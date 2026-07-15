@@ -144,6 +144,25 @@ export const supportReplyGovernance: FounderActionGovernance = {
   driftKeys: ["status"],
 };
 
+export const socialPostGovernance: FounderActionGovernance = {
+  key: "owner.social.post",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  // A public post under the company name is irreversible — the print (fresh
+  // password step-up) is demanded at confirm.
+  requiresReauth: true,
+  reversibility: "irreversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      platform: z.enum(["x"]),
+      text: z.string().min(1).max(280),
+    })
+    .strict(),
+  driftKeys: ["platformReady"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -151,6 +170,7 @@ export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   sellerDecisionGovernance,
   divisionStatusGovernance,
   supportReplyGovernance,
+  socialPostGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */

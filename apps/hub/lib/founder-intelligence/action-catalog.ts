@@ -15,6 +15,7 @@ import {
 } from "@/lib/seller-decision-write";
 import { applyDivisionStatus, readDivisionStatus } from "@/lib/division-status-write";
 import { applySupportReply, readSupportThread } from "@/lib/support-reply-write";
+import { postToX, readXCreds } from "@/lib/social/x-client";
 import {
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -22,6 +23,7 @@ import {
   sellerDecisionGovernance,
   divisionStatusGovernance,
   supportReplyGovernance,
+  socialPostGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
 
@@ -366,6 +368,50 @@ const supportReply: FounderActionEntry = {
   entityType: "support_thread",
 };
 
+// ── Entry 7: social post to X (public voice, IRREVERSIBLE, reauth) ───────────
+//
+// The AI composes; the OWNER reads the exact text on the card, passes the
+// print (requiresReauth), and only then does the post publish through the
+// company's X account (OAuth 1.0a — non-expiring bot tokens, no refresh
+// rotation to burn). No card is ever shown while X isn't connected.
+
+const socialPost: FounderActionEntry = {
+  ...socialPostGovernance,
+  title: "Post to the company X account",
+  trueStateReader: async ({ params }) => {
+    if (params.platform !== "x") return null;
+    const platformReady = Boolean(readXCreds());
+    if (!platformReady) return null;
+    return { platform: "x", platformReady: true, text: params.text as string };
+  },
+  // driftKeys single-sourced from the governance spread (["platformReady"]).
+  confirmationCopy: (trueState) => ({
+    title: "Post to X",
+    body: `Publish this to the company X account — a public post cannot be unpublished:\n\n"${String(trueState.text)}"`,
+    confirmLabel: "Post to X",
+  }),
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    // AUDIT-FIRST-ABORT, matching every core: no trail, no post.
+    const admin = createAdminSupabase();
+    const { error: auditError } = await admin.from("staff_audit_logs").insert({
+      actor_id: ownerId,
+      actor_role: ownerRole || "owner",
+      action: "social.post.x",
+      entity: "social_post",
+      entity_id: null,
+      meta: { via: "founder_action", platform: "x", chars: String(trueState.text).length },
+    } as never);
+    if (auditError) {
+      return { ok: false, error: "Audit logging failed; nothing was posted." };
+    }
+    const posted = await postToX(String(trueState.text));
+    if (!posted.ok) return { ok: false, error: posted.error };
+    return { ok: true, executionRef: `social:x:${posted.tweetId}` };
+  },
+  auditAction: "founder.owner.social.post",
+  entityType: "social_post",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
@@ -373,6 +419,7 @@ export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [sellerDecision.key]: sellerDecision,
   [divisionStatus.key]: divisionStatus,
   [supportReply.key]: supportReply,
+  [socialPost.key]: socialPost,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */

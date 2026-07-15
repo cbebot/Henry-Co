@@ -88,6 +88,8 @@ function sampleFor(key: string): Record<string, unknown> {
       return { slug: "care", intent: "pause" };
     case "owner.support.reply":
       return { threadId: "c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f", body: "We're on it — the team is looking now." };
+    case "owner.social.post":
+      return { platform: "x", text: "Henry Onyx is live." };
     default:
       return {};
   }
