@@ -15,6 +15,7 @@ import {
 } from "@/lib/seller-decision-write";
 import { applyDivisionStatus, readDivisionStatus } from "@/lib/division-status-write";
 import { applySupportReply, readSupportThread } from "@/lib/support-reply-write";
+import { postToX, readXCreds } from "@/lib/social/x-client";
 import {
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -22,6 +23,8 @@ import {
   sellerDecisionGovernance,
   divisionStatusGovernance,
   supportReplyGovernance,
+  socialPostGovernance,
+  supportReplyBatchGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
 
@@ -366,6 +369,115 @@ const supportReply: FounderActionEntry = {
   entityType: "support_thread",
 };
 
+// ── Entry 7: social post to X (public voice, IRREVERSIBLE, reauth) ───────────
+//
+// The AI composes; the OWNER reads the exact text on the card, passes the
+// print (requiresReauth), and only then does the post publish through the
+// company's X account (OAuth 1.0a — non-expiring bot tokens, no refresh
+// rotation to burn). No card is ever shown while X isn't connected.
+
+const socialPost: FounderActionEntry = {
+  ...socialPostGovernance,
+  title: "Post to the company X account",
+  trueStateReader: async ({ params }) => {
+    if (params.platform !== "x") return null;
+    const platformReady = Boolean(readXCreds());
+    if (!platformReady) return null;
+    return { platform: "x", platformReady: true, text: params.text as string };
+  },
+  // driftKeys single-sourced from the governance spread (["platformReady"]).
+  confirmationCopy: (trueState) => ({
+    title: "Post to X",
+    body: `Publish this to the company X account — a public post cannot be unpublished:\n\n"${String(trueState.text)}"`,
+    confirmLabel: "Post to X",
+  }),
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    // AUDIT-FIRST-ABORT, matching every core: no trail, no post.
+    const admin = createAdminSupabase();
+    const { error: auditError } = await admin.from("staff_audit_logs").insert({
+      actor_id: ownerId,
+      actor_role: ownerRole || "owner",
+      action: "social.post.x",
+      entity: "social_post",
+      entity_id: null,
+      meta: { via: "founder_action", platform: "x", chars: String(trueState.text).length },
+    } as never);
+    if (auditError) {
+      return { ok: false, error: "Audit logging failed; nothing was posted." };
+    }
+    const posted = await postToX(String(trueState.text));
+    if (!posted.ok) return { ok: false, error: posted.error };
+    return { ok: true, executionRef: `social:x:${posted.tweetId}` };
+  },
+  auditAction: "founder.owner.social.post",
+  entityType: "social_post",
+};
+
+// ── Entry 8: BATCH support replies (compose many, confirm once) ──────────────
+//
+// "Reply to all of them" — the AI composes a reply per thread; the card lists
+// EVERY reply verbatim; one confirm (behind the print — mass outbound) sends
+// them one by one through the same core as the single reply. Threads that
+// closed since composing are dropped at propose; if the ready set changes
+// between card and confirm, the driftKey (readyCount) aborts to a fresh card.
+
+const supportReplyBatch: FounderActionEntry = {
+  ...supportReplyBatchGovernance,
+  title: "Send replies to several support threads",
+  trueStateReader: async ({ params }) => {
+    const raw = params.replies as Array<{ threadId: string; body: string }>;
+    const items: Array<{ threadId: string; subject: string; division: string; body: string }> = [];
+    for (const reply of raw) {
+      const thread = await readSupportThread(reply.threadId);
+      if (!thread) continue; // gone or closed — dropped from the batch
+      items.push({
+        threadId: thread.id,
+        subject: thread.subject,
+        division: thread.division,
+        body: reply.body,
+      });
+    }
+    if (items.length === 0) return null;
+    return { readyCount: items.length, items };
+  },
+  // driftKeys single-sourced from the governance spread (["readyCount"]).
+  confirmationCopy: (trueState) => {
+    const items = trueState.items as Array<{ subject: string; body: string }>;
+    const lines = items
+      .map((item, i) => `${i + 1}. "${item.subject}" → "${item.body}"`)
+      .join("\n\n");
+    return {
+      title: `Send ${items.length} ${items.length === 1 ? "reply" : "replies"}`,
+      body: `These go out as the team, one by one — sent messages cannot be unsent:\n\n${lines}`,
+      confirmLabel: `Send ${items.length} ${items.length === 1 ? "reply" : "replies"}`,
+    };
+  },
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const items = trueState.items as Array<{ threadId: string; body: string }>;
+    let sent = 0;
+    let firstError: string | null = null;
+    // Sequential on purpose: each reply audits + notifies independently, and a
+    // mid-batch failure must not abort the ones already sent — the ref reports
+    // the honest count.
+    for (const item of items) {
+      const applied = await applySupportReply({
+        threadId: item.threadId,
+        body: item.body,
+        actorId: ownerId,
+        actorRole: ownerRole,
+      });
+      if (applied.ok) sent += 1;
+      else if (!firstError) firstError = applied.error;
+    }
+    if (sent === 0) {
+      return { ok: false, error: firstError || "None of the replies could be sent." };
+    }
+    return { ok: true, executionRef: `support:batch:${sent}/${items.length}` };
+  },
+  auditAction: "founder.owner.support.reply_batch",
+  entityType: "support_thread",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
@@ -373,6 +485,8 @@ export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [sellerDecision.key]: sellerDecision,
   [divisionStatus.key]: divisionStatus,
   [supportReply.key]: supportReply,
+  [socialPost.key]: socialPost,
+  [supportReplyBatch.key]: supportReplyBatch,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */

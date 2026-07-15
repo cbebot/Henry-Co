@@ -88,6 +88,15 @@ function sampleFor(key: string): Record<string, unknown> {
       return { slug: "care", intent: "pause" };
     case "owner.support.reply":
       return { threadId: "c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f", body: "We're on it — the team is looking now." };
+    case "owner.social.post":
+      return { platform: "x", text: "Henry Onyx is live." };
+    case "owner.support.reply_batch":
+      return {
+        replies: [
+          { threadId: "c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f", body: "The team is on it now." },
+          { threadId: "d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a", body: "Resolved — check your dashboard." },
+        ],
+      };
     default:
       return {};
   }

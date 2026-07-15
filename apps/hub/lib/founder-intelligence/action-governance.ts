@@ -144,6 +144,53 @@ export const supportReplyGovernance: FounderActionGovernance = {
   driftKeys: ["status"],
 };
 
+export const socialPostGovernance: FounderActionGovernance = {
+  key: "owner.social.post",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  // A public post under the company name is irreversible — the print (fresh
+  // password step-up) is demanded at confirm.
+  requiresReauth: true,
+  reversibility: "irreversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      platform: z.enum(["x"]),
+      text: z.string().min(1).max(280),
+    })
+    .strict(),
+  driftKeys: ["platformReady"],
+};
+
+export const supportReplyBatchGovernance: FounderActionGovernance = {
+  key: "owner.support.reply_batch",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  // Mass outbound in one confirm — the print is demanded even though each
+  // individual reply wouldn't need it.
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      replies: z
+        .array(
+          z
+            .object({
+              threadId: z.string().uuid(),
+              body: z.string().min(1).max(2000),
+            })
+            .strict(),
+        )
+        .min(1)
+        .max(10),
+    })
+    .strict(),
+  driftKeys: ["readyCount"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -151,6 +198,8 @@ export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   sellerDecisionGovernance,
   divisionStatusGovernance,
   supportReplyGovernance,
+  socialPostGovernance,
+  supportReplyBatchGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */
