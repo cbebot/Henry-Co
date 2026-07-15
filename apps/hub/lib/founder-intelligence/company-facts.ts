@@ -2,6 +2,7 @@ import "server-only";
 
 import { getOwnerOverviewData } from "@/lib/owner-data";
 import { getFinanceLedgerSnapshot } from "@/lib/finance-ledger";
+import { getSignupsSnapshot } from "@/lib/owner-command/signups";
 
 /**
  * Founder Intelligence F2 — the COMPANY facts pack.
@@ -44,9 +45,10 @@ function kobo(amountKobo: number): string {
 }
 
 export async function buildCompanyFactsForFounderAI(): Promise<string> {
-  const [overview, finance] = await Promise.all([
+  const [overview, finance, signups] = await Promise.all([
     getOwnerOverviewData(),
     getFinanceLedgerSnapshot().catch(() => null),
+    getSignupsSnapshot().catch(() => null),
   ]);
 
   const lines: string[] = [];
@@ -68,6 +70,19 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
     }
   } else {
     lines.push("Ledger snapshot unavailable this turn (finance console still has it).");
+  }
+
+  // Signups — exact HEAD counts over customer_profiles (the same series the
+  // overview renders). The founder asks for this constantly; give the trend,
+  // not just the topline.
+  if (signups?.ok) {
+    const recent = signups.weekly.slice(-4);
+    const trend = recent.map((w) => `${w.weekStart}: ${w.count}`).join(", ");
+    lines.push(
+      `Signups: ${signups.last7d} in the last 7 days; ${signups.totalProfiles} accounts all-time. Weekly (start date: count) — ${trend}.`,
+    );
+  } else {
+    lines.push("Signup counts unavailable this turn (the overview page still has them).");
   }
 
   lines.push("", "Per division (revenue is the console rollup; unwired divisions show 0 by design):");
@@ -97,7 +112,7 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
 
   lines.push(
     "",
-    "Known coverage gaps (answer honestly about these): studio, jobs, property, and logistics revenue are not yet wired into the rollup; there is no signups time-series yet; refund amounts are not aggregated.",
+    "Known coverage gaps (answer honestly about these): studio, jobs, property, and logistics revenue are not yet wired into the rollup; refund amounts are not aggregated.",
   );
 
   return lines.join("\n").slice(0, 5800);

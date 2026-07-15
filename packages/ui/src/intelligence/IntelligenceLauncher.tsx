@@ -243,6 +243,14 @@ export function IntelligenceLauncherStyles() {
 .hc-il-action-card-body{margin:.45rem 0 0;font-size:.8rem;line-height:1.5;color:var(--hc-il-ink)}
 .hc-il-action-card-why{margin:.4rem 0 0;font-size:.74rem;line-height:1.45;color:var(--hc-il-ink-soft);font-style:italic}
 .hc-il-action-card-buttons{display:flex;gap:.5rem;margin-top:.65rem}
+/* Deep-action step-up (the owner's "print") — inline password verify on the card. */
+.hc-il-reauth{margin-top:.65rem;border-top:1px solid var(--hc-il-line);padding-top:.65rem}
+.hc-il-reauth-title{margin:0;font-size:.82rem;font-weight:700;color:var(--hc-il-ink)}
+.hc-il-reauth-body{margin:.25rem 0 .5rem;font-size:.76rem;line-height:1.45;color:var(--hc-il-ink-soft)}
+.hc-il-reauth-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.hc-il-reauth-input{flex:1 1 10rem;min-width:0;border:1px solid var(--hc-il-line);border-radius:999px;padding:.48rem .85rem;font-size:.82rem;background:var(--hc-il-surface);color:var(--hc-il-ink);outline:none}
+.hc-il-reauth-input:focus{border-color:var(--hc-il-accent,#C9A227);box-shadow:0 0 0 3px color-mix(in srgb,var(--hc-il-accent,#C9A227) 18%,transparent)}
+.hc-il-reauth-error{margin:.45rem 0 0;font-size:.75rem;color:var(--hc-il-danger,#b3261e)}
 .hc-il-action-confirm{border:none;border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer;background:var(--hc-il-accent,#C9A227);color:var(--hc-il-on-accent)}
 .hc-il-action-confirm:disabled{opacity:.6;cursor:default}
 .hc-il-action-cancel{border:1px solid var(--hc-il-line);border-radius:999px;padding:.5rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:var(--hc-il-ink-soft)}

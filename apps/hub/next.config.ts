@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname, "../.."),
   },
   async headers() {
-    return defaultSecurityHeadersConfig();
+    // microphone=(self): the Founder Intelligence portal (owner console on this
+    // app) uses SpeechRecognition for voice command. The default policy blocks
+    // the mic entirely, which makes listening silently impossible — the browser
+    // denies it before the permission prompt can even appear. (self) restricts
+    // it to our own origin; the user still grants per-site permission.
+    return defaultSecurityHeadersConfig({ permissions: { microphone: "(self)" } });
   },
   // The canonical legal routes are /privacy and /terms. These 308s catch the
   // conventional long-form URLs (and any external inbound links that assume

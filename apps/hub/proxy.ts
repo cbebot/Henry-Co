@@ -33,7 +33,12 @@ const csp = [
   "upgrade-insecure-requests",
 ].join("; ");
 
-const sharedSecurityHeaders = buildSecurityHeaders();
+// microphone=(self): the Founder Intelligence portal (owner console) listens
+// via SpeechRecognition. The default Permissions-Policy denies the microphone
+// outright — the browser blocks it before any permission prompt — so voice
+// could never work. (self) scopes it to our origin; per-site user consent
+// still applies. Mirrors next.config.ts (both layers emit this header).
+const sharedSecurityHeaders = buildSecurityHeaders({ permissions: { microphone: "(self)" } });
 
 function applyBaselineSecurityHeaders(res: NextResponse) {
   for (const { key, value } of sharedSecurityHeaders) {

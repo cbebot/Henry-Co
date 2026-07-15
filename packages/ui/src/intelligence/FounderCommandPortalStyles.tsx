@@ -102,6 +102,41 @@ export function FounderCommandPortalStyles() {
 .fcp-headline { margin-top: .6rem; font-family: var(--acct-font-display, var(--hc-font-serif, Georgia, serif));
   font-size: clamp(1.6rem, 3vw, 2.35rem); line-height: 1.08; letter-spacing: -.02em; font-weight: 540; color: #f6f1e7; text-wrap: balance; }
 .fcp-focus { margin-top: .7rem; font-size: .95rem; line-height: 1.55; color: rgba(243,237,225,.66); }
+.fcp-pulse { margin-top: 1.1rem; display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
+.fcp-pulse-chip { display: inline-flex; align-items: baseline; gap: .45rem; padding: .35rem .7rem; border-radius: .55rem;
+  border: 1px solid rgba(240,212,136,.14); background: rgba(255,255,255,.02); font-family: var(--fcp-mono); }
+.fcp-pulse-label { font-size: .58rem; letter-spacing: .18em; color: rgba(240,212,136,.55); }
+.fcp-pulse-value { font-size: .82rem; font-weight: 600; color: #f0d488; font-variant-numeric: tabular-nums; }
+
+.fcp-auto { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(240,212,136,.2); background: rgba(255,255,255,.03); color: rgba(243,237,225,.55);
+  font-family: var(--fcp-mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; transition: all .16s ease; }
+.fcp-auto svg { width: .85rem; height: .85rem; }
+.fcp-auto--on { border-color: rgba(127,214,191,.45); background: rgba(127,214,191,.08); color: #a6e9d4; }
+.fcp-auto:focus-visible { outline: 2px solid var(--fcp-accent,#c9a227); outline-offset: 2px; }
+.fcp-icon-btn--on { border-color: rgba(240,212,136,.45); background: rgba(240,212,136,.1); color: #f0d488; }
+
+.fcp-recent { position: absolute; top: 4.2rem; right: clamp(1rem, 3vw, 2.25rem); z-index: 5; width: min(22rem, calc(100vw - 2rem));
+  max-height: min(24rem, 60vh); overflow-y: auto; padding: .9rem; border-radius: 1rem;
+  border: 1px solid rgba(240,212,136,.2); background: rgba(10,14,21,.97); box-shadow: 0 24px 70px -18px rgba(0,0,0,.8);
+  animation: fcp-rise .25s cubic-bezier(.22,1,.36,1) both; }
+.fcp-recent-title { margin: 0 0 .5rem; font-family: var(--fcp-mono); font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(240,212,136,.7); }
+.fcp-recent-empty { margin: 0; font-size: .82rem; color: rgba(243,237,225,.55); }
+.fcp-recent-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+.fcp-recent-row { display: flex; align-items: center; gap: .4rem; }
+.fcp-recent-open { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .1rem;
+  padding: .5rem .65rem; border-radius: .65rem; border: 1px solid transparent; background: transparent; cursor: pointer;
+  color: #f3ede1; text-align: left; transition: background .15s ease, border-color .15s ease; }
+.fcp-recent-open:hover:not(:disabled) { background: rgba(240,212,136,.07); border-color: rgba(240,212,136,.18); }
+.fcp-recent-open:disabled { opacity: .5; }
+.fcp-recent-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .85rem; font-weight: 550; }
+.fcp-recent-when { font-family: var(--fcp-mono); font-size: .6rem; letter-spacing: .06em; color: rgba(243,237,225,.4); }
+.fcp-recent-del { flex: none; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: .55rem;
+  border: 1px solid transparent; background: transparent; color: rgba(243,237,225,.4); cursor: pointer; transition: all .15s ease; }
+.fcp-recent-del svg { width: .9rem; height: .9rem; }
+.fcp-recent-del:hover:not(:disabled) { color: #ffc9c9; background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.3); }
+.fcp-recent-open:focus-visible, .fcp-recent-del:focus-visible { outline: 2px solid var(--fcp-accent,#c9a227); outline-offset: 2px; }
+
 .fcp-cmds { margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: .55rem; justify-content: center; }
 .fcp-cmd { display: inline-flex; align-items: center; gap: .5rem; padding: .58rem 1rem; border-radius: 999px; cursor: pointer;
   border: 1px solid rgba(240,212,136,.28); background: rgba(240,212,136,.05); color: #f4ecd6; font-size: .86rem; font-weight: 550; font-family: inherit;
@@ -155,6 +190,7 @@ export function FounderCommandPortalStyles() {
 
 .fcp-composer { padding: .9rem clamp(1rem, 4vw, 2rem) .5rem; border-top: 1px solid rgba(201,162,39,.12); }
 .fcp-error { max-width: 46rem; margin: 0 auto .6rem; color: #ffc9c9; font-size: .85rem; text-align: center; }
+.fcp-voice-notice { max-width: 46rem; margin: 0 auto .6rem; color: #ffe6a1; font-size: .82rem; text-align: center; }
 .fcp-composer-row { max-width: 46rem; margin: 0 auto; display: flex; align-items: center; gap: .6rem; }
 .fcp-live { display: inline-flex; align-items: center; gap: .4rem; padding: 0 .6rem; height: 3rem; font-family: var(--fcp-mono); font-size: .68rem; letter-spacing: .18em; color: rgba(243,237,225,.4); }
 .fcp-live-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(243,237,225,.3); }
@@ -185,6 +221,8 @@ export function FounderCommandPortalStyles() {
 @media (max-width: 640px) {
   .fcp-mode-btn { padding: .35rem .55rem; font-size: 0; gap: 0; }
   .fcp-mode-btn svg { width: 1.05rem; height: 1.05rem; }
+  .fcp-auto { padding: .35rem .55rem; font-size: 0; gap: 0; letter-spacing: 0; }
+  .fcp-auto svg { width: 1rem; height: 1rem; }
   .fcp-mark, .fcp-footer span:nth-child(2) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {

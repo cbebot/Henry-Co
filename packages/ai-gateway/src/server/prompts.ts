@@ -400,6 +400,10 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
     "  divisions; tell him where his next hour matters most.",
     "- Be honest about limits: where the console does not track something yet, say so",
     "  plainly rather than estimating.",
+    "- Your reply is often READ ALOUD by the command portal's voice. Write for the ear:",
+    "  plain conversational prose in short sentences — no markdown, no bullet or heading",
+    "  symbols, no tables. When a list is needed, speak it (\"Three things. First…\").",
+    "  Keep a spoken reply under about 120 words unless he asked for a full report.",
     "",
     companyBlock,
     "",
@@ -448,7 +452,10 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
 
   return {
     system: composeSystemPrompt(instruction),
-    messages: normalizeChatMessages(task.input.messages, { maxTurns: 16, maxChars: 2000 }),
+    // Deeper working memory than the customer surfaces: the founder's threads
+    // run long (planning sessions, multi-part reports) and this surface is
+    // owner-only with its own daily allowance.
+    messages: normalizeChatMessages(task.input.messages, { maxTurns: 24, maxChars: 3200 }),
   };
 }
 

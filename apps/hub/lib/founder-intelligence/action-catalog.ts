@@ -13,11 +13,15 @@ import {
   readSellerApplication,
   type SellerDecision,
 } from "@/lib/seller-decision-write";
+import { applyDivisionStatus, readDivisionStatus } from "@/lib/division-status-write";
+import { applySupportReply, readSupportThread } from "@/lib/support-reply-write";
 import {
   brandSettingsGovernance,
   staffStatusGovernance,
   kycReviewGovernance,
   sellerDecisionGovernance,
+  divisionStatusGovernance,
+  supportReplyGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
 
@@ -278,11 +282,97 @@ const sellerDecision: FounderActionEntry = {
   entityType: "marketplace_vendor_application",
 };
 
+// ── Entry 5: division pause / resume (operations, reversible, REAUTH) ────────
+//
+// "Pause care" by voice. Removing a division from every public surface is a
+// deep action, so the governance demands the founder's print (fresh password
+// step-up) at confirm even though no money moves. Writes the same
+// company_divisions.status the settings page writes; the public live-divisions
+// filter reacts within a minute.
+
+const divisionStatus: FounderActionEntry = {
+  ...divisionStatusGovernance,
+  title: "Pause or resume a division",
+  trueStateReader: async ({ params }) => {
+    const state = await readDivisionStatus(params.slug as string);
+    if (!state) return null;
+    const intent = params.intent as "pause" | "resume";
+    const targetStatus = intent === "pause" ? "paused" : "active";
+    // No-op guard at PROPOSE: already in the target state → no card.
+    if (state.status === targetStatus) return null;
+    return { ...state, intent };
+  },
+  // driftKeys single-sourced from the governance spread (["status"]).
+  confirmationCopy: (trueState) => {
+    const name = String(trueState.name || trueState.slug);
+    const intent = String(trueState.intent);
+    return intent === "pause"
+      ? {
+          title: `Pause ${name}`,
+          body: `Pause the ${name} division. It disappears from every public footer and listing within a minute; nothing is deleted and resume restores it instantly.`,
+          confirmLabel: "Pause division",
+        }
+      : {
+          title: `Resume ${name}`,
+          body: `Bring the ${name} division back live. It returns to every public surface within a minute.`,
+          confirmLabel: "Resume division",
+        };
+  },
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const applied = await applyDivisionStatus({
+      slug: String(trueState.slug),
+      intent: trueState.intent as "pause" | "resume",
+      actorId: ownerId,
+      actorRole: ownerRole,
+    });
+    if (!applied.ok) return { ok: false, error: applied.error };
+    return { ok: true, executionRef: applied.executionRef };
+  },
+  auditAction: "founder.owner.division.status.set",
+  entityType: "company_division",
+};
+
+// ── Entry 6: support reply (comms, hard-to-reverse, caller-authored body) ────
+//
+// The AI composes the reply; the OWNER reads the exact text on the card and
+// confirms; the core posts it through the same support_messages spine the
+// staff console uses. A sent message cannot be unsent — the copy says so.
+
+const supportReply: FounderActionEntry = {
+  ...supportReplyGovernance,
+  title: "Reply to a support thread as the team",
+  trueStateReader: async ({ params }) => {
+    const state = await readSupportThread(params.threadId as string);
+    if (!state) return null;
+    return { ...state, threadId: state.id, body: params.body as string };
+  },
+  // driftKeys single-sourced from the governance spread (["status"]).
+  confirmationCopy: (trueState) => ({
+    title: `Reply to "${String(trueState.subject)}"`,
+    body: `Send this reply to the customer (it cannot be unsent):\n\n"${String(trueState.body)}"`,
+    confirmLabel: "Send the reply",
+  }),
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const applied = await applySupportReply({
+      threadId: String(trueState.threadId),
+      body: String(trueState.body),
+      actorId: ownerId,
+      actorRole: ownerRole,
+    });
+    if (!applied.ok) return { ok: false, error: applied.error };
+    return { ok: true, executionRef: applied.executionRef };
+  },
+  auditAction: "founder.owner.support.reply",
+  entityType: "support_thread",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
   [kycReview.key]: kycReview,
   [sellerDecision.key]: sellerDecision,
+  [divisionStatus.key]: divisionStatus,
+  [supportReply.key]: supportReply,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */
