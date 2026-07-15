@@ -452,7 +452,10 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
 
   return {
     system: composeSystemPrompt(instruction),
-    messages: normalizeChatMessages(task.input.messages, { maxTurns: 16, maxChars: 2000 }),
+    // Deeper working memory than the customer surfaces: the founder's threads
+    // run long (planning sessions, multi-part reports) and this surface is
+    // owner-only with its own daily allowance.
+    messages: normalizeChatMessages(task.input.messages, { maxTurns: 24, maxChars: 3200 }),
   };
 }
 

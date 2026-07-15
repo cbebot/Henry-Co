@@ -232,7 +232,10 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     billable: false,
     ruleBookKey: DEFAULT_RULE_BOOK_KEY,
     modelTier: "deep",
-    maxOutputTokens: 1600,
+    // The founder's working surface: enough headroom for a full structured
+    // report in one turn (it already runs the deep tier — depth, not tier,
+    // is the lever left).
+    maxOutputTokens: 2400,
     maxCalls: 1,
     // One person holds this surface, but the anti-abuse lesson still applies —
     // a leaked owner session must not be able to burn unbounded provider spend.

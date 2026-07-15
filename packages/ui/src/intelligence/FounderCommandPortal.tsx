@@ -318,8 +318,21 @@ export function FounderCommandPortal({
       }
     },
   });
-  const { listening, speaking, transcript, muted, setMuted, canListen, canSpeak, startListening, stopListening, speak } =
-    voice;
+  const {
+    listening,
+    speaking,
+    transcript,
+    muted,
+    setMuted,
+    canListen,
+    canSpeak,
+    startListening,
+    stopListening,
+    speak,
+    wakeActive,
+    startWake,
+    stopWake,
+  } = voice;
   useEffect(() => {
     startListeningRef.current = startListening;
   }, [startListening]);
@@ -337,6 +350,23 @@ export function FounderCommandPortal({
     openRef.current = open;
     if (!open) stopListening();
   }, [open, stopListening]);
+
+  // Wake word — while the portal idles in voice mode it listens for its name
+  // ("Henry Onyx…"). Hearing it answers "Yes?" and opens a command turn, so
+  // the owner never touches the mic button. The wake listener yields the
+  // microphone whenever anything else needs it (command turn, speech, close).
+  useEffect(() => {
+    const idle = open && voiceMode && !listening && !speaking && !sending && !typing && !muted;
+    if (!idle) {
+      stopWake();
+      return;
+    }
+    startWake(() => {
+      pushLog("SYS: At your service.");
+      void speak(t("Yes?")).then(() => startListeningRef.current());
+    });
+    return () => stopWake();
+  }, [open, voiceMode, listening, speaking, sending, typing, muted, startWake, stopWake, speak, t, pushLog]);
 
   useEffect(() => {
     try {
@@ -502,7 +532,9 @@ export function FounderCommandPortal({
               : workStage === "composing"
                 ? t("Composing")
                 : t("Reasoning")
-            : t("Ready");
+            : wakeActive
+              ? t("Standing by — say “Henry Onyx”")
+              : t("Ready");
 
   // Action lifecycle in the SYS feed: executing → (verify) → outcome.
   useEffect(() => {

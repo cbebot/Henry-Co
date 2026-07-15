@@ -131,7 +131,21 @@ export type FounderVoice = {
   /** Speak a reply aloud; resolves when finished (or immediately when muted/unsupported). */
   speak: (text: string) => Promise<void>;
   cancelSpeech: () => void;
+  /** True while the always-on wake-phrase listener is running. */
+  wakeActive: boolean;
+  /**
+   * Start the always-on wake listener ("Henry Onyx…"). Continuous, restart-on-
+   * end, never auto-sends; fires onWake once when the phrase is heard and
+   * stops itself (the host then opens a real command turn). Silently refuses
+   * while a command turn is listening.
+   */
+  startWake: (onWake: () => void) => void;
+  stopWake: () => void;
 };
+
+/** The phrases that wake the portal. Deliberately fuzzy — ASR mangles brand
+ *  names ("henry onyx" → "henry on x", "henri onix"). */
+const WAKE_RE = /\bhenry\b|\bonyx\b|\bon[iy]x\b|\bhey\s+(?:henry|onyx)\b/i;
 
 export function useFounderVoice({
   lang = "en-US",
@@ -157,6 +171,12 @@ export function useFounderVoice({
   const errorRef = useRef<((k: FounderVoiceErrorKind) => void) | undefined>(onError);
   errorRef.current = onError;
   const mutedRef = useRef(false);
+  // Wake listener state — its own recognition instance, never the command one.
+  const [wakeActive, setWakeActive] = useState(false);
+  const wakeRecRef = useRef<SpeechRecognitionLike | null>(null);
+  const wakeWantedRef = useRef(false);
+  const wakeCallbackRef = useRef<(() => void) | null>(null);
+  const listeningRef = useRef(false);
 
   // Voice inventory — Chrome populates getVoices() asynchronously; without the
   // voiceschanged subscription the first replies get the robotic default.
@@ -184,6 +204,12 @@ export function useFounderVoice({
     return () => {
       try {
         recognitionRef.current?.abort();
+      } catch {
+        /* already stopped */
+      }
+      wakeWantedRef.current = false;
+      try {
+        wakeRecRef.current?.abort();
       } catch {
         /* already stopped */
       }
@@ -297,6 +323,14 @@ export function useFounderVoice({
       errorRef.current?.("unavailable");
       return;
     }
+    // One microphone, one recogniser: the wake listener yields to a command turn.
+    wakeWantedRef.current = false;
+    try {
+      wakeRecRef.current?.abort();
+    } catch {
+      /* noop */
+    }
+    setWakeActive(false);
     // Barge-in: the owner talking over the assistant interrupts it.
     cancelSpeech();
     try {
@@ -340,6 +374,7 @@ export function useFounderVoice({
     };
     rec.onend = () => {
       setListening(false);
+      listeningRef.current = false;
       const text = finalText.trim();
       setTranscript("");
       if (text) {
@@ -356,9 +391,11 @@ export function useFounderVoice({
     try {
       rec.start();
       setListening(true);
+      listeningRef.current = true;
       setTranscript("");
     } catch {
       setListening(false);
+      listeningRef.current = false;
       errorRef.current?.("unavailable");
     }
   }, [lang, cancelSpeech]);
@@ -370,7 +407,89 @@ export function useFounderVoice({
       /* noop */
     }
     setListening(false);
+    listeningRef.current = false;
   }, []);
+
+  // ── The wake listener — "Henry Onyx…" opens a command turn ────────────────
+  // A separate continuous recogniser that idles in the background, restarts
+  // itself when the engine times out, and NEVER sends anything: hearing the
+  // wake phrase only hands control back to the host via onWake. It yields the
+  // microphone to command turns and to speech output (the host orchestrates
+  // when it may run).
+  const stopWake = useCallback(() => {
+    wakeWantedRef.current = false;
+    try {
+      wakeRecRef.current?.abort();
+    } catch {
+      /* noop */
+    }
+    wakeRecRef.current = null;
+    setWakeActive(false);
+  }, []);
+
+  const startWake = useCallback(
+    (onWake: () => void) => {
+      const Ctor = getRecognitionCtor();
+      if (!Ctor || listeningRef.current || wakeWantedRef.current) return;
+      wakeCallbackRef.current = onWake;
+      wakeWantedRef.current = true;
+
+      const spin = () => {
+        if (!wakeWantedRef.current || listeningRef.current) return;
+        const rec = new Ctor();
+        rec.lang = lang;
+        rec.continuous = true;
+        rec.interimResults = true;
+        let woke = false;
+        rec.onresult = (event: unknown) => {
+          if (woke || !wakeWantedRef.current) return;
+          const e = event as { results: ArrayLike<ArrayLike<{ transcript: string }>> };
+          let heard = "";
+          for (let i = 0; i < e.results.length; i++) {
+            heard += e.results[i][0]?.transcript ?? "";
+          }
+          if (WAKE_RE.test(heard)) {
+            woke = true;
+            wakeWantedRef.current = false;
+            try {
+              rec.abort();
+            } catch {
+              /* noop */
+            }
+            setWakeActive(false);
+            wakeCallbackRef.current?.();
+          }
+        };
+        rec.onerror = (event: unknown) => {
+          const code = String((event as { error?: unknown })?.error ?? "");
+          // Permission loss kills the loop for good; transient errors restart.
+          if (code === "not-allowed" || code === "service-not-allowed") {
+            wakeWantedRef.current = false;
+            setWakeActive(false);
+          }
+        };
+        rec.onend = () => {
+          // The engine times continuous sessions out — respin while wanted.
+          if (wakeWantedRef.current && !listeningRef.current) {
+            window.setTimeout(spin, 250);
+          } else if (!wakeWantedRef.current) {
+            setWakeActive(false);
+          }
+        };
+        wakeRecRef.current = rec;
+        try {
+          rec.start();
+          setWakeActive(true);
+        } catch {
+          wakeWantedRef.current = false;
+          setWakeActive(false);
+        }
+      };
+
+      spin();
+    },
+    [lang],
+  );
 
   const setMuted = useCallback(
     (v: boolean) => {
@@ -393,5 +512,8 @@ export function useFounderVoice({
     stopListening,
     speak,
     cancelSpeech,
+    wakeActive,
+    startWake,
+    stopWake,
   };
 }
