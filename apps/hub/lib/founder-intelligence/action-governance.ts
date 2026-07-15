@@ -163,6 +163,34 @@ export const socialPostGovernance: FounderActionGovernance = {
   driftKeys: ["platformReady"],
 };
 
+export const supportReplyBatchGovernance: FounderActionGovernance = {
+  key: "owner.support.reply_batch",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  // Mass outbound in one confirm — the print is demanded even though each
+  // individual reply wouldn't need it.
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      replies: z
+        .array(
+          z
+            .object({
+              threadId: z.string().uuid(),
+              body: z.string().min(1).max(2000),
+            })
+            .strict(),
+        )
+        .min(1)
+        .max(10),
+    })
+    .strict(),
+  driftKeys: ["readyCount"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -171,6 +199,7 @@ export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   divisionStatusGovernance,
   supportReplyGovernance,
   socialPostGovernance,
+  supportReplyBatchGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */

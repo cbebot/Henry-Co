@@ -25,9 +25,12 @@ export interface FounderAssistAction {
  * dropped before the owner ever sees a card. The AI cannot fill an amount —
  * money-relevant values are server-fetched true state by construction.
  */
+/** A flat batch item — string fields only (e.g. one reply: {threadId, body}). */
+export type FounderActionBatchItem = Record<string, string>;
+
 export interface FounderProposedAction {
   key: string;
-  params: Record<string, string | number | boolean>;
+  params: Record<string, string | number | boolean | FounderActionBatchItem[]>;
   /** One short sentence of the assistant's reasoning, shown on the card. */
   rationale?: string;
 }
@@ -48,6 +51,12 @@ const MAX_TARGET_CHARS = 64;
 const MAX_ACTION_PARAMS = 12;
 const MAX_PARAM_STRING_CHARS = 500;
 const MAX_RATIONALE_CHARS = 240;
+// Batch params (e.g. many support replies in one action): a bounded array of
+// FLAT string records. Bounds are transport-level only — the hub's strict
+// schema re-validates every item before the owner ever sees a card.
+const MAX_BATCH_ITEMS = 10;
+const MAX_BATCH_ITEM_KEYS = 4;
+const MAX_BATCH_STRING_CHARS = 2000;
 
 /**
  * Sanitize the AI-proposed action into a flat, bounded shape. This is only the
@@ -60,7 +69,7 @@ function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
   const key = String(record.key ?? "").trim().slice(0, MAX_TARGET_CHARS);
   if (!key) return null;
 
-  const params: Record<string, string | number | boolean> = {};
+  const params: Record<string, string | number | boolean | FounderActionBatchItem[]> = {};
   const rawParams = record.params;
   if (rawParams && typeof rawParams === "object" && !Array.isArray(rawParams)) {
     let count = 0;
@@ -74,6 +83,26 @@ function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
         params[cleanName] = value;
       } else if (typeof value === "boolean") {
         params[cleanName] = value;
+      } else if (Array.isArray(value)) {
+        // Bounded batch: ≤10 FLAT items, string values only (≤2000 chars,
+        // ≤4 keys each). Anything nested, non-string, or oversized is dropped
+        // item-by-item; an empty result drops the param entirely.
+        const items: FounderActionBatchItem[] = [];
+        for (const raw of value.slice(0, MAX_BATCH_ITEMS)) {
+          if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+          const item: FounderActionBatchItem = {};
+          let keys = 0;
+          for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+            if (keys >= MAX_BATCH_ITEM_KEYS) break;
+            const cleanKey = k.trim().slice(0, 64);
+            if (!cleanKey || typeof v !== "string") continue;
+            item[cleanKey] = v.slice(0, MAX_BATCH_STRING_CHARS);
+            keys += 1;
+          }
+          if (Object.keys(item).length > 0) items.push(item);
+        }
+        if (items.length === 0) continue;
+        params[cleanName] = items;
       } else {
         continue;
       }
