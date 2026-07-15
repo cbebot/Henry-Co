@@ -191,6 +191,24 @@ export const supportReplyBatchGovernance: FounderActionGovernance = {
   driftKeys: ["readyCount"],
 };
 
+export const productReviewGovernance: FounderActionGovernance = {
+  key: "owner.marketplace.product.review",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  reversibility: "reversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      productId: z.string().uuid(),
+      decision: z.enum(["approved", "changes_requested", "rejected"]),
+      note: z.string().max(1000).optional().default(""),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -200,6 +218,7 @@ export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   supportReplyGovernance,
   socialPostGovernance,
   supportReplyBatchGovernance,
+  productReviewGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */
