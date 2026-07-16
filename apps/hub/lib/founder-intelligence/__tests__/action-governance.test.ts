@@ -97,6 +97,8 @@ function sampleFor(key: string): Record<string, unknown> {
           { threadId: "d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a", body: "Resolved — check your dashboard." },
         ],
       };
+    case "owner.marketplace.product.review":
+      return { productId: "e5f6a7b8-c9d0-4e1f-8a2b-3c4d5e6f7a8b", decision: "approved" };
     default:
       return {};
   }

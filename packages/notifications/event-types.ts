@@ -26,6 +26,11 @@ export type EventTypeId =
   // first-class users of the shim.
   | "logistics.shipment.update"
   | "marketplace.order.update"
+  // Review verdicts delivered to the seller (application + product). The
+  // seller-decision core already publishes marketplace.seller.review — it was
+  // silently failing validation while unlisted (latent since F3 tranche 2).
+  | "marketplace.seller.review"
+  | "marketplace.product.review"
   | "property.viewing.update"
   | "learn.enrollment.update"
   | "studio.project.update"
@@ -82,6 +87,16 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeSpec> = {
     defaultSeverity: "info",
     deepLinkTemplate: "/marketplace",
     allowedPayloadKeys: [],
+  },
+  "marketplace.seller.review": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/vendor",
+    allowedPayloadKeys: ["decision", "storeName", "note"],
+  },
+  "marketplace.product.review": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/vendor",
+    allowedPayloadKeys: ["decision", "productTitle", "note"],
   },
   "property.viewing.update": {
     defaultSeverity: "info",

@@ -17,6 +17,11 @@ import { applyDivisionStatus, readDivisionStatus } from "@/lib/division-status-w
 import { applySupportReply, readSupportThread } from "@/lib/support-reply-write";
 import { postToX, readXCreds } from "@/lib/social/x-client";
 import {
+  applyProductReview,
+  readProductReview,
+  type ProductReviewDecision,
+} from "@/lib/product-review-write";
+import {
   brandSettingsGovernance,
   staffStatusGovernance,
   kycReviewGovernance,
@@ -25,6 +30,7 @@ import {
   supportReplyGovernance,
   socialPostGovernance,
   supportReplyBatchGovernance,
+  productReviewGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
 
@@ -478,6 +484,61 @@ const supportReplyBatch: FounderActionEntry = {
   entityType: "support_thread",
 };
 
+// ── Entry 9: marketplace product review (catalog verdicts, reversible) ───────
+//
+// "Approve the new product from <store>" — mirrors the marketplace console's
+// admin_product_decision write; the vendor is notified with the verdict.
+
+const productReview: FounderActionEntry = {
+  ...productReviewGovernance,
+  title: "Approve, reject, or request changes on a product",
+  trueStateReader: async ({ params }) => {
+    const state = await readProductReview(params.productId as string);
+    if (!state) return null;
+    const decision = params.decision as string;
+    if (state.status === decision) return null; // no-op guard at propose
+    return { ...state, decision, note: (params.note as string) ?? "" };
+  },
+  // driftKeys single-sourced from the governance spread (["status"]).
+  confirmationCopy: (trueState) => {
+    const decision = String(trueState.decision);
+    const title = String(trueState.title);
+    const store = String(trueState.vendorStore);
+    if (decision === "approved") {
+      return {
+        title: "Approve product",
+        body: `Approve "${title}" from ${store} — it goes live in the catalog. The seller is notified.`,
+        confirmLabel: "Approve product",
+      };
+    }
+    if (decision === "changes_requested") {
+      return {
+        title: "Request product changes",
+        body: `Ask ${store} for changes to "${title}" before it can go live. They are notified with your note.`,
+        confirmLabel: "Request changes",
+      };
+    }
+    return {
+      title: "Reject product",
+      body: `Reject "${title}" from ${store}. It stays out of the catalog; the seller is notified.`,
+      confirmLabel: "Reject product",
+    };
+  },
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const applied = await applyProductReview({
+      productId: String(trueState.productId),
+      decision: trueState.decision as ProductReviewDecision,
+      note: String(trueState.note ?? ""),
+      actorId: ownerId,
+      actorRole: ownerRole,
+    });
+    if (!applied.ok) return { ok: false, error: applied.error };
+    return { ok: true, executionRef: applied.executionRef };
+  },
+  auditAction: "founder.owner.marketplace.product.review",
+  entityType: "marketplace_product",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
@@ -487,6 +548,7 @@ export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [supportReply.key]: supportReply,
   [socialPost.key]: socialPost,
   [supportReplyBatch.key]: supportReplyBatch,
+  [productReview.key]: productReview,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */
