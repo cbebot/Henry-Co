@@ -12,8 +12,5 @@
   },
   "dependencies": {
     "@henryco/config": "workspace:*"
-  },
-  "devDependencies": {
-    "tsx": "^4.20.6"
   }
 }
