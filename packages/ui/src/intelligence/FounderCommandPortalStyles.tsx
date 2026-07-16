@@ -116,6 +116,25 @@ export function FounderCommandPortalStyles() {
 .fcp-auto:focus-visible { outline: 2px solid var(--fcp-accent,#c9a227); outline-offset: 2px; }
 .fcp-icon-btn--on { border-color: rgba(240,212,136,.45); background: rgba(240,212,136,.1); color: #f0d488; }
 
+/* Readiness alert — shown when a deploy-time gate is closed, so the owner sees
+   WHY the AI is dark instead of a silent refusal. Warm-warning, never alarming. */
+.fcp-health {
+  display: flex; gap: .75rem; align-items: flex-start;
+  margin: .75rem clamp(1rem, 3vw, 2.25rem) 0;
+  padding: .85rem 1rem; border-radius: .9rem;
+  border: 1px solid rgba(240,212,136,.35);
+  background: linear-gradient(180deg, rgba(240,212,136,.1), rgba(240,212,136,.04));
+}
+.fcp-health-dot { flex: none; margin-top: .35rem; width: 8px; height: 8px; border-radius: 999px;
+  background: #f0d488; box-shadow: 0 0 10px 1px rgba(240,212,136,.7); }
+.fcp-health-body { min-width: 0; }
+.fcp-health-title { margin: 0; font-size: .9rem; font-weight: 650; color: #f6efdd; }
+.fcp-health-summary { margin: .25rem 0 0; font-size: .82rem; line-height: 1.5; color: rgba(243,237,225,.78); }
+.fcp-health-list { margin: .5rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: .4rem; }
+.fcp-health-list li code { font-family: var(--fcp-mono); font-size: .72rem; color: #201700;
+  background: #f0d488; padding: .15rem .5rem; border-radius: .4rem; }
+.fcp-health-note { margin: .5rem 0 0; font-size: .74rem; color: rgba(240,212,136,.85); }
+
 .fcp-recent { position: absolute; top: 4.2rem; right: clamp(1rem, 3vw, 2.25rem); z-index: 5; width: min(22rem, calc(100vw - 2rem));
   max-height: min(24rem, 60vh); overflow-y: auto; padding: .9rem; border-radius: 1rem;
   border: 1px solid rgba(240,212,136,.2); background: rgba(10,14,21,.97); box-shadow: 0 24px 70px -18px rgba(0,0,0,.8);

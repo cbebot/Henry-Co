@@ -51,8 +51,19 @@ export interface FounderCommandPortalProps {
   endpoint: string;
   briefingEndpoint: string;
   conversationsEndpoint: string;
+  /** Owner-only readiness check — reports which deploy-time gate is closed when
+   *  the AI is dark, so the portal explains WHY instead of failing in silence. */
+  healthEndpoint?: string;
   accent?: string;
 }
+
+type AiHealth = {
+  ready: boolean;
+  actionsReady?: boolean;
+  summary: string;
+  missing: string[];
+  mustRedeploy?: boolean;
+};
 
 type Briefing = {
   headline: string;
@@ -85,12 +96,14 @@ export function FounderCommandPortal({
   endpoint,
   briefingEndpoint,
   conversationsEndpoint,
+  healthEndpoint,
   accent = "#C9A227",
 }: FounderCommandPortalProps) {
   const chat = useIntelligenceChat({ division, endpoint });
   const { t, messages, typing, send, hydrate, reset, proposedAction, actionOutcome } = chat;
 
   const [open, setOpen] = useState(false);
+  const [health, setHealth] = useState<AiHealth | null>(null);
   const [briefing, setBriefing] = useState<Briefing | null>(null);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -417,6 +430,20 @@ export function FounderCommandPortal({
     let cancelled = false;
     pushLog("SYS: Henry Onyx Intelligence online.");
 
+    // Readiness FIRST — if a deploy-time gate is closed, say so plainly instead
+    // of letting every turn refuse in silence. Owner-only, unaffected by the AI
+    // flags themselves, so it answers precisely when the AI is dark.
+    if (healthEndpoint) {
+      void fetch(healthEndpoint, { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: AiHealth | null) => {
+          if (cancelled || !data || typeof data.ready !== "boolean") return;
+          setHealth(data);
+          pushLog(data.ready ? "SYS: All systems live." : "SYS: AI is OFF — a switch is missing.");
+        })
+        .catch(() => undefined);
+    }
+
     void fetch(briefingEndpoint, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: Briefing | null) => {
@@ -669,6 +696,28 @@ export function FounderCommandPortal({
               </button>
             </span>
           </header>
+
+          {health && !health.ready ? (
+            <div className="fcp-health" role="alert">
+              <span className="fcp-health-dot" aria-hidden />
+              <div className="fcp-health-body">
+                <p className="fcp-health-title">{t("Henry Onyx Intelligence is installed but switched OFF")}</p>
+                <p className="fcp-health-summary">{health.summary}</p>
+                {health.missing.length > 0 ? (
+                  <ul className="fcp-health-list">
+                    {health.missing.map((key) => (
+                      <li key={key}><code>{key}</code></li>
+                    ))}
+                  </ul>
+                ) : null}
+                {health.mustRedeploy ? (
+                  <p className="fcp-health-note">
+                    {t("These are build-time settings — redeploy the app after setting them, or they never take effect.")}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
 
           {recentOpen ? (
             <div className="fcp-recent" role="region" aria-label={t("Recent conversations")}>
