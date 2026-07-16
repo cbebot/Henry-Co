@@ -2,11 +2,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "node:crypto";
 
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
-import { interpretFounderAssistOutput, type ChatMessage } from "@henryco/ai-gateway";
+import {
+  interpretFounderAssistOutput,
+  type ChatMessage,
+  type FounderAssistTurn,
+} from "@henryco/ai-gateway";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { buildCompanyFactsForFounderAI } from "@/lib/founder-intelligence/company-facts";
 import { persistFounderTurn } from "@/lib/founder-intelligence/persist";
 import { listFounderActionsForPrompt } from "@/lib/founder-intelligence/action-catalog";
+import {
+  listFounderLookupsForPrompt,
+  runFounderLookup,
+} from "@/lib/founder-intelligence/lookup-catalog";
 import { resolveProposedAction } from "@/lib/founder-intelligence/propose";
 
 export const runtime = "nodejs";
@@ -68,28 +76,62 @@ export async function POST(request: NextRequest) {
       )
     : undefined;
 
-  const result = await runAiTask(
-    {
-      surface: "hub.founder.assist",
-      actorId: auth.user.id,
-      input: { messages, company, actions },
-      idempotencyKey: randomUUID(),
-    },
-    // The audit option is what makes "every call is audited" TRUE — without it the
-    // gateway writes no henry_events/audit rows (review finding, 2026-07-10). The
-    // most privileged AI surface is exactly where a leaked-session investigation
-    // needs a durable trail.
-    { billing: noBillingPort, audit: { supabase: auth.supabase as never } },
-  );
+  // F4 — the closed READ catalog is always offered (owner-gated, read-only):
+  // the assistant may request one server-run lookup per model turn to fetch the
+  // records (ids, thread messages, pending applications) it needs.
+  const lookups = listFounderLookupsForPrompt();
 
-  if (!result.ok) {
-    const status = result.error.code === "rate_limited" ? 429 : 502;
-    return NextResponse.json({ error: result.error.message }, { status });
-  }
+  // The lookup loop: model turn → (optional) server-run read → follow-up model
+  // turn WITH the records, inside this same POST. Bounded to MAX_LOOKUPS reads
+  // (≤ MAX_LOOKUPS+1 model calls); each call is individually audited by the
+  // gateway. The intermediate exchange is transport-only — persistence below
+  // stores the owner's question and the FINAL answer, exactly as before.
+  const MAX_LOOKUPS = 2;
+  let convo: ChatMessage[] = messages;
+  let turn: FounderAssistTurn | null = null;
 
-  const turn = interpretFounderAssistOutput(result.value.output);
-  if (!turn) {
-    return NextResponse.json({ error: "Please try that again." }, { status: 502 });
+  for (let round = 0; ; round += 1) {
+    const result = await runAiTask(
+      {
+        surface: "hub.founder.assist",
+        actorId: auth.user.id,
+        input: { messages: convo, company, actions, lookups },
+        idempotencyKey: randomUUID(),
+      },
+      // The audit option is what makes "every call is audited" TRUE — without it the
+      // gateway writes no henry_events/audit rows (review finding, 2026-07-10). The
+      // most privileged AI surface is exactly where a leaked-session investigation
+      // needs a durable trail.
+      { billing: noBillingPort, audit: { supabase: auth.supabase as never } },
+    );
+
+    if (!result.ok) {
+      const status = result.error.code === "rate_limited" ? 429 : 502;
+      return NextResponse.json({ error: result.error.message }, { status });
+    }
+
+    turn = interpretFounderAssistOutput(result.value.output);
+    if (!turn) {
+      return NextResponse.json({ error: "Please try that again." }, { status: 502 });
+    }
+
+    // No lookup requested, or the read budget is spent → this turn is final.
+    if (!turn.lookup || round >= MAX_LOOKUPS) break;
+
+    const lookupBlock = await runFounderLookup(turn.lookup).catch(
+      () =>
+        `LOOKUP_RESULT for ${turn?.lookup?.key ?? "that lookup"}: the read failed. Answer with what you have and say what's missing.`,
+    );
+    const finalNotice =
+      round === MAX_LOOKUPS - 1
+        ? "\nThis was the final lookup for this exchange — answer the founder now."
+        : "";
+
+    convo = [
+      ...convo,
+      { role: "assistant", content: result.value.output.slice(0, 3800) },
+      { role: "user", content: (lookupBlock + finalNotice).slice(0, 3900) },
+    ];
   }
 
   // F3 — resolve any proposed action into a server-built confirmation card.

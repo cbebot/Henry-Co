@@ -35,12 +35,28 @@ export interface FounderProposedAction {
   rationale?: string;
 }
 
-/** The `{reply, navigate, proposeAction?}` output envelope of `hub.founder.assist`. */
+/**
+ * F4 — a server-run READ the assistant REQUESTS (never executes). Pure naming,
+ * exactly like proposeAction: `key` must match the hub's closed
+ * FOUNDER_LOOKUP_CATALOG and `params` are re-validated server-side against that
+ * entry's strict schema. The hub runs the read inside the same POST and hands
+ * the records back as fenced LOOKUP_RESULT data for a follow-up model turn —
+ * this is what lets the assistant fetch the thread/application/staff ids it
+ * needs instead of telling the founder "give me the ID".
+ */
+export interface FounderLookupRequest {
+  key: string;
+  params: Record<string, string>;
+}
+
+/** The `{reply, navigate, proposeAction?, lookup?}` output envelope of `hub.founder.assist`. */
 export interface FounderAssistEnvelope {
   reply: string;
   navigate: FounderAssistAction[];
   /** F3, optional and additive — absent in every F2-only turn. */
   proposeAction: FounderProposedAction | null;
+  /** F4, optional and additive — a requested server-side read, or null. */
+  lookup: FounderLookupRequest | null;
 }
 
 // 2, not 3: IntelligenceLauncher renders navigate.slice(0, 2) — a third button
@@ -116,6 +132,37 @@ function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
       : undefined;
 
   return { key, params, ...(rationale ? { rationale } : {}) };
+}
+
+// F4 lookup transport bounds — string params only (a read filter is never a
+// number the model must invent), tightly capped. The hub re-validates against
+// the closed lookup catalog's strict schema before running anything.
+const MAX_LOOKUP_PARAMS = 6;
+const MAX_LOOKUP_VALUE_CHARS = 200;
+
+/** Sanitize the AI-requested lookup into a flat, bounded, string-only shape. */
+function sanitizeLookupRequest(raw: unknown): FounderLookupRequest | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const record = raw as Record<string, unknown>;
+  const key = String(record.key ?? "").trim().slice(0, MAX_TARGET_CHARS);
+  if (!key) return null;
+
+  const params: Record<string, string> = {};
+  const rawParams = record.params;
+  if (rawParams && typeof rawParams === "object" && !Array.isArray(rawParams)) {
+    let count = 0;
+    for (const [name, value] of Object.entries(rawParams as Record<string, unknown>)) {
+      if (count >= MAX_LOOKUP_PARAMS) break;
+      const cleanName = name.trim().slice(0, 64);
+      if (!cleanName || typeof value !== "string") continue;
+      const cleanValue = value.trim().slice(0, MAX_LOOKUP_VALUE_CHARS);
+      if (!cleanValue) continue;
+      params[cleanName] = cleanValue;
+      count += 1;
+    }
+  }
+
+  return { key, params };
 }
 
 /**
@@ -243,6 +290,7 @@ export function parseFounderAssistEnvelope(text: string): FounderAssistEnvelope 
         reply,
         navigate,
         proposeAction: sanitizeProposedAction(record.proposeAction),
+        lookup: sanitizeLookupRequest(record.lookup),
       };
     } catch {
       return null;
@@ -284,7 +332,7 @@ export function salvageFounderAssistEnvelope(rawText: string): string | null {
   const reply = humanizeAssistantText(candidate);
   if (!reply || /^[[{]/.test(reply.trim())) return null;
 
-  return JSON.stringify({ reply, navigate: [], proposeAction: null });
+  return JSON.stringify({ reply, navigate: [], proposeAction: null, lookup: null });
 }
 
 /** A resolved, render-ready navigation button (relative hub href). */
@@ -316,6 +364,9 @@ export interface FounderAssistTurn {
   reply: string;
   navigate: ResolvedFounderAction[];
   proposeAction: FounderProposedAction | null;
+  /** F4 — a requested server-side read the hub validates against its closed
+   *  lookup catalog and (when valid) runs inside the same POST. */
+  lookup: FounderLookupRequest | null;
 }
 
 /** The one call the hub route makes on the raw model output. */
@@ -326,6 +377,7 @@ export function interpretFounderAssistOutput(rawText: string): FounderAssistTurn
     reply: envelope.reply,
     navigate: resolveFounderAssistActions(envelope.navigate),
     proposeAction: envelope.proposeAction,
+    lookup: envelope.lookup,
   };
 }
 
