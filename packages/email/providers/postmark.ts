@@ -63,13 +63,21 @@ export function resolvePostmarkStream(input: SendTransactionalEmailInput): strin
 }
 
 export function getPostmarkSender(input: SendTransactionalEmailInput): ResolvedSender {
-  const envFromRaw = (process.env.POSTMARK_FROM_EMAIL || "").trim();
-  const angle = envFromRaw.match(/^(.*?)<([^<>]+)>\s*$/);
-  const envEmail = angle ? angle[2].trim() : envFromRaw;
-  const envName = angle ? angle[1].replace(/^["']|["']$/g, "").trim() : "";
+  // Accept either a bare "a@b.com" or a combined "Name <a@b.com>" in BOTH
+  // input.from and POSTMARK_FROM_EMAIL, so a caller that passes a combined value
+  // is never double-wrapped into a malformed "Name <Name <a@b.com>>" From.
+  const parse = (raw: string | undefined | null): { email: string; name: string } => {
+    const s = (raw || "").trim();
+    const m = s.match(/^(.*?)<([^<>]+)>\s*$/);
+    return m
+      ? { email: m[2].trim(), name: m[1].replace(/^["']|["']$/g, "").trim() }
+      : { email: s, name: "" };
+  };
+  const fromParsed = parse(input.from);
+  const envParsed = parse(process.env.POSTMARK_FROM_EMAIL);
 
-  const email = input.from?.trim() || envEmail || BRAND_EMAILS.noreply;
-  const name = input.fromName?.trim() || envName || "Henry Onyx";
+  const email = fromParsed.email || envParsed.email || BRAND_EMAILS.noreply;
+  const name = input.fromName?.trim() || fromParsed.name || envParsed.name || "Henry Onyx";
   return { email, name };
 }
 

@@ -85,6 +85,18 @@ describe("getPostmarkSender", () => {
     assert.equal(s.email, "care@henryonyx.com");
     assert.equal(s.name, "Henry Onyx Care");
   });
+
+  it("parses a combined 'Name <email>' passed via input.from (no double-wrap)", () => {
+    const s = getPostmarkSender({ to: "a@b.co", subject: "x", from: "Henry Onyx <noreply@henryonyx.com>" });
+    assert.equal(s.email, "noreply@henryonyx.com");
+    assert.equal(s.name, "Henry Onyx");
+  });
+
+  it("keeps a bare input.from paired with a separate fromName", () => {
+    const s = getPostmarkSender({ to: "a@b.co", subject: "x", from: "noreply@henryonyx.com", fromName: "Henry Onyx" });
+    assert.equal(s.email, "noreply@henryonyx.com");
+    assert.equal(s.name, "Henry Onyx");
+  });
 });
 
 describe("sendPostmarkEmail", () => {
@@ -182,6 +194,23 @@ describe("sendPostmarkEmail", () => {
     assert.ok(!to.includes(CR) && !to.includes(LF), "To must not contain CR/LF");
     assert.ok(!subject.includes(LF), "Subject must not contain LF");
     assert.equal(to, "a@b.coBcc: evil@x.com");
+  });
+
+  it("builds a single well-formed From even when input.from is combined (regression)", async () => {
+    process.env.POSTMARK_SERVER_TOKEN = "tok";
+    let body: Record<string, unknown> = {};
+    globalThis.fetch = (async (_u: unknown, init: RequestInit) => {
+      body = JSON.parse(init.body as string);
+      return new Response(JSON.stringify({ ErrorCode: 0, MessageID: "m" }), { status: 200 });
+    }) as unknown as typeof fetch;
+    await sendPostmarkEmail({
+      to: "a@b.co",
+      subject: "x",
+      text: "y",
+      from: "Henry Onyx <noreply@henryonyx.com>",
+      purpose: "generic",
+    });
+    assert.equal(body.From, "Henry Onyx <noreply@henryonyx.com>");
   });
 
   it("returns a safe error (no throw) when fetch rejects", async () => {
