@@ -21,6 +21,7 @@ import {
   readProductReview,
   type ProductReviewDecision,
 } from "@/lib/product-review-write";
+import { applySecureAccount, readSecureAccountTarget } from "@/lib/security-response-write";
 import {
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -31,6 +32,7 @@ import {
   socialPostGovernance,
   supportReplyBatchGovernance,
   productReviewGovernance,
+  securitySecureAccountGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
 
@@ -539,6 +541,44 @@ const productReview: FounderActionEntry = {
   entityType: "marketplace_product",
 };
 
+// ── Entry 10: secure a customer account (containment, hard-to-reverse, REAUTH) ─
+//
+// The "respond" verb of the Threat watch. When an account shows a takeover
+// pattern, the owner names it and, behind the print, revokes every recognised
+// device — each must re-verify + re-alert on its next sign-in. Honest copy: this
+// forces re-verification, it does not instantly kill a live token.
+
+const secureAccount: FounderActionEntry = {
+  ...securitySecureAccountGovernance,
+  title: "Secure a customer account under attack",
+  trueStateReader: async ({ params }) => {
+    const target = await readSecureAccountTarget(params.userId as string);
+    if (!target) return null;
+    return { ...target };
+  },
+  // driftKeys single-sourced from the governance spread (["activeDeviceCount"]).
+  confirmationCopy: (trueState) => {
+    const who = String(trueState.userLabel || "this account");
+    const count = Number(trueState.activeDeviceCount ?? 0);
+    return {
+      title: "Secure this account",
+      body: `Secure ${who}: revoke ${count === 0 ? "its recognised devices" : `all ${count} recognised device${count === 1 ? "" : "s"}`} so each must re-verify and re-alert on the next sign-in, and drop every trusted mark. Their in-flight token expires normally; this stops the attacker's device from being remembered.`,
+      confirmLabel: "Secure account",
+    };
+  },
+  executionBinding: async ({ trueState, ownerId, ownerRole }) => {
+    const applied = await applySecureAccount({
+      userId: String(trueState.userId),
+      actorId: ownerId,
+      actorRole: ownerRole,
+    });
+    if (!applied.ok) return { ok: false, error: applied.error };
+    return { ok: true, executionRef: applied.executionRef };
+  },
+  auditAction: "founder.owner.security.account.secure",
+  entityType: "customer_account",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
@@ -549,6 +589,7 @@ export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [socialPost.key]: socialPost,
   [supportReplyBatch.key]: supportReplyBatch,
   [productReview.key]: productReview,
+  [secureAccount.key]: secureAccount,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */

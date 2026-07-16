@@ -546,6 +546,49 @@ export function FounderCommandPortal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chat.reauthNeeded]);
 
+  // The reactor, telemetry, and SYS log are rendered in BOTH layouts (idle
+  // cinematic + active command-desk), so they're built once here and placed by
+  // the layout below — no duplicated markup, identical behaviour in each state.
+  const reactorNode = (
+    <div className={`fcp-reactor${hasConversation ? " fcp-reactor--compact" : ""}`}>
+      <span className="fcp-bracket fcp-bracket--tl" aria-hidden />
+      <span className="fcp-bracket fcp-bracket--tr" aria-hidden />
+      <span className="fcp-bracket fcp-bracket--bl" aria-hidden />
+      <span className="fcp-bracket fcp-bracket--br" aria-hidden />
+      <IntelligenceCore mode={coreMode} size={hasConversation ? 150 : 232} className="fcp-core" />
+      <span className="fcp-core-status" data-mode={coreMode}>
+        <span className="fcp-core-status-dot" aria-hidden />
+        {statusLabel}
+      </span>
+    </div>
+  );
+
+  // Live company pulse — real numbers from the console dataset (revenue, active
+  // members, security posture, critical). In the idle hero it sits under the
+  // headline; in the active desk it anchors the left telemetry rail.
+  const telemetryNode = briefing?.pulse?.length ? (
+    <div className="fcp-telemetry" aria-label={t("Live company pulse")}>
+      {briefing.pulse.map((metric) => (
+        <span
+          key={metric.label}
+          className={`fcp-pulse-chip${/critical|elevated/i.test(metric.value) ? " fcp-pulse-chip--alert" : ""}`}
+        >
+          <span className="fcp-pulse-label">{metric.label}</span>
+          <span className="fcp-pulse-value">{metric.value}</span>
+        </span>
+      ))}
+    </div>
+  ) : null;
+
+  const syslogNode = (
+    <div className="fcp-syslog" aria-live="polite" aria-label={t("System log")}>
+      {log.length === 0 ? <span className="fcp-syslog-line">SYS: Standing by.</span> : null}
+      {log.map((line, i) => (
+        <span key={`${i}-${line}`} className="fcp-syslog-line">{line}</span>
+      ))}
+    </div>
+  );
+
   return (
     <>
       {/* The F3 extras (governed-action cards + nav chips) are the shared
@@ -577,7 +620,7 @@ export function FounderCommandPortal({
           <header className="fcp-top">
             <span className="fcp-brand">
               <HenryCoLockup height={24} accent="var(--fcp-accent)" />
-              <span className="fcp-mark">{t("Founder Intelligence")} · MARK I</span>
+              <span className="fcp-mark">{t("Founder Intelligence")} · MARK II</span>
             </span>
             <span className="fcp-clock" aria-hidden>{clock}</span>
             <span className="fcp-top-actions">
@@ -664,21 +707,11 @@ export function FounderCommandPortal({
             </div>
           ) : null}
 
-          <div className="fcp-stage">
-            <div className={`fcp-reactor${hasConversation ? " fcp-reactor--compact" : ""}`}>
-              <span className="fcp-bracket fcp-bracket--tl" aria-hidden />
-              <span className="fcp-bracket fcp-bracket--tr" aria-hidden />
-              <span className="fcp-bracket fcp-bracket--bl" aria-hidden />
-              <span className="fcp-bracket fcp-bracket--br" aria-hidden />
-              <IntelligenceCore mode={coreMode} size={hasConversation ? 150 : 232} className="fcp-core" />
-              <span className="fcp-core-status" data-mode={coreMode}>
-                <span className="fcp-core-status-dot" aria-hidden />
-                {statusLabel}
-              </span>
-            </div>
-
+          <div className={`fcp-stage${hasConversation ? " fcp-stage--active" : ""}`}>
             {!hasConversation ? (
-              <div className="fcp-hero-copy">
+              <div className="fcp-hero-wrap">
+                {reactorNode}
+                <div className="fcp-hero-copy">
                 <p className="fcp-eyebrow">{t("Henry Onyx Intelligence")}</p>
                 <h1 className="fcp-headline">{briefing?.headline || t("What do you want to do?")}</h1>
                 {briefing?.focus ? <p className="fcp-focus">{briefing.focus}</p> : null}
@@ -723,9 +756,17 @@ export function FounderCommandPortal({
                     ))}
                   </div>
                 ) : null}
+                </div>
+                {syslogNode}
               </div>
             ) : (
-              <div className="fcp-thread" ref={scrollRef}>
+              <div className="fcp-desk">
+                <aside className="fcp-rail fcp-rail--left">
+                  {reactorNode}
+                  {telemetryNode}
+                </aside>
+                <div className="fcp-main">
+                  <div className="fcp-thread" ref={scrollRef}>
                 {displayThread.map((m) => (
                   <div key={m.id} className={`fcp-turn ${m.authorRole === "viewer" ? "fcp-turn--you" : "fcp-turn--ai"}`}>
                     {m.authorRole === "other" ? <span className="fcp-turn-mark" aria-hidden /> : null}
@@ -739,16 +780,13 @@ export function FounderCommandPortal({
                   </div>
                 ) : null}
                 <div className="fcp-extras"><IntelligenceExtras chat={chat} supportHref={supportHref} /></div>
+                  </div>
+                </div>
+                <aside className="fcp-rail fcp-rail--right">
+                  {syslogNode}
+                </aside>
               </div>
             )}
-
-            {/* SYS activity log — the cockpit's live feed. */}
-            <div className="fcp-syslog" aria-live="polite" aria-label={t("System log")}>
-              {log.length === 0 ? <span className="fcp-syslog-line">SYS: Standing by.</span> : null}
-              {log.map((line, i) => (
-                <span key={`${i}-${line}`} className="fcp-syslog-line">{line}</span>
-              ))}
-            </div>
           </div>
 
           <form className="fcp-composer" onSubmit={(e) => { e.preventDefault(); void doSend(draft); }}>

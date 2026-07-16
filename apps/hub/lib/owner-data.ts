@@ -18,6 +18,12 @@ import {
   formatAuditActorDisplay,
   formatAuditEntityDisplay,
 } from "@/lib/owner-identity";
+import {
+  assessThreats,
+  type ThreatAssessment,
+  type ThreatLogRow,
+  type ThreatDeviceRow,
+} from "@/lib/security/threat-signals";
 
 export type {
   WorkforceMember,
@@ -382,6 +388,10 @@ const getOwnerBaseDataset = cache(async () => {
     companies,
     auditLogs,
     authUsers,
+    succeededIntents,
+    marketplaceRefunds,
+    recentSecurityLog,
+    knownDevices,
   ] = await Promise.all([
     safeMaybeSingle("company_settings"),
     safeMaybeSingle("company_site_settings"),
@@ -435,6 +445,44 @@ const getOwnerBaseDataset = cache(async () => {
     safeSelect("companies", "*", { orderBy: "created_at", ascending: false, limit: 80 }),
     safeSelect("audit_logs", "*", { orderBy: "created_at", ascending: false, limit: 80 }),
     listAuthUsers(),
+    // Revenue truth: succeeded intents carry the division dimension (indexed) —
+    // the ONE rail every division's money settles through. This is what wires
+    // studio/jobs/property/logistics into the rollup.
+    safeSelect("payment_intents", "division, amount_minor, status", {
+      filters: [{ column: "status", value: "succeeded" }],
+      orderBy: "created_at",
+      ascending: false,
+      limit: 2000,
+    }),
+    safeSelect("marketplace_refunds", "amount_minor, status, created_at", {
+      orderBy: "created_at",
+      ascending: false,
+      limit: 1000,
+    }),
+    // Engagement + THREAT truth: sign-in/security events over the last 30 days.
+    // ip_address + metadata (country/risk/reason/category) feed the threat
+    // engine (credential spray, impossible travel, reset pressure); the rows
+    // also carry the behavioural record behind "active members, not accounts".
+    safeSelect("customer_security_log", "user_id, event_type, ip_address, metadata, created_at", {
+      filters: [
+        {
+          column: "created_at",
+          operator: "gte",
+          value: new Date(Date.now() - 30 * 86_400_000).toISOString(),
+        },
+      ],
+      orderBy: "created_at",
+      ascending: false,
+      limit: 4000,
+    }),
+    // Integrity + THREAT truth: the persistent device registry. Shared device
+    // ids across accounts = duplicate-account signal; revoked_at vs last_seen_at
+    // = a killed device seen alive again.
+    safeSelect(
+      "account_known_devices",
+      "user_id, device_id, ua_summary, first_country, first_seen_at, last_seen_at, trusted_at, revoked_at",
+      { limit: 3000 },
+    ),
   ]);
 
   const legacyWalletFundingRequests = walletTransactionRows
@@ -477,11 +525,51 @@ const getOwnerBaseDataset = cache(async () => {
     companies,
     auditLogs,
     authUsers,
+    succeededIntents,
+    marketplaceRefunds,
+    recentSecurityLog,
+    knownDevices,
   };
 });
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
+}
+
+/** Map a customer_security_log row (metadata jsonb carries the enrichment) to a
+ *  threat-engine input row. See lib/security/threat-signals.ts for the fields. */
+function toThreatLogRow(row: JsonRecord, labelFor: (id: string) => string): ThreatLogRow {
+  const meta = (row.metadata && typeof row.metadata === "object" ? row.metadata : {}) as Record<string, unknown>;
+  const metaStr = (key: string) => (typeof meta[key] === "string" ? (meta[key] as string) : "");
+  const userId = toText(row.user_id);
+  return {
+    userId,
+    userLabel: labelFor(userId),
+    eventType: toText(row.event_type),
+    ip: toText(row.ip_address),
+    country: metaStr("country"),
+    location: metaStr("location_summary"),
+    device: metaStr("device_summary"),
+    riskLevel: metaStr("risk_level"),
+    category: metaStr("event_category"),
+    reason: metaStr("reason"),
+    createdAt: toNullableText(row.created_at),
+  };
+}
+
+/** Map an account_known_devices row to a threat-engine device row. */
+function toThreatDeviceRow(row: JsonRecord, labelFor: (id: string) => string): ThreatDeviceRow {
+  const userId = toText(row.user_id);
+  return {
+    userId,
+    userLabel: labelFor(userId),
+    deviceId: toText(row.device_id),
+    firstCountry: toText(row.first_country),
+    firstSeenAt: toNullableText(row.first_seen_at),
+    lastSeenAt: toNullableText(row.last_seen_at),
+    trustedAt: toNullableText(row.trusted_at),
+    revokedAt: toNullableText(row.revoked_at),
+  };
 }
 
 function readNestedRecord(source: JsonRecord | null | undefined, key: string) {
@@ -928,6 +1016,18 @@ function buildDivisionSnapshots(
       ).length;
     }
 
+    // Revenue truth (the AI's own gap report, 2026-07-16): studio, jobs,
+    // property, and logistics settle through the payment-intents rail — the
+    // rollup now reads their SUCCEEDED intents (kobo → naira) instead of
+    // showing 0 by omission. Care/marketplace/learn keep their richer
+    // app-native sources above; intents are the source ONLY for divisions
+    // with no native rollup, so nothing double-counts.
+    if (revenueNaira === 0 && ["studio", "jobs", "property", "logistics"].includes(slug)) {
+      revenueNaira = dataset.succeededIntents
+        .filter((row) => normalizeDivisionSlug(row.division) === slug)
+        .reduce((sum, row) => sum + toNumber(row.amount_minor) / 100, 0);
+    }
+
     const divisionWorkforce = workforce.filter((member) => member.division === slug);
     const recentActivity = [
       ...divisionActivity.map((row) => ({
@@ -1155,6 +1255,66 @@ export async function getOwnerOverviewData() {
   const dataset = await getOwnerBaseDataset();
   const workforce = buildWorkforceMembers(dataset);
   const signals = buildOwnerSignals(dataset, workforce);
+
+  // ── Engagement truth: active members, not just accounts ────────────────────
+  // Distinct people with a sign-in/security event (or device last-seen) inside
+  // the window — the behavioural record the AI reported it could not see.
+  const now = Date.now();
+  const activeWithin = (days: number): Set<string> => {
+    const cutoff = now - days * 86_400_000;
+    const active = new Set<string>();
+    for (const row of dataset.recentSecurityLog) {
+      const userId = toText(row.user_id);
+      if (!userId) continue;
+      const at = new Date(toText(row.created_at)).getTime();
+      if (Number.isFinite(at) && at >= cutoff) active.add(userId);
+    }
+    for (const row of dataset.knownDevices) {
+      const userId = toText(row.user_id);
+      if (!userId) continue;
+      const at = new Date(toText(row.last_seen_at)).getTime();
+      if (Number.isFinite(at) && at >= cutoff) active.add(userId);
+    }
+    return active;
+  };
+  const activeMembers7d = activeWithin(7).size;
+  const activeMembers30d = activeWithin(30).size;
+
+  // ── Refund truth: aggregated, not invisible ────────────────────────────────
+  const refundRows = dataset.marketplaceRefunds;
+  const refundsTotalNaira = refundRows.reduce((sum, row) => sum + toNumber(row.amount_minor) / 100, 0);
+
+  // ── Threat watch: full attacker-signal assessment ─────────────────────────
+  // The SAME engine the audit console renders — so the dashboard, the audit
+  // page, and the Founder AI all read one truth. Evidence-backed only (owner
+  // calibration): every signal is a real row count. Only actionable threats
+  // (critical + warning) surface on the dashboard; the full list, incl.
+  // watch-level, lives on the audit page. Labels stay short-id here; the audit
+  // page resolves names in a batched customer_profiles lookup.
+  const shortLabel = (id: string) => (id ? `${id.slice(0, 8)}…` : "unknown");
+  const threat = assessThreats(
+    dataset.recentSecurityLog.map((row) => toThreatLogRow(row, shortLabel)),
+    dataset.knownDevices.map((row) => toThreatDeviceRow(row, shortLabel)),
+  );
+  for (const sig of threat.signals) {
+    if (sig.severity === "watch") continue;
+    signals.push({
+      id: `threat-${sig.id}`,
+      severity: sig.severity === "critical" ? "critical" : "warning",
+      division: "account",
+      title: sig.title,
+      body: `${sig.detail} Open the audit console to act.`,
+      href: "/owner/settings/audit",
+    } as (typeof signals)[number]);
+  }
+  const sharedDevices = threat.metrics.sharedDevices;
+
+  // Surface the worst threats first: re-rank the combined signal list by
+  // severity (stable — equal severities keep their prior order) so a critical
+  // threat pushed on last still leads the digest and survives the top-8 slice.
+  const severityRank: Record<string, number> = { critical: 3, warning: 2, info: 1 };
+  signals.sort((a, b) => (severityRank[b.severity] ?? 0) - (severityRank[a.severity] ?? 0));
+
   const divisions = buildDivisionSnapshots(dataset, workforce, signals);
   const totalRevenueNaira = divisions.reduce((sum, division) => sum + division.revenueNaira, 0);
   const totalExpenseNaira = dataset.careExpenses
@@ -1179,6 +1339,16 @@ export async function getOwnerOverviewData() {
       activeStaff,
       queuedNotifications,
       criticalSignals: signals.filter((signal) => signal.severity === "critical").length,
+      // Engagement + refund truth (the AI's own gap report, 2026-07-16).
+      activeMembers7d,
+      activeMembers30d,
+      refundsCount: refundRows.length,
+      refundsTotalNaira,
+      sharedDeviceAccounts: sharedDevices,
+      // Threat watch (2026-07-16): the owner sees everything, not just sign-ins.
+      threatPosture: threat.posture,
+      threatCritical: threat.metrics.criticalCount,
+      threatWarning: threat.metrics.warningCount,
     },
     executiveDigest:
       signals[0]?.severity === "critical"
@@ -1863,6 +2033,68 @@ export async function getSecurityActivityData(options?: { limit?: number }) {
       revokedDevices: devices.filter((device) => device.state === "revoked").length,
     },
   };
+}
+
+/**
+ * getSecurityThreatData — the owner threat watchtower.
+ *
+ * Reads a WIDER window than the sessions view (30 days / up to 5000 events +
+ * the full device registry) and runs the pure `assessThreats` engine over it,
+ * with account names resolved in one batched customer_profiles lookup so every
+ * flagged signal names a real person, not a raw uuid. This is the "we see
+ * everything" surface — attacker fingerprints, not sign-in/out noise.
+ *
+ * Service-role read (requireOwner console). Best-effort: a missing table
+ * degrades to an empty, calm assessment rather than erroring the page.
+ */
+export async function getSecurityThreatData(): Promise<ThreatAssessment> {
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  const [securityLog, deviceRows] = await Promise.all([
+    safeSelect("customer_security_log", "user_id, event_type, ip_address, metadata, created_at", {
+      filters: [{ column: "created_at", operator: "gte", value: since }],
+      orderBy: "created_at",
+      ascending: false,
+      limit: 5000,
+    }),
+    safeSelect(
+      "account_known_devices",
+      "user_id, device_id, ua_summary, first_country, first_seen_at, last_seen_at, trusted_at, revoked_at",
+      { limit: 5000 },
+    ),
+  ]);
+
+  const userIds = Array.from(
+    new Set([...securityLog, ...deviceRows].map((row) => toText(row.user_id)).filter(Boolean)),
+  );
+  const identity = new Map<string, { fullName: string | null; email: string | null }>();
+  if (userIds.length > 0) {
+    try {
+      const admin = createAdminSupabase();
+      // Chunk the IN() list — a 5000-account window can exceed URL limits.
+      for (let i = 0; i < userIds.length; i += 500) {
+        const { data } = await admin
+          .from("customer_profiles")
+          .select("id, full_name, email")
+          .in("id", userIds.slice(i, i + 500));
+        for (const p of (data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+          identity.set(p.id, { fullName: p.full_name, email: p.email });
+        }
+      }
+    } catch (error) {
+      logOwnerSurfaceError("lib/owner-data.getSecurityThreatData.identity", error, {});
+    }
+  }
+  const labelFor = (userId: string): string => {
+    const profile = identity.get(userId);
+    if (profile?.fullName) return profile.fullName;
+    if (profile?.email) return profile.email;
+    return userId ? `${userId.slice(0, 8)}…` : "Unknown";
+  };
+
+  return assessThreats(
+    securityLog.map((row) => toThreatLogRow(row, labelFor)),
+    deviceRows.map((row) => toThreatDeviceRow(row, labelFor)),
+  );
 }
 
 export type ApprovalQueueItem = {

@@ -209,6 +209,27 @@ export const productReviewGovernance: FounderActionGovernance = {
   driftKeys: ["status"],
 };
 
+// ── Security containment — the "respond" verb of the threat watchtower ───────
+// When the Threat watch flags an account under attack, the owner can SECURE it:
+// revoke every recognised device so each must re-verify + re-alert next sign-in
+// and lose its trusted mark. A deep security action → the founder's print
+// (fresh password step-up) is demanded at confirm even though no money moves.
+export const securitySecureAccountGovernance: FounderActionGovernance = {
+  key: "owner.security.account.secure",
+  division: "hub",
+  tranche: 2,
+  moneyAdjacent: false,
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      userId: z.string().uuid(),
+    })
+    .strict(),
+  driftKeys: ["activeDeviceCount"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -219,6 +240,7 @@ export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   socialPostGovernance,
   supportReplyBatchGovernance,
   productReviewGovernance,
+  securitySecureAccountGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */
