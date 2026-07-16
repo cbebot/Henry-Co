@@ -2097,6 +2097,109 @@ export async function getSecurityThreatData(): Promise<ThreatAssessment> {
   );
 }
 
+export type FounderActionQueue = {
+  supportThreads: Array<{ id: string; subject: string; division: string; lastMessage: string }>;
+  vendorApplications: Array<{ id: string; store: string; email: string }>;
+  kycSubmissions: Array<{ id: string; docType: string; user: string }>;
+  productReviews: Array<{ id: string; title: string }>;
+};
+
+/**
+ * getFounderActionQueue — the REAL records the Founder AI can act on, WITH IDs.
+ *
+ * The AI had every governed action wired but was blocked on "give me the ID"
+ * because its grounding showed COUNTS, not records (live finding, 2026-07-16 —
+ * the AI's own words: "this surface shows me counts, not records"). This reads
+ * the actual pending action targets — open support threads (with the customer's
+ * latest message so a real reply can be drafted), pending vendor applications,
+ * KYC submissions, and product reviews — each with the exact ID its F3 action
+ * needs. Owner-gated grounding; every field is fenced as DATA by company-facts.
+ *
+ * Best-effort by construction (safeSelect degrades a missing table/column to []),
+ * so a schema gap quietly drops a category rather than erroring the turn.
+ */
+export async function getFounderActionQueue(): Promise<FounderActionQueue> {
+  const [threads, vendors, kyc, products] = await Promise.all([
+    safeSelect("support_threads", "id, user_id, subject, division, status", {
+      orderBy: "updated_at",
+      ascending: false,
+      limit: 60,
+    }),
+    safeSelect("marketplace_vendor_applications", "id, store_name, status, normalized_email", {
+      orderBy: "submitted_at",
+      ascending: false,
+      limit: 40,
+    }),
+    safeSelect("customer_verification_submissions", "id, user_id, document_type, status", { limit: 40 }),
+    safeSelect("marketplace_products", "id, title, approval_status, vendor_id", { limit: 60 }),
+  ]);
+
+  const isOpen = (status: string) => {
+    const s = status.toLowerCase();
+    return s !== "closed" && s !== "resolved" && s !== "archived";
+  };
+  const isPending = (status: string) => {
+    const s = status.toLowerCase();
+    return s === "pending" || s === "submitted" || s === "in_review" || s === "review" || s === "draft" || s === "";
+  };
+
+  const openThreads = threads.filter((t) => isOpen(toText(t.status))).slice(0, 8);
+
+  // The customer's latest message per open thread — what the AI needs to draft a
+  // REAL reply instead of filler. One batched read, newest-first, first wins.
+  const lastMessage = new Map<string, string>();
+  const threadIds = openThreads.map((t) => toText(t.id)).filter(Boolean);
+  if (threadIds.length > 0) {
+    try {
+      const admin = createAdminSupabase();
+      const { data } = await admin
+        .from("support_messages")
+        .select("thread_id, sender_type, body, created_at")
+        .in("thread_id", threadIds)
+        .order("created_at", { ascending: false })
+        .limit(300);
+      for (const m of (data ?? []) as Array<{ thread_id: string; sender_type: string; body: string }>) {
+        const key = String(m.thread_id ?? "");
+        // Prefer the latest CUSTOMER message (not the team's own replies).
+        if (key && !lastMessage.has(key) && String(m.sender_type ?? "") !== "agent") {
+          lastMessage.set(key, String(m.body ?? ""));
+        }
+      }
+    } catch (error) {
+      logOwnerSurfaceError("lib/owner-data.getFounderActionQueue.messages", error, {});
+    }
+  }
+
+  return {
+    supportThreads: openThreads.map((t) => ({
+      id: toText(t.id),
+      subject: toText(t.subject) || "Support request",
+      division: toText(t.division) || "account",
+      lastMessage: lastMessage.get(toText(t.id)) ?? "",
+    })),
+    vendorApplications: vendors
+      .filter((v) => isPending(toText(v.status)))
+      .slice(0, 6)
+      .map((v) => ({
+        id: toText(v.id),
+        store: toText(v.store_name) || "a store",
+        email: toText(v.normalized_email),
+      })),
+    kycSubmissions: kyc
+      .filter((k) => isPending(toText(k.status)))
+      .slice(0, 6)
+      .map((k) => ({
+        id: toText(k.id),
+        docType: toText(k.document_type) || "identity",
+        user: toText(k.user_id).slice(0, 8),
+      })),
+    productReviews: products
+      .filter((p) => isPending(toText(p.approval_status)))
+      .slice(0, 6)
+      .map((p) => ({ id: toText(p.id), title: toText(p.title) || "a product" })),
+  };
+}
+
 export type ApprovalQueueItem = {
   id: string;
   category: string;

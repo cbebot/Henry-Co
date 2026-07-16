@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getOwnerOverviewData } from "@/lib/owner-data";
+import { getOwnerOverviewData, getFounderActionQueue } from "@/lib/owner-data";
 import { getFinanceLedgerSnapshot } from "@/lib/finance-ledger";
 import { getSignupsSnapshot } from "@/lib/owner-command/signups";
 
@@ -45,10 +45,11 @@ function kobo(amountKobo: number): string {
 }
 
 export async function buildCompanyFactsForFounderAI(): Promise<string> {
-  const [overview, finance, signups] = await Promise.all([
+  const [overview, finance, signups, actionQueue] = await Promise.all([
     getOwnerOverviewData(),
     getFinanceLedgerSnapshot().catch(() => null),
     getSignupsSnapshot().catch(() => null),
+    getFounderActionQueue().catch(() => null),
   ]);
 
   const lines: string[] = [];
@@ -102,6 +103,44 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
     }
   }
 
+  // PENDING ITEMS TO ACT ON — the real records behind the counts, WITH their
+  // exact IDs. This is what turns "give me the ID" into a concrete confirm card:
+  // the AI reads the id straight from here and prepares the matching F3 action.
+  // Fenced as DATA; the owner already sees every one of these on his console.
+  if (actionQueue) {
+    const q = actionQueue;
+    const hasAny =
+      q.supportThreads.length + q.vendorApplications.length + q.kycSubmissions.length + q.productReviews.length > 0;
+    if (hasAny) {
+      lines.push(
+        "",
+        "PENDING ITEMS YOU CAN ACT ON NOW — use the EXACT id shown to prepare the matching confirm card. NEVER invent or guess an id; if the item you need is not listed here, say so and ask the owner to open the relevant console list.",
+      );
+      for (const thread of q.supportThreads) {
+        const msg = thread.lastMessage ? ` — customer said: "${fenceSafe(thread.lastMessage, 160)}"` : " — (no customer message on record yet)";
+        lines.push(
+          `- SUPPORT THREAD id=${fenceSafe(thread.id, 40)} · ${fenceSafe(thread.division, 20)} · subject "${fenceSafe(thread.subject, 80)}"${msg} → owner.support.reply (threadId, body)`,
+        );
+      }
+      for (const app of q.vendorApplications) {
+        const who = app.email ? ` (${fenceSafe(app.email, 50)})` : "";
+        lines.push(
+          `- VENDOR APPLICATION id=${fenceSafe(app.id, 40)} · store "${fenceSafe(app.store, 60)}"${who} awaiting decision → owner.marketplace.seller.decision (applicationId, decision)`,
+        );
+      }
+      for (const sub of q.kycSubmissions) {
+        lines.push(
+          `- KYC SUBMISSION id=${fenceSafe(sub.id, 40)} · ${fenceSafe(sub.docType, 40)} · user ${fenceSafe(sub.user, 12)}… → owner.kyc.review (submissionId, decision)`,
+        );
+      }
+      for (const product of q.productReviews) {
+        lines.push(
+          `- PRODUCT REVIEW id=${fenceSafe(product.id, 40)} · "${fenceSafe(product.title, 60)}" → owner.marketplace.product.review (productId, decision)`,
+        );
+      }
+    }
+  }
+
   // Recent activity — the real audit trail (owner/staff writes, sign-ins) so the
   // assistant can answer "what changed recently / who did what" from record, not
   // guesswork. Actor + action only, fenced; the owner already sees this feed.
@@ -118,5 +157,8 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
     "Known coverage gaps (answer honestly about these): site traffic, visit sources, and signup conversion are not instrumented yet — engagement above is from sign-in records, not page analytics. Failed sign-in attempts are not captured yet, so failed-password brute-force is a security blind spot — but impossible-travel, credential-spray, shared-device, revoked-device-reuse, and reset-pressure detection ARE live and feed the security posture above.",
   );
 
-  return lines.join("\n").slice(0, 5800);
+  // 6000 = the prompt builder's own company-facts ceiling (prompts.ts). The
+  // action queue is placed ABOVE recent-activity + coverage-gaps, so if anything
+  // is trimmed here it's the lower-value tail, never the actionable records.
+  return lines.join("\n").slice(0, 6000);
 }

@@ -366,6 +366,10 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
   // F3 — the hub route passes the rendered action catalog ONLY when the action
   // layer is live (FOUNDER_ACTIONS_LIVE). Absent, the prompt is F2-identical.
   const actions = str(task.input.actions, 3000);
+  // F4 — the closed READ catalog. When present, the assistant may REQUEST one
+  // server-run lookup per turn to fetch the records (ids, thread messages,
+  // pending applications) it needs, instead of asking the founder for ids.
+  const lookups = str(task.input.lookups, 2200);
 
   const companyBlock = company
     ? [
@@ -437,14 +441,37 @@ function buildFounderAssistPrompt(task: AiTask): AiPromptParts {
           "those, say so honestly in one sentence and offer the button to the surface that does it.",
           "",
         ]),
+    ...(lookups
+      ? [
+          "FETCHING RECORDS: when his request needs specific records you cannot see — a support",
+          "thread's messages, the list of urgent threads, pending seller/KYC/product applications,",
+          "staff ids — do NOT ask him to find ids and do NOT invent them. Request a server lookup",
+          'instead: set "lookup" to {"key": ..., "params": ...} using EXACTLY one of these reads:',
+          lookups,
+          "The server runs the read immediately and hands you the live records as LOOKUP_RESULT",
+          "data inside this same exchange; your next turn then answers with the real ids or",
+          "proposes the matching action using them. While requesting a lookup, keep \"reply\" to one",
+          "short working line (it may be spoken), like: Pulling up the urgent threads now. At most",
+          "ONE lookup per turn, never the same lookup twice in one exchange, and once LOOKUP_RESULT",
+          "data is in the conversation USE it — answer from it instead of looking up again. If the",
+          "records you need have no lookup here, say so plainly and offer the console button.",
+          "",
+        ]
+      : []),
     "OUTPUT FORMAT: respond with ONLY a JSON object, no prose, no code fence:",
     ...(actions
       ? [
-          String.raw`{"reply": string, "navigate": [{"target": string, "label": string}], "proposeAction": {"key": string, "params": object, "rationale": string} or null}`,
+          String.raw`{"reply": string, "navigate": [{"target": string, "label": string}], "proposeAction": {"key": string, "params": object, "rationale": string} or null` +
+            (lookups ? String.raw`, "lookup": {"key": string, "params": object} or null}` : String.raw`}`),
           String.raw`"proposeAction" is null unless you are proposing exactly one catalog action this turn;`,
           String.raw`"rationale" is one short sentence of why. `,
+          ...(lookups ? [String.raw`"lookup" is null unless you are requesting exactly one catalog read this turn.`] : []),
         ]
-      : [String.raw`{"reply": string, "navigate": [{"target": string, "label": string}]}`]),
+      : [
+          String.raw`{"reply": string, "navigate": [{"target": string, "label": string}]` +
+            (lookups ? String.raw`, "lookup": {"key": string, "params": object} or null}` : String.raw`}`),
+          ...(lookups ? [String.raw`"lookup" is null unless you are requesting exactly one catalog read this turn.`] : []),
+        ]),
     String.raw`"reply" is the message shown to the founder. "navigate" is 0-2 buttons whose "target" is one`,
     String.raw`of the destination ids above and whose "label" is short button text (never a raw id). Use []`,
     "when nothing fits.",
