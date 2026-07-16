@@ -19,6 +19,7 @@ export default function FounderIntelligenceMount() {
       endpoint="/api/owner/intelligence/chat"
       briefingEndpoint="/api/owner/intelligence/briefing"
       conversationsEndpoint="/api/owner/intelligence/conversations"
+      healthEndpoint="/api/owner/intelligence/health"
       accent="#C9A227"
     />
   );
