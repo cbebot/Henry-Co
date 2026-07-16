@@ -55,7 +55,10 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
   const m = overview.metrics;
   lines.push(
     `Company: ${fenceSafe(overview.companyName, 80)}. Divisions live: ${m.divisionsLive}. Active staff: ${m.activeStaff}.`,
-    `Recognized revenue (console rollup): ${naira(m.totalRevenueNaira)}. Expenses: ${naira(m.totalExpenseNaira)}.`,
+    `Recognized revenue (console rollup — ALL divisions wired via the payment rail): ${naira(m.totalRevenueNaira)}. Expenses: ${naira(m.totalExpenseNaira)}.`,
+    `Refunds: ${m.refundsCount} totalling ${naira(m.refundsTotalNaira)}.`,
+    `Engagement: ${m.activeMembers7d} members active in the last 7 days, ${m.activeMembers30d} in 30 days (sign-in + device activity — accounts with neither are cold).`,
+    `Security posture: ${String(m.threatPosture).toUpperCase()} — ${m.threatCritical} critical + ${m.threatWarning} warning attacker signal(s) in the last 30 days (${m.sharedDeviceAccounts} device(s) shared across accounts). ${m.threatCritical + m.threatWarning > 0 ? "The specific threats are in the signals list below; full detail + actions on the audit console." : "No attacker fingerprints right now."}`,
     `Open support threads: ${m.openSupport}. Queued notifications: ${m.queuedNotifications}. Critical signals: ${m.criticalSignals}.`,
   );
 
@@ -85,7 +88,7 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
     lines.push("Signup counts unavailable this turn (the overview page still has them).");
   }
 
-  lines.push("", "Per division (revenue is the console rollup; unwired divisions show 0 by design):");
+  lines.push("", "Per division (revenue = app-native records for care/marketplace/learn, the settled payment rail for the rest):");
   for (const division of overview.divisions) {
     lines.push(
       `- ${fenceSafe(division.displayName, 60)}: status ${fenceSafe(division.status, 24)}, stability index ${division.healthScore} (${division.healthLabel}), revenue ${naira(division.revenueNaira)}, open work ${division.workOpen}, open support ${division.supportOpen}, alerts ${division.alertCount}, staff ${division.staffingCount}.`,
@@ -112,7 +115,7 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
 
   lines.push(
     "",
-    "Known coverage gaps (answer honestly about these): studio, jobs, property, and logistics revenue are not yet wired into the rollup; refund amounts are not aggregated.",
+    "Known coverage gaps (answer honestly about these): site traffic, visit sources, and signup conversion are not instrumented yet — engagement above is from sign-in records, not page analytics. Failed sign-in attempts are not captured yet, so failed-password brute-force is a security blind spot — but impossible-travel, credential-spray, shared-device, revoked-device-reuse, and reset-pressure detection ARE live and feed the security posture above.",
   );
 
   return lines.join("\n").slice(0, 5800);

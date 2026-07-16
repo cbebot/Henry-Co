@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { ExternalLink, MapPin, MonitorSmartphone } from "lucide-react";
+import { ExternalLink, MapPin, MonitorSmartphone, ShieldAlert, ShieldCheck } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import {
   getAuditHistoryPageData,
   getSecurityActivityData,
+  getSecurityThreatData,
   type OwnerKnownDevice,
 } from "@/lib/owner-data";
+import type { ThreatSeverity, ThreatPosture } from "@/lib/security/threat-signals";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +16,27 @@ export const dynamic = "force-dynamic";
 type SearchParams = { view?: string; q?: string };
 
 const PILL = "inline-flex items-center rounded-full px-2 py-0.5 text-[0.68rem] font-semibold capitalize";
+
+/** Threat severity → dual-theme tone (shares the account palette tokens). */
+function threatTone(severity: ThreatSeverity): string {
+  if (severity === "critical") return `${PILL} bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]`;
+  if (severity === "warning") return `${PILL} bg-[var(--acct-orange-soft)] text-[var(--acct-orange-text)]`;
+  return `${PILL} bg-[var(--acct-gold-soft)] text-[var(--acct-muted)]`;
+}
+
+/** Overall posture → banner styling + human word. */
+function postureBanner(posture: ThreatPosture): { tone: string; label: string; calm: boolean } {
+  switch (posture) {
+    case "critical":
+      return { tone: "border-[var(--acct-red)] bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]", label: "Critical — act now", calm: false };
+    case "elevated":
+      return { tone: "border-[var(--acct-orange)] bg-[var(--acct-orange-soft)] text-[var(--acct-orange-text)]", label: "Elevated — review today", calm: false };
+    case "watch":
+      return { tone: "border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] text-[var(--acct-ink)]", label: "Watch — nothing urgent", calm: false };
+    default:
+      return { tone: "border-[var(--acct-green)] bg-[var(--acct-green-soft)] text-[var(--acct-green-text)]", label: "All calm — no attacker signals", calm: true };
+  }
+}
 
 /** Map a stored risk_level to a dual-theme tone (defaults to calm). */
 function riskTone(level: string): string {
@@ -48,12 +71,14 @@ export default async function OwnerAuditPage({
   const sp = (await searchParams) || {};
   const view = sp.view === "all" ? "all" : "risk";
   const q = typeof sp.q === "string" ? sp.q : "";
-  const [data, security, locale] = await Promise.all([
+  const [data, security, threat, locale] = await Promise.all([
     getAuditHistoryPageData({ view, q, limit: 220 }),
     getSecurityActivityData({ limit: 60 }),
+    getSecurityThreatData(),
     getHubPublicLocale(),
   ]);
   const t = (s: string) => translateSurfaceLabel(locale, s);
+  const banner = postureBanner(threat.posture);
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -62,6 +87,90 @@ export default async function OwnerAuditPage({
         title={t("Sensitive activity history")}
         description={t("Privilege, payout, wallet, and security-relevant events. Navigation audit tail appears when staff_navigation_audit is populated (future staff dashboards).")}
       />
+
+      {/* Threat watch — attacker fingerprints derived live from every account's
+          sign-in + device telemetry. This is the "we see everything" surface:
+          not sign-in/out noise, but credential spray, impossible travel, shared
+          devices, revoked-device reuse. Same engine as the owner dashboard +
+          the Founder AI, so all three read one truth. */}
+      <OwnerPanel
+        title={t("Threat watch")}
+        description={t("Attacker signals derived live from platform-wide sign-in and device telemetry — the view only this console has. Every signal is evidence-backed: a real count you can act on, not sign-in/out noise.")}
+        action={
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--acct-muted)]">
+            {banner.calm ? (
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
+            )}
+            {threat.metrics.eventsAnalyzed} {t("events")} · {threat.metrics.windowDays}
+            {t("d")}
+          </span>
+        }
+      >
+        <div className={`rounded-xl border px-4 py-3 text-sm font-semibold ${banner.tone}`}>
+          {t(banner.label)}
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {[
+            { label: t("Critical"), value: threat.metrics.criticalCount, danger: threat.metrics.criticalCount > 0 },
+            { label: t("Warnings"), value: threat.metrics.warningCount },
+            { label: t("Spray IPs"), value: threat.metrics.distinctSprayIps },
+            { label: t("Shared devices"), value: threat.metrics.sharedDevices },
+            { label: t("Impossible travel"), value: threat.metrics.impossibleTravelAccounts },
+            { label: t("Revoked reuse"), value: threat.metrics.revokedReuse, danger: threat.metrics.revokedReuse > 0 },
+            { label: t("Watch-level"), value: threat.metrics.watchCount },
+            { label: t("Devices tracked"), value: threat.metrics.devicesAnalyzed },
+          ].map((stat) => (
+            <div key={stat.label} className="acct-card px-3 py-2">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--acct-muted)]">{stat.label}</p>
+              <p className={`mt-0.5 text-xl font-bold ${stat.danger ? "text-[var(--acct-red-text)]" : "text-[var(--acct-ink)]"}`}>
+                {stat.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {threat.signals.length === 0 ? (
+          <p className="mt-3 text-sm text-[var(--acct-muted)]">
+            {t("No attacker signals in the current window. This panel lights up the moment the telemetry shows one.")}
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {threat.signals.map((signal) => (
+              <li key={signal.id} className="acct-card px-4 py-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={threatTone(signal.severity)}>{t(signal.severity)}</span>
+                  <span className="font-semibold text-[var(--acct-ink)]">{signal.title}</span>
+                  <span className="ml-auto font-mono text-[0.7rem] text-[var(--acct-muted)]">
+                    {signal.evidenceCount} {t("rows")}
+                  </span>
+                </div>
+                <p className="mt-1 text-sm text-[var(--acct-muted)]">{signal.detail}</p>
+                {signal.subjects.length > 0 ? (
+                  <p className="mt-1 truncate text-xs text-[var(--acct-muted)]" title={signal.subjects.join(", ")}>
+                    {t("Involves")}: {signal.subjects.join(", ")}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {threat.blindSpots.length > 0 ? (
+          <div className="mt-3 rounded-xl border border-dashed border-[var(--acct-line)] px-4 py-2">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--acct-muted)]">
+              {t("Known blind spots")}
+            </p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-[var(--acct-muted)]">
+              {threat.blindSpots.map((spot, i) => (
+                <li key={i}>{spot}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </OwnerPanel>
 
       <OwnerPanel
         title={t("Filters")}
