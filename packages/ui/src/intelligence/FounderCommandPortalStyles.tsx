@@ -218,6 +218,51 @@ export function FounderCommandPortalStyles() {
   font-family: var(--fcp-mono); font-size: .58rem; letter-spacing: .22em; color: rgba(240,212,136,.4); text-transform: uppercase; }
 .fcp-footer span:nth-child(2) { color: rgba(248,113,113,.5); }
 
+/* ── Idle hero: the cinematic centered column (unchanged feel) ──────────────── */
+.fcp-hero-wrap { width: 100%; max-width: 46rem; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+
+/* Live telemetry — the pulse chips, reused by the idle hero (a centered row)
+   and the active desk's left rail (a stacked column). */
+.fcp-telemetry { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
+.fcp-pulse-chip--alert { border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.08); }
+.fcp-pulse-chip--alert .fcp-pulse-label { color: rgba(255,201,201,.72); }
+.fcp-pulse-chip--alert .fcp-pulse-value { color: #ffc9c9; }
+
+/* ── Active command desk: mission rail · dialogue · telemetry rail ──────────── */
+/* Mobile: the three regions simply stack (reactor+pulse, thread, syslog) — the
+   same vertical flow as before, so nothing regresses on a phone. Desktop turns
+   it into a real edge-to-edge command desk that USES the width. */
+.fcp-desk { width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.fcp-rail { display: flex; flex-direction: column; gap: 1rem; }
+.fcp-rail--left { align-items: center; }
+.fcp-main { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; }
+.fcp-main .fcp-thread { max-width: 46rem; margin: 0 auto; }
+
+@media (min-width: 1024px) {
+  .fcp-stage--active { overflow: hidden; align-items: stretch; padding: 0; }
+  .fcp-desk {
+    display: grid;
+    grid-template-columns: minmax(230px, 19rem) minmax(0, 1fr) minmax(230px, 20rem);
+    gap: clamp(1rem, 2vw, 2rem);
+    height: 100%;
+    align-items: stretch;
+    padding: 1.25rem clamp(1rem, 2.4vw, 2rem) .5rem;
+  }
+  .fcp-rail { min-height: 0; overflow-y: auto; }
+  .fcp-rail--left { padding-top: 1.25rem; border-right: 1px solid rgba(201,162,39,.1); padding-right: clamp(.5rem,1.4vw,1.1rem); }
+  .fcp-rail--right { border-left: 1px solid rgba(201,162,39,.1); padding-left: clamp(.5rem,1.4vw,1.1rem); }
+  .fcp-rail--left .fcp-telemetry { flex-direction: column; width: 100%; gap: .4rem; }
+  .fcp-rail--left .fcp-pulse-chip { justify-content: space-between; width: 100%; }
+  .fcp-main { overflow: hidden; }
+  .fcp-main .fcp-thread { max-width: 52rem; width: 100%; height: 100%; }
+  .fcp-rail--right .fcp-syslog { max-width: none; margin: 0; border-top: 0; max-height: none; }
+  .fcp-composer-row, .fcp-error, .fcp-voice-notice { max-width: 60rem; }
+}
+@media (min-width: 1440px) {
+  .fcp-desk { grid-template-columns: minmax(260px, 22rem) minmax(0, 1fr) minmax(260px, 24rem); }
+  .fcp-main .fcp-thread { max-width: 58rem; }
+}
+
 @media (max-width: 640px) {
   .fcp-mode-btn { padding: .35rem .55rem; font-size: 0; gap: 0; }
   .fcp-mode-btn svg { width: 1.05rem; height: 1.05rem; }
