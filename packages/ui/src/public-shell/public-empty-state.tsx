@@ -47,8 +47,8 @@ export function PublicEmptyState({
           className={cn(
             "mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl",
             onDark
-              ? "bg-amber-400/12 text-amber-200"
-              : "bg-amber-500/12 text-amber-700 dark:bg-amber-400/12 dark:text-amber-200"
+              ? "bg-[color:color-mix(in_srgb,var(--hc-accent-strong,#E5C870)_12%,transparent)] text-[color:var(--hc-accent-strong,#E5C870)]"
+              : "bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_12%,transparent)] text-[color:var(--hc-accent-text,#8A6F00)]"
           )}
         >
           {icon}
@@ -58,7 +58,9 @@ export function PublicEmptyState({
         <p
           className={cn(
             "text-[11px] font-semibold uppercase tracking-[0.24em]",
-            onDark ? "text-amber-300/85" : "text-amber-700 dark:text-amber-300/85"
+            onDark
+              ? "text-[color:color-mix(in_srgb,var(--hc-accent-strong,#E5C870)_85%,transparent)]"
+              : "text-[color:var(--hc-accent-text,#8A6F00)]"
           )}
         >
           {eyebrow}
@@ -86,7 +88,7 @@ export function PublicEmptyState({
           {ctaHref && ctaLabel ? (
             <Link
               href={ctaHref}
-              className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400"
+              className="inline-flex items-center gap-2 rounded-full bg-[color:var(--hc-accent,#C9A227)] px-5 py-2.5 text-sm font-semibold text-[color:var(--hc-ink-on-accent,#1A1814)] shadow-sm transition hover:bg-[color:var(--hc-accent-strong,#A88718)]"
             >
               {ctaLabel}
             </Link>

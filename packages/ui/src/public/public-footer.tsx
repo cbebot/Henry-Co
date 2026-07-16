@@ -70,7 +70,7 @@ export function PublicFooter({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/35 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_35%,transparent)] to-transparent"
       />
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:px-10">
         <div>
@@ -174,11 +174,11 @@ export function PublicFooter({
               attributionHref ? (
                 <a
                   href={attributionHref}
-                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 transition hover:text-amber-700 dark:text-white/55 dark:hover:text-amber-300"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 transition hover:text-[color:var(--hc-accent-text,#8A6F00)] dark:text-white/55"
                 >
                   <span
                     aria-hidden
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500/80 dark:bg-amber-300/80"
+                    className="inline-block h-1.5 w-1.5 rounded-full bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_80%,transparent)]"
                   />
                   {attribution}
                 </a>
@@ -186,7 +186,7 @@ export function PublicFooter({
                 <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                   <span
                     aria-hidden
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500/80 dark:bg-amber-300/80"
+                    className="inline-block h-1.5 w-1.5 rounded-full bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_80%,transparent)]"
                   />
                   {attribution}
                 </span>

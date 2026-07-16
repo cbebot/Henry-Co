@@ -16,8 +16,13 @@ type BadgeSize = "sm" | "md";
 const TONE: Record<BadgeTone, string> = {
   neutral:
     "bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-200/80 dark:bg-white/5 dark:text-white/75 dark:ring-white/10",
+  // accent + trust are BRAND tones — accent-governed (CHROME-64 amber
+  // retirement): --hc-accent maps to each division's colour and flips per
+  // theme at the token layer, so no dark: twins; fallbacks reproduce brand
+  // gold. `warning` below stays amber ON PURPOSE — semantic status colour,
+  // not brand accent.
   accent:
-    "bg-amber-500/10 text-amber-700 ring-1 ring-inset ring-amber-500/25 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/25",
+    "bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_10%,transparent)] text-[color:var(--hc-accent-text,#A88718)] ring-1 ring-inset ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_25%,transparent)]",
   success:
     "bg-emerald-500/10 text-emerald-700 ring-1 ring-inset ring-emerald-500/25 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/25",
   warning:
@@ -27,7 +32,7 @@ const TONE: Record<BadgeTone, string> = {
   info:
     "bg-sky-500/10 text-sky-700 ring-1 ring-inset ring-sky-500/25 dark:bg-sky-400/10 dark:text-sky-300 dark:ring-sky-400/25",
   trust:
-    "bg-gradient-to-r from-amber-500/12 via-amber-500/8 to-amber-500/12 text-amber-700 ring-1 ring-inset ring-amber-500/28 dark:from-amber-400/10 dark:via-amber-400/6 dark:to-amber-400/10 dark:text-amber-200 dark:ring-amber-400/30",
+    "bg-gradient-to-r from-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_12%,transparent)] via-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_8%,transparent)] to-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_12%,transparent)] text-[color:var(--hc-accent-text,#A88718)] ring-1 ring-inset ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_28%,transparent)]",
   outline:
     "text-zinc-700 ring-1 ring-inset ring-zinc-300/80 dark:text-white/75 dark:ring-white/15",
 };
@@ -88,7 +93,8 @@ export function PublicStatusDot({
   className?: string;
 }) {
   const map: Record<string, string> = {
-    accent: "bg-amber-500 dark:bg-amber-300",
+    // accent = brand dot (accent-governed, flips per theme); warning = semantic amber.
+    accent: "bg-[color:var(--hc-accent,#C9A227)]",
     success: "bg-emerald-500 dark:bg-emerald-400",
     warning: "bg-amber-600 dark:bg-amber-400",
     danger: "bg-rose-500 dark:bg-rose-400",

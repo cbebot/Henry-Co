@@ -230,7 +230,7 @@ export function EcosystemPreferences({
           <div className="pointer-events-auto mx-auto w-full max-w-4xl rounded-2xl border border-zinc-200/90 bg-white/95 p-3.5 text-zinc-950 shadow-[0_22px_70px_-36px_rgba(0,0,0,0.58)] backdrop-blur-2xl dark:border-white/12 dark:bg-[#0b1018]/95 dark:text-white sm:p-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-[color:var(--accent)]">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--hc-accent-text,#8A6F00)] dark:text-[color:var(--accent)]">
                 <ShieldCheck className="h-4 w-4" />
                 {copy.banner.eyebrow}
               </div>
@@ -244,7 +244,7 @@ export function EcosystemPreferences({
                   value={localeChoice}
                   onChange={(e) => setLocaleChoice(normalizeLocale(e.target.value) as AppLocale)}
                   dir="auto"
-                    className="h-10 rounded-xl border border-zinc-200/90 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15 dark:border-white/12 dark:bg-black/25 dark:text-white"
+                    className="h-10 rounded-xl border border-zinc-200/90 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-[color:var(--hc-accent,#C9A227)] focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_15%,transparent)] dark:border-white/12 dark:bg-black/25 dark:text-white"
                 >
                   {localeOptions.map((code) => (
                     <option key={code} value={code} dir="auto" className="bg-[#0B1020] text-white">
@@ -275,7 +275,7 @@ export function EcosystemPreferences({
               <button
                 type="button"
                 onClick={() => setShowPanel(true)}
-                  className="rounded-full border border-amber-500/25 bg-amber-500/10 px-4 py-2.5 text-sm font-semibold text-amber-800 transition hover:bg-amber-500/15 dark:border-[color:var(--accent)]/25 dark:text-[color:var(--accent)]"
+                  className="rounded-full border border-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_10%,transparent)] px-4 py-2.5 text-sm font-semibold text-[color:var(--hc-accent-text,#8A6F00)] transition hover:bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_15%,transparent)] dark:text-[color:var(--accent)]"
               >
                 {copy.banner.customize}
               </button>
@@ -314,7 +314,7 @@ export function EcosystemPreferences({
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-[color:var(--accent)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--hc-accent-text,#8A6F00)] dark:text-[color:var(--accent)]">
                   {copy.panel.eyebrow}
                 </div>
                 <div id="henryco-privacy-panel-title" className="mt-1.5 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">
@@ -326,7 +326,7 @@ export function EcosystemPreferences({
               <button
                 type="button"
                 onClick={closePanel}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-200/90 bg-zinc-50 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus:ring-2 focus:ring-amber-500/30 dark:border-white/12 dark:bg-white/[0.04] dark:text-white/70 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-200/90 bg-zinc-50 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)] dark:border-white/12 dark:bg-white/[0.04] dark:text-white/70 dark:hover:bg-white/[0.08] dark:hover:text-white"
                 aria-label={copy.panel.close}
               >
                 <X className="h-4 w-4" />
@@ -341,7 +341,7 @@ export function EcosystemPreferences({
                 value={localeChoice}
                 onChange={(e) => setLocaleChoice(normalizeLocale(e.target.value) as AppLocale)}
                 dir="auto"
-                className="h-10 rounded-xl border border-zinc-200/90 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15 dark:border-white/12 dark:bg-black/25 dark:text-white"
+                className="h-10 rounded-xl border border-zinc-200/90 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-[color:var(--hc-accent,#C9A227)] focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_15%,transparent)] dark:border-white/12 dark:bg-black/25 dark:text-white"
               >
                   {localeOptions.map((code) => (
                     <option key={code} value={code} dir="auto" className="bg-[#0B1020] text-white">
@@ -458,7 +458,7 @@ function PreferenceRow({
         checked={checked}
         disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 accent-[color:var(--accent)] focus:ring-2 focus:ring-amber-500/20 dark:border-white/20"
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 accent-[color:var(--accent)] focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_20%,transparent)] dark:border-white/20"
       />
     </label>
   );

@@ -96,7 +96,9 @@ export function ConsentNotice({ preferencesHref, locale = "en", tone = "auto" }:
               aria-hidden
               className={cn(
                 "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full",
-                onDark ? "bg-amber-300/90" : "bg-amber-500/90 dark:bg-amber-300/90"
+                onDark
+                  ? "bg-[color:color-mix(in_srgb,var(--hc-accent-strong,#E5C870)_90%,transparent)]"
+                  : "bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_90%,transparent)]"
               )}
             />
             <p

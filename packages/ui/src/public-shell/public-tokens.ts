@@ -48,8 +48,10 @@ export const PublicBrandTokens = {
 
 /** Typography scale — composes Tailwind-friendly utility strings. */
 export const PublicTypographyTokens = {
+  // Accent-governed (CHROME-64 amber retirement): --hc-accent-text is the
+  // designed gold-as-text ramp and flips per theme — no dark: twin needed.
   eyebrow:
-    "text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:color-mix(in_srgb,var(--site-accent,#C9A227)_80%,#6b5a1a_20%)] dark:text-amber-300/80",
+    "text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--hc-accent-text,#A88718)]",
   display:
     "text-[2.25rem] font-black tracking-[-0.035em] text-zinc-950 dark:text-white sm:text-[2.75rem] md:text-[3.25rem] leading-[1.05]",
   heading:
@@ -132,12 +134,14 @@ export const PublicMotionTokens = {
     "active:translate-y-[1px] transition-transform duration-150 ease-out motion-reduce:transition-none motion-reduce:active:translate-y-0",
 } as const;
 
-/** Focus ring — premium amber, readable on both themes. */
+/** Focus ring — accent-governed (CHROME-64 amber retirement): --hc-accent
+ *  flips per theme, so one declaration serves both; the OFFSET stays a
+ *  surface colour. Key names keep the historical `ringAmber` API. */
 export const PublicFocusTokens = {
   ringAmber:
-    "outline-none focus-visible:ring-2 focus-visible:ring-amber-500/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/50 dark:focus-visible:ring-offset-[#0a0f14]",
+    "outline-none focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_55%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0a0f14]",
   ringAmberTight:
-    "outline-none focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/55 dark:focus-visible:ring-offset-[#0a0f14]",
+    "outline-none focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_60%,transparent)] focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0a0f14]",
 } as const;
 
 /** Safe-area helpers so floating surfaces (toasts, dock, mobile sheets) don't collide with iPhone home bar. */
@@ -164,7 +168,7 @@ export const PublicSurfaceStyles = {
   dividerSoft:
     "h-px w-full bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-white/10",
   dividerAmber:
-    "h-px w-full bg-gradient-to-r from-transparent via-amber-400/50 to-transparent",
+    "h-px w-full bg-gradient-to-r from-transparent via-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_50%,transparent)] to-transparent",
 } as const;
 
 /** Consolidated namespace so consumers can do `PublicDesignTokens.color.accent.base`. */
