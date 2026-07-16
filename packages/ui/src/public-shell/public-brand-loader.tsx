@@ -61,7 +61,7 @@ export function PublicBrandLoader({
           <HenryCoBrandedSpinner size="xl" tone={onDark ? "onDark" : "default"} label={title} />
         </div>
         <div className="max-w-md">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-500/80 dark:text-amber-300/70">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--hc-accent-text,#8A6F00)]">
             {eyebrow ?? brand}
           </p>
           <p

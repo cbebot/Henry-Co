@@ -325,7 +325,9 @@ export function HomeHeader({
       <div
         className={cn(
           "mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 transition-[padding] duration-300 sm:px-6 lg:px-8",
-          scrolled ? "py-2.5" : "py-4",
+          // CHROME-64: resting height 12+40+12 = 64px — the ecosystem chrome
+          // standard every division header sits at; scrolled tightens further.
+          scrolled ? "py-2.5" : "py-3",
         )}
       >
         <HomeWordmark brandTitle={brandTitle} brandSub={brandSub} />

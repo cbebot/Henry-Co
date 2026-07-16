@@ -65,7 +65,7 @@ export function PublicSection({
         >
           <div className={cn(headerContainer, headerAlign, headerClassName)}>
             {eyebrow ? (
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-700 dark:text-amber-300/85">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[color:var(--hc-accent-text,#8A6F00)]">
                 {eyebrow}
               </p>
             ) : null}
