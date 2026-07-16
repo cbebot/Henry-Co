@@ -107,7 +107,7 @@
   background: radial-gradient(38% 42% at 30% 22%, rgba(240, 212, 136, 0.18) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
-  animation: auth-glow-breathe 14s ease-in-out infinite;
+  animation: auth-glow-breathe 22s ease-in-out infinite;
 }
 
 .auth-brand > * {
@@ -214,22 +214,29 @@
   animation: auth-seam-draw 820ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
 }
 
-/* A slow highlight that travels the seam — the lamp moving across the stone.
-   The gold glow (box-shadow) is what makes the moving light READ on the light
-   theme too: a bright core alone washes out against the pale form, but a gold
-   halo carries against both the onyx panel and the light surface. */
+/* A slow reflection that glides along the seam — light moving across stone,
+   not a searchlight. Calm is engineered, not asserted:
+   - 18s per pass at LINEAR speed (a constant glide reads serene; easing on a
+     position loop lurches at the ends);
+   - warm gold core, no pure white, ONE soft halo — a reflection, not a flare;
+   - transform-only motion (translateY on the compositor — animating `top`
+     repaints every frame and is why it felt rough);
+   - long fade plateaus so it appears and leaves like passing light. */
 .auth-seam::after {
   content: "";
   position: absolute;
   left: 50%;
   top: 0;
-  width: 5px;
-  height: 26%;
-  transform: translateX(-50%);
+  width: 4px;
+  height: 32%;
+  margin-left: -2px;
   border-radius: 999px;
-  background: linear-gradient(180deg, transparent, #fff6dc 42%, #ffffff 50%, #fff6dc 58%, transparent);
-  box-shadow: 0 0 16px 4px rgba(240, 212, 136, 0.75), 0 0 34px 8px rgba(201, 162, 39, 0.4);
-  animation: auth-seam-travel 6s ease-in-out 0.8s infinite;
+  background: linear-gradient(180deg, transparent, rgba(246, 228, 166, 0.85) 50%, transparent);
+  box-shadow: 0 0 18px 5px rgba(201, 162, 39, 0.28);
+  opacity: 0;
+  transform: translateY(-100%);
+  animation: auth-seam-travel 18s linear 1.2s infinite;
+  will-change: transform, opacity;
 }
 
 @media (max-width: 1023px) {
@@ -249,11 +256,14 @@
   .auth-seam::after {
     left: 0;
     top: 50%;
-    width: 22%;
-    height: 3px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, transparent, #fff6dc, transparent);
-    animation: auth-seam-travel-h 7s ease-in-out 1s infinite;
+    width: 28%;
+    height: 2px;
+    margin-left: 0;
+    background: linear-gradient(90deg, transparent, rgba(246, 228, 166, 0.8), transparent);
+    box-shadow: 0 0 14px 3px rgba(201, 162, 39, 0.24);
+    opacity: 0;
+    transform: translate(-100%, -50%);
+    animation: auth-seam-travel-h 20s linear 1.2s infinite;
   }
 }
 
@@ -278,7 +288,7 @@
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(46% 60% at 1% 40%, rgba(201, 162, 39, 0.12) 0%, transparent 62%);
-  animation: auth-glow-breathe 15s ease-in-out infinite;
+  animation: auth-glow-breathe 22s ease-in-out infinite;
 }
 
 .dark .auth-form-panel::before {
@@ -658,25 +668,33 @@
   from { transform: scaleX(0); opacity: 0; }
   to { transform: scaleX(1); opacity: 1; }
 }
+/* Transform-only glide (compositor-smooth). Percentages are of the pseudo's
+   OWN size: -100% starts it fully hidden before the seam, ~320%/370% carries
+   its trailing edge past the far end. Long fade plateaus (18% ≈ 3.2s) mean it
+   arrives and leaves like passing light — never pops. */
 @keyframes auth-seam-travel {
-  0% { top: -22%; opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% { transform: translateY(-100%); opacity: 0; }
+  18% { opacity: 0.9; }
+  82% { opacity: 0.9; }
+  100% { transform: translateY(320%); opacity: 0; }
 }
 @keyframes auth-seam-travel-h {
-  0% { left: -22%; opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  0% { transform: translate(-100%, -50%); opacity: 0; }
+  18% { opacity: 0.85; }
+  82% { opacity: 0.85; }
+  100% { transform: translate(370%, -50%); opacity: 0; }
 }
 @keyframes auth-rise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* Opacity-only breathe: no translate, no scale — geometry that swells reads
+   restless and repaints; a narrow 0.75→0.9 band at 22s is a room breathing,
+   not a lamp flickering. Both instances share the duration so the whole scene
+   breathes as ONE body instead of two out-of-phase glows. */
 @keyframes auth-glow-breathe {
-  0%, 100% { opacity: 0.7; transform: translate(0, 0) scale(1); }
-  50% { opacity: 1; transform: translate(2%, 1.5%) scale(1.08); }
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 0.9; }
 }
 
 /* ─── Quality floor — motion off, focus visible, RTL ─────────────────────── */
