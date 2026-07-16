@@ -1,4 +1,4 @@
-import { getSesConfig, sendSesEmail } from "./providers/ses";
+import { getPostmarkServerToken, sendPostmarkEmail } from "./providers/postmark";
 import { resolveSenderIdentity } from "./sender-identity";
 import type {
   EmailDispatchResult,
@@ -8,29 +8,32 @@ import type {
 } from "./types";
 
 export type ResolvedEmailProvider =
-  | { provider: "ses"; reason: "default" }
+  | { provider: "postmark"; reason: "default" }
   | { provider: "none"; reason: "no_provider_configured" };
 
 /**
- * EMAIL-SES-ONLY (2026-07-09) — Amazon SES is the ONLY outbound email rail.
+ * EMAIL-POSTMARK (2026-07-14) — Postmark is the ONLY outbound email rail.
  *
- * Resend and Brevo are permanently retired (owner directive). That retirement
- * is a CODE invariant, not an env accident: the chain below can never contain
- * another provider, so a leftover RESEND_API_KEY / BREVO_API_KEY on some
- * deployment can never silently re-route mail through a retired vendor.
- * EMAIL_PROVIDER / EMAIL_FALLBACK_PROVIDER are intentionally ignored for the
- * same reason.
+ * Amazon SES and the earlier Resend/Brevo vendors are permanently retired
+ * (owner directive: every email going out from the company ships through
+ * Postmark). That retirement is a CODE invariant, not an env accident: the
+ * chain below can never contain another provider, so a leftover AWS_SES_* /
+ * RESEND_API_KEY / BREVO_API_KEY on some deployment can never silently
+ * re-route mail through a retired vendor. EMAIL_PROVIDER /
+ * EMAIL_FALLBACK_PROVIDER are intentionally ignored for the same reason.
  *
  * Every purpose (auth, support, newsletter, per-division transactional) rides
- * SES. Channel separation (V2-PNH-03B) is preserved where it always mattered —
- * in sender identity (which mailbox a purpose sends FROM, see
- * `resolveSenderIdentity`) — not in vendor routing.
+ * Postmark. Channel separation (V2-PNH-03B) is preserved where it always
+ * mattered — in sender identity (which mailbox a purpose sends FROM, see
+ * `resolveSenderIdentity`) and now additionally in Postmark Message Streams
+ * (which reputation lane it rides, see `resolvePostmarkStream`) — not in
+ * vendor routing.
  */
 export function resolveProviderChain(purpose?: EmailPurpose): EmailProviderId[] {
   // The purpose parameter stays for API stability; routing no longer varies
   // by purpose — one rail for everything.
   void purpose;
-  return getSesConfig() ? ["ses"] : [];
+  return getPostmarkServerToken() ? ["postmark"] : [];
 }
 
 /**
@@ -38,7 +41,7 @@ export function resolveProviderChain(purpose?: EmailPurpose): EmailProviderId[] 
  */
 export function resolveEmailProvider(purpose?: EmailPurpose): ResolvedEmailProvider {
   return resolveProviderChain(purpose).length > 0
-    ? { provider: "ses", reason: "default" }
+    ? { provider: "postmark", reason: "default" }
     : { provider: "none", reason: "no_provider_configured" };
 }
 
@@ -83,5 +86,5 @@ export async function sendTransactionalEmail(
     };
   }
 
-  return sendSesEmail(enriched);
+  return sendPostmarkEmail(enriched);
 }

@@ -211,8 +211,8 @@ export async function POST(req: NextRequest) {
   );
   const sender = resolveSenderIdentity("auth");
 
-  // EMAIL-SES-ONLY (2026-07-09): the shared router IS the dispatch policy —
-  // Amazon SES only, no vendor fallback (Resend/Brevo retired).
+  // EMAIL-POSTMARK (2026-07-14): the shared router IS the dispatch policy —
+  // Postmark only, no vendor fallback (Amazon SES/Resend/Brevo retired).
   const result = await sendTransactionalEmail({
     to: parsed.user_email,
     subject: rendered.subject,
