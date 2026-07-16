@@ -99,6 +99,8 @@ function sampleFor(key: string): Record<string, unknown> {
       };
     case "owner.marketplace.product.review":
       return { productId: "e5f6a7b8-c9d0-4e1f-8a2b-3c4d5e6f7a8b", decision: "approved" };
+    case "owner.security.account.secure":
+      return { userId: "f6a7b8c9-d0e1-4f2a-9b3c-4d5e6f7a8b9c" };
     default:
       return {};
   }
