@@ -18,6 +18,7 @@ import {
   renderDraftAsHtml,
   resolveBrevoConfig,
   runVoiceGuard,
+  scopeMatchesCampaign,
   summarizeVoiceWarnings,
   listTopicsForDivision,
   type NewsletterBrandVoiceRule,
@@ -926,7 +927,9 @@ export async function runCampaignSend(
     const scope = suppressionEntries
       .filter((e) => e.email.toLowerCase() === row.email.toLowerCase())
       .find((e) => {
-        if (e.scope === "transactional_only") return false;
+        // Canonical scope semantics — a transactional_only opt-down still
+        // suppresses every marketing class (STAFF-6: never skip it wholesale).
+        if (!scopeMatchesCampaign(e.scope, campaign.campaign_class)) return false;
         if (e.expires_at) {
           const exp = Date.parse(e.expires_at);
           if (!Number.isNaN(exp) && exp <= Date.now()) return false;

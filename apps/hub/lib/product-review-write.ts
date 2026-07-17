@@ -51,12 +51,12 @@ export async function readProductReview(productIdInput: string): Promise<Product
   if (product.vendor_id) {
     const { data: vendorRow } = await admin
       .from("marketplace_vendors")
-      .select("id, store_name, owner_user_id")
+      .select("id, name, owner_user_id")
       .eq("id", product.vendor_id)
       .maybeSingle();
-    const vendor = vendorRow as { store_name: string | null; owner_user_id: string | null } | null;
+    const vendor = vendorRow as { name: string | null; owner_user_id: string | null } | null;
     if (vendor) {
-      vendorStore = vendor.store_name || vendorStore;
+      vendorStore = vendor.name || vendorStore;
       vendorUserId = vendor.owner_user_id;
     }
   }

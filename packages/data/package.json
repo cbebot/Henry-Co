@@ -12,11 +12,13 @@
     "./cross-division-activity": "./src/cross-division-activity.ts",
     "./support-summary": "./src/support-summary.ts",
     "./abandoned-tasks": "./src/abandoned-tasks.ts",
-    "./abandoned-tasks-core": "./src/abandoned-tasks-core.ts"
+    "./abandoned-tasks-core": "./src/abandoned-tasks-core.ts",
+    "./studio-scope": "./src/studio-scope.ts",
+    "./studio-scope-core": "./src/studio-scope-core.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/inbox-href.test.ts"
+    "test": "tsx --test src/__tests__/inbox-href.test.ts src/__tests__/studio-scope-core.test.ts"
   },
   "peerDependencies": {
     "@supabase/supabase-js": "^2.0.0"
