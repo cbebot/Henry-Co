@@ -39,7 +39,16 @@ export type SuppressionEvaluationInput = {
   trustState?: TrustState;
 };
 
-function scopeMatchesCampaign(
+/**
+ * Does a suppression entry of `scope` apply to a campaign of
+ * `campaignClass`? This is the single source of truth for suppression
+ * scope semantics — in particular `transactional_only` suppresses every
+ * class EXCEPT `transactional_education`. Send paths and the subscribe
+ * gate MUST route through this predicate so they can never diverge (the
+ * FIRE STAFF-6 lesson: an inline `scope === "transactional_only"` skip
+ * silently let marketing blasts reach opted-down addresses).
+ */
+export function scopeMatchesCampaign(
   scope: NewsletterSuppressionScope,
   campaignClass: NewsletterCampaignClass
 ): boolean {

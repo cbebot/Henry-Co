@@ -11,8 +11,15 @@
       "default": "./src/index.ts"
     }
   },
+  "scripts": {
+    "test": "tsx --test src/__tests__/suppression.test.ts"
+  },
   "dependencies": {
     "@henryco/config": "workspace:*",
     "@henryco/intelligence": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.9.3"
   }
 }

@@ -25,6 +25,7 @@ import {
   brevoBlocklistContact,
   renderDraftAsHtml,
   runVoiceGuard,
+  scopeMatchesCampaign,
   type NewsletterCampaignContent,
   type NewsletterCampaignClass,
 } from "@henryco/newsletter";
@@ -158,7 +159,12 @@ async function isEmailSuppressed(email: string): Promise<boolean> {
   if (!data) return false;
   const now = Date.now();
   return data.some((row: { scope: string; expires_at: string | null }) => {
-    if (row.scope === "transactional_only") return false;
+    // Subscribing to the newsletter is a marketing (company_wide) action,
+    // so a transactional_only opt-down blocks it too (STAFF-6: don't treat
+    // transactional_only as "not suppressed" for a marketing subscribe).
+    if (!scopeMatchesCampaign(row.scope as NewsletterSuppressionScope, "company_wide")) {
+      return false;
+    }
     if (row.expires_at) {
       const exp = Date.parse(row.expires_at);
       if (!Number.isNaN(exp) && exp <= now) return false;
@@ -888,7 +894,9 @@ export async function runCampaignSend(
     const scope = suppressionEntries
       .filter((e) => e.email.toLowerCase() === subscriber.email.toLowerCase())
       .find((e) => {
-        if (e.scope === "transactional_only") return false;
+        // Canonical scope semantics — a transactional_only opt-down still
+        // suppresses every marketing class (STAFF-6: never skip it wholesale).
+        if (!scopeMatchesCampaign(e.scope, campaign.campaign_class)) return false;
         if (e.expires_at) {
           const exp = Date.parse(e.expires_at);
           if (!Number.isNaN(exp) && exp <= Date.now()) return false;

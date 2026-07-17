@@ -75,6 +75,13 @@ export {
 } from "./calendar-aggregate";
 
 export {
+  studioViewerIdentity,
+  filterToAllowedProjects,
+  loadViewerStudioProjectIds,
+  type StudioViewerIdentity,
+} from "./studio-scope";
+
+export {
   captureAbandonedTask,
   listPendingAbandonedTasks,
   bumpAbandonedTaskReminder,
