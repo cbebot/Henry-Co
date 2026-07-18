@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-07-18T04:06:02.530Z",
+  "generatedAt": "2026-07-18T18:25:31.718Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1562,
-    "entries": 1231,
+    "scannedFiles": 1568,
+    "entries": 1232,
     "counts": {
       "OK": 3,
       "GAP": 1052,
-      "EXEMPT": 124,
+      "EXEMPT": 125,
       "AMBIGUOUS": 52
     },
-    "durationMs": 11492
+    "durationMs": 7223
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -8941,6 +8941,16 @@
         "text": "Reply with the next action, clarification, or resolution. Drafts stay here while you type.",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
+      }
+    ],
+    "apps/studio-sites/app/[[...slug]]/page.tsx": [
+      {
+        "line": 29,
+        "col": 45,
+        "kind": "jsx_text",
+        "text": "This preview is private",
+        "classification": "EXEMPT",
+        "reason": "file under exempt prefix apps/studio-sites"
       }
     ],
     "apps/super-app/app/(tabs)/account.tsx": [

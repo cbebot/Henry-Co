@@ -1,0 +1,67 @@
+# Studio Build Agent — executor workflow (E1).
+# Lives in the DEDICATED private repo (henryonyx/studio-build-agent), NOT the
+# monorepo. Triggered by the studio orchestrator via workflow_dispatch with a
+# fine-grained actions:write token scoped to this repo only.
+#
+# The runner holds ZERO production credentials — only the two repo secrets
+# below (a dedicated provider key + the HMAC callback secret). The signed
+# spec-fetch URL arrives as a dispatch INPUT, not a stored secret.
+
+name: studio-build-agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: "Build job id (correlation key)"
+        required: true
+        type: string
+      attempt:
+        description: "Attempt number"
+        required: true
+        type: string
+      spec_fetch_url:
+        description: "Short-TTL signed URL to fetch the frozen BuildJobSpec"
+        required: true
+        type: string
+
+# Least privilege: the workflow itself needs no repo write scopes. The agent
+# reaches the provider + the callback only.
+permissions:
+  contents: read
+
+concurrency:
+  # One run per (job, attempt) — a re-dispatch cancels a superseded run.
+  group: build-${{ inputs.job_id }}-${{ inputs.attempt }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # A dedicated GitHub Environment can gate this with an approval + scoped
+    # secrets, matching the eas-build.yml production-approval precedent.
+    environment: build-agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout runner harness
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install (harness deps only)
+        run: npm ci --omit=dev || npm install --omit=dev
+
+      - name: Run the capped build agent
+        env:
+          # The ONLY two secrets in the runner. Neither authenticates to
+          # Henry Onyx production.
+          BUILD_AGENT_ANTHROPIC_KEY: ${{ secrets.BUILD_AGENT_ANTHROPIC_KEY }}
+          AGENCY_CALLBACK_SECRET: ${{ secrets.AGENCY_CALLBACK_SECRET }}
+          JOB_ID: ${{ inputs.job_id }}
+          ATTEMPT: ${{ inputs.attempt }}
+          SPEC_FETCH_URL: ${{ inputs.spec_fetch_url }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: node run.mjs
