@@ -582,6 +582,12 @@ function mapBrief(row: Record<string, unknown>): StudioBrief {
     urgency: cleanText(row.urgency),
     timeline: cleanText(row.timeline),
     packageIntent: cleanText(row.package_intent) === "package" ? "package" : "custom",
+    briefClass:
+      cleanText(row.brief_class) === "template"
+        ? "template"
+        : cleanText(row.brief_class) === "agency"
+          ? "agency"
+          : null,
     techPreferences: arrayOfText(row.tech_preferences),
     requiredFeatures: arrayOfText(row.required_features),
     referenceFiles: [],
@@ -930,6 +936,9 @@ async function upsertBrief(brief: StudioBrief, meta?: UpsertMeta) {
       urgency: brief.urgency,
       timeline: brief.timeline,
       package_intent: brief.packageIntent,
+      // SA-1 discriminator. Deploy-order safe: writeWithSchemaRetry strips
+      // this column until the 20260718120000 migration is applied.
+      brief_class: brief.briefClass,
       tech_preferences: brief.techPreferences,
       required_features: brief.requiredFeatures,
       reference_links: brief.referenceLinks,

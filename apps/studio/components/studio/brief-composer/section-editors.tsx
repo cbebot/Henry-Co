@@ -329,6 +329,8 @@ function ComposerBudgetInput({
 
 export function BusinessSectionEditor({
   requestConfig,
+  pathway = "custom",
+  packagePriceLabel = null,
   businessType,
   setBusinessType,
   budgetBand,
@@ -340,6 +342,10 @@ export function BusinessSectionEditor({
   errors,
 }: {
   requestConfig: StudioRequestConfig;
+  /** SA-1 — on the package lane the budget question is dead weight: the
+   * package price IS the budget, so we state it instead of asking. */
+  pathway?: "package" | "custom";
+  packagePriceLabel?: string | null;
   businessType: string;
   setBusinessType: (value: string) => void;
   budgetBand: string;
@@ -354,13 +360,18 @@ export function BusinessSectionEditor({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const urgencyOptions = requestConfig.urgencyOptions.filter((item) => item.isActive !== false);
   const timelineOptions = requestConfig.timelineOptions.filter((item) => item.isActive !== false);
+  const packageBudget = pathway === "package" && Boolean(packagePriceLabel);
 
   return (
     <div className="space-y-6">
       <p className="max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-        {t(
-          "Tell us the budget and the timing. We come back inside one business day with a fixed scope, a fixed delivery window, and a senior lead assigned by name — no junior hand-offs, no scope drift.",
-        )}
+        {packageBudget
+          ? t(
+              "Your package already fixes the price, so there is no budget question here — just confirm the timing and who this is for.",
+            )
+          : t(
+              "Tell us the budget and the timing. We come back inside one business day with a fixed scope, a fixed delivery window, and a senior lead assigned by name — no junior hand-offs, no scope drift.",
+            )}
       </p>
       <div className="grid gap-4 md:grid-cols-2">
         <StudioListbox
@@ -371,7 +382,21 @@ export function BusinessSectionEditor({
           placeholder={t("Select business type")}
           options={requestConfig.businessOptions.map((item) => ({ value: item, label: item }))}
         />
-        <ComposerBudgetInput value={budgetBand} onChange={setBudgetBand} error={errors?.budgetBand} />
+        {packageBudget ? (
+          <div className="flex flex-col">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+              {t("Project budget")} · NGN
+            </span>
+            <div className="studio-input mt-2 flex items-center rounded-[1.4rem] px-4 py-3 text-base font-semibold tracking-tight">
+              {packagePriceLabel}
+            </div>
+            <span className="mt-2 text-[0.72rem] leading-snug text-[var(--studio-ink-soft)]">
+              {t("Fixed package price — locked at proposal acceptance, no surprise overages.")}
+            </span>
+          </div>
+        ) : (
+          <ComposerBudgetInput value={budgetBand} onChange={setBudgetBand} error={errors?.budgetBand} />
+        )}
         <StudioListbox
           label={t("Urgency")}
           required

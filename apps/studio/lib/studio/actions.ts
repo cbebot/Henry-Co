@@ -11,6 +11,7 @@ import {
   requireStudioRoles,
   viewerHasRole,
 } from "@/lib/studio/auth";
+import { markStudioBriefFlowDraftSubmitted } from "@/lib/studio/brief-flow-draft-server";
 import { getProjectWorkspace } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import { normalizeStudioRequestConfig } from "@/lib/studio/request-config";
@@ -24,6 +25,7 @@ import {
   attachPaymentProof,
   createProjectFromProposal,
   publishReview,
+  releaseStudioProposal,
   saveStudioPackage,
   saveStudioPlatformSettings,
   saveStudioRequestConfig,
@@ -180,6 +182,11 @@ export async function submitStudioBriefAction(formData: FormData) {
     files,
     domainIntent: parseDomainIntentFromForm(String(formData.get("domainIntentJson") || "")),
   });
+
+  // SA-1 — the brief landed; retire the server recovery draft so a later
+  // visit starts clean instead of resurrecting a submitted brief. Best-
+  // effort and awaited (it never throws) before the redirect unwinds.
+  await markStudioBriefFlowDraftSubmitted();
 
   if (result.project && result.payment) {
     redirect(
@@ -386,12 +393,32 @@ export async function setProposalStatusAction(formData: FormData) {
     proposalId,
     String(formData.get("status") || "sent") as
       | "draft"
+      | "in_review"
       | "sent"
       | "accepted"
       | "rejected"
       | "expired"
   );
   redirect(redirectPath);
+}
+
+/**
+ * SA-D5 — one-tap release of a held agency proposal. Role gate matches the
+ * SA-D1 pre-approved delegation set exactly (studio_owner + sales_consultation);
+ * deploy/money/social stay with the owner and are not touched here.
+ */
+export async function releaseStudioProposalAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "sales_consultation"], "/sales/proposals");
+  const proposalId = String(formData.get("proposalId") || "");
+  const redirectPath = String(formData.get("redirectPath") || "/sales/proposals");
+  if (!proposalId) redirect(redirectPath);
+
+  try {
+    await releaseStudioProposal(proposalId);
+  } catch {
+    redirect(withStudioToast(redirectPath, "proposal_release_failed"));
+  }
+  redirect(withStudioToast(redirectPath, "proposal_released"));
 }
 
 export async function createProjectUpdateAction(formData: FormData) {

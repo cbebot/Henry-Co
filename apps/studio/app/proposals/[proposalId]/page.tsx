@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/env";
 import { getStudioPublicLocale } from "@/lib/locale-server";
@@ -181,6 +182,75 @@ export default async function ProposalDetailPage({
       }),
     ),
   ]);
+
+  // SA-D5 — an agency brief holds in review: the client sees an honest
+  // "with the team" state, never a price that no human has looked at.
+  // Studio staff (the release roles) still see the full room below so they
+  // can review exactly what the client will receive.
+  const heldForClient =
+    proposal.status === "in_review" &&
+    !viewerHasRole(viewer, ["studio_owner", "sales_consultation"]);
+
+  if (heldForClient) {
+    const t = (text: string) => translateSurfaceLabel(locale, text);
+    const reviewSteps = [
+      t("A senior lead reads your brief in full — goals, scope, timing, and the details you shared."),
+      t("The team locks the scope and a fixed price, so the number you receive is one we stand behind."),
+      t("Your complete proposal arrives by email, usually within one business day."),
+    ];
+    return (
+      <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8 lg:px-10">
+        <section className="studio-panel studio-mesh rounded-[2.8rem] px-7 py-10 sm:px-10 lg:px-14">
+          <div className="studio-kicker">{t("Proposal room")}</div>
+          <h1 className="studio-heading mt-4">{t("Your brief is with the team.")}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--studio-ink-soft)]">
+            {t(
+              "This build asks for real judgment, so a senior lead reviews it personally before any pricing reaches you. Nothing is on hold — the review is already underway.",
+            )}
+          </p>
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--studio-accent-ring)] bg-[var(--studio-accent-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink)]">
+            <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" aria-hidden />
+            {proposalStatusLabel(proposal.status)}
+          </div>
+
+          <div className="mt-8 space-y-4">
+            {reviewSteps.map((step, index) => (
+              <div key={step} className="flex gap-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] text-xs font-semibold text-[var(--studio-signal)]">
+                  {index + 1}
+                </div>
+                <div className="text-sm leading-7 text-[var(--studio-ink-soft)]">{step}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {brief ? (
+          <section className="studio-panel mt-8 rounded-[1.9rem] p-6">
+            <div className="studio-kicker">{t("What you told us")}</div>
+            <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
+              <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                {t("Goals and scope")}
+              </div>
+              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedBriefGoals}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedBriefScope}</p>
+            </div>
+            {domainRecap ? (
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
+                <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                  {domainRecap.title}
+                </div>
+                <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{domainRecap.body}</p>
+              </div>
+            ) : null}
+            <p className="mt-5 text-sm leading-7 text-[var(--studio-ink-soft)]">
+              {t("Spotted something to add? Reply to your confirmation email and it reaches the same reviewer.")}
+            </p>
+          </section>
+        ) : null}
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">

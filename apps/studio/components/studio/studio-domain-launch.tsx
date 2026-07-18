@@ -23,12 +23,17 @@ function buildIntent(partial: Partial<StudioDomainIntent> & { path: Path }): Stu
   return intent;
 }
 
-function getPathCopy(locale: AppLocale): Record<Path, { title: string; hint: string }> {
+function getPathCopy(
+  locale: AppLocale,
+  lookupEnabled: boolean,
+): Record<Path, { title: string; hint: string }> {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
     new: {
       title: t("I want a new web address (domain)"),
-      hint: t("We can check common cases and suggest clean alternatives. Final purchase is always confirmed with you."),
+      hint: lookupEnabled
+        ? t("We can check common cases and suggest clean alternatives. Final purchase is always confirmed with you.")
+        : t("Tell us the name you have in mind and a backup. We confirm availability and register it with you before go-live."),
     },
     have: {
       title: t("I already own a domain"),
@@ -43,15 +48,23 @@ function getPathCopy(locale: AppLocale): Record<Path, { title: string; hint: str
 
 export function StudioDomainLaunchSection({
   onIntentChange,
+  lookupEnabled = false,
 }: {
   /** Lifts the serialized domain intent up to the form shell so it can be
    * mirrored as a hidden input. This section unmounts before submit (it
    * lives in the Commercial step), so without lifting, the intent drops. */
   onIntentChange?: (intentJson: string) => void;
+  /** SA-1 — server-resolved `getDomainLookupMode() !== "off"`. While the
+   * lookup is dark (the default in every environment today) the "Check
+   * this name" affordance is NOT rendered: a button that always answers
+   * "not turned on yet" is friction shipped to every brief. The paths
+   * (new/have/later) and the advisory copy stay; flipping
+   * STUDIO_DOMAIN_RDAP_ENABLED lights the control back up unchanged. */
+  lookupEnabled?: boolean;
 } = {}) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const PATH_COPY = useMemo(() => getPathCopy(locale), [locale]);
+  const PATH_COPY = useMemo(() => getPathCopy(locale, lookupEnabled), [locale, lookupEnabled]);
   const [path, setPath] = useState<Path>("new");
   const [desired, setDesired] = useState("");
   const [backupDesired, setBackupDesired] = useState("");
@@ -258,9 +271,11 @@ export function StudioDomainLaunchSection({
               <li>
                 {t("If you serve one country strongly, your local registrar may offer a trusted country ending—we will confirm what fits your brand.")}
               </li>
-              <li>
-                {t("When live lookup is on, we check public registry data for many .com names; we never claim legal availability until a registrar agrees at purchase time.")}
-              </li>
+              {lookupEnabled ? (
+                <li>
+                  {t("When live lookup is on, we check public registry data for many .com names; we never claim legal availability until a registrar agrees at purchase time.")}
+                </li>
+              ) : null}
             </ul>
           </div>
         ) : null}
@@ -268,7 +283,11 @@ export function StudioDomainLaunchSection({
 
       {path === "new" ? (
         <div className="mt-6 space-y-4">
-          <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div
+            className={
+              lookupEnabled ? "grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end" : "grid gap-4"
+            }
+          >
             <div>
               <label htmlFor="studio-domain-input" className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                 {t("Preferred name or domain")}
@@ -283,21 +302,25 @@ export function StudioDomainLaunchSection({
                 className="studio-input mt-2 rounded-[1.2rem] px-4 py-3"
               />
               <p className="mt-2 text-xs leading-5 text-[var(--studio-ink-soft)]">
-                {t("*Live checks only run when enabled for .com names. Otherwise we show thoughtful ideas—not a guarantee until a registrar confirms.")}
+                {lookupEnabled
+                  ? t("*Live checks only run when enabled for .com names. Otherwise we show thoughtful ideas—not a guarantee until a registrar confirms.")
+                  : t("Share the name you want—Henry Onyx confirms availability with you before anything is purchased.")}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => void runCheck()}
-              disabled={checking}
-              className="studio-button-secondary inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-60"
-            >
-              {checking ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {checking ? t("Checking…") : t("Check this name")}
-            </button>
+            {lookupEnabled ? (
+              <button
+                type="button"
+                onClick={() => void runCheck()}
+                disabled={checking}
+                className="studio-button-secondary inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-60"
+              >
+                {checking ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                {checking ? t("Checking…") : t("Check this name")}
+              </button>
+            ) : null}
           </div>
 
-          {lastResult ? (
+          {lookupEnabled && lastResult ? (
             <div
               role="status"
               className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/12 px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]"
@@ -306,7 +329,7 @@ export function StudioDomainLaunchSection({
             </div>
           ) : null}
 
-          {lastResult && lastResult.suggestions.length > 0 ? (
+          {lookupEnabled && lastResult && lastResult.suggestions.length > 0 ? (
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                 {t("Professional alternatives to try")}

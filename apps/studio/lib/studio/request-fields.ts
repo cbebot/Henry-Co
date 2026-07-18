@@ -287,9 +287,14 @@ export function validateStep(
   }
 
   if (step === "scope") {
+    // SA-1 adaptive cut: on the package lane the package's own includes
+    // define the core build — an empty pick list means "the package as
+    // sold", not a missing answer. (The path step already enforces that a
+    // package is actually selected on this lane.)
     if (
+      d.pathway !== "package" &&
       d.selectedPages.length + d.selectedModules.length + d.selectedAddOns.length ===
-      0
+        0
     ) {
       errors.scope = "Pick at least one capability so we know what to build.";
     }
@@ -303,7 +308,9 @@ export function validateStep(
     if (d.scopeNotes.trim().length < 12) {
       errors.scopeNotes = "A line on scope keeps the estimate honest.";
     }
-    if (!d.budgetBand.trim()) {
+    // SA-1 adaptive cut: a package's price IS the budget — the question
+    // only exists on the custom lane.
+    if (d.pathway !== "package" && !d.budgetBand.trim()) {
       errors.budgetBand = "A budget band sharpens the plan. A range is fine.";
     }
   }

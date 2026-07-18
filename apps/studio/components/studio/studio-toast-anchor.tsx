@@ -3,6 +3,8 @@
 import { CheckCircle2, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 const TOAST_COPY: Record<string, { title: string; body: string }> = {
   brief_submitted: {
@@ -49,9 +51,19 @@ const TOAST_COPY: Record<string, { title: string; body: string }> = {
     title: "Payment status saved",
     body: "The workspace reflects this change.",
   },
+  proposal_released: {
+    title: "Proposal released",
+    body: "The client can now open the full proposal. The same record carries into acceptance, finance, and delivery.",
+  },
+  proposal_release_failed: {
+    title: "Release did not go through",
+    body: "Only a proposal that is still in review can be released. Refresh the queue and try again.",
+  },
 };
 
 export function StudioToastAnchor() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const searchParams = useSearchParams();
   const router = useRouter();
   const raw = searchParams.get("studioToast");
@@ -82,8 +94,8 @@ export function StudioToastAnchor() {
         <div className="flex gap-3">
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--studio-signal)]" aria-hidden />
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold text-[var(--studio-ink)]">{copy.title}</div>
-            <p className="mt-1 text-sm leading-6 text-[var(--studio-ink-soft)]">{copy.body}</p>
+            <div className="text-sm font-semibold text-[var(--studio-ink)]">{t(copy.title)}</div>
+            <p className="mt-1 text-sm leading-6 text-[var(--studio-ink-soft)]">{t(copy.body)}</p>
           </div>
           <button
             type="button"
