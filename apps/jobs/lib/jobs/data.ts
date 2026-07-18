@@ -1558,7 +1558,7 @@ async function computeJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
       {
         label: t("Open roles"),
         value: String(jobs.length),
-        detail: t("Live roles published into the Henry Onyx hiring operating system."),
+        detail: t("Open roles accepting applications right now."),
       },
       {
         label: t("Verified employers"),

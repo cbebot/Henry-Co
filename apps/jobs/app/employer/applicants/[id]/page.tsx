@@ -20,6 +20,22 @@ function toneForStage(stage: string) {
   return "neutral" as const;
 }
 
+// Audit actions are internal enum strings (e.g. "hiring.application.stage_moved").
+// Map them to human labels — the raw taxonomy and payload never render.
+function timelineActionLabel(action: string): string {
+  if (action.includes("stage")) return "Stage updated";
+  if (action.includes("score")) return "Candidate scored";
+  if (action.includes("comment") || action.includes("note")) return "Note added";
+  if (action.includes("offer")) return "Offer recorded";
+  if (action.includes("hire")) return "Hire recorded";
+  if (action.includes("reject")) return "Decision recorded";
+  if (action.includes("interview")) return "Interview scheduled";
+  if (action.includes("submitted") || action.includes("applied") || action.includes("created")) {
+    return "Application received";
+  }
+  return "Application updated";
+}
+
 function stageLabel(stage: string, copy: ApplicantsCopy): string {
   switch (stage) {
     case "reviewing":
@@ -96,12 +112,6 @@ export default async function EmployerApplicantDetailPage({
         >
           <div className="flex flex-wrap items-center gap-3">
             <StatusPill label={stageLabel(application.stage, copy)} tone={toneForStage(application.stage)} />
-            <span className="rounded-full bg-[var(--jobs-paper-soft)] px-3 py-1 text-xs font-semibold">
-              {copy.profileStrengthTemplate.replace("{percent}", String(application.candidateReadiness))}
-            </span>
-            <span className="rounded-full bg-[var(--jobs-paper-soft)] px-3 py-1 text-xs font-semibold">
-              {copy.matchConfidenceTemplate.replace("{percent}", String(application.recruiterConfidence))}
-            </span>
           </div>
           <p className="mt-4 text-sm leading-7 text-[var(--jobs-muted)]">{application.coverNote || copy.noCoverNote}</p>
         </SectionCard>
@@ -144,8 +154,10 @@ export default async function EmployerApplicantDetailPage({
             <div className="space-y-3">
               {timeline.map((event) => (
                 <div key={event.id} className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
-                  <div className="font-semibold">{event.action}</div>
-                  <div className="mt-1 text-sm text-[var(--jobs-muted)]">{event.reason || JSON.stringify(event.newValues)}</div>
+                  <div className="font-semibold">{timelineActionLabel(event.action)}</div>
+                  {event.reason ? (
+                    <div className="mt-1 text-sm text-[var(--jobs-muted)]">{event.reason}</div>
+                  ) : null}
                 </div>
               ))}
             </div>

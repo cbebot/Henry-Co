@@ -76,10 +76,12 @@ export async function POST(request: Request) {
       document: await normalizeCandidateDocument(documentRow || {}, kind),
     });
   } catch (error) {
+    // Raw upload/storage errors (bucket names, table/constraint text) stay
+    // in server logs — the client gets a fixed, actionable message.
+    console.error("[jobs][candidate/documents] upload failed:", error);
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "Candidate document upload failed.",
+        error: "Your document could not be saved. Check the file and try again.",
       },
       { status: 500 }
     );

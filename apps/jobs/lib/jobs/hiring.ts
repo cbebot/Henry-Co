@@ -360,8 +360,7 @@ export async function sendMessage(
   // and the contact-safety screen below so a blocked send reads identically
   // regardless of which guard rejected it.
   const blockReason =
-    "This message could not be sent because it contains content that violates platform policy. " +
-    "Keep all communication, contact details, and payment arrangements inside Henry Onyx";
+    "This message can't be sent. Remove contact details or off-platform links and try again.";
 
   // Repeat-offender escalation: look up unresolved trust flags for this sender
   // over the past 30 days and escalate the base severity before the block decision.

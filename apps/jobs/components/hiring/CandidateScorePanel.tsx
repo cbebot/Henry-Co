@@ -73,12 +73,6 @@ export function CandidateScorePanel({ applicationId, rubricKeys, myScores, summa
             <div className="text-lg font-semibold">{summary.overallMean ?? "—"}</div>
           </div>
           <div className="text-[var(--jobs-muted)]">{copy.scoreScorersTemplate.replace("{count}", String(summary.scorerCount))}</div>
-          {summary.predictiveScore != null && (
-            <div className="ml-auto">
-              <div className="text-xs uppercase tracking-wide text-[var(--jobs-muted)]">{copy.predictiveLabel}</div>
-              <div className="text-lg font-semibold">{summary.predictiveScore}</div>
-            </div>
-          )}
         </div>
       )}
 
