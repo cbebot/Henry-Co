@@ -12,9 +12,12 @@ import {
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
+import { formatNaira } from "@/components/studio/request-builder-data";
 import { StudioDomainLaunchSection } from "@/components/studio/studio-domain-launch";
 import { StudioRequestPathStep } from "@/components/studio/request-path-step";
 import { submitStudioBriefAction } from "@/lib/studio/actions";
+import { sectionsNeedingAttention } from "@/lib/studio/brief-attention";
+import { saveStudioBriefFlowDraftAction } from "@/lib/studio/brief-draft-actions";
 import { estimateStudioPricing } from "@/lib/studio/pricing";
 import {
   filterModifierOptions,
@@ -75,14 +78,28 @@ type Props = {
    * submit block greets them instead of re-asking — a known client never re-enters
    * details we already hold. Null for anonymous prospects (the full form shows). */
   viewerIdentity?: { name: string; email: string } | null;
+  /** SA-1 — server-resolved live-lookup flag. Defaults to false so any
+   * unplumbed mount fails HIDDEN, never as a dead button. */
+  domainLookupEnabled?: boolean;
+  /** SA-1 — abandoned-brief recovery: the newest server-persisted draft for
+   * this session/user, loaded by the page. A local same-device draft still
+   * wins (useFormDraft restores over the initial value); this fills in
+   * after a device change or cleared storage. */
+  serverDraft?: StudioBriefDraft | null;
 };
 
-function computeInitialOpen(draft: StudioBriefDraft): Record<ComposerSectionKey, boolean> {
+function computeInitialOpen(
+  draft: StudioBriefDraft,
+  attention: Partial<Record<ComposerSectionKey, string>> = {},
+): Record<ComposerSectionKey, boolean> {
   const open = {} as Record<ComposerSectionKey, boolean>;
   for (const section of COMPOSER_SECTIONS) {
     // A card with data starts collapsed (summary + Adjust); an empty card
-    // sits open, inviting the missing detail.
-    open[section.key] = !sectionIsComplete(section.key, draft);
+    // sits open, inviting the missing detail. SA-1: a card the copilot
+    // flagged as uncertain ALSO opens — those are the follow-ups that
+    // materially change the build; everything inferred stays collapsed.
+    open[section.key] =
+      !sectionIsComplete(section.key, draft) || Boolean(attention[section.key]);
   }
   return open;
 }
@@ -106,12 +123,18 @@ export function BriefComposer({
   initialStepIndex = 0,
   initialPathway,
   viewerIdentity,
+  domainLookupEnabled = false,
+  serverDraft = null,
 }: Props) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   // Initial draft envelope — the same derivation the wizard used, delegating
   // defaults + co-pilot-seed overlay to the shared request-fields contract.
+  // SA-1 recovery order: a fresh copilot seed wins outright; otherwise a
+  // server-recovered draft is restored AS-IS (it is user state — the page's
+  // default lane/step must not overwrite what the person already chose);
+  // otherwise the empty draft with the page's lane/step hints.
   const initialDraft = useMemo<StudioBriefDraft>(
     () => {
       const seedInput = {
@@ -120,6 +143,9 @@ export function BriefComposer({
         serviceKind: presetHint?.serviceKind,
         preferredTeamId,
       };
+      if (!copilotSeed && serverDraft) {
+        return serverDraft;
+      }
       const base = copilotSeed
         ? structuredToDraft(copilotSeed, seedInput)
         : emptyStudioBriefDraft(seedInput);
@@ -195,8 +221,19 @@ export function BriefComposer({
   // Inline validation messages keyed by field anchor (`data-field`). Set by
   // a blocked submit, cleared when the user edits a section.
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // SA-1 — the copilot's own uncertainty flags, routed to the sections that
+  // answer them. Deterministic keyword mapping, no model call.
+  const copilotAttention = useMemo(
+    () => sectionsNeedingAttention(copilotSeed?.uncertainties ?? []),
+    // Seed is consumed at mount (parent re-keys for a fresh one).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   // Which cards are expanded. Computed once after the draft restore settles
-  // (complete → collapsed, empty → open); user toggles take over from there.
+  // (complete → collapsed, empty or copilot-uncertain → open); user toggles
+  // take over from there.
   const [openSections, setOpenSections] = useState<Record<ComposerSectionKey, boolean> | null>(
     null,
   );
@@ -204,7 +241,27 @@ export function BriefComposer({
   useEffect(() => {
     if (!draft.isRestored || openInitialized.current) return;
     openInitialized.current = true;
-    setOpenSections(computeInitialOpen(draft.value));
+    setOpenSections(computeInitialOpen(draft.value, copilotAttention));
+  }, [draft.isRestored, draft.value, copilotAttention]);
+
+  // SA-1 — server-persist the draft as it's filled (abandoned-brief
+  // recovery). Debounced fire-and-forget; the server drops drafts with no
+  // substance, re-checks ownership, and never throws. Local state stays
+  // the source of truth — this is a durable shadow, not a round-trip.
+  const serverSaveTimer = useRef<number | null>(null);
+  const lastServerSave = useRef<string>("");
+  useEffect(() => {
+    if (!draft.isRestored || typeof window === "undefined") return;
+    const serialized = JSON.stringify(draft.value);
+    if (serialized === lastServerSave.current) return;
+    if (serverSaveTimer.current) window.clearTimeout(serverSaveTimer.current);
+    serverSaveTimer.current = window.setTimeout(() => {
+      lastServerSave.current = serialized;
+      void saveStudioBriefFlowDraftAction({ draft: draft.value, source: "composer" });
+    }, 2500);
+    return () => {
+      if (serverSaveTimer.current) window.clearTimeout(serverSaveTimer.current);
+    };
   }, [draft.isRestored, draft.value]);
 
   const toggleSection = useCallback((key: ComposerSectionKey) => {
@@ -426,7 +483,7 @@ export function BriefComposer({
           if (section) owning.add(section);
         }
         setOpenSections((prev) => {
-          const base = prev ?? computeInitialOpen(draft.value);
+          const base = prev ?? computeInitialOpen(draft.value, copilotAttention);
           const next = { ...base };
           for (const section of owning) next[section] = true;
           return next;
@@ -456,15 +513,24 @@ export function BriefComposer({
     event.preventDefault();
   }
 
-  const summaryContext = { t, packageName: selectedPackage?.name ?? null };
+  const packagePriceLabel =
+    pathway === "package" && selectedPackage ? formatNaira(selectedPackage.price) : null;
+  const summaryContext = {
+    t,
+    packageName: selectedPackage?.name ?? null,
+    packagePriceLabel,
+  };
   const sectionAttention = useMemo(() => {
-    const map: Partial<Record<ComposerSectionKey, string>> = {};
+    // Validation errors win over copilot follow-up hints — both render on
+    // the collapsed card as the "needs your eye" line.
+    const map: Partial<Record<ComposerSectionKey, string>> = { ...copilotAttention };
     for (const [key, message] of Object.entries(errors)) {
       const section = sectionForErrorKey(key);
-      if (section && !map[section]) map[section] = message;
+      if (section) map[section] = message;
     }
     return map;
-  }, [errors]);
+  }, [errors, copilotAttention]);
+  const followUpCount = Object.keys(copilotAttention).length;
 
   const isOpen = (key: ComposerSectionKey) => openSections?.[key] ?? false;
   const clearSectionErrors = () => {
@@ -513,7 +579,14 @@ export function BriefComposer({
       <input type="hidden" name="projectType" value={effectiveProjectType} />
       <input type="hidden" name="platformPreference" value={effectivePlatform} />
       <input type="hidden" name="businessType" value={businessType} />
-      <input type="hidden" name="budgetBand" value={budgetBand} />
+      {/* SA-1 — on the package lane the budget question isn't asked; the
+        package's fixed price posts as the budget band so the lead record
+        stays meaningful downstream. */}
+      <input
+        type="hidden"
+        name="budgetBand"
+        value={budgetBand || (pathway === "package" ? packagePriceLabel ?? "" : "")}
+      />
       <input type="hidden" name="urgency" value={effectiveUrgency} />
       <input type="hidden" name="timeline" value={effectiveTimeline} />
       <input type="hidden" name="goals" value={goals} />
@@ -549,6 +622,16 @@ export function BriefComposer({
             "Most of it is already drafted. Open a card to adjust a detail, or describe the change and preview it before it lands. Pricing updates as you go.",
           )}
         </p>
+        {copilotSeed && followUpCount > 0 ? (
+          <p className="mt-3 flex items-start gap-2 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+            <span>
+              {t("Drafted from your conversation.")}{" "}
+              {followUpCount === 1
+                ? t("One follow-up is open below — it changes what we build.")
+                : t("The open cards below are the follow-ups that change what we build.")}
+            </span>
+          </p>
+        ) : null}
       </section>
 
       <div className="grid gap-10 2xl:grid-cols-[1.08fr_0.92fr]">
@@ -632,6 +715,8 @@ export function BriefComposer({
                 {card.key === "business" ? (
                   <BusinessSectionEditor
                     requestConfig={requestConfig}
+                    pathway={pathway}
+                    packagePriceLabel={packagePriceLabel}
                     businessType={businessType}
                     setBusinessType={(value) => setField("businessType", value)}
                     budgetBand={budgetBand}
@@ -644,7 +729,10 @@ export function BriefComposer({
                   />
                 ) : null}
                 {card.key === "domain" ? (
-                  <StudioDomainLaunchSection onIntentChange={setDomainIntentJson} />
+                  <StudioDomainLaunchSection
+                    onIntentChange={setDomainIntentJson}
+                    lookupEnabled={domainLookupEnabled}
+                  />
                 ) : null}
                 {card.key === "goals" ? (
                   <GoalsSectionEditor

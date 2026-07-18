@@ -53,6 +53,10 @@ import {
   type StoredBriefChat,
 } from "@/lib/studio/brief-conversations";
 import { generateStudioBriefDraftAction } from "@/lib/studio/brief-copilot-action";
+import {
+  markBriefConversationHandedOffAction,
+  saveStudioBriefFlowDraftAction,
+} from "@/lib/studio/brief-draft-actions";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
 import {
   STUDIO_BRIEF_DRAFT_KEY,
@@ -198,7 +202,12 @@ export function CopilotChat({
       const next: BriefChatMessage[] = [...base, { role: "user", content: body }];
       setSending(true);
       try {
-        const result = await continueStudioBriefChatAction({ messages: next });
+        const result = await continueStudioBriefChatAction({
+          messages: next,
+          // SA-1 — continue the server-persisted transcript when one exists;
+          // ownership is re-verified server-side.
+          conversationId: active?.serverConversationId ?? null,
+        });
         if (!result.ok) {
           return { ok: false, reason: t(result.message) };
         }
@@ -212,6 +221,8 @@ export function CopilotChat({
             ready: result.turn.ready,
             progress: result.turn.progress,
             covered: result.turn.covered,
+            serverConversationId:
+              result.turn.conversationId ?? active?.serverConversationId ?? null,
             now: Date.now(),
           }),
         );
@@ -235,7 +246,7 @@ export function CopilotChat({
         setSending(false);
       }
     },
-    [active?.id, messages, store, setStore, t],
+    [active?.id, active?.serverConversationId, messages, store, setStore, t],
   );
 
   const finalize = useCallback(async () => {
@@ -271,6 +282,19 @@ export function CopilotChat({
       version: STUDIO_BRIEF_DRAFT_VERSION,
     });
 
+    // SA-1 — durable copies, fire-and-forget: the draft survives a device
+    // change and the server transcript records its handoff. Neither blocks
+    // the navigation; both no-op harmlessly on failure.
+    void saveStudioBriefFlowDraftAction({
+      draft: { ...draftValue, stepIndex: 1 },
+      source: "copilot",
+    });
+    if (active?.serverConversationId) {
+      void markBriefConversationHandedOffAction({
+        conversationId: active.serverConversationId,
+      });
+    }
+
     if (active?.id) {
       setStore((prev) =>
         updateConversation(prev, active.id, { finalizedAt: Date.now(), now: Date.now() }),
@@ -278,7 +302,7 @@ export function CopilotChat({
     }
 
     router.push("/request/build");
-  }, [finalizing, messages, preferredTeamId, requestConfig, router, services, active?.id, setStore]);
+  }, [finalizing, messages, preferredTeamId, requestConfig, router, services, active?.id, active?.serverConversationId, setStore]);
 
   // Auto-handoff: the moment the coach reports the brief is complete, close
   // the conversation gracefully and build the brief — no dead-end chatting

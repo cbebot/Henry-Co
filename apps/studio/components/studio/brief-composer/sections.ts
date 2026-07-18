@@ -91,6 +91,9 @@ export type SectionSummaryContext = {
   t: (text: string) => string;
   /** Resolved package name when the draft is on the package lane. */
   packageName?: string | null;
+  /** SA-1 — formatted package price ("₦1,950,000") for the package lane,
+   * where the budget question is answered by the package itself. */
+  packagePriceLabel?: string | null;
 };
 
 function truncate(value: string, max: number): string {
@@ -177,9 +180,13 @@ export function sectionSummary(
   }
 
   if (section === "business") {
+    const budgetPart =
+      draft.pathway === "package"
+        ? draft.budgetBand || ctx.packagePriceLabel || t("Package price locked")
+        : draft.budgetBand || t("Budget open");
     return [
       draft.businessType || t("Business type open"),
-      draft.budgetBand || t("Budget open"),
+      budgetPart,
       draft.urgency,
       draft.timeline,
     ].filter((part) => part.trim().length > 0);
@@ -223,6 +230,9 @@ export function sectionIsComplete(
     return draft.pathway === "custom" || draft.selectedPackageId.trim().length > 0;
   }
   if (section === "scope") {
+    // SA-1: mirrors validateStep — on the package lane the package covers
+    // the core scope, so an empty pick list is complete, not missing.
+    if (draft.pathway === "package") return true;
     return (
       draft.selectedPages.length + draft.selectedModules.length + draft.selectedAddOns.length >
       0
@@ -232,7 +242,10 @@ export function sectionIsComplete(
     return true;
   }
   if (section === "business") {
-    return draft.businessType.trim().length > 0 && draft.budgetBand.trim().length > 0;
+    // SA-1: the package lane answers the budget question by itself.
+    const budgetAnswered =
+      draft.pathway === "package" || draft.budgetBand.trim().length > 0;
+    return draft.businessType.trim().length > 0 && budgetAnswered;
   }
   if (section === "domain") {
     const intent = parseDomainIntent(draft.domainIntentJson);

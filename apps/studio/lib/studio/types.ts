@@ -150,10 +150,19 @@ export type StudioLeadStatus =
 
 export type StudioProposalStatus =
   | "draft"
+  | "in_review"
   | "sent"
   | "accepted"
   | "rejected"
   | "expired";
+
+/**
+ * SA-1 discriminator — classifies a brief at submit and is load-bearing
+ * downstream: SA-D5 review routing (template auto-sends, agency holds in
+ * `in_review`), SA-2 build-track selection, and the Mode-A envelope
+ * defaults all key off this one persisted field.
+ */
+export type StudioBriefClass = "template" | "agency";
 
 export type StudioProjectStatus =
   | "pending_deposit"
@@ -222,6 +231,8 @@ export type StudioBrief = {
   urgency: string;
   timeline: string;
   packageIntent: "package" | "custom";
+  /** Persisted at submit (SA-1). Null on briefs from before the gate. */
+  briefClass: StudioBriefClass | null;
   techPreferences: string[];
   requiredFeatures: string[];
   referenceFiles: string[];

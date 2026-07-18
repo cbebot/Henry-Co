@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { BriefComposer } from "@/components/studio/brief-composer/brief-composer";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioViewer } from "@/lib/studio/auth";
+import { loadStudioBriefFlowDraft } from "@/lib/studio/brief-flow-draft-server";
+import { getDomainLookupMode } from "@/lib/studio/domain-intelligence";
 import {
   resolveStudioRequestPreset,
   resolveStudioTemplatePreset,
@@ -47,7 +49,14 @@ export default async function RequestBuildPage({
     redirect("/pick");
   }
 
-  const [catalog, viewer] = await Promise.all([getStudioCatalog(), getStudioViewer()]);
+  const [catalog, viewer, serverDraft] = await Promise.all([
+    getStudioCatalog(),
+    getStudioViewer(),
+    // SA-1 — abandoned-brief recovery: the newest server-persisted draft
+    // for this session/user. Local same-device drafts still win inside the
+    // composer; this fills in after a device change or cleared storage.
+    loadStudioBriefFlowDraft(),
+  ]);
   // Signed-in identity, so the composer never re-asks a known person for their name/email.
   // Slim + client-safe: only what they already own (their own name + email).
   const viewerIdentity = viewer.user
@@ -86,6 +95,8 @@ export default async function RequestBuildPage({
         initialStepIndex={initialStepIndex}
         initialPathway={resolvedPathway}
         viewerIdentity={viewerIdentity}
+        domainLookupEnabled={getDomainLookupMode() !== "off"}
+        serverDraft={serverDraft?.draft ?? null}
       />
     </main>
   );

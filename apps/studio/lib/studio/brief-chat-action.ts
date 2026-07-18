@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { runAiTask, noBillingPort } from "@henryco/ai-gateway/server";
 import { parseCoachEnvelope, COACH_DISCOVERY_AREAS, assessFreeMessage } from "@henryco/ai-gateway";
 import { STUDIO_AI_MODEL_LABEL, briefFailureCopy, isRetryableGatewayCode } from "@/lib/studio/ai-runtime";
+import { persistStudioBriefChatTurn } from "@/lib/studio/brief-flow-draft-server";
 import { getOrCreateCopilotSessionId } from "@/lib/studio/copilot-session";
 import {
   briefUsageHash,
@@ -57,6 +58,9 @@ export type BriefChatTurn = {
   covered: string[];
   /** Brand-opaque label only (never a provider/model id). */
   modelUsed: string;
+  /** SA-1 — server conversation id for the durable transcript. Null when
+   * persistence was unavailable (best-effort; the reply already rendered). */
+  conversationId: string | null;
 };
 
 export type BriefChatResult =
@@ -89,6 +93,9 @@ function sanitizeMessages(raw: unknown): BriefChatMessage[] | null {
  */
 export async function continueStudioBriefChatAction(input: {
   messages: BriefChatMessage[];
+  /** SA-1 — the server conversation this chat continues. Ownership is
+   * re-verified server-side; a foreign id silently starts a fresh row. */
+  conversationId?: string | null;
 }): Promise<BriefChatResult> {
   const messages = sanitizeMessages(input?.messages);
   if (!messages || messages.length === 0) {
@@ -118,6 +125,7 @@ export async function continueStudioBriefChatAction(input: {
         progress: 100,
         covered: [...COACH_DISCOVERY_AREAS],
         modelUsed: STUDIO_AI_MODEL_LABEL,
+        conversationId: String(input.conversationId ?? "").trim() || null,
       },
     };
   }
@@ -220,6 +228,15 @@ export async function continueStudioBriefChatAction(input: {
     status: "completed", durationMs: Date.now() - startedAt,
   });
 
+  // SA-1 — durable transcript (best-effort, PII-redacted inside). Awaited
+  // because the client pins the returned conversation id; a null simply
+  // means "not persisted this turn" and the chat continues unchanged.
+  const conversationId = await persistStudioBriefChatTurn({
+    conversationId: input.conversationId ?? null,
+    userMessage: lastUserMessage,
+    assistantReply: envelope.reply,
+  });
+
   return {
     ok: true,
     turn: {
@@ -229,6 +246,7 @@ export async function continueStudioBriefChatAction(input: {
       progress: envelope.progress,
       covered: envelope.covered,
       modelUsed: STUDIO_AI_MODEL_LABEL,
+      conversationId,
     },
   };
 }

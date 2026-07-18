@@ -72,6 +72,7 @@ export function friendlyRevisionStatus(status: string): string {
 
 const PROPOSAL_STATUS_LABELS: Record<string, string> = {
   draft: "Draft",
+  in_review: "Being reviewed by the team",
   sent: "Sent to client",
   accepted: "Accepted",
   declined: "Declined",
