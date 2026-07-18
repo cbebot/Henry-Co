@@ -242,13 +242,13 @@ export async function getEmployerPostingEligibility(input: {
     {
       id: "identity",
       label: "Identity verification",
-      detail: "Employer posting is blocked until the account owner passes shared Henry Onyx identity verification.",
+      detail: "Verify your identity to post live roles.",
       complete: verificationStatus === "verified",
     },
     {
       id: "trust",
-      label: "Shared account trust tier",
-      detail: "Jobs posting now requires at least the shared Henry Onyx Verified trust lane.",
+      label: "Account verification",
+      detail: "Complete identity verification to unlock posting.",
       complete: verificationControlledTrust.tier !== "basic",
     },
     {

@@ -102,8 +102,11 @@ function extractRecordingUrl(payload: Record<string, unknown>): string | null {
 export async function POST(request: Request) {
   const config = getInterviewRoomConfig();
   if (!config.webhookSecret) {
+    // Never confirm which secret is missing (or name the provider) to
+    // unauthenticated callers — the real cause goes to server logs.
+    console.error("[jobs][webhooks] interview webhook secret not configured — rejecting");
     return NextResponse.json(
-      { error: "webhook_disabled", message: "Daily webhook secret not configured." },
+      { error: "service_unavailable", message: "This service is not available." },
       { status: 503 },
     );
   }

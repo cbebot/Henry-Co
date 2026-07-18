@@ -68,18 +68,23 @@ export function createJobsThreadAdapter(opts: {
       } catch {
         // Network failure (offline / flaky connection) — the engine keeps the
         // draft + offers retry, so surface a soft reason rather than throwing.
-        return { ok: false, reason: "network_error" };
+        return { ok: false, reason: "Connection lost. Check your network and try again." };
       }
 
       const data = (await response.json().catch(() => ({}))) as {
         messageId?: string;
         error?: string;
+        message?: string;
       };
       // The route returns the persisted message id as `messageId` on success
-      // (200). Blocked sends come back 422 with `{ error: "blocked" }`; the
-      // engine surfaces the reason and keeps the draft for editing.
+      // (200). On failure the engine renders `reason` verbatim in the
+      // composer, so surface the route's human-readable `message` — never
+      // the machine code in `error`.
       if (!response.ok || !data.messageId) {
-        return { ok: false, reason: data.error };
+        return {
+          ok: false,
+          reason: data.message || "Message could not be sent. Please try again.",
+        };
       }
       return { ok: true, messageId: data.messageId };
     },

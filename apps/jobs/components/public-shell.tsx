@@ -155,7 +155,7 @@ export async function PublicShell({
       <PublicSiteFooter
         copy={{
           statement: t(
-            "A premium hiring operating system — verified talent, trusted employers, and cleaner recruitment on one record.",
+            "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record.",
           ),
           divisionsLabel: t("The Henry Onyx group"),
           rightsReserved: t("All rights reserved."),

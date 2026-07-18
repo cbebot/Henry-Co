@@ -21,7 +21,7 @@ export default async function CandidateConversationsPage() {
     <WorkspaceShell
       area="candidate"
       title={t("Messages")}
-      subtitle={t("Your hiring conversations with employers. All messages are kept on-platform for security and auditability.")}
+      subtitle={t("Your hiring conversations with employers. All messages stay on Henry Onyx to keep you protected.")}
       nav={candidateNav}
       activeHref="/candidate/conversations"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
@@ -34,7 +34,7 @@ export default async function CandidateConversationsPage() {
           <EmptyState
             kicker={t("No conversations yet")}
             title={t("Hiring conversations will appear here.")}
-            body={t("When an employer responds to one of your applications, the thread opens here. Every message stays on-platform for audit and security.")}
+            body={t("When an employer responds to one of your applications, the thread opens here. All messages stay on Henry Onyx so everyone stays protected.")}
             action={
               <Link
                 href="/candidate/applications"
@@ -68,9 +68,11 @@ export default async function CandidateConversationsPage() {
                         : t("No messages yet")}
                     </div>
                   </div>
-                  <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold">
-                    {conv.status}
-                  </span>
+                  {conv.status === "open" || conv.status === "closed" ? (
+                    <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold">
+                      {conv.status === "open" ? t("Active") : t("Closed")}
+                    </span>
+                  ) : null}
                 </div>
               </Link>
             ))}

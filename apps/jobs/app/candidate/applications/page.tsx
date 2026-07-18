@@ -149,14 +149,10 @@ export default async function CandidateApplicationsPage({
                         </p>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="grid gap-3">
                         <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] px-4 py-3">
                           <div className="jobs-kicker">{t("Candidate readiness")}</div>
                           <div className="mt-2 text-2xl font-semibold">{journey.application.candidateReadiness}%</div>
-                        </div>
-                        <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] px-4 py-3">
-                          <div className="jobs-kicker">{t("Recruiter confidence")}</div>
-                          <div className="mt-2 text-2xl font-semibold">{journey.application.recruiterConfidence}%</div>
                         </div>
                       </div>
                     </div>
@@ -236,7 +232,13 @@ export default async function CandidateApplicationsPage({
                             {journey.timeline.slice(0, 3).map((event) => (
                               <div key={event.id} className="rounded-[1.2rem] bg-white/80 p-3">
                                 <div className="text-xs text-[var(--jobs-muted)]">{formatDateTime(event.createdAt)}</div>
-                                <div className="mt-2 text-sm font-semibold capitalize">{event.action.replace(/^jobs_/, "").replace(/[_-]+/g, " ")}</div>
+                                <div className="mt-2 text-sm font-semibold">
+                                  {event.action.includes("stage")
+                                    ? t("Stage updated")
+                                    : event.action.includes("submitted") || event.action.includes("applied")
+                                      ? t("Application received")
+                                      : t("Application updated")}
+                                </div>
                                 <div className="mt-1 text-sm leading-7 text-[var(--jobs-muted)]">
                                   {event.reason || t("Your application status was updated.")}
                                 </div>

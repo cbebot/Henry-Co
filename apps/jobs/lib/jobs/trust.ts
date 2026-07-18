@@ -93,13 +93,13 @@ export function computeEmployerTrustProfile(
     reasons.push("Identity verification is approved.");
   } else if (signals.verificationStatus === "pending") {
     reasons.push("Identity documents are currently under review.");
-    coaching.push("Identity verification is in progress — expect higher-trust lanes to unlock once approved.");
+    coaching.push("Identity verification is in progress — more posting options unlock once approved.");
   } else if (signals.verificationStatus === "rejected") {
     score -= 8;
     reasons.push("Identity verification needs attention before trust-gated actions can unlock.");
     coaching.push("Resubmit clear identity documents to restore normal employer trust access.");
   } else {
-    coaching.push("Start identity verification to unlock higher-trust employer posting lanes.");
+    coaching.push("Start identity verification to unlock live employer posting.");
   }
 
   // Company profile completeness (website + industry + locations + name + description)
@@ -446,7 +446,9 @@ export function deriveJobTrustHighlights(input: {
   }
 
   if (input.employerTrustScore >= 82) {
-    highlights.push("High employer trust score");
+    // Candidate-facing outcome label — the internal trust-score system
+    // is never named on public listings.
+    highlights.push("Strong hiring track record");
   }
 
   if (input.responseSlaHours !== null && input.responseSlaHours <= 4) {

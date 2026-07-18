@@ -146,11 +146,15 @@ export async function POST(request: Request) {
       });
     }
 
+    // Aggregate the skip count — a per-reason breakdown would let an
+    // employer infer an individual candidate's consent or completion
+    // state by differencing batches.
     return NextResponse.json({
       invited: result.invited.length,
-      skippedInvited: result.skippedInvited.length,
-      skippedNoConsent: result.skippedNoConsent.length,
-      skippedNoCompletion: result.skippedNoCompletion.length,
+      skipped:
+        result.skippedInvited.length +
+        result.skippedNoConsent.length +
+        result.skippedNoCompletion.length,
     });
   } catch (error) {
     console.error("[candidate-invites] POST error:", error);

@@ -155,7 +155,21 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ offer });
+    // Project the record — the employer client needs the draft facts only.
+    // Signing infrastructure detail (provider, envelope id, signing URLs)
+    // and signature forensics stay server-side.
+    return NextResponse.json({
+      offer: {
+        id: offer.id,
+        applicationId: offer.applicationId,
+        pipelineId: offer.pipelineId,
+        status: offer.status,
+        terms: offer.terms,
+        expiresAt: offer.expiresAt,
+        issuedAt: offer.issuedAt,
+        createdAt: offer.createdAt,
+      },
+    });
   } catch (error) {
     console.error("[jobs/offers] internal error:", error);
     return NextResponse.json(

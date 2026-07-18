@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const ctx = await resolveHiringActingContext();
     if (ctx.kind !== "business") {
       return NextResponse.json(
-        { error: "forbidden", message: "Switch to your business to manage hiring." },
+        { error: "forbidden", message: "This action requires a business account." },
         { status: 403 },
       );
     }
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       businessId: ctx.businessId,
     });
     if (!result.ok) {
-      return NextResponse.json({ error: "move_rejected", message: result.error }, { status: 422 });
+      return NextResponse.json({ error: "move_rejected", message: "Couldn't move the selected applicants. Please try again." }, { status: 422 });
     }
 
     const auditClient = hiringAuditClient();

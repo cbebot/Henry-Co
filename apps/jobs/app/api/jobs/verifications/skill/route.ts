@@ -133,7 +133,18 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ verification: data });
+    // Project the row — the candidate needs confirmation and the pending
+    // status, not the table's full column set.
+    const row = data as Record<string, unknown>;
+    return NextResponse.json({
+      verification: {
+        id: row.id,
+        skillLabel: row.skill_label,
+        evidenceType: row.evidence_type,
+        status: row.status,
+        createdAt: row.created_at,
+      },
+    });
   } catch (error) {
     console.error("[verifications/skill] internal error:", error);
     return NextResponse.json(

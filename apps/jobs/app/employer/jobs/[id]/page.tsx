@@ -70,7 +70,18 @@ export default async function EmployerJobDetailPage({
 
         <SectionCard title={job.title} body={job.summary}>
           <div className="flex flex-wrap items-center gap-3">
-            <StatusPill label={job.moderationStatus.replace(/[_-]+/g, " ")} tone={job.moderationStatus === "approved" ? "good" : "warn"} />
+            <StatusPill
+              label={
+                job.moderationStatus === "approved"
+                  ? t("Live")
+                  : job.moderationStatus === "draft"
+                    ? t("Draft")
+                    : job.moderationStatus === "flagged"
+                      ? t("Needs attention")
+                      : t("Under review")
+              }
+              tone={job.moderationStatus === "approved" ? "good" : "warn"}
+            />
             <span className="rounded-full bg-[var(--jobs-paper-soft)] px-3 py-1 text-xs font-semibold">
               {job.applicationCount} {t(job.applicationCount === 1 ? "applicant" : "applicants")}
             </span>
@@ -80,7 +91,17 @@ export default async function EmployerJobDetailPage({
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
-              {t("Status")}: <strong className="capitalize">{job.moderationStatus.replace(/[_-]+/g, " ")}</strong><br />
+              {t("Status")}:{" "}
+              <strong>
+                {job.moderationStatus === "approved"
+                  ? t("Live")
+                  : job.moderationStatus === "draft"
+                    ? t("Draft")
+                    : job.moderationStatus === "flagged"
+                      ? t("Needs attention")
+                      : t("Under review")}
+              </strong>
+              <br />
               {t("Visibility")}: <strong>{job.isPublished ? t("Live on board") : t("Not yet published")}</strong><br />
               {t("Compensation")}: <strong>{job.salaryLabel || t("Discussed in process")}</strong>
             </div>
