@@ -6,6 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { contactSafety } from "@henryco/contact-safety";
 import { createId, upsertLearnRecord } from "@/lib/learn/store";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
@@ -33,13 +34,29 @@ export async function POST(request: Request) {
   const courseId = String(payload?.courseId || "").trim();
   const lessonId = String(payload?.lessonId || "").trim() || null;
   const parentId = String(payload?.parentId || "").trim() || null;
-  const body = String(payload?.body || "").trim();
-  if (!courseId || !body) {
+  const rawBody = String(payload?.body || "").trim();
+  if (!courseId || !rawBody) {
     return NextResponse.json({ ok: false, error: "missing_fields" }, { status: 400 });
   }
-  if (body.length > 5000) {
+  if (rawBody.length > 5000) {
     return NextResponse.json({ ok: false, error: "body_too_long" }, { status: 400 });
   }
+
+  // Contact-safety screening (same classifier every division's comms use):
+  // off-platform contact is blocked and never persisted; medium signals are
+  // masked. Keeps course discussions on-platform without exposing the mechanics.
+  const verdict = contactSafety(rawBody);
+  if (verdict.action === "block") {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "contact_blocked",
+        message: "To keep everyone safe, contact details can’t be shared in course discussions. Remove them and try again.",
+      },
+      { status: 422 },
+    );
+  }
+  const body = verdict.action === "mask" ? verdict.maskedText : rawBody;
 
   const snapshot = await getLearnSnapshot();
   // Authorisation: must be enrolled in this course (or be staff / instructor).

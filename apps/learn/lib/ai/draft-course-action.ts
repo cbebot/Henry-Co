@@ -40,7 +40,12 @@ export async function draftCourseAction(input: { title: string; notes?: string; 
     { billing: createPgBillingPort(getPaymentsSqlExecutor()), audit: { supabase: supabase as never } },
   );
 
-  if (!result.ok) return { ok: false, code: result.error.code, message: result.error.message };
+  // Do not surface the raw gateway error message (it can name internal
+  // billing/provider mechanics) — the panel renders its own fallback copy.
+  if (!result.ok) {
+    console.error("[learn][draft-course] AI gateway error:", result.error.code, result.error.message);
+    return { ok: false, code: result.error.code, message: "Henry Onyx Intelligence couldn’t complete the draft. Please try again." };
+  }
 
   const draft = parseDraftOutput(result.value.output);
   if (!draft) {

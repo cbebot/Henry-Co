@@ -54,7 +54,6 @@ export async function GET(
       startsAt: cleanText(row.starts_at),
       endsAt: cleanText(row.ends_at),
       meetingUrl: cleanText(row.meeting_url) || null,
-      meetingProvider: cleanText(row.meeting_provider) || "daily",
       recordingUrl: cleanText(row.recording_url) || null,
       status: cleanText(row.status),
     })),

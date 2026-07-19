@@ -22,6 +22,7 @@
     "@henryco/branded-documents": "workspace:^",
     "@henryco/aware": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/contact-safety": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",

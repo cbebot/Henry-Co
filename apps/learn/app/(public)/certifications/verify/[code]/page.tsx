@@ -32,17 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
     return { title: t("Certificate verification"), robots: { index: false, follow: false } };
   }
 
-  const profileDirectory = await lookupLearnProfiles([
-    {
-      userId: data.enrollment?.userId || data.certificate.userId,
-      normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
-    },
-  ]);
-  const learnerProfile = resolveLearnProfile(profileDirectory, {
-    userId: data.enrollment?.userId || data.certificate.userId,
-    normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
-  });
-  const learnerName = (learnerProfile?.fullName || t("Henry Onyx learner")).trim();
+  // The certificate holder's name is shown on the page body for a verifier who
+  // has the code — but it is deliberately kept OUT of the machine metadata, and
+  // the page is not indexed, so issued certificates never become a crawlable,
+  // bulk-harvestable directory of who-completed-what.
   const courseTitle = data.course
     ? await resolveLocalizedDynamicField({
         record: data.course as unknown as Record<string, unknown>,
@@ -52,8 +45,8 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
         machineTranslate: locale !== "en",
       })
     : t("Henry Onyx Learn programme");
-  const title = `${learnerName} · ${courseTitle} — Henry Onyx Learn certificate`;
-  const description = `Verified Henry Onyx Learn certificate ${data.certificate.certificateNo}. ${t("This page is the live, public verification surface — no login required.")}`;
+  const title = `${courseTitle} — Henry Onyx Learn certificate`;
+  const description = t("This page is the live, public verification surface — no login required.");
 
   return {
     title,
@@ -70,7 +63,7 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
       title,
       description,
     },
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: false },
   };
 }
 
@@ -121,6 +114,13 @@ export default async function CertificateVerifyPage({
       : Promise.resolve(""),
   ]);
 
+  // Never render the raw DB status enum, and never hardcode a "valid" colour —
+  // a revoked certificate must read as revoked on the public check.
+  const statusMeta =
+    data.certificate.status === "revoked"
+      ? { label: t("Revoked"), tone: "warning" as const }
+      : { label: t("Valid"), tone: "success" as const };
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
@@ -134,7 +134,7 @@ export default async function CertificateVerifyPage({
           <div className="rounded-[2.4rem] border border-[var(--learn-line)] bg-[linear-gradient(160deg,rgba(227,188,126,0.16),rgba(95,197,171,0.1))] p-8 sm:p-10">
             <div className="learn-print-hidden flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
-                <LearnStatusBadge label={data.certificate.status} tone="success" />
+                <LearnStatusBadge label={statusMeta.label} tone={statusMeta.tone} />
                 <LearnStatusBadge label={t("Verification live")} tone="signal" />
               </div>
               <div className="flex flex-wrap gap-3">
@@ -194,10 +194,10 @@ export default async function CertificateVerifyPage({
                 </div>
                 <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    {t("Score")}
+                    {t("Result")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">
-                    {data.certificate.score ?? t("Completed")}
+                    {data.certificate.status === "revoked" ? t("Revoked") : t("Passed")}
                   </p>
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default async function CertificateVerifyPage({
             <div className="mt-5 space-y-3">
               {[
                 t("The certificate number is unique inside Henry Onyx Learn."),
-                t("The verification code resolves to the academy record, not a placeholder file."),
+                t("The verification code matches an active certificate issued by Henry Onyx Learn."),
                 t("Completion and assessment status are tied to the course enrollment path."),
               ].map((item) => (
                 <div
