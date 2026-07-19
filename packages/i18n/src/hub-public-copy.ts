@@ -299,7 +299,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
       successBody: "We'll email {email} about: {topics}.",
       managePrefs: "Manage preferences any time:",
       openPreferenceCenter: "open preference center",
-      errorSuppressed: "This address is on our suppression list.",
+      errorSuppressed: "We couldn't complete your subscription for this address. If this looks wrong, contact support.",
       errorGeneric: "Something went wrong. Try again.",
       errorNetwork: "Network error.",
     },
@@ -359,9 +359,9 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     figureOperatingCity: "Operating city",
     founderEyebrow: "Founder note",
     founderPhotoPlaceholder: "Photo",
-    founderPlaceholderTitle: "Founder note — content managed via CMS",
+    founderPlaceholderTitle: "A note from the founder",
     founderPlaceholderBody:
-      "A short, signed note from the founder will appear here. The shape is ready — copy, photo, and signature flow in from the company CMS once published.",
+      "A short, signed note from the founder will appear here.",
     linkReachCompany: "Reach the company",
     linkBrowseDivisions: "Browse divisions",
   },
@@ -381,7 +381,7 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
       "This profile is part of the Henry Onyx public leadership board.",
     emptyTitle: "Leadership information will appear here",
     emptyBody:
-      "Publish leadership profiles from the owner dashboard to present ownership, management, and trusted company representatives in a polished public format.",
+      "Leadership profiles for Henry Onyx will appear here.",
     sharedSectionDescription:
       "Profiles in this section reinforce the people, stewardship, and operational accountability behind Henry Onyx",
     headerEyebrow: "Leadership board",
@@ -808,9 +808,9 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Ville d’exploitation",
     founderEyebrow: "Note du fondateur",
     founderPhotoPlaceholder: "Photo",
-    founderPlaceholderTitle: "Note du fondateur — contenu géré via le CMS",
+    founderPlaceholderTitle: "Une note du fondateur",
     founderPlaceholderBody:
-      "Une courte note signée du fondateur apparaîtra ici. La structure est prête — texte, photo et signature s’afficheront automatiquement dès la publication depuis le CMS de l’entreprise.",
+      "Une courte note signée du fondateur apparaîtra ici.",
     linkReachCompany: "Joindre l’entreprise",
     linkBrowseDivisions: "Parcourir les divisions",
   },
@@ -830,7 +830,7 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
       "Ce profil fait partie du conseil de direction public de Henry Onyx",
     emptyTitle: "Les informations de direction apparaîtront ici",
     emptyBody:
-      "Publiez des profils de direction depuis le tableau de bord propriétaire pour présenter l’actionnariat, la direction et les représentants de confiance de l’entreprise dans un format public soigné.",
+      "Les profils de direction de Henry Onyx apparaîtront ici.",
     sharedSectionDescription:
       "Les profils de cette section incarnent les personnes, la gouvernance et la responsabilité opérationnelle qui portent le groupe Henry Onyx",
     headerEyebrow: "Conseil de direction",
@@ -1256,9 +1256,9 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Ciudad de operación",
     founderEyebrow: "Nota del fundador",
     founderPhotoPlaceholder: "Foto",
-    founderPlaceholderTitle: "Nota del fundador — contenido gestionado por CMS",
+    founderPlaceholderTitle: "Una nota del fundador",
     founderPlaceholderBody:
-      "Aquí aparecerá una breve nota firmada por el fundador. La estructura está lista — texto, foto y firma se incorporarán desde el CMS de la empresa una vez publicados.",
+      "Aquí aparecerá una breve nota firmada por el fundador.",
     linkReachCompany: "Contactar con la empresa",
     linkBrowseDivisions: "Explorar las divisiones",
   },
@@ -1278,7 +1278,7 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
       "Este perfil forma parte del consejo público de liderazgo de Henry Onyx",
     emptyTitle: "Aquí aparecerá la información de liderazgo",
     emptyBody:
-      "Publique perfiles de liderazgo desde el panel del propietario para presentar la propiedad, la dirección y los representantes de confianza de la empresa en un formato público cuidado.",
+      "Aquí aparecerán los perfiles de liderazgo de Henry Onyx.",
     sharedSectionDescription:
       "Los perfiles de esta sección reflejan las personas, la administración y la responsabilidad operativa que sostienen al grupo Henry Onyx",
     headerEyebrow: "Consejo de liderazgo",
@@ -1704,9 +1704,9 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Cidade de operação",
     founderEyebrow: "Nota do fundador",
     founderPhotoPlaceholder: "Foto",
-    founderPlaceholderTitle: "Nota do fundador — conteúdo gerido por CMS",
+    founderPlaceholderTitle: "Uma nota do fundador",
     founderPlaceholderBody:
-      "Aqui surgirá uma breve nota assinada pelo fundador. A estrutura está pronta — texto, foto e assinatura serão integrados a partir do CMS da empresa assim que publicados.",
+      "Aqui surgirá uma breve nota assinada pelo fundador.",
     linkReachCompany: "Contactar a empresa",
     linkBrowseDivisions: "Explorar as divisões",
   },
@@ -1726,7 +1726,7 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
       "Este perfil faz parte do conselho público de liderança da Henry Onyx",
     emptyTitle: "Aqui aparecerão as informações de liderança",
     emptyBody:
-      "Publique perfis de liderança a partir do painel do proprietário para apresentar a propriedade, a gestão e os representantes de confiança da empresa num formato público cuidado.",
+      "Os perfis de liderança da Henry Onyx aparecerão aqui.",
     sharedSectionDescription:
       "Os perfis desta secção representam as pessoas, a administração e a responsabilidade operacional que sustentam o grupo Henry Onyx",
     headerEyebrow: "Conselho de liderança",
@@ -2152,9 +2152,9 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "مدينة التشغيل",
     founderEyebrow: "كلمة المؤسس",
     founderPhotoPlaceholder: "صورة",
-    founderPlaceholderTitle: "كلمة المؤسس — المحتوى يُدار عبر نظام إدارة المحتوى",
+    founderPlaceholderTitle: "كلمة من المؤسس",
     founderPlaceholderBody:
-      "ستظهر هنا كلمة موجزة موقَّعة من المؤسس. القالب جاهز — يتدفق النص والصورة والتوقيع تلقائيًا من نظام إدارة المحتوى الخاص بالشركة بمجرد النشر.",
+      "ستظهر هنا كلمة موجزة موقَّعة من المؤسس.",
     linkReachCompany: "تواصل مع الشركة",
     linkBrowseDivisions: "تصفح الأقسام",
   },
@@ -2174,7 +2174,7 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
       "هذا الملف جزء من مجلس القيادة العام لـ Henry Onyx",
     emptyTitle: "ستظهر هنا معلومات القيادة",
     emptyBody:
-      "انشر ملفات القيادة من لوحة المالك لتقديم الملكية والإدارة وممثلي الشركة الموثوقين في صورة عامة متقَنة.",
+      "ستظهر هنا ملفات قيادة Henry Onyx.",
     sharedSectionDescription:
       "تُجسّد ملفات هذا القسم الأشخاصَ والمسؤوليةَ التشغيليةَ والإشرافَ القائم خلف مجموعة Henry Onyx",
     headerEyebrow: "مجلس القيادة",
@@ -2600,9 +2600,9 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Geschäftssitz",
     founderEyebrow: "Gründernotiz",
     founderPhotoPlaceholder: "Foto",
-    founderPlaceholderTitle: "Gründernotiz — Inhalt über CMS verwaltet",
+    founderPlaceholderTitle: "Eine Notiz des Gründers",
     founderPlaceholderBody:
-      "Hier erscheint eine kurze, unterschriebene Notiz des Gründers. Die Struktur ist bereit — Text, Foto und Unterschrift werden nach der Veröffentlichung aus dem CMS des Unternehmens übernommen.",
+      "Hier erscheint eine kurze, unterschriebene Notiz des Gründers.",
     linkReachCompany: "Unternehmen kontaktieren",
     linkBrowseDivisions: "Divisionen durchsuchen",
   },
@@ -2622,7 +2622,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
       "Dieses Profil gehört zum öffentlichen Führungsgremium von Henry Onyx",
     emptyTitle: "Hier erscheinen Informationen zur Führung",
     emptyBody:
-      "Veröffentlichen Sie Führungsprofile über das Eigentümer-Dashboard, um Eigentum, Geschäftsleitung und vertrauenswürdige Unternehmensvertreter in einem klaren öffentlichen Format darzustellen.",
+      "Führungsprofile für Henry Onyx erscheinen hier.",
     sharedSectionDescription:
       "Die Profile in diesem Bereich verkörpern die Menschen, die Verantwortung und die operative Sorgfalt hinter der Henry-&-Co.-Gruppe.",
     headerEyebrow: "Führungsgremium",
@@ -3048,9 +3048,9 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Città operativa",
     founderEyebrow: "Nota del fondatore",
     founderPhotoPlaceholder: "Foto",
-    founderPlaceholderTitle: "Nota del fondatore — contenuto gestito tramite CMS",
+    founderPlaceholderTitle: "Una nota del fondatore",
     founderPlaceholderBody:
-      "Qui apparirà una breve nota firmata dal fondatore. La struttura è pronta — testo, foto e firma confluiscono dal CMS aziendale una volta pubblicati.",
+      "Qui apparirà una breve nota firmata dal fondatore.",
     linkReachCompany: "Contatta l’azienda",
     linkBrowseDivisions: "Esplora le divisioni",
   },
@@ -3070,7 +3070,7 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
       "Questo profilo fa parte del consiglio pubblico di leadership di Henry Onyx",
     emptyTitle: "Qui appariranno le informazioni di leadership",
     emptyBody:
-      "Pubblica i profili di leadership dal pannello del titolare per presentare proprietà, direzione e rappresentanti aziendali di fiducia in un formato pubblico curato.",
+      "I profili di leadership di Henry Onyx appariranno qui.",
     sharedSectionDescription:
       "I profili di questa sezione rappresentano le persone, la responsabilità e la cura operativa che sostengono il gruppo Henry Onyx",
     headerEyebrow: "Consiglio di leadership",
@@ -3496,9 +3496,9 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "运营所在地",
     founderEyebrow: "创始人寄语",
     founderPhotoPlaceholder: "照片",
-    founderPlaceholderTitle: "创始人寄语 — 内容由 CMS 管理",
+    founderPlaceholderTitle: "创始人寄语",
     founderPlaceholderBody:
-      "此处将呈现创始人亲笔签署的简短寄语。版式已就绪——文字、照片与署名将在公司 CMS 发布后自动接入。",
+      "此处将呈现创始人亲笔签署的简短寄语。",
     linkReachCompany: "联系公司",
     linkBrowseDivisions: "浏览业务板块",
   },
@@ -3518,7 +3518,7 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
       "该介绍属于 Henry Onyx 公开发布的领导团队信息。",
     emptyTitle: "领导团队信息将在此显示",
     emptyBody:
-      "请在所有者控制台中发布领导团队介绍,以体面而专业的方式向公众呈现公司的股东、管理层及主要代表。",
+      "Henry Onyx 的领导团队介绍将在此显示。",
     sharedSectionDescription:
       "此部分的介绍体现着 Henry Onyx 集团背后的人、所担负的治理责任与持续的运营守护。",
     headerEyebrow: "领导团队",
@@ -3944,9 +3944,9 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "संचालन का शहर",
     founderEyebrow: "संस्थापक की टिप्पणी",
     founderPhotoPlaceholder: "फ़ोटो",
-    founderPlaceholderTitle: "संस्थापक की टिप्पणी — सामग्री CMS द्वारा संचालित",
+    founderPlaceholderTitle: "संस्थापक की ओर से एक टिप्पणी",
     founderPlaceholderBody:
-      "यहाँ संस्थापक द्वारा हस्ताक्षरित एक संक्षिप्त टिप्पणी दिखाई देगी। ढाँचा तैयार है — पाठ, फ़ोटो और हस्ताक्षर प्रकाशन के बाद कंपनी के CMS से स्वतः जुड़ जाएँगे।",
+      "यहाँ संस्थापक द्वारा हस्ताक्षरित एक संक्षिप्त टिप्पणी दिखाई देगी।",
     linkReachCompany: "कंपनी से संपर्क करें",
     linkBrowseDivisions: "डिवीज़न देखें",
   },
@@ -3966,7 +3966,7 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
       "यह परिचय Henry Onyx के सार्वजनिक नेतृत्व मंडल का हिस्सा है।",
     emptyTitle: "नेतृत्व की जानकारी यहाँ प्रकट होगी",
     emptyBody:
-      "स्वामी डैशबोर्ड से नेतृत्व परिचय प्रकाशित कीजिए, ताकि कंपनी का स्वामित्व, प्रबंधन और भरोसेमंद प्रतिनिधि एक सुसज्जित सार्वजनिक रूप में दिखाई दें।",
+      "Henry Onyx के नेतृत्व परिचय यहाँ दिखाई देंगे।",
     sharedSectionDescription:
       "इस खंड के परिचय Henry Onyx समूह के पीछे खड़े लोगों, उनकी देखरेख और परिचालन उत्तरदायित्व को दर्शाते हैं।",
     headerEyebrow: "नेतृत्व मंडल",
@@ -4087,9 +4087,9 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Obodo a na-arụ ọrụ",
     founderEyebrow: "Okwu onye guzobere ya",
     founderPhotoPlaceholder: "Foto",
-    founderPlaceholderTitle: "Okwu onye guzobere ya — a na-elekọta site na CMS",
+    founderPlaceholderTitle: "A note from the founder",
     founderPlaceholderBody:
-      "Okwu nkenke nke onye guzobere ụlọọrụ a bịnyere aka ya ga-apụta ebe a. A kwadebere usoro ya — ederede, foto, na mbinye aka ga-abata site na CMS ụlọọrụ ozugbo akwadoro ya.",
+      "A short, signed note from the founder will appear here.",
     linkReachCompany: "Kpọtụrụ ụlọọrụ",
     linkBrowseDivisions: "Nyochaa ngalaba",
   },
@@ -4109,7 +4109,7 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
       "Akụkọ a so na ndị nduzi Henry Onyx e gosipụtara n’ihu ọha.",
     emptyTitle: "Ozi banyere ndị nduzi ga-apụta ebe a",
     emptyBody:
-      "Tinye akụkọ ndị nduzi site n’ụlọ ọchịchị onye nwe iji gosipụta nweta, njikwa, na ndị nnọchi anya ụlọọrụ a tụkwasịrị obi n’ụdị mara mma maka ọha.",
+      "Leadership profiles for Henry Onyx will appear here.",
     sharedSectionDescription:
       "Akụkọ dị n’akụkụ a na-egosi mmadụ, nlekọta, na ọrụ nkwado dị n’azụ otu Henry Onyx",
     headerEyebrow: "Ọgbakọ ndị nduzi",
@@ -4230,9 +4230,9 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Ìlú iṣẹ́",
     founderEyebrow: "Àkíyèsí olùdásílẹ̀",
     founderPhotoPlaceholder: "Fọ́tò",
-    founderPlaceholderTitle: "Àkíyèsí olùdásílẹ̀ — àkóónú tí a ń ṣàkóso láti inú CMS",
+    founderPlaceholderTitle: "A note from the founder",
     founderPlaceholderBody:
-      "Àkíyèsí kúkúrú tí olùdásílẹ̀ fi-ọwọ́-sí yóò hàn níbí. A ti pèsè ìlànà rẹ̀ tán — ọ̀rọ̀, fọ́tò, àti ìbáwí-ọwọ́ ní wọn yóò bọ́ sí inú nígbà tí a bá ti tẹ̀ wọ́n jáde láti inú CMS iléeṣẹ́.",
+      "A short, signed note from the founder will appear here.",
     linkReachCompany: "Bá iléeṣẹ́ sọ̀rọ̀",
     linkBrowseDivisions: "Yẹ àwọn ẹ̀ka wò",
   },
@@ -4252,7 +4252,7 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
       "Àpèjúwe yìí jẹ́ apá kan ìgbìmọ̀ aṣáájú-ọnà gbangba ti Henry Onyx",
     emptyTitle: "Àlàyé olórí yóò hàn níbí",
     emptyBody:
-      "Tẹ àwọn àpèjúwe olórí jáde láti inú pẹpẹ olúwa kí o lè fi ìní, ìṣàkóso, àti àwọn aṣojú igbẹ́kẹ̀lé iléeṣẹ́ hàn ní ọnà àtìnúwà fún gbangba.",
+      "Leadership profiles for Henry Onyx will appear here.",
     sharedSectionDescription:
       "Àwọn àpèjúwe nínú apá yìí ń jẹ́rìí àwọn ènìyàn, ìbojútó, àti àyípadà iṣẹ́ tí ó ń gbé ẹgbẹ́ Henry Onyx dúró.",
     headerEyebrow: "Ìgbìmọ̀ olórí",
@@ -4373,9 +4373,9 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     figureOperatingCity: "Birnin da ake aiki",
     founderEyebrow: "Saƙon wanda ya kafa",
     founderPhotoPlaceholder: "Hoto",
-    founderPlaceholderTitle: "Saƙon wanda ya kafa — ana sarrafa abun ciki ta CMS",
+    founderPlaceholderTitle: "A note from the founder",
     founderPlaceholderBody:
-      "Wani gajeren saƙo da wanda ya kafa kamfanin ya sa hannu zai bayyana a nan. An shirya tsarinsa — rubutu, hoto, da sa-hannu za su iso daga CMS ɗin kamfani da zaran an buga su.",
+      "A short, signed note from the founder will appear here.",
     linkReachCompany: "Tuntubi kamfanin",
     linkBrowseDivisions: "Bincika rassa",
   },
@@ -4395,7 +4395,7 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
       "Wannan bayanin yana cikin allon shugabancin Henry Onyx da aka bayyana a fili.",
     emptyTitle: "Bayanin shugabanci zai bayyana a nan",
     emptyBody:
-      "Buga bayanan shugabanci daga dashbod na mai kamfani don gabatar da mallaka, gudanarwa, da amintattun wakilan kamfani a cikin tsari mai kyau ga jama’a.",
+      "Leadership profiles for Henry Onyx will appear here.",
     sharedSectionDescription:
       "Bayanan da ke wannan sashin suna nuna mutanen, kulawa, da nauyin aiki da ke goyon bayan rukunin Henry Onyx",
     headerEyebrow: "Allon shugabanci",

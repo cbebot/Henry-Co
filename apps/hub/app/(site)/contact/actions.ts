@@ -108,7 +108,7 @@ export async function submitContactMessage(
   if (dispatch.status === "skipped") {
     return {
       status: "error",
-      message: `The form is paused right now. Please email ${supportEmail} directly and we will reply.`,
+      message: `We couldn't submit the form just now. Please email ${supportEmail} directly and we'll reply.`,
     };
   }
 

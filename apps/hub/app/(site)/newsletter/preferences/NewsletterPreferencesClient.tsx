@@ -87,10 +87,10 @@ export default function NewsletterPreferencesClient(props: Props) {
         topicKeys: body.topicKeys ?? topicKeys,
         nextStatus: body.status ?? "active",
       });
-    } catch (err) {
+    } catch {
       setState({
         status: "error",
-        message: err instanceof Error ? err.message : "Network error",
+        message: "Network error. Please try again in a moment.",
       });
     }
   };

@@ -10,9 +10,9 @@ function cleanText(value?: unknown) {
 
 function isAuthorized(request: Request) {
   const secret = cleanText(process.env.CRON_SECRET);
-  if (!secret) {
-    return process.env.NODE_ENV !== "production";
-  }
+  // Fail closed when the secret is unset — an unset secret must never authorize
+  // an anonymous caller (set CRON_SECRET locally to run this cron in dev).
+  if (!secret) return false;
 
   return request.headers.get("authorization") === `Bearer ${secret}`;
 }

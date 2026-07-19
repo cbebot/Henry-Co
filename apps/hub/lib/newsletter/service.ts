@@ -191,8 +191,10 @@ export async function subscribe(input: SubscriptionInput): Promise<SubscribeResu
       return {
         ok: false,
         code: "suppressed",
+        // Neutral, non-enumerating wording — do not reveal the internal
+        // suppression mechanics or confirm this address's prior state.
         message:
-          "This address is on our suppression list. We'll remove it only after a documented review.",
+          "We couldn't complete your subscription for this address. If you think this is a mistake, contact support.",
       };
     }
   } catch (err) {
@@ -357,7 +359,7 @@ export async function loadPreferencesByToken(token: string): Promise<LoadPrefere
       ok: false,
       code: "invalid_token",
       message:
-        "Preference links are not configured on this environment. Contact support to unsubscribe.",
+        "We couldn't open your preferences right now. Please contact support to update or unsubscribe.",
     };
   }
   const verified = verifyPreferenceToken({ secret, token });

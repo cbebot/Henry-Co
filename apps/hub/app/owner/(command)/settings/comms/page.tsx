@@ -10,7 +10,7 @@ export default function OwnerCommsGovernancePage() {
       <OwnerPageHeader
         eyebrow="Governance"
         title="Internal communication rules"
-        description="Henry Onyx HQ separates customer-facing channels from owner and staff messaging. These rules define how rooms are created, who can post, and where escalation belongs. Enforcement combines RLS in Supabase, API checks, and the room types you create under Team internal chat."
+        description="Henry Onyx HQ separates customer-facing channels from owner and staff messaging. These rules define how rooms are created, who can post, and where escalation belongs. Enforcement combines database row-level security, API checks, and the room types you create under Team internal chat."
         actions={
           <>
             <Link href="/owner/messaging/team" className="acct-button-primary">
@@ -33,9 +33,7 @@ export default function OwnerCommsGovernancePage() {
             <span>
               <span className="font-semibold text-[var(--acct-ink)]">Cross-division DMs: </span>
               Restricted by role; owners retain override to start threads with managers and leads when
-              policy allows. Database policies in{" "}
-              <code className="rounded bg-[var(--acct-bg-soft)] px-1 text-xs">hq_internal_comm_*</code>{" "}
-              tables (see Hub Supabase migrations) gate membership.
+              policy allows. Membership is gated by database access policies maintained with the Hub schema.
             </span>
           </li>
           <li className="flex gap-3">
@@ -69,11 +67,10 @@ export default function OwnerCommsGovernancePage() {
         </ul>
       </OwnerPanel>
 
-      <OwnerPanel title="Voice / live sessions" description="Roadmap-ready posture.">
+      <OwnerPanel title="Voice / live sessions" description="Not yet available.">
         <p className="text-sm leading-6 text-[var(--acct-muted)]">
-          Live voice and group calls require a provider contract (e.g. WebRTC + TURN, or a managed
-          meetings API). The UI shell in HQ is structured so &quot;start call&quot; can be added per thread
-          without rewriting the messaging layout—keep sensitive topics in authenticated HQ only.
+          Live voice and group calls are not available in HQ yet. Keep sensitive topics in
+          authenticated HQ messaging.
         </p>
       </OwnerPanel>
     </div>
