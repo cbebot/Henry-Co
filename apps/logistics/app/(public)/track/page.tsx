@@ -191,6 +191,9 @@ export default async function TrackPage({ searchParams }: Props) {
       ? Promise.all(
           detail.issues
             .filter((i) => i.status !== "resolved")
+            // Only `summary` is customer-facing on this surface — `details`
+            // (raw operator/automation free-text) is not rendered, so it is not
+            // localized either.
             .map(async (issue) => ({
               ...issue,
               summary: await resolveLocalizedDynamicField({
@@ -198,13 +201,6 @@ export default async function TrackPage({ searchParams }: Props) {
                 field: "summary",
                 locale,
                 fallback: issue.summary,
-                machineTranslate: locale !== "en",
-              }),
-              details: await resolveLocalizedDynamicField({
-                record: issue as unknown as Record<string, unknown>,
-                field: "details",
-                locale,
-                fallback: issue.details,
                 machineTranslate: locale !== "en",
               }),
             })),

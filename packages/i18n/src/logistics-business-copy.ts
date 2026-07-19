@@ -158,7 +158,7 @@ const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Pour les opérateurs",
     title: "Conçu pour les opérateurs.",
-    body: "La réservation et le suivi publics tournent sur le même modèle d’expédition utilisé en interne. Les expéditeurs professionnels bénéficient d’une tarification prévisible, d’une visibilité sur les jalons, d’une rigueur sur la preuve de livraison et du compte Henry Onyx partagé pour les reçus, les notifications et l’historique d’assistance.",
+    body: "La même rigueur d’enlèvement, de suivi et de preuve s’applique à chaque expédition que nous transportons. Les expéditeurs professionnels bénéficient d’une tarification prévisible, d’une visibilité sur les jalons, d’une rigueur sur la preuve de livraison et du compte Henry Onyx partagé pour les reçus, les notifications et l’historique d’assistance.",
     quoteCta: "Obtenir un devis pour une vraie ligne",
     accountCta: "Ouvrir la logistique dans le compte",
     compareCta: "Comparer les niveaux de service",
@@ -191,7 +191,7 @@ const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
       "Utilisez le devis public pour obtenir un vrai chiffre sur votre paire origine-destination la plus fréquente, puis nous calibrons à partir de là.",
     step02Title: "Ouvrez le hub du compte",
     step02Body:
-      "Dans votre compte Henry Onyx, l’espace logistique conserve reçus, historique des jalons et acheminement des notifications pour la finance et l’exploitation.",
+      "Dans votre compte Henry Onyx, l’espace logistique conserve vos reçus, l’historique des jalons et les notifications de livraison au même endroit.",
     step03Title: "Faites tourner le volume",
     step03Body:
       "Les réservations récurrentes réutilisent les profils enregistrés. Les codes de suivi sont émis dès la réservation ; la preuve de livraison s’attache à la bonne facture.",
@@ -213,7 +213,7 @@ const LOGISTICS_BUSINESS_COPY_FR: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Mouvements internationaux transfrontaliers — les lignes domestiques sont aujourd’hui la surface de service publiée.",
     notYetHazmat:
-      "Expéditions de matières dangereuses — traitées séparément en contact direct avec l’exploitation, pas via la réservation publique.",
+      "Expéditions de matières dangereuses — non disponibles via la réservation en ligne. Contactez le bureau entreprises pour en discuter les options.",
   },
   closing: {
     eyebrow: "Prêt à parler volume ?",
@@ -234,7 +234,7 @@ const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Para operadores",
     title: "Diseñado para operadores.",
-    body: "La reserva y el seguimiento públicos funcionan sobre el mismo modelo de envío que se usa internamente. Las empresas remitentes obtienen precios predecibles, visibilidad de hitos, disciplina en la prueba de entrega y la cuenta Henry Onyx compartida para recibos, notificaciones e historial de soporte.",
+    body: "La misma disciplina de recogida, seguimiento y prueba se aplica a cada envío que movemos. Las empresas remitentes obtienen precios predecibles, visibilidad de hitos, disciplina en la prueba de entrega y la cuenta Henry Onyx compartida para recibos, notificaciones e historial de soporte.",
     quoteCta: "Cotizar una ruta real",
     accountCta: "Abrir logística en la cuenta",
     compareCta: "Comparar niveles de servicio",
@@ -267,7 +267,7 @@ const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
       "Use la cotización pública para obtener un número real sobre su par origen-destino más habitual; a partir de ahí calibramos.",
     step02Title: "Abra el hub de la cuenta",
     step02Body:
-      "Dentro de su cuenta Henry Onyx, el espacio de logística guarda recibos, historial de hitos y enrutamiento de notificaciones para finanzas y operaciones.",
+      "Dentro de su cuenta Henry Onyx, el espacio de logística guarda sus recibos, el historial de hitos y las notificaciones de entrega en un solo lugar.",
     step03Title: "Ponga en marcha el volumen",
     step03Body:
       "Las reservas recurrentes reutilizan los perfiles guardados. Los códigos de seguimiento se emiten al reservar; la prueba de entrega se adjunta a la factura correcta.",
@@ -289,7 +289,7 @@ const LOGISTICS_BUSINESS_COPY_ES: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Movimientos internacionales transfronterizos — hoy las rutas domésticas son la superficie de servicio publicada.",
     notYetHazmat:
-      "Envíos de mercancías peligrosas — se gestionan por separado mediante contacto directo con operaciones, no por reserva pública.",
+      "Envíos de mercancías peligrosas — no disponibles mediante la reserva en línea. Contacte con el equipo de empresas para ver las opciones.",
   },
   closing: {
     eyebrow: "¿Listo para hablar de volumen?",
@@ -310,7 +310,7 @@ const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Para operadores",
     title: "Pensado para operadores.",
-    body: "A reserva e o rastreamento públicos correm no mesmo modelo de envio usado internamente. Os expedidores empresariais ganham preços previsíveis, visibilidade de marcos, disciplina no comprovativo de entrega e a conta Henry Onyx partilhada para recibos, notificações e histórico de apoio.",
+    body: "A mesma disciplina de recolha, rastreamento e comprovativo aplica-se a cada envio que movemos. Os expedidores empresariais ganham preços previsíveis, visibilidade de marcos, disciplina no comprovativo de entrega e a conta Henry Onyx partilhada para recibos, notificações e histórico de apoio.",
     quoteCta: "Pedir orçamento para uma rota real",
     accountCta: "Abrir logística na conta",
     compareCta: "Comparar níveis de serviço",
@@ -343,7 +343,7 @@ const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
       "Use o orçamento público para obter um número real para o seu par origem-destino mais comum; a partir daí calibramos.",
     step02Title: "Abra o hub da conta",
     step02Body:
-      "Dentro da sua conta Henry Onyx, o espaço de logística guarda recibos, histórico de marcos e encaminhamento de notificações para finanças e operações.",
+      "Dentro da sua conta Henry Onyx, o espaço de logística guarda os seus recibos, o histórico de marcos e as notificações de entrega num só lugar.",
     step03Title: "Faça correr o volume",
     step03Body:
       "As reservas recorrentes reutilizam perfis guardados. Os códigos de rastreamento são emitidos na reserva; o comprovativo de entrega anexa-se à fatura certa.",
@@ -365,7 +365,7 @@ const LOGISTICS_BUSINESS_COPY_PT: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Movimentos internacionais transfronteiriços — hoje as rotas domésticas são a superfície de serviço publicada.",
     notYetHazmat:
-      "Envios de matérias perigosas — tratados em separado por contacto direto com operações, não pela reserva pública.",
+      "Envios de matérias perigosas — não disponíveis pela reserva online. Contacte a equipa de empresas para discutir as opções.",
   },
   closing: {
     eyebrow: "Pronto para falar de volume?",
@@ -386,7 +386,7 @@ const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "للمشغّلين",
     title: "مصمَّم للمشغّلين.",
-    body: "يعمل الحجز والتتبع العامّان على نموذج الشحن نفسه المستخدم داخليًا. يحصل مُرسِلو الأعمال على تسعير يمكن توقعه، ورؤية للمراحل، وانضباط في إثبات التسليم، وحساب Henry Onyx المشترك للفواتير والإشعارات وسجل الدعم.",
+    body: "ينطبق انضباط الاستلام والتتبع والإثبات نفسه على كل شحنة ننقلها. يحصل مُرسِلو الأعمال على تسعير يمكن توقعه، ورؤية للمراحل، وانضباط في إثبات التسليم، وحساب Henry Onyx المشترك للفواتير والإشعارات وسجل الدعم.",
     quoteCta: "اطلب عرضًا لخط حقيقي",
     accountCta: "افتح الخدمات اللوجستية في الحساب",
     compareCta: "قارن مستويات الخدمة",
@@ -419,7 +419,7 @@ const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
       "استخدم العرض العام للحصول على رقم حقيقي لأكثر زوج منشأ-وجهة لديك تكرارًا، ثم نعاير من هناك.",
     step02Title: "افتح مركز الحساب",
     step02Body:
-      "داخل حسابك في Henry Onyx، تحفظ مساحة الخدمات اللوجستية الفواتير وسجل المراحل وتوجيه الإشعارات للمالية والعمليات.",
+      "داخل حسابك في Henry Onyx، تحفظ مساحة الخدمات اللوجستية فواتيرك وسجل المراحل وإشعارات التسليم في مكان واحد.",
     step03Title: "شغّل الحجم",
     step03Body:
       "تعيد الحجوزات المتكررة استخدام الملفات المحفوظة. تُصدَر رموز التتبع عند الحجز، ويُرفَق إثبات التسليم بالفاتورة الصحيحة.",
@@ -441,7 +441,7 @@ const LOGISTICS_BUSINESS_COPY_AR: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "النقل الدولي عبر الحدود — اليوم الخطوط المحلية هي سطح الخدمة المعلن.",
     notYetHazmat:
-      "شحنات المواد الخطرة — تُعالَج بشكل منفصل عبر اتصال مباشر بالعمليات، لا عبر الحجز العام.",
+      "شحنات المواد الخطرة — غير متاحة عبر الحجز عبر الإنترنت. تواصل مع مكتب الأعمال لمناقشة الخيارات.",
   },
   closing: {
     eyebrow: "جاهز للحديث عن الحجم؟",
@@ -461,7 +461,7 @@ const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Für Operator",
     title: "Für Operator gebaut.",
-    body: "Öffentliche Buchung und Tracking laufen auf demselben Sendungsmodell, das auch intern verwendet wird. Geschäftsversender bekommen kalkulierbare Preise, Meilensteintransparenz, Disziplin beim Zustellnachweis und das gemeinsame Henry Onyx-Konto für Belege, Benachrichtigungen und Support-Historie.",
+    body: "Dieselbe Disziplin bei Abholung, Tracking und Nachweis gilt für jede Sendung, die wir bewegen. Geschäftsversender bekommen kalkulierbare Preise, Meilensteintransparenz, Disziplin beim Zustellnachweis und das gemeinsame Henry Onyx-Konto für Belege, Benachrichtigungen und Support-Historie.",
     quoteCta: "Angebot für eine reale Route",
     accountCta: "Logistik im Konto öffnen",
     compareCta: "Service-Stufen vergleichen",
@@ -494,7 +494,7 @@ const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
       "Nutzen Sie das öffentliche Angebot, um eine echte Zahl für Ihr häufigstes Start-Ziel-Paar zu erhalten — von dort aus kalibrieren wir.",
     step02Title: "Öffnen Sie das Konto-Hub",
     step02Body:
-      "In Ihrem Henry Onyx-Konto speichert der Logistik-Arbeitsbereich Belege, Meilensteinhistorie und Benachrichtigungsrouting für Finanzen und Betrieb.",
+      "In Ihrem Henry Onyx-Konto bewahrt der Logistik-Arbeitsbereich Ihre Belege, die Meilensteinhistorie und Zustellbenachrichtigungen an einem Ort auf.",
     step03Title: "Lassen Sie das Volumen laufen",
     step03Body:
       "Wiederkehrende Buchungen nutzen gespeicherte Profile erneut. Tracking-Codes werden bei der Buchung vergeben; Zustellnachweise hängen sich an die richtige Rechnung.",
@@ -516,7 +516,7 @@ const LOGISTICS_BUSINESS_COPY_DE: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Internationale grenzüberschreitende Transporte — heute sind nationale Strecken die veröffentlichte Servicefläche.",
     notYetHazmat:
-      "Gefahrgut-Sendungen — werden separat über direkten Betriebs-Kontakt abgewickelt, nicht über die öffentliche Buchung.",
+      "Gefahrgut-Sendungen — über die Online-Buchung nicht verfügbar. Wenden Sie sich an das Geschäftskunden-Team, um die Optionen zu besprechen.",
   },
   closing: {
     eyebrow: "Bereit, über Volumen zu sprechen?",
@@ -537,7 +537,7 @@ const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Per gli operatori",
     title: "Costruita per gli operatori.",
-    body: "Prenotazione e tracciamento pubblici girano sullo stesso modello di spedizione usato internamente. Gli spedizionieri aziendali ottengono tariffe prevedibili, visibilità sulle tappe, disciplina sulla prova di consegna e l’account Henry Onyx condiviso per ricevute, notifiche e storico assistenza.",
+    body: "La stessa disciplina di ritiro, tracciamento e prova vale per ogni spedizione che muoviamo. Gli spedizionieri aziendali ottengono tariffe prevedibili, visibilità sulle tappe, disciplina sulla prova di consegna e l’account Henry Onyx condiviso per ricevute, notifiche e storico assistenza.",
     quoteCta: "Richiedi un preventivo per una tratta reale",
     accountCta: "Apri la logistica nell’account",
     compareCta: "Confronta i livelli di servizio",
@@ -570,7 +570,7 @@ const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
       "Usa il preventivo pubblico per ottenere un numero reale sulla tua coppia origine-destinazione più frequente, poi calibriamo da lì.",
     step02Title: "Apri l’hub dell’account",
     step02Body:
-      "Dentro il tuo account Henry Onyx, lo spazio logistica conserva ricevute, storico delle tappe e instradamento delle notifiche per finanza e operations.",
+      "Dentro il tuo account Henry Onyx, lo spazio logistica conserva le tue ricevute, lo storico delle tappe e le notifiche di consegna in un solo posto.",
     step03Title: "Fai girare il volume",
     step03Body:
       "Le prenotazioni ricorrenti riutilizzano i profili salvati. I codici di tracciamento vengono emessi alla prenotazione; la prova di consegna si aggancia alla fattura giusta.",
@@ -592,7 +592,7 @@ const LOGISTICS_BUSINESS_COPY_IT: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Movimenti internazionali transfrontalieri — oggi le tratte nazionali sono la superficie di servizio pubblicata.",
     notYetHazmat:
-      "Spedizioni di materiali pericolosi — gestite a parte tramite contatto diretto con le operations, non dalla prenotazione pubblica.",
+      "Spedizioni di materiali pericolosi — non disponibili tramite la prenotazione online. Contatta il team aziendale per discutere le opzioni.",
   },
   closing: {
     eyebrow: "Pronto a parlare di volumi?",
@@ -612,7 +612,7 @@ const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "面向运营者",
     title: "为运营者而生。",
-    body: "公开下单与追踪运行在与内部相同的运单模型之上。企业寄件方可获得可预期的定价、里程碑可见度、严谨的送达凭证,以及共享的 Henry Onyx 账户来管理凭证、通知与支持记录。",
+    body: "同样的取件、追踪与送达凭证规范贯穿我们运送的每一票货件。企业寄件方可获得可预期的定价、里程碑可见度、严谨的送达凭证,以及共享的 Henry Onyx 账户来管理凭证、通知与支持记录。",
     quoteCta: "对一条真实线路报价",
     accountCta: "在账户中打开物流",
     compareCta: "对比服务等级",
@@ -645,7 +645,7 @@ const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
       "用公开报价拿到你最常见的起讫点对的真实数字,我们再据此校准。",
     step02Title: "打开账户中心",
     step02Body:
-      "在你的 Henry Onyx 账户里,物流工作区保存凭证、里程碑历史以及面向财务与运营的通知路由。",
+      "在你的 Henry Onyx 账户里,物流工作区将你的凭证、里程碑历史与送达通知集中保存在一处。",
     step03Title: "把量跑起来",
     step03Body:
       "重复下单会复用已保存的档案。追踪码在下单时发放;送达凭证挂到正确的发票上。",
@@ -662,7 +662,7 @@ const LOGISTICS_BUSINESS_COPY_ZH: DeepPartial<LogisticsBusinessCopy> = {
     notYetColdChain:
       "需要专用容器的冷链或控温运输——请提前告知,我们会做相应安排。",
     notYetCrossBorder: "国际跨境运输——目前公开的服务面是国内线路。",
-    notYetHazmat: "危险品运输——通过运营直连单独处理,不走公开下单。",
+    notYetHazmat: "危险品运输——无法通过在线下单办理。请联系企业专线了解可选方案。",
   },
   closing: {
     eyebrow: "准备好谈量了吗?",
@@ -682,7 +682,7 @@ const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "ऑपरेटरों के लिए",
     title: "ऑपरेटरों के लिए बनाया गया।",
-    body: "सार्वजनिक बुकिंग और ट्रैकिंग उसी शिपमेंट मॉडल पर चलती है जिसे अंदर इस्तेमाल होता है। व्यवसायिक प्रेषकों को पूर्वानुमेय मूल्य, माइलस्टोन की दृश्यता, डिलीवरी प्रमाण का अनुशासन और रसीद, सूचना तथा सहायता इतिहास के लिए साझा Henry Onyx खाता मिलता है।",
+    body: "वही पिकअप, ट्रैकिंग और प्रमाण का अनुशासन हमारी हर भेजी जाने वाली शिपमेंट पर लागू होता है। व्यवसायिक प्रेषकों को पूर्वानुमेय मूल्य, माइलस्टोन की दृश्यता, डिलीवरी प्रमाण का अनुशासन और रसीद, सूचना तथा सहायता इतिहास के लिए साझा Henry Onyx खाता मिलता है।",
     quoteCta: "एक असली रूट पर कोटेशन लें",
     accountCta: "खाते में लॉजिस्टिक्स खोलें",
     compareCta: "सेवा स्तर तुलना करें",
@@ -715,7 +715,7 @@ const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
       "अपनी सबसे आम मूल–गंतव्य जोड़ी पर असली आंकड़ा पाने के लिए सार्वजनिक कोटेशन का उपयोग करें, फिर हम वहाँ से अंशांकन करते हैं।",
     step02Title: "खाते का हब खोलें",
     step02Body:
-      "आपके Henry Onyx खाते में, लॉजिस्टिक्स वर्कस्पेस वित्त/संचालन के लिए रसीदें, माइलस्टोन इतिहास और सूचना रूटिंग रखता है।",
+      "आपके Henry Onyx खाते में, लॉजिस्टिक्स वर्कस्पेस आपकी रसीदें, माइलस्टोन इतिहास और डिलीवरी सूचनाएँ एक ही जगह रखता है।",
     step03Title: "वॉल्यूम चलाएँ",
     step03Body:
       "दोहराई जाने वाली बुकिंग सहेजी गई प्रोफ़ाइलों का पुनः उपयोग करती हैं। ट्रैकिंग कोड बुकिंग पर जारी होते हैं; डिलीवरी प्रमाण सही इनवॉइस से जुड़ता है।",
@@ -737,7 +737,7 @@ const LOGISTICS_BUSINESS_COPY_HI: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "अंतर्राष्ट्रीय सीमा-पार मूवमेंट — आज प्रकाशित सेवा घरेलू रूटों पर केंद्रित है।",
     notYetHazmat:
-      "खतरनाक सामग्री की शिपमेंट — सार्वजनिक बुकिंग नहीं, सीधे संचालन संपर्क के तहत अलग से संभाली जाती है।",
+      "खतरनाक सामग्री की शिपमेंट — ऑनलाइन बुकिंग के माध्यम से उपलब्ध नहीं। विकल्पों पर चर्चा के लिए व्यवसाय डेस्क से संपर्क करें।",
   },
   closing: {
     eyebrow: "वॉल्यूम पर बात करने के लिए तैयार?",
@@ -758,7 +758,7 @@ const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Maka ndị na-arụ ọrụ",
     title: "E wuru maka ndị na-arụ ọrụ.",
-    body: "Ndebanye aha na nyocha ọha na-agba ọsọ n’otu ụdị mbufe a na-eji n’ime ụlọ. Ndị na-eziga maka azụmaahịa na-enweta ọnụahịa enwere ike ịkọwa, anya na nzọụkwụ, ọzụzụ n’ihe àmà nnyefe, na akaụntụ Henry Onyx a na-eke maka akwụkwọ ego, ọkwa na akụkọ ihe ọmụma nkwado.",
+    body: "The same pickup, tracking, and proof discipline runs across every shipment we move. Ndị na-eziga maka azụmaahịa na-enweta ọnụahịa enwere ike ịkọwa, anya na nzọụkwụ, ọzụzụ n’ihe àmà nnyefe, na akaụntụ Henry Onyx a na-eke maka akwụkwọ ego, ọkwa na akụkọ ihe ọmụma nkwado.",
     quoteCta: "Nweta ọnụ ahịa maka ezigbo ụzọ",
     accountCta: "Mepee logistics n’akaụntụ",
     compareCta: "Tụlee ọkwa ọrụ",
@@ -791,7 +791,7 @@ const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
       "Jiri ọnụ ahịa ọha nweta ezigbo nọmba maka ụzọ ebe-mmalite/ebe-njedebe gị na-emegharị, anyị ga-emezigharị site n’ebe ahụ.",
     step02Title: "Mepee mkpụrụ akaụntụ",
     step02Body:
-      "N’ime akaụntụ Henry Onyx gị, oghere logistics na-echekwa akwụkwọ ego, akụkọ nzọụkwụ na nzipu ọkwa maka akụnụba/ọrụ.",
+      "Inside your Henry Onyx account, the logistics workspace keeps your receipts, milestone history, and delivery notifications in one place.",
     step03Title: "Mee ka mpịakọta ahụ rụọ ọrụ",
     step03Body:
       "Ndebe ndị na-emegharị na-ejigharị profaịlụ echekwara. A na-enye koodu nyocha n’oge ndebe; ihe àmà nnyefe na-ejikọta na akwụkwọ ego ziri ezi.",
@@ -813,7 +813,7 @@ const LOGISTICS_BUSINESS_COPY_IG: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Mbufe mba ụwa nke gafere ókè — ụzọ ime obodo bụ elu ọrụ a kwupụtara taa.",
     notYetHazmat:
-      "Mbufe ihe ize ndụ — a na-elekọta ya iche site na kpọtụrụ ọrụ kpọmkwem, ọ bụghị site na ndebe ọha.",
+      "Hazardous-materials shipments — not available through online booking. Contact the business desk to discuss options.",
   },
   closing: {
     eyebrow: "Ị dị njikere ikwu maka mpịakọta?",
@@ -834,7 +834,7 @@ const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Fún àwọn olùṣe iṣẹ́",
     title: "A kọ́ ọ́ fún àwọn olùṣe iṣẹ́.",
-    body: "Ìfọwọ́sí àti àtẹ̀lé ní gbangba ń ṣiṣẹ́ lórí ìṣètò ìránṣẹ́ kan náà tí a fi ṣiṣẹ́ nínú. Àwọn olùrànṣẹ́ iṣòwò ní ìṣètò owó tó ṣe é fojú-sọ́nà, ìríran lórí ìpele, ìbáwí lórí ẹ̀rí ìfijiṣẹ́, àti akáǹtì Henry Onyx tí a pín fún àwọn ìwé-ẹ̀rí, ìfìránṣẹ́ àti ìtàn ìtìlẹ́yìn.",
+    body: "The same pickup, tracking, and proof discipline runs across every shipment we move. Àwọn olùrànṣẹ́ iṣòwò ní ìṣètò owó tó ṣe é fojú-sọ́nà, ìríran lórí ìpele, ìbáwí lórí ẹ̀rí ìfijiṣẹ́, àti akáǹtì Henry Onyx tí a pín fún àwọn ìwé-ẹ̀rí, ìfìránṣẹ́ àti ìtàn ìtìlẹ́yìn.",
     quoteCta: "Béèrè ìdíyelé lórí ọ̀nà gidi",
     accountCta: "Ṣí Logistics nínú akáǹtì",
     compareCta: "Fi àwọn ìpele iṣẹ́ wéra",
@@ -867,7 +867,7 @@ const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
       "Lo ìdíyelé ní gbangba láti rí nọ́mbà gidi fún ìpín orisun-ìbi-ipinnu tí o sábà máa lo, lẹ́yìn náà a máa tó.",
     step02Title: "Ṣí ibùdó akáǹtì",
     step02Body:
-      "Nínú akáǹtì Henry Onyx rẹ, àyè logistics máa tọ́jú àwọn ìwé-ẹ̀rí, ìtàn ìpele àti ìpín ìfìránṣẹ́ fún ìnáwó àti iṣẹ́.",
+      "Inside your Henry Onyx account, the logistics workspace keeps your receipts, milestone history, and delivery notifications in one place.",
     step03Title: "Mú àpapọ̀ ṣiṣẹ́",
     step03Body:
       "Àwọn ìfọwọ́sí àtúnṣe máa lo profaílì tó tọ́jú. A máa tu kóòdù àtẹ̀lé jáde nígbà ìfọwọ́sí; ẹ̀rí ìfijiṣẹ́ máa fẹsùn mọ́ ìwé-ìṣèlú yẹ̀.",
@@ -889,7 +889,7 @@ const LOGISTICS_BUSINESS_COPY_YO: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Ìránṣẹ́ orílẹ̀-èdè aládúgbò — lónìí àwọn ọ̀nà inú orílẹ̀ ni iṣẹ́ tí a ti tẹ̀.",
     notYetHazmat:
-      "Ìránṣẹ́ ohun apànìyàn — a ń ṣe é lọ́tọ̀ọ̀tọ̀ pẹ̀lú olùṣe iṣẹ́ tààrà, kì í ṣe nípasẹ̀ ìfọwọ́sí gbangba.",
+      "Hazardous-materials shipments — not available through online booking. Contact the business desk to discuss options.",
   },
   closing: {
     eyebrow: "Ṣe o ti ṣetán láti sọ̀rọ̀ àpapọ̀?",
@@ -910,7 +910,7 @@ const LOGISTICS_BUSINESS_COPY_HA: DeepPartial<LogisticsBusinessCopy> = {
   hero: {
     eyebrow: "Ga masu aiki",
     title: "An gina shi don masu aiki.",
-    body: "Yin rijista da bibiya na jama’a suna gudana akan irin samfurin jigilar kayan da ake amfani da shi a ciki. Masu aikawa na kasuwanci suna samun farashi mai yiwuwa hango, gani na matakai, kulawa kan tabbacin isar da kaya, da akwatin Henry Onyx da aka raba don rasit, sanarwa da tarihin tallafi.",
+    body: "The same pickup, tracking, and proof discipline runs across every shipment we move. Masu aikawa na kasuwanci suna samun farashi mai yiwuwa hango, gani na matakai, kulawa kan tabbacin isar da kaya, da akwatin Henry Onyx da aka raba don rasit, sanarwa da tarihin tallafi.",
     quoteCta: "Nemo farashi don hanya ta gaske",
     accountCta: "Bude logistics a cikin akwati",
     compareCta: "Kwatanta matakan sabis",
@@ -943,7 +943,7 @@ const LOGISTICS_BUSINESS_COPY_HA: DeepPartial<LogisticsBusinessCopy> = {
       "Yi amfani da farashin jama’a don samun lambar gaske ga ma’aurata na asali-zuwa-makoma da kake amfani da su sosai, sannan mu daidaita daga can.",
     step02Title: "Bude cibiyar akwati",
     step02Body:
-      "Cikin akwatin Henry Onyx naka, sararin logistics yana ajiye rasit, tarihin matakai da jagorancin sanarwa ga kuɗi/ayyuka.",
+      "Inside your Henry Onyx account, the logistics workspace keeps your receipts, milestone history, and delivery notifications in one place.",
     step03Title: "Tafiyar da yawan",
     step03Body:
       "Rijistar maimaitaccen tana sake amfani da fayilolin da aka ajiye. Ana ba da lambar bibiya a lokacin rijista; tabbacin isar da kaya yana ɗauke da takardar kuɗi mai kyau.",
@@ -965,7 +965,7 @@ const LOGISTICS_BUSINESS_COPY_HA: DeepPartial<LogisticsBusinessCopy> = {
     notYetCrossBorder:
       "Motsi na ƙasa-ƙasa — yau hanyoyin cikin gida sune sabis ɗin da aka buga.",
     notYetHazmat:
-      "Jigilar kayan masu haɗari — ana sarrafa su a daban ta hanyar tuntuɓar ayyuka kai tsaye, ba ta hanyar rijista ta jama’a ba.",
+      "Hazardous-materials shipments — not available through online booking. Contact the business desk to discuss options.",
   },
   closing: {
     eyebrow: "A shirye don magana kan yawan?",

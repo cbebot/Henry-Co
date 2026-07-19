@@ -173,7 +173,7 @@ const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Besoin de tarifs en volume ?",
-    body: "Les trajets B2B récurrents, la répartition multi-arrêts et les tarifs contractuels passent par le bureau des entreprises — pas par un devis public rapide.",
+    body: "Les trajets B2B récurrents, les itinéraires multi-arrêts et les tarifs contractuels sont gérés par notre équipe entreprises — pas par un devis public rapide.",
     talkLink: "Parler au bureau des entreprises",
     compareLink: "Comparer les niveaux de service",
   },
@@ -237,7 +237,7 @@ const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "¿Necesitas precios por volumen?",
-    body: "Los trayectos B2B recurrentes, el despacho multi-parada y los precios por contrato pasan por el escritorio empresarial — no por un presupuesto público rápido.",
+    body: "Los trayectos B2B recurrentes, las rutas multi-parada y los precios por contrato los gestiona nuestro equipo de empresas — no un presupuesto público rápido.",
     talkLink: "Habla con el escritorio empresarial",
     compareLink: "Comparar niveles de servicio",
   },
@@ -301,7 +301,7 @@ const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Precisa de preços por volume?",
-    body: "Trajetos B2B recorrentes, despacho multi-paragem e preços contratuais passam pelo balcão empresarial — não por um orçamento público rápido.",
+    body: "Trajetos B2B recorrentes, rotas multi-paragem e preços contratuais são tratados pela nossa equipa de empresas — não por um orçamento público rápido.",
     talkLink: "Falar com o balcão empresarial",
     compareLink: "Comparar níveis de serviço",
   },
@@ -365,7 +365,7 @@ const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "تحتاج تسعيراً بالحجم؟",
-    body: "المسارات المتكرّرة بين الشركات، والإرسال متعدّد المحطات، والتسعير التعاقدي تمرّ عبر مكتب الأعمال — لا عبر عرض عام سريع.",
+    body: "المسارات المتكرّرة بين الشركات، والمسارات متعدّدة المحطات، والتسعير التعاقدي يتولّاها فريق الأعمال لدينا — لا عبر عرض عام سريع.",
     talkLink: "تحدّث مع مكتب الأعمال",
     compareLink: "قارن مستويات الخدمة",
   },
@@ -429,7 +429,7 @@ const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Volumenpreise benötigt?",
-    body: "Wiederkehrende B2B-Strecken, Multi-Stopp-Dispatch und Vertragspreise laufen über den Business-Desk — nicht über ein schnelles öffentliches Angebot.",
+    body: "Wiederkehrende B2B-Strecken, Multi-Stopp-Routen und Vertragspreise werden von unserem Geschäftskunden-Team betreut — nicht über ein schnelles öffentliches Angebot.",
     talkLink: "Mit dem Business-Desk sprechen",
     compareLink: "Servicestufen vergleichen",
   },
@@ -493,7 +493,7 @@ const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Servono prezzi a volume?",
-    body: "Tratte B2B ricorrenti, dispatch multi-fermata e prezzi a contratto passano per il business desk — non per un preventivo pubblico veloce.",
+    body: "Tratte B2B ricorrenti, percorsi multi-fermata e prezzi a contratto sono gestiti dal nostro team aziendale — non da un preventivo pubblico veloce.",
     talkLink: "Parla con il business desk",
     compareLink: "Confronta i livelli di servizio",
   },
@@ -557,7 +557,7 @@ const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "需要大宗价格?",
-    body: "经常性的 B2B 线路、多点派送和合同定价由业务专席处理 — 而非快速公开报价。",
+    body: "经常性的 B2B 线路、多点路线和合同定价由我们的业务团队处理 — 而非快速公开报价。",
     talkLink: "联系业务专席",
     compareLink: "比较服务等级",
   },
@@ -621,7 +621,7 @@ const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "वॉल्यूम मूल्य चाहिए?",
-    body: "आवर्ती B2B लेन, मल्टी-स्टॉप डिस्पैच और अनुबंध मूल्य व्यवसाय डेस्क से होकर जाते हैं — न कि एक त्वरित सार्वजनिक कोटेशन से।",
+    body: "आवर्ती B2B लेन, मल्टी-स्टॉप रूट और अनुबंध मूल्य हमारी व्यवसाय टीम संभालती है — न कि एक त्वरित सार्वजनिक कोटेशन।",
     talkLink: "व्यवसाय डेस्क से बात करें",
     compareLink: "सेवा स्तरों की तुलना करें",
   },
@@ -685,7 +685,7 @@ const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Ị chọrọ ọnụego olu?",
-    body: "Ụzọ B2B na-aga aga, mbufe ọtụtụ nkwụsị, na ọnụego nkwekọrịta na-agafe site na nkuku azụmaahịa — ọ bụghị site na ọnụego ọha ngwa ngwa.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Gwa nkuku azụmaahịa okwu",
     compareLink: "Tụlee ọkwa ọrụ",
   },
@@ -749,7 +749,7 @@ const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Ṣé o nílò iye fún ìṣòfin tó pọ̀?",
-    body: "Àwọn ọ̀nà B2B tó ń tẹ̀síwájú, ìpín onírúurú-ìdúró, àti iye àdéhùn ń kọjá láti orí tábìlì iṣẹ́-òwò — kì í ṣe láti orí ìpèsè kíákíá ní gbangba.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Bá tábìlì iṣẹ́-òwò sọ̀rọ̀",
     compareLink: "Fi àwọn ipele iṣẹ́ wé ara wọn",
   },
@@ -813,7 +813,7 @@ const LOGISTICS_QUOTE_COPY_HA: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Kana buƙatar farashin kaya mai yawa?",
-    body: "Hanyoyin B2B masu maimaitawa, aikawa mai tasha-tasha, da farashin yarjejeniya suna ratsa ta tebur ɗin kasuwanci — ba ta wani farashi mai sauri na jama’a ba.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Yi magana da tebur ɗin kasuwanci",
     compareLink: "Kwatanta matakan sabis",
   },

@@ -81,7 +81,7 @@ const LOGISTICS_PRICING_COPY_FR: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Tarification",
     title: "Honnête du tarif de base au tarif final.",
-    body: "Le tarif de base combine votre zone avec une grille tarifaire de service ; poids, taille, urgence et manipulation fragile s’ajoutent de façon prévisible. La répartition peut confirmer les chiffres définitifs uniquement sur de véritables cas particuliers.",
+    body: "Le tarif de base combine votre zone avec une grille tarifaire de service ; poids, taille, urgence et manipulation fragile s’ajoutent de façon prévisible. Le prix final peut être confirmé pour les expéditions véritablement exceptionnelles.",
   },
   zones: {
     eyebrow: "Zones",
@@ -112,7 +112,7 @@ const LOGISTICS_PRICING_COPY_ES: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Precios",
     title: "Honestos desde la base hasta el total.",
-    body: "La tarifa base combina tu zona con una tabla de tarifas de servicio; el peso, el tamaño, la urgencia y el manejo frágil se suman de forma predecible. Despacho solo confirma cifras finales en casos verdaderamente excepcionales.",
+    body: "La tarifa base combina tu zona con una tabla de tarifas de servicio; el peso, el tamaño, la urgencia y el manejo frágil se suman de forma predecible. El precio final puede confirmarse para envíos verdaderamente excepcionales.",
   },
   zones: {
     eyebrow: "Zonas",
@@ -143,7 +143,7 @@ const LOGISTICS_PRICING_COPY_PT: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Preços",
     title: "Honestos da base ao final.",
-    body: "A tarifa base combina a sua zona com uma tabela tarifária de serviço; peso, tamanho, urgência e manuseio frágil somam-se de forma previsível. O despacho só confirma valores finais em casos verdadeiramente excepcionais.",
+    body: "A tarifa base combina a sua zona com uma tabela tarifária de serviço; peso, tamanho, urgência e manuseio frágil somam-se de forma previsível. O preço final pode ser confirmado para envios verdadeiramente excepcionais.",
   },
   zones: {
     eyebrow: "Zonas",
@@ -174,7 +174,7 @@ const LOGISTICS_PRICING_COPY_AR: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "التسعير",
     title: "صادق من الأساس إلى النهائي.",
-    body: "تجمع الرسوم الأساسية بين منطقتك وبطاقة أسعار الخدمة؛ يُضاف الوزن والحجم والاستعجال والتعامل الحذر مع الهشّ بشكل متوقّع. قد يؤكّد قسم الإرسال الأرقام النهائية فقط في الحالات الاستثنائية الحقيقية.",
+    body: "تجمع الرسوم الأساسية بين منطقتك وبطاقة أسعار الخدمة؛ يُضاف الوزن والحجم والاستعجال والتعامل الحذر مع الهشّ بشكل متوقّع. قد يُؤكَّد السعر النهائي للشحنات الاستثنائية فعلًا.",
   },
   zones: {
     eyebrow: "المناطق",
@@ -205,7 +205,7 @@ const LOGISTICS_PRICING_COPY_DE: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Preise",
     title: "Ehrlich von der Basis bis zum Endpreis.",
-    body: "Die Grundgebühr verbindet Ihre Zone mit einer Servicetarifkarte; Gewicht, Größe, Dringlichkeit und Handhabung zerbrechlicher Ware kommen vorhersehbar hinzu. Die Disposition bestätigt endgültige Zahlen nur bei echten Sonderfällen.",
+    body: "Die Grundgebühr verbindet Ihre Zone mit einer Servicetarifkarte; Gewicht, Größe, Dringlichkeit und Handhabung zerbrechlicher Ware kommen vorhersehbar hinzu. Der endgültige Preis kann bei wirklich außergewöhnlichen Sendungen bestätigt werden.",
   },
   zones: {
     eyebrow: "Zonen",
@@ -236,7 +236,7 @@ const LOGISTICS_PRICING_COPY_IT: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Prezzi",
     title: "Onesti dalla base al finale.",
-    body: "La tariffa base combina la tua zona con un tariffario di servizio; peso, dimensioni, urgenza e gestione fragile si aggiungono in modo prevedibile. Il dispatch conferma i numeri finali solo in casi veramente eccezionali.",
+    body: "La tariffa base combina la tua zona con un tariffario di servizio; peso, dimensioni, urgenza e gestione fragile si aggiungono in modo prevedibile. Il prezzo finale può essere confermato per spedizioni davvero eccezionali.",
   },
   zones: {
     eyebrow: "Zone",
@@ -266,7 +266,7 @@ const LOGISTICS_PRICING_COPY_ZH: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "定价",
     title: "从基础到最终都诚实。",
-    body: "基础费用将您的区域与服务费率卡结合;重量、尺寸、紧急程度和易碎处理按可预测的方式叠加。调度仅在真正的特殊情况下确认最终金额。",
+    body: "基础费用将您的区域与服务费率卡结合;重量、尺寸、紧急程度和易碎处理按可预测的方式叠加。对于确属特殊的货件,最终价格可能需要另行确认。",
   },
   zones: {
     eyebrow: "区域",
@@ -296,7 +296,7 @@ const LOGISTICS_PRICING_COPY_HI: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "मूल्य निर्धारण",
     title: "आधार से अंतिम तक ईमानदार।",
-    body: "आधार शुल्क आपके ज़ोन को सेवा दर कार्ड के साथ जोड़ता है; वज़न, आकार, अत्यावश्यकता और नाज़ुक हैंडलिंग पूर्वानुमेय ढंग से जुड़ती है। डिस्पैच केवल वास्तविक विशेष मामलों में अंतिम संख्याओं की पुष्टि करता है।",
+    body: "आधार शुल्क आपके ज़ोन को सेवा दर कार्ड के साथ जोड़ता है; वज़न, आकार, अत्यावश्यकता और नाज़ुक हैंडलिंग पूर्वानुमेय ढंग से जुड़ती है। वास्तव में असाधारण शिपमेंट के लिए अंतिम मूल्य की पुष्टि की जा सकती है।",
   },
   zones: {
     eyebrow: "ज़ोन",
@@ -327,7 +327,7 @@ const LOGISTICS_PRICING_COPY_IG: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Ọnụ ahịa",
     title: "Ezi okwu site na ntọala ruo na ngwụcha.",
-    body: "Ụgwọ ntọala na-ejikọta mpaghara gị na kaadị ọnụ ego ọrụ; ịdị arọ, nha, mgbalịrịị na njikwa ihe nwere mfe na-agbakwunye n’ụzọ a na-atụ anya ya. Nzipu nwere ike ịkwado ọnụ ọgụgụ ikpeazụ naanị n’ọnọdụ pụrụ iche.",
+    body: "Ụgwọ ntọala na-ejikọta mpaghara gị na kaadị ọnụ ego ọrụ; ịdị arọ, nha, mgbalịrịị na njikwa ihe nwere mfe na-agbakwunye n’ụzọ a na-atụ anya ya. Final pricing may be confirmed for genuinely exceptional shipments.",
   },
   zones: {
     eyebrow: "Mpaghara",
@@ -358,7 +358,7 @@ const LOGISTICS_PRICING_COPY_YO: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Ìdíyelé",
     title: "Òtítọ́ láti ìpilẹ̀ títí dé ìkẹ́yìn.",
-    body: "Owó ìpilẹ̀ ń darapọ̀ àgbègbè rẹ pẹ̀lú káàdì ìdíyelé iṣẹ́; ìwúwo, ìwọ̀n, kíákíá, àti ìmúdúró ohun ẹlẹgẹ́ máa ń kún sí i lọ́nà tí a lè fojú-sọ́nà. Dìsípátì lè jẹ́risí àwọn nọ́mbà ìkẹyìn nìkan ní àwọn ọ̀ràn pàtàkì gidi.",
+    body: "Owó ìpilẹ̀ ń darapọ̀ àgbègbè rẹ pẹ̀lú káàdì ìdíyelé iṣẹ́; ìwúwo, ìwọ̀n, kíákíá, àti ìmúdúró ohun ẹlẹgẹ́ máa ń kún sí i lọ́nà tí a lè fojú-sọ́nà. Final pricing may be confirmed for genuinely exceptional shipments.",
   },
   zones: {
     eyebrow: "Àwọn àgbègbè",
@@ -389,7 +389,7 @@ const LOGISTICS_PRICING_COPY_HA: DeepPartial<LogisticsPricingCopy> = {
   hero: {
     eyebrow: "Farashi",
     title: "Gaskiya daga tushe har zuwa karshe.",
-    body: "Kuɗin tushe yana haɗa yankinka tare da katin farashi na sabis; nauyi, girma, gaggawa, da kulawa da abubuwa masu sauƙin karyewa suna ƙarawa cikin hanyar da ake iya hango. Sashen aikawa zai iya tabbatar da lambobin ƙarshe ne kaɗai a cikin lamuran musamman na gaske.",
+    body: "Kuɗin tushe yana haɗa yankinka tare da katin farashi na sabis; nauyi, girma, gaggawa, da kulawa da abubuwa masu sauƙin karyewa suna ƙarawa cikin hanyar da ake iya hango. Final pricing may be confirmed for genuinely exceptional shipments.",
   },
   zones: {
     eyebrow: "Yankuna",
