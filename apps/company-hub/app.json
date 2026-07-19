@@ -18,8 +18,8 @@
       "buildNumber": "1",
       "bundleIdentifier": "com.henryco.hub",
       "associatedDomains": [
-        "applinks:hq.henrycogroup.com",
-        "applinks:staff.henrycogroup.com"
+        "applinks:hq.henryonyx.com",
+        "applinks:staff.henryonyx.com"
       ],
       "infoPlist": {
         "NSCameraUsageDescription": "Used for profile and content features in future updates.",
@@ -38,8 +38,8 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "https", "host": "hq.henrycogroup.com" },
-            { "scheme": "https", "host": "staff.henrycogroup.com" }
+            { "scheme": "https", "host": "hq.henryonyx.com" },
+            { "scheme": "https", "host": "staff.henryonyx.com" }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }

@@ -51,7 +51,7 @@ export default function TermsScreen() {
           className="mt-2 text-sm leading-6"
           style={{ color: palette.muted }}
         >
-          Last updated: April 5, 2026
+          Last updated: July 19, 2026
         </Text>
 
         <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
