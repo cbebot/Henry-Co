@@ -19,7 +19,8 @@ export type EscalationReason =
   | "budget_breach"
   | "heartbeat_gap"
   | "max_attempts"
-  | "deploy_check_failed";
+  | "deploy_check_failed"
+  | "review_stalled";
 
 const REASON_COPY: Record<EscalationReason, { title: string; body: string }> = {
   budget_breach: {
@@ -37,6 +38,10 @@ const REASON_COPY: Record<EscalationReason, { title: string; body: string }> = {
   deploy_check_failed: {
     title: "A deploy check failed",
     body: "A Studio site failed its post-deploy checks and was rolled back. Review before re-releasing.",
+  },
+  review_stalled: {
+    title: "A client hasn't reviewed their preview",
+    body: "A client's site preview has waited past the reminder window with no response. It needs your decision — the job will not advance on its own.",
   },
 };
 

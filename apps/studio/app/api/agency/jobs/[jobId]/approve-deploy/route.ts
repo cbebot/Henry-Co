@@ -60,13 +60,16 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ jobId:
     reauth_at: guard.context.reauthAt,
   });
 
-  // 4. audit-first-abort transition (the single choke point).
+  // 4. audit-first-abort transition (the single choke point). Capture the
+  //    approved hash into the WRITE-ONCE approved_artifact_hash column — the
+  //    deploy binds to THIS exact hash, so a post-approval swap of the mutable
+  //    artifact_hash cannot reach production (adversarial hardening).
   const moved = await transitionJob({
     jobId,
     to: "approved_for_deploy",
     reason: "owner_approved_deploy",
     actor: viewer.user.id,
-    patch: {},
+    patch: { approved_artifact_hash: job.artifactHash },
   });
   if (!moved.ok) {
     return NextResponse.json({ error: "Could not record the approval.", reason: moved.reason }, { status: 409 });

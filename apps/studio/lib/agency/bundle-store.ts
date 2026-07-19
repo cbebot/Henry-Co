@@ -99,6 +99,21 @@ export async function upsertPreviewPointer(input: {
 }
 
 /**
+ * Rollback primitive (SA-3): stop serving a host immediately. Instant and
+ * reversible — a re-deploy repoints it. Used when a deploy fails its
+ * post-checks so a mismatched/failed bundle is never left live.
+ */
+export async function disableSite(host: string): Promise<boolean> {
+  if (!hasAdminSupabaseEnv()) return false;
+  const admin = createAdminSupabase();
+  const { error } = await admin
+    .from("studio_sites")
+    .update({ status: "disabled", updated_at: new Date().toISOString() } as never)
+    .eq("host", host);
+  return !error;
+}
+
+/**
  * Flip a host to LIVE on an approved bundle. Guarded: the caller must pass the
  * approved hash, and this re-verifies the stored bundle hashes to it before the
  * flip. A post-approval swap is impossible.

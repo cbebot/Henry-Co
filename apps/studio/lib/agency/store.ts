@@ -13,11 +13,13 @@ import "server-only";
 
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import { writeAuditLog } from "@henryco/observability/audit-log";
+import { emitEvent } from "@henryco/observability/events";
 import {
   checkTransition,
   isActiveStage,
   type BuildStage,
 } from "@/lib/agency/state-machine";
+import { utcDayStartIso } from "@/lib/agency/daily-budget";
 import type { BuildJobSpec, QaReport } from "@/lib/agency/contracts";
 
 export type BuildJobRow = {
@@ -38,6 +40,8 @@ export type BuildJobRow = {
   heartbeatSeq: number;
   artifactRef: string | null;
   artifactHash: string | null;
+  /** SA-3 — the hash the owner reauth-approved (write-once). The deploy binds to THIS. */
+  approvedArtifactHash: string | null;
   previewRef: string | null;
   qa: QaReport | null;
   briefClass: "template" | "agency" | null;
@@ -66,6 +70,7 @@ function mapJob(row: Record<string, unknown>): BuildJobRow {
     heartbeatSeq: Number(row.heartbeat_seq ?? 0),
     artifactRef: (row.artifact_ref as string) ?? null,
     artifactHash: (row.artifact_hash as string) ?? null,
+    approvedArtifactHash: (row.approved_artifact_hash as string) ?? null,
     previewRef: (row.preview_ref as string) ?? null,
     qa: (row.qa as QaReport) ?? null,
     briefClass: (row.brief_class as "template" | "agency" | null) ?? null,
@@ -77,7 +82,7 @@ function mapJob(row: Record<string, unknown>): BuildJobRow {
 }
 
 const JOB_COLUMNS =
-  "id, project_id, brief_id, spec, stage, attempt, cost_mode, track, budget_kobo, cost_kobo, claimed_by, claimed_at, executor_run_ref, last_heartbeat_at, heartbeat_seq, artifact_ref, artifact_hash, preview_ref, qa, brief_class, is_internal, parent_job_id, created_at, updated_at";
+  "id, project_id, brief_id, spec, stage, attempt, cost_mode, track, budget_kobo, cost_kobo, claimed_by, claimed_at, executor_run_ref, last_heartbeat_at, heartbeat_seq, artifact_ref, artifact_hash, approved_artifact_hash, preview_ref, qa, brief_class, is_internal, parent_job_id, created_at, updated_at";
 
 export async function getBuildJob(jobId: string): Promise<BuildJobRow | null> {
   if (!hasAdminSupabaseEnv()) return null;
@@ -197,6 +202,17 @@ export async function transitionJob(input: {
     await appendBuildEvent(input.jobId, "transition_conflict", { from: job.stage, to: input.to });
     return { ok: false, reason: "conflict_or_db_error" };
   }
+
+  // Canonical telemetry on EVERY successful stage move (henry.studio.build.*).
+  // No PII/spec/money in the payload — job/project ids + from/to/reason only.
+  emitEvent({
+    name: "henry.studio.build.transitioned",
+    classification: "system_state",
+    outcome: "completed",
+    actorId: input.actor && input.actor !== "system" ? input.actor : undefined,
+    payload: { job_id: input.jobId, project_id: job.projectId, from: job.stage, to: input.to, reason: input.reason },
+  });
+
   return { ok: true, job: mapJob(data as Record<string, unknown>) };
 }
 
@@ -230,4 +246,93 @@ export async function releaseJobClaim(jobId: string): Promise<void> {
 export async function listActiveJobs(): Promise<BuildJobRow[]> {
   const all = await listBuildJobs({ limit: 200 });
   return all.filter((job) => isActiveStage(job.stage));
+}
+
+/** Jobs currently in any of the given stages (e.g. the aftercare sweep set). */
+export async function listJobsInStages(stages: BuildStage[]): Promise<BuildJobRow[]> {
+  if (stages.length === 0) return [];
+  return listBuildJobs({ stages, limit: 200 });
+}
+
+/** The single active job for a project, if any (one-active-per-project index). */
+export async function getActiveJobForProject(projectId: string): Promise<BuildJobRow | null> {
+  if (!hasAdminSupabaseEnv()) return null;
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("studio_build_jobs")
+    .select(JOB_COLUMNS)
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  const rows = (data as Record<string, unknown>[] | null) ?? [];
+  const job = rows.map(mapJob).find((j) => isActiveStage(j.stage));
+  return job ?? null;
+}
+
+/**
+ * When did a job LAST enter `stage`? Derived from the append-only transition
+ * events (kind='transition', payload.to=stage) so it is independent of any stray
+ * row update — the honest "waiting since". Returns epoch ms, or null.
+ */
+export async function getStageEnteredAtMs(jobId: string, stage: BuildStage): Promise<number | null> {
+  if (!hasAdminSupabaseEnv()) return null;
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("studio_build_events")
+    .select("created_at, payload")
+    .eq("job_id", jobId)
+    .eq("kind", "transition")
+    .order("created_at", { ascending: false })
+    .limit(50);
+  const rows = (data as { created_at: string; payload: Record<string, unknown> }[] | null) ?? [];
+  for (const row of rows) {
+    if (String(row.payload?.to ?? "") === stage) {
+      const ms = Date.parse(row.created_at);
+      return Number.isFinite(ms) ? ms : null;
+    }
+  }
+  return null;
+}
+
+/** Count append-only events of a kind for a job (e.g. reminders already sent). */
+export async function countBuildEvents(jobId: string, kind: string): Promise<number> {
+  if (!hasAdminSupabaseEnv()) return 0;
+  const admin = createAdminSupabase();
+  const { count } = await admin
+    .from("studio_build_events")
+    .select("id", { count: "exact", head: true })
+    .eq("job_id", jobId)
+    .eq("kind", kind);
+  return count ?? 0;
+}
+
+/**
+ * The company day's provider-cost commitment, in kobo — over jobs CREATED today
+ * (UTC). The daily-ceiling guard (SAFETY-MODEL §4.3) reads this at dispatch so N
+ * jobs cannot compound past the company-day line.
+ *
+ * DURABLE RESERVATION (adversarial hardening): an actively-building job commits
+ * its WORST-CASE envelope (budget_kobo) until its actual cost catches up — so a
+ * FRESH tick (a back-to-back or overlapping cron run whose in-memory reservation
+ * reset to 0) still sees the spend a prior tick committed by dispatching. A
+ * completed/other-stage job counts at its real cost_kobo. cost_kobo is kept in
+ * step with settled usage + heartbeat accrual (metering.ts), so this never
+ * double-counts and is enforced OUTSIDE the model.
+ */
+export async function dailyAgencySpendKobo(now: Date): Promise<number> {
+  if (!hasAdminSupabaseEnv()) return 0;
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("studio_build_jobs")
+    .select("stage, cost_kobo, budget_kobo")
+    .gte("created_at", utcDayStartIso(now));
+  const rows = (data as { stage: string; cost_kobo: number; budget_kobo: number }[] | null) ?? [];
+  return rows.reduce((acc, r) => {
+    const cost = Math.max(0, Number(r.cost_kobo ?? 0));
+    const budget = Math.max(0, Number(r.budget_kobo ?? 0));
+    // Actively-building jobs are counted at their full envelope until actuals
+    // exceed it — a cross-tick durable reservation the in-memory counter can't give.
+    const committed = r.stage === "dispatching" || r.stage === "building" ? Math.max(cost, budget) : cost;
+    return acc + committed;
+  }, 0);
 }
