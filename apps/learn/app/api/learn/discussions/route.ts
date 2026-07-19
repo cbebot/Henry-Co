@@ -6,12 +6,26 @@
  */
 
 import { NextResponse } from "next/server";
-import { contactSafety } from "@henryco/contact-safety";
 import { createId, upsertLearnRecord } from "@/lib/learn/store";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 
 export const runtime = "nodejs";
+
+// Public course discussions are educational content — numbers, code, doc links,
+// and @mentions are legitimate and common, so the aggressive 1:1-DM contact
+// classifier is the wrong fit here (it false-blocks dates/error-codes/IPs and
+// would strip reference links). We mask only the one unambiguous personal-contact
+// vector — email addresses — so a scammer can't drop a "contact me off-platform"
+// address, while everything else in the post is preserved.
+const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+function maskEmails(text: string): string {
+  return text.replace(EMAIL_RE, (match) => {
+    const [local, domain] = match.split("@");
+    return `${local.slice(0, 2)}***@${domain}`;
+  });
+}
 
 export async function POST(request: Request) {
   const viewer = await getLearnViewer();
@@ -42,21 +56,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "body_too_long" }, { status: 400 });
   }
 
-  // Contact-safety screening (same classifier every division's comms use):
-  // off-platform contact is blocked and never persisted; medium signals are
-  // masked. Keeps course discussions on-platform without exposing the mechanics.
-  const verdict = contactSafety(rawBody);
-  if (verdict.action === "block") {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: "contact_blocked",
-        message: "To keep everyone safe, contact details can’t be shared in course discussions. Remove them and try again.",
-      },
-      { status: 422 },
-    );
-  }
-  const body = verdict.action === "mask" ? verdict.maskedText : rawBody;
+  // Mask email addresses only — no hard block, so a legitimate technical post
+  // (dates, error codes, IPs, code, reference links) is never rejected.
+  const body = maskEmails(rawBody);
 
   const snapshot = await getLearnSnapshot();
   // Authorisation: must be enrolled in this course (or be staff / instructor).

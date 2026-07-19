@@ -943,9 +943,6 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
-      '@henryco/contact-safety':
-        specifier: workspace:^
-        version: link:../../packages/contact-safety
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email
