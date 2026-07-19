@@ -134,9 +134,9 @@ export default function HomeScreen() {
           <SectionHeader kicker="News & Updates" title="What's happening" />
           <View className="mt-4">
             <NewsCard
-              title="Company-wide platform stabilization"
-              date="April 5, 2026"
-              excerpt="Ongoing MVP stabilization across all Henry Onyx divisions — refining connected experiences, polishing interfaces, and ensuring consistent quality from Care through Logistics and beyond."
+              title="A more connected Henry Onyx"
+              date="July 19, 2026"
+              excerpt="Divisions across Henry Onyx now share one consistent experience — connected navigation, refined interfaces, and dependable quality from Care through Logistics and beyond."
               onPress={() => {}}
             />
           </View>

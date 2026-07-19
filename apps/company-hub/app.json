@@ -17,10 +17,6 @@
       "supportsTablet": true,
       "buildNumber": "1",
       "bundleIdentifier": "com.henryco.hub",
-      "associatedDomains": [
-        "applinks:hq.henryonyx.com",
-        "applinks:staff.henryonyx.com"
-      ],
       "infoPlist": {
         "NSCameraUsageDescription": "Used for profile and content features in future updates.",
         "NSPhotoLibraryUsageDescription": "Used to select images for profile and content features."
@@ -33,17 +29,6 @@
         "backgroundColor": "#1A1510"
       },
       "package": "com.henryco.hub",
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            { "scheme": "https", "host": "hq.henryonyx.com" },
-            { "scheme": "https", "host": "staff.henryonyx.com" }
-          ],
-          "category": ["BROWSABLE", "DEFAULT"]
-        }
-      ],
       "edgeToEdgeEnabled": true
     },
     "web": {
