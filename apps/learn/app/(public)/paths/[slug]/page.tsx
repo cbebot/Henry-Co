@@ -89,7 +89,9 @@ export default async function PathDetailPage({
                 ? t("Free")
                 : data.path.accessModel === "paid"
                   ? t("Paid")
-                  : t("Sponsored")
+                  : data.path.accessModel === "internal"
+                    ? t("Internal")
+                    : t("Sponsored")
             }
           />
         </div>

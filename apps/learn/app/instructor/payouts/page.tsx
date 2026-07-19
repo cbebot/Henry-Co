@@ -85,7 +85,13 @@ export default async function InstructorPayoutsPage() {
                   {record.courseTitle ?? t("Course payout")}
                 </p>
                 <p className="mt-1 text-xs text-[var(--learn-ink-soft)]">
-                  {record.payoutModel === "flat_fee" ? t("Flat fee") : t("Revenue share")} ·{" "}
+                  {record.payoutModel === "fixed_fee"
+                    ? t("Fixed fee")
+                    : record.payoutModel === "stipend"
+                      ? t("Stipend")
+                      : record.payoutModel === "pending"
+                        ? t("To be agreed")
+                        : t("Revenue share")} ·{" "}
                   {formatDate(record.periodStart)} → {formatDate(record.periodEnd)}
                 </p>
               </div>
