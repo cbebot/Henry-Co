@@ -42,6 +42,8 @@ import {
   listJobsInStages,
   claimJob,
   releaseJobClaim,
+  acquireTickLock,
+  releaseTickLock,
   transitionJob,
   appendBuildEvent,
   getStageEnteredAtMs,
@@ -94,41 +96,53 @@ export async function runAgencyTick(now = new Date()): Promise<TickSummary> {
   const summary = newSummary();
   const worker = `tick:${randomUUID().slice(0, 8)}`;
 
-  // The company-day ceiling context — computed ONCE per tick; committedKobo
-  // accrues as this tick dispatches, so N jobs cannot each read spent≈0.
-  const ceiling: CeilingCtx = {
-    spentKobo: await dailyAgencySpendKobo(now),
-    ceilingKobo: resolveDailyCeilingKobo(),
-    committedKobo: 0,
-  };
+  // SINGLE-FLIGHT (adversarial hardening): serialize overlapping cron runs so the
+  // daily-ceiling reservation holds ACROSS ticks — two concurrent ticks could
+  // otherwise each read a stale spend baseline and each dispatch a full ceiling.
+  // A losing tick no-ops; the job-level CAS still governs work within the winner.
+  const locked = await acquireTickLock(worker);
+  if (!locked) return summary;
 
-  // 1. Active jobs — advance / stall / deploy / review-sweep under a CAS claim.
-  const jobs = await listActiveJobs();
-  summary.scanned = jobs.length;
-  for (const job of jobs) {
-    const claimed = await claimJob(job.id, worker);
-    if (!claimed) continue;
-    try {
-      await advanceJob(job, now, summary, ceiling);
-    } finally {
-      await releaseJobClaim(job.id);
+  try {
+    // The company-day ceiling context — computed ONCE per (serialized) tick;
+    // committedKobo accrues as this tick dispatches, so N jobs cannot each read
+    // spent≈0, and no peer tick runs concurrently to double-spend it.
+    const ceiling: CeilingCtx = {
+      spentKobo: await dailyAgencySpendKobo(now),
+      ceilingKobo: resolveDailyCeilingKobo(),
+      committedKobo: 0,
+    };
+
+    // 1. Active jobs — advance / stall / deploy / review-sweep under a CAS claim.
+    const jobs = await listActiveJobs();
+    summary.scanned = jobs.length;
+    for (const job of jobs) {
+      const claimed = await claimJob(job.id, worker);
+      if (!claimed) continue;
+      try {
+        await advanceJob(job, now, summary, ceiling);
+      } finally {
+        await releaseJobClaim(job.id);
+      }
     }
-  }
 
-  // 2. Aftercare sweep — live/aftercare are NOT active stages, so they get their
-  //    own claimed pass (day-3 check-in + warranty-window close).
-  const aftercareJobs = await listJobsInStages(["live", "aftercare"]);
-  for (const job of aftercareJobs) {
-    const claimed = await claimJob(job.id, worker);
-    if (!claimed) continue;
-    try {
-      await aftercareSweep(job, now, summary);
-    } finally {
-      await releaseJobClaim(job.id);
+    // 2. Aftercare sweep — live/aftercare are NOT active stages, so they get their
+    //    own claimed pass (day-3 check-in + warranty-window close).
+    const aftercareJobs = await listJobsInStages(["live", "aftercare"]);
+    for (const job of aftercareJobs) {
+      const claimed = await claimJob(job.id, worker);
+      if (!claimed) continue;
+      try {
+        await aftercareSweep(job, now, summary);
+      } finally {
+        await releaseJobClaim(job.id);
+      }
     }
-  }
 
-  return summary;
+    return summary;
+  } finally {
+    await releaseTickLock(worker);
+  }
 }
 
 async function advanceJob(job: BuildJobRow, now: Date, summary: TickSummary, ceiling: CeilingCtx): Promise<void> {

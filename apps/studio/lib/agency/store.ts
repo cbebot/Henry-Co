@@ -242,6 +242,48 @@ export async function releaseJobClaim(jobId: string): Promise<void> {
     .eq("id", jobId);
 }
 
+/**
+ * Single-flight lock TTL. MUST be greater than the tick route's `maxDuration`
+ * (60s) so the platform kills an overrunning tick BEFORE its lock can expire —
+ * that closes the TTL-expiry overlap window (a live tick can never outlive its
+ * own lock). Kept just above maxDuration so a hard-killed tick (no release) only
+ * pauses the orchestrator for ~one lock window, not minutes.
+ */
+export const TICK_LOCK_TTL_SECONDS = 90;
+
+/**
+ * Acquire the single-flight tick lock (CAS on the sentinel row's expiry). Returns
+ * true only when this worker won — a concurrent/overlapping cron run gets false
+ * and must no-op. This is what makes the daily-ceiling reservation hold ACROSS
+ * ticks (not just within one): serialized ticks each read a fresh spend baseline.
+ * PostgREST-safe (a plain conditional UPDATE, not a session advisory lock).
+ */
+export async function acquireTickLock(worker: string, ttlSeconds = TICK_LOCK_TTL_SECONDS): Promise<boolean> {
+  if (!hasAdminSupabaseEnv()) return false;
+  const admin = createAdminSupabase();
+  const nowIso = new Date().toISOString();
+  const untilIso = new Date(Date.now() + ttlSeconds * 1000).toISOString();
+  const { data } = await admin
+    .from("studio_agency_tick_lock")
+    .update({ locked_until: untilIso, holder: worker, updated_at: nowIso } as never)
+    .eq("id", true)
+    .lt("locked_until", nowIso) // only when the prior lock has expired — the CAS
+    .select("id")
+    .maybeSingle();
+  return Boolean(data);
+}
+
+/** Release the tick lock (only if we still hold it) so the next cron can proceed. */
+export async function releaseTickLock(worker: string): Promise<void> {
+  if (!hasAdminSupabaseEnv()) return;
+  const admin = createAdminSupabase();
+  await admin
+    .from("studio_agency_tick_lock")
+    .update({ locked_until: new Date().toISOString(), updated_at: new Date().toISOString() } as never)
+    .eq("id", true)
+    .eq("holder", worker);
+}
+
 /** Active jobs (a tick candidate set) — one active job per project is enforced by the index. */
 export async function listActiveJobs(): Promise<BuildJobRow[]> {
   const all = await listBuildJobs({ limit: 200 });

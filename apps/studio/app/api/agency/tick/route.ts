@@ -13,6 +13,11 @@ import { runAgencyTick } from "@/lib/agency/tick";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// Bound the tick BELOW the single-flight lock's TTL (TICK_LOCK_TTL_SECONDS=90):
+// the platform kills an overrunning tick before its lock can expire, so a live
+// tick can never outlive its lock and overlap a concurrent one (adversarial
+// TTL-expiry hardening). The tick is idempotent, so a mid-run kill resumes cleanly.
+export const maxDuration = 60;
 
 const CRON_SECRET_ENV = "CRON_SECRET";
 
