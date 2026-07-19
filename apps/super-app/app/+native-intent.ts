@@ -17,7 +17,7 @@
  * the OS can hand back to the browser.
  *
  * Mapping (web path → in-app route):
- *   /care/bookings/<id>            → /module/care
+ *   /care/bookings/<id>            → /module/fabric-care
  *   /marketplace/orders/<id>       → /module/marketplace
  *   /product/<slug>                → /module/marketplace
  *   /track/<orderNo>               → /module/logistics
@@ -41,7 +41,7 @@ type RedirectSystemPathArgs = {
 
 /** Division module slugs the app exposes via `module/[slug]`. */
 const DIVISION_MODULE = {
-  care: "/module/care",
+  care: "/module/fabric-care",
   marketplace: "/module/marketplace",
   property: "/module/property",
   jobs: "/module/jobs",
