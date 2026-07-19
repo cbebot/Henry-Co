@@ -2547,7 +2547,7 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
 const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
   footer: {
     description:
-      "Ein hochwertiges Konzern-Portal über mehrere Divisionen hinweg, das das Henry-&-Co.-Ökosystem mit Klarheit, Vertrauen und langfristiger Markendisziplin präsentiert.",
+      "Ein hochwertiges Konzern-Portal über mehrere Divisionen hinweg, das das Henry-Onyx-Ökosystem mit Klarheit, Vertrauen und langfristiger Markendisziplin präsentiert.",
     columnCompany: "Unternehmen",
     columnLegal: "Rechtliches",
     home: "Startseite",
@@ -2624,7 +2624,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     emptyBody:
       "Führungsprofile für Henry Onyx erscheinen hier.",
     sharedSectionDescription:
-      "Die Profile in diesem Bereich verkörpern die Menschen, die Verantwortung und die operative Sorgfalt hinter der Henry-&-Co.-Gruppe.",
+      "Die Profile in diesem Bereich verkörpern die Menschen, die Verantwortung und die operative Sorgfalt hinter der Henry-Onyx-Gruppe.",
     headerEyebrow: "Führungsgremium",
     headerTitle: "Führung und Verantwortung",
     headerBody:
@@ -2634,7 +2634,7 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     metricManagement: "Geschäftsleitung",
     spotlightEyebrow: "Profil im Fokus",
     spotlightBioFallback:
-      "Dieses Führungsprofil steht für die Personen, die in der Henry-&-Co.-Gruppe für Ausrichtung, Governance und hochwertige Umsetzung verantwortlich sind.",
+      "Dieses Führungsprofil steht für die Personen, die in der Henry-Onyx-Gruppe für Ausrichtung, Governance und hochwertige Umsetzung verantwortlich sind.",
     sectionOwnershipTitle: "Eigentum",
     sectionOwnershipEyebrow: "Unternehmensführung",
     sectionManagementTitle: "Geschäftsleitung",
