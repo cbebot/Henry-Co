@@ -15,9 +15,8 @@ export function ModuleDetail({ division }: { division: Division }) {
     return (
       <View style={{ gap: spacing.md }}>
         <Text variant="body" color="textSecondary">
-          Buildings &amp; Interiors is in a coming-soon state on the public hub. This placeholder
-          keeps the roadmap visible inside the super app without exposing unfinished transactional
-          flows.
+          Buildings &amp; Interiors is launching soon — building materials, interior finishes,
+          procurement, and engineering support. Open the website for the latest.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
       </View>
@@ -30,7 +29,6 @@ export function ModuleDetail({ division }: { division: Division }) {
         <Text variant="subtitle">Orders &amp; pickup</Text>
         <Text variant="body" color="textSecondary">
           Schedule pickup, follow live garment status, and message support from one workspace.
-          Native flows connect to Supabase tables (`fabric_orders`, `pickup_slots`) in staging.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
       </View>
@@ -82,7 +80,7 @@ export function ModuleDetail({ division }: { division: Division }) {
         <Text variant="subtitle">Dispatch &amp; proof of delivery</Text>
         <Text variant="body" color="textSecondary">
           Quotes, bookings, rider assignment, and POD photos share one accountable workflow. Start
-          on the web while native dispatch surfaces harden in staging.
+          on the web, with more coming to mobile.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
       </View>
@@ -95,7 +93,7 @@ export function ModuleDetail({ division }: { division: Division }) {
         <Text variant="subtitle">Products &amp; vendors</Text>
         <Text variant="body" color="textSecondary">
           Verified seller passports, split-order clarity, and wishlists stay tied to your Henry Onyx
-          account. Checkout integrations should remain in staging until payments are approved.
+          account.
         </Text>
         <OpenSiteButton url={division.destinationUrl} />
       </View>
@@ -118,7 +116,7 @@ export function ModuleDetail({ division }: { division: Division }) {
   return (
     <View style={{ gap: spacing.md }}>
       <Text variant="body" color="textSecondary">
-        Explore this division on the web while native experiences continue to ship.
+        Explore this division on the web, with more coming to mobile.
       </Text>
       <OpenSiteButton url={division.destinationUrl} />
     </View>
