@@ -74,7 +74,7 @@ export function HubBrandHeader({ variant = "screen" }: Props) {
               },
             ]}
           >
-            {"& Co."}
+            {"Onyx"}
           </Animated.Text>
           <Animated.View
             pointerEvents="none"

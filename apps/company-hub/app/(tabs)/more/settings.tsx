@@ -6,7 +6,6 @@ import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
 import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { clearBookmarks } from "@/store/bookmarks";
-import { resetOnboarding } from "@/store/onboarding";
 import { getThemeMode, setThemeMode, type ThemeMode } from "@/store/themeStore";
 
 const THEME_OPTIONS: { key: ThemeMode; label: string; icon: React.ComponentProps<typeof MaterialCommunityIcons>["name"] }[] = [
@@ -34,26 +33,6 @@ export default function SettingsScreen() {
     },
     [refresh],
   );
-
-  const handleResetOnboarding = useCallback(() => {
-    Alert.alert(
-      "Reset Onboarding",
-      "This will show the onboarding screens again on next app launch.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Reset",
-          style: "destructive",
-          onPress: async () => {
-            await resetOnboarding();
-            await Haptics.notificationAsync(
-              Haptics.NotificationFeedbackType.Success,
-            );
-          },
-        },
-      ],
-    );
-  }, []);
 
   const handleClearBookmarks = useCallback(() => {
     Alert.alert(
@@ -149,41 +128,6 @@ export default function SettingsScreen() {
         </Text>
 
         <Pressable
-          onPress={handleResetOnboarding}
-          className="flex-row items-center gap-4 rounded-2xl border p-4 active:opacity-80"
-          style={{
-            borderColor: palette.line,
-            backgroundColor: palette.surface,
-          }}
-          accessibilityLabel="Reset onboarding"
-          accessibilityRole="button"
-        >
-          <View className="h-10 w-10 items-center justify-center rounded-xl bg-[#C9A227]/15">
-            <MaterialCommunityIcons
-              name="refresh"
-              size={20}
-              color="#C9A227"
-            />
-          </View>
-          <View className="min-w-0 flex-1">
-            <Text
-              className="text-base font-semibold"
-              style={{ color: palette.textPrimary }}
-            >
-              Reset Onboarding
-            </Text>
-            <Text className="text-xs" style={{ color: palette.muted }}>
-              Show welcome screens again
-            </Text>
-          </View>
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={20}
-            color={palette.textSubtle}
-          />
-        </Pressable>
-
-        <Pressable
           onPress={handleClearBookmarks}
           className="flex-row items-center gap-4 rounded-2xl border p-4 active:opacity-80"
           style={{
@@ -250,7 +194,7 @@ export default function SettingsScreen() {
 
       <View className="mt-6 items-center px-4 pb-4">
         <Text className="text-xs" style={{ color: palette.textSubtle }}>
-          Powered by Cursor AI
+          © Henry Onyx Limited
         </Text>
       </View>
     </ScrollView>

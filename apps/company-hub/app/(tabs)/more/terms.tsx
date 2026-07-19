@@ -51,7 +51,7 @@ export default function TermsScreen() {
           className="mt-2 text-sm leading-6"
           style={{ color: palette.muted }}
         >
-          Last updated: April 5, 2026
+          Last updated: July 19, 2026
         </Text>
 
         <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
@@ -132,7 +132,7 @@ export default function TermsScreen() {
 
         <Section title="7. Limitation of Liability">
           <Body>
-            TO THE MAXIMUM EXTENT PERMITTED BY LAW, HENRY HOLDINGS LIMITED SHALL
+            TO THE MAXIMUM EXTENT PERMITTED BY LAW, HENRY ONYX LIMITED SHALL
             NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
             OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF THE
             APP, REGARDLESS OF THE THEORY OF LIABILITY.

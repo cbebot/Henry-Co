@@ -224,44 +224,64 @@ export function DivisionDetailModal({
 
                 {/* Action buttons */}
                 <View className="mt-6 flex-row items-center gap-3">
-                  {/* Visit */}
-                  <Pressable
-                    onPress={openSite}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Visit ${division.name}`}
-                    className="flex-1 flex-row items-center justify-center gap-2 rounded-xl py-3.5"
-                    style={{
-                      backgroundColor: accent,
-                      borderWidth: 1,
-                      borderColor:
-                        visitFg === "#FFFFFF"
-                          ? "rgba(255,255,255,0.2)"
-                          : "rgba(0,0,0,0.12)",
-                    }}
-                  >
-                    <MaterialCommunityIcons name="launch" size={18} color={visitFg} />
-                    <Text className="text-sm font-bold" style={{ color: visitFg }}>
-                      Visit Division
-                    </Text>
-                  </Pressable>
+                  {active ? (
+                    <>
+                      {/* Visit */}
+                      <Pressable
+                        onPress={openSite}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Visit ${division.name}`}
+                        className="flex-1 flex-row items-center justify-center gap-2 rounded-xl py-3.5"
+                        style={{
+                          backgroundColor: accent,
+                          borderWidth: 1,
+                          borderColor:
+                            visitFg === "#FFFFFF"
+                              ? "rgba(255,255,255,0.2)"
+                              : "rgba(0,0,0,0.12)",
+                        }}
+                      >
+                        <MaterialCommunityIcons name="launch" size={18} color={visitFg} />
+                        <Text className="text-sm font-bold" style={{ color: visitFg }}>
+                          Visit Division
+                        </Text>
+                      </Pressable>
 
-                  {/* Share */}
-                  <Pressable
-                    onPress={handleShare}
-                    accessibilityRole="button"
-                    accessibilityLabel="Share division"
-                    className="items-center justify-center rounded-xl border p-3.5"
-                    style={{
-                      borderColor: palette.line,
-                      backgroundColor: palette.surface,
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="share-variant-outline"
-                      size={20}
-                      color={palette.textPrimary}
-                    />
-                  </Pressable>
+                      {/* Share */}
+                      <Pressable
+                        onPress={handleShare}
+                        accessibilityRole="button"
+                        accessibilityLabel="Share division"
+                        className="items-center justify-center rounded-xl border p-3.5"
+                        style={{
+                          borderColor: palette.line,
+                          backgroundColor: palette.surface,
+                        }}
+                      >
+                        <MaterialCommunityIcons
+                          name="share-variant-outline"
+                          size={20}
+                          color={palette.textPrimary}
+                        />
+                      </Pressable>
+                    </>
+                  ) : (
+                    /* Coming soon — no live site to visit or share yet */
+                    <View
+                      accessibilityRole="text"
+                      accessibilityLabel={`${division.name} is not yet available`}
+                      className="flex-1 flex-row items-center justify-center gap-2 rounded-xl border py-3.5"
+                      style={{
+                        borderColor: palette.line,
+                        backgroundColor: palette.surface,
+                      }}
+                    >
+                      <MaterialCommunityIcons name="clock-outline" size={18} color={palette.muted} />
+                      <Text className="text-sm font-semibold" style={{ color: palette.muted }}>
+                        Coming soon
+                      </Text>
+                    </View>
+                  )}
 
                   {/* Bookmark */}
                   {onToggleBookmark && (
