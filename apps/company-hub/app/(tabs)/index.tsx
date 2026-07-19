@@ -137,7 +137,6 @@ export default function HomeScreen() {
               title="A more connected Henry Onyx"
               date="July 19, 2026"
               excerpt="Divisions across Henry Onyx now share one consistent experience — connected navigation, refined interfaces, and dependable quality from Care through Logistics and beyond."
-              onPress={() => {}}
             />
           </View>
         </View>
