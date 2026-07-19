@@ -113,6 +113,19 @@ export type HenryEventName =
   | "henry.studio_project.client_viewed"
   | "henry.studio_project.revision_requested"
   | "henry.studio_project.deliverable_approved"
+  // studio agency build orchestration (SA-2/SA-3) — the autonomous build job
+  // lifecycle. Payloads carry job/project ids + stage/reason only; never the
+  // spec, never client PII, never provider/model, never money amounts. The
+  // generic `transitioned` fires on EVERY stage move (from/to/reason); the rest
+  // mark the milestones the owner reviews (created, deployed, escalated, a
+  // queued decision, a client review, aftercare).
+  | "henry.studio.build.job_created"
+  | "henry.studio.build.transitioned"
+  | "henry.studio.build.deployed"
+  | "henry.studio.build.escalated"
+  | "henry.studio.build.decision_queued"
+  | "henry.studio.build.client_reviewed"
+  | "henry.studio.build.aftercare_scheduled"
   // gaming arena (V3-GAMING-01) — free-play match lifecycle. No money/PII in
   // payloads: game id, hashed actor ids, and PII-free outcome only.
   | "henry.gaming.match.created"

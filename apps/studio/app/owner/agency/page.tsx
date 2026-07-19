@@ -5,7 +5,9 @@ import { StudioWorkspaceShell } from "@/components/studio/workspace/shell";
 import { ownerNav } from "@/lib/studio/navigation";
 import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import { AgencyConsole, type ConsoleJob } from "@/components/studio/agency/agency-console";
+import { DecisionsInbox, type InboxDecision } from "@/components/studio/agency/decisions-inbox";
 import { listBuildJobs } from "@/lib/agency/store";
+import { listPendingDecisions } from "@/lib/agency/decisions";
 import { isStudioAgencyEnabled } from "@/lib/agency/flag";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 
@@ -22,18 +24,30 @@ export default async function AgencyConsolePage() {
   const locale = await getStudioPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  const jobs = await listBuildJobs({ limit: 100 });
+  const [jobs, decisions] = await Promise.all([
+    listBuildJobs({ limit: 100 }),
+    listPendingDecisions(50),
+  ]);
 
-  // Resolve project titles for the listed jobs (one batched read).
+  // Resolve project titles for the listed jobs + decisions (one batched read).
   const projectTitles = new Map<string, string>();
-  if (hasAdminSupabaseEnv() && jobs.length > 0) {
+  const projectIds = [...new Set([...jobs.map((j) => j.projectId), ...decisions.map((d) => d.projectId)])];
+  if (hasAdminSupabaseEnv() && projectIds.length > 0) {
     const admin = createAdminSupabase();
-    const ids = [...new Set(jobs.map((j) => j.projectId))];
-    const { data } = await admin.from("studio_projects").select("id, title").in("id", ids);
+    const { data } = await admin.from("studio_projects").select("id, title").in("id", projectIds);
     for (const row of (data as { id: string; title: string }[] | null) ?? []) {
       projectTitles.set(row.id, row.title);
     }
   }
+
+  const inboxDecisions: InboxDecision[] = decisions.map((d) => ({
+    id: d.id,
+    jobId: d.jobId,
+    kind: d.kind,
+    title: d.title,
+    body: d.body,
+    projectTitle: projectTitles.get(d.projectId) ?? t("Untitled project"),
+  }));
 
   // Server component — Date.now() is request-deterministic for this render.
   // Captured once so the row map stays pure (react-hooks/purity).
@@ -65,7 +79,10 @@ export default async function AgencyConsolePage() {
         </p>
       ) : null}
       <SensitiveActionProviderBridge email={viewer.user?.email ?? null}>
-        <AgencyConsole jobs={consoleJobs} />
+        <div className="space-y-4">
+          <DecisionsInbox decisions={inboxDecisions} />
+          <AgencyConsole jobs={consoleJobs} />
+        </div>
       </SensitiveActionProviderBridge>
     </StudioWorkspaceShell>
   );
