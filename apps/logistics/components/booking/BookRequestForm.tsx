@@ -96,7 +96,7 @@ export default function BookRequestForm({
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
           <h2 className="text-lg font-semibold text-white">{t("Service")}</h2>
           <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-            {t("Pick how fast you need this to move. Pricing updates instantly from your selections.")}
+            {t("Pick how fast you need this to move. Pricing updates as you change your selections.")}
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
@@ -196,7 +196,7 @@ export default function BookRequestForm({
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
           <h2 className="text-lg font-semibold text-white">{t("Pickup")}</h2>
           <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-            {t("Where our rider or dispatch team should collect the parcel.")}
+            {t("Where the rider should collect the parcel.")}
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {(savedAddresses ?? []).length > 0 ? (
@@ -344,9 +344,9 @@ export default function BookRequestForm({
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[var(--logistics-muted)]">
-            {t("Indicative pricing is calculated from your zone and parcel profile. Final quotes may be confirmed by dispatch.")}
+            {t("Indicative pricing is calculated from your zone and parcel profile. Final pricing is confirmed before dispatch.")}
             {defaultMode === "book"
-              ? " " + t("Bookings enter the live queue; payment may be confirmed offline or via a link from our team.")
+              ? " " + t("Once booked, you receive a tracking code. Payment instructions follow by SMS or email if payment is due.")
               : null}
           </p>
           <button
