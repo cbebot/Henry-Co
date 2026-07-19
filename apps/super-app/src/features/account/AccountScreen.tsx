@@ -159,6 +159,10 @@ export function AccountScreen() {
         <Text variant="caption" color="textSecondary">
           Loading…
         </Text>
+      ) : activity.length === 0 ? (
+        <Text variant="caption" color="textSecondary">
+          No linked activity yet. Your orders, bookings, and applications appear here.
+        </Text>
       ) : (
         <View style={{ gap: spacing.sm }}>
           {activity.map((a) => (
