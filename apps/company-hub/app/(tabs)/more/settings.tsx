@@ -250,7 +250,7 @@ export default function SettingsScreen() {
 
       <View className="mt-6 items-center px-4 pb-4">
         <Text className="text-xs" style={{ color: palette.textSubtle }}>
-          Powered by Cursor AI
+          © Henry Onyx Limited
         </Text>
       </View>
     </ScrollView>
