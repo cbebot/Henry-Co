@@ -156,6 +156,19 @@ describe("PROVE (5) — the cost cap aborts a runaway arc", () => {
     assert.match(tick, /isEnvelopeBreached/);
     assert.match(tick, /budget_breach/);
   });
+
+  it("the tick is SINGLE-FLIGHT so concurrent cron runs cannot each spend a full ceiling", () => {
+    const tick = read(TICK);
+    // A tick acquires the lock and NO-OPS if it loses — no peer tick runs
+    // concurrently to double-spend the daily reservation.
+    assert.match(tick, /const locked = await acquireTickLock\(worker\);\s*if \(!locked\) return summary;/);
+    assert.match(tick, /await releaseTickLock\(worker\)/);
+    // The lock is a deny-RLS CAS-row (PostgREST-safe single-flight).
+    const mig = read(MIGRATION);
+    assert.match(mig, /create table if not exists public\.studio_agency_tick_lock/);
+    assert.match(mig, /alter table public\.studio_agency_tick_lock enable row level security/);
+    assert.match(mig, /studio_agency_tick_lock: intentionally NO policies/);
+  });
 });
 
 describe("PROVE (6) — IDOR another client's orchestration state fails", () => {

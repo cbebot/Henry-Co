@@ -153,9 +153,37 @@ comment on table public.studio_agency_decisions is
   'gate re-reads true state; a long-lived row is never trusted as authority.';
 
 -- ─────────────────────────────────────────────────────────────────────
+-- studio_agency_tick_lock — single-flight guard for the orchestration tick
+--   (adversarial finding: concurrent/overlapping cron ticks each read a stale
+--   day-spend baseline with a process-local reservation, so two ticks could each
+--   dispatch a full daily ceiling — 2x overspend). PostgREST can't hold a session
+--   advisory lock across the tick's many statements, so single-flight uses the
+--   repo's own CAS-row idiom: a tick acquires the sentinel row only when the
+--   prior holder's TTL has expired; a losing tick no-ops. This serializes ticks,
+--   so the start-of-tick spend read is always fresh relative to peers and the
+--   ceiling reservation holds across ticks, not just within one.
+-- ─────────────────────────────────────────────────────────────────────
+create table if not exists public.studio_agency_tick_lock (
+  id boolean primary key default true check (id),   -- single-row sentinel
+  locked_until timestamptz not null default timezone('utc', now()),
+  holder text,
+  updated_at timestamptz not null default timezone('utc', now())
+);
+insert into public.studio_agency_tick_lock (id, locked_until)
+  values (true, timezone('utc', now()))
+  on conflict (id) do nothing;
+
+comment on table public.studio_agency_tick_lock is
+  'SA-3 — single-flight lock for /api/agency/tick. CAS on locked_until (TTL) '
+  'serializes overlapping cron runs so the daily-ceiling reservation holds '
+  'across ticks. Service-role-only (deny-RLS, no policies).';
+
+-- ─────────────────────────────────────────────────────────────────────
 -- RLS — default-deny; service-role writes; staff read only (no client read)
 -- ─────────────────────────────────────────────────────────────────────
 alter table public.studio_agency_decisions enable row level security;
+alter table public.studio_agency_tick_lock enable row level security;
+-- studio_agency_tick_lock: intentionally NO policies (service-role-only).
 
 drop policy if exists studio_agency_decisions_staff_read on public.studio_agency_decisions;
 create policy studio_agency_decisions_staff_read on public.studio_agency_decisions
