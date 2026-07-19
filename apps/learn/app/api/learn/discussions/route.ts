@@ -12,6 +12,21 @@ import { getLearnSnapshot } from "@/lib/learn/data";
 
 export const runtime = "nodejs";
 
+// Public course discussions are educational content — numbers, code, doc links,
+// and @mentions are legitimate and common, so the aggressive 1:1-DM contact
+// classifier is the wrong fit here (it false-blocks dates/error-codes/IPs and
+// would strip reference links). We mask only the one unambiguous personal-contact
+// vector — email addresses — so a scammer can't drop a "contact me off-platform"
+// address, while everything else in the post is preserved.
+const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+function maskEmails(text: string): string {
+  return text.replace(EMAIL_RE, (match) => {
+    const [local, domain] = match.split("@");
+    return `${local.slice(0, 2)}***@${domain}`;
+  });
+}
+
 export async function POST(request: Request) {
   const viewer = await getLearnViewer();
   if (!viewer.user) {
@@ -33,13 +48,17 @@ export async function POST(request: Request) {
   const courseId = String(payload?.courseId || "").trim();
   const lessonId = String(payload?.lessonId || "").trim() || null;
   const parentId = String(payload?.parentId || "").trim() || null;
-  const body = String(payload?.body || "").trim();
-  if (!courseId || !body) {
+  const rawBody = String(payload?.body || "").trim();
+  if (!courseId || !rawBody) {
     return NextResponse.json({ ok: false, error: "missing_fields" }, { status: 400 });
   }
-  if (body.length > 5000) {
+  if (rawBody.length > 5000) {
     return NextResponse.json({ ok: false, error: "body_too_long" }, { status: 400 });
   }
+
+  // Mask email addresses only — no hard block, so a legitimate technical post
+  // (dates, error codes, IPs, code, reference links) is never rejected.
+  const body = maskEmails(rawBody);
 
   const snapshot = await getLearnSnapshot();
   // Authorisation: must be enrolled in this course (or be staff / instructor).

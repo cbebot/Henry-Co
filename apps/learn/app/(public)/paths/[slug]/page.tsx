@@ -80,10 +80,20 @@ export default async function PathDetailPage({
       <section>
         <div className="flex flex-wrap items-center gap-2">
           <LearnStatusBadge
-            label={data.path.visibility}
+            label={data.path.visibility === "public" ? t("Public path") : t("Assigned path")}
             tone={data.path.visibility === "public" ? "signal" : "warning"}
           />
-          <LearnStatusBadge label={data.path.accessModel} />
+          <LearnStatusBadge
+            label={
+              data.path.accessModel === "free"
+                ? t("Free")
+                : data.path.accessModel === "paid"
+                  ? t("Paid")
+                  : data.path.accessModel === "internal"
+                    ? t("Internal")
+                    : t("Sponsored")
+            }
+          />
         </div>
         <h1 className="mt-6 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
           {pathTitle}

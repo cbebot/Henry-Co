@@ -31,7 +31,7 @@ export default async function InstructorGradingPage() {
       kicker={t("Grading")}
       title={t("Review submissions and quiz attempts.")}
       description={t(
-        "Quiz attempts auto-grade against the answer key; this surface gives you the audit trail and a place to follow up on assignment submissions that need instructor review.",
+        "Quizzes are graded automatically; use this space to review assignment submissions that need your input and to see recent assessment activity.",
       )}
       nav={instructorNav("/instructor/grading", t)}
     >
@@ -39,7 +39,7 @@ export default async function InstructorGradingPage() {
         kicker={t("Quiz attempts")}
         title={t("Latest assessment activity")}
         body={t(
-          "Server-authoritative grading runs on submit; the score and pass/fail outcome are written to learn_quiz_attempts.",
+          "Quizzes are graded automatically the moment a learner submits, so the score and pass/fail result you see here are final.",
         )}
       />
       <ul className="mt-6 space-y-3">
@@ -87,7 +87,7 @@ export default async function InstructorGradingPage() {
         kicker={t("Assignments queue")}
         title={t("Assignments awaiting your review")}
         body={t(
-          "Once a learner uploads a file or free-text response, the entry lands here. Instructor grading writes to learn_assignment_grades.",
+          "Once a learner uploads a file or free-text response, it appears here for you to grade.",
         )}
       />
       <ul className="mt-6 space-y-3">
@@ -126,7 +126,7 @@ export default async function InstructorGradingPage() {
         </p>
         <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
           {t(
-            "Assignment submissions + per-submission grading land in learn_assignment_submissions and learn_assignment_grades (V3 PASS 21 migration 20260515000000). The full grading composer is staged behind this overview while V3 PASS 21 ships.",
+            "Assignment submissions land in the queue above as learners upload them. The full grading composer is being finished — for now, use this overview to see what needs review.",
           )}
         </p>
       </LearnPanel>

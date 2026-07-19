@@ -200,7 +200,7 @@ export default async function TeachPage({
             {commissionLabel}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            {t("Commission is deducted at sale and disclosed in the instructor agreement before publishing opens. Featured placement (paid promotion in search results) is coming soon — separate from the base commission.")}
+            {t("Commission is deducted at sale and disclosed in the instructor agreement before publishing opens.")}
           </p>
         </div>
       </section>
@@ -269,7 +269,17 @@ export default async function TeachPage({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <LearnStatusBadge
-                  label={`Status: ${application.status.replace(/_/g, " ")}`}
+                  label={`${t("Status")}: ${
+                    application.status === "approved"
+                      ? t("Approved")
+                      : application.status === "changes_requested"
+                        ? t("Changes requested")
+                        : application.status === "rejected"
+                          ? t("Not approved")
+                          : application.status === "under_review"
+                            ? t("Under review")
+                            : t("Submitted")
+                  }`}
                   tone={
                     application.status === "approved"
                       ? "success"
@@ -279,9 +289,6 @@ export default async function TeachPage({
                   }
                 />
                 <LearnStatusBadge label={application.expertiseArea} />
-                <LearnStatusBadge
-                  label={`Payout: ${application.payoutModel.replace(/_/g, " ")}`}
-                />
               </div>
               <h3 className="mt-5 text-balance text-[1.35rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.55rem]">
                 {t("Existing application")}
