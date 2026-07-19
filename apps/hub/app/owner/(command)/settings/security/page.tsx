@@ -45,7 +45,7 @@ export default async function OwnerSecurityPage() {
 
       <OwnerPanel
         title={t("Owner profiles")}
-        description={t("Active owner rows in the production project — each grants platform-wide access.")}
+        description={t("Active owner accounts — each grants platform-wide access.")}
       >
         {data.ownerProfiles.length === 0 ? (
           <p className="text-sm text-[var(--acct-muted)]">{t("No owner profiles found.")}</p>
@@ -123,7 +123,7 @@ export default async function OwnerSecurityPage() {
                     <td className="text-xs uppercase tracking-wide text-[var(--acct-muted)]">
                       {src}
                     </td>
-                    <td>{String(row.action || row.event_type || "event")}</td>
+                    <td>{String(row.action || row.event_type || "Audit event").replace(/[._-]+/g, " ")}</td>
                     <td className="max-w-[min(200px,20vw)] truncate text-xs text-[var(--acct-muted)]">
                       {String(row.entity || row.entity_id || "—")}
                     </td>

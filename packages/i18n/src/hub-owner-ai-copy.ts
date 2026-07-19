@@ -142,13 +142,13 @@ const HUB_OWNER_AI_COPY_EN: HubOwnerAiCopy = {
     metadata: {
       title: "Live signals · Henry Onyx",
       description:
-        "Live anomaly and pressure signals from real bookings, invoices, support threads, queue rows, and automation runs in the Henry Onyx Supabase project.",
+        "Live anomaly and pressure signals from real bookings, invoices, support threads, queue rows, and automation runs across the Henry Onyx production system.",
     },
     hero: {
       eyebrow: "Signals",
       title: "Live anomaly and pressure signals",
       description:
-        "Every item below is generated from real bookings, invoices, support threads, queue rows, or automation runs already stored in the shared Supabase project.",
+        "Every item below is generated from real bookings, invoices, support threads, queue rows, or automation runs already stored in the shared production system.",
     },
     panel: {
       title: "Signals",
@@ -218,13 +218,13 @@ const HUB_OWNER_AI_COPY_FR: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Signaux en direct · Henry Onyx",
       description:
-        "Signaux d’anomalie et de pression en direct issus de vraies réservations, factures, fils de support, lignes de file et exécutions d’automatisation du projet Supabase Henry Onyx.",
+        "Signaux d’anomalie et de pression en direct issus de vraies réservations, factures, fils de support, lignes de file et exécutions d’automatisation à travers le système de production Henry Onyx.",
     },
     hero: {
       eyebrow: "Signaux",
       title: "Signaux d’anomalie et de pression en direct",
       description:
-        "Chaque élément ci-dessous est généré à partir de vraies réservations, factures, fils de support, lignes de file ou exécutions d’automatisation déjà stockés dans le projet Supabase partagé.",
+        "Chaque élément ci-dessous est généré à partir de vraies réservations, factures, fils de support, lignes de file ou exécutions d’automatisation déjà stockés dans le système de production partagé.",
     },
     panel: {
       title: "Signaux",
@@ -294,13 +294,13 @@ const HUB_OWNER_AI_COPY_ES: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Señales en vivo · Henry Onyx",
       description:
-        "Señales de anomalía y presión en vivo procedentes de reservas, facturas, hilos de soporte, filas de cola y ejecuciones automatizadas reales del proyecto Supabase de Henry Onyx.",
+        "Señales de anomalía y presión en vivo procedentes de reservas, facturas, hilos de soporte, filas de cola y ejecuciones automatizadas reales de todo el sistema de producción de Henry Onyx.",
     },
     hero: {
       eyebrow: "Señales",
       title: "Señales en vivo de anomalía y presión",
       description:
-        "Cada elemento siguiente se genera a partir de reservas, facturas, hilos de soporte, filas de cola o ejecuciones automatizadas reales ya almacenadas en el proyecto Supabase compartido.",
+        "Cada elemento siguiente se genera a partir de reservas, facturas, hilos de soporte, filas de cola o ejecuciones automatizadas reales ya almacenadas en el sistema de producción compartido.",
     },
     panel: {
       title: "Señales",
@@ -370,13 +370,13 @@ const HUB_OWNER_AI_COPY_PT: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Sinais ao vivo · Henry Onyx",
       description:
-        "Sinais de anomalia e pressão ao vivo a partir de reservas, facturas, tópicos de suporte, linhas de fila e execuções automatizadas reais do projecto Supabase da Henry Onyx.",
+        "Sinais de anomalia e pressão ao vivo a partir de reservas, facturas, tópicos de suporte, linhas de fila e execuções automatizadas reais em todo o sistema de produção da Henry Onyx.",
     },
     hero: {
       eyebrow: "Sinais",
       title: "Sinais ao vivo de anomalia e pressão",
       description:
-        "Cada item abaixo é gerado a partir de reservas, facturas, tópicos de suporte, linhas de fila ou execuções automatizadas reais já guardadas no projecto Supabase partilhado.",
+        "Cada item abaixo é gerado a partir de reservas, facturas, tópicos de suporte, linhas de fila ou execuções automatizadas reais já guardadas no sistema de produção partilhado.",
     },
     panel: {
       title: "Sinais",
@@ -446,13 +446,13 @@ const HUB_OWNER_AI_COPY_AR: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "إشارات حية · Henry Onyx",
       description:
-        "إشارات شذوذ وضغط حية من الحجوزات والفواتير ومحادثات الدعم وصفوف الطوابير وعمليات الأتمتة الفعلية في مشروع Supabase الخاص بـ Henry Onyx.",
+        "إشارات شذوذ وضغط حية من الحجوزات والفواتير ومحادثات الدعم وصفوف الطوابير وعمليات الأتمتة الفعلية عبر نظام الإنتاج الخاص بـ Henry Onyx.",
     },
     hero: {
       eyebrow: "الإشارات",
       title: "إشارات شذوذ وضغط حية",
       description:
-        "كل عنصر أدناه يُنشأ من حجوزات وفواتير ومحادثات دعم وصفوف طابور أو عمليات أتمتة فعلية مخزّنة بالفعل في مشروع Supabase المشترك.",
+        "كل عنصر أدناه يُنشأ من حجوزات وفواتير ومحادثات دعم وصفوف طابور أو عمليات أتمتة فعلية مخزّنة بالفعل في نظام الإنتاج المشترك.",
     },
     panel: {
       title: "الإشارات",
@@ -522,13 +522,13 @@ const HUB_OWNER_AI_COPY_DE: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Live-Signale · Henry Onyx",
       description:
-        "Live-Anomalie- und Drucksignale aus echten Buchungen, Rechnungen, Support-Threads, Warteschlangen und Automations-Läufen im Henry Onyx-Supabase-Projekt.",
+        "Live-Anomalie- und Drucksignale aus echten Buchungen, Rechnungen, Support-Threads, Warteschlangen und Automations-Läufen im gesamten Henry Onyx-Produktionssystem.",
     },
     hero: {
       eyebrow: "Signale",
       title: "Live-Anomalie- und Drucksignale",
       description:
-        "Jeder Eintrag unten wird aus echten Buchungen, Rechnungen, Support-Threads, Warteschlangenzeilen oder Automations-Läufen erzeugt, die bereits im gemeinsamen Supabase-Projekt liegen.",
+        "Jeder Eintrag unten wird aus echten Buchungen, Rechnungen, Support-Threads, Warteschlangenzeilen oder Automations-Läufen erzeugt, die bereits im gemeinsamen Produktionssystem liegen.",
     },
     panel: {
       title: "Signale",
@@ -598,13 +598,13 @@ const HUB_OWNER_AI_COPY_IT: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Segnali in tempo reale · Henry Onyx",
       description:
-        "Segnali di anomalia e pressione in tempo reale da prenotazioni, fatture, thread di supporto, righe di coda ed esecuzioni di automazione reali nel progetto Supabase di Henry Onyx.",
+        "Segnali di anomalia e pressione in tempo reale da prenotazioni, fatture, thread di supporto, righe di coda ed esecuzioni di automazione reali nell’intero sistema di produzione di Henry Onyx.",
     },
     hero: {
       eyebrow: "Segnali",
       title: "Segnali in tempo reale di anomalia e pressione",
       description:
-        "Ogni voce qui sotto è generata da prenotazioni, fatture, thread di supporto, righe di coda o esecuzioni di automazione reali già memorizzate nel progetto Supabase condiviso.",
+        "Ogni voce qui sotto è generata da prenotazioni, fatture, thread di supporto, righe di coda o esecuzioni di automazione reali già memorizzate nel sistema di produzione condiviso.",
     },
     panel: {
       title: "Segnali",
@@ -670,12 +670,12 @@ const HUB_OWNER_AI_COPY_ZH: DeepPartial<HubOwnerAiCopy> = {
   signals: {
     metadata: {
       title: "实时信号 · Henry Onyx",
-      description: "来自 Henry Onyx Supabase 项目中真实预订、发票、支持工单、队列行和自动化运行的实时异常与压力信号。",
+      description: "来自 Henry Onyx 生产系统中真实预订、发票、支持工单、队列行和自动化运行的实时异常与压力信号。",
     },
     hero: {
       eyebrow: "信号",
       title: "实时异常与压力信号",
-      description: "下列每一项都由共享 Supabase 项目中已存储的真实预订、发票、支持工单、队列行或自动化运行生成。",
+      description: "下列每一项都由共享生产系统中已存储的真实预订、发票、支持工单、队列行或自动化运行生成。",
     },
     panel: {
       title: "信号",
@@ -736,13 +736,13 @@ const HUB_OWNER_AI_COPY_HI: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "लाइव संकेत · Henry Onyx",
       description:
-        "Henry Onyx Supabase प्रोजेक्ट में मौजूद असली बुकिंग, इनवॉइस, सपोर्ट थ्रेड, क़तार पंक्तियों और ऑटोमेशन रन से उत्पन्न लाइव विसंगति और दबाव संकेत।",
+        "Henry Onyx प्रोडक्शन सिस्टम में मौजूद असली बुकिंग, इनवॉइस, सपोर्ट थ्रेड, क़तार पंक्तियों और ऑटोमेशन रन से उत्पन्न लाइव विसंगति और दबाव संकेत।",
     },
     hero: {
       eyebrow: "संकेत",
       title: "लाइव विसंगति और दबाव संकेत",
       description:
-        "नीचे प्रत्येक आइटम साझा Supabase प्रोजेक्ट में पहले से संग्रहीत असली बुकिंग, इनवॉइस, सपोर्ट थ्रेड, क़तार पंक्तियों या ऑटोमेशन रन से उत्पन्न होता है।",
+        "नीचे प्रत्येक आइटम साझा प्रोडक्शन सिस्टम में पहले से संग्रहीत असली बुकिंग, इनवॉइस, सपोर्ट थ्रेड, क़तार पंक्तियों या ऑटोमेशन रन से उत्पन्न होता है।",
     },
     panel: {
       title: "संकेत",
@@ -803,13 +803,13 @@ const HUB_OWNER_AI_COPY_IG: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Mgbaàmà dị ndụ · Henry Onyx",
       description:
-        "Mgbaàmà rụrụ arụ na mpịkọta dị ndụ sitere na nlekọta, ụgwọ, eziokwu nkwado, ahịrị usoro na mmegharị akpaka dị adị na ọrụ Supabase Henry Onyx.",
+        "Live anomaly and pressure signals from real bookings, invoices, support threads, queue rows, and automation runs across the Henry Onyx production system.",
     },
     hero: {
       eyebrow: "Mgbaàmà",
       title: "Mgbaàmà rụrụ arụ na mpịkọta dị ndụ",
       description:
-        "Ihe niile dị n'okpuru sitere na nlekọta, ụgwọ, eziokwu nkwado, ahịrị usoro ma ọ bụ mmegharị akpaka dị adị nke echekwararị na ọrụ Supabase nkesa.",
+        "Every item below is generated from real bookings, invoices, support threads, queue rows, or automation runs already stored in the shared production system.",
     },
     panel: {
       title: "Mgbaàmà",
@@ -870,13 +870,13 @@ const HUB_OWNER_AI_COPY_YO: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Àmì aláàyè · Henry Onyx",
       description:
-        "Àmì àìpé àti àmì ìpá aláàyè láti ara ìfìbúkù, ìwé owó, ìjíròrò ìtìlẹ́yìn, ìlà ìtò, àti ìṣiṣẹ́ aládàákọ́ tó wà ní ojúlówó nínú iṣẹ́ Supabase Henry Onyx.",
+        "Live anomaly and pressure signals from real bookings, invoices, support threads, queue rows, and automation runs across the Henry Onyx production system.",
     },
     hero: {
       eyebrow: "Àmì",
       title: "Àmì aláàyè ti àìpé àti ìpá",
       description:
-        "Gbogbo ohun tí ó wà nísàlẹ̀ ni a dá láti ara ìfìbúkù, ìwé owó, ìjíròrò ìtìlẹ́yìn, ìlà ìtò, tàbí ìṣiṣẹ́ aládàákọ́ tó ti wà ní àjọpín iṣẹ́ Supabase.",
+        "Every item below is generated from real bookings, invoices, support threads, queue rows, or automation runs already stored in the shared production system.",
     },
     panel: {
       title: "Àmì",
@@ -937,13 +937,13 @@ const HUB_OWNER_AI_COPY_HA: DeepPartial<HubOwnerAiCopy> = {
     metadata: {
       title: "Alamomi masu rai · Henry Onyx",
       description:
-        "Alamomin rashin daidaito da matsi masu rai daga ainihin ajiya, lissafi, tattaunawar tallafi, jerin layi, da gudanar da kai tsaye a aikin Supabase na Henry Onyx.",
+        "Live anomaly and pressure signals from real bookings, invoices, support threads, queue rows, and automation runs across the Henry Onyx production system.",
     },
     hero: {
       eyebrow: "Alamomi",
       title: "Alamomi masu rai na rashin daidaito da matsi",
       description:
-        "Kowane abu a ƙasa ana samar da shi ne daga ainihin ajiya, lissafi, tattaunawar tallafi, jerin layi, ko gudanar da kai tsaye da aka riga aka ajiye a cikin aikin Supabase na haɗin gwiwa.",
+        "Every item below is generated from real bookings, invoices, support threads, queue rows, or automation runs already stored in the shared production system.",
     },
     panel: {
       title: "Alamomi",

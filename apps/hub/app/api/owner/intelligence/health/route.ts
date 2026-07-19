@@ -57,7 +57,7 @@ export async function GET() {
     },
     {
       key: "ANTHROPIC_API_KEY",
-      label: "Model provider — the AI cannot reply without it",
+      label: "Model access key — the AI cannot reply without it",
       ok: providerConfigured,
       buildTime: false,
       set: "=<your key>",

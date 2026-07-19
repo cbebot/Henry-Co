@@ -60,7 +60,7 @@ export default async function IntelligenceConversationsPage() {
           <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-6 text-sm leading-relaxed text-[var(--acct-muted)]">
             {data.available
               ? t("No conversations yet. They will appear here as people use Henry Onyx Intelligence.")
-              : t("The conversation store is not active yet. Once Intelligence Live is switched on, every chat appears here.")}
+              : t("No conversations yet. As people use Henry Onyx Intelligence across the ecosystem, they will appear here.")}
           </div>
         ) : (
           <ul className="space-y-2">

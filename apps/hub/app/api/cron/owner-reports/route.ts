@@ -48,11 +48,9 @@ export async function GET(request: Request) {
       executedAt: new Date().toISOString(),
     });
   } catch (error) {
+    console.error("[owner-reports]", error);
     return NextResponse.json(
-      {
-        ok: false,
-        error: error instanceof Error ? error.message : "Owner report run failed.",
-      },
+      { ok: false, error: "Owner report run failed." },
       { status: 500 }
     );
   }

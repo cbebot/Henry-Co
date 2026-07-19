@@ -172,8 +172,12 @@ export async function POST(request: NextRequest) {
   }
 
   if (executionError) {
+    console.error("[owner/intelligence/actions/confirm] execution failed:", executionError);
     await resolveProposal(admin, token, "failed", { execution_ref: null });
-    return NextResponse.json({ outcome: "failed", error: executionError }, { status: 502 });
+    return NextResponse.json(
+      { outcome: "failed", error: "That action could not be completed. Check the audit log for detail." },
+      { status: 502 },
+    );
   }
 
   // 7. Guaranteed forward-ledger write, then the execute audit.

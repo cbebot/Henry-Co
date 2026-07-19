@@ -256,7 +256,9 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               { id: "about-identity-trading", label: "Trading name", value: LEGAL.entity.tradingName },
               { id: "about-identity-legal", label: "Registered name", value: LEGAL.entity.name },
               { id: "about-identity-rc", label: "CAC RC number", value: LEGAL.entity.rcNumber },
-              { id: "about-identity-tin", label: "FIRS TIN", value: LEGAL.entity.tin },
+              // The FIRS TIN is a sensitive financial identifier and is deliberately
+              // NOT published on the unauthenticated public /about page — the CAC RC
+              // number + registered name/office already provide public identity proof.
               { id: "about-identity-office", label: "Registered office", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country}` },
               { id: "about-identity-founded", label: "Year founded", value: LEGAL.entity.yearFounded },
             ],
@@ -266,7 +268,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "What the divisions do",
             title: "Seven divisions, one operating standard",
             body:
-              "Each division has a defined market and a defined contract \u2014 not a bundle. Sourced directly from packages/config/company.ts so this page cannot drift from the platform.",
+              "Each division has a defined market and a defined contract \u2014 not a bundle. The list here mirrors the divisions we actually operate, so it stays accurate.",
             layout: "cards",
             items: [
               { id: "about-div-logistics", title: COMPANY.divisions.logistics.name, body: COMPANY.divisions.logistics.description, href: "/#divisions" },
@@ -294,7 +296,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               {
                 id: "about-standard-audit",
                 title: "Every mutation written to the audit trail",
-                body: "Owner, staff, and operator actions across the platform write to a structured, tamper-evident audit trail retained for 7 years. Error-tracing breadcrumbs and structured logging accompany every server action.",
+                body: "Owner, staff, and operator actions across the platform write to a structured, tamper-evident audit trail retained for 7 years, so every action can be traced after the fact.",
               },
               {
                 id: "about-standard-support",
@@ -314,7 +316,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               {
                 id: "about-standard-i18n",
                 title: "11 supported locales",
-                body: "Customer-facing surfaces flow through a unified localization layer with a primed translation cache. English is the canonical version in case of conflict.",
+                body: "Customer-facing surfaces are available in 11 locales. English is the canonical version in case of conflict.",
               },
             ],
           },
@@ -655,7 +657,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "16. Languages",
             title: "Canonical language and translations",
             body:
-              `This policy is published in English (canonical) and translated into ${LEGAL.policy.supportedLocales} additional locales through the @henryco/i18n translation pipeline. In case of conflict between language versions, the English text controls.\n\n— In plain English: English wins if a translation says something different.`,
+              `This policy is published in English (canonical) and translated into ${LEGAL.policy.supportedLocales} additional locales. In case of conflict between language versions, the English text controls.\n\n— In plain English: English wins if a translation says something different.`,
             layout: "default",
             items: [
               { id: "privacy-lang-canonical", label: "Canonical", value: LEGAL.policy.canonicalLanguage },
