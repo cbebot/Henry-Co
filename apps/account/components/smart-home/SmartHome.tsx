@@ -2,19 +2,24 @@ import "server-only";
 
 import { countActiveSavedItems } from "@henryco/cart-saved-items/server";
 import { getEligibleModules } from "@henryco/dashboard-shell";
-import type { SignalFeedCursor, SignalFeedItem } from "@henryco/data";
+import type { SignalFeedCursor, SignalFeedItem, TypedSupabaseClient } from "@henryco/data";
 import { logger } from "@henryco/observability";
+import { parseHenryFeatureFlags, isFlagEnabled } from "@henryco/intelligence";
 import { getCachedSignalFeed } from "@/lib/smart-home/signal-feed-cache";
 import type { UnifiedViewer } from "@henryco/auth";
 import {
   collectAndPersistLifecycleSnapshot,
 } from "@/lib/lifecycle/collector";
 import { createAdminSupabase } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { withTimeout } from "@/lib/with-timeout";
 import {
   collectHomeWidgets,
   pickRankedMetrics,
   pickRemainingWidgets,
 } from "@/lib/smart-home/widgets";
+import { resolvePersonalizedHome } from "@/lib/personalization/home";
+import { detectDevice } from "@/lib/personalization/device";
 import { rankNextBestActions } from "@/lib/smart-home/recommender";
 import { AttentionPanel } from "./AttentionPanel";
 import { ModuleWidgetGrid } from "./ModuleWidgetGrid";
@@ -80,8 +85,41 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
     (s) => s.priority !== "security" && s.priority !== "urgent",
   );
 
-  const rankedMetrics = pickRankedMetrics(widgets, 6);
-  const restWidgets = pickRemainingWidgets(widgets, rankedMetrics);
+  // Default (kill-switch) ordering: pure DASH weight. When the
+  // `personalization_home` flag is ON, the deterministic per-user projection
+  // (pin/hide/reorder + own-signal ranking, consent-gated) supersedes it. Every
+  // read inside is best-effort + timeout-bounded, so a slow/failed layout read
+  // falls straight back to this default — the home is never broken or stalled.
+  let rankedMetrics = pickRankedMetrics(widgets, 6);
+  let restWidgets = pickRemainingWidgets(widgets, rankedMetrics);
+
+  if (
+    isFlagEnabled(
+      parseHenryFeatureFlags(process.env as Record<string, string | undefined>),
+      "personalization_home",
+    )
+  ) {
+    const device = await detectDevice();
+    const authClient =
+      (await createSupabaseServer()) as unknown as TypedSupabaseClient;
+    const personalized = await withTimeout(
+      resolvePersonalizedHome({
+        viewer,
+        client: authClient,
+        modules,
+        widgets,
+        signals: signalFeed.items,
+        lifecycle,
+        device,
+        now: new Date().toISOString(),
+      }),
+      1500,
+    ).catch(() => null);
+    if (personalized) {
+      rankedMetrics = personalized.rankedMetrics;
+      restWidgets = personalized.restWidgets;
+    }
+  }
 
   // Empty teachings — modules that have NO content to render expose
   // a teaching action via `getEmptyTeaching(viewer)`. These feed the
