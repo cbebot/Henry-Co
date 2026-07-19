@@ -16,9 +16,8 @@ export function ModuleDetail({ division }: { division: Division }) {
       <View style={{ gap: spacing.md }}>
         <Text variant="body" color="textSecondary">
           Buildings &amp; Interiors is launching soon — building materials, interior finishes,
-          procurement, and engineering support. Open the website for the latest.
+          procurement, and engineering support. Check back here for updates.
         </Text>
-        <OpenSiteButton url={division.destinationUrl} />
       </View>
     );
   }

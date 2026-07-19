@@ -23,8 +23,6 @@ export const linkingPrefixes = [
   "https://learn.henryonyx.com",
   "https://logistics.henryonyx.com",
   "https://studio.henryonyx.com",
-  "https://building.henryonyx.com",
-  "https://hotel.henryonyx.com",
 ];
 
 export const linkingConfig = {
