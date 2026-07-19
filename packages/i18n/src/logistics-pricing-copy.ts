@@ -50,7 +50,7 @@ const LOGISTICS_PRICING_COPY_EN: LogisticsPricingCopy = {
   hero: {
     eyebrow: "Pricing",
     title: "Honest from base to final.",
-    body: "Base fee combines your zone with a service rate card; weight, size, urgency, and fragile handling layer on predictably. Dispatch may confirm final numbers only on genuine edge cases.",
+    body: "Base fee combines your zone with a service rate card; weight, size, urgency, and fragile handling layer on predictably. Final pricing may be confirmed for genuinely exceptional shipments.",
   },
   zones: {
     eyebrow: "Zones",

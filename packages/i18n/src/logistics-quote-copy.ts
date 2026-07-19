@@ -109,7 +109,7 @@ const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
   },
   volume: {
     eyebrow: "Need volume pricing?",
-    body: "Recurring B2B lanes, multi-stop dispatch, and contract pricing run through the business desk — not a quick public quote.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Talk to the business desk",
     compareLink: "Compare service tiers",
   },

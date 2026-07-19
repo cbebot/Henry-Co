@@ -60,6 +60,27 @@ const LIFECYCLE_LABELS: Record<string, { label: string; tone: "active" | "good" 
   cancelled: { label: "Cancelled", tone: "neutral" },
 };
 
+// Curated customer-facing labels — never render the raw DB enum on the public
+// tracking surface.
+const SERVICE_LABELS: Record<string, string> = {
+  same_day: "Same day",
+  scheduled: "Scheduled",
+  dispatch: "On-demand",
+  inter_city: "Inter-city",
+  business_route: "Business route",
+};
+const URGENCY_LABELS: Record<string, string> = {
+  standard: "Standard",
+  priority: "Priority",
+  rush: "Rush",
+};
+const PROOF_TYPE_LABELS: Record<string, string> = {
+  signature: "Signature",
+  photo: "Photo",
+  code: "Delivery code",
+  hybrid: "Signature + photo",
+};
+
 export default async function TrackPage({ searchParams }: Props) {
   const locale = await getLogisticsPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -245,7 +266,7 @@ export default async function TrackPage({ searchParams }: Props) {
         {
           label: t("Visibility"),
           value: t("Customer-only events"),
-          trend: t("Internal dispatch noise hidden"),
+          trend: t("Only milestones you can act on"),
         },
         {
           label: t("Proof model"),
@@ -258,7 +279,7 @@ export default async function TrackPage({ searchParams }: Props) {
     {
       icon: Eye,
       title: t("Customer-visible milestones only"),
-      body: t("We never show internal dispatch noise — only the events both sides can act on."),
+      body: t("We show the delivery milestones that matter to you — not internal operational chatter."),
     },
     {
       icon: ShieldCheck,
@@ -268,7 +289,7 @@ export default async function TrackPage({ searchParams }: Props) {
     {
       icon: MapPinned,
       title: t("Live position when shared"),
-      body: t("Map updates when dispatch shares a rider GPS pin. Until then, pickup and dropoff pins anchor the route."),
+      body: t("The map shows live location once it is available. Until then, pickup and dropoff pins anchor the route."),
     },
   ];
 
@@ -285,10 +306,10 @@ export default async function TrackPage({ searchParams }: Props) {
           }
           blurb={
             detail
-              ? `${zoneLabelLocalized ?? t("Lane pending")} · ${detail.shipment.serviceType.replaceAll(
+              ? `${zoneLabelLocalized ?? t("Lane pending")} · ${t(SERVICE_LABELS[detail.shipment.serviceType] ?? detail.shipment.serviceType.replaceAll(
                   "_",
                   " ",
-                )} · ${detail.shipment.urgency}. ${t("Milestones update as dispatch progresses; signed-in customers see logistics activity inside their shared Henry Onyx account.")}`
+                ))} · ${t(URGENCY_LABELS[detail.shipment.urgency] ?? detail.shipment.urgency)}. ${t("Milestones update as your delivery progresses; signed-in customers see logistics activity inside their shared Henry Onyx account.")}`
               : `${trackingLookupHelpLocalized} ${t("Signed-in customers also see logistics activity inside their shared Henry Onyx account.")}`
           }
           capabilityMetrics={heroCapability}
@@ -396,7 +417,7 @@ export default async function TrackPage({ searchParams }: Props) {
               href="/support"
               className="font-semibold text-[color:var(--home-ink-70)] underline-offset-4 hover:underline"
             >
-              {t("Contact dispatch")}
+              {t("Contact support")}
             </Link>
           </div>
         </PortalSection>
@@ -407,7 +428,7 @@ export default async function TrackPage({ searchParams }: Props) {
               {t("No shipment found")}
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-              {t("No shipment matches that code and phone. Confirm the code on your booking confirmation and use the phone you listed as sender or recipient. If both are correct, dispatch will verify your record.")}
+              {t("No shipment matches that code and phone. Confirm the code on your booking confirmation and use the phone you listed as sender or recipient. If both are correct, contact support and we will verify your record.")}
             </p>
             <div className="mt-3 flex flex-wrap gap-3 text-sm">
               <Link
@@ -440,16 +461,16 @@ export default async function TrackPage({ searchParams }: Props) {
                   </h2>
                   <p className="mt-1 text-sm text-[var(--logistics-muted)]">
                     {zoneLabelLocalized || t("Lane TBD")} ·{" "}
-                    {detail.shipment.serviceType.replaceAll("_", " ")} ·{" "}
-                    {detail.shipment.urgency}
+                    {t(SERVICE_LABELS[detail.shipment.serviceType] ?? detail.shipment.serviceType.replaceAll("_", " "))} ·{" "}
+                    {t(URGENCY_LABELS[detail.shipment.urgency] ?? detail.shipment.urgency)}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {t("Status")}
                   </p>
-                  <p className="mt-1 text-lg font-semibold capitalize text-[color:var(--home-ink)]">
-                    {detail.shipment.lifecycleStatus.replaceAll("_", " ")}
+                  <p className="mt-1 text-lg font-semibold text-[color:var(--home-ink)]">
+                    {t(status?.label ?? "Status pending")}
                   </p>
                   <p className="mt-2 text-sm text-[var(--logistics-muted)]">
                     {t("Indicative total")}{" "}
@@ -514,8 +535,8 @@ export default async function TrackPage({ searchParams }: Props) {
                         <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                           {t("Type")}
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold capitalize tracking-tight text-[color:var(--home-ink)]">
-                          {detail.proof.proofType}
+                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
+                          {t(PROOF_TYPE_LABELS[detail.proof.proofType] ?? "Confirmed on delivery")}
                         </dd>
                       </div>
                       {proofNoteLocalized ? (
@@ -543,8 +564,10 @@ export default async function TrackPage({ searchParams }: Props) {
                     <ul className="mt-3 space-y-3 text-sm leading-7 text-[var(--logistics-muted)]">
                       {issuesLocalized.map((issue) => (
                         <li key={issue.id}>
-                          <span className="font-semibold text-[color:var(--home-ink)]">{issue.summary}</span> —{" "}
-                          {issue.details}
+                          {/* Only the curated summary is customer-facing — the raw
+                              operator/automation `details` free-text is never echoed
+                              on the public tracking surface. */}
+                          <span className="font-semibold text-[color:var(--home-ink)]">{issue.summary}</span>
                         </li>
                       ))}
                     </ul>

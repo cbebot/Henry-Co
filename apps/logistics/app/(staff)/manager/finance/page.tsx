@@ -25,7 +25,7 @@ export default async function ManagerFinancePage() {
           {t("Revenue, payouts, expenses")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          {t("The money view. Pricing engine is governance — overrides are audited and surfaced on the owner workspace.")}
+          {t("Revenue, payouts, and expenses for the period. Price overrides are recorded and reviewed in the owner workspace.")}
         </p>
       </header>
 

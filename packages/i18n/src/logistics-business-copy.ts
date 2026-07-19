@@ -82,7 +82,7 @@ const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
   hero: {
     eyebrow: "For operators",
     title: "Built for operators.",
-    body: "Public booking and tracking run on the same shipment model used internally. Business shippers get predictable pricing, milestone visibility, proof-of-delivery discipline, and the shared Henry Onyx account for receipts, notifications, and support history.",
+    body: "The same pickup, tracking, and proof discipline runs across every shipment we move. Business shippers get predictable pricing, milestone visibility, proof-of-delivery discipline, and the shared Henry Onyx account for receipts, notifications, and support history.",
     quoteCta: "Quote a real lane",
     accountCta: "Open logistics in account",
     compareCta: "Compare service tiers",
@@ -115,7 +115,7 @@ const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
       "Use the public quote to get a real number for your most common origin–destination pair, then we calibrate from there.",
     step02Title: "Open the account hub",
     step02Body:
-      "Inside your Henry Onyx account, the logistics workspace stores receipts, milestone history, and notification routing for finance/ops.",
+      "Inside your Henry Onyx account, the logistics workspace keeps your receipts, milestone history, and delivery notifications in one place.",
     step03Title: "Run the volume",
     step03Body:
       "Repeat bookings reuse saved profiles. Tracking codes are issued on booking; proof-of-delivery records attach to the right invoice.",
@@ -137,7 +137,7 @@ const LOGISTICS_BUSINESS_COPY_EN: LogisticsBusinessCopy = {
     notYetCrossBorder:
       "International cross-border movements — domestic lanes are the published service surface today.",
     notYetHazmat:
-      "Hazardous-materials shipments — handled separately under direct ops contact, not via public booking.",
+      "Hazardous-materials shipments — not available through online booking. Contact the business desk to discuss options.",
   },
   closing: {
     eyebrow: "Ready to talk volume?",

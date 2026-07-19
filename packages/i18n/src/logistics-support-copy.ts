@@ -84,8 +84,8 @@ const LOGISTICS_SUPPORT_COPY_EN: LogisticsSupportCopy = {
   },
   hero: {
     eyebrow: "One desk · One thread",
-    title: "Logistics support, kept on one thread.",
-    body: "Shipment exceptions, billing questions, routing changes — reach the dispatch desk directly. Account holders should open a logistics-tagged thread so history stays in one place.",
+    title: "Logistics support, all in one place.",
+    body: "Shipment exceptions, billing questions, routing changes — contact the logistics support team directly. If you have an account, start your message from the logistics area so your delivery history stays with the conversation.",
     ctas: {
       openThread: "Open a tagged thread",
       emailDispatch: "Email dispatch",
@@ -108,7 +108,7 @@ const LOGISTICS_SUPPORT_COPY_EN: LogisticsSupportCopy = {
       },
       phone: {
         title: "Sender or recipient phone",
-        body: "Used to verify you and authorise the read on the lane — same as the public track page.",
+        body: "Used to confirm it's you before we show shipment details, the same check as the public tracking page.",
       },
       observed: {
         title: "What you observed",

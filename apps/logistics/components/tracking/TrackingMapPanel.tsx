@@ -93,7 +93,7 @@ export default function TrackingMapPanel({
             {t("Route")}
           </div>
           <p className="mt-1 text-sm leading-6 text-[var(--logistics-muted)]">
-            {t("Coordinates come from your booking addresses and live rider telemetry — never simulated.")}
+            {t("Coordinates come from your booking addresses and the rider's live position — never simulated.")}
           </p>
         </div>
         {status && tone ? (
@@ -130,7 +130,7 @@ export default function TrackingMapPanel({
             </span>
             <div className="text-sm font-medium text-white/90">{t("Map preview will appear here")}</div>
             <p className="max-w-md text-sm text-[var(--logistics-muted)]">
-              {t("We render the route as soon as either pickup or dropoff has a precise coordinate. Live rider breadcrumbs join automatically once dispatch shares the position.")}
+              {t("We render the route as soon as pickup or dropoff has a precise coordinate. The rider's live location joins automatically once it is available.")}
             </p>
           </div>
         )}
@@ -160,7 +160,7 @@ export default function TrackingMapPanel({
                 ? t("Delivered — tracking complete")
                 : map.live
                 ? t("Position updated")
-                : t("Awaiting GPS share from dispatch")
+                : t("Live location not available yet")
             }
             secondary={null}
             status={

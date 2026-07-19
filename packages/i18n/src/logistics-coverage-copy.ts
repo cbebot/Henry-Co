@@ -42,7 +42,7 @@ const LOGISTICS_COVERAGE_COPY_EN: LogisticsCoverageCopy = {
   metadata: {
     title: "Coverage | Henry Onyx Logistics",
     description:
-      "Service zones, ETAs, and base coverage we deliver across — published from the live logistics rate book.",
+      "Service zones, delivery windows, and base coverage across the areas we deliver.",
   },
   hero: {
     eyebrow: "Coverage",

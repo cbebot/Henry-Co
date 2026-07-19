@@ -217,7 +217,7 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
       "Yes. Quotes and bookings share the same shipment builder. Quote mode saves the shipment intent, calculates pricing, and stops before payment.",
     trackingQ: "How is tracking secured?",
     trackingA:
-      "Public tracking uses the tracking code plus the sender or recipient phone number. Signed-in customers also see any shipment linked to their user id or normalized email.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "What happens when a rider hits an issue?",
     riderIssueA:
       "Riders can raise structured issues directly from their workflow. Dispatch and support receive the escalation, and every resolution step is logged back onto the shipment timeline.",
