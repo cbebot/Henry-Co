@@ -95,15 +95,15 @@ export async function GET(req: NextRequest) {
     // V3 PASS 21 — stage photos: garment intake + completion, plus
     // per-leg POD captures. Best-effort: tables may not exist on
     // older environments, so we tolerate query failures.
+    // Public tracking response intentionally excludes operational POD
+    // metadata (GPS coordinates of the customer's location, delivery
+    // recipient name) — a code-only lookup must not expose it.
     const stagePhotos: Array<{
       id: string;
       url: string;
       caption: string;
       stage: "intake" | "completion" | "pickup_pod" | "delivery_pod";
       captured_at: string;
-      recipient_name: string | null;
-      gps_lat: number | null;
-      gps_lng: number | null;
     }> = [];
 
     try {
@@ -127,9 +127,6 @@ export async function GET(req: NextRequest) {
             caption: `${label} — intake`,
             stage: "intake",
             captured_at: updatedAt,
-            recipient_name: null,
-            gps_lat: null,
-            gps_lng: null,
           });
         }
         if (completionUrl) {
@@ -139,9 +136,6 @@ export async function GET(req: NextRequest) {
             caption: `${label} — completion`,
             stage: "completion",
             captured_at: updatedAt,
-            recipient_name: null,
-            gps_lat: null,
-            gps_lng: null,
           });
         }
       }
@@ -152,9 +146,7 @@ export async function GET(req: NextRequest) {
     try {
       const { data: pods } = await supabase
         .from("care_pod_records")
-        .select(
-          "id, leg, photo_url, captured_at, recipient_name, gps_lat, gps_lng",
-        )
+        .select("id, leg, photo_url, captured_at")
         .eq("booking_id", resolvedBooking.id)
         .not("photo_url", "is", null);
 
@@ -164,9 +156,6 @@ export async function GET(req: NextRequest) {
           leg: string;
           photo_url: string;
           captured_at: string;
-          recipient_name: string | null;
-          gps_lat: number | null;
-          gps_lng: number | null;
         };
         const isPickup = podRow.leg === "pickup";
         stagePhotos.push({
@@ -175,9 +164,6 @@ export async function GET(req: NextRequest) {
           caption: isPickup ? "Pickup confirmation" : "Delivery confirmation",
           stage: isPickup ? "pickup_pod" : "delivery_pod",
           captured_at: podRow.captured_at,
-          recipient_name: podRow.recipient_name,
-          gps_lat: podRow.gps_lat,
-          gps_lng: podRow.gps_lng,
         });
       }
     } catch {
