@@ -107,11 +107,11 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
+    console.error("[care:pod] insert failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error:
-          error.message || "Proof of delivery could not be captured.",
+        error: "Proof of delivery could not be captured. Please try again.",
       },
       { status: 400 },
     );

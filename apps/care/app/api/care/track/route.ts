@@ -90,7 +90,24 @@ export async function GET(req: NextRequest) {
     const booking = await applyEffectiveBookingStatus(bookingByCode);
     const resolvedBooking = booking ?? bookingByCode;
 
-    const payment = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
+    const paymentSnapshot = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
+    // Public tracking exposes only the payment fields the tracking UI needs —
+    // never the payer email/phone, internal request IDs, or the raw proof
+    // submission (payer name, bank reference, attachments).
+    const payment = paymentSnapshot
+      ? {
+          verificationStatus: paymentSnapshot.verificationStatus,
+          verificationLabel: paymentSnapshot.verificationLabel,
+          verificationMessage: paymentSnapshot.verificationMessage,
+          amountDue: paymentSnapshot.amountDue,
+          amountPaidRecorded: paymentSnapshot.amountPaidRecorded,
+          balanceDue: paymentSnapshot.balanceDue,
+          paymentStatus: paymentSnapshot.paymentStatus,
+          supportEmail: paymentSnapshot.supportEmail,
+          supportWhatsApp: paymentSnapshot.supportWhatsApp,
+          canSubmitReceipt: paymentSnapshot.canSubmitReceipt,
+        }
+      : null;
 
     // V3 PASS 21 — stage photos: garment intake + completion, plus
     // per-leg POD captures. Best-effort: tables may not exist on
@@ -170,10 +187,26 @@ export async function GET(req: NextRequest) {
       // care_pod_records table absent
     }
 
+    // Drop the internal booking UUID from the public payload — the tracking
+    // UI keys off tracking_code, never the row id.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _internalBookingId, ...bookingPublic } = resolvedBooking;
+
+    // special_instructions stores internal ops annotations (e.g. the
+    // "Payment path:" note) alongside the customer's own text — strip the
+    // internal segments from the public tracking view.
+    const publicSpecialInstructions =
+      String(bookingPublic.special_instructions || "")
+        .split(" | ")
+        .map((segment) => segment.trim())
+        .filter((segment) => segment && !segment.toLowerCase().startsWith("payment path:"))
+        .join(" | ") || null;
+
     return NextResponse.json({
       ok: true,
       booking: {
-        ...resolvedBooking,
+        ...bookingPublic,
+        special_instructions: publicSpecialInstructions,
         family: inferCareServiceFamily(resolvedBooking),
         service_summary: parseServiceBookingSummary(resolvedBooking.item_summary),
         payment,

@@ -71,10 +71,11 @@ export async function POST(req: Request) {
       trackingCode,
     });
   } catch (error: unknown) {
+    console.error("[care:bookings] request failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "Server error.",
+        error: "Booking could not be saved. Please try again.",
       },
       { status: 500 }
     );

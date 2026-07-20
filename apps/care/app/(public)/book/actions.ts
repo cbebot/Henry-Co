@@ -516,9 +516,10 @@ export async function createPublicBookingAction(formData: FormData) {
       .maybeSingle();
 
     if (bookingResult.error || !bookingResult.data?.id) {
+      console.error("[care:book] service booking insert failed", bookingResult.error);
       redirect(
         `/book?error=${encodeURIComponent(
-          `Service booking could not be created: ${bookingResult.error?.message || "Unknown error"}`
+          "Your booking could not be created. Please check your details and try again."
         )}`
       );
     }
@@ -795,9 +796,10 @@ export async function createPublicBookingAction(formData: FormData) {
     .maybeSingle();
 
   if (bookingResult.error || !bookingResult.data?.id) {
+    console.error("[care:book] booking insert failed", bookingResult.error);
     redirect(
       `/book?error=${encodeURIComponent(
-        `Booking could not be created: ${bookingResult.error?.message || "Unknown error"}`
+        "Your booking could not be created. Please check your details and try again."
       )}`
     );
   }
@@ -841,7 +843,8 @@ export async function createPublicBookingAction(formData: FormData) {
     });
 
     if (result.error) {
-      itemErrors.push(result.error.message || "Unknown garment-line save error");
+      console.error("[care:book] garment line insert failed", result.error);
+      itemErrors.push("garment_line_save_failed");
     }
   }
 
@@ -850,7 +853,7 @@ export async function createPublicBookingAction(formData: FormData) {
   if (itemErrors.length > 0) {
     redirect(
       `/book?error=${encodeURIComponent(
-        `Booking was created but some garment lines could not be saved: ${itemErrors[0]}`
+        "Your booking was created, but some items could not be saved. Please contact support to confirm your order."
       )}&tracking=${encodeURIComponent(bookingResult.data.tracking_code)}`
     );
   }

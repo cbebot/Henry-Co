@@ -102,13 +102,11 @@ export async function POST(request: Request) {
       snapshot: result.snapshot,
     });
   } catch (error) {
+    console.error("[care:receipt] submit failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "The payment proof could not be submitted.",
+        error: "The payment proof could not be submitted. Please try again.",
       },
       { status: 400 }
     );

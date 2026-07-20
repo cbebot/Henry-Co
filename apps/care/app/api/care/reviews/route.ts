@@ -143,14 +143,9 @@ export async function POST(req: Request) {
           publicIdPrefix: trackingCode,
         });
       } catch (error) {
+        console.error("[care:reviews] image upload failed", error);
         return NextResponse.json(
-          {
-            ok: false,
-            error:
-              error instanceof Error
-                ? error.message
-                : "Review image upload failed. Please try again.",
-          },
+          { ok: false, error: "Review image upload failed. Please try again." },
           { status: 400 }
         );
       }
@@ -252,8 +247,9 @@ export async function POST(req: Request) {
       message: "Review submitted successfully and is awaiting approval.",
     });
   } catch (error) {
+    console.error("[care:reviews] request failed", error);
     return NextResponse.json(
-      { ok: false, error: error instanceof Error ? error.message : "Server error" },
+      { ok: false, error: "Your review could not be submitted. Please try again." },
       { status: 500 }
     );
   }
