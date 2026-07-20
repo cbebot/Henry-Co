@@ -209,13 +209,21 @@ export async function GET(req: NextRequest) {
         })
         .join(" | ") || null;
 
+    // service_summary is parsed from item_summary, which also embeds the
+    // site-contact NAME (third-party PII) — drop it from the public view
+    // (same reason the "Site contact:" special_instructions segment is stripped).
+    const serviceSummary = parseServiceBookingSummary(resolvedBooking.item_summary);
+    if (serviceSummary) {
+      serviceSummary.siteContactName = null;
+    }
+
     return NextResponse.json({
       ok: true,
       booking: {
         ...bookingPublic,
         special_instructions: publicSpecialInstructions,
         family: inferCareServiceFamily(resolvedBooking),
-        service_summary: parseServiceBookingSummary(resolvedBooking.item_summary),
+        service_summary: serviceSummary,
         payment,
         stage_photos: stagePhotos,
       },

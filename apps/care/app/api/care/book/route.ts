@@ -54,9 +54,11 @@ export async function POST(req: NextRequest) {
 
     const booking = Array.isArray(data) ? data[0] : data;
 
+    // Return only the customer-facing tracking code — not the raw RPC row
+    // (which includes the internal care_bookings UUID).
     return NextResponse.json({
       ok: true,
-      booking,
+      trackingCode: booking?.tracking_code ?? null,
     });
   } catch {
     return NextResponse.json(
