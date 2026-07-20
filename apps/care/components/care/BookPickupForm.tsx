@@ -1806,7 +1806,7 @@ export default function BookPickupForm({
               </div>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
                 {t(
-                  "Best when you already know you want the slot locked in fast and want instant payment guidance by email, with support visibility from the start.",
+                  "Best when you already know you want the slot confirmed and payment guidance sent by email, with support visibility from the start.",
                 )}
               </p>
             </button>
@@ -1891,7 +1891,7 @@ export default function BookPickupForm({
               disabled={mode === "garment" ? selectedItems.length === 0 : !serviceQuote}
               label={
                 paymentPlan === "pay_now"
-                  ? t("Submit booking and unlock payment path")
+                  ? t("Submit booking and continue to payment")
                   : mode === "garment"
                     ? t("Submit garment request")
                     : quoteLabel(selectedServiceType)
