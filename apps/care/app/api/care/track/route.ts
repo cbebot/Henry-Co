@@ -192,14 +192,21 @@ export async function GET(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _internalBookingId, ...bookingPublic } = resolvedBooking;
 
-    // special_instructions stores internal ops annotations (e.g. the
-    // "Payment path:" note) alongside the customer's own text — strip the
-    // internal segments from the public tracking view.
+    // special_instructions stores internal ops annotations and duplicated
+    // structured fields (payment path, property label, and the site-contact
+    // NAME — third-party PII) alongside the customer's own text. Strip those
+    // internal segments from the public tracking view; keep the customer's
+    // free-text note and their own "Return address:" (which the UI parses).
+    const INTERNAL_INSTRUCTION_PREFIXES = ["payment path:", "property label:", "site contact:"];
     const publicSpecialInstructions =
       String(bookingPublic.special_instructions || "")
         .split(" | ")
         .map((segment) => segment.trim())
-        .filter((segment) => segment && !segment.toLowerCase().startsWith("payment path:"))
+        .filter((segment) => {
+          if (!segment) return false;
+          const lower = segment.toLowerCase();
+          return !INTERNAL_INSTRUCTION_PREFIXES.some((prefix) => lower.startsWith(prefix));
+        })
         .join(" | ") || null;
 
     return NextResponse.json({

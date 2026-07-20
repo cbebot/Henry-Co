@@ -169,13 +169,11 @@ export async function POST(request: NextRequest) {
         evidenceUrls.push(ref);
       }
     } catch (error) {
+      console.error("[care:claims] evidence upload failed", error);
       return NextResponse.json(
         {
           ok: false,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Evidence upload failed. Please try again.",
+          error: "Evidence upload failed. Please try again.",
         },
         { status: 400 },
       );

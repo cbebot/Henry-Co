@@ -94,12 +94,12 @@ export async function POST(request: Request) {
       attachments: uploadedAttachment ? [uploadedAttachment] : [],
     });
 
+    // The proof-submit UI only needs ok/duplicate. Do not ship the internal
+    // booking/request UUIDs or the full verification snapshot (payer email/
+    // phone, bank reference, attachments) back over the wire.
     return NextResponse.json({
       ok: true,
       duplicate: result.duplicate,
-      requestId: result.requestId,
-      bookingId: result.bookingId,
-      snapshot: result.snapshot,
     });
   } catch (error) {
     console.error("[care:receipt] submit failed", error);
