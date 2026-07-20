@@ -45,8 +45,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
+      console.error("[care:book] create_care_booking failed", error);
       return NextResponse.json(
-        { ok: false, error: error.message || "Booking failed." },
+        { ok: false, error: "Booking failed. Please check your details and try again." },
         { status: 400 }
       );
     }

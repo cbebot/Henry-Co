@@ -7,7 +7,8 @@ export async function POST() {
   const supabase = await createSupabaseServer();
   const { error } = await supabase.auth.signOut({ scope: "global" });
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[care:auth] logout failed", error);
+    return NextResponse.json({ error: "Sign-out failed. Please try again." }, { status: 500 });
   }
   return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
 }

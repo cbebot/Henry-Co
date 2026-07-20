@@ -59,8 +59,9 @@ export async function POST(req: Request) {
     });
 
     if (error) {
+      console.error("[care:bookings] insert failed", error);
       return NextResponse.json(
-        { ok: false, error: error.message || "Booking insert failed." },
+        { ok: false, error: "Booking could not be saved. Please try again." },
         { status: 400 }
       );
     }

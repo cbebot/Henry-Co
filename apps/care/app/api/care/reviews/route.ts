@@ -171,8 +171,9 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (error) {
+      console.error("[care:reviews] insert failed", error);
       return NextResponse.json(
-        { ok: false, error: error.message },
+        { ok: false, error: "Your review could not be submitted. Please try again." },
         { status: 400 }
       );
     }

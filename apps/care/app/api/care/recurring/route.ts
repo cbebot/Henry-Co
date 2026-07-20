@@ -66,8 +66,9 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (error) {
+    console.error("[care:recurring] query failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Schedules query failed." },
+      { ok: false, error: "Schedules could not be loaded. Please try again." },
       { status: 400 },
     );
   }
@@ -168,10 +169,11 @@ export async function POST(request: NextRequest) {
         .single();
 
   if (error) {
+    console.error("[care:recurring] save failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error: error.message || "Schedule could not be saved.",
+        error: "Schedule could not be saved. Please try again.",
       },
       { status: 400 },
     );
@@ -210,8 +212,9 @@ export async function DELETE(request: NextRequest) {
     .eq("user_id", user.id);
 
   if (error) {
+    console.error("[care:recurring] cancel failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Schedule could not be cancelled." },
+      { ok: false, error: "Schedule could not be cancelled. Please try again." },
       { status: 400 },
     );
   }
