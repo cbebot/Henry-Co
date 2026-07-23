@@ -1,0 +1,76 @@
+# Phase E Privacy & Consent — NDPR/NDPA posture for personalization
+
+**Pass:** V3-E-DESIGN-01 · **Type:** Design / architecture only (no feature code, no migration) · **Risk class:** C (compliance) · **Status:** Draft for owner ratification · **Base:** `origin/main @ 47de2de2` (2026-07-16)
+
+> Personalization is the first Phase where the platform *profiles* people across divisions. The prompts are silent on this — of the nine, **only V3-37 mentions consent at all** (grep-verified; the register rows carry no C risk marker for V3-34…39). This doc closes that gap: lawful bases per feature, the consent model, minimization/retention, opt-outs, and the no-cross-leak invariant as testable rules. It binds every Phase E build pass.
+
+---
+
+## 1. The legal frame that already exists (bind to it, don't invent)
+
+- **`packages/config/legal.ts` is the typed legal source of truth**: NDPA 2023 lawful bases (§25(1)(a)–(f)) — with the `consent` basis already naming "marketing push notifications, optional analytics cookies" (`legal.ts:94-97`) and legitimate-interests covering internal analytics; 10 data categories **including behavioural and inferred data with bases**; 18 named sub-processors; statute-tied retention windows (analytics cookies 13 months; marketing data 90-day suppression after withdrawal per NDPA §37; profile 30-day soft-delete per §36) (`legal.ts:137-208,249-257`).
+- **The written doctrine**: `docs/consent-and-tracking-boundaries.md` — client-side third-party SDKs are consent-gated; server-side `customer_activity` writes are deliberately consent-**exempt** under legitimate interest, PII-stripped at write time by `sanitizeAnalyticsProperties`; no analytics events leave the platform (every `AnalyticsSink` caller passes `noopSink`). A `HENRY_ANALYTICS_REQUIRE_CONSENT` escape hatch is pre-planned (`:80`).
+- **The NDPA privacy policy is live copy** (hub company-pages + studio policies), including data-subject rights and an automated-decision objection section.
+- **V3-93 (compliance-privacy-data-rights)** is the Phase I pass that builds the DSAR endpoint, deletion workflow, versioned `consent_log`, and residency (`docs/v3/prompts/v3-93-compliance-privacy-data-rights.md`; register `PASS-REGISTER.md:251`). Phase E does not build V3-93 — it must land **compatible seams**.
+
+### Lawful-basis map per Phase E feature
+
+| Feature | Basis (NDPA §25(1)) | Rationale |
+|---|---|---|
+| Home layout persistence, pin/hide/reorder (V3-34) | **Contract / legitimate interest** | The user explicitly configures their own product surface; first-party, no profiling |
+| Abandoned-task **in-app** resume (`/continue`, widgets) (V3-37) | **Legitimate interest** | Operational continuation of a task the user started; already PII-minimal (`state` is secret-free by test) |
+| Recovery **outreach** (email/push cadence) (V3-37/45/48) | **Consent** (marketing-adjacent) + suppression | Per-channel opt-out/mutes are enforced at publish time today (`packages/notifications/publish.ts`); the cadence planner has a quiet-hours gate (`packages/lifecycle/src/recovery/cadence.ts:51`) **but the shipped sweep bypasses it** (`recovery-sweep/route.ts:92` passes `quietHours:false` — in-app is non-intrusive, email/push are intent-only) — wiring real quiet-hours + `evaluateSuppression` is a **launch requirement for V3-45/48 sends**; the SP1 interactions engine is already hard-gated on `consented` (`packages/interactions/src/engines/abandonment-recovery/recovery.logic.ts:2-47`) |
+| Cross-division recommendation profiling (V3-36), deal targeting by `audience_signals` (V3-35), cross-division stitches (V3-39) | **Consent — the `personalizedExperience` gate** | This is profiling across services; the shipped consent copy already describes exactly this: "Allows tailored recommendations and contextual hints based on how you use Henry Onyx properties" (`packages/i18n/src/consent-copy.ts:62-66`) |
+| Geo/local availability (V3-38) | **Legitimate interest** for saved-address resolution (user-provided, purpose-consistent); IP-geo fallback coarse + advisory, disclosed | Availability is location-keyed, never user-keyed; the coverage tables are public-read by design and carry no PII. **The geo split, defined once:** resolving availability against the user's own saved address (V3-38) = legitimate interest; using geography as a **profiling signal** in recommendations or deal targeting (V3-35/36 `location_match`, `audience_signals`) = consent, under the `personalizedExperience` gate like the rest of profiling |
+| Predictive fraud/quality scoring (V3-40/41/42) | **Legitimate interest / legal obligation** (fraud prevention, AML control surface) | Never consent-gated (a fraudster must not opt out of fraud scoring); counter-balanced by strict access control (§5), staff-only visibility, shadow-mode governance, and the policy's automated-decision objection route |
+
+The owner ratifies this split as **E-D2** (OWNER-DECISIONS.md). It matches the platform's existing doctrine: first-party operational personalization runs on legitimate interest; *profiling and outreach* require consent.
+
+## 2. The consent model — wire the dead signal
+
+**Ground truth:** a five-category consent state already ships — `{ essential, preferences, analytics, marketing, personalizedExperience }` — persisted in localStorage + a 1-year shared-domain cookie, with UI in hub `/preferences` and account `/settings#privacy-controls` and a first-visit `ConsentNotice`. But `personalizedExperience` is a **dead signal**: no `consentAllowsPersonalized` helper exists and nothing reads it (`packages/ui/src/public/consent-state.ts:9-25,130-136`; grep = 6 files, none a consumer). Consent is device-scoped, unversioned, and never reaches the DB.
+
+Phase E wires it in three steps (built inside V3-34, consumed by every later pass):
+
+1. **The helper + gate.** Add `consentAllowsPersonalized(state)` beside the existing analytics/marketing helpers. Every profiling read path (V3-36 engine, V3-35 targeting, V3-39 stitch) checks the gate server-side and degrades to non-profiled defaults when false. Degradation is graceful — division-local, popularity/recency-based content — never a broken surface.
+2. **Account-scoped persistence.** Device cookies cannot prove consent for a signed-in person across devices. Add a `personalization_enabled boolean` (nullable = not-yet-answered) to **`customer_preferences`** — the canonical own-row-RLS prefs table (`supabase/prod-actual/schema.sql:2883-2919`) — written through the account preferences route with its `ALLOWED_FIELDS` allowlist extended (`apps/account/app/api/preferences/update/route.ts:7-16`). Merge rule: signed-in account value **wins** over device cookie; on first sign-in after the feature ships, the device value seeds the account value once (recorded, §2.3).
+3. **A consent record, not just a flag.** Copy the two shipped consent-ledger patterns — `learn_candidate_optins` ("the opt-in row IS the consent record", revocation via `revoked_at`) and `rooms_recordings_consent` (`consent_text_version` pins the exact copy the user read) — into a minimal `personalization_consent_events` append-only table (user_id, granted|revoked, consent_text_version, source surface, created_at; own-row SELECT, service-role insert). This is deliberately **forward-compatible with V3-93's `consent_log`**: when V3-93 lands its general ledger, these rows migrate in. Category-model note for V3-93: its designed banner (necessary/analytics/experimentation/marketing) must be reconciled with the shipped 5-category model — Phase E's stake in that reconciliation is that `personalizedExperience` survives as a first-class category.
+
+**Mounting gap to close en route:** `ThirdPartyRuntimeProviders` and `ConsentNotice` are mounted only in hub + account (`apps/hub/app/layout.tsx:66-67`; `apps/account/app/layout.tsx:99-119`), contradicting `docs/privacy-control-model.md:54`. Divisions are currently safe by omission (no SDKs mounted), but any Phase E surface that *acts on consent in a division app* must be able to read the shared consent cookie there — the read helper is client-safe and cookie-based, so no new mounts are strictly required for server-side gating; the doc claim gets corrected either way.
+
+## 3. Minimization & retention
+
+- **Minimize at write.** Personalization signals reuse the shipped write-path hygiene: `sanitizeAnalyticsProperties` strips 23+ PII field categories before `customer_activity` metadata persists; `abandoned_tasks.state` is secret-free **by test** (no card/PAN/KYC bytes/tokens); `henry_events` payloads carry ids and enums, never raw PII. New Phase E tables store **references** (`targetRef`, `task_ref`, module slugs) — never denormalized personal content.
+- **Retention is currently a gap Phase E must not widen.** `henry_events` has no retention job (unbounded growth; the base migration explicitly defers to V3-90/92, which spec a 90-day partition-drop + `actor_hash` pseudonymization). Phase E rules: (a) every new signal-bearing table declares an intended retention window in its migration header, aligned to `RETENTION_POLICIES` in `legal.ts`; (b) ranking reads window their queries (the signal feed already reads last-30d `customer_activity`) so stale behavior ages out of *effect* even before it ages out of *storage*; (c) `deal_impressions` and telemetry aggregates for owner tiles keep counts, not per-user rows, beyond their audit window; (d) risk scores retain longer (legal-obligation basis, dispute evidence) — stated explicitly, staff-only.
+- **Nothing leaves the platform.** No third-party analytics exists and Phase E introduces none; the only consent-gated third-party runtimes remain FingerprintJS Pro (analytics) and OneSignal (marketing). AI calls ride the in-house gateway with prompt redaction and provider opacity.
+
+## 4. Opt-out & suppression
+
+- **Global:** the `personalizedExperience` toggle (device + account, §2) turns off profiling surfaces; the V3-39 `next_action_prompts_enabled` preference turns off nudge chips; per-prompt dismissals persist (`next_action_dismissals`, own-row RLS).
+- **Recovery cadence:** per-channel opt-out/mutes are enforced at publish time (shipped); the planner's quiet-hours gate exists but is currently bypassed by the sweep (`quietHours:false` — in-app only today). When V3-45/48 turn on real email/push sends, wiring `customer_preferences` quiet-hours into the cadence gate is a launch requirement, not an option. `RECOVERY_CADENCE_ENABLED` is the kill switch.
+- **Outbound email:** ALL Phase E-adjacent sends (deal campaigns, recovery emails when V3-45/48 land) go through canonical `evaluateSuppression` — and the known divergence where hub/staff campaign loops skip `transactional_only` suppression entries (`apps/staff/lib/newsletter/service.ts:924-946`; `apps/hub/lib/newsletter/service.ts:150-168`) is **P0 pre-work**: a person who opted down to transactional-only must never receive a personalized deal blast.
+- **Withdrawal honors NDPA §37**: 90-day suppression-only retention after consent withdrawal, then deletion — already encoded in `legal.ts:255`; the `personalization_consent_events` revocation row triggers profile-signal exclusion immediately (reads check the flag, not the history).
+
+## 5. The no-cross-leak invariant (the FIRE lesson, made testable)
+
+Personalization must **never** surface one user's data on another user's surface. This is Phase E Prime Directive 10 (README) — held as hard rules:
+
+1. **Every reader is viewer-filtered.** No query in a personalization path may lack a viewer predicate. The two live violations found during this pass — `packages/data/src/inbox-aggregate.ts:176-189` (studio_project_messages, no viewer filter, message-body previews cross users) and `packages/data/src/calendar-aggregate.ts:150-157` (studio_project_milestones, same class) — are **fixed before any Phase E pass builds on those aggregates**, with regression tests. Both contradict their own header contracts; the fix restores the documented behavior.
+2. **Candidate generation is RLS-respecting**: the recommendation engine "never recommends an item the viewer could not read directly" (retained from the V3-36 prompt as doctrine). Where readers use the service-role client, the TS viewer filter **is** the security boundary — so it is tested like one.
+3. **Leak tests are CI-graded.** A `personalization-leak` CI job (modeled on the payments-grant-invariant job) provisions two fixture users, writes signals for each, runs every personalization reader as user A, and asserts zero user-B rows — for `@henryco/data` aggregates, `generateRecommendations`, layout reads, abandoned-task lists, and (as staff-role matrices) the V3-42 drill-downs.
+4. **Scores never serialize.** `confidence`, `risk_score`, model config: server-only; `assertClientSafe`-style deep-walk on client-bound payloads; the scored party never sees a prediction about themselves (risk/quality tables are staff/service-role RLS with no end-user read, per the prompts — unchanged).
+5. **Owner/staff tiles aggregate.** Personalization observability tiles show counts and distributions, never per-user behavior lists; any drill-down runs under the staff RLS matrix (V3-42's load-bearing check).
+6. **The IDOR lesson stands**: any client-supplied id that selects a row to *write* (conversation, layout, dismissal, task) is ownership-verified server-side first — the pattern now canonical in `apps/account/lib/intelligence/persist.ts:107-145`.
+
+## 6. Data-subject rights — the V3-93 seam
+
+Today: export and deletion are **manual** (support-thread prefill links; `docs/data-retention-and-delete-readiness.md:36-62` for deletion, `:76-102` for export — the doc states this honestly). Phase E adds personal-data classes, so it must extend the manual procedure's inventory now and be V3-93-ready later:
+
+- **Export inventory additions:** `user_home_layouts`, `personalization_consent_events`, `next_action_dismissals`, `abandoned_tasks` (own rows), `deal_impressions` (own rows), recommendation-signal derivations. Each new migration header names its export source + owner.
+- **Deletion classes:** layouts/dismissals/consent-events/abandoned-tasks delete with the account (CASCADE on `auth.users` where shipped DDL already does this — e.g. `user_home_layouts` prompt DDL, `abandoned_tasks`); risk/quality scores follow the anonymize-retain class (legal-obligation evidence), documented per V3-93's per-class model (delete identifiers / anonymize-retain ledger).
+- **Automated-decision objection:** the live privacy policy already promises it; V3-40's staff-override path **is** the mechanism — the policy section links to support with the enforcement-review category once enforcement goes live.
+
+## 7. Owner compliance dependencies (blocking consent-bearing launches, not builds)
+
+- **NDPC registration reference and DPO identity are `[OWNER-TO-CONFIRM]` placeholders** in `packages/config/legal.ts:300-301`. A consent-bearing personalization launch (V3-36 profiling on) should not go live with placeholder controller identity in the published policy.
+- **DPAs with sub-processors** (`docs/v3/LEGAL-AND-BUSINESS.md:267`) remain a V3-93 certification dependency; Phase E adds **no new sub-processors** (in-house gateway, in-house signals), which keeps this unchanged.
