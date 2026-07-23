@@ -17,6 +17,7 @@ import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import { isStudioAgencyEnabled } from "@/lib/agency/flag";
 import { createBuildJobFromProject } from "@/lib/agency/spec";
 import { getBuildJob, transitionJob, appendBuildEvent } from "@/lib/agency/store";
+import { resolveDecision, supersedeDecisions } from "@/lib/agency/decisions";
 import { sendBuildStarted, sendPreviewReady, sendChangesReceived, postBuildSystemMessage } from "@/lib/studio/email/agency";
 
 const AGENCY_CALLBACK_KEY_ID = "studio-agency-v1";
@@ -108,6 +109,9 @@ export async function recordChangesRequestedAction(input: { jobId: string }): Pr
   });
   if (!moved.ok) return { ok: false, error: moved.reason };
 
+  // Leaving owner_review invalidates any pending deploy-approval in the inbox.
+  await supersedeDecisions(input.jobId, ["deploy_approval"]).catch(() => undefined);
+
   // Templated ack (no tap) + re-queue for another pass.
   try {
     const admin = createAdminSupabase();
@@ -175,6 +179,23 @@ export async function postPreviewToThreadAction(input: { jobId: string; previewU
     messageType: "approval_request",
   });
   return { ok: true };
+}
+
+/**
+ * Resolve a server-initiated decision from the inbox (owner one-tap: act or
+ * dismiss). Owner-gated; CAS on status='pending' inside resolveDecision so a
+ * double-tap cannot double-resolve. This NEVER authorizes anything itself —
+ * a `deploy_approval` still requires the separate reauth-gated approve-deploy
+ * route; this only clears the inbox item.
+ */
+export async function resolveAgencyDecisionAction(input: {
+  decisionId: string;
+  status: "acted" | "dismissed";
+}): Promise<ActionResult> {
+  const owner = await requireOwnerActor();
+  if (!owner) return { ok: false, error: "not_authorized" };
+  const ok = await resolveDecision({ decisionId: input.decisionId, status: input.status, actor: owner.id });
+  return ok ? { ok: true } : { ok: false, error: "already_resolved" };
 }
 
 /** Owner dispatches a queued job immediately (in addition to the cron tick). */

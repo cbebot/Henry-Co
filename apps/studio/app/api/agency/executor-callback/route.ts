@@ -157,7 +157,22 @@ async function handleHeartbeat(
   return NextResponse.json({ ok: true, status: "heartbeat_recorded" });
 }
 
+/** Stages where a build report is still legitimate (the executor is/was running). */
+const BUILDABLE_STAGES = ["queued", "dispatching", "building"];
+
 async function handleReport(jobId: string, stage: string, report: BuildJobReport): Promise<Response> {
+  // A report is only legitimate while the job is in the BUILD phase. A report
+  // for ANY post-build stage (qa, client_review, owner_review,
+  // approved_for_deploy, deploying, live, aftercare) is a stale/duplicate or a
+  // hostile replay — it must NEVER store a bundle or mutate the pinned
+  // artifact_hash after QA/approval. Reject it before touching any state; this
+  // is the app-layer half of the post-approval swap guard (the DB trigger makes
+  // artifact_hash write-once past building as the second wall).
+  if (!BUILDABLE_STAGES.includes(stage)) {
+    await appendBuildEvent(jobId, "report_stale_stage", { stage, outcome: clean(report.outcome) });
+    return NextResponse.json({ ok: true, status: "stale_stage" });
+  }
+
   // Record usage FIRST (idempotent) so the cost trail exists regardless of
   // outcome.
   if (report.usage) {

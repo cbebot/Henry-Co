@@ -40,6 +40,10 @@ import {
   type PortalDeliverableView,
 } from "@/components/portal/portal-deliverable-card";
 import { DeliverableApprovalPanel } from "@/components/portal/deliverable-approval-panel";
+import { AgencyPreviewReview } from "@/components/portal/agency-preview-review";
+import { getClientPreviewForProject, type ClientPreviewReview } from "@/lib/agency/client-preview";
+import { isStudioAgencyEnabled } from "@/lib/agency/flag";
+import { MAX_CLIENT_REVISION_ROUNDS } from "@/lib/agency/review-window";
 import { StudioMessageThread } from "@/components/portal/StudioMessageThread";
 import { MilestoneProgress } from "@/components/portal/milestone-progress";
 import { PortalEmptyState } from "@/components/portal/empty-state";
@@ -124,6 +128,12 @@ export default async function ClientProjectDetailPage({
   const finalsLocked = !isProjectPaid(detail.paymentSummary);
   // Per-deliverable revision rounds + round-trip counter (RLS-scoped read).
   const revisionStates = await getDeliverableRevisionStates(detail.project.id);
+  // SA-3 — the active build job awaiting THIS client's preview review, if any.
+  // Ownership was already established by getClientProjectDetail above; the
+  // client-review route re-verifies independently before any state move.
+  const agencyPreview: ClientPreviewReview | null = isStudioAgencyEnabled()
+    ? await getClientPreviewForProject(detail.project.id)
+    : null;
 
   // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
   // so non-EN locales hit the cached DeepL pipeline (and any `_i18n` /
@@ -360,6 +370,7 @@ export default async function ClientProjectDetailPage({
           locale={locale}
           revisionStates={revisionStates}
           finalsLocked={finalsLocked}
+          agencyPreview={agencyPreview}
         />
       ) : null}
       {activeTab === "messages" ? (
@@ -582,16 +593,31 @@ function ApprovalsTab({
   locale,
   revisionStates,
   finalsLocked,
+  agencyPreview,
 }: {
   detail: NonNullable<Awaited<ReturnType<typeof getClientProjectDetail>>>;
   locale: AppLocale;
   revisionStates: Awaited<ReturnType<typeof getDeliverableRevisionStates>>;
   finalsLocked: boolean;
+  agencyPreview: ClientPreviewReview | null;
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
+  const previewPanel = agencyPreview ? (
+    <AgencyPreviewReview
+      jobId={agencyPreview.jobId}
+      previewUrl={agencyPreview.previewUrl}
+      roundsUsed={agencyPreview.roundsUsed}
+      maxRounds={MAX_CLIENT_REVISION_ROUNDS}
+      locale={locale}
+    />
+  ) : null;
+
   if (detail.deliverables.length === 0) {
-    return (
+    // The agency preview review can exist before any deliverable is shared.
+    return previewPanel ? (
+      <div className="space-y-4">{previewPanel}</div>
+    ) : (
       <PortalEmptyState
         icon={ShieldCheck}
         title={t("Nothing to approve yet")}
@@ -602,6 +628,7 @@ function ApprovalsTab({
 
   return (
     <div className="space-y-4">
+      {previewPanel}
       <p className="text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
         {t("Review each deliverable, then approve it or request changes. Your included revision rounds are tracked per deliverable.")}
       </p>
