@@ -145,6 +145,60 @@ export async function sendSiteLive(project: ProjectRecipient, liveUrl: string): 
 }
 
 /**
+ * review_reminder — SA-3 client-silence reminder (templated, no tap). The
+ * client's preview is waiting; we nudge, we never auto-advance. Fixed copy,
+ * tone-gated, i18n Pattern A.
+ */
+export async function sendReviewReminder(project: ProjectRecipient): Promise<void> {
+  await renderAndSendStudioEmail({
+    to: project.normalizedEmail,
+    entityId: project.id,
+    templateKey: "review_reminder",
+    layout: {
+      subject: `Your preview is waiting • ${project.title}`,
+      eyebrow: "Preview waiting",
+      title: "Your site preview is still waiting for you.",
+      intro:
+        "A preview of your site is ready and waiting in your project workspace. Take a look when you can, then approve it or ask for changes — nothing goes live until you're happy.",
+      actionLabel: "Review your preview",
+      actionHref: `${studioEmailBaseUrl()}/client/projects/${project.id}?tab=approvals`,
+    },
+  });
+  await postBuildSystemMessage({
+    projectId: project.id,
+    body: "A quick reminder — your site preview is ready to review whenever you are.",
+    messageType: "system",
+  });
+}
+
+/**
+ * aftercare_checkin — SA-3 day-3 post-launch check-in (templated, no tap).
+ */
+export async function sendAftercareCheckin(project: ProjectRecipient, liveUrl: string): Promise<void> {
+  await renderAndSendStudioEmail({
+    to: project.normalizedEmail,
+    entityId: project.id,
+    templateKey: "aftercare_checkin",
+    layout: {
+      subject: `Checking in on your site • ${project.title}`,
+      eyebrow: "Post-launch check-in",
+      title: "How is everything looking?",
+      intro:
+        "Your site has been live for a few days. We wanted to check in — if anything needs adjusting, just reply in your workspace and we'll take care of it within your warranty window.",
+      highlightLabel: "Live address",
+      highlightValue: liveUrl,
+      actionLabel: "Open your project",
+      actionHref: `${studioEmailBaseUrl()}/client/projects/${project.id}`,
+    },
+  });
+  await postBuildSystemMessage({
+    projectId: project.id,
+    body: "Checking in now that your site has been live for a few days — reply here if anything needs a tweak.",
+    messageType: "milestone_update",
+  });
+}
+
+/**
  * Owner escalation email (ARCHITECTURE §3.3 fallback). Not client-facing;
  * rings the owner's inbox with the exact cause of a stall/breach.
  */
