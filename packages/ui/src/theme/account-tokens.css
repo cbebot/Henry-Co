@@ -30,8 +30,14 @@
   /* Premium Henry Onyx gold (brand anchor). */
   --acct-gold: #C9A227;
   --acct-gold-strong: #A88718;
-  --acct-gold-text: #8A6F00;
+  /* Darkened #8A6F00 -> #7A6200 so gold-text on the pale gold-soft ground clears
+     WCAG AA for normal text (4.23:1 -> 5.15:1). Light-mode only; dark keeps its
+     lighter gold-text for dark grounds. */
+  --acct-gold-text: #7A6200;
   --acct-gold-soft: #F7F0D8;
+  /* Ink for text on a SOLID gold ground — dark in BOTH themes so a primary
+     CTA never renders white-on-gold (AA: 7.33:1 light, 7.76:1 dark). */
+  --acct-on-gold: #1A1814;
   --acct-green: #10B981;
   --acct-green-soft: #D1FAE5;
   --acct-red: #EF4444;
@@ -121,6 +127,8 @@
   --acct-gold-strong: #E5C870;
   --acct-gold-text: #E5C870;
   --acct-gold-soft: rgba(212,175,55,0.16);
+  /* Stays dark on the lighter dark-mode gold (#D4AF37) — never white-on-gold. */
+  --acct-on-gold: #1A1814;
   --acct-green: #34D399;
   --acct-green-soft: rgba(52,211,153,0.12);
   --acct-red: #F87171;

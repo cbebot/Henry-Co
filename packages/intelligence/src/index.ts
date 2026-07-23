@@ -306,7 +306,11 @@ export type HenryFeatureFlagName =
   // V3-AI-01 — the system-wide Henry Onyx Intelligence kill switch. Default OFF
   // (absent env ⇒ false), so the AI engine launches dark; flipping it off halts all
   // gateway dispatch instantly (in-flight holds expire and release — no stranded funds).
-  | "ai_gateway";
+  | "ai_gateway"
+  // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
+  // Default OFF: the account home falls back to pure DASH weight ordering instantly.
+  // Deterministic + AI-free; gates only the user-preference/signal projection.
+  | "personalization_home";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -355,6 +359,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_AI_GATEWAY) ||
       list.has("ai_gateway") ||
       list.has("ai"),
+    // V3-34 personalization-home kill switch — default OFF (dark launch).
+    personalization_home:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
+      list.has("personalization_home") ||
+      list.has("personalization"),
   };
 }
 

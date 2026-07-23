@@ -28,6 +28,11 @@ export {
   type LogisticsStaffOwnerCopy,
 } from "./logistics-staff-owner-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
+export {
+  getPersonalizationCopy,
+  formatPersonalizationTemplate,
+  type PersonalizationCopy,
+} from "./personalization-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";

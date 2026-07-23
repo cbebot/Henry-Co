@@ -262,6 +262,18 @@ export type HenryEventName =
   | "henry.dashboard.module.rendered"
   | "henry.dashboard.module.refreshed"
   | "henry.dashboard.empty_state.cta_clicked"
+  // V3-34 personalization-home (Phase E). `layout.computed` fires each time
+  // the deterministic projection is applied (owner tile: daily layouts). The
+  // module verbs track explicit user intent (pin/hide) and `layout.reset`
+  // clears overrides. `consent.granted|revoked` record the account-scoped
+  // personalization consent decision (NDPR ledger). Outcome axis: computed→
+  // completed, pinned/hidden→saved, reset→removed, consent→approved|rejected.
+  | "henry.personalization.layout.computed"
+  | "henry.personalization.layout.reset"
+  | "henry.personalization.module.pinned"
+  | "henry.personalization.module.hidden"
+  | "henry.personalization.consent.granted"
+  | "henry.personalization.consent.revoked"
   // payments / provider router — V3-13 foundation lock (vendor-agnostic
   // routing). `intent.*` track the money lifecycle of a payment_intent
   // (created → succeeded | failed → refunded); the outcome axis maps
